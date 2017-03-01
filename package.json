@@ -1,9 +1,13 @@
 {
   "name": "premiser-ui",
   "version": "0.1",
-  "description": "UI for premiser.co",
+  "description": "UI for premiser.co.  Proprietary and confidential.  Copyright Carl Gieringer",
   "main": "index.js",
   "repository": "git@bitbucket.org:premiser/premiser-ui.git",
   "author": "Carl Gieringer <carl@premiser.co>",
-  "license": "Proprietary and confidential.  Copyright Carl Gieringer"
+  "devDependencies": {
+    "debug": "^2.6.1",
+    "express": "^4.14.1",
+    "morgan": "^1.8.1"
+  }
 }
