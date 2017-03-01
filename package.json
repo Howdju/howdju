@@ -1,0 +1,9 @@
+{
+  "name": "premiser-ui",
+  "version": "0.1",
+  "description": "UI for premiser.co",
+  "main": "index.js",
+  "repository": "git@bitbucket.org:premiser/premiser-ui.git",
+  "author": "Carl Gieringer <carl@premiser.co>",
+  "license": "Proprietary and confidential.  Copyright Carl Gieringer"
+}
