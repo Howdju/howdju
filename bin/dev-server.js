@@ -1,6 +1,5 @@
 const debug = require('debug')('premiser-ui:dev-server')
 const server = require('../server')
-
 const projectConfig = require('../config/project.config')
 
 

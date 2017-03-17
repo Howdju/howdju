@@ -12,6 +12,7 @@ const config = {
     dist: path.resolve.bind(path, basePath, 'dist')
   },
   buildFailOnWarning: false,
+  compilerPublicPath: '/',
   compilerStats: {
     chunks: false,
     chunkModules: false,
