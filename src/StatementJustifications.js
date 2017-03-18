@@ -9,18 +9,17 @@ export default class StatementJustifications extends Component {
     this.state = {statement: new Statement(), justifications: []};
   }
   render () {
-    const justifications = this.props.justifications.map(j => (
-        <div key={j.id} className={classNames({justification: true, positive: j.polarity === 'positive', negative: j.polarity === 'negative'})}>
-          {j.basis.text}
-        </div>
-    ))
     return (
         <div className="statement-justifications">
           <div className="statement">
             {this.props.statement.text}
           </div>
           <div className="justifications">
-            {justifications}
+            {this.props.justifications.map(j => (
+                <div key={j.id} className={classNames({justification: true, positive: j.polarity === 'positive', negative: j.polarity === 'negative'})}>
+                  {j.basis.text}
+                </div>
+            ))}
           </div>
         </div>
     )

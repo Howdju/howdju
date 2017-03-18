@@ -3,7 +3,8 @@ import StatementJustifications from './StatementJustifications'
 import Statement from './Statement'
 import Justification from './Justification'
 
-export default class UiContainer extends Component {
+export default class StatementJustificationsContainer extends Component {
+
   statement = new Statement({
     id: 1,
     text: "The American Health Care Reform Act of 2017 (H.R.277) is an improvement over The Affordable Care Act"
@@ -41,9 +42,9 @@ export default class UiContainer extends Component {
       score: 5,
     })
   ]
-  render () {
-    return (
-        <StatementJustifications statement={this.statement} justifications={this.justifications}/>
-    )
+
+  render() {
+    console.log('statementId: ' + this.props.match.params.statementId)
+    return <StatementJustifications statement={this.statement} justifications={this.justifications}/>
   }
 }

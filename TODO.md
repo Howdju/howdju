@@ -1,6 +1,6 @@
 # Howdju UI TODO
-* Navigation, basic page layout
 * breakpoints in source
+* Title
 * Redux
 * index.html / [HtmlWebpackPlugin](https://github.com/jantimon/html-webpack-plugin)
 * Testing
