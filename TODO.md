@@ -1,11 +1,13 @@
 # Howdju UI TODO
 * Navigation, basic page layout
+* breakpoints in source
 * Redux
 * index.html / [HtmlWebpackPlugin](https://github.com/jantimon/html-webpack-plugin)
-
 * Testing
+
 ## Maybe
 * https://github.com/reactjs/reselect
+
 ## Done?
 * HMR
     * [React Hot Module Reload](https://webpack.js.org/guides/hmr-react/)
