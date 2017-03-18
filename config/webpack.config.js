@@ -26,10 +26,34 @@ const config = {
         test: /\.css$/,
         use: [
           'style-loader',
-          'css-loader?modules',
-          'postcss-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              // minimize: false,
+              importLoaders: 1,
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              autoprefixer: {
+                add: true,
+                remove: true,
+                browsers: ['last 2 versions']
+              },
+              discardComments: {
+                removeAll: true
+              },
+              discardUnused: false,
+              mergeIdents: false,
+              reduceIdents: false,
+              safe: true,
+              sourceMap: 'inline',
+            }
+          }
         ],
-      },
+      }
     ]
   },
   plugins: [
@@ -49,7 +73,7 @@ const config = {
     //   }
     // })
     // new webpack.optimize.UglifyJsPlugin(),
-  ]
+  ],
 };
 
 module.exports = config;
