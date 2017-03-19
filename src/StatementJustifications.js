@@ -1,12 +1,13 @@
 import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames';
-import Statement from './Statement'
+import Helmet from 'react-helmet'
 import './StatementJustifications.css'
 
 export default class StatementJustifications extends Component {
   render () {
     return (
         <div className="statement-justifications">
+          <Helmet title={this.props.statement.text + ' - Howdju'} />
           <div className="statement">
             {this.props.statement.text}
           </div>
