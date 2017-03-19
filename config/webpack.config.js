@@ -14,7 +14,7 @@ const config = {
     path: projectConfig.paths.dist(),
     publicPath: '/',
   },
-  devtool: 'inline-source-map',
+  devtool: 'eval-source-map',
   module: {
     rules: [
       {

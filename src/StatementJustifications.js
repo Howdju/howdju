@@ -4,10 +4,6 @@ import Statement from './Statement'
 import './StatementJustifications.css'
 
 export default class StatementJustifications extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {statement: new Statement(), justifications: []};
-  }
   render () {
     return (
         <div className="statement-justifications">
