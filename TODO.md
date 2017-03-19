@@ -1,11 +1,22 @@
 # Howdju UI TODO
-* Title
 * Redux
+  * Combine router with redux (e.g. get statement ID from URL), ensure hot reload works
+  * [redux-thunk](https://github.com/gaearon/redux-thunk) vs. [redux-saga](https://redux-saga.github.io/redux-saga/)
+  * [react-router-redux](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux)?
+  * [redux-actions](https://github.com/acdlite/redux-actions)
+  * [normilzr](https://github.com/paularmstrong/normalizr)
+  * [ecosystem](http://redux.js.org/docs/introduction/Ecosystem.html)
+* Move to API
 * index.html / [HtmlWebpackPlugin](https://github.com/jantimon/html-webpack-plugin)
 * Testing
+* favicon
 
 ## Maybe
 * https://github.com/reactjs/reselect
+* SSR
+  * [Redux SSR](http://redux.js.org/docs/recipes/ServerRendering.html)
+* Drag-n-drop
+  * [react-dnd](https://github.com/react-dnd/react-dnd)
 
 ## Done?
 * HMR
@@ -22,3 +33,6 @@
   * https://webpack.js.org/guides/production-build/#source-maps
   * https://survivejs.com/webpack/building/source-maps/
 * [React Router 4 Docs](https://reacttraining.com/react-router/web/example/basic)
+
+## Cool
+* Collaborative editor: https://github.com/philholden/redux-swarmlog
