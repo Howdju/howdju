@@ -5,6 +5,15 @@
     "react"
   ],
   "plugins": [
-    "react-hot-loader/babel"
-  ]
+    "react-hot-loader/babel",
+    "syntax-dynamic-import"
+  ],
+  "env": {
+    "test": {
+      "plugins": [
+        "transform-es2015-modules-commonjs",
+        "dynamic-import-node"
+      ]
+    }
+  }
 }

@@ -1,20 +1,22 @@
 # Howdju UI TODO
 * Redux
-  * Combine router with redux (e.g. get statement ID from URL), ensure hot reload works
   * [redux-thunk](https://github.com/gaearon/redux-thunk) vs. [redux-saga](https://redux-saga.github.io/redux-saga/)
-  * [react-router-redux](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux)?
   * [redux-actions](https://github.com/acdlite/redux-actions)
   * [normilzr](https://github.com/paularmstrong/normalizr)
   * [ecosystem](http://redux.js.org/docs/introduction/Ecosystem.html)
 * Move to API
 * index.html / [HtmlWebpackPlugin](https://github.com/jantimon/html-webpack-plugin)
-* Testing
 * favicon
 
 ## Maybe
-* https://github.com/reactjs/reselect
+* [selectors](https://github.com/reactjs/reselect) (memoization of deriving from state)
+  * http://redux.js.org/docs/recipes/ComputingDerivedData.html
 * SSR
   * [Redux SSR](http://redux.js.org/docs/recipes/ServerRendering.html)
+* [react-router-redux](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux)?
+* Ensure Redux store preserved between hot reloads
+  * http://stackoverflow.com/a/34697765/39396
+* prop types
 * Drag-n-drop
   * [react-dnd](https://github.com/react-dnd/react-dnd)
 
