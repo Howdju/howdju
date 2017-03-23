@@ -19,6 +19,7 @@
 * prop types
 * Drag-n-drop
   * [react-dnd](https://github.com/react-dnd/react-dnd)
+* [normalizr with immutable](https://github.com/mschipperheyn/normalizr-immutable)?
 
 ## Done?
 * HMR

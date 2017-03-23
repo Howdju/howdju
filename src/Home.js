@@ -1,10 +1,34 @@
 import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { fetchStatements } from './actions'
 
-export default class Home extends Component {
+class Home extends Component {
+
+  componentWillMount() {
+    this.props.fetchStatements()
+  }
+
   render () {
     return (
-        <Link to="/s/1/blah-blah-blah">Statement 1</Link>
+        <ul>
+          {this.props.statements.map(s => <li key={s.id}><Link to={'/s/' + s.id + '/' + s.slug}>{s.text}</Link></li>)}
+        </ul>
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  const {
+    entities: {
+      statements
+    }
+  } = state
+  return {
+    statements: _.sortBy(statements, ['text']),
+  }
+}
+
+export default connect(mapStateToProps, {
+      fetchStatements
+    })(Home)

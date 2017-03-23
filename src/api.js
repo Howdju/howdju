@@ -1,11 +1,11 @@
 import { normalize, schema } from 'normalizr';
 import fetch from 'isomorphic-fetch'
+import { apiUrl } from "./util";
+import {FETCH_STATEMENTS, FETCH_STATEMENT_JUSTIFICATIONS} from "./actions";
 
-const API_ROOT = 'http://localhost:3000/'
 
-function callApi(endpoint, schema) {
-  const fullUrl = API_ROOT + endpoint
-
+export function callApi(endpoint, schema) {
+  const fullUrl = apiUrl(endpoint)
   return fetch(fullUrl)
       .then(response => response.json().then(json => ({ json, response })))
       .then(({ json, response }) => {
@@ -15,10 +15,6 @@ function callApi(endpoint, schema) {
 
         return normalize(json, schema)
       })
-      .then(
-          response => ({response}),
-          error => ({error: error.message || 'Something bad happened'})
-      )
 }
 
 export const statementSchema = new schema.Entity('statements');
@@ -49,5 +45,9 @@ export const statementJustificationsSchema = {
   justifications: [justificationSchema]
 }
 
-export const fetchStatements = () => callApi('statements', statementsSchema)
-export const fetchStatementJustifications = (statementId) => callApi(`statement/${statementId}?justifications`, statementJustificationsSchema)
+// These methods translate FETCH_* payloads into API calls
+export const resourceCalls = {
+  [FETCH_STATEMENTS]: () => callApi('statements', statementsSchema),
+  [FETCH_STATEMENT_JUSTIFICATIONS]: (statementId) =>
+      callApi(`statement/${statementId}?justifications`, statementJustificationsSchema),
+}

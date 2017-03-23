@@ -1,25 +1,27 @@
-export const CREATE_STATEMENT = 'CREATE_STATEMENT'
-export const JUSTIFY_STATEMENT = 'JUSTIFY_STATEMENT'
-export const CREATE_JUSTIFIED_STATEMENT = 'CREATE_JUSTIFIED_STATEMENT'
+import { createAction as create2Action } from 'redux-actions';
+
+export const FETCH_STATEMENTS = 'FETCH_STATEMENTS'
+export const FETCH_STATEMENTS_SUCCESS = 'FETCH_STATEMENTS_SUCCESS'
+export const FETCH_STATEMENTS_FAILURE = 'FETCH_STATEMENTS_FAILURE'
+export const fetchStatements = create2Action(FETCH_STATEMENTS)
+
+export const FETCH_STATEMENT_JUSTIFICATIONS = 'FETCH_STATEMENT_JUSTIFICATIONS'
+export const FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS = 'FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS'
+export const FETCH_STATEMENT_JUSTIFICATIONS_FAILURE = 'FETCH_STATEMENT_JUSTIFICATIONS_FAILURE'
+export const fetchStatementJustifications = create2Action(FETCH_STATEMENT_JUSTIFICATIONS)
+
 export const ACCEPT_JUSTIFICATION = 'ACCEPT_JUSTIFICATION'
+export const acceptJustification = create2Action(ACCEPT_JUSTIFICATION)
 export const REJECT_JUSTIFICATION = 'REJECT_JUSTIFICATION'
+export const rejectJustification = create2Action(REJECT_JUSTIFICATION)
 
-export function createStatement(text) {
-  return { type: CREATE_STATEMENT, payload: { text }}
-}
-
-export function justifyStatement(statementId, justification) {
-  return { type: JUSTIFY_STATEMENT, payload: { statementId, justification }}
-}
-
-export function createJustifiedStatement(statement, justifications) {
-  return { type: CREATE_JUSTIFIED_STATEMENT, payload: { statement, justifications }}
-}
-
-export function acceptJustification(justificationId) {
-  return { type: ACCEPT_JUSTIFICATION, payload: { justificationId }}
-}
-
-export function rejectJustification(justificationId) {
-  return { type: REJECT_JUSTIFICATION, payload: { justificationId }}
+export const API_RESOURCE_ACTIONS = {
+  [FETCH_STATEMENTS]: {
+    SUCCESS: FETCH_STATEMENTS_SUCCESS,
+    FAILURE: FETCH_STATEMENTS_FAILURE
+  },
+  [FETCH_STATEMENT_JUSTIFICATIONS]: {
+    SUCCESS: FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS,
+    FAILURE: FETCH_STATEMENT_JUSTIFICATIONS_FAILURE,
+  }
 }

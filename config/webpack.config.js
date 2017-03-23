@@ -72,7 +72,12 @@ const config = {
     //     collapseWhitespace : true
     //   }
     // })
-    // new webpack.optimize.UglifyJsPlugin(),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   compressor: {
+    //     screw_ie8: true,
+    //     warnings: false
+    //   }
+    // })
   ],
 };
 

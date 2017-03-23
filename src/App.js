@@ -4,9 +4,9 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import Helmet from 'react-helmet'
 import Header from './Header'
 import Home from './Home'
-import StatementJustificationsContainer from './StatementJustificationsContainer'
+import StatementJustifications from './StatementJustifications'
 
-export default class AppContainer extends Component {
+export default class App extends Component {
   render () {
     return (
       <Router>
@@ -16,7 +16,7 @@ export default class AppContainer extends Component {
           <Header/>
 
           <Route exact path="/" component={Home} />
-          <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsContainer} />
+          <Route path="/s/:statementId/:statementSlug" component={StatementJustifications} />
 
         </div>
       </Router>

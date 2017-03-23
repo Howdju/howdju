@@ -1,26 +1,22 @@
-import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames';
+import React, { Component, PropTypes } from 'react'
 import Helmet from 'react-helmet'
-import { JustificationType } from './Justification'
+import { connect } from 'react-redux'
+import { denormalize } from 'normalizr';
+
+import { extractDomain } from './util'
+import { JustificationTargetType, JustificationPolarity, JustificationBasisType} from './models'
 import './StatementJustifications.css'
+import {acceptJustification, rejectJustification, fetchStatementJustifications} from "./actions";
+import {statementJustificationsSchema} from "./api";
 
-function extractDomain(url) {
-  let domain;
-  //find & remove protocol (http, ftp, etc.) and get domain
-  if (url.indexOf("://") > -1) {
-    domain = url.split('/')[2];
+
+class StatementJustifications extends Component {
+
+  componentWillMount() {
+    this.props.fetchStatementJustifications(this.props.match.params.statementId)
   }
-  else {
-    domain = url.split('/')[0];
-  }
 
-  //find & remove port number
-  domain = domain.split(':')[0];
-
-  return domain;
-}
-
-export default class StatementJustifications extends Component {
   render () {
     return (
         <div className="statement-justifications">
@@ -30,9 +26,11 @@ export default class StatementJustifications extends Component {
           </div>
           <div className="justifications">
             {this.props.justifications.map(j => (
-                <div key={j.id} className={classNames({justification: true, positive: j.polarity === 'positive', negative: j.polarity === 'negative'})}>
-                  {j.basis.text}
-                  {j.type === JustificationType.QUOTE && (<a href={j.basis.citation.sources[0].url}>{extractDomain(j.basis.citation.sources[0].url)}</a>)}
+                <div key={j.id} className={classNames({justification: true, positive: j.polarity === JustificationPolarity.POSITIVE, negative: j.polarity === JustificationPolarity.NEGATIVE})}>
+                  {j.basis.entity.text}
+                  {j.basis.type === JustificationBasisType.QUOTE &&
+                    <a href={j.basis.entity.citation.sources[0].entity.url}>{extractDomain(j.basis.entity.citation.sources[0].entity.url)}</a>
+                  }
                 </div>
             ))}
           </div>
@@ -40,3 +38,26 @@ export default class StatementJustifications extends Component {
     )
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  const statement = state.entities.statements[ownProps.match.params.statementId] || {}
+  const justifiesStatement = j =>
+    j.target.type === JustificationTargetType.STATEMENT &&
+    j.target.entity.id === statement.id
+  const justifications = _.chain(state.entities.justifications)
+      .filter(justifiesStatement)
+      .sortBy(j => j.score)
+      .value()
+  const statementJustifications = {
+    statement: statement,
+    justifications: justifications,
+  }
+  const denormalized = denormalize(statementJustifications, statementJustificationsSchema, state.entities)
+  return denormalized
+}
+
+export default connect(mapStateToProps, {
+  fetchStatementJustifications,
+  acceptJustification,
+  rejectJustification,
+})(StatementJustifications)

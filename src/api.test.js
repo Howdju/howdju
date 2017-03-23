@@ -15,8 +15,8 @@ describe('api', () => {
     const statements = [{ id: 1, text: 'a statement' }]
     Promise.all([import('isomorphic-fetch'), import('./api')]).then(([fetch, api]) => {
       fetch.mockImplementation((url) => Promise.resolve({ ok: true, json: () => Promise.resolve(statements) }))
-      api.fetchStatements().then((result) => {
-        expect(result).toEqual({ response: normalize(statements, statementsSchema) })
+      api.callApi('blah', statementsSchema).then((result) => {
+        expect(result).toEqual(normalize(statements, statementsSchema))
         done()
       })
     })
