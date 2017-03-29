@@ -46,9 +46,14 @@ CREATE TABLE taggings (
   target_type varchar(32)
 );
 
-CREATE TABLE votes (
-  vote_id SERIAL,
-  target_type varchar(32), -- JUSTIFICATION, TAGGING
+CREATE TABLE justification_votes (
+  justification_vote_id SERIAL,
+  target_id integer,
+  polarity varchar(32)
+);
+
+CREATE TABLE tagging_votes (
+  tagging_vote_id SERIAL,
   target_id integer,
   polarity varchar(32)
 );

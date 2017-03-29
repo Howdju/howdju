@@ -12,7 +12,6 @@ const config = {
 }
 
 const pool = new pg.Pool(config)
-// pool.end()
 
 pool.on('error', (err, client) => console.error('idle client error', err.message, err.stack))
 
@@ -24,5 +23,3 @@ exports.queries = queries => Promise.resolve(
         .all(queries.map(q => client.query.apply(client, q)))
         .finally(() => client.release()))
 )
-
-exports.pool = pool

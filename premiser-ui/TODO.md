@@ -1,5 +1,5 @@
 # Howdju UI TODO
-* Separate server project
+* Deploy to S3
 * Accept/reject justifications
 * Add statements/justifications
 * tagging

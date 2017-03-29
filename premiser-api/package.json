@@ -7,17 +7,26 @@
   "license": "UNLICENSED",
   "scripts": {
     "db": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
-    "dev": "DEBUG=premiser-api:* node bin/dev-server.js"
+    "dev": "DEBUG=premiser-api:* node bin/dev-server.js",
+    "build": "gulp build",
+    "deploy": "gulp deploy"
   },
   "devDependencies": {
+    "aws-sdk": "^2.34.0",
     "debug": "^2.6.3",
+    "del": "^2.2.2",
     "express": "^4.15.2",
     "gulp": "^3.9.1",
+    "gulp-install": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-util": "^3.0.8",
     "gulp-zip": "^4.0.0",
-    "morgan": "^1.8.1"
+    "morgan": "^1.8.1",
+    "run-sequence": "^1.2.2"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
+    "node-env-file": "^0.1.8",
     "pg": "^6.1.5"
   }
 }
