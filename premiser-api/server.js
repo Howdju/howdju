@@ -18,7 +18,9 @@ app.use('/api/*', function (req, res) {
     httpMethod: req.method,
     queryStringParameters: req.query
   }
+
   const context = {}
+
   const callback = (error, response) => {
     if (error) throw error
 

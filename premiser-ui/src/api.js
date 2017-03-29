@@ -6,7 +6,7 @@ import {FETCH_STATEMENTS, FETCH_STATEMENT_JUSTIFICATIONS} from "./actions";
 
 export function callApi(endpoint, schema) {
   const fullUrl = apiUrl(endpoint)
-  return fetch(fullUrl)
+  return fetch(fullUrl, { credentials: 'include' })
       .then(response => response.json().then(json => ({ json, response })))
       .then(({ json, response }) => {
         if (!response.ok) {
@@ -49,5 +49,5 @@ export const statementJustificationsSchema = {
 export const resourceCalls = {
   [FETCH_STATEMENTS]: () => callApi('statements', statementsSchema),
   [FETCH_STATEMENT_JUSTIFICATIONS]: (statementId) =>
-      callApi(`statement/${statementId}?justifications`, statementJustificationsSchema),
+      callApi(`statements/${statementId}?justifications`, statementJustificationsSchema),
 }

@@ -1,5 +1,6 @@
 # TODO
-* Local server using Lambda function
+* CORS
+  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
 * Successfully query db from Lambda
 * Configuration in env. vars (encryption, add decrypt permission to execution role)
 * gulp copies files to Lambda

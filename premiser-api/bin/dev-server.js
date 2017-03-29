@@ -5,6 +5,7 @@ Object.assign(process.env, {
   DB_NAME: 'premiser',
   DB_PASSWORD: null,
   DB_HOST: 'localhost',
+  CORS_ALLOW_ORIGIN: 'http://localhost:3000'
 })
 
 const server = require('../server')

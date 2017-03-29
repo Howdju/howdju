@@ -14,7 +14,7 @@ export function extractDomain(url) {
   return domain;
 }
 
-const API_ROOT = 'http://localhost:3000/api/'
+const API_ROOT = 'http://localhost:8081/api/'
 
 export function apiUrl(path) {
   return API_ROOT + path;
