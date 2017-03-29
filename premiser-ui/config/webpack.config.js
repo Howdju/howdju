@@ -1,6 +1,9 @@
 const path = require('path')
-const projectConfig = require('./project.config')
+
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
+
+const projectConfig = require('./project.config')
 
 const config = {
   entry: [
@@ -61,17 +64,19 @@ const config = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    // new HtmlWebpackPlugin({
-    //   // https://github.com/jaketrent/html-webpack-template/blob/86f285d5c790a6c15263f5cc50fd666d51f974fd/index.html
-    //   template : project.paths.client('index.html'),
-    //   hash     : false,
-    //   favicon  : project.paths.public('favicon.ico'),
-    //   filename : 'index.html',
-    //   inject   : 'body',
-    //   minify   : {
-    //     collapseWhitespace : true
-    //   }
-    // })
+    new HtmlWebpackPlugin({
+      // https://github.com/jaketrent/html-webpack-template/blob/86f285d5c790a6c15263f5cc50fd666d51f974fd/index.html
+      appMountId: 'root',
+      template: projectConfig.paths.src('index.html'),
+      hash: false,
+      // favicon: projectConfig.paths.public('favicon.ico'),
+      mobile: true,
+      filename: 'index.html',
+      inject: 'body',
+      minify: {
+        collapseWhitespace : true
+      }
+    }),
     // new webpack.optimize.UglifyJsPlugin({
     //   compressor: {
     //     screw_ie8: true,

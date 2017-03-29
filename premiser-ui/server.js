@@ -112,7 +112,7 @@ app.use('/api/statement/1', function (req, res) {
 })
 
 app.use('*', function (req, res) {
-  res.sendfile('./src/index.html')
+  res.sendFile(projectConfig.paths.dist('index.html'))
 })
 
 module.exports = app

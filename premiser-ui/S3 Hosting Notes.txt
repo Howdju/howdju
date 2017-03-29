@@ -1,0 +1,11 @@
+  <RoutingRules>
+    <RoutingRule>
+        <Condition>
+          <KeyPrefixEquals>*</KeyPrefixEquals>
+        </Condition>
+        <Redirect>
+          <ReplaceKeyPrefixWith>/</ReplaceKeyPrefixWith>
+          <ReplaceKeyWith>index.html</ReplaceKeyWith>
+        </Redirect>
+    </RoutingRule>
+  </RoutingRules>

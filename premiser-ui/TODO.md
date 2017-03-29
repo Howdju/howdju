@@ -6,10 +6,11 @@
 * Jobs (justification score)
 * Search
 * Home page tag cloud
-* index.html / [HtmlWebpackPlugin](https://github.com/jantimon/html-webpack-plugin)
+* Time travel to see what libraries made app large
 * favicon
 
 ## Maybe
+* [Resource hints](https://github.com/jantimon/resource-hints-webpack-plugin)
 * [selectors](https://github.com/reactjs/reselect) (memoization of deriving from state)
   * http://redux.js.org/docs/recipes/ComputingDerivedData.html
 * SSR
