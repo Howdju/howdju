@@ -10,5 +10,5 @@ export const JustificationPolarity = {
 
 export const JustificationBasisType = {
   STATEMENT: 'STATEMENT',
-  QUOTE: 'QUOTE',
+  REFERENCE: 'REFERENCE',
 }

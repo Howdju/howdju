@@ -1,0 +1,17 @@
+bower
+generator-angular
+generator-karma
+generator-meanjs
+grunt-cli
+gulp
+gulp-cli
+http-server
+jasmine-node
+jspm
+live-server
+nativefier
+node-inspector
+tslint
+typescript
+typings
+yo

@@ -55,23 +55,21 @@ const justifications = [
     id: 6,
     target: { type: 'STATEMENT', entity: { id: 1 } },
     basis: {
-      type: 'QUOTE',
+      type: 'REFERENCE',
       entity: {
         id: 1,
-        text: 'Generally, people who are older, lower-income, or live in high-premium areas (like Alaska and Arizona) ' +
+        quote: 'Generally, people who are older, lower-income, or live in high-premium areas (like Alaska and Arizona) ' +
         'receive larger tax credits under the ACA than they would under the American Health Care Act replacement.',
         citation: {
-          title: 'Tax Credits under the Affordable Care Act vs. the American Health Care Act: An Interactive Map',
-          sources: [
-            {
-              type: 'WEBSOURCE',
-              entity: {
-                id: 1,
-                url: 'http://kff.org/interactive/tax-credits-under-the-affordable-care-act-vs-replacement-proposal-interactive-map/'
-              },
-            },
-          ]
+          id: 1,
+          text: 'Tax Credits under the Affordable Care Act vs. the American Health Care Act: An Interactive Map',
         },
+        urls: [
+          {
+            id: 1,
+            url: 'http://kff.org/interactive/tax-credits-under-the-affordable-care-act-vs-replacement-proposal-interactive-map/'
+          },
+        ]
       }
     },
     polarity: 'NEGATIVE',

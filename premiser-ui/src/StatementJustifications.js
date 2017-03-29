@@ -27,9 +27,9 @@ class StatementJustifications extends Component {
           <div className="justifications">
             {this.props.justifications.map(j => (
                 <div key={j.id} className={classNames({justification: true, positive: j.polarity === JustificationPolarity.POSITIVE, negative: j.polarity === JustificationPolarity.NEGATIVE})}>
-                  {j.basis.entity.text}
-                  {j.basis.type === JustificationBasisType.QUOTE &&
-                    <a href={j.basis.entity.citation.sources[0].entity.url}>{extractDomain(j.basis.entity.citation.sources[0].entity.url)}</a>
+                  {j.basis.type === JustificationBasisType.STATEMENT ? j.basis.entity.text : j.basis.entity.quote}
+                  {j.basis.type === JustificationBasisType.REFERENCE &&
+                    <a href={j.basis.entity.urls[0].url}>{extractDomain(j.basis.entity.urls[0].url)}</a>
                   }
                 </div>
             ))}

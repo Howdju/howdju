@@ -1,0 +1,67 @@
+https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html
+
+1. create RDS not publicly accessible in default VPC (see warning below about slow name resolution)
+    premiser.cc4gfeuy5z8h.us-east-1.rds.amazonaws.com:5432
+2. create lambda function in default VPC
+    arn:aws:lambda:us-east-1:007899441171:function:premiserApi:$LATEST
+3. create API Gateway, type AWS_PROXY (Lambda)
+    https://ewl0mezq3f.execute-api.us-east-1.amazonaws.com/dev
+4. Create role having: AWS Lambda (AWS service role), AWSLambdaVPCAccessExecutionRole
+    arn:aws:iam::007899441171:role/service-role/premiserLambdaRole
+
+
+Lambda VPC access
+
+    https://docs.aws.amazon.com/lambda/latest/dg/vpc.html
+
+    aws lambda create-function \
+        --function-name ExampleFunction \
+        --runtime python2.7 \
+        --role execution-role-arn \
+        --zip-file fileb://path/app.zip \
+        --handler app.handler \
+        --vpc-config SubnetIds=comma-separated-vpc-subnet-ids,SecurityGroupIds=comma-separated-security-group-ids \
+        --memory-size 1024
+
+    aws lambda create-function \
+        --region us-east-1 \
+        --function-name   CreateTableAddRecordsAndRead  \
+        --zip-file fileb://file-path/app.zip \
+        --role execution-role-arn \
+        --handler app.handler \
+        --runtime python2.7 \
+        --vpc-config SubnetIds=comma-separated-subnet-ids,SecurityGroupIds=default-vpc-security-group-id \
+        --profile adminuser
+
+        optional:
+        --code S3Bucket=bucket-name,S3Key=zip-file-object-key
+
+    aws lambda invoke \
+        --function-name premiserApi  \
+        --region us-east-1 \
+        --profile premiser \
+        output.txt
+
+    We recommend that you avoid DNS resolution of public host names for your VPC. This can take several seconds to resolve,
+    which adds several seconds of billable time on your request. For example, if your Lambda function accesses an Amazon RDS
+    instance in your VPC, launch the instance with the no-publicly-accessible option.
+
+    If your Lambda function needs Internet access, do not attach it to a public subnet or to a private subnet without
+    Internet access. Instead, attach it only to private subnets with Internet access through a NAT instance or an Amazon
+    VPC NAT gateway.
+
+
+RDS
+
+     aws rds create-db-instance \
+        --db-instance-identifier MySQLForLambdaTest \
+        --db-instance-class db.t2.micro \
+        --engine MySQL \
+        --allocated-storage 5 \
+        --no-publicly-accessible \
+        --db-name ExampleDB \
+        --master-username username \
+        --master-user-password password \
+        --backup-retention-period 3
+
+https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html

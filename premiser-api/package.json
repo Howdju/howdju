@@ -1,0 +1,23 @@
+{
+  "name": "premiser-api",
+  "version": "0.1.0",
+  "description": "API for premiser.co.  Proprietary and confidential.  Copyright Carl Gieringer",
+  "main": "index.js",
+  "author": "Carl Gieringer <carl@premiser.co>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "db": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
+    "dev": "DEBUG=premiser-api:* node bin/dev-server.js"
+  },
+  "devDependencies": {
+    "debug": "^2.6.3",
+    "express": "^4.15.2",
+    "gulp": "^3.9.1",
+    "gulp-zip": "^4.0.0",
+    "morgan": "^1.8.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "pg": "^6.1.5"
+  }
+}
