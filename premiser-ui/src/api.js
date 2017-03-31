@@ -1,8 +1,8 @@
 import { normalize, schema } from 'normalizr';
 import fetch from 'isomorphic-fetch'
-import { apiUrl } from "./util";
 import {FETCH_STATEMENTS, FETCH_STATEMENT_JUSTIFICATIONS} from "./actions";
 
+const apiUrl = path => process.env.API_ROOT + path
 
 export function callApi(endpoint, schema) {
   const fullUrl = apiUrl(endpoint)

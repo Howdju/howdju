@@ -11,6 +11,7 @@
 
 ## Maybe
 * [Resource hints](https://github.com/jantimon/resource-hints-webpack-plugin)
+  * [faster](https://hackernoon.com/10-things-i-learned-making-the-fastest-site-in-the-world-18a0e1cdf4a7)
 * [selectors](https://github.com/reactjs/reselect) (memoization of deriving from state)
   * http://redux.js.org/docs/recipes/ComputingDerivedData.html
 * SSR

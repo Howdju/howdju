@@ -1,9 +1,10 @@
 const path = require('path')
+const merge = require('webpack-merge')
 
 
 const basePath = path.resolve(__dirname, '..')
 
-const config = {
+const baseConfig = {
   port: 3000,
   paths: {
     base: path.resolve.bind(path, basePath),
@@ -11,13 +12,8 @@ const config = {
     src: path.resolve.bind(path, basePath, 'src'),
     dist: path.resolve.bind(path, basePath, 'dist')
   },
-  buildFailOnWarning: false,
-  compilerPublicPath: '/',
-  compilerStats: {
-    chunks: false,
-    chunkModules: false,
-    colors: true
-  }
 }
 
-module.exports = config
+const envConfig = require(`./project.${process.env.NODE_ENV}.config.js`)
+
+module.exports = merge(baseConfig, envConfig)

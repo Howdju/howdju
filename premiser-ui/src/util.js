@@ -13,10 +13,3 @@ export function extractDomain(url) {
 
   return domain;
 }
-
-const API_ROOT = 'http://localhost:8081/api/'
-// https://ewl0mezq3f.execute-api.us-east-1.amazonaws.com/dev/api/
-
-export function apiUrl(path) {
-  return API_ROOT + path;
-}

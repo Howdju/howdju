@@ -1,23 +1,43 @@
 const path = require('path')
 
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
+const merge = require('webpack-merge')
 
 const projectConfig = require('./project.config')
 
-const config = {
-  entry: [
-      'react-hot-loader/patch',
-      `webpack-hot-middleware/client?path=${projectConfig.compilerPublicPath}__webpack_hmr`,
-      'webpack/hot/only-dev-server',
-      projectConfig.paths.src('main.js')
-    ],
+const {
+  htmlWebpackPluginConfig: envHtmlWebpackPluginConfig,
+  definePluginConfig: envDefinePluginConfig,
+  webpackConfig: envWebpackConfig,
+} = require(`./webpack.${process.env.NODE_ENV}.config.js`)
+
+const htmlWebpackPluginConfig = merge({
+  appMountId: 'root',
+  // favicon: projectConfig.paths.public('favicon.ico'),
+  filename: 'index.html',
+  hash: false,
+  inject: false, // The template injects scripts
+  minify: {
+    collapseWhitespace: true,
+    conservativeCollapse: true,
+  },
+  mobile: true,
+  title: 'Howdju',
+  template: projectConfig.paths.src('index.html'),
+}, envHtmlWebpackPluginConfig)
+
+const definePluginConfig = merge({
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+}, envDefinePluginConfig)
+
+const baseWebpackConfig = {
   output: {
     filename: 'premiser-ui.js',
     path: projectConfig.paths.dist(),
     publicPath: '/',
   },
-  devtool: 'eval-source-map',
   module: {
     rules: [
       {
@@ -60,30 +80,15 @@ const config = {
     ]
   },
   plugins: [
+    new CleanWebpackPlugin([projectConfig.paths.dist()], {
+      root: projectConfig.paths.base()
+    }),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new HtmlWebpackPlugin({
-      // https://github.com/jaketrent/html-webpack-template/blob/86f285d5c790a6c15263f5cc50fd666d51f974fd/index.html
-      appMountId: 'root',
-      template: projectConfig.paths.src('index.html'),
-      hash: false,
-      // favicon: projectConfig.paths.public('favicon.ico'),
-      mobile: true,
-      filename: 'index.html',
-      inject: 'body',
-      minify: {
-        collapseWhitespace : true
-      }
-    }),
-    // new webpack.optimize.UglifyJsPlugin({
-    //   compressor: {
-    //     screw_ie8: true,
-    //     warnings: false
-    //   }
-    // })
+    new HtmlWebpackPlugin(htmlWebpackPluginConfig),
+    new webpack.DefinePlugin(definePluginConfig),
   ],
-};
+}
 
-module.exports = config;
+module.exports = merge.smart(baseWebpackConfig, envWebpackConfig)

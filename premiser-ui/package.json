@@ -7,9 +7,11 @@
   "author": "Carl Gieringer <carl@premiser.co>",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "DEBUG=* node bin/build.js",
-    "dev": "DEBUG=premiser-ui:* node bin/dev-server.js",
-    "test": "jest"
+    "build:dev": "cross-env NODE_ENV=development DEBUG=* webpack --config config/webpack.config.js",
+    "build:prod": "cross-env NODE_ENV=production DEBUG=* webpack --config config/webpack.config.js",
+    "serve:dev": "cross-env NODE_ENV=development DEBUG=premiser-ui:* node bin/dev-server.js",
+    "serve:prod": "cross-env NODE_ENV=production DEBUG=premiser-ui:* node bin/dev-server.js",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
@@ -19,6 +21,8 @@
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.23.0",
     "babel-preset-stage-0": "^6.22.0",
+    "clean-webpack-plugin": "^0.1.16",
+    "cross-env": "^3.2.4",
     "css-loader": "^0.27.3",
     "debug": "^2.6.1",
     "express": "^4.14.1",
@@ -32,7 +36,8 @@
     "webpack": "^2.2.1",
     "webpack-dev-middleware": "^1.10.1",
     "webpack-dev-server": "^2.4.2",
-    "webpack-hot-middleware": "^2.17.1"
+    "webpack-hot-middleware": "^2.17.1",
+    "webpack-merge": "^4.1.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
