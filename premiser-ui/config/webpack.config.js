@@ -16,7 +16,7 @@ const {
 const htmlWebpackPluginConfig = merge({
   appMountId: 'root',
   // favicon: projectConfig.paths.public('favicon.ico'),
-  filename: 'index.html',
+  filename: projectConfig.names.index,
   hash: false,
   inject: false, // The template injects scripts
   minify: {
@@ -25,7 +25,7 @@ const htmlWebpackPluginConfig = merge({
   },
   mobile: true,
   title: 'Howdju',
-  template: projectConfig.paths.src('index.html'),
+  template: projectConfig.paths.src(projectConfig.names.index),
 }, envHtmlWebpackPluginConfig)
 
 const definePluginConfig = merge({
@@ -34,7 +34,7 @@ const definePluginConfig = merge({
 
 const baseWebpackConfig = {
   output: {
-    filename: 'premiser-ui.js',
+    filename: projectConfig.names.js,
     path: projectConfig.paths.dist(),
     publicPath: '/',
   },

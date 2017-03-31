@@ -31,7 +31,7 @@ app.use(express.static(projectConfig.paths.public()))
 app.use(express.static(projectConfig.paths.dist()))
 
 app.use('*', function (req, res) {
-  res.sendFile(projectConfig.paths.dist('index.html'))
+  res.sendFile(projectConfig.paths.dist(projectConfig.names.index))
 })
 
 module.exports = app

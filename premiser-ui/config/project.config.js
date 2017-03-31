@@ -6,6 +6,10 @@ const basePath = path.resolve(__dirname, '..')
 
 const baseConfig = {
   port: 3000,
+  names: {
+    js: 'premiser-ui.js',
+    index: 'index.html',
+  },
   paths: {
     base: path.resolve.bind(path, basePath),
     public: path.resolve.bind(path, basePath, 'public'),

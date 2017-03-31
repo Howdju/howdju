@@ -1,5 +1,8 @@
 # Howdju UI TODO
 * Deploy to S3
+  * Support reload with path
+  * HTTPS
+* Cloudfront and during deploy
 * Accept/reject justifications
 * Add statements/justifications
 * tagging
@@ -23,6 +26,10 @@
 * Drag-n-drop
   * [react-dnd](https://github.com/react-dnd/react-dnd)
 * [normalizr with immutable](https://github.com/mschipperheyn/normalizr-immutable)?
+* Plugins
+  * [favicons](https://github.com/jantimon/favicons-webpack-plugin)
+  * [Launch browser](https://github.com/1337programming/webpack-browser-plugin)
+  * [GraphQL schema hot](https://github.com/nodkz/webpack-plugin-graphql-schema-hot)
 
 ## Done?
 * HMR
