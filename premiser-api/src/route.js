@@ -1,26 +1,8 @@
 const {statements, statementJustifications} = require('./service')
 
-const statusCodes = {
-  ok: 200,
-  notFound: 404,
-  error: 500
-}
-
-function respond({status, headers={}, body, callback}) {
-  headers['Access-Control-Allow-Origin'] = process.env['CORS_ALLOW_ORIGIN'] || 'none'
-  headers['Access-Control-Allow-Credentials'] = 'true'
-  headers['Vary'] = 'Origin'
-  const response = {
-    statusCode: statusCodes[status] || statusCodes.error,
-    headers,
-    body: JSON.stringify(body)
-  }
-  callback(null, response);
-}
-
-const ok = ({body, callback}) => respond({status: 'ok', body, callback})
-const notImplemented = callback => respond({status: 'error', body: 'not implemented', callback})
-const notFound = callback => respond({status: 'notFound', body: 'not found', callback})
+const ok = ({body, callback}) => callback({status: 'ok', body})
+const notImplemented = callback => callback({status: 'error', body: 'not implemented'})
+const notFound = callback => callback({status: 'notFound', body: 'not found'})
 
 const routes = [
   {

@@ -12,6 +12,9 @@ app.use(morgan('dev'))
 app.use('/api/*', function (req, res) {
 
   const event = {
+    headers: {
+      origin: 'http://localhost:3000',
+    },
     pathParameters: {
       proxy: req.baseUrl.substring('/api/'.length)
     },

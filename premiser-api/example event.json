@@ -1,0 +1,59 @@
+{
+  "resource":"/api/{proxy+}",
+  "path":"/api/statements",
+  "httpMethod":"GET",
+  "headers":{
+    "Accept":"*/*",
+    "Accept-Encoding":"gzip, deflate, sdch, br",
+    "Accept-Language":"en-US,en;q=0.8",
+    "cache-control":"no-cache",
+    "CloudFront-Forwarded-Proto":"https",
+    "CloudFront-Is-Desktop-Viewer":"true",
+    "CloudFront-Is-Mobile-Viewer":"false",
+    "CloudFront-Is-SmartTV-Viewer":"false",
+    "CloudFront-Is-Tablet-Viewer":"false",
+    "CloudFront-Viewer-Country":"US",
+    "dnt":"1",
+    "Host":"ewl0mezq3f.execute-api.us-east-1.amazonaws.com",
+    "origin":"http://www.premiser.co",
+    "pragma":"no-cache",
+    "Referer":"http://www.premiser.co/",
+    "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
+    "Via":"2.0 dbdd67063f01c39bd9e0f02db8431258.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id":"aZsZGlgVbwN06Na0EEKoJq9uGpN5kDpMAUBIOu1_ORQi8DqXqiSpHQ==",
+    "X-Amzn-Trace-Id":"Root=1-58ddf1b7-40f3c50376d6a57027390f8b",
+    "X-Forwarded-For":"173.239.197.152, 54.182.230.64",
+    "X-Forwarded-Port":"443",
+    "X-Forwarded-Proto":"https"
+  },
+  "queryStringParameters":null,
+  "pathParameters":{
+    "proxy":"statements"
+  },
+  "stageVariables":null,
+  "requestContext":{
+    "accountId":"007899441171",
+    "resourceId":"rat0br",
+    "stage":"dev",
+    "requestId":"13555d48-15d8-11e7-b8f2-1311ec94a640",
+    "identity":{
+      "cognitoIdentityPoolId":null,
+      "accountId":null,
+      "cognitoIdentityId":null,
+      "caller":null,
+      "apiKey":null,
+      "sourceIp":"173.239.197.152",
+      "accessKey":null,
+      "cognitoAuthenticationType":null,
+      "cognitoAuthenticationProvider":null,
+      "userArn":null,
+      "userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
+      "user":null
+    },
+    "resourcePath":"/api/{proxy+}",
+    "httpMethod":"GET",
+    "apiId":"ewl0mezq3f"
+  },
+  "body":null,
+  "isBase64Encoded":false
+}

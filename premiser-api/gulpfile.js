@@ -37,20 +37,16 @@ gulp.task('upload', () => {
   const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
   const FunctionName = 'premiserApi'
 
-  const params = {
-    FunctionName,
-    Publish: false, // This boolean parameter can be used to request AWS Lambda to update the Lambda function and publish a version as an atomic operation.
-  }
   fs.readFile('./dist/premiserApi.zip', (err, data) => {
-    params['ZipFile'] = data
-    lambda.updateFunctionCode(params, (err, data) => {
-      if (err) {
-        const warning = 'Package upload failed. Check your iam:PassRole permissions.'
-        gutil.log(warning)
-        gutil.log(err)
-        return
-      }
+    if (err) throw err
 
+    const params = {
+      FunctionName,
+      Publish: false, // This boolean parameter can be used to request AWS Lambda to update the Lambda function and publish a version as an atomic operation.
+      ZipFile: data
+    }
+    lambda.updateFunctionCode(params, (err, data) => {
+      if (err) throw err
       gutil.log(`Uploaded ${FunctionName}`)
     })
   })

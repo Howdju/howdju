@@ -7,7 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "db": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
-    "dev": "DEBUG=premiser-api:* node bin/dev-server.js",
+    "serve:dev": "DEBUG=premiser-api:* node bin/dev-server.js",
+    "debug": "DEBUG=premiser-api:* node debug bin/dev-server.js",
+    "dev": "yarn run serve:dev",
     "build": "gulp build",
     "deploy": "gulp deploy"
   },

@@ -1,0 +1,11 @@
+{
+  "callbackWaitsForEmptyEventLoop":true,
+  "logGroupName":"/aws/lambda/premiserApi",
+  "logStreamName":"2017/03/31/[$LATEST]6f52850fbe2a483699b77efb43574c43",
+  "functionName":"premiserApi",
+  "memoryLimitInMB":"128",
+  "functionVersion":"$LATEST",
+  "invokeid":"13555c91-15d8-11e7-ad5c-4b4eeeb331a9",
+  "awsRequestId":"13555c91-15d8-11e7-ad5c-4b4eeeb331a9",
+  "invokedFunctionArn":"arn:aws:lambda:us-east-1:007899441171:function:premiserApi"
+}
