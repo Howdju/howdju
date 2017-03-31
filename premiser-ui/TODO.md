@@ -1,8 +1,4 @@
 # Howdju UI TODO
-* Deploy to S3
-  * Support reload with path
-  * HTTPS
-* Cloudfront and during deploy
 * Accept/reject justifications
 * Add statements/justifications
 * tagging
@@ -11,8 +7,14 @@
 * Home page tag cloud
 * Time travel to see what libraries made app large
 * favicon
+* Deploy to S3
+  * HTTPS (NGINX?)
+  * Cache index.html?
+  * cdn.premiser.co?
+  * [Invalidation vs. versioning](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html)
 
 ## Maybe
+* https://prerender.io/
 * [Resource hints](https://github.com/jantimon/resource-hints-webpack-plugin)
   * [faster](https://hackernoon.com/10-things-i-learned-making-the-fastest-site-in-the-world-18a0e1cdf4a7)
 * [selectors](https://github.com/reactjs/reselect) (memoization of deriving from state)

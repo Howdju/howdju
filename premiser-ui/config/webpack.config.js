@@ -1,6 +1,5 @@
 const path = require('path')
 
-const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
@@ -80,9 +79,6 @@ const baseWebpackConfig = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin([projectConfig.paths.dist()], {
-      root: projectConfig.paths.base()
-    }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
