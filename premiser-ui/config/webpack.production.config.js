@@ -13,11 +13,11 @@ module.exports.webpackConfig = {
   devtool: 'cheap-module-source-map',
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true
-      //   compressor: {
-      //     screw_ie8: true,
-      //     warnings: false
-      //   }
+      sourceMap: true,
+      compressor: {
+        screw_ie8: true,
+        warnings: false,
+      }
     }),
   ],
 }
