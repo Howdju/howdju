@@ -1,13 +1,14 @@
 import { put, call, takeEvery, takeLatest } from 'redux-saga/effects'
 
-import {API_RESOURCE_ACTIONS} from "./actions";
-import {resourceCalls} from "./api";
+import {
+  API_RESOURCE_ACTIONS,
+  FETCH_STATEMENTS,
+  FETCH_STATEMENT_JUSTIFICATIONS,
+  LOGIN, LOGIN_SUCCESS, LOGIN_FAILURE
+} from "./actions";
+import {login, resourceCalls} from "./api";
 
-function* helloSaga() {
-  console.log('Hello Sagas!')
-}
-
-function* fetchResource(action) {
+function* callResource(action) {
   const apiMethod = resourceCalls[action.type]
   try {
     const result = yield call(apiMethod, action.payload)
@@ -17,16 +18,27 @@ function* fetchResource(action) {
   }
 }
 
-function* watchFetchStatements() {
-  yield takeEvery([
-      'FETCH_STATEMENTS',
-      'FETCH_STATEMENT_JUSTIFICATIONS',
-  ], fetchResource)
+function* callLogin(action) {
+  try {
+    const result = yield call(login, action.payload)
+    yield put({type: LOGIN_SUCCESS, payload: result})
+  } catch (error) {
+    yield put({type: LOGIN_FAILURE, payload: error})
+  }
 }
 
-export default function* appSaga() {
-  yield [
-    helloSaga(),
-    watchFetchStatements(),
-  ]
+function* watchFetchResources() {
+  yield takeEvery([
+      FETCH_STATEMENTS,
+      FETCH_STATEMENT_JUSTIFICATIONS,
+  ], callResource)
 }
+
+function* watchLogin() {
+  yield takeEvery(LOGIN, callLogin)
+}
+
+export default () => [
+  watchLogin(),
+  watchFetchResources(),
+]

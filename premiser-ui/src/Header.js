@@ -7,6 +7,7 @@ export default class Header extends Component {
         <div id="header">
           <Link to="/">Howdju?</Link>
           <input type="text" />
+          <Link to="/login">Login</Link>
         </div>
     )
   }

@@ -15,6 +15,11 @@ export const acceptJustification = create2Action(ACCEPT_JUSTIFICATION)
 export const REJECT_JUSTIFICATION = 'REJECT_JUSTIFICATION'
 export const rejectJustification = create2Action(REJECT_JUSTIFICATION)
 
+export const LOGIN = 'LOGIN'
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGIN_FAILURE = 'LOGIN_FAILURE'
+export const login = create2Action(LOGIN)
+
 export const API_RESOURCE_ACTIONS = {
   [FETCH_STATEMENTS]: {
     SUCCESS: FETCH_STATEMENTS_SUCCESS,

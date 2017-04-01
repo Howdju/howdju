@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import _ from 'lodash'
+import merge from 'lodash/merge'
 
 import { FETCH_STATEMENTS_SUCCESS, FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS, FETCH_STATEMENT_JUSTIFICATIONS_FAILURE} from './actions'
 
@@ -7,13 +7,13 @@ const entities = (state = { statements: {}, justifications: {}, quotes: {} }, ac
 
   switch (action.type) {
     case FETCH_STATEMENTS_SUCCESS:
-      return {...state, statements: _.merge(state.statements, action.payload.entities.statements)}
+      return {...state, statements: merge(state.statements, action.payload.entities.statements)}
     case FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS:
       return {
         ...state,
-        statements: _.merge(state.statements, action.payload.entities.statements),
-        justifications: _.merge(state.justifications, action.payload.entities.justifications),
-        quotes: _.merge(state.quotes, action.payload.entities.quotes),
+        statements: merge(state.statements, action.payload.entities.statements),
+        justifications: merge(state.justifications, action.payload.entities.justifications),
+        quotes: merge(state.quotes, action.payload.entities.quotes),
       }
   }
 

@@ -4,16 +4,16 @@ import {FETCH_STATEMENTS, FETCH_STATEMENT_JUSTIFICATIONS} from "./actions";
 
 const apiUrl = path => process.env.API_ROOT + path
 
-export function callApi(endpoint, schema) {
+export function callApi(endpoint, {init, schema}) {
   const fullUrl = apiUrl(endpoint)
-  return fetch(fullUrl, { credentials: 'include' })
+  return fetch(fullUrl, init)
       .then(response => response.json().then(json => ({ json, response })))
       .then(({ json, response }) => {
         if (!response.ok) {
           return Promise.reject(json)
         }
 
-        return normalize(json, schema)
+        return schema ? normalize(json, schema) : json
       })
 }
 
@@ -45,9 +45,17 @@ export const statementJustificationsSchema = {
   justifications: [justificationSchema]
 }
 
+export const login = (credentials) => callApi('login', {init: {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({credentials}),
+}})
+
 // These methods translate FETCH_* payloads into API calls
 export const resourceCalls = {
-  [FETCH_STATEMENTS]: () => callApi('statements', statementsSchema),
+  [FETCH_STATEMENTS]: () => callApi('statements', {schema: statementsSchema}),
   [FETCH_STATEMENT_JUSTIFICATIONS]: (statementId) =>
-      callApi(`statements/${statementId}?justifications`, statementJustificationsSchema),
+      callApi(`statements/${statementId}?justifications`, {schema: statementJustificationsSchema}),
 }

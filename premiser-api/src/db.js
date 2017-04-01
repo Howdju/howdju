@@ -15,11 +15,11 @@ const pool = new pg.Pool(config)
 
 pool.on('error', (err, client) => console.error('idle client error', err.message, err.stack))
 
-exports.query = query => Promise.resolve(
-    pool.connect().then(client => Promise.resolve(client.query(query)).finally(() => client.release()))
+exports.query = (query, args) => Promise.resolve(
+    pool.connect().then(client => Promise.resolve(client.query(query, args)).finally(() => client.release()))
 )
 exports.queries = queries => Promise.resolve(
     pool.connect().then(client => Promise
-        .all(queries.map(q => client.query.apply(client, q)))
+        .all(queries.map((query, args) => client.query.apply(client, query, args)))
         .finally(() => client.release()))
 )

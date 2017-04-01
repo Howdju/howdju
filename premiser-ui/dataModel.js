@@ -1,6 +1,3 @@
-
-
-
 const statements = [
   {
     id: 1,

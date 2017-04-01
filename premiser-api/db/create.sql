@@ -1,71 +1,142 @@
-CREATE TABLE statements (
-  statement_id SERIAL,
-  text varchar(2048)
+create table actions (
+  user_id integer, -- User who acted
+  action_type varchar(128), -- CREATE, DELETE, MODIFY
+  target_id integer, -- Thing acted upon
+  target_type varchar(64),
+  tstamp timestamp
 );
 
-CREATE TABLE justifications (
-  justification_id SERIAL,
-  target_type varchar(32), -- 'STATEMENT' or 'JUSTIFICATION'
+create table statements (
+  statement_id serial,
+  text varchar(2048),
+  created timestamp,
+  deleted timestamp
+);
+
+create table justifications (
+  justification_id serial,
+  target_type varchar(64), -- 'STATEMENT' or 'JUSTIFICATION'
   target_id integer,
-  basis_type varchar(32), -- 'STATEMENT' or 'REFERENCE'
+  basis_type varchar(64), -- 'STATEMENT' or 'REFERENCE'
   basis_id integer,
-  polarity varchar(32) -- 'POSITIVE' or 'NEGATIVE'.  target_type='JUSTIFICATION' implies polarity='NEGATIVE'
+  polarity varchar(32), -- 'POSITIVE' or 'NEGATIVE'.  target_type='JUSTIFICATION' implies polarity='NEGATIVE'
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE "references" (
-  reference_id SERIAL,
+create table "references" (
+  reference_id serial,
   quote varchar(65536),
-  citation_id integer
+  citation_id integer,
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE citations (
-  citation_id SERIAL,
-  text varchar(2048)
+create table citations (
+  citation_id serial,
+  text varchar(2048),
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE reference_urls (
+create table reference_urls (
   reference_id integer,
-  url_id integer
+  url_id integer,
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE urls (
-  url_id SERIAL,
-  url varchar(65536)
+create table urls (
+  url_id serial,
+  url varchar(65536),
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE tags (
-  tag_id SERIAL,
-  type varchar(32), -- statements: SUBJECT, TIME, LOCATION; justifications: LOGICAL_FALLACY
-  text varchar(1024)
+create table tags (
+  tag_id serial,
+  type varchar(64), -- statements: SUBJECT, TIME, LOCATION; justifications: LOGICAL_FALLACY
+  text varchar(1024),
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE taggings (
-  tagging_id SERIAL,
+create table taggings (
+  tagging_id serial,
   tag_id integer,
   target_id integer,
-  target_type varchar(32)
+  target_type varchar(64),
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE justification_votes (
-  justification_vote_id SERIAL,
+create table justification_votes (
+  justification_vote_id serial,
   target_id integer,
-  polarity varchar(32)
+  polarity varchar(32),
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE tagging_votes (
-  tagging_vote_id SERIAL,
+create table tagging_votes (
+  tagging_vote_id serial,
   target_id integer,
-  polarity varchar(32)
+  polarity varchar(32),
+  created timestamp,
+  deleted timestamp
 );
 
-CREATE TABLE justification_scores (
+create table justification_scores (
   justification_id integer,
-  score_type varchar(32), -- GLOBAL_VOTE_SUM
+  score_type varchar(64), -- GLOBAL_VOTE_SUM
   score FLOAT
 );
 
-CREATE TABLE tagging_scores (
+create table tagging_scores (
   tagging_id integer,
-  score_type varchar(32),
+  score_type varchar(64),
   score float
+);
+
+create table users (
+  user_id serial,
+  email varchar(2048),
+  hash varchar(4096),
+  created timestamp,
+  deleted timestamp
+);
+
+create table groups (
+  group_id serial,
+  name varchar(256),
+  created timestamp,
+  deleted timestamp
+);
+
+create table user_groups (
+  user_id integer,
+  group_id integer
+);
+
+create table permissions (
+  permission_id serial,
+  name varchar(256)
+);
+
+create table user_permissions (
+  user_id integer,
+  permission_id integer
+);
+
+create table group_permissions (
+  group_id integer,
+  permission_id integer
+);
+
+create table authentication_tokens (
+  user_id integer,
+  token varchar(1024),
+  created timestamp,
+  expires timestamp,
+  deleted timestamp
 );

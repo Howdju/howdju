@@ -1,22 +1,22 @@
 import React, { Component, PropTypes } from 'react'
 import { Route, IndexRoute } from 'react-router'
 import { BrowserRouter as Router } from 'react-router-dom'
-import Helmet from 'react-helmet'
 import Header from './Header'
-import Home from './Home'
-import StatementJustifications from './StatementJustifications'
+import HomePage from './HomePage'
+import StatementJustificationsPage from './StatementJustificationsPage'
+import LoginPage from './LoginPage'
 
 export default class App extends Component {
   render () {
     return (
       <Router>
         <div id="app">
-          <Helmet title="Howdju" />
 
           <Header/>
 
-          <Route exact path="/" component={Home} />
-          <Route path="/s/:statementId/:statementSlug" component={StatementJustifications} />
+          <Route exact path="/" component={HomePage} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsPage} />
 
         </div>
       </Router>

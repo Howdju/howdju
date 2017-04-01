@@ -1,12 +1,17 @@
 # Howdju UI TODO
+* Authentication, messages, logout
 * Accept/reject justifications
 * Add statements/justifications
 * tagging
 * Jobs (justification score)
 * Search
 * Home page tag cloud
+* Loading flags (vs. just empty return from API)
 * Time travel to see what libraries made app large
+  * Figure out how to minimize lodash import
 * favicon
+* eslint
+  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
 * Deploy to S3
   * HTTPS (NGINX?)
   * Cache index.html?

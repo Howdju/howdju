@@ -6,15 +6,19 @@
   "author": "Carl Gieringer <carl@premiser.co>",
   "license": "UNLICENSED",
   "scripts": {
-    "db": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
-    "serve:dev": "DEBUG=premiser-api:* node bin/dev-server.js",
-    "debug": "DEBUG=premiser-api:* node debug bin/dev-server.js",
+    "db:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
+    "db:dev:shell": "psql premiser",
+    "create-user": "NODE_ENV=development node bin/create-user.js",
+    "serve:dev": "DEBUG=premiser-api:* nodemon bin/dev-server.js",
+    "debug": "DEBUG=premiser-api:* nodemon debug bin/dev-server.js",
     "dev": "yarn run serve:dev",
     "build": "gulp build",
     "deploy": "gulp deploy"
   },
   "devDependencies": {
+    "argparse": "https://github.com/nodeca/argparse.git",
     "aws-sdk": "^2.34.0",
+    "body-parser": "^1.17.1",
     "debug": "^2.6.3",
     "del": "^2.2.2",
     "express": "^4.15.2",
@@ -24,10 +28,14 @@
     "gulp-util": "^3.0.8",
     "gulp-zip": "^4.0.0",
     "morgan": "^1.8.1",
+    "nodemon": "^1.11.0",
+    "read": "^1.0.7",
     "run-sequence": "^1.2.2"
   },
   "dependencies": {
+    "argon2": "^0.15.0",
     "bluebird": "^3.5.0",
+    "moment": "^2.18.1",
     "node-env-file": "^0.1.8",
     "pg": "^6.1.5"
   }

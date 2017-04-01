@@ -20,7 +20,7 @@ gulp.task('npm', () =>
       .pipe(install({production: true})))
 
 gulp.task('env', () =>
-  gulp.src('./config/prod.env')
+  gulp.src('./config/production.env')
       .pipe(rename('.env'))
       .pipe(gulp.dest('./dist')))
 
