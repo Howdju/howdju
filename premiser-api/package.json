@@ -9,8 +9,9 @@
     "db:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
     "db:dev:shell": "psql premiser",
     "create-user": "NODE_ENV=development node bin/create-user.js",
-    "serve:dev": "DEBUG=premiser-api:* nodemon bin/dev-server.js",
-    "debug": "DEBUG=premiser-api:* nodemon debug bin/dev-server.js",
+    "serve:dev": "DEBUG=premiser-api:* NODE_ENV=development nodemon --watch src bin/dev-server.js",
+    "debug": "DEBUG=premiser-api:* NODE_ENV=development nodemon --watch src bin/dev-server.js",
+    "inspect": "DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",
     "dev": "yarn run serve:dev",
     "build": "gulp build",
     "deploy": "gulp deploy"
@@ -35,6 +36,7 @@
   "dependencies": {
     "argon2": "^0.15.0",
     "bluebird": "^3.5.0",
+    "inspect-process": "^0.4.2",
     "moment": "^2.18.1",
     "node-env-file": "^0.1.8",
     "pg": "^6.1.5"

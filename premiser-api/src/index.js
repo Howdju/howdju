@@ -5,6 +5,7 @@ const env = require('node-env-file')
 env(__dirname + '/.env')
 
 const {routeEvent} = require('./route')
+const config = require('./config')
 
 const statusCodes = {
   ok: 200,
@@ -15,10 +16,12 @@ const statusCodes = {
   error: 500,
 }
 
-const allowedOrigins = _.reduce(process.env['CORS_ALLOW_ORIGIN'].split(','), (acc, o) => {
+const makeObj = (iterable) => _.reduce(iterable, (acc, o) => {
   acc[o] = o
   return acc
 }, {})
+
+const allowedOrigins = _.isArray(config.corsAllowOrigin) ? makeObj(config.corsAllowOrigin) : makeObj([config.corsAllowOrigin])
 
 const makeResponse = ({status, headers={}, body, origin}) => {
   headers = Object.assign({}, headers, {

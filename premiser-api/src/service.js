@@ -4,8 +4,9 @@ const argon2 = require('argon2')
 const uuid = require('uuid');
 const moment = require('moment')
 
+const config = require('./config')
+
 const CREATE_USER = 'CREATE_USER'
-const authenticationDuration = 'P24H'
 
 const withPermission = (permission, authenticationToken) => query(`
     select true as is_authorized
@@ -104,7 +105,7 @@ exports.login = ({credentials}) => {
 
         const authenticationToken = uuid.v4()
         const created = new Date()
-        const expires = moment().add(authenticationDuration).toDate()
+        const expires = moment().add(moment.duration.apply(moment.duration, config.authenticationTokenDuration)).toDate()
         return query('insert into authentication_tokens (user_id, token, created, expires) values ($1, $2, $3, $4)',
             [userId, authenticationToken, created, expires])
             .then( () => ({authenticationToken, email: credentials.email}) )
