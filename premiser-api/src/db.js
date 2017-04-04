@@ -20,6 +20,6 @@ exports.query = (query, args) => Promise.resolve(
 )
 exports.queries = queries => Promise.resolve(
     pool.connect().then(client => Promise
-        .all(queries.map((query, args) => client.query.apply(client, query, args)))
+        .all(queries.map( ({query, args}) => client.query.call(client, query, args)) )
         .finally(() => client.release()))
 )

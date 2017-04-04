@@ -1,14 +1,22 @@
 # Howdju UI TODO
-* Authentication, messages, logout
+## MVP
 * Accept/reject justifications
+* redirect to previous page upon login
 * Add statements/justifications
 * tagging
 * Jobs (justification score)
 * Search
 * Home page tag cloud
+## 0.2
+* Change email, password, password reset
 * Loading flags (vs. just empty return from API)
+* Error reporting
+  * feedback mechanism
+## 
 * Time travel to see what libraries made app large
   * Figure out how to minimize lodash import
+* what if different API call completes during login?
+  * Refactor out nonce business in sagas
 * favicon
 * eslint
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp

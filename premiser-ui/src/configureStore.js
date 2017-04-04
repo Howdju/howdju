@@ -1,12 +1,23 @@
 import { createStore, applyMiddleware, compose } from 'redux'
+import {autoRehydrate, persistStore} from 'redux-persist'
 import createSagaMiddleware from 'redux-saga'
 import rootReducer from './reducers';
 import getSagas from './sagas';
 
 export default function configureStore(initialState) {
   const sagaMiddleware = createSagaMiddleware()
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-  let store = createStore(rootReducer, initialState, composeEnhancers(applyMiddleware(sagaMiddleware)))
+  const compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+  const store = createStore(
+      rootReducer,
+      initialState,
+      compose(
+          applyMiddleware(sagaMiddleware),
+          autoRehydrate()
+      )
+  )
+  persistStore(store, {
+    whitelist: ['auth']
+  });
   let sagaTask = sagaMiddleware.run(function* () {
     yield getSagas()
   })

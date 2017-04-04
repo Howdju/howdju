@@ -389,6 +389,10 @@ crypto-browserify@1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-1.0.9.tgz#cc5449685dfb85eb11c9828acc7cb87ab5bbfcc0"
 
+cryptohat@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/cryptohat/-/cryptohat-1.0.1.tgz#86ca72aebea0510386d8fc94adb2c9939622afc3"
+
 dargs@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/dargs/-/dargs-5.1.0.tgz#ec7ea50c78564cd36c9d5ec18f66329fade27829"

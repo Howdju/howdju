@@ -2,14 +2,14 @@ import classNames from 'classnames'
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { denormalize } from 'normalizr'
-import Title from 'react-title-component'
+import DocumentTitle from 'react-document-title'
 import _ from 'lodash/core'
 
 import { extractDomain } from './util'
 import { JustificationTargetType, JustificationPolarity, JustificationBasisType} from './models'
 import './StatementJustificationsPage.css'
 import {acceptJustification, rejectJustification, fetchStatementJustifications} from "./actions"
-import {statementJustificationsSchema} from "./api"
+import {statementJustificationsSchema} from "./schemas"
 
 
 class StatementJustificationsPage extends Component {
@@ -20,25 +20,26 @@ class StatementJustificationsPage extends Component {
 
   render () {
     return (
-        <div className="statement-justifications">
-          <Title render={previousTitle => `${this.props.statement.text} - ${previousTitle}`}/>
-          <div className="statement">
-            {this.props.statement.text}
+        <DocumentTitle title={`${this.props.statement.text} - Howdju`}>
+          <div className="statement-justifications">
+            <div className="statement">
+              {this.props.statement.text}
+            </div>
+            <div className="justifications">
+              {!this.props.justifications.length ?
+                  <div>Loading...</div> :
+                  this.props.justifications.map(j => (
+                    <div key={j.id} className={classNames({justification: true, positive: j.polarity === JustificationPolarity.POSITIVE, negative: j.polarity === JustificationPolarity.NEGATIVE})}>
+                      {j.basis.type === JustificationBasisType.STATEMENT ? j.basis.entity.text : j.basis.entity.quote}
+                      {j.basis.type === JustificationBasisType.REFERENCE &&
+                        <a href={j.basis.entity.urls[0].url}>{extractDomain(j.basis.entity.urls[0].url)}</a>
+                      }
+                    </div>
+                  ))
+              }
+            </div>
           </div>
-          <div className="justifications">
-            {!this.props.justifications.length ?
-                <div>Loading...</div> :
-                this.props.justifications.map(j => (
-                  <div key={j.id} className={classNames({justification: true, positive: j.polarity === JustificationPolarity.POSITIVE, negative: j.polarity === JustificationPolarity.NEGATIVE})}>
-                    {j.basis.type === JustificationBasisType.STATEMENT ? j.basis.entity.text : j.basis.entity.quote}
-                    {j.basis.type === JustificationBasisType.REFERENCE &&
-                      <a href={j.basis.entity.urls[0].url}>{extractDomain(j.basis.entity.urls[0].url)}</a>
-                    }
-                  </div>
-                ))
-            }
-          </div>
-        </div>
+        </DocumentTitle>
     )
   }
 }

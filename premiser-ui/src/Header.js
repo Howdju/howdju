@@ -1,14 +1,50 @@
 import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 
-export default class Header extends Component {
+import {logout} from "./actions";
+
+class Header extends Component {
+
+  constructor() {
+    super()
+    this.handleLogout = this.handleLogout.bind(this)
+  }
+
+  handleLogout() {
+    this.props.logout()
+  }
+
   render() {
     return (
         <div id="header">
           <Link to="/">Howdju?</Link>
           <input type="text" />
-          <Link to="/login">Login</Link>
+          {this.props.authenticationToken ?
+              <div>
+                <span>You are logged in as {this.props.email}</span>
+                <button onClick={this.handleLogout}>Logout</button>
+              </div> :
+              <Link to="/login">Login</Link>
+          }
         </div>
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  const {
+    auth: {
+      email,
+      authenticationToken,
+    }
+  } = state
+  return {
+    email,
+    authenticationToken,
+  }
+}
+
+export default connect(mapStateToProps, {
+  logout
+})(Header)

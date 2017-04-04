@@ -26,7 +26,7 @@ const allowedOrigins = _.isArray(config.corsAllowOrigin) ? makeObj(config.corsAl
 const makeResponse = ({status, headers={}, body, origin}) => {
   headers = Object.assign({}, headers, {
     'Access-Control-Allow-Origin': allowedOrigins[origin] || 'none',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     'Access-Control-Allow-Credentials': 'true',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Expires': '0',
@@ -53,11 +53,15 @@ exports.handler = (event, context, callback) => {
     }
 
     routeEvent({
-      path: event.pathParameters.proxy,
-      method: event.httpMethod,
-      queryStringParameters: event.queryStringParameters,
-      body: event.body,
-    }, respond)
+      callback: respond,
+      request: {
+        authenticationToken: event.headers['Authorization'],
+        path: event.pathParameters.proxy,
+        method: event.httpMethod,
+        queryStringParameters: event.queryStringParameters,
+        body: event.body,
+      },
+    })
         .error(error => callback(error))
   } catch(error) {
     console.error('Event:', JSON.stringify(event, null, 2))

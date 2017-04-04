@@ -1,7 +1,13 @@
 import { combineReducers } from 'redux'
 import merge from 'lodash/merge'
 
-import { FETCH_STATEMENTS_SUCCESS, FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS, FETCH_STATEMENT_JUSTIFICATIONS_FAILURE} from './actions'
+import {
+  FETCH_STATEMENTS_SUCCESS,
+  FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS,
+  FETCH_STATEMENT_JUSTIFICATIONS_FAILURE,
+  LOGIN_SUCCESS,
+  LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGIN, LOGIN_FAILURE, LOGIN_CREDENTIAL_CHANGE,
+} from './actions'
 
 const entities = (state = { statements: {}, justifications: {}, quotes: {} }, action) => {
 
@@ -20,7 +26,48 @@ const entities = (state = { statements: {}, justifications: {}, quotes: {} }, ac
   return state
 }
 
-const ui = (state = {}, action) => {
+const auth = (state = {}, action) => {
+  switch (action.type) {
+    case LOGIN_SUCCESS:
+      return {...state, authenticationToken: action.payload.authenticationToken, email: action.payload.email}
+    // remove auth token even if server fails; that way the user is logged out from client and server will eventually cleanup auth token
+    case LOGOUT_SUCCESS:
+    case LOGOUT_FAILURE:
+      return {...state, authenticationToken: null, email: null}
+  }
+
+  return state
+}
+
+// const loginErrorMessage = (status) => {
+//   switch (status) {
+//     case 400:
+//       return 'Invalid credentials'
+//     case 403:
+//       return 'Incorrect password'
+//     case 404:
+//       return 'Email does not exist'
+//     default:
+//       return 'Unable to complete login at this time'
+//   }
+// }
+
+const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {email: '', password: ''}}, action) => {
+  switch (action.type) {
+    case LOGIN:
+      return merge({}, state, {isLoggingIn: true, credentials: action.payload.credentials })
+    case LOGIN_SUCCESS:
+      return merge({}, state, {isLoggingIn: false, credentials: {email: '', password: ''}})
+    case LOGIN_FAILURE:
+      return merge({}, state, {isLoggingIn: false, errorMessage: action.payload.message})
+    case LOGIN_CREDENTIAL_CHANGE:
+      return merge({}, state, {errorMessage: '', credentials: action.payload})
+  }
+
+  return state;
+}
+
+const statementJustificationsPage = (state = {errorMessage: ''}, action) => {
   switch (action.type) {
     case FETCH_STATEMENT_JUSTIFICATIONS_FAILURE:
       console.error(action.payload);
@@ -30,7 +77,13 @@ const ui = (state = {}, action) => {
   return state;
 }
 
+const ui = combineReducers({
+  loginPage,
+  statementJustificationsPage,
+})
+
 export default combineReducers({
+  auth,
   ui,
   entities,
 })

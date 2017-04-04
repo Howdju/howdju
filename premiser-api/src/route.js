@@ -1,16 +1,38 @@
 const Promise = require('bluebird')
+const merge = require('lodash/merge')
 
-const {statements, statementJustifications, login, createUser} = require('./service')
+const {statements, statementJustifications, login, logout, createUser} = require('./service')
 
-const ok = ({body, headers, callback}) => callback({status: 'ok', headers, body})
-const notImplemented = callback => callback({status: 'error', body: 'not implemented'})
-const notFound = ({callback, message='not found'}) => callback({status: 'notFound', body: message})
-const forbidden = ({callback, message='forbidden'}) => callback({status: 'forbidden', body: message})
-const badRequest = ({callback, message='bad request'}) => callback({status: 'badRequest', body: message})
+const ok = ({callback, body={}, headers}) => callback({
+  status: 'ok',
+  headers,
+  body
+})
+const notImplemented = callback => callback({
+  status: 'error',
+  body: {message: 'not implemented'}
+})
+const notFound = ({callback, message='not found'}) => callback({
+  status: 'notFound',
+  body: {message}
+})
+const forbidden = ({callback, message='forbidden'}) => callback({
+  status: 'forbidden',
+  body: {message}
+})
+const badRequest = ({callback, message='bad request'}) => callback({
+  status: 'badRequest',
+  body: {message}
+})
+
+const GET = 'GET'
+const POST = 'POST'
+const PUT = 'PUT'
+const OPTIONS = 'OPTIONS'
 
 const routes = [
   {
-    method: 'OPTIONS',
+    method: OPTIONS,
     handler: ({callback}) => {
       const headers = {
         'Access-Control-Allow-Headers': 'Content-Type'
@@ -20,7 +42,7 @@ const routes = [
   },
   {
     path: 'statements',
-    method: 'GET',
+    method: GET,
     handler: ({callback}) => statements()
         .then(statements => {
           console.log(`Returning ${statements.length} statements`)
@@ -29,13 +51,13 @@ const routes = [
   },
   {
     path: 'statements',
-    method: 'PUT',
+    method: POST,
     handler: notImplemented
   },
   {
     path: new RegExp('^statements/([^/]+)$'),
     method: 'GET',
-    handler: ({callback, pathParameters: [statementId]}) => statementJustifications(statementId)
+    handler: ({callback, request: {pathParameters: [statementId]}}) => statementJustifications(statementId)
         .then(({statement, justifications}) => {
           if (!statement) {
             return notFound({callback})
@@ -47,9 +69,9 @@ const routes = [
   },
   {
     path: 'login',
-    method: 'POST',
-    handler: ({callback, body}) => login(body)
-        .then(({message, isInvalid, isNotFound, isNotAuthorized, authenticationToken, email}) => {
+    method: POST,
+    handler: ({callback, request: {body}}) => login(body)
+        .then(({message, isInvalid, isNotFound, isNotAuthorized, auth}) => {
           if (isInvalid) {
             return badRequest({callback, message})
           }
@@ -59,14 +81,20 @@ const routes = [
           if (isNotAuthorized) {
             return forbidden({callback, message})
           }
-          console.log(`Successfully authenticated ${email}`)
-          return ok({callback, body: {authenticationToken}})
+          console.log(`Successfully authenticated ${auth.email}`)
+          return ok({callback, body: auth})
         })
   },
   {
+    path: 'logout',
+    method: POST,
+    handler: ({callback, request: authenticationToken}) => logout({authenticationToken})
+        .then( () => ok({callback}) )
+  },
+  {
     path: 'users',
-    method: 'POST',
-    handler: ({callback, body: {credentials: {email, password}, authenticationToken}}) => createUser(body)
+    method: POST,
+    handler: ({callback, request: {body: {credentials: {email, password}, authenticationToken}}}) => createUser(body)
         .then(({message, notAuthorized, user}) => {
           if (notAuthorized) {
             return forbidden({callback, message})
@@ -102,9 +130,9 @@ function selectRoute({path, method, queryStringParameters}) {
   return Promise.resolve({route: null})
 }
 
-exports.routeEvent = ({path, method, queryStringParameters, body}, callback) =>
-  selectRoute({path, method, queryStringParameters})
+exports.routeEvent = ({callback, request}) =>
+  selectRoute(request)
       .then( ({route, pathParameters}) => route ?
-          route.handler({callback, pathParameters, queryStringParameters, body}) :
+          route.handler({callback, request: merge({}, request, {pathParameters})}) :
           notFound({callback})
       )

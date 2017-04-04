@@ -10,7 +10,7 @@
     "db:dev:shell": "psql premiser",
     "create-user": "NODE_ENV=development node bin/create-user.js",
     "serve:dev": "DEBUG=premiser-api:* NODE_ENV=development nodemon --watch src bin/dev-server.js",
-    "debug": "DEBUG=premiser-api:* NODE_ENV=development nodemon --watch src bin/dev-server.js",
+    "debug": "DEBUG=premiser-api:* NODE_ENV=development node debug --watch src bin/dev-server.js",
     "inspect": "DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",
     "dev": "yarn run serve:dev",
     "build": "gulp build",
@@ -36,6 +36,7 @@
   "dependencies": {
     "argon2": "^0.15.0",
     "bluebird": "^3.5.0",
+    "cryptohat": "^1.0.1",
     "inspect-process": "^0.4.2",
     "moment": "^2.18.1",
     "node-env-file": "^0.1.8",

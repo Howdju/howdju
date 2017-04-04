@@ -15,10 +15,22 @@ export const acceptJustification = create2Action(ACCEPT_JUSTIFICATION)
 export const REJECT_JUSTIFICATION = 'REJECT_JUSTIFICATION'
 export const rejectJustification = create2Action(REJECT_JUSTIFICATION)
 
+export const CALL_API = 'CALL_API'
+export const CALL_API_SUCCESS = 'CALL_API_SUCCESS'
+export const CALL_API_FAILURE = 'CALL_API_FAILURE'
+
 export const LOGIN = 'LOGIN'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_FAILURE = 'LOGIN_FAILURE'
 export const login = create2Action(LOGIN)
+
+export const LOGIN_CREDENTIAL_CHANGE = 'LOGIN_CREDENTIAL_CHANGE'
+export const loginCredentialChange = create2Action(LOGIN_CREDENTIAL_CHANGE)
+
+export const LOGOUT = 'LOGOUT'
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
+export const LOGOUT_FAILURE = 'LOGOUT_FAILURE'
+export const logout = create2Action(LOGOUT)
 
 export const API_RESOURCE_ACTIONS = {
   [FETCH_STATEMENTS]: {
