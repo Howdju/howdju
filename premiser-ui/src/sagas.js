@@ -11,7 +11,7 @@ import {
   LOGIN_FAILURE,
   CALL_API,
   CALL_API_SUCCESS,
-  CALL_API_FAILURE, LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGOUT
+  CALL_API_FAILURE, LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGOUT, ADD_TOAST
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError} from './util'
@@ -177,6 +177,11 @@ function* callApiForLogout(logoutAction) {
   }
 }
 
+function* onLoginSuccess(action) {
+  yield put({type: ADD_TOAST, payload: { text: `You have logged in as ${action.payload.email}`}})
+  //  TODO navigate to previous page?
+}
+
 function* watchFetchResources() {
   yield takeEvery([
     FETCH_STATEMENTS,
@@ -186,6 +191,10 @@ function* watchFetchResources() {
 
 function* watchLogin() {
   yield takeEvery(LOGIN, callApiForLogin)
+}
+
+function* watchLoginSuccess() {
+  yield takeEvery(LOGIN_SUCCESS, onLoginSuccess)
 }
 
 function* watchLogout() {
@@ -198,6 +207,7 @@ function* watchCallApi() {
 
 export default () => [
   watchLogin(),
+  watchLoginSuccess(),
   watchLogout(),
   watchFetchResources(),
   watchCallApi(),

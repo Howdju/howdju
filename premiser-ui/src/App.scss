@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400|Orbitron|Roboto:300,400,500|Source+Sans+Pro');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+//$md-font-name: Lato;
+@import '~react-md/src/scss/react-md';
+@import './flatui-colors.scss';
+$md-primary-color: $midnight-blue;
+$md-secondary-color: $md-pink-a-200;
+@include react-md-everything;
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  font-family: 'Lato', sans-serif;
+  //font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 300;
+}
+
+body {
+  font-size: 1.2rem;
+}
+
+//$md-text-field-error-color

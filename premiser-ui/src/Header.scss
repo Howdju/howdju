@@ -1,0 +1,26 @@
+@import "./flatui-colors";
+
+#header {
+  color: $clouds;
+
+  ::-webkit-input-placeholder, /* WebKit, Blink, Edge */
+  :-ms-input-placeholder, /* Internet Explorer 10-11 */
+  :-moz-placeholder, /* Mozilla Firefox 4 to 18 */
+  ::-moz-placeholder /* Mozilla Firefox 19+ */ {
+    color: $wetAsphalt;
+    opacity:  0.5;
+  }
+  :-moz-placeholder, ::-moz-placeholder {
+    opacity:  0.5;
+  }
+}
+
+#header a {
+  // TODO limit to title?  And change login to an anchor button?  (Does react-md have such a thing?)
+  color: $clouds;
+}
+
+#title {
+  font-family: 'Orbitron', sans-serif;
+  text-decoration: none;
+}

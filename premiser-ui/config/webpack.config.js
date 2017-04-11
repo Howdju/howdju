@@ -45,15 +45,24 @@ const baseWebpackConfig = {
         use: { loader: 'babel-loader' },
       },
       {
+        test: /\.scss$/,
+        use: [
+          "style-loader",
+          "css-loader",
+          "resolve-url-loader",
+          "sass-loader?sourceMap",
+        ]
+      },
+      {
         test: /\.css$/,
         use: [
           'style-loader',
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true,
-              // minimize: false,
               importLoaders: 1,
+              // minimize: false,
+              sourceMap: true,
             }
           },
           {
@@ -72,9 +81,18 @@ const baseWebpackConfig = {
               reduceIdents: false,
               safe: true,
               sourceMap: 'inline',
+              sourceComments: true,
             }
-          }
+          },
         ],
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        use: 'url-loader?limit=10000&mimetype=application/font-woff',
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        use: 'file-loader',
       }
     ]
   },

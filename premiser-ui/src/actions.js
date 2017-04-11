@@ -42,3 +42,17 @@ export const API_RESOURCE_ACTIONS = {
     FAILURE: FETCH_STATEMENT_JUSTIFICATIONS_FAILURE,
   }
 }
+
+export const SHOW_NAV_DRAWER = 'SHOW_NAV_DRAWER'
+export const HIDE_NAV_DRAWER = 'HIDE_NAV_DRAWER'
+export const TOGGLE_NAV_DRAWER_VISIBILITY = 'TOGGLE_NAV_DRAWER_VISIBILITY'
+export const SET_NAV_DRAWER_VISIBILITY = 'SET_NAV_DRAWER_VISIBILITY'
+export const showNavDrawer = create2Action(SHOW_NAV_DRAWER)
+export const hideNavDrawer = create2Action(HIDE_NAV_DRAWER)
+export const toggleNavDrawerVisibility = create2Action(TOGGLE_NAV_DRAWER_VISIBILITY)
+export const setNavDrawerVisibility = create2Action(SET_NAV_DRAWER_VISIBILITY)
+
+export const ADD_TOAST = 'ADD_TOAST'
+export const DISMISS_TOAST = 'DISMISS_TOAST'
+export const addToast = create2Action(ADD_TOAST)
+export const dismissToast = create2Action(DISMISS_TOAST)

@@ -6,7 +6,8 @@ import {
   FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS,
   FETCH_STATEMENT_JUSTIFICATIONS_FAILURE,
   LOGIN_SUCCESS,
-  LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGIN, LOGIN_FAILURE, LOGIN_CREDENTIAL_CHANGE,
+  LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGIN, LOGIN_FAILURE, LOGIN_CREDENTIAL_CHANGE, SHOW_NAV_DRAWER, HIDE_NAV_DRAWER,
+  TOGGLE_NAV_DRAWER_VISIBILITY, SET_NAV_DRAWER_VISIBILITY, ADD_TOAST, DISMISS_TOAST,
 } from './actions'
 
 const entities = (state = { statements: {}, justifications: {}, quotes: {} }, action) => {
@@ -64,7 +65,7 @@ const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {
       return merge({}, state, {errorMessage: '', credentials: action.payload})
   }
 
-  return state;
+  return state
 }
 
 const statementJustificationsPage = (state = {errorMessage: ''}, action) => {
@@ -74,12 +75,33 @@ const statementJustificationsPage = (state = {errorMessage: ''}, action) => {
       return {...state, errorMessage: 'Failed to load justifications'}
   }
 
-  return state;
+  return state
+}
+
+const appUi = (state = {isNavDrawerVisible: false, toasts: []}, action) => {
+  switch (action.type) {
+    case SHOW_NAV_DRAWER:
+      return {...state, isNavDrawerVisible: true}
+    case HIDE_NAV_DRAWER:
+      return {...state, isNavDrawerVisible: false}
+    case TOGGLE_NAV_DRAWER_VISIBILITY:
+      return {...state, isNavDrawerVisible: !state.isNavDrawerVisible}
+    case SET_NAV_DRAWER_VISIBILITY:
+      return {...state, isNavDrawerVisible: action.payload.visible}
+
+    case ADD_TOAST:
+      return {...state, toasts: state.toasts.concat(action.payload)}
+    case DISMISS_TOAST:
+      return {...state, toasts: state.toasts.slice(1)}
+  }
+
+  return state
 }
 
 const ui = combineReducers({
   loginPage,
   statementJustificationsPage,
+  app: appUi,
 })
 
 export default combineReducers({

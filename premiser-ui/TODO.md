@@ -1,5 +1,26 @@
 # Howdju UI TODO
 ## MVP
+* Replace Material-UI with React Toolbox 2
+* Theme/colors
+* [Form validation](http://redux-form.com/6.6.2/)
+  * https://github.com/christianalfoni/formsy-react
+  * https://github.com/vazco/uniforms
+* CSS
+  * React-MD recommends: https://github.com/postcss/autoprefixer
+  * dppx
+  * [vw/vh](https://www.w3.org/TR/css3-values/#viewport-relative-lengths)
+  * https://github.com/jgranstrom/sass-extract-loader
+* Tap events
+  * https://github.com/zilverline/react-tap-event-plugin
+    * [Maybe not necessary?](https://www.reddit.com/r/reactjs/comments/4pe61k/why_do_we_need_reacttapeventplugin_in_our_projects/)
+* Animation
+  * https://facebook.github.io/react/docs/animation.html
+  * react-motion
+* UI Build
+  * ensure that CSS goes to external sheet
+  * ensure that google fonts go to external link
+* Rotate placeholder of mainSearch
+
 * Accept/reject justifications
 * redirect to previous page upon login
 * Add statements/justifications
@@ -7,11 +28,13 @@
 * Jobs (justification score)
 * Search
 * Home page tag cloud
+* Why do I have PostCSS in my project?
 ## 0.2
 * Change email, password, password reset
 * Loading flags (vs. just empty return from API)
 * Error reporting
   * feedback mechanism
+* Statement example: height of the capitol building limit DC
 ## 
 * Time travel to see what libraries made app large
   * Figure out how to minimize lodash import

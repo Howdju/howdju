@@ -1,4 +1,5 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+// const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const moment = require('moment')
 const webpack = require('webpack')
 
@@ -16,9 +17,26 @@ const commitHash = require('child_process')
     .toString();
 const banner = `${projectConfig.names.js} ${moment().format()} ${commitHash}`
 
+// const extractTextPlugin = new ExtractTextPlugin({
+//   filename: "[name].[contenthash].css",
+// })
+
 module.exports.webpackConfig = {
   entry: [projectConfig.paths.src('main.js')],
   devtool: 'cheap-module-source-map',
+  // module: {
+  //   rules: [{
+  //     test: /\.scss$/,
+  //     use: extractTextPlugin.extract({
+  //       use: [
+  //         "css-loader",
+  //         "sass-loader"
+  //       ],
+  //       // use style-loader in development
+  //       fallback: "style-loader"
+  //     })
+  //   }]
+  // },
   plugins: [
     new webpack.BannerPlugin({
       banner: banner,
@@ -32,5 +50,6 @@ module.exports.webpackConfig = {
       }
     }),
     new CopyWebpackPlugin([ { from: projectConfig.paths.src('error.html') }]),
+    // extractTextPlugin,
   ],
 }
