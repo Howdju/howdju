@@ -1,26 +1,48 @@
 @import "./flatui-colors";
 
-#header {
+@mixin placeholder {
+  color: $asbestos;
+}
+
+#mainSearch {
+  // Get a little space between the title and the search; maybe we should be using the grid to do this?
+  margin-left: 10px;
+
   color: $clouds;
 
-  ::-webkit-input-placeholder, /* WebKit, Blink, Edge */
-  :-ms-input-placeholder, /* Internet Explorer 10-11 */
-  :-moz-placeholder, /* Mozilla Firefox 4 to 18 */
-  ::-moz-placeholder /* Mozilla Firefox 19+ */ {
-    color: $wetAsphalt;
-    opacity:  0.5;
+  /* Chrome doesn't render these styles if the rule includes non-chrome selectors.
+     Just for safety, separate them all
+   */
+
+  /* WebKit, Blink, Edge */
+  &::-webkit-input-placeholder {
+    @include placeholder;
   }
-  :-moz-placeholder, ::-moz-placeholder {
+  /* Internet Explorer 10-11 */
+  &:-ms-input-placeholder {
+    @include placeholder;
+  }
+  /* Mozilla Firefox 4 to 18 */
+  &:-moz-placeholder {
+    @include placeholder;
+  }
+  /* Mozilla Firefox 19+ */
+  &::-moz-placeholder {
+    @include placeholder;
+  }
+  &::placeholder {
+    @include placeholder;
+  }
+  // Is this rule necessary?
+  &:-moz-placeholder, &::-moz-placeholder {
     opacity:  0.5;
   }
 }
 
-#header a {
-  // TODO limit to title?  And change login to an anchor button?  (Does react-md have such a thing?)
-  color: $clouds;
+a.md-title--toolbar {
+  text-decoration: none;
 }
 
 #title {
   font-family: 'Orbitron', sans-serif;
-  text-decoration: none;
 }

@@ -1,6 +1,5 @@
 # Howdju UI TODO
 ## MVP
-* Replace Material-UI with React Toolbox 2
 * Theme/colors
 * [Form validation](http://redux-form.com/6.6.2/)
   * https://github.com/christianalfoni/formsy-react
@@ -19,7 +18,7 @@
 * UI Build
   * ensure that CSS goes to external sheet
   * ensure that google fonts go to external link
-* Rotate placeholder of mainSearch
+* Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
 
 * Accept/reject justifications
 * redirect to previous page upon login

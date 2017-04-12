@@ -48,7 +48,7 @@ const baseWebpackConfig = {
         test: /\.scss$/,
         use: [
           "style-loader",
-          "css-loader",
+          "css-loader?sourceMap",
           "resolve-url-loader",
           "sass-loader?sourceMap",
         ]

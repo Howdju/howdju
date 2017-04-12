@@ -27,7 +27,7 @@ class Header extends Component {
           colored
           fixed
           title={
-            <Link to="/" id="title">
+            <Link to="/">
               <span id="title">
                 howdju?
               </span>
@@ -39,7 +39,7 @@ class Header extends Component {
 
           <Autocomplete
               id="mainSearch"
-              placeholder=" know..."
+              placeholder="know..."
               data={this.state.autoComplete.data}
               filter={null}
               // dataLabel="name"
