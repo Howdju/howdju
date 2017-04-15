@@ -14,9 +14,47 @@ import { connect } from 'react-redux'
 import './App.scss'
 import Header from './Header'
 import HomePage from './HomePage'
+import ToolsPage from './ToolsPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
 import {dismissToast, hideNavDrawer, logout, setNavDrawerVisibility} from "./actions";
+
+const IconPage = props => (
+    <DocumentTitle title={'Icons - Howdju'}>
+      <div>
+        <i className="material-icons">all_out</i>
+        <i className="material-icons">open_in_new</i>
+        <i className="material-icons">check_circle</i>
+        <i className="material-icons">done</i>
+        <i className="material-icons">loyalty</i>
+        <i className="material-icons">label</i>
+        <i className="material-icons">label_outline</i>
+        <i className="material-icons">search</i>
+        <i className="material-icons">settings</i>
+        <i className="material-icons">thumb_up</i>
+        <i className="material-icons">thumb_down</i>
+        <i className="material-icons">add</i>
+        <i className="material-icons">add_box</i>
+        <i className="material-icons">add_circle</i>
+        <i className="material-icons">add_circle_outline</i>
+        <i className="material-icons">remove</i>
+        <i className="material-icons">remove_circle</i>
+        <i className="material-icons">remove_circle_outline</i>
+        <i className="material-icons">archive</i>
+        <i className="material-icons">unarchive</i>
+        <i className="material-icons">delete</i>
+        <i className="material-icons">delete_forever</i>
+        <i className="material-icons">undo</i>
+        <i className="material-icons">redo</i>
+        <i className="material-icons">create</i>
+        <i className="material-icons">block</i>
+        <i className="material-icons">clear</i>
+        <i className="material-icons">call_made</i>
+        <i className="material-icons">compare_arrows</i>
+        <i className="material-icons">merge_type</i>
+      </div>
+    </DocumentTitle>
+)
 
 class App extends Component {
 
@@ -63,7 +101,8 @@ class App extends Component {
               </Toolbar>
             }
             navItems={[
-              <ListItem key="login" primaryText="Login" component={Link} to="/login" />
+              <ListItem key="login" primaryText="Login" component={Link} to="/login" />,
+              <ListItem key="tools" primaryText="Tools" component={Link} to="/tools" />
             ]}
             visible={this.props.isNavDrawerVisible}
             onVisibilityToggle={this.onNavDrawerVisibilityToggle}
@@ -82,6 +121,8 @@ class App extends Component {
 
               <Route exact path="/" component={HomePage} />
               <Route path="/login" component={LoginPage} />
+              <Route path="/tools" component={ToolsPage} />
+              <Route path="/icons" component={IconPage} />
               <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsPage} />
 
             </div>

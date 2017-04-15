@@ -4,6 +4,10 @@
   color: $asbestos;
 }
 
+#header * {
+  color: $clouds;
+}
+
 #mainSearch {
   // Get a little space between the title and the search; maybe we should be using the grid to do this?
   margin-left: 10px;

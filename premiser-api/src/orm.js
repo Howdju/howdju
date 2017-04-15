@@ -1,7 +1,7 @@
 
 const toSlug = (t) => t.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
-exports.toStatement = s => !s ? s : ({
+const toStatement = s => !s ? s : ({
   id: s.statement_id,
   text: s.text,
   slug: toSlug(s.text)
@@ -12,7 +12,7 @@ const toUrl = u => !u ? u : ({
   url: u.url
 })
 
-exports.toJustification = (j, urls) => {
+const toJustification = (j, urlsByJustificationId, counterJustificationsByJustificationId) => {
   if (!j) {
     return j
   }
@@ -50,9 +50,19 @@ exports.toJustification = (j, urls) => {
     }
   }
 
+  const urls = urlsByJustificationId[justification.id]
   if (urls) {
     justification.basis.entity.urls = urls.map(toUrl)
   }
+  const counterJustifications = counterJustificationsByJustificationId[justification.id]
+  if (counterJustifications) {
+    justification.counterJustifications = counterJustifications.map(j => toJustification(j, urlsByJustificationId, counterJustificationsByJustificationId))
+  }
 
   return justification
+}
+
+module.exports = {
+  toStatement,
+  toJustification,
 }

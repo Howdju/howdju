@@ -4,10 +4,12 @@
 
 //$md-font-name: Lato;
 @import '~react-md/src/scss/react-md';
-@import './flatui-colors.scss';
-$md-primary-color: $midnight-blue;
-$md-secondary-color: $md-pink-a-200;
+@import './colors.scss';
+$md-primary-color: $primary-color;
+$md-secondary-color: $secondary-color;
 @include react-md-everything;
+
+@import './flatui-colors.scss';
 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -25,10 +27,15 @@ time, mark, audio, video {
   font-family: 'Lato', sans-serif;
   //font-family: 'Source Sans Pro', sans-serif;
   font-weight: 300;
+  color: darken($midnight-blue, 15%); // rgb(19, 27, 35);
 }
 
 body {
   font-size: 1.2rem;
+}
+
+.hidden {
+  display: none;
 }
 
 //$md-text-field-error-color

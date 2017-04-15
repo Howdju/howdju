@@ -1,3 +1,5 @@
+import isFunction from 'lodash/isFunction'
+
 export function extractDomain(url) {
   let domain;
   //find & remove protocol (http, ftp, etc.) and get domain
@@ -17,13 +19,13 @@ export function extractDomain(url) {
 export function assert(test, message) {
   const makeMessage = message =>
       // If there is a message thunk, use it
-      _.isFunction(message) ?
+      isFunction(message) ?
         message() :
         // Otherwise if there is a message, us it
         !!message ?
             message :
             // Otherwise, if the test was a thunk, use it as a description
-            _.isFunction(test) ?
+            isFunction(test) ?
                 test.toString().substring(0, 1024) :
                 // Otherwise, not much else we can do
                 message
@@ -31,7 +33,7 @@ export function assert(test, message) {
   const logError = message => console.error("Failed assertion: " + makeMessage(message))
 
   if (process.env.DO_ASSERT === 'true') {
-    if (_.isFunction(test)) {
+    if (isFunction(test)) {
       if (!test()) {
         logError(message)
       }

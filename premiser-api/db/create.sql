@@ -15,6 +15,10 @@ create table statements (
 
 create table justifications (
   justification_id serial,
+  -- convenient way to retrieve all justifications for the statement justifications page.
+  -- when target_type = 'STATEMENT", equals target_id.  When target_type = 'JUSTIFICATION',
+  -- equals the target_id of the nearest parent justification having target_type = 'STATEMENT'
+  root_statement_id integer,
   target_type varchar(64), -- 'STATEMENT' or 'JUSTIFICATION'
   target_id integer,
   basis_type varchar(64), -- 'STATEMENT' or 'REFERENCE'

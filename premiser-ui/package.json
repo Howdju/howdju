@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "UI for premiser.co.  Proprietary and confidential.  Copyright Carl Gieringer",
   "main": "index.js",
-  "repository": "git@bitbucket.org:premiser/premiser-ui.git",
+  "repository": "git@bitbucket.org:premiser/premiser.git",
   "author": "Carl Gieringer <carl@premiser.co>",
   "license": "UNLICENSED",
   "scripts": {

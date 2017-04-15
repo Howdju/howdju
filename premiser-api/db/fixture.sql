@@ -4,15 +4,17 @@ insert into statements (statement_id, text, created) values
 (3, 'The AHCA will uninsure 14 million people by 2018', NOW()),
 (4, 'The AHCA is shorter than the ACA', NOW()),
 (5, 'The AHCA removes the penalty for choosing not to have health insurance', NOW()),
-(6, 'The removal of the individual mandate will drive up insurance costs and emergency care costs', NOW());
+(6, 'The removal of the individual mandate will drive up insurance costs and emergency care costs', NOW()),
+(7, 'The AHCA is only so much shorter because it incorporates or relies upon the existing ACA laws', NOW());
 
-insert into justifications (target_type, target_id, basis_type, basis_id, polarity, created) values
-('STATEMENT', 1, 'STATEMENT', 2, 'POSITIVE', NOW()),
-('STATEMENT', 1, 'STATEMENT', 3, 'NEGATIVE', NOW()),
-('STATEMENT', 1, 'STATEMENT', 4, 'POSITIVE', NOW()),
-('STATEMENT', 1, 'STATEMENT', 5, 'POSITIVE', NOW()),
-('STATEMENT', 1, 'STATEMENT', 6, 'NEGATIVE', NOW()),
-('STATEMENT', 1, 'REFERENCE', 1, 'NEGATIVE', NOW());
+insert into justifications (justification_id, root_statement_id, target_type, target_id, basis_type, basis_id, polarity, created) values
+(1, 1, 'STATEMENT', 1, 'STATEMENT', 2, 'POSITIVE', NOW()),
+(2, 1, 'STATEMENT', 1, 'STATEMENT', 3, 'NEGATIVE', NOW()),
+(3, 1, 'STATEMENT', 1, 'STATEMENT', 4, 'POSITIVE', NOW()),
+(4, 1, 'STATEMENT', 1, 'STATEMENT', 5, 'POSITIVE', NOW()),
+(5, 1, 'STATEMENT', 1, 'STATEMENT', 6, 'NEGATIVE', NOW()),
+(6, 1, 'STATEMENT', 1, 'REFERENCE', 1, 'NEGATIVE', NOW()),
+(7, 1, 'JUSTIFICATION', 3, 'STATEMENT', 7, 'NEGATIVE', NOW());
 
 insert into citations (citation_id, text, created) values
 (1, 'Tax Credits under the Affordable Care Act vs. the American Health Care Act: An Interactive Map', NOW());

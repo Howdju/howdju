@@ -1,0 +1,117 @@
+@import './flatui-colors';
+@import './colors';
+
+.statement {
+
+}
+
+@mixin quote {
+  color: $asbestos;
+  font-size: 200%;
+  position: absolute;
+}
+
+.justification {
+
+  .justificationText.quote {
+    border-left: 2px solid $primary-color;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    quotes: "\201C" "\201D" "\2018" "\2019";
+
+    span {
+      // Push it out past the position:absolute quote
+      margin-left: 20px;
+    }
+
+    &:before {
+      @include quote;
+      content: open-quote;
+    }
+    &:after {
+      @include quote;
+      margin-left: 10px;
+      content: close-quote;
+    }
+  }
+
+  /*transition: width 1s cubic-bezier(0.77, 0, 0.175, 1);*/
+
+  .md-list--menu {
+    // Menus will always be ltr
+    direction: ltr;
+  }
+
+  &.positive {
+
+    /*background-color: #AFA;*/
+    .actions {
+      .md-icon {
+        // When positivey, the icons look better flipped
+        transform: scaleX(-1);
+      }
+    }
+
+    & > .counterJustifications {
+      margin-left: 20px;
+      .actions {
+        direction: rtl;
+        .md-icon {
+          transform: none;
+        }
+      }
+      & > .counterJustifications {
+        margin-right: 20px;
+        .actions {
+          direction: ltr;
+          .md-icon {
+            transform: scaleX(-1);
+          }
+        }
+      }
+    }
+  }
+
+  &.negative {
+
+    /*background-color: #FAA;*/
+
+    .card {
+      .actions {
+        direction: rtl;
+      }
+    }
+
+    & > .counterJustifications {
+      margin-right: 20px;
+      .actions {
+        direction: ltr;
+        .md-icon {
+          transform: scaleX(-1);
+        }
+      }
+
+      & > .counterJustifications {
+        margin-left: 20px;
+
+        .actions {
+          direction: rtl;
+          .md-icon {
+            transform: none;
+          }
+        }
+      }
+    }
+  }
+
+  .card {
+    margin-bottom: 10px;
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  /*.justification.positive, .justification.negative {*/
+    /*float: none;*/
+    /*width: 100%;*/
+  /*}*/
+}

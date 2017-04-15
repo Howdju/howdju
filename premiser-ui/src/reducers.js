@@ -7,7 +7,7 @@ import {
   FETCH_STATEMENT_JUSTIFICATIONS_FAILURE,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGIN, LOGIN_FAILURE, LOGIN_CREDENTIAL_CHANGE, SHOW_NAV_DRAWER, HIDE_NAV_DRAWER,
-  TOGGLE_NAV_DRAWER_VISIBILITY, SET_NAV_DRAWER_VISIBILITY, ADD_TOAST, DISMISS_TOAST,
+  TOGGLE_NAV_DRAWER_VISIBILITY, SET_NAV_DRAWER_VISIBILITY, ADD_TOAST, DISMISS_TOAST, FETCH_STATEMENT_JUSTIFICATIONS,
 } from './actions'
 
 const entities = (state = { statements: {}, justifications: {}, quotes: {} }, action) => {
@@ -68,11 +68,15 @@ const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {
   return state
 }
 
-const statementJustificationsPage = (state = {errorMessage: ''}, action) => {
+const statementJustificationsPage = (state = {errorMessage: '', isFetching: false}, action) => {
   switch (action.type) {
     case FETCH_STATEMENT_JUSTIFICATIONS_FAILURE:
-      console.error(action.payload);
-      return {...state, errorMessage: 'Failed to load justifications'}
+      return {...state, errorMessage: 'Failed to load justifications', isFetching: false}
+    case FETCH_STATEMENT_JUSTIFICATIONS:
+      return {...state, errorMessage: '', isFetching: true}
+    case FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS:
+      return {...state, isFetching: false}
+
   }
 
   return state

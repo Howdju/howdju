@@ -9,7 +9,8 @@ module.exports.htmlWebpackPluginConfig = {
 }
 
 module.exports.definePluginConfig = {
-  'process.env.API_ROOT': JSON.stringify('http://localhost:8081/api/')
+  'process.env.API_ROOT': JSON.stringify('http://localhost:8081/api/'),
+  'process.env.DO_ASSERT': JSON.stringify('true'),
 }
 
 module.exports.webpackConfig = {

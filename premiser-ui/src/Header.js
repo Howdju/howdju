@@ -39,7 +39,7 @@ class Header extends Component {
 
           <Autocomplete
               id="mainSearch"
-              placeholder="know..."
+              placeholder="know that..."
               data={this.state.autoComplete.data}
               filter={null}
               // dataLabel="name"

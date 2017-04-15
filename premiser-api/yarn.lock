@@ -296,8 +296,8 @@ chokidar@^1.4.3:
     fsevents "^1.0.0"
 
 chromedriver@^2.26.1:
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-2.28.0.tgz#ea0c383621dd27db340c612b85fe39414c16ec79"
+  version "2.29.0"
+  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-2.29.0.tgz#e3fd8b3c08dce2562b80ef1b0b846597659d0cc3"
   dependencies:
     adm-zip "^0.4.7"
     kew "^0.7.0"
@@ -1047,8 +1047,8 @@ homedir-polyfill@^1.0.0:
     parse-passwd "^1.0.0"
 
 hosted-git-info@^2.1.4:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.4.1.tgz#4b0445e41c004a8bd1337773a4ff790ca40318c8"
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.4.2.tgz#0076b9f46a270506ddbaaea56496897460612a67"
 
 http-errors@~1.6.1:
   version "1.6.1"

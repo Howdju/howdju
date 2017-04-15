@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import DocumentTitle from 'react-document-title'
 import clone from 'lodash/clone'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
@@ -29,30 +30,32 @@ class LoginPage extends Component {
 
   render () {
     return (
-        <div id="loginPage">
-          <div className="errorMessage">{this.props.errorMessage}</div>
-          <form onSubmit={this.handleSubmit}>
-            <Paper zDepth={2}>
-              <TextField
-                  id="loginEmail"
-                  type="email"
-                  name="email"
-                  label="Email"
-                  value={this.props.credentials.email}
-                  onChange={this.handleInputChange}
-              />
-              <TextField
-                  id="loginPassword"
-                  type="password"
-                  name="password"
-                  label="Password"
-                  value={this.props.credentials.password}
-                  onChange={this.handleInputChange}
-              />
-            </Paper>
-            <Button raised type="submit" label="Login" disabled={this.props.isLoggingIn} />
-          </form>
-        </div>
+        <DocumentTitle title={'Login - Howdju'}>
+          <div id="loginPage">
+            <div className="errorMessage">{this.props.errorMessage}</div>
+            <form onSubmit={this.handleSubmit}>
+              <Paper zDepth={2}>
+                <TextField
+                    id="loginEmail"
+                    type="email"
+                    name="email"
+                    label="Email"
+                    value={this.props.credentials.email}
+                    onChange={this.handleInputChange}
+                />
+                <TextField
+                    id="loginPassword"
+                    type="password"
+                    name="password"
+                    label="Password"
+                    value={this.props.credentials.password}
+                    onChange={this.handleInputChange}
+                />
+              </Paper>
+              <Button raised primary type="submit" label="Login" disabled={this.props.isLoggingIn} />
+            </form>
+          </div>
+        </DocumentTitle>
     )
   }
 }

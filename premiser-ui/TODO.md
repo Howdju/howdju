@@ -1,9 +1,19 @@
 # Howdju UI TODO
 ## MVP
+* Style StatementJustifications page
+  * style positive/negative!
+  * Style agreement/validation
+
+  * Drilling down
+    * link to own statement page
+    * show in-context
+    * drill down, showing hierarchy of statements above
+  * narrow screen
+    * Weird layout error at 923/924px
+* Create statements/justifications
+* bookmarklet
+
 * Theme/colors
-* [Form validation](http://redux-form.com/6.6.2/)
-  * https://github.com/christianalfoni/formsy-react
-  * https://github.com/vazco/uniforms
 * CSS
   * React-MD recommends: https://github.com/postcss/autoprefixer
   * dppx
@@ -17,7 +27,10 @@
   * react-motion
 * UI Build
   * ensure that CSS goes to external sheet
-  * ensure that google fonts go to external link
+  * ensure that google fonts go to external link?
+* [Form validation](http://redux-form.com/6.6.2/)
+  * https://github.com/christianalfoni/formsy-react
+  * https://github.com/vazco/uniforms
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
 
 * Accept/reject justifications

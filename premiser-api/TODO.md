@@ -1,4 +1,5 @@
 # TODO
+* Version API
 * Add route permissions
 * scheduled jobs
   * calculate scores
@@ -13,3 +14,4 @@
 * [Versioning](https://docs.aws.amazon.com/lambda/latest/dg/versioning-aliases.html)?
 * [pg native](https://github.com/brianc/node-postgres#native-bindings)
 * delete passed token upon re-login?
+* Factor common code into premiser-common package (util, models)
