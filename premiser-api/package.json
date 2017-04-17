@@ -15,12 +15,14 @@
     "inspect": "DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",
     "dev": "yarn run serve:dev",
     "build": "gulp build",
-    "deploy": "gulp deploy"
+    "deploy": "gulp deploy",
+    "test": "cross-env NODE_ENV=test jest --config .jestrc"
   },
   "devDependencies": {
     "argparse": "https://github.com/nodeca/argparse.git",
     "aws-sdk": "^2.34.0",
     "body-parser": "^1.17.1",
+    "cross-env": "^4.0.0",
     "debug": "^2.6.3",
     "del": "^2.2.2",
     "express": "^4.15.2",
@@ -30,6 +32,7 @@
     "gulp-util": "^3.0.8",
     "gulp-zip": "^4.0.0",
     "inspect-process": "^0.4.2",
+    "jest": "^19.0.2",
     "morgan": "^1.8.1",
     "nodemon": "^1.11.0",
     "read": "^1.0.7",
@@ -41,6 +44,7 @@
     "cryptohat": "^1.0.1",
     "moment": "^2.18.1",
     "node-env-file": "^0.1.8",
-    "pg": "^6.1.5"
+    "pg": "^6.1.5",
+    "winston": "^2.3.1"
   }
 }

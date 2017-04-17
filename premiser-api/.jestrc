@@ -1,0 +1,6 @@
+{
+  "testRegex": "(/src/.*\\.test\\.js)$",
+  "testPathIgnorePatterns": [
+    "/config/config\\.test\\.js"
+  ]
+}

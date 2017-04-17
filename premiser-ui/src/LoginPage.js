@@ -6,6 +6,7 @@ import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
 import Paper from 'react-md/lib/Papers/Paper';
 
+
 import {login, loginCredentialChange} from './actions'
 import './LoginPage.scss'
 
@@ -32,28 +33,42 @@ class LoginPage extends Component {
     return (
         <DocumentTitle title={'Login - Howdju'}>
           <div id="loginPage">
-            <div className="errorMessage">{this.props.errorMessage}</div>
-            <form onSubmit={this.handleSubmit}>
-              <Paper zDepth={2}>
-                <TextField
-                    id="loginEmail"
-                    type="email"
-                    name="email"
-                    label="Email"
-                    value={this.props.credentials.email}
-                    onChange={this.handleInputChange}
-                />
-                <TextField
-                    id="loginPassword"
-                    type="password"
-                    name="password"
-                    label="Password"
-                    value={this.props.credentials.password}
-                    onChange={this.handleInputChange}
-                />
-              </Paper>
-              <Button raised primary type="submit" label="Login" disabled={this.props.isLoggingIn} />
-            </form>
+            <div className="md-grid">
+              <div className="md-cell md-cell--12">
+
+                <Paper zDepth={2}>
+                  <div className="md-grid">
+                    <div className="md-cell md-cell--12">
+
+                      <div className="errorMessage">{this.props.errorMessage}</div>
+                      <form onSubmit={this.handleSubmit}>
+                          <TextField
+                              id="loginEmail"
+                              type="email"
+                              name="email"
+                              label="Email"
+                              value={this.props.credentials.email}
+                              onChange={this.handleInputChange}
+                          />
+                          <TextField
+                              id="loginPassword"
+                              type="password"
+                              name="password"
+                              label="Password"
+                              value={this.props.credentials.password}
+                              onChange={this.handleInputChange}
+                          />
+
+                        <Button raised primary type="submit" label="Login" disabled={this.props.isLoggingIn} />
+                      </form>
+
+                    </div>
+                  </div>
+                </Paper>
+
+              </div>
+            </div>
+
           </div>
         </DocumentTitle>
     )

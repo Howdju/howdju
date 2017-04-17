@@ -92,9 +92,9 @@ class App extends Component {
                   nav={<Button icon onClick={this.handleHideNavDrawer}>close</Button>}
                   className="md-divider-border md-divider-border--bottom"
               >
-                {this.props.authenticationToken &&
+                {this.props.authToken &&
                 <div>
-                  <div>You are logged in as {this.props.authenticatedEmail}</div>
+                  <div>You are logged in as {this.props.authEmail}</div>
                   <Button raised label="Logout" onClick={this.handleLogout} />
                 </div>
                 }
@@ -139,8 +139,8 @@ class App extends Component {
 const mapStateToProps = state => {
   const {
     auth: {
-      email: authenticatedEmail,
-      authenticationToken,
+      email: authEmail,
+      authToken,
     },
     ui: {
       app: {
@@ -150,8 +150,8 @@ const mapStateToProps = state => {
     }
   } = state
   return {
-    authenticatedEmail,
-    authenticationToken,
+    authEmail,
+    authToken,
     isNavDrawerVisible,
     toasts,
   }

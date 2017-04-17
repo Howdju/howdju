@@ -1,8 +1,25 @@
 @import './flatui-colors';
 @import './colors';
 
-.statement {
+$agreement: $emerald;
+$disagreement: $pomegranate;
+$gradient-start-opacity: .6;
+$gradient-point: 25%;
 
+.statement {
+  .agreement {
+    //background: red; /* For browsers that do not support gradients */
+    //background: -webkit-linear-gradient(bottom left, red, yellow);
+    //background: -o-linear-gradient(top right, red, yellow);
+    //background: -moz-linear-gradient(top right, red, yellow);
+    background: linear-gradient(to right, rgba($agreement, $gradient-start-opacity) 0%, rgba($agreement, 0) $gradient-point, rgba($agreement,0) 100%);
+  }
+  .disagreement {
+    background: linear-gradient(to left, rgba($disagreement, $gradient-start-opacity) 0%,rgba($disagreement,0) $gradient-point, rgba($disagreement, 0) 100%);
+  }
+  .agreement.disagreement {
+    background: linear-gradient(to right, rgba($agreement, $gradient-start-opacity) 0%, rgba($agreement, 0) $gradient-point, rgba($disagreement, 0) 100% - $gradient-point, rgba($disagreement, $gradient-start-opacity) 100%);
+  }
 }
 
 @mixin quote {
@@ -37,9 +54,17 @@
 
   /*transition: width 1s cubic-bezier(0.77, 0, 0.175, 1);*/
 
+  .otherSelected .md-icon {
+    color: $concrete;
+  }
+
   .md-list--menu {
     // Menus will always be ltr
     direction: ltr;
+  }
+
+  .verified, .disverified {
+    color: $midnight-blue;
   }
 
   &.positive {

@@ -1,6 +1,8 @@
 import { put, call, take, takeEvery, takeLatest, select, race } from 'redux-saga/effects'
 import isFunction from 'lodash/isFunction'
+import merge from 'lodash/merge'
 import uuid from 'uuid'
+import {REHYDRATE} from 'redux-persist/constants'
 
 import {
   API_RESOURCE_ACTIONS,
@@ -11,48 +13,67 @@ import {
   LOGIN_FAILURE,
   CALL_API,
   CALL_API_SUCCESS,
-  CALL_API_FAILURE, LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGOUT, ADD_TOAST
+  CALL_API_FAILURE, LOGOUT_SUCCESS, LOGOUT_FAILURE, LOGOUT, ADD_TOAST, VERIFY_JUSTIFICATION,
+  VERIFY_JUSTIFICATION_SUCCESS, VERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
+  UN_DISVERIFY_JUSTIFICATION, UN_VERIFY_JUSTIFICATION_SUCCESS, UN_VERIFY_JUSTIFICATION_FAILURE,
+  DISVERIFY_JUSTIFICATION_SUCCESS, DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE,
+  UN_DISVERIFY_JUSTIFICATION_SUCCESS
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError} from './util'
-import {statementsSchema, statementJustificationsSchema} from './schemas'
+import {statementsSchema, statementJustificationsSchema, voteSchema} from './schemas'
+import {VotePolarity, VoteTargetType} from "./models";
 
-const getAuthenticationToken = state => state.auth.authenticationToken
+const POST = 'POST'
+const DELETE = 'DELETE'
+
+const getAuthToken = state => {
+  return state.auth.authToken
+}
+
+let isRehydrated = false
 
 // These methods translate FETCH_* payloads into API calls
-export const resourcePayloads = {
+export const resourceApiConfigs = {
   [FETCH_STATEMENTS]: {
-    endpoint: 'statements',
-    schema: statementsSchema,
+    payload: {
+      endpoint: 'statements',
+      schema: statementsSchema,
+    }
   },
   [FETCH_STATEMENT_JUSTIFICATIONS]: statementId => ({
-    endpoint: `statements/${statementId}?justifications`,
-    schema: statementJustificationsSchema,
+    payload: {
+      endpoint: `statements/${statementId}?justifications`,
+      schema: statementJustificationsSchema,
+    },
+    meta: {
+      requiresRehydrate: true,
+    }
   }),
 }
 
-function* callApi({type, payload: {endpoint, fetchInit = {}, schema}, meta: {nonce} = {}}) {
+function* callApi({type, payload: {endpoint, fetchInit = {}, schema}, meta: {nonce, requiresRehydrate}}) {
   try {
     assert(() => type === CALL_API)
 
-    // Add authentication token to all API requests
-    const authenticationToken = yield select(getAuthenticationToken)
-    if (authenticationToken) {
-      fetchInit = {...fetchInit,
-        headers: {
-          'Authorization': `Bearer ${authenticationToken}`,
-        },
-      }
+    if (requiresRehydrate && !isRehydrated) {
+      yield take(REHYDRATE)
+    }
+
+    // Add auth token to all API requests
+    const authToken = yield select(getAuthToken)
+    if (authToken) {
+      fetchInit.headers = merge({}, fetchInit.headers, {
+        'Authorization': `Bearer ${authToken}`,
+      })
     }
 
     // Prepare data submission
     if (fetchInit.body) {
-      fetchInit = {...fetchInit,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(fetchInit.body),
-      }
+      fetchInit.headers = merge({}, fetchInit.headers, {
+        'Content-Type': 'application/json',
+      })
+      fetchInit.body = JSON.stringify(fetchInit.body)
     }
 
     const result = yield call(fetchJson, endpoint, {init: fetchInit, schema})
@@ -63,117 +84,180 @@ function* callApi({type, payload: {endpoint, fetchInit = {}, schema}, meta: {non
   }
 }
 
-// function* callApiWithNonce(apiPayload) {
-//   const nonce = uuid.v4()
-//   yield put({type: CALL_API, payload: apiPayload, meta: {nonce}})
-//   let successAction, failureAction
-//   let complete = false
-//   while (!complete) {
-//     ({ successAction, failureAction } = {null, null})
-//     ({ successAction, failureAction } = yield race({
-//       successAction: take(CALL_API_SUCCESS),
-//       failureAction: take(CALL_API_FAILURE)
-//     }))
-//     complete = successAction && successAction.meta.nonce === nonce ||
-//         failureAction && failureAction.meta.nonce === nonce
-//   }
-//   return {successAction, failureAction}
-// }
+/** Adds a nonce to the meta of an API call to ensure that the API success/failure corresponds to this call */
+const callApiWithNonce = ({payload, meta}) => function* () {
+  const nonce = uuid.v4()
+  meta = merge({}, meta, {nonce})
+  yield put({type: CALL_API, payload, meta})
+
+  let successAction, failureAction
+  let isComplete = false
+  while (!isComplete) {
+    // If the take picked up an action with the incorrect nonce from a previous loop iteration, clear it out
+    successAction = failureAction = null;
+    ({ successAction, failureAction } = yield race({
+      successAction: take(CALL_API_SUCCESS),
+      failureAction: take(CALL_API_FAILURE)
+    }))
+    isComplete = successAction && successAction.meta.nonce === nonce ||
+        failureAction && failureAction.meta.nonce === nonce
+  }
+
+  return {
+    successAction,
+    failureAction
+  }
+}
 
 function* callApiForResource(fetchResourceAction) {
   try {
-    let apiPayload = resourcePayloads[fetchResourceAction.type]
-    if (isFunction(apiPayload)) {
-      apiPayload = apiPayload(fetchResourceAction.payload)
-    }
+    let config = resourceApiConfigs[fetchResourceAction.type]
+    const {payload, meta} = isFunction(config) ? config(fetchResourceAction.payload) : config
 
-    // const {successAction, failureAction} = yield call(callApiWithNonce, apiPayload)
-
-    const nonce = uuid.v4()
-    yield put({type: CALL_API, payload: apiPayload, meta: {nonce}})
-
-    let successAction, failureAction
-    let complete = false
-    while (!complete) {
-      ({ successAction, failureAction } = yield race({
-        successAction: take(CALL_API_SUCCESS),
-        failureAction: take(CALL_API_FAILURE)
-      }))
-      complete = successAction && successAction.meta.nonce === nonce ||
-              failureAction && failureAction.meta.nonce === nonce
-    }
+    const {successAction, failureAction} = yield* callApiWithNonce({payload, meta})()
 
     if (successAction) {
       yield put({type: API_RESOURCE_ACTIONS[fetchResourceAction.type]['SUCCESS'], payload: successAction.payload})
-    } else if (failureAction) {
-      yield put({type: API_RESOURCE_ACTIONS[fetchResourceAction.type]['FAILURE'], payload: failureAction.payload})
     } else {
-      const errorMessage = 'Both successAction and failureAction were falsy'
-      logError(errorMessage)
-      yield put({type: API_RESOURCE_ACTIONS[fetchResourceAction.type]['FAILURE'], payload: new Error(errorMessage)})
+      yield put({type: API_RESOURCE_ACTIONS[fetchResourceAction.type]['FAILURE'], payload: failureAction.payload})
     }
-
   } catch (error) {
     logError(error)
     yield put({type: API_RESOURCE_ACTIONS[fetchResourceAction.type]['FAILURE'], payload: error})
   }
 }
 
-function* callApiForLogin(loginAction) {
+/** Factory for API calling sagas with known success/failure types
+ * @param payloadCreator - Either a static payload for the API action or a function that will be called with the
+ *                            saga's action and that returns the payload for the API action
+ */
+const apiCaller = ({successType, failureType}, payloadCreator) => function* (action) {
   try {
-    const apiPayload = {
-      endpoint: 'login',
-      fetchInit: {
-        method: 'POST',
-        body: loginAction.payload,
-      }
-    }
-    const nonce = uuid.v4()
-    yield put({type: CALL_API, payload: apiPayload, meta: {nonce}})
+    const payload = isFunction(payloadCreator) ? payloadCreator(action) : payloadCreator
 
-    let successAction, failureAction
-    let complete = false
-    while (!complete) {
-      ({ successAction, failureAction } = yield race({
-        successAction: take(CALL_API_SUCCESS, nonce),
-        failureAction: take(CALL_API_FAILURE, nonce)
-      }))
-      complete = successAction && successAction.meta.nonce === nonce ||
-          failureAction && failureAction.meta.nonce === nonce
-    }
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
 
     if (successAction) {
-      yield put({type: LOGIN_SUCCESS, payload: successAction.payload})
+      yield put({type: successType, payload: successAction.payload})
     } else {
-      yield put({type: LOGIN_FAILURE, payload: failureAction.payload})
+      yield put({type: failureType, payload: failureAction.payload})
     }
   } catch (error) {
     logError(error)
-    yield put({type: LOGIN_FAILURE, payload: error})
+    yield put({type: failureType, payload: error})
   }
 }
 
-function* callApiForLogout(logoutAction) {
-  try {
-    const apiPayload = {
-      endpoint: 'logout',
-      fetchInit: {
-        method: 'POST',
-      }
+const callApiForLogin = apiCaller({successType: LOGIN_SUCCESS, failureType: LOGIN_FAILURE}, action => ({
+  endpoint: 'login',
+  fetchInit: {
+    method: POST,
+    body: action.payload,
+  }
+}))
+
+const callApiForLogout = apiCaller({successType: LOGOUT_SUCCESS, failureType: LOGOUT_FAILURE}, {
+  endpoint: 'logout',
+  fetchInit: {
+    method: POST,
+  }
+})
+
+function* callApiForVote({type, payload: {target}}) {
+  const configure = () => {
+    switch (type) {
+      case VERIFY_JUSTIFICATION:
+        return {
+          targetType: VoteTargetType.JUSTIFICATION,
+          polarity: VotePolarity.POSITIVE,
+          method: POST,
+          successType: VERIFY_JUSTIFICATION_SUCCESS,
+          failureType: VERIFY_JUSTIFICATION_FAILURE,
+          failureToastText: 'Verification failed.',
+        }
+      case UN_VERIFY_JUSTIFICATION:
+        return {
+          targetType: VoteTargetType.JUSTIFICATION,
+          polarity: VotePolarity.POSITIVE,
+          method: DELETE,
+          successType: UN_VERIFY_JUSTIFICATION_SUCCESS,
+          failureType: UN_VERIFY_JUSTIFICATION_FAILURE,
+          failureToastText: 'Removing verification failed.',
+        }
+      case DISVERIFY_JUSTIFICATION:
+        return {
+          targetType: VoteTargetType.JUSTIFICATION,
+          polarity: VotePolarity.NEGATIVE,
+          method: POST,
+          successType: DISVERIFY_JUSTIFICATION_SUCCESS,
+          failureType: DISVERIFY_JUSTIFICATION_FAILURE,
+          failureToastText: 'Disverification failed.',
+        }
+      case UN_DISVERIFY_JUSTIFICATION:
+        return {
+          targetType: VoteTargetType.JUSTIFICATION,
+          polarity: VotePolarity.NEGATIVE,
+          method: DELETE,
+          successType: UN_DISVERIFY_JUSTIFICATION_SUCCESS,
+          failureType: UN_DISVERIFY_JUSTIFICATION_FAILURE,
+          failureToastText: 'Removing disverification failed.',
+        }
     }
-    yield put({type: CALL_API, payload: apiPayload})
-    const { successAction, failureAction } = yield race({
-      successAction: take(CALL_API_SUCCESS),
-      failureAction: take(CALL_API_FAILURE)
-    })
+  }
+
+  const {targetType, polarity, method, successType, failureType, failureToastText} = configure()
+  const meta = {originalTarget: target}
+
+  try {
+
+    const payload = {
+      endpoint: 'votes',
+      fetchInit: {
+        method,
+        body: {
+          targetType,
+          targetId: target.id,
+          polarity,
+        }
+      },
+      schema: voteSchema
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
     if (successAction) {
-      yield put({type: LOGOUT_SUCCESS, payload: successAction.payload})
+      yield put({type: successType, payload: successAction.payload, meta})
     } else {
-      yield put({type: LOGOUT_FAILURE, payload: failureAction.payload})
+      yield put({type: failureType, payload: failureAction.payload, meta})
+      yield put({type: ADD_TOAST, payload: { text: failureToastText}})
     }
   } catch (error) {
     logError(error)
-    yield put({type: LOGOUT_FAILURE, payload: error})
+    yield put({type: failureType, payload: error, meta})
+  }
+}
+
+function* callApiForVerifyJustification(action) {
+  const justification = action.payload.target
+  try {
+    const payload = {
+      endpoint: `justifications/${justification.id}/verifications`,
+      fetchInit: {
+        method: POST,
+      }
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
+    if (successAction) {
+      yield put({type: VERIFY_JUSTIFICATION_SUCCESS, payload: successAction.payload})
+    } else {
+      yield put({type: VERIFY_JUSTIFICATION_FAILURE, payload: failureAction.payload, meta: {originalTarget: justification}})
+      yield put({type: ADD_TOAST, payload: { text: `Verification failed.`}})
+    }
+  } catch (error) {
+    logError(error)
+    yield put({type: VERIFY_JUSTIFICATION_FAILURE, payload: error, meta: {originalTarget: justification}})
   }
 }
 
@@ -187,6 +271,19 @@ function* watchFetchResources() {
     FETCH_STATEMENTS,
     FETCH_STATEMENT_JUSTIFICATIONS,
   ], callApiForResource)
+}
+
+function* recordRehydrate() {
+  isRehydrated = true
+}
+
+function* watchVotes() {
+  yield takeEvery([
+      VERIFY_JUSTIFICATION,
+      UN_VERIFY_JUSTIFICATION,
+      DISVERIFY_JUSTIFICATION,
+      UN_DISVERIFY_JUSTIFICATION,
+  ], callApiForVote)
 }
 
 function* watchLogin() {
@@ -205,10 +302,16 @@ function* watchCallApi() {
   yield takeEvery(CALL_API, callApi)
 }
 
+function* watchRehydrate() {
+  yield takeEvery(REHYDRATE, recordRehydrate)
+}
+
 export default () => [
   watchLogin(),
   watchLoginSuccess(),
   watchLogout(),
   watchFetchResources(),
   watchCallApi(),
+  watchVotes(),
+  watchRehydrate(),
 ]

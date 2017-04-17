@@ -16,7 +16,7 @@
     "invalidate": "cross-env NODE_ENV=production DEBUG=* node bin/create-invalidation.js",
     "upload": "cross-env NODE_ENV=production DEBUG=* node bin/upload-to-s3.js",
     "deploy": "yarn run build:prod && cp src/error.html dist/ && yarn run upload && yarn run invalidate",
-    "test": "cross-env NODE_ENV=test jest",
+    "test": "cross-env NODE_ENV=test jest --config .jestrc",
     "test-dns": "dig +recurse +trace www.premiser.co any"
   },
   "devDependencies": {
@@ -73,8 +73,5 @@
     "redux-actions": "^2.0.1",
     "redux-persist": "^4.6.0",
     "redux-saga": "^0.14.3"
-  },
-  "jest": {
-    "testRegex": "(/src/.*\\.test\\.js)$"
   }
 }

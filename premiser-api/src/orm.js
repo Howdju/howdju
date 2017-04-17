@@ -19,6 +19,7 @@ const toJustification = (j, urlsByJustificationId, counterJustificationsByJustif
 
   let justification = {
     id: j.justification_id,
+    rootStatementId: j.root_statement_id,
     target: {
       type: j.target_type,
       entity: {
@@ -33,6 +34,12 @@ const toJustification = (j, urlsByJustificationId, counterJustificationsByJustif
     },
     polarity: j.polarity,
     score: j.score,
+    vote: j.vote_id && toVote({
+      vote_id: j.vote_id,
+      polarity: j.vote_polarity,
+      target_type: j.vote_target_type,
+      target_id: j.vote_target_id,
+    })
   }
 
   if (j.basis_statement_text) {
@@ -62,7 +69,17 @@ const toJustification = (j, urlsByJustificationId, counterJustificationsByJustif
   return justification
 }
 
+const toVote = row => {
+  return {
+    id: row.vote_id,
+    polarity: row.polarity,
+    targetType: row.target_type,
+    targetId: row.target_id,
+  }
+}
+
 module.exports = {
   toStatement,
   toJustification,
+  toVote,
 }

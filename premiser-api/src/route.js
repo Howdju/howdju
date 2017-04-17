@@ -1,13 +1,27 @@
 const Promise = require('bluebird')
 const merge = require('lodash/merge')
 
-const {statements, statementJustifications, login, logout, createUser} = require('./service')
+const {
+  statements,
+  statementJustifications,
+  login,
+  logout,
+  createUser,
+  vote,
+  unvote,
+} = require('./service')
+const {logger} = require('./logger')
 
 const ok = ({callback, body={}, headers}) => callback({
   status: 'ok',
   headers,
   body
 })
+// NO CONTENT must not have a body. https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204
+const noContent = ({callback, body}) => {
+  if (body) logger.error('noContent may not return a body.  Ignoring body')
+  return callback({status: 'noContent'})
+}
 const notImplemented = callback => callback({
   status: 'error',
   body: {message: 'not implemented'}
@@ -15,6 +29,10 @@ const notImplemented = callback => callback({
 const notFound = ({callback, message='not found'}) => callback({
   status: 'notFound',
   body: {message}
+})
+const unauthorized = ({callback, message='unauthenticated'}) => callback({
+  status: 'unauthorized',
+  body: {message},
 })
 const forbidden = ({callback, message='forbidden'}) => callback({
   status: 'forbidden',
@@ -28,6 +46,7 @@ const badRequest = ({callback, message='bad request'}) => callback({
 const GET = 'GET'
 const POST = 'POST'
 const PUT = 'PUT'
+const DELETE = 'DELETE'
 const OPTIONS = 'OPTIONS'
 
 const routes = [
@@ -55,9 +74,18 @@ const routes = [
     handler: notImplemented
   },
   {
+    id: 'getStatement',
     path: new RegExp('^statements/([^/]+)$'),
-    method: 'GET',
-    handler: ({callback, request: {pathParameters: [statementId]}}) => statementJustifications(statementId)
+    method: GET,
+    handler: ({
+                callback,
+                request: {
+                  pathParameters: [statementId],
+                  authToken,
+                  // TODO look at justifications query param
+                  queryStringParameters
+                }
+    }) => statementJustifications({statementId, authToken})
         .then(({statement, justifications}) => {
           if (!statement) {
             return notFound({callback})
@@ -88,14 +116,42 @@ const routes = [
   {
     path: 'logout',
     method: POST,
-    handler: ({callback, request: authenticationToken}) => logout({authenticationToken})
+    handler: ({callback, request: {authToken}}) => logout({authToken})
         .then( () => ok({callback}) )
+  },
+  {
+    path: new RegExp('^votes$'),
+    method: POST,
+    handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
+        vote({authToken, targetType, targetId, polarity})
+            .then( ({isUnauthenticated, isAlreadyDone, vote}) => {
+              if (isUnauthenticated) {
+                return unauthorized({callback, message})
+              } else if (isAlreadyDone) {
+                return ok({callback, body: vote})
+              }
+              return ok({callback, body: vote})
+            })
+  },
+  {
+    path: new RegExp('^votes$'),
+    method: DELETE,
+    handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
+        unvote({authToken, targetType, targetId, polarity})
+            .then( ({message, isUnauthenticated, isAlreadyDone}) => {
+              if (isUnauthenticated) {
+                return unauthorized({callback, message})
+              } else if (isAlreadyDone) {
+                return noContent({callback})
+              }
+              return ok({callback, message})
+            })
   },
   {
     path: 'users',
     method: POST,
-    handler: ({callback, request: {body: {credentials: {email, password}, authenticationToken}}}) => createUser(body)
-        .then(({message, notAuthorized, user}) => {
+    handler: ({callback, request: {body: {credentials: {email, password}, authToken}}}) => createUser(body)
+        .then( ({message, notAuthorized, user}) => {
           if (notAuthorized) {
             return forbidden({callback, message})
           } else {
@@ -119,7 +175,8 @@ function selectRoute({path, method, queryStringParameters}) {
       return Promise.resolve({route})
     }
     if (route.path instanceof RegExp &&
-        (match = route.path.exec(path))
+        (match = route.path.exec(path)) &&
+        (!route.method || route.method === method)
     ) {
       // First item is the whole match
       const pathParameters = match.slice(1)
@@ -130,9 +187,17 @@ function selectRoute({path, method, queryStringParameters}) {
   return Promise.resolve({route: null})
 }
 
-exports.routeEvent = ({callback, request}) =>
+const routeEvent = ({callback, request}) =>
   selectRoute(request)
-      .then( ({route, pathParameters}) => route ?
-          route.handler({callback, request: merge({}, request, {pathParameters})}) :
-          notFound({callback})
-      )
+      .then( ({route, pathParameters}) => {
+        if (!route) {
+          console.log(`No route for ${request.method} ${request.path}`)
+          return notFound({callback})
+        }
+        return route.handler({callback, request: merge({}, request, {pathParameters})})
+      })
+
+module.exports = {
+  routes,
+  routeEvent
+}

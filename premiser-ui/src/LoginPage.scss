@@ -1,6 +1,11 @@
 
-#loginPage .md-password-btn {
-  // Don't give users the option of showing their password.  1) I don't htink that's a good idea.  2) The React-MD icon is confusing
-  // because it starts out with the eye not having the cross, suggesting to me that the password is visible.
-  display: none;
+#loginPage  {
+  .md-password-btn {
+    // Don't give users the option of showing their password.  1) I don't htink that's a good idea.  2) The React-MD icon is confusing
+    // because it starts out with the eye not having the cross, suggesting to me that the password is visible.
+    display: none;
+  }
+  button[type="submit"] {
+    margin-top: 15px;
+  }
 }

@@ -7,6 +7,10 @@
 @import './colors.scss';
 $md-primary-color: $primary-color;
 $md-secondary-color: $secondary-color;
+// TODO figure these out to remove warnings during build
+//$md-data-table-contextual-fallback-color: $md-blue-grey-900;
+//$md-linear-progress-fallback-color: $md-red-800;
+//$md-switch-ball-fallback-color: $md-indigo-900;
 @include react-md-everything;
 
 @import './flatui-colors.scss';
@@ -27,7 +31,11 @@ time, mark, audio, video {
   font-family: 'Lato', sans-serif;
   //font-family: 'Source Sans Pro', sans-serif;
   font-weight: 300;
-  color: darken($midnight-blue, 15%); // rgb(19, 27, 35);
+  color: darken($midnight-blue, 15%);
+}
+
+#webpack-hot-middleware-clientOverlay * {
+  color: $clouds;
 }
 
 body {

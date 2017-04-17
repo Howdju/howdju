@@ -11,7 +11,12 @@ const runSequence = require('run-sequence')
 gulp.task('clean', next => del('./dist', next))
 
 gulp.task('js', () =>
-    gulp.src('src/**/*.js')
+    gulp.src([
+      'src/**/*.js',
+      '!src/**/*.test.js',
+      '!src/config/config.*.js',
+      'src/config/config.production.js'
+    ])
       .pipe(gulp.dest('dist/')))
 
 gulp.task('npm', () =>

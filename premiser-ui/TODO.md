@@ -1,8 +1,6 @@
 # Howdju UI TODO
 ## MVP
 * Style StatementJustifications page
-  * style positive/negative!
-  * Style agreement/validation
 
   * Drilling down
     * link to own statement page
@@ -47,6 +45,7 @@
 * Error reporting
   * feedback mechanism
 * Statement example: height of the capitol building limit DC
+* https://github.com/mattkrick/redux-optimistic-ui
 ## 
 * Time travel to see what libraries made app large
   * Figure out how to minimize lodash import

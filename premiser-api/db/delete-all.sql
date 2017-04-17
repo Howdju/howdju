@@ -4,7 +4,6 @@ delete from citations;
 delete from group_permissions;
 delete from groups;
 delete from justification_scores;
-delete from justification_votes;
 delete from justifications;
 delete from permissions;
 delete from reference_urls;
@@ -17,6 +16,6 @@ delete from urls;
 delete from user_groups;
 delete from user_permissions;
 delete from users;
-delete from tagging_votes;
+delete from votes;
 
 -- alter sequence the_sequence restart;

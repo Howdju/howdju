@@ -62,12 +62,12 @@ const mapStateToProps = (state) => {
   const {
     auth: {
       email,
-      authenticationToken,
+      authToken,
     }
   } = state
   return {
     email,
-    authenticationToken,
+    authToken,
   }
 }
 

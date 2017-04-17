@@ -1,128 +1,29 @@
+import React, {Component} from "react";
+import {connect} from "react-redux";
+import {denormalize} from "normalizr";
+import DocumentTitle from "react-document-title";
+import Divider from "react-md/lib/Dividers";
+import Card from "react-md/lib/Cards/Card";
+import FontIcon from "react-md/lib/FontIcons";
+import CircularProgress from "react-md/lib/Progress/CircularProgress";
+import MenuButton from "react-md/lib/Menus/MenuButton";
+import ListItem from "react-md/lib/Lists/ListItem";
+import Positions from "react-md/lib/Menus/Positions";
+import groupBy from "lodash/groupBy";
+import sortBy from "lodash/sortBy";
+import toNumber from "lodash/toNumber";
+import isFinite from "lodash/isFinite";
+import forEach from 'lodash/forEach';
+import some from 'lodash/some'
 import classNames from 'classnames'
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { denormalize } from 'normalizr'
-import DocumentTitle from 'react-document-title'
-import Divider from 'react-md/lib/Dividers'
-import Card from 'react-md/lib/Cards/Card'
-import CardActions from 'react-md/lib/Cards/CardActions'
-import CardTitle from 'react-md/lib/Cards/CardTitle'
-import Button from 'react-md/lib/Buttons'
-import FontIcon from 'react-md/lib/FontIcons'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import MenuButton from 'react-md/lib/Menus/MenuButton'
-import ListItem from 'react-md/lib/Lists/ListItem'
-import Positions from 'react-md/lib/Menus/Positions'
-import groupBy from 'lodash/groupBy'
-import filter from 'lodash/filter'
-import sortBy from 'lodash/sortBy'
-import toNumber from 'lodash/toNumber'
-import isFinite from 'lodash/isFinite'
 
 
-import {extractDomain, logError} from './util'
-import { JustificationTargetType, JustificationPolarity, JustificationBasisType} from './models'
-import './StatementJustificationsPage.scss'
-import {acceptJustification, rejectJustification, fetchStatementJustifications} from "./actions"
-import {statementSchema, justificationSchema} from "./schemas"
-
-class CounterJustifications extends Component {
-  render() {
-    const {counterJustifications} = this.props
-    if (counterJustifications && counterJustifications.length > 0) {
-      return (
-          <div className="counterJustifications">
-            {counterJustifications.map(j => <Justification key={j.id} withCounterJustifications justification={j} />)}
-          </div>
-      )
-    }
-    return null
-  }
-}
-
-class Justification extends Component {
-  constructor() {
-    super()
-    this.state = {isOver: false}
-    this.onCardMouseOver = this.onCardMouseOver.bind(this)
-    this.onCardMouseLeave = this.onCardMouseLeave.bind(this)
-  }
-
-  onCardMouseOver() {
-    this.setState({isOver: true})
-  }
-
-  onCardMouseLeave() {
-    this.setState({isOver: false})
-  }
-
-  render() {
-    const {justification, withCounterJustifications} = this.props
-    const isPositive = justification.polarity === JustificationPolarity.POSITIVE
-    const isNegative = justification.polarity === JustificationPolarity.NEGATIVE
-    const {isOver} = this.state
-    const justificationClasses = classNames({
-      justification: true,
-      positive: isPositive,
-      negative: isNegative
-    })
-    const justificationTextClasses = classNames({
-      justificationText: true,
-      quote: justification.basis.type === JustificationBasisType.REFERENCE,
-    })
-    const text = justification.basis.type === JustificationBasisType.STATEMENT ? justification.basis.entity.text : justification.basis.entity.quote
-    const menu = (
-        <MenuButton
-            icon
-            id={`justification-${justification.id}-context-menu`}
-            buttonChildren={isOver ? 'more_vert' : 'empty'}
-            position={Positions.TOP_RIGHT}
-        >
-          <ListItem primaryText="Counter" leftIcon={<FontIcon>reply</FontIcon>} />
-          <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
-          <Divider />
-          <ListItem primaryText="Edit" leftIcon={<FontIcon>create</FontIcon>} />
-          <ListItem primaryText="Delete" leftIcon={<FontIcon>delete</FontIcon>} />
-        </MenuButton>
-    )
-    return (
-        <div className={justificationClasses}>
-          <Card className="card"
-                onMouseOver={this.onCardMouseOver}
-                onMouseLeave={this.onCardMouseLeave}
-          >
-
-            <div className="md-grid">
-              <div className="md-cell md-cell--11">
-
-                <div>
-                  <div className={justificationTextClasses}>
-                    <span>{text}</span>
-                  </div>
-                  {justification.basis.type === JustificationBasisType.REFERENCE &&
-                    <ul>
-                      {justification.basis.entity.urls.map(u => <a key={u.id} href={u.url}>{extractDomain(u.url)}</a>)}
-                    </ul>
-                  }
-                </div>
-
-              </div>
-              <div className="md-cell md-cell--1 md-cell--right">
-                {menu}
-              </div>
-            </div>
-
-            <CardActions className="actions">
-              <Button icon title="Confirm this justification">thumb_up</Button>
-              <Button icon title="Dis-confirm this justification">thumb_down</Button>
-              <Button icon className={classNames({hidden: !isOver})} title="Counter this justification">reply</Button>
-            </CardActions>
-          </Card>
-          {withCounterJustifications && <CounterJustifications counterJustifications={justification.counterJustifications} />}
-        </div>
-    )
-  }
-}
+import {logError} from "./util";
+import {isVerified, isDisverified, JustificationPolarity} from "./models";
+import "./StatementJustificationsPage.scss";
+import {acceptJustification, fetchStatementJustifications, rejectJustification} from "./actions";
+import {justificationSchema, statementSchema} from "./schemas";
+import Justification from './Justification'
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -149,8 +50,14 @@ class StatementJustificationsPage extends Component {
       statement,
       hasJustifications,
       justificationsByPolarity,
-      isFetching
+      isFetching,
+      hasAgreement,
+      hasDisagreement,
     } = this.props
+    const statementCardClassNames = classNames({
+      agreement: hasAgreement,
+      disagreement: hasDisagreement,
+    })
     const menu = (
         <MenuButton
             icon
@@ -173,7 +80,7 @@ class StatementJustificationsPage extends Component {
 
                 <div className="statement">
 
-                  <Card
+                  <Card className={statementCardClassNames}
                       onMouseOver={this.onStatementMouseOver}
                       onMouseLeave={this.onStatementMouseLeave}
                   >
@@ -233,6 +140,15 @@ class StatementJustificationsPage extends Component {
   }
 }
 
+const sortJustifications = justifications => {
+  justifications = sortBy(justifications, j => j.score)
+  justifications = sortBy(justifications, j => isDisverified(j) ? 1 : isVerified(j) ? -1 : 0)
+  forEach(justifications, j => {
+    j.counterJustifications = sortJustifications(j.counterJustifications)
+  })
+  return justifications
+}
+
 const mapStateToProps = (state, ownProps) => {
   const statementId = toNumber(ownProps.match.params.statementId)
   if (!statementId) {
@@ -251,31 +167,21 @@ const mapStateToProps = (state, ownProps) => {
     return {}
   }
 
-  const justifiesStatement = j =>
-    j.target.type === JustificationTargetType.STATEMENT &&
-    j.target.entity.id === statementId
+  let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
+  justifications = sortJustifications(justifications)
 
-  // TODO this may get inefficient; we should probably store the justifications by statement ID somewhere in the state
-  let justifications = filter(state.entities.justifications, justifiesStatement)
-  justifications = sortBy(justifications, j => j.score)
   const hasJustifications = justifications.length > 0
   const justificationsByPolarity = groupBy(justifications, j => j.polarity)
-  const statementJustifications = {
-    statement,
-    justificationsByPolarity,
-  }
-  const denormalizedStatementJustifications = denormalize(statementJustifications, {
-    statement: statementSchema,
-    justificationsByPolarity: {
-      [JustificationPolarity.POSITIVE]: [justificationSchema],
-      [JustificationPolarity.NEGATIVE]: [justificationSchema],
-    }
-  }, state.entities)
+  const hasAgreement = some(justificationsByPolarity[JustificationPolarity.POSITIVE], isVerified)
+  const hasDisagreement = some(justificationsByPolarity[JustificationPolarity.NEGATIVE], isVerified)
   return {
+    statement: denormalize(statement, statementSchema, state.entities),
+    justificationsByPolarity,
     isFetching,
     errorMessage,
+    hasAgreement,
+    hasDisagreement,
     hasJustifications,
-    ...denormalizedStatementJustifications,
   }
 }
 
