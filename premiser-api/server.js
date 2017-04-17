@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const path = require('path')
 
 const handler = require('./src/index').handler
+const {logger} = require('./src/logger')
 
 const app = express()
 
@@ -28,6 +29,7 @@ app.use('/api/*', function (req, res) {
 
   const callback = (error, response) => {
     if (error) {
+      logger.error(error)
       res.status(500)
       res.send(error)
       return

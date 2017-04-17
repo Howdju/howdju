@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { Route, IndexRoute } from 'react-router'
 import { Link } from 'react-router-dom'
 
-import { BrowserRouter as Router } from 'react-router-dom'
+import { ConnectedRouter } from 'react-router-redux'
 import DocumentTitle from 'react-document-title'
 import Button from 'react-md/lib/Buttons/Button'
 import Drawer from 'react-md/lib/Drawers/Drawer';
@@ -18,6 +18,7 @@ import ToolsPage from './ToolsPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
 import {dismissToast, hideNavDrawer, logout, setNavDrawerVisibility} from "./actions";
+import {history} from './configureStore'
 
 const IconPage = props => (
     <DocumentTitle title={'Icons - Howdju'}>
@@ -56,6 +57,11 @@ const IconPage = props => (
     </DocumentTitle>
 )
 
+export const paths = {
+  home: '/',
+  login: '/login',
+}
+
 class App extends Component {
 
   constructor() {
@@ -85,6 +91,7 @@ class App extends Component {
   render () {
     const navDrawer = (
         <Drawer
+            id="appNavDrawer"
             position="right"
             type={Drawer.DrawerTypes.TEMPORARY}
             header={
@@ -93,15 +100,18 @@ class App extends Component {
                   className="md-divider-border md-divider-border--bottom"
               >
                 {this.props.authToken &&
-                <div>
-                  <div>You are logged in as {this.props.authEmail}</div>
-                  <Button raised label="Logout" onClick={this.handleLogout} />
-                </div>
+                  <div className="md-grid">
+                    <div className="md-cell md-cell--12">
+                      You are logged in as <b>{this.props.authEmail}</b>
+                    </div>
+                  </div>
                 }
               </Toolbar>
             }
             navItems={[
-              <ListItem key="login" primaryText="Login" component={Link} to="/login" />,
+              this.props.authToken ?
+                  <ListItem key="logout" primaryText="Logout" onClick={this.handleLogout} /> :
+                  <ListItem key="login" primaryText="Login" component={Link} to="/login" />,
               <ListItem key="tools" primaryText="Tools" component={Link} to="/tools" />
             ]}
             visible={this.props.isNavDrawerVisible}
@@ -110,7 +120,7 @@ class App extends Component {
         />)
     return (
       <DocumentTitle title="Howdju">
-        <Router>
+        <ConnectedRouter history={history}>
           <div id="app">
 
             <Header/>
@@ -119,8 +129,8 @@ class App extends Component {
 
             <div id="page" className="md-toolbar-relative">
 
-              <Route exact path="/" component={HomePage} />
-              <Route path="/login" component={LoginPage} />
+              <Route exact path={paths.home} component={HomePage} />
+              <Route path={paths.login} component={LoginPage} />
               <Route path="/tools" component={ToolsPage} />
               <Route path="/icons" component={IconPage} />
               <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsPage} />
@@ -130,7 +140,7 @@ class App extends Component {
             <Snackbar toasts={this.props.toasts} onDismiss={this.onSnackbarDismiss} />
 
           </div>
-        </Router>
+        </ConnectedRouter>
       </DocumentTitle>
     )
   }

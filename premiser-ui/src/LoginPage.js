@@ -5,6 +5,8 @@ import clone from 'lodash/clone'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
 import Paper from 'react-md/lib/Papers/Paper';
+import merge from 'lodash/merge'
+import classNames from 'classnames'
 
 
 import {login, loginCredentialChange} from './actions'
@@ -38,9 +40,22 @@ class LoginPage extends Component {
 
                 <Paper zDepth={2}>
                   <div className="md-grid">
+                    <div className={classNames({
+                      'md-cell': true,
+                       'md-cell--12': true,
+                       hidden: !this.props.loginRedirectLocation,
+                    })}>
+                      <h4>Please login to continue</h4>
+                    </div>
+                    <div className={classNames({
+                      'md-cell': true,
+                      'md-cell--12': true,
+                      hidden: !this.props.errorMessage,
+                    })}>
+                      <div className="errorMessage">{this.props.errorMessage}</div>
+                    </div>
                     <div className="md-cell md-cell--12">
 
-                      <div className="errorMessage">{this.props.errorMessage}</div>
                       <form onSubmit={this.handleSubmit}>
                           <TextField
                               id="loginEmail"
@@ -75,7 +90,9 @@ class LoginPage extends Component {
   }
 }
 
-const mapStateToProps = state => clone(state.ui.loginPage)
+const mapStateToProps = state => {
+  return merge(clone(state.ui.loginPage), {loginRedirectLocation: state.app.loginRedirectLocation})
+}
 
 export default connect(mapStateToProps, {
   login,

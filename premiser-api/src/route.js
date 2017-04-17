@@ -126,7 +126,7 @@ const routes = [
         vote({authToken, targetType, targetId, polarity})
             .then( ({isUnauthenticated, isAlreadyDone, vote}) => {
               if (isUnauthenticated) {
-                return unauthorized({callback, message})
+                return unauthorized({callback})
               } else if (isAlreadyDone) {
                 return ok({callback, body: vote})
               }
@@ -138,13 +138,13 @@ const routes = [
     method: DELETE,
     handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
         unvote({authToken, targetType, targetId, polarity})
-            .then( ({message, isUnauthenticated, isAlreadyDone}) => {
+            .then( ({isUnauthenticated, isAlreadyDone}) => {
               if (isUnauthenticated) {
                 return unauthorized({callback, message})
               } else if (isAlreadyDone) {
                 return noContent({callback})
               }
-              return ok({callback, message})
+              return ok({callback})
             })
   },
   {

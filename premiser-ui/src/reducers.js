@@ -1,8 +1,11 @@
 import { combineReducers } from 'redux'
+import { routerReducer } from 'react-router-redux'
 import merge from 'lodash/merge'
 import groupBy from 'lodash/groupBy'
 import map from 'lodash/map'
+import {LOCATION_CHANGE} from 'react-router-redux'
 import {VotePolarity, VoteTargetType} from './models'
+import {paths} from './App'
 
 import {
   FETCH_STATEMENTS_SUCCESS,
@@ -13,7 +16,7 @@ import {
   TOGGLE_NAV_DRAWER_VISIBILITY, SET_NAV_DRAWER_VISIBILITY, ADD_TOAST, DISMISS_TOAST, FETCH_STATEMENT_JUSTIFICATIONS,
   VERIFY_JUSTIFICATION, VERIFY_JUSTIFICATION_SUCCESS, VERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION_FAILURE,
   DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
-  UN_DISVERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION_SUCCESS,
+  UN_DISVERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT,
 } from './actions'
 
 const indexJustificationsByRootStatementId = (justifications => {
@@ -108,18 +111,18 @@ const auth = (state = {}, action) => {
   return state
 }
 
-// const loginErrorMessage = (status) => {
-//   switch (status) {
-//     case 400:
-//       return 'Invalid credentials'
-//     case 403:
-//       return 'Incorrect password'
-//     case 404:
-//       return 'Email does not exist'
-//     default:
-//       return 'Unable to complete login at this time'
-//   }
-// }
+const loginErrorMessage = (status) => {
+  switch (status) {
+    case 400:
+      return 'Invalid credentials'
+    case 403:
+      return 'Incorrect password'
+    case 404:
+      return 'Email does not exist'
+    default:
+      return 'Unable to complete login at this time'
+  }
+}
 
 const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {email: '', password: ''}}, action) => {
   switch (action.type) {
@@ -128,7 +131,7 @@ const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {
     case LOGIN_SUCCESS:
       return merge({}, state, {isLoggingIn: false, credentials: {email: '', password: ''}})
     case LOGIN_FAILURE:
-      return merge({}, state, {isLoggingIn: false, errorMessage: action.payload.message})
+      return merge({}, state, {isLoggingIn: false, errorMessage: loginErrorMessage(action.payload.status)})
     case LOGIN_CREDENTIAL_CHANGE:
       return merge({}, state, {errorMessage: '', credentials: action.payload})
   }
@@ -170,6 +173,22 @@ const appUi = (state = {isNavDrawerVisible: false, toasts: []}, action) => {
   return state
 }
 
+const app = (state = { loginRedirectLocation: null }, action) => {
+  switch (action.type) {
+    case LOGIN_REDIRECT:
+      // When we redirect to the login page, store the previous location
+      return {...state, loginRedirectLocation: action.payload.routerLocation}
+    case LOCATION_CHANGE:
+      // If the user navigates anywhere other than the login page, clear any login redirection
+      if (action.payload.pathname !== paths.login) {
+        return {...state, loginRedirectLocation: null}
+      }
+      break;
+  }
+
+  return state
+}
+
 const ui = combineReducers({
   loginPage,
   statementJustificationsPage,
@@ -178,6 +197,8 @@ const ui = combineReducers({
 
 export default combineReducers({
   auth,
+  app,
   ui,
   entities,
+  router: routerReducer
 })

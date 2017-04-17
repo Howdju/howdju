@@ -32,6 +32,8 @@ export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
 export const LOGOUT_FAILURE = 'LOGOUT_FAILURE'
 export const logout = create2Action(LOGOUT)
 
+export const LOGIN_REDIRECT = 'LOGIN_REDIRECT'
+
 export const API_RESOURCE_ACTIONS = {
   [FETCH_STATEMENTS]: {
     SUCCESS: FETCH_STATEMENTS_SUCCESS,

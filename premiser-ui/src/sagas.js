@@ -3,6 +3,8 @@ import isFunction from 'lodash/isFunction'
 import merge from 'lodash/merge'
 import uuid from 'uuid'
 import {REHYDRATE} from 'redux-persist/constants'
+import {push} from 'react-router-redux'
+import {paths} from './App'
 
 import {
   API_RESOURCE_ACTIONS,
@@ -17,7 +19,7 @@ import {
   VERIFY_JUSTIFICATION_SUCCESS, VERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
   UN_DISVERIFY_JUSTIFICATION, UN_VERIFY_JUSTIFICATION_SUCCESS, UN_VERIFY_JUSTIFICATION_FAILURE,
   DISVERIFY_JUSTIFICATION_SUCCESS, DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE,
-  UN_DISVERIFY_JUSTIFICATION_SUCCESS
+  UN_DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError} from './util'
@@ -26,10 +28,14 @@ import {VotePolarity, VoteTargetType} from "./models";
 
 const POST = 'POST'
 const DELETE = 'DELETE'
+const UNAUTHORIZED = 401
 
 const getAuthToken = state => {
   return state.auth.authToken
 }
+
+const getRouterLocation = state => state.router.location
+const getLoginRedirectLocation = state => state.app.loginRedirectLocation
 
 let isRehydrated = false
 
@@ -261,9 +267,22 @@ function* callApiForVerifyJustification(action) {
   }
 }
 
+function* onCallApiFailure(action) {
+  if (action.payload.status === UNAUTHORIZED) {
+    const routerLocation = yield select(getRouterLocation)
+    yield put({type: LOGIN_REDIRECT, payload: {routerLocation}})
+  }
+}
+
+function* onLoginRedirect(action) {
+  yield put(push(paths.login))
+}
+
 function* onLoginSuccess(action) {
   yield put({type: ADD_TOAST, payload: { text: `You have logged in as ${action.payload.email}`}})
-  //  TODO navigate to previous page?
+  const loginRedirectLocation = yield select(getLoginRedirectLocation)
+  const location = loginRedirectLocation || paths.home
+  yield put(push(location))
 }
 
 function* watchFetchResources() {
@@ -302,6 +321,14 @@ function* watchCallApi() {
   yield takeEvery(CALL_API, callApi)
 }
 
+function* watchCallApiFailure() {
+  yield takeEvery(CALL_API_FAILURE, onCallApiFailure)
+}
+
+function* watchLoginRedirect() {
+  yield takeEvery(LOGIN_REDIRECT, onLoginRedirect)
+}
+
 function* watchRehydrate() {
   yield takeEvery(REHYDRATE, recordRehydrate)
 }
@@ -312,6 +339,8 @@ export default () => [
   watchLogout(),
   watchFetchResources(),
   watchCallApi(),
+  watchCallApiFailure(),
+  watchLoginRedirect(),
   watchVotes(),
   watchRehydrate(),
 ]

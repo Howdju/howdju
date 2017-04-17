@@ -7,6 +7,7 @@
 @import './colors.scss';
 $md-primary-color: $primary-color;
 $md-secondary-color: $secondary-color;
+$md-text-field-error-color: $pomegranate;
 // TODO figure these out to remove warnings during build
 //$md-data-table-contextual-fallback-color: $md-blue-grey-900;
 //$md-linear-progress-fallback-color: $md-red-800;
@@ -34,8 +35,16 @@ time, mark, audio, video {
   color: darken($midnight-blue, 15%);
 }
 
+b {
+  font-weight: 400;
+}
+
 #webpack-hot-middleware-clientOverlay * {
   color: $clouds;
+}
+
+.errorMessage {
+  color: $md-text-field-error-color;
 }
 
 body {
@@ -46,4 +55,12 @@ body {
   display: none;
 }
 
-//$md-text-field-error-color
+#appNavDrawer {
+  width: min(400px, $md-drawer-desktop-width)
+
+  // TODO make this more like the left-nav rules
+  // The left nav drawer's rules are:
+  // On mobile devices, the width of the drawer will be calc(100vw - 56px) and a max width of 320px.
+  // On tablets and desktop screens, the width will be equal to the $md-drawer-tablet-width and $md-drawer-desktop-width but no more than 400px.
+
+}

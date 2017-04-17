@@ -8,7 +8,11 @@ const ToolsPage = props => {
   const submitUrl = `${schema}://${host}:${port}/api/${version}/submit-bookmarklet?`
   const href=`javascript:(function(){function enc(v){return window.encodeURIComponent(window.encodeURIComponent(v))} window.open('${submitUrl}'+'url='+enc(window.location)+'&amp;citationText='+document.title+'&amp;quote='+enc(window.getSelection()||document.getSelection&&document.getSelection()||document.selection&&document.selection.createRange().text)})();`
   return (
-      <a title="Submit to Howdju" href={href}>+Howdju</a>
+      <div className="md-grid">
+        <div className="md-cell md-cell--12">
+          <a title="Submit to Howdju" href={href}>+Howdju</a>
+        </div>
+      </div>
   )
 }
 

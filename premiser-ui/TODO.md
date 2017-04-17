@@ -1,7 +1,9 @@
 # Howdju UI TODO
 ## MVP
+* Animation
+  * https://facebook.github.io/react/docs/animation.html
+  * react-motion
 * Style StatementJustifications page
-
   * Drilling down
     * link to own statement page
     * show in-context
@@ -10,6 +12,8 @@
     * Weird layout error at 923/924px
 * Create statements/justifications
 * bookmarklet
+
+* flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
 
 * Theme/colors
 * CSS
@@ -20,9 +24,7 @@
 * Tap events
   * https://github.com/zilverline/react-tap-event-plugin
     * [Maybe not necessary?](https://www.reddit.com/r/reactjs/comments/4pe61k/why_do_we_need_reacttapeventplugin_in_our_projects/)
-* Animation
-  * https://facebook.github.io/react/docs/animation.html
-  * react-motion
+
 * UI Build
   * ensure that CSS goes to external sheet
   * ensure that google fonts go to external link?

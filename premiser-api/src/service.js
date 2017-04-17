@@ -170,7 +170,6 @@ exports.login = ({credentials}) => {
 exports.logout = ({authToken}) => query('delete from authentication_tokens where token = $1', [authToken])
 
 exports.vote = ({authToken, targetType, targetId, polarity}) => {
-  logger.silly('In vote!')
   if (!authToken) {
     logger.debug('Missing authentication token')
     return Promise.resolve({isUnauthenticated: true})
@@ -227,7 +226,6 @@ exports.vote = ({authToken, targetType, targetId, polarity}) => {
 }
 
 exports.unvote = ({authToken, targetType, targetId, polarity}) => {
-  logger.silly('In unvote!')
   if (!authToken) {
     logger.debug('Missing authentication token')
     return Promise.resolve({isUnauthenticated: true})
@@ -261,8 +259,6 @@ exports.unvote = ({authToken, targetType, targetId, polarity}) => {
       } else if (rows.length > 1) {
         logger.warn(`Deleted ${rows.length} votes at once!`, updateQueryArgs)
       }
-
-      return {message: 'Deleted vote'}
     })
   })
 }

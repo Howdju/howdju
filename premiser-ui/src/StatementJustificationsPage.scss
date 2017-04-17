@@ -12,13 +12,26 @@ $gradient-point: 25%;
     //background: -webkit-linear-gradient(bottom left, red, yellow);
     //background: -o-linear-gradient(top right, red, yellow);
     //background: -moz-linear-gradient(top right, red, yellow);
-    background: linear-gradient(to right, rgba($agreement, $gradient-start-opacity) 0%, rgba($agreement, 0) $gradient-point, rgba($agreement,0) 100%);
+    background: linear-gradient(to right,
+            rgba($agreement, $gradient-start-opacity) 0%,
+            rgba($agreement, 0) $gradient-point,
+            rgba($agreement,0) 100%
+    );
   }
   .disagreement {
-    background: linear-gradient(to left, rgba($disagreement, $gradient-start-opacity) 0%,rgba($disagreement,0) $gradient-point, rgba($disagreement, 0) 100%);
+    background: linear-gradient(to left,
+            rgba($disagreement, $gradient-start-opacity) 0%,
+            rgba($disagreement,0) $gradient-point,
+            rgba($disagreement, 0) 100%
+    );
   }
   .agreement.disagreement {
-    background: linear-gradient(to right, rgba($agreement, $gradient-start-opacity) 0%, rgba($agreement, 0) $gradient-point, rgba($disagreement, 0) 100% - $gradient-point, rgba($disagreement, $gradient-start-opacity) 100%);
+    background: linear-gradient(to right,
+            rgba($agreement, $gradient-start-opacity) 0%,
+            rgba($agreement, 0) $gradient-point,
+            rgba($disagreement, 0) 100% - $gradient-point,
+            rgba($disagreement, $gradient-start-opacity) 100%
+    );
   }
 }
 

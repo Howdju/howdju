@@ -1,23 +1,33 @@
 import { createStore, applyMiddleware, compose } from 'redux'
+import createHistory from 'history/createBrowserHistory'
+import { routerMiddleware } from 'react-router-redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
 import createSagaMiddleware from 'redux-saga'
 import rootReducer from './reducers';
 import getSagas from './sagas';
 
+export const history = createHistory()
+
 export default function configureStore(initialState) {
-  const sagaMiddleware = createSagaMiddleware()
   const compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+  const sagaMiddleware = createSagaMiddleware()
+
   const store = createStore(
       rootReducer,
       initialState,
       compose(
-          applyMiddleware(sagaMiddleware),
-          autoRehydrate()
+          autoRehydrate(),
+          applyMiddleware(
+              routerMiddleware(history),
+              sagaMiddleware
+          ),
       )
   )
+
   persistStore(store, {
     whitelist: ['auth']
   });
+
   let sagaTask = sagaMiddleware.run(function* () {
     yield getSagas()
   })

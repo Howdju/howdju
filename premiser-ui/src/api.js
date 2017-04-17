@@ -24,7 +24,10 @@ export function fetchJson(endpoint, {init = {}, schema}) {
       })
       .then(({ json, response }) => {
         if (!response.ok) {
-          return Promise.reject(json)
+          return Promise.reject({
+            status: response.status,
+            json
+          })
         }
 
         return schema ? normalize(json, schema) : json
