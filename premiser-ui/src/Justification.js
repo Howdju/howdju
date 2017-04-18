@@ -85,7 +85,7 @@ class Justification extends Component {
     )
     return (
         <div id={`justification-${justification.id}`} className={justificationClasses}>
-          <Card className="card"
+          <Card className="justificationCard"
                 onMouseOver={this.onCardMouseOver}
                 onMouseLeave={this.onCardMouseLeave}
           >

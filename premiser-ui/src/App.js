@@ -12,6 +12,7 @@ import Toolbar from 'react-md/lib/Toolbars';
 import { connect } from 'react-redux'
 
 import './App.scss'
+
 import Header from './Header'
 import HomePage from './HomePage'
 import ToolsPage from './ToolsPage'

@@ -1,6 +1,7 @@
 @import '~react-md/src/scss/react-md';
 @import './flatui-colors';
 @import './colors';
+@import './grid';
 
 $agreement: $emerald;
 $disagreement: $pomegranate;
@@ -23,6 +24,13 @@ $over-gradient-z-index: 10;
 
 .justificationContextMenu {
   float: right;
+}
+
+.statementCard, .justificationCard {
+  margin-bottom: $gutter;
+}
+.statementCard {
+  margin-top: $gutter;
 }
 
 .statement {
@@ -157,7 +165,6 @@ $over-gradient-z-index: 10;
 
   &.positivey {
 
-    /*background-color: #AFA;*/
     .actions {
       .md-icon {
         // When positivey, the icons look better flipped
@@ -178,24 +185,22 @@ $over-gradient-z-index: 10;
 
   &.negativey {
 
-    .card {
-      .actions {
-        direction: rtl;
+    .actions {
+      direction: rtl;
 
-        & > * {
-          left: 0;
+      & > * {
+        left: 0;
+        right: auto;
+
+        &.disverified.inactive {
+          left: $slide-size;
           right: auto;
+        }
 
-          &.disverified.inactive {
-            left: $slide-size;
-            right: auto;
-          }
-
-          &.hiding {
-            left: $slide-size;
-            right: auto;
-            opacity: 0;
-          }
+        &.hiding {
+          left: $slide-size;
+          right: auto;
+          opacity: 0;
         }
       }
     }
@@ -210,15 +215,4 @@ $over-gradient-z-index: 10;
       }
     }
   }
-
-  .card {
-    margin-bottom: 10px;
-  }
-}
-
-@media only screen and (max-width: 640px) {
-  /*.justification.positive, .justification.negative {*/
-    /*float: none;*/
-    /*width: 100%;*/
-  /*}*/
 }

@@ -17,10 +17,11 @@ import forEach from 'lodash/forEach';
 import some from 'lodash/some'
 import classNames from 'classnames'
 import FlipMove from 'react-flip-move';
+import config from './config';
 
 
 import {logError} from "./util";
-import {isVerified, isDisverified, JustificationPolarity} from "./models";
+import {isVerified, isDisverified, JustificationPolarity, isPositive, isNegative} from "./models";
 import "./StatementJustificationsPage.scss";
 import {acceptJustification, fetchStatementJustifications, rejectJustification} from "./actions";
 import {justificationSchema, statementSchema} from "./schemas";
@@ -32,6 +33,20 @@ class StatementJustificationsPage extends Component {
     this.state = {isOverStatement: false}
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
+    this.updateDimensions = this.updateDimensions.bind(this)
+  }
+
+  componentWillMount() {
+    this.props.fetchStatementJustifications(this.props.match.params.statementId)
+    this.updateDimensions();
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
   }
 
   onStatementMouseOver() {
@@ -42,19 +57,32 @@ class StatementJustificationsPage extends Component {
     this.setState({isOverStatement: false})
   }
 
-  componentWillMount() {
-    this.props.fetchStatementJustifications(this.props.match.params.statementId)
+  updateDimensions() {
+    this.setState({width: window.innerWidth, height: window.innerHeight});
   }
 
   render () {
     const {
       statement,
-      hasJustifications,
-      justificationsByPolarity,
+      justifications,
       isFetching,
-      hasAgreement,
-      hasDisagreement,
+      errorMessage,
     } = this.props
+
+    const {narrowBreakpoint, flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
+
+    const isNarrow = this.state.width <= narrowBreakpoint
+    const justificationsByPolarity =
+        !isNarrow && groupBy(justifications, j => j.polarity) ||
+        {
+          [JustificationPolarity.POSITIVE]: [],
+          [JustificationPolarity.NEGATIVE]: [],
+        }
+
+    const hasJustifications = justifications && justifications.length > 0
+    const hasAgreement = some(justifications, j => isVerified(j) && isPositive(j))
+    const hasDisagreement = some(justifications, j => isVerified(j) && isNegative(j))
+
     const statementCardClassNames = classNames({
       statementCard: true,
       agreement: hasAgreement,
@@ -74,12 +102,57 @@ class StatementJustificationsPage extends Component {
           <ListItem primaryText="Delete" leftIcon={<FontIcon>delete</FontIcon>} />
         </MenuButton>
     )
+    const twoColumnJustifications = [
+      <div key="positive-justifications" className="col-xs-6">
+
+        <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
+          {justificationsByPolarity[JustificationPolarity.POSITIVE] && justificationsByPolarity[JustificationPolarity.POSITIVE].map(j => (
+              <div className="row" key={j.id}>
+                <div className="col-xs-12">
+                  <Justification withCounterJustifications key={j.id} justification={j} positivey={true} />
+                </div>
+              </div>
+          ))}
+        </FlipMove>
+
+      </div>,
+      <div key="negative-justifications" className="col-xs-6">
+
+        <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
+          {justificationsByPolarity[JustificationPolarity.NEGATIVE] && justificationsByPolarity[JustificationPolarity.NEGATIVE].map(j => (
+              <div className="row" key={j.id}>
+                <div className="col-xs-12">
+                  <Justification withCounterJustifications key={j.id} justification={j} positivey={false} />
+                </div>
+              </div>
+          ))}
+        </FlipMove>
+
+      </div>
+    ]
+    const singleColumnJustifications = (
+      <div key="justifications" className="col-xs-12">
+
+        <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
+          {justifications.map(j => (
+              <div className="row" key={j.id}>
+                <div className="col-xs-12">
+                  <Justification withCounterJustifications justification={j} positivey={isPositive(j)} />
+                </div>
+              </div>
+          ))}
+        </FlipMove>
+
+      </div>
+    )
+    const justificationRows = isNarrow ? singleColumnJustifications : twoColumnJustifications
+
     return (
         <DocumentTitle title={`${statement ? statement.text : 'Loading statement'} - Howdju`}>
           <div className="statement-justifications">
 
-            <div className="md-grid">
-              <div className="md-cell md-cell--12">
+            <div className="row">
+              <div className="col-xs-12">
 
                 <div className="statement">
 
@@ -96,7 +169,7 @@ class StatementJustificationsPage extends Component {
                             statement.text :
                             isFetching ?
                                 <CircularProgress id="fetchingStatementProgress" /> :
-                                ''
+                                errorMessage
                         }
 
                       </div>
@@ -107,35 +180,18 @@ class StatementJustificationsPage extends Component {
                 </div>
 
               </div>
-                {hasJustifications ? (() => [
-                    <div key="positive-justifications" className="md-cell md-cell--6">
-
-                      <FlipMove duration={750} easing="ease-out">
-                        {justificationsByPolarity[JustificationPolarity.POSITIVE].map(j => (
-                            <Justification withCounterJustifications key={j.id} justification={j} positivey={true} />
-                        ))}
-                      </FlipMove>
-
-                    </div>,
-                    <div key="negative-justifications" className="md-cell md-cell--6">
-
-                      <FlipMove duration={750} easing="ease-out">
-                        {justificationsByPolarity[JustificationPolarity.NEGATIVE].map(j => (
-                            <Justification withCounterJustifications key={j.id} justification={j} positivey={false} />
-                        ))}
-                      </FlipMove>
-
-                    </div>
-                ])() :
-                  <div className="md-cell md-cell--12">
+            </div>
+            <div className="row">
+              {hasJustifications ?
+                  justificationRows :
+                  <div className="col-xs-12">
                     {isFetching ?
-                      // Only show progress if we are not also showing one for the statement
-                      !!statement && <CircularProgress id="fetchingJustificationsProgress"/> :
-                      'No justifications'
+                        // Only show progress if we are not also showing one for the statement
+                        !!statement && <CircularProgress id="fetchingJustificationsProgress"/> :
+                        'No justifications'
                     }
                   </div>
-                }
-
+              }
             </div>
 
           </div>
@@ -173,31 +229,19 @@ const mapStateToProps = (state, ownProps) => {
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
   justifications = sortJustifications(justifications)
-
-  const hasJustifications = justifications.length > 0
-  const justificationsByPolarity = groupBy(justifications, j => j.polarity)
-  const hasAgreement = some(justificationsByPolarity[JustificationPolarity.POSITIVE], isVerified)
-  const hasDisagreement = some(justificationsByPolarity[JustificationPolarity.NEGATIVE], isVerified)
   return {
     statement: denormalize(statement, statementSchema, state.entities),
-    justificationsByPolarity,
+    justifications,
     isFetching,
     errorMessage,
-    hasAgreement,
-    hasDisagreement,
-    hasJustifications,
   }
 }
 
 StatementJustificationsPage.defaultProps = {
   isFetching: false,
   errorMessage: '',
-  hasJustifications: false,
   statement: null,
-  justificationsByPolarity: {
-    [JustificationPolarity.POSITIVE]: [],
-    [JustificationPolarity.NEGATIVE]: [],
-  }
+  justifications: []
 }
 
 export default connect(mapStateToProps, {

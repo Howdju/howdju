@@ -1,10 +1,11 @@
 @import url('./reset.css');
+@import url('~flexboxgrid/dist/flexboxgrid.css');
 @import url('https://fonts.googleapis.com/css?family=Lato:300,400|Orbitron|Roboto:300,400,500|Source+Sans+Pro');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 //$md-font-name: Lato;
 @import '~react-md/src/scss/react-md';
-@import './colors.scss';
+@import './colors';
 $md-primary-color: $primary-color;
 $md-secondary-color: $secondary-color;
 $md-text-field-error-color: $pomegranate;
@@ -14,7 +15,9 @@ $md-text-field-error-color: $pomegranate;
 //$md-switch-ball-fallback-color: $md-indigo-900;
 @include react-md-everything;
 
-@import './flatui-colors.scss';
+@import './flatui-colors';
+@import './flexboxgrid';
+@import './grid';
 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -47,8 +50,8 @@ b {
   color: $md-text-field-error-color;
 }
 
-body {
-  font-size: 1.2rem;
+html {
+  font-size: 12pt;
 }
 
 .hidden {
@@ -63,4 +66,9 @@ body {
   // On mobile devices, the width of the drawer will be calc(100vw - 56px) and a max width of 320px.
   // On tablets and desktop screens, the width will be equal to the $md-drawer-tablet-width and $md-drawer-desktop-width but no more than 400px.
 
+}
+
+#page {
+  margin-left: $gutter;
+  margin-right: $gutter;
 }

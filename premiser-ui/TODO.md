@@ -1,27 +1,37 @@
 # Howdju UI TODO
 ## MVP
-* Style StatementJustifications page
-  * narrow screen
-    * Weird layout error at 923/924px
 * Create statements/justifications
+
+* tagging
+* Jobs (justification score)
+* Search
+* Home page tag cloud
+
 * bookmarklet
+
 
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
 
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
 * Error reporting
-  * feedback script; unhandled error reporting
+  * feedback script; 
+  * unhandled error reporting
 
-* Statement justification drilling down
-  * link to own statement page
-  * show in-context
-  * drill down, showing hierarchy of statements above
+
+* UX
+  * Statement justification drilling down
+    * link to own statement page
+    * show in-context
+    * drill down, showing hierarchy of statements above
+  * Get statement to stay in place and float above justifications? Or maybe collapse to something 
+    smaller, but that lets you see the statement still as you scroll.  maybe combine with header.
 * Theme/colors
 * CSS
   * React-MD recommends: https://github.com/postcss/autoprefixer
   * dppx
   * [vw/vh](https://www.w3.org/TR/css3-values/#viewport-relative-lengths)
   * https://github.com/jgranstrom/sass-extract-loader
+  * reset.css alternative? https://necolas.github.io/normalize.css/
 * Tap events
   * https://github.com/zilverline/react-tap-event-plugin
     * [Maybe not necessary?](https://www.reddit.com/r/reactjs/comments/4pe61k/why_do_we_need_reacttapeventplugin_in_our_projects/)
@@ -33,11 +43,6 @@
   * https://github.com/christianalfoni/formsy-react
   * https://github.com/vazco/uniforms
 
-* Add statements/justifications
-* tagging
-* Jobs (justification score)
-* Search
-* Home page tag cloud
 * Why do I have PostCSS in my project?
 ## 0.2
 * Change email, password, password reset
