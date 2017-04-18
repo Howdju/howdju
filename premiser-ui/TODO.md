@@ -17,7 +17,6 @@
   * feedback script; 
   * unhandled error reporting
 
-
 * UX
   * Statement justification drilling down
     * link to own statement page

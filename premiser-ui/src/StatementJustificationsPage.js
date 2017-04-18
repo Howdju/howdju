@@ -92,8 +92,9 @@ class StatementJustificationsPage extends Component {
         <MenuButton
             icon
             id={`statement-${statement && statement.id}-context-menu`}
-            menuClassName="statementContextMenu"
-            buttonChildren={this.state.isOverStatement ? 'more_vert' : 'empty'}
+            className={classNames({hiding: !this.state.isOverStatement})}
+            menuClassName="contextMenu statementContextMenu"
+            buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
         >
           <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />

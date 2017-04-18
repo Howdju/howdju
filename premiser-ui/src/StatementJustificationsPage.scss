@@ -33,6 +33,14 @@ $over-gradient-z-index: 10;
   margin-top: $gutter;
 }
 
+.contextMenu {
+  .hiding {
+    .md-icon {
+      display: none;
+    }
+  }
+}
+
 .statement {
   // Animate gradients with this trick:
   // https://medium.com/@dave_lunny/animating-css-gradients-using-only-css-d2fd7671e759

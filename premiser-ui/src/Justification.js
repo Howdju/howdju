@@ -72,8 +72,9 @@ class Justification extends Component {
         <MenuButton
             icon
             id={`justification-${justification.id}-context-menu`}
-            menuClassName="justificationContextMenu"
-            buttonChildren={isOver ? 'more_vert' : 'empty'}
+            className={classNames({hiding: !isOver})}
+            menuClassName="contextMenu justificationContextMenu"
+            buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
         >
           <ListItem primaryText="Counter" leftIcon={<FontIcon>reply</FontIcon>} />
