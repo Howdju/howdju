@@ -134,6 +134,12 @@ const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {
       return merge({}, state, {isLoggingIn: false, errorMessage: loginErrorMessage(action.payload.status)})
     case LOGIN_CREDENTIAL_CHANGE:
       return merge({}, state, {errorMessage: '', credentials: action.payload})
+    case LOCATION_CHANGE:
+      // If the user navigates anywhere other than the login page, clear any credentials
+      if (action.payload.pathname !== paths.login) {
+        return {...state, credentials: {email: '', password: ''}}
+      }
+      break;
   }
 
   return state

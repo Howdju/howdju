@@ -54,16 +54,14 @@ class Justification extends Component {
   }
 
   render() {
-    const {justification, withCounterJustifications} = this.props
-    const _isPositive = isPositive(justification)
-    const _isNegative = isNegative(justification)
+    const {justification, withCounterJustifications, positivey} = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
     const {isOver} = this.state
     const justificationClasses = classNames({
       justification: true,
-      positive: _isPositive,
-      negative: _isNegative
+      positivey: positivey,
+      negativey: !positivey,
     })
     const justificationTextClasses = classNames({
       justificationText: true,
@@ -74,6 +72,7 @@ class Justification extends Component {
         <MenuButton
             icon
             id={`justification-${justification.id}-context-menu`}
+            menuClassName="justificationContextMenu"
             buttonChildren={isOver ? 'more_vert' : 'empty'}
             position={Positions.TOP_RIGHT}
         >
@@ -92,9 +91,10 @@ class Justification extends Component {
           >
 
             <div className="md-grid">
-              <div className="md-cell md-cell--11">
+              <div className="md-cell md-cell--12">
 
                 <div>
+                  {menu}
                   <div className={justificationTextClasses}>
                     <span>{text}</span>
                   </div>
@@ -106,16 +106,14 @@ class Justification extends Component {
                 </div>
 
               </div>
-              <div className="md-cell md-cell--1 md-cell--right">
-                {menu}
-              </div>
             </div>
 
             <CardActions className="actions">
               <Button icon
                       className={classNames({
                         verified: _isVerified,
-                        hidden: _isDisverified && !isOver,
+                        inactive: !isOver,
+                        hiding: _isDisverified && !isOver,
                         otherSelected: _isDisverified,
                       })}
                       title="Verify this justification"
@@ -124,7 +122,8 @@ class Justification extends Component {
               <Button icon
                       className={classNames({
                         disverified: _isDisverified,
-                        hidden: _isVerified && !isOver,
+                        inactive: !isOver,
+                        hiding: _isVerified && !isOver,
                         otherSelected: _isVerified,
                       })}
                       title="Dis-verify this justification"
@@ -132,14 +131,15 @@ class Justification extends Component {
               >thumb_down</Button>
               <Button icon
                       className={classNames({
-                        hidden: !isOver,
+                        hiding: !isOver,
                         otherSelected: _isVerified || _isDisverified,
                       })}
                       title="Counter this justification"
               >reply</Button>
             </CardActions>
           </Card>
-          {withCounterJustifications && <CounterJustifications counterJustifications={justification.counterJustifications} />}
+          {withCounterJustifications &&
+            <CounterJustifications counterJustifications={justification.counterJustifications} positivey={!positivey} />}
         </div>
     )
   }

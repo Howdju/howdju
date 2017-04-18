@@ -1,13 +1,6 @@
 # Howdju UI TODO
 ## MVP
-* Animation
-  * https://facebook.github.io/react/docs/animation.html
-  * react-motion
 * Style StatementJustifications page
-  * Drilling down
-    * link to own statement page
-    * show in-context
-    * drill down, showing hierarchy of statements above
   * narrow screen
     * Weird layout error at 923/924px
 * Create statements/justifications
@@ -15,6 +8,14 @@
 
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
 
+* Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
+* Error reporting
+  * feedback script; unhandled error reporting
+
+* Statement justification drilling down
+  * link to own statement page
+  * show in-context
+  * drill down, showing hierarchy of statements above
 * Theme/colors
 * CSS
   * React-MD recommends: https://github.com/postcss/autoprefixer
@@ -31,10 +32,7 @@
 * [Form validation](http://redux-form.com/6.6.2/)
   * https://github.com/christianalfoni/formsy-react
   * https://github.com/vazco/uniforms
-* Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
 
-* Accept/reject justifications
-* redirect to previous page upon login
 * Add statements/justifications
 * tagging
 * Jobs (justification score)
@@ -44,15 +42,12 @@
 ## 0.2
 * Change email, password, password reset
 * Loading flags (vs. just empty return from API)
-* Error reporting
-  * feedback mechanism
 * Statement example: height of the capitol building limit DC
-* https://github.com/mattkrick/redux-optimistic-ui
-## 
+
+##
+ * https://github.com/mattkrick/redux-optimistic-ui
 * Time travel to see what libraries made app large
   * Figure out how to minimize lodash import
-* what if different API call completes during login?
-  * Refactor out nonce business in sagas
 * favicon
 * eslint
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
@@ -102,7 +97,6 @@
   * [redux-actions](https://github.com/acdlite/redux-actions)
   * [normilzr](https://github.com/paularmstrong/normalizr)
   * [ecosystem](http://redux.js.org/docs/introduction/Ecosystem.html)
-* Move to API
 
 ## Cool
 * Collaborative editor: https://github.com/philholden/redux-swarmlog

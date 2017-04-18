@@ -1,3 +1,4 @@
+@import '~react-md/src/scss/react-md';
 @import './flatui-colors';
 @import './colors';
 
@@ -5,33 +6,87 @@ $agreement: $emerald;
 $disagreement: $pomegranate;
 $gradient-start-opacity: .6;
 $gradient-point: 25%;
+$slide-size: $md-btn-icon-size;
+
+// All must be less than $md-toolbar-z-index (default 15) or else they will float above the toolbar upon scrolling
+// ($md-menu-z-index is 10)
+$gradient-z-index: 5;
+$over-gradient-z-index: 10;
+
+.statementContextMenu {
+  z-index: $over-gradient-z-index;
+  float: right;
+  .md-list--menu {
+    z-index: $over-gradient-z-index + 1;
+  }
+}
+
+.justificationContextMenu {
+  float: right;
+}
 
 .statement {
-  .agreement {
-    //background: red; /* For browsers that do not support gradients */
-    //background: -webkit-linear-gradient(bottom left, red, yellow);
-    //background: -o-linear-gradient(top right, red, yellow);
-    //background: -moz-linear-gradient(top right, red, yellow);
-    background: linear-gradient(to right,
-            rgba($agreement, $gradient-start-opacity) 0%,
-            rgba($agreement, 0) $gradient-point,
-            rgba($agreement,0) 100%
-    );
-  }
-  .disagreement {
-    background: linear-gradient(to left,
-            rgba($disagreement, $gradient-start-opacity) 0%,
-            rgba($disagreement,0) $gradient-point,
-            rgba($disagreement, 0) 100%
-    );
-  }
-  .agreement.disagreement {
-    background: linear-gradient(to right,
-            rgba($agreement, $gradient-start-opacity) 0%,
-            rgba($agreement, 0) $gradient-point,
-            rgba($disagreement, 0) 100% - $gradient-point,
-            rgba($disagreement, $gradient-start-opacity) 100%
-    );
+  // Animate gradients with this trick:
+  // https://medium.com/@dave_lunny/animating-css-gradients-using-only-css-d2fd7671e759
+
+  // Provide a background color for the card, which we make transparent
+  background: get-color('card', $md-light-theme);
+
+  .statementCard {
+
+     .statementText {
+       z-index: $over-gradient-z-index;
+     }
+
+    background: inherit;
+    background-size: 100%;
+    position: relative;
+    // Don't use this part of the trick; messing with z-index can break material design
+    //z-index: 100;
+
+    &:before {
+      background: linear-gradient(to right,
+              rgba($agreement, $gradient-start-opacity) 0%,
+              rgba($agreement, 0) $gradient-point,
+              rgba($agreement,0) 100%
+      );
+
+      content: '';
+      display: block;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      width: 100%;
+      // Place this above the .statement in the local stacking context
+      z-index: $gradient-z-index;
+      transition: opacity 0.4s;
+    }
+    // Extend the trick to have both a before and after
+    &:after {
+      background: linear-gradient(to left,
+              rgba($disagreement, $gradient-start-opacity) 0%,
+              rgba($disagreement,0) $gradient-point,
+              rgba($disagreement, 0) 100%
+      );
+
+      content: '';
+      display: block;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      width: 100%;
+      // Place this above the .statement in the local stacking context
+      z-index: $gradient-z-index;
+      transition: opacity 0.4s;
+    }
+    &.agreement:before {
+      opacity: 1;
+    }
+    &.disagreement:after {
+      opacity: 1;
+    }
   }
 }
 
@@ -42,6 +97,32 @@ $gradient-point: 25%;
 }
 
 .justification {
+
+  .actions {
+    // Create a local stacking context
+    z-index: 0;
+
+    & > * {
+      transition: opacity 0.2s, right 0.4s, left 0.4s;
+      position: relative;
+      right: 0;
+
+      &.verified, &.disverified {
+        color: $midnight-blue;
+        // Put the selected buttons (which will remain visible while others fade) above them
+        z-index: 1;
+      }
+      &.disverified.inactive {
+        right: $slide-size;
+      }
+
+      &.hiding {
+        right: $slide-size;
+        opacity: 0;
+      }
+    }
+  }
+
 
   .justificationText.quote {
     border-left: 2px solid $primary-color;
@@ -65,8 +146,6 @@ $gradient-point: 25%;
     }
   }
 
-  /*transition: width 1s cubic-bezier(0.77, 0, 0.175, 1);*/
-
   .otherSelected .md-icon {
     color: $concrete;
   }
@@ -76,11 +155,7 @@ $gradient-point: 25%;
     direction: ltr;
   }
 
-  .verified, .disverified {
-    color: $midnight-blue;
-  }
-
-  &.positive {
+  &.positivey {
 
     /*background-color: #AFA;*/
     .actions {
@@ -98,25 +173,30 @@ $gradient-point: 25%;
           transform: none;
         }
       }
-      & > .counterJustifications {
-        margin-right: 20px;
-        .actions {
-          direction: ltr;
-          .md-icon {
-            transform: scaleX(-1);
-          }
-        }
-      }
     }
   }
 
-  &.negative {
-
-    /*background-color: #FAA;*/
+  &.negativey {
 
     .card {
       .actions {
         direction: rtl;
+
+        & > * {
+          left: 0;
+          right: auto;
+
+          &.disverified.inactive {
+            left: $slide-size;
+            right: auto;
+          }
+
+          &.hiding {
+            left: $slide-size;
+            right: auto;
+            opacity: 0;
+          }
+        }
       }
     }
 
@@ -126,17 +206,6 @@ $gradient-point: 25%;
         direction: ltr;
         .md-icon {
           transform: scaleX(-1);
-        }
-      }
-
-      & > .counterJustifications {
-        margin-left: 20px;
-
-        .actions {
-          direction: rtl;
-          .md-icon {
-            transform: none;
-          }
         }
       }
     }

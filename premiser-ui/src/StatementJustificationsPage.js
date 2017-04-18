@@ -16,6 +16,7 @@ import isFinite from "lodash/isFinite";
 import forEach from 'lodash/forEach';
 import some from 'lodash/some'
 import classNames from 'classnames'
+import FlipMove from 'react-flip-move';
 
 
 import {logError} from "./util";
@@ -55,13 +56,15 @@ class StatementJustificationsPage extends Component {
       hasDisagreement,
     } = this.props
     const statementCardClassNames = classNames({
+      statementCard: true,
       agreement: hasAgreement,
       disagreement: hasDisagreement,
     })
     const menu = (
         <MenuButton
             icon
-            id={`statement-context-menu`}
+            id={`statement-${statement && statement.id}-context-menu`}
+            menuClassName="statementContextMenu"
             buttonChildren={this.state.isOverStatement ? 'more_vert' : 'empty'}
             position={Positions.TOP_RIGHT}
         >
@@ -86,8 +89,9 @@ class StatementJustificationsPage extends Component {
                   >
 
                     <div className="md-grid">
-                      <div className="md-cell md-cell--11">
+                      <div className="md-cell md-cell--12 statementText">
 
+                        {statement && menu}
                         {statement ?
                             statement.text :
                             isFetching ?
@@ -96,9 +100,6 @@ class StatementJustificationsPage extends Component {
                         }
 
                       </div>
-                      <div className="md-cell md-cell--1 md-cell--right">
-                        {menu}
-                      </div>
                     </div>
 
                   </Card>
@@ -106,31 +107,34 @@ class StatementJustificationsPage extends Component {
                 </div>
 
               </div>
-
-              {hasJustifications ? (() => [
+                {hasJustifications ? (() => [
                     <div key="positive-justifications" className="md-cell md-cell--6">
 
-                      {justificationsByPolarity[JustificationPolarity.POSITIVE].map(j => (
-                          <Justification withCounterJustifications key={j.id} justification={j}/>
-                      ))}
+                      <FlipMove duration={750} easing="ease-out">
+                        {justificationsByPolarity[JustificationPolarity.POSITIVE].map(j => (
+                            <Justification withCounterJustifications key={j.id} justification={j} positivey={true} />
+                        ))}
+                      </FlipMove>
 
                     </div>,
                     <div key="negative-justifications" className="md-cell md-cell--6">
 
-                      {justificationsByPolarity[JustificationPolarity.NEGATIVE].map(j => (
-                          <Justification withCounterJustifications key={j.id} justification={j}/>
-                      ))}
+                      <FlipMove duration={750} easing="ease-out">
+                        {justificationsByPolarity[JustificationPolarity.NEGATIVE].map(j => (
+                            <Justification withCounterJustifications key={j.id} justification={j} positivey={false} />
+                        ))}
+                      </FlipMove>
 
                     </div>
-              ])() :
+                ])() :
                   <div className="md-cell md-cell--12">
                     {isFetching ?
-                        // Only show progress if we are not also showing one for the statement
-                        !!statement && <CircularProgress id="fetchingJustificationsProgress"/> :
-                        'No justifications'
+                      // Only show progress if we are not also showing one for the statement
+                      !!statement && <CircularProgress id="fetchingJustificationsProgress"/> :
+                      'No justifications'
                     }
                   </div>
-              }
+                }
 
             </div>
 

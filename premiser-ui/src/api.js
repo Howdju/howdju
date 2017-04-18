@@ -30,6 +30,6 @@ export function fetchJson(endpoint, {init = {}, schema}) {
           })
         }
 
-        return schema ? normalize(json, schema) : json
+        return schema && json ? normalize(json, schema) : json
       })
 }

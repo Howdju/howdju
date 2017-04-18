@@ -42,6 +42,10 @@ const badRequest = ({callback, message='bad request'}) => callback({
   status: 'badRequest',
   body: {message}
 })
+const error = ({callback, body={}}) => callback({
+  status: 'error',
+  body
+})
 
 const GET = 'GET'
 const POST = 'POST'
@@ -138,13 +142,17 @@ const routes = [
     method: DELETE,
     handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
         unvote({authToken, targetType, targetId, polarity})
-            .then( ({isUnauthenticated, isAlreadyDone}) => {
+            .then( ({isUnauthenticated, isAlreadyDone, isSuccess}) => {
               if (isUnauthenticated) {
                 return unauthorized({callback, message})
               } else if (isAlreadyDone) {
                 return noContent({callback})
               }
-              return ok({callback})
+              if (isSuccess) {
+                return ok({callback})
+              }
+              logger.error(`It shouldn't be possible for DELETE /votes to get here.`)
+              return error({callback})
             })
   },
   {

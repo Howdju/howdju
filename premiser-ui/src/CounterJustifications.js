@@ -3,11 +3,13 @@ import Justification from './Justification'
 
 class CounterJustifications extends Component {
   render() {
-    const {counterJustifications} = this.props
+    const {counterJustifications, positivey} = this.props
     if (counterJustifications && counterJustifications.length > 0) {
       return (
           <div className="counterJustifications">
-            {counterJustifications.map(j => <Justification key={j.id} withCounterJustifications justification={j} />)}
+            {counterJustifications.map(j =>
+                <Justification key={j.id} withCounterJustifications justification={j} positivey={positivey} />
+            )}
           </div>
       )
     }

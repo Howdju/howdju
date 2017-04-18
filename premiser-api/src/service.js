@@ -259,6 +259,7 @@ exports.unvote = ({authToken, targetType, targetId, polarity}) => {
       } else if (rows.length > 1) {
         logger.warn(`Deleted ${rows.length} votes at once!`, updateQueryArgs)
       }
+      return {isSuccess: true}
     })
   })
 }

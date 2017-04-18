@@ -112,7 +112,7 @@ class App extends Component {
               this.props.authToken ?
                   <ListItem key="logout" primaryText="Logout" onClick={this.handleLogout} /> :
                   <ListItem key="login" primaryText="Login" component={Link} to="/login" />,
-              <ListItem key="tools" primaryText="Tools" component={Link} to="/tools" />
+              <ListItem key="tools" primaryText="Tools" component={Link} to="/tools" />,
             ]}
             visible={this.props.isNavDrawerVisible}
             onVisibilityToggle={this.onNavDrawerVisibilityToggle}
