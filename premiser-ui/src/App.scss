@@ -72,3 +72,10 @@ html {
   margin-left: $gutter;
   margin-right: $gutter;
 }
+
+form {
+  button[type="submit"] {
+    // TODO make this the same as the grid padding/margin
+    margin-top: 1rem;
+  }
+}

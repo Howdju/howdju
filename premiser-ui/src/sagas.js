@@ -4,7 +4,6 @@ import merge from 'lodash/merge'
 import uuid from 'uuid'
 import {REHYDRATE} from 'redux-persist/constants'
 import {push} from 'react-router-redux'
-import {paths} from './App'
 
 import {
   API_RESOURCE_ACTIONS,
@@ -19,12 +18,15 @@ import {
   VERIFY_JUSTIFICATION_SUCCESS, VERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
   UN_DISVERIFY_JUSTIFICATION, UN_VERIFY_JUSTIFICATION_SUCCESS, UN_VERIFY_JUSTIFICATION_FAILURE,
   DISVERIFY_JUSTIFICATION_SUCCESS, DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE,
-  UN_DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT
+  UN_DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT, CREATE_STATEMENT_SUCCESS, CREATE_STATEMENT_FAILURE,
+  CREATE_STATEMENT
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError} from './util'
-import {statementsSchema, statementJustificationsSchema, voteSchema} from './schemas'
+import {statementsSchema, statementJustificationsSchema, voteSchema, statementSchema} from './schemas'
 import {VotePolarity, VoteTargetType} from "./models";
+import paths from "./paths";
+import {LOGIN_SUCCESS_MESSAGE} from "./texts";
 
 const POST = 'POST'
 const DELETE = 'DELETE'
@@ -243,27 +245,29 @@ function* callApiForVote({type, payload: {target}}) {
   }
 }
 
-function* callApiForVerifyJustification(action) {
-  const justification = action.payload.target
+function* onCreateStatement(action) {
+
   try {
+
     const payload = {
-      endpoint: `justifications/${justification.id}/verifications`,
+      endpoint: 'statements',
       fetchInit: {
         method: POST,
-      }
+        body: action.payload
+      },
+      schema: statementSchema
     }
 
     const {successAction, failureAction} = yield* callApiWithNonce({payload})()
 
     if (successAction) {
-      yield put({type: VERIFY_JUSTIFICATION_SUCCESS, payload: successAction.payload})
+      yield put({type: CREATE_STATEMENT_SUCCESS, payload: successAction.payload})
     } else {
-      yield put({type: VERIFY_JUSTIFICATION_FAILURE, payload: failureAction.payload, meta: {originalTarget: justification}})
-      yield put({type: ADD_TOAST, payload: { text: `Verification failed.`}})
+      yield put({type: CREATE_STATEMENT_FAILURE, payload: failureAction.payload})
     }
   } catch (error) {
     logError(error)
-    yield put({type: VERIFY_JUSTIFICATION_FAILURE, payload: error, meta: {originalTarget: justification}})
+    yield put({type: CREATE_STATEMENT_FAILURE, payload: error})
   }
 }
 
@@ -275,14 +279,19 @@ function* onCallApiFailure(action) {
 }
 
 function* onLoginRedirect(action) {
-  yield put(push(paths.login))
+  yield put(push(paths.login()))
 }
 
 function* onLoginSuccess(action) {
-  yield put({type: ADD_TOAST, payload: { text: `You have logged in as ${action.payload.email}`}})
+  yield put({type: ADD_TOAST, payload: { text: text(LOGIN_SUCCESS_MESSAGE, action.payload.email)}})
   const loginRedirectLocation = yield select(getLoginRedirectLocation)
-  const location = loginRedirectLocation || paths.home
+  const location = loginRedirectLocation || paths.home()
   yield put(push(location))
+}
+
+function* onCreateStatementSuccess(action) {
+  const statement = action.payload.entities.statements[action.payload.result]
+  yield put(push(paths.statement(statement)))
 }
 
 function* watchFetchResources() {
@@ -313,6 +322,10 @@ function* watchLoginSuccess() {
   yield takeEvery(LOGIN_SUCCESS, onLoginSuccess)
 }
 
+function* watchCreateStatementSuccess() {
+  yield takeEvery(CREATE_STATEMENT_SUCCESS, onCreateStatementSuccess)
+}
+
 function* watchLogout() {
   yield takeEvery(LOGOUT, callApiForLogout)
 }
@@ -329,6 +342,10 @@ function* watchLoginRedirect() {
   yield takeEvery(LOGIN_REDIRECT, onLoginRedirect)
 }
 
+function* watchCreateStatement() {
+  yield takeEvery(CREATE_STATEMENT, onCreateStatement)
+}
+
 function* watchRehydrate() {
   yield takeEvery(REHYDRATE, recordRehydrate)
 }
@@ -343,4 +360,6 @@ export default () => [
   watchLoginRedirect(),
   watchVotes(),
   watchRehydrate(),
+  watchCreateStatement(),
+  watchCreateStatementSuccess(),
 ]

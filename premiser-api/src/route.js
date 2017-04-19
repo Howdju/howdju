@@ -9,6 +9,7 @@ const {
   createUser,
   vote,
   unvote,
+  createStatement,
 } = require('./service')
 const {logger} = require('./logger')
 
@@ -22,7 +23,7 @@ const noContent = ({callback, body}) => {
   if (body) logger.error('noContent may not return a body.  Ignoring body')
   return callback({status: 'noContent'})
 }
-const notImplemented = callback => callback({
+const notImplemented = ({callback}) => callback({
   status: 'error',
   body: {message: 'not implemented'}
 })
@@ -75,7 +76,26 @@ const routes = [
   {
     path: 'statements',
     method: POST,
-    handler: notImplemented
+    handler: ({
+                callback,
+                request: {
+                  authToken,
+                  body: statement,
+                  method,
+                  path
+                }
+    }) => createStatement({authToken, statement})
+        .then( ({isUnauthenticated, isInvalid, statement}) => {
+          if (isUnauthenticated) {
+            return unauthorized({callback})
+          } else if (isInvalid) {
+            return badRequest({callback})
+          } else if (statement) {
+            return ok({callback, body: statement})
+          }
+          logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
+          return error({callback})
+        })
   },
   {
     id: 'getStatement',
@@ -140,18 +160,19 @@ const routes = [
   {
     path: new RegExp('^votes$'),
     method: DELETE,
-    handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
+    handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken, method, path}}) =>
+        // TODO base this on the vote_id instead?  Ensure the vote_id matches up with the other values passed?
         unvote({authToken, targetType, targetId, polarity})
             .then( ({isUnauthenticated, isAlreadyDone, isSuccess}) => {
               if (isUnauthenticated) {
-                return unauthorized({callback, message})
+                return unauthorized({callback})
               } else if (isAlreadyDone) {
                 return noContent({callback})
               }
               if (isSuccess) {
                 return ok({callback})
               }
-              logger.error(`It shouldn't be possible for DELETE /votes to get here.`)
+              logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
               return error({callback})
             })
   },

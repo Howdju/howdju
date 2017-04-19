@@ -11,7 +11,7 @@
     "db:dev:shell": "psql premiser",
     "create-user": "NODE_ENV=development node bin/create-user.js",
     "serve:dev": "DEBUG=premiser-api:* NODE_ENV=development DO_ASSERT=true nodemon --watch src bin/dev-server.js",
-    "debug": "DEBUG=premiser-api:* NODE_ENV=development node debug --watch src bin/dev-server.js",
+    "debug": "DEBUG=premiser-api:* NODE_ENV=development nodemon debug --watch src bin/dev-server.js",
     "inspect": "DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",
     "dev": "yarn run serve:dev",
     "build": "gulp build",

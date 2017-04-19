@@ -26,6 +26,7 @@ import "./StatementJustificationsPage.scss";
 import {acceptJustification, fetchStatementJustifications, rejectJustification} from "./actions";
 import {justificationSchema, statementSchema} from "./schemas";
 import Justification from './Justification'
+import texts, {FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE} from "./texts";
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -66,10 +67,12 @@ class StatementJustificationsPage extends Component {
       statement,
       justifications,
       isFetching,
-      errorMessage,
+      didFail,
     } = this.props
 
     const {narrowBreakpoint, flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
+
+    const errorMessage = didFail ? text(FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE) : ''
 
     const isNarrow = this.state.width <= narrowBreakpoint
     const justificationsByPolarity =
@@ -97,6 +100,7 @@ class StatementJustificationsPage extends Component {
             buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
         >
+          <ListItem primaryText="Add Justification" leftIcon={<FontIcon>add</FontIcon>} />
           <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
           <Divider />
           <ListItem primaryText="Edit" leftIcon={<FontIcon>create</FontIcon>} />
@@ -221,7 +225,7 @@ const mapStateToProps = (state, ownProps) => {
     return {}
   }
 
-  let {isFetching, errorMessage} = state.ui.statementJustificationsPage
+  let {isFetching, didFail} = state.ui.statementJustificationsPage
   const statement = state.entities.statements[statementId]
   if (!statement && !isFetching) {
     // The component may just be mounting
@@ -234,13 +238,13 @@ const mapStateToProps = (state, ownProps) => {
     statement: denormalize(statement, statementSchema, state.entities),
     justifications,
     isFetching,
-    errorMessage,
+    didFail,
   }
 }
 
 StatementJustificationsPage.defaultProps = {
   isFetching: false,
-  errorMessage: '',
+  didFail: false,
   statement: null,
   justifications: []
 }

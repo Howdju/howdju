@@ -9,19 +9,24 @@ const config = require('./config')
 const {assert} = require('./util')
 const {logger} = require('./logger')
 
-const {JustificationTargetType, VotePolarity, VoteTargetType} = require('./models')
+const {
+  JustificationTargetType,
+  ActionTargetType,
+  ActionType,
+  VoteTargetType
+} = require('./models')
 
 const CREATE_USER = 'CREATE_USER'
 
 const withPermission = (permission, authToken) => query(`
-    select true as is_authorized
+    select auth.user_id
     from authentication_tokens auth
       join users u USING (user_id)
       join permissions p USING (user_id)
       where auth.token = $1 and p.permission_name = $2 and auth.expires > $3 and auth.deleted IS NULL 
 `, [authToken, permission, new Date()])
     // TODO does this work deconstructing the first row?  What happen when it is empty?
-    .then(({rows: [isAuthorized]}) => isAuthorized ? Promise.resolve() : Promise.reject())
+    .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
 
 exports.statements = () => query('select * from statements')
   .then(({rows: statements}) => statements.map(toStatement))
@@ -263,3 +268,46 @@ exports.unvote = ({authToken, targetType, targetId, polarity}) => {
     })
   })
 }
+
+const withAuth = (authToken) => query(`
+    select user_id
+    from authentication_tokens
+      where 
+            token = $1 
+        and expires > $2
+        and deleted is null 
+`, [authToken, new Date()])
+    // TODO does this work deconstructing the first row?  What happen when it is empty?
+    .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
+
+exports.createStatement = ({authToken, statement}) => withAuth(authToken)
+    .then(userId => {
+      const now = new Date()
+      if (!statement.text) {
+        return {isInvalid: true}
+      }
+      return query('select * from statements where text = $1', [statement.text]).then( ({rows: [row]}) => {
+        if (row) {
+          query(
+              'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
+              [userId, ActionType.TRY_CREATE_DUPLICATE, statement.id, ActionTargetType.STATEMENT, now]
+          )
+          // return statement while asynchronously inserting action
+          return {statement: toStatement(row)}
+        }
+
+        return query('insert into statements (text, created) values ($1, $2) returning *', [statement.text, now])
+            .then( ({rows: [row]}) => {
+              return toStatement(row)
+            })
+            .then(statement => {
+              query(
+                  'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
+                  [userId, ActionType.CREATE, statement.id, ActionTargetType.STATEMENT, now]
+              )
+              // return statement while asynchronously inserting action
+              return {statement}
+            })
+      })
+
+    }, () => ({isUnauthenticated: true}))

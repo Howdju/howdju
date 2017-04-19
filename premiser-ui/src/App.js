@@ -7,6 +7,7 @@ import DocumentTitle from 'react-document-title'
 import Button from 'react-md/lib/Buttons/Button'
 import Drawer from 'react-md/lib/Drawers/Drawer';
 import ListItem from 'react-md/lib/Lists/ListItem'
+import FontIcon from 'react-md/lib/FontIcons'
 import Snackbar from 'react-md/lib/Snackbars'
 import Toolbar from 'react-md/lib/Toolbars';
 import { connect } from 'react-redux'
@@ -15,11 +16,13 @@ import './App.scss'
 
 import Header from './Header'
 import HomePage from './HomePage'
+import CreateStatementPage from './CreateStatementPage'
 import ToolsPage from './ToolsPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
 import {dismissToast, hideNavDrawer, logout, setNavDrawerVisibility} from "./actions";
 import {history} from './configureStore'
+import paths from "./paths";
 
 const IconPage = props => (
     <DocumentTitle title={'Icons - Howdju'}>
@@ -54,14 +57,12 @@ const IconPage = props => (
         <i className="material-icons">call_made</i>
         <i className="material-icons">compare_arrows</i>
         <i className="material-icons">merge_type</i>
+        <i className="material-icons">gavel</i>
+        <i className="material-icons">hourglass_empty</i>
+        <i className="material-icons">hourglass_full</i>
       </div>
     </DocumentTitle>
 )
-
-export const paths = {
-  home: '/',
-  login: '/login',
-}
 
 class App extends Component {
 
@@ -111,9 +112,29 @@ class App extends Component {
             }
             navItems={[
               this.props.authToken ?
-                  <ListItem key="logout" primaryText="Logout" onClick={this.handleLogout} /> :
-                  <ListItem key="login" primaryText="Login" component={Link} to="/login" />,
-              <ListItem key="tools" primaryText="Tools" component={Link} to="/tools" />,
+                  <ListItem key="logout"
+                            primaryText="Logout"
+                            leftIcon={<FontIcon>exit_to_app</FontIcon>}
+                            onClick={this.handleLogout}
+                  /> :
+                  <ListItem key="login"
+                            primaryText="Login"
+                            leftIcon={<FontIcon>https</FontIcon>}
+                            component={Link}
+                            to="/login"
+                  />,
+              <ListItem key="createStatement"
+                        primaryText="Make a Statement"
+                        leftIcon={<FontIcon>add</FontIcon>}
+                        component={Link}
+                        to="/create-statement"
+              />,
+              <ListItem key="tools"
+                        primaryText="Tools"
+                        leftIcon={<FontIcon>build</FontIcon>}
+                        component={Link}
+                        to="/tools"
+              />,
             ]}
             visible={this.props.isNavDrawerVisible}
             onVisibilityToggle={this.onNavDrawerVisibilityToggle}
@@ -130,9 +151,10 @@ class App extends Component {
 
             <div id="page" className="md-toolbar-relative">
 
-              <Route exact path={paths.home} component={HomePage} />
-              <Route path={paths.login} component={LoginPage} />
+              <Route exact path={paths.home()} component={HomePage} />
+              <Route path={paths.login()} component={LoginPage} />
               <Route path="/tools" component={ToolsPage} />
+              <Route path="/create-statement" component={CreateStatementPage} />
               <Route path="/icons" component={IconPage} />
               <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsPage} />
 

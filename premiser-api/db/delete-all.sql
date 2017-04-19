@@ -18,4 +18,8 @@ delete from user_permissions;
 delete from users;
 delete from votes;
 
--- alter sequence the_sequence restart;
+alter sequence statements_statement_id_seq restart with 1;
+alter sequence justifications_justification_id restart with 1;
+alter sequence citations_citation_id_seq restart with 1;
+alter sequence references_reference_id_seq restart with 1;
+alter sequence urls_url_id_seq restart with 1;

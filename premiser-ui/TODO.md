@@ -17,6 +17,9 @@
   * feedback script; 
   * unhandled error reporting
 
+* Bug
+  * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
+
 * UX
   * Statement justification drilling down
     * link to own statement page
@@ -24,6 +27,13 @@
     * drill down, showing hierarchy of statements above
   * Get statement to stay in place and float above justifications? Or maybe collapse to something 
     smaller, but that lets you see the statement still as you scroll.  maybe combine with header.
+  * Create statement brilliance:
+    * reset state (statement, error) if they navigate away
+    * warn if they try and navigate away after entering text
+    * When statement already exists, tell them that on the create page and offer link to go there
+    * When attempting to create a statement that already exists, redirect them to it with a message that it already exists
+  * Justification awesomeness
+    * have "create a justification" instead of "no justifications" on statement page
 * Theme/colors
 * CSS
   * React-MD recommends: https://github.com/postcss/autoprefixer
@@ -41,10 +51,13 @@
 * [Form validation](http://redux-form.com/6.6.2/)
   * https://github.com/christianalfoni/formsy-react
   * https://github.com/vazco/uniforms
+  * https://www.npmjs.com/package/react-validation
+  * http://redux-form.com/
 
 * Why do I have PostCSS in my project?
 ## 0.2
 * Change email, password, password reset
+* Timeout authentication
 * Loading flags (vs. just empty return from API)
 * Statement example: height of the capitol building limit DC
 

@@ -1,5 +1,5 @@
 
-const toSlug = (t) => t.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
+const toSlug = t => t && t.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
 const toStatement = s => !s ? s : ({
   id: s.statement_id,

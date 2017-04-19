@@ -1,3 +1,14 @@
+const ActionType = {
+  /** The user created something */
+  CREATE: 'CREATE',
+  /** The user tried to create something that was a duplicate of something existing; nothing was created */
+  TRY_CREATE_DUPLICATE: 'TRY_CREATE_DUPLICATE',
+}
+
+const ActionTargetType = {
+  STATEMENT: 'STATEMENT',
+}
+
 const JustificationTargetType = {
   STATEMENT: 'STATEMENT',
   JUSTIFICATION: 'JUSTIFICATION'
@@ -24,6 +35,8 @@ const VoteTargetType = {
 }
 
 module.exports = {
+  ActionType,
+  ActionTargetType,
   JustificationTargetType,
   JustificationPolarity,
   JustificationBasisType,

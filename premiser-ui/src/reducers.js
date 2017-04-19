@@ -5,7 +5,7 @@ import groupBy from 'lodash/groupBy'
 import map from 'lodash/map'
 import {LOCATION_CHANGE} from 'react-router-redux'
 import {VotePolarity, VoteTargetType} from './models'
-import {paths} from './App'
+import paths from './paths'
 
 import {
   FETCH_STATEMENTS_SUCCESS,
@@ -16,7 +16,8 @@ import {
   TOGGLE_NAV_DRAWER_VISIBILITY, SET_NAV_DRAWER_VISIBILITY, ADD_TOAST, DISMISS_TOAST, FETCH_STATEMENT_JUSTIFICATIONS,
   VERIFY_JUSTIFICATION, VERIFY_JUSTIFICATION_SUCCESS, VERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION_FAILURE,
   DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
-  UN_DISVERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT,
+  UN_DISVERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT, CREATE_STATEMENT_PROPERTY_CHANGE,
+  CREATE_STATEMENT, CREATE_STATEMENT_SUCCESS, CREATE_STATEMENT_FAILURE,
 } from './actions'
 
 const indexJustificationsByRootStatementId = (justifications => {
@@ -49,6 +50,15 @@ const entities = (state = {
         justificationsByRootStatementId: merge({}, state.justificationsByRootStatementId, justificationsByRootStatementId),
         quotes: merge({}, state.quotes, action.payload.entities.quotes),
       }
+
+    case CREATE_STATEMENT_SUCCESS: {
+
+      return {
+        ...state,
+        statements: merge({}, state.statements, action.payload.entities.statements),
+      }
+    }
+
     case VERIFY_JUSTIFICATION:
     case DISVERIFY_JUSTIFICATION: {
       const currJustification = state.justifications[action.payload.target.id]
@@ -145,17 +155,32 @@ const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {
   return state
 }
 
-const statementJustificationsPage = (state = {errorMessage: '', isFetching: false}, action) => {
+const statementJustificationsPage = (state = {isFetching: false, didFail: false}, action) => {
   switch (action.type) {
     case FETCH_STATEMENT_JUSTIFICATIONS_FAILURE:
-      return {...state, errorMessage: 'Failed to load justifications', isFetching: false}
+      return {...state, isFetching: false, didFail: true}
     case FETCH_STATEMENT_JUSTIFICATIONS:
-      return {...state, errorMessage: '', isFetching: true}
+      return {...state, isFetching: true, didFail: false}
     case FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS:
       return {...state, isFetching: false}
-
   }
 
+  return state
+}
+
+const createStatementPage = (state = {statement: {text:''}, isCreating: false, didFail: false}, action) => {
+  switch (action.type) {
+    case CREATE_STATEMENT_PROPERTY_CHANGE:
+      const statement = merge({}, state.statement, action.payload)
+      return merge({}, state, {statement})
+    case CREATE_STATEMENT:
+      return merge({}, state, {isCreating: true, didFail: false})
+    case CREATE_STATEMENT_SUCCESS:
+      return merge({}, state, {statement: {text: ''}, isCreating: false, didFail: false})
+    case CREATE_STATEMENT_FAILURE:
+      return merge({}, state, {isCreating: false, didFail: true})
+  }
+  
   return state
 }
 
@@ -198,6 +223,7 @@ const app = (state = { loginRedirectLocation: null }, action) => {
 const ui = combineReducers({
   loginPage,
   statementJustificationsPage,
+  createStatementPage,
   app: appUi,
 })
 

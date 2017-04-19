@@ -32,6 +32,12 @@ class LoginPage extends Component {
   }
 
   render () {
+    const {
+      credentials,
+      isLoggingIn,
+      loginRedirectLocation,
+      errorMessage,
+    } = this.props
     return (
         <DocumentTitle title={'Login - Howdju'}>
           <div id="loginPage">
@@ -43,16 +49,17 @@ class LoginPage extends Component {
                     <div className={classNames({
                       'md-cell': true,
                        'md-cell--12': true,
-                       hidden: !this.props.loginRedirectLocation,
+                       hidden: !loginRedirectLocation,
                     })}>
                       <h4>Please login to continue</h4>
                     </div>
                     <div className={classNames({
                       'md-cell': true,
                       'md-cell--12': true,
-                      hidden: !this.props.errorMessage,
+                      errorMessage: true,
+                      hidden: !errorMessage,
                     })}>
-                      <div className="errorMessage">{this.props.errorMessage}</div>
+                      {errorMessage}
                     </div>
                     <div className="md-cell md-cell--12">
 
@@ -62,7 +69,8 @@ class LoginPage extends Component {
                               type="email"
                               name="email"
                               label="Email"
-                              value={this.props.credentials.email}
+                              value={credentials.email}
+                              required
                               onChange={this.handleInputChange}
                           />
                           <TextField
@@ -70,11 +78,12 @@ class LoginPage extends Component {
                               type="password"
                               name="password"
                               label="Password"
-                              value={this.props.credentials.password}
+                              value={credentials.password}
+                              required
                               onChange={this.handleInputChange}
                           />
 
-                        <Button raised primary type="submit" label="Login" disabled={this.props.isLoggingIn} />
+                        <Button raised primary type="submit" label="Login" disabled={isLoggingIn} />
                       </form>
 
                     </div>
