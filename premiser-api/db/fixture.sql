@@ -33,8 +33,15 @@ select setval('urls_url_id_seq', (select max(url_id) from urls));
 insert into reference_urls (reference_id, url_id, created) values
 (1, 1, NOW());
 
-insert into permissions (name) values
-('CREATE_USER');
+insert into permissions (permission_id, name, comment) values
+(1, 'CREATE_USER', 'can create new users'),
+(2, 'DELETE_STATEMENTS', 'can delete any statement');
+select setval('permissions_permission_id_seq', (select max(permission_id) from permissions));
 
-insert into groups (name, created) values
-('admins', NOW());
+insert into groups (group_id, name, created) values
+(1, 'admins', NOW());
+select setval('groups_group_id_seq', (select max(group_id) from groups));
+
+insert into group_permissions (group_id, permission_id) values
+(1, 1),
+(1, 2);

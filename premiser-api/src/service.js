@@ -18,17 +18,27 @@ const {
 
 const CREATE_USER = 'CREATE_USER'
 
-const withPermission = (permission, authToken) => query(`
-    select auth.user_id
+const withPermission = (authToken, permission) => query(`
+    select distinct auth.user_id
     from authentication_tokens auth
-      join users u USING (user_id)
-      join permissions p USING (user_id)
-      where auth.token = $1 and p.permission_name = $2 and auth.expires > $3 and auth.deleted IS NULL 
+        join users u using (user_id)
+        -- try and find the permission by user_permissions
+        left join user_permissions up using (user_id)
+        left join permissions user_perm on up.permission_id = user_perm.permission_id
+        -- or by group_permissions
+        left join user_groups using (user_id)
+        left join group_permissions gp using (group_id)
+        left join permissions group_perm on gp.permission_id = group_perm.permission_id
+      where 
+            auth.token = $1 
+        and (user_perm.name = $2 or group_perm.name = $2)
+        and auth.expires > $3 
+        and auth.deleted IS NULL 
 `, [authToken, permission, new Date()])
     // TODO does this work deconstructing the first row?  What happen when it is empty?
     .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
 
-exports.statements = () => query('select * from statements')
+exports.statements = () => query('select * from statements where deleted is null')
   .then(({rows: statements}) => statements.map(toStatement))
 
 const collectJustifications = (statementId, justifications) => {
@@ -65,7 +75,7 @@ const collectUrls = urls => {
 exports.statementJustifications = ({statementId, authToken}) => queries([
     {
       // Statement
-      query: 'select * from statements where statement_id = $1',
+      query: 'select * from statements where statement_id = $1 and deleted is null',
       args: [statementId],
     },
     {
@@ -92,7 +102,9 @@ exports.statementJustifications = ({statementId, authToken}) => queries([
                   and v.user_id = auth.user_id
                   and v.deleted IS NULL
                 where 
-                  j.root_statement_id = $1`,
+                      j.deleted is null
+                  and s.deleted is null
+                  and j.root_statement_id = $1`,
       args: [statementId, authToken, VoteTargetType.JUSTIFICATION]
     },
     {
@@ -104,12 +116,17 @@ exports.statementJustifications = ({statementId, authToken}) => queries([
                     join "references" r ON j.basis_type = 'REFERENCE' AND j.basis_id = r.reference_id
                     join reference_urls USING (reference_id)
                     join urls u USING (url_id)
-                    where j.root_statement_id = $1
+                    where
+                          j.deleted is null
+                      and j.root_statement_id = $1
                     order by j.justification_id`,
       args: [statementId]
     }
   ])
   .then(([{rows: [statement]}, {rows: justifications}, {rows: urls}]) => {
+    if (!statement) {
+      return {statement}
+    }
     const urlsByJustificationId = collectUrls(urls)
     const {rootJustifications, counterJustificationsByJustificationId} =
         collectJustifications(statement.statement_id, justifications)
@@ -120,13 +137,18 @@ exports.statementJustifications = ({statementId, authToken}) => queries([
     }
   })
 
-exports.createUser = ({user: {email, password}, authorizationToken}) => {
-  withPermission(CREATE_USER, authorizationToken).then(
-      () => {
+exports.createUser = ({user: {email, password}, authToken}) => {
+  withPermission(authToken, CREATE_USER).then(
+      userId => {
         argon2.generateSalt().then(salt => {
           argon2.hash(password, salt)
               .then( hash => query('insert into users (email, hash) values ($1, $2) returning user_id', [email, hash]) )
               .then( ({rows: [{user_id: id}]}) => ({user: {email, id}}) )
+              .then( user => query(
+                  'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ()',
+                  [userId, 'CREATE', user.id, 'USER', new Date()]
+              )
+                  .then(() => user))
         })
       },
       () => ({notAuthorized: true, message: 'insufficient permissions'})
@@ -311,3 +333,14 @@ exports.createStatement = ({authToken, statement}) => withAuth(authToken)
       })
 
     }, () => ({isUnauthenticated: true}))
+
+exports.deleteStatement = ({authToken, statementId}) => {
+  if (!authToken) {
+    return Promise.resolve({isUnauthenticated: true})
+  }
+  return withPermission(authToken, 'DELETE_STATEMENTS').then(userId => {
+
+    return query('update statements set deleted = $2 where statement_id = $1', [statementId, new Date()])
+        .then(() => ({isSuccess: true}))
+  }, () => ({isUnauthorized: true}))
+}

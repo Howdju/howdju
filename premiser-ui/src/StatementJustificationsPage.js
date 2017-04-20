@@ -23,10 +23,10 @@ import config from './config';
 import {logError} from "./util";
 import {isVerified, isDisverified, JustificationPolarity, isPositive, isNegative} from "./models";
 import "./StatementJustificationsPage.scss";
-import {acceptJustification, fetchStatementJustifications, rejectJustification} from "./actions";
+import {acceptJustification, deleteStatement, fetchStatementJustifications, rejectJustification} from "./actions";
 import {justificationSchema, statementSchema} from "./schemas";
 import Justification from './Justification'
-import texts, {FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE} from "./texts";
+import text, {FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE} from "./texts";
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -35,6 +35,7 @@ class StatementJustificationsPage extends Component {
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
     this.updateDimensions = this.updateDimensions.bind(this)
+    this.deleteStatement = this.deleteStatement.bind(this)
   }
 
   componentWillMount() {
@@ -60,6 +61,10 @@ class StatementJustificationsPage extends Component {
 
   updateDimensions() {
     this.setState({width: window.innerWidth, height: window.innerHeight});
+  }
+
+  deleteStatement() {
+    this.props.deleteStatement(this.props.statement)
   }
 
   render () {
@@ -104,7 +109,10 @@ class StatementJustificationsPage extends Component {
           <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
           <Divider />
           <ListItem primaryText="Edit" leftIcon={<FontIcon>create</FontIcon>} />
-          <ListItem primaryText="Delete" leftIcon={<FontIcon>delete</FontIcon>} />
+          <ListItem primaryText="Delete"
+                    leftIcon={<FontIcon>delete</FontIcon>}
+                    onClick={this.deleteStatement}
+          />
         </MenuButton>
     )
     const twoColumnJustifications = [
@@ -253,4 +261,5 @@ export default connect(mapStateToProps, {
   fetchStatementJustifications,
   acceptJustification,
   rejectJustification,
+  deleteStatement,
 })(StatementJustificationsPage)

@@ -1,13 +1,15 @@
 # Howdju UI TODO
 ## MVP
-* Create statements/justifications
+* create justifications
+* Delete justifications
+
+* bookmarklet
 
 * tagging
 * Jobs (justification score)
 * Search
 * Home page tag cloud
-
-* bookmarklet
+* favicon
 
 
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)

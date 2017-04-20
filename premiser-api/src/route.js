@@ -10,6 +10,7 @@ const {
   vote,
   unvote,
   createStatement,
+  deleteStatement,
 } = require('./service')
 const {logger} = require('./logger')
 
@@ -74,13 +75,14 @@ const routes = [
         })
   },
   {
+    id: 'createStatement',
     path: 'statements',
     method: POST,
     handler: ({
                 callback,
                 request: {
                   authToken,
-                  body: statement,
+                  body: {statement},
                   method,
                   path
                 }
@@ -91,11 +93,35 @@ const routes = [
           } else if (isInvalid) {
             return badRequest({callback})
           } else if (statement) {
-            return ok({callback, body: statement})
+            return ok({callback, body: {statement}})
           }
           logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
           return error({callback})
         })
+  },
+  {
+    id: 'deleteStatement',
+    path: new RegExp('^statements/([^/]+)$'),
+    method: DELETE,
+    handler: ({
+                callback,
+                request: {
+                  authToken,
+                  method,
+                  path,
+                  pathParameters: [statementId],
+                }
+    }) => deleteStatement({authToken, statementId}).then(({isUnauthenticated, isUnauthorized, isSuccess}) => {
+      if (isUnauthenticated) {
+        return unauthorized({callback})
+      } else if (isUnauthorized) {
+        return forbidden({callback})
+      } else if (isSuccess) {
+        return ok({callback})
+      }
+      logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
+      return error({callback})
+    })
   },
   {
     id: 'getStatement',

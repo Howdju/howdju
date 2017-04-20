@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
 import merge from 'lodash/merge'
 import groupBy from 'lodash/groupBy'
+import pickBy from 'lodash/pickBy'
 import map from 'lodash/map'
 import {LOCATION_CHANGE} from 'react-router-redux'
 import {VotePolarity, VoteTargetType} from './models'
@@ -17,7 +18,7 @@ import {
   VERIFY_JUSTIFICATION, VERIFY_JUSTIFICATION_SUCCESS, VERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION_FAILURE,
   DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
   UN_DISVERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT, CREATE_STATEMENT_PROPERTY_CHANGE,
-  CREATE_STATEMENT, CREATE_STATEMENT_SUCCESS, CREATE_STATEMENT_FAILURE,
+  CREATE_STATEMENT, CREATE_STATEMENT_SUCCESS, CREATE_STATEMENT_FAILURE, DELETE_STATEMENT_SUCCESS,
 } from './actions'
 
 const indexJustificationsByRootStatementId = (justifications => {
@@ -52,10 +53,15 @@ const entities = (state = {
       }
 
     case CREATE_STATEMENT_SUCCESS: {
-
       return {
         ...state,
         statements: merge({}, state.statements, action.payload.entities.statements),
+      }
+    }
+    case DELETE_STATEMENT_SUCCESS: {
+      return {
+        ...state,
+        statements: pickBy(state.statements, (s, id) => id !== action.meta.deletedStatement.id )
       }
     }
 

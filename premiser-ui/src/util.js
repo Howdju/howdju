@@ -46,3 +46,11 @@ export function assert(test, message) {
 export const logError = (error) => {
   console.error(error)
 }
+
+export const logger = {
+  error: console.log,
+  warn: console.log,
+  info: console.log,
+  debug: console.log,
+  trace: console.log,
+}

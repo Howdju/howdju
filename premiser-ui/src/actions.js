@@ -8,7 +8,7 @@ export const fetchStatements = create2Action(FETCH_STATEMENTS)
 export const FETCH_STATEMENT_JUSTIFICATIONS = 'FETCH_STATEMENT_JUSTIFICATIONS'
 export const FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS = 'FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS'
 export const FETCH_STATEMENT_JUSTIFICATIONS_FAILURE = 'FETCH_STATEMENT_JUSTIFICATIONS_FAILURE'
-export const fetchStatementJustifications = create2Action(FETCH_STATEMENT_JUSTIFICATIONS)
+export const fetchStatementJustifications = create2Action(FETCH_STATEMENT_JUSTIFICATIONS, statementId => ({statementId}))
 
 export const ACCEPT_JUSTIFICATION = 'ACCEPT_JUSTIFICATION'
 export const acceptJustification = create2Action(ACCEPT_JUSTIFICATION)
@@ -38,10 +38,6 @@ export const API_RESOURCE_ACTIONS = {
   [FETCH_STATEMENTS]: {
     SUCCESS: FETCH_STATEMENTS_SUCCESS,
     FAILURE: FETCH_STATEMENTS_FAILURE
-  },
-  [FETCH_STATEMENT_JUSTIFICATIONS]: {
-    SUCCESS: FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS,
-    FAILURE: FETCH_STATEMENT_JUSTIFICATIONS_FAILURE,
   }
 }
 
@@ -85,4 +81,9 @@ export const createStatementPropertyChange = create2Action(CREATE_STATEMENT_PROP
 export const CREATE_STATEMENT = 'CREATE_STATEMENT'
 export const CREATE_STATEMENT_SUCCESS = 'CREATE_STATEMENT_SUCCESS'
 export const CREATE_STATEMENT_FAILURE = 'CREATE_STATEMENT_FAILURE'
-export const createStatement = create2Action(CREATE_STATEMENT)
+export const createStatement = create2Action(CREATE_STATEMENT, statement => ({statement}))
+
+export const DELETE_STATEMENT = 'DELETE_STATEMENT'
+export const DELETE_STATEMENT_SUCCESS = 'DELETE_STATEMENT_SUCCESS'
+export const DELETE_STATEMENT_FAILURE = 'DELETE_STATEMENT_FAILURE'
+export const deleteStatement = create2Action(DELETE_STATEMENT, statement => ({statement}))

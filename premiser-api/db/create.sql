@@ -118,7 +118,8 @@ create table if not exists user_groups (
 
 create table if not exists permissions (
   permission_id serial,
-  name varchar(256)
+  name varchar(256),
+  comment varchar(2048)
 );
 
 create table if not exists user_permissions (
