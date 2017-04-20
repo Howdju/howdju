@@ -61,9 +61,14 @@ const entities = (state = {
     case DELETE_STATEMENT_SUCCESS: {
       return {
         ...state,
-        statements: pickBy(state.statements, (s, id) => id !== action.meta.deletedStatement.id )
+        statements: pickBy(state.statements, (s, id) => +id !== action.meta.deletedStatement.id )
       }
     }
+    case FETCH_STATEMENT_JUSTIFICATIONS_FAILURE:
+      return {
+        ...state,
+        statements: pickBy(state.statements, (s, id) => +id !== action.meta.statementId)
+      }
 
     case VERIFY_JUSTIFICATION:
     case DISVERIFY_JUSTIFICATION: {

@@ -308,14 +308,14 @@ exports.createStatement = ({authToken, statement}) => withAuth(authToken)
       if (!statement.text) {
         return {isInvalid: true}
       }
-      return query('select * from statements where text = $1', [statement.text]).then( ({rows: [row]}) => {
+      return query('select * from statements where text = $1 and deleted is null', [statement.text]).then( ({rows: [row]}) => {
         if (row) {
           query(
               'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
               [userId, ActionType.TRY_CREATE_DUPLICATE, statement.id, ActionTargetType.STATEMENT, now]
           )
           // return statement while asynchronously inserting action
-          return {statement: toStatement(row)}
+          return {statement: toStatement(row), isExtant: true}
         }
 
         return query('insert into statements (text, created) values ($1, $2) returning *', [statement.text, now])

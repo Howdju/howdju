@@ -5,6 +5,7 @@ import uuid from 'uuid'
 import {REHYDRATE} from 'redux-persist/constants'
 import {push} from 'react-router-redux'
 import text, {
+  CREATE_EXTANT_STATEMENT_TOAST_MESSAGE,
   DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE, MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE
 } from './texts'
@@ -360,6 +361,9 @@ function* onLoginSuccess(action) {
 }
 
 function* onCreateStatementSuccess(action) {
+  if (action.payload.isExtant) {
+    yield put({type: ADD_TOAST, payload: { text: text(CREATE_EXTANT_STATEMENT_TOAST_MESSAGE)}})
+  }
   const statement = action.payload.entities.statements[action.payload.result.statement]
   yield put(push(paths.statement(statement)))
 }
