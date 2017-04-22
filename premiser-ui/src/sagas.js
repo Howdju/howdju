@@ -5,8 +5,11 @@ import uuid from 'uuid'
 import {REHYDRATE} from 'redux-persist/constants'
 import {push} from 'react-router-redux'
 import text, {
-  CREATE_EXTANT_STATEMENT_TOAST_MESSAGE,
-  DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE, MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
+  CREATE_EXTANT_STATEMENT_TOAST_MESSAGE, CREATE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+  DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+  DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
+  DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
+  UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE
 } from './texts'
 
@@ -25,11 +28,16 @@ import {
   DISVERIFY_JUSTIFICATION_SUCCESS, DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE,
   UN_DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT, CREATE_STATEMENT_SUCCESS, CREATE_STATEMENT_FAILURE,
   CREATE_STATEMENT, DELETE_STATEMENT_SUCCESS, DELETE_STATEMENT_FAILURE, DELETE_STATEMENT,
-  FETCH_STATEMENT_JUSTIFICATIONS_FAILURE, FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS
+  FETCH_STATEMENT_JUSTIFICATIONS_FAILURE, FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS, CREATE_JUSTIFICATION,
+  CREATE_JUSTIFICATION_SUCCESS, CREATE_JUSTIFICATION_FAILURE, DELETE_JUSTIFICATION, DELETE_JUSTIFICATION_FAILURE,
+  DELETE_JUSTIFICATION_SUCCESS, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError, logger} from './util'
-import {statementsSchema, statementJustificationsSchema, voteSchema, statementSchema} from './schemas'
+import {
+  statementsSchema, statementJustificationsSchema, voteSchema, statementSchema,
+  justificationSchema
+} from './schemas'
 import {VotePolarity, VoteTargetType} from "./models";
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE, LOGIN_SUCCESS_TOAST_MESSAGE} from "./texts";
@@ -291,13 +299,77 @@ function* onCreateStatement(action) {
   }
 }
 
-function* onDeleteStatement(action) {
+function* onCreateJustification(action) {
+  try {
+    const payload = {
+      endpoint: 'justifications',
+      fetchInit: {
+        method: POST,
+        body: action.payload
+      },
+      schema: {justification: justificationSchema}
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
+    if (successAction) {
+      yield put({type: CREATE_JUSTIFICATION_SUCCESS, payload: successAction.payload})
+    } else {
+      yield put({type: CREATE_JUSTIFICATION_FAILURE, payload: failureAction.payload})
+    }
+  } catch (error) {
+    logError(error)
+    yield put({type: CREATE_JUSTIFICATION_FAILURE, payload: error})
+  }
+}
+
+function* onCreateJustificationSuccess(action) {
+  yield put({type: HIDE_ADD_NEW_JUSTIFICATION})
+  yield put({type: RESET_NEW_JUSTIFICATION})
+}
+
+function* onCreateJustificationFailure(action) {
+  yield put({type: ADD_TOAST, payload: { text: text(CREATE_JUSTIFICATION_FAILURE_TOAST_MESSAGE)}})
+}
+
+function* onDeleteJustification(action) {
+  const {justification} = action.payload
   const meta = {
-    deletedStatement: action.payload.statement
+    deletedEntity: justification
   }
   try {
     const payload = {
-      endpoint: `statements/${action.payload.statement.id}`,
+      endpoint: `justifications/${justification.id}`,
+      fetchInit: {
+        method: DELETE,
+      },
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
+    if (successAction) {
+      yield put({type: DELETE_JUSTIFICATION_SUCCESS, payload: successAction.payload, meta})
+    } else {
+      yield put({type: DELETE_JUSTIFICATION_FAILURE, payload: failureAction.payload, meta})
+    }
+  } catch (error) {
+    logError(error)
+    yield put({type: DELETE_JUSTIFICATION_FAILURE, payload: error, meta})
+  }
+}
+
+function* onDeleteJustificationFailure(action) {
+  yield put({type: ADD_TOAST, payload: { text: text(DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE)}})
+}
+
+function* onDeleteStatement(action) {
+  const {statement} = action.payload
+  const meta = {
+    deletedEntity: statement
+  }
+  try {
+    const payload = {
+      endpoint: `statements/${statement.id}`,
       fetchInit: {
         method: DELETE,
       },
@@ -439,6 +511,26 @@ function* watchFetchStatementJustificationsFailure() {
   yield takeEvery(FETCH_STATEMENT_JUSTIFICATIONS_FAILURE, onFetchStatementJustificationsFailure)
 }
 
+function* watchCreateJustification() {
+  yield takeEvery(CREATE_JUSTIFICATION, onCreateJustification)
+}
+
+function* watchCreateJustificationSuccess() {
+  yield takeEvery(CREATE_JUSTIFICATION_SUCCESS, onCreateJustificationSuccess)
+}
+
+function* watchCreateJustificationFailure() {
+  yield takeEvery(CREATE_JUSTIFICATION_FAILURE, onCreateJustificationFailure)
+}
+
+function* watchDeleteJustificationFailure() {
+  yield takeEvery(DELETE_JUSTIFICATION_FAILURE, onDeleteJustificationFailure)
+}
+
+function* watchDeleteJustification() {
+  yield takeEvery(DELETE_JUSTIFICATION, onDeleteJustification)
+}
+
 function* watchRehydrate() {
   yield takeEvery(REHYDRATE, recordRehydrate)
 }
@@ -460,4 +552,9 @@ export default () => [
   watchDeleteStatement(),
   watchDeleteStatementSuccess(),
   watchDeleteStatementFailure(),
+  watchCreateJustification(),
+  watchCreateJustificationSuccess(),
+  watchCreateJustificationFailure(),
+  watchDeleteJustification(),
+  watchDeleteJustificationFailure(),
 ]

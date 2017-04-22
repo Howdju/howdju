@@ -1,73 +1,105 @@
+const {JustificationBasisType} = require('./models')
 
-const toSlug = t => t && t.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
-const toStatement = s => !s ? s : ({
-  id: s.statement_id,
-  text: s.text,
-  slug: toSlug(s.text)
+const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
+
+const toStatement = row => !row ? row : ({
+  id: row.statement_id,
+  text: row.text,
+  slug: toSlug(row.text)
 })
 
-const toUrl = u => !u ? u : ({
-  id: u.url_id,
-  url: u.url
-})
-
-const toJustification = (j, urlsByJustificationId, counterJustificationsByJustificationId) => {
-  if (!j) {
-    return j
+const toJustification = (row, urlsByJustificationId, counterJustificationsByJustificationId) => {
+  if (!row) {
+    return row
   }
 
   let justification = {
-    id: j.justification_id,
-    rootStatementId: j.root_statement_id,
+    id: row.justification_id,
+    rootStatementId: row.root_statement_id,
     target: {
-      type: j.target_type,
+      type: row.target_type,
       entity: {
-        id: j.target_id
+        id: row.target_id
       }
     },
     basis: {
-      type: j.basis_type,
+      type: row.basis_type,
       entity: {
-        id: j.basis_id
+        id: row.basis_id
       }
     },
-    polarity: j.polarity,
-    score: j.score,
-    vote: j.vote_id && toVote({
-      vote_id: j.vote_id,
-      polarity: j.vote_polarity,
-      target_type: j.vote_target_type,
-      target_id: j.vote_target_id,
+    polarity: row.polarity,
+    score: row.score,
+    vote: row.vote_id && toVote({
+      vote_id: row.vote_id,
+      polarity: row.vote_polarity,
+      target_type: row.vote_target_type,
+      target_id: row.vote_target_id,
     })
   }
 
-  if (j.basis_statement_text) {
-    justification.basis.entity.text = j.basis_statement_text
+  switch (row.basis_type) {
+    case JustificationBasisType.CITATION_REFERENCE:
+      if (row.basis_citation_reference_id) {
+        justification.basis.entity = toCitationReference({
+          citation_reference_id: row.basis_citation_reference_id,
+          quote: row.basis_citation_reference_quote,
+          citation_reference_citation_id: row.basis_citation_reference_citation_id,
+          citation_reference_citation_text: row.basis_citation_reference_citation_text,
+        })
+        debugger
+      }
+      break
+
+    case JustificationBasisType.STATEMENT:
+      if (row.basis_statement_id) {
+        justification.basis.entity = toStatement({
+          statement_id: row.basis_statement_id,
+          text: row.basis_statement_text,
+        })
+      }
+      break
+
+    default:
+      throw Error(`Unsupported JustificationBasisType: ${row.basis_type}`)
   }
 
-  if (j.basis_reference_quote) {
-    justification.basis.entity.quote = j.basis_reference_quote
-  }
-
-  if (j.basis_reference_citation_id) {
-    justification.basis.entity.citation = {
-      id: j.basis_reference_citation_id,
-      text: j.basis_reference_citation_text
+  if (urlsByJustificationId) {
+    const urls = urlsByJustificationId[justification.id]
+    if (urls) {
+      justification.basis.entity.urls = urls.map(toUrl)
     }
   }
 
-  const urls = urlsByJustificationId[justification.id]
-  if (urls) {
-    justification.basis.entity.urls = urls.map(toUrl)
-  }
-  const counterJustifications = counterJustificationsByJustificationId[justification.id]
-  if (counterJustifications) {
-    justification.counterJustifications = counterJustifications.map(j => toJustification(j, urlsByJustificationId, counterJustificationsByJustificationId))
+  if (counterJustificationsByJustificationId) {
+    const counterJustifications = counterJustificationsByJustificationId[justification.id]
+    if (counterJustifications) {
+      justification.counterJustifications = counterJustifications.map(j => toJustification(j, urlsByJustificationId, counterJustificationsByJustificationId))
+    }
   }
 
   return justification
 }
+
+const toCitationReference = row => !row ? row : {
+  id: row.citation_reference_id,
+  quote: row.quote,
+  citation: toCitation({
+    citation_id: row.citation_reference_citation_id,
+    text: row.citation_reference_citation_text
+  })
+}
+
+const toCitation = row => !row ? row : ({
+  id: row.citation_id,
+  text: row.text
+})
+
+const toUrl = row => !row ? row : ({
+  id: row.url_id,
+  url: row.url
+})
 
 const toVote = row => {
   return {
@@ -81,5 +113,8 @@ const toVote = row => {
 module.exports = {
   toStatement,
   toJustification,
+  toCitationReference,
+  toCitation,
+  toUrl,
   toVote,
 }

@@ -7,6 +7,9 @@ const ActionType = {
 
 const ActionTargetType = {
   STATEMENT: 'STATEMENT',
+  JUSTIFICATION: 'JUSTIFICATION',
+  CITATION_REFERENCE: 'CITATION_REFERENCE',
+  CITATION: 'CITATION',
 }
 
 const JustificationTargetType = {
@@ -26,7 +29,7 @@ const VotePolarity = {
 
 const JustificationBasisType = {
   STATEMENT: 'STATEMENT',
-  REFERENCE: 'REFERENCE',
+  CITATION_REFERENCE: 'CITATION_REFERENCE',
 }
 
 const VoteTargetType = {

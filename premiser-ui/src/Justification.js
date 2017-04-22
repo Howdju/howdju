@@ -9,13 +9,22 @@ import FontIcon from "react-md/lib/FontIcons"
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"
 import Positions from "react-md/lib/Menus/Positions"
-import {verifyJustification, disverifyJustification, unVerifyJustification, unDisverifyJustification} from './actions'
 import {
-  JustificationPolarity, JustificationBasisType, isVerified,
-  isDisverified, isPositive, isNegative
+  verifyJustification,
+  disverifyJustification,
+  unVerifyJustification,
+  unDisverifyJustification,
+  deleteJustification,
+} from './actions'
+import {
+  JustificationBasisType,
+  isVerified,
+  isDisverified,
 } from './models'
 import {extractDomain} from './util'
 import CounterJustifications from './CounterJustifications'
+
+import './Justification.scss'
 
 class Justification extends Component {
   constructor() {
@@ -25,6 +34,7 @@ class Justification extends Component {
     this.onCardMouseLeave = this.onCardMouseLeave.bind(this)
     this.onVerifyButtonClick = this.onVerifyButtonClick.bind(this)
     this.onDisverifyButtonClick = this.onDisverifyButtonClick.bind(this)
+    this.onDeleteClick = this.onDeleteClick.bind(this)
   }
 
   onCardMouseOver() {
@@ -53,6 +63,10 @@ class Justification extends Component {
     }
   }
 
+  onDeleteClick() {
+    this.props.deleteJustification(this.props.justification)
+  }
+
   render() {
     const {justification, withCounterJustifications, positivey} = this.props
     const _isVerified = isVerified(justification)
@@ -65,9 +79,26 @@ class Justification extends Component {
     })
     const justificationTextClasses = classNames({
       justificationText: true,
-      quote: justification.basis.type === JustificationBasisType.REFERENCE,
+      quote: justification.basis.type === JustificationBasisType.CITATION_REFERENCE,
     })
-    const text = justification.basis.type === JustificationBasisType.STATEMENT ? justification.basis.entity.text : justification.basis.entity.quote
+
+    const text = justification.basis.type === JustificationBasisType.STATEMENT ?
+        justification.basis.entity.text :
+        justification.basis.entity.quote
+    const urls = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
+        justification.basis.entity.urls.map(u =>
+            <li key={`url-${u.id}`} className="url">
+              <a href={u.url}>
+                {extractDomain(u.url)}
+                <FontIcon>open_in_new</FontIcon>
+              </a>
+            </li>
+        ) :
+        null
+    const citationTitle = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
+        justification.basis.entity.citation.text :
+        null
+
     const menu = (
         <MenuButton
             icon
@@ -81,7 +112,10 @@ class Justification extends Component {
           <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
           <Divider />
           <ListItem primaryText="Edit" leftIcon={<FontIcon>create</FontIcon>} />
-          <ListItem primaryText="Delete" leftIcon={<FontIcon>delete</FontIcon>} />
+          <ListItem primaryText="Delete"
+                    leftIcon={<FontIcon>delete</FontIcon>}
+                    onClick={this.onDeleteClick}
+          />
         </MenuButton>
     )
     return (
@@ -99,9 +133,12 @@ class Justification extends Component {
                   <div className={justificationTextClasses}>
                     <span>{text}</span>
                   </div>
-                  {justification.basis.type === JustificationBasisType.REFERENCE &&
+                  {citationTitle &&
+                    <div className="citationTitle">{citationTitle}</div>
+                  }
+                  {urls &&
                     <ul>
-                      {justification.basis.entity.urls.map(u => <a key={`url-${u.id}`} href={u.url}>{extractDomain(u.url)}</a>)}
+                      {urls}
                     </ul>
                   }
                 </div>
@@ -151,4 +188,5 @@ export default connect(null, {
   unVerifyJustification,
   disverifyJustification,
   unDisverifyJustification,
+  deleteJustification,
 })(Justification)

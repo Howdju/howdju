@@ -1,7 +1,10 @@
 # Howdju UI TODO
 ## MVP
-* create justifications
-* Delete justifications
+* create counter-justifications inline
+* When FETCH_STATEMENT_JUSTIFICATIONS_FAILED, no error message on page (didFail is never true)
+* Am I transitioning color on the verification icons?
+
+* simplify reducer by merging all payload.entities?
 
 * bookmarklet
 
@@ -10,6 +13,8 @@
 * Search
 * Home page tag cloud
 * favicon
+
+* Figure out if the site works in Firefox
 
 
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
@@ -55,6 +60,7 @@
   * https://github.com/vazco/uniforms
   * https://www.npmjs.com/package/react-validation
   * http://redux-form.com/
+  * https://gist.github.com/mlaursen/641364cf6114692d470069c56c505880
 
 * Why do I have PostCSS in my project?
 ## 0.2

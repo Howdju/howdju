@@ -11,6 +11,8 @@ const {
   unvote,
   createStatement,
   deleteStatement,
+  createJustification,
+  deleteJustification,
 } = require('./service')
 const {logger} = require('./logger')
 
@@ -100,6 +102,28 @@ const routes = [
         })
   },
   {
+    id: 'getStatement',
+    path: new RegExp('^statements/([^/]+)$'),
+    method: GET,
+    handler: ({
+                callback,
+                request: {
+                  pathParameters: [statementId],
+                  authToken,
+                  // TODO look at justifications query param
+                  queryStringParameters
+                }
+              }) => statementJustifications({statementId, authToken})
+        .then(({statement, justifications}) => {
+          if (!statement) {
+            return notFound({callback})
+          } else {
+            console.log(`Returning statement ${statement.id} with ${justifications.length} justifications`)
+            return ok({callback, body: {statement, justifications}})
+          }
+        })
+  },
+  {
     id: 'deleteStatement',
     path: new RegExp('^statements/([^/]+)$'),
     method: DELETE,
@@ -124,25 +148,58 @@ const routes = [
     })
   },
   {
-    id: 'getStatement',
-    path: new RegExp('^statements/([^/]+)$'),
-    method: GET,
+    id: 'createJustification',
+    path: 'justifications',
+    method: POST,
     handler: ({
                 callback,
                 request: {
-                  pathParameters: [statementId],
                   authToken,
-                  // TODO look at justifications query param
-                  queryStringParameters
+                  body: {
+                    justification
+                  },
+                  method,
+                  path,
                 }
-    }) => statementJustifications({statementId, authToken})
-        .then(({statement, justifications}) => {
-          if (!statement) {
-            return notFound({callback})
-          } else {
-            console.log(`Returning statement ${statement.id} with ${justifications.length} justifications`)
-            return ok({callback, body: {statement, justifications}})
+    }) => createJustification({authToken, justification})
+        .then( ({isUnauthenticated, isInvalid, justification}) => {
+          if (isUnauthenticated) {
+            return unauthorized({callback})
+          } else if (isInvalid) {
+            return badRequest({callback})
+          } else if (justification) {
+            return ok({callback, body: {justification}})
           }
+          logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
+          return error({callback})
+        })
+  },
+  {
+    id: 'deleteJustification',
+    path: new RegExp('^justifications/([^/]+)$'),
+    method: DELETE,
+    handler: ({
+                callback,
+                request: {
+                  authToken,
+                  body: {
+                    justification
+                  },
+                  method,
+                  path,
+                  pathParameters: [justificationId]
+                }
+              }) => deleteJustification({authToken, justificationId})
+        .then( ({isUnauthenticated, isUnauthorized, isSuccess}) => {
+          if (isUnauthenticated) {
+            return unauthorized({callback})
+          } else if (isUnauthorized) {
+            return forbidden({callback})
+          } else if (isSuccess) {
+            return ok({callback})
+          }
+          logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
+          return error({callback})
         })
   },
   {

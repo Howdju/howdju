@@ -4,7 +4,7 @@ import DocumentTitle from 'react-document-title'
 import clone from 'lodash/clone'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
-import Paper from 'react-md/lib/Papers/Paper';
+import Paper from 'react-md/lib/Papers/Paper'
 import merge from 'lodash/merge'
 import classNames from 'classnames'
 

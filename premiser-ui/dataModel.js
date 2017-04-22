@@ -18,7 +18,7 @@ const justifications = [
     id: 6,
     target: { type: 'STATEMENT', entity: { id: 1 } },
     basis: {
-      type: 'REFERENCE',
+      type: 'CITATION_REFERENCE',
       entity: {
         id: 1,
         quote: 'Generally, people who are older, lower-income, or live in high-premium areas (like Alaska and Arizona) ' +

@@ -87,3 +87,27 @@ export const DELETE_STATEMENT = 'DELETE_STATEMENT'
 export const DELETE_STATEMENT_SUCCESS = 'DELETE_STATEMENT_SUCCESS'
 export const DELETE_STATEMENT_FAILURE = 'DELETE_STATEMENT_FAILURE'
 export const deleteStatement = create2Action(DELETE_STATEMENT, statement => ({statement}))
+
+export const CREATE_JUSTIFICATION = 'CREATE_JUSTIFICATION'
+export const CREATE_JUSTIFICATION_SUCCESS = 'CREATE_JUSTIFICATION_SUCCESS'
+export const CREATE_JUSTIFICATION_FAILURE = 'CREATE_JUSTIFICATION_FAILURE'
+export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => ({justification}))
+
+/** For a singleton on the Statemeent Justifications page; be careful if using multiple editors at once! */
+export const SHOW_ADD_NEW_JUSTIFICATION = 'SHOW_ADD_NEW_JUSTIFICATION'
+export const HIDE_ADD_NEW_JUSTIFICATION = 'HIDE_ADD_NEW_JUSTIFICATION'
+export const NEW_JUSTIFICATION_PROPERTY_CHANGE = 'NEW_JUSTIFICATION_PROPERTY_CHANGE'
+export const RESET_NEW_JUSTIFICATION = 'RESET_NEW_JUSTIFICATION'
+export const showAddNewJustification = create2Action(SHOW_ADD_NEW_JUSTIFICATION, statementId => ({statementId}))
+export const hideAddNewJustification = create2Action(HIDE_ADD_NEW_JUSTIFICATION)
+export const newJustificationPropertyChange = create2Action(NEW_JUSTIFICATION_PROPERTY_CHANGE)
+export const resetNewJustification = create2Action(RESET_NEW_JUSTIFICATION)
+export const ADD_NEW_JUSTIFICATION_URL = 'ADD_NEW_JUSTIFICATION_URL'
+export const addNewJustificationUrl = create2Action(ADD_NEW_JUSTIFICATION_URL)
+export const DELETE_NEW_JUSTIFICATION_URL = 'DELETE_NEW_JUSTIFICATION_URL'
+export const deleteNewJustificationUrl = create2Action(DELETE_NEW_JUSTIFICATION_URL, (url, index) => ({url, index}))
+
+export const DELETE_JUSTIFICATION = 'DELETE_JUSTIFICATION'
+export const DELETE_JUSTIFICATION_SUCCESS = 'DELETE_JUSTIFICATION_SUCCESS'
+export const DELETE_JUSTIFICATION_FAILURE = 'DELETE_JUSTIFICATION_FAILURE'
+export const deleteJustification = create2Action(DELETE_JUSTIFICATION, justification => ({justification}))

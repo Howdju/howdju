@@ -10,7 +10,7 @@ export const JustificationPolarity = {
 
 export const JustificationBasisType = {
   STATEMENT: 'STATEMENT',
-  REFERENCE: 'REFERENCE',
+  CITATION_REFERENCE: 'CITATION_REFERENCE',
 }
 
 export const VoteTargetType = {

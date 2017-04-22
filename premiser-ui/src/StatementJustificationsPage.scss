@@ -26,7 +26,7 @@ $over-gradient-z-index: 10;
   float: right;
 }
 
-.statementCard, .justificationCard {
+.statementCard, .justificationCard, .newJustificationEditorCard {
   margin-bottom: $gutter;
 }
 .statementCard {
@@ -142,7 +142,7 @@ $over-gradient-z-index: 10;
 
   .justificationText.quote {
     border-left: 2px solid $primary-color;
-    margin: 1.5em 10px;
+    margin: 0 10px 1em;
     padding: 0.5em 10px;
     quotes: "\201C" "\201D" "\2018" "\2019";
 

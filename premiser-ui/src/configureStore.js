@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, compose } from 'redux'
+import { createStore, applyMiddleware, compose as reduxCompose } from 'redux'
 import createHistory from 'history/createBrowserHistory'
 import { routerMiddleware } from 'react-router-redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
@@ -9,7 +9,7 @@ import getSagas from './sagas';
 export const history = createHistory()
 
 export default function configureStore(initialState) {
-  const compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+  const compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || reduxCompose
   const sagaMiddleware = createSagaMiddleware()
 
   const store = createStore(

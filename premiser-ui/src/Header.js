@@ -33,7 +33,7 @@ class Header extends Component {
               </span>
             </Link>
           }
-          actions={<Button icon onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
+          actions={<Button icon className="toggleNavDrawerVisibility" onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
       >
         <div className="md-cell--12 md-cell--middle">
 
@@ -42,6 +42,7 @@ class Header extends Component {
               placeholder="know that..."
               data={this.state.autoComplete.data}
               filter={null}
+              type="search"
               // dataLabel="name"
               // value={this.state.value}
               // onChange={this._handleChange}

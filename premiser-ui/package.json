@@ -17,6 +17,7 @@
     "upload": "cross-env NODE_ENV=production DEBUG=* node bin/upload-to-s3.js",
     "deploy": "yarn run build:prod && cp src/error.html dist/ && yarn run upload && yarn run invalidate",
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
+    "test:debug": "cross-env NODE_ENV=test node debug --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
     "test-dns": "dig +recurse +trace www.premiser.co any"
   },
   "devDependencies": {

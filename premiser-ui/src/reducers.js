@@ -1,11 +1,22 @@
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
+import isArray from 'lodash/isArray'
 import merge from 'lodash/merge'
+import mergeWith from 'lodash/mergeWith'
 import groupBy from 'lodash/groupBy'
 import pickBy from 'lodash/pickBy'
 import map from 'lodash/map'
+import mapValues from 'lodash/mapValues'
+import forEach from 'lodash/forEach'
+import cloneDeep from 'lodash/cloneDeep'
+import set from 'lodash/set'
+import filter from 'lodash/filter'
+import union from 'lodash/union'
 import {LOCATION_CHANGE} from 'react-router-redux'
-import {VotePolarity, VoteTargetType} from './models'
+import {
+  JustificationBasisType, JustificationPolarity, JustificationTargetType, VotePolarity,
+  VoteTargetType
+} from './models'
 import paths from './paths'
 
 import {
@@ -19,18 +30,56 @@ import {
   DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
   UN_DISVERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION_SUCCESS, LOGIN_REDIRECT, CREATE_STATEMENT_PROPERTY_CHANGE,
   CREATE_STATEMENT, CREATE_STATEMENT_SUCCESS, CREATE_STATEMENT_FAILURE, DELETE_STATEMENT_SUCCESS,
+  NEW_JUSTIFICATION_PROPERTY_CHANGE, ADD_NEW_JUSTIFICATION, CLEAR_NEW_JUSTIFICATION, DELETE_JUSTIFICATION_SUCCESS,
+  CREATE_JUSTIFICATION_SUCCESS, SHOW_ADD_NEW_JUSTIFICATION, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION,
+  CREATE_JUSTIFICATION_FAILURE, ADD_NEW_JUSTIFICATION_URL, DELETE_NEW_JUSTIFICATION_URL,
 } from './actions'
+import text, {CREATE_JUSTIFICATION_FAILURE_MESSAGE} from "./texts";
+
+const unionArraysCustomizer = (destVal, srcVal) => {
+  if (isArray(destVal) && isArray(srcVal)) {
+    return union(destVal, srcVal)
+  }
+}
 
 const indexJustificationsByRootStatementId = (justifications => {
-  const justificationsByRootStatementId = groupBy(justifications, j => j.rootStatementId)
-  for (let statementId of Object.keys(justificationsByRootStatementId)) {
-    justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], 'id')
-    // justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => normalize(j, justificationSchema).results)
-  }
+  let justificationsByRootStatementId = groupBy(justifications, j => j.rootStatementId)
+  justificationsByRootStatementId = mapValues(justificationsByRootStatementId, (justifications, rootStatementId) => map(justifications, j => j.id))
+  // for (let statementId of Object.keys(justificationsByRootStatementId)) {
+  //   justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => j.id)
+  //   // justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => normalize(j, justificationSchema).results)
+  // }
   return justificationsByRootStatementId
 })
 
-const entities = (state = {
+const defaultNewJustification = ({rootStatementId, targetType, targetId}) => ({
+  rootStatementId: rootStatementId,
+  polarity: JustificationPolarity.POSITIVE,
+  target: {
+    type: targetType,
+    entity: {
+      id: targetId
+    }
+  },
+  basis: {
+    type: JustificationBasisType.STATEMENT,
+    // Store both these types directly on the basis for the view-model
+    // Before the justification is sent to the server, the one corresponding to the current type should be put on the
+    // entity property
+    citationReference: {
+      citation: {
+        text: '',
+      },
+      quote: '',
+      urls: [{url: ''}],
+    },
+    statement: {
+      text: ''
+    }
+  }
+})
+
+export const entities = (state = {
     statements: {},
     justifications: {},
     justificationsByRootStatementId: {},
@@ -41,6 +90,7 @@ const entities = (state = {
   switch (action.type) {
     case FETCH_STATEMENTS_SUCCESS:
       return {...state, statements: merge(state.statements, action.payload.entities.statements)}
+
     case FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS:
       const justificationsByRootStatementId = indexJustificationsByRootStatementId(action.payload.entities.justifications)
       return {
@@ -48,7 +98,7 @@ const entities = (state = {
         statements: merge({}, state.statements, action.payload.entities.statements),
         justifications: merge({}, state.justifications, action.payload.entities.justifications),
         votes: merge({}, state.votes, action.payload.entities.votes),
-        justificationsByRootStatementId: merge({}, state.justificationsByRootStatementId, justificationsByRootStatementId),
+        justificationsByRootStatementId: mergeWith({}, state.justificationsByRootStatementId, justificationsByRootStatementId, unionArraysCustomizer),
         quotes: merge({}, state.quotes, action.payload.entities.quotes),
       }
 
@@ -61,7 +111,7 @@ const entities = (state = {
     case DELETE_STATEMENT_SUCCESS: {
       return {
         ...state,
-        statements: pickBy(state.statements, (s, id) => +id !== action.meta.deletedStatement.id )
+        statements: pickBy(state.statements, (s, id) => +id !== action.meta.deletedEntity.id )
       }
     }
     case FETCH_STATEMENT_JUSTIFICATIONS_FAILURE:
@@ -69,6 +119,35 @@ const entities = (state = {
         ...state,
         statements: pickBy(state.statements, (s, id) => +id !== action.meta.statementId)
       }
+
+    case CREATE_JUSTIFICATION_SUCCESS: {
+      const justificationsByRootStatementId = indexJustificationsByRootStatementId(action.payload.entities.justifications)
+      return mergeWith(
+          {},
+          state,
+          action.payload.entities,
+          {justificationsByRootStatementId},
+          unionArraysCustomizer
+          )
+      // return {
+      //   ...state,
+      //   statements: merge({}, state.statements, action.payload.entities.statements),
+      //   justifications: merge({}, state.justifications, action.payload.entities.justifications),
+      //   justificationsByRootStatementId: mergeWith({}, state.justificationsByRootStatementId, justificationsByRootStatementId, mergeArraysCustomizer)
+      // }
+    }
+    case DELETE_JUSTIFICATION_SUCCESS: {
+      const justification = action.meta.deletedEntity
+      const justificationsByRootStatementId = cloneDeep(state.justificationsByRootStatementId)
+      justificationsByRootStatementId[justification.rootStatementId] =
+          filter(justificationsByRootStatementId[justification.rootStatementId], id => id !== justification.id)
+      return {
+        ...state,
+        justifications: pickBy(state.justifications, (j, id) => +id !== justification.id ),
+        justificationsByRootStatementId
+      }
+    }
+
 
     case VERIFY_JUSTIFICATION:
     case DISVERIFY_JUSTIFICATION: {
@@ -166,7 +245,13 @@ const loginPage = (state = {isLoggingIn: false, errorMessage: '', credentials: {
   return state
 }
 
-const statementJustificationsPage = (state = {isFetching: false, didFail: false}, action) => {
+const statementJustificationsPage = (state = {
+  isFetching: false,
+  didFail: false,
+  isNewJustificationDialogVisible: false,
+  newJustification: null,
+  newJustificationErrorMessage: '',
+}, action) => {
   switch (action.type) {
     case FETCH_STATEMENT_JUSTIFICATIONS_FAILURE:
       return {...state, isFetching: false, didFail: true}
@@ -174,6 +259,53 @@ const statementJustificationsPage = (state = {isFetching: false, didFail: false}
       return {...state, isFetching: true, didFail: false}
     case FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS:
       return {...state, isFetching: false}
+
+    case SHOW_ADD_NEW_JUSTIFICATION:
+      const rootStatementId = action.payload.statementId
+      const targetId = action.payload.statementId
+      const targetType = JustificationTargetType.STATEMENT
+      return {
+        ...state,
+        isNewJustificationDialogVisible: true,
+        newJustification: defaultNewJustification({rootStatementId, targetType,  targetId}),
+        newJustificationErrorMessage: '',
+      }
+    case HIDE_ADD_NEW_JUSTIFICATION:
+      return {...state, isNewJustificationDialogVisible: false, newJustificationErrorMessage: ''}
+    case RESET_NEW_JUSTIFICATION:
+      return {...state, newJustification: defaultNewJustification({}), newJustificationErrorMessage: ''}
+
+    case CREATE_JUSTIFICATION_FAILURE:
+      return {...state, newJustificationErrorMessage: text(CREATE_JUSTIFICATION_FAILURE_MESSAGE)}
+
+    case NEW_JUSTIFICATION_PROPERTY_CHANGE: {
+      const newJustification = cloneDeep(state.newJustification)
+      const properties = action.payload
+      forEach(properties, (val, key) => {
+        set(newJustification, key, val)
+      })
+      return {...state, newJustification, newJustificationErrorMessage: ''}
+    }
+
+    case ADD_NEW_JUSTIFICATION_URL: {
+      const newJustification = cloneDeep(state.newJustification)
+      newJustification.basis.citationReference.urls = newJustification.basis.citationReference.urls.concat([{url: ''}])
+      return {
+        ...state,
+        newJustification,
+      }
+    }
+
+    case DELETE_NEW_JUSTIFICATION_URL: {
+      const newJustification = cloneDeep(state.newJustification)
+      console.log(newJustification.basis.citationReference.urls)
+      console.log(action.payload)
+      newJustification.basis.citationReference.urls.splice(action.payload.index, 1)
+      return {
+        ...state,
+        newJustification,
+      }
+    }
   }
 
   return state

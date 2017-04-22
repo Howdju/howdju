@@ -9,6 +9,7 @@ create table if not exists actions (
 create table if not exists statements (
   statement_id serial,
   text varchar(2048),
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
@@ -21,17 +22,19 @@ create table if not exists justifications (
   root_statement_id integer,
   target_type varchar(64), -- 'STATEMENT' or 'JUSTIFICATION'
   target_id integer,
-  basis_type varchar(64), -- 'STATEMENT' or 'REFERENCE'
+  basis_type varchar(64), -- 'STATEMENT' or 'CITATION_REFERENCE'
   basis_id integer,
   polarity varchar(32), -- 'POSITIVE' or 'NEGATIVE'.  target_type='JUSTIFICATION' implies polarity='NEGATIVE'
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
 
-create table if not exists "references" (
-  reference_id serial,
+create table if not exists citation_references (
+  citation_reference_id serial,
   quote varchar(65536),
   citation_id integer,
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
@@ -39,13 +42,17 @@ create table if not exists "references" (
 create table if not exists citations (
   citation_id serial,
   text varchar(2048),
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
 
-create table if not exists reference_urls (
-  reference_id integer,
+-- Both citation_urls and reference_urls might make sense;
+-- citation_urls refer to the full source while citation_reference_urls point to the quote
+create table if not exists citation_reference_urls (
+  citation_reference_id integer,
   url_id integer,
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
@@ -53,6 +60,7 @@ create table if not exists reference_urls (
 create table if not exists urls (
   url_id serial,
   url varchar(65536),
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
@@ -61,6 +69,7 @@ create table if not exists tags (
   tag_id serial,
   type varchar(64), -- statements: SUBJECT, TIME, LOCATION; justifications: LOGICAL_FALLACY
   text varchar(1024),
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
@@ -70,6 +79,7 @@ create table if not exists taggings (
   tag_id integer,
   target_id integer,
   target_type varchar(64),
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
@@ -100,6 +110,7 @@ create table if not exists users (
   user_id serial,
   email varchar(2048),
   hash varchar(4096),
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
@@ -107,29 +118,42 @@ create table if not exists users (
 create table if not exists groups (
   group_id serial,
   name varchar(256),
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );
 
 create table if not exists user_groups (
   user_id integer,
-  group_id integer
+  group_id integer,
+  creator_user_id integer,
+  created timestamp,
+  deleted timestamp
 );
 
 create table if not exists permissions (
   permission_id serial,
   name varchar(256),
-  comment varchar(2048)
+  comment varchar(2048),
+  creator_user_id integer,
+  created timestamp,
+  deleted timestamp
 );
 
 create table if not exists user_permissions (
   user_id integer,
   permission_id integer
+  creator_user_id integer,
+  created timestamp,
+  deleted timestamp
 );
 
 create table if not exists group_permissions (
   group_id integer,
-  permission_id integer
+  permission_id integer,
+  creator_user_id integer,
+  created timestamp,
+  deleted timestamp
 );
 
 create table if not exists authentication_tokens (

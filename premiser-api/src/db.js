@@ -22,9 +22,9 @@ exports.query = (query, args) => Promise.resolve(
       return Promise.resolve(client.query(query, args)).finally(() => client.release())
     })
 )
-exports.queries = queries => Promise.resolve(
+exports.queries = queryAndArgs => Promise.resolve(
     pool.connect().then(client => Promise
-        .all(queries.map( ({query, args}) => {
+        .all(queryAndArgs.map( ({query, args}) => {
           logger.silly('db.query:', {query, args})
           return client.query.call(client, query, args)
         } ))
