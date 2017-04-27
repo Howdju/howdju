@@ -100,6 +100,7 @@ class JustificationEditor extends Component {
           name="basis.citationReference.citation.text"
           label="Citation"
           value={justification.basis.citationReference.citation.text}
+          required
           onChange={this.handlePropertyChange}
           leftIcon={<FontIcon>book</FontIcon>}
       />,
@@ -155,6 +156,7 @@ class JustificationEditor extends Component {
           name="basis.statement.text"
           label="Statement"
           value={justification.basis.statement.text}
+          required
           onChange={this.handlePropertyChange}
           leftIcon={<FontIcon>text_fields</FontIcon>}
       />

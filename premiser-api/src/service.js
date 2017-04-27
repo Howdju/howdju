@@ -99,7 +99,7 @@ const statementJustifications = ({statementId, authToken}) => queries([
       args: [statementId],
     },
     {
-      // Justifications
+      // Justifications, justifications' bases, and justifications' votes
       query: `select 
                 j.*
                 , s.statement_id as basis_statement_id
@@ -107,7 +107,6 @@ const statementJustifications = ({statementId, authToken}) => queries([
                 
                 , r.citation_reference_id as basis_citation_reference_id
                 , r.quote as basis_citation_reference_quote
-                
                 , c.citation_id as basis_citation_reference_citation_id
                 , c.text as basis_citation_reference_citation_text
                 
@@ -447,7 +446,6 @@ const selectOrInsertCitationReference = (citationReference, userId, now) => Prom
       return selectOrInsertJustCitationReference(citationReference, userId, now)
     })
     .then( citationReference => {
-      debugger
       return Promise.props({
         citationReference,
         urls: selectOrInsertCitationReferenceUrls(citationReference, userId, now)

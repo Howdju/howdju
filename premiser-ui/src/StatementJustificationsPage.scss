@@ -173,7 +173,7 @@ $over-gradient-z-index: 10;
 
   &.positivey {
 
-    .actions {
+    & > .justificationCard > .actions {
       .md-icon {
         // When positivey, the icons look better flipped
         transform: scaleX(-1);
@@ -181,20 +181,18 @@ $over-gradient-z-index: 10;
     }
 
     & > .counterJustifications {
-      margin-left: 20px;
-      .actions {
-        direction: rtl;
-        .md-icon {
-          transform: none;
-        }
-      }
+      margin-left: 30px;
     }
   }
 
   &.negativey {
 
-    .actions {
+    & > .justificationCard > .actions {
       direction: rtl;
+
+      .md-icon {
+        transform: none;
+      }
 
       & > * {
         left: 0;
@@ -214,13 +212,7 @@ $over-gradient-z-index: 10;
     }
 
     & > .counterJustifications {
-      margin-right: 20px;
-      .actions {
-        direction: ltr;
-        .md-icon {
-          transform: scaleX(-1);
-        }
-      }
+      margin-right: 30px;
     }
   }
 }

@@ -48,7 +48,6 @@ const toJustification = (row, urlsByJustificationId, counterJustificationsByJust
           citation_reference_citation_id: row.basis_citation_reference_citation_id,
           citation_reference_citation_text: row.basis_citation_reference_citation_text,
         })
-        debugger
       }
       break
 

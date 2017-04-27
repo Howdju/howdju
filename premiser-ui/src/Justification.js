@@ -6,6 +6,7 @@ import Card from "react-md/lib/Cards/Card"
 import CardActions from "react-md/lib/Cards/CardActions"
 import Button from "react-md/lib/Buttons"
 import FontIcon from "react-md/lib/FontIcons"
+import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"
 import Positions from "react-md/lib/Menus/Positions"
@@ -15,6 +16,10 @@ import {
   unVerifyJustification,
   unDisverifyJustification,
   deleteJustification,
+  addNewCounterJustification,
+  newCounterJustificationPropertyChange,
+  createJustification,
+  cancelNewCounterJustification,
 } from './actions'
 import {
   JustificationBasisType,
@@ -22,9 +27,15 @@ import {
   isDisverified,
 } from './models'
 import {extractDomain} from './util'
-import CounterJustifications from './CounterJustifications'
+import FlipMove from 'react-flip-move';
+import config from './config';
 
 import './Justification.scss'
+import CounterJustificationEditor from "./CounterJustificationEditor";
+import {
+  default as t, CANCEL_BUTTON_LABEL, CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
+  CREATE_COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL
+} from "./texts";
 
 class Justification extends Component {
   constructor() {
@@ -34,7 +45,11 @@ class Justification extends Component {
     this.onCardMouseLeave = this.onCardMouseLeave.bind(this)
     this.onVerifyButtonClick = this.onVerifyButtonClick.bind(this)
     this.onDisverifyButtonClick = this.onDisverifyButtonClick.bind(this)
-    this.onDeleteClick = this.onDeleteClick.bind(this)
+    this.deleteClick = this.deleteClick.bind(this)
+    this.onAddNewCounterJustification = this.onAddNewCounterJustification.bind(this)
+    this.onNewCounterJustificationPropertyChange = this.onNewCounterJustificationPropertyChange.bind(this)
+    this.onCreateCounterJustification = this.onCreateCounterJustification.bind(this)
+    this.onCancelNewCounterJustification = this.onCancelNewCounterJustification.bind(this)
   }
 
   onCardMouseOver() {
@@ -63,12 +78,34 @@ class Justification extends Component {
     }
   }
 
-  onDeleteClick() {
+  deleteClick() {
     this.props.deleteJustification(this.props.justification)
   }
 
+  onAddNewCounterJustification() {
+    this.props.addNewCounterJustification(this.props.justification)
+  }
+
+  onNewCounterJustificationPropertyChange(properties) {
+    this.props.newCounterJustificationPropertyChange(this.props.newCounterJustification, properties)
+  }
+
+  onCreateCounterJustification() {
+    this.props.createJustification(this.props.newCounterJustification)
+  }
+
+  onCancelNewCounterJustification() {
+    this.props.cancelNewCounterJustification(this.props.newCounterJustification)
+  }
+
   render() {
-    const {justification, withCounterJustifications, positivey} = this.props
+    const {
+      justification,
+      withCounterJustifications,
+      positivey,
+      newCounterJustification,
+      isCreatingNewCounterJustification,
+    } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
     const {isOver} = this.state
@@ -87,7 +124,7 @@ class Justification extends Component {
         justification.basis.entity.quote
     const urls = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
         justification.basis.entity.urls.map(u =>
-            <li key={`url-${u.id}`} className="url">
+            <li id={`url-${u.id}-list-item`} key={`url-${u.id}-list-item`} className="url">
               <a href={u.url}>
                 {extractDomain(u.url)}
                 <FontIcon>open_in_new</FontIcon>
@@ -114,12 +151,55 @@ class Justification extends Component {
           <ListItem primaryText="Edit" leftIcon={<FontIcon>create</FontIcon>} />
           <ListItem primaryText="Delete"
                     leftIcon={<FontIcon>delete</FontIcon>}
-                    onClick={this.onDeleteClick}
+                    onClick={this.deleteClick}
           />
         </MenuButton>
     )
+
+    const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
+    const counterJustifications = (
+        <div className="counterJustifications">
+          <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
+            {newCounterJustification &&
+              <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justificationCard">
+                <div className="md-grid">
+                  <div className="md-cell md-cell--12">
+                    <FocusContainer focusOnMount>
+                      <CounterJustificationEditor counterJustification={newCounterJustification}
+                                                  onPropertyChange={this.onNewCounterJustificationPropertyChange}
+                                                  onSubmit={this.onCreateCounterJustification}
+                      />
+                    </FocusContainer>
+                    <CardActions className="md-dialog-footer">
+                      <Button flat label={t(CANCEL_BUTTON_LABEL)} onClick={this.onCancelNewCounterJustification} />
+                      <Button flat
+                              primary
+                              type="submit"
+                              label={t(CREATE_COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+                              onClick={this.onCreateCounterJustification}
+                              disabled={isCreatingNewCounterJustification}
+                      />
+                    </CardActions>
+                  </div>
+                </div>
+              </Card>
+            }
+            {justification.counterJustifications.map(j =>
+              <div id={`counter-justification-${j.id}-row`} key={`counter-justification-${j.id}-row`} className="row">
+                <div className="col-xs-12">
+                  <ConnectedJustification withCounterJustifications={withCounterJustifications}
+                                          justification={j}
+                                          positivey={!positivey}
+                  />
+                </div>
+              </div>
+            )}
+          </FlipMove>
+        </div>
+    )
+
     return (
-        <div id={`justification-${justification.id}`} className={justificationClasses}>
+        <div id={`justification-${justification.id}-card-wrapper`} className={justificationClasses}>
           <Card className="justificationCard"
                 onMouseOver={this.onCardMouseOver}
                 onMouseLeave={this.onCardMouseLeave}
@@ -173,20 +253,35 @@ class Justification extends Component {
                         otherSelected: _isVerified || _isDisverified,
                       })}
                       title="Counter this justification"
+                      onClick={this.onAddNewCounterJustification}
               >reply</Button>
             </CardActions>
           </Card>
-          {withCounterJustifications &&
-            <CounterJustifications counterJustifications={justification.counterJustifications} positivey={!positivey} />}
+          {withCounterJustifications && counterJustifications}
         </div>
     )
   }
 }
 
-export default connect(null, {
+const mapStateToProps = (state, ownProps) => {
+  const newCounterJustification = state.ui.statementJustificationsPage.newCounterJustificationsByTargetId[ownProps.justification.id]
+  const isCreatingNewCounterJustification = state.ui.statementJustificationsPage.newCounterJustificationIsCreatingByTargetId[ownProps.justification.id]
+  return {
+    newCounterJustification,
+    isCreatingNewCounterJustification,
+  }
+}
+
+const ConnectedJustification = connect(mapStateToProps, {
   verifyJustification,
   unVerifyJustification,
   disverifyJustification,
   unDisverifyJustification,
   deleteJustification,
+  addNewCounterJustification,
+  newCounterJustificationPropertyChange,
+  createJustification,
+  cancelNewCounterJustification,
 })(Justification)
+
+export default ConnectedJustification

@@ -18,6 +18,8 @@ import toNumber from "lodash/toNumber";
 import isFinite from "lodash/isFinite";
 import forEach from 'lodash/forEach';
 import some from 'lodash/some'
+import merge from 'lodash/merge'
+import map from 'lodash/map'
 import defaults from 'lodash/defaults'
 import classNames from 'classnames'
 import FlipMove from 'react-flip-move';
@@ -31,7 +33,7 @@ import {
   JustificationPolarity,
   isPositive,
   isNegative,
-  JustificationBasisType,
+  JustificationBasisType, JustificationTargetType, isCounter, decircularizeCounterJustifications,
 } from "./models";
 
 import {
@@ -322,23 +324,27 @@ class StatementJustificationsPage extends Component {
 
               </div>
             </div>
-            <div className="row">
-              {!hasJustifications &&
-                  <div className="col-xs-12">
-                    {isFetching ?
-                        // Only show progress if we are not also showing one for the statement
-                        !!statement && <CircularProgress id="fetchingJustificationsProgress"/> :
+            {!hasJustifications &&
+
+              <div className="row center-xs">
+                <div className="col-xs-12">
+                  {isFetching ?
+                      // Only show progress if we are not also showing one for the statement
+                      !!statement && <CircularProgress id="fetchingJustificationsProgress" /> :
+                      <div>
+                        <div>No justifications.</div>
                         <div>
-                          <span>No justifications.</span>
-                          {' '}
                           <a onClick={this.showAddNewJustification} href="#">
                             {text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                           </a>
-
                         </div>
-                    }
-                  </div>
-              }
+
+                      </div>
+                  }
+                </div>
+              </div>
+            }
+            <div className="row">
               {justificationRows}
             </div>
 
@@ -379,6 +385,8 @@ const mapStateToProps = (state, ownProps) => {
   }
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
+  // justifications = decircularizeCounterJustifications(justifications)
+
   justifications = sortJustifications(justifications)
   const props = {
     ...state.ui.statementJustificationsPage,

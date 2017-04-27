@@ -91,7 +91,15 @@ export const deleteStatement = create2Action(DELETE_STATEMENT, statement => ({st
 export const CREATE_JUSTIFICATION = 'CREATE_JUSTIFICATION'
 export const CREATE_JUSTIFICATION_SUCCESS = 'CREATE_JUSTIFICATION_SUCCESS'
 export const CREATE_JUSTIFICATION_FAILURE = 'CREATE_JUSTIFICATION_FAILURE'
-export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => ({justification}))
+export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => {
+  if (justification.target.entity.id) {
+    // If the target already has an ID, then just sent that along; that is enough for the server to identify it.
+    // This transformation probably applies to basis and any other entities.  But it is particularly important for
+    // justification targets, because the target may be a justification having circular references.
+    justification = {...justification, target:{...justification.target, entity: { id: justification.target.entity.id}}}
+  }
+  return {justification}
+})
 
 /** For a singleton on the Statemeent Justifications page; be careful if using multiple editors at once! */
 export const SHOW_ADD_NEW_JUSTIFICATION = 'SHOW_ADD_NEW_JUSTIFICATION'
@@ -111,3 +119,11 @@ export const DELETE_JUSTIFICATION = 'DELETE_JUSTIFICATION'
 export const DELETE_JUSTIFICATION_SUCCESS = 'DELETE_JUSTIFICATION_SUCCESS'
 export const DELETE_JUSTIFICATION_FAILURE = 'DELETE_JUSTIFICATION_FAILURE'
 export const deleteJustification = create2Action(DELETE_JUSTIFICATION, justification => ({justification}))
+
+export const ADD_NEW_COUNTER_JUSTIFICATION = 'ADD_NEW_COUNTER_JUSTIFICATION'
+export const NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE = 'NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE'
+export const CANCEL_NEW_COUNTER_JUSTIFICATION = 'CANCEL_NEW_COUNTER_JUSTIFICATION'
+export const addNewCounterJustification = create2Action(ADD_NEW_COUNTER_JUSTIFICATION, targetJustification => ({targetJustification}))
+export const newCounterJustificationPropertyChange =
+    create2Action(NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE, (justification, properties) => ({justification, properties}))
+export const cancelNewCounterJustification = create2Action(CANCEL_NEW_COUNTER_JUSTIFICATION, justification => ({justification}))

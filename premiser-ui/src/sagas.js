@@ -30,7 +30,7 @@ import {
   CREATE_STATEMENT, DELETE_STATEMENT_SUCCESS, DELETE_STATEMENT_FAILURE, DELETE_STATEMENT,
   FETCH_STATEMENT_JUSTIFICATIONS_FAILURE, FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS, CREATE_JUSTIFICATION,
   CREATE_JUSTIFICATION_SUCCESS, CREATE_JUSTIFICATION_FAILURE, DELETE_JUSTIFICATION, DELETE_JUSTIFICATION_FAILURE,
-  DELETE_JUSTIFICATION_SUCCESS, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION
+  DELETE_JUSTIFICATION_SUCCESS, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION,
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError, logger} from './util'
@@ -53,6 +53,8 @@ const getAuthToken = state => {
 
 const getRouterLocation = state => state.router.location
 const getLoginRedirectLocation = state => state.app.loginRedirectLocation
+const getCounterJustification = targetJustificationId => state =>
+    state.ui.statementJustificationsPage.newCounterJustificationsByTargetId[targetJustificationId]
 
 let isRehydrated = false
 
@@ -74,21 +76,26 @@ function* callApi({type, payload: {endpoint, fetchInit = {}, schema}, meta: {non
       yield take(REHYDRATE)
     }
 
+    let fetchInitUpdate = {}
+
     // Add auth token to all API requests
     const authToken = yield select(getAuthToken)
     if (authToken) {
-      fetchInit.headers = merge({}, fetchInit.headers, {
+      fetchInitUpdate.headers = merge({}, fetchInitUpdate.headers, {
         'Authorization': `Bearer ${authToken}`,
       })
     }
 
     // Prepare data submission
     if (fetchInit.body) {
-      fetchInit.headers = merge({}, fetchInit.headers, {
+      fetchInitUpdate.headers = merge({}, fetchInitUpdate.headers, {
         'Content-Type': 'application/json',
       })
-      fetchInit.body = JSON.stringify(fetchInit.body)
+
+      fetchInitUpdate.body = JSON.stringify(fetchInit.body)
     }
+
+    fetchInit = merge({}, fetchInit, fetchInitUpdate)
 
     const result = yield call(fetchJson, endpoint, {init: fetchInit, schema})
     yield put({type: CALL_API_SUCCESS, payload: result, meta: {nonce}})
@@ -301,6 +308,7 @@ function* onCreateStatement(action) {
 
 function* onCreateJustification(action) {
   try {
+
     const payload = {
       endpoint: 'justifications',
       fetchInit: {

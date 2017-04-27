@@ -72,7 +72,7 @@ const routes = [
     method: GET,
     handler: ({callback}) => statements()
         .then(statements => {
-          console.log(`Returning ${statements.length} statements`)
+          logger.debug(`Returning ${statements.length} statements`)
           return ok({callback, body: statements})
         })
   },
@@ -118,7 +118,7 @@ const routes = [
           if (!statement) {
             return notFound({callback})
           } else {
-            console.log(`Returning statement ${statement.id} with ${justifications.length} justifications`)
+            logger.debug(`Returning statement ${statement.id} with ${justifications.length} justifications`)
             return ok({callback, body: {statement, justifications}})
           }
         })
@@ -216,7 +216,7 @@ const routes = [
           if (isNotAuthorized) {
             return forbidden({callback, message})
           }
-          console.log(`Successfully authenticated ${auth.email}`)
+          logger.debug(`Successfully authenticated ${auth.email}`)
           return ok({callback, body: auth})
         })
   },
@@ -267,7 +267,7 @@ const routes = [
           if (notAuthorized) {
             return forbidden({callback, message})
           } else {
-            console.log(`Successfully created user ${user.id}`)
+            logger.debug(`Successfully created user ${user.id}`)
             return ok({callback, body: {user}})
           }
         })
@@ -303,7 +303,7 @@ const routeEvent = ({callback, request}) =>
   selectRoute(request)
       .then( ({route, pathParameters}) => {
         if (!route) {
-          console.log(`No route for ${request.method} ${request.path}`)
+          logger.debug(`No route for ${request.method} ${request.path}`)
           return notFound({callback})
         }
         return route.handler({callback, request: merge({}, request, {pathParameters})})
