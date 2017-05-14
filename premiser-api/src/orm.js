@@ -1,6 +1,5 @@
 const {JustificationBasisType} = require('./models')
 
-
 const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
 const toStatement = row => !row ? row : ({

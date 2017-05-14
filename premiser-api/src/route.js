@@ -14,6 +14,9 @@ const {
   createJustification,
   deleteJustification,
 } = require('./service')
+const {
+  searchStatements,
+} = require('./search')
 const {logger} = require('./logger')
 
 const ok = ({callback, body={}, headers}) => callback({
@@ -74,6 +77,16 @@ const routes = [
         .then(statements => {
           logger.debug(`Returning ${statements.length} statements`)
           return ok({callback, body: statements})
+        })
+  },
+  {
+    id: 'searchStatements',
+    path: 'search-statements',
+    method: GET,
+    handler: ({callback, request: { queryStringParameters: { searchText }}}) => searchStatements(searchText)
+        .then(rankedStatements => {
+          logger.debug(`Returning ${rankedStatements.length} statements from search`)
+          return ok({callback, body: rankedStatements})
         })
   },
   {

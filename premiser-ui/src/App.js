@@ -12,17 +12,21 @@ import Snackbar from 'react-md/lib/Snackbars'
 import Toolbar from 'react-md/lib/Toolbars';
 import { connect } from 'react-redux'
 
+
 import './App.scss'
 
 import Header from './Header'
 import HomePage from './HomePage'
+import MainSearchPage from './MainSearchPage'
 import CreateStatementPage from './CreateStatementPage'
 import ToolsPage from './ToolsPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
-import {dismissToast, hideNavDrawer, logout, setNavDrawerVisibility} from "./actions";
+import {dismissToast, hideNavDrawer, initializeMainSearch, logout, setNavDrawerVisibility} from "./actions";
 import {history} from './configureStore'
 import paths from "./paths";
+import mainSearcher from './mainSearcher'
+
 
 const IconPage = props => (
     <DocumentTitle title={'Icons - Howdju'}>
@@ -72,6 +76,14 @@ class App extends Component {
     this.handleHideNavDrawer = this.handleHideNavDrawer.bind(this)
     this.onNavDrawerVisibilityToggle = this.onNavDrawerVisibilityToggle.bind(this)
     this.onSnackbarDismiss = this.onSnackbarDismiss.bind(this)
+  }
+
+  componentDidMount() {
+    const location = window.location
+    const queryParamSearchText = mainSearcher.mainSearchText(location)
+    if (queryParamSearchText) {
+      this.props.initializeMainSearch(queryParamSearchText)
+    }
   }
 
   handleLogout() {
@@ -140,18 +152,26 @@ class App extends Component {
             onVisibilityToggle={this.onNavDrawerVisibilityToggle}
             style={{ zIndex: 100 }}
         />)
+
+    const renderHomePath = props => {
+      const mainSearchText = mainSearcher.mainSearchText(props.location)
+      return mainSearchText ?
+          <MainSearchPage {...props} /> :
+          <HomePage {...props} />
+    }
+
     return (
       <DocumentTitle title="Howdju">
         <ConnectedRouter history={history}>
           <div id="app">
 
-            <Header/>
+            <Header />
 
             {navDrawer}
 
             <div id="page" className="md-toolbar-relative">
 
-              <Route exact path={paths.home()} component={HomePage} />
+              <Route exact path={paths.home()} render={renderHomePath}/>
               <Route path={paths.login()} component={LoginPage} />
               <Route path="/tools" component={ToolsPage} />
               <Route path="/create-statement" component={CreateStatementPage} />
@@ -195,4 +215,5 @@ export default connect(mapStateToProps, {
   hideNavDrawer,
   setNavDrawerVisibility,
   dismissToast,
+  initializeMainSearch,
 })(App)

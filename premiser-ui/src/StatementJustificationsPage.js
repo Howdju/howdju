@@ -385,7 +385,6 @@ const mapStateToProps = (state, ownProps) => {
   }
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
-  // justifications = decircularizeCounterJustifications(justifications)
 
   justifications = sortJustifications(justifications)
   const props = {

@@ -30,7 +30,9 @@ import {
   CREATE_STATEMENT, DELETE_STATEMENT_SUCCESS, DELETE_STATEMENT_FAILURE, DELETE_STATEMENT,
   FETCH_STATEMENT_JUSTIFICATIONS_FAILURE, FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS, CREATE_JUSTIFICATION,
   CREATE_JUSTIFICATION_SUCCESS, CREATE_JUSTIFICATION_FAILURE, DELETE_JUSTIFICATION, DELETE_JUSTIFICATION_FAILURE,
-  DELETE_JUSTIFICATION_SUCCESS, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION,
+  DELETE_JUSTIFICATION_SUCCESS, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION, DO_MAIN_SEARCH,
+  FETCH_STATEMENTS_SEARCH, FETCH_STATEMENTS_SEARCH_SUCCESS, FETCH_STATEMENTS_SEARCH_FAILURE, fetchStatementsSearch,
+  mainSearchTextChange, INITIALIZE_MAIN_SEARCH,
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError, logger} from './util'
@@ -41,6 +43,7 @@ import {
 import {VotePolarity, VoteTargetType} from "./models";
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE, LOGIN_SUCCESS_TOAST_MESSAGE} from "./texts";
+import mainSearcher from './mainSearcher'
 
 const POST = 'POST'
 const DELETE = 'DELETE'
@@ -282,6 +285,27 @@ function* callApiForFetchStatementJustifications(action) {
   }
 }
 
+function* callApiForFetchStatementsSearch(action) {
+  const searchText = action.payload.searchText
+  try {
+    const payload = {
+      endpoint: `search-statements?searchText=${searchText}`,
+      schema: [statementSchema],
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
+    if (successAction) {
+      yield put({type: FETCH_STATEMENTS_SEARCH_SUCCESS, payload: successAction.payload})
+    } else {
+      yield put({type: FETCH_STATEMENTS_SEARCH_FAILURE, payload: failureAction.payload})
+    }
+  } catch (error) {
+    logError(error)
+    yield put({type: FETCH_STATEMENTS_SEARCH_FAILURE, payload: error})
+  }
+}
+
 function* onCreateStatement(action) {
   try {
     const payload = {
@@ -448,6 +472,22 @@ function* onCreateStatementSuccess(action) {
   yield put(push(paths.statement(statement)))
 }
 
+function* onDoMainSearch(action) {
+  const mainSearchPath = paths.mainSearch(action.payload.mainSearchText)
+  const routerLocation = yield select(getRouterLocation)
+  const routerMainSearchText = mainSearcher.mainSearchText(routerLocation)
+  const urlSearchText = paths.mainSearch(routerMainSearchText)
+  if (urlSearchText !== mainSearchPath) {
+    yield put(push(mainSearchPath))
+  }
+  yield put(fetchStatementsSearch(action.payload.mainSearchText))
+}
+
+function* onInitializeMainSearch(action) {
+  yield put(mainSearchTextChange(action.payload.searchText))
+  yield put(fetchStatementsSearch(action.payload.searchText))
+}
+
 function* watchFetchResources() {
   yield takeEvery([
     FETCH_STATEMENTS,
@@ -543,6 +583,18 @@ function* watchRehydrate() {
   yield takeEvery(REHYDRATE, recordRehydrate)
 }
 
+function* watchDoMainSearch() {
+  yield takeEvery(DO_MAIN_SEARCH, onDoMainSearch)
+}
+
+function* watchFetchStatementsSearch() {
+  yield takeEvery(FETCH_STATEMENTS_SEARCH, callApiForFetchStatementsSearch)
+}
+
+function* watchInitializeMainSearch() {
+  yield takeEvery(INITIALIZE_MAIN_SEARCH, onInitializeMainSearch)
+}
+
 export default () => [
   watchLogin(),
   watchLoginSuccess(),
@@ -565,4 +617,7 @@ export default () => [
   watchCreateJustificationFailure(),
   watchDeleteJustification(),
   watchDeleteJustificationFailure(),
+  watchDoMainSearch(),
+  watchFetchStatementsSearch(),
+  watchInitializeMainSearch(),
 ]

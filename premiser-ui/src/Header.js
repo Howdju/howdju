@@ -4,8 +4,11 @@ import { connect } from 'react-redux'
 import Button from 'react-md/lib/Buttons/Button'
 import Autocomplete from 'react-md/lib/Autocompletes';
 import Toolbar from 'react-md/lib/Toolbars';
+import throttle from 'lodash/throttle'
 
-import {toggleNavDrawerVisibility} from "./actions"
+import {
+  toggleNavDrawerVisibility, mainSearchTextChange, doMainSearch, initializeMainSearch
+} from "./actions"
 import './Header.scss'
 
 class Header extends Component {
@@ -13,14 +16,40 @@ class Header extends Component {
   constructor() {
     super()
     this.handleToggleNavDrawerVisibility = this.handleToggleNavDrawerVisibility.bind(this)
+    this.onMainSearchChange = this.onMainSearchChange.bind(this)
+    this.refreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), 250)
+    this.onMainSearch = this.onMainSearch.bind(this)
     this.state = {autoComplete: { data: [] }}
+    this.hasInitializedMainSearch = false
   }
 
   handleToggleNavDrawerVisibility() {
     this.props.toggleNavDrawerVisibility()
   }
 
+  onMainSearchChange(text) {
+    this.props.mainSearchTextChange(text)
+    this.refreshAutocomplete()
+  }
+
+  onMainSearch(e) {
+    e.preventDefault()
+    this.props.doMainSearch(this.props.mainSearchText)
+  }
+
+  refreshAutocomplete() {
+    // TODO
+  }
+
+  onAutocomplete(statement, index) {
+    this.props.viewStatement(statement)
+  }
+
   render() {
+    const {
+      mainSearchText
+    } = this.props
+    const mainSearchAutocompleteData = []
     return (
       <Toolbar
           id="header"
@@ -35,24 +64,25 @@ class Header extends Component {
           }
           actions={<Button icon className="toggleNavDrawerVisibility" onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
       >
-        <div className="md-cell--12 md-cell--middle">
+        <form className="md-cell--12 md-cell--middle" onSubmit={this.onMainSearch}>
 
           <Autocomplete
               id="mainSearch"
               placeholder="know that..."
-              data={this.state.autoComplete.data}
+              data={mainSearchAutocompleteData}
               filter={null}
               type="search"
               // dataLabel="name"
-              // value={this.state.value}
-              // onChange={this._handleChange}
-              // onAutocomplete={this._handleChange}
+              // dataValue="id"
+              value={mainSearchText}
+              onChange={this.onMainSearchChange}
+              onAutocomplete={this.onAutocomplete}
               block
               // className="md-title--toolbar"
               inputClassName="md-text-field--toolbar"
           />
 
-        </div>
+        </form>
 
       </Toolbar>
     )
@@ -64,14 +94,22 @@ const mapStateToProps = (state) => {
     auth: {
       email,
       authToken,
+    },
+    ui: {
+      app: {
+        mainSearchText
+      }
     }
   } = state
   return {
     email,
     authToken,
+    mainSearchText,
   }
 }
 
 export default connect(mapStateToProps, {
-  toggleNavDrawerVisibility
+  toggleNavDrawerVisibility,
+  mainSearchTextChange,
+  doMainSearch,
 })(Header)

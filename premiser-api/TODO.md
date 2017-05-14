@@ -23,6 +23,7 @@
 * CORS
   * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
 ## Maybe
+* Create views for undeleted entities
 * Add CORS to error 500 responses?
 * [Versioning](https://docs.aws.amazon.com/lambda/latest/dg/versioning-aliases.html)?
 * [pg native](https://github.com/brianc/node-postgres#native-bindings)

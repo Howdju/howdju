@@ -1,7 +1,15 @@
-export const paths = {
-  home: () => '/',
-  login: () => '/login',
-  statement: ({id, slug}) => `/s/${id}/${slug || ''}`,
+import { createPath } from 'history/PathUtils';
+
+const mainSearchPathName = '/'
+
+class Paths {
+  home = () => '/'
+  login = () => '/login'
+  statement = ({id, slug}) => `/s/${id}/${slug || ''}`
+  mainSearch = mainSearchText => createPath({
+    pathname: mainSearchPathName,
+    search: '?' + window.encodeURIComponent(mainSearchText)
+  })
 }
 
-export default paths
+export default new Paths()

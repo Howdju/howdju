@@ -39,9 +39,11 @@ import {
   CREATE_JUSTIFICATION_SUCCESS, SHOW_ADD_NEW_JUSTIFICATION, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION,
   CREATE_JUSTIFICATION_FAILURE, ADD_NEW_JUSTIFICATION_URL, DELETE_NEW_JUSTIFICATION_URL, ADD_NEW_COUNTER_JUSTIFICATION,
   NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE, CANCEL_NEW_COUNTER_JUSTIFICATION,
-  CREATE_JUSTIFICATION,
+  CREATE_JUSTIFICATION, MAIN_SEARCH_TEXT_CHANGE, FETCH_STATEMENTS_SEARCH, FETCH_STATEMENTS_SEARCH_SUCCESS,
+  FETCH_STATEMENTS_SEARCH_FAILURE,
 } from './actions'
 import text, {CREATE_JUSTIFICATION_FAILURE_MESSAGE} from "./texts";
+import mainSearcher from './mainSearcher'
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {
@@ -480,7 +482,7 @@ const createStatementPage = (state = {statement: {text:''}, isCreating: false, d
   return state
 }
 
-const appUi = (state = {isNavDrawerVisible: false, toasts: []}, action) => {
+export const appUi = (state = {isNavDrawerVisible: false, toasts: [], mainSearchText: ''}, action) => {
   switch (action.type) {
     case SHOW_NAV_DRAWER:
       return {...state, isNavDrawerVisible: true}
@@ -495,6 +497,15 @@ const appUi = (state = {isNavDrawerVisible: false, toasts: []}, action) => {
       return {...state, toasts: state.toasts.concat(action.payload)}
     case DISMISS_TOAST:
       return {...state, toasts: state.toasts.slice(1)}
+
+    case MAIN_SEARCH_TEXT_CHANGE:
+      return {...state, mainSearchText: action.payload}
+    case LOCATION_CHANGE:
+      // debugger
+      if (!mainSearcher.isSearch(action.payload)) {
+        return {...state, mainSearchText: ''}
+      }
+      break;
   }
 
   return state
@@ -516,10 +527,24 @@ const app = (state = { loginRedirectLocation: null }, action) => {
   return state
 }
 
+const mainSearchPage = (state = { isFetching: false, statements: [] }, action) => {
+  switch (action.type) {
+    case FETCH_STATEMENTS_SEARCH:
+      return {...state, isFetching: true}
+    case FETCH_STATEMENTS_SEARCH_SUCCESS:
+      const statements = action.payload.result.map(id => action.payload.entities.statements[id])
+      return {...state, isFetching: false, statements: statements || []}
+    case FETCH_STATEMENTS_SEARCH_FAILURE:
+      return {...state, isFetching: false}
+  }
+  return state
+}
+
 const ui = combineReducers({
   loginPage,
   statementJustificationsPage,
   createStatementPage,
+  mainSearchPage,
   app: appUi,
 })
 

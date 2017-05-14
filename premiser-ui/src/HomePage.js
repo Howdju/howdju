@@ -13,6 +13,7 @@ class HomePage extends Component {
   render () {
     return (
         <div className="md-grid">
+          <h1>Home</h1>
           <div className="md-cell md-cell--12">
             <ul>
               {!this.props.statements.length ?

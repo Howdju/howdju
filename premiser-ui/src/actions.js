@@ -127,3 +127,16 @@ export const addNewCounterJustification = create2Action(ADD_NEW_COUNTER_JUSTIFIC
 export const newCounterJustificationPropertyChange =
     create2Action(NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE, (justification, properties) => ({justification, properties}))
 export const cancelNewCounterJustification = create2Action(CANCEL_NEW_COUNTER_JUSTIFICATION, justification => ({justification}))
+
+export const MAIN_SEARCH_TEXT_CHANGE = 'MAIN_SEARCH_TEXT_CHANGE'
+export const DO_MAIN_SEARCH = 'DO_MAIN_SEARCH'
+export const mainSearchTextChange = create2Action(MAIN_SEARCH_TEXT_CHANGE)
+export const doMainSearch = create2Action(DO_MAIN_SEARCH, mainSearchText => ({mainSearchText}))
+
+export const FETCH_STATEMENTS_SEARCH = 'FETCH_STATEMENTS_SEARCH'
+export const FETCH_STATEMENTS_SEARCH_SUCCESS = 'FETCH_STATEMENTS_SEARCH_SUCCESS'
+export const FETCH_STATEMENTS_SEARCH_FAILURE = 'FETCH_STATEMENTS_SEARCH_FAILURE'
+export const fetchStatementsSearch = create2Action(FETCH_STATEMENTS_SEARCH, searchText => ({searchText}))
+
+export const INITIALIZE_MAIN_SEARCH = 'INITIALIZE_MAIN_SEARCH'
+export const initializeMainSearch = create2Action(INITIALIZE_MAIN_SEARCH, searchText => ({searchText}))

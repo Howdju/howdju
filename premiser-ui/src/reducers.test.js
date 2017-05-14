@@ -1,8 +1,18 @@
-import {entities, indexRootJustificationsByRootStatementId, unionArraysDistinctIdsCustomizer} from './reducers'
-import {CREATE_JUSTIFICATION_SUCCESS, DELETE_JUSTIFICATION_SUCCESS} from "./actions";
+import {LOCATION_CHANGE} from 'react-router-redux'
+import { parsePath } from 'history/PathUtils';
 import mergeWith from 'lodash/mergeWith'
 import isArray from 'lodash/isArray'
+
+import {
+  entities,
+  indexRootJustificationsByRootStatementId,
+  unionArraysDistinctIdsCustomizer,
+  appUi,
+} from './reducers'
+import paths from './paths'
+import {CREATE_JUSTIFICATION_SUCCESS, DELETE_JUSTIFICATION_SUCCESS} from "./actions";
 import {JustificationBasisType, JustificationPolarity, JustificationTargetType} from "./models";
+
 
 describe('lodash', () => {
   describe('mergeWith', () => {
@@ -482,5 +492,34 @@ describe('reducers', () => {
         expect(resultTargetJustification.counterJustifications).not.toContainEqual(counterJustification)
       })
     })
+  })
+
+  describe('main search', () => {
+
+    test('should clear the search text when navigating to a non-search page', () => {
+      const initialState = {mainSearchText: 'non-empty'}
+      const action = {
+        type: LOCATION_CHANGE,
+        payload: parsePath(paths.home()),
+      }
+      debugger
+      const newState = appUi(initialState, action)
+      expect(newState.mainSearchText).toEqual('')
+    })
+
+    test('should not clear the search when navigating to the search page', () => {
+      const mainSearchText = 'non-empty'
+      const initialState = {mainSearchText}
+      const action = {
+        type: LOCATION_CHANGE,
+        payload: parsePath(paths.mainSearch(mainSearchText)),
+      }
+      const newState = appUi(initialState, action)
+      expect(newState.mainSearchText).toEqual(mainSearchText)
+    })
+
+    test('should load search results on page load')
+
+    test('should not load search results on navigation')
   })
 })

@@ -2,12 +2,23 @@
 ## MVP
 
 ### Features
+
+* main search autocomplete
+
 * bookmarklet
 
 * tagging
+* Author of quote
+
 * Jobs (justification score)
-* Search
 * Home page tag cloud
+* Analyze sources
+  * See list of all domains cited; search cited domains.
+  * See citations (quotes?) and/or citations supported by domain name
+  * How to evaluate the truthiness of a quote from a URL
+    * How to tell when text on a page is a quotation rather than a direct statement
+      * X said
+      * quotation marks
 * favicon
 
 ### Bugs/stability
@@ -16,6 +27,7 @@
 * Test with mobile device
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
   * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
+* can create two statements that only differ by apostrophe types (' vs. ’)
 
 ### Feedback
 * Error reporting
@@ -33,6 +45,7 @@
 ## 0.2
 
 ### Features
+* add citation text to main search?
 * Allow collapsing counter justifications
 * Change email, password, password reset
 * Timeout authentication
