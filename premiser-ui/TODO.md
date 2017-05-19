@@ -3,7 +3,9 @@
 
 ### Features
 
-* main search autocomplete
+* autocomplete
+  * add statement
+  * statement justification
 
 * bookmarklet
 
@@ -22,6 +24,10 @@
 * favicon
 
 ### Bugs/stability
+* Autocomplete
+  * does not disappear after going to search (should close upon doing search)
+  * reappears after clicking on search page (should only reappear upon typing)
+  * branch react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
 * Why are IDs sometimes strings and sometimes ints?
 * Figure out if the site works in Firefox
 * Test with mobile device
@@ -51,6 +57,8 @@
 * Timeout authentication
 * Loading flags (vs. just empty return from API)
 * Statement example: height of the capitol building limit DC
+* Unfocus/blur main search input after clicking on autocomplete
+  * [document.activeElement.blur()](http://stackoverflow.com/a/2520670/39396)
   
 ### Flair
   * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
@@ -88,6 +96,9 @@
 
 ### Product/Modeling ideas
 * Disjustifications of a statement are counters to a justification using that statement
+  
+### Bugs
+* react-md autocomplete still shows when there are no results
   
 ### Error/Requirements
 * Do required fields on either justification editor prevent submission?

@@ -32,7 +32,8 @@ import {
   CREATE_JUSTIFICATION_SUCCESS, CREATE_JUSTIFICATION_FAILURE, DELETE_JUSTIFICATION, DELETE_JUSTIFICATION_FAILURE,
   DELETE_JUSTIFICATION_SUCCESS, HIDE_ADD_NEW_JUSTIFICATION, RESET_NEW_JUSTIFICATION, DO_MAIN_SEARCH,
   FETCH_STATEMENTS_SEARCH, FETCH_STATEMENTS_SEARCH_SUCCESS, FETCH_STATEMENTS_SEARCH_FAILURE, fetchStatementsSearch,
-  mainSearchTextChange, INITIALIZE_MAIN_SEARCH,
+  mainSearchTextChange, INITIALIZE_MAIN_SEARCH, REFRESH_MAIN_SEARCH_AUTOCOMPLETE, FETCH_MAIN_SEARCH_AUTOCOMPLETE,
+  FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS, FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE, VIEW_STATEMENT,
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError, logger} from './util'
@@ -305,6 +306,26 @@ function* callApiForFetchStatementsSearch(action) {
     yield put({type: FETCH_STATEMENTS_SEARCH_FAILURE, payload: error})
   }
 }
+function* callApiForFetchMainSearchAutocomplete(action) {
+  const searchText = action.payload.searchText
+  try {
+    const payload = {
+      endpoint: `search-statements?searchText=${searchText}`,
+      schema: [statementSchema],
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
+    if (successAction) {
+      yield put({type: FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS, payload: successAction.payload})
+    } else {
+      yield put({type: FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE, payload: failureAction.payload})
+    }
+  } catch (error) {
+    logError(error)
+    yield put({type: FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE, payload: error})
+  }
+}
 
 function* onCreateStatement(action) {
   try {
@@ -507,6 +528,10 @@ function* watchVotes() {
   ], callApiForVote)
 }
 
+function* onViewStatement(action) {
+  yield put(push(paths.statement(action.payload.statement)))
+}
+
 function* watchFetchStatementJustifications() {
   yield takeEvery(FETCH_STATEMENT_JUSTIFICATIONS, callApiForFetchStatementJustifications)
 }
@@ -595,6 +620,14 @@ function* watchInitializeMainSearch() {
   yield takeEvery(INITIALIZE_MAIN_SEARCH, onInitializeMainSearch)
 }
 
+function* watchFetchMainSearchAutocomplete() {
+  yield takeEvery(FETCH_MAIN_SEARCH_AUTOCOMPLETE, callApiForFetchMainSearchAutocomplete)
+}
+
+function* watchViewStatement() {
+  yield takeEvery(VIEW_STATEMENT, onViewStatement)
+}
+
 export default () => [
   watchLogin(),
   watchLoginSuccess(),
@@ -620,4 +653,6 @@ export default () => [
   watchDoMainSearch(),
   watchFetchStatementsSearch(),
   watchInitializeMainSearch(),
+  watchFetchMainSearchAutocomplete(),
+  watchViewStatement(),
 ]

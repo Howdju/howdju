@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { fetchStatements } from './actions'
 import sortBy from 'lodash/sortBy'
 
+import paths from './paths'
+
 class HomePage extends Component {
 
   componentWillMount() {
@@ -18,7 +20,7 @@ class HomePage extends Component {
             <ul>
               {!this.props.statements.length ?
                   <div>Loading...</div> :
-                  this.props.statements.map(s => <li key={s.id}><Link to={'/s/' + s.id + '/' + s.slug}>{s.text}</Link></li>)
+                  this.props.statements.map(s => <li key={s.id}><Link to={paths.statement(s)}>{s.text}</Link></li>)
               }
             </ul>
           </div>

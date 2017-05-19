@@ -40,7 +40,7 @@ import {
   CREATE_JUSTIFICATION_FAILURE, ADD_NEW_JUSTIFICATION_URL, DELETE_NEW_JUSTIFICATION_URL, ADD_NEW_COUNTER_JUSTIFICATION,
   NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE, CANCEL_NEW_COUNTER_JUSTIFICATION,
   CREATE_JUSTIFICATION, MAIN_SEARCH_TEXT_CHANGE, FETCH_STATEMENTS_SEARCH, FETCH_STATEMENTS_SEARCH_SUCCESS,
-  FETCH_STATEMENTS_SEARCH_FAILURE,
+  FETCH_STATEMENTS_SEARCH_FAILURE, CLEAR_MAIN_SEARCH_AUTOCOMPLETE, FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS,
 } from './actions'
 import text, {CREATE_JUSTIFICATION_FAILURE_MESSAGE} from "./texts";
 import mainSearcher from './mainSearcher'
@@ -98,7 +98,7 @@ export const indexRootJustificationsByRootStatementId = justificationsById => {
   rootJustificationsByRootStatementId = mapValues(rootJustificationsByRootStatementId, (justifications, rootStatementId) => map(justifications, j => j.id))
   // for (let statementId of Object.keys(justificationsByRootStatementId)) {
   //   justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => j.id)
-  //   // justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => normalize(j, justificationSchema).results)
+  //   // justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => normalize(j, justificationSchema).result)
   // }
   return rootJustificationsByRootStatementId
 }
@@ -482,7 +482,7 @@ const createStatementPage = (state = {statement: {text:''}, isCreating: false, d
   return state
 }
 
-export const appUi = (state = {isNavDrawerVisible: false, toasts: [], mainSearchText: ''}, action) => {
+export const appUi = (state = {isNavDrawerVisible: false, toasts: []}, action) => {
   switch (action.type) {
     case SHOW_NAV_DRAWER:
       return {...state, isNavDrawerVisible: true}
@@ -497,15 +497,26 @@ export const appUi = (state = {isNavDrawerVisible: false, toasts: [], mainSearch
       return {...state, toasts: state.toasts.concat(action.payload)}
     case DISMISS_TOAST:
       return {...state, toasts: state.toasts.slice(1)}
+  }
+
+  return state
+}
+
+export const mainSearch = (state = {mainSearchText: '', autocompleteResults: []}, action) => {
+  switch (action.type) {
 
     case MAIN_SEARCH_TEXT_CHANGE:
       return {...state, mainSearchText: action.payload}
     case LOCATION_CHANGE:
-      // debugger
       if (!mainSearcher.isSearch(action.payload)) {
         return {...state, mainSearchText: ''}
       }
       break;
+    case FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS:
+      const autocompleteResults = action.payload.result.map(id => action.payload.entities.statements[id])
+      return {...state, autocompleteResults}
+    case CLEAR_MAIN_SEARCH_AUTOCOMPLETE:
+      return {...state, autocompleteResults: []}
   }
 
   return state
@@ -546,6 +557,7 @@ const ui = combineReducers({
   createStatementPage,
   mainSearchPage,
   app: appUi,
+  mainSearch,
 })
 
 export default combineReducers({

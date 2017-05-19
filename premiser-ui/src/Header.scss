@@ -1,17 +1,28 @@
 @import "./flatui-colors";
+@import "./colors";
 
 @mixin placeholder {
   color: $asbestos;
 }
 
-#header * {
-  color: $clouds;
+#header {
+  * {
+    color: $clouds;
+  }
+
+  .md-autocomplete-list {
+    * {
+      color: $primary-text-color;
+    }
+  }
+
+  .mainSearchAutocomplete {
+    margin-left: 10px;
+    padding-right: 20px;
+  }
 }
 
 #mainSearch {
-  // Get a little space between the title and the search; maybe we should be using the grid to do this?
-  margin-left: 10px;
-
   color: $clouds;
 
   /* Chrome doesn't render these styles if the rule includes non-chrome selectors.

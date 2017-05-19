@@ -7,9 +7,14 @@ import Toolbar from 'react-md/lib/Toolbars';
 import throttle from 'lodash/throttle'
 
 import {
-  toggleNavDrawerVisibility, mainSearchTextChange, doMainSearch, initializeMainSearch
+  toggleNavDrawerVisibility, mainSearchTextChange, doMainSearch, fetchMainSearchAutocomplete,
+  clearMainSearchAutocomplete, viewStatement
 } from "./actions"
 import './Header.scss'
+
+import {
+  ESCAPE_KEY_CODE
+} from './keyCodes'
 
 class Header extends Component {
 
@@ -19,8 +24,8 @@ class Header extends Component {
     this.onMainSearchChange = this.onMainSearchChange.bind(this)
     this.refreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), 250)
     this.onMainSearch = this.onMainSearch.bind(this)
-    this.state = {autoComplete: { data: [] }}
-    this.hasInitializedMainSearch = false
+    this.onMainSearchAutocomplete = this.onMainSearchAutocomplete.bind(this)
+    this.onMainSearchKeyDown = this.onMainSearchKeyDown.bind(this)
   }
 
   handleToggleNavDrawerVisibility() {
@@ -29,7 +34,20 @@ class Header extends Component {
 
   onMainSearchChange(text) {
     this.props.mainSearchTextChange(text)
-    this.refreshAutocomplete()
+    if (text === '') {
+      this.refreshAutocomplete.cancel()
+      this.props.clearMainSearchAutocomplete()
+    } else {
+      this.refreshAutocomplete(text)
+    }
+  }
+
+  onMainSearchKeyDown(e) {
+    if (e.keyCode === ESCAPE_KEY_CODE) {
+      this.props.mainSearchTextChange('')
+      this.refreshAutocomplete.cancel()
+      this.props.clearMainSearchAutocomplete()
+    }
   }
 
   onMainSearch(e) {
@@ -37,19 +55,27 @@ class Header extends Component {
     this.props.doMainSearch(this.props.mainSearchText)
   }
 
-  refreshAutocomplete() {
-    // TODO
+  refreshAutocomplete(text) {
+    this.props.fetchMainSearchAutocomplete(text)
   }
 
-  onAutocomplete(statement, index) {
-    this.props.viewStatement(statement)
+  onMainSearchAutocomplete(label, index) {
+    const autocompleteResult = this.props.autocompleteResults[index]
+    this.props.viewStatement(autocompleteResult)
   }
 
   render() {
     const {
-      mainSearchText
+      mainSearchText,
+      autocompleteResults,
     } = this.props
-    const mainSearchAutocompleteData = []
+
+    const autocompleteData = autocompleteResults.map(s => ({
+      id: s.id,
+      key: `autocomplete-${s.id}`,
+      label: s.text,
+    }))
+
     return (
       <Toolbar
           id="header"
@@ -67,18 +93,20 @@ class Header extends Component {
         <form className="md-cell--12 md-cell--middle" onSubmit={this.onMainSearch}>
 
           <Autocomplete
+              block
+              clearOnAutocomplete
               id="mainSearch"
               placeholder="know that..."
-              data={mainSearchAutocompleteData}
+              data={autocompleteData}
               filter={null}
               type="search"
-              // dataLabel="name"
-              // dataValue="id"
+              dataLabel="label"
+              dataValue="id"
               value={mainSearchText}
               onChange={this.onMainSearchChange}
-              onAutocomplete={this.onAutocomplete}
-              block
-              // className="md-title--toolbar"
+              onAutocomplete={this.onMainSearchAutocomplete}
+              onKeyDown={this.onMainSearchKeyDown}
+              className="mainSearchAutocomplete"
               inputClassName="md-text-field--toolbar"
           />
 
@@ -96,8 +124,9 @@ const mapStateToProps = (state) => {
       authToken,
     },
     ui: {
-      app: {
-        mainSearchText
+      mainSearch: {
+        mainSearchText,
+        autocompleteResults,
       }
     }
   } = state
@@ -105,6 +134,7 @@ const mapStateToProps = (state) => {
     email,
     authToken,
     mainSearchText,
+    autocompleteResults,
   }
 }
 
@@ -112,4 +142,7 @@ export default connect(mapStateToProps, {
   toggleNavDrawerVisibility,
   mainSearchTextChange,
   doMainSearch,
+  fetchMainSearchAutocomplete,
+  clearMainSearchAutocomplete,
+  viewStatement,
 })(Header)

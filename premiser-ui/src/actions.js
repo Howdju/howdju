@@ -140,3 +140,14 @@ export const fetchStatementsSearch = create2Action(FETCH_STATEMENTS_SEARCH, sear
 
 export const INITIALIZE_MAIN_SEARCH = 'INITIALIZE_MAIN_SEARCH'
 export const initializeMainSearch = create2Action(INITIALIZE_MAIN_SEARCH, searchText => ({searchText}))
+
+export const FETCH_MAIN_SEARCH_AUTOCOMPLETE = 'FETCH_MAIN_SEARCH_AUTOCOMPLETE'
+export const FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS = 'FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS'
+export const FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE = 'FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE'
+export const fetchMainSearchAutocomplete = create2Action(FETCH_MAIN_SEARCH_AUTOCOMPLETE, searchText => ({searchText}))
+
+export const CLEAR_MAIN_SEARCH_AUTOCOMPLETE = 'CLEAR_MAIN_SEARCH_AUTOCOMPLETE'
+export const clearMainSearchAutocomplete = create2Action(CLEAR_MAIN_SEARCH_AUTOCOMPLETE)
+
+export const VIEW_STATEMENT = 'VIEW_STATEMENT'
+export const viewStatement = create2Action(VIEW_STATEMENT, statement => ({statement}))
