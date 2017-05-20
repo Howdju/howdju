@@ -3,10 +3,6 @@
 
 ### Features
 
-* autocomplete
-  * add statement
-  * statement justification
-
 * bookmarklet
 
 * tagging
@@ -25,15 +21,18 @@
 
 ### Bugs/stability
 * Autocomplete
-  * does not disappear after going to search (should close upon doing search)
+  * Does not appear above dialog
+    * [Fix in react-md 1.1](https://github.com/mlaursen/react-md/issues/232)
   * reappears after clicking on search page (should only reappear upon typing)
   * branch react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
-* Why are IDs sometimes strings and sometimes ints?
+* Why are IDs sometimes strings and sometimes ints?  (e.g., reducers.entities.DELETE_STATEMENT_SUCCESS)
 * Figure out if the site works in Firefox
 * Test with mobile device
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
   * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
-* can create two statements that only differ by apostrophe types (' vs. ’)
+* can create two statements that only differ by apostrophe types (' vs. ’), probably whitespace, too.
+* Can counter justification with same statement as basis for target justification
+* Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
 
 ### Feedback
 * Error reporting
@@ -51,14 +50,16 @@
 ## 0.2
 
 ### Features
-* add citation text to main search?
+* Main search:
+  * citation text
+  * url
+  * author
+  * tags
 * Allow collapsing counter justifications
 * Change email, password, password reset
 * Timeout authentication
 * Loading flags (vs. just empty return from API)
 * Statement example: height of the capitol building limit DC
-* Unfocus/blur main search input after clicking on autocomplete
-  * [document.activeElement.blur()](http://stackoverflow.com/a/2520670/39396)
   
 ### Flair
   * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"

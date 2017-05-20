@@ -10,7 +10,6 @@ import MenuButton from "react-md/lib/Menus/MenuButton";
 import ListItem from "react-md/lib/Lists/ListItem";
 import Dialog from 'react-md/lib/Dialogs'
 import Positions from "react-md/lib/Menus/Positions";
-import CardTitle from 'react-md/lib/Cards/CardTitle'
 import Button from 'react-md/lib/Buttons'
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
@@ -18,8 +17,6 @@ import toNumber from "lodash/toNumber";
 import isFinite from "lodash/isFinite";
 import forEach from 'lodash/forEach';
 import some from 'lodash/some'
-import merge from 'lodash/merge'
-import map from 'lodash/map'
 import defaults from 'lodash/defaults'
 import classNames from 'classnames'
 import FlipMove from 'react-flip-move';
@@ -33,7 +30,7 @@ import {
   JustificationPolarity,
   isPositive,
   isNegative,
-  JustificationBasisType, JustificationTargetType, isCounter, decircularizeCounterJustifications,
+  JustificationBasisType,
 } from "./models";
 
 import {

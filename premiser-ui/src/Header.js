@@ -10,6 +10,7 @@ import {
   toggleNavDrawerVisibility, mainSearchTextChange, doMainSearch, fetchMainSearchAutocomplete,
   clearMainSearchAutocomplete, viewStatement
 } from "./actions"
+import autocompleter from './autocompleter'
 import './Header.scss'
 
 import {
@@ -44,14 +45,19 @@ class Header extends Component {
 
   onMainSearchKeyDown(e) {
     if (e.keyCode === ESCAPE_KEY_CODE) {
-      this.props.mainSearchTextChange('')
       this.refreshAutocomplete.cancel()
       this.props.clearMainSearchAutocomplete()
+      this.mainSearchAutocomplete._close()
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    autocompleter.fixOpen(this.mainSearchAutocomplete, nextProps.mainSearchText, nextProps.autocompleteResults)
   }
 
   onMainSearch(e) {
     e.preventDefault()
+    this.mainSearchAutocomplete._close()
     this.props.doMainSearch(this.props.mainSearchText)
   }
 
@@ -93,13 +99,14 @@ class Header extends Component {
         <form className="md-cell--12 md-cell--middle" onSubmit={this.onMainSearch}>
 
           <Autocomplete
+              id="mainSearch"
+              type="search"
+              name="mainSearch"
               block
               clearOnAutocomplete
-              id="mainSearch"
               placeholder="know that..."
               data={autocompleteData}
               filter={null}
-              type="search"
               dataLabel="label"
               dataValue="id"
               value={mainSearchText}
@@ -108,6 +115,7 @@ class Header extends Component {
               onKeyDown={this.onMainSearchKeyDown}
               className="mainSearchAutocomplete"
               inputClassName="md-text-field--toolbar"
+              ref={el => this.mainSearchAutocomplete = el}
           />
 
         </form>

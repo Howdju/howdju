@@ -41,6 +41,8 @@ import {
   NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE, CANCEL_NEW_COUNTER_JUSTIFICATION,
   CREATE_JUSTIFICATION, MAIN_SEARCH_TEXT_CHANGE, FETCH_STATEMENTS_SEARCH, FETCH_STATEMENTS_SEARCH_SUCCESS,
   FETCH_STATEMENTS_SEARCH_FAILURE, CLEAR_MAIN_SEARCH_AUTOCOMPLETE, FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS,
+  FETCH_CREATE_STATEMENT_TEXT_AUTOCOMPLETE_SUCCESS, CLEAR_CREATE_STATEMENT_TEXT_AUTOCOMPLETE,
+  FETCH_STATEMENT_SUGGESTIONS_SUCCESS,
 } from './actions'
 import text, {CREATE_JUSTIFICATION_FAILURE_MESSAGE} from "./texts";
 import mainSearcher from './mainSearcher'
@@ -281,6 +283,15 @@ export const entities = (state = {
         justifications: merge({}, state.justifications, {[justification.id]: justification}),
       }
     }
+
+    case FETCH_STATEMENT_SUGGESTIONS_SUCCESS:
+      return {
+          ...state,
+          statements: {
+            ...state.statements,
+            ...action.payload.entities.statements,
+          }
+      }
   }
 
   return state
@@ -466,7 +477,12 @@ const statementJustificationsPage = (state = {
   return state
 }
 
-const createStatementPage = (state = {statement: {text:''}, isCreating: false, didFail: false}, action) => {
+const createStatementPage = (state = {
+  statement: {text:''},
+  isCreating: false,
+  didFail: false,
+  textAutocompleteResults: [],
+}, action) => {
   switch (action.type) {
     case CREATE_STATEMENT_PROPERTY_CHANGE:
       const statement = merge({}, state.statement, action.payload)
@@ -522,7 +538,7 @@ export const mainSearch = (state = {mainSearchText: '', autocompleteResults: []}
   return state
 }
 
-const app = (state = { loginRedirectLocation: null }, action) => {
+const app = (state = { loginRedirectLocation: null, statementSuggestions: {} }, action) => {
   switch (action.type) {
     case LOGIN_REDIRECT:
       // When we redirect to the login page, store the previous location
@@ -533,6 +549,14 @@ const app = (state = { loginRedirectLocation: null }, action) => {
         return {...state, loginRedirectLocation: null}
       }
       break;
+    case FETCH_STATEMENT_SUGGESTIONS_SUCCESS:
+      return {
+        ...state,
+        statementSuggestions: {
+          ...state.statementSuggestions,
+          ...{ [action.meta.suggestionsKey]: action.payload.result}
+        }
+      }
   }
 
   return state

@@ -75,7 +75,8 @@ const removeDups = (idName, ...rowsArr) => {
 }
 
 const searchStatements = (searchText) => {
-  searchText = searchText.replace(/\W/, '')
+  searchText = searchText.replace(/[^\w\s]/g, '')
+  searchText = searchText.replace(/\s+/g, ' ')
   if (searchText === '') {
     return Promise.resolve([])
   }

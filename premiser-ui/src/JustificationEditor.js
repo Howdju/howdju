@@ -12,6 +12,8 @@ import text, {
   JUSTIFICATION_BASIS_TYPE_STATEMENT, JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE
 } from "./texts";
+import StatementTextAutocomplete from './StatementTextAutocomplete'
+import { suggestionKeys } from './autocompleter'
 
 import './JustificationEditor.scss'
 
@@ -21,12 +23,13 @@ class JustificationEditor extends Component {
     this.state = {
       isQuoteEditedAfterMount: false
     }
-    this.handlePropertyChange = this.handlePropertyChange.bind(this)
+    this.onPropertyChange = this.onPropertyChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.onAddUrlClick = this.onAddUrlClick.bind(this)
+    this.onStatementTextAutocomplete = this.onStatementTextAutocomplete.bind(this)
   }
 
-  handlePropertyChange(value, event) {
+  onPropertyChange(value, event) {
     const target = event.target;
     const name = target.name
     this.updateIsQuoteEditedAfterMount(value, name)
@@ -47,6 +50,10 @@ class JustificationEditor extends Component {
     }
   }
 
+  onStatementTextAutocomplete(text, index) {
+    this.props.onPropertyChange({'basis.statement.text': text})
+  }
+
   onAddUrlClick(e) {
     e.preventDefault()
     this.props.onAddUrlClick()
@@ -64,7 +71,7 @@ class JustificationEditor extends Component {
 
   render() {
     const {
-      justification
+      justification,
     } = this.props
     const {
       isQuoteEditedAfterMount
@@ -101,7 +108,7 @@ class JustificationEditor extends Component {
           label="Citation"
           value={justification.basis.citationReference.citation.text}
           required
-          onChange={this.handlePropertyChange}
+          onChange={this.onPropertyChange}
           leftIcon={<FontIcon>book</FontIcon>}
       />,
       <TextField
@@ -117,7 +124,7 @@ class JustificationEditor extends Component {
             hasValue: !!justification.basis.citationReference.quote,
           })}
           value={justification.basis.citationReference.quote}
-          onChange={this.handlePropertyChange}
+          onChange={this.onPropertyChange}
           leftIcon={<FontIcon>format_quote</FontIcon>}
       />
     ]
@@ -129,7 +136,7 @@ class JustificationEditor extends Component {
             name={`basis.citationReference.urls[${index}].url`}
             label="URL"
             value={justification.basis.citationReference.urls[index].url}
-            onChange={this.handlePropertyChange}
+            onChange={this.onPropertyChange}
             leftIcon={<FontIcon>link</FontIcon>}
             rightIcon={<Button icon onClick={(e) => this.onDeleteUrlClick(e, url, index)}>delete</Button>}
         />,
@@ -149,16 +156,17 @@ class JustificationEditor extends Component {
                  component="div"
                  key="statementSubheader"
       />,
-      <TextField
+      <StatementTextAutocomplete
           id="basis.statement.text"
           key="basis.statement.text"
-          type="text"
           name="basis.statement.text"
           label="Statement"
-          value={justification.basis.statement.text}
           required
-          onChange={this.handlePropertyChange}
           leftIcon={<FontIcon>text_fields</FontIcon>}
+          value={justification.basis.statement.text}
+          suggestionsKey={suggestionKeys.justificationEditor}
+          onChange={this.onPropertyChange}
+          onAutocomplete={this.onStatementTextAutocomplete}
       />
     ]
 
@@ -174,7 +182,7 @@ class JustificationEditor extends Component {
               name="polarity"
               type="radio"
               value={justification.polarity}
-              onChange={this.handlePropertyChange}
+              onChange={this.onPropertyChange}
               controls={polarityControls}
           />
           <Divider />
@@ -188,7 +196,7 @@ class JustificationEditor extends Component {
               name="basis.type"
               type="radio"
               value={justification.basis.type}
-              onChange={this.handlePropertyChange}
+              onChange={this.onPropertyChange}
               controls={basisTypeControls}
           />
           <Divider />

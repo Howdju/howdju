@@ -151,3 +151,11 @@ export const clearMainSearchAutocomplete = create2Action(CLEAR_MAIN_SEARCH_AUTOC
 
 export const VIEW_STATEMENT = 'VIEW_STATEMENT'
 export const viewStatement = create2Action(VIEW_STATEMENT, statement => ({statement}))
+
+export const FETCH_STATEMENT_SUGGESTIONS = 'FETCH_STATEMENT_SUGGESTIONS'
+export const FETCH_STATEMENT_SUGGESTIONS_SUCCESS = 'FETCH_STATEMENT_SUGGESTIONS_SUCCESS'
+export const FETCH_STATEMENT_SUGGESTIONS_FAILURE = 'FETCH_STATEMENT_SUGGESTIONS_FAILURE'
+export const fetchStatementSuggestions = create2Action(FETCH_STATEMENT_SUGGESTIONS, (text, suggestionsKey) => ({
+  text,
+  suggestionsKey,
+}))

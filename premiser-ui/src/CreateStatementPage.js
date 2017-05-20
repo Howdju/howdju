@@ -1,32 +1,42 @@
 import React, {Component} from "react"
-import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons'
-import {createStatementPropertyChange, createStatement} from './actions'
 import { connect } from 'react-redux'
 import Paper from 'react-md/lib/Papers'
+import classNames from 'classnames'
+import FontIcon from 'react-md/lib/FontIcons'
+
+import {
+  createStatementPropertyChange, createStatement
+} from './actions'
 import text, {
   CREATE_STATEMENT_FAILURE_MESSAGE,
   CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
   CREATE_STATEMENT_SUBMIT_BUTTON_TITLE
 } from "./texts";
-import classNames from 'classnames'
+import { suggestionKeys } from './autocompleter'
+import StatementTextAutocomplete from './StatementTextAutocomplete'
 
 class CreateStatementPage extends Component {
 
   constructor() {
     super()
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+    this.onPropertyChange = this.onPropertyChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.onTextAutocomplete = this.onTextAutocomplete.bind(this)
   }
 
-  handleInputChange(val, e) {
+  onPropertyChange(val, e) {
     const name = e.target.name
     this.props.createStatementPropertyChange({[name]: val})
   }
 
-  handleSubmit(event) {
+  onSubmit(event) {
     event.preventDefault()
     this.props.createStatement(this.props.statement)
+  }
+
+  onTextAutocomplete(text, index) {
+    this.props.createStatementPropertyChange({text})
   }
 
   render() {
@@ -34,6 +44,7 @@ class CreateStatementPage extends Component {
       statement,
       isCreating,
       didFail,
+      textAutocompleteResults,
     } = this.props
 
     const errorMessage = didFail ? text(CREATE_STATEMENT_FAILURE_MESSAGE) : ''
@@ -57,17 +68,18 @@ class CreateStatementPage extends Component {
 
               <div className="md-cell md-cell--12">
 
-                <form onSubmit={this.handleSubmit}>
-                  <TextField
+                <form onSubmit={this.onSubmit}>
+
+                  <StatementTextAutocomplete
                       id="statementText"
-                      type="text"
                       name="text"
                       label="Text"
-                      value={statement.text}
                       required
-                      maxLength={2048}
-                      pattern=".+"
-                      onChange={this.handleInputChange}
+                      leftIcon={<FontIcon>text_fields</FontIcon>}
+                      value={statement.text}
+                      suggestionsKey={suggestionKeys.createStatementPage}
+                      onChange={this.onPropertyChange}
+                      onAutocomplete={this.onTextAutocomplete}
                   />
 
                   <Button raised

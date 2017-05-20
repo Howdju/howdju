@@ -34,6 +34,9 @@ import {
   FETCH_STATEMENTS_SEARCH, FETCH_STATEMENTS_SEARCH_SUCCESS, FETCH_STATEMENTS_SEARCH_FAILURE, fetchStatementsSearch,
   mainSearchTextChange, INITIALIZE_MAIN_SEARCH, REFRESH_MAIN_SEARCH_AUTOCOMPLETE, FETCH_MAIN_SEARCH_AUTOCOMPLETE,
   FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS, FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE, VIEW_STATEMENT,
+  FETCH_CREATE_STATEMENT_TEXT_AUTOCOMPLETE_FAILURE, FETCH_CREATE_STATEMENT_TEXT_AUTOCOMPLETE_SUCCESS,
+  FETCH_CREATE_STATEMENT_TEXT_AUTOCOMPLETE, FETCH_STATEMENT_SUGGESTIONS_SUCCESS, FETCH_STATEMENT_SUGGESTIONS_FAILURE,
+  FETCH_STATEMENT_SUGGESTIONS,
 } from "./actions";
 import {fetchJson} from "./api";
 import {assert, logError, logger} from './util'
@@ -324,6 +327,29 @@ function* callApiForFetchMainSearchAutocomplete(action) {
   } catch (error) {
     logError(error)
     yield put({type: FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE, payload: error})
+  }
+}
+function* callApiForFetchStatementSuggestions(action) {
+  const text = action.payload.text
+  try {
+    const payload = {
+      endpoint: `search-statements?searchText=${text}`,
+      schema: [statementSchema],
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
+    if (successAction) {
+      const meta = {
+        suggestionsKey: action.payload.suggestionsKey
+      }
+      yield put({type: FETCH_STATEMENT_SUGGESTIONS_SUCCESS, payload: successAction.payload, meta})
+    } else {
+      yield put({type: FETCH_STATEMENT_SUGGESTIONS_FAILURE, payload: failureAction.payload})
+    }
+  } catch (error) {
+    logError(error)
+    yield put({type: FETCH_STATEMENT_SUGGESTIONS_FAILURE, payload: error})
   }
 }
 
@@ -628,6 +654,10 @@ function* watchViewStatement() {
   yield takeEvery(VIEW_STATEMENT, onViewStatement)
 }
 
+function* watchFetchStatementSuggestions() {
+  yield takeEvery(FETCH_STATEMENT_SUGGESTIONS, callApiForFetchStatementSuggestions)
+}
+
 export default () => [
   watchLogin(),
   watchLoginSuccess(),
@@ -655,4 +685,5 @@ export default () => [
   watchInitializeMainSearch(),
   watchFetchMainSearchAutocomplete(),
   watchViewStatement(),
+  watchFetchStatementSuggestions(),
 ]
