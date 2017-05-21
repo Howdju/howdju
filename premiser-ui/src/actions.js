@@ -81,7 +81,7 @@ export const createStatementPropertyChange = create2Action(CREATE_STATEMENT_PROP
 export const CREATE_STATEMENT = 'CREATE_STATEMENT'
 export const CREATE_STATEMENT_SUCCESS = 'CREATE_STATEMENT_SUCCESS'
 export const CREATE_STATEMENT_FAILURE = 'CREATE_STATEMENT_FAILURE'
-export const createStatement = create2Action(CREATE_STATEMENT, statement => ({statement}))
+export const createStatement = create2Action(CREATE_STATEMENT, (statement, justification) => ({statement, justification}))
 
 export const DELETE_STATEMENT = 'DELETE_STATEMENT'
 export const DELETE_STATEMENT_SUCCESS = 'DELETE_STATEMENT_SUCCESS'
@@ -108,12 +108,15 @@ export const NEW_JUSTIFICATION_PROPERTY_CHANGE = 'NEW_JUSTIFICATION_PROPERTY_CHA
 export const RESET_NEW_JUSTIFICATION = 'RESET_NEW_JUSTIFICATION'
 export const showAddNewJustification = create2Action(SHOW_ADD_NEW_JUSTIFICATION, statementId => ({statementId}))
 export const hideAddNewJustification = create2Action(HIDE_ADD_NEW_JUSTIFICATION)
-export const newJustificationPropertyChange = create2Action(NEW_JUSTIFICATION_PROPERTY_CHANGE)
+export const newJustificationPropertyChange = create2Action(NEW_JUSTIFICATION_PROPERTY_CHANGE, (justificationEditorId, properties) => ({
+  justificationEditorId,
+  properties,
+}))
 export const resetNewJustification = create2Action(RESET_NEW_JUSTIFICATION)
 export const ADD_NEW_JUSTIFICATION_URL = 'ADD_NEW_JUSTIFICATION_URL'
-export const addNewJustificationUrl = create2Action(ADD_NEW_JUSTIFICATION_URL)
+export const addNewJustificationUrl = create2Action(ADD_NEW_JUSTIFICATION_URL, justificationEditorId => ({justificationEditorId}))
 export const DELETE_NEW_JUSTIFICATION_URL = 'DELETE_NEW_JUSTIFICATION_URL'
-export const deleteNewJustificationUrl = create2Action(DELETE_NEW_JUSTIFICATION_URL, (url, index) => ({url, index}))
+export const deleteNewJustificationUrl = create2Action(DELETE_NEW_JUSTIFICATION_URL, (justificationEditorId, url, index) => ({justificationEditorId, url, index}))
 
 export const DELETE_JUSTIFICATION = 'DELETE_JUSTIFICATION'
 export const DELETE_JUSTIFICATION_SUCCESS = 'DELETE_JUSTIFICATION_SUCCESS'

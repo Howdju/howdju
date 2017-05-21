@@ -1,0 +1,2 @@
+export const createStatementPageJustificationEditorId = 'createStatementPageJustificationEditorId'
+export const statementJustificationsPageJustificationEditorId = 'statementJustificationJustificationEditorId'

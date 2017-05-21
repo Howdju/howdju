@@ -41,11 +41,12 @@ import {
   NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE, CANCEL_NEW_COUNTER_JUSTIFICATION,
   CREATE_JUSTIFICATION, MAIN_SEARCH_TEXT_CHANGE, FETCH_STATEMENTS_SEARCH, FETCH_STATEMENTS_SEARCH_SUCCESS,
   FETCH_STATEMENTS_SEARCH_FAILURE, CLEAR_MAIN_SEARCH_AUTOCOMPLETE, FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS,
-  FETCH_CREATE_STATEMENT_TEXT_AUTOCOMPLETE_SUCCESS, CLEAR_CREATE_STATEMENT_TEXT_AUTOCOMPLETE,
   FETCH_STATEMENT_SUGGESTIONS_SUCCESS,
 } from './actions'
 import text, {CREATE_JUSTIFICATION_FAILURE_MESSAGE} from "./texts";
 import mainSearcher from './mainSearcher'
+import { makeNewJustification } from './models'
+import { createStatementPageJustificationEditorId, statementJustificationsPageJustificationEditorId } from './editorIds'
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {
@@ -105,32 +106,6 @@ export const indexRootJustificationsByRootStatementId = justificationsById => {
   return rootJustificationsByRootStatementId
 }
 
-const makeNewJustification = ({rootStatementId, targetType, targetId}) => ({
-  rootStatementId: rootStatementId,
-  polarity: JustificationPolarity.POSITIVE,
-  target: {
-    type: targetType,
-    entity: {
-      id: targetId
-    }
-  },
-  basis: {
-    type: JustificationBasisType.STATEMENT,
-    // Store both these types directly on the basis for the view-model
-    // Before the justification is sent to the server, the one corresponding to the current type should be put on the
-    // entity property
-    citationReference: {
-      citation: {
-        text: '',
-      },
-      quote: '',
-      urls: [{url: ''}],
-    },
-    statement: {
-      text: ''
-    }
-  }
-})
 const makeNewCounterJustification = targetJustification => ({
   rootStatementId: targetJustification.rootStatementId,
   target: {
@@ -170,7 +145,8 @@ export const entities = (state = {
     case CREATE_STATEMENT_SUCCESS: {
       return {
         ...state,
-        statements: merge({}, state.statements, action.payload.entities.statements),
+        statements: {...state.statements, ...action.payload.entities.statements},
+        justifications: {...state.justifications, ...action.payload.entities.justifications},
       }
     }
     case DELETE_STATEMENT_SUCCESS: {
@@ -369,13 +345,13 @@ const statementJustificationsPage = (state = {
       return {
         ...state,
         isNewJustificationDialogVisible: true,
-        newJustification: makeNewJustification({rootStatementId, targetType,  targetId}),
+        newJustification: makeNewJustification({ rootStatementId, target: { type: targetType, entity: { id: targetId } } }),
         newJustificationErrorMessage: '',
       }
     case HIDE_ADD_NEW_JUSTIFICATION:
       return {...state, isNewJustificationDialogVisible: false, newJustificationErrorMessage: ''}
     case RESET_NEW_JUSTIFICATION:
-      return {...state, newJustification: makeNewJustification({}), newJustificationErrorMessage: ''}
+      return {...state, newJustification: makeNewJustification(), newJustificationErrorMessage: ''}
 
     case CREATE_JUSTIFICATION: {
       const justification = action.payload.justification
@@ -412,16 +388,20 @@ const statementJustificationsPage = (state = {
     case CREATE_JUSTIFICATION_FAILURE:
       return {...state, newJustificationErrorMessage: text(CREATE_JUSTIFICATION_FAILURE_MESSAGE)}
 
+    // TODO JustificationEditor dedupe with createStatementPage
     case NEW_JUSTIFICATION_PROPERTY_CHANGE: {
+      if (action.payload.justificationEditorId !== statementJustificationsPageJustificationEditorId) break
+
       const newJustification = cloneDeep(state.newJustification)
-      const properties = action.payload
+      const properties = action.payload.properties
       forEach(properties, (val, key) => {
         set(newJustification, key, val)
       })
       return {...state, newJustification, newJustificationErrorMessage: ''}
     }
-
     case ADD_NEW_JUSTIFICATION_URL: {
+      if (action.payload.justificationEditorId !== statementJustificationsPageJustificationEditorId) break
+
       const newJustification = cloneDeep(state.newJustification)
       newJustification.basis.citationReference.urls = newJustification.basis.citationReference.urls.concat([{url: ''}])
       return {
@@ -430,6 +410,8 @@ const statementJustificationsPage = (state = {
       }
     }
     case DELETE_NEW_JUSTIFICATION_URL: {
+      if (action.payload.justificationEditorId !== statementJustificationsPageJustificationEditorId) break
+
       const newJustification = cloneDeep(state.newJustification)
       newJustification.basis.citationReference.urls.splice(action.payload.index, 1)
       return {
@@ -478,21 +460,61 @@ const statementJustificationsPage = (state = {
 }
 
 const createStatementPage = (state = {
-  statement: {text:''},
+  newStatement: {text:''},
+  newJustification: makeNewJustification({
+    target: {
+      type: JustificationTargetType.STATEMENT
+    }
+  }),
+  newJustificationErrorMessage: '',
   isCreating: false,
   didFail: false,
   textAutocompleteResults: [],
 }, action) => {
   switch (action.type) {
-    case CREATE_STATEMENT_PROPERTY_CHANGE:
-      const statement = merge({}, state.statement, action.payload)
-      return merge({}, state, {statement})
+    case CREATE_STATEMENT_PROPERTY_CHANGE: {
+      const newStatement = merge({}, state.statement, action.payload)
+      return {...state, newStatement}
+    }
     case CREATE_STATEMENT:
-      return merge({}, state, {isCreating: true, didFail: false})
-    case CREATE_STATEMENT_SUCCESS:
-      return merge({}, state, {statement: {text: ''}, isCreating: false, didFail: false})
+      return {...state, isCreating: true, didFail: false}
+    case CREATE_STATEMENT_SUCCESS: {
+      const newStatement = {text: ''}
+      const newJustification = makeNewJustification({
+        target: {
+          type: JustificationTargetType.STATEMENT
+        }
+      })
+      return {...state, newStatement, newJustification, isCreating: false, didFail: false}
+    }
     case CREATE_STATEMENT_FAILURE:
-      return merge({}, state, {isCreating: false, didFail: true})
+      return {...state, isCreating: false, didFail: true}
+
+    // TODO JustificationEditor dedupe with statementJustificationsPage
+    case NEW_JUSTIFICATION_PROPERTY_CHANGE: {
+      if (action.payload.justificationEditorId !== createStatementPageJustificationEditorId) break
+
+      const newJustification = cloneDeep(state.newJustification)
+      const properties = action.payload.properties
+      forEach(properties, (val, key) => {
+        set(newJustification, key, val)
+      })
+      return {...state, newJustification, newJustificationErrorMessage: ''}
+    }
+    case ADD_NEW_JUSTIFICATION_URL: {
+      if (action.payload.justificationEditorId !== createStatementPageJustificationEditorId) break
+
+      const newJustification = cloneDeep(state.newJustification)
+      newJustification.basis.citationReference.urls = newJustification.basis.citationReference.urls.concat([{url: ''}])
+      return {...state, newJustification}
+    }
+    case DELETE_NEW_JUSTIFICATION_URL: {
+      if (action.payload.justificationEditorId !== createStatementPageJustificationEditorId) break
+
+      const newJustification = cloneDeep(state.newJustification)
+      newJustification.basis.citationReference.urls.splice(action.payload.index, 1)
+      return {...state, newJustification}
+    }
   }
   
   return state

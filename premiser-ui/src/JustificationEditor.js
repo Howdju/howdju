@@ -24,7 +24,6 @@ class JustificationEditor extends Component {
       isQuoteEditedAfterMount: false
     }
     this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
     this.onAddUrlClick = this.onAddUrlClick.bind(this)
     this.onStatementTextAutocomplete = this.onStatementTextAutocomplete.bind(this)
   }
@@ -64,11 +63,6 @@ class JustificationEditor extends Component {
     this.props.onDeleteUrlClick(url, index)
   }
 
-  handleSubmit(e) {
-    e.preventDefault()
-    this.props.onSubmit()
-  }
-
   render() {
     const {
       justification,
@@ -92,7 +86,9 @@ class JustificationEditor extends Component {
       label: text(JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE),
     }];
 
-    const urls = justification.basis.citationReference.urls
+    const urls = justification.basis.citationReference ?
+        justification.basis.citationReference.urls :
+        []
 
     let citationReferenceInputs = [
       <Subheader primary
@@ -171,7 +167,7 @@ class JustificationEditor extends Component {
     ]
 
     return (
-        <form onSubmit={this.handleSubmit}>
+        <div>
           <Subheader primary
                      primaryText="Polarity"
                      component="div"
@@ -204,7 +200,7 @@ class JustificationEditor extends Component {
               citationReferenceInputs :
               statementInputs
           }
-        </form>
+        </div>
     )
   }
 }

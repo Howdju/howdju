@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { Route, IndexRoute } from 'react-router'
 import { Link } from 'react-router-dom'
 
@@ -26,47 +26,7 @@ import {dismissToast, hideNavDrawer, initializeMainSearch, logout, setNavDrawerV
 import {history} from './configureStore'
 import paths from "./paths";
 import mainSearcher from './mainSearcher'
-
-
-const IconPage = props => (
-    <DocumentTitle title={'Icons - Howdju'}>
-      <div>
-        <i className="material-icons">all_out</i>
-        <i className="material-icons">open_in_new</i>
-        <i className="material-icons">check_circle</i>
-        <i className="material-icons">done</i>
-        <i className="material-icons">loyalty</i>
-        <i className="material-icons">label</i>
-        <i className="material-icons">label_outline</i>
-        <i className="material-icons">search</i>
-        <i className="material-icons">settings</i>
-        <i className="material-icons">thumb_up</i>
-        <i className="material-icons">thumb_down</i>
-        <i className="material-icons">add</i>
-        <i className="material-icons">add_box</i>
-        <i className="material-icons">add_circle</i>
-        <i className="material-icons">add_circle_outline</i>
-        <i className="material-icons">remove</i>
-        <i className="material-icons">remove_circle</i>
-        <i className="material-icons">remove_circle_outline</i>
-        <i className="material-icons">archive</i>
-        <i className="material-icons">unarchive</i>
-        <i className="material-icons">delete</i>
-        <i className="material-icons">delete_forever</i>
-        <i className="material-icons">undo</i>
-        <i className="material-icons">redo</i>
-        <i className="material-icons">create</i>
-        <i className="material-icons">block</i>
-        <i className="material-icons">clear</i>
-        <i className="material-icons">call_made</i>
-        <i className="material-icons">compare_arrows</i>
-        <i className="material-icons">merge_type</i>
-        <i className="material-icons">gavel</i>
-        <i className="material-icons">hourglass_empty</i>
-        <i className="material-icons">hourglass_full</i>
-      </div>
-    </DocumentTitle>
-)
+import IconPage from './IconPage'
 
 class App extends Component {
 
@@ -79,6 +39,10 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.checkInitializeMainSearch()
+  }
+
+  checkInitializeMainSearch() {
     const location = window.location
     const queryParamSearchText = mainSearcher.mainSearchText(location)
     if (queryParamSearchText) {

@@ -19,12 +19,12 @@ import {
   addNewCounterJustification,
   newCounterJustificationPropertyChange,
   createJustification,
-  cancelNewCounterJustification,
+  cancelNewCounterJustification, viewStatement,
 } from './actions'
 import {
   JustificationBasisType,
   isVerified,
-  isDisverified,
+  isDisverified, isStatementBased,
 } from './models'
 import {extractDomain} from './util'
 import FlipMove from 'react-flip-move';
@@ -50,6 +50,7 @@ class Justification extends Component {
     this.onNewCounterJustificationPropertyChange = this.onNewCounterJustificationPropertyChange.bind(this)
     this.onCreateCounterJustification = this.onCreateCounterJustification.bind(this)
     this.onCancelNewCounterJustification = this.onCancelNewCounterJustification.bind(this)
+    this.goToStatement = this.goToStatement.bind(this)
   }
 
   onCardMouseOver() {
@@ -80,6 +81,13 @@ class Justification extends Component {
 
   deleteClick() {
     this.props.deleteJustification(this.props.justification)
+  }
+
+  goToStatement() {
+    const basis = this.props.justification.basis
+    if (basis.type === JustificationBasisType.STATEMENT) {
+      this.props.viewStatement(basis.entity)
+    }
   }
 
   onAddNewCounterJustification() {
@@ -145,6 +153,11 @@ class Justification extends Component {
             buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
         >
+          <ListItem primaryText="Go To"
+                    leftIcon={<FontIcon>forward</FontIcon>}
+                    onClick={this.goToStatement}
+                    className={classNames({hidden: !isStatementBased(justification)})}
+          />
           <ListItem primaryText="Counter" leftIcon={<FontIcon>reply</FontIcon>} />
           <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
           <Divider />
@@ -282,6 +295,7 @@ const ConnectedJustification = connect(mapStateToProps, {
   newCounterJustificationPropertyChange,
   createJustification,
   cancelNewCounterJustification,
+  viewStatement,
 })(Justification)
 
 export default ConnectedJustification

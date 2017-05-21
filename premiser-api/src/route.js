@@ -97,18 +97,18 @@ const routes = [
                 callback,
                 request: {
                   authToken,
-                  body: {statement},
+                  body: {statement, justification},
                   method,
                   path
                 }
-    }) => createStatement({authToken, statement})
-        .then( ({isUnauthenticated, isInvalid, statement, isExtant}) => {
+    }) => createStatement({authToken, statement, justification})
+        .then( ({isUnauthenticated, isInvalid, statement, justification, isExtant}) => {
           if (isUnauthenticated) {
             return unauthorized({callback})
           } else if (isInvalid) {
             return badRequest({callback})
           } else if (statement) {
-            return ok({callback, body: {statement, isExtant}})
+            return ok({callback, body: {statement, justification, isExtant}})
           }
           logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
           return error({callback})

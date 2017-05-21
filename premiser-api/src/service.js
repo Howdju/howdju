@@ -21,6 +21,7 @@ const assign = require('lodash/assign')
 const forEach = require('lodash/forEach')
 const cloneDeep = require('lodash/cloneDeep')
 const filter = require('lodash/filter')
+const {ValidationError} = require("./errors")
 
 const {
   JustificationTargetType,
@@ -326,7 +327,7 @@ const withAuth = (authToken) => query(`
     // TODO does this work deconstructing the first row?  What happen when it is empty?
     .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
 
-const createStatement = ({authToken, statement}) => withAuth(authToken)
+const createStatement = ({authToken, statement, justification}) => withAuth(authToken)
     .then(userId => {
       const now = new Date()
       if (!statement.text) {
@@ -355,6 +356,28 @@ const createStatement = ({authToken, statement}) => withAuth(authToken)
                   [userId, ActionType.CREATE, statement.id, ActionTargetType.STATEMENT, now]
               )
               // return statement while asynchronously inserting action
+              if (justification) {
+                if (justification.basis.type !== JustificationBasisType.STATEMENT) {
+                  throw new ValidationError(`Justification created with statement must have basis type of ` +
+                      `${JustificationBasisType.STATEMENT}, but was ${justification.basis.type}`)
+                }
+                const justificationWithStatementId = cloneDeep(justification)
+                justificationWithStatementId.rootStatementId = statement.id
+                justificationWithStatementId.target.entity.id = statement.id
+                console.log('justificationWithStatementId')
+                console.log(justificationWithStatementId)
+                return createJustification({authToken, justification: justificationWithStatementId})
+                    // TODO this will mask error properties set on the resolved value
+                    // Factor out a createJustification method that rejects the promise upon an error
+                    .then((val) => {
+                      console.log('val')
+                      console.log(val)
+                      return {
+                        statement,
+                        justification: val.justification,
+                      }
+                    })
+              }
               return {statement}
             })
       })
@@ -390,7 +413,6 @@ const createJustification = ({authToken, justification}) => withAuth(authToken)
           !justification.polarity ||
           !justification.target ||
           !justification.target.type ||
-          // TODO allow a new target statement (having no id)
           !justification.target.entity.id ||
           !justification.basis ||
           !justification.basis.type ||

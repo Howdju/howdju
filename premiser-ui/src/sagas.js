@@ -361,7 +361,10 @@ function* onCreateStatement(action) {
         method: POST,
         body: action.payload
       },
-      schema: {statement: statementSchema}
+      schema: {
+        statement: statementSchema,
+        justification: justificationSchema,
+      }
     }
 
     const {successAction, failureAction} = yield* callApiWithNonce({payload})()

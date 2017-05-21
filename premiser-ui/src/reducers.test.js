@@ -7,7 +7,7 @@ import {
   entities,
   indexRootJustificationsByRootStatementId,
   unionArraysDistinctIdsCustomizer,
-  appUi,
+  appUi, mainSearch,
 } from './reducers'
 import paths from './paths'
 import {CREATE_JUSTIFICATION_SUCCESS, DELETE_JUSTIFICATION_SUCCESS} from "./actions";
@@ -503,7 +503,7 @@ describe('reducers', () => {
         payload: parsePath(paths.home()),
       }
       debugger
-      const newState = appUi(initialState, action)
+      const newState = mainSearch(initialState, action)
       expect(newState.mainSearchText).toEqual('')
     })
 

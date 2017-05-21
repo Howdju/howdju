@@ -21,7 +21,6 @@ import defaults from 'lodash/defaults'
 import classNames from 'classnames'
 import FlipMove from 'react-flip-move';
 import config from './config';
-import cloneDeep from 'lodash/cloneDeep'
 
 import {logError} from "./util";
 import {
@@ -30,7 +29,7 @@ import {
   JustificationPolarity,
   isPositive,
   isNegative,
-  JustificationBasisType,
+  consolidateBasis,
 } from "./models";
 
 import {
@@ -54,6 +53,7 @@ import text, {
 import JustificationEditor from './JustificationEditor'
 
 import "./StatementJustificationsPage.scss";
+import {statementJustificationsPageJustificationEditorId} from "./editorIds";
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -61,6 +61,7 @@ class StatementJustificationsPage extends Component {
     this.state = {
       isOverStatement: false,
     }
+
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
     this.updateDimensions = this.updateDimensions.bind(this)
@@ -69,6 +70,7 @@ class StatementJustificationsPage extends Component {
     this.showAddNewJustification = this.showAddNewJustification.bind(this)
     this.onNewJustificationPropertyChange = this.onNewJustificationPropertyChange.bind(this)
     this.saveNewJustification = this.saveNewJustification.bind(this)
+    this.onSubmitNewJustification = this.onSubmitNewJustification.bind(this)
     this.cancelNewJustification = this.cancelNewJustification.bind(this)
     this.addNewJustificationUrl = this.addNewJustificationUrl.bind(this)
     this.deleteNewJustificationUrl = this.deleteNewJustificationUrl.bind(this)
@@ -109,34 +111,24 @@ class StatementJustificationsPage extends Component {
   }
 
   onNewJustificationPropertyChange(properties) {
-    this.props.newJustificationPropertyChange(properties)
+    this.props.newJustificationPropertyChange(statementJustificationsPageJustificationEditorId, properties)
   }
 
   addNewJustificationUrl() {
-    this.props.addNewJustificationUrl()
+    this.props.addNewJustificationUrl(this.justificationEditorId)
   }
 
   deleteNewJustificationUrl(url, index) {
-    this.props.deleteNewJustificationUrl(url, index)
+    this.props.deleteNewJustificationUrl(statementJustificationsPageJustificationEditorId, url, index)
+  }
+
+  onSubmitNewJustification(e) {
+    e.preventDefault()
+    this.saveNewJustification()
   }
 
   saveNewJustification() {
-    const newJustification = cloneDeep(this.props.newJustification);
-    switch (newJustification.basis.type) {
-      case JustificationBasisType.STATEMENT:
-        newJustification.basis.entity = newJustification.basis.statement
-        break
-      case JustificationBasisType.CITATION_REFERENCE:
-        newJustification.basis.entity = newJustification.basis.citationReference
-        break
-      default:
-        logError(`newJustification had impossible basis type: ${newJustification.basis.type}.  Defaulting to statement basis`)
-        newJustification.basis.entity = newJustification.basis.statement
-        break
-    }
-    delete newJustification.basis.statement
-    delete newJustification.basis.citationReference
-
+    const newJustification = consolidateBasis(this.props.newJustification)
     this.props.createJustification(newJustification)
   }
 
@@ -225,12 +217,13 @@ class StatementJustificationsPage extends Component {
             {newJustificationErrorMessage}
           </div>
 
-          <JustificationEditor justification={this.props.newJustification}
-                               onPropertyChange={this.onNewJustificationPropertyChange}
-                               onSubmit={this.saveNewJustification}
-                               onAddUrlClick={this.addNewJustificationUrl}
-                               onDeleteUrlClick={this.deleteNewJustificationUrl}
-          />
+          <form onSubmit={this.onSubmitNewJustification}>
+            <JustificationEditor justification={this.props.newJustification}
+                                 onPropertyChange={this.onNewJustificationPropertyChange}
+                                 onAddUrlClick={this.addNewJustificationUrl}
+                                 onDeleteUrlClick={this.deleteNewJustificationUrl}
+            />
+          </form>
 
         </Dialog>
     )
