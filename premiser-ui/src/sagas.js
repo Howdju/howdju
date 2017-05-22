@@ -472,7 +472,7 @@ function* onDeleteStatement(action) {
 
 function* onDeleteStatementSuccess(action) {
   const routerLocation = yield select(getRouterLocation)
-  if (routerLocation.pathname === paths.statement(action.meta.deletedStatement)) {
+  if (routerLocation.pathname === paths.statement(action.meta.deletedEntity)) {
     yield put({type: ADD_TOAST, payload: { text: text(DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE)}})
     yield put(push(paths.home()))
   }

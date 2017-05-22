@@ -5,14 +5,14 @@
 
 * bookmarklet
 
-* Statement menu
-  * When delete, go to home
-  * Use
-  * Edit
-* Justification menu
-  * Counter
-  * Use
-  * Edit
+* StatementJustifications menus
+  * Statement menu
+    * Use
+    * Edit
+  * Justification menu
+    * Counter
+    * Use
+    * Edit
 
 * tagging
 * Author of quote
