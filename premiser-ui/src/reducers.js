@@ -567,7 +567,7 @@ const app = (state = { loginRedirectLocation: null, statementSuggestions: {} }, 
       return {...state, loginRedirectLocation: action.payload.routerLocation}
     case LOCATION_CHANGE:
       // If the user navigates anywhere other than the login page, clear any login redirection
-      if (action.payload.pathname !== paths.login) {
+      if (action.payload.pathname !== paths.login()) {
         return {...state, loginRedirectLocation: null}
       }
       break;

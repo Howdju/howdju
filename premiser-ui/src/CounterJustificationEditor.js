@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import FontIcon from 'react-md/lib/FontIcons'
 
 import StatementTextAutocomplete from './StatementTextAutocomplete'
@@ -53,6 +54,11 @@ class CounterJustificationEditor extends Component {
         </form>
     )
   }
+}
+CounterJustificationEditor.propTypes = {
+  counterJustification: PropTypes.object,
+  onPropertyChange: PropTypes.func,
+  onSubmit: PropTypes.func,
 }
 
 export default CounterJustificationEditor

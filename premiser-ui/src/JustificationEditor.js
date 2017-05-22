@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import Divider from 'react-md/lib/Dividers'
 import TextField from 'react-md/lib/TextFields'
 import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
@@ -25,7 +26,7 @@ class JustificationEditor extends Component {
     }
     this.onPropertyChange = this.onPropertyChange.bind(this)
     this.onAddUrlClick = this.onAddUrlClick.bind(this)
-    this.onStatementTextAutocomplete = this.onStatementTextAutocomplete.bind(this)
+    this.onStatementBasisTextAutocomplete = this.onStatementBasisTextAutocomplete.bind(this)
   }
 
   onPropertyChange(value, event) {
@@ -49,7 +50,7 @@ class JustificationEditor extends Component {
     }
   }
 
-  onStatementTextAutocomplete(text, index) {
+  onStatementBasisTextAutocomplete(text, index) {
     this.props.onPropertyChange({'basis.statement.text': text})
   }
 
@@ -162,7 +163,7 @@ class JustificationEditor extends Component {
           value={justification.basis.statement.text}
           suggestionsKey={suggestionKeys.justificationEditor}
           onChange={this.onPropertyChange}
-          onAutocomplete={this.onStatementTextAutocomplete}
+          onAutocomplete={this.onStatementBasisTextAutocomplete}
       />
     ]
 
@@ -203,6 +204,12 @@ class JustificationEditor extends Component {
         </div>
     )
   }
+}
+JustificationEditor.propTypes = {
+  justification: PropTypes.object,
+  onPropertyChange: PropTypes.func,
+  onDeleteUrlClick: PropTypes.func,
+  onAddUrlClick: PropTypes.func,
 }
 
 export default JustificationEditor

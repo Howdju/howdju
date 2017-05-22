@@ -25,24 +25,27 @@ import StatementTextAutocomplete from './StatementTextAutocomplete'
 import JustificationEditor from './JustificationEditor'
 import {consolidateBasis} from "./models";
 import {createStatementPageJustificationEditorId} from "./editorIds";
+import StatementEditor from "./StatementEditor";
 
 class CreateStatementPage extends Component {
 
   constructor() {
     super()
-    this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onTextAutocomplete = this.onTextAutocomplete.bind(this)
+
+    this.state = {doCreateJustification: false}
+
+    this.onNewStatementPropertyChange = this.onNewStatementPropertyChange.bind(this)
+
     this.onDoCreateJustificationSwitchClick = this.onDoCreateJustificationSwitchClick.bind(this)
 
     this.onNewJustificationPropertyChange = this.onNewJustificationPropertyChange.bind(this)
     this.addNewJustificationUrl = this.addNewJustificationUrl.bind(this)
     this.deleteNewJustificationUrl = this.deleteNewJustificationUrl.bind(this)
 
-    this.state = {doCreateJustification: false}
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
-  onPropertyChange(val, e) {
+  onNewStatementPropertyChange(val, e) {
     const name = e.target.name
     this.props.createStatementPropertyChange({[name]: val})
   }
@@ -55,10 +58,6 @@ class CreateStatementPage extends Component {
     } else {
       this.props.createStatement(this.props.newStatement)
     }
-  }
-
-  onTextAutocomplete(text, index) {
-    this.props.createStatementPropertyChange({text})
   }
 
   onNewJustificationPropertyChange(properties) {
@@ -108,16 +107,10 @@ class CreateStatementPage extends Component {
                 {errorMessage}
               </CardText>
               <CardText>
-                <StatementTextAutocomplete
-                    id="newStatementText"
-                    name="text"
-                    label="Text"
-                    required
-                    leftIcon={<FontIcon>text_fields</FontIcon>}
-                    value={newStatement.text}
-                    suggestionsKey={suggestionKeys.createStatementPage}
-                    onChange={this.onPropertyChange}
-                    onAutocomplete={this.onTextAutocomplete}
+                <StatementEditor statementTextInputId="statementText"
+                                 statement={newStatement}
+                                 suggestionsKey={suggestionKeys.createStatementPage}
+                                 onPropertyChange={this.onNewStatementPropertyChange}
                 />
               </CardText>
 

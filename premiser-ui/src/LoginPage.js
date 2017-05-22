@@ -4,7 +4,9 @@ import DocumentTitle from 'react-document-title'
 import clone from 'lodash/clone'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
-import Paper from 'react-md/lib/Papers/Paper'
+import Card from 'react-md/lib/Cards'
+import CardTitle from 'react-md/lib/Cards/CardTitle'
+import CardText from 'react-md/lib/Cards/CardText'
 import merge from 'lodash/merge'
 import classNames from 'classnames'
 
@@ -35,7 +37,7 @@ class LoginPage extends Component {
     const {
       credentials,
       isLoggingIn,
-      loginRedirectLocation,
+      isLoginRedirect,
       errorMessage,
     } = this.props
     return (
@@ -44,51 +46,44 @@ class LoginPage extends Component {
             <div className="md-grid">
               <div className="md-cell md-cell--12">
 
-                <Paper zDepth={2}>
-                  <div className="md-grid">
-                    <div className={classNames({
-                      'md-cell': true,
-                       'md-cell--12': true,
-                       hidden: !loginRedirectLocation,
-                    })}>
-                      <h4>Please login to continue</h4>
-                    </div>
-                    <div className={classNames({
+                <Card>
+                  <CardTitle title="Login"
+                             subtitle={isLoginRedirect && "Please login to continue"}
+                  />
+                  <CardText className={classNames({
                       'md-cell': true,
                       'md-cell--12': true,
                       errorMessage: true,
                       hidden: !errorMessage,
-                    })}>
-                      {errorMessage}
-                    </div>
-                    <div className="md-cell md-cell--12">
+                    })}
+                  >
+                    {errorMessage}
+                  </CardText>
+                  <CardText>
+                    <form onSubmit={this.handleSubmit}>
+                      <TextField
+                          id="loginEmail"
+                          type="email"
+                          name="email"
+                          label="Email"
+                          value={credentials.email}
+                          required
+                          onChange={this.handleInputChange}
+                      />
+                      <TextField
+                          id="loginPassword"
+                          type="password"
+                          name="password"
+                          label="Password"
+                          value={credentials.password}
+                          required
+                          onChange={this.handleInputChange}
+                      />
 
-                      <form onSubmit={this.handleSubmit}>
-                          <TextField
-                              id="loginEmail"
-                              type="email"
-                              name="email"
-                              label="Email"
-                              value={credentials.email}
-                              required
-                              onChange={this.handleInputChange}
-                          />
-                          <TextField
-                              id="loginPassword"
-                              type="password"
-                              name="password"
-                              label="Password"
-                              value={credentials.password}
-                              required
-                              onChange={this.handleInputChange}
-                          />
-
-                        <Button raised primary type="submit" label="Login" disabled={isLoggingIn} />
-                      </form>
-
-                    </div>
-                  </div>
-                </Paper>
+                      <Button raised primary type="submit" label="Login" disabled={isLoggingIn} />
+                    </form>
+                  </CardText>
+                </Card>
 
               </div>
             </div>
@@ -100,7 +95,7 @@ class LoginPage extends Component {
 }
 
 const mapStateToProps = state => {
-  return merge(clone(state.ui.loginPage), {loginRedirectLocation: state.app.loginRedirectLocation})
+  return merge(clone(state.ui.loginPage), {isLoginRedirect: !!state.app.loginRedirectLocation})
 }
 
 export default connect(mapStateToProps, {
