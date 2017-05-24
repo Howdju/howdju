@@ -38,10 +38,12 @@ import {
   fetchStatementJustifications,
   rejectJustification,
   createJustification,
-  newJustificationPropertyChange,
-  resetNewJustification,
-  hideAddNewJustification,
-  showAddNewJustification, addNewJustificationUrl, deleteNewJustificationUrl,
+  editJustificationPropertyChange,
+  resetEditJustification,
+  showNewJustificationDialog,
+  hideNewJustificationDialog,
+  editJustificationAddUrl,
+  editJustificationDeleteUrl, doEditStatement,
 } from "./actions";
 import {justificationSchema, statementSchema} from "./schemas";
 import Justification from './Justification'
@@ -65,15 +67,16 @@ class StatementJustificationsPage extends Component {
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
     this.updateDimensions = this.updateDimensions.bind(this)
+    this.doEditStatement = this.doEditStatement.bind(this)
     this.deleteStatement = this.deleteStatement.bind(this)
 
-    this.showAddNewJustification = this.showAddNewJustification.bind(this)
+    this.showNewJustificationDialog = this.showNewJustificationDialog.bind(this)
     this.onNewJustificationPropertyChange = this.onNewJustificationPropertyChange.bind(this)
-    this.saveNewJustification = this.saveNewJustification.bind(this)
-    this.onSubmitNewJustification = this.onSubmitNewJustification.bind(this)
-    this.cancelNewJustification = this.cancelNewJustification.bind(this)
     this.addNewJustificationUrl = this.addNewJustificationUrl.bind(this)
     this.deleteNewJustificationUrl = this.deleteNewJustificationUrl.bind(this)
+    this.saveNewJustification = this.saveNewJustification.bind(this)
+    this.onSubmitNewJustificationDialog = this.onSubmitNewJustificationDialog.bind(this)
+    this.cancelNewJustificationDialog = this.cancelNewJustificationDialog.bind(this)
   }
 
   componentWillMount() {
@@ -101,17 +104,21 @@ class StatementJustificationsPage extends Component {
     this.setState({width: window.innerWidth, height: window.innerHeight});
   }
 
+  doEditStatement() {
+    this.props.doEditStatement(this.props.statement.id)
+  }
+
   deleteStatement() {
     this.props.deleteStatement(this.props.statement)
   }
 
-  showAddNewJustification(e) {
+  showNewJustificationDialog(e) {
     e.preventDefault()
-    this.props.showAddNewJustification(this.props.match.params.statementId)
+    this.props.showNewJustificationDialog(this.props.match.params.statementId)
   }
 
   onNewJustificationPropertyChange(properties) {
-    this.props.newJustificationPropertyChange(statementJustificationsPageJustificationEditorId, properties)
+    this.props.editJustificationPropertyChange(statementJustificationsPageJustificationEditorId, properties)
   }
 
   addNewJustificationUrl() {
@@ -119,10 +126,10 @@ class StatementJustificationsPage extends Component {
   }
 
   deleteNewJustificationUrl(url, index) {
-    this.props.deleteNewJustificationUrl(statementJustificationsPageJustificationEditorId, url, index)
+    this.props.editJustificationDeleteUrl(statementJustificationsPageJustificationEditorId, url, index)
   }
 
-  onSubmitNewJustification(e) {
+  onSubmitNewJustificationDialog(e) {
     e.preventDefault()
     this.saveNewJustification()
   }
@@ -132,9 +139,9 @@ class StatementJustificationsPage extends Component {
     this.props.createJustification(newJustification)
   }
 
-  cancelNewJustification() {
-    this.props.hideAddNewJustification()
-    this.props.resetNewJustification()
+  cancelNewJustificationDialog() {
+    this.props.hideNewJustificationDialog()
+    this.props.resetEditJustification()
   }
 
   render () {
@@ -146,6 +153,7 @@ class StatementJustificationsPage extends Component {
       isNewJustificationDialogVisible,
       newJustificationErrorMessage,
       isCreatingNewJustification,
+      newJustification,
     } = this.props
 
     const {narrowBreakpoint, flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
@@ -182,11 +190,14 @@ class StatementJustificationsPage extends Component {
         >
           <ListItem primaryText="Add Justification"
                     leftIcon={<FontIcon>add</FontIcon>}
-                    onClick={this.showAddNewJustification}
+                    onClick={this.showNewJustificationDialog}
           />
           <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
           <Divider />
-          <ListItem primaryText="Edit" leftIcon={<FontIcon>create</FontIcon>} />
+          <ListItem primaryText="Edit"
+                    leftIcon={<FontIcon>create</FontIcon>}
+                    onClick={this.doEditStatement}
+          />
           <ListItem primaryText="Delete"
                     leftIcon={<FontIcon>delete</FontIcon>}
                     onClick={this.deleteStatement}
@@ -198,9 +209,9 @@ class StatementJustificationsPage extends Component {
         <Dialog id="newJustificationDialog"
                 visible={isNewJustificationDialogVisible}
                 title="Add justification"
-                onHide={this.cancelNewJustification}
+                onHide={this.cancelNewJustificationDialog}
                 actions={[
-                  <Button flat label={text(CANCEL_BUTTON_LABEL)} onClick={this.cancelNewJustification} />,
+                  <Button flat label={text(CANCEL_BUTTON_LABEL)} onClick={this.cancelNewJustificationDialog} />,
                   <Button flat
                           primary
                           type="submit"
@@ -217,8 +228,8 @@ class StatementJustificationsPage extends Component {
             {newJustificationErrorMessage}
           </div>
 
-          <form onSubmit={this.onSubmitNewJustification}>
-            <JustificationEditor justification={this.props.newJustification}
+          <form onSubmit={this.onSubmitNewJustificationDialog}>
+            <JustificationEditor justification={newJustification}
                                  onPropertyChange={this.onNewJustificationPropertyChange}
                                  onAddUrlClick={this.addNewJustificationUrl}
                                  onDeleteUrlClick={this.deleteNewJustificationUrl}
@@ -279,12 +290,6 @@ class StatementJustificationsPage extends Component {
 
             <div className="row">
 
-              {errorMessage &&
-                <div className="col-xs-12">
-                  {errorMessage}
-                </div>
-              }
-
               <div className="col-xs-12">
 
                 <div className="statement">
@@ -314,7 +319,15 @@ class StatementJustificationsPage extends Component {
 
               </div>
             </div>
-            {!hasJustifications &&
+
+            {errorMessage &&
+                <div className="row center-xs">
+                  <div className="col-xs-12 errorMessage">
+                    {errorMessage}
+                  </div>
+                </div>
+            }
+            {!errorMessage && !hasJustifications &&
 
               <div className="row center-xs">
                 <div className="col-xs-12">
@@ -324,7 +337,7 @@ class StatementJustificationsPage extends Component {
                       <div>
                         <div>No justifications.</div>
                         <div>
-                          <a onClick={this.showAddNewJustification} href="#">
+                          <a onClick={this.showNewJustificationDialog} href="#">
                             {text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                           </a>
                         </div>
@@ -398,12 +411,13 @@ export default connect(mapStateToProps, {
   fetchStatementJustifications,
   acceptJustification,
   rejectJustification,
+  doEditStatement,
   deleteStatement,
   createJustification,
-  showAddNewJustification,
-  newJustificationPropertyChange,
-  resetNewJustification,
-  hideAddNewJustification,
-  addNewJustificationUrl,
-  deleteNewJustificationUrl,
+  editJustificationPropertyChange,
+  editJustificationAddUrl,
+  editJustificationDeleteUrl,
+  resetEditJustification,
+  showNewJustificationDialog,
+  hideNewJustificationDialog,
 })(StatementJustificationsPage)

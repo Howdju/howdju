@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import {fetchStatementsSearch} from "./actions";
 
 class MainSearchPage extends Component {
 
@@ -42,6 +41,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, {
-  fetchStatementsSearch
-})(MainSearchPage)
+export default connect(mapStateToProps)(MainSearchPage)

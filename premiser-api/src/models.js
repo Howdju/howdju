@@ -3,6 +3,8 @@ const ActionType = {
   CREATE: 'CREATE',
   /** The user tried to create something that was a duplicate of something existing; nothing was created */
   TRY_CREATE_DUPLICATE: 'TRY_CREATE_DUPLICATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
 }
 
 const ActionTargetType = {

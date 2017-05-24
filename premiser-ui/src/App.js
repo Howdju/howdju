@@ -18,7 +18,6 @@ import './App.scss'
 import Header from './Header'
 import HomePage from './HomePage'
 import MainSearchPage from './MainSearchPage'
-import CreateStatementPage from './CreateStatementPage'
 import ToolsPage from './ToolsPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
@@ -27,6 +26,7 @@ import {history} from './configureStore'
 import paths from "./paths";
 import mainSearcher from './mainSearcher'
 import IconPage from './IconPage'
+import EditStatementPage from "./EditStatementPage";
 
 class App extends Component {
 
@@ -138,8 +138,9 @@ class App extends Component {
               <Route exact path={paths.home()} render={renderHomePath}/>
               <Route path={paths.login()} component={LoginPage} />
               <Route path="/tools" component={ToolsPage} />
-              <Route path="/create-statement" component={CreateStatementPage} />
+              <Route path="/create-statement" component={EditStatementPage} />
               <Route path="/icons" component={IconPage} />
+              <Route path="/edit-statement/:statementId" component={EditStatementPage} />
               <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsPage} />
 
             </div>

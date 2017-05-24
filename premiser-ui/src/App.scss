@@ -73,13 +73,6 @@ html {
   margin-right: $gutter;
 }
 
-form {
-  button[type="submit"] {
-    // TODO make this the same as the grid padding/margin
-    margin-top: 1rem;
-  }
-}
-
 // TODO remove at some point!
 .md-text-field-container.md-text-field-container--multiline:not(.hasIcon) {
   // the following doens't appear to apply to multiline inputs with an icon (left icon, at least)

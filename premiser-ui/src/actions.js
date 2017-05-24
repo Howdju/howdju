@@ -76,12 +76,17 @@ export const UN_DISVERIFY_JUSTIFICATION_SUCCESS = 'UN_DISVERIFY_JUSTIFICATION_SU
 export const UN_DISVERIFY_JUSTIFICATION_FAILURE = 'UN_DISVERIFY_JUSTIFICATION_FAILURE'
 export const unDisverifyJustification = create2Action(UN_DISVERIFY_JUSTIFICATION, target => ({target}))
 
-export const CREATE_STATEMENT_PROPERTY_CHANGE = 'CREATE_STATEMENT_PROPERTY_CHANGE'
-export const createStatementPropertyChange = create2Action(CREATE_STATEMENT_PROPERTY_CHANGE)
+export const EDIT_STATEMENT_PROPERTY_CHANGE = 'EDIT_STATEMENT_PROPERTY_CHANGE'
+export const editStatementPropertyChange = create2Action(EDIT_STATEMENT_PROPERTY_CHANGE, (editorId, properties) => ({editorId, properties}))
 export const CREATE_STATEMENT = 'CREATE_STATEMENT'
 export const CREATE_STATEMENT_SUCCESS = 'CREATE_STATEMENT_SUCCESS'
 export const CREATE_STATEMENT_FAILURE = 'CREATE_STATEMENT_FAILURE'
 export const createStatement = create2Action(CREATE_STATEMENT, (statement, justification) => ({statement, justification}))
+
+export const UPDATE_STATEMENT = 'UPDATE_STATEMENT'
+export const UPDATE_STATEMENT_SUCCESS = 'UPDATE_STATEMENT_SUCCESS'
+export const UPDATE_STATEMENT_FAILURE = 'UPDATE_STATEMENT_FAILURE'
+export const updateStatement = create2Action(UPDATE_STATEMENT, statement => ({statement}))
 
 export const DELETE_STATEMENT = 'DELETE_STATEMENT'
 export const DELETE_STATEMENT_SUCCESS = 'DELETE_STATEMENT_SUCCESS'
@@ -93,30 +98,32 @@ export const CREATE_JUSTIFICATION_SUCCESS = 'CREATE_JUSTIFICATION_SUCCESS'
 export const CREATE_JUSTIFICATION_FAILURE = 'CREATE_JUSTIFICATION_FAILURE'
 export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => {
   if (justification.target.entity.id) {
-    // If the target already has an ID, then just sent that along; that is enough for the server to identify it.
+    // If the target already has an ID, then just send that along; that is enough for the server to identify it.
     // This transformation probably applies to basis and any other entities.  But it is particularly important for
     // justification targets, because the target may be a justification having circular references.
-    justification = {...justification, target:{...justification.target, entity: { id: justification.target.entity.id}}}
+    justification = {...justification, target: {...justification.target, entity: { id: justification.target.entity.id}}}
   }
   return {justification}
 })
 
-/** For a singleton on the Statemeent Justifications page; be careful if using multiple editors at once! */
-export const SHOW_ADD_NEW_JUSTIFICATION = 'SHOW_ADD_NEW_JUSTIFICATION'
-export const HIDE_ADD_NEW_JUSTIFICATION = 'HIDE_ADD_NEW_JUSTIFICATION'
-export const NEW_JUSTIFICATION_PROPERTY_CHANGE = 'NEW_JUSTIFICATION_PROPERTY_CHANGE'
-export const RESET_NEW_JUSTIFICATION = 'RESET_NEW_JUSTIFICATION'
-export const showAddNewJustification = create2Action(SHOW_ADD_NEW_JUSTIFICATION, statementId => ({statementId}))
-export const hideAddNewJustification = create2Action(HIDE_ADD_NEW_JUSTIFICATION)
-export const newJustificationPropertyChange = create2Action(NEW_JUSTIFICATION_PROPERTY_CHANGE, (justificationEditorId, properties) => ({
+/** For a singleton on the Statement Justifications page; be careful if using multiple editors at once! */
+export const SHOW_NEW_JUSTIFICATION_DIALOG = 'SHOW_NEW_JUSTIFICATION_DIALOG'
+export const HIDE_NEW_JUSTIFICATION_DIALOG = 'HIDE_NEW_JUSTIFICATION_DIALOG'
+export const showNewJustificationDialog = create2Action(SHOW_NEW_JUSTIFICATION_DIALOG, statementId => ({statementId}))
+export const hideNewJustificationDialog = create2Action(HIDE_NEW_JUSTIFICATION_DIALOG)
+
+export const EDIT_JUSTIFICATION_PROPERTY_CHANGE = 'EDIT_JUSTIFICATION_PROPERTY_CHANGE'
+export const editJustificationPropertyChange = create2Action(EDIT_JUSTIFICATION_PROPERTY_CHANGE, (justificationEditorId, properties) => ({
   justificationEditorId,
   properties,
 }))
-export const resetNewJustification = create2Action(RESET_NEW_JUSTIFICATION)
-export const ADD_NEW_JUSTIFICATION_URL = 'ADD_NEW_JUSTIFICATION_URL'
-export const addNewJustificationUrl = create2Action(ADD_NEW_JUSTIFICATION_URL, justificationEditorId => ({justificationEditorId}))
-export const DELETE_NEW_JUSTIFICATION_URL = 'DELETE_NEW_JUSTIFICATION_URL'
-export const deleteNewJustificationUrl = create2Action(DELETE_NEW_JUSTIFICATION_URL, (justificationEditorId, url, index) => ({justificationEditorId, url, index}))
+
+export const RESET_EDIT_JUSTIFICATION = 'RESET_EDIT_JUSTIFICATION'
+export const resetEditJustification = create2Action(RESET_EDIT_JUSTIFICATION)
+export const EDIT_JUSTIFICATION_ADD_URL = 'EDIT_JUSTIFICATION_ADD_URL'
+export const editJustificationAddUrl = create2Action(EDIT_JUSTIFICATION_ADD_URL, justificationEditorId => ({justificationEditorId}))
+export const EDIT_JUSTIFICATION_DELETE_URL = 'EDIT_JUSTIFICATION_DELETE_URL'
+export const editJustificationDeleteUrl = create2Action(EDIT_JUSTIFICATION_DELETE_URL, (justificationEditorId, url, index) => ({justificationEditorId, url, index}))
 
 export const DELETE_JUSTIFICATION = 'DELETE_JUSTIFICATION'
 export const DELETE_JUSTIFICATION_SUCCESS = 'DELETE_JUSTIFICATION_SUCCESS'
@@ -162,3 +169,15 @@ export const fetchStatementSuggestions = create2Action(FETCH_STATEMENT_SUGGESTIO
   text,
   suggestionsKey,
 }))
+
+export const FETCH_STATEMENT = 'FETCH_STATEMENT'
+export const FETCH_STATEMENT_SUCCESS = 'FETCH_STATEMENT_SUCCESS'
+export const FETCH_STATEMENT_FAILURE = 'FETCH_STATEMENT_FAILURE'
+export const fetchStatement = create2Action(FETCH_STATEMENT, statementId => ({statementId}))
+export const FETCH_STATEMENT_FOR_EDIT = 'FETCH_STATEMENT_FOR_EDIT'
+export const FETCH_STATEMENT_FOR_EDIT_SUCCESS = 'FETCH_STATEMENT_FOR_EDIT_SUCCESS'
+export const FETCH_STATEMENT_FOR_EDIT_FAILURE = 'FETCH_STATEMENT_FOR_EDIT_FAILURE'
+export const fetchStatementForEdit = create2Action(FETCH_STATEMENT_FOR_EDIT, statementId => ({statementId}))
+
+export const DO_EDIT_STATEMENT = 'DO_EDIT_STATEMENT'
+export const doEditStatement = create2Action(DO_EDIT_STATEMENT, statementId => ({statementId}))

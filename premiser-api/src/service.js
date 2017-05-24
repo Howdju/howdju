@@ -1,5 +1,11 @@
 const {query, queries} = require('./db')
 const {
+  statementsDao,
+} = require('./dao/statementsDao')
+const {
+  permissionsDao,
+} = require('./dao/permissionsDao')
+const {
   toStatement,
   toJustification,
   toCitationReference,
@@ -21,7 +27,20 @@ const assign = require('lodash/assign')
 const forEach = require('lodash/forEach')
 const cloneDeep = require('lodash/cloneDeep')
 const filter = require('lodash/filter')
-const {ValidationError} = require("./errors")
+const {
+  AuthenticationError,
+  AuthorizationError,
+  NotFoundError,
+  EntityConflictError,
+  ValidationError,
+  UserActionsConflictError,
+} = require("./errors")
+const {
+  CREATE_USERS,
+  DELETE_JUSTIFICATIONS,
+  DELETE_STATEMENTS,
+  UPDATE_STATEMENTS,
+} = require("./permissions")
 
 const {
   JustificationTargetType,
@@ -31,33 +50,46 @@ const {
   VoteTargetType
 } = require('./models')
 
-const CREATE_USER = 'CREATE_USER'
 
 const withPermission = (authToken, permission) => query(`
-    select distinct auth.user_id
-    from authentication_tokens auth
-        join users u using (user_id)
+    with
+      permission AS (
+        SELECT * from permissions where name = $2
+      )
+      , "user" AS (
+        select users.*
+        from authentication_tokens auth join users using (user_id)
+          where
+              auth.token = $1
+          and auth.expires > $3
+          and auth.deleted is null
+          and users.deleted is null
+      )
+    select distinct
+        "user".user_id
+      , coalesce(up.permission_id, gp.permission_id) is not null as has_perm
+    from "user"
+        left join permission on true
         -- try and find the permission by user_permissions
-        left join user_permissions up using (user_id)
-        left join permissions user_perm on up.permission_id = user_perm.permission_id
+        left join user_permissions up using (user_id, permission_id)
         -- or by group_permissions
         left join user_groups ug using (user_id)
-        left join group_permissions gp using (group_id)
-        left join permissions group_perm on gp.permission_id = group_perm.permission_id
-      where 
-            auth.token = $1 
-        and (user_perm.name = $2 or group_perm.name = $2)
-        and auth.expires > $3 
-        and auth.deleted is null
-        and u.deleted is null
-        and up.deleted is null
-        and user_perm.deleted is null
+        left join group_permissions gp using(group_id, permission_id)
+      where
+            up.deleted is null
         and ug.deleted is null
         and gp.deleted is null
-        and group_perm.deleted is null
 `, [authToken, permission, new Date()])
-    // TODO does this work deconstructing the first row?  What happen when it is empty?
-    .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
+    .then( ({rows}) => {
+      if (rows.length !== 1) {
+        throw new AuthenticationError()
+      }
+      const [{user_id: userId, has_perm: hasPerm}] = rows
+      if (!hasPerm) {
+        throw new AuthorizationError()
+      }
+      return Promise.resolve(userId)
+    })
 
 const statements = () => query('select * from statements where deleted is null')
   .then(({rows: statements}) => statements.map(toStatement))
@@ -163,7 +195,7 @@ const statementJustifications = ({statementId, authToken}) => queries([
   })
 
 const createUser = ({user: {email, password}, authToken}) => {
-  withPermission(authToken, CREATE_USER).then(
+  withPermission(authToken, CREATE_USERS).then(
       userId => {
         argon2.generateSalt().then(salt => {
           argon2.hash(password, salt)
@@ -384,11 +416,49 @@ const createStatement = ({authToken, statement, justification}) => withAuth(auth
 
     }, () => ({isUnauthenticated: true}))
 
+const updateStatement = ({authToken, statement}) => withPermission(authToken, UPDATE_STATEMENTS)
+    .then(userId => {
+      return Promise.all([
+        userId,
+        statementsDao.countOtherStatementsHavingSameTextAs(statement),
+        statementsDao.hasOtherUserInteractions(userId, statement),
+        permissionsDao.userHasPermission(userId, UPDATE_STATEMENTS)
+      ])
+    })
+    .then( ([
+        userId,
+        otherStatementsHavingSameTextCount,
+        hasOtherUserInteractions,
+        hasUpdateStatementsPermission,
+      ]) => {
+      if (otherStatementsHavingSameTextCount > 0) {
+        throw new EntityConflictError()
+      } else if (hasOtherUserInteractions && !hasUpdateStatementsPermission) {
+        throw new UserActionsConflictError()
+      }
+      return userId
+    })
+    .then(userId => {
+      const now = new Date()
+      return Promise.all([
+        userId,
+        now,
+        query('update statements set text = $1 where statement_id = $2 and deleted is null returning *', [statement.text, statement.id])
+      ])
+    })
+    .then( ([userId, now, {rows}]) => {
+      if (rows.length !== 1) throw new NotFoundError()
+
+      const [row] = rows
+      asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.STATEMENT, now)
+      return toStatement(row)
+    })
+
 const deleteStatement = ({authToken, statementId}) => {
   if (!authToken) {
     return Promise.resolve({isUnauthenticated: true})
   }
-  return withPermission(authToken, 'DELETE_STATEMENTS').then(userId => {
+  return withPermission(authToken, DELETE_STATEMENTS).then(userId => {
     const now = new Date()
     return query('update statements set deleted = $2 where statement_id = $1 returning statement_id', [statementId, now])
         .then(({rows}) => {
@@ -629,7 +699,7 @@ const deleteJustification = ({authToken, justificationId}) => {
   if (!authToken) {
     return Promise.resolve({isUnauthenticated: true})
   }
-  return withPermission(authToken, 'DELETE_JUSTIFICATIONS').then(userId => {
+  return withPermission(authToken, DELETE_JUSTIFICATIONS).then(userId => {
     const now = new Date()
     return query('update justifications set deleted = $2 where justification_id = $1 returning justification_id', [justificationId, now])
         .then(({rows}) => {
@@ -656,6 +726,7 @@ module.exports = {
   vote,
   unvote,
   createStatement,
+  updateStatement,
   deleteStatement,
   createJustification,
   deleteJustification,

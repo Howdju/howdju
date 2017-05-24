@@ -8,11 +8,10 @@
 * StatementJustifications menus
   * Statement menu
     * Use
-    * Edit
   * Justification menu
+    * Edit
     * Counter
     * Use
-    * Edit
 
 * tagging
 * Author of quote
@@ -27,6 +26,8 @@
       * X said
       * quotation marks
 * favicon
+* Figure out cancel, location replace, login redirect, etc.
+* Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
 
 ### Bugs/stability
 * Autocomplete
@@ -42,6 +43,7 @@
 * can create two statements that only differ by apostrophe types (' vs. ’), probably whitespace, too.
 * Can counter justification with same statement as basis for target justification
 * Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
+* If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
 
 ### Feedback
 * Error reporting
@@ -64,6 +66,7 @@
   * url
   * author
   * tags
+* Hide/show context menu items based upon permissions/ability to do the action
 * Allow collapsing counter justifications
 * Change email, password, password reset
 * Timeout authentication

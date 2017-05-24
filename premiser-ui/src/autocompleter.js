@@ -15,7 +15,7 @@ export default {
       autocomplete._close()
     } else if (
         text &&
-        autocompleteResults.length === 0 &&
+        autocompleteResults.length > 0 &&
         !autocomplete.state.isOpen
     ) {
       // react-md autocomplete incorrectly has menu hidden

@@ -37,9 +37,7 @@ app.use('/api/*', function (req, res) {
 
     const {statusCode, headers, body} = response
     if (headers) {
-      for (let header of Object.getOwnPropertyNames(headers)) {
-        res.setHeader(header, headers[header])
-      }
+      res.set(headers)
     }
     res.status(statusCode)
     res.send(body)

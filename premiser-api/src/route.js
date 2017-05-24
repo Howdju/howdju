@@ -1,5 +1,13 @@
 const Promise = require('bluebird')
 const merge = require('lodash/merge')
+const {
+  AuthenticationError,
+  AuthorizationError,
+  ImpossibleError,
+  NotFoundError,
+  EntityConflictError,
+  UserActionsConflictError,
+} = require("./errors")
 
 const {
   statements,
@@ -10,6 +18,7 @@ const {
   vote,
   unvote,
   createStatement,
+  updateStatement,
   deleteStatement,
   createJustification,
   deleteJustification,
@@ -37,13 +46,11 @@ const notFound = ({callback, message='not found'}) => callback({
   status: 'notFound',
   body: {message}
 })
-const unauthorized = ({callback, message='unauthenticated'}) => callback({
+const unauthenticated = ({callback}) => callback({
   status: 'unauthorized',
-  body: {message},
 })
-const forbidden = ({callback, message='forbidden'}) => callback({
+const unauthorized = ({callback}) => callback({
   status: 'forbidden',
-  body: {message}
 })
 const badRequest = ({callback, message='bad request'}) => callback({
   status: 'badRequest',
@@ -52,6 +59,12 @@ const badRequest = ({callback, message='bad request'}) => callback({
 const error = ({callback, body={}}) => callback({
   status: 'error',
   body
+})
+const entityConflict = ({callback}) => callback({
+  status: 'entityConflict'
+})
+const userActionsConflict = ({callback}) => callback({
+  status: 'userActionsConflict'
 })
 
 const GET = 'GET'
@@ -104,7 +117,7 @@ const routes = [
     }) => createStatement({authToken, statement, justification})
         .then( ({isUnauthenticated, isInvalid, statement, justification, isExtant}) => {
           if (isUnauthenticated) {
-            return unauthorized({callback})
+            return unauthenticated({callback})
           } else if (isInvalid) {
             return badRequest({callback})
           } else if (statement) {
@@ -113,6 +126,25 @@ const routes = [
           logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
           return error({callback})
         })
+  },
+  {
+    id: 'updateStatement',
+    path: new RegExp('^statements/([^/]+)$'),
+    method: PUT,
+    handler: ({
+                callback,
+                request: {
+                  authToken,
+                  body: {statement},
+                }
+              }) => updateStatement({authToken, statement})
+        .then( (statement) => ok({callback, body: {statement}}))
+        .catch(NotFoundError, e => notFound({callback}))
+        .catch(AuthenticationError, e => unauthenticated({callback}))
+        .catch(AuthorizationError, e => unauthorized({callback}))
+        .catch(EntityConflictError, e => entityConflict({callback}))
+        .catch(UserActionsConflictError, e => userActionsConflict({callback}))
+        .catch(e => { throw new ImpossibleError(e) })
   },
   {
     id: 'getStatement',
@@ -150,9 +182,9 @@ const routes = [
                 }
     }) => deleteStatement({authToken, statementId}).then(({isUnauthenticated, isUnauthorized, isSuccess}) => {
       if (isUnauthenticated) {
-        return unauthorized({callback})
+        return unauthenticated({callback})
       } else if (isUnauthorized) {
-        return forbidden({callback})
+        return unauthorized({callback})
       } else if (isSuccess) {
         return ok({callback})
       }
@@ -177,7 +209,7 @@ const routes = [
     }) => createJustification({authToken, justification})
         .then( ({isUnauthenticated, isInvalid, justification}) => {
           if (isUnauthenticated) {
-            return unauthorized({callback})
+            return unauthenticated({callback})
           } else if (isInvalid) {
             return badRequest({callback})
           } else if (justification) {
@@ -205,9 +237,9 @@ const routes = [
               }) => deleteJustification({authToken, justificationId})
         .then( ({isUnauthenticated, isUnauthorized, isSuccess}) => {
           if (isUnauthenticated) {
-            return unauthorized({callback})
+            return unauthenticated({callback})
           } else if (isUnauthorized) {
-            return forbidden({callback})
+            return unauthorized({callback})
           } else if (isSuccess) {
             return ok({callback})
           }
@@ -227,7 +259,7 @@ const routes = [
             return notFound({callback, message})
           }
           if (isNotAuthorized) {
-            return forbidden({callback, message})
+            return unauthorized({callback, message})
           }
           logger.debug(`Successfully authenticated ${auth.email}`)
           return ok({callback, body: auth})
@@ -246,7 +278,7 @@ const routes = [
         vote({authToken, targetType, targetId, polarity})
             .then( ({isUnauthenticated, isAlreadyDone, vote}) => {
               if (isUnauthenticated) {
-                return unauthorized({callback})
+                return unauthenticated({callback})
               } else if (isAlreadyDone) {
                 return ok({callback, body: vote})
               }
@@ -261,7 +293,7 @@ const routes = [
         unvote({authToken, targetType, targetId, polarity})
             .then( ({isUnauthenticated, isAlreadyDone, isSuccess}) => {
               if (isUnauthenticated) {
-                return unauthorized({callback})
+                return unauthenticated({callback})
               } else if (isAlreadyDone) {
                 return noContent({callback})
               }
@@ -278,7 +310,7 @@ const routes = [
     handler: ({callback, request: {body: {credentials: {email, password}, authToken}}}) => createUser(body)
         .then( ({message, notAuthorized, user}) => {
           if (notAuthorized) {
-            return forbidden({callback, message})
+            return unauthorized({callback, message})
           } else {
             logger.debug(`Successfully created user ${user.id}`)
             return ok({callback, body: {user}})

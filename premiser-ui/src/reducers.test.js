@@ -502,7 +502,6 @@ describe('reducers', () => {
         type: LOCATION_CHANGE,
         payload: parsePath(paths.home()),
       }
-      debugger
       const newState = mainSearch(initialState, action)
       expect(newState.mainSearchText).toEqual('')
     })
