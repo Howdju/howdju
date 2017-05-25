@@ -16,10 +16,11 @@ class StatementTextAutocomplete extends Component {
 
   constructor() {
     super()
+
     this.onChange = this.onChange.bind(this)
     this.onAutocomplete = this.onAutocomplete.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
-    this.refreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), 250)
+    this.refreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), 1000)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -27,7 +28,8 @@ class StatementTextAutocomplete extends Component {
   }
 
   onChange(val, e) {
-    this.props.onChange(val, e)
+    const name = e.target.name
+    this.props.onPropertyChange({[name]: val})
     this.refreshAutocomplete(val)
   }
 
@@ -36,8 +38,6 @@ class StatementTextAutocomplete extends Component {
       e.preventDefault()
       if (this.autocomplete.state.isOpen) {
         this.autocomplete._close()
-      } else {
-        this.autocomplete._field.blur()
       }
     }
   }
@@ -61,6 +61,7 @@ class StatementTextAutocomplete extends Component {
     delete props.suggestionsKey
     delete props.suggestedStatements
     delete props.fetchStatementSuggestions
+    delete props.onPropertyChange
 
     const suggestions = suggestedStatements.map(s => ({
       id: s.id,
@@ -93,7 +94,7 @@ StatementTextAutocomplete.propTypes = {
   /** Where to store the component's suggestions in the react state (under state.app.statementSuggestions) */
   suggestionsKey: PropTypes.string.isRequired,
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
-  onChange: PropTypes.func,
+  onPropertyChange: PropTypes.func,
   /** The callback for when the user selects a suggestion.  Arguments: (label, index) */
   onAutocomplete: PropTypes.func,
 }

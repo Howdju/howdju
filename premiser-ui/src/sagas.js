@@ -368,7 +368,6 @@ function* onCreateStatement(action) {
       },
       schema: {
         statement: statementSchema,
-        justification: justificationSchema,
       }
     }
 
@@ -382,6 +381,32 @@ function* onCreateStatement(action) {
   } catch (error) {
     logError(error)
     yield put({type: actions.CREATE_STATEMENT_FAILURE, payload: error})
+  }
+}
+function* onCreateStatementJustification(action) {
+  try {
+    const payload = {
+      endpoint: 'statements',
+      fetchInit: {
+        method: httpMethods.POST,
+        body: action.payload
+      },
+      schema: {
+        statement: statementSchema,
+        justification: justificationSchema,
+      }
+    }
+
+    const {successAction, failureAction} = yield* callApiWithNonce({payload})()
+
+    if (successAction) {
+      yield put({type: actions.CREATE_STATEMENT_JUSTIFICATION_SUCCESS, payload: successAction.payload})
+    } else {
+      yield put({type: actions.CREATE_STATEMENT_JUSTIFICATION_FAILURE, payload: failureAction.payload})
+    }
+  } catch (error) {
+    logError(error)
+    yield put({type: actions.CREATE_STATEMENT_JUSTIFICATION_FAILURE, payload: error})
   }
 }
 
@@ -559,6 +584,14 @@ function* onCreateStatementSuccess(action) {
   yield put(push(paths.statement(statement)))
 }
 
+function* onCreateStatementJustificationSuccess(action) {
+  if (action.payload.isExtant) {
+    yield put({type: actions.ADD_TOAST, payload: { text: text(CREATE_EXTANT_STATEMENT_TOAST_MESSAGE)}})
+  }
+  const statement = action.payload.entities.statements[action.payload.result.statement]
+  yield put(push(paths.statement(statement)))
+}
+
 function* onDoMainSearch(action) {
   const mainSearchPath = paths.mainSearch(action.payload.mainSearchText)
   const routerLocation = yield select(getRouterLocation)
@@ -624,6 +657,10 @@ function* watchCreateStatementSuccess() {
   yield takeEvery(actions.CREATE_STATEMENT_SUCCESS, onCreateStatementSuccess)
 }
 
+function* watchCreateStatementJustificationSuccess() {
+  yield takeEvery(actions.CREATE_STATEMENT_JUSTIFICATION_SUCCESS, onCreateStatementJustificationSuccess)
+}
+
 function* watchLogout() {
   yield takeEvery(actions.LOGOUT, callApiForLogout)
 }
@@ -642,6 +679,10 @@ function* watchLoginRedirect() {
 
 function* watchCreateStatement() {
   yield takeEvery(actions.CREATE_STATEMENT, onCreateStatement)
+}
+
+function* watchCreateStatementJustification() {
+  yield takeEvery(actions.CREATE_STATEMENT_JUSTIFICATION, onCreateStatementJustification)
 }
 
 function* watchDeleteStatement() {
@@ -728,33 +769,44 @@ export default () => [
   watchLogin(),
   watchLoginSuccess(),
   watchLogout(),
+  watchLoginRedirect(),
+
   watchFetchResources(),
   watchFetchStatementJustifications(),
   watchFetchStatementJustificationsFailure(),
+
   watchCallApi(),
   watchCallApiFailure(),
-  watchLoginRedirect(),
+
   watchVotes(),
+
   watchRehydrate(),
+
   watchCreateStatement(),
   watchCreateStatementSuccess(),
   watchDeleteStatement(),
   watchDeleteStatementSuccess(),
   watchDeleteStatementFailure(),
+
+  watchUpdateStatement(),
+  watchUpdateStatementSuccess(),
+
+  watchCreateStatementJustification(),
+  watchCreateStatementJustificationSuccess(),
+
   watchCreateJustification(),
   watchCreateJustificationSuccess(),
   watchCreateJustificationFailure(),
   watchDeleteJustification(),
   watchDeleteJustificationFailure(),
+
   watchDoMainSearch(),
+  watchDoEditStatement(),
+  watchViewStatement(),
+
   watchFetchStatementsSearch(),
   watchInitializeMainSearch(),
   watchFetchMainSearchAutocomplete(),
-  watchViewStatement(),
   watchFetchStatementSuggestions(),
   watchFetchStatementForEdit(),
-  watchDoEditStatement(),
-  watchUpdateStatement(),
-  watchUpdateStatementSuccess(),
-  // watchUpdateStatementForMessage()
 ]

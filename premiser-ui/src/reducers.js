@@ -44,12 +44,13 @@ import {
   CREATE_JUSTIFICATION_SUCCESS, SHOW_NEW_JUSTIFICATION_DIALOG, HIDE_NEW_JUSTIFICATION_DIALOG, RESET_EDIT_JUSTIFICATION,
   CREATE_JUSTIFICATION, CREATE_JUSTIFICATION_FAILURE,
   FETCH_STATEMENT_FOR_EDIT, FETCH_STATEMENT_FOR_EDIT_SUCCESS, FETCH_STATEMENT_FOR_EDIT_FAILURE, FETCH_STATEMENT_SUCCESS,
-  UPDATE_STATEMENT, UPDATE_STATEMENT_SUCCESS, UPDATE_STATEMENT_FAILURE,
+  UPDATE_STATEMENT, UPDATE_STATEMENT_SUCCESS, UPDATE_STATEMENT_FAILURE, CREATE_STATEMENT_JUSTIFICATION_SUCCESS,
+  CREATE_STATEMENT_JUSTIFICATION, CREATE_STATEMENT_JUSTIFICATION_FAILURE,
 } from './actions'
 import text, {CREATE_JUSTIFICATION_FAILURE_MESSAGE} from "./texts";
 import mainSearcher from './mainSearcher'
 import { makeNewJustification } from './models'
-import { editStatementPageJustificationEditorId, statementJustificationsPageJustificationEditorId } from './editorIds'
+import { editStatementJustificationPageJustificationEditorId, statementJustificationsPageJustificationEditorId } from './editorIds'
 import {statementSchema} from "./schemas";
 import {denormalize} from "normalizr";
 import {activityKeys, makeMessage} from "./messages";
@@ -151,7 +152,8 @@ export const entities = (state = {
         quotes: merge({}, state.quotes, action.payload.entities.quotes),
       }
 
-    case CREATE_STATEMENT_SUCCESS: {
+    case CREATE_STATEMENT_SUCCESS:
+    case CREATE_STATEMENT_JUSTIFICATION_SUCCESS: {
       return {
         ...state,
         statements: {...state.statements, ...action.payload.entities.statements},
@@ -441,9 +443,9 @@ const statementJustificationsPage = (state = {
   return state
 }
 
-const editStatementPage = (state = {
+const editStatementJustificationPage = (state = {
   statement: {text:''},
-  newJustification: makeNewJustification({
+  justification: makeNewJustification({
     target: {
       type: JustificationTargetType.STATEMENT
     }
@@ -451,7 +453,6 @@ const editStatementPage = (state = {
   message: '',
   errorMessage: '',
   inProgress: false,
-  statementTextAutocompleteResults: [],
 }, action) => {
   switch (action.type) {
 
@@ -488,25 +489,28 @@ const editStatementPage = (state = {
     }
 
     case CREATE_STATEMENT:
+    case CREATE_STATEMENT_JUSTIFICATION:
       return {...state, inProgress: true, errorMessage: ''}
-    case CREATE_STATEMENT_SUCCESS: {
+    case CREATE_STATEMENT_SUCCESS:
+    case CREATE_STATEMENT_JUSTIFICATION_SUCCESS: {
       const statement = {text: ''}
-      const newJustification = makeNewJustification({
+      const justification = makeNewJustification({
         target: {
           type: JustificationTargetType.STATEMENT
         }
       })
-      return {...state, statement, newJustification, inProgress: false, errorMessage: ''}
+      return {...state, statement, justification, inProgress: false, errorMessage: ''}
     }
-    case CREATE_STATEMENT_FAILURE: {
+    case CREATE_STATEMENT_FAILURE:
+    case CREATE_STATEMENT_JUSTIFICATION_FAILURE: {
       const errorMessage = makeMessage(activityKeys.CREATE_STATEMENT, action.payload)
       return {...state, inProgress: false, errorMessage}
     }
   }
 
-  const newJustification = justificationEditor(editStatementPageJustificationEditorId, state.newJustification, action)
-  if (newJustification) {
-    return {...state, newJustification, newJustificationErrorMessage: ''}
+  const justification = justificationEditor(editStatementJustificationPageJustificationEditorId, state.justification, action)
+  if (justification) {
+    return {...state, justification}
   }
   
   return state
@@ -621,7 +625,7 @@ const mainSearchPage = (state = { isFetching: false, statements: [] }, action) =
 const ui = combineReducers({
   loginPage,
   statementJustificationsPage,
-  editStatementPage,
+  editStatementJustificationPage,
   mainSearchPage,
   app: appUi,
   mainSearch,

@@ -1,6 +1,7 @@
 const {query, queries} = require('./../db')
 const {
-  VoteTargetType
+  JustificationBasisType,
+  VoteTargetType,
 } = require('./../models')
 
 class StatementsDao {
@@ -10,7 +11,7 @@ class StatementsDao {
         .then( ({rows: [{count}]}) => count )
   }
   hasOtherUserInteractions(userId, statement) {
-    const otherUserJustificationsSql = `
+    const otherUserJustificationsCountSql = `
       select count(*) as count 
       from justifications 
         where 
@@ -18,7 +19,7 @@ class StatementsDao {
           and creator_user_id != $2
           and deleted is null
     `
-    const otherUsersVotesSql = `
+    const otherUsersVotesCountSql = `
       with
         statement_justifications as ( select * from justifications where root_statement_id = $1 )
       select count(v.*) as count
@@ -29,15 +30,28 @@ class StatementsDao {
           and v.user_id != $3
           and v.deleted is null
     `
+    const justificationsForWhichIsBasisCountSql = `
+      select count(*) as count
+      from justifications
+        where 
+              basis_type = $2
+          and basis_id = $1
+    `
     return queries([
-      {query: otherUserJustificationsSql, args: [statement.id, userId]},
-      {query: otherUsersVotesSql, args: [statement.id, VoteTargetType.JUSTIFICATION, userId]},
+      {query: otherUserJustificationsCountSql, args: [statement.id, userId]},
+      {query: otherUsersVotesCountSql, args: [statement.id, VoteTargetType.JUSTIFICATION, userId]},
+      {query: justificationsForWhichIsBasisCountSql, args: [statement.id, JustificationBasisType.STATEMENT]},
     ])
         .then( ([
             {rows: [{count: otherUserJustificationsCount}]},
-            {rows: [{count: otherUsersVotes}]}
+            {rows: [{count: otherUsersVotesCounts}]},
+                  {rows: [{count: justificationsForWhichIsBasisCount}]},
             ]) => {
-          return otherUserJustificationsCount > 0 || otherUsersVotes > 0
+          return (
+                 otherUserJustificationsCount > 0
+              || otherUsersVotesCounts > 0
+              || justificationsForWhichIsBasisCount > 0
+          )
         })
   }
 }

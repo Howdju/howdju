@@ -33,7 +33,7 @@ import config from './config';
 import './Justification.scss'
 import CounterJustificationEditor from "./CounterJustificationEditor";
 import {
-  default as t, CANCEL_BUTTON_LABEL, CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
+  default as t, CANCEL_BUTTON_LABEL,
   CREATE_COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL
 } from "./texts";
 

@@ -36,21 +36,15 @@ export const isDisverified = j => j.vote && j.vote.polarity === VotePolarity.NEG
 export const isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && isNegative(j)
 export const isStatementBased = j => j.basis.type === JustificationBasisType.STATEMENT
 
-export const decircularTargetJustification = target =>
-    // or pick(target, ['type', 'entity.id'])
-    ({type: target.type, entity: { id: target.entity.id } })
-
-export const decircularizeCounterJustification = justification => isCounter(justification) ?
-    // overwrite the target
-    assign({}, justification, { target: decircularTargetJustification(justification.target) } ) :
-    justification
-
-export const decircularizeCounterJustifications = justifications => justifications && map(justifications, j => isCounter(j) ?
-    decircularizeCounterJustification(j) :
-    assign({}, j, j.counterJustifications && {
-      counterJustifications: decircularizeCounterJustifications(j.counterJustifications)
-    })
-)
+export const decircularizeTarget = justification => {
+  if (justification.target.entity.id) {
+    // If the target already has an ID, then just send that along; that is enough for the server to identify it.
+    // This transformation probably applies to basis and any other entities.  But it is particularly important for
+    // justification targets, because the target may be a justification having circular references.
+    justification = {...justification, target: {...justification.target, entity: { id: justification.target.entity.id}}}
+  }
+  return justification
+}
 
 export const makeNewJustification = props => merge({
   rootStatementId: null,

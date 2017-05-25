@@ -55,7 +55,10 @@ import text, {
 import JustificationEditor from './JustificationEditor'
 
 import "./StatementJustificationsPage.scss";
-import {statementJustificationsPageJustificationEditorId} from "./editorIds";
+import {
+  statementJustificationsPageStatementEditorId,
+  statementJustificationsPageJustificationEditorId
+} from "./editorIds";
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -63,6 +66,9 @@ class StatementJustificationsPage extends Component {
     this.state = {
       isOverStatement: false,
     }
+
+    this.statementEditorId = statementJustificationsPageStatementEditorId
+    this.justificationEditorId = statementJustificationsPageJustificationEditorId
 
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
@@ -118,15 +124,15 @@ class StatementJustificationsPage extends Component {
   }
 
   onNewJustificationPropertyChange(properties) {
-    this.props.editJustificationPropertyChange(statementJustificationsPageJustificationEditorId, properties)
+    this.props.editJustificationPropertyChange(this.justificationEditorId, properties)
   }
 
   addNewJustificationUrl() {
-    this.props.addNewJustificationUrl(this.justificationEditorId)
+    this.props.editJustificationAddUrl(this.justificationEditorId)
   }
 
   deleteNewJustificationUrl(url, index) {
-    this.props.editJustificationDeleteUrl(statementJustificationsPageJustificationEditorId, url, index)
+    this.props.editJustificationDeleteUrl(this.justificationEditorId, url, index)
   }
 
   onSubmitNewJustificationDialog(e) {

@@ -47,8 +47,8 @@ create table if not exists citations (
   deleted timestamp
 );
 
--- Both citation_urls and reference_urls might make sense;
--- citation_urls refer to the full source while citation_reference_urls point to the quote
+-- Both citation_urls and citation_reference_urls might make sense;
+-- citation_urls would refer to the full source while citation_reference_urls would point to the quote
 create table if not exists citation_reference_urls (
   citation_reference_id integer,
   url_id integer,

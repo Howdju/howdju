@@ -3,7 +3,10 @@
 
 ### Features
 
-* bookmarklet
+* What about in-place edits?
+  * back to CreateStatementJustificationPage
+  
+* What happens if we justify a statement with itself?
 
 * StatementJustifications menus
   * Statement menu
@@ -12,6 +15,10 @@
     * Edit
     * Counter
     * Use
+    
+* Show statements justified by statement
+
+* bookmarklet
 
 * tagging
 * Author of quote
@@ -28,8 +35,10 @@
 * favicon
 * Figure out cancel, location replace, login redirect, etc.
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
+* Statements that differ by special chars or capitalization are treated as different
 
 ### Bugs/stability
+* When creating statement and statement-based justification, typing in the justification basis statement text pops up the autocomplete for the statement
 * Autocomplete
   * Does not appear above dialog
     * [Fix in react-md 1.1](https://github.com/mlaursen/react-md/issues/232)
@@ -44,6 +53,7 @@
 * Can counter justification with same statement as basis for target justification
 * Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
 * If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
+* Change to using 500s with error keys that can be translated into UI messages
 
 ### Feedback
 * Error reporting
@@ -193,3 +203,6 @@
 
 ## Cool
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
+
+https://chriszarate.github.io/bookmarkleter/
+https://www.labnol.org/internet/better-twitter-bookmarklet/28028/

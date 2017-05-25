@@ -1,4 +1,5 @@
 import { createAction as create2Action } from 'redux-actions';
+import {decircularizeTarget} from "./models";
 
 export const FETCH_STATEMENTS = 'FETCH_STATEMENTS'
 export const FETCH_STATEMENTS_SUCCESS = 'FETCH_STATEMENTS_SUCCESS'
@@ -81,7 +82,12 @@ export const editStatementPropertyChange = create2Action(EDIT_STATEMENT_PROPERTY
 export const CREATE_STATEMENT = 'CREATE_STATEMENT'
 export const CREATE_STATEMENT_SUCCESS = 'CREATE_STATEMENT_SUCCESS'
 export const CREATE_STATEMENT_FAILURE = 'CREATE_STATEMENT_FAILURE'
-export const createStatement = create2Action(CREATE_STATEMENT, (statement, justification) => ({statement, justification}))
+export const createStatement = create2Action(CREATE_STATEMENT, statement => ({statement}))
+
+export const CREATE_STATEMENT_JUSTIFICATION = 'CREATE_STATEMENT_JUSTIFICATION'
+export const CREATE_STATEMENT_JUSTIFICATION_SUCCESS = 'CREATE_STATEMENT_JUSTIFICATION_SUCCESS'
+export const CREATE_STATEMENT_JUSTIFICATION_FAILURE = 'CREATE_STATEMENT_JUSTIFICATION_FAILURE'
+export const createStatementJustification = create2Action(CREATE_STATEMENT_JUSTIFICATION, (statement, justification) => ({statement, justification}))
 
 export const UPDATE_STATEMENT = 'UPDATE_STATEMENT'
 export const UPDATE_STATEMENT_SUCCESS = 'UPDATE_STATEMENT_SUCCESS'
@@ -96,17 +102,8 @@ export const deleteStatement = create2Action(DELETE_STATEMENT, statement => ({st
 export const CREATE_JUSTIFICATION = 'CREATE_JUSTIFICATION'
 export const CREATE_JUSTIFICATION_SUCCESS = 'CREATE_JUSTIFICATION_SUCCESS'
 export const CREATE_JUSTIFICATION_FAILURE = 'CREATE_JUSTIFICATION_FAILURE'
-export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => {
-  if (justification.target.entity.id) {
-    // If the target already has an ID, then just send that along; that is enough for the server to identify it.
-    // This transformation probably applies to basis and any other entities.  But it is particularly important for
-    // justification targets, because the target may be a justification having circular references.
-    justification = {...justification, target: {...justification.target, entity: { id: justification.target.entity.id}}}
-  }
-  return {justification}
-})
+export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => ({justification: decircularizeTarget(justification)}))
 
-/** For a singleton on the Statement Justifications page; be careful if using multiple editors at once! */
 export const SHOW_NEW_JUSTIFICATION_DIALOG = 'SHOW_NEW_JUSTIFICATION_DIALOG'
 export const HIDE_NEW_JUSTIFICATION_DIALOG = 'HIDE_NEW_JUSTIFICATION_DIALOG'
 export const showNewJustificationDialog = create2Action(SHOW_NEW_JUSTIFICATION_DIALOG, statementId => ({statementId}))
@@ -174,6 +171,7 @@ export const FETCH_STATEMENT = 'FETCH_STATEMENT'
 export const FETCH_STATEMENT_SUCCESS = 'FETCH_STATEMENT_SUCCESS'
 export const FETCH_STATEMENT_FAILURE = 'FETCH_STATEMENT_FAILURE'
 export const fetchStatement = create2Action(FETCH_STATEMENT, statementId => ({statementId}))
+
 export const FETCH_STATEMENT_FOR_EDIT = 'FETCH_STATEMENT_FOR_EDIT'
 export const FETCH_STATEMENT_FOR_EDIT_SUCCESS = 'FETCH_STATEMENT_FOR_EDIT_SUCCESS'
 export const FETCH_STATEMENT_FOR_EDIT_FAILURE = 'FETCH_STATEMENT_FOR_EDIT_FAILURE'

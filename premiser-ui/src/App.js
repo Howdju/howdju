@@ -26,7 +26,7 @@ import {history} from './configureStore'
 import paths from "./paths";
 import mainSearcher from './mainSearcher'
 import IconPage from './IconPage'
-import EditStatementPage from "./EditStatementPage";
+import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage";
 
 class App extends Component {
 
@@ -138,10 +138,19 @@ class App extends Component {
               <Route exact path={paths.home()} render={renderHomePath}/>
               <Route path={paths.login()} component={LoginPage} />
               <Route path="/tools" component={ToolsPage} />
-              <Route path="/create-statement" component={EditStatementPage} />
               <Route path="/icons" component={IconPage} />
-              <Route path="/edit-statement/:statementId" component={EditStatementPage} />
+
               <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsPage} />
+
+              <Route path="/create-statement" render={props => (
+                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
+              )} />
+              <Route path="/create-justification" render={props => (
+                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
+              )} />
+              <Route path="/edit-statement/:statementId" render={props => (
+                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.EDIT_STATEMENT} />
+              )} />
 
             </div>
 

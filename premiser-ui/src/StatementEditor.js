@@ -31,7 +31,7 @@ class StatementEditor extends Component {
                                      leftIcon={<FontIcon>text_fields</FontIcon>}
                                      value={statement.text}
                                      suggestionsKey={suggestionsKey}
-                                     onChange={this.props.onPropertyChange}
+                                     onPropertyChange={this.props.onPropertyChange}
                                      onAutocomplete={this.onTextAutocomplete}
           />
         </div>

@@ -6,6 +6,7 @@
 * factor out withAuthorization check
 
 * factor out queries in repositories?
+* refactor services to look like update statement
 * rename callback to respond
 * http://ramdajs.com/ ? 
 * Add route permissions

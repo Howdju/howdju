@@ -15,7 +15,7 @@ const {
 } = require('./orm')
 const argon2 = require('argon2')
 const cryptohat = require('cryptohat')
-const uuid = require('uuid');
+const uuid = require('uuid')
 const moment = require('moment')
 const Promise = require('bluebird')
 
@@ -371,7 +371,28 @@ const createStatement = ({authToken, statement, justification}) => withAuth(auth
               'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
               [userId, ActionType.TRY_CREATE_DUPLICATE, statement.id, ActionTargetType.STATEMENT, now]
           )
-          // return statement while asynchronously inserting action
+
+          if (justification) {
+            if (justification.target.type !== JustificationTargetType.STATEMENT) {
+              throw new ValidationError(`Justification created with statement must have basis type of ` +
+                  `${JustificationBasisType.STATEMENT}, but was ${justification.basis.type}`)
+            }
+            const justificationWithStatementId = cloneDeep(justification)
+            const statementId = row.statement_id
+            justificationWithStatementId.rootStatementId = statementId
+            justificationWithStatementId.target.entity.id = statementId
+            return createJustification({authToken, justification: justificationWithStatementId})
+            // TODO this will mask error properties set on the resolved value
+            // Factor out a createJustification method that rejects the promise upon an error
+                .then((val) => {
+                  return {
+                    statement: toStatement(row),
+                    isExtant: true,
+                    justification: val.justification,
+                  }
+                })
+          }
+
           return {statement: toStatement(row), isExtant: true}
         }
 
@@ -387,23 +408,19 @@ const createStatement = ({authToken, statement, justification}) => withAuth(auth
                   'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
                   [userId, ActionType.CREATE, statement.id, ActionTargetType.STATEMENT, now]
               )
-              // return statement while asynchronously inserting action
+
               if (justification) {
-                if (justification.basis.type !== JustificationBasisType.STATEMENT) {
+                if (justification.target.type !== JustificationTargetType.STATEMENT) {
                   throw new ValidationError(`Justification created with statement must have basis type of ` +
                       `${JustificationBasisType.STATEMENT}, but was ${justification.basis.type}`)
                 }
                 const justificationWithStatementId = cloneDeep(justification)
                 justificationWithStatementId.rootStatementId = statement.id
                 justificationWithStatementId.target.entity.id = statement.id
-                console.log('justificationWithStatementId')
-                console.log(justificationWithStatementId)
                 return createJustification({authToken, justification: justificationWithStatementId})
                     // TODO this will mask error properties set on the resolved value
                     // Factor out a createJustification method that rejects the promise upon an error
                     .then((val) => {
-                      console.log('val')
-                      console.log(val)
                       return {
                         statement,
                         justification: val.justification,
