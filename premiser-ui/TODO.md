@@ -3,17 +3,10 @@
 
 ### Features
 
-* What about in-place edits?
-  * back to CreateStatementJustificationPage
-  
-* What happens if we justify a statement with itself?
-
 * StatementJustifications menus
   * Statement menu
     * Use
   * Justification menu
-    * Edit
-    * Counter
     * Use
     
 * Show statements justified by statement
@@ -22,6 +15,8 @@
 
 * tagging
 * Author of quote
+
+* Generate ID for counter justification editor and send that along with action to update
 
 * Jobs (justification score)
 * Home page tag cloud
@@ -35,9 +30,15 @@
 * favicon
 * Figure out cancel, location replace, login redirect, etc.
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
-* Statements that differ by special chars or capitalization are treated as different
+* Statements that differ by special chars or capitalization are treated as different (normalized text etc)
 
 ### Bugs/stability
+* Reuse code between client/server (Use same javascript syntax in client/server.)  
+  * https://webpack.github.io/docs/commonjs.html
+* refactor sagas to use callApiForResource
+* don't let a user edit their own entities when they are older than a certain age
+* replace regex with path-to-regexp
+* What happens if we justify a statement with itself?
 * When creating statement and statement-based justification, typing in the justification basis statement text pops up the autocomplete for the statement
 * Autocomplete
   * Does not appear above dialog
@@ -65,10 +66,25 @@
 * UI Build
   * ensure that CSS goes to external sheet
   * ensure that google fonts go to external link?
+* CitationReference update
+  * If a users modifies a URL, do we edit it or create a new one?  I think treat them with value semantics, and create a new one
+  * want to use the same schema for data submitted as data returned (why?) or at least same data shape
+  * reducers.entities if we just know which entities are returned from which success actions, we can automatically respond
 
 * Why do I have PostCSS in my project?
 
 ## 0.2
+
+### Editors
+* Don't revert edit until see success.  Show error message if failure
+* When a citation reference update failure comes in, how do I know that it belongs to a particular editor?
+* action onSuccess callback has got to be an anti-pattern
+* Separate JustificationWithCounters into JustificationCard and JustificationTree/CounteredJustification/Argument
+  * challenge of card having buttons to create counter
+* Can only delete bases (justifications/quotes) if other users haven't used them as bases
+  * If super user deletes them, must cascade delete to justifications
+  * Can't delete justifications if other users have voted or countered them
+  * if delete justification, must delete counters
 
 ### Features
 * Main search:
@@ -82,6 +98,8 @@
 * Timeout authentication
 * Loading flags (vs. just empty return from API)
 * Statement example: height of the capitol building limit DC
+* Add messages for when cannot edit and why
+* When statements or citations or citation references conflict, offer to merge them somehow?
   
 ### Flair
   * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
@@ -97,6 +115,7 @@
   * Move logic from models.js into prototypes
 * Why store statement autocomplete suggestions in redux?  They are transient; just make them state
   * Or somehow reset them, like navigating away from page
+* Error codes from API should be allowed per-entity, kind of like normalizer
 
 ### UX
 * Allow creating multiple counter-justifications at a time

@@ -33,6 +33,4 @@ class PermissionsDao {
   }
 }
 
-module.exports = {
-  permissionsDao: new PermissionsDao()
-}
+module.exports = new PermissionsDao()

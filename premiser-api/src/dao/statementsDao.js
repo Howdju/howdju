@@ -30,32 +30,31 @@ class StatementsDao {
           and v.user_id != $3
           and v.deleted is null
     `
-    const justificationsForWhichIsBasisCountSql = `
+    const otherUsersJustificationsForWhichIsBasisCountSql = `
       select count(*) as count
       from justifications
         where 
               basis_type = $2
           and basis_id = $1
+          and creator_user_id != $3
     `
     return queries([
       {query: otherUserJustificationsCountSql, args: [statement.id, userId]},
       {query: otherUsersVotesCountSql, args: [statement.id, VoteTargetType.JUSTIFICATION, userId]},
-      {query: justificationsForWhichIsBasisCountSql, args: [statement.id, JustificationBasisType.STATEMENT]},
+      {query: otherUsersJustificationsForWhichIsBasisCountSql, args: [statement.id, JustificationBasisType.STATEMENT, userId]},
     ])
         .then( ([
             {rows: [{count: otherUserJustificationsCount}]},
             {rows: [{count: otherUsersVotesCounts}]},
-                  {rows: [{count: justificationsForWhichIsBasisCount}]},
+                  {rows: [{count: otherUsersJustificationsForWhichIsBasisCount}]},
             ]) => {
           return (
                  otherUserJustificationsCount > 0
               || otherUsersVotesCounts > 0
-              || justificationsForWhichIsBasisCount > 0
+              || otherUsersJustificationsForWhichIsBasisCount > 0
           )
         })
   }
 }
 
-module.exports = {
-  statementsDao: new StatementsDao()
-}
+module.exports = new StatementsDao()

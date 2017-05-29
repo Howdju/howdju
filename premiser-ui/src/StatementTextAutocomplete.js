@@ -61,7 +61,7 @@ class StatementTextAutocomplete extends Component {
     delete props.suggestionsKey
     delete props.suggestedStatements
     delete props.fetchStatementSuggestions
-    delete props.onPropertyChange
+    delete props.onEditBasisPropertyChange
 
     const suggestions = suggestedStatements.map(s => ({
       id: s.id,

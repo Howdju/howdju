@@ -9,6 +9,18 @@ exports.NotFoundError = class NotFoundError extends Error {}
 exports.ImpossibleError = class ImpossibleError extends Error {}
 
 /** The request would cause a conflict with one or more other entities */
-exports.EntityConflictError = class EntityConflictError extends Error {}
+exports.EntityConflictError = class EntityConflictError extends Error {
+  constructor(conflictCodes) {
+    super()
 
-exports.UserActionsConflictError = class UserActionsConflictError extends Error {}
+    this.conflictCodes = conflictCodes
+  }
+}
+
+exports.UserActionsConflictError = class UserActionsConflictError extends Error {
+  constructor(conflictCodes) {
+    super()
+
+    this.conflictCodes = conflictCodes
+  }
+}

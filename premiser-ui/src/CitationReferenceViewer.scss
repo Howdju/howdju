@@ -1,0 +1,45 @@
+@import './colors';
+
+@mixin quote {
+  color: $asbestos;
+  font-size: 200%;
+  position: absolute;
+}
+
+.citationReferenceViewer {
+  .quote {
+    border-left: 2px solid $primary-color;
+    margin: 0 10px 1em;
+    padding: 0.5em 10px;
+    quotes: "\201C" "\201D" "\2018" "\2019";
+
+    span {
+      // Push it out past the position:absolute quote
+      margin-left: 20px;
+    }
+
+    &:before {
+      @include quote;
+      content: open-quote;
+    }
+    &:after {
+      @include quote;
+      margin-left: 10px;
+      content: close-quote;
+    }
+  }
+
+  .citationTitle {
+    font-weight: 400;
+    margin: 0.5em 0;
+  }
+
+  li.url {
+    margin: 1em 1em;
+
+    .md-icon {
+      font-size: 12px;
+      margin-left: 8px;
+    }
+  }
+}

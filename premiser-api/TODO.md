@@ -14,7 +14,13 @@
 * scheduled jobs
   * calculate scores
   * sweep authentication tokens
-  * aggregate old votes
+  * aggregate old votes (delete intervening deletions)
+  * enforce constraints, 
+    * like unique IDs, 
+    * unique statement text, 
+    * citation reference quote, 
+    * citation text
+  * Delete URLS when nothing references them?
 * Short IDs
 
 * Update prod DB, update queries to handle deleted, add action logging

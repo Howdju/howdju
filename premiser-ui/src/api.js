@@ -9,6 +9,7 @@ export function fetchJson(endpoint, {init = {}, schema}) {
   const fullUrl = apiUrl(endpoint)
   // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
   return fetch(fullUrl, init)
+      // TODO translate errors into ApiResponseErrors { responseCode }
       .then(response => {
         const contentType = response.headers.get('Content-Type')
         switch (contentType) {

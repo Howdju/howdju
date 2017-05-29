@@ -15,10 +15,8 @@ class CounterJustificationEditor extends Component {
     this.onStatementTextAutocomplete = this.onStatementTextAutocomplete.bind(this)
   }
 
-  onPropertyChange(value, event) {
-    const target = event.target;
-    const name = target.name
-    this.props.onPropertyChange({[name]: value})
+  onPropertyChange(change) {
+    this.props.onPropertyChange(change)
   }
 
   onStatementTextAutocomplete(text, index) {
@@ -48,7 +46,7 @@ class CounterJustificationEditor extends Component {
               leftIcon={<FontIcon>text_fields</FontIcon>}
               value={counterJustification.basis.entity.text}
               suggestionsKey={suggestionKeys.counterJustificationEditor(targetJustificationId)}
-              onChange={this.onPropertyChange}
+              onPropertyChange={this.onPropertyChange}
               onAutocomplete={this.onStatementTextAutocomplete}
           />
         </form>

@@ -118,15 +118,18 @@ class EditStatementJustificationPage extends Component {
       case EditStatementJustificationPageMode.CREATE_STATEMENT: {
         if (this.state.doCreateJustification) {
           const justification = consolidateBasis(this.props.justification)
-          this.props.createStatementJustification(this.props.statement, justification)
+          // TODO anti-pattern of passing callback to action?
+          this.props.createStatementJustification(this.props.statement, justification, ({statement, justification}) => this.props.viewStatement(statement))
         } else {
-          this.props.createStatement(this.props.statement)
+          // TODO anti-pattern of passing callback to action?
+          this.props.createStatement(this.props.statement, this.props.viewStatement)
         }
         break
       }
       case EditStatementJustificationPageMode.CREATE_JUSTIFICATION: {
         const justification = consolidateBasis(this.props.justification)
-        this.props.createStatementJustification(this.props.statement, justification)
+        // TODO anti-pattern of passing callback to action?
+        this.props.createStatementJustification(this.props.statement, justification, ({statement, justification}) => this.props.viewStatement(statement))
         break
       }
       default: {
@@ -216,8 +219,8 @@ class EditStatementJustificationPage extends Component {
                     {errorMessage}
                   </CardText>
                   <CardText>
-                    <StatementEditor statementTextInputId="statementText"
-                                     statement={statement}
+                    <StatementEditor statement={statement}
+                                     id="statement"
                                      suggestionsKey={suggestionKeys.createStatementPage}
                                      onPropertyChange={this.onStatementPropertyChange}
                     />

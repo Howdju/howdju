@@ -35,6 +35,7 @@ export const isVerified = j => j.vote && j.vote.polarity === VotePolarity.POSITI
 export const isDisverified = j => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
 export const isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && isNegative(j)
 export const isStatementBased = j => j.basis.type === JustificationBasisType.STATEMENT
+export const isCitationReferenceBased = j =>j.basis.type === JustificationBasisType.CITATION_REFERENCE
 
 export const decircularizeTarget = justification => {
   if (justification.target.entity.id) {

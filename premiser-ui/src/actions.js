@@ -35,13 +35,6 @@ export const logout = create2Action(LOGOUT)
 
 export const LOGIN_REDIRECT = 'LOGIN_REDIRECT'
 
-export const API_RESOURCE_ACTIONS = {
-  [FETCH_STATEMENTS]: {
-    SUCCESS: FETCH_STATEMENTS_SUCCESS,
-    FAILURE: FETCH_STATEMENTS_FAILURE
-  }
-}
-
 export const SHOW_NAV_DRAWER = 'SHOW_NAV_DRAWER'
 export const HIDE_NAV_DRAWER = 'HIDE_NAV_DRAWER'
 export const TOGGLE_NAV_DRAWER_VISIBILITY = 'TOGGLE_NAV_DRAWER_VISIBILITY'
@@ -82,7 +75,7 @@ export const editStatementPropertyChange = create2Action(EDIT_STATEMENT_PROPERTY
 export const CREATE_STATEMENT = 'CREATE_STATEMENT'
 export const CREATE_STATEMENT_SUCCESS = 'CREATE_STATEMENT_SUCCESS'
 export const CREATE_STATEMENT_FAILURE = 'CREATE_STATEMENT_FAILURE'
-export const createStatement = create2Action(CREATE_STATEMENT, statement => ({statement}))
+export const createStatement = create2Action(CREATE_STATEMENT, (statement, onSuccess) => ({statement, onSuccess}))
 
 export const CREATE_STATEMENT_JUSTIFICATION = 'CREATE_STATEMENT_JUSTIFICATION'
 export const CREATE_STATEMENT_JUSTIFICATION_SUCCESS = 'CREATE_STATEMENT_JUSTIFICATION_SUCCESS'
@@ -103,6 +96,9 @@ export const CREATE_JUSTIFICATION = 'CREATE_JUSTIFICATION'
 export const CREATE_JUSTIFICATION_SUCCESS = 'CREATE_JUSTIFICATION_SUCCESS'
 export const CREATE_JUSTIFICATION_FAILURE = 'CREATE_JUSTIFICATION_FAILURE'
 export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => ({justification: decircularizeTarget(justification)}))
+
+export const UPDATE_CITATION_REFERENCE = 'UPDATE_CITATION_REFERENCE'
+export const updateCitationReference = create2Action(UPDATE_CITATION_REFERENCE, citationReference => ({citationReference}))
 
 export const SHOW_NEW_JUSTIFICATION_DIALOG = 'SHOW_NEW_JUSTIFICATION_DIALOG'
 export const HIDE_NEW_JUSTIFICATION_DIALOG = 'HIDE_NEW_JUSTIFICATION_DIALOG'
@@ -179,3 +175,16 @@ export const fetchStatementForEdit = create2Action(FETCH_STATEMENT_FOR_EDIT, sta
 
 export const DO_EDIT_STATEMENT = 'DO_EDIT_STATEMENT'
 export const doEditStatement = create2Action(DO_EDIT_STATEMENT, statementId => ({statementId}))
+
+export const SUCCESS = 'SUCCESS'
+export const FAILURE = 'FAILURE'
+export const API_RESOURCE_ACTIONS = {
+  [FETCH_STATEMENTS]: {
+    [SUCCESS]: FETCH_STATEMENTS_SUCCESS,
+    [FAILURE]: FETCH_STATEMENTS_FAILURE
+  },
+  [UPDATE_CITATION_REFERENCE]: {
+    [SUCCESS]: 'UPDATE_CITATION_REFERENCE_SUCCESS',
+    [FAILURE]: 'UPDATE_CITATION_REFERENCE_FAILURE'
+  }
+}

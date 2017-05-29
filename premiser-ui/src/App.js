@@ -140,7 +140,7 @@ class App extends Component {
               <Route path="/tools" component={ToolsPage} />
               <Route path="/icons" component={IconPage} />
 
-              <Route path="/s/:statementId/:statementSlug" component={StatementJustificationsPage} />
+              <Route path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
 
               <Route path="/create-statement" render={props => (
                   <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />

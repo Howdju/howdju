@@ -106,12 +106,6 @@ $over-gradient-z-index: 10;
   }
 }
 
-@mixin quote {
-  color: $asbestos;
-  font-size: 200%;
-  position: absolute;
-}
-
 .justification {
 
   .actions {
@@ -136,29 +130,6 @@ $over-gradient-z-index: 10;
         right: $slide-size;
         opacity: 0;
       }
-    }
-  }
-
-
-  .justificationText.quote {
-    border-left: 2px solid $primary-color;
-    margin: 0 10px 1em;
-    padding: 0.5em 10px;
-    quotes: "\201C" "\201D" "\2018" "\2019";
-
-    span {
-      // Push it out past the position:absolute quote
-      margin-left: 20px;
-    }
-
-    &:before {
-      @include quote;
-      content: open-quote;
-    }
-    &:after {
-      @include quote;
-      margin-left: 10px;
-      content: close-quote;
     }
   }
 

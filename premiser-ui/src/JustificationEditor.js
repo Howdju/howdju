@@ -1,13 +1,10 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Divider from 'react-md/lib/Dividers'
-import TextField from 'react-md/lib/TextFields'
 import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
 import FontIcon from 'react-md/lib/FontIcons'
 import Subheader from 'react-md/lib/Subheaders'
-import Button from 'react-md/lib/Buttons'
 import {JustificationBasisType, JustificationPolarity} from "./models";
-import cn from 'classnames'
 import text, {
   JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE,
   JUSTIFICATION_BASIS_TYPE_STATEMENT, JUSTIFICATION_POLARITY_NEGATIVE,
@@ -18,6 +15,7 @@ import { suggestionKeys } from './autocompleter'
 
 import './JustificationEditor.scss'
 import CitationReferenceEditor from "./CitationReferenceEditor";
+
 
 const statementTextName = 'basis.statement.text'
 
@@ -47,6 +45,8 @@ class JustificationEditor extends Component {
   render() {
     const {
       justification,
+      name,
+      id,
     } = this.props
 
     const polarityControls = [{
@@ -64,6 +64,10 @@ class JustificationEditor extends Component {
       label: text(JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE),
     }];
 
+    const namePrefix = name ? name + '.' : ''
+    const idPrefix = id ? id + '.' : ''
+
+    // TODO replace with StatementEditor name=basis.statement
     const statementComponents = [
       <Subheader primary
                  primaryText="Statement information"
@@ -139,6 +143,10 @@ class JustificationEditor extends Component {
 }
 JustificationEditor.propTypes = {
   justification: PropTypes.object,
+  /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
+  id: PropTypes.string,
+  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
+  name: PropTypes.string,
   onPropertyChange: PropTypes.func,
   onDeleteUrlClick: PropTypes.func,
   onAddUrlClick: PropTypes.func,

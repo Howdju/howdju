@@ -1,5 +1,10 @@
 const Promise = require('bluebird')
 const merge = require('lodash/merge')
+
+const {
+  ENTITY_CONFLICT_RESPONSE_CODE,
+  USER_ACTIONS_CONFLICT_RESPONSE_CODE,
+} = require("./codes/responseCodes");
 const {
   AuthenticationError,
   AuthorizationError,
@@ -8,7 +13,6 @@ const {
   EntityConflictError,
   UserActionsConflictError,
 } = require("./errors")
-
 const {
   statements,
   statementJustifications,
@@ -22,6 +26,7 @@ const {
   deleteStatement,
   createJustification,
   deleteJustification,
+  updateCitationReference,
 } = require('./service')
 const {
   searchStatements,
@@ -33,10 +38,10 @@ const ok = ({callback, body={}, headers}) => callback({
   headers,
   body
 })
-// NO CONTENT must not have a body. https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204
-const noContent = ({callback, body}) => {
-  if (body) logger.error('noContent may not return a body.  Ignoring body')
-  return callback({status: 'noContent'})
+const noContent = args => {
+  // NO CONTENT must not have a body. https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204
+  if (args.body) logger.error('noContent may not return a body.  Ignoring body')
+  return args.callback({status: 'noContent'})
 }
 const notImplemented = ({callback}) => callback({
   status: 'error',
@@ -60,11 +65,20 @@ const error = ({callback, body={}}) => callback({
   status: 'error',
   body
 })
-const entityConflict = ({callback}) => callback({
-  status: 'entityConflict'
+const entityConflict = ({callback, conflictCodes}) => callback({
+  status: 'error',
+  body: {
+    responseCode: ENTITY_CONFLICT_RESPONSE_CODE,
+    payload: {
+      conflictCodes
+    }
+  }
 })
 const userActionsConflict = ({callback}) => callback({
-  status: 'userActionsConflict'
+  status: 'error',
+  body: {
+    responseCode: USER_ACTIONS_CONFLICT_RESPONSE_CODE
+  }
 })
 
 const GET = 'GET'
@@ -139,12 +153,6 @@ const routes = [
                 }
               }) => updateStatement({authToken, statement})
         .then( (statement) => ok({callback, body: {statement}}))
-        .catch(NotFoundError, e => notFound({callback}))
-        .catch(AuthenticationError, e => unauthenticated({callback}))
-        .catch(AuthorizationError, e => unauthorized({callback}))
-        .catch(EntityConflictError, e => entityConflict({callback}))
-        .catch(UserActionsConflictError, e => userActionsConflict({callback}))
-        .catch(e => { throw new ImpossibleError(e) })
   },
   {
     id: 'getStatement',
@@ -217,6 +225,26 @@ const routes = [
           }
           logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
           return error({callback})
+        })
+  },
+  {
+    id: 'updateCitationReference',
+    path: new RegExp('^citation-references/([^/]+)$'),
+    method: PUT,
+    handler: ({
+        callback,
+        request: {
+          authToken,
+          body: {
+            citationReference
+          }
+        }
+    }) => updateCitationReference({authToken, citationReference})
+        .then( (updatedCitationReference) => {
+          if (updatedCitationReference === citationReference) {
+            return noContent({callback})
+          }
+          return ok({callback, body: {citationReference}})
         })
   },
   {
@@ -352,6 +380,11 @@ const routeEvent = ({callback, request}) =>
           return notFound({callback})
         }
         return route.handler({callback, request: merge({}, request, {pathParameters})})
+            .catch(NotFoundError, e => notFound({callback}))
+            .catch(AuthenticationError, e => unauthenticated({callback}))
+            .catch(AuthorizationError, e => unauthorized({callback}))
+            .catch(EntityConflictError, e => entityConflict({callback, conflicts: e.conflictCodes}))
+            .catch(UserActionsConflictError, e => userActionsConflict({callback}))
       })
 
 module.exports = {

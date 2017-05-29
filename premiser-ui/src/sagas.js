@@ -18,7 +18,7 @@ import {fetchJson} from "./api";
 import {assert, logError} from './util'
 import {
   statementsSchema, statementJustificationsSchema, voteSchema, statementSchema,
-  justificationSchema
+  justificationSchema, citationReferenceSchema
 } from './schemas'
 import {VotePolarity, VoteTargetType} from "./models";
 import paths from "./paths";
@@ -48,6 +48,18 @@ export const resourceApiConfigs = {
       schema: statementsSchema,
     }
   },
+  [actions.UPDATE_CITATION_REFERENCE]: payload => ({
+    payload: {
+      endpoint: `citation-references/${payload.citationReference.id}`,
+      fetchInit: {
+        method: httpMethods.PUT,
+        body: payload
+      },
+      schema: {
+        citationReference: citationReferenceSchema
+      },
+    }
+  })
 }
 
 function* callApi({type, payload: {endpoint, fetchInit = {}, schema}, meta: {nonce, requiresRehydrate}}) {
@@ -119,7 +131,11 @@ function* callApiForResource(fetchResourceAction) {
     const {successAction, failureAction} = yield* callApiWithNonce({payload, meta})()
 
     if (successAction) {
-      yield put({type: actions.API_RESOURCE_ACTIONS[fetchResourceAction.type]['SUCCESS'], payload: successAction.payload})
+      const meta = {
+        onSuccess: fetchResourceAction.onSuccess,
+        schema: payload.schema,
+      }
+      yield put({type: actions.API_RESOURCE_ACTIONS[fetchResourceAction.type]['SUCCESS'], payload: successAction.payload, meta})
     } else {
       yield put({type: actions.API_RESOURCE_ACTIONS[fetchResourceAction.type]['FAILURE'], payload: failureAction.payload})
     }
@@ -374,7 +390,10 @@ function* onCreateStatement(action) {
     const {successAction, failureAction} = yield* callApiWithNonce({payload})()
 
     if (successAction) {
-      yield put({type: actions.CREATE_STATEMENT_SUCCESS, payload: successAction.payload})
+      const meta = {
+        onSuccess: action.onSuccess
+      }
+      yield put({type: actions.CREATE_STATEMENT_SUCCESS, payload: successAction.payload, meta})
     } else {
       yield put({type: actions.CREATE_STATEMENT_FAILURE, payload: failureAction.payload})
     }
@@ -612,9 +631,10 @@ function* onInitializeMainSearch(action) {
   yield put(actions.fetchStatementsSearch(action.payload.searchText))
 }
 
-function* watchFetchResources() {
+function* watchApiCallActions() {
   yield takeEvery([
     actions.FETCH_STATEMENTS,
+    actions.UPDATE_CITATION_REFERENCE,
   ], callApiForResource)
 }
 
@@ -637,8 +657,18 @@ function* onViewStatement(action) {
 }
 
 function* onUpdateStatementSuccess(action) {
-  const {statement} = denormalize(action.payload.result, {statement: statementSchema}, action.payload.entities)
-  yield(put(push(paths.statement(statement))))
+  if (action.meta && action.meta.onSuccess) {
+    const {statement} = denormalize(action.payload.result, {statement: statementSchema}, action.payload.entities)
+    // TODO anti-pattern of passing callback to action?
+    action.meta.onSuccess(statement)
+  }
+}
+
+function* onFetchResourceSuccess(action) {
+  if (action.meta.onSuccess) {
+    const entity = denormalize(action.payload.result, action.meta.schema, action.payload.entities)
+    action.meta.onSuccess(entity)
+  }
 }
 
 function* watchFetchStatementJustifications() {
@@ -771,7 +801,7 @@ export default () => [
   watchLogout(),
   watchLoginRedirect(),
 
-  watchFetchResources(),
+  watchApiCallActions(),
   watchFetchStatementJustifications(),
   watchFetchStatementJustificationsFailure(),
 

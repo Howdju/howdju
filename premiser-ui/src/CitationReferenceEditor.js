@@ -33,12 +33,8 @@ class CitationReferenceEditor extends Component {
   onPropertyChange(value, event) {
     const target = event.target;
     const name = target.name
-
     this.updateIsQuoteEditedAfterMount(value, name)
-
-    const qualifiedName = this.props.name ? [this.props.name, name].join('.') : name
-    // The name will be sent to lodash.set, so it will be traversed on the new justification
-    this.props.onPropertyChange({[qualifiedName]: value})
+    this.props.onPropertyChange({[name]: value})
   }
 
   updateIsQuoteEditedAfterMount(value, name) {
@@ -62,30 +58,23 @@ class CitationReferenceEditor extends Component {
   render() {
     const {
       citationReference,
+      name,
+      id,
     } = this.props
     const {
       isQuoteEditedAfterMount
     } = this.state
 
     const urls = citationReference ? citationReference.urls : []
+    const namePrefix = name ? name + '.' : ''
+    const idPrefix = id ? id + '.' : ''
 
     return (
         <div>
           <TextField
-              id="citation.text"
-              key="citation.text"
-              name="citation.text"
-              type="text"
-              label="Citation"
-              value={citationReference.citation.text}
-              required
-              onChange={this.onPropertyChange}
-              leftIcon={<FontIcon>book</FontIcon>}
-          />
-          <TextField
-              id="quote"
+              id={idPrefix + "quote"}
               key="quote"
-              name="quote"
+              name={namePrefix + "quote"}
               type="text"
               label="Quote"
               rows={2}
@@ -98,11 +87,22 @@ class CitationReferenceEditor extends Component {
               onChange={this.onPropertyChange}
               leftIcon={<FontIcon>format_quote</FontIcon>}
           />
+          <TextField
+              id={idPrefix + 'citation.text'}
+              key="citation.text"
+              name={namePrefix + 'citation.text'}
+              type="text"
+              label="Citation"
+              value={citationReference.citation.text}
+              required
+              onChange={this.onPropertyChange}
+              leftIcon={<FontIcon>book</FontIcon>}
+          />
           {urls.map( (url, index) =>
               <TextField
-                  id={`urls[${index}].url`}
+                  id={`${idPrefix}urls[${index}].url`}
                   key={`urls[${index}].url`}
-                  name={`urls[${index}].url`}
+                  name={`${namePrefix}urls[${index}].url`}
                   type="url"
                   label="URL"
                   value={citationReference.urls[index].url}
@@ -123,9 +123,9 @@ class CitationReferenceEditor extends Component {
 }
 CitationReferenceEditor.propTypes = {
   citationReference: PropTypes.object,
-  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." when
-   * the onPropertyChange prop handler is called
-   */
+  /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
+  id: PropTypes.string,
+  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
   onPropertyChange: PropTypes.func,
   onDeleteUrlClick: PropTypes.func,

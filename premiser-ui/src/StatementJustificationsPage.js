@@ -46,7 +46,7 @@ import {
   editJustificationDeleteUrl, doEditStatement,
 } from "./actions";
 import {justificationSchema, statementSchema} from "./schemas";
-import Justification from './Justification'
+import JustificationWithCounters from './JustificationWithCounters'
 import text, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
   CANCEL_BUTTON_LABEL,
@@ -252,7 +252,7 @@ class StatementJustificationsPage extends Component {
           {justificationsByPolarity[JustificationPolarity.POSITIVE].map(j => (
               <div className="row" key={j.id}>
                 <div className="col-xs-12">
-                  <Justification withCounterJustifications key={j.id} justification={j} positivey={true} />
+                  <JustificationWithCounters justification={j} positivey={true} />
                 </div>
               </div>
           ))}
@@ -265,7 +265,7 @@ class StatementJustificationsPage extends Component {
           {justificationsByPolarity[JustificationPolarity.NEGATIVE].map(j => (
               <div className="row" key={j.id}>
                 <div className="col-xs-12">
-                  <Justification withCounterJustifications key={j.id} justification={j} positivey={false} />
+                  <JustificationWithCounters justification={j} positivey={false} />
                 </div>
               </div>
           ))}
@@ -280,7 +280,7 @@ class StatementJustificationsPage extends Component {
           {justifications.map(j => (
               <div className="row" key={j.id}>
                 <div className="col-xs-12">
-                  <Justification withCounterJustifications justification={j} positivey={isPositive(j)} />
+                  <JustificationWithCounters justification={j} positivey={isPositive(j)} />
                 </div>
               </div>
           ))}

@@ -1,10 +1,24 @@
+const argon2 = require('argon2')
+const cryptohat = require('cryptohat')
+const uuid = require('uuid')
+const moment = require('moment')
+const Promise = require('bluebird')
+const merge = require('lodash/merge')
+const assign = require('lodash/assign')
+const forEach = require('lodash/forEach')
+const cloneDeep = require('lodash/cloneDeep')
+const filter = require('lodash/filter')
+const keys = require('lodash/keys')
+const pickBy = require('lodash/pickBy')
+
+const config = require('./config')
+const {assert} = require('./util')
+const {logger} = require('./logger')
 const {query, queries} = require('./db')
-const {
-  statementsDao,
-} = require('./dao/statementsDao')
-const {
-  permissionsDao,
-} = require('./dao/permissionsDao')
+const statementsDao = require('./dao/statementsDao')
+const permissionsDao = require('./dao/permissionsDao')
+const citationReferencesDao = require('./dao/citationReferencesDao')
+const citationsDao = require('./dao/citationsDao')
 const {
   toStatement,
   toJustification,
@@ -13,20 +27,18 @@ const {
   toUrl,
   toVote
 } = require('./orm')
-const argon2 = require('argon2')
-const cryptohat = require('cryptohat')
-const uuid = require('uuid')
-const moment = require('moment')
-const Promise = require('bluebird')
-
-const config = require('./config')
-const {assert} = require('./util')
-const {logger} = require('./logger')
-const merge = require('lodash/merge')
-const assign = require('lodash/assign')
-const forEach = require('lodash/forEach')
-const cloneDeep = require('lodash/cloneDeep')
-const filter = require('lodash/filter')
+const {
+  OTHER_CITATION_REFERENCES_HAVE_SAME_QUOTE_CONFLICT,
+  OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT,
+} = require("./codes/entityConflictCodes")
+const {
+  OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT,
+  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_REFERENCE_CONFLICT,
+  OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT,
+  OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
+  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_CONFLICT,
+  OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
+} = require("./codes/userActionsConflictCodes")
 const {
   AuthenticationError,
   AuthorizationError,
@@ -40,8 +52,8 @@ const {
   DELETE_JUSTIFICATIONS,
   DELETE_STATEMENTS,
   UPDATE_STATEMENTS,
+  UPDATE_CITATION_REFERENCES,
 } = require("./permissions")
-
 const {
   JustificationTargetType,
   JustificationBasisType,
@@ -90,6 +102,17 @@ const withPermission = (authToken, permission) => query(`
       }
       return Promise.resolve(userId)
     })
+
+const withAuth = (authToken) => query(`
+    select user_id
+    from authentication_tokens
+      where 
+            token = $1 
+        and expires > $2
+        and deleted is null 
+`, [authToken, new Date()])
+// TODO does this work deconstructing the first row?  What happen when it is empty?
+    .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
 
 const statements = () => query('select * from statements where deleted is null')
   .then(({rows: statements}) => statements.map(toStatement))
@@ -348,17 +371,6 @@ const unvote = ({authToken, targetType, targetId, polarity}) => {
   })
 }
 
-const withAuth = (authToken) => query(`
-    select user_id
-    from authentication_tokens
-      where 
-            token = $1 
-        and expires > $2
-        and deleted is null 
-`, [authToken, new Date()])
-    // TODO does this work deconstructing the first row?  What happen when it is empty?
-    .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
-
 const createStatement = ({authToken, statement, justification}) => withAuth(authToken)
     .then(userId => {
       const now = new Date()
@@ -433,15 +445,13 @@ const createStatement = ({authToken, statement, justification}) => withAuth(auth
 
     }, () => ({isUnauthenticated: true}))
 
-const updateStatement = ({authToken, statement}) => withPermission(authToken, UPDATE_STATEMENTS)
-    .then(userId => {
-      return Promise.all([
-        userId,
-        statementsDao.countOtherStatementsHavingSameTextAs(statement),
-        statementsDao.hasOtherUserInteractions(userId, statement),
-        permissionsDao.userHasPermission(userId, UPDATE_STATEMENTS)
-      ])
-    })
+const updateStatement = ({authToken, statement}) => withAuth(authToken)
+    .then(userId => Promise.all([
+      userId,
+      statementsDao.countOtherStatementsHavingSameTextAs(statement),
+      statementsDao.hasOtherUserInteractions(userId, statement),
+      permissionsDao.userHasPermission(userId, UPDATE_STATEMENTS)
+    ]))
     .then( ([
         userId,
         otherStatementsHavingSameTextCount,
@@ -449,9 +459,10 @@ const updateStatement = ({authToken, statement}) => withPermission(authToken, UP
         hasUpdateStatementsPermission,
       ]) => {
       if (otherStatementsHavingSameTextCount > 0) {
-        throw new EntityConflictError()
+        throw new EntityConflictError([OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT])
       } else if (hasOtherUserInteractions && !hasUpdateStatementsPermission) {
-        throw new UserActionsConflictError()
+        const conflictCodes = []
+        throw new UserActionsConflictError(conflictCodes)
       }
       return userId
     })
@@ -469,6 +480,99 @@ const updateStatement = ({authToken, statement}) => withPermission(authToken, UP
       const [row] = rows
       asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.STATEMENT, now)
       return toStatement(row)
+    })
+
+const updateCitationReference = ({authToken, citationReference}) => withAuth(authToken)
+    .then(userId => Promise.all([
+      userId,
+      citationReferencesDao.hasChanged(citationReference),
+      citationsDao.hasChanged(citationReference.citation),
+      // TODO check URLs
+    ]))
+    .then( ([
+        userId,
+        citationReferenceHasChanged,
+        citationHasChanged
+    ]) => {
+      if (!citationReferenceHasChanged && !citationHasChanged) {
+        return citationReference
+      }
+
+      const entityConflicts = {}
+      const userActionConflicts = {}
+      if (citationReferenceHasChanged) {
+        entityConflicts[OTHER_CITATION_REFERENCES_HAVE_SAME_QUOTE_CONFLICT] =
+            citationReferencesDao.doOtherCitationReferencesHaveSameQuoteAs(citationReference)
+        assign(userActionConflicts, {
+          [OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT]:
+              citationReferencesDao.isBasisToJustificationsHavingOtherUsersVotes(userId, citationReference),
+          [OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_REFERENCE_CONFLICT]:
+              citationReferencesDao.isBasisToOtherUsersJustifications(userId, citationReference),
+          [OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT]:
+              citationReferencesDao.isBasisToJustificationsHavingOtherUsersCounters(userId, citationReference),
+        })
+      }
+      if (citationHasChanged) {
+        const citation = citationReference.citation
+
+        entityConflicts[OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT] = citationsDao.doOtherCitationsHaveSameTextAs(citation)
+
+        assign(userActionConflicts, {
+          [OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT]:
+              citationsDao.isCitationOfBasisToOtherUsersJustifications(userId, citation),
+          [OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_CONFLICT]:
+              citationsDao.isCitationOfBasisToJustificationsHavingOtherUsersVotes(userId, citation),
+          [OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT]:
+              citationsDao.isCitationOfBasisToJustificationsHavingOtherUsersCounters(userId, citation),
+        })
+      }
+
+      return Promise.props({
+        userId,
+        now: new Date(),
+        citationReferenceHasChanged,
+        citationHasChanged,
+        hasPermission: permissionsDao.userHasPermission(userId, UPDATE_CITATION_REFERENCES),
+        entityConflicts: Promise.props(entityConflicts),
+        userActionConflicts: Promise.props(userActionConflicts)
+      })
+    })
+    .then( ({
+              userId,
+              now,
+              hasPermission,
+              entityConflicts,
+              userActionConflicts,
+              citationReferenceHasChanged,
+              citationHasChanged,
+    }) => {
+
+      const entityConflictCodes = keys(pickBy(entityConflicts))
+      if (entityConflictCodes.length > 0) throw new EntityConflictError(entityConflictCodes)
+
+      const userActionsConflictCodes = keys(pickBy(userActionConflicts))
+      if (userActionsConflictCodes.length > 0) {
+        if (!hasPermission) {
+          throw new UserActionsConflictError(userActionsConflictCodes)
+        }
+        logger.info(`User ${userId} overriding userActionsConflictCodes ${userActionsConflictCodes}`)
+      }
+
+      return {userId, now, citationReferenceHasChanged, citationHasChanged}
+    })
+    .then( ({userId, now, citationReferenceHasChanged, citationHasChanged}) => [
+        userId,
+        now,
+        citationReferenceHasChanged ? citationReferencesDao.update(citationReference) : citationReference,
+        citationHasChanged ? citationsDao.update(citationReference.citation) : citationReference.citation,
+    ])
+    .then( ([userId, now, citationReference, citation]) => {
+      if (citationReference.citation !== citation) {
+        citationReference = assign({}, citationReference, {citation})
+      }
+
+      asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE, now)
+      return citationReference
     })
 
 const deleteStatement = ({authToken, statementId}) => {
@@ -747,4 +851,5 @@ module.exports = {
   deleteStatement,
   createJustification,
   deleteJustification,
+  updateCitationReference,
 }
