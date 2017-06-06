@@ -1,4 +1,5 @@
-export const editStatementJustificationPageStatementEditorId = 'editStatementJustificationPageStatementEditorId'
-export const editStatementJustificationPageJustificationEditorId = 'editStatementJustificationPageJustificationEditorId'
+export const editStatementJustificationPageEditorId = 'editStatementJustificationPageEditorId'
 export const statementJustificationsPageStatementEditorId = 'statementJustificationsPageStatementEditorId'
-export const statementJustificationsPageJustificationEditorId = 'statementJustificationJustificationEditorId'
+export const statementJustificationsPageNewJustificationEditorId = 'statementJustificationsPageNewJustificationEditorId'
+
+export const loginPageEditorId = 'loginPageEditorId'

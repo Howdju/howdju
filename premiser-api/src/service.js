@@ -10,6 +10,7 @@ const cloneDeep = require('lodash/cloneDeep')
 const filter = require('lodash/filter')
 const keys = require('lodash/keys')
 const pickBy = require('lodash/pickBy')
+const map = require('lodash/map')
 
 const config = require('./config')
 const {assert} = require('./util')
@@ -148,7 +149,18 @@ const collectUrls = urls => {
   return urlsByJustificationId
 }
 
-const statementJustifications = ({statementId, authToken}) => queries([
+const readStatement = ({statementId, authToken}) => query(
+    'select * from statements where statement_id = $1 and deleted is null',
+    [statementId]
+)
+    .then( ({rows: [statementRow]}) => {
+      if (!statementRow) {
+        throw new NotFoundError()
+      }
+      return {statement: toStatement(statementRow)}
+    })
+
+const readStatementJustifications = ({statementId, authToken}) => queries([
     {
       // Statement
       query: 'select * from statements where statement_id = $1 and deleted is null',
@@ -482,6 +494,8 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
       return toStatement(row)
     })
 
+const readCitationReference = ({authToken, citationReferenceId}) => citationReferencesDao.read(citationReferenceId)
+
 const updateCitationReference = ({authToken, citationReference}) => withAuth(authToken)
     .then(userId => Promise.all([
       userId,
@@ -725,18 +739,21 @@ const selectOrInsertCitationReferenceUrls = (citationReference, userId, now) => 
     query: 'select * from citation_reference_urls where citation_reference_id = $1 and url_id = $2',
     args: [citationReference.id, url.id]
   })))
-      .then( (results) => {
+      .then( results => {
         const associatedUrlIds = {}
         forEach(results, ({rows}) => {
           if (rows.length > 0 && rows[0].url_id) {
+            const row = rows[0]
             associatedUrlIds[row.url_id] = true
           }
         })
-        const unassociatedUrls = filter(urls, url => !associatedUrlIds[url.id])
-        return queries(unassociatedUrls.map( url => ({
-          query: 'insert into citation_reference_urls (citation_reference_id, url_id, creator_user_id, created) values ($1, $2, $3, $4)',
-          args: [citationReference.id, url.id, userId, now]
-        })))
+        return map(urls, u => associatedUrlIds[u.id] ?
+            u :
+            query(
+                'insert into citation_reference_urls (citation_reference_id, url_id, creator_user_id, created) values ($1, $2, $3, $4)',
+                [citationReference.id, u.id, userId, now]
+            )
+        )
       })
 }
 
@@ -769,7 +786,7 @@ const selectOrInsertCitation = (citation, userId, now) => {
 const selectOrInsertStatement = (statement, userId, now) => {
   if (statement.id) {
     logger.silly('Returning existing statement')
-    return statement
+    return Promise.resolve(statement)
   }
 
   return query('select * from statements where text = $1 and deleted is null', [statement.text])
@@ -840,7 +857,8 @@ const deleteJustification = ({authToken, justificationId}) => {
 
 module.exports = {
   statements,
-  statementJustifications,
+  readStatement,
+  readStatementJustifications,
   createUser,
   login,
   logout,
@@ -851,5 +869,6 @@ module.exports = {
   deleteStatement,
   createJustification,
   deleteJustification,
+  readCitationReference,
   updateCitationReference,
 }

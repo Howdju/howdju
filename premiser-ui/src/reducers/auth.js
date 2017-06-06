@@ -1,17 +1,15 @@
 import {
-  LOGIN_SUCCESS,
-  LOGOUT_SUCCESS, LOGOUT_FAILURE,
+  api,
 } from '../actions'
+import { handleActions } from 'redux-actions'
 
-export default (state = {}, action) => {
-  switch (action.type) {
-    case LOGIN_SUCCESS:
-      return {...state, authToken: action.payload.authToken, email: action.payload.email}
-      // remove auth token even if server fails; that way the user is logged out from client and server will eventually cleanup auth token
-    case LOGOUT_SUCCESS:
-    case LOGOUT_FAILURE:
-      return {...state, authToken: null, email: null}
-  }
-
-  return state
-}
+export default handleActions({
+  [api.login.response]: (state, action) => {
+    const {
+      authToken,
+      email
+    } = action.payload
+    return {...state, authToken, email}
+    },
+  [api.logout.response]: (state, action) => ({...state, authToken: null, email: null})
+}, { authToken: null, email: null })

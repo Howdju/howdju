@@ -16,7 +16,9 @@
     "dev": "yarn run serve:dev",
     "build": "gulp build",
     "deploy": "gulp deploy",
-    "test": "cross-env NODE_ENV=test jest --config .jestrc"
+    "test": "cross-env NODE_ENV=test jest --config .jestrc",
+    "test-debug": "node --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
+    "test-inspect": "yarn run test:debug &; node-inspector"
   },
   "devDependencies": {
     "argparse": "https://github.com/nodeca/argparse.git",

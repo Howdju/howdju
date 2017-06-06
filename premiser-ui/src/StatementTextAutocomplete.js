@@ -9,7 +9,9 @@ import {
   ESCAPE_KEY_CODE
 } from './keyCodes'
 import autocompleter from './autocompleter'
-import {fetchStatementSuggestions} from "./actions";
+import {
+  api, mapActionCreatorGroupToDispatchToProps
+} from "./actions";
 import {statementSchema} from "./schemas";
 
 class StatementTextAutocomplete extends Component {
@@ -43,12 +45,12 @@ class StatementTextAutocomplete extends Component {
   }
 
   refreshAutocomplete(text) {
-    this.props.fetchStatementSuggestions(text, this.props.suggestionsKey)
+    this.props.api.fetchStatementSuggestions(text, this.props.suggestionsKey)
   }
 
   onAutocomplete(label, index) {
     if (this.props.onAutocomplete) {
-      this.props.onAutocomplete(label, index)
+      this.props.onAutocomplete(this.props.name, label, index)
     }
   }
 
@@ -59,9 +61,8 @@ class StatementTextAutocomplete extends Component {
       ...props
     } = this.props
     delete props.suggestionsKey
-    delete props.suggestedStatements
-    delete props.fetchStatementSuggestions
-    delete props.onEditBasisPropertyChange
+    delete props.api
+    delete props.onPropertyChange
 
     const suggestions = suggestedStatements.map(s => ({
       id: s.id,
@@ -107,6 +108,6 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default connect(mapStateToProps, {
-  fetchStatementSuggestions
-})(StatementTextAutocomplete)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api
+}))(StatementTextAutocomplete)

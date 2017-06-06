@@ -1,7 +1,43 @@
 # Howdju UI TODO
 ## MVP
 
+* Add subheaders to CREATE_JUSTIFICATION page
+* Add readonly to create justification
+
+* Reset doCreateJustification on EditStatementJustificationPage
+* StatementTextAutocomplete.onAutocomplete has new first property 'name'
+* EditableStatement.componentWillMount editors.init may occur before the statement has been fetched, so the editor state won't have it...
+* Move JustificationWithCounter to use editor state
+* Search TODO
+
+* Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
+* readOnlyBasis on JustificationEditor
+
+* deal with issue of citation.basis.entity vs. citation.basis.citationReference/.statement (how to know which one it is in an editor reducer?)
+* Get rid of editStatementPropertyChange, editJustificationPropertyChange, and resetEditJustification
+* editJustificationAddUrl/editJustificationDeleteUrl should be editCitationReferenceAddUrl/...
+* Look at use of makeNewJustification, maybe put this logic into the components
+* resetEditJustification
+* replace resetEditJustication with beginEdit(makeNewJustification(...))
+* Figure out how to incorporate ui.justificationEditor into new action creator reducers
+* See if things work; like passing in bare actionCreators to takeEvery
+
 ### Features
+
+* Add in-place statement editing on StatementJustificationsPage so that we can remove EDIT_STATEMENT from 
+  EditStatementJustificationsPage
+  * Add buttons to EditableStatement, along with sagas
+  * Update API and UI for editor errors
+* Then add menu > use
+
+
+## Editors
+* onClick, beginEdit(editorId, entity)
+* editModel = cloneDeep(entity)
+* property for entity type and id, so that can watch FETCH actions and show spinner?
+* 
+
+
 
 * StatementJustifications menus
   * Statement menu
@@ -33,6 +69,9 @@
 * Statements that differ by special chars or capitalization are treated as different (normalized text etc)
 
 ### Bugs/stability
+* Don't create empty URL from EditStatementJustificationPage!
+* Simplify sagas like login/logout at bottom here: https://github.com/redux-saga/redux-saga/blob/master/docs/advanced/FutureActions.md
+* Do I ever get failure actions in sagas?  Or are they always caught? And do I need to separate successAction from failureAction, or just use action.error?
 * Reuse code between client/server (Use same javascript syntax in client/server.)  
   * https://webpack.github.io/docs/commonjs.html
 * refactor sagas to use callApiForResource
@@ -78,7 +117,6 @@
 ### Editors
 * Don't revert edit until see success.  Show error message if failure
 * When a citation reference update failure comes in, how do I know that it belongs to a particular editor?
-* action onSuccess callback has got to be an anti-pattern
 * Separate JustificationWithCounters into JustificationCard and JustificationTree/CounteredJustification/Argument
   * challenge of card having buttons to create counter
 * Can only delete bases (justifications/quotes) if other users haven't used them as bases
@@ -87,6 +125,7 @@
   * if delete justification, must delete counters
 
 ### Features
+* Recent votes: see what statement justifications look like when limited to a time period, either pre-selected time periods or according to the 'most recent activity' however recent that most recent activity is
 * Main search:
   * citation text
   * url

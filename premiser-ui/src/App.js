@@ -21,9 +21,14 @@ import MainSearchPage from './MainSearchPage'
 import ToolsPage from './ToolsPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
-import {dismissToast, hideNavDrawer, initializeMainSearch, logout, setNavDrawerVisibility} from "./actions";
+import {
+  api,
+  app,
+  mapActionCreatorGroupToDispatchToProps,
+  ui,
+} from "./actions";
 import {history} from './configureStore'
-import paths from "./paths";
+import paths, {createJustificationPath, mainSearchPathName} from "./paths";
 import mainSearcher from './mainSearcher'
 import IconPage from './IconPage'
 import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage";
@@ -44,26 +49,28 @@ class App extends Component {
 
   checkInitializeMainSearch() {
     const location = window.location
-    const queryParamSearchText = mainSearcher.mainSearchText(location)
-    if (queryParamSearchText) {
-      this.props.initializeMainSearch(queryParamSearchText)
+    if (location.pathname === mainSearchPathName) {
+      const queryParamSearchText = mainSearcher.mainSearchText(location)
+      if (queryParamSearchText) {
+        this.props.app.initializeMainSearch(queryParamSearchText)
+      }
     }
   }
 
   handleLogout() {
-    this.props.logout()
+    this.props.api.logout()
   }
 
   handleHideNavDrawer() {
-    this.props.hideNavDrawer()
+    this.props.ui.hideNavDrawer()
   }
 
   onNavDrawerVisibilityToggle(visible) {
-    this.props.setNavDrawerVisibility({visible})
+    this.props.ui.setNavDrawerVisibility({visible})
   }
 
   onSnackbarDismiss() {
-    this.props.dismissToast()
+    this.props.ui.dismissToast()
   }
 
   render () {
@@ -137,20 +144,18 @@ class App extends Component {
 
               <Route exact path={paths.home()} render={renderHomePath}/>
               <Route path={paths.login()} component={LoginPage} />
-              <Route path="/tools" component={ToolsPage} />
-              <Route path="/icons" component={IconPage} />
 
               <Route path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
 
               <Route path="/create-statement" render={props => (
                   <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
               )} />
-              <Route path="/create-justification" render={props => (
+              <Route path={createJustificationPath} render={props => (
                   <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
               )} />
-              <Route path="/edit-statement/:statementId" render={props => (
-                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.EDIT_STATEMENT} />
-              )} />
+
+              <Route path="/tools" component={ToolsPage} />
+              <Route path="/icons" component={IconPage} />
 
             </div>
 
@@ -184,10 +189,8 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, {
-  logout,
-  hideNavDrawer,
-  setNavDrawerVisibility,
-  dismissToast,
-  initializeMainSearch,
-})(App)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api,
+  app,
+  ui,
+}))(App)

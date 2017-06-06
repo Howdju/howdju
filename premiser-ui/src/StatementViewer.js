@@ -1,10 +1,20 @@
 import React from 'react'
+import CircularProgress from "react-md/lib/Progress/CircularProgress";
 
 export default props => {
   const {
-    statement
+    id,
+    statement,
+    isFetching,
   } = props
   return (
-      <span>{statement.text}</span>
+      <span>
+        {statement ?
+            statement.text :
+            isFetching ?
+                <CircularProgress /> :
+                ''
+        }
+      </span>
   )
 }

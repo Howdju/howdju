@@ -1,15 +1,17 @@
-exports.ValidationError = class ValidationError extends Error {}
+class HowdjuApiError extends Error {}
 
-exports.AuthenticationError = class AuthenticationError extends Error {}
+class ValidationError extends HowdjuApiError {}
 
-exports.AuthorizationError = class AuthorizationError extends Error {}
+class AuthenticationError extends HowdjuApiError {}
 
-exports.NotFoundError = class NotFoundError extends Error {}
+class AuthorizationError extends HowdjuApiError {}
 
-exports.ImpossibleError = class ImpossibleError extends Error {}
+class NotFoundError extends HowdjuApiError {}
+
+class ImpossibleError extends HowdjuApiError {}
 
 /** The request would cause a conflict with one or more other entities */
-exports.EntityConflictError = class EntityConflictError extends Error {
+class EntityConflictError extends HowdjuApiError {
   constructor(conflictCodes) {
     super()
 
@@ -17,10 +19,21 @@ exports.EntityConflictError = class EntityConflictError extends Error {
   }
 }
 
-exports.UserActionsConflictError = class UserActionsConflictError extends Error {
+/** The request would conflict with the actions of one or more other users */
+class UserActionsConflictError extends HowdjuApiError {
   constructor(conflictCodes) {
     super()
 
     this.conflictCodes = conflictCodes
   }
+}
+
+module.exports = {
+  ValidationError,
+  AuthenticationError,
+  AuthorizationError,
+  NotFoundError,
+  ImpossibleError,
+  EntityConflictError,
+  UserActionsConflictError,
 }

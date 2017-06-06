@@ -17,19 +17,9 @@ import forEach from 'lodash/forEach'
 import cloneDeep from 'lodash/cloneDeep'
 
 import {
-  verifyJustification,
-  disverifyJustification,
-  unVerifyJustification,
-  unDisverifyJustification,
-  deleteJustification,
-  addNewCounterJustification,
-  newCounterJustificationPropertyChange,
-  createJustification,
-  cancelNewCounterJustification,
-  viewStatement,
-  updateStatement,
-  updateCitationReference,
-  editJustificationPropertyChange,
+  api,
+  ui,
+  editors, mapActionCreatorGroupToDispatchToProps, goto,
 } from './actions'
 import {
   JustificationBasisType,
@@ -48,7 +38,6 @@ import {
 import {logError} from "./util";
 import JustificationBasisViewer from "./JustificationBasisViewer";
 import JustificationBasisEditor from "./JustificationBasisEditor";
-
 
 
 class JustificationWithCounters extends Component {
@@ -78,6 +67,7 @@ class JustificationWithCounters extends Component {
     this.onCreateCounterJustification = this.onCreateCounterJustification.bind(this)
     this.onCancelNewCounterJustification = this.onCancelNewCounterJustification.bind(this)
 
+    this.onUseJustification = this.onUseJustification.bind(this)
   }
 
   onCardMouseOver() {
@@ -91,46 +81,46 @@ class JustificationWithCounters extends Component {
   onVerifyButtonClick() {
     const {justification} = this.props
     if (isVerified(justification)) {
-      this.props.unVerifyJustification(justification)
+      this.props.api.unVerifyJustification(justification)
     } else {
-      this.props.verifyJustification(justification)
+      this.props.api.verifyJustification(justification)
     }
   }
 
   onDisverifyButtonClick() {
     const {justification} = this.props
     if (isDisverified(justification)) {
-      this.props.unDisverifyJustification(justification)
+      this.props.api.unDisverifyJustification(justification)
     } else {
-      this.props.disverifyJustification(justification)
+      this.props.api.disverifyJustification(justification)
     }
   }
 
   deleteClick() {
-    this.props.deleteJustification(this.props.justification)
+    this.props.api.deleteJustification(this.props.justification)
   }
 
   goToStatement() {
     const basis = this.props.justification.basis
     if (basis.type === JustificationBasisType.STATEMENT) {
-      this.props.viewStatement(basis.entity)
+      this.props.goto.statement(basis.entity)
     }
   }
 
   onAddNewCounterJustification() {
-    this.props.addNewCounterJustification(this.props.justification)
+    this.props.ui.addNewCounterJustification(this.props.justification)
   }
 
   onNewCounterJustificationPropertyChange(properties) {
-    this.props.newCounterJustificationPropertyChange(this.props.newCounterJustification, properties)
+    this.props.ui.newCounterJustificationPropertyChange(this.props.newCounterJustification, properties)
   }
 
   onCreateCounterJustification() {
-    this.props.createJustification(this.props.newCounterJustification)
+    this.props.api.createJustification(this.props.newCounterJustification)
   }
 
   onCancelNewCounterJustification() {
-    this.props.cancelNewCounterJustification(this.props.newCounterJustification)
+    this.props.ui.cancelNewCounterJustification(this.props.newCounterJustification)
   }
 
   onBeginEditBasis() {
@@ -160,10 +150,10 @@ class JustificationWithCounters extends Component {
     switch (basisType) {
       case JustificationBasisType.STATEMENT:
         // TODO callback
-        this.props.updateStatement(editBasis)
+        this.props.api.updateStatement(editBasis)
         break;
       case JustificationBasisType.CITATION_REFERENCE:
-        this.props.updateCitationReference(editBasis)
+        this.props.api.updateCitationReference(editBasis)
         break;
       default:
         logError(`Unhandled justification basis type: ${basisType}`)
@@ -177,6 +167,16 @@ class JustificationWithCounters extends Component {
     this.setState({
       editBasis: null,
     })
+  }
+
+  onUseJustification() {
+    const {
+      type: basisType,
+      entity: {
+        id: basisId
+      }
+    } = this.props.justification.basis
+    this.props.goto.createJustification(basisType, basisId)
   }
 
   render() {
@@ -214,7 +214,10 @@ class JustificationWithCounters extends Component {
                     leftIcon={<FontIcon>reply</FontIcon>}
                     onClick={this.onAddNewCounterJustification}
           />
-          <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
+          <ListItem primaryText="Use"
+                    leftIcon={<FontIcon>call_made</FontIcon>}
+                    onClick={this.onUseJustification}
+          />
           <Divider />
           <ListItem primaryText="Edit"
                     leftIcon={<FontIcon>create</FontIcon>}
@@ -378,20 +381,10 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const ConnectedJustificationWithCounters = connect(mapStateToProps, {
-  verifyJustification,
-  unVerifyJustification,
-  disverifyJustification,
-  unDisverifyJustification,
-  deleteJustification,
-  addNewCounterJustification,
-  newCounterJustificationPropertyChange,
-  createJustification,
-  cancelNewCounterJustification,
-  viewStatement,
-  updateCitationReference,
-  updateStatement,
-  editJustificationPropertyChange,
-})(JustificationWithCounters)
+const ConnectedJustificationWithCounters = connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api,
+  editors,
+  goto,
+}))(JustificationWithCounters)
 
 export default ConnectedJustificationWithCounters

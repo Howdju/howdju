@@ -19,7 +19,8 @@ class CounterJustificationEditor extends Component {
     this.props.onPropertyChange(change)
   }
 
-  onStatementTextAutocomplete(text, index) {
+  onStatementTextAutocomplete(name, text, index) {
+    // TODO use name instead of hardcoded string
     this.props.onPropertyChange({'basis.entity.text': text})
   }
 

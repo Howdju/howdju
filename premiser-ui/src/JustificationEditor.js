@@ -15,9 +15,12 @@ import { suggestionKeys } from './autocompleter'
 
 import './JustificationEditor.scss'
 import CitationReferenceEditor from "./CitationReferenceEditor";
+import StatementViewer from "./StatementViewer";
+import StatementEditor from "./StatementEditor";
 
 
 const statementTextName = 'basis.statement.text'
+const citationReferenceName = "basis.citationReference"
 
 class JustificationEditor extends Component {
 
@@ -38,7 +41,8 @@ class JustificationEditor extends Component {
     this.props.onPropertyChange(change)
   }
 
-  onStatementBasisTextAutocomplete(text, index) {
+  onStatementBasisTextAutocomplete(name, text, index) {
+    // TODO use name instead of statementTextName
     this.props.onPropertyChange({[statementTextName]: text})
   }
 
@@ -47,6 +51,7 @@ class JustificationEditor extends Component {
       justification,
       name,
       id,
+      readOnlyBasis,
     } = this.props
 
     const polarityControls = [{
@@ -74,17 +79,10 @@ class JustificationEditor extends Component {
                  component="div"
                  key="statementSubheader"
       />,
-      <StatementTextAutocomplete
-          id={statementTextName}
-          key={statementTextName}
-          name={statementTextName}
-          label="Statement"
-          required
-          leftIcon={<FontIcon>text_fields</FontIcon>}
-          value={justification.basis.statement.text}
-          suggestionsKey={suggestionKeys.justificationEditor}
-          onPropertyChange={this.onPropertyChange}
-          onAutocomplete={this.onStatementBasisTextAutocomplete}
+      <StatementEditor statement={justification.basis}
+                       key="statementEditor"
+                       onPropertyChange={this.onPropertyChange}
+                       readOnly={readOnlyBasis}
       />
     ]
     const citationReferenceComponents =  [
@@ -94,12 +92,13 @@ class JustificationEditor extends Component {
                  key="citationReferenceSubheader"
       />,
       <CitationReferenceEditor citationReference={justification.basis.citationReference}
-                               id="basis.citationReference"
-                               name="basis.citationReference"
-                               key="basis.citationReference"
+                               id={idPrefix + citationReferenceName}
+                               key={citationReferenceName}
+                               name={namePrefix + citationReferenceName}
                                onPropertyChange={this.props.onPropertyChange}
                                onAddUrlClick={this.props.onAddUrlClick}
                                onDeleteUrlClick={this.props.onDeleteUrlClick}
+                               readOnly={readOnlyBasis}
       />
     ]
 
@@ -111,8 +110,8 @@ class JustificationEditor extends Component {
           />
           <SelectionControlGroup
               inline
-              id="polarity"
-              name="polarity"
+              id={idPrefix + "polarity"}
+              name={namePrefix + "polarity"}
               type="radio"
               value={justification.polarity}
               onChange={this.onChange}
@@ -125,12 +124,13 @@ class JustificationEditor extends Component {
           />
           <SelectionControlGroup
               inline
-              id="basis.type"
-              name="basis.type"
+              id={idPrefix + "basis.type"}
+              name={namePrefix + "basis.type"}
               type="radio"
               value={justification.basis.type}
               onChange={this.onChange}
               controls={basisTypeControls}
+              disabled={readOnlyBasis}
           />
           <Divider />
           {justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
@@ -142,14 +142,18 @@ class JustificationEditor extends Component {
   }
 }
 JustificationEditor.propTypes = {
-  justification: PropTypes.object,
+  justification: PropTypes.object.isRequired,
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
-  onPropertyChange: PropTypes.func,
-  onDeleteUrlClick: PropTypes.func,
-  onAddUrlClick: PropTypes.func,
+  onPropertyChange: PropTypes.func.isRequired,
+  onDeleteUrlClick: PropTypes.func.isRequired,
+  onAddUrlClick: PropTypes.func.isRequired,
+  readOnlyBasis: PropTypes.bool,
+}
+JustificationEditor.defaultProps = {
+  readOnlyBasis: false,
 }
 
 export default JustificationEditor

@@ -1,190 +1,163 @@
-import { createAction as create2Action } from 'redux-actions';
-import {decircularizeTarget} from "./models";
+import { createAction as actionCreator } from 'redux-actions';
+import {decircularizeTarget, VotePolarity, VoteTargetType} from "./models";
+import reduce from 'lodash/reduce'
+import mapValues from 'lodash/mapValues'
+import assign from 'lodash/assign'
 
-export const FETCH_STATEMENTS = 'FETCH_STATEMENTS'
-export const FETCH_STATEMENTS_SUCCESS = 'FETCH_STATEMENTS_SUCCESS'
-export const FETCH_STATEMENTS_FAILURE = 'FETCH_STATEMENTS_FAILURE'
-export const fetchStatements = create2Action(FETCH_STATEMENTS)
+const actionTypeDelim = '/'
 
-export const FETCH_STATEMENT_JUSTIFICATIONS = 'FETCH_STATEMENT_JUSTIFICATIONS'
-export const FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS = 'FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS'
-export const FETCH_STATEMENT_JUSTIFICATIONS_FAILURE = 'FETCH_STATEMENT_JUSTIFICATIONS_FAILURE'
-export const fetchStatementJustifications = create2Action(FETCH_STATEMENT_JUSTIFICATIONS, statementId => ({statementId}))
+/** react-actions has a convention that its action creators .toString return the action type.
+ * .toString appears to happen automatically when an action creator is the key of an object, but in some
+ * cases we will need to call .toString manually.  This method will help us locate those places in the code
+ */
+export const str = ac => ac.toString()
 
-export const ACCEPT_JUSTIFICATION = 'ACCEPT_JUSTIFICATION'
-export const acceptJustification = create2Action(ACCEPT_JUSTIFICATION)
-export const REJECT_JUSTIFICATION = 'REJECT_JUSTIFICATION'
-export const rejectJustification = create2Action(REJECT_JUSTIFICATION)
+const identity = x => x
 
-export const CALL_API = 'CALL_API'
-export const CALL_API_SUCCESS = 'CALL_API_SUCCESS'
-export const CALL_API_FAILURE = 'CALL_API_FAILURE'
+/** Helper to easily allow us to pass an object with 'action groups' to redux-react's connect method.
+ * Action groups are what we call the objects below with react-actions action creators.  They are just
+ * a way to organize related action creators.  The convention with redux-react's connect method's mapDispatchToProps
+ * is to pass an object with keys equal to action creators.  redux-react will automatically turn the action creators
+ * into dispatched versions.  This helper accomplishes the same for an object the properties of which are action creator
+ * groups like those defined below.
+ */
+export const mapActionCreatorGroupToDispatchToProps = (actionCreatorGroups, otherActions) => dispatch => {
+  const dispatchProps = mapValues(actionCreatorGroups, (actionCreatorGroup) =>
+      mapValues(actionCreatorGroup, (actionCreator) =>
+          (...args) => dispatch(actionCreator.apply(null, args))
+      )
+  )
 
-export const LOGIN = 'LOGIN'
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
-export const LOGIN_FAILURE = 'LOGIN_FAILURE'
-export const login = create2Action(LOGIN)
-
-export const LOGIN_CREDENTIAL_CHANGE = 'LOGIN_CREDENTIAL_CHANGE'
-export const loginCredentialChange = create2Action(LOGIN_CREDENTIAL_CHANGE)
-
-export const LOGOUT = 'LOGOUT'
-export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
-export const LOGOUT_FAILURE = 'LOGOUT_FAILURE'
-export const logout = create2Action(LOGOUT)
-
-export const LOGIN_REDIRECT = 'LOGIN_REDIRECT'
-
-export const SHOW_NAV_DRAWER = 'SHOW_NAV_DRAWER'
-export const HIDE_NAV_DRAWER = 'HIDE_NAV_DRAWER'
-export const TOGGLE_NAV_DRAWER_VISIBILITY = 'TOGGLE_NAV_DRAWER_VISIBILITY'
-export const SET_NAV_DRAWER_VISIBILITY = 'SET_NAV_DRAWER_VISIBILITY'
-export const showNavDrawer = create2Action(SHOW_NAV_DRAWER)
-export const hideNavDrawer = create2Action(HIDE_NAV_DRAWER)
-export const toggleNavDrawerVisibility = create2Action(TOGGLE_NAV_DRAWER_VISIBILITY)
-export const setNavDrawerVisibility = create2Action(SET_NAV_DRAWER_VISIBILITY)
-
-export const ADD_TOAST = 'ADD_TOAST'
-export const DISMISS_TOAST = 'DISMISS_TOAST'
-export const addToast = create2Action(ADD_TOAST)
-export const dismissToast = create2Action(DISMISS_TOAST)
-
-
-export const VERIFY_JUSTIFICATION = 'VERIFY_JUSTIFICATION'
-export const VERIFY_JUSTIFICATION_SUCCESS = 'VERIFY_JUSTIFICATION_SUCCESS'
-export const VERIFY_JUSTIFICATION_FAILURE = 'VERIFY_JUSTIFICATION_FAILURE'
-export const verifyJustification = create2Action(VERIFY_JUSTIFICATION, target => ({target}))
-
-export const UN_VERIFY_JUSTIFICATION = 'UN_VERIFY_JUSTIFICATION'
-export const UN_VERIFY_JUSTIFICATION_SUCCESS = 'UN_VERIFY_JUSTIFICATION_SUCCESS'
-export const UN_VERIFY_JUSTIFICATION_FAILURE = 'UN_VERIFY_JUSTIFICATION_FAILURE'
-export const unVerifyJustification = create2Action(UN_VERIFY_JUSTIFICATION, target => ({target}))
-
-export const DISVERIFY_JUSTIFICATION = 'DISVERIFY_JUSTIFICATION'
-export const DISVERIFY_JUSTIFICATION_SUCCESS = 'DISVERIFY_JUSTIFICATION_SUCCESS'
-export const DISVERIFY_JUSTIFICATION_FAILURE = 'DISVERIFY_JUSTIFICATION_FAILURE'
-export const disverifyJustification = create2Action(DISVERIFY_JUSTIFICATION, target => ({target}))
-
-export const UN_DISVERIFY_JUSTIFICATION = 'UN_DISVERIFY_JUSTIFICATION'
-export const UN_DISVERIFY_JUSTIFICATION_SUCCESS = 'UN_DISVERIFY_JUSTIFICATION_SUCCESS'
-export const UN_DISVERIFY_JUSTIFICATION_FAILURE = 'UN_DISVERIFY_JUSTIFICATION_FAILURE'
-export const unDisverifyJustification = create2Action(UN_DISVERIFY_JUSTIFICATION, target => ({target}))
-
-export const EDIT_STATEMENT_PROPERTY_CHANGE = 'EDIT_STATEMENT_PROPERTY_CHANGE'
-export const editStatementPropertyChange = create2Action(EDIT_STATEMENT_PROPERTY_CHANGE, (editorId, properties) => ({editorId, properties}))
-export const CREATE_STATEMENT = 'CREATE_STATEMENT'
-export const CREATE_STATEMENT_SUCCESS = 'CREATE_STATEMENT_SUCCESS'
-export const CREATE_STATEMENT_FAILURE = 'CREATE_STATEMENT_FAILURE'
-export const createStatement = create2Action(CREATE_STATEMENT, (statement, onSuccess) => ({statement, onSuccess}))
-
-export const CREATE_STATEMENT_JUSTIFICATION = 'CREATE_STATEMENT_JUSTIFICATION'
-export const CREATE_STATEMENT_JUSTIFICATION_SUCCESS = 'CREATE_STATEMENT_JUSTIFICATION_SUCCESS'
-export const CREATE_STATEMENT_JUSTIFICATION_FAILURE = 'CREATE_STATEMENT_JUSTIFICATION_FAILURE'
-export const createStatementJustification = create2Action(CREATE_STATEMENT_JUSTIFICATION, (statement, justification) => ({statement, justification}))
-
-export const UPDATE_STATEMENT = 'UPDATE_STATEMENT'
-export const UPDATE_STATEMENT_SUCCESS = 'UPDATE_STATEMENT_SUCCESS'
-export const UPDATE_STATEMENT_FAILURE = 'UPDATE_STATEMENT_FAILURE'
-export const updateStatement = create2Action(UPDATE_STATEMENT, statement => ({statement}))
-
-export const DELETE_STATEMENT = 'DELETE_STATEMENT'
-export const DELETE_STATEMENT_SUCCESS = 'DELETE_STATEMENT_SUCCESS'
-export const DELETE_STATEMENT_FAILURE = 'DELETE_STATEMENT_FAILURE'
-export const deleteStatement = create2Action(DELETE_STATEMENT, statement => ({statement}))
-
-export const CREATE_JUSTIFICATION = 'CREATE_JUSTIFICATION'
-export const CREATE_JUSTIFICATION_SUCCESS = 'CREATE_JUSTIFICATION_SUCCESS'
-export const CREATE_JUSTIFICATION_FAILURE = 'CREATE_JUSTIFICATION_FAILURE'
-export const createJustification = create2Action(CREATE_JUSTIFICATION, justification => ({justification: decircularizeTarget(justification)}))
-
-export const UPDATE_CITATION_REFERENCE = 'UPDATE_CITATION_REFERENCE'
-export const updateCitationReference = create2Action(UPDATE_CITATION_REFERENCE, citationReference => ({citationReference}))
-
-export const SHOW_NEW_JUSTIFICATION_DIALOG = 'SHOW_NEW_JUSTIFICATION_DIALOG'
-export const HIDE_NEW_JUSTIFICATION_DIALOG = 'HIDE_NEW_JUSTIFICATION_DIALOG'
-export const showNewJustificationDialog = create2Action(SHOW_NEW_JUSTIFICATION_DIALOG, statementId => ({statementId}))
-export const hideNewJustificationDialog = create2Action(HIDE_NEW_JUSTIFICATION_DIALOG)
-
-export const EDIT_JUSTIFICATION_PROPERTY_CHANGE = 'EDIT_JUSTIFICATION_PROPERTY_CHANGE'
-export const editJustificationPropertyChange = create2Action(EDIT_JUSTIFICATION_PROPERTY_CHANGE, (justificationEditorId, properties) => ({
-  justificationEditorId,
-  properties,
-}))
-
-export const RESET_EDIT_JUSTIFICATION = 'RESET_EDIT_JUSTIFICATION'
-export const resetEditJustification = create2Action(RESET_EDIT_JUSTIFICATION)
-export const EDIT_JUSTIFICATION_ADD_URL = 'EDIT_JUSTIFICATION_ADD_URL'
-export const editJustificationAddUrl = create2Action(EDIT_JUSTIFICATION_ADD_URL, justificationEditorId => ({justificationEditorId}))
-export const EDIT_JUSTIFICATION_DELETE_URL = 'EDIT_JUSTIFICATION_DELETE_URL'
-export const editJustificationDeleteUrl = create2Action(EDIT_JUSTIFICATION_DELETE_URL, (justificationEditorId, url, index) => ({justificationEditorId, url, index}))
-
-export const DELETE_JUSTIFICATION = 'DELETE_JUSTIFICATION'
-export const DELETE_JUSTIFICATION_SUCCESS = 'DELETE_JUSTIFICATION_SUCCESS'
-export const DELETE_JUSTIFICATION_FAILURE = 'DELETE_JUSTIFICATION_FAILURE'
-export const deleteJustification = create2Action(DELETE_JUSTIFICATION, justification => ({justification}))
-
-export const ADD_NEW_COUNTER_JUSTIFICATION = 'ADD_NEW_COUNTER_JUSTIFICATION'
-export const NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE = 'NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE'
-export const CANCEL_NEW_COUNTER_JUSTIFICATION = 'CANCEL_NEW_COUNTER_JUSTIFICATION'
-export const addNewCounterJustification = create2Action(ADD_NEW_COUNTER_JUSTIFICATION, targetJustification => ({targetJustification}))
-export const newCounterJustificationPropertyChange =
-    create2Action(NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE, (justification, properties) => ({justification, properties}))
-export const cancelNewCounterJustification = create2Action(CANCEL_NEW_COUNTER_JUSTIFICATION, justification => ({justification}))
-
-export const MAIN_SEARCH_TEXT_CHANGE = 'MAIN_SEARCH_TEXT_CHANGE'
-export const DO_MAIN_SEARCH = 'DO_MAIN_SEARCH'
-export const mainSearchTextChange = create2Action(MAIN_SEARCH_TEXT_CHANGE)
-export const doMainSearch = create2Action(DO_MAIN_SEARCH, mainSearchText => ({mainSearchText}))
-
-export const FETCH_STATEMENTS_SEARCH = 'FETCH_STATEMENTS_SEARCH'
-export const FETCH_STATEMENTS_SEARCH_SUCCESS = 'FETCH_STATEMENTS_SEARCH_SUCCESS'
-export const FETCH_STATEMENTS_SEARCH_FAILURE = 'FETCH_STATEMENTS_SEARCH_FAILURE'
-export const fetchStatementsSearch = create2Action(FETCH_STATEMENTS_SEARCH, searchText => ({searchText}))
-
-export const INITIALIZE_MAIN_SEARCH = 'INITIALIZE_MAIN_SEARCH'
-export const initializeMainSearch = create2Action(INITIALIZE_MAIN_SEARCH, searchText => ({searchText}))
-
-export const FETCH_MAIN_SEARCH_AUTOCOMPLETE = 'FETCH_MAIN_SEARCH_AUTOCOMPLETE'
-export const FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS = 'FETCH_MAIN_SEARCH_AUTOCOMPLETE_SUCCESS'
-export const FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE = 'FETCH_MAIN_SEARCH_AUTOCOMPLETE_FAILURE'
-export const fetchMainSearchAutocomplete = create2Action(FETCH_MAIN_SEARCH_AUTOCOMPLETE, searchText => ({searchText}))
-
-export const CLEAR_MAIN_SEARCH_AUTOCOMPLETE = 'CLEAR_MAIN_SEARCH_AUTOCOMPLETE'
-export const clearMainSearchAutocomplete = create2Action(CLEAR_MAIN_SEARCH_AUTOCOMPLETE)
-
-export const VIEW_STATEMENT = 'VIEW_STATEMENT'
-export const viewStatement = create2Action(VIEW_STATEMENT, statement => ({statement}))
-
-export const FETCH_STATEMENT_SUGGESTIONS = 'FETCH_STATEMENT_SUGGESTIONS'
-export const FETCH_STATEMENT_SUGGESTIONS_SUCCESS = 'FETCH_STATEMENT_SUGGESTIONS_SUCCESS'
-export const FETCH_STATEMENT_SUGGESTIONS_FAILURE = 'FETCH_STATEMENT_SUGGESTIONS_FAILURE'
-export const fetchStatementSuggestions = create2Action(FETCH_STATEMENT_SUGGESTIONS, (text, suggestionsKey) => ({
-  text,
-  suggestionsKey,
-}))
-
-export const FETCH_STATEMENT = 'FETCH_STATEMENT'
-export const FETCH_STATEMENT_SUCCESS = 'FETCH_STATEMENT_SUCCESS'
-export const FETCH_STATEMENT_FAILURE = 'FETCH_STATEMENT_FAILURE'
-export const fetchStatement = create2Action(FETCH_STATEMENT, statementId => ({statementId}))
-
-export const FETCH_STATEMENT_FOR_EDIT = 'FETCH_STATEMENT_FOR_EDIT'
-export const FETCH_STATEMENT_FOR_EDIT_SUCCESS = 'FETCH_STATEMENT_FOR_EDIT_SUCCESS'
-export const FETCH_STATEMENT_FOR_EDIT_FAILURE = 'FETCH_STATEMENT_FOR_EDIT_FAILURE'
-export const fetchStatementForEdit = create2Action(FETCH_STATEMENT_FOR_EDIT, statementId => ({statementId}))
-
-export const DO_EDIT_STATEMENT = 'DO_EDIT_STATEMENT'
-export const doEditStatement = create2Action(DO_EDIT_STATEMENT, statementId => ({statementId}))
-
-export const SUCCESS = 'SUCCESS'
-export const FAILURE = 'FAILURE'
-export const API_RESOURCE_ACTIONS = {
-  [FETCH_STATEMENTS]: {
-    [SUCCESS]: FETCH_STATEMENTS_SUCCESS,
-    [FAILURE]: FETCH_STATEMENTS_FAILURE
-  },
-  [UPDATE_CITATION_REFERENCE]: {
-    [SUCCESS]: 'UPDATE_CITATION_REFERENCE_SUCCESS',
-    [FAILURE]: 'UPDATE_CITATION_REFERENCE_FAILURE'
+  if (otherActions) {
+    assign(dispatchProps, mapValues(otherActions, actionCreator => (...args) => dispatch(actionCreator.apply(null, args))))
   }
+
+  return dispatchProps
+}
+
+/** Create an action creator having a property `.response` with another action creator for corresponding API responses */
+const apiActionCreator = (...args) => {
+  const ac = actionCreator(...args)
+  const actionType = args[0]
+  ac.response = actionCreator(actionType + actionTypeDelim + 'RESPONSE', identity, (payload, meta) => meta)
+  return ac
+}
+
+export const app = {
+  /** If the query params indicate a main search, initialize the results */
+  initializeMainSearch: actionCreator('INITIALIZE_MAIN_SEARCH', searchText => ({searchText})),
+}
+
+export const api = {
+  callApi: apiActionCreator('CALL_API'),
+  fetchStatement: apiActionCreator('FETCH_STATEMENT', statementId => ({statementId})),
+  fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
+  fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
+  fetchCitationReference: apiActionCreator('FETCH_CITATION_REFERENCE', citationReferenceId => ({citationReferenceId})),
+  login: apiActionCreator('LOGIN', credentials => ({credentials})),
+  logout: apiActionCreator('LOGOUT'),
+  verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', target => ({
+    targetType: VoteTargetType.JUSTIFICATION,
+    targetId: target.id,
+    polarity: VotePolarity.POSITIVE,
+  })),
+  unVerifyJustification: apiActionCreator('UN_VERIFY_JUSTIFICATION', target => ({
+    targetType: VoteTargetType.JUSTIFICATION,
+    targetId: target.id,
+    polarity: VotePolarity.POSITIVE,
+  })),
+  disverifyJustification: apiActionCreator('DISVERIFY_JUSTIFICATION', target => ({
+    targetType: VoteTargetType.JUSTIFICATION,
+    targetId: target.id,
+    polarity: VotePolarity.NEGATIVE,
+  })),
+  unDisverifyJustification: apiActionCreator('UN_DISVERIFY_JUSTIFICATION', target => ({
+    targetType: VoteTargetType.JUSTIFICATION,
+    targetId: target.id,
+    polarity: VotePolarity.NEGATIVE,
+  })),
+  createStatement: apiActionCreator('CREATE_STATEMENT', statement => ({statement})),
+  createStatementJustification: apiActionCreator('CREATE_STATEMENT_JUSTIFICATION', (statement, justification) => ({statement, justification})),
+  updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),
+  deleteStatement: apiActionCreator('DELETE_STATEMENT', statement => ({statement})),
+  fetchStatementSuggestions: apiActionCreator('FETCH_STATEMENT_SUGGESTIONS', (text, suggestionsKey) => ({
+    text,
+    suggestionsKey,
+  })),
+  createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeTarget(justification)})),
+  updateCitationReference: apiActionCreator('UPDATE_CITATION_REFERENCE', citationReference => ({citationReference})),
+  deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', justification => ({justification})),
+  fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', searchText => ({searchText})),
+  fetchMainSearchAutocomplete: apiActionCreator('FETCH_MAIN_SEARCH_AUTOCOMPLETE', searchText => ({searchText})),
+}
+export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator) => {
+  result[actionCreator] = actionCreator
+  return result
+}, {})
+
+export const ui = {
+  showNavDrawer: actionCreator('SHOW_NAV_DRAWER'),
+  hideNavDrawer: actionCreator('HIDE_NAV_DRAWER'),
+  toggleNavDrawerVisibility: actionCreator('TOGGLE_NAV_DRAWER_VISIBILITY'),
+  setNavDrawerVisibility: actionCreator('SET_NAV_DRAWER_VISIBILITY'),
+  addToast: actionCreator('ADD_TOAST', text => ({text})),
+  dismissToast: actionCreator('DISMISS_TOAST'),
+
+  clearMainSearchAutocomplete: actionCreator('CLEAR_MAIN_SEARCH_AUTOCOMPLETE'),
+
+  showNewJustificationDialog: actionCreator('SHOW_NEW_JUSTIFICATION_DIALOG'),
+  hideNewJustificationDialog: actionCreator('HIDE_NEW_JUSTIFICATION_DIALOG'),
+
+  addNewCounterJustification: actionCreator('ADD_NEW_COUNTER_JUSTIFICATION', targetJustification => ({targetJustification})),
+  newCounterJustificationPropertyChange: actionCreator('NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE', (justification, properties) => ({justification, properties})),
+  cancelNewCounterJustification: actionCreator('CANCEL_NEW_COUNTER_JUSTIFICATION', justification => ({justification})),
+
+  mainSearchTextChange: actionCreator('MAIN_SEARCH_TEXT_CHANGE'),
+  loginCredentialChange: actionCreator('LOGIN_CREDENTIAL_CHANGE'),
+
+  setDoCreateJustification: actionCreator('SET_DO_CREATE_JUSTIFICATION', doCreateJustification => ({doCreateJustification})),
+}
+
+const commitEdit = actionCreator('EDITOR_COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
+commitEdit.result = actionCreator('EDITOR_COMMIT_EDIT' + actionTypeDelim + 'RESULT', (editorType, editorId, result) => ({editorType, editorId, result}))
+export const editors = {
+  init: actionCreator('EDITOR_INIT', (editorType, editorId, entityId) => ({editorType, editorId, entityId})),
+  beginEdit: actionCreator('EDITOR_BEGIN_EDIT', (editorType, editorId, entity) => ({editorType, editorId, entity})),
+  propertyChange: actionCreator('EDITOR_PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
+  commitEdit,
+  cancelEdit: actionCreator('EDITOR_CANCEL_EDIT', (editorType, editorId) => ({editorType, editorId})),
+
+  editStatementPropertyChange: actionCreator('EDIT_STATEMENT_PROPERTY_CHANGE', (editorType, editorId, properties) => ({
+    editorType,
+    editorId,
+    properties
+  })),
+  editJustificationPropertyChange: actionCreator('EDIT_JUSTIFICATION_PROPERTY_CHANGE', (editorType, editorId, properties) => ({
+    editorType,
+    editorId,
+    properties,
+  })),
+  resetEditJustification: actionCreator('RESET_EDIT_JUSTIFICATION'),
+
+  editJustificationAddUrl: actionCreator('EDIT_JUSTIFICATION_ADD_URL', (editorType, editorId) => ({editorId})),
+  editJustificationDeleteUrl: actionCreator('EDIT_JUSTIFICATION_DELETE_URL', (editorType, editorId, url, index) => ({
+    editorType,
+    editorId,
+    url,
+    index
+  })),
+}
+
+export const goto = {
+  login: actionCreator('GOTO/LOGIN', loginRedirectLocation => ({loginRedirectLocation})),
+  statement: actionCreator('GOTO/STATEMENT', statement => ({statement})),
+  mainSearch: actionCreator('GOTO/MAIN_SEARCH', mainSearchText => ({mainSearchText})),
+  createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION', (basisType, basisId) => ({basisType, basisId}))
+}
+
+export const flows = {
+  fetchAndBeginEditOfNewJustificationFromBasis: actionCreator('FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS',
+      (editorType, editorId, basisType, basisId) => ({editorType, editorId, basisType, basisId})),
+  createStatementThenView: actionCreator('CREATE_STATEMENT_THEN_VIEW', (...args) => ({args})),
+  createStatementJustificationThenView: actionCreator('CREATE_STATEMENT_JUSTIFICATION_THEN_VIEW', (...args) => ({args})),
 }

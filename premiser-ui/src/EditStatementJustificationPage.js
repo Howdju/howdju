@@ -5,63 +5,59 @@ import DocumentTitle from 'react-document-title'
 import Card from 'react-md/lib/Cards'
 import CardTitle from 'react-md/lib/Cards/CardTitle';
 import CardActions from 'react-md/lib/Cards/CardActions';
-import CardText from 'react-md/lib/Cards/CardText';
-import cn from 'classnames'
+import {goBack} from "react-router-redux";
 import Divider from 'react-md/lib/Dividers'
+import CardText from 'react-md/lib/Cards/CardText';
 import { Switch } from 'react-md/lib/SelectionControls'
-import isNil from "lodash/isNil";
+import cn from 'classnames'
+import get from 'lodash/get'
+import queryString from 'query-string'
+
 
 import {
-  createStatement,
-  createStatementJustification,
-  updateStatement,
-  editStatementPropertyChange,
-  editJustificationPropertyChange,
-  editJustificationAddUrl,
-  editJustificationDeleteUrl,
-  fetchStatementForEdit,
+  api,
+  editors,
+  flows,
+  mapActionCreatorGroupToDispatchToProps,
+  ui,
 } from './actions'
 import text, {
-  ADD_JUSTIFICATION_TO_CREATE_STATEMENT, CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
+  ADD_JUSTIFICATION_TO_CREATE_STATEMENT,
+  CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE, CREATE_JUSTIFICATION_TITLE,
   CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
   CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE,
-  EDIT_STATEMENT_SUBMIT_BUTTON_LABEL,
-  EDIT_STATEMENT_SUBMIT_BUTTON_TITLE, EDIT_STATEMENT_TITLE,
 } from "./texts";
 import { suggestionKeys } from './autocompleter'
-import JustificationEditor from './JustificationEditor'
-import {consolidateBasis} from "./models";
+import {consolidateBasis, makeNewJustification, makeNewStatement} from "./models";
 import {
-  editStatementJustificationPageStatementEditorId,
-  editStatementJustificationPageJustificationEditorId
+  editStatementJustificationPageEditorId,
 } from "./editorIds"
-import StatementEditor from "./StatementEditor";
-import {goBack} from "react-router-redux";
 import {logger} from "./util";
+import JustificationEditor from "./JustificationEditor";
+import StatementEditor from "./StatementEditor";
+import {EditorTypes} from "./reducers/editors";
 
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
   CREATE_STATEMENT: 'CREATE_STATEMENT',
-  /** Hide justification editor */
-  EDIT_STATEMENT: 'EDIT_STATEMENT',
-  /** Blank statement editor, pre-populated justification information (e.g. citation reference from bookmarklet) */
+  /** Blank statement editor, pre-populated justification information (e.g. citation reference from bookmarklet)
+   *
+   * Hide the citation switch.
+   */
   CREATE_JUSTIFICATION: 'CREATE_JUSTIFICATION',
 }
 
 const titleTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_TITLE,
-  [EditStatementJustificationPageMode.EDIT_STATEMENT]: EDIT_STATEMENT_TITLE,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
 }
 const submitButtonLabelTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
-  [EditStatementJustificationPageMode.EDIT_STATEMENT]: EDIT_STATEMENT_SUBMIT_BUTTON_LABEL,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 }
 const submitButtonTitleTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_TITLE,
-  [EditStatementJustificationPageMode.EDIT_STATEMENT]: EDIT_STATEMENT_SUBMIT_BUTTON_TITLE,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
 }
 
@@ -70,116 +66,77 @@ class EditStatementJustificationPage extends Component {
   constructor() {
     super()
 
-    this.state = {
-      doShowCreateJustificationSwitch: false,
-      doCreateJustification: false,
-    }
-
-    this.onStatementPropertyChange = this.onStatementPropertyChange.bind(this)
-
-    this.onDoCreateJustificationSwitchClick = this.onDoCreateJustificationSwitchClick.bind(this)
-
-    this.onJustificationPropertyChange = this.onJustificationPropertyChange.bind(this)
+    this.onPropertyChange = this.onPropertyChange.bind(this)
     this.addJustificationUrl = this.addJustificationUrl.bind(this)
     this.deleteJustificationUrl = this.deleteJustificationUrl.bind(this)
-
+    this.onDoCreateJustificationSwitchChange = this.onDoCreateJustificationSwitchChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.onCancel = this.onCancel.bind(this)
 
-    this.statementEditorId = editStatementJustificationPageStatementEditorId
-    this.justificationEditorId = editStatementJustificationPageJustificationEditorId
+    this.editorId = editStatementJustificationPageEditorId
+    this.editorType = EditorTypes.STATEMENT_JUSTIFICATION
   }
 
   componentWillMount() {
     switch (this.props.mode) {
-      case EditStatementJustificationPageMode.EDIT_STATEMENT:
-        const statementId = this.props.match.params.statementId
-        this.props.fetchStatementForEdit(statementId)
+      case EditStatementJustificationPageMode.CREATE_STATEMENT:
+        this.props.editors.beginEdit(this.editorType, this.editorId, {
+          statement: makeNewStatement(),
+          justification: makeNewJustification(),
+        })
+        break
+      case EditStatementJustificationPageMode.CREATE_JUSTIFICATION:
+        const {
+          basisType,
+          basisId,
+        } = this.props.queryParams
+        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasis(this.editorType, this.editorId, basisType, basisId)
         break
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.logPropProblems(nextProps)
+  onPropertyChange(properties) {
+    this.props.editors.propertyChange(this.editorType, this.editorId, properties)
   }
 
-  onStatementPropertyChange(change) {
-    this.props.editStatementPropertyChange(this.statementEditorId, change)
+  addJustificationUrl() {
+    this.props.editJustificationAddUrl(this.editorType, this.editorId)
+  }
+
+  deleteJustificationUrl(url, index) {
+    this.props.editJustificationDeleteUrl(this.editorType, this.editorId, url, index)
+  }
+
+  onDoCreateJustificationSwitchChange(checked) {
+    this.props.ui.setDoCreateJustification(checked)
   }
 
   onSubmit(event) {
     event.preventDefault()
 
     switch (this.props.mode) {
-      case EditStatementJustificationPageMode.EDIT_STATEMENT: {
-        this.props.updateStatement(this.props.statement)
-        break
-      }
       case EditStatementJustificationPageMode.CREATE_STATEMENT: {
-        if (this.state.doCreateJustification) {
+        if (this.props.doCreateJustification) {
           const justification = consolidateBasis(this.props.justification)
-          // TODO anti-pattern of passing callback to action?
-          this.props.createStatementJustification(this.props.statement, justification, ({statement, justification}) => this.props.viewStatement(statement))
+          this.props.flows.createStatementJustificationThenView(this.props.statement, justification)
         } else {
-          // TODO anti-pattern of passing callback to action?
-          this.props.createStatement(this.props.statement, this.props.viewStatement)
+          this.props.flows.createStatementThenView(this.props.statement)
         }
         break
       }
       case EditStatementJustificationPageMode.CREATE_JUSTIFICATION: {
         const justification = consolidateBasis(this.props.justification)
-        // TODO anti-pattern of passing callback to action?
-        this.props.createStatementJustification(this.props.statement, justification, ({statement, justification}) => this.props.viewStatement(statement))
+        this.props.flows.createStatementJustificationThenView(this.props.statement, justification)
         break
       }
       default: {
-        logger.warn("onSubmit has unhandled EditStatementJustificationPageMode", this.props.mode)
+        logger.warn("onSubmit has unhandled mode", this.props.mode)
       }
     }
-  }
-
-  onJustificationPropertyChange(properties) {
-    this.props.editJustificationPropertyChange(this.justificationEditorId, properties)
-  }
-
-  addJustificationUrl() {
-    this.props.editJustificationAddUrl(this.justificationEditorId)
-  }
-
-  deleteJustificationUrl(url, index) {
-    this.props.editJustificationDeleteUrl(this.justificationEditorId, url, index)
-  }
-
-  onDoCreateJustificationSwitchClick(checked) {
-    this.setState({doCreateJustification: checked})
   }
 
   onCancel() {
     this.props.goBack()
-  }
-
-  logPropProblems(props) {
-    const {
-      mode,
-      statement,
-    } = props
-    switch (mode) {
-      case EditStatementJustificationPageMode.CREATE_STATEMENT: {
-        if (statement && !isNil(statement.id)) {
-          logger.warn("Creating statement that has ID")
-        }
-        break
-      }
-      case EditStatementJustificationPageMode.EDIT_STATEMENT: {
-        if (statement && isNil(statement.id)) {
-          logger.warn("Editing statement that has no ID")
-        }
-        if (!props.match.params.statementId) {
-          logger.warn("Editing statement but received no statement ID param")
-        }
-        break
-      }
-    }
   }
 
   render() {
@@ -188,19 +145,16 @@ class EditStatementJustificationPage extends Component {
       statement,
       justification,
       inProgress,
-      errorMessage,
-    } = this.props
-    const {
       doCreateJustification,
-      isExpanded,
-    } = this.state
+    } = this.props
 
-    const doHideJustificationEditor = mode === EditStatementJustificationPageMode.EDIT_STATEMENT
-    const doHideJustificationEditorSwitch = mode !== EditStatementJustificationPageMode.CREATE_STATEMENT
+    const errorMessage = ''
 
     const title = text(titleTextKeyByMode[mode])
     const submitButtonLabel = text(submitButtonLabelTextKeyByMode[mode])
     const submitButtonTitle = text(submitButtonTitleTextKeyByMode[mode])
+
+    const isCreateJustification = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
 
     return (
         <DocumentTitle title={`Howdju - ${title}`}>
@@ -208,10 +162,11 @@ class EditStatementJustificationPage extends Component {
             <div id="addStatementPage" className="md-grid">
               <div className="md-cell md-cell--12">
 
-                <Card expanded={isExpanded} onExpanderClick={this.onExpanderClick}>
+                <Card>
                   <CardTitle
                       title={title}
                   />
+
                   <CardText className={cn({
                     errorMessage: true,
                     hidden: !errorMessage
@@ -221,29 +176,32 @@ class EditStatementJustificationPage extends Component {
                   <CardText>
                     <StatementEditor statement={statement}
                                      id="statement"
-                                     suggestionsKey={suggestionKeys.createStatementPage}
-                                     onPropertyChange={this.onStatementPropertyChange}
+                                     name="statement"
+                                     suggestionsKey={suggestionKeys.createStatementPageStatement}
+                                     onPropertyChange={this.onPropertyChange}
                     />
                   </CardText>
 
-                  <Divider className={cn({hidden: doHideJustificationEditor})} />
+                  <Divider className={cn({hidden: isCreateJustification})} />
 
                   <Switch id="doCreateJustificationSwitch"
                           name="doCreateJustification"
                           label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
-                          className={cn({hidden: doHideJustificationEditorSwitch})}
+                          className={cn({hidden: isCreateJustification})}
                           checked={doCreateJustification}
-                          onChange={this.onDoCreateJustificationSwitchClick} />
+                          onChange={this.onDoCreateJustificationSwitchChange} />
 
-                  <CardText className={cn({hidden: doHideJustificationEditor || !doCreateJustification})}>
+                  <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
                     <JustificationEditor justification={justification}
-                                         onPropertyChange={this.onJustificationPropertyChange}
+                                         name="justification"
+                                         readOnlyBasis={isCreateJustification}
+                                         onPropertyChange={this.onPropertyChange}
                                          onAddUrlClick={this.addJustificationUrl}
                                          onDeleteUrlClick={this.deleteJustificationUrl}
                     />
                   </CardText>
 
-                  <Divider className={cn({hidden: doHideJustificationEditor})} />
+                  <Divider />
 
                   <CardActions>
                     <Button raised
@@ -270,14 +228,31 @@ class EditStatementJustificationPage extends Component {
   }
 }
 
-export default connect(state => state.ui.editStatementJustificationPage, {
-  createStatement,
-  createStatementJustification,
-  updateStatement,
-  fetchStatementForEdit,
-  editStatementPropertyChange,
-  editJustificationPropertyChange,
-  editJustificationAddUrl,
-  editJustificationDeleteUrl,
+const mapStateToProps = (state, ownProps) => {
+  const editorState = get(state.editors, [EditorTypes.STATEMENT_JUSTIFICATION, editStatementJustificationPageEditorId], {})
+  const errors = editorState.errors
+  const {
+    statement,
+    justification,
+  } = get(editorState, 'editEntity', {
+    statement: makeNewStatement(),
+    justification: makeNewJustification(),
+  })
+  const queryParams = queryString.parse(ownProps.location.search)
+  return {
+    ...state.ui.editStatementJustificationPage,
+    statement,
+    justification,
+    errors,
+    queryParams,
+  }
+}
+
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api,
+  editors,
+  ui,
+  flows,
+}, {
   goBack,
-})(EditStatementJustificationPage)
+}))(EditStatementJustificationPage)

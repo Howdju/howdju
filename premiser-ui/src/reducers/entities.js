@@ -13,27 +13,16 @@ import filter from 'lodash/filter'
 import union from 'lodash/union'
 import isNumber from 'lodash/isNumber'
 import toNumber from 'lodash/toNumber'
+import {combineActions, handleActions} from "redux-actions";
+
 import {
   isCounter,
   JustificationTargetType,
   VotePolarity,
   VoteTargetType
 } from '../models'
-
-import {
-  FETCH_STATEMENTS_SUCCESS,
-  FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS,
-  FETCH_STATEMENT_JUSTIFICATIONS_FAILURE,
-  VERIFY_JUSTIFICATION, VERIFY_JUSTIFICATION_SUCCESS, VERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION_FAILURE,
-  DISVERIFY_JUSTIFICATION_FAILURE, UN_DISVERIFY_JUSTIFICATION_FAILURE, UN_VERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION,
-  UN_DISVERIFY_JUSTIFICATION, DISVERIFY_JUSTIFICATION_SUCCESS, DELETE_STATEMENT_SUCCESS,
-  DELETE_JUSTIFICATION_SUCCESS,
-  FETCH_STATEMENT_SUGGESTIONS_SUCCESS,
-  CREATE_JUSTIFICATION_SUCCESS, FETCH_STATEMENT_SUCCESS,
-  UPDATE_STATEMENT_SUCCESS, CREATE_STATEMENT_JUSTIFICATION_SUCCESS,
-  API_RESOURCE_ACTIONS,
-  UPDATE_CITATION_REFERENCE, SUCCESS, FAILURE, CREATE_STATEMENT_SUCCESS,
-} from '../actions'
+import {api, str} from '../actions'
+import * as httpStatuses from "../httpStatuses";
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {
@@ -93,59 +82,63 @@ export const indexRootJustificationsByRootStatementId = justificationsById => {
   return rootJustificationsByRootStatementId
 }
 
-export default (state = {
-  statements: {},
-  justifications: {},
-  justificationsByRootStatementId: {},
-  citationReferences: {},
-  votes: {}
-}, action) => {
-
-  switch (action.type) {
-    case FETCH_STATEMENTS_SUCCESS:
-      return {...state, statements: merge(state.statements, action.payload.entities.statements)}
-
-    case FETCH_STATEMENT_SUCCESS:
-      return {...state, statements: merge(state.statements, action.payload.entities.statements)}
-
-    case FETCH_STATEMENT_JUSTIFICATIONS_SUCCESS:
+export default handleActions({
+  [combineActions(
+      api.fetchStatement.response,
+      api.fetchStatements.response,
+  )]: {
+    next: (state, action) => ({...state, statements: {...state.statements, ...action.payload.entities.statements}})
+  },
+  [api.fetchStatementJustifications.response]: {
+    next: (state, action) => {
       const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
-      return {
-        ...state,
-        statements: merge({}, state.statements, action.payload.entities.statements),
-        justifications: merge({}, state.justifications, action.payload.entities.justifications),
-        votes: merge({}, state.votes, action.payload.entities.votes),
-        justificationsByRootStatementId: mergeWith({}, state.justificationsByRootStatementId, justificationsByRootStatementId, unionArraysDistinctIdsCustomizer),
-        citationReferences: merge({}, state.citationReferences, action.payload.entities.citationReferences),
-      }
-
-    case CREATE_STATEMENT_SUCCESS:
-    case CREATE_STATEMENT_JUSTIFICATION_SUCCESS: {
       return {
         ...state,
         statements: {...state.statements, ...action.payload.entities.statements},
         justifications: {...state.justifications, ...action.payload.entities.justifications},
+        votes: {...state.votes, ...action.payload.entities.votes},
+        justificationsByRootStatementId: mergeWith({}, state.justificationsByRootStatementId, justificationsByRootStatementId, unionArraysDistinctIdsCustomizer),
+        citationReferences: {...state.citationReferences, ...action.payload.entities.citationReferences},
       }
+    },
+    throw: (state, action) => {
+      // If a statement is not found (another user deleted it), then remove it.
+      if (action.status === httpStatuses.NOT_FOUND) {
+        return {
+          ...state,
+          statements: pickBy(state.statements, (s, id) => +id !== action.meta.statementId)
+        }
+      }
+      return state
     }
-    case UPDATE_STATEMENT_SUCCESS: {
-      return {
-        ...state,
-        statements: {...state.statements, ...action.payload.entities.statements}
-      }
-    }
-    case DELETE_STATEMENT_SUCCESS: {
-      return {
-        ...state,
-        statements: pickBy(state.statements, (s, id) => +id !== action.meta.deletedEntity.id )
-      }
-    }
-    case FETCH_STATEMENT_JUSTIFICATIONS_FAILURE:
-      return {
-        ...state,
-        statements: pickBy(state.statements, (s, id) => +id !== action.meta.statementId)
-      }
-
-    case CREATE_JUSTIFICATION_SUCCESS: {
+  },
+  [api.fetchCitationReference]: {
+    next: (state, action) => ({...state, citationReferences: {...state.citationReferences, ...action.payload.entities.citationReferences}})
+  },
+  [combineActions(
+      api.createStatement.response,
+      api.createStatementJustification.response
+  )]: {
+    next: (state, action) => ({
+      ...state,
+      statements: {...state.statements, ...action.payload.entities.statements},
+      justifications: {...state.justifications, ...action.payload.entities.justifications},
+    })
+  },
+  [api.updateStatement.response]: {
+    next: (state, action) => ({
+      ...state,
+      statements: {...state.statements, ...action.payload.entities.statements}
+    })
+  },
+  [api.deleteStatement.response]: {
+    next: (state, action) => ({
+      ...state,
+      statements: pickBy(state.statements, (s, id) => +id !== action.meta.requestPayload.statement.id )
+    })
+  },
+  [api.createJustification.response]: {
+    next: (state, action) => {
       const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
 
       // if counter, add to counter justifications
@@ -168,15 +161,11 @@ export default (state = {
           {justificationsByRootStatementId},
           unionArraysDistinctIdsCustomizer,
       )
-      // return {
-      //   ...state,
-      //   statements: merge({}, state.statements, action.payload.entities.statements),
-      //   justifications: merge({}, state.justifications, action.payload.entities.justifications),
-      //   justificationsByRootStatementId: mergeWith({}, state.justificationsByRootStatementId, justificationsByRootStatementId, mergeArraysCustomizer)
-      // }
     }
-    case DELETE_JUSTIFICATION_SUCCESS: {
-      const deletedJustification = action.meta.deletedEntity
+  },
+  [api.deleteJustification.response]: {
+    next: (state, action) => {
+      const deletedJustification = action.meta.requestPayload.justification
       const justificationsByRootStatementId = cloneDeep(state.justificationsByRootStatementId)
       justificationsByRootStatementId[deletedJustification.rootStatementId] =
           filter(justificationsByRootStatementId[deletedJustification.rootStatementId], id => id !== deletedJustification.id)
@@ -198,54 +187,69 @@ export default (state = {
         justificationsByRootStatementId
       }
     }
-
-    case API_RESOURCE_ACTIONS[UPDATE_CITATION_REFERENCE][SUCCESS]: {
-      return {
-        ...state,
-        citationReferences: {
-          ...state.citationReferences,
-          ...action.payload.entities.citationReferences
-        }
+  },
+  [api.updateCitationReference.response]: {
+    next: (state, action) => ({
+      ...state,
+      citationReferences: {
+        ...state.citationReferences,
+        ...action.payload.entities.citationReferences
       }
+    })
+  },
+  [combineActions(
+      api.verifyJustification,
+      api.disverifyJustification
+  )]: (state, action) => {
+    const {
+      targetId,
+      targetType,
+      polarity
+    } = action.payload
+    const currJustification = state.justifications[targetId]
+    const justification = merge({}, currJustification, {vote: {targetType, targetId, polarity}})
+    return {
+      ...state,
+      justifications: {...state.justifications, [justification.id]: justification},
     }
-
-    case VERIFY_JUSTIFICATION:
-    case DISVERIFY_JUSTIFICATION: {
-      const currJustification = state.justifications[action.payload.target.id]
-      const targetType = VoteTargetType.JUSTIFICATION
-      const targetId = currJustification.id
-      const polarity = action.type === VERIFY_JUSTIFICATION ? VotePolarity.POSITIVE : VotePolarity.NEGATIVE
-      const justification = merge({}, currJustification, {vote: {targetType, targetId, polarity}})
-      return {
-        ...state,
-        justifications: merge({}, state.justifications, {[justification.id]: justification}),
-      }
+  },
+  [combineActions(
+      api.unVerifyJustification,
+      api.unDisverifyJustification
+  )]: (state, action) => {
+    const {
+      targetId,
+    } = action.payload
+    const currJustification = state.justifications[targetId]
+    const justification = merge({}, currJustification, {vote: null})
+    return {
+      ...state,
+      justifications: {...state.justifications, [justification.id]: justification},
     }
-    case UN_VERIFY_JUSTIFICATION:
-    case UN_DISVERIFY_JUSTIFICATION: {
-      const currJustification = state.justifications[action.payload.target.id]
-      const justification = merge({}, currJustification, {vote: null})
-      return {
-        ...state,
-        justifications: merge({}, state.justifications, {[justification.id]: justification}),
-      }
-    }
-    case VERIFY_JUSTIFICATION_SUCCESS:
-    case DISVERIFY_JUSTIFICATION_SUCCESS: {
-      const currJustification = state.justifications[action.meta.originalTarget.id]
+  },
+  [combineActions(
+      api.verifyJustification.response,
+      api.disverifyJustification.response
+  )]: {
+    next: (state, action) => {
       const vote = action.payload.entities.votes[action.payload.result]
-      const justification = merge({}, currJustification, {vote})
+      const currJustification = state.justifications[vote.targetId]
+      const justification = {...currJustification, vote}
       return {
         ...state,
-        justifications: merge({}, state.justifications, {[justification.id]: justification}),
-        votes: merge({}, state.votes, action.payload.entities.votes),
+        justifications: {...state.justifications, [justification.id]: justification},
+        votes: {...state.votes, ...action.payload.entities.votes},
       }
     }
-    case VERIFY_JUSTIFICATION_FAILURE:
-    case UN_VERIFY_JUSTIFICATION_FAILURE:
-    case DISVERIFY_JUSTIFICATION_FAILURE:
-    case UN_DISVERIFY_JUSTIFICATION_FAILURE: {
-      const prevJustification = action.meta.originalTarget
+  },
+  [combineActions(
+      api.verifyJustification.response,
+      api.unVerifyJustification.response,
+      api.disverifyJustification.response,
+      api.unDisverifyJustification.response
+  )]: {
+    throw: (state, action) => {
+      const prevJustification = action.meta.requestPayload.justification
       const currJustification = state.justifications[prevJustification.id]
       const justification = merge({}, currJustification, {vote: prevJustification.vote})
       return {
@@ -253,16 +257,20 @@ export default (state = {
         justifications: merge({}, state.justifications, {[justification.id]: justification}),
       }
     }
-
-    case FETCH_STATEMENT_SUGGESTIONS_SUCCESS:
-      return {
-        ...state,
-        statements: {
-          ...state.statements,
-          ...action.payload.entities.statements,
-        }
+  },
+  [api.fetchStatementSuggestions.response]: {
+    next: (state, action) => ({
+      ...state,
+      statements: {
+        ...state.statements,
+        ...action.payload.entities.statements,
       }
+    })
   }
-
-  return state
-}
+}, {
+  statements: {},
+  justifications: {},
+  justificationsByRootStatementId: {},
+  citationReferences: {},
+  votes: {}
+})

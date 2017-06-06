@@ -1,36 +1,50 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import DocumentTitle from 'react-document-title'
-import clone from 'lodash/clone'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
 import Card from 'react-md/lib/Cards'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
-import merge from 'lodash/merge'
 import classNames from 'classnames'
+import get from 'lodash/get'
 
+import {
+  api,
+  editors,
+  mapActionCreatorGroupToDispatchToProps,
+  ui,
+} from './actions'
+import {loginPageEditorId} from './editorIds'
+import {EditorTypes} from "./reducers/editors";
 
-import {login, loginCredentialChange} from './actions'
 import './LoginPage.scss'
+import {makeNewCredentials} from "./models";
 
 class LoginPage extends Component {
 
   constructor() {
     super()
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+
+    this.editorId = loginPageEditorId
+
+    this.onChange = this.onChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
-  handleInputChange(value, event) {
+  componentWillMount() {
+    this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, this.editorId, makeNewCredentials())
+  }
+
+  onChange(value, event) {
     const target = event.target;
     const name = target.name
-    this.props.loginCredentialChange({[name]: value})
+    this.props.editors.propertyChange(EditorTypes.LOGIN_CREDENTIALS, this.editorId, {[name]: value})
   }
 
-  handleSubmit(event) {
+  onSubmit(event) {
     event.preventDefault()
-    this.props.login({credentials: this.props.credentials})
+    this.props.api.login(this.props.credentials)
   }
 
   render () {
@@ -38,8 +52,13 @@ class LoginPage extends Component {
       credentials,
       isLoggingIn,
       isLoginRedirect,
-      errorMessage,
     } = this.props
+
+    // TODO get from editor state
+    const errorMessage = ''
+
+    const subtitle = isLoginRedirect && "Please login to continue"
+
     return (
         <DocumentTitle title={'Login - Howdju'}>
           <div id="loginPage">
@@ -48,7 +67,7 @@ class LoginPage extends Component {
 
                 <Card>
                   <CardTitle title="Login"
-                             subtitle={isLoginRedirect && "Please login to continue"}
+                             subtitle={subtitle}
                   />
                   <CardText className={classNames({
                       'md-cell': true,
@@ -60,24 +79,24 @@ class LoginPage extends Component {
                     {errorMessage}
                   </CardText>
                   <CardText>
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={this.onSubmit}>
                       <TextField
-                          id="loginEmail"
+                          id="email"
                           type="email"
                           name="email"
                           label="Email"
                           value={credentials.email}
                           required
-                          onChange={this.handleInputChange}
+                          onChange={this.onChange}
                       />
                       <TextField
-                          id="loginPassword"
+                          id="password"
                           type="password"
                           name="password"
                           label="Password"
                           value={credentials.password}
                           required
-                          onChange={this.handleInputChange}
+                          onChange={this.onChange}
                       />
 
                       <Button raised primary type="submit" label="Login" disabled={isLoggingIn} />
@@ -94,11 +113,14 @@ class LoginPage extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return merge(clone(state.ui.loginPage), {isLoginRedirect: !!state.app.loginRedirectLocation})
-}
+const mapStateToProps = state => ({
+  ...state.ui.loginPage,
+  credentials: get(state, ['editors', EditorTypes.LOGIN_CREDENTIALS, loginPageEditorId, 'editEntity'], makeNewCredentials()),
+  isLoginRedirect: !!state.app.loginRedirectLocation,
+})
 
-export default connect(mapStateToProps, {
-  login,
-  loginCredentialChange,
-})(LoginPage)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api,
+  ui,
+  editors,
+}))(LoginPage)

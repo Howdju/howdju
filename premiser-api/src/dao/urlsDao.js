@@ -11,6 +11,11 @@ const {logger} = require('../logger')
 
 class UrlsDao {
 
+  readUrlsForCitationReferenceId(citationReferenceId) {
+    return query('select u.* from urls u join citation_reference_urls cru using (url_id) where citation_reference_id = $1', [citationReferenceId])
+        .then( ({rows}) => map(rows, toUrl))
+  }
+
   update(citationReferenceId, urls) {
     // TODO change to value semantics, where we don't update a URL by ID, but instead just make new ones any time the URL is different
     const {

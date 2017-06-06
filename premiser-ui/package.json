@@ -65,6 +65,7 @@
     "lodash": "^4.17.4",
     "normalizr": "^3.2.2",
     "prop-types": "^15.5.10",
+    "query-string": "^4.3.4",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.5.2",
     "react-addons-transition-group": "^15.5.2",

@@ -1,5 +1,8 @@
 const Promise = require('bluebird')
 const merge = require('lodash/merge')
+const assign = require('lodash/assign')
+const isEqual = require('lodash/isEqual')
+const httpMethods = require('./httpMethods')
 
 const {
   ENTITY_CONFLICT_RESPONSE_CODE,
@@ -15,7 +18,8 @@ const {
 } = require("./errors")
 const {
   statements,
-  statementJustifications,
+  readStatement,
+  readStatementJustifications,
   login,
   logout,
   createUser,
@@ -26,6 +30,7 @@ const {
   deleteStatement,
   createJustification,
   deleteJustification,
+  readCitationReference,
   updateCitationReference,
 } = require('./service')
 const {
@@ -81,25 +86,19 @@ const userActionsConflict = ({callback}) => callback({
   }
 })
 
-const GET = 'GET'
-const POST = 'POST'
-const PUT = 'PUT'
-const DELETE = 'DELETE'
-const OPTIONS = 'OPTIONS'
-
 const routes = [
   {
-    method: OPTIONS,
+    method: httpMethods.OPTIONS,
     handler: ({callback}) => {
       const headers = {
         'Access-Control-Allow-Headers': 'Content-Type'
       }
-      return ok({headers, callback})
+      return Promise.resolve(ok({headers, callback}))
     }
   },
   {
     path: 'statements',
-    method: GET,
+    method: httpMethods.GET,
     handler: ({callback}) => statements()
         .then(statements => {
           logger.debug(`Returning ${statements.length} statements`)
@@ -109,7 +108,7 @@ const routes = [
   {
     id: 'searchStatements',
     path: 'search-statements',
-    method: GET,
+    method: httpMethods.GET,
     handler: ({callback, request: { queryStringParameters: { searchText }}}) => searchStatements(searchText)
         .then(rankedStatements => {
           logger.debug(`Returning ${rankedStatements.length} statements from search`)
@@ -119,7 +118,7 @@ const routes = [
   {
     id: 'createStatement',
     path: 'statements',
-    method: POST,
+    method: httpMethods.POST,
     handler: ({
                 callback,
                 request: {
@@ -144,7 +143,7 @@ const routes = [
   {
     id: 'updateStatement',
     path: new RegExp('^statements/([^/]+)$'),
-    method: PUT,
+    method: httpMethods.PUT,
     handler: ({
                 callback,
                 request: {
@@ -155,18 +154,35 @@ const routes = [
         .then( (statement) => ok({callback, body: {statement}}))
   },
   {
-    id: 'getStatement',
+    id: 'readStatement',
     path: new RegExp('^statements/([^/]+)$'),
-    method: GET,
+    method: httpMethods.GET,
+    queryStringParameters: {},
     handler: ({
                 callback,
                 request: {
                   pathParameters: [statementId],
                   authToken,
-                  // TODO look at justifications query param
+                }
+              }) => readStatement({statementId, authToken})
+        .then( ({statement}) => ok({callback, body: {statement}}))
+  },
+  {
+    id: 'readStatementJustifications',
+    path: new RegExp('^statements/([^/]+)$'),
+    method: httpMethods.GET,
+    queryStringParameters: {
+      include: 'justifications'
+    },
+    handler: ({
+                callback,
+                request: {
+                  pathParameters: [statementId],
+                  authToken,
+                  // TODO look at include=justifications query param
                   queryStringParameters
                 }
-              }) => statementJustifications({statementId, authToken})
+              }) => readStatementJustifications({statementId, authToken})
         .then(({statement, justifications}) => {
           if (!statement) {
             return notFound({callback})
@@ -179,7 +195,7 @@ const routes = [
   {
     id: 'deleteStatement',
     path: new RegExp('^statements/([^/]+)$'),
-    method: DELETE,
+    method: httpMethods.DELETE,
     handler: ({
                 callback,
                 request: {
@@ -203,7 +219,7 @@ const routes = [
   {
     id: 'createJustification',
     path: 'justifications',
-    method: POST,
+    method: httpMethods.POST,
     handler: ({
                 callback,
                 request: {
@@ -228,9 +244,22 @@ const routes = [
         })
   },
   {
+    id: 'readCitationReference',
+    path: new RegExp('^citation-references/([^/]+)$'),
+    method: httpMethods.GET,
+    handler: ({
+      callback,
+      request: {
+        authToken,
+        pathParameters,
+      }
+    }) => readCitationReference({authToken, citationReferenceId: pathParameters[0]})
+        .then(citationReference => ok({callback, body: {citationReference}}))
+  },
+  {
     id: 'updateCitationReference',
     path: new RegExp('^citation-references/([^/]+)$'),
-    method: PUT,
+    method: httpMethods.PUT,
     handler: ({
         callback,
         request: {
@@ -250,7 +279,7 @@ const routes = [
   {
     id: 'deleteJustification',
     path: new RegExp('^justifications/([^/]+)$'),
-    method: DELETE,
+    method: httpMethods.DELETE,
     handler: ({
                 callback,
                 request: {
@@ -277,7 +306,7 @@ const routes = [
   },
   {
     path: 'login',
-    method: POST,
+    method: httpMethods.POST,
     handler: ({callback, request: {body}}) => login(body)
         .then(({message, isInvalid, isNotFound, isNotAuthorized, auth}) => {
           if (isInvalid) {
@@ -295,13 +324,13 @@ const routes = [
   },
   {
     path: 'logout',
-    method: POST,
+    method: httpMethods.POST,
     handler: ({callback, request: {authToken}}) => logout({authToken})
         .then( () => ok({callback}) )
   },
   {
     path: new RegExp('^votes$'),
-    method: POST,
+    method: httpMethods.POST,
     handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
         vote({authToken, targetType, targetId, polarity})
             .then( ({isUnauthenticated, isAlreadyDone, vote}) => {
@@ -315,7 +344,7 @@ const routes = [
   },
   {
     path: new RegExp('^votes$'),
-    method: DELETE,
+    method: httpMethods.DELETE,
     handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken, method, path}}) =>
         // TODO base this on the vote_id instead?  Ensure the vote_id matches up with the other values passed?
         unvote({authToken, targetType, targetId, polarity})
@@ -334,7 +363,7 @@ const routes = [
   },
   {
     path: 'users',
-    method: POST,
+    method: httpMethods.POST,
     handler: ({callback, request: {body: {credentials: {email, password}, authToken}}}) => createUser(body)
         .then( ({message, notAuthorized, user}) => {
           if (notAuthorized) {
@@ -348,46 +377,43 @@ const routes = [
 ]
 
 function selectRoute({path, method, queryStringParameters}) {
-  let match;
+
   for (let route of routes) {
-    if (!route.path && route.method === method) {
-      return Promise.resolve({route})
-    }
-    if (typeof route.path === 'string' &&
-        route.path === path &&
-        route.method === method
-    ) {
-      return Promise.resolve({route})
-    }
-    if (route.path instanceof RegExp &&
-        (match = route.path.exec(path)) &&
-        (!route.method || route.method === method)
-    ) {
-      // First item is the whole match
-      const pathParameters = match.slice(1)
-      return Promise.resolve({route, pathParameters})
-    }
+    let match
+
+    if (route.method && route.method !== method) continue
+    if (typeof route.path === 'string' && route.path !== path) continue
+    if (route.path instanceof RegExp && !(match = route.path.exec(path))) continue
+    if (route.queryStringParameters && !isEqual(route.queryStringParameters, queryStringParameters)) continue
+
+    // First item is the whole match, rest are the group matches
+    const pathParameters = match ? match.slice(1) : undefined
+    return Promise.resolve({route, pathParameters})
   }
 
-  return Promise.resolve({route: null})
+  return Promise.reject()
 }
 
 const routeEvent = ({callback, request}) =>
-  selectRoute(request)
-      .then( ({route, pathParameters}) => {
-        if (!route) {
-          logger.debug(`No route for ${request.method} ${request.path}`)
-          return notFound({callback})
-        }
-        return route.handler({callback, request: merge({}, request, {pathParameters})})
-            .catch(NotFoundError, e => notFound({callback}))
-            .catch(AuthenticationError, e => unauthenticated({callback}))
-            .catch(AuthorizationError, e => unauthorized({callback}))
-            .catch(EntityConflictError, e => entityConflict({callback, conflicts: e.conflictCodes}))
-            .catch(UserActionsConflictError, e => userActionsConflict({callback}))
+  selectRoute(request).then(
+    ({route, pathParameters}) => route.handler({callback, request: assign({}, request, {pathParameters})}),
+    () => {
+      logger.debug(`No route for ${request.method} ${request.path}`)
+      return notFound({callback})
+    }
+  )
+      .catch(NotFoundError, e => notFound({callback}))
+      .catch(AuthenticationError, e => unauthenticated({callback}))
+      .catch(AuthorizationError, e => unauthorized({callback}))
+      .catch(EntityConflictError, e => entityConflict({callback, conflicts: e.conflictCodes}))
+      .catch(UserActionsConflictError, e => userActionsConflict({callback}))
+      .catch(e => {
+        logger.error(e)
+        return error({callback})
       })
 
 module.exports = {
   routes,
-  routeEvent
+  routeEvent,
+  selectRoute,
 }

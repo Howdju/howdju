@@ -60,6 +60,7 @@ class CitationReferenceEditor extends Component {
       citationReference,
       name,
       id,
+      readOnly,
     } = this.props
     const {
       isQuoteEditedAfterMount
@@ -86,6 +87,7 @@ class CitationReferenceEditor extends Component {
               value={citationReference.quote}
               onChange={this.onPropertyChange}
               leftIcon={<FontIcon>format_quote</FontIcon>}
+              disabled={readOnly}
           />
           <TextField
               id={idPrefix + 'citation.text'}
@@ -97,6 +99,7 @@ class CitationReferenceEditor extends Component {
               required
               onChange={this.onPropertyChange}
               leftIcon={<FontIcon>book</FontIcon>}
+              disabled={readOnly}
           />
           {urls.map( (url, index) =>
               <TextField
@@ -108,13 +111,17 @@ class CitationReferenceEditor extends Component {
                   value={citationReference.urls[index].url}
                   onChange={this.onPropertyChange}
                   leftIcon={<FontIcon>link</FontIcon>}
-                  rightIcon={<Button icon onClick={(e) => this.onDeleteUrlClick(e, url, index)}>delete</Button>}
+                  rightIcon={readOnly ? <div></div> : <Button icon onClick={(e) => this.onDeleteUrlClick(e, url, index)}>delete</Button>}
+                  disabled={readOnly}
               />
           )}
           <Button flat
+                  className={cn({
+                    deleteCitationReferenceUrlButton: true,
+                    hidden: readOnly,
+                  })}
                   key="addUrlButton"
                   label="Add URL"
-                  className="deleteCitationReferenceUrlButton"
                   onClick={this.onAddUrlClick}
           >add</Button>
         </div>

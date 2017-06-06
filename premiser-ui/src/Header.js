@@ -7,8 +7,9 @@ import Toolbar from 'react-md/lib/Toolbars';
 import throttle from 'lodash/throttle'
 
 import {
-  toggleNavDrawerVisibility, mainSearchTextChange, doMainSearch, fetchMainSearchAutocomplete,
-  clearMainSearchAutocomplete, viewStatement
+  api,
+  ui,
+  goto, mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
 import autocompleter from './autocompleter'
 import './Header.scss'
@@ -30,14 +31,14 @@ class Header extends Component {
   }
 
   handleToggleNavDrawerVisibility() {
-    this.props.toggleNavDrawerVisibility()
+    this.props.ui.toggleNavDrawerVisibility()
   }
 
   onMainSearchChange(text) {
-    this.props.mainSearchTextChange(text)
+    this.props.ui.mainSearchTextChange(text)
     if (text === '') {
       this.refreshAutocomplete.cancel()
-      this.props.clearMainSearchAutocomplete()
+      this.props.ui.clearMainSearchAutocomplete()
     } else {
       this.refreshAutocomplete(text)
     }
@@ -46,7 +47,8 @@ class Header extends Component {
   onMainSearchKeyDown(e) {
     if (e.keyCode === ESCAPE_KEY_CODE) {
       this.refreshAutocomplete.cancel()
-      this.props.clearMainSearchAutocomplete()
+      this.props.ui.clearMainSearchAutocomplete()
+      // TODO shouldn't this be close on first escape, clear on second?
       this.mainSearchAutocomplete._close()
     }
   }
@@ -58,16 +60,16 @@ class Header extends Component {
   onMainSearch(e) {
     e.preventDefault()
     this.mainSearchAutocomplete._close()
-    this.props.doMainSearch(this.props.mainSearchText)
+    this.props.goto.mainSearch(this.props.mainSearchText)
   }
 
   refreshAutocomplete(text) {
-    this.props.fetchMainSearchAutocomplete(text)
+    this.props.api.fetchMainSearchAutocomplete(text)
   }
 
-  onMainSearchAutocomplete(label, index) {
+  onMainSearchAutocomplete(name, label, index) {
     const autocompleteResult = this.props.autocompleteResults[index]
-    this.props.viewStatement(autocompleteResult)
+    this.props.goto.statement(autocompleteResult)
   }
 
   render() {
@@ -146,11 +148,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, {
-  toggleNavDrawerVisibility,
-  mainSearchTextChange,
-  doMainSearch,
-  fetchMainSearchAutocomplete,
-  clearMainSearchAutocomplete,
-  viewStatement,
-})(Header)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api,
+  ui,
+  goto,
+}))(Header)

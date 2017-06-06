@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { fetchStatements } from './actions'
+import {
+  api,
+  mapActionCreatorGroupToDispatchToProps,
+} from './actions'
 import sortBy from 'lodash/sortBy'
 
 import paths from './paths'
@@ -9,7 +12,7 @@ import paths from './paths'
 class HomePage extends Component {
 
   componentWillMount() {
-    this.props.fetchStatements()
+    this.props.api.fetchStatements()
   }
 
   render () {
@@ -40,6 +43,6 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, {
-      fetchStatements
-    })(HomePage)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api,
+}))(HomePage)

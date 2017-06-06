@@ -47,6 +47,10 @@ export const decircularizeTarget = justification => {
   return justification
 }
 
+export const makeNewCredentials = () => ({email: '', password: ''})
+
+export const makeNewStatement = props => ({text: '', ...props})
+
 export const makeNewJustification = props => merge({
   rootStatementId: null,
   polarity: JustificationPolarity.POSITIVE,
@@ -74,6 +78,19 @@ export const makeNewJustification = props => merge({
   }
 }, props)
 
+export const makeNewCounterJustification = targetJustification => ({
+  rootStatementId: targetJustification.rootStatementId,
+  target: {
+    type: JustificationTargetType.JUSTIFICATION,
+    entity: targetJustification,
+  },
+  basis: {
+    type: JustificationBasisType.STATEMENT,
+    entity: {text: ''}
+  },
+  polarity: JustificationPolarity.NEGATIVE
+})
+
 export const consolidateBasis = justification => {
   const cloneJustification = cloneDeep(justification);
   switch (cloneJustification.basis.type) {
@@ -93,3 +110,5 @@ export const consolidateBasis = justification => {
 
   return cloneJustification
 }
+
+export const makeNewUrl = () => ({url: ''})

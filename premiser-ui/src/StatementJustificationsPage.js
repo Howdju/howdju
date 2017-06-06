@@ -5,7 +5,6 @@ import DocumentTitle from "react-document-title";
 import Divider from "react-md/lib/Dividers";
 import Card from "react-md/lib/Cards/Card";
 import FontIcon from "react-md/lib/FontIcons";
-import CircularProgress from "react-md/lib/Progress/CircularProgress";
 import MenuButton from "react-md/lib/Menus/MenuButton";
 import ListItem from "react-md/lib/Lists/ListItem";
 import Dialog from 'react-md/lib/Dialogs'
@@ -20,6 +19,8 @@ import some from 'lodash/some'
 import defaults from 'lodash/defaults'
 import classNames from 'classnames'
 import FlipMove from 'react-flip-move';
+import get from 'lodash/get'
+
 import config from './config';
 
 import {logError} from "./util";
@@ -29,21 +30,14 @@ import {
   JustificationPolarity,
   isPositive,
   isNegative,
-  consolidateBasis,
+  makeNewJustification, JustificationTargetType, JustificationBasisType,
 } from "./models";
 
 import {
-  acceptJustification,
-  deleteStatement,
-  fetchStatementJustifications,
-  rejectJustification,
-  createJustification,
-  editJustificationPropertyChange,
-  resetEditJustification,
-  showNewJustificationDialog,
-  hideNewJustificationDialog,
-  editJustificationAddUrl,
-  editJustificationDeleteUrl, doEditStatement,
+  api,
+  editors, mapActionCreatorGroupToDispatchToProps,
+  ui,
+  goto,
 } from "./actions";
 import {justificationSchema, statementSchema} from "./schemas";
 import JustificationWithCounters from './JustificationWithCounters'
@@ -57,8 +51,10 @@ import JustificationEditor from './JustificationEditor'
 import "./StatementJustificationsPage.scss";
 import {
   statementJustificationsPageStatementEditorId,
-  statementJustificationsPageJustificationEditorId
+  statementJustificationsPageNewJustificationEditorId
 } from "./editorIds";
+import {EditorTypes} from "./reducers/editors";
+import EditableStatement from "./EditableStatement";
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -68,13 +64,14 @@ class StatementJustificationsPage extends Component {
     }
 
     this.statementEditorId = statementJustificationsPageStatementEditorId
-    this.justificationEditorId = statementJustificationsPageJustificationEditorId
+    this.justificationEditorId = statementJustificationsPageNewJustificationEditorId
 
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
     this.updateDimensions = this.updateDimensions.bind(this)
-    this.doEditStatement = this.doEditStatement.bind(this)
+    this.onEditStatement = this.onEditStatement.bind(this)
     this.deleteStatement = this.deleteStatement.bind(this)
+    this.onUseStatement = this.onUseStatement.bind(this)
 
     this.showNewJustificationDialog = this.showNewJustificationDialog.bind(this)
     this.onNewJustificationPropertyChange = this.onNewJustificationPropertyChange.bind(this)
@@ -86,7 +83,7 @@ class StatementJustificationsPage extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchStatementJustifications(this.props.match.params.statementId)
+    this.props.api.fetchStatementJustifications(this.props.match.params.statementId)
     this.updateDimensions()
   }
 
@@ -110,29 +107,41 @@ class StatementJustificationsPage extends Component {
     this.setState({width: window.innerWidth, height: window.innerHeight});
   }
 
-  doEditStatement() {
-    this.props.doEditStatement(this.props.statement.id)
+  onEditStatement() {
+    this.props.editors.beginEdit(EditorTypes.STATEMENT, this.statementEditorId, this.props.statement)
+  }
+
+  onUseStatement() {
+    this.props.goto.createJustification(JustificationBasisType.STATEMENT, this.props.match.params.statementId)
   }
 
   deleteStatement() {
-    this.props.deleteStatement(this.props.statement)
+    this.props.api.deleteStatement(this.props.statement)
   }
 
   showNewJustificationDialog(e) {
     e.preventDefault()
-    this.props.showNewJustificationDialog(this.props.match.params.statementId)
+
+    const statementId = this.props.match.params.statementId
+    const newJustification = makeNewJustification({
+      rootStatementId: statementId,
+      target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
+    })
+    this.props.editors.beginEdit(EditorTypes.JUSTIFICATION, this.justificationEditorId, newJustification)
+
+    this.props.ui.showNewJustificationDialog(statementId)
   }
 
   onNewJustificationPropertyChange(properties) {
-    this.props.editJustificationPropertyChange(this.justificationEditorId, properties)
+    this.props.editors.propertyChange(EditorTypes.JUSTIFICATION, this.justificationEditorId, properties)
   }
 
   addNewJustificationUrl() {
-    this.props.editJustificationAddUrl(this.justificationEditorId)
+    this.props.editors.editJustificationAddUrl(EditorTypes.JUSTIFICATION, this.justificationEditorId)
   }
 
   deleteNewJustificationUrl(url, index) {
-    this.props.editJustificationDeleteUrl(this.justificationEditorId, url, index)
+    this.props.editors.editJustificationDeleteUrl(EditorTypes.JUSTIFICATION, this.justificationEditorId, url, index)
   }
 
   onSubmitNewJustificationDialog(e) {
@@ -141,13 +150,11 @@ class StatementJustificationsPage extends Component {
   }
 
   saveNewJustification() {
-    const newJustification = consolidateBasis(this.props.newJustification)
-    this.props.createJustification(newJustification)
+    this.props.editors.commitEdit(EditorTypes.JUSTIFICATION, this.justificationEditorId)
   }
 
   cancelNewJustificationDialog() {
-    this.props.hideNewJustificationDialog()
-    this.props.resetEditJustification()
+    this.props.ui.hideNewJustificationDialog()
   }
 
   render () {
@@ -160,6 +167,7 @@ class StatementJustificationsPage extends Component {
       newJustificationErrorMessage,
       isCreatingNewJustification,
       newJustification,
+      match: {params: {statementId} }
     } = this.props
 
     const {narrowBreakpoint, flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
@@ -167,13 +175,13 @@ class StatementJustificationsPage extends Component {
     const errorMessage = didFail ? text(FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE) : ''
 
     const isNarrow = this.state.width <= narrowBreakpoint
-    const defaultjustificationsByPolarity = {
+    const defaultJustificationsByPolarity = {
       [JustificationPolarity.POSITIVE]: [],
       [JustificationPolarity.NEGATIVE]: [],
     }
     const justificationsByPolarity = isNarrow ?
-        defaultjustificationsByPolarity :
-        defaults(groupBy(justifications, j => j.polarity), defaultjustificationsByPolarity)
+        defaultJustificationsByPolarity :
+        defaults(groupBy(justifications, j => j.polarity), defaultJustificationsByPolarity)
 
 
     const hasJustifications = justifications && justifications.length > 0
@@ -188,7 +196,7 @@ class StatementJustificationsPage extends Component {
     const menu = (
         <MenuButton
             icon
-            id={`statement-${statement && statement.id}-context-menu`}
+            id={`statement-${statementId}-context-menu`}
             className={classNames({hiding: !this.state.isOverStatement})}
             menuClassName="contextMenu statementContextMenu"
             buttonChildren={'more_vert'}
@@ -198,11 +206,14 @@ class StatementJustificationsPage extends Component {
                     leftIcon={<FontIcon>add</FontIcon>}
                     onClick={this.showNewJustificationDialog}
           />
-          <ListItem primaryText="Use" leftIcon={<FontIcon>call_made</FontIcon>} />
+          <ListItem primaryText="Use"
+                    leftIcon={<FontIcon>call_made</FontIcon>}
+                    onClick={this.onUseStatement}
+          />
           <Divider />
           <ListItem primaryText="Edit"
                     leftIcon={<FontIcon>create</FontIcon>}
-                    onClick={this.doEditStatement}
+                    onClick={this.onEditStatement}
           />
           <ListItem primaryText="Delete"
                     leftIcon={<FontIcon>delete</FontIcon>}
@@ -235,11 +246,13 @@ class StatementJustificationsPage extends Component {
           </div>
 
           <form onSubmit={this.onSubmitNewJustificationDialog}>
-            <JustificationEditor justification={newJustification}
-                                 onPropertyChange={this.onNewJustificationPropertyChange}
-                                 onAddUrlClick={this.addNewJustificationUrl}
-                                 onDeleteUrlClick={this.deleteNewJustificationUrl}
-            />
+            {newJustification &&
+              <JustificationEditor justification={newJustification}
+                                   onPropertyChange={this.onNewJustificationPropertyChange}
+                                   onAddUrlClick={this.addNewJustificationUrl}
+                                   onDeleteUrlClick={this.deleteNewJustificationUrl}
+              />
+            }
           </form>
 
         </Dialog>
@@ -309,12 +322,9 @@ class StatementJustificationsPage extends Component {
                       <div className="md-cell md-cell--12 statementText">
 
                         {statement && menu}
-                        {statement ?
-                            statement.text :
-                            isFetching ?
-                                <CircularProgress id="fetchingStatementProgress" /> :
-                                ''
-                        }
+                        <EditableStatement id="StatementJustificationsPage-StatementEditor"
+                                           entityId={statementId}
+                                           editorId={statementJustificationsPageStatementEditorId} />
 
                       </div>
                     </div>
@@ -333,23 +343,19 @@ class StatementJustificationsPage extends Component {
                   </div>
                 </div>
             }
-            {!errorMessage && !hasJustifications &&
+            {!hasJustifications && !isFetching && !errorMessage &&
 
               <div className="row center-xs">
                 <div className="col-xs-12">
-                  {isFetching ?
-                      // Only show progress if we are not also showing one for the statement
-                      !!statement && <CircularProgress id="fetchingJustificationsProgress" /> :
-                      <div>
-                        <div>No justifications.</div>
-                        <div>
-                          <a onClick={this.showNewJustificationDialog} href="#">
-                            {text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
-                          </a>
-                        </div>
+                  <div>
+                    <div>No justifications.</div>
+                    <div>
+                      <a onClick={this.showNewJustificationDialog} href="#">
+                        {text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      </a>
+                    </div>
 
-                      </div>
-                  }
+                  </div>
                 </div>
               </div>
             }
@@ -364,6 +370,13 @@ class StatementJustificationsPage extends Component {
         </DocumentTitle>
     )
   }
+}
+StatementJustificationsPage.defaultProps = {
+  isFetching: false,
+  didFail: false,
+  isNewJustificationDialogVisible: false,
+  statement: null,
+  justifications: [],
 }
 
 const sortJustifications = justifications => {
@@ -394,36 +407,25 @@ const mapStateToProps = (state, ownProps) => {
   }
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
-
   justifications = sortJustifications(justifications)
-  const props = {
+
+  const {
+    editEntity: newJustification,
+    inProgress: isCreatingNewJustification,
+  } = get(state.editors, [EditorTypes.JUSTIFICATION, statementJustificationsPageNewJustificationEditorId], {})
+
+  return {
     ...state.ui.statementJustificationsPage,
-    isCreatingNewJustification: false,
     statement: denormalize(statement, statementSchema, state.entities),
     justifications,
+    newJustification,
+    isCreatingNewJustification,
   }
-  return props
 }
 
-StatementJustificationsPage.defaultProps = {
-  isFetching: false,
-  didFail: false,
-  isNewJustificationDialogVisible: false,
-  statement: null,
-  justifications: [],
-}
-
-export default connect(mapStateToProps, {
-  fetchStatementJustifications,
-  acceptJustification,
-  rejectJustification,
-  doEditStatement,
-  deleteStatement,
-  createJustification,
-  editJustificationPropertyChange,
-  editJustificationAddUrl,
-  editJustificationDeleteUrl,
-  resetEditJustification,
-  showNewJustificationDialog,
-  hideNewJustificationDialog,
-})(StatementJustificationsPage)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  api,
+  ui,
+  editors,
+  goto,
+}))(StatementJustificationsPage)

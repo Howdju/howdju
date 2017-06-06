@@ -13,8 +13,8 @@ class StatementEditor extends Component {
     this.onTextAutocomplete = this.onTextAutocomplete.bind(this)
   }
 
-  onTextAutocomplete(text, index) {
-    this.props.onPropertyChange({text})
+  onTextAutocomplete(name, label, index) {
+    this.props.onPropertyChange({[name]: label})
   }
 
   onChange(val, event) {
@@ -28,12 +28,26 @@ class StatementEditor extends Component {
       suggestionsKey,
       name,
       id,
+      readOnly,
+      onPropertyChange,
+      ...rest,
     } = this.props
 
     const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
 
-    const textField = (
+    return (suggestionsKey && !readOnly) ?
+        <StatementTextAutocomplete id={idPrefix + "text"}
+                                   name={namePrefix + "text"}
+                                   label="Text"
+                                   required
+                                   value={statement.text}
+                                   suggestionsKey={suggestionsKey + 'Text'}
+                                   onPropertyChange={onPropertyChange}
+                                   onAutocomplete={this.onTextAutocomplete}
+                                   leftIcon={<FontIcon>text_fields</FontIcon>}
+                                   {...rest}
+        /> :
         <TextField id={idPrefix + 'text'}
                    name={namePrefix + "text"}
                    label="Text"
@@ -42,24 +56,9 @@ class StatementEditor extends Component {
                    required
                    onChange={this.onChange}
                    leftIcon={<FontIcon>text_fields</FontIcon>}
+                   disabled={readOnly}
+                   {...rest}
         />
-    )
-
-    const autocomplete = (
-        <StatementTextAutocomplete id={idPrefix + "text"}
-                                   name={namePrefix + "text"}
-                                   label="Text"
-                                   required
-                                   value={statement.text}
-                                   suggestionsKey={suggestionsKey}
-                                   onPropertyChange={this.props.onPropertyChange}
-                                   onAutocomplete={this.onTextAutocomplete}
-                                   leftIcon={<FontIcon>text_fields</FontIcon>}
-        />
-    )
-
-
-    return suggestionsKey ? autocomplete : textField
   }
 }
 StatementEditor.propTypes = {

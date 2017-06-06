@@ -6,6 +6,7 @@ const urlsDao = require('./urlsDao')
 const citationsDao = require('./citationsDao')
 const {
   toCitationReference,
+  toCitation,
 } = require("../orm")
 const {query, queries} = require('./../db')
 const {
@@ -17,6 +18,34 @@ const {logger} = require('../logger')
 
 
 class CitationReferencesDao {
+
+  read(citationReferenceId) {
+    return Promise.all([
+      query('select * from citation_references where citation_reference_id = $1 and deleted is null', [citationReferenceId]),
+      query(`
+        select * 
+        from citations c 
+          join citation_references cr using (citation_id) 
+            where 
+                  cr.citation_reference_id = $1 
+              and cr.deleted is null 
+              and c.deleted is null`,
+      [citationReferenceId]
+      ),
+      urlsDao.readUrlsForCitationReferenceId(citationReferenceId)
+    ])
+        .then( ([
+                  {rows: [citationReferenceRow]},
+                  {rows: [citationRow]},
+                  urls,
+                ]) => {
+          const citationReference = toCitationReference(citationReferenceRow)
+          citationReference.citation = toCitation(citationRow)
+          citationReference.urls = urls
+          return citationReference
+        })
+  }
+
   doOtherCitationReferencesHaveSameQuoteAs(citationReference) {
     const sql = `
       select count(*) > 0 has_conflict 
@@ -110,7 +139,10 @@ class CitationReferencesDao {
 
   update(citationReference) {
     return Promise.all([
-      query('update citation_references set quote = $1 where citation_reference_id = $2 returning *', [citationReference.quote, citationReference.id]),
+      query(
+          'update citation_references set quote = $1 where citation_reference_id = $2 and deleted is null returning *',
+          [citationReference.quote, citationReference.id]
+      ),
       urlsDao.update(citationReference.id, citationReference.urls)
     ])
         .then( ([
