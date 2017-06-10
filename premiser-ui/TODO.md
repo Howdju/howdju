@@ -1,7 +1,7 @@
 # Howdju UI TODO
 ## MVP
 
-* disverifying verified negative justification and reload page.  Is still verified
+* Failed vote did not reset optimistic vote
 * negative justification disverified causes horizontal scrollbar
 * Prevent empty statement/citation reference justification 
 
@@ -40,6 +40,7 @@
 * Statements that differ by special chars or capitalization are treated as different (normalized text etc)
 
 ### Bugs/stability
+* Change vote polarity to enum to support future vote types?
 * consolidateBasis of editor justification should happen in saga I think instead of in components
 * Don't create empty URL from EditStatementJustificationPage!
 * Simplify sagas like login/logout at bottom here: https://github.com/redux-saga/redux-saga/blob/master/docs/advanced/FutureActions.md

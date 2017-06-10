@@ -60,7 +60,8 @@ const {
   JustificationBasisType,
   ActionTargetType,
   ActionType,
-  VoteTargetType
+  VoteTargetType,
+  negatePolarity,
 } = require('./models')
 
 
@@ -288,7 +289,7 @@ const login = ({credentials}) => {
 
 const logout = ({authToken}) => query('delete from authentication_tokens where token = $1', [authToken])
 
-const vote = ({authToken, targetType, targetId, polarity}) => {
+const createVote = ({authToken, targetType, targetId, polarity}) => {
   if (!authToken) {
     logger.debug('Missing authentication token')
     return Promise.resolve({isUnauthenticated: true})
@@ -312,7 +313,7 @@ const vote = ({authToken, targetType, targetId, polarity}) => {
                                    and polarity = $5 
                                    and deleted is null
                                  returning vote_id`
-    const updateOppositeQueryArgs = [new Date(), userId, targetType, targetId, !polarity]
+    const updateOppositeQueryArgs = [new Date(), userId, targetType, targetId, negatePolarity(polarity)]
 
     const alreadyQuery = `select * 
                           from votes 
@@ -862,7 +863,7 @@ module.exports = {
   createUser,
   login,
   logout,
-  vote,
+  createVote,
   unvote,
   createStatement,
   updateStatement,

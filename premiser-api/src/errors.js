@@ -8,7 +8,11 @@ class AuthorizationError extends HowdjuApiError {}
 
 class NotFoundError extends HowdjuApiError {}
 
-class ImpossibleError extends HowdjuApiError {}
+class ImpossibleError extends HowdjuApiError {
+  constructor(message) {
+    super(message)
+  }
+}
 
 /** The request would cause a conflict with one or more other entities */
 class EntityConflictError extends HowdjuApiError {

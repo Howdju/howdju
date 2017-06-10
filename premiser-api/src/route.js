@@ -23,7 +23,7 @@ const {
   login,
   logout,
   createUser,
-  vote,
+  createVote,
   unvote,
   createStatement,
   updateStatement,
@@ -341,10 +341,11 @@ const routes = [
         .then( () => ok({callback}) )
   },
   {
+    id: 'createVote',
     path: new RegExp('^votes$'),
     method: httpMethods.POST,
     handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
-        vote({authToken, targetType, targetId, polarity})
+        createVote({authToken, targetType, targetId, polarity})
             .then( ({isUnauthenticated, isAlreadyDone, vote}) => {
               if (isUnauthenticated) {
                 return unauthenticated({callback})
@@ -355,6 +356,7 @@ const routes = [
             })
   },
   {
+    id: 'deleteVote',
     path: new RegExp('^votes$'),
     method: httpMethods.DELETE,
     handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken, method, path}}) =>

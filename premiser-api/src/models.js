@@ -1,3 +1,5 @@
+const {ImpossibleError} = require('./errors')
+
 const ActionType = {
   /** The user created something */
   CREATE: 'CREATE',
@@ -39,6 +41,17 @@ const VoteTargetType = {
   TAGGING: 'TAGGING',
 }
 
+const negatePolarity = polarity => {
+  switch (polarity) {
+    case VotePolarity.POSITIVE:
+      return VotePolarity.NEGATIVE
+    case VotePolarity.NEGATIVE:
+      return VotePolarity.POSITIVE
+    default:
+      throw new ImpossibleError(`Unsupported vote polarity for negation: ${polarity}`)
+  }
+}
+
 module.exports = {
   ActionType,
   ActionTargetType,
@@ -47,4 +60,5 @@ module.exports = {
   JustificationBasisType,
   VotePolarity,
   VoteTargetType,
+  negatePolarity,
 }
