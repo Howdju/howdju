@@ -1,7 +1,6 @@
 # Howdju UI TODO
 ## MVP
 
-* Failed vote did not reset optimistic vote
 * negative justification disverified causes horizontal scrollbar
 * Prevent empty statement/citation reference justification 
 

@@ -56,26 +56,32 @@ export const api = {
   fetchCitationReference: apiActionCreator('FETCH_CITATION_REFERENCE', citationReferenceId => ({citationReferenceId})),
   login: apiActionCreator('LOGIN', credentials => ({credentials})),
   logout: apiActionCreator('LOGOUT'),
+
   verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', target => ({
     targetType: VoteTargetType.JUSTIFICATION,
     targetId: target.id,
     polarity: VotePolarity.POSITIVE,
+    previousVote: target.vote,
   })),
   unVerifyJustification: apiActionCreator('UN_VERIFY_JUSTIFICATION', target => ({
     targetType: VoteTargetType.JUSTIFICATION,
     targetId: target.id,
     polarity: VotePolarity.POSITIVE,
+    previousVote: target.vote,
   })),
   disverifyJustification: apiActionCreator('DISVERIFY_JUSTIFICATION', target => ({
     targetType: VoteTargetType.JUSTIFICATION,
     targetId: target.id,
     polarity: VotePolarity.NEGATIVE,
+    previousVote: target.vote,
   })),
   unDisverifyJustification: apiActionCreator('UN_DISVERIFY_JUSTIFICATION', target => ({
     targetType: VoteTargetType.JUSTIFICATION,
     targetId: target.id,
     polarity: VotePolarity.NEGATIVE,
+    previousVote: target.vote,
   })),
+
   createStatement: apiActionCreator('CREATE_STATEMENT', statement => ({statement})),
   createStatementJustification: apiActionCreator('CREATE_STATEMENT_JUSTIFICATION', (statement, justification) => ({statement, justification})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),

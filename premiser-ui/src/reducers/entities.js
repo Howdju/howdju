@@ -201,6 +201,7 @@ export default handleActions({
       }
     })
   },
+
   [combineActions(
       api.verifyJustification,
       api.disverifyJustification
@@ -211,7 +212,8 @@ export default handleActions({
       polarity
     } = action.payload
     const currJustification = state.justifications[targetId]
-    const justification = merge({}, currJustification, {vote: {targetType, targetId, polarity}})
+    const optimisticVote = {targetType, targetId, polarity}
+    const justification = merge({}, currJustification, {vote: optimisticVote})
     return {
       ...state,
       justifications: {...state.justifications, [justification.id]: justification},
@@ -253,15 +255,19 @@ export default handleActions({
       api.unDisverifyJustification.response
   )]: {
     throw: (state, action) => {
-      const prevJustification = action.meta.requestPayload.justification
-      const currJustification = state.justifications[prevJustification.id]
-      const justification = merge({}, currJustification, {vote: prevJustification.vote})
+      const {
+        targetId,
+        previousVote,
+      } = action.meta.requestPayload
+      const currJustification = state.justifications[targetId]
+      const justification = merge({}, currJustification, {vote: previousVote})
       return {
         ...state,
-        justifications: merge({}, state.justifications, {[justification.id]: justification}),
+        justifications: merge({}, state.justifications, {[targetId]: justification}),
       }
     }
   },
+
   [api.fetchStatementTextSuggestions.response]: {
     next: (state, action) => {
       const normalized = normalize(action.payload, [statementSchema])

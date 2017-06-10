@@ -245,16 +245,12 @@ function* callApiForResource(action) {
         config
 
     const apiResultAction = yield call(callApi, endpoint, schema, fetchInit, requiresRehydrate)
-    if (apiResultAction.error) {
-      return yield put(responseActionCreator(apiResultAction.payload))
-    } else {
-      const responseMeta = {
-        schema,
-        requestPayload: action.payload,
-      }
 
-      return yield put(responseActionCreator(apiResultAction.payload, responseMeta))
+    const responseMeta = {
+      schema,
+      requestPayload: action.payload,
     }
+    return yield put(responseActionCreator(apiResultAction.payload, responseMeta))
   } catch (error) {
     return yield put(responseActionCreator(error))
   }
