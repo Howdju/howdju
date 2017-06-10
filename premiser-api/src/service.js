@@ -214,15 +214,15 @@ const readStatementJustifications = ({statementId, authToken}) => queries([
       args: [statementId]
     }
   ])
-  .then(([{rows: [statement]}, {rows: justifications}, {rows: urls}]) => {
-    if (!statement) {
-      return {statement}
+  .then(([{rows: [statementRow]}, {rows: justificationRows}, {rows: urlRows}]) => {
+    if (!statementRow) {
+      throw new NotFoundError('STATEMENT', statementId)
     }
-    const urlsByJustificationId = collectUrls(urls)
+    const urlsByJustificationId = collectUrls(urlRows)
     const {rootJustifications, counterJustificationsByJustificationId} =
-        collectJustifications(statement.statement_id, justifications)
+        collectJustifications(statementRow.statement_id, justificationRows)
     return {
-      statement: toStatement(statement),
+      statement: toStatement(statementRow),
       justifications: rootJustifications.map(j =>
           toJustification(j, urlsByJustificationId, counterJustificationsByJustificationId)
       )
@@ -684,16 +684,16 @@ const selectOrInsertUrls = (urls, userId, now) => Promise.all(urls.map(url => {
   if (url.id) {
     return url
   }
-  return query('select * from urls where url = $1', [url.url])
-    .then(({rows: [row]}) => {
-      if (row) return url
-      return query(
-          'insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *',
-          [url.url, userId, now]
+  return query('select * from urls where url = $1 and deleted is null', [url.url])
+    .then(({rows: [row]}) => row ?
+      row :
+      query(
+        'insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *',
+        [url.url, userId, now]
       )
-          .then( ({rows: [row]}) => row)
-          .then(toUrl)
-    })
+        .then( ({rows: [row]}) => row)
+    )
+      .then(toUrl)
 }))
 
 const selectOrInsertJustCitationReference = (citationReference, userId, now) => {

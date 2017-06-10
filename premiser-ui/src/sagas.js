@@ -7,7 +7,6 @@ import map from 'lodash/map'
 
 import text, {
   default as t,
-  CREATE_EXTANT_STATEMENT_TOAST_MESSAGE,
   DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
   DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
@@ -21,7 +20,7 @@ import {
   justificationSchema, citationReferenceSchema
 } from './schemas'
 import paths from "./paths";
-import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE, LOGIN_SUCCESS_TOAST_MESSAGE} from "./texts";
+import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
 import mainSearcher from './mainSearcher'
 import * as httpMethods from './httpMethods'
 import * as httpStatuses from './httpStatuses'
@@ -38,14 +37,11 @@ import {
   flows, str,
 } from "./actions";
 import {JustificationBasisType, makeNewJustification, makeNewStatement} from "./models";
+import {logger} from './util'
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false
 
-
-const EditorTypeCommitActionCreators = {
-  [EditorTypes.STATEMENT]: api.updateStatement,
-}
 
 // These methods translate FETCH_* payloads into API calls
 export const resourceApiConfigs = {
@@ -147,15 +143,12 @@ export const resourceApiConfigs = {
     endpoint: `search-statements?searchText=${payload.searchText}`,
     schema: [statementSchema],
   }),
-  [api.fetchMainSearchAutocomplete]: payload => ({
+  [api.fetchMainSearchSuggestions]: payload => ({
     endpoint: `search-statements?searchText=${payload.searchText}`,
-    schema: [statementSchema],
   }),
-  [api.fetchStatementSuggestions]: payload => ({
+  [api.fetchStatementTextSuggestions]: payload => ({
     endpoint: `search-statements?searchText=${payload.text}`,
-    schema: [statementSchema],
   }),
-
   [api.verifyJustification]: payload => ({
     endpoint: 'votes',
     fetchInit: {
@@ -193,7 +186,9 @@ export const resourceApiConfigs = {
 function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
   try {
     if (requiresRehydrate && !isRehydrated) {
+      logger.debug('Waiting on rehydrate')
       yield take(REHYDRATE)
+      logger.debug('Proceeding after rehydrate')
     }
 
     let fetchInitUpdate = {}
@@ -286,27 +281,6 @@ function* redirectAfterLogin() {
   })
 }
 
-function* goToCreatedStatement() {
-  yield takeEvery([
-    str(api.createStatement.response),
-    str(api.createStatementJustification.response),
-  ], function* goToCreatedStatementWorker(action) {
-    if (!action.error) {
-      const {
-        isExtant,
-        entities,
-        result,
-      } = action.payload
-      if (isExtant) {
-        yield put(ui.addToast(text(CREATE_EXTANT_STATEMENT_TOAST_MESSAGE)))
-      }
-      // TODO how to tell when it is an in-place edit?
-      const statement = entities.statements[result.statement]
-      yield put(push(paths.statement(statement)))
-    }
-  })
-}
-
 function* resourceApiCalls() {
   const actionTypes = map(api, str)
   yield takeEvery(actionTypes, callApiForResource)
@@ -341,16 +315,6 @@ function* leaveMissingStatement() {
         yield put(ui.addToast(text(MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE)))
         yield put(push(paths.home()))
       }
-    }
-  })
-}
-
-function* updateUiAfterCreatingJustification() {
-  yield takeEvery(str(api.createJustification.response), function* updateUiAfterCreatingJustificationWorker(action) {
-    if (!action.error) {
-      // TODO only when doing this on the StatementJustificationsPage
-      yield put(ui.hideNewJustificationDialog())
-      yield put(ui.resetEditJustification())
     }
   })
 }
@@ -408,14 +372,36 @@ function* goToStatement() {
 }
 
 function* editorCommitEdit() {
+  const CREATE = 'CREATE'
+  const UPDATE = 'UPDATE'
+  const EditorTypeCommitActionCreators = {
+    [EditorTypes.STATEMENT]: {
+      [UPDATE]: api.updateStatement
+    },
+    [EditorTypes.JUSTIFICATION]: {
+      [CREATE]: api.createJustification,
+    }
+  }
   yield takeEvery(str(editors.commitEdit), function* editorCommitEditWorker(action) {
     const {
       editorType,
       editorId,
     } = action.payload
 
+    if (!editorType) {
+      throw new Error("editorType is required")
+    }
+    if (!editorId) {
+      throw new Error("editorId is required")
+    }
+
     const {editEntity} = yield select(selectEditorState(editorType, editorId))
-    const actionCreator = EditorTypeCommitActionCreators[editorType]
+    const actionCreatorCrudType = editEntity.id ? UPDATE : CREATE
+    const actionCreator = EditorTypeCommitActionCreators[editorType][actionCreatorCrudType]
+
+    if (!actionCreator) {
+      throw new Error(`Missing EditorTypeCommitActionCreators for ${editorType}.${actionCreatorCrudType}`)
+    }
 
     try {
       const resultAction = yield call(callApiForResource, actionCreator(editEntity))
@@ -496,11 +482,23 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
   })
 }
 
+function* createJustificationThenPutActionIfSuccessful() {
+  yield takeEvery(str(flows.createJustificationThenPutActionIfSuccessful), function* createJustificationThenPutActionIfSuccessfulWorker(action) {
+    const {
+      justification,
+      nextAction,
+    } = action.payload
+    const result = yield call(callApiForResource, api.createJustification(justification))
+    if (!result.error) {
+      return yield put(nextAction)
+    }
+  })
+}
+
 export default () => [
   flagRehydrate(),
   initializeMainSearch(),
   resourceApiCalls(),
-  goToCreatedStatement(),
 
   redirectToLoginWhenUnauthorized(),
   goTo(),
@@ -509,7 +507,7 @@ export default () => [
   goToStatement(),
   goHomeIfDeleteStatementWhileViewing(),
   leaveMissingStatement(),
-  updateUiAfterCreatingJustification(),
+  createJustificationThenPutActionIfSuccessful(),
   apiFailureErrorMessages(),
   editorCommitEdit(),
   goToMainSearch(),

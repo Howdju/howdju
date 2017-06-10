@@ -64,10 +64,8 @@ const toJustification = (row, urlsByJustificationId, counterJustificationsByJust
   }
 
   if (urlsByJustificationId) {
-    const urls = urlsByJustificationId[justification.id]
-    if (urls) {
-      justification.basis.entity.urls = urls.map(toUrl)
-    }
+    const urls = urlsByJustificationId[justification.id] || []
+    justification.basis.entity.urls = urls.map(toUrl)
   }
 
   if (counterJustificationsByJustificationId) {

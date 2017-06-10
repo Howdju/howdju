@@ -154,16 +154,8 @@ export const mainSearch = handleActions({
     }
     return state
   },
-  [api.fetchMainSearchAutocomplete.response]: {
-    next: (state, action) => {
-      const autocompleteResults = action.payload.result.map(id => action.payload.entities.statements[id])
-      return {...state, autocompleteResults}
-    }
-  },
-  [ui.clearMainSearchAutocomplete]: (state, action) => ({...state, autocompleteResults: []})
 }, {
   mainSearchText: '',
-  autocompleteResults: []
 })
 
 export const mainSearchPage = handleActions({
@@ -180,17 +172,10 @@ export const mainSearchPage = handleActions({
   statements: []
 })
 
-const editStatementJustificationPage = handleActions({
-  [ui.setDoCreateJustification]: (state, action) => ({...state, doCreateJustification: action.payload.doCreateJustification})
-}, {
-  doCreateJustification: false,
-})
-
 export default combineReducers({
   loginPage,
   statementJustificationsPage,
   mainSearchPage,
   app: appUi,
   mainSearch,
-  editStatementJustificationPage,
 })

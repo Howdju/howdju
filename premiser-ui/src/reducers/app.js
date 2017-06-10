@@ -12,16 +12,6 @@ export default handleActions({
     return state
   },
   [goto.login]: (state, action) => ({...state, loginRedirectLocation: action.payload.loginRedirectLocation}),
-  [api.fetchStatementSuggestions.response]: {
-    next: (state, action) => ({
-      ...state,
-      statementSuggestions: {
-        ...state.statementSuggestions,
-        [action.meta.requestPayload.suggestionsKey]: action.payload.result,
-      }
-    })
-  }
 }, {
-  loginRedirectLocation: null,
-  statementSuggestions: {}
+  loginRedirectLocation: null
 })

@@ -23,6 +23,8 @@ import {
 } from '../models'
 import {api, str} from '../actions'
 import * as httpStatuses from "../httpStatuses";
+import {normalize} from "normalizr";
+import {statementSchema} from "../schemas";
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {
@@ -67,8 +69,9 @@ export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
 export const indexRootJustificationsByRootStatementId = justificationsById => {
   const justifications = values(justificationsById)
   const rootJustifications = filter(justifications, j =>
-          // TODO do we need a more thorough approach to ensuring that only fully entities are present? I'd like to send/receive them as stubs, and denormalize them somewhere standard
-          // Some justifications that come back are stubs and will lack relations like .target
+      // TODO do we need a more thorough approach to ensuring that only fully entities are present?
+      // I'd like to send/receive them as stubs, and denormalize them somewhere standard
+      // Some justifications that come back are stubs and will lack relations like .target
       j.target &&
       j.target.type === JustificationTargetType.STATEMENT &&
       j.target.entity.id === j.rootStatementId
@@ -123,6 +126,7 @@ export default handleActions({
       ...state,
       statements: {...state.statements, ...action.payload.entities.statements},
       justifications: {...state.justifications, ...action.payload.entities.justifications},
+      citationReferences: {...state.citationReferences, ...action.payload.entities.citationReferences},
     })
   },
   [api.updateStatement.response]: {
@@ -258,14 +262,29 @@ export default handleActions({
       }
     }
   },
-  [api.fetchStatementSuggestions.response]: {
-    next: (state, action) => ({
-      ...state,
-      statements: {
-        ...state.statements,
-        ...action.payload.entities.statements,
+  [api.fetchStatementTextSuggestions.response]: {
+    next: (state, action) => {
+      const normalized = normalize(action.payload, [statementSchema])
+      return {
+        ...state,
+        statements: {
+          ...state.statements,
+          ...normalized.entities.statements,
+        }
       }
-    })
+    }
+  },
+  [api.fetchMainSearchSuggestions.response]: {
+    next: (state, action) => {
+      const normalized = normalize(action.payload, [statementSchema])
+      return {
+        ...state,
+        statements: {
+          ...state.statements,
+          ...normalized.entities.statements,
+        }
+      }
+    }
   }
 }, {
   statements: {},

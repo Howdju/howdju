@@ -30,14 +30,14 @@ import {
   JustificationPolarity,
   isPositive,
   isNegative,
-  makeNewJustification, JustificationTargetType, JustificationBasisType,
+  makeNewJustification, JustificationTargetType, JustificationBasisType, consolidateBasis,
 } from "./models";
 
 import {
   api,
   editors, mapActionCreatorGroupToDispatchToProps,
   ui,
-  goto,
+  goto, flows,
 } from "./actions";
 import {justificationSchema, statementSchema} from "./schemas";
 import JustificationWithCounters from './JustificationWithCounters'
@@ -64,7 +64,7 @@ class StatementJustificationsPage extends Component {
     }
 
     this.statementEditorId = statementJustificationsPageStatementEditorId
-    this.justificationEditorId = statementJustificationsPageNewJustificationEditorId
+    this.newJustificationEditorId = statementJustificationsPageNewJustificationEditorId
 
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
@@ -127,21 +127,21 @@ class StatementJustificationsPage extends Component {
       rootStatementId: statementId,
       target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
     })
-    this.props.editors.beginEdit(EditorTypes.JUSTIFICATION, this.justificationEditorId, newJustification)
+    this.props.editors.beginEdit(EditorTypes.JUSTIFICATION, this.newJustificationEditorId, newJustification)
 
     this.props.ui.showNewJustificationDialog(statementId)
   }
 
   onNewJustificationPropertyChange(properties) {
-    this.props.editors.propertyChange(EditorTypes.JUSTIFICATION, this.justificationEditorId, properties)
+    this.props.editors.propertyChange(EditorTypes.JUSTIFICATION, this.newJustificationEditorId, properties)
   }
 
   addNewJustificationUrl() {
-    this.props.editors.editJustificationAddUrl(EditorTypes.JUSTIFICATION, this.justificationEditorId)
+    this.props.editors.addUrl(EditorTypes.JUSTIFICATION, this.newJustificationEditorId)
   }
 
   deleteNewJustificationUrl(url, index) {
-    this.props.editors.editJustificationDeleteUrl(EditorTypes.JUSTIFICATION, this.justificationEditorId, url, index)
+    this.props.editors.deleteUrl(EditorTypes.JUSTIFICATION, this.newJustificationEditorId, url, index)
   }
 
   onSubmitNewJustificationDialog(e) {
@@ -150,7 +150,8 @@ class StatementJustificationsPage extends Component {
   }
 
   saveNewJustification() {
-    this.props.editors.commitEdit(EditorTypes.JUSTIFICATION, this.justificationEditorId)
+    const justification = consolidateBasis(this.props.newJustification)
+    this.props.flows.createJustificationThenPutActionIfSuccessful(justification, ui.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog() {
@@ -428,4 +429,5 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   ui,
   editors,
   goto,
+  flows,
 }))(StatementJustificationsPage)

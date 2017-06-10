@@ -80,7 +80,7 @@ export const api = {
   createStatementJustification: apiActionCreator('CREATE_STATEMENT_JUSTIFICATION', (statement, justification) => ({statement, justification})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),
   deleteStatement: apiActionCreator('DELETE_STATEMENT', statement => ({statement})),
-  fetchStatementSuggestions: apiActionCreator('FETCH_STATEMENT_SUGGESTIONS', (text, suggestionsKey) => ({
+  fetchStatementTextSuggestions: apiActionCreator('FETCH_STATEMENT_SUGGESTIONS', (text, suggestionsKey) => ({
     text,
     suggestionsKey,
   })),
@@ -88,7 +88,7 @@ export const api = {
   updateCitationReference: apiActionCreator('UPDATE_CITATION_REFERENCE', citationReference => ({citationReference})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', justification => ({justification})),
   fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', searchText => ({searchText})),
-  fetchMainSearchAutocomplete: apiActionCreator('FETCH_MAIN_SEARCH_AUTOCOMPLETE', searchText => ({searchText})),
+  fetchMainSearchSuggestions: apiActionCreator('FETCH_MAIN_SEARCH_SUGGESTIONS', (searchText, suggestionsKey) => ({searchText, suggestionsKey})),
 }
 export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator) => {
   result[actionCreator] = actionCreator
@@ -103,8 +103,6 @@ export const ui = {
   addToast: actionCreator('ADD_TOAST', text => ({text})),
   dismissToast: actionCreator('DISMISS_TOAST'),
 
-  clearMainSearchAutocomplete: actionCreator('CLEAR_MAIN_SEARCH_AUTOCOMPLETE'),
-
   showNewJustificationDialog: actionCreator('SHOW_NEW_JUSTIFICATION_DIALOG'),
   hideNewJustificationDialog: actionCreator('HIDE_NEW_JUSTIFICATION_DIALOG'),
 
@@ -114,33 +112,20 @@ export const ui = {
 
   mainSearchTextChange: actionCreator('MAIN_SEARCH_TEXT_CHANGE'),
   loginCredentialChange: actionCreator('LOGIN_CREDENTIAL_CHANGE'),
-
-  setDoCreateJustification: actionCreator('SET_DO_CREATE_JUSTIFICATION', doCreateJustification => ({doCreateJustification})),
 }
 
-const commitEdit = actionCreator('EDITOR_COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
-commitEdit.result = actionCreator('EDITOR_COMMIT_EDIT' + actionTypeDelim + 'RESULT', (editorType, editorId, result) => ({editorType, editorId, result}))
+const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
+commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RESULT', (editorType, editorId, result) => ({editorType, editorId, result}))
 export const editors = {
-  init: actionCreator('EDITOR_INIT', (editorType, editorId, entityId) => ({editorType, editorId, entityId})),
-  beginEdit: actionCreator('EDITOR_BEGIN_EDIT', (editorType, editorId, entity) => ({editorType, editorId, entity})),
-  propertyChange: actionCreator('EDITOR_PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
+  beginEdit: actionCreator('EDITORS/BEGIN_EDIT', (editorType, editorId, entity) => ({editorType, editorId, entity})),
+  propertyChange: actionCreator('EDITORS/PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
   commitEdit,
-  cancelEdit: actionCreator('EDITOR_CANCEL_EDIT', (editorType, editorId) => ({editorType, editorId})),
+  cancelEdit: actionCreator('EDITORS/CANCEL_EDIT', (editorType, editorId) => ({editorType, editorId})),
 
-  editStatementPropertyChange: actionCreator('EDIT_STATEMENT_PROPERTY_CHANGE', (editorType, editorId, properties) => ({
-    editorType,
-    editorId,
-    properties
-  })),
-  editJustificationPropertyChange: actionCreator('EDIT_JUSTIFICATION_PROPERTY_CHANGE', (editorType, editorId, properties) => ({
-    editorType,
-    editorId,
-    properties,
-  })),
   resetEditJustification: actionCreator('RESET_EDIT_JUSTIFICATION'),
 
-  editJustificationAddUrl: actionCreator('EDIT_JUSTIFICATION_ADD_URL', (editorType, editorId) => ({editorId})),
-  editJustificationDeleteUrl: actionCreator('EDIT_JUSTIFICATION_DELETE_URL', (editorType, editorId, url, index) => ({
+  addUrl: actionCreator('EDITORS/ADD_URL', (editorType, editorId) => ({editorType, editorId})),
+  deleteUrl: actionCreator('EDITORS/DELETE_URL', (editorType, editorId, url, index) => ({
     editorType,
     editorId,
     url,
@@ -156,8 +141,14 @@ export const goto = {
 }
 
 export const flows = {
+  createJustificationThenPutActionIfSuccessful: actionCreator('FLOWS/CREATE_JUSTIFICATION_THEN_PUT_ACTION_IF_SUCCESSFUL',
+      (justification, nextAction) => ({justification, nextAction})),
   fetchAndBeginEditOfNewJustificationFromBasis: actionCreator('FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS',
       (editorType, editorId, basisType, basisId) => ({editorType, editorId, basisType, basisId})),
   createStatementThenView: actionCreator('CREATE_STATEMENT_THEN_VIEW', (...args) => ({args})),
   createStatementJustificationThenView: actionCreator('CREATE_STATEMENT_JUSTIFICATION_THEN_VIEW', (...args) => ({args})),
+}
+
+export const autocompletes = {
+  clearSuggestions: actionCreator('AUTOCOMPLETES/CLEAR_SUGGESTIONS', suggestionsKey => ({suggestionsKey}))
 }

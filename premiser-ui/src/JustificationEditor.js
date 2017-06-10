@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Divider from 'react-md/lib/Dividers'
 import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
-import FontIcon from 'react-md/lib/FontIcons'
 import Subheader from 'react-md/lib/Subheaders'
 import {JustificationBasisType, JustificationPolarity} from "./models";
 import text, {
@@ -10,16 +9,13 @@ import text, {
   JUSTIFICATION_BASIS_TYPE_STATEMENT, JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE
 } from "./texts";
-import StatementTextAutocomplete from './StatementTextAutocomplete'
-import { suggestionKeys } from './autocompleter'
 
 import './JustificationEditor.scss'
 import CitationReferenceEditor from "./CitationReferenceEditor";
-import StatementViewer from "./StatementViewer";
 import StatementEditor from "./StatementEditor";
 
 
-const statementTextName = 'basis.statement.text'
+const statementName = 'basis.statement'
 const citationReferenceName = "basis.citationReference"
 
 class JustificationEditor extends Component {
@@ -29,7 +25,6 @@ class JustificationEditor extends Component {
 
     this.onPropertyChange = this.onPropertyChange.bind(this)
     this.onChange = this.onChange.bind(this)
-    this.onStatementBasisTextAutocomplete = this.onStatementBasisTextAutocomplete.bind(this)
   }
 
   onChange(value, event) {
@@ -41,17 +36,13 @@ class JustificationEditor extends Component {
     this.props.onPropertyChange(change)
   }
 
-  onStatementBasisTextAutocomplete(name, text, index) {
-    // TODO use name instead of statementTextName
-    this.props.onPropertyChange({[statementTextName]: text})
-  }
-
   render() {
     const {
       justification,
       name,
       id,
       readOnlyBasis,
+      suggestionsKey,
     } = this.props
 
     const polarityControls = [{
@@ -71,8 +62,8 @@ class JustificationEditor extends Component {
 
     const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
+    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
-    // TODO replace with StatementEditor name=basis.statement
     const statementComponents = [
       <Subheader primary
                  primaryText="Statement information"
@@ -81,6 +72,9 @@ class JustificationEditor extends Component {
       />,
       <StatementEditor statement={justification.basis}
                        key="statementEditor"
+                       id={idPrefix + statementName}
+                       name={namePrefix + statementName}
+                       suggestionsKey={suggestionsKeyPrefix + statementName}
                        onPropertyChange={this.onPropertyChange}
                        readOnly={readOnlyBasis}
       />
@@ -95,6 +89,7 @@ class JustificationEditor extends Component {
                                id={idPrefix + citationReferenceName}
                                key={citationReferenceName}
                                name={namePrefix + citationReferenceName}
+                               suggestionsKey={suggestionsKeyPrefix + citationReferenceName}
                                onPropertyChange={this.props.onPropertyChange}
                                onAddUrlClick={this.props.onAddUrlClick}
                                onDeleteUrlClick={this.props.onDeleteUrlClick}
@@ -147,6 +142,8 @@ JustificationEditor.propTypes = {
   id: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
+  /** If present, this string will be prepended to this editor's autocomplete's suggestionKeys, with an intervening "." */
+  suggestionsKey: PropTypes.string,
   onPropertyChange: PropTypes.func.isRequired,
   onDeleteUrlClick: PropTypes.func.isRequired,
   onAddUrlClick: PropTypes.func.isRequired,

@@ -10,18 +10,7 @@ import './JustificationEditor.scss'
 class CounterJustificationEditor extends Component {
   constructor() {
     super()
-    this.onPropertyChange = this.onPropertyChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
-    this.onStatementTextAutocomplete = this.onStatementTextAutocomplete.bind(this)
-  }
-
-  onPropertyChange(change) {
-    this.props.onPropertyChange(change)
-  }
-
-  onStatementTextAutocomplete(name, text, index) {
-    // TODO use name instead of hardcoded string
-    this.props.onPropertyChange({'basis.entity.text': text})
   }
 
   onSubmit(e) {
@@ -31,7 +20,8 @@ class CounterJustificationEditor extends Component {
 
   render() {
     const {
-      counterJustification
+      counterJustification,
+      onPropertyChange,
     } = this.props
 
     const targetJustificationId = counterJustification.target.entity.id
@@ -47,8 +37,7 @@ class CounterJustificationEditor extends Component {
               leftIcon={<FontIcon>text_fields</FontIcon>}
               value={counterJustification.basis.entity.text}
               suggestionsKey={suggestionKeys.counterJustificationEditor(targetJustificationId)}
-              onPropertyChange={this.onPropertyChange}
-              onAutocomplete={this.onStatementTextAutocomplete}
+              onPropertyChange={onPropertyChange}
           />
         </form>
     )

@@ -10,11 +10,6 @@ class StatementEditor extends Component {
     super()
 
     this.onChange = this.onChange.bind(this)
-    this.onTextAutocomplete = this.onTextAutocomplete.bind(this)
-  }
-
-  onTextAutocomplete(name, label, index) {
-    this.props.onPropertyChange({[name]: label})
   }
 
   onChange(val, event) {
@@ -33,8 +28,9 @@ class StatementEditor extends Component {
       ...rest,
     } = this.props
 
-    const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
+    const namePrefix = name ? name + '.' : ''
+    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
     return (suggestionsKey && !readOnly) ?
         <StatementTextAutocomplete id={idPrefix + "text"}
@@ -42,9 +38,8 @@ class StatementEditor extends Component {
                                    label="Text"
                                    required
                                    value={statement.text}
-                                   suggestionsKey={suggestionsKey + 'Text'}
+                                   suggestionsKey={suggestionsKeyPrefix + 'text'}
                                    onPropertyChange={onPropertyChange}
-                                   onAutocomplete={this.onTextAutocomplete}
                                    leftIcon={<FontIcon>text_fields</FontIcon>}
                                    {...rest}
         /> :
@@ -70,6 +65,10 @@ StatementEditor.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
   onPropertyChange: PropTypes.func.isRequired,
+  readOnly: PropTypes.bool,
+}
+StatementEditor.defaultProps = {
+  readOnly: false
 }
 
 export default StatementEditor

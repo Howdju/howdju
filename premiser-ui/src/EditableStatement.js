@@ -27,18 +27,6 @@ class EditableStatement extends Component {
     this.onCancelEdit = this.onCancelEdit.bind(this)
   }
 
-  componentWillMount() {
-    // TODO this may not fire before the FETCH action from parent component fires.  So need to intercept these in sagas somehow
-    this.props.editors.init(EditorTypes.STATEMENT, this.props.editorId, this.props.entityId)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // console.log(this.props, nextProps)
-    if (nextProps.editorId !== this.props.editorId) {
-      this.props.editors.init(EditorTypes.STATEMENT, this.props.editorId, nextProps.entityId)
-    }
-  }
-
   onPropertyChange(properties) {
     this.props.editors.propertyChange(EditorTypes.STATEMENT, this.props.editorId, properties)
   }

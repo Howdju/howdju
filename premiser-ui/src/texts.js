@@ -56,6 +56,8 @@ export const EDIT_STATEMENT_SUBMIT_BUTTON_LABEL = 'EDIT_STATEMENT_SUBMIT_BUTTON_
 
 export const LOGIN_TO_CONTINUE = 'LOGIN_TO_CONTINUE'
 
+export const JUSTIFICATION_TITLE = 'JUSTIFICATION_TITLE'
+
 const texts = {
   [CREATE_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Create statement',
   [CREATE_STATEMENT_SUBMIT_BUTTON_TITLE]: 'Tell the world!',
@@ -93,7 +95,7 @@ const texts = {
     'Cannot modify a statement after other users have added justifications to or verified it',
 
   [CREATE_STATEMENT_TITLE]: 'Create statement',
-  [CREATE_JUSTIFICATION_TITLE]: 'Create justification',
+  [CREATE_JUSTIFICATION_TITLE]: 'Justify statement',
   [EDIT_JUSTIFICATION_TITLE]: 'Edit justification',
 
   [ERROR_FETCHING_STATEMENT]: 'Error fetching statement',
@@ -109,6 +111,8 @@ const texts = {
   [EDIT_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Save',
 
   [LOGIN_TO_CONTINUE]: 'Login to continue',
+
+  [JUSTIFICATION_TITLE]: 'Justification',
 }
 
 const text = (key, ...args) => {

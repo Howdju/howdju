@@ -69,6 +69,7 @@ class CitationReferenceEditor extends Component {
     const urls = citationReference ? citationReference.urls : []
     const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
+    // const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
     return (
         <div>
@@ -93,6 +94,7 @@ class CitationReferenceEditor extends Component {
               id={idPrefix + 'citation.text'}
               key="citation.text"
               name={namePrefix + 'citation.text'}
+              // suggestionsKey={suggestionsKeyPrefix + 'Text'}
               type="text"
               label="Citation"
               value={citationReference.citation.text}

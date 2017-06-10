@@ -15,6 +15,9 @@ export default {
       autocomplete._close()
     } else if (
         text &&
+        autocomplete.state.focus &&
+        // Another way we might check the focus, if we need to
+        // window.document.activeElement === autocomplete._field
         autocompleteResults.length > 0 &&
         !autocomplete.state.isOpen
     ) {

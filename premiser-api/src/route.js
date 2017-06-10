@@ -179,7 +179,6 @@ const routes = [
                 request: {
                   pathParameters: [statementId],
                   authToken,
-                  // TODO look at include=justifications query param
                   queryStringParameters
                 }
               }) => readStatementJustifications({statementId, authToken})

@@ -149,7 +149,6 @@ class JustificationWithCounters extends Component {
     const editBasis = this.state.editBasis
     switch (basisType) {
       case JustificationBasisType.STATEMENT:
-        // TODO callback
         this.props.api.updateStatement(editBasis)
         break;
       case JustificationBasisType.CITATION_REFERENCE:

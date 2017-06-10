@@ -78,6 +78,12 @@ export const makeNewJustification = props => merge({
   }
 }, props)
 
+export const makeNewStatementJustification = () => ({
+  statement: makeNewStatement(),
+  justification: makeNewJustification(),
+  doCreateJustification: false,
+})
+
 export const makeNewCounterJustification = targetJustification => ({
   rootStatementId: targetJustification.rootStatementId,
   target: {

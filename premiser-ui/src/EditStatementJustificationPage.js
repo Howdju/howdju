@@ -6,7 +6,6 @@ import Card from 'react-md/lib/Cards'
 import CardTitle from 'react-md/lib/Cards/CardTitle';
 import CardActions from 'react-md/lib/Cards/CardActions';
 import {goBack} from "react-router-redux";
-import Divider from 'react-md/lib/Dividers'
 import CardText from 'react-md/lib/Cards/CardText';
 import { Switch } from 'react-md/lib/SelectionControls'
 import cn from 'classnames'
@@ -22,14 +21,15 @@ import {
   ui,
 } from './actions'
 import text, {
+  default as t,
   ADD_JUSTIFICATION_TO_CREATE_STATEMENT,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE, CREATE_JUSTIFICATION_TITLE,
   CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
-  CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE,
+  CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE, JUSTIFICATION_TITLE,
 } from "./texts";
 import { suggestionKeys } from './autocompleter'
-import {consolidateBasis, makeNewJustification, makeNewStatement} from "./models";
+import {consolidateBasis, makeNewStatementJustification} from "./models";
 import {
   editStatementJustificationPageEditorId,
 } from "./editorIds"
@@ -80,10 +80,7 @@ class EditStatementJustificationPage extends Component {
   componentWillMount() {
     switch (this.props.mode) {
       case EditStatementJustificationPageMode.CREATE_STATEMENT:
-        this.props.editors.beginEdit(this.editorType, this.editorId, {
-          statement: makeNewStatement(),
-          justification: makeNewJustification(),
-        })
+        this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification())
         break
       case EditStatementJustificationPageMode.CREATE_JUSTIFICATION:
         const {
@@ -100,15 +97,15 @@ class EditStatementJustificationPage extends Component {
   }
 
   addJustificationUrl() {
-    this.props.editJustificationAddUrl(this.editorType, this.editorId)
+    this.props.editors.addUrl(this.editorType, this.editorId)
   }
 
   deleteJustificationUrl(url, index) {
-    this.props.editJustificationDeleteUrl(this.editorType, this.editorId, url, index)
+    this.props.editors.deleteUrl(this.editorType, this.editorId, url, index)
   }
 
   onDoCreateJustificationSwitchChange(checked) {
-    this.props.ui.setDoCreateJustification(checked)
+    this.props.editors.propertyChange(this.editorType, this.editorId, {doCreateJustification: checked})
   }
 
   onSubmit(event) {
@@ -163,9 +160,7 @@ class EditStatementJustificationPage extends Component {
               <div className="md-cell md-cell--12">
 
                 <Card>
-                  <CardTitle
-                      title={title}
-                  />
+                  <CardTitle title={title} />
 
                   <CardText className={cn({
                     errorMessage: true,
@@ -182,8 +177,6 @@ class EditStatementJustificationPage extends Component {
                     />
                   </CardText>
 
-                  <Divider className={cn({hidden: isCreateJustification})} />
-
                   <Switch id="doCreateJustificationSwitch"
                           name="doCreateJustification"
                           label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
@@ -191,17 +184,20 @@ class EditStatementJustificationPage extends Component {
                           checked={doCreateJustification}
                           onChange={this.onDoCreateJustificationSwitchChange} />
 
+                  <CardTitle title={t(JUSTIFICATION_TITLE)}
+                             className={cn({hidden: !isCreateJustification && !doCreateJustification})}
+                  />
+
                   <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
                     <JustificationEditor justification={justification}
                                          name="justification"
+                                         suggestionsKey="justification"
                                          readOnlyBasis={isCreateJustification}
                                          onPropertyChange={this.onPropertyChange}
                                          onAddUrlClick={this.addJustificationUrl}
                                          onDeleteUrlClick={this.deleteJustificationUrl}
                     />
                   </CardText>
-
-                  <Divider />
 
                   <CardActions>
                     <Button raised
@@ -231,18 +227,10 @@ class EditStatementJustificationPage extends Component {
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state.editors, [EditorTypes.STATEMENT_JUSTIFICATION, editStatementJustificationPageEditorId], {})
   const errors = editorState.errors
-  const {
-    statement,
-    justification,
-  } = get(editorState, 'editEntity', {
-    statement: makeNewStatement(),
-    justification: makeNewJustification(),
-  })
+  const editEntity = get(editorState, 'editEntity', makeNewStatementJustification())
   const queryParams = queryString.parse(ownProps.location.search)
   return {
-    ...state.ui.editStatementJustificationPage,
-    statement,
-    justification,
+    ...editEntity,
     errors,
     queryParams,
   }

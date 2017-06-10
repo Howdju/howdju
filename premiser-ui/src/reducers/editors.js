@@ -4,16 +4,24 @@ import cloneDeep from 'lodash/cloneDeep'
 import set from 'lodash/set'
 import assign from 'lodash/assign'
 import get from 'lodash/get'
-import mapKeys from 'lodash/mapKeys'
+import reduce from 'lodash/reduce'
+import merge from 'lodash/merge'
 import { handleActions } from 'redux-actions'
 
 import {
   api,
-  editors, str
+  editors
 } from "../actions"
 import {makeNewUrl} from "../models";
 
-const EditorActions = mapKeys(editors, str)
+const EditorActions = reduce(editors, (editorActions, actionCreator) => {
+  editorActions[actionCreator] = true
+  // Include the result action too, if present
+  if (actionCreator.result) {
+    editorActions[actionCreator.result] = true
+  }
+  return editorActions
+}, {})
 
 export const EditorTypes = {
   DEFAULT: 'DEFAULT',
@@ -24,16 +32,15 @@ export const EditorTypes = {
   LOGIN_CREDENTIALS: 'LOGIN_CREDENTIALS',
 }
 
+const defaultEditorState = {}
+
 /** Reducers that separate the behavior from the state so that it is possible to have independent states updating according
  * to the same rules.  The editor type determines the rules that update the state, the editor type and editor ID identify
  * the state.
  */
 const editorReducerByType = {
+
   [EditorTypes.DEFAULT]: handleActions({
-    [editors.init]: (state, action) => {
-      const {entityId} = action.payload
-      return {...state, entityId}
-    },
     [editors.beginEdit]: (state, action) => {
       const {entity} = action.payload
       const editEntity = cloneDeep(entity)
@@ -54,7 +61,8 @@ const editorReducerByType = {
       throw: (state, action) => ({...state, errors: action.payload.errors})
     },
     [editors.cancelEdit]: (state, action) => ({...state, editEntity: null}),
-  }, {}),
+  }, defaultEditorState),
+
   [EditorTypes.STATEMENT]: handleActions({
     [api.fetchStatementJustifications]: (state, action) => {
       if (state.entityId === action.payload.statementId) {
@@ -80,14 +88,15 @@ const editorReducerByType = {
       }
       return state
     }
-  }, {}),
+  }, defaultEditorState),
+
   [EditorTypes.JUSTIFICATION]: handleActions({
-    [editors.editJustificationAddUrl]: (state, action) => {
+    [editors.addUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.basis.citationReference.urls = editEntity.basis.citationReference.urls.concat([makeNewUrl()])
       return {...state, editEntity}
     },
-    [editors.editJustificationAddUrl]: (state, action) => {
+    [editors.deleteUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.basis.citationReference.urls.splice(action.payload.index, 1)
       return {...state, editEntity}
@@ -118,14 +127,28 @@ const editorReducerByType = {
       }
       return state
     }
-  }, {}),
+  }, defaultEditorState),
+
+  [EditorTypes.STATEMENT_JUSTIFICATION]: handleActions({
+    [editors.addUrl]: (state, action) => {
+      const citationReference = {...state.editEntity.justification.basis.citationReference}
+      citationReference.urls = citationReference.urls.concat([makeNewUrl()])
+      return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
+    },
+    [editors.deleteUrl]: (state, action) => {
+      const citationReference = {...state.editEntity.justification.basis.citationReference}
+      citationReference.urls.splice(action.payload.index, 1)
+      return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
+    },
+  }, defaultEditorState),
+
   [EditorTypes.CITATION_REFERENCE]: handleActions({
-    [editors.editJustificationAddUrl]: (state, action) => {
+    [editors.addUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.urls = editEntity.urls.concat([makeNewUrl()])
       return {...state, editEntity}
     },
-    [editors.editJustificationAddUrl]: (state, action) => {
+    [editors.deleteUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.urls.splice(action.payload.index, 1)
       return {...state, editEntity}
@@ -144,7 +167,7 @@ const editorReducerByType = {
       }
       return state
     }
-  }, {})
+  }, defaultEditorState)
 }
 
 const defaultEditorReducer = editorReducerByType[EditorTypes.DEFAULT]
@@ -156,7 +179,7 @@ const handleEditorAction = (state, action) => {
   } = action.payload
 
   // editorState could be undefined
-  const editorState = get(state, [editorType, editorId])
+  const editorState = get(state, [editorType, editorId], defaultEditorState)
   const editorReducer = editorReducerByType[editorType]
   let newEditorState = editorReducer ? editorReducer(editorState, action) : editorState
   if (newEditorState === editorState) {
