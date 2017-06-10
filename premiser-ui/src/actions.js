@@ -80,8 +80,12 @@ export const api = {
   createStatementJustification: apiActionCreator('CREATE_STATEMENT_JUSTIFICATION', (statement, justification) => ({statement, justification})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),
   deleteStatement: apiActionCreator('DELETE_STATEMENT', statement => ({statement})),
-  fetchStatementTextSuggestions: apiActionCreator('FETCH_STATEMENT_SUGGESTIONS', (text, suggestionsKey) => ({
-    text,
+  fetchStatementTextSuggestions: apiActionCreator('API/FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({
+    statementText,
+    suggestionsKey,
+  })),
+  fetchCitationTextSuggestions: apiActionCreator('API/FETCH_CITATION_TEXT_SUGGESTIONS', (citationText, suggestionsKey) => ({
+    citationText,
     suggestionsKey,
   })),
   createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeTarget(justification)})),

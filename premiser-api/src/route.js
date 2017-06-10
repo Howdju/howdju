@@ -35,7 +35,10 @@ const {
 } = require('./service')
 const {
   searchStatements,
-} = require('./search')
+} = require('./search/statements')
+const {
+  searchCitations,
+} = require('./search/citations')
 const {logger} = require('./logger')
 
 const ok = ({callback, body={}, headers}) => callback({
@@ -112,6 +115,16 @@ const routes = [
     handler: ({callback, request: { queryStringParameters: { searchText }}}) => searchStatements(searchText)
         .then(rankedStatements => {
           logger.debug(`Returning ${rankedStatements.length} statements from search`)
+          return ok({callback, body: rankedStatements})
+        })
+  },
+  {
+    id: 'searchCitations',
+    path: 'search-citations',
+    method: httpMethods.GET,
+    handler: ({callback, request: { queryStringParameters: { searchText }}}) => searchCitations(searchText)
+        .then(rankedStatements => {
+          logger.debug(`Returning ${rankedStatements.length} citations from search`)
           return ok({callback, body: rankedStatements})
         })
   },

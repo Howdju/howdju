@@ -10,8 +10,10 @@ import text, {
   JUSTIFICATION_POLARITY_POSITIVE
 } from "./texts";
 import { suggestionKeys } from './autocompleter'
+import {RETURN_KEY_CODE} from "./keyCodes";
+import CitationTextAutocomplete from "./CitationTextAutocomplete";
 
-// import './CitationReferenceEditor.scss'
+const quoteName = 'quote'
 
 class CitationReferenceEditor extends Component {
   constructor() {
@@ -19,7 +21,9 @@ class CitationReferenceEditor extends Component {
     this.state = {
       isQuoteEditedAfterMount: false
     }
+    this.onChange = this.onChange.bind(this)
     this.onPropertyChange = this.onPropertyChange.bind(this)
+    this.onTextInputKeyDown = this.onTextInputKeyDown.bind(this)
     this.onAddUrlClick = this.onAddUrlClick.bind(this)
     this.onDeleteUrlClick = this.onDeleteUrlClick.bind(this)
   }
@@ -30,18 +34,20 @@ class CitationReferenceEditor extends Component {
     })
   }
 
-  onPropertyChange(value, event) {
+  onChange(value, event) {
     const target = event.target;
     const name = target.name
-    this.updateIsQuoteEditedAfterMount(value, name)
     this.props.onPropertyChange({[name]: value})
   }
 
-  updateIsQuoteEditedAfterMount(value, name) {
-    if (name === 'quote') {
-      this.setState({
-        isQuoteEditedAfterMount: true
-      })
+  onPropertyChange(properties) {
+    this.props.onPropertyChange(properties)
+  }
+
+  onTextInputKeyDown(event) {
+    if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
+      event.preventDefault()
+      this.props.onSubmit()
     }
   }
 
@@ -60,6 +66,7 @@ class CitationReferenceEditor extends Component {
       citationReference,
       name,
       id,
+      suggestionsKey,
       readOnly,
     } = this.props
     const {
@@ -69,14 +76,14 @@ class CitationReferenceEditor extends Component {
     const urls = citationReference ? citationReference.urls : []
     const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
-    // const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
+    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
     return (
         <div>
           <TextField
-              id={idPrefix + "quote"}
+              id={idPrefix + quoteName}
               key="quote"
-              name={namePrefix + "quote"}
+              name={namePrefix + quoteName}
               type="text"
               label="Quote"
               rows={2}
@@ -86,22 +93,22 @@ class CitationReferenceEditor extends Component {
                 hasValue: !!citationReference.quote,
               })}
               value={citationReference.quote}
-              onChange={this.onPropertyChange}
+              onChange={this.onChange}
               leftIcon={<FontIcon>format_quote</FontIcon>}
               disabled={readOnly}
           />
-          <TextField
+          <CitationTextAutocomplete
               id={idPrefix + 'citation.text'}
               key="citation.text"
               name={namePrefix + 'citation.text'}
-              // suggestionsKey={suggestionsKeyPrefix + 'Text'}
-              type="text"
+              suggestionsKey={suggestionsKeyPrefix + 'citation.text'}
               label="Citation"
               value={citationReference.citation.text}
               required
-              onChange={this.onPropertyChange}
+              onPropertyChange={this.onPropertyChange}
               leftIcon={<FontIcon>book</FontIcon>}
               disabled={readOnly}
+              onKeyDown={this.onTextInputKeyDown}
           />
           {urls.map( (url, index) =>
               <TextField
@@ -111,10 +118,11 @@ class CitationReferenceEditor extends Component {
                   type="url"
                   label="URL"
                   value={citationReference.urls[index].url}
-                  onChange={this.onPropertyChange}
+                  onChange={this.onChange}
                   leftIcon={<FontIcon>link</FontIcon>}
-                  rightIcon={readOnly ? <div></div> : <Button icon onClick={(e) => this.onDeleteUrlClick(e, url, index)}>delete</Button>}
+                  rightIcon={readOnly ? <div/> : <Button icon onClick={(e) => this.onDeleteUrlClick(e, url, index)}>delete</Button>}
                   disabled={readOnly}
+                  onKeyDown={this.onTextInputKeyDown}
               />
           )}
           <Button flat
@@ -136,6 +144,7 @@ CitationReferenceEditor.propTypes = {
   id: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
+  onSubmit: PropTypes.func,
   onPropertyChange: PropTypes.func,
   onDeleteUrlClick: PropTypes.func,
   onAddUrlClick: PropTypes.func,

@@ -9,15 +9,20 @@ import text, {
   default as t,
   DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
-  DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
-  UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, LOGIN_TO_CONTINUE
+  DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+  MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
+  UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+  UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
 } from './texts'
 import {fetchJson} from "./api";
 import {logError} from './util'
 import {
-  statementJustificationsSchema, voteSchema, statementSchema,
-  justificationSchema, citationReferenceSchema
+  statementJustificationsSchema,
+  voteSchema,
+  statementSchema,
+  justificationSchema,
+  citationReferenceSchema
 } from './schemas'
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
@@ -25,7 +30,12 @@ import mainSearcher from './mainSearcher'
 import * as httpMethods from './httpMethods'
 import * as httpStatuses from './httpStatuses'
 import {denormalize} from "normalizr";
-import {selectAuthToken, selectEditorState, selectLoginRedirectLocation, selectRouterLocation} from "./selectors";
+import {
+  selectAuthToken,
+  selectEditorState,
+  selectLoginRedirectLocation,
+  selectRouterLocation
+} from "./selectors";
 import {EditorTypes} from "./reducers/editors";
 import {
   api,
@@ -36,7 +46,10 @@ import {
   app,
   flows, str,
 } from "./actions";
-import {JustificationBasisType, makeNewJustification, makeNewStatement} from "./models";
+import {
+  JustificationBasisType,
+  makeNewStatementJustification
+} from "./models";
 import {logger} from './util'
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -147,7 +160,10 @@ export const resourceApiConfigs = {
     endpoint: `search-statements?searchText=${payload.searchText}`,
   }),
   [api.fetchStatementTextSuggestions]: payload => ({
-    endpoint: `search-statements?searchText=${payload.text}`,
+    endpoint: `search-statements?searchText=${payload.statementText}`,
+  }),
+  [api.fetchCitationTextSuggestions]: payload => ({
+    endpoint: `search-citations?searchText=${payload.citationText}`,
   }),
   [api.verifyJustification]: payload => ({
     endpoint: 'votes',
@@ -468,16 +484,14 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
       const basis = basisGetter(denormalize(result, schema, entities))
       const statement = basisType === JustificationBasisType.STATEMENT ? basis : undefined
       const citationReference = basisType === JustificationBasisType.CITATION_REFERENCE ? basis : undefined
-      yield put(editors.beginEdit(editorType, editorId, {
-        statement: makeNewStatement(),
-        justification: makeNewJustification({
-          basis: {
-            type: basisType,
-            statement: statement,
-            citationReference: citationReference,
-          }
-        })
-      }))
+      const editModel = makeNewStatementJustification({}, {
+        basis: {
+          type: basisType,
+          statement: statement,
+          citationReference: citationReference,
+        }
+      })
+      yield put(editors.beginEdit(editorType, editorId, editModel))
     }
   })
 }

@@ -6,7 +6,7 @@ import {
 } from "./actions";
 import ApiAutocomplete from "./ApiAutocomplete";
 
-class StatementTextAutocomplete extends Component {
+class CitationTextAutocomplete extends Component {
 
   constructor() {
     super()
@@ -14,8 +14,8 @@ class StatementTextAutocomplete extends Component {
     this.onAutocomplete = this.onAutocomplete.bind(this)
   }
 
-  onAutocomplete(statement) {
-    this.props.onPropertyChange({[this.props.name]: statement.text})
+  onAutocomplete(citation) {
+    this.props.onPropertyChange({[this.props.name]: citation.text})
   }
 
   render() {
@@ -28,22 +28,22 @@ class StatementTextAutocomplete extends Component {
     } = this.props
 
     return (
-      <ApiAutocomplete
-          {...props}
-          value={value}
-          // maxLength={2048}
-          pattern=".+"
-          onPropertyChange={onPropertyChange}
-          onAutocomplete={this.onAutocomplete}
-          fetchSuggestions={api.fetchStatementTextSuggestions}
-          suggestionsKey={suggestionsKey}
-          dataLabel="text"
-          dataValue="id"
-      />
+        <ApiAutocomplete
+            {...props}
+            value={value}
+            // maxLength={2048}
+            pattern=".+"
+            onPropertyChange={onPropertyChange}
+            onAutocomplete={this.onAutocomplete}
+            fetchSuggestions={api.fetchCitationTextSuggestions}
+            suggestionsKey={suggestionsKey}
+            dataLabel="text"
+            dataValue="id"
+        />
     )
   }
 }
-StatementTextAutocomplete.propTypes = {
+CitationTextAutocomplete.propTypes = {
   name: PropTypes.string.isRequired,
   /** The value to display in the text input */
   value: PropTypes.string,
@@ -55,4 +55,4 @@ StatementTextAutocomplete.propTypes = {
 
 export default connect(null, mapActionCreatorGroupToDispatchToProps({
   api
-}))(StatementTextAutocomplete)
+}))(CitationTextAutocomplete)

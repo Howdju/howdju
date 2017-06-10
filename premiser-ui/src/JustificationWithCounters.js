@@ -24,7 +24,7 @@ import {
 import {
   JustificationBasisType,
   isVerified,
-  isDisverified,
+  isDisverified, isStatementBased, hasQuote,
 } from './models'
 
 import config from './config';
@@ -196,6 +196,12 @@ class JustificationWithCounters extends Component {
 
     const isEditing = !!editBasis
 
+    const basisUseDescription = isStatementBased(justification) ?
+        'Justify another statement with this one' :
+        hasQuote(justification) ?
+            'Justify a statement with this quote' :
+            'Justify a statement with this citation'
+
     const menu = (
         <MenuButton
             icon
@@ -208,12 +214,14 @@ class JustificationWithCounters extends Component {
           <ListItem primaryText="Go To"
                     leftIcon={<FontIcon>forward</FontIcon>}
                     onClick={this.goToStatement}
+                    className={cn({hidden: !isStatementBased(justification)})}
           />
           <ListItem primaryText="Counter"
                     leftIcon={<FontIcon>reply</FontIcon>}
                     onClick={this.onAddNewCounterJustification}
           />
           <ListItem primaryText="Use"
+                    title={basisUseDescription}
                     leftIcon={<FontIcon>call_made</FontIcon>}
                     onClick={this.onUseJustification}
           />

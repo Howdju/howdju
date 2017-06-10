@@ -208,6 +208,7 @@ class StatementJustificationsPage extends Component {
                     onClick={this.showNewJustificationDialog}
           />
           <ListItem primaryText="Use"
+                    title="Justify another statement with this one"
                     leftIcon={<FontIcon>call_made</FontIcon>}
                     onClick={this.onUseStatement}
           />
@@ -252,6 +253,7 @@ class StatementJustificationsPage extends Component {
                                    onPropertyChange={this.onNewJustificationPropertyChange}
                                    onAddUrlClick={this.addNewJustificationUrl}
                                    onDeleteUrlClick={this.deleteNewJustificationUrl}
+                                   onSubmit={this.saveNewJustification}
               />
             }
           </form>

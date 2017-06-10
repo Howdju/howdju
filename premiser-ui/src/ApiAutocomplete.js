@@ -122,7 +122,7 @@ ApiAutocomplete.propTypes = {
   onPropertyChange: PropTypes.func,
   /** The callback for when the user selects a suggestion.  Arguments: (label, index) */
   onAutocomplete: PropTypes.func,
-  /** An optional function for transforming the contents of the array state.app.autocompleteSuggestions[suggestionsKey].  Called
+  /** An optional function for transforming the stored suggestions.  Called
    * with item to transform.  Provides flexibility when the results from
    * the API don't match the form required for the Autocomplete
    */

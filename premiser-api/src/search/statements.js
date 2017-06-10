@@ -1,3 +1,4 @@
+const {removeDups} = require("./util")
 const {queries} = require('../db')
 const {toStatement} = require("../orm")
 
@@ -59,20 +60,6 @@ where
       text ilike '%' || $1 || '%'
   and deleted is null
 `
-
-const removeDups = (idName, ...rowsArr) => {
-  const seenIds = {}
-  const deduped = []
-  for (rows of rowsArr) {
-    for (row of rows) {
-      if (!seenIds[row[idName]]) {
-        deduped.push(row)
-        seenIds[row[idName]] = true
-      }
-    }
-  }
-  return deduped
-}
 
 const searchStatements = (searchText) => {
   searchText = searchText.replace(/[^\w\s]/g, '')

@@ -35,6 +35,7 @@ export const isVerified = j => j.vote && j.vote.polarity === VotePolarity.POSITI
 export const isDisverified = j => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
 export const isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && isNegative(j)
 export const isStatementBased = j => j.basis.type === JustificationBasisType.STATEMENT
+export const hasQuote = j => isCitationReferenceBased(j) && j.basis.entity.quote
 export const isCitationReferenceBased = j =>j.basis.type === JustificationBasisType.CITATION_REFERENCE
 
 export const decircularizeTarget = justification => {
@@ -78,9 +79,9 @@ export const makeNewJustification = props => merge({
   }
 }, props)
 
-export const makeNewStatementJustification = () => ({
-  statement: makeNewStatement(),
-  justification: makeNewJustification(),
+export const makeNewStatementJustification = (statementProps, justificationProps) => ({
+  statement: makeNewStatement(statementProps),
+  justification: makeNewJustification(justificationProps),
   doCreateJustification: false,
 })
 

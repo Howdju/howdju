@@ -12,6 +12,15 @@ export default handleActions({
       }
     })
   },
+  [api.fetchCitationTextSuggestions.response]: {
+    next: (state, action) => ({
+      ...state,
+      suggestions: {
+        ...state.suggestions,
+        [action.meta.requestPayload.suggestionsKey]: action.payload,
+      }
+    })
+  },
   [api.fetchMainSearchSuggestions.response]: {
     next: (state, action) => ({
       ...state,

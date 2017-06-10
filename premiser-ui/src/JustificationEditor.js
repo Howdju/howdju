@@ -23,17 +23,12 @@ class JustificationEditor extends Component {
   constructor() {
     super()
 
-    this.onPropertyChange = this.onPropertyChange.bind(this)
     this.onChange = this.onChange.bind(this)
   }
 
   onChange(value, event) {
     const name = event.target.name
     this.props.onPropertyChange({[name]: value})
-  }
-
-  onPropertyChange(change) {
-    this.props.onPropertyChange(change)
   }
 
   render() {
@@ -43,6 +38,10 @@ class JustificationEditor extends Component {
       id,
       readOnlyBasis,
       suggestionsKey,
+      onSubmit,
+      onPropertyChange,
+      onAddUrlClick,
+      onDeleteUrlClick,
     } = this.props
 
     const polarityControls = [{
@@ -75,7 +74,7 @@ class JustificationEditor extends Component {
                        id={idPrefix + statementName}
                        name={namePrefix + statementName}
                        suggestionsKey={suggestionsKeyPrefix + statementName}
-                       onPropertyChange={this.onPropertyChange}
+                       onPropertyChange={onPropertyChange}
                        readOnly={readOnlyBasis}
       />
     ]
@@ -90,10 +89,11 @@ class JustificationEditor extends Component {
                                key={citationReferenceName}
                                name={namePrefix + citationReferenceName}
                                suggestionsKey={suggestionsKeyPrefix + citationReferenceName}
-                               onPropertyChange={this.props.onPropertyChange}
-                               onAddUrlClick={this.props.onAddUrlClick}
-                               onDeleteUrlClick={this.props.onDeleteUrlClick}
+                               onPropertyChange={onPropertyChange}
+                               onAddUrlClick={onAddUrlClick}
+                               onDeleteUrlClick={onDeleteUrlClick}
                                readOnly={readOnlyBasis}
+                               onSubmit={onSubmit}
       />
     ]
 
@@ -148,6 +148,7 @@ JustificationEditor.propTypes = {
   onDeleteUrlClick: PropTypes.func.isRequired,
   onAddUrlClick: PropTypes.func.isRequired,
   readOnlyBasis: PropTypes.bool,
+  onSubmit: PropTypes.func,
 }
 JustificationEditor.defaultProps = {
   readOnlyBasis: false,

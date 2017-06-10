@@ -1,10 +1,10 @@
 # Howdju UI TODO
 ## MVP
 
-* Add CitationTextAutocomplete
+* disverifying verified negative justification and reload page.  Is still verified
+* negative justification disverified causes horizontal scrollbar
+* Prevent empty statement/citation reference justification 
 
-* Get StatementJustificationsPage to work with editors
-  * Need to hide dialog on success
 * Get rid of resetEditJustification in favor of something like beginning edit of new model?
   * replace resetEditJustification with beginEdit(makeNewJustification(...))
 
