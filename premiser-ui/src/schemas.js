@@ -22,6 +22,7 @@ justificationSchema.define({
   counterJustifications: [justificationSchema],
   vote: voteSchema
 })
+const justificationsSchema = [justificationSchema]
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there.
 justificationTargetSchema.define({
   STATEMENT: statementSchema,
@@ -30,5 +31,10 @@ justificationTargetSchema.define({
 
 export const statementJustificationsSchema = {
   statement: statementSchema,
-  justifications: [justificationSchema]
+  justifications: justificationsSchema
+}
+
+export const statementJustificationSchema = {
+  statement: statementSchema,
+  justification: justificationSchema,
 }

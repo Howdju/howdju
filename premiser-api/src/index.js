@@ -1,6 +1,8 @@
 process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT']
 
-const _ = require('lodash')
+const reduce = require('lodash/reduce')
+const isArray = require('lodash/isArray')
+const httpStatusCodes = require('./httpStatusCodes')
 const env = require('node-env-file')
 // ENV vars for either sensitive information or things that may need to be changed via the AWS lambda console
 env(__dirname + '/.env')
@@ -10,31 +12,14 @@ const {routeEvent} = require('./route')
 const config = require('./config')
 const {logger} = require('./logger')
 
-/** See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
- *  See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
- */
-const statusCodes = {
-  ok: 200,
-  /** There was nothing to do and nothing new to return (does not allow a body) */
-  noContent: 204,
-  /** The parameters/body supplied for the endpoint are improper */
-  badRequest: 400,
-  /** The user is not authenticated, or improperly authenticated */
-  unauthorized: 401,
-  /** The user is authenticated, but lacks permission */
-  forbidden: 403,
-  notFound: 404,
-  error: 500,
-}
-
-const makeObj = (iterable) => _.reduce(iterable, (acc, o) => {
+const makeObj = (iterable) => reduce(iterable, (acc, o) => {
   acc[o] = o
   return acc
 }, {})
 
-const allowedOrigins = _.isArray(config.corsAllowOrigin) ? makeObj(config.corsAllowOrigin) : makeObj([config.corsAllowOrigin])
+const allowedOrigins = isArray(config.corsAllowOrigin) ? makeObj(config.corsAllowOrigin) : makeObj([config.corsAllowOrigin])
 
-const makeResponse = ({status, headers={}, body, origin}) => {
+const makeResponse = ({httpStatusCode, headers={}, body, origin}) => {
   headers = Object.assign({}, headers, {
     'Access-Control-Allow-Origin': allowedOrigins[origin] || 'none',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization',
@@ -45,7 +30,7 @@ const makeResponse = ({status, headers={}, body, origin}) => {
     'Pragma': 'no-cache',
     'Vary': 'Origin',
   })
-  if (status === 'unauthorized') {
+  if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
     // https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
     // realm=<realm> A description of the protected area. If no realm is specified, clients often display a formatted hostname instead.
@@ -53,12 +38,12 @@ const makeResponse = ({status, headers={}, body, origin}) => {
   }
 
   const response = {
-    statusCode: statusCodes[status] || statusCodes.error,
+    statusCode: httpStatusCode || httpStatusCodes.ERROR,
     headers,
   }
 
   if (body) {
-    if (status === 'noContent') {
+    if (httpStatusCode === httpStatusCodes.NO_CONTENT) {
       logger.warn('noContent response received body.  Ignoring')
     } else {
       response.headers['Content-Type'] = 'application/json'
@@ -86,8 +71,8 @@ exports.handler = (event, context, callback) => {
     // Otherwise the pg.Pool timeout keeps us alive
     context.callbackWaitsForEmptyEventLoop = false
 
-    function respond({status, headers, body}) {
-      const response = makeResponse({status, headers, body, origin: event.headers.origin})
+    function respond({httpStatusCode, headers, body}) {
+      const response = makeResponse({httpStatusCode, headers, body, origin: event.headers.origin})
       return callback(null, response)
     }
 
@@ -101,7 +86,10 @@ exports.handler = (event, context, callback) => {
         queryStringParameters: event.queryStringParameters,
         body: event.body,
       },
-    }).then(null, error => callback(error))
+    }).then(null, error => {
+      logger.error('uncaught error after routeEvent')
+      callback(error)
+    })
   } catch(error) {
     logger.error(error)
     console.error('Event:', JSON.stringify(event, null, 2))

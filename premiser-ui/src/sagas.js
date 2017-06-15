@@ -4,8 +4,11 @@ import merge from 'lodash/merge'
 import {REHYDRATE} from 'redux-persist/constants'
 import {push, replace} from 'react-router-redux'
 import map from 'lodash/map'
+import get from 'lodash/get'
 
 import text, {
+  A_NETWORK_ERROR_OCCURRED,
+  AN_UNEXPECTED_ERROR_OCCURRED,
   default as t,
   DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
@@ -22,13 +25,13 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  citationReferenceSchema
+  citationReferenceSchema, statementJustificationSchema, statementsSchema
 } from './schemas'
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
 import mainSearcher from './mainSearcher'
 import * as httpMethods from './httpMethods'
-import * as httpStatuses from './httpStatuses'
+import * as httpStatusCodes from './httpStatusCodes'
 import {denormalize} from "normalizr";
 import {
   selectAuthToken,
@@ -51,6 +54,8 @@ import {
   makeNewStatementJustification
 } from "./models";
 import {logger} from './util'
+import apiErrorCodes from "./apiErrorCodes";
+import {customErrorTypes} from "./customErrors";
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false
@@ -60,8 +65,7 @@ let isRehydrated = false
 export const resourceApiConfigs = {
   [api.fetchStatements]: {
     endpoint: 'statements',
-    // TODO {statements: [statementSchema}]
-    schema: [statementSchema],
+    schema: {statements: statementsSchema},
   },
   [api.fetchStatement]: payload => ({
     endpoint: `statements/${payload.statementId}`,
@@ -77,9 +81,7 @@ export const resourceApiConfigs = {
       method: httpMethods.PUT,
       body: payload
     },
-    schema: {
-      citationReference: citationReferenceSchema
-    },
+    schema: {citationReference: citationReferenceSchema},
   }),
   [api.createStatement]: payload => ({
     endpoint: 'statements',
@@ -87,15 +89,11 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
       body: payload
     },
-    schema: {
-      statement: statementSchema,
-    }
+    schema: {statement: statementSchema}
   }),
   [api.updateStatement]: payload => ({
     endpoint: `statements/${payload.statement.id}`,
-    schema: {
-      statement: statementSchema,
-    },
+    schema: {statement: statementSchema},
     fetchInit: {
       method: httpMethods.PUT,
       body: {
@@ -104,15 +102,12 @@ export const resourceApiConfigs = {
     },
   }),
   [api.createStatementJustification]: payload => ({
-    endpoint: 'statements',
+    endpoint: 'statement-justifications',
     fetchInit: {
       method: httpMethods.POST,
       body: payload
     },
-    schema: {
-      statement: statementSchema,
-      justification: justificationSchema,
-    }
+    schema: {statementJustification: statementJustificationSchema}
   }),
   [api.createJustification]: payload => ({
     endpoint: 'justifications',
@@ -154,7 +149,7 @@ export const resourceApiConfigs = {
   }),
   [api.fetchStatementsSearch]: payload => ({
     endpoint: `search-statements?searchText=${payload.searchText}`,
-    schema: [statementSchema],
+    schema: statementsSchema,
   }),
   [api.fetchMainSearchSuggestions]: payload => ({
     endpoint: `search-statements?searchText=${payload.searchText}`,
@@ -169,33 +164,41 @@ export const resourceApiConfigs = {
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.POST,
-      body: payload
+      body: {
+        vote: payload.vote
+      }
     },
-    schema: voteSchema,
+    schema: {vote: voteSchema},
   }),
   [api.unVerifyJustification]: payload => ({
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.DELETE,
-      body: payload
+      body: {
+        vote: payload.vote
+      }
     },
-    schema: voteSchema,
+    schema: {vote: voteSchema},
   }),
   [api.disverifyJustification]: payload => ({
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.POST,
-      body: payload
+      body: {
+        vote: payload.vote
+      }
     },
-    schema: voteSchema,
+    schema: {vote: voteSchema},
   }),
   [api.unDisverifyJustification]: payload => ({
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.DELETE,
-      body: payload
+      body: {
+        vote: payload.vote
+      }
     },
-    schema: voteSchema,
+    schema: {vote: voteSchema},
   }),
 }
 
@@ -271,8 +274,8 @@ function* goHomeIfDeleteStatementWhileViewing() {
 function* redirectToLoginWhenUnauthorized() {
   yield takeEvery(str(api.callApi.response), function* redirectToLoginWhenUnauthorizedWorker(action) {
     if (action.error) {
-      const {status} = action.payload
-      if (status === httpStatuses.UNAUTHORIZED) {
+      const {httpStatusCode} = action.payload
+      if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
         const routerLocation = yield select(selectRouterLocation)
         yield put(goto.login(routerLocation))
       }
@@ -313,14 +316,14 @@ function* goTo() {
   })
 }
 
-function* leaveMissingStatement() {
+function* redirectHomeFromMissingStatement() {
   yield takeEvery(str(api.fetchStatementJustifications.response), function* leaveMissingStatementWorker(action) {
     if (action.error) {
       const routerLocation = yield select(selectRouterLocation)
       // Try to determine whether we are on the page for a statement that was not found
-      const path = paths.statement({id: action.meta.statementId})
+      const path = paths.statement({id: action.meta.requestPayload.statementId})
       if (
-          action.payload.status === httpStatuses.NOT_FOUND &&
+          action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND &&
           // startsWith because we don't have a slug
           routerLocation.pathname.startsWith(path)
       ) {
@@ -427,20 +430,20 @@ function* editorCommitEdit() {
 
 function* createEntityThenView() {
 
-  const actionCreatorByFlow = {
-    [flows.createStatementThenView]: api.createStatement,
-    [flows.createStatementJustificationThenView]: api.createStatementJustification,
-  }
-
-  yield takeEvery([
-      str(flows.createStatementThenView),
-      str(flows.createStatementJustificationThenView),
-  ], function* createStatementJustificationThenViewWorker(action) {
-    const actionCreator = actionCreatorByFlow[action.type]
-    const createResponseAction = yield call(callApiForResource, actionCreator(...action.payload.args))
+  yield takeEvery(str(flows.createStatementThenView), function* createStatementThenViewWorker(action) {
+    const createResponseAction = yield call(callApiForResource, api.createStatement(...action.payload.args))
     if (!createResponseAction.error) {
       const {entities, result} = createResponseAction.payload
       const statement = entities.statements[result.statement]
+      yield put(goto.statement(statement))
+    }
+  })
+
+  yield takeEvery(str(flows.createStatementJustificationThenView), function* createStatementJustificationThenViewWorker(action) {
+    const createResponseAction = yield call(callApiForResource, api.createStatementJustification(...action.payload.args))
+    if (!createResponseAction.error) {
+      const {entities, result} = createResponseAction.payload
+      const statement = entities.statements[result.statementJustification.statement]
       yield put(goto.statement(statement))
     }
   })
@@ -505,9 +508,47 @@ function* createJustificationThenPutActionIfSuccessful() {
   })
 }
 
+function* showAlertForUnexpectedApiError() {
+  yield takeEvery(str(api.callApi.response), function* showAlertForUnexpectedApiErrorWorker(action) {
+    if (action.error) {
+      if (action.payload.errorType) {
+        switch (action.payload.errorType) {
+          case customErrorTypes.NETWORK_FAILURE_ERROR: {
+            yield put(ui.addToast(t(A_NETWORK_ERROR_OCCURRED)))
+            break
+          }
+          case customErrorTypes.API_RESPONSE_ERROR: {
+            const errorCode = get(action.payload, ['body', 'errorCode'])
+            if (!errorCode) {
+              logger.error('API response error missing error code')
+              yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+            } else if (errorCode === apiErrorCodes.UNEXPECTED_ERROR) {
+              yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+            }
+            break
+          }
+          default: {
+            logger.error(`Unexpected error type: ${action.payload}`)
+            logger.error(action.payload)
+            yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+            break
+          }
+        }
+      } else {
+        yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+        logger.error(`Unexpected error type: ${action.payload}`)
+        logger.error(action.payload)
+      }
+    }
+  })
+}
+
+
+
 export default () => [
   flagRehydrate(),
   initializeMainSearch(),
+
   resourceApiCalls(),
 
   redirectToLoginWhenUnauthorized(),
@@ -516,11 +557,13 @@ export default () => [
 
   goToStatement(),
   goHomeIfDeleteStatementWhileViewing(),
-  leaveMissingStatement(),
+  redirectHomeFromMissingStatement(),
   createJustificationThenPutActionIfSuccessful(),
   apiFailureErrorMessages(),
   editorCommitEdit(),
   goToMainSearch(),
   createEntityThenView(),
   fetchAndBeginEditOfNewJustificationFromBasis(),
+
+  showAlertForUnexpectedApiError(),
 ]

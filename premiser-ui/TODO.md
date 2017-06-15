@@ -1,20 +1,9 @@
 # Howdju UI TODO
 ## MVP
 
-* negative justification disverified causes horizontal scrollbar
-* Prevent empty statement/citation reference justification 
-
-* Get rid of resetEditJustification in favor of something like beginning edit of new model?
-  * replace resetEditJustification with beginEdit(makeNewJustification(...))
-
-* Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
-  * Or should we not be normalizing from API?  Should we normalize in reducer?
-  * Change this for autocomplete fetches in entities
-
-* deal with issue of citation.basis.entity vs. citation.basis.citationReference/.statement (how to know which one it is in an editor reducer?)
-
 ### Editors/Errors
 * Update API and UI for editor errors
+  * Combine messages.js with whatever we do with showing errors in editors
 * Move JustificationWithCounter to use editor state
 * change editEntity to editModel
   * cf. use of entityId
@@ -39,6 +28,7 @@
 * Statements that differ by special chars or capitalization are treated as different (normalized text etc)
 
 ### Bugs/stability
+* Include type conversion in validation somehow?  toNumber(statementId), e.g.
 * Change vote polarity to enum to support future vote types?
 * consolidateBasis of editor justification should happen in saga I think instead of in components
 * Don't create empty URL from EditStatementJustificationPage!
@@ -66,6 +56,18 @@
 * Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
 * If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
 * Change to using 500s with error keys that can be translated into UI messages
+* Do I check return values for delete dao methods and throw NotFoundError when it was missing?
+
+* Prevent empty statement/citation reference justification 
+
+* Get rid of resetEditJustification in favor of something like beginning edit of new model?
+  * replace resetEditJustification with beginEdit(makeNewJustification(...))
+
+* Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
+  * Or should we not be normalizing from API?  Should we normalize in reducer?
+  * Change this for autocomplete fetches in entities
+
+* deal with issue of citation.basis.entity vs. citation.basis.citationReference/.statement (how to know which one it is in an editor reducer?)
 
 ### Feedback
 * Error reporting
@@ -121,6 +123,17 @@
 * Statement example: height of the capitol building limit DC
 * Add messages for when cannot edit and why
 * When statements or citations or citation references conflict, offer to merge them somehow?
+* Add time grade period checks to entity update methods
+* Update/Delete validation rules
+  _ If modification would conflict with another entity, then disallow
+  - If user has permission to MODIFY_ALL_ENTITIES, then allow
+  - If other users have interacted with the entity, then disallow
+  - If a grace period of 24 hours or so has passed, then disallow
+
+* Make URLs (or CitationUrls) voteable.
+  * Users can always add new URLs
+  * Deleting URLs follow the normal rules (if other users have interacted, or grace period is up)
+  * Votes determine order of URLs
   
 ### Flair
   * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
@@ -159,11 +172,13 @@
   * When created counter-justification is initially inserted, this may not be the same location it appears on a full
      page reload.
 
+
 ### Product/Modeling ideas
 * Disjustifications of a statement are counters to a justification using that statement
   
 ### Bugs
 * react-md autocomplete still shows when there are no results
+* disverified negative justification causes horizontal scrollbar
   
 ### Error/Requirements
 * Do required fields on either justification editor prevent submission?

@@ -4,17 +4,19 @@ const sortBy = require('lodash/sortBy')
 
 const urlsDao = require('./urlsDao')
 const citationsDao = require('./citationsDao')
+const {toCitationReferenceUrl} = require("../orm")
 const {
   toCitationReference,
   toCitation,
 } = require("../orm")
-const {query, queries} = require('./../db')
+const {query} = require('./../db')
 const {
   JustificationBasisType,
   JustificationTargetType,
   VoteTargetType,
 } = require('../models')
 const {logger} = require('../logger')
+const head = require('lodash/head')
 
 
 class CitationReferencesDao {
@@ -44,6 +46,47 @@ class CitationReferencesDao {
           citationReference.urls = urls
           return citationReference
         })
+  }
+
+  readCitationReferencesEquivalentTo(citationReference) {
+
+    return query(
+        'select * from citation_references where citation_id = $1 and quote = $2 and deleted is null',
+        [citationReference.citation.id, citationReference.quote]
+    )
+        .then( ({rows}) => {
+          if (rows.length > 1) {
+            logger.error(`${rows.length} equivalent citation references`, citationReference)
+          }
+          return toCitationReference(head(rows))
+        })
+  }
+
+  readCitationReferenceUrl(citationReference, url) {
+    return query('select * from citation_reference_urls where citation_reference_id = $1 and url_id = $2',
+        [citationReference.id, url.id])
+        .then( ({rows}) => map(rows, toCitationReferenceUrl))
+  }
+
+  createCitationReferenceUrl(citationReference, url, userId, now) {
+    return query(`
+      insert into citation_reference_urls (citation_reference_id, url_id, creator_user_id, created) 
+      values ($1, $2, $3, $4)
+      returning *
+      `,
+      [citationReference.id, url.id, userId, now]
+    )
+        .then( ({rows}) => map(rows, toCitationReferenceUrl))
+  }
+
+  createCitationReference(citationReference, userId, now) {
+    const sql = `
+      insert into citation_references (quote, citation_id, creator_user_id, created) 
+      values ($1, $2, $3, $4) 
+      returning *
+    `
+    return query(sql, [citationReference.quote, citationReference.citation.id, userId, now])
+        .then( ({rows: [row]}) => toCitationReference(row))
   }
 
   doOtherCitationReferencesHaveSameQuoteAs(citationReference) {

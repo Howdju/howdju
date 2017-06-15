@@ -11,23 +11,26 @@ const filter = require('lodash/filter')
 const keys = require('lodash/keys')
 const pickBy = require('lodash/pickBy')
 const map = require('lodash/map')
+const toNumber = require('lodash/toNumber')
 
 const config = require('./config')
-const {assert} = require('./util')
 const {logger} = require('./logger')
-const {query, queries} = require('./db')
 const statementsDao = require('./dao/statementsDao')
 const permissionsDao = require('./dao/permissionsDao')
 const citationReferencesDao = require('./dao/citationReferencesDao')
 const citationsDao = require('./dao/citationsDao')
+const justificationsDao = require('./dao/justificationsDao')
+const usersDao = require('./dao/usersDao')
+const authDao = require('./dao/authDao')
+const votesDao = require('./dao/votesDao')
+const urlsDao = require('./dao/urlsDao')
+const actionsDao = require('./dao/actionsDao')
 const {
-  toStatement,
-  toJustification,
-  toCitationReference,
-  toCitation,
-  toUrl,
-  toVote
-} = require('./orm')
+  statementValidator,
+  statementJustificationValidator,
+  justificationValidator,
+  credentialValidator,
+} = require('./validators')
 const {
   OTHER_CITATION_REFERENCES_HAVE_SAME_QUOTE_CONFLICT,
   OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT,
@@ -41,439 +44,231 @@ const {
   OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
 } = require("./codes/userActionsConflictCodes")
 const {
+  CANNOT_MODIFY_OTHER_USERS_ENTITIES
+} = require('./codes/authorizationErrorCodes')
+const {
   AuthenticationError,
   AuthorizationError,
   NotFoundError,
   EntityConflictError,
   ValidationError,
   UserActionsConflictError,
+  ImpossibleError,
+  EntityTooOldToModifyError,
 } = require("./errors")
 const {
   CREATE_USERS,
-  DELETE_JUSTIFICATIONS,
-  DELETE_STATEMENTS,
-  UPDATE_STATEMENTS,
-  UPDATE_CITATION_REFERENCES,
+  EDIT_ANY_ENTITY,
 } = require("./permissions")
 const {
-  JustificationTargetType,
   JustificationBasisType,
   ActionTargetType,
   ActionType,
-  VoteTargetType,
-  negatePolarity,
+  EntityTypes,
 } = require('./models')
 
 
-const withPermission = (authToken, permission) => query(`
-    with
-      permission AS (
-        SELECT * from permissions where name = $2
-      )
-      , "user" AS (
-        select users.*
-        from authentication_tokens auth join users using (user_id)
-          where
-              auth.token = $1
-          and auth.expires > $3
-          and auth.deleted is null
-          and users.deleted is null
-      )
-    select distinct
-        "user".user_id
-      , coalesce(up.permission_id, gp.permission_id) is not null as has_perm
-    from "user"
-        left join permission on true
-        -- try and find the permission by user_permissions
-        left join user_permissions up using (user_id, permission_id)
-        -- or by group_permissions
-        left join user_groups ug using (user_id)
-        left join group_permissions gp using(group_id, permission_id)
-      where
-            up.deleted is null
-        and ug.deleted is null
-        and gp.deleted is null
-`, [authToken, permission, new Date()])
-    .then( ({rows}) => {
-      if (rows.length !== 1) {
+const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPermission(authToken, permission)
+    .then( ({userId, hasPermission}) => {
+      if (!userId) {
         throw new AuthenticationError()
       }
-      const [{user_id: userId, has_perm: hasPerm}] = rows
-      if (!hasPerm) {
-        throw new AuthorizationError()
+      if (!hasPermission) {
+        throw new AuthorizationError(permission)
       }
-      return Promise.resolve(userId)
+      return toNumber(userId)
     })
 
-const withAuth = (authToken) => query(`
-    select user_id
-    from authentication_tokens
-      where 
-            token = $1 
-        and expires > $2
-        and deleted is null 
-`, [authToken, new Date()])
-// TODO does this work deconstructing the first row?  What happen when it is empty?
-    .then(({rows: [{user_id: userId}]}) => userId ? Promise.resolve(userId) : Promise.reject())
+const withAuth = (authToken) => permissionsDao.getUserId(authToken).then(userId => {
+  if (!userId) {
+    throw new AuthenticationError()
+  }
+  return toNumber(userId)
+})
 
-const statements = () => query('select * from statements where deleted is null')
-  .then(({rows: statements}) => statements.map(toStatement))
+const readStatements = () => statementsDao.readStatements()
 
-const collectJustifications = (statementId, justifications) => {
-  const rootJustifications = [], counterJustificationsByJustificationId = {}
-  for (let justification of justifications) {
-    if (justification.target_type === JustificationTargetType.STATEMENT) {
-      assert(() => justification.target_id === statementId)
-      rootJustifications.push(justification)
-    } else {
-      assert(() => justification.target_type === JustificationTargetType.JUSTIFICATION)
-      if (!counterJustificationsByJustificationId.hasOwnProperty(justification.target_id)) {
-        counterJustificationsByJustificationId[justification.target_id] = []
+const readStatement = ({statementId, authToken}) => statementsDao.readStatementById(statementId)
+    .then(statement => {
+      if (!statement) {
+        throw new NotFoundError(EntityTypes.STATEMENT, statementId)
       }
-      counterJustificationsByJustificationId[justification.target_id].push(justification)
-    }
-  }
-  return {
-    rootJustifications,
-    counterJustificationsByJustificationId,
-  }
-}
-
-const collectUrls = urls => {
-  const urlsByJustificationId = {}
-  for (let url of urls) {
-    if (!urlsByJustificationId.hasOwnProperty(url.justification_id)) {
-      urlsByJustificationId[url.justification_id] = []
-    }
-    urlsByJustificationId[url.justification_id].push(url)
-  }
-  return urlsByJustificationId
-}
-
-const readStatement = ({statementId, authToken}) => query(
-    'select * from statements where statement_id = $1 and deleted is null',
-    [statementId]
-)
-    .then( ({rows: [statementRow]}) => {
-      if (!statementRow) {
-        throw new NotFoundError()
-      }
-      return {statement: toStatement(statementRow)}
+      return statement
     })
 
-const readStatementJustifications = ({statementId, authToken}) => queries([
-    {
-      // Statement
-      query: 'select * from statements where statement_id = $1 and deleted is null',
-      args: [statementId],
-    },
-    {
-      // Justifications, justifications' bases, and justifications' votes
-      query: `select 
-                j.*
-                , s.statement_id as basis_statement_id
-                , s.text as basis_statement_text
-                
-                , r.citation_reference_id as basis_citation_reference_id
-                , r.quote as basis_citation_reference_quote
-                , c.citation_id as basis_citation_reference_citation_id
-                , c.text as basis_citation_reference_citation_text
-                
-                , v.vote_id
-                , v.polarity AS vote_polarity
-                , v.target_type AS vote_target_type
-                , v.target_id AS vote_target_id
-              from justifications j 
-                left join statements s ON j.basis_type = 'STATEMENT' AND j.basis_id = s.statement_id
-                left join citation_references r ON j.basis_type = 'CITATION_REFERENCE' AND j.basis_id = r.citation_reference_id
-                left join citations c USING (citation_id)
-                left join authentication_tokens auth ON auth.token = $2
-                left join votes v ON 
-                      v.target_type = $3
-                  and j.justification_id = v.target_id
-                  and v.user_id = auth.user_id
-                  and v.deleted IS NULL
-                where 
-                      j.deleted is null
-                  and s.deleted is null
-                  and j.root_statement_id = $1`,
-      args: [statementId, authToken, VoteTargetType.JUSTIFICATION]
-    },
-    {
-      // Urls
-      query: `select 
-                    j.justification_id, 
-                    u.* 
-                  from justifications j 
-                    join citation_references r ON j.basis_type = 'CITATION_REFERENCE' AND j.basis_id = r.citation_reference_id
-                    join citation_reference_urls USING (citation_reference_id)
-                    join urls u USING (url_id)
-                    where
-                          j.deleted is null
-                      and j.root_statement_id = $1
-                    order by j.justification_id`,
-      args: [statementId]
-    }
-  ])
-  .then(([{rows: [statementRow]}, {rows: justificationRows}, {rows: urlRows}]) => {
-    if (!statementRow) {
-      throw new NotFoundError('STATEMENT', statementId)
-    }
-    const urlsByJustificationId = collectUrls(urlRows)
-    const {rootJustifications, counterJustificationsByJustificationId} =
-        collectJustifications(statementRow.statement_id, justificationRows)
-    return {
-      statement: toStatement(statementRow),
-      justifications: rootJustifications.map(j =>
-          toJustification(j, urlsByJustificationId, counterJustificationsByJustificationId)
-      )
-    }
-  })
-
-const createUser = ({user: {email, password}, authToken}) => {
-  withPermission(authToken, CREATE_USERS).then(
-      userId => {
-        argon2.generateSalt().then(salt => {
-          argon2.hash(password, salt)
-              .then( hash => query('insert into users (email, hash) values ($1, $2) returning user_id', [email, hash]) )
-              .then( ({rows: [{user_id: id}]}) => ({user: {email, id}}) )
-              .then( user => query(
-                  'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ()',
-                  [userId, 'CREATE', user.id, 'USER', new Date()]
-              )
-                  .then(() => user))
+const readStatementJustifications = ({statementId, authToken}) => Promise.resolve([
+    statementId,
+    authToken,
+])
+    .then( ([statementId, authToken]) => Promise.all([
+        statementsDao.readStatementById(statementId),
+        justificationsDao.readJustificationsAndVotesByRootStatementId(authToken, statementId),
+    ]))
+        .then( ([statement, justifications]) => {
+          if (!statement) {
+            throw new NotFoundError(EntityTypes.STATEMENT, statementId)
+          }
+          return {
+            statement,
+            justifications,
+          }
         })
-      },
-      () => ({notAuthorized: true, message: 'insufficient permissions'})
-  )
-}
 
-const login = ({credentials}) => {
-  if (!credentials) {
-    return Promise.resolve({isInvalid: true, message: 'missing credentials'})
-  }
-  if (!credentials.email || !credentials.password) {
-    const missing = []
-    if (!credentials.email) {
-      missing.push('email')
-    }
-    if (!credentials.password) {
-      missing.push('password')
-    }
-    return Promise.resolve({isInvalid: true, message: `missing ${missing.join(', ')}`})
-  }
-  return query('select user_id, hash from users where email = $1', [credentials.email])
-    .then( ({rows: [user]}) => {
+const createUser = ({user: {email, password}, authToken}) => withPermission(authToken, CREATE_USERS)
+    .then(creatorUserId => Promise.all([
+        creatorUserId,
+        argon2.generateSalt().then(salt => argon2.hash(password, salt)),
+        new Date(),
+    ]))
+    .then( ([creatorUserId, hash, now]) => Promise.all([
+        creatorUserId,
+        usersDao.createUser(email, hash, creatorUserId, now)
+            .then(asyncRecordEntityAction(creatorUserId, ActionType.CREATE, ActionTargetType.USER, now)),
+        now
+    ]))
+    .then( ([creatorUserId, user, now]) => user)
+
+const login = ({credentials}) => Promise.resolve(credentials)
+    .then(credentials => {
+      const validationErrors = credentialValidator.validate(credentials)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError({credentials: validationErrors})
+      }
+      return credentials
+    })
+    .then(credentials => Promise.all([
+        credentials,
+        usersDao.readAuthUserByEmail(credentials.email),
+    ]))
+    .then( ([credentials, user]) => {
       if (!user) {
-        return {isNotFound: true, message: 'the email does not exist'}
+        throw new NotFoundError(EntityTypes.USER, credentials.email)
       }
-      const {user_id: userId, hash} = user
-      return argon2.verify(hash, credentials.password).then(match => {
-        if (!match) return {isNotAuthorized: true, message: 'invalid credentials'}
-
-        const authToken = cryptohat(256, 36)
-        const created = new Date()
-        const expires = moment().add(moment.duration.apply(moment.duration, config.authTokenDuration)).toDate()
-        return query('insert into authentication_tokens (user_id, token, created, expires) values ($1, $2, $3, $4)',
-            [userId, authToken, created, expires])
-            .then( () => ({
-              auth: {
-                authToken,
-                email: credentials.email
-                // tokenType, expiresIn, refreshToken (another token)
-              }
-            }) )
-      });
+      return Promise.all([
+          user,
+          argon2.verify(hash, credentials.password),
+      ])
     })
-}
-
-const logout = ({authToken}) => query('delete from authentication_tokens where token = $1', [authToken])
-
-const createVote = ({authToken, targetType, targetId, polarity}) => {
-  if (!authToken) {
-    logger.debug('Missing authentication token')
-    return Promise.resolve({isUnauthenticated: true})
-  }
-  // TODO factor out common technique
-  const authQuery = 'select user_id from authentication_tokens where token = $1 and expires > $2 and deleted is null'
-  const authQueryArgs = [authToken, new Date()]
-  return query(authQuery, authQueryArgs).then( ({rows}) => {
-    if (rows.length < 1) {
-      logger.debug(`Authentication token is not valid: ${authToken}`)
-      return {isUnauthenticated: true}
-    }
-
-    const {user_id: userId} = rows[0]
-    const updateOppositeQuery = `update votes 
-                                 set deleted = $1 
-                                 where 
-                                       user_id = $2 
-                                   and target_type = $3 
-                                   and target_id = $4 
-                                   and polarity = $5 
-                                   and deleted is null
-                                 returning vote_id`
-    const updateOppositeQueryArgs = [new Date(), userId, targetType, targetId, negatePolarity(polarity)]
-
-    const alreadyQuery = `select * 
-                          from votes 
-                            where 
-                                  user_id = $1
-                              and target_type = $2 
-                              and target_id = $3 
-                              and polarity = $4
-                              and deleted is null`
-    const alreadyDoneQueryArgs = [userId, targetType, targetId, polarity]
-    return queries([
-        {query: updateOppositeQuery, args: updateOppositeQueryArgs},
-        {query: alreadyQuery, args: alreadyDoneQueryArgs},
-    ]).then( ([{rows: updatedOppositeRows}, {rows: [existingVote]}]) => {
-      if (updatedOppositeRows.length > 0) {
-        logger.debug(`Updated ${updatedOppositeRows.length} opposite votes for args: `, updateOppositeQueryArgs)
+    .then( ([user, isMatch]) => {
+      if (!isMatch) {
+        throw new AuthenticationError()
       }
-      if (existingVote) {
-        logger.debug('Vote already exists', existingVote)
-        return {isAlreadyDone: true, vote: toVote(existingVote)}
-      }
+      const authToken = cryptohat(256, 36)
+      const created = new Date()
+      const expires = moment().add(moment.duration.apply(moment.duration, config.authTokenDuration)).toDate()
 
-      const createQuery = `insert into votes (user_id, target_type, target_id, polarity, created) 
-                           values ($1, $2, $3, $4, $5) 
-                           returning *`
-      const createQueryArgs = [userId, targetType, targetId, polarity, new Date()]
-      return query(createQuery, createQueryArgs).then( ({rows: [vote]}) => ({vote: toVote(vote)}) )
+      return Promise.all([
+          user,
+          authToken,
+          authDao.insertAuthToken(user.id, authToken, created, expires)
+      ])
     })
-  })
-}
+    .then( ([user, authToken]) => ({
+      email: user.email,
+      authToken,
+      // ignore insertion result, so long as it succeeded
+    }))
 
-const unvote = ({authToken, targetType, targetId, polarity}) => {
-  if (!authToken) {
-    logger.debug('Missing authentication token')
-    return Promise.resolve({isUnauthenticated: true})
-  }
-  // TODO factor out common technique
-  const authQuery = 'select user_id from authentication_tokens where token = $1 and expires > $2 and deleted is null'
-  return query(authQuery, [authToken, new Date()]).then( ({rows}) => {
-    if (rows.length < 1) {
-      logger.debug(`Authentication token is not valid: ${authToken}`)
-      return {isUnauthenticated: true}
-    }
+const logout = ({authToken}) => authDao.deleteAuthToken(authToken)
 
-    const {user_id: userId} = rows[0]
+const createVote = ({authToken, vote}) => withAuth(authToken)
+    .then(userId => Promise.all([
+        userId,
+        votesDao.deleteOpposingVotes(userId, vote),
+        votesDao.readEquivalentVotes(userId, vote),
+    ]))
+    .then( ([userId, updatedOpposingVoteIds, equivalentVotes]) => {
+      if (updatedOpposingVoteIds.length > 0) {
+        logger.debug(`Deleted ${updatedOpposingVoteIds.length} opposing votes`, vote)
+      }
+      if (equivalentVotes.length > 0) {
+        if (equivalentVotes.length > 1) {
+          logger.error(`${equivalentVotes.length} equivalent votes exist`, equivalentVotes, vote)
+        }
+        const equivalentVote = equivalentVotes[0]
+        logger.debug('Equivalent vote already exists', equivalentVote, vote)
+        return equivalentVote
+      } else {
+        return votesDao.createVote(userId, vote)
+      }
+    })
+    .then(vote => ({vote}))
 
-
-    const updateQuery = `update votes 
-                         set deleted = $1 
-                         where 
-                               user_id = $2 
-                           and target_type = $3 
-                           and target_id = $4 
-                           and polarity = $5 
-                           and deleted is null
-                         returning vote_id`
-    const updateQueryArgs = [new Date(), userId, targetType, targetId, polarity]
-
-    return query(updateQuery, updateQueryArgs).then( ({rows}) => {
-      if (rows.length === 0) {
+const deleteVote = ({authToken, vote}) => withAuth(authToken)
+    .then(userId => votesDao.deleteEquivalentVotes(userId, vote))
+    .then(deletedVoteIds => {
+      if (deletedVoteIds.length === 0) {
         logger.debug('No votes to unvote')
-        return {isAlreadyDone: true}
-      } else if (rows.length > 1) {
-        logger.warn(`Deleted ${rows.length} votes at once!`, updateQueryArgs)
+        throw new NotFoundError()
+      } else if (deletedVoteIds.length > 1) {
+        logger.warn(`Deleted ${deletedVoteIds.length} votes at once!`)
       }
-      return {isSuccess: true}
+      return deletedVoteIds
     })
-  })
-}
 
-const createStatement = ({authToken, statement, justification}) => withAuth(authToken)
+const createStatementJustification = ({authToken, statementJustification}) => withAuth(authToken)
     .then(userId => {
       const now = new Date()
-      if (!statement.text) {
-        return {isInvalid: true}
+      const validationErrors = statementJustificationValidator.validate(statementJustification)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError({statementJustification: validationErrors})
       }
-      return query('select * from statements where text = $1 and deleted is null', [statement.text]).then( ({rows: [row]}) => {
-        if (row) {
-          query(
-              'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
-              [userId, ActionType.TRY_CREATE_DUPLICATE, statement.id, ActionTargetType.STATEMENT, now]
-          )
+      return [
+          userId,
+          now,
+      ]
+    })
+    .then( ([userId, now]) => Promise.all([
+          userId,
+          now,
+          createValidStatementAsUser(userId, statementJustification.statement, now)
+      ])
+    )
+    .then( ([userId, now, {isExtant, statement}]) => {
+      const justification = cloneDeep(statementJustification.justification)
+      justification.rootStatementId = statement.id
+      justification.target.entity.id = statement.id
 
-          if (justification) {
-            if (justification.target.type !== JustificationTargetType.STATEMENT) {
-              throw new ValidationError(`Justification created with statement must have basis type of ` +
-                  `${JustificationBasisType.STATEMENT}, but was ${justification.basis.type}`)
-            }
-            const justificationWithStatementId = cloneDeep(justification)
-            const statementId = row.statement_id
-            justificationWithStatementId.rootStatementId = statementId
-            justificationWithStatementId.target.entity.id = statementId
-            return createJustification({authToken, justification: justificationWithStatementId})
-            // TODO this will mask error properties set on the resolved value
-            // Factor out a createJustification method that rejects the promise upon an error
-                .then((val) => {
-                  return {
-                    statement: toStatement(row),
-                    isExtant: true,
-                    justification: val.justification,
-                  }
-                })
-          }
-
-          return {statement: toStatement(row), isExtant: true}
-        }
-
-        return query(
-            'insert into statements (text, creator_user_id, created) values ($1, $2, $3) returning *',
-            [statement.text, userId, now]
-        )
-            .then( ({rows: [row]}) => {
-              return toStatement(row)
-            })
-            .then(statement => {
-              query(
-                  'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
-                  [userId, ActionType.CREATE, statement.id, ActionTargetType.STATEMENT, now]
-              )
-
-              if (justification) {
-                if (justification.target.type !== JustificationTargetType.STATEMENT) {
-                  throw new ValidationError(`Justification created with statement must have basis type of ` +
-                      `${JustificationBasisType.STATEMENT}, but was ${justification.basis.type}`)
-                }
-                const justificationWithStatementId = cloneDeep(justification)
-                justificationWithStatementId.rootStatementId = statement.id
-                justificationWithStatementId.target.entity.id = statement.id
-                return createJustification({authToken, justification: justificationWithStatementId})
-                    // TODO this will mask error properties set on the resolved value
-                    // Factor out a createJustification method that rejects the promise upon an error
-                    .then((val) => {
-                      return {
-                        statement,
-                        justification: val.justification,
-                      }
-                    })
-              }
-              return {statement}
-            })
-      })
-
-    }, () => ({isUnauthenticated: true}))
+      return Promise.all([
+          isExtant,
+          statement,
+          createValidJustificationAsUser(userId, justification, now)
+      ])
+    })
+    .then ( ([isStatementExtant, statement, {isExtant: isJustificationExtant, justification}]) => {
+      return {
+        isStatementExtant,
+        isJustificationExtant,
+        statementJustification: {
+          statement,
+          justification
+        },
+      }
+    })
 
 const updateStatement = ({authToken, statement}) => withAuth(authToken)
+    .then(userId => {
+      const validationErrors = statementValidator.validate(statement)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError(validationErrors)
+      }
+      return userId
+    })
     .then(userId => Promise.all([
       userId,
       statementsDao.countOtherStatementsHavingSameTextAs(statement),
       statementsDao.hasOtherUserInteractions(userId, statement),
-      permissionsDao.userHasPermission(userId, UPDATE_STATEMENTS)
+      permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY)
     ]))
     .then( ([
         userId,
         otherStatementsHavingSameTextCount,
         hasOtherUserInteractions,
-        hasUpdateStatementsPermission,
+        hasPermission,
       ]) => {
       if (otherStatementsHavingSameTextCount > 0) {
         throw new EntityConflictError([OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT])
-      } else if (hasOtherUserInteractions && !hasUpdateStatementsPermission) {
+      } else if (hasOtherUserInteractions && !hasPermission) {
         const conflictCodes = []
         throw new UserActionsConflictError(conflictCodes)
       }
@@ -484,15 +279,16 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
       return Promise.all([
         userId,
         now,
-        query('update statements set text = $1 where statement_id = $2 and deleted is null returning *', [statement.text, statement.id])
+        statementsDao.updateStatement(statement)
       ])
     })
-    .then( ([userId, now, {rows}]) => {
-      if (rows.length !== 1) throw new NotFoundError()
+    .then( ([userId, now, updatedStatement]) => {
+      if (!updatedStatement) {
+        throw new NotFoundError(EntityTypes.STATEMENT, statement.id)
+      }
 
-      const [row] = rows
-      asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.STATEMENT, now)
-      return toStatement(row)
+      asyncRecordAction(userId, ActionType.UPDATE, ActionTargetType.STATEMENT, now, updatedStatement.id)
+      return updatedStatement
     })
 
 const readCitationReference = ({authToken, citationReferenceId}) => citationReferencesDao.read(citationReferenceId)
@@ -503,13 +299,15 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
       citationReferencesDao.hasChanged(citationReference),
       citationsDao.hasChanged(citationReference.citation),
       // TODO check URLs
+      false
     ]))
     .then( ([
         userId,
         citationReferenceHasChanged,
-        citationHasChanged
+        citationHasChanged,
+        urlsHaveChanged,
     ]) => {
-      if (!citationReferenceHasChanged && !citationHasChanged) {
+      if (!citationReferenceHasChanged && !citationHasChanged && !urlsHaveChanged) {
         return citationReference
       }
 
@@ -541,13 +339,17 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
               citationsDao.isCitationOfBasisToJustificationsHavingOtherUsersCounters(userId, citation),
         })
       }
+      if (urlsHaveChanged) {
+        // When URLs are votable, ensure that no one has voted them (or at least up-voted them) before deleting
+        // Adding should always be okay
+      }
 
       return Promise.props({
         userId,
         now: new Date(),
         citationReferenceHasChanged,
         citationHasChanged,
-        hasPermission: permissionsDao.userHasPermission(userId, UPDATE_CITATION_REFERENCES),
+        hasPermission: permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
         entityConflicts: Promise.props(entityConflicts),
         userActionConflicts: Promise.props(userActionConflicts)
       })
@@ -578,294 +380,311 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
     .then( ({userId, now, citationReferenceHasChanged, citationHasChanged}) => [
         userId,
         now,
-        citationReferenceHasChanged ? citationReferencesDao.update(citationReference) : citationReference,
-        citationHasChanged ? citationsDao.update(citationReference.citation) : citationReference.citation,
+        citationReferenceHasChanged ?
+            citationReferencesDao.update(citationReference)
+                .then(asyncRecordAction(userId, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE, now))
+            : citationReference,
+        citationHasChanged ?
+            citationsDao.update(citationReference.citation)
+                .then(asyncRecordAction(userId, ActionType.UPDATE, ActionTargetType.CITATION, now))
+            : citationReference.citation,
     ])
     .then( ([userId, now, citationReference, citation]) => {
       if (citationReference.citation !== citation) {
         citationReference = assign({}, citationReference, {citation})
       }
 
-      asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE, now)
       return citationReference
     })
 
-const deleteStatement = ({authToken, statementId}) => {
-  if (!authToken) {
-    return Promise.resolve({isUnauthenticated: true})
-  }
-  return withPermission(authToken, DELETE_STATEMENTS).then(userId => {
-    const now = new Date()
-    return query('update statements set deleted = $2 where statement_id = $1 returning statement_id', [statementId, now])
-        .then(({rows}) => {
-          if (rows.length > 1) {
-            logger.error('Delete statement deleted more than 1: ', rows)
-          }
-          const [{statement_id: statementId}] = rows
-          query(
-              'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
-              [userId, ActionType.DELETE, statementId, ActionTargetType.STATEMENT, now]
-          )
-          // Insert action asynchronously
-          return {isSuccess: true}
-        })
-  }, () => ({isUnauthorized: true}))
-}
+const deleteStatement = ({authToken, statementId}) => withAuth(authToken)
+    .then(userId => Promise.all([
+        userId,
+        permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
+        justificationsDao.readJustificationsDependentUponStatementId(statementId),
+        statementsDao.readStatementById(statementId),
+    ]))
+    .then( ([userId, hasPermission, dependentJustifications, statement]) => {
+      if (!statement) {
+        throw new NotFoundError(EntityTypes.STATEMENT, statementId)
+      }
+      if (hasPermission) {
+        return [userId, statement, dependentJustifications]
+      }
+      if (userId !== statement.creatorUserId) {
+        throw new AuthorizationError([CANNOT_MODIFY_OTHER_USERS_ENTITIES])
+      }
+
+      const created = moment(statement.created)
+      const graceCutoff = created.add.apply(created, config.modifyEntityGracePeriod)
+      const now = new Date()
+      const nowMoment = moment(now)
+      if (nowMoment.isAfter(graceCutoff)) {
+        throw new EntityTooOldToModifyError(config.modifyEntityGracePeriod)
+      }
+
+      const otherUsersJustificationsDependentUponStatement = filter(dependentJustifications, j => j.creatorUserId !== userId)
+      if (otherUsersJustificationsDependentUponStatement.length > 0) {
+        throw new UserActionsConflictError()
+      }
+      return [userId, now, statement, dependentJustifications]
+    })
+    .then( ([userId, now, statement, dependentJustifications]) => Promise.all([
+      userId,
+      now,
+      statementsDao.deleteStatement(statement, now),
+      justificationsDao.deleteJustifications(dependentJustifications, now),
+    ]))
+    .then( ([userId, now, deletedStatementId, deletedJustificationIds]) => Promise.all([
+      deletedStatementId,
+      deletedJustificationIds,
+      asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.STATEMENT, now, statementId),
+      Promise.all(map(deletedJustificationIds, id => asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.JUSTIFICATION, id)))
+    ]))
+    .then( ([deletedStatementId, deletedJustificationIds]) => ({
+      deletedStatementId,
+      deletedJustificationIds,
+    }))
 
 const createJustification = ({authToken, justification}) => withAuth(authToken)
     .then(userId => {
-      if (
-          !justification.rootStatementId ||
-          !justification.polarity ||
-          !justification.target ||
-          !justification.target.type ||
-          !justification.target.entity.id ||
-          !justification.basis ||
-          !justification.basis.type ||
-          !justification.basis.entity
-      ) {
-        return {isInvalid: true}
-      }
-
       const now = new Date()
-      return selectOrInsertJustificationBasis(justification.basis, userId, now)
-          .then( ({basisType, basisEntity}) => {
-            justification = cloneDeep(justification)
-            justification.basis = {
-              type: basisType,
-              entity: basisEntity
-            }
-            return justification
-          })
-          .then(justification => insertJustification(justification, userId, now))
-          .then(justification => ({justification}))
+      const validationErrors = justificationValidator.validate(justification)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError(validationErrors)
+      }
+      return [userId, now]
+    })
+    .then( ([userId, now]) => createValidJustificationAsUser(userId, justification, now))
 
-    }, () => ({isUnauthenticated: true}))
+const createValidJustificationAsUser = (userId, justification, now) => Promise.all([
+      now,
+      createJustificationBasis(justification.basis, userId, now)
+    ])
+    .then( ([now, {basisType, basisEntity}]) => {
+      justification = cloneDeep(justification)
+      justification.basis = {
+        type: basisType,
+        entity: basisEntity
+      }
+      return [now, justification]
+    })
+    .then( ([now, justification]) => Promise.all([
+        justification,
+        justificationsDao.createJustification(justification, userId, now)
+            .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.JUSTIFICATION, now))
+    ]))
+    // merge in the previous stuff, which might have details about the basis and target
+    .then( ([justification, dbJustification]) => merge({}, justification, dbJustification))
+    // TODO isExtant
+    .then( justification => ({justification}) )
 
-const selectOrInsertJustificationBasis = (justificationBasis, userId, now) => {
-  const justificationBasisType = justificationBasis.type
-  switch (justificationBasisType) {
+const createJustificationBasis = (justificationBasis, userId, now) => {
+  switch (justificationBasis.type) {
+
     case JustificationBasisType.CITATION_REFERENCE:
-      return selectOrInsertCitationReference(justificationBasis.entity, userId, now).then(citationReference => ({
+      return createCitationReference(justificationBasis.entity, userId, now).then(citationReference => ({
         basisType: JustificationBasisType.CITATION_REFERENCE,
         basisEntity: citationReference,
       }))
 
     case JustificationBasisType.STATEMENT:
-      return selectOrInsertStatement(justificationBasis.entity, userId, now).then(statement => ({
-        basisType: JustificationBasisType.STATEMENT,
-        basisEntity: statement,
-      }))
+      return createStatementAsUser(justificationBasis.entity, userId, now)
+          .then(({isExtant, statement}) => ({
+            isExtant,
+              basisType: JustificationBasisType.STATEMENT,
+              basisEntity: statement,
+            }))
 
     default:
-      logger.error(`Unsupported JustificationBasisType: ${justificationBasisType}`)
+      throw new ImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
   }
-
-  return Promise.reject()
 }
 
-const selectOrInsertCitationReference = (citationReference, userId, now) => Promise.props({
-    citation: selectOrInsertCitation(citationReference.citation, userId, now),
-    urls: selectOrInsertUrls(citationReference.urls, userId, now),
+const createCitationReference = (citationReference, userId, now) => Promise.props({
+    citation: createCitation(citationReference.citation, userId, now),
+    urls: createUrls(citationReference.urls, userId, now),
   })
     .then( ({citation, urls}) => {
       citationReference.citation = citation
       citationReference.urls = urls
-      return selectOrInsertJustCitationReference(citationReference, userId, now)
+      return createJustCitationReference(citationReference, userId, now)
     })
     .then( citationReference => {
       return Promise.props({
         citationReference,
-        urls: selectOrInsertCitationReferenceUrls(citationReference, userId, now)
+        citationReferenceUrls: createCitationReferenceUrls(citationReference, userId, now)
       })
     })
     .then( ({citationReference}) => citationReference)
 
-const selectOrInsertUrls = (urls, userId, now) => Promise.all(urls.map(url => {
-  if (url.id) {
-    return url
-  }
-  return query('select * from urls where url = $1 and deleted is null', [url.url])
-    .then(({rows: [row]}) => row ?
-      row :
-      query(
-        'insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *',
-        [url.url, userId, now]
-      )
-        .then( ({rows: [row]}) => row)
-    )
-      .then(toUrl)
-}))
+const createUrls = (urls, userId, now) => Promise.all(urls.map(url => createUrl(url, userId, now)))
 
-const selectOrInsertJustCitationReference = (citationReference, userId, now) => {
+const createUrl = (url, userId, now) => {
+  return urlsDao.readUrlEquivalentTo(url)
+      .then( equivalentUrl => {
+        if (equivalentUrl) {
+          return equivalentUrl
+        }
+        return urlsDao.createUrl(url, userId, now)
+            .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.URL, now))
+      })
+}
+
+const createJustCitationReference = (citationReference, userId, now) => {
   if (citationReference.id) {
-    logger.silly('returning existing citation reference', citationReference)
     return citationReference
   }
-  const citation = citationReference.citation
-  return query(
-      'select * from citation_references where citation_id = $1 and quote = $2 and deleted is null',
-      [citation.id, citationReference.quote]
-  )
-      .then( ({rows: [row]}) => {
-        if (row) {
-          logger.silly('returning found citation reference', citationReference)
-          return citationReference
+  return citationReferencesDao.readCitationReferencesEquivalentTo(citationReference)
+      .then( equivalentCitationReference => {
+        if (equivalentCitationReference) {
+          return equivalentCitationReference
         }
-
-        return query(
-            'insert into citation_references (quote, citation_id, creator_user_id, created) values ($1, $2, $3, $4) returning *',
-            [citationReference.quote, citation.id, userId, now]
-        )
-            .then( ({rows: [row]}) => {
-              citationReference = assign(toCitationReference(row), citationReference)
-              logger.silly('returning newly created citation reference', citationReference)
-              return citationReference
-            })
+        return citationReferencesDao.createCitationReference(citationReference, userId, now)
             .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.CITATION_REFERENCE, now))
+            // Merge in related entities such as the citation
+            .then(dbCitationReference => merge(citationReference, dbCitationReference))
       })
 }
 
-const asyncRecordEntityAction = (userId, actionType, actionTargetType, now) => entity => {
-  query(
-      'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
-      [userId, actionType, entity.id, actionTargetType, now]
-  )
-  return entity
-}
-
-const selectOrInsertCitationReferenceUrls = (citationReference, userId, now) => {
+const createCitationReferenceUrls = (citationReference, userId, now) => {
   const urls = citationReference.urls
-  return queries(urls.map( url => ({
-    query: 'select * from citation_reference_urls where citation_reference_id = $1 and url_id = $2',
-    args: [citationReference.id, url.id]
-  })))
-      .then( results => {
+  return Promise.all(map(urls, url => citationReferencesDao.readCitationReferenceUrl(citationReference.id, url.id)))
+      .then( citationReferenceUrls => {
         const associatedUrlIds = {}
-        forEach(results, ({rows}) => {
-          if (rows.length > 0 && rows[0].url_id) {
-            const row = rows[0]
-            associatedUrlIds[row.url_id] = true
-          }
+        forEach(citationReferenceUrls, citationReferenceUrl => {
+          associatedUrlIds[citationReferenceUrl.urlId] = citationReferenceUrl
         })
-        return map(urls, u => associatedUrlIds[u.id] ?
-            u :
-            query(
-                'insert into citation_reference_urls (citation_reference_id, url_id, creator_user_id, created) values ($1, $2, $3, $4)',
-                [citationReference.id, u.id, userId, now]
-            )
+        return map(urls, url => associatedUrlIds[url.id] ?
+            associatedUrlIds[url.id] :
+            citationReferencesDao.createCitationReferenceUrl(citationReference, url, userId, now)
         )
       })
 }
 
-const selectOrInsertCitation = (citation, userId, now) => {
-  // if the citation has an ID, assume it is extant
-  if (citation.id) {
-    logger.silly('returning existing citation', citation)
-    return citation
+const createCitation = (citation, userId, now) => {
+  if (citation.id) return {
+    citation
   }
-  // otherwise, if there is a citation with the same info already, use it
-  return query('select * from citations where text = $1 and deleted is null', [citation.text])
-      .then( ({rows: [row]}) => {
-        if (row) {
-          logger.silly('returning found citation', row)
-          return toCitation(row)
+  return citationsDao.readCitationEquivalentTo(citation)
+      .then( equivalentCitation => {
+        if (equivalentCitation) {
+          return equivalentCitation
         }
-        // finally, create a new citation
-        const insertCitationQuery = 'insert into citations (text, creator_user_id, created) values ($1, $2, $3) returning *'
-        const insertCitationQueryArgs = [citation.text, userId, now]
-        return query(insertCitationQuery, insertCitationQueryArgs)
-            .then( ({rows: [row]}) => {
-              const citation = toCitation(row)
-              logger.silly('returning newly created citation', citation)
-              return citation
-            })
+        return citationsDao.createCitation(citation, userId, now)
             .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.CITATION, now))
       })
 }
 
-const selectOrInsertStatement = (statement, userId, now) => {
-  if (statement.id) {
-    logger.silly('Returning existing statement')
-    return Promise.resolve(statement)
+const createStatement = ({authToken, statement}) => withAuth(authToken)
+    .then(userId => {
+      if (statement.id) {
+        return {isExtant: true, statement}
+      } else {
+        const now = new Date()
+        return createStatementAsUser(statement, userId, now)
+      }
+    })
+
+const createStatementAsUser = (statement, userId, now) => Promise.resolve()
+    .then(() => {
+      const validationErrors = statementValidator.validate(statement)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError({statement: validationErrors})
+      }
+      return userId
+    })
+    .then(userId => createValidStatementAsUser(userId, statement, now))
+
+const createValidStatementAsUser = (userId, statement, now) => Promise.resolve()
+    .then(() => Promise.all([
+      userId,
+      statementsDao.readStatementByText(statement.text),
+      now,
+    ]))
+    .then( ([userId, extantStatement, now]) => {
+      return Promise.all([
+        userId,
+        now,
+        !!extantStatement,
+        extantStatement || statementsDao.createStatement(userId, statement, now),
+      ])
+    })
+    .then( ([userId, now, isExtant, statement]) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      asyncRecordAction(userId, actionType, ActionTargetType.STATEMENT, now, statement.id)
+
+      return {
+        isExtant,
+        statement,
+      }
+    })
+
+const deleteJustification = ({authToken, justificationId}) => withAuth(authToken)
+    .then(userId => Promise.all([
+      userId,
+      permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
+      justificationsDao.readJustificationById(justificationId),
+    ]))
+    .then( ([userId, hasPermission, justification]) => {
+      if (hasPermission) {
+        return [userId, justification]
+      }
+
+      if (userId !== justification.creatorUserId) {
+        throw new AuthorizationError([CANNOT_MODIFY_OTHER_USERS_ENTITIES])
+      }
+
+      const created = moment(justification.created)
+      const graceCutoff = created.add.apply(created, config.modifyEntityGracePeriod)
+      const now = new Date()
+      const nowMoment = moment(now)
+      if (nowMoment.isAfter(graceCutoff)) {
+        throw new EntityTooOldToModifyError(config.modifyEntityGracePeriod)
+      }
+
+      return [userId, now, justification]
+    })
+    .then( ([userId, now, justification]) => Promise.all([
+      userId,
+      now,
+      justificationsDao.deleteJustification(justification, now),
+    ]))
+    .then( ([userId, now, deletedJustificationId]) => Promise.all([
+      deletedJustificationId,
+      asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.JUSTIFICATION, now, deletedJustificationId),
+    ]))
+    .then( ([deletedJustificationId]) => ({
+      deletedJustificationId,
+    }))
+
+/** Inserts an action record, but returns the entity, so that promises won't block on the query */
+const asyncRecordEntityAction = (userId, actionType, actionTargetType, now) => entity => {
+  if (entity) {
+    asyncRecordAction(userId, actionType, actionTargetType, now, entity.id)
+  } else {
+    logger.info(`Recorded missing entity action (user ${userId} ${actionType} ${actionTargetType} ${now}`)
   }
 
-  return query('select * from statements where text = $1 and deleted is null', [statement.text])
-      .then( ({rows: [row]}) => {
-        if (row) {
-          logger.silly('Found existing statement', row)
-          return toStatement(row)
-        }
-
-        return query(
-            'insert into statements (text, creator_user_id, created) values ($1, $2, $3) returning *',
-            [statement.text, userId, now]
-        )
-            .then( ({rows: [row]}) => {
-              const statement = toStatement(row)
-              logger.silly('Returning newly created statement', statement)
-              return statement
-            })
-            .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.STATEMENT, now))
-      })
+  return entity
 }
 
-const insertJustification = (justification, userId, now) => {
-
-  const justificationQuery =
-      'insert into justifications (root_statement_id, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created) ' +
-      'values ($1, $2, $3, $4, $5, $6, $7, $8) returning *'
-  const justificationQueryArgs = [
-    justification.rootStatementId,
-    justification.target.type,
-    justification.target.entity.id,
-    justification.basis.type,
-    justification.basis.entity.id,
-    justification.polarity,
-    userId,
-    now
-  ]
-
-  return query(justificationQuery, justificationQueryArgs)
-      .then( ({rows: [row]}) => {
-        // merge in the previous stuff, which might have details about the basis and target
-        return merge(toJustification(row), justification)
-      })
-      .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.JUSTIFICATION, now))
-}
-
-const deleteJustification = ({authToken, justificationId}) => {
-  if (!authToken) {
-    return Promise.resolve({isUnauthenticated: true})
-  }
-  return withPermission(authToken, DELETE_JUSTIFICATIONS).then(userId => {
-    const now = new Date()
-    return query('update justifications set deleted = $2 where justification_id = $1 returning justification_id', [justificationId, now])
-        .then(({rows}) => {
-          if (rows.length > 1) {
-            logger.error(`Delete justification deleted ${rows.length} rows:`, rows)
-          }
-          const [{justification_id: justificationId}] = rows
-          query(
-              'insert into actions (user_id, action_type, target_id, target_type, tstamp) values ($1, $2, $3, $4, $5)',
-              [userId, ActionType.DELETE, justificationId, ActionTargetType.JUSTIFICATION, now]
-          )
-          // Insert action asynchronously
-          return {isSuccess: true}
-        })
-  }, () => ({isUnauthorized: true}))
+const asyncRecordAction = (userId, actionType, actionTargetType, now, entityId) => {
+  // Don't return promise
+  actionsDao.createAction(userId, actionType, entityId, actionTargetType, now)
 }
 
 module.exports = {
-  statements,
+  readStatements,
   readStatement,
   readStatementJustifications,
   createUser,
   login,
   logout,
   createVote,
-  unvote,
+  deleteVote,
   createStatement,
+  createStatementJustification,
   updateStatement,
   deleteStatement,
   createJustification,

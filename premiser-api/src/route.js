@@ -3,29 +3,28 @@ const merge = require('lodash/merge')
 const assign = require('lodash/assign')
 const isEqual = require('lodash/isEqual')
 const httpMethods = require('./httpMethods')
+const httpStatusCodes = require('./httpStatusCodes')
 
-const {
-  ENTITY_CONFLICT_RESPONSE_CODE,
-  USER_ACTIONS_CONFLICT_RESPONSE_CODE,
-} = require("./codes/responseCodes");
 const {
   AuthenticationError,
   AuthorizationError,
-  ImpossibleError,
   NotFoundError,
   EntityConflictError,
   UserActionsConflictError,
+  ValidationError,
 } = require("./errors")
+const apiErrorCodes = require('./codes/apiErrorCodes')
 const {
-  statements,
+  readStatements,
   readStatement,
   readStatementJustifications,
   login,
   logout,
   createUser,
   createVote,
-  unvote,
+  deleteVote,
   createStatement,
+  createStatementJustification,
   updateStatement,
   deleteStatement,
   createJustification,
@@ -42,51 +41,36 @@ const {
 const {logger} = require('./logger')
 
 const ok = ({callback, body={}, headers}) => callback({
-  status: 'ok',
+  httpStatusCode: httpStatusCodes.OK,
   headers,
   body
 })
 const noContent = args => {
   // NO CONTENT must not have a body. https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204
   if (args.body) logger.error('noContent may not return a body.  Ignoring body')
-  return args.callback({status: 'noContent'})
+  return args.callback({
+    httpStatusCode: httpStatusCodes.NO_CONTENT
+  })
 }
-const notImplemented = ({callback}) => callback({
-  status: 'error',
-  body: {message: 'not implemented'}
-})
-const notFound = ({callback, message='not found'}) => callback({
-  status: 'notFound',
-  body: {message}
-})
-const unauthenticated = ({callback}) => callback({
-  status: 'unauthorized',
-})
-const unauthorized = ({callback}) => callback({
-  status: 'forbidden',
-})
-const badRequest = ({callback, message='bad request'}) => callback({
-  status: 'badRequest',
-  body: {message}
-})
-const error = ({callback, body={}}) => callback({
-  status: 'error',
+const notFound = ({callback, body={errorCode: apiErrorCodes.NOT_FOUND} }) => callback({
+  httpStatusCode: httpStatusCodes.NOT_FOUND,
   body
 })
-const entityConflict = ({callback, conflictCodes}) => callback({
-  status: 'error',
-  body: {
-    responseCode: ENTITY_CONFLICT_RESPONSE_CODE,
-    payload: {
-      conflictCodes
-    }
-  }
+const unauthenticated = ({callback, body={errorCode: apiErrorCodes.UNAUTHENTICATED} }) => callback({
+  httpStatusCode: httpStatusCodes.UNAUTHORIZED,
+  body
 })
-const userActionsConflict = ({callback}) => callback({
-  status: 'error',
-  body: {
-    responseCode: USER_ACTIONS_CONFLICT_RESPONSE_CODE
-  }
+const unauthorized = ({callback, body}) => callback({
+  httpStatusCode: httpStatusCodes.FORBIDDEN,
+  body,
+})
+const badRequest = ({callback, body}) => callback({
+  httpStatusCode: httpStatusCodes.BAD_REQUEST,
+  body
+})
+const error = ({callback, body}) => callback({
+  httpStatusCode: httpStatusCodes.ERROR,
+  body
 })
 
 const routes = [
@@ -96,17 +80,15 @@ const routes = [
       const headers = {
         'Access-Control-Allow-Headers': 'Content-Type'
       }
-      return Promise.resolve(ok({headers, callback}))
+      return ok({headers, callback})
     }
   },
   {
+    id: 'readStatements',
     path: 'statements',
     method: httpMethods.GET,
-    handler: ({callback}) => statements()
-        .then(statements => {
-          logger.debug(`Returning ${statements.length} statements`)
-          return ok({callback, body: statements})
-        })
+    handler: ({callback}) => readStatements()
+        .then(statements => ok({callback, body: {statements}}))
   },
   {
     id: 'searchStatements',
@@ -136,22 +118,29 @@ const routes = [
                 callback,
                 request: {
                   authToken,
-                  body: {statement, justification},
+                  body: {statement},
                   method,
                   path
                 }
-    }) => createStatement({authToken, statement, justification})
-        .then( ({isUnauthenticated, isInvalid, statement, justification, isExtant}) => {
-          if (isUnauthenticated) {
-            return unauthenticated({callback})
-          } else if (isInvalid) {
-            return badRequest({callback})
-          } else if (statement) {
-            return ok({callback, body: {statement, justification, isExtant}})
-          }
-          logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
-          return error({callback})
-        })
+    }) => createStatement({authToken, statement})
+        .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
+  },
+  {
+    id: 'createStatementJustification',
+    path: 'statement-justifications',
+    method: httpMethods.POST,
+    handler: ({
+                callback,
+                request: {
+                  authToken,
+                  body: {statementJustification},
+                  method,
+                  path
+                }
+              }) => createStatementJustification({authToken, statementJustification})
+        .then( ({statementJustification, isStatementExtant, isJustificationExtant}) =>
+            ok({callback, body: {statementJustification, isStatementExtant, isJustificationExtant}})
+        )
   },
   {
     id: 'updateStatement',
@@ -195,14 +184,7 @@ const routes = [
                   queryStringParameters
                 }
               }) => readStatementJustifications({statementId, authToken})
-        .then(({statement, justifications}) => {
-          if (!statement) {
-            return notFound({callback})
-          } else {
-            logger.debug(`Returning statement ${statement.id} with ${justifications.length} justifications`)
-            return ok({callback, body: {statement, justifications}})
-          }
-        })
+        .then( ({statement, justifications}) => ok({callback, body: {statement, justifications}}) )
   },
   {
     id: 'deleteStatement',
@@ -216,17 +198,7 @@ const routes = [
                   path,
                   pathParameters: [statementId],
                 }
-    }) => deleteStatement({authToken, statementId}).then(({isUnauthenticated, isUnauthorized, isSuccess}) => {
-      if (isUnauthenticated) {
-        return unauthenticated({callback})
-      } else if (isUnauthorized) {
-        return unauthorized({callback})
-      } else if (isSuccess) {
-        return ok({callback})
-      }
-      logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
-      return error({callback})
-    })
+    }) => deleteStatement({authToken, statementId}).then( () => ok({callback}) )
   },
   {
     id: 'createJustification',
@@ -243,17 +215,7 @@ const routes = [
                   path,
                 }
     }) => createJustification({authToken, justification})
-        .then( ({isUnauthenticated, isInvalid, justification}) => {
-          if (isUnauthenticated) {
-            return unauthenticated({callback})
-          } else if (isInvalid) {
-            return badRequest({callback})
-          } else if (justification) {
-            return ok({callback, body: {justification}})
-          }
-          logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
-          return error({callback})
-        })
+        .then( ({justification}) => ok({callback, body: {justification}}))
   },
   {
     id: 'readCitationReference',
@@ -285,7 +247,7 @@ const routes = [
           if (updatedCitationReference === citationReference) {
             return noContent({callback})
           }
-          return ok({callback, body: {citationReference}})
+          return ok({callback, body: {citationReference: updatedCitationReference}})
         })
   },
   {
@@ -303,90 +265,42 @@ const routes = [
                   path,
                   pathParameters: [justificationId]
                 }
-              }) => deleteJustification({authToken, justificationId})
-        .then( ({isUnauthenticated, isUnauthorized, isSuccess}) => {
-          if (isUnauthenticated) {
-            return unauthenticated({callback})
-          } else if (isUnauthorized) {
-            return unauthorized({callback})
-          } else if (isSuccess) {
-            return ok({callback})
-          }
-          logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
-          return error({callback})
-        })
+              }) => deleteJustification({authToken, justificationId}).then( () => ok({callback}) )
   },
   {
     path: 'login',
     method: httpMethods.POST,
+    // TODO change to body: {credentials}
     handler: ({callback, request: {body}}) => login(body)
-        .then(({message, isInvalid, isNotFound, isNotAuthorized, auth}) => {
-          if (isInvalid) {
-            return badRequest({callback, message})
-          }
-          if (isNotFound) {
-            return notFound({callback, message})
-          }
-          if (isNotAuthorized) {
-            return unauthorized({callback, message})
-          }
-          logger.debug(`Successfully authenticated ${auth.email}`)
-          return ok({callback, body: auth})
-        })
+        .then(({auth}) => ok({callback, body: auth}))
   },
   {
     path: 'logout',
     method: httpMethods.POST,
-    handler: ({callback, request: {authToken}}) => logout({authToken})
-        .then( () => ok({callback}) )
+    handler: ({callback, request: {authToken}}) => logout({authToken}).then( () => ok({callback}) )
   },
   {
     id: 'createVote',
     path: new RegExp('^votes$'),
     method: httpMethods.POST,
-    handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken}}) =>
-        createVote({authToken, targetType, targetId, polarity})
-            .then( ({isUnauthenticated, isAlreadyDone, vote}) => {
-              if (isUnauthenticated) {
-                return unauthenticated({callback})
-              } else if (isAlreadyDone) {
-                return ok({callback, body: vote})
-              }
-              return ok({callback, body: vote})
-            })
+    handler: ({callback, request: {body: {vote}, authToken}}) =>
+        createVote({authToken, vote})
+            .then(vote => ok({callback, body: {vote}}))
   },
   {
     id: 'deleteVote',
     path: new RegExp('^votes$'),
     method: httpMethods.DELETE,
-    handler: ({callback, request: {body: {targetType, targetId, polarity}, authToken, method, path}}) =>
-        // TODO base this on the vote_id instead?  Ensure the vote_id matches up with the other values passed?
-        unvote({authToken, targetType, targetId, polarity})
-            .then( ({isUnauthenticated, isAlreadyDone, isSuccess}) => {
-              if (isUnauthenticated) {
-                return unauthenticated({callback})
-              } else if (isAlreadyDone) {
-                return noContent({callback})
-              }
-              if (isSuccess) {
-                return ok({callback})
-              }
-              logger.error(`It shouldn't be possible for ${method} ${path} to get here.`)
-              return error({callback})
-            })
+    handler: ({callback, request: {body: {vote}, authToken, method, path}}) =>
+        deleteVote({authToken, vote})
+            .then( () => ok({callback}) )
   },
   {
+    id: 'createUser',
     path: 'users',
     method: httpMethods.POST,
     handler: ({callback, request: {body: {credentials: {email, password}, authToken}}}) => createUser(body)
-        .then( ({message, notAuthorized, user}) => {
-          if (notAuthorized) {
-            return unauthorized({callback, message})
-          } else {
-            logger.debug(`Successfully created user ${user.id}`)
-            return ok({callback, body: {user}})
-          }
-        })
+        .then( ({user}) => ok({callback, body: {user}}))
   },
 ]
 
@@ -416,14 +330,16 @@ const routeEvent = ({callback, request}) =>
       return notFound({callback})
     }
   )
+      .catch(ValidationError, e => badRequest({callback, body: {errorCode: apiErrorCodes.VALIDATION_ERROR, errors: e.errors}}))
       .catch(NotFoundError, e => notFound({callback}))
       .catch(AuthenticationError, e => unauthenticated({callback}))
-      .catch(AuthorizationError, e => unauthorized({callback}))
-      .catch(EntityConflictError, e => entityConflict({callback, conflicts: e.conflictCodes}))
-      .catch(UserActionsConflictError, e => userActionsConflict({callback}))
+      .catch(AuthorizationError, e => unauthorized({callback, body: {errorCode: apiErrorCodes.AUTHORIZATION_ERROR, errors: e.errors}}))
+      .catch(EntityConflictError, e => error({callback, body: {errorCode: apiErrorCodes.ENTITY_CONFLICT, errors: e.errors}}))
+      .catch(UserActionsConflictError, e => error({callback, body: {errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT, errors: e.errors}}))
       .catch(e => {
+        logger.error("Unexpected error")
         logger.error(e)
-        return error({callback})
+        return error({callback, body: {errorCode: apiErrorCodes.UNEXPECTED_ERROR}})
       })
 
 module.exports = {

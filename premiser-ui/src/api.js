@@ -2,21 +2,23 @@ import { normalize } from 'normalizr';
 import fetch from 'isomorphic-fetch'
 
 import {logError} from './util'
-import {ApiResponseError} from "./errors";
+import {
+  newApiResponseError,
+  newNetworkFailureError,
+} from "./customErrors";
 
 const apiUrl = path => process.env.API_ROOT + path
 
-const toJson = response => {
+const extractResponseBodyJson = response => {
   const contentType = response.headers.get('Content-Type')
   switch (contentType) {
     case 'application/json':
     case 'application/json; charset=utf-8':
       return response.json().then(
-          json => ({ json, response }),
+          bodyJson => ({ bodyJson, response }),
           error => {
-            // Invalid JSON
             logError(error)
-            return Promise.reject(new ApiResponseError(response.status, null, error))
+            return Promise.reject(newApiResponseError("Invalid JSON", error, response.status))
           }
       )
     default:
@@ -26,8 +28,8 @@ const toJson = response => {
       if (contentLength !== 0) {
         logError("Non-empty non-JSON response; API only handles JSON content")
         return response.text().then(
-          text => Promise.reject(new ApiResponseError(response.status, null, new Error(text))),
-          error => Promise.reject(new ApiResponseError(response.status, null, error))
+          text => Promise.reject(newApiResponseError("Non-JSON response: " + text, null, response.status)),
+          error => Promise.reject(newApiResponseError("Invalid response; error converting response to text", error, response.status))
         )
       }
       return { null, response }
@@ -38,12 +40,16 @@ export function fetchJson(endpoint, {init = {}, schema}) {
   const fullUrl = apiUrl(endpoint)
   // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
   return fetch(fullUrl, init)
-      .then(toJson)
-      .then( ({ json, response }) => {
+      .then(extractResponseBodyJson, error => {
+        // Any way to detect difference between CORS failure and network failure here?
+        // Might try a fetch with 'no-cors'
+        throw newNetworkFailureError(error)
+      })
+      .then( ({ bodyJson, response }) => {
         if (!response.ok) {
-          return Promise.reject(new ApiResponseError(response.status, json))
+          return Promise.reject(newApiResponseError("Api error response", null, response.status, bodyJson))
         }
 
-        return schema && json ? normalize(json, schema) : json
+        return schema && bodyJson ? normalize(bodyJson, schema) : bodyJson
       })
 }

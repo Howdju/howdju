@@ -1,5 +1,11 @@
 const {JustificationBasisType} = require('./models')
 
+const toUser = row => !row ? row : ({
+  id: row.user_id,
+  email: row.email,
+  hash: row.hash,
+})
+
 const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
 const toStatement = row => !row ? row : ({
@@ -13,8 +19,9 @@ const toJustification = (row, urlsByJustificationId, counterJustificationsByJust
     return row
   }
 
-  let justification = {
+  const justification = {
     id: row.justification_id,
+    creatorUserId: row.creator_user_id,
     rootStatementId: row.root_statement_id,
     target: {
       type: row.target_type,
@@ -106,11 +113,18 @@ const toVote = row => {
   }
 }
 
+const toCitationReferenceUrl = row => !row ? row : ({
+  citationReferenceId: row.citation_reference_id,
+  urlId: row.url_id,
+})
+
 module.exports = {
+  toUser,
   toStatement,
   toJustification,
   toCitationReference,
   toCitation,
   toUrl,
   toVote,
+  toCitationReferenceUrl,
 }

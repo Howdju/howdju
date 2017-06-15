@@ -1,4 +1,4 @@
-import * as httpStatuses from './httpStatuses'
+import * as httpStatusCodes from './httpStatusCodes'
 import {
   default as t,
   YOU_LACK_PERMISSION_TO_PERFORM_THAT_ACTION,
@@ -20,11 +20,11 @@ export const makeMessage = (activityKey, params) => {
     }
     case activityKeys.UPDATE_STATEMENT: {
       switch (params.status) {
-        case httpStatuses.FORBIDDEN:
+        case httpStatusCodes.FORBIDDEN:
           return t(YOU_LACK_PERMISSION_TO_PERFORM_THAT_ACTION)
-        case httpStatuses.ENTITY_CONFLICT:
+        case httpStatusCodes.ENTITY_CONFLICT:
           return t(A_STATEMENT_WITH_THAT_TEXT_ALREADY_EXISTS)
-        case httpStatuses.USER_ACTIONS_CONFLICT:
+        case httpStatusCodes.USER_ACTIONS_CONFLICT:
           return t(CANNOT_MODIFY_A_STATEMENT_AFTER_OTHER_USERS_HAVE_ADDED_JUSTIFICATIONS_OR_VERIFIED_IT)
       }
       if (params.status >= 400) {

@@ -243,7 +243,7 @@ class JustificationWithCounters extends Component {
               className={cn({
                 verified: _isVerified,
                 inactive: !isOver,
-                hiding: _isDisverified && !isOver,
+                hiding: !_isVerified && !isOver,
                 otherSelected: _isDisverified,
               })}
               title="Verify this justification"
@@ -254,7 +254,7 @@ class JustificationWithCounters extends Component {
               className={cn({
                 disverified: _isDisverified,
                 inactive: !isOver,
-                hiding: _isVerified && !isOver,
+                hiding: !_isDisverified && !isOver,
                 otherSelected: _isVerified,
               })}
               title="Dis-verify this justification"

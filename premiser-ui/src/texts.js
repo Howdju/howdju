@@ -58,6 +58,10 @@ export const LOGIN_TO_CONTINUE = 'LOGIN_TO_CONTINUE'
 
 export const JUSTIFICATION_TITLE = 'JUSTIFICATION_TITLE'
 
+export const AN_UNEXPECTED_ERROR_OCCURRED = 'AN_UNEXPECTED_ERROR_OCCURRED'
+
+export const A_NETWORK_ERROR_OCCURRED = 'A_NETWORK_ERROR_OCCURRED'
+
 const texts = {
   [CREATE_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Create statement',
   [CREATE_STATEMENT_SUBMIT_BUTTON_TITLE]: 'Tell the world!',
@@ -113,6 +117,8 @@ const texts = {
   [LOGIN_TO_CONTINUE]: 'Login to continue',
 
   [JUSTIFICATION_TITLE]: 'Justification',
+  [AN_UNEXPECTED_ERROR_OCCURRED]: 'An unexpected error occurred',
+  [A_NETWORK_ERROR_OCCURRED]: 'A network error occurred.  Please check your connection and try again.',
 }
 
 const text = (key, ...args) => {

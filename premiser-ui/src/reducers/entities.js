@@ -22,7 +22,7 @@ import {
   VoteTargetType
 } from '../models'
 import {api, str} from '../actions'
-import * as httpStatuses from "../httpStatuses";
+import * as httpStatusCodes from "../httpStatusCodes";
 import {normalize} from "normalizr";
 import {statementSchema} from "../schemas";
 
@@ -105,8 +105,8 @@ export default handleActions({
       }
     },
     throw: (state, action) => {
-      // If a statement is not found (another user deleted it), then remove it.
-      if (action.status === httpStatuses.NOT_FOUND) {
+      // If a statement is not found (e.g., another user deleted it), then remove it.
+      if (action.httpStatusCode === httpStatusCodes.NOT_FOUND) {
         return {
           ...state,
           statements: pickBy(state.statements, (s, id) => +id !== action.meta.statementId)
@@ -118,10 +118,13 @@ export default handleActions({
   [api.fetchCitationReference]: {
     next: (state, action) => ({...state, citationReferences: {...state.citationReferences, ...action.payload.entities.citationReferences}})
   },
-  [combineActions(
-      api.createStatement.response,
-      api.createStatementJustification.response
-  )]: {
+  [api.createStatement.response]: {
+    next: (state, action) => ({
+      ...state,
+      statements: {...state.statements, ...action.payload.entities.statements},
+    })
+  },
+  [api.createStatementJustification.response]: {
     next: (state, action) => ({
       ...state,
       statements: {...state.statements, ...action.payload.entities.statements},
@@ -206,14 +209,11 @@ export default handleActions({
       api.verifyJustification,
       api.disverifyJustification
   )]: (state, action) => {
-    const {
-      targetId,
-      targetType,
-      polarity
-    } = action.payload
+    const vote = action.payload.vote
+    const {targetId} = vote
     const currJustification = state.justifications[targetId]
-    const optimisticVote = {targetType, targetId, polarity}
-    const justification = merge({}, currJustification, {vote: optimisticVote})
+    // Optimistically apply vote
+    const justification = merge({}, currJustification, {vote})
     return {
       ...state,
       justifications: {...state.justifications, [justification.id]: justification},
@@ -225,8 +225,9 @@ export default handleActions({
   )]: (state, action) => {
     const {
       targetId,
-    } = action.payload
+    } = action.payload.vote
     const currJustification = state.justifications[targetId]
+    // Optimistically remove vote
     const justification = merge({}, currJustification, {vote: null})
     return {
       ...state,
@@ -238,7 +239,7 @@ export default handleActions({
       api.disverifyJustification.response
   )]: {
     next: (state, action) => {
-      const vote = action.payload.entities.votes[action.payload.result]
+      const vote = action.payload.entities.votes[action.payload.result.vote]
       const currJustification = state.justifications[vote.targetId]
       const justification = {...currJustification, vote}
       return {
@@ -255,8 +256,11 @@ export default handleActions({
       api.unDisverifyJustification.response
   )]: {
     throw: (state, action) => {
+      // Undo optimistic vote
       const {
-        targetId,
+        vote: {
+          targetId
+        },
         previousVote,
       } = action.meta.requestPayload
       const currJustification = state.justifications[targetId]

@@ -58,32 +58,41 @@ export const api = {
   logout: apiActionCreator('LOGOUT'),
 
   verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', target => ({
-    targetType: VoteTargetType.JUSTIFICATION,
-    targetId: target.id,
-    polarity: VotePolarity.POSITIVE,
+    vote: {
+      targetType: VoteTargetType.JUSTIFICATION,
+      targetId: target.id,
+      polarity: VotePolarity.POSITIVE,
+    },
     previousVote: target.vote,
   })),
   unVerifyJustification: apiActionCreator('UN_VERIFY_JUSTIFICATION', target => ({
-    targetType: VoteTargetType.JUSTIFICATION,
-    targetId: target.id,
-    polarity: VotePolarity.POSITIVE,
+    vote: {
+      targetType: VoteTargetType.JUSTIFICATION,
+      targetId: target.id,
+      polarity: VotePolarity.POSITIVE,
+    },
     previousVote: target.vote,
   })),
   disverifyJustification: apiActionCreator('DISVERIFY_JUSTIFICATION', target => ({
-    targetType: VoteTargetType.JUSTIFICATION,
-    targetId: target.id,
-    polarity: VotePolarity.NEGATIVE,
+    vote: {
+      targetType: VoteTargetType.JUSTIFICATION,
+      targetId: target.id,
+      polarity: VotePolarity.NEGATIVE,
+    },
     previousVote: target.vote,
   })),
   unDisverifyJustification: apiActionCreator('UN_DISVERIFY_JUSTIFICATION', target => ({
-    targetType: VoteTargetType.JUSTIFICATION,
-    targetId: target.id,
-    polarity: VotePolarity.NEGATIVE,
+    vote: {
+      targetType: VoteTargetType.JUSTIFICATION,
+      targetId: target.id,
+      polarity: VotePolarity.NEGATIVE,
+    },
     previousVote: target.vote,
   })),
 
   createStatement: apiActionCreator('CREATE_STATEMENT', statement => ({statement})),
-  createStatementJustification: apiActionCreator('CREATE_STATEMENT_JUSTIFICATION', (statement, justification) => ({statement, justification})),
+  createStatementJustification: apiActionCreator('CREATE_STATEMENT_JUSTIFICATION', (statement, justification) =>
+      ({statementJustification: {statement, justification}})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),
   deleteStatement: apiActionCreator('DELETE_STATEMENT', statement => ({statement})),
   fetchStatementTextSuggestions: apiActionCreator('API/FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({

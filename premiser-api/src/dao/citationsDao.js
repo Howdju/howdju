@@ -1,6 +1,7 @@
 const map = require('lodash/map')
 const groupBy = require('lodash/groupBy')
 const sortBy = require('lodash/sortBy')
+const head = require('lodash/head')
 
 const {
   toCitation,
@@ -15,6 +16,20 @@ const {logger} = require('../logger')
 
 
 class CitationsDao {
+  readCitationEquivalentTo(citation) {
+    return query('select * from citations where text = $1 and deleted is null', [citation.text])
+        .then( ({rows}) => {
+          if (rows.length > 1) {
+            logger.error(`${rows.length} equivalent citations found`, citation)
+          }
+          return toCitation(head(rows))
+        })
+  }
+  createCitation(citation, userId, now) {
+    const sql = 'insert into citations (text, creator_user_id, created) values ($1, $2, $3) returning *'
+    return query(sql, [citation.text, userId, now])
+        .then( ({rows: [row]}) => toCitation(row) )
+  }
   doOtherCitationsHaveSameTextAs(citation) {
     const sql = `
       select count(*) > 0 as has_conflict

@@ -1,5 +1,9 @@
 const {ImpossibleError} = require('./errors')
 
+const EntityTypes = {
+  STATEMENT: 'STATEMENT'
+}
+
 const ActionType = {
   /** The user created something */
   CREATE: 'CREATE',
@@ -14,6 +18,8 @@ const ActionTargetType = {
   JUSTIFICATION: 'JUSTIFICATION',
   CITATION_REFERENCE: 'CITATION_REFERENCE',
   CITATION: 'CITATION',
+  USER: 'USER',
+  URL: 'URL',
 }
 
 const JustificationTargetType = {
@@ -61,4 +67,5 @@ module.exports = {
   VotePolarity,
   VoteTargetType,
   negatePolarity,
+  EntityTypes,
 }
