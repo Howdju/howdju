@@ -1,74 +1,96 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import FontIcon from 'react-md/lib/FontIcons'
-import StatementTextAutocomplete from './StatementTextAutocomplete'
-import TextField from "react-md/lib/TextFields";
+import {connect} from "react-redux";
+import Button from "react-md/lib/Buttons"
+import get from 'lodash/get'
+
+import {
+  editors,
+  mapActionCreatorGroupToDispatchToProps,
+} from './actions'
+import {EditorTypes} from "./reducers/editors";
+import StatementEditorFields from "./StatementEditorFields";
+import {
+  CANCEL_BUTTON_LABEL, EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
+} from "./texts";
+import {default as t} from './texts'
 
 class StatementEditor extends Component {
 
   constructor() {
     super()
 
-    this.onChange = this.onChange.bind(this)
+    this.onPropertyChange = this.onPropertyChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.onCancelEdit = this.onCancelEdit.bind(this)
   }
 
-  onChange(val, event) {
-    const name = event.target.name
-    this.props.onPropertyChange({[name]: val})
+  onPropertyChange(properties) {
+    this.props.editors.propertyChange(EditorTypes.STATEMENT, this.props.editorId, properties)
+  }
+
+  onSubmit(event) {
+    event.preventDefault()
+    this.props.editors.commitEdit(EditorTypes.STATEMENT, this.props.editorId)
+  }
+
+  onCancelEdit() {
+    this.props.editors.cancelEdit(EditorTypes.STATEMENT, this.props.editorId)
   }
 
   render() {
     const {
-      statement,
       suggestionsKey,
-      name,
-      id,
-      readOnly,
-      onPropertyChange,
+      editorState: {
+        errors,
+        editEntity,
+        isSaving,
+      },
       ...rest,
     } = this.props
+    delete rest.editors
+    delete rest.editorId
 
-    const idPrefix = id ? id + '.' : ''
-    const namePrefix = name ? name + '.' : ''
-    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
+    const statementErrors = errors && errors.statement
 
-    return (suggestionsKey && !readOnly) ?
-        <StatementTextAutocomplete id={idPrefix + "text"}
-                                   name={namePrefix + "text"}
-                                   label="Text"
-                                   required
-                                   value={statement.text}
-                                   suggestionsKey={suggestionsKeyPrefix + 'text'}
-                                   onPropertyChange={onPropertyChange}
-                                   leftIcon={<FontIcon>text_fields</FontIcon>}
-                                   {...rest}
-        /> :
-        <TextField id={idPrefix + 'text'}
-                   name={namePrefix + "text"}
-                   label="Text"
-                   type="text"
-                   value={statement.text}
-                   required
-                   onChange={this.onChange}
-                   leftIcon={<FontIcon>text_fields</FontIcon>}
-                   disabled={readOnly}
-                   {...rest}
-        />
+    return (
+        <form onSubmit={this.onSubmit}>
+          <StatementEditorFields statement={editEntity}
+                                 disabled={isSaving}
+                                 suggestionsKey={suggestionsKey}
+                                 onPropertyChange={this.onPropertyChange}
+                                 errors={statementErrors}
+                                 {...rest}
+          />
+          <Button flat
+                  key="cancelButton"
+                  label={t(CANCEL_BUTTON_LABEL)}
+                  onClick={this.onCancelEdit} />
+          <Button flat
+                  primary
+                  key="submitButton"
+                  type="submit"
+                  label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+                  disabled={isSaving}
+          />
+        </form>
+    )
   }
 }
 StatementEditor.propTypes = {
-  statement: PropTypes.object.isRequired,
-  /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
-  id: PropTypes.string,
-  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
-  name: PropTypes.string,
+  /** Identifies the editor's state */
+  editorId: PropTypes.string.isRequired,
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
-  onPropertyChange: PropTypes.func.isRequired,
-  readOnly: PropTypes.bool,
-}
-StatementEditor.defaultProps = {
-  readOnly: false
 }
 
-export default StatementEditor
+const mapStateToProps = (state, ownProps) => {
+  const editorState = get(state.editors, [EditorTypes.STATEMENT, ownProps.editorId], {})
+  return {
+    editorState,
+  }
+}
+
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  editors,
+}))(StatementEditor)

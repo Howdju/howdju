@@ -1,52 +1,52 @@
-const {JustificationTargetType} = require("./models")
+const {
+  JustificationTargetType,
+  JustificationBasisType,
+} = require("./models")
 
 const isArray = require('lodash/isArray')
 const map = require('lodash/map')
 const some = require('lodash/some')
-const url = require("url");
+const urlParser = require("url");
+const modelErrorCodes = require('./codes/modelErrorCodes')
 
-const MUST_BE_NONEMPTY = 'MUST_BE_NONEMPTY'
-const IS_REQUIRED = 'IS_REQUIRED'
-const IF_PRESENT_MUST_BE_ARRAY = 'IF_PRESENT_MUST_BE_ARRAY'
-const INVALID_URL = 'INVALID_URL'
-const STATEMENT_JUSTIFICATION_MUST_HAVE_STATEMENT_TARGET_TYPE = 'STATEMENT_JUSTIFICATION_MUST_HAVE_STATEMENT_TARGET_TYPE'
 
 class CredentialValidator {
   validate(credentials) {
-    const errors = {
-      hasErrors: false,
-      modelErrors: [],
-      fieldErrors: {
-        email: [],
-        password: [],
-      },
-    }
+    const errors = CredentialValidator.blankErrors()
 
     if (!credentials) {
       errors.hasErrors = true
-      errors.modelErrors.push(IS_REQUIRED)
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
     if (credentials.email === '') {
       errors.hasErrors = true
-      errors.fieldErrors.email.push(MUST_BE_NONEMPTY)
+      errors.fieldErrors.email.push(modelErrorCodes.MUST_BE_NONEMPTY)
     } else if (!credentials.email) {
       errors.hasErrors = true
-      errors.fieldErrors.email.push(IS_REQUIRED)
+      errors.fieldErrors.email.push(modelErrorCodes.IS_REQUIRED)
     }
 
     if (credentials.password === '') {
       errors.hasErrors = true
-      errors.fieldErrors.password.push(MUST_BE_NONEMPTY)
+      errors.fieldErrors.password.push(modelErrorCodes.MUST_BE_NONEMPTY)
     } else if (!credentials.password) {
       errors.hasErrors = true
-      errors.fieldErrors.password.push(IS_REQUIRED)
+      errors.fieldErrors.password.push(modelErrorCodes.IS_REQUIRED)
     }
 
     return errors
   }
 }
+CredentialValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    email: [],
+    password: [],
+  },
+})
 
 class StatementJustificationValidator {
   constructor(statementValidator, justificationValidator) {
@@ -60,17 +60,16 @@ class StatementJustificationValidator {
       justification,
     } = statementJustification
     const statementErrors = this.statementValidator.validate(statement)
-    const justificationErrors = justification ?
-        this.justificationValidator.validate(justification) :
-        JustificationValidator.defaultErrors
+    const justificationErrors = this.justificationValidator.validate(justification, {rootStatementId: true, target: true})
 
     if (justification && justification.target.type !== JustificationTargetType.STATEMENT) {
       justificationErrors.hasErrors = true
-      justificationErrors.fieldErrors.target.fieldErrors.type.push(STATEMENT_JUSTIFICATION_MUST_HAVE_STATEMENT_TARGET_TYPE)
+      justificationErrors.fieldErrors.target.fieldErrors.type.push(modelErrorCodes.STATEMENT_JUSTIFICATION_MUST_HAVE_STATEMENT_TARGET_TYPE)
     }
 
     return {
       hasErrors: statementErrors.hasErrors || justificationErrors.hasErrors,
+      modelErrors: [],
       fieldErrors: {
         statement: statementErrors,
         justification: justificationErrors,
@@ -84,29 +83,86 @@ class JustificationValidator {
     this.statementValidator = statementValidator
     this.citationReferenceValidator = citationReferenceValidator
   }
-  validate(justification) {
-    // rootStatementId and polarity required
-    // target type and EITHER ID required OR valid properties for type required
-    // basis type and EITHER ID OR valid properties for type required
-    /*
+  validate(justification, ignore={}) {
+    const errors = JustificationValidator.blankErrors()
 
-      if (
-          !justification.rootStatementId ||
-          !justification.polarity ||
-          !justification.target ||
-          !justification.target.type ||
-          !justification.target.entity.id ||
-          !justification.basis ||
-          !justification.basis.type ||
-          !justification.basis.entity
-      ) {
-        return {isInvalid: true}
+    if (!justification) {
+      errors.hasErrors = true
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      return errors
+    }
+
+    if (justification.id) {
+      // If it has an ID already, then it doesn't need anything else?
+      // If we get rid of this, how to deal with target justification that can be only ID?
+      return errors
+    }
+
+    if (!justification.rootStatementId && !ignore.rootStatementId) {
+      errors.hasErrors = true
+      errors.fieldErrors.rootStatementId.push(modelErrorCodes.IS_REQUIRED)
+    }
+    if (!justification.polarity) {
+      errors.hasErrors = true
+      errors.fieldErrors.polarity.push(modelErrorCodes.IS_REQUIRED)
+    }
+
+    if (!ignore.target) {
+      if (!justification.target) {
+        errors.hasErrors = true
+        errors.fieldErrors.target.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      } else {
+        if (!justification.target.type) {
+          errors.hasErrors = true
+          errors.fieldErrors.target.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED)
+        }
+        if (!justification.target.entity) {
+          errors.hasErrors = true
+          errors.fieldErrors.target.fieldErrors.entity.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+        } else {
+          if (!justification.target.entity.id) {
+            // Must have valid props
+            const targetEntityErrors = justification.target.type === JustificationTargetType.JUSTIFICATION ?
+                this.validate(justification.target.entity) :
+                this.statementValidator.validate(justification.target.entity)
+            if (targetEntityErrors.hasErrors) {
+              errors.hasErrors = true
+              errors.fieldErrors.target.fieldErrors.entity = targetEntityErrors
+            }
+          }
+        }
       }
-     */
-    return JustificationValidator.defaultErrors
+    }
+
+    if (!justification.basis) {
+      errors.hasErrors = true
+      errors.fieldErrors.basis.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+    } else {
+      if (!justification.basis.type) {
+        errors.hasErrors = true
+        errors.fieldErrors.basis.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED)
+      }
+      if (!justification.basis.entity) {
+        errors.hasErrors = true
+        errors.fieldErrors.basis.fieldErrors.entity.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      } else {
+        if (!justification.basis.entity.id) {
+          // Must have valid props
+          const basisEntityErrors = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
+              this.citationReferenceValidator.validate(justification.basis.entity) :
+              this.statementValidator.validate(justification.basis.entity)
+          if (basisEntityErrors.hasErrors) {
+            errors.hasErrors = true
+            errors.fieldErrors.basis.fieldErrors.entity = basisEntityErrors
+          }
+        }
+      }
+    }
+
+    return errors
   }
 }
-JustificationValidator.defaultErrors = {
+JustificationValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
@@ -133,35 +189,36 @@ JustificationValidator.defaultErrors = {
       },
     },
   },
-}
+})
 
 class StatementValidator {
   validate(statement) {
-    const errors = {
-      hasErrors: false,
-      modelErrors: [],
-      fieldErrors: {
-        text: []
-      },
-    }
+    const errors = StatementValidator.blankErrors()
 
     if (!statement) {
       errors.hasErrors = true
-      errors.modelErrors.push(IS_REQUIRED)
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
     if (statement.text === '') {
       errors.hasErrors = true
-      errors.fieldErrors.text.push(MUST_BE_NONEMPTY)
+      errors.fieldErrors.text.push(modelErrorCodes.MUST_BE_NONEMPTY)
     } else if (!statement.text) {
       errors.hasErrors = true
-      errors.fieldErrors.text.push(IS_REQUIRED)
+      errors.fieldErrors.text.push(modelErrorCodes.IS_REQUIRED)
     }
 
     return errors
   }
 }
+StatementValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    text: []
+  },
+})
 
 class CitationReferenceValidator {
   constructor(citationValidator, urlValidator) {
@@ -170,24 +227,11 @@ class CitationReferenceValidator {
   }
 
   validate(citationReference) {
-    const errors = {
-      hasErrors: false,
-      modelErrors: [],
-      fieldErrors: {
-        citation: {
-          modelErrors: [],
-          fieldErrors: {},
-        },
-        urls: {
-          modelErrors: [],
-          itemErrors: [],
-        }
-      },
-    }
+    const errors = CitationReferenceValidator.blankErrors()
 
     if (!citationReference) {
       errors.hasErrors = true
-      errors.modelErrors.push(IS_REQUIRED)
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
@@ -198,10 +242,10 @@ class CitationReferenceValidator {
 
     if (citationReference.urls && !isArray(citationReference.urls)) {
       errors.hasErrors = true
-      errors.fieldErrors.urls.modelErrors.push(IF_PRESENT_MUST_BE_ARRAY)
+      errors.fieldErrors.urls.modelErrors.push(modelErrorCodes.IF_PRESENT_MUST_BE_ARRAY)
     } else {
       errors.fieldErrors.urls.itemErrors = map(citationReference.urls, this.urlValidator.validate)
-      if (some(errors.fields.urls.items, i => i.hasErrors)) {
+      if (some(errors.fieldErrors.urls.itemErrors, i => i.hasErrors)) {
         errors.hasErrors = true
       }
     }
@@ -209,67 +253,161 @@ class CitationReferenceValidator {
     return errors
   }
 }
+CitationReferenceValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    quote: [],
+    citation: {
+      modelErrors: [],
+      fieldErrors: {},
+    },
+    urls: {
+      modelErrors: [],
+      itemErrors: [],
+    }
+  },
+})
 
 class UrlValidator {
   validate(url) {
-    const errors = {
-      hasErrors: false,
-      modelErrors: [],
-      fieldErrors: {
-        url: []
-      },
-    }
-    if (url.url === '') {
-      errors.hasErrors = true
-      errors.fieldErrors.url.push(MUST_BE_NONEMPTY)
-    } else if (!url.url) {
-      errors.hasErrors = true
-      errors.fieldErrors.url.push(IS_REQUIRED)
-    } else {
+    const errors = UrlValidator.blankErrors()
+
+    // A url can be blank (we will ignore it) but if present, it must be valid
+    if (url.url) {
       try {
-        url.parse(url.url);
+        urlParser.parse(url.url);
       } catch (e) {
-        errors.fieldErrors.url = INVALID_URL
+        errors.hasErrors = true
+        errors.fieldErrors.url.push(modelErrorCodes.INVALID_URL)
       }
     }
 
     return errors
   }
 }
+UrlValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    url: []
+  },
+})
 
 class CitationValidator {
   validate(citation) {
-    const errors = {
-      hasErrors: false,
-      modelErrors: [],
-      fieldErrors: {
-        text: []
-      },
-    }
+    const errors = CitationValidator.blankErrors()
 
     if (!citation) {
       errors.hasErrors = true
-      errors.modelErrors.push(IS_REQUIRED)
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
     if (citation.text === '') {
       errors.hasErrors = true
-      errors.fieldErrors.text.push(MUST_BE_NONEMPTY)
+      errors.fieldErrors.text.push(modelErrorCodes.MUST_BE_NONEMPTY)
     } else if (!citation.text) {
       errors.hasErrors = true
-      errors.fieldErrors.text.push(IS_REQUIRED)
+      errors.fieldErrors.text.push(modelErrorCodes.IS_REQUIRED)
     }
 
     return errors
   }
 }
+CitationValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    text: []
+  },
+})
 
+class UserValidator {
+  validate(user) {
+    const errors = UserValidator.blankErrors()
+
+    if (!user) {
+      errors.hasErrors = true
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      return errors
+    }
+
+    if (user.email === '') {
+      errors.hasErrors = true
+      errors.fieldErrors.email.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    } else if (!user.email) {
+      errors.hasErrors = true
+      errors.fieldErrors.email.push(modelErrorCodes.IS_REQUIRED)
+    }
+
+    if (user.password === '') {
+      errors.hasErrors = true
+      errors.fieldErrors.password.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    } else if (!user.password) {
+      errors.hasErrors = true
+      errors.fieldErrors.password.push(modelErrorCodes.IS_REQUIRED)
+    }
+
+    return errors
+  }
+}
+UserValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    email: [],
+    password: []
+  }
+})
+
+class VoteValidator {
+  validate(vote) {
+    const errors = VoteValidator.blankErrors()
+
+    if (!vote) {
+      errors.hasErrors = true
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      return errors
+    }
+
+    if (!vote.targetType) {
+      errors.hasErrors = true
+      errors.fieldErrors.targetType.push(modelErrorCodes.IS_REQUIRED)
+    }
+
+    if (!vote.targetId) {
+      errors.hasErrors = true
+      errors.fieldErrors.targetId.push(modelErrorCodes.IS_REQUIRED)
+    }
+
+    if (!vote.polarity) {
+      errors.hasErrors = true
+      errors.fieldErrors.polarity.push(modelErrorCodes.IS_REQUIRED)
+    }
+
+    return errors
+  }
+}
+VoteValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    targetType: [],
+    targetId: [],
+    polarity: [],
+  }
+})
+
+const urlValidator = new UrlValidator()
+const userValidator = new UserValidator()
 const statementValidator = new StatementValidator()
-const citationReferenceValidator = new CitationReferenceValidator(new CitationValidator(), new UrlValidator())
+const citationValidator = new CitationValidator()
+const citationReferenceValidator = new CitationReferenceValidator(citationValidator, urlValidator)
 const justificationValidator = new JustificationValidator(statementValidator, citationReferenceValidator)
 const statementJustificationValidator = new StatementJustificationValidator(statementValidator, justificationValidator)
 const credentialValidator = new CredentialValidator()
+const voteValidator = new VoteValidator()
 
 module.exports = {
   statementValidator,
@@ -277,4 +415,6 @@ module.exports = {
   justificationValidator,
   statementJustificationValidator,
   credentialValidator,
+  userValidator,
+  voteValidator,
 }

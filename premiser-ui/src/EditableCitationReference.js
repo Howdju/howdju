@@ -4,35 +4,37 @@ import {connect} from "react-redux";
 import CircularProgress from "react-md/lib/Progress/CircularProgress";
 import get from 'lodash/get'
 
+import {
+  editors,
+  mapActionCreatorGroupToDispatchToProps,
+} from './actions'
 import {EditorTypes} from "./reducers/editors";
-import StatementViewer from "./StatementViewer";
-import StatementEditor from "./StatementEditor";
+import CitationReferenceViewer from "./CitationReferenceViewer";
+import CitationReferenceEditor from "./CitationReferenceEditor";
 
-class EditableStatement extends Component {
+class EditableCitationReference extends Component {
 
   render() {
     const {
       id,
       editorId,
-      statement,
+      citationReference,
       suggestionsKey,
       isFetching,
       isEditing,
-      ...rest,
+      ...rest
     } = this.props
-    delete rest.entityId
 
-    // statement is required, so make this lazy.  Is this a problem for react efficiency-wise?
     const editor =
-        <StatementEditor editorId={editorId}
-                         id={id}
-                         suggestionsKey={suggestionsKey}
-                         {...rest}
+        <CitationReferenceEditor id={id}
+                                 editorId={editorId}
+                                 suggestionsKey={suggestionsKey}
+
         />
     const viewer =
-        <StatementViewer id={id}
-                         statement={statement}
-                         {...rest}
+        <CitationReferenceViewer id={id}
+                                 citationReference={citationReference}
+                                 {...rest}
         />
     const progress =
         <CircularProgress id={`${id}-Progress`} />
@@ -42,7 +44,7 @@ class EditableStatement extends Component {
         isFetching ? progress : viewer
   }
 }
-EditableStatement.propTypes = {
+EditableCitationReference.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Let's the component fetch its statement from the API and retrieve it from the state */
@@ -57,13 +59,15 @@ EditableStatement.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const statement = state.entities.statements[ownProps.entityId]
-  const editEntity = get(state.editors, [EditorTypes.STATEMENT, ownProps.editorId, 'editEntity'])
+  const citationReference = state.entities.citationReferences[ownProps.entityId]
+  const editEntity = get(state.editors, [EditorTypes.CITATION_REFERENCE, ownProps.editorId, 'editEntity'])
   const isEditing = !!editEntity
   return {
-    statement,
+    citationReference,
     isEditing,
   }
 }
 
-export default connect(mapStateToProps)(EditableStatement)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  editors,
+}))(EditableCitationReference)

@@ -29,14 +29,15 @@ import text, {
   CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE, JUSTIFICATION_TITLE,
 } from "./texts";
 import { suggestionKeys } from './autocompleter'
-import {consolidateBasis, makeNewStatementJustification} from "./models";
+import {makeNewStatementJustification} from "./models";
 import {
   editStatementJustificationPageEditorId,
 } from "./editorIds"
 import {logger} from "./util";
 import JustificationEditor from "./JustificationEditor";
-import StatementEditor from "./StatementEditor";
+import StatementEditorFields from "./StatementEditorFields";
 import {EditorTypes} from "./reducers/editors";
+import ModelErrors from "./ModelErrors";
 
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
@@ -110,26 +111,7 @@ class EditStatementJustificationPage extends Component {
 
   onSubmit(event) {
     event.preventDefault()
-
-    switch (this.props.mode) {
-      case EditStatementJustificationPageMode.CREATE_STATEMENT: {
-        if (this.props.doCreateJustification) {
-          const justification = consolidateBasis(this.props.justification)
-          this.props.flows.createStatementJustificationThenView(this.props.statement, justification)
-        } else {
-          this.props.flows.createStatementThenView(this.props.statement)
-        }
-        break
-      }
-      case EditStatementJustificationPageMode.CREATE_JUSTIFICATION: {
-        const justification = consolidateBasis(this.props.justification)
-        this.props.flows.createStatementJustificationThenView(this.props.statement, justification)
-        break
-      }
-      default: {
-        logger.warn("onSubmit has unhandled mode", this.props.mode)
-      }
-    }
+    this.props.flows.commitEditThenView(this.editorType, this.editorId)
   }
 
   onCancel() {
@@ -139,19 +121,27 @@ class EditStatementJustificationPage extends Component {
   render() {
     const {
       mode,
+      isEditing,
       statement,
       justification,
-      inProgress,
       doCreateJustification,
+      inProgress,
+      errors,
     } = this.props
-
-    const errorMessage = ''
 
     const title = text(titleTextKeyByMode[mode])
     const submitButtonLabel = text(submitButtonLabelTextKeyByMode[mode])
     const submitButtonTitle = text(submitButtonTitleTextKeyByMode[mode])
 
     const isCreateJustification = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
+
+    const modelErrors = errors && doCreateJustification && errors.statementJustification.modelErrors
+    const statementErrors = errors && (
+        doCreateJustification ?
+            errors.statementJustification.fieldErrors.statement :
+            errors.statement
+        )
+    const justificationErrors = errors &&  doCreateJustification ? errors.statementJustification.fieldErrors.justification : null
 
     return (
         <DocumentTitle title={`Howdju - ${title}`}>
@@ -162,41 +152,50 @@ class EditStatementJustificationPage extends Component {
                 <Card>
                   <CardTitle title={title} />
 
-                  <CardText className={cn({
-                    errorMessage: true,
-                    hidden: !errorMessage
-                  })}>
-                    {errorMessage}
-                  </CardText>
+                  {modelErrors &&
+                    <CardText>
+                      <ModelErrors errors={modelErrors} />
+                    </CardText>
+                  }
+
                   <CardText>
-                    <StatementEditor statement={statement}
-                                     id="statement"
-                                     name="statement"
-                                     suggestionsKey={suggestionKeys.createStatementPageStatement}
-                                     onPropertyChange={this.onPropertyChange}
-                    />
+                    {statement &&
+                      <StatementEditorFields statement={statement}
+                                             id="statement"
+                                             name="statement"
+                                             suggestionsKey={suggestionKeys.createStatementPageStatement}
+                                             onPropertyChange={this.onPropertyChange}
+                                             errors={statementErrors}
+                      />
+                    }
                   </CardText>
 
-                  <Switch id="doCreateJustificationSwitch"
-                          name="doCreateJustification"
-                          label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
-                          className={cn({hidden: isCreateJustification})}
-                          checked={doCreateJustification}
-                          onChange={this.onDoCreateJustificationSwitchChange} />
+                  {isEditing &&
+                    <Switch id="doCreateJustificationSwitch"
+                            name="doCreateJustification"
+                            label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
+                            className={cn({hidden: isCreateJustification})}
+                            checked={doCreateJustification}
+                            onChange={this.onDoCreateJustificationSwitchChange}
+                    />
+                  }
 
                   <CardTitle title={t(JUSTIFICATION_TITLE)}
                              className={cn({hidden: !isCreateJustification && !doCreateJustification})}
                   />
 
                   <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
-                    <JustificationEditor justification={justification}
-                                         name="justification"
-                                         suggestionsKey="justification"
-                                         readOnlyBasis={isCreateJustification}
-                                         onPropertyChange={this.onPropertyChange}
-                                         onAddUrlClick={this.addJustificationUrl}
-                                         onDeleteUrlClick={this.deleteJustificationUrl}
-                    />
+                    {justification &&
+                      <JustificationEditor justification={justification}
+                                           name="justification"
+                                           suggestionsKey="justification"
+                                           readOnlyBasis={isCreateJustification}
+                                           onPropertyChange={this.onPropertyChange}
+                                           onAddUrlClick={this.addJustificationUrl}
+                                           onDeleteUrlClick={this.deleteJustificationUrl}
+                                           errors={justificationErrors}
+                      />
+                    }
                   </CardText>
 
                   <CardActions>
@@ -231,6 +230,7 @@ const mapStateToProps = (state, ownProps) => {
   const queryParams = queryString.parse(ownProps.location.search)
   return {
     ...editEntity,
+    isEditing: !!editEntity,
     errors,
     queryParams,
   }

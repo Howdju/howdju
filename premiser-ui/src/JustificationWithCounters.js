@@ -7,14 +7,11 @@ import Card from "react-md/lib/Cards/Card"
 import CardActions from "react-md/lib/Cards/CardActions"
 import Button from "react-md/lib/Buttons"
 import FontIcon from "react-md/lib/FontIcons"
-import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"
 import Positions from "react-md/lib/Menus/Positions"
-import FlipMove from 'react-flip-move';
-import set from 'lodash/set'
-import forEach from 'lodash/forEach'
-import cloneDeep from 'lodash/cloneDeep'
+import FlipMove from 'react-flip-move'
+import get from 'lodash/get'
 
 import {
   api,
@@ -24,20 +21,18 @@ import {
 import {
   JustificationBasisType,
   isVerified,
-  isDisverified, isStatementBased, hasQuote,
+  isDisverified, isStatementBased, hasQuote, makeNewCounterJustification,
 } from './models'
+import {counterJustificationEditorId, justificationBasisEditorId} from './editorIds'
 
 import config from './config';
 
 import CounterJustificationEditor from "./CounterJustificationEditor";
-import {
-  default as t, CANCEL_BUTTON_LABEL,
-  CREATE_COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL, EDIT_JUSTIFICATION_SUBMIT_BUTTON_LABEL
-} from "./texts";
 
 import {logError} from "./util";
-import JustificationBasisViewer from "./JustificationBasisViewer";
-import JustificationBasisEditor from "./JustificationBasisEditor";
+import EditableJustificationBasis from "./EditableJustificationBasis";
+import {EditorTypes} from "./reducers/editors";
+import {suggestionKeys} from "./autocompleter";
 
 
 class JustificationWithCounters extends Component {
@@ -50,11 +45,7 @@ class JustificationWithCounters extends Component {
     this.goToStatement = this.goToStatement.bind(this)
     this.deleteClick = this.deleteClick.bind(this)
 
-    this.onBeginEditBasis = this.onBeginEditBasis.bind(this)
-    this.onEditBasisPropertyChange = this.onEditBasisPropertyChange.bind(this)
-    this.onCancelEditBasis = this.onCancelEditBasis.bind(this)
-    this.onSaveEditBasis = this.onSaveEditBasis.bind(this)
-    this.endEditBasis = this.endEditBasis.bind(this)
+    this.onEditBasis = this.onEditBasis.bind(this)
 
     this.onCardMouseOver = this.onCardMouseOver.bind(this)
     this.onCardMouseLeave = this.onCardMouseLeave.bind(this)
@@ -62,10 +53,7 @@ class JustificationWithCounters extends Component {
     this.onVerifyButtonClick = this.onVerifyButtonClick.bind(this)
     this.onDisverifyButtonClick = this.onDisverifyButtonClick.bind(this)
 
-    this.onAddNewCounterJustification = this.onAddNewCounterJustification.bind(this)
-    this.onNewCounterJustificationPropertyChange = this.onNewCounterJustificationPropertyChange.bind(this)
-    this.onCreateCounterJustification = this.onCreateCounterJustification.bind(this)
-    this.onCancelNewCounterJustification = this.onCancelNewCounterJustification.bind(this)
+    this.onEditNewCounterJustification = this.onEditNewCounterJustification.bind(this)
 
     this.onUseJustification = this.onUseJustification.bind(this)
   }
@@ -107,65 +95,15 @@ class JustificationWithCounters extends Component {
     }
   }
 
-  onAddNewCounterJustification() {
-    this.props.ui.addNewCounterJustification(this.props.justification)
+  onEditNewCounterJustification() {
+    const justification = this.props.justification
+    this.props.editors.beginEdit(EditorTypes.JUSTIFICATION, counterJustificationEditorId(justification), makeNewCounterJustification(justification))
   }
 
-  onNewCounterJustificationPropertyChange(properties) {
-    this.props.ui.newCounterJustificationPropertyChange(this.props.newCounterJustification, properties)
-  }
-
-  onCreateCounterJustification() {
-    this.props.api.createJustification(this.props.newCounterJustification)
-  }
-
-  onCancelNewCounterJustification() {
-    this.props.ui.cancelNewCounterJustification(this.props.newCounterJustification)
-  }
-
-  onBeginEditBasis() {
-    this.setState({
-      editBasis: cloneDeep(this.props.justification.basis.entity)
-    })
-  }
-
-  onEditBasisPropertyChange(change) {
-    const editBasis = cloneDeep(this.state.editBasis)
-    forEach(change, (val, key) => {
-      set(editBasis, key, val)
-    })
-    this.setState({editBasis})
-  }
-
-  onCancelEditBasis(event) {
-    event.preventDefault()
-    this.endEditBasis()
-  }
-
-  onSaveEditBasis(event) {
-    event.preventDefault()
-
-    const basisType = this.props.justification.basis.type
-    const editBasis = this.state.editBasis
-    switch (basisType) {
-      case JustificationBasisType.STATEMENT:
-        this.props.api.updateStatement(editBasis)
-        break;
-      case JustificationBasisType.CITATION_REFERENCE:
-        this.props.api.updateCitationReference(editBasis)
-        break;
-      default:
-        logError(`Unhandled justification basis type: ${basisType}`)
-        break
-    }
-
-    this.endEditBasis()
-  }
-
-  endEditBasis() {
-    this.setState({
-      editBasis: null,
-    })
+  onEditBasis() {
+    const justificationBasis = this.props.justification.basis
+    const basisEditorType = justificationBasis.type
+    this.props.editors.beginEdit(basisEditorType, justificationBasisEditorId(justificationBasis), justificationBasis.entity)
   }
 
   onUseJustification() {
@@ -183,18 +121,13 @@ class JustificationWithCounters extends Component {
       justification,
       positivey,
       newCounterJustification,
-      isCreatingNewCounterJustification,
-      // TODO
-      isUpdating,
+      isEditingBasis,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
     const {
       isOver,
-      editBasis,
     } = this.state
-
-    const isEditing = !!editBasis
 
     const basisUseDescription = isStatementBased(justification) ?
         'Justify another statement with this one' :
@@ -218,7 +151,7 @@ class JustificationWithCounters extends Component {
           />
           <ListItem primaryText="Counter"
                     leftIcon={<FontIcon>reply</FontIcon>}
-                    onClick={this.onAddNewCounterJustification}
+                    onClick={this.onEditNewCounterJustification}
           />
           <ListItem primaryText="Use"
                     title={basisUseDescription}
@@ -228,7 +161,7 @@ class JustificationWithCounters extends Component {
           <Divider />
           <ListItem primaryText="Edit"
                     leftIcon={<FontIcon>create</FontIcon>}
-                    onClick={this.onBeginEditBasis}
+                    onClick={this.onEditBasis}
           />
           <ListItem primaryText="Delete"
                     leftIcon={<FontIcon>delete</FontIcon>}
@@ -267,22 +200,8 @@ class JustificationWithCounters extends Component {
                 otherSelected: _isVerified || _isDisverified,
               })}
               title="Counter this justification"
-              onClick={this.onAddNewCounterJustification}
+              onClick={this.onEditNewCounterJustification}
       >reply</Button>
-    ]
-
-    const editingActions = [
-      <Button flat
-              key="cancelButton"
-              label={t(CANCEL_BUTTON_LABEL)}
-              onClick={this.onCancelEditBasis} />,
-      <Button flat
-              primary
-              key="submitButton"
-              type="submit"
-              label={t(EDIT_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-              disabled={isUpdating}
-      />
     ]
 
     const card = (
@@ -294,29 +213,20 @@ class JustificationWithCounters extends Component {
             <div className="md-cell md-cell--12">
 
               <div>
-                {!isEditing && menu}
-                {isEditing ?
-                    <JustificationBasisEditor justification={justification}
-                                              editBasis={editBasis}
-                                              onPropertyChange={this.onEditBasisPropertyChange}
-                    /> :
-                    <JustificationBasisViewer justification={justification}/>
-                }
+                {justification && !isEditingBasis && menu}
+                <EditableJustificationBasis id={`editableJustificationBasis-${justification.id}-${justification.basis.entity.id}`}
+                                            justification={justification}
+                                            editorId={justificationBasisEditorId(justification.basis)}
+                />
               </div>
 
             </div>
           </div>
 
           <CardActions className="actions">
-            {isEditing ? editingActions : actions}
+            {!isEditingBasis && actions}
           </CardActions>
         </Card>
-    )
-
-    const form = (
-        <form onSubmit={this.onSaveEditBasis}>
-          {card}
-        </form>
     )
 
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
@@ -324,28 +234,15 @@ class JustificationWithCounters extends Component {
         <div className="counterJustifications">
           <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
             {newCounterJustification &&
-            <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justificationCard">
-              <div className="md-grid">
-                <div className="md-cell md-cell--12">
-                  <FocusContainer focusOnMount>
-                    <CounterJustificationEditor counterJustification={newCounterJustification}
-                                                onPropertyChange={this.onNewCounterJustificationPropertyChange}
-                                                onSubmit={this.onCreateCounterJustification}
+              <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justificationCard">
+                <div className="md-grid">
+                  <div className="md-cell md-cell--12">
+                    <CounterJustificationEditor editorId={counterJustificationEditorId(justification)}
+                                                suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
                     />
-                  </FocusContainer>
-                  <CardActions className="md-dialog-footer">
-                    <Button flat label={t(CANCEL_BUTTON_LABEL)} onClick={this.onCancelNewCounterJustification} />
-                    <Button flat
-                            primary
-                            type="submit"
-                            label={t(CREATE_COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-                            onClick={this.onCreateCounterJustification}
-                            disabled={isCreatingNewCounterJustification}
-                    />
-                  </CardActions>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
             }
             {justification.counterJustifications.map(j =>
                 <div id={`counter-justification-${j.id}-row`} key={`counter-justification-${j.id}-row`} className="row">
@@ -364,7 +261,7 @@ class JustificationWithCounters extends Component {
           positivey: positivey,
           negativey: !positivey,
         })}>
-          {isEditing ? form : card}
+          {card}
           {counterJustifications}
         </div>
     )
@@ -373,18 +270,16 @@ class JustificationWithCounters extends Component {
 JustificationWithCounters.propTypes = {}
 
 const mapStateToProps = (state, ownProps) => {
-  // TODO
-  // const {
-  //   isEditing,
-  //   editBasis,
-  //   errorMessage,
-  //   errorReasons,
-  // } = state.editors.justificationBases[ownProps.id]
-  const newCounterJustification = state.ui.statementJustificationsPage.newCounterJustificationsByTargetId[ownProps.justification.id]
-  const isCreatingNewCounterJustification = state.ui.statementJustificationsPage.newCounterJustificationIsCreatingByTargetId[ownProps.justification.id]
+  const justification = ownProps.justification
+  const justificationBasis = justification.basis
+  const basisEditorType = justificationBasis.type
+  const editEntity = get(state, ['editors', basisEditorType, justificationBasisEditorId(justificationBasis), 'editEntity'])
+  const isEditingBasis = !!editEntity
+
+  const newCounterJustification = get(state, ['editors', EditorTypes.JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
   return {
     newCounterJustification,
-    isCreatingNewCounterJustification,
+    isEditingBasis,
   }
 }
 

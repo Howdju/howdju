@@ -168,7 +168,8 @@ class StatementJustificationsPage extends Component {
       newJustificationErrorMessage,
       isCreatingNewJustification,
       newJustification,
-      match: {params: {statementId} }
+      match: {params: {statementId} },
+      isEditingStatement,
     } = this.props
 
     const {narrowBreakpoint, flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
@@ -324,10 +325,12 @@ class StatementJustificationsPage extends Component {
                     <div className="md-grid">
                       <div className="md-cell md-cell--12 statementText">
 
-                        {statement && menu}
-                        <EditableStatement id="StatementJustificationsPage-StatementEditor"
+                        {statement && !isEditingStatement && menu}
+                        <EditableStatement id={`editableStatement-${statementId}`}
                                            entityId={statementId}
-                                           editorId={statementJustificationsPageStatementEditorId} />
+                                           editorId={statementJustificationsPageStatementEditorId}
+                                           suggestionsKey="StatementJustificationsPage-StatementEditor"
+                        />
 
                       </div>
                     </div>
@@ -409,6 +412,9 @@ const mapStateToProps = (state, ownProps) => {
     return {}
   }
 
+  const statementEditorModel = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPageStatementEditorId, 'editEntity'])
+  const isEditingStatement = !!statementEditorModel
+
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
   justifications = sortJustifications(justifications)
 
@@ -423,6 +429,7 @@ const mapStateToProps = (state, ownProps) => {
     justifications,
     newJustification,
     isCreatingNewJustification,
+    isEditingStatement,
   }
 }
 

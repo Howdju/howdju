@@ -42,9 +42,16 @@ class ApiAutocomplete extends Component {
     this.props.onPropertyChange(properties)
     const val = properties[this.props.name]
     if (val) {
-      this.throttledRefreshAutocomplete(val)
+      // TODO I'm not sure why this is undefined the first time this is called...shouldn't it have been set in componentWillReceiveProps?
+      if (this.throttledRefreshAutocomplete) {
+        this.throttledRefreshAutocomplete(val)
+      } else {
+        this.refreshAutocomplete(val)
+      }
     } else {
-      this.throttledRefreshAutocomplete.cancel()
+      if (this.throttledRefreshAutocomplete) {
+        this.throttledRefreshAutocomplete.cancel()
+      }
       this.props.autocompletes.clearSuggestions(this.props.suggestionsKey)
     }
   }
@@ -52,6 +59,7 @@ class ApiAutocomplete extends Component {
   onKeyDown(e) {
     if (e.keyCode === ESCAPE_KEY_CODE) {
       e.preventDefault()
+      e.stopPropagation()
       this.throttledRefreshAutocomplete.cancel()
       if (this.autocomplete.state.isOpen) {
         this.autocomplete._close()

@@ -162,10 +162,11 @@ export const goto = {
 export const flows = {
   createJustificationThenPutActionIfSuccessful: actionCreator('FLOWS/CREATE_JUSTIFICATION_THEN_PUT_ACTION_IF_SUCCESSFUL',
       (justification, nextAction) => ({justification, nextAction})),
-  fetchAndBeginEditOfNewJustificationFromBasis: actionCreator('FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS',
+  fetchAndBeginEditOfNewJustificationFromBasis: actionCreator('FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS',
       (editorType, editorId, basisType, basisId) => ({editorType, editorId, basisType, basisId})),
-  createStatementThenView: actionCreator('CREATE_STATEMENT_THEN_VIEW', (...args) => ({args})),
-  createStatementJustificationThenView: actionCreator('CREATE_STATEMENT_JUSTIFICATION_THEN_VIEW', (...args) => ({args})),
+  commitEditThenView: actionCreator('FLOWS/COMMIT_STATEMENT_THEN_VIEW',
+      (editorType, editorId) => ({editorType, editorId})
+  ),
 }
 
 export const autocompletes = {

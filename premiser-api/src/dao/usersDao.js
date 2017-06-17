@@ -3,10 +3,10 @@ const {
 } = require('../orm')
 
 class UsersDao {
-  createUser(email, hash, creatorUserId, now) {
+  createUser(user, hash, creatorUserId, now) {
     return query(
         'insert into users (email, hash, creator_user_id, created) values ($1, $2, $3, $4) returning *',
-        [email, hash, creatorUserId, now])
+        [user.email, hash, creatorUserId, now])
         .then( ({rows: [userRow]}) => toUser(userRow))
   }
 

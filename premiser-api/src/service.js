@@ -12,6 +12,12 @@ const keys = require('lodash/keys')
 const pickBy = require('lodash/pickBy')
 const map = require('lodash/map')
 const toNumber = require('lodash/toNumber')
+const differenceBy = require('lodash/differenceBy')
+const find = require('lodash/find')
+const values = require('lodash/values')
+const findIndex = require('lodash/findIndex')
+const groupBy = require('lodash/groupBy')
+const sortBy = require('lodash/sortBy')
 
 const config = require('./config')
 const {logger} = require('./logger')
@@ -30,6 +36,9 @@ const {
   statementJustificationValidator,
   justificationValidator,
   credentialValidator,
+  userValidator,
+  voteValidator,
+  citationReferenceValidator,
 } = require('./validators')
 const {
   OTHER_CITATION_REFERENCES_HAVE_SAME_QUOTE_CONFLICT,
@@ -63,6 +72,7 @@ const {
 const {
   JustificationBasisType,
   ActionTargetType,
+  ActionSubjectType,
   ActionType,
   EntityTypes,
 } = require('./models')
@@ -97,7 +107,7 @@ const readStatement = ({statementId, authToken}) => statementsDao.readStatementB
     })
 
 const readStatementJustifications = ({statementId, authToken}) => Promise.resolve([
-    statementId,
+    toNumber(statementId),
     authToken,
 ])
     .then( ([statementId, authToken]) => Promise.all([
@@ -114,22 +124,26 @@ const readStatementJustifications = ({statementId, authToken}) => Promise.resolv
           }
         })
 
-const createUser = ({user: {email, password}, authToken}) => withPermission(authToken, CREATE_USERS)
+const createUser = ({user, authToken}) => withPermission(authToken, CREATE_USERS)
+    .then(creatorUserId => {
+      const validationErrors = userValidator.validate(user)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError(({user: validationErrors}))
+      }
+      return creatorUserId
+    })
     .then(creatorUserId => Promise.all([
         creatorUserId,
-        argon2.generateSalt().then(salt => argon2.hash(password, salt)),
+        argon2.generateSalt().then(salt => argon2.hash(user.password, salt)),
         new Date(),
     ]))
-    .then( ([creatorUserId, hash, now]) => Promise.all([
-        creatorUserId,
-        usersDao.createUser(email, hash, creatorUserId, now)
-            .then(asyncRecordEntityAction(creatorUserId, ActionType.CREATE, ActionTargetType.USER, now)),
-        now
-    ]))
-    .then( ([creatorUserId, user, now]) => user)
+    .then( ([creatorUserId, hash, now]) =>
+        usersDao.createUser(user, hash, creatorUserId, now)
+            .then(asyncRecordEntityAction(creatorUserId, ActionType.CREATE, ActionTargetType.USER, now))
+    )
 
-const login = ({credentials}) => Promise.resolve(credentials)
-    .then(credentials => {
+const login = ({credentials}) => Promise.resolve()
+    .then(() => {
       const validationErrors = credentialValidator.validate(credentials)
       if (validationErrors.hasErrors) {
         throw new ValidationError({credentials: validationErrors})
@@ -172,6 +186,13 @@ const login = ({credentials}) => Promise.resolve(credentials)
 const logout = ({authToken}) => authDao.deleteAuthToken(authToken)
 
 const createVote = ({authToken, vote}) => withAuth(authToken)
+    .then(userId => {
+      const validationErrors = voteValidator.validate(vote)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError({vote: validationErrors})
+      }
+      return userId
+    })
     .then(userId => Promise.all([
         userId,
         votesDao.deleteOpposingVotes(userId, vote),
@@ -195,6 +216,13 @@ const createVote = ({authToken, vote}) => withAuth(authToken)
     .then(vote => ({vote}))
 
 const deleteVote = ({authToken, vote}) => withAuth(authToken)
+    .then(userId => {
+      const validationErrors = voteValidator.validate(vote)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError({vote: validationErrors})
+      }
+      return userId
+    })
     .then(userId => votesDao.deleteEquivalentVotes(userId, vote))
     .then(deletedVoteIds => {
       if (deletedVoteIds.length === 0) {
@@ -250,7 +278,7 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
     .then(userId => {
       const validationErrors = statementValidator.validate(statement)
       if (validationErrors.hasErrors) {
-        throw new ValidationError(validationErrors)
+        throw new ValidationError({statement: validationErrors})
       }
       return userId
     })
@@ -293,21 +321,40 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
 
 const readCitationReference = ({authToken, citationReferenceId}) => citationReferencesDao.read(citationReferenceId)
 
+const diffUrls = citationReference => Promise.resolve()
+    .then(() => citationReferencesDao.readUrlsByCitationReferenceId(citationReference.id))
+    .then(extantUrls => {
+      const addedUrls = differenceBy(citationReference.urls, [extantUrls], url => url.url)
+      const removedUrls = differenceBy(extantUrls, [citationReference.urls], url => url.url)
+      const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
+      return {
+        addedUrls,
+        removedUrls,
+        haveChanged
+      }
+    })
+
 const updateCitationReference = ({authToken, citationReference}) => withAuth(authToken)
+    .then(userId => {
+      const validationErrors = citationReferenceValidator.validate(citationReference)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError({citationReference: validationErrors})
+      }
+      return userId
+    })
     .then(userId => Promise.all([
       userId,
-      citationReferencesDao.hasChanged(citationReference),
-      citationsDao.hasChanged(citationReference.citation),
-      // TODO check URLs
-      false
+      citationReferencesDao.hasCitationReferenceChanged(citationReference),
+      citationsDao.hasCitationChanged(citationReference.citation),
+      diffUrls(citationReference),
     ]))
     .then( ([
         userId,
         citationReferenceHasChanged,
         citationHasChanged,
-        urlsHaveChanged,
+        urlDiffs,
     ]) => {
-      if (!citationReferenceHasChanged && !citationHasChanged && !urlsHaveChanged) {
+      if (!citationReferenceHasChanged && !citationHasChanged && !urlDiffs.haveChanged) {
         return citationReference
       }
 
@@ -339,7 +386,7 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
               citationsDao.isCitationOfBasisToJustificationsHavingOtherUsersCounters(userId, citation),
         })
       }
-      if (urlsHaveChanged) {
+      if (urlDiffs.haveChanged) {
         // When URLs are votable, ensure that no one has voted them (or at least up-voted them) before deleting
         // Adding should always be okay
       }
@@ -349,6 +396,7 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
         now: new Date(),
         citationReferenceHasChanged,
         citationHasChanged,
+        urlDiffs,
         hasPermission: permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
         entityConflicts: Promise.props(entityConflicts),
         userActionConflicts: Promise.props(userActionConflicts)
@@ -362,6 +410,7 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
               userActionConflicts,
               citationReferenceHasChanged,
               citationHasChanged,
+              urlDiffs,
     }) => {
 
       const entityConflictCodes = keys(pickBy(entityConflicts))
@@ -375,27 +424,73 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
         logger.info(`User ${userId} overriding userActionsConflictCodes ${userActionsConflictCodes}`)
       }
 
-      return {userId, now, citationReferenceHasChanged, citationHasChanged}
+      return {userId, now, citationReferenceHasChanged, citationHasChanged, urlDiffs}
     })
-    .then( ({userId, now, citationReferenceHasChanged, citationHasChanged}) => [
+    .then( ({userId, now, citationReferenceHasChanged, citationHasChanged, urlDiffs}) => Promise.all([
         userId,
         now,
         citationReferenceHasChanged ?
-            citationReferencesDao.update(citationReference)
-                .then(asyncRecordAction(userId, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE, now))
-            : citationReference,
+            citationReferencesDao.updateCitationReference(citationReference)
+                .then(asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE, now)) :
+            citationReference,
         citationHasChanged ?
             citationsDao.update(citationReference.citation)
-                .then(asyncRecordAction(userId, ActionType.UPDATE, ActionTargetType.CITATION, now))
-            : citationReference.citation,
-    ])
-    .then( ([userId, now, citationReference, citation]) => {
+                .then(asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.CITATION, now)) :
+            citationReference.citation,
+        urlDiffs.haveChanged ?
+            updateCitationReferenceUrls(citationReference, userId, now) :
+            citationReference.urls
+    ]))
+    .then( ([userId, now, citationReference, citation, urls]) => {
       if (citationReference.citation !== citation) {
         citationReference = assign({}, citationReference, {citation})
+      }
+      if (citationReference.urls !== urls) {
+        citationReference = assign({}, citationReference, {urls})
       }
 
       return citationReference
     })
+
+const updateCitationReferenceUrls = (citationReference, userId, now) => Promise.resolve()
+    .then(() => {
+      // deduplicate URLs, giving preference to those having IDs
+      const urlByUrl = {}
+      forEach(citationReference.urls, url => {
+        const previousUrl = urlByUrl[url.url]
+        if (!previousUrl || !previousUrl.id) {
+          urlByUrl[url.url] = url
+        }
+      })
+      return values(urlByUrl)
+    })
+    .then(dedupedUrls => groupBy(dedupedUrls, u => u.id ? 'hasId' : 'noId'))
+    .then( ({'hasId': extantUrls, 'noId': newUrls}) => Promise.all([
+      extantUrls || [],
+      newUrls ? createUrls(newUrls, userId, now) : [],
+    ]))
+    .then( ([extantUrls, createdUrls]) => Promise.all([
+      citationReferencesDao.readUrlsByCitationReferenceId(citationReference.id),
+      extantUrls.concat(createdUrls),
+    ]))
+    .then( ([currentUrls, updatedUrls]) => ({
+      updatedUrls,
+      addedUrls: differenceBy(updatedUrls, currentUrls, url => url.url),
+      removedUrls: differenceBy(currentUrls, updatedUrls, url => url.url),
+    }))
+    .then( ({updatedUrls, addedUrls, removedUrls}) => Promise.all([
+      updatedUrls,
+      addedUrls.length > 0 ? citationReferencesDao.createCitationReferenceUrls(citationReference, addedUrls, userId, now) : addedUrls,
+      removedUrls.length > 0 ? citationReferencesDao.deleteCitationReferenceUrls(citationReference, removedUrls, now) : removedUrls,
+    ]))
+    .then( ([updatedUrls, createdCitationReferenceUrls, deletedCitationReferenceUrls]) => {
+      map(createdCitationReferenceUrls, citationReferenceUrl => asyncRecordAction(userId, ActionType.ASSOCIATE,
+          ActionTargetType.CITATION_REFERENCE, now, citationReferenceUrl.citationReferenceId, ActionSubjectType.URL, citationReferenceUrl.urlId))
+      map(deletedCitationReferenceUrls, citationReferenceUrl => asyncRecordAction(userId, ActionType.DISASSOCIATE,
+          ActionTargetType.CITATION_REFERENCE, now, citationReferenceUrl.citationReferenceId, ActionSubjectType.URL, citationReferenceUrl.urlId))
+      return updatedUrls
+    })
+    .then(updatedUrls => sortBy(updatedUrls, url => url.url))
 
 const deleteStatement = ({authToken, statementId}) => withAuth(authToken)
     .then(userId => Promise.all([
@@ -518,7 +613,9 @@ const createCitationReference = (citationReference, userId, now) => Promise.prop
     })
     .then( ({citationReference}) => citationReference)
 
-const createUrls = (urls, userId, now) => Promise.all(urls.map(url => createUrl(url, userId, now)))
+const createUrls = (urls, userId, now) => Promise.resolve()
+    .then(() => filter(urls, url => url.url))
+    .then(nonEmptyUrls => Promise.all(map(nonEmptyUrls, url => createUrl(url, userId, now))))
 
 const createUrl = (url, userId, now) => {
   return urlsDao.readUrlEquivalentTo(url)
@@ -577,6 +674,13 @@ const createCitation = (citation, userId, now) => {
 }
 
 const createStatement = ({authToken, statement}) => withAuth(authToken)
+    .then(userId => {
+      const validationErrors = statementValidator.validate(statement)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError({statement: validationErrors})
+      }
+      return userId
+    })
     .then(userId => {
       if (statement.id) {
         return {isExtant: true, statement}
@@ -669,9 +773,9 @@ const asyncRecordEntityAction = (userId, actionType, actionTargetType, now) => e
   return entity
 }
 
-const asyncRecordAction = (userId, actionType, actionTargetType, now, entityId) => {
+const asyncRecordAction = (userId, actionType, actionTargetType, now, targetEntityId, actionSubjectType, subjectEntityId) => {
   // Don't return promise
-  actionsDao.createAction(userId, actionType, entityId, actionTargetType, now)
+  actionsDao.createAction(userId, actionType, targetEntityId, actionTargetType, now, actionSubjectType, subjectEntityId)
 }
 
 module.exports = {

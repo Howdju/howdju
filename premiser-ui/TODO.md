@@ -2,17 +2,22 @@
 ## MVP
 
 ### Editors/Errors
-* Update API and UI for editor errors
-  * Combine messages.js with whatever we do with showing errors in editors
-* Move JustificationWithCounter to use editor state
-* change editEntity to editModel
+* Can I replace CounterJustificationEditor with JustificationBasisEditor?
+  * well, editor behavior needs to be to create a justification...
+  * It might be JustificationEditor, with appropriate props
+* JustificationEditor becomes JustificationBasisEditorFields?
+* The thing called StatementEditor should be called StatementEditorFields and the <form> from 
+   EditableStatement should become StatementEditor
+   * EditStatementFields
+   * StatementEditorInputs
+
+* Disable submit and edits while submitting editors
+* change editEntity to editorModel
   * cf. use of entityId
-
-### Editors
-* onClick, beginEdit(editorId, entity)
-* editModel = cloneDeep(entity)
+  * could be statementId, etc.
+  * entityId is for Editable*, which uses editors
 * property for entity type and id, so that can watch FETCH actions and show spinner?
-
+* http://redux-form.com/6.8.0/docs/GettingStarted.md/
 
 ### Features
     
@@ -26,8 +31,11 @@
 * favicon
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
 * Statements that differ by special chars or capitalization are treated as different (normalized text etc)
+  * https://lodash.com/docs/#deburr
 
 ### Bugs/stability
+* Difficult to distinguish citationReference having only citation.text from statement justification
+* Validation belongs in route.js, I think
 * Include type conversion in validation somehow?  toNumber(statementId), e.g.
 * Change vote polarity to enum to support future vote types?
 * consolidateBasis of editor justification should happen in saga I think instead of in components
@@ -57,6 +65,7 @@
 * If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
 * Change to using 500s with error keys that can be translated into UI messages
 * Do I check return values for delete dao methods and throw NotFoundError when it was missing?
+* Add linting 
 
 * Prevent empty statement/citation reference justification 
 
@@ -99,6 +108,7 @@
   * if delete justification, must delete counters
 
 ### Features
+* Add delete statement/justification confirmation (or better, undo)
 * Author of quote
 * tagging
   * Home page tag cloud

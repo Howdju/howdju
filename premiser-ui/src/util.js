@@ -1,7 +1,12 @@
 import isFunction from 'lodash/isFunction'
 
 export function extractDomain(url) {
-  let domain;
+
+  let domain = null;
+  if (!url) {
+    return domain
+  }
+
   //find & remove protocol (http, ftp, etc.) and get domain
   if (url.indexOf("://") > -1) {
     domain = url.split('/')[2];

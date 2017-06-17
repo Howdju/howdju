@@ -1,6 +1,7 @@
 import React from 'react'
 import {extractDomain} from "./util"
 import FontIcon from 'react-md/lib/FontIcons'
+import cn from 'classnames'
 
 import './CitationReferenceViewer.scss'
 
@@ -20,7 +21,10 @@ export default props => {
 
   return (
       <div className="citationReferenceViewer">
-        <div className="quote">
+        <div className={cn({
+          quote: true,
+          hidden: !citationReference.quote
+        })}>
           <span>{citationReference.quote}</span>
         </div>
         <div className="citationTitle">{citationReference.citation.text}</div>

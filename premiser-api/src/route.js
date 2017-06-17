@@ -243,11 +243,8 @@ const routes = [
           }
         }
     }) => updateCitationReference({authToken, citationReference})
-        .then( (updatedCitationReference) => {
-          if (updatedCitationReference === citationReference) {
-            return noContent({callback})
-          }
-          return ok({callback, body: {citationReference: updatedCitationReference}})
+        .then( citationReference => {
+          return ok({callback, body: {citationReference}})
         })
   },
   {

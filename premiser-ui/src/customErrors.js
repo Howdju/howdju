@@ -3,6 +3,7 @@ import assign from 'lodash/assign'
 export const customErrorTypes = {
   NETWORK_FAILURE_ERROR: 'NETWORK_FAILURE_ERROR',
   API_RESPONSE_ERROR: 'API_RESPONSE_ERROR',
+  COMMIT_EDIT_RESULT_ERROR: 'COMMIT_EDIT_RESULT_ERROR',
 }
 
 /* Identify custom errors with a errorType property.  Subclassing builtins like Error is not widely supported,
@@ -19,10 +20,10 @@ const newCustomError = (errorType, message, sourceError, props) => {
 }
 
 /** The network call to the API failed */
-export const newNetworkFailureError = sourceError => {
-  return newCustomError(customErrorTypes.NETWORK_FAILURE_ERROR, null, sourceError)
-}
+export const newNetworkFailureError = sourceError => newCustomError(customErrorTypes.NETWORK_FAILURE_ERROR, null, sourceError)
 
-export const newApiResponseError = (message, sourceError, httpStatusCode, body) => {
-  return newCustomError(customErrorTypes.API_RESPONSE_ERROR, message, sourceError, {httpStatusCode, body})
-}
+export const newApiResponseError = (message, sourceError, httpStatusCode, body) =>
+    newCustomError(customErrorTypes.API_RESPONSE_ERROR, message, sourceError, {httpStatusCode, body})
+
+export const newEditorCommitResultError = (editorType, editorId, sourceError) =>
+    newCustomError(customErrorTypes.COMMIT_EDIT_RESULT_ERROR, null, sourceError, {editorType, editorId})

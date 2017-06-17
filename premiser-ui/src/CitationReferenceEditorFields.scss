@@ -1,0 +1,10 @@
+@import './colors';
+
+.urlInput {
+  // Even though the url input is disabled, the user can still interact with the buttons.  So show those the normal color.
+  .md-text-field-icon--disabled {
+    &, .md-icon {
+      color: $icon-color;
+    }
+  }
+}

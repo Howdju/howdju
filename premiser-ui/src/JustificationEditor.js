@@ -11,8 +11,8 @@ import text, {
 } from "./texts";
 
 import './JustificationEditor.scss'
-import CitationReferenceEditor from "./CitationReferenceEditor";
-import StatementEditor from "./StatementEditor";
+import CitationReferenceEditorFields from "./CitationReferenceEditorFields";
+import StatementEditorFields from "./StatementEditorFields";
 
 
 const statementName = 'basis.statement'
@@ -42,6 +42,7 @@ class JustificationEditor extends Component {
       onPropertyChange,
       onAddUrlClick,
       onDeleteUrlClick,
+      errors,
     } = this.props
 
     const polarityControls = [{
@@ -63,19 +64,24 @@ class JustificationEditor extends Component {
     const idPrefix = id ? id + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
+    const basisEntityErrors = errors && errors.fieldErrors.basis.fieldErrors.entity
+    const statementErrors = justification.basis.type === JustificationBasisType.STATEMENT ? basisEntityErrors : null
+    const citationReferenceErrors = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ? basisEntityErrors : null
+
     const statementComponents = [
       <Subheader primary
                  primaryText="Statement information"
                  component="div"
                  key="statementSubheader"
       />,
-      <StatementEditor statement={justification.basis}
-                       key="statementEditor"
-                       id={idPrefix + statementName}
-                       name={namePrefix + statementName}
-                       suggestionsKey={suggestionsKeyPrefix + statementName}
-                       onPropertyChange={onPropertyChange}
-                       readOnly={readOnlyBasis}
+      <StatementEditorFields statement={justification.basis}
+                             key="statementEditorFields"
+                             id={idPrefix + statementName}
+                             name={namePrefix + statementName}
+                             suggestionsKey={suggestionsKeyPrefix + statementName}
+                             onPropertyChange={onPropertyChange}
+                             readOnly={readOnlyBasis}
+                             errors={statementErrors}
       />
     ]
     const citationReferenceComponents =  [
@@ -84,7 +90,7 @@ class JustificationEditor extends Component {
                  component="div"
                  key="citationReferenceSubheader"
       />,
-      <CitationReferenceEditor citationReference={justification.basis.citationReference}
+      <CitationReferenceEditorFields citationReference={justification.basis.citationReference}
                                id={idPrefix + citationReferenceName}
                                key={citationReferenceName}
                                name={namePrefix + citationReferenceName}
@@ -94,6 +100,7 @@ class JustificationEditor extends Component {
                                onDeleteUrlClick={onDeleteUrlClick}
                                readOnly={readOnlyBasis}
                                onSubmit={onSubmit}
+                               errors={citationReferenceErrors}
       />
     ]
 
@@ -149,6 +156,7 @@ JustificationEditor.propTypes = {
   onAddUrlClick: PropTypes.func.isRequired,
   readOnlyBasis: PropTypes.bool,
   onSubmit: PropTypes.func,
+  errors: PropTypes.object,
 }
 JustificationEditor.defaultProps = {
   readOnlyBasis: false,

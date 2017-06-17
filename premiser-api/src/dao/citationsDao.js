@@ -39,7 +39,7 @@ class CitationsDao {
         .then( ({rows: [{has_conflict}]}) => has_conflict )
   }
 
-  hasChanged(citation) {
+  hasCitationChanged(citation) {
     const sql = `
       select count(*) < 1 as has_changed
       from citations where citation_id = $1 and text = $2

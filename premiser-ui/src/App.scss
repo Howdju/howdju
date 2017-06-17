@@ -38,16 +38,18 @@ time, mark, audio, video {
   color: $primary-text-color;
 }
 
+.errorMessage,
+  // Must override span color above
+.md-text-field-message-container--error > span {
+  color: $md-text-field-error-color;
+}
+
 b {
   font-weight: 400;
 }
 
 #webpack-hot-middleware-clientOverlay * {
   color: $clouds;
-}
-
-.errorMessage {
-  color: $md-text-field-error-color;
 }
 
 html {
@@ -118,4 +120,8 @@ html, body {
     // devices...
     position: static;
   }
+}
+
+.md-icon {
+  color: $icon-color;
 }

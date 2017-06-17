@@ -50,12 +50,13 @@ import {
   flows, str,
 } from "./actions";
 import {
+  consolidateBasis,
   JustificationBasisType,
   makeNewStatementJustification
 } from "./models";
 import {logger} from './util'
 import apiErrorCodes from "./apiErrorCodes";
-import {customErrorTypes} from "./customErrors";
+import {customErrorTypes, newEditorCommitResultError} from "./customErrors";
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false
@@ -387,15 +388,39 @@ function* goToStatement() {
 }
 
 function* editorCommitEdit() {
+  // TODO this belongs with the editors reducers somehow
   const CREATE = 'CREATE'
   const UPDATE = 'UPDATE'
-  const EditorTypeCommitActionCreators = {
+  const editorTypeCommitConfigs = {
     [EditorTypes.STATEMENT]: {
-      [UPDATE]: api.updateStatement
+      crudActionCreators: {
+        [UPDATE]: api.updateStatement
+      }
+    },
+    [EditorTypes.STATEMENT_JUSTIFICATION]: {
+      crudActionCreators: (model, crudType) => {
+        switch (crudType) {
+          case CREATE: {
+            if (model.doCreateJustification) {
+              const justification = consolidateBasis(model.justification)
+              return api.createStatementJustification.bind(null, model.statement, justification)
+            } else {
+              return api.createStatement.bind(null, model.statement)
+            }
+          }
+        }
+      }
     },
     [EditorTypes.JUSTIFICATION]: {
-      [CREATE]: api.createJustification,
-    }
+      crudActionCreators: {
+        [CREATE]: api.createJustification,
+      }
+    },
+    [EditorTypes.CITATION_REFERENCE]: {
+      crudActionCreators: {
+        [UPDATE]: api.updateCitationReference
+      }
+    },
   }
   yield takeEvery(str(editors.commitEdit), function* editorCommitEditWorker(action) {
     const {
@@ -411,43 +436,65 @@ function* editorCommitEdit() {
     }
 
     const {editEntity} = yield select(selectEditorState(editorType, editorId))
-    const actionCreatorCrudType = editEntity.id ? UPDATE : CREATE
-    const actionCreator = EditorTypeCommitActionCreators[editorType][actionCreatorCrudType]
+
+    const crudType = editEntity.id ? UPDATE : CREATE
+    const editorTypeCommitConfig = editorTypeCommitConfigs[editorType]
+    const {crudActionCreators} = editorTypeCommitConfig
+    const actionCreator = isFunction(crudActionCreators) ?
+        crudActionCreators(editEntity, crudType) :
+        crudActionCreators[crudType]
 
     if (!actionCreator) {
-      throw new Error(`Missing EditorTypeCommitActionCreators for ${editorType}.${actionCreatorCrudType}`)
+      throw new Error(`Missing EditorTypeCommitActionCreators for ${editorType}.${crudType}`)
     }
 
     try {
       const resultAction = yield call(callApiForResource, actionCreator(editEntity))
-      return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload))
+      if (resultAction.error) {
+        return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, resultAction.payload)))
+      } else {
+        return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload))
+      }
+
     } catch (error) {
       logError(error)
-      return yield put(editors.commitEdit.result(editorType, editorId, error))
+      return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, error)))
     }
   })
 }
 
-function* createEntityThenView() {
+function* commitEditorThenView() {
 
-  yield takeEvery(str(flows.createStatementThenView), function* createStatementThenViewWorker(action) {
-    const createResponseAction = yield call(callApiForResource, api.createStatement(...action.payload.args))
-    if (!createResponseAction.error) {
-      const {entities, result} = createResponseAction.payload
+  const EditorTypeViewBehaviors = {
+    [EditorTypes.STATEMENT]: (entities, result) => {
       const statement = entities.statements[result.statement]
-      yield put(goto.statement(statement))
-    }
-  })
+      return goto.statement(statement)
+    },
+    [EditorTypes.STATEMENT_JUSTIFICATION]: (entities, result) => {
+      const statementId = result.statementJustification ? result.statementJustification.statement : result.statement
+      const statement = entities.statements[statementId]
+      return goto.statement(statement)
+    },
+  }
 
-  yield takeEvery(str(flows.createStatementJustificationThenView), function* createStatementJustificationThenViewWorker(action) {
-    const createResponseAction = yield call(callApiForResource, api.createStatementJustification(...action.payload.args))
-    if (!createResponseAction.error) {
-      const {entities, result} = createResponseAction.payload
-      const statement = entities.statements[result.statementJustification.statement]
-      yield put(goto.statement(statement))
+  yield takeEvery(str(flows.commitEditThenView), function* commitEditThenViewWorker(action) {
+      const {editorType, editorId} = action.payload
+      yield put(editors.commitEdit(editorType, editorId))
+      let resultAction = null
+      while (!resultAction) {
+        const currResultAction = yield take(str(editors.commitEdit.result))
+        if (currResultAction.payload.editorType === editorType && currResultAction.payload.editorId === editorId) {
+          resultAction = currResultAction
+        }
+      }
+      if (!resultAction.error) {
+        const {entities, result} = resultAction.payload.result
+        const gotoActionFactory = EditorTypeViewBehaviors[editorType]
+        const gotoAction = gotoActionFactory(entities, result)
+        yield put(gotoAction)
+      }
     }
-  })
-
+  )
 }
 
 function* fetchAndBeginEditOfNewJustificationFromBasis() {
@@ -562,7 +609,7 @@ export default () => [
   apiFailureErrorMessages(),
   editorCommitEdit(),
   goToMainSearch(),
-  createEntityThenView(),
+  commitEditorThenView(),
   fetchAndBeginEditOfNewJustificationFromBasis(),
 
   showAlertForUnexpectedApiError(),

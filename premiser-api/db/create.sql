@@ -3,6 +3,8 @@ create table if not exists actions (
   action_type varchar(128), -- CREATE, DELETE, MODIFY
   target_id integer, -- Thing acted upon
   target_type varchar(64),
+  subject_id integer, -- The thing used to act, if applicable (e.g. URL, when associated with a target CITATION_REFERENCE)
+  subject_type varchar(64),
   tstamp timestamp
 );
 

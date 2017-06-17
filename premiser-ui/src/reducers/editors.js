@@ -13,6 +13,8 @@ import {
   editors
 } from "../actions"
 import {makeNewUrl} from "../models";
+import * as apiErrorCodes from "../apiErrorCodes";
+import {customErrorTypes} from "../customErrors";
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   editorActions[actionCreator] = true
@@ -27,6 +29,7 @@ export const EditorTypes = {
   DEFAULT: 'DEFAULT',
   STATEMENT: 'STATEMENT',
   JUSTIFICATION: 'JUSTIFICATION',
+  COUNTER_JUSTIFICATION: 'COUNTER_JUSTIFICATION',
   CITATION_REFERENCE: 'CITATION_REFERENCE',
   STATEMENT_JUSTIFICATION: 'STATEMENT_JUSTIFICATION',
   LOGIN_CREDENTIALS: 'LOGIN_CREDENTIALS',
@@ -52,13 +55,22 @@ const editorReducerByType = {
       forEach(properties, (val, key) => {
         set(editEntity, key, val)
       })
-      return {...state, editEntity}
+      return {...state, editEntity, errors: null}
     },
     [editors.commitEdit]: (state, action) => ({...state, errors: null}),
     [editors.commitEdit.result]: {
       next: (state, action) => ({...state, editEntity: null}),
-      // errors: { entity: {[code]: {[args]: ...} }, ...], fields: { [field]: {[code]: {[args]: ...}} } }
-      throw: (state, action) => ({...state, errors: action.payload.errors})
+      throw: (state, action) => {
+        const sourceError = action.payload.sourceError
+        if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+          const responseBody = sourceError.body
+          if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
+            return {...state, errors: responseBody.errors}
+          }
+        }
+
+        return state
+      }
     },
     [editors.cancelEdit]: (state, action) => ({...state, editEntity: null}),
   }, defaultEditorState),
@@ -70,11 +82,19 @@ const editorReducerByType = {
       }
       return state
     },
-    [api.fetchStatementJustifications.response]: (state, action) => {
-      if (state.entityId === action.payload.result.statement) {
-        return {...state, isFetching: false}
+    [api.fetchStatementJustifications.response]: {
+      next: (state, action) => {
+        if (state.entityId === action.payload.result.statementJustification.statement) {
+          return {...state, isFetching: false}
+        }
+        return state
+      },
+      throw: (state, action) => {
+        if (state.entityId === action.meta.requestPayload.statementJustification.statement.id) {
+          return {...state, isFetching: false}
+        }
+        return state
       }
-      return state
     },
     [api.updateStatement]: (state, action) => {
       if (state.entityId === action.payload.statement.id) {
@@ -82,11 +102,19 @@ const editorReducerByType = {
       }
       return state
     },
-    [api.updateStatement.response]: (state, action) => {
-      if (state.entityId === action.payload.result.statement) {
-        return {...state, isUpdating: false}
+    [api.updateStatement.response]: {
+      next: (state, action) => {
+        if (state.entityId === action.payload.result.statement) {
+          return {...state, isUpdating: false}
+        }
+        return state
+      },
+      throw: (state, action) => {
+        if (state.entityId === action.meta.requestPayload.statement.id) {
+          return {...state, isUpdating: false}
+        }
+        return state
       }
-      return state
     }
   }, defaultEditorState),
 
@@ -115,18 +143,6 @@ const editorReducerByType = {
       }
       return state
     },
-    [api.updateCitationReference]: (state, action) => {
-      if (state.entityId === action.payload.citationReference.id) {
-        return {...state, isUpdating: true}
-      }
-      return state
-    },
-    [api.updateCitationReference.response]: (state, action) => {
-      if (state.entityId === action.payload.result.citationReference) {
-        return {...state, isUpdating: false}
-      }
-      return state
-    }
   }, defaultEditorState),
 
   [EditorTypes.STATEMENT_JUSTIFICATION]: handleActions({
@@ -153,19 +169,25 @@ const editorReducerByType = {
       editEntity.urls.splice(action.payload.index, 1)
       return {...state, editEntity}
     },
-    // TODO how to see that citationReference is being fetched with API?  Usually done via requesting justification,
-    // which citationReference doesn't know about directly and doesn't even have a one-to-one correspondence with
     [api.updateCitationReference]: (state, action) => {
       if (state.entityId === action.payload.citationReference.id) {
         return {...state, isUpdating: true}
       }
       return state
     },
-    [api.updateCitationReference.response]: (state, action) => {
-      if (state.entityId === action.payload.result.citationReference) {
-        return {...state, isUpdating: false}
+    [api.updateCitationReference.response]: {
+      next: (state, action) => {
+        if (state.entityId === action.payload.result.citationReference) {
+          return {...state, isUpdating: false}
+        }
+        return state
+      },
+      throw: (state, action) => {
+        if (state.entityId === action.meta.requestPayload.citationReference.id) {
+          return {...state, isUpdating: false}
+        }
+        return state
       }
-      return state
     }
   }, defaultEditorState)
 }

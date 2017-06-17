@@ -11,6 +11,8 @@ const ActionType = {
   TRY_CREATE_DUPLICATE: 'TRY_CREATE_DUPLICATE',
   UPDATE: 'UPDATE',
   DELETE: 'DELETE',
+  ASSOCIATE: 'ASSOCIATE',
+  DISASSOCIATE: 'DISASSOCIATE',
 }
 
 const ActionTargetType = {
@@ -19,6 +21,10 @@ const ActionTargetType = {
   CITATION_REFERENCE: 'CITATION_REFERENCE',
   CITATION: 'CITATION',
   USER: 'USER',
+  URL: 'URL',
+}
+
+const ActionSubjectType = {
   URL: 'URL',
 }
 
@@ -61,6 +67,7 @@ const negatePolarity = polarity => {
 module.exports = {
   ActionType,
   ActionTargetType,
+  ActionSubjectType,
   JustificationTargetType,
   JustificationPolarity,
   JustificationBasisType,
