@@ -4,7 +4,7 @@ const groupBy = require('lodash/groupBy')
 const {
   toUrl,
 } = require("../orm")
-const {query, queries} = require('./../db')
+const {query} = require('./../db')
 const {logger} = require('../logger')
 const head = require('lodash/head')
 

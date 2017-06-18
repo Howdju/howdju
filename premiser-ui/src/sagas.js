@@ -13,7 +13,7 @@ import text, {
   DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
   DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-  MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
+  MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE, THAT_JUSTIFICATION_ALREADY_EXISTS, THAT_STATEMENT_ALREADY_EXISTS,
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
@@ -596,19 +596,6 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
   })
 }
 
-function* createJustificationThenPutActionIfSuccessful() {
-  yield takeEvery(str(flows.createJustificationThenPutActionIfSuccessful), function* createJustificationThenPutActionIfSuccessfulWorker(action) {
-    const {
-      justification,
-      nextAction,
-    } = action.payload
-    const result = yield call(callApiForResource, api.createJustification(justification))
-    if (!result.error) {
-      return yield put(nextAction)
-    }
-  })
-}
-
 function* showAlertForUnexpectedApiError() {
   yield takeEvery(str(api.callApi.response), function* showAlertForUnexpectedApiErrorWorker(action) {
     if (action.error) {
@@ -644,6 +631,26 @@ function* showAlertForUnexpectedApiError() {
   })
 }
 
+function* showAlertForExtantEntities() {
+
+  const toastMessageKeys = {
+    [api.createStatement.response]: THAT_STATEMENT_ALREADY_EXISTS,
+    [api.createJustification.response]: THAT_JUSTIFICATION_ALREADY_EXISTS,
+  }
+
+  yield takeEvery([
+      str(api.createStatement.response),
+      str(api.createJustification.response)
+  ], function* showAlertForExtantEntitiesWorker(action) {
+    if (!action.error) {
+      if (action.payload.result.isExtant) {
+        const toastMessageKey = toastMessageKeys[action.type]
+        yield put(ui.addToast(t(toastMessageKey)))
+      }
+    }
+  })
+}
+
 export default () => [
   flagRehydrate(),
   initializeMainSearch(),
@@ -657,7 +664,6 @@ export default () => [
   goToStatement(),
   goHomeIfDeleteStatementWhileViewing(),
   redirectHomeFromMissingStatement(),
-  createJustificationThenPutActionIfSuccessful(),
   apiFailureErrorMessages(),
   editorCommitEdit(),
   goToMainSearch(),
@@ -666,4 +672,5 @@ export default () => [
   fetchAndBeginEditOfNewJustificationFromBasis(),
 
   showAlertForUnexpectedApiError(),
+  showAlertForExtantEntities(),
 ]

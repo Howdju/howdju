@@ -201,7 +201,7 @@ const routes = [
                   path,
                 }
     }) => createJustification({authToken, justification})
-        .then(justification => ok({callback, body: {justification}}))
+        .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
         .catch(ValidationError, rethrowTranslatedValidationError('justification'))
   },
   {

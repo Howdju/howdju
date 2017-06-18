@@ -510,7 +510,7 @@ const createJustification = ({authToken, justification}) => withAuth(authToken)
 const createJustificationAsUser = (justification, userId, now) => Promise.resolve()
     .then(() => {
       if (justification.id) {
-        return justification
+        return {justification, isExtant: true}
       }
       return Promise.resolve()
           .then(() => {
@@ -548,12 +548,27 @@ const createValidJustificationAsUser = (justification, userId, now) => Promise.a
       return [now, justification]
     })
     .then( ([now, justification]) => Promise.all([
+        now,
         justification,
-        justificationsDao.createJustification(justification, userId, now)
+        justificationsDao.readJustificationEquivalentTo(justification)
+    ]))
+    .then( ([now, justification, equivalentJustification]) => Promise.all([
+        justification,
+        !!equivalentJustification,
+        equivalentJustification || justificationsDao.createJustification(justification, userId, now)
             .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.JUSTIFICATION, now))
     ]))
+    .then( ([justification, isExtant, dbJustification]) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      asyncRecordAction(userId, actionType, ActionTargetType.JUSTIFICATION, now, dbJustification.id)
+
+      return [justification, isExtant, dbJustification]
+    })
     // merge in the previous stuff, which might have details about the basis and target
-    .then( ([justification, dbJustification]) => merge({}, justification, dbJustification))
+    .then( ([justification, isExtant, dbJustification]) => ({
+      isExtant,
+      justification: merge({}, justification, dbJustification),
+    }))
 
 const createJustificationTarget = (justificationTarget, userId, now) => {
   switch (justificationTarget.type) {

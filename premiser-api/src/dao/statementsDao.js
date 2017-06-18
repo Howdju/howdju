@@ -94,9 +94,9 @@ class StatementsDao {
           and creator_user_id != $3
     `
     return queries([
-      {query: otherUserJustificationsCountSql, args: [statement.id, userId]},
-      {query: otherUsersVotesCountSql, args: [statement.id, VoteTargetType.JUSTIFICATION, userId]},
-      {query: otherUsersJustificationsForWhichIsBasisCountSql, args: [statement.id, JustificationBasisType.STATEMENT, userId]},
+      {sql: otherUserJustificationsCountSql, args: [statement.id, userId]},
+      {sql: otherUsersVotesCountSql, args: [statement.id, VoteTargetType.JUSTIFICATION, userId]},
+      {sql: otherUsersJustificationsForWhichIsBasisCountSql, args: [statement.id, JustificationBasisType.STATEMENT, userId]},
     ])
         .then( ([
             {rows: [{count: otherUserJustificationsCount}]},

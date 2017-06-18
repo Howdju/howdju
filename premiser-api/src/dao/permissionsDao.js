@@ -1,4 +1,4 @@
-const {query, queries} = require('./../db')
+const {query} = require('./../db')
 const {logger} = require('../logger')
 
 class PermissionsDao {

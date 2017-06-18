@@ -64,6 +64,9 @@ export const AN_UNEXPECTED_ERROR_OCCURRED = 'AN_UNEXPECTED_ERROR_OCCURRED'
 
 export const A_NETWORK_ERROR_OCCURRED = 'A_NETWORK_ERROR_OCCURRED'
 
+export const THAT_STATEMENT_ALREADY_EXISTS = 'THAT_STATEMENT_ALREADY_EXISTS'
+export const THAT_JUSTIFICATION_ALREADY_EXISTS = 'THAT_JUSTIFICATION_ALREADY_EXISTS'
+
 const texts = {
   [CREATE_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Create statement',
   [CREATE_STATEMENT_SUBMIT_BUTTON_TITLE]: 'Tell the world!',
@@ -71,7 +74,8 @@ const texts = {
   [CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL]: 'Create justification',
   [CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE]: 'A statement is only as good as its justification',
 
-  [CREATE_EXTANT_STATEMENT_TOAST_MESSAGE]: 'That statement already exists',
+  [THAT_STATEMENT_ALREADY_EXISTS]: 'That statement already exists',
+  [THAT_JUSTIFICATION_ALREADY_EXISTS]: 'That justification already exists',
   [CREATE_STATEMENT_FAILURE_MESSAGE]: 'Unable to create the statement',
   [DELETE_STATEMENT_FAILURE_TOAST_MESSAGE]: 'Unable to delete the statement',
   [DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE]: 'Deleted the statement',

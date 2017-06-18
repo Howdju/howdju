@@ -1,10 +1,6 @@
 # Howdju UI TODO
 ## MVP
 
-Can create duplicate statement-based justification from EditStatementJustificationPage
-Change submit button message to "create justification" when statement exists
-  * Add link to statement when statement exists
-
 ### Editors/Errors
 * Disable submit and edits while submitting editors
   * property for entity type and id, so that can watch FETCH actions and show spinner?
@@ -141,6 +137,8 @@ Change submit button message to "create justification" when statement exists
 ### Improvements
 * Client validation
   * http://redux-form.com/6.8.0/docs/GettingStarted.md/
+Change submit button message to "create justification" when statement exists
+  * Add link to statement when statement exists
 
 ### Flair
   * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"

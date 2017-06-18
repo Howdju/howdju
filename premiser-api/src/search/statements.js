@@ -77,19 +77,19 @@ const searchStatements = (searchText) => {
   const tsquery = tsqueryParts.join(' || ')
   return queries([
     {
-      query: searchStatementsFullTextPhraseQuery,
+      sql: searchStatementsFullTextPhraseQuery,
       args: [searchText]
     },
     {
-      query: searchStatementsFullTextPlainQuery,
+      sql: searchStatementsFullTextPlainQuery,
       args: [searchText]
     },
     {
-      query: searchStatementsFullTextRawQuery(tsquery),
+      sql: searchStatementsFullTextRawQuery(tsquery),
       args: searchTextWords
     },
     {
-      query: searchStatementsContainingTextQuery,
+      sql: searchStatementsContainingTextQuery,
       args: [searchText]
     },
   ]).then( ([

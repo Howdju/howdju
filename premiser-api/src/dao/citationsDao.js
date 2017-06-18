@@ -6,7 +6,7 @@ const head = require('lodash/head')
 const {
   toCitation,
 } = require("../orm")
-const {query, queries} = require('./../db')
+const {query} = require('./../db')
 const {
   JustificationBasisType,
   JustificationTargetType,

@@ -1,4 +1,6 @@
 const head = require('lodash/head')
+const map = require('lodash/map')
+const toNumber = require('lodash/toNumber')
 
 const {assert} = require('../util')
 const urlsDao = require('./urlsDao')
@@ -10,7 +12,6 @@ const {
 const {
   toJustification
 } = require('../orm')
-const map = require('lodash/map')
 const {query} = require('./../db')
 const {logger} = require('../logger')
 
@@ -102,6 +103,33 @@ class JustificationsDao {
             logger.error(`More than one justification has ID ${justificationId}`)
           }
           return toJustification(head(rows))
+        })
+  }
+
+  readJustificationEquivalentTo(justification) {
+    const sql = `
+      select * from justifications j where
+            j.deleted is null
+        and j.target_type = $1
+        and j.target_id = $2
+        and j.polarity = $3
+        and j.basis_type = $4
+        and j.basis_id = $5
+    `
+    const args = [
+      justification.target.type,
+      justification.target.entity.id,
+      justification.polarity,
+      justification.basis.type,
+      justification.basis.entity.id,
+    ]
+    return query(sql, args)
+        .then( ({rows}) => toJustification(head(rows)) )
+        .then(equivalentJustification => {
+          if (equivalentJustification && equivalentJustification.rootStatementId !== toNumber(justification.rootStatementId)) {
+            logger.error(`justification's rootStatementId ${justification.rootStatementId} !== equivalent justification ${equivalentJustification.id}'s rootStatementId ${equivalentJustification.rootStatementId}`)
+          }
+          return equivalentJustification
         })
   }
 
