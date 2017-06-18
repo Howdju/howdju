@@ -56,7 +56,7 @@ import {
 } from "./models";
 import {logger} from './util'
 import apiErrorCodes from "./apiErrorCodes";
-import {customErrorTypes, newEditorCommitResultError} from "./customErrors";
+import {customErrorTypes, newEditorCommitResultError, newImpossibleError} from "./customErrors";
 import {assert} from './util'
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -381,51 +381,54 @@ function* goToStatement() {
 }
 
 function* editorCommitEdit() {
-  // TODO this belongs with the editors reducers somehow
+
   const CREATE = 'CREATE'
   const UPDATE = 'UPDATE'
-  const editorTypeCommitConfigs = {
+  const editorTypeCommitApiResourceActions = {
     [EditorTypes.STATEMENT]: {
-      crudActionCreators: {
-        [UPDATE]: api.updateStatement
-      }
+      [UPDATE]: api.updateStatement
     },
-    [EditorTypes.STATEMENT_JUSTIFICATION]: {
-      crudActionCreators: (model, crudType) => {
-        switch (crudType) {
-          case CREATE: {
-            if (model.doCreateJustification) {
-              const justification = consolidateBasis(model.justification)
-              justification.target.entity = model.statement
-              return api.createJustification.bind(null, justification)
-            } else {
-              return api.createStatement.bind(null, model.statement)
-            }
+    [EditorTypes.STATEMENT_JUSTIFICATION]: (model, crudType) => {
+      switch (crudType) {
+        case CREATE: {
+          if (model.doCreateJustification) {
+            const justification = consolidateBasis(model.justification)
+            justification.target.entity = model.statement
+            return api.createJustification.bind(null, justification)
+          } else {
+            return api.createStatement.bind(null, model.statement)
           }
         }
       }
     },
     [EditorTypes.COUNTER_JUSTIFICATION]: {
-      crudActionCreators: {
-        [CREATE]: api.createJustification,
-      }
+      [CREATE]: api.createJustification,
     },
-    [EditorTypes.NEW_JUSTIFICATION]: {
-      crudActionCreators: (model, crudType) => {
-        switch (crudType) {
-          case CREATE: {
-            const justification = consolidateBasis(model)
-            return api.createJustification.bind(null, justification)
-          }
+    [EditorTypes.NEW_JUSTIFICATION]: (model, crudType) => {
+      switch (crudType) {
+        case CREATE: {
+          const justification = consolidateBasis(model)
+          return api.createJustification.bind(null, justification)
         }
       }
     },
     [EditorTypes.CITATION_REFERENCE]: {
-      crudActionCreators: {
-        [UPDATE]: api.updateCitationReference
-      }
+      [UPDATE]: api.updateCitationReference
     },
   }
+
+  const createEditorCommitApiResourceAction = (editorType, editEntity) => {
+    const crudType = editEntity.id ? UPDATE : CREATE
+    const editorCommitApiResourceActions = editorTypeCommitApiResourceActions[editorType]
+    const actionCreator = isFunction(editorCommitApiResourceActions) ?
+        editorCommitApiResourceActions(editEntity, crudType) :
+        editorCommitApiResourceActions[crudType]
+    if (!actionCreator) {
+      throw new Error(`Missing ${crudType} action creator to commit edit of ${editorType}.`)
+    }
+    return actionCreator(editEntity)
+  }
+
   yield takeEvery(str(editors.commitEdit), function* editorCommitEditWorker(action) {
     const {
       editorType,
@@ -440,24 +443,12 @@ function* editorCommitEdit() {
     }
 
     const {editEntity} = yield select(selectEditorState(editorType, editorId))
-
-    const crudType = editEntity.id ? UPDATE : CREATE
-    const editorTypeCommitConfig = editorTypeCommitConfigs[editorType]
-    const {crudActionCreators} = editorTypeCommitConfig
-    const actionCreator = isFunction(crudActionCreators) ?
-        crudActionCreators(editEntity, crudType) :
-        crudActionCreators[crudType]
-
-    if (!actionCreator) {
-      throw new Error(`Missing EditorTypeCommitActionCreators for ${editorType}.${crudType}`)
-    }
-
+    const editorCommitApiResourceAction = createEditorCommitApiResourceAction(editorType, editEntity)
     const meta = {
       editEntity
     }
-
     try {
-      const resultAction = yield call(callApiForResource, actionCreator(editEntity))
+      const resultAction = yield call(callApiForResource, editorCommitApiResourceAction)
       if (resultAction.error) {
         return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, resultAction.payload), meta))
       } else {
@@ -472,7 +463,7 @@ function* editorCommitEdit() {
 
 function* commitEditorThenView() {
 
-  const EditorTypeViewBehaviors = {
+  const editorCommitResultGotoActionCreators = {
     [EditorTypes.STATEMENT]: (entities, result) => {
       const statement = entities.statements[result.statement]
       return goto.statement(statement)
@@ -502,6 +493,13 @@ function* commitEditorThenView() {
     },
   }
 
+  const gotoEditorCommitResultAction = (editorType, resultAction) => {
+    const {entities, result} = resultAction.payload.result
+    const gotoActionCreator = editorCommitResultGotoActionCreators[editorType]
+    const gotoAction = gotoActionCreator(entities, result)
+    return gotoAction
+  }
+
   yield takeEvery(str(flows.commitEditThenView), function* commitEditThenViewWorker(action) {
       const {editorType, editorId} = action.payload
       yield put(editors.commitEdit(editorType, editorId))
@@ -513,10 +511,7 @@ function* commitEditorThenView() {
         }
       }
       if (!resultAction.error) {
-        const {entities, result} = resultAction.payload.result
-        const gotoActionFactory = EditorTypeViewBehaviors[editorType]
-        const gotoAction = gotoActionFactory(entities, result)
-        yield put(gotoAction)
+        yield put(gotoEditorCommitResultAction(editorType, resultAction))
       }
     }
   )
@@ -541,14 +536,39 @@ function* commitEditThenPutActionOnSuccess() {
 
 function* fetchAndBeginEditOfNewJustificationFromBasis() {
 
-  const actionCreatorByBasisType = {
-    [JustificationBasisType.STATEMENT]: api.fetchStatement,
-    [JustificationBasisType.CITATION_REFERENCE]: api.fetchCitationReference,
+  const fetchActionCreatorForBasisType = basisType => {
+    const actionCreatorByBasisType = {
+      [JustificationBasisType.STATEMENT]: api.fetchStatement,
+      [JustificationBasisType.CITATION_REFERENCE]: api.fetchCitationReference,
+    }
+    const actionCreator = actionCreatorByBasisType[basisType]
+    if (!actionCreator) {
+      throw newImpossibleError(`${basisType} exhausted justification basis types`)
+    }
+    return actionCreator
   }
-  // TODO for endpoints returning one entity, could just get only key of result and denormalize it
-  const basisGetterByBasisType = {
-    [JustificationBasisType.STATEMENT]: result => result.statement,
-    [JustificationBasisType.CITATION_REFERENCE]: result => result.citationReference,
+
+  const extractBasisFromFetchResponseAction = (basisType, fetchResponseAction) => {
+    const {
+      result,
+      entities
+    } = fetchResponseAction.payload
+    const {
+      schema,
+    } = fetchResponseAction.meta
+
+    const basisGetterByBasisType = {
+      [JustificationBasisType.STATEMENT]: result => result.statement,
+      [JustificationBasisType.CITATION_REFERENCE]: result => result.citationReference,
+    }
+
+    const basisGetter = basisGetterByBasisType[basisType]
+    if (!basisGetter) {
+      throw newImpossibleError(`${basisType} exhausted justification basis types`)
+    }
+    const basis = basisGetter(denormalize(result, schema, entities))
+
+    return basis
   }
 
   yield takeEvery(str(flows.fetchAndBeginEditOfNewJustificationFromBasis), function* fetchAndBeginEditOfNewJustificationFromBasisWorker(action) {
@@ -558,18 +578,10 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
       basisType,
       basisId,
     } = action.payload
-    const actionCreator = actionCreatorByBasisType[basisType]
+    const actionCreator = fetchActionCreatorForBasisType(basisType)
     const fetchResponseAction = yield call(callApiForResource, actionCreator(basisId))
     if (!fetchResponseAction.error) {
-      const {
-        result,
-        entities
-      } = fetchResponseAction.payload
-      const {
-        schema,
-      } = fetchResponseAction.meta
-      const basisGetter = basisGetterByBasisType[basisType]
-      const basis = basisGetter(denormalize(result, schema, entities))
+      const basis = extractBasisFromFetchResponseAction(basisType, fetchResponseAction)
       const statement = basisType === JustificationBasisType.STATEMENT ? basis : undefined
       const citationReference = basisType === JustificationBasisType.CITATION_REFERENCE ? basis : undefined
       const editModel = makeNewStatementJustification({}, {
@@ -631,8 +643,6 @@ function* showAlertForUnexpectedApiError() {
     }
   })
 }
-
-
 
 export default () => [
   flagRehydrate(),

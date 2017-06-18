@@ -1,8 +1,12 @@
 # Howdju UI TODO
 ## MVP
 
+Can't submit new justification by hitting enter on citation text
+Can create duplicate statement-based justification from EditStatementJustificationPage
+Change submit button message to "create justification" when statement exists
+  * Add link to statement when statement exists
+
 ### Editors/Errors
-* Cleanup editor stuff in sagas
 * Disable submit and edits while submitting editors
   * property for entity type and id, so that can watch FETCH actions and show spinner?
 * Autocomplete doesn't hide after searching
