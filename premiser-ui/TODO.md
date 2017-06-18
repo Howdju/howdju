@@ -1,7 +1,6 @@
 # Howdju UI TODO
 ## MVP
 
-Can't submit new justification by hitting enter on citation text
 Can create duplicate statement-based justification from EditStatementJustificationPage
 Change submit button message to "create justification" when statement exists
   * Add link to statement when statement exists

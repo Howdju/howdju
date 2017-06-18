@@ -42,7 +42,6 @@ class CitationReferenceEditorFields extends Component {
 
   onTextInputKeyDown(event) {
     if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
-      event.preventDefault()
       this.props.onSubmit(event)
     }
   }

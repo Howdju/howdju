@@ -66,6 +66,8 @@ class ApiAutocomplete extends Component {
       } else if (this.props.escapeClears) {
         this.onPropertyChange({[this.props.name]: ''})
       }
+    } else if (this.props.onKeyDown) {
+      this.props.onKeyDown(e)
     }
   }
 

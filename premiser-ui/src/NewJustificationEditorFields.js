@@ -91,16 +91,16 @@ class NewJustificationEditorFields extends Component {
                  key="citationReferenceSubheader"
       />,
       <CitationReferenceEditorFields citationReference={newJustification.basis.citationReference}
-                               id={idPrefix + citationReferenceName}
-                               key={citationReferenceName}
-                               name={namePrefix + citationReferenceName}
-                               suggestionsKey={suggestionsKeyPrefix + citationReferenceName}
-                               onPropertyChange={onPropertyChange}
-                               onAddUrl={onAddUrl}
-                               onRemoveUrl={onRemoveUrl}
-                               readOnly={readOnlyBasis}
-                               onSubmit={onSubmit}
-                               errors={citationReferenceErrors}
+                                     id={idPrefix + citationReferenceName}
+                                     key={citationReferenceName}
+                                     name={namePrefix + citationReferenceName}
+                                     suggestionsKey={suggestionsKeyPrefix + citationReferenceName}
+                                     onPropertyChange={onPropertyChange}
+                                     onAddUrl={onAddUrl}
+                                     onRemoveUrl={onRemoveUrl}
+                                     readOnly={readOnlyBasis}
+                                     onSubmit={onSubmit}
+                                     errors={citationReferenceErrors}
       />
     ]
 
