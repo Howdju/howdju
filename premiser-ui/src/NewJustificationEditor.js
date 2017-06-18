@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import {connect} from "react-redux";
 import Button from 'react-md/lib/Buttons/Button'
 import get from 'lodash/get'
+import merge from 'lodash/merge'
 
 import {
   editors,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import {EditorTypes} from "./reducers/editors";
-import StatementEditorFields from "./StatementEditorFields";
 import {
   CANCEL_BUTTON_LABEL, EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
 } from "./texts";
@@ -17,17 +17,6 @@ import {default as t} from './texts'
 import NewJustificationEditorFields from "./NewJustificationEditorFields";
 import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewJustification} from "./models";
 
-
-const translateErrors = (justification, errors) => {
-  if (!justification || !errors) {
-    return errors
-  }
-  const justificationBasisType = justification.basis.type
-  const newJustificationBasisMemberName = justificationBasisTypeToNewJustificationBasisMemberName(justificationBasisType)
-  const newJustificationBasisErrors = {fieldErrors: {[newJustificationBasisMemberName]: errors.fieldErrors.basis} }
-  const newJustificationErrors = merge({}, errors, newJustificationBasisErrors, {fieldErrors: {basis: null}})
-  return newJustificationErrors
-}
 
 class NewJustificationEditor extends Component {
 
@@ -76,8 +65,6 @@ class NewJustificationEditor extends Component {
     const {errors, isSaving} = editorState
     const editEntity = editorState.editEntity || makeNewJustification()
 
-    const newJustificationErrors = translateErrors(editEntity, errors)
-
     const buttons = [
       <Button flat
               key="cancelButton"
@@ -100,7 +87,7 @@ class NewJustificationEditor extends Component {
                                         onDeleteUrlClick={this.onRemoveUrl}
                                         onSubmit={this.onSubmit}
                                         suggestionsKey={suggestionsKey}
-                                        errors={newJustificationErrors}
+                                        errors={errors}
           />
           {doShowButtons && buttons}
         </form>

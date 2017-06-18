@@ -1,15 +1,16 @@
 import React, {Component} from "react"
-import Button from 'react-md/lib/Buttons/Button'
 import { connect } from 'react-redux'
+import {goBack} from "react-router-redux";
 import DocumentTitle from 'react-document-title'
+import Button from 'react-md/lib/Buttons/Button'
 import Card from 'react-md/lib/Cards'
 import CardTitle from 'react-md/lib/Cards/CardTitle';
 import CardActions from 'react-md/lib/Cards/CardActions';
-import {goBack} from "react-router-redux";
 import CardText from 'react-md/lib/Cards/CardText';
 import { Switch } from 'react-md/lib/SelectionControls'
 import cn from 'classnames'
 import get from 'lodash/get'
+import merge from 'lodash/merge'
 import queryString from 'query-string'
 
 
@@ -29,7 +30,7 @@ import text, {
   CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE, JUSTIFICATION_TITLE,
 } from "./texts";
 import { suggestionKeys } from './autocompleter'
-import {makeNewStatementJustification} from "./models";
+import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewStatementJustification} from "./models";
 import {
   editStatementJustificationPageEditorId,
 } from "./editorIds"
@@ -60,6 +61,18 @@ const submitButtonLabelTextKeyByMode = {
 const submitButtonTitleTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_TITLE,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
+}
+
+const translateErrors = (justification, errors) => {
+  // TODO equivalent logic exists in editors.NEW_JUSTIFICATION reducer
+  if (!justification || !errors) {
+    return errors
+  }
+  const justificationBasisType = justification.basis.type
+  const newJustificationBasisMemberName = justificationBasisTypeToNewJustificationBasisMemberName(justificationBasisType)
+  const newJustificationBasisErrors = {fieldErrors: {basis: {fieldErrors: {[newJustificationBasisMemberName]: errors.fieldErrors.basis.fieldErrors.entity} } } }
+  const newJustificationErrors = merge({}, errors, newJustificationBasisErrors, {fieldErrors: {basis: {fieldErrors: {entity: undefined}}}})
+  return newJustificationErrors
 }
 
 class EditStatementJustificationPage extends Component {
@@ -143,7 +156,10 @@ class EditStatementJustificationPage extends Component {
             errors.statementJustification.fieldErrors.statement :
             errors.statement
         )
-    const justificationErrors = errors &&  doCreateJustification ? errors.statementJustification.fieldErrors.justification : null
+    const justificationErrors = errors &&  doCreateJustification ?
+        errors.statementJustification.fieldErrors.justification :
+        null
+    const newJustificationErrors = translateErrors(justification, justificationErrors)
 
     return (
         <DocumentTitle title={`Howdju - ${title}`}>
@@ -195,7 +211,7 @@ class EditStatementJustificationPage extends Component {
                                                     onPropertyChange={this.onPropertyChange}
                                                     onAddUrlClick={this.addJustificationUrl}
                                                     onDeleteUrlClick={this.deleteJustificationUrl}
-                                                    errors={justificationErrors}
+                                                    errors={newJustificationErrors}
                       />
                     }
                   </CardText>

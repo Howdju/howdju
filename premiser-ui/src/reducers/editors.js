@@ -12,7 +12,7 @@ import {
   api,
   editors
 } from "../actions"
-import {makeNewUrl} from "../models";
+import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewUrl} from "../models";
 import * as apiErrorCodes from "../apiErrorCodes";
 import {customErrorTypes, newProgrammingError} from "../customErrors";
 
@@ -175,7 +175,20 @@ const editorReducerByType = {
       return {...state, editEntity}
     },
     [editors.commitEdit.result]: {
-      throw: editorErrorReducer('justification')
+      throw: (state, action) => {
+        const sourceError = action.payload.sourceError
+        if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+          const responseBody = sourceError.body
+          if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
+            const errors = cloneDeep(responseBody.errors.justification)
+            const name = justificationBasisTypeToNewJustificationBasisMemberName(action.meta.editEntity.basis.type)
+            errors.fieldErrors.basis.fieldErrors[name] = errors.fieldErrors.basis.fieldErrors.entity
+            delete errors.fieldErrors.basis.fieldErrors.entity
+            return {...state, errors}
+          }
+        }
+        return state
+      }
     },
   }, defaultEditorState),
 

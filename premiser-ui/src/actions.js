@@ -134,7 +134,17 @@ export const ui = {
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
-commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RESULT', (editorType, editorId, result) => ({editorType, editorId, result}))
+commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RESULT',
+    (editorType, editorId, result) => ({editorType, editorId, result}),
+    (...args) => {
+        if (args.length === 4) {
+          return args[3]
+        } else if (args.length === 2 && args[0] instanceof Error) {
+          return args[1]
+        }
+        return undefined
+    }
+)
 export const editors = {
   beginEdit: actionCreator('EDITORS/BEGIN_EDIT', (editorType, editorId, entity) => ({editorType, editorId, entity})),
   propertyChange: actionCreator('EDITORS/PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),

@@ -133,4 +133,5 @@ export const justificationBasisTypeToNewJustificationBasisMemberName = justifica
   if (!newJustificationBasisMemberName) {
     throw newImpossibleError(`${justificationBasisType} exhausted justification basis types`)
   }
+  return newJustificationBasisMemberName
 }

@@ -458,17 +458,20 @@ function* editorCommitEdit() {
       throw new Error(`Missing EditorTypeCommitActionCreators for ${editorType}.${crudType}`)
     }
 
+    const meta = {
+      editEntity
+    }
+
     try {
       const resultAction = yield call(callApiForResource, actionCreator(editEntity))
       if (resultAction.error) {
-        return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, resultAction.payload)))
+        return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, resultAction.payload), meta))
       } else {
-        return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload))
+        return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload, meta))
       }
-
     } catch (error) {
       logError(error)
-      return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, error)))
+      return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, error), meta))
     }
   })
 }

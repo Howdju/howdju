@@ -1,15 +1,20 @@
 # Howdju UI TODO
 ## MVP
 
+Think through on-page model
+
 ### Editors/Errors
+* Submit justification from EditStatementJustificationPage?
+
+* Cleanup editor stuff in sagas
 * Disable submit and edits while submitting editors
   * property for entity type and id, so that can watch FETCH actions and show spinner?
-* Submit justification from EditStatementJustificationPage?
 * Client validation
   * http://redux-form.com/6.8.0/docs/GettingStarted.md/
 * Autocomplete doesn't hide after searching
   * reappears after clicking on search page (should only reappear upon typing)
 
+### Strong validation
 * Can only delete bases (justifications/quotes) if other users haven't used them as bases
   * If super user deletes them, must cascade delete to justifications
   * Can't delete justifications if other users have voted or countered them
@@ -33,6 +38,7 @@
 * can create two statements that only differ by apostrophe types (' vs. ’), probably whitespace, too.
 * Can counter justification with same statement as basis for target justification
 * Add linting 
+  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
 
 * Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
   * Or should we not be normalizing from API?  Should we normalize in reducer?
@@ -192,8 +198,6 @@
  * https://github.com/mattkrick/redux-optimistic-ui
 * Time travel to see what libraries made app large
   * Figure out how to minimize lodash import
-* eslint
-  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
 * Deploy to S3
   * HTTPS (NGINX?)
   * Cache index.html?
@@ -202,8 +206,11 @@
 
 ## Maybe
 * https://prerender.io/
+
+### Performance
 * [Resource hints](https://github.com/jantimon/resource-hints-webpack-plugin)
   * [faster](https://hackernoon.com/10-things-i-learned-making-the-fastest-site-in-the-world-18a0e1cdf4a7)
+  * https://github.com/brillout/awesome-react-components#performance
 * [selectors](https://github.com/reactjs/reselect) (memoization of deriving from state)
   * http://redux.js.org/docs/recipes/ComputingDerivedData.html
 * SSR
@@ -241,4 +248,4 @@
 
 ## Cool
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
-
+* https://github.com/mariusandra/kea
