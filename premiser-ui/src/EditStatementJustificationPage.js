@@ -63,7 +63,7 @@ const submitButtonTitleTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
 }
 
-const translateErrors = (justification, errors) => {
+const justificationErrorsToNewJustificationErrors = (justification, errors) => {
   // TODO equivalent logic exists in editors.NEW_JUSTIFICATION reducer
   if (!justification || !errors) {
     return errors
@@ -135,14 +135,15 @@ class EditStatementJustificationPage extends Component {
     const {
       mode,
       isEditing,
-      editEntity: {
-        statement,
-        justification,
-        doCreateJustification,
-      },
+      editEntity,
       inProgress,
       errors,
     } = this.props
+    const {
+      statement,
+      justification,
+      doCreateJustification,
+    } = editEntity
 
     const title = text(titleTextKeyByMode[mode])
     const submitButtonLabel = text(submitButtonLabelTextKeyByMode[mode])
@@ -150,16 +151,13 @@ class EditStatementJustificationPage extends Component {
 
     const isCreateJustification = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
 
-    const modelErrors = get(errors, "statementJustification.modelErrors")
     const statementErrors = errors && (
         doCreateJustification ?
-            errors.statementJustification.fieldErrors.statement :
+            errors.justification.fieldErrors.target.fieldErrors.entity :
             errors.statement
         )
-    const justificationErrors = errors &&  doCreateJustification ?
-        errors.statementJustification.fieldErrors.justification :
-        null
-    const newJustificationErrors = translateErrors(justification, justificationErrors)
+    const justificationErrors = errors && doCreateJustification ? errors.justification : null
+    const newJustificationErrors = justificationErrorsToNewJustificationErrors(justification, justificationErrors)
 
     return (
         <DocumentTitle title={`Howdju - ${title}`}>
@@ -169,12 +167,6 @@ class EditStatementJustificationPage extends Component {
 
                 <Card>
                   <CardTitle title={title} />
-
-                  {modelErrors &&
-                    <CardText>
-                      <ErrorMessages errors={modelErrors} />
-                    </CardText>
-                  }
 
                   <CardText>
                     {statement &&

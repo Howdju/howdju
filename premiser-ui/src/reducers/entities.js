@@ -124,14 +124,6 @@ export default handleActions({
       statements: {...state.statements, ...action.payload.entities.statements},
     })
   },
-  [api.createStatementJustification.response]: {
-    next: (state, action) => ({
-      ...state,
-      statements: {...state.statements, ...action.payload.entities.statements},
-      justifications: {...state.justifications, ...action.payload.entities.justifications},
-      citationReferences: {...state.citationReferences, ...action.payload.entities.citationReferences},
-    })
-  },
   [api.updateStatement.response]: {
     next: (state, action) => ({
       ...state,

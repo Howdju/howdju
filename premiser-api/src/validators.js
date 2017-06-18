@@ -48,36 +48,6 @@ CredentialValidator.blankErrors = () => ({
   },
 })
 
-class StatementJustificationValidator {
-  constructor(statementValidator, justificationValidator) {
-    this.statementValidator = statementValidator
-    this.justificationValidator = justificationValidator
-  }
-
-  validate(statementJustification) {
-    const {
-      statement,
-      justification,
-    } = statementJustification
-    const statementErrors = this.statementValidator.validate(statement)
-    const justificationErrors = this.justificationValidator.validate(justification, {rootStatementId: true, target: true})
-
-    if (justification && justification.target.type !== JustificationTargetType.STATEMENT) {
-      justificationErrors.hasErrors = true
-      justificationErrors.fieldErrors.target.fieldErrors.type.push(modelErrorCodes.STATEMENT_JUSTIFICATION_MUST_HAVE_STATEMENT_TARGET_TYPE)
-    }
-
-    return {
-      hasErrors: statementErrors.hasErrors || justificationErrors.hasErrors,
-      modelErrors: [],
-      fieldErrors: {
-        statement: statementErrors,
-        justification: justificationErrors,
-      }
-    }
-  }
-}
-
 class JustificationValidator {
   constructor(statementValidator, citationReferenceValidator) {
     this.statementValidator = statementValidator
@@ -99,8 +69,11 @@ class JustificationValidator {
     }
 
     if (!justification.rootStatementId && !ignore.rootStatementId) {
-      errors.hasErrors = true
-      errors.fieldErrors.rootStatementId.push(modelErrorCodes.IS_REQUIRED)
+      const canReceiveRootStatementIdFromTarget = justification.target && justification.target.type === JustificationTargetType.STATEMENT
+      if (!canReceiveRootStatementIdFromTarget) {
+        errors.hasErrors = true
+        errors.fieldErrors.rootStatementId.push(modelErrorCodes.IS_REQUIRED)
+      }
     }
     if (!justification.polarity) {
       errors.hasErrors = true
@@ -405,7 +378,6 @@ const statementValidator = new StatementValidator()
 const citationValidator = new CitationValidator()
 const citationReferenceValidator = new CitationReferenceValidator(citationValidator, urlValidator)
 const justificationValidator = new JustificationValidator(statementValidator, citationReferenceValidator)
-const statementJustificationValidator = new StatementJustificationValidator(statementValidator, justificationValidator)
 const credentialValidator = new CredentialValidator()
 const voteValidator = new VoteValidator()
 
@@ -413,7 +385,6 @@ module.exports = {
   statementValidator,
   citationReferenceValidator,
   justificationValidator,
-  statementJustificationValidator,
   credentialValidator,
   userValidator,
   voteValidator,

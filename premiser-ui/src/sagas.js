@@ -25,7 +25,7 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  citationReferenceSchema, statementJustificationSchema, statementsSchema
+  citationReferenceSchema, statementsSchema
 } from './schemas'
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
@@ -51,12 +51,13 @@ import {
 } from "./actions";
 import {
   consolidateBasis,
-  JustificationBasisType,
+  JustificationBasisType, JustificationTargetType,
   makeNewStatementJustification
 } from "./models";
 import {logger} from './util'
 import apiErrorCodes from "./apiErrorCodes";
 import {customErrorTypes, newEditorCommitResultError} from "./customErrors";
+import {assert} from './util'
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false
@@ -101,14 +102,6 @@ export const resourceApiConfigs = {
         statement: payload.statement
       }
     },
-  }),
-  [api.createStatementJustification]: payload => ({
-    endpoint: 'statement-justifications',
-    fetchInit: {
-      method: httpMethods.POST,
-      body: payload
-    },
-    schema: {statementJustification: statementJustificationSchema}
   }),
   [api.createJustification]: payload => ({
     endpoint: 'justifications',
@@ -403,7 +396,8 @@ function* editorCommitEdit() {
           case CREATE: {
             if (model.doCreateJustification) {
               const justification = consolidateBasis(model.justification)
-              return api.createStatementJustification.bind(null, model.statement, justification)
+              justification.target.entity = model.statement
+              return api.createJustification.bind(null, justification)
             } else {
               return api.createStatement.bind(null, model.statement)
             }
@@ -484,7 +478,25 @@ function* commitEditorThenView() {
       return goto.statement(statement)
     },
     [EditorTypes.STATEMENT_JUSTIFICATION]: (entities, result) => {
-      const statementId = result.statementJustification ? result.statementJustification.statement : result.statement
+      let statementId
+      if (result.statement) {
+        statementId = result.statement
+      } else {
+        assert(() => !!result.justification)
+        const justificationId = result.justification
+        const justification = entities.justifications[justificationId]
+        switch (justification.target.type) {
+          case JustificationTargetType.STATEMENT: {
+            statementId = justification.target.entity.id
+            break
+          }
+          default: {
+            statementId = justification.rootStatementId
+            break
+          }
+        }
+      }
+
       const statement = entities.statements[statementId]
       return goto.statement(statement)
     },

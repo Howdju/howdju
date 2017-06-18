@@ -33,7 +33,6 @@ const urlsDao = require('./dao/urlsDao')
 const actionsDao = require('./dao/actionsDao')
 const {
   statementValidator,
-  statementJustificationValidator,
   justificationValidator,
   credentialValidator,
   userValidator,
@@ -70,6 +69,7 @@ const {
   EDIT_ANY_ENTITY,
 } = require("./permissions")
 const {
+  JustificationTargetType,
   JustificationBasisType,
   ActionTargetType,
   ActionSubjectType,
@@ -232,46 +232,6 @@ const deleteVote = ({authToken, vote}) => withAuth(authToken)
         logger.warn(`Deleted ${deletedVoteIds.length} votes at once!`)
       }
       return deletedVoteIds
-    })
-
-const createStatementJustification = ({authToken, statementJustification}) => withAuth(authToken)
-    .then(userId => {
-      const now = new Date()
-      const validationErrors = statementJustificationValidator.validate(statementJustification)
-      if (validationErrors.hasErrors) {
-        throw new ValidationError({statementJustification: validationErrors})
-      }
-      return [
-          userId,
-          now,
-      ]
-    })
-    .then( ([userId, now]) => Promise.all([
-          userId,
-          now,
-          createValidStatementAsUser(userId, statementJustification.statement, now)
-      ])
-    )
-    .then( ([userId, now, {isExtant, statement}]) => {
-      const justification = cloneDeep(statementJustification.justification)
-      justification.rootStatementId = statement.id
-      justification.target.entity.id = statement.id
-
-      return Promise.all([
-          isExtant,
-          statement,
-          createValidJustificationAsUser(userId, justification, now)
-      ])
-    })
-    .then ( ([isStatementExtant, statement, {isExtant: isJustificationExtant, justification}]) => {
-      return {
-        isStatementExtant,
-        isJustificationExtant,
-        statementJustification: {
-          statement,
-          justification
-        },
-      }
     })
 
 const updateStatement = ({authToken, statement}) => withAuth(authToken)
@@ -542,22 +502,40 @@ const deleteStatement = ({authToken, statementId}) => withAuth(authToken)
     }))
 
 const createJustification = ({authToken, justification}) => withAuth(authToken)
-    .then(userId => {
-      const now = new Date()
-      const validationErrors = justificationValidator.validate(justification)
-      if (validationErrors.hasErrors) {
-        throw new ValidationError({justification: validationErrors})
-      }
-      return [userId, now]
-    })
-    .then( ([userId, now]) => createValidJustificationAsUser(userId, justification, now))
+    .then(userId => createJustificationAsUser(justification, userId, new Date()))
 
-const createValidJustificationAsUser = (userId, justification, now) => Promise.all([
+const createJustificationAsUser = (justification, userId, now) => Promise.resolve()
+    .then(() => {
+      if (justification.id) {
+        return justification
+      }
+      return Promise.resolve()
+          .then(() => {
+            const validationErrors = justificationValidator.validate(justification)
+            if (validationErrors.hasErrors) {
+              throw new ValidationError({justification: validationErrors})
+            }
+            return [userId, now]
+          })
+          .then( ([userId, now]) => createValidJustificationAsUser(justification, userId, now))
+    })
+
+const createValidJustificationAsUser = (justification, userId, now) => Promise.all([
       now,
-      createJustificationBasis(justification.basis, userId, now)
+      createJustificationTarget(justification.target, userId, now),
+      createJustificationBasis(justification.basis, userId, now),
     ])
-    .then( ([now, {basisType, basisEntity}]) => {
+    .then( ([now, {targetType, targetEntity}, {basisType, basisEntity}]) => {
       justification = cloneDeep(justification)
+
+      justification.target = {
+        type: targetType,
+        entity: targetEntity,
+      }
+      if (targetType === JustificationTargetType.STATEMENT) {
+        justification.rootStatementId = targetEntity.id
+      }
+
       justification.basis = {
         type: basisType,
         entity: basisEntity
@@ -571,6 +549,28 @@ const createValidJustificationAsUser = (userId, justification, now) => Promise.a
     ]))
     // merge in the previous stuff, which might have details about the basis and target
     .then( ([justification, dbJustification]) => merge({}, justification, dbJustification))
+
+const createJustificationTarget = (justificationTarget, userId, now) => {
+  switch (justificationTarget.type) {
+
+    case JustificationTargetType.JUSTIFICATION:
+      return createJustificationAsUser(justificationTarget.entity, userId, now).then(justification => ({
+        targetType: justificationTarget.type,
+        targetEntity: justification,
+      }))
+
+    case JustificationTargetType.STATEMENT:
+      return createStatementAsUser(justificationTarget.entity, userId, now)
+          .then(({isExtant, statement}) => ({
+            isExtant,
+            targetType: justificationTarget.type,
+            targetEntity: statement,
+          }))
+
+    default:
+      throw new ImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
+  }
+}
 
 const createJustificationBasis = (justificationBasis, userId, now) => {
   switch (justificationBasis.type) {
@@ -657,19 +657,20 @@ const createCitationReferenceUrls = (citationReference, userId, now) => {
       })
 }
 
-const createCitation = (citation, userId, now) => {
-  if (citation.id) return {
-    citation
-  }
-  return citationsDao.readCitationEquivalentTo(citation)
-      .then( equivalentCitation => {
-        if (equivalentCitation) {
-          return equivalentCitation
-        }
-        return citationsDao.createCitation(citation, userId, now)
-            .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.CITATION, now))
-      })
-}
+const createCitation = (citation, userId, now) => Promise.resolve()
+    .then(() => {
+      if (citation.id) return {
+        citation
+      }
+      return citationsDao.readCitationEquivalentTo(citation)
+          .then( equivalentCitation => {
+            if (equivalentCitation) {
+              return equivalentCitation
+            }
+            return citationsDao.createCitation(citation, userId, now)
+                .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.CITATION, now))
+          })
+    })
 
 const createStatement = ({authToken, statement}) => withAuth(authToken)
     .then(userId => {
@@ -696,9 +697,9 @@ const createStatementAsUser = (statement, userId, now) => Promise.resolve()
       }
       return userId
     })
-    .then(userId => createValidStatementAsUser(userId, statement, now))
+    .then(userId => createValidStatementAsUser(statement, userId, now))
 
-const createValidStatementAsUser = (userId, statement, now) => Promise.resolve()
+const createValidStatementAsUser = (statement, userId, now) => Promise.resolve()
     .then(() => Promise.all([
       userId,
       statementsDao.readStatementByText(statement.text),
@@ -786,7 +787,6 @@ module.exports = {
   createVote,
   deleteVote,
   createStatement,
-  createStatementJustification,
   updateStatement,
   deleteStatement,
   createJustification,

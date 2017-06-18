@@ -12,7 +12,7 @@ import Snackbar from 'react-md/lib/Snackbars'
 import Toolbar from 'react-md/lib/Toolbars';
 import { connect } from 'react-redux'
 
-
+import './fonts.scss'
 import './App.scss'
 
 import Header from './Header'

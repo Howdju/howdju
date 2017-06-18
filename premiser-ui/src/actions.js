@@ -91,8 +91,6 @@ export const api = {
   })),
 
   createStatement: apiActionCreator('CREATE_STATEMENT', statement => ({statement})),
-  createStatementJustification: apiActionCreator('CREATE_STATEMENT_JUSTIFICATION', (statement, justification) =>
-      ({statementJustification: {statement, justification}})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),
   deleteStatement: apiActionCreator('DELETE_STATEMENT', statement => ({statement})),
   fetchStatementTextSuggestions: apiActionCreator('API/FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({

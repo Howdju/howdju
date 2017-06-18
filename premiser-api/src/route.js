@@ -24,7 +24,6 @@ const {
   createVote,
   deleteVote,
   createStatement,
-  createStatementJustification,
   updateStatement,
   deleteStatement,
   createJustification,
@@ -124,23 +123,6 @@ const routes = [
                 }
     }) => createStatement({authToken, statement})
         .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
-  },
-  {
-    id: 'createStatementJustification',
-    path: 'statement-justifications',
-    method: httpMethods.POST,
-    handler: ({
-                callback,
-                request: {
-                  authToken,
-                  body: {statementJustification},
-                  method,
-                  path
-                }
-              }) => createStatementJustification({authToken, statementJustification})
-        .then( ({statementJustification, isStatementExtant, isJustificationExtant}) =>
-            ok({callback, body: {statementJustification, isStatementExtant, isJustificationExtant}})
-        )
   },
   {
     id: 'updateStatement',

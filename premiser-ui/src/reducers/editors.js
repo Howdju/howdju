@@ -96,13 +96,13 @@ const editorReducerByType = {
     },
     [api.fetchStatementJustifications.response]: {
       next: (state, action) => {
-        if (state.entityId === action.payload.result.statementJustification.statement) {
+        if (state.entityId === action.payload.result.statement) {
           return {...state, isFetching: false}
         }
         return state
       },
       throw: (state, action) => {
-        if (state.entityId === action.meta.requestPayload.statementJustification.statement.id) {
+        if (state.entityId === action.meta.requestPayload.statement.id) {
           return {...state, isFetching: false}
         }
         return state

@@ -33,8 +33,3 @@ export const statementJustificationsSchema = {
   statement: statementSchema,
   justifications: justificationsSchema
 }
-
-export const statementJustificationSchema = {
-  statement: statementSchema,
-  justification: justificationSchema,
-}

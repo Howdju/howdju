@@ -1,16 +1,11 @@
 # Howdju UI TODO
 ## MVP
 
-Think through on-page model
-
 ### Editors/Errors
-* Submit justification from EditStatementJustificationPage?
-
+* onDeleteUrl => onRemoveUrl
 * Cleanup editor stuff in sagas
 * Disable submit and edits while submitting editors
   * property for entity type and id, so that can watch FETCH actions and show spinner?
-* Client validation
-  * http://redux-form.com/6.8.0/docs/GettingStarted.md/
 * Autocomplete doesn't hide after searching
   * reappears after clicking on search page (should only reappear upon typing)
 
@@ -102,6 +97,9 @@ Think through on-page model
   * challenge of card having buttons to create counter
   
 ### Features
+* JustificationBasisType.List 
+  * A list of purported examples of something with links to prove their existence
+  * [{text, urls}, ...]
 * warn if they try and navigate away after entering text
 * Add delete statement/justification confirmation (or better, undo)
 * Author of quote
@@ -137,6 +135,10 @@ Think through on-page model
 * Add messages for when cannot edit and why
 * When statements or citations or citation references conflict, offer to merge them somehow?
 * Add time grade period checks to entity update methods
+
+### Improvements
+* Client validation
+  * http://redux-form.com/6.8.0/docs/GettingStarted.md/
 
 ### Flair
   * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
