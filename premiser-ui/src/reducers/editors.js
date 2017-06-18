@@ -14,7 +14,7 @@ import {
 } from "../actions"
 import {makeNewUrl} from "../models";
 import * as apiErrorCodes from "../apiErrorCodes";
-import {customErrorTypes} from "../customErrors";
+import {customErrorTypes, newProgrammingError} from "../customErrors";
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   editorActions[actionCreator] = true
@@ -36,6 +36,18 @@ export const EditorTypes = {
 }
 
 const defaultEditorState = {}
+
+const editorErrorReducer = errorKey => (state, action) => {
+  const sourceError = action.payload.sourceError
+  if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+    const responseBody = sourceError.body
+    if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
+      const errors = responseBody.errors[errorKey]
+      return {...state, errors}
+    }
+  }
+  return state
+}
 
 /** Reducers that separate the behavior from the state so that it is possible to have independent states updating according
  * to the same rules.  The editor type determines the rules that update the state, the editor type and editor ID identify
@@ -115,7 +127,10 @@ const editorReducerByType = {
         }
         return state
       }
-    }
+    },
+    [editors.commitEdit.result]: {
+      throw: editorErrorReducer('statement')
+    },
   }, defaultEditorState),
 
   [EditorTypes.JUSTIFICATION]: handleActions({
@@ -143,6 +158,25 @@ const editorReducerByType = {
       }
       return state
     },
+    [editors.commitEdit.result]: {
+      throw: editorErrorReducer('justification')
+    }
+  }, defaultEditorState),
+
+  [EditorTypes.NEW_JUSTIFICATION]: handleActions({
+    [editors.addUrl]: (state, action) => {
+      const editEntity = {...state.editEntity}
+      editEntity.basis.citationReference.urls = editEntity.basis.citationReference.urls.concat([makeNewUrl()])
+      return {...state, editEntity}
+    },
+    [editors.deleteUrl]: (state, action) => {
+      const editEntity = {...state.editEntity}
+      editEntity.basis.citationReference.urls.splice(action.payload.index, 1)
+      return {...state, editEntity}
+    },
+    [editors.commitEdit.result]: {
+      throw: editorErrorReducer('justification')
+    },
   }, defaultEditorState),
 
   [EditorTypes.STATEMENT_JUSTIFICATION]: handleActions({
@@ -156,6 +190,10 @@ const editorReducerByType = {
       citationReference.urls.splice(action.payload.index, 1)
       return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
     },
+    // TODO uncomment if we switch over to creating a justification instead
+    // [editors.commitEdit.result]: {
+    //   throw: editorErrorReducer('justification')
+    // },
   }, defaultEditorState),
 
   [EditorTypes.CITATION_REFERENCE]: handleActions({
@@ -188,7 +226,10 @@ const editorReducerByType = {
         }
         return state
       }
-    }
+    },
+    [editors.commitEdit.result]: {
+      throw: editorErrorReducer('citationReference')
+    },
   }, defaultEditorState)
 }
 
@@ -200,8 +241,15 @@ const handleEditorAction = (state, action) => {
     editorId,
   } = action.payload
 
+  if (!editorType) {
+    throw newProgrammingError('editorType is required')
+  }
+  if (!editorId) {
+    throw newProgrammingError('editorId is required')
+  }
+
   // editorState could be undefined
-  const editorState = get(state, [editorType, editorId], defaultEditorState)
+  const editorState = get(state, [editorType, editorId], cloneDeep(defaultEditorState))
   const editorReducer = editorReducerByType[editorType]
   let newEditorState = editorReducer ? editorReducer(editorState, action) : editorState
   if (newEditorState === editorState) {

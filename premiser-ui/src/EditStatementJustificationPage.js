@@ -1,5 +1,5 @@
 import React, {Component} from "react"
-import Button from 'react-md/lib/Buttons'
+import Button from 'react-md/lib/Buttons/Button'
 import { connect } from 'react-redux'
 import DocumentTitle from 'react-document-title'
 import Card from 'react-md/lib/Cards'

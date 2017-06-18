@@ -5,7 +5,7 @@ import {connect} from "react-redux"
 import Divider from "react-md/lib/Dividers"
 import Card from "react-md/lib/Cards/Card"
 import CardActions from "react-md/lib/Cards/CardActions"
-import Button from "react-md/lib/Buttons"
+import Button from 'react-md/lib/Buttons/Button'
 import FontIcon from "react-md/lib/FontIcons"
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"

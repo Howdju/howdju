@@ -9,7 +9,7 @@ import MenuButton from "react-md/lib/Menus/MenuButton";
 import ListItem from "react-md/lib/Lists/ListItem";
 import Dialog from 'react-md/lib/Dialogs'
 import Positions from "react-md/lib/Menus/Positions";
-import Button from 'react-md/lib/Buttons'
+import Button from 'react-md/lib/Buttons/Button'
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import toNumber from "lodash/toNumber";
@@ -31,6 +31,7 @@ import {
   isPositive,
   isNegative,
   makeNewJustification, JustificationTargetType, JustificationBasisType, consolidateBasis,
+  makeNewJustificationTargetingStatementId,
 } from "./models";
 
 import {
@@ -123,10 +124,7 @@ class StatementJustificationsPage extends Component {
     e.preventDefault()
 
     const statementId = this.props.match.params.statementId
-    const newJustification = makeNewJustification({
-      rootStatementId: statementId,
-      target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
-    })
+    const newJustification = makeNewJustificationTargetingStatementId(statementId)
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
 
     this.props.ui.showNewJustificationDialog(statementId)

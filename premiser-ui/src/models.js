@@ -3,6 +3,7 @@ import map from 'lodash/map'
 import merge from 'lodash/merge'
 import {logError} from "./util";
 import cloneDeep from 'lodash/cloneDeep'
+import {newImpossibleError} from "./customErrors";
 
 export const JustificationTargetType = {
   STATEMENT: 'STATEMENT',
@@ -79,6 +80,11 @@ export const makeNewJustification = props => merge({
   }
 }, props)
 
+export const makeNewJustificationTargetingStatementId = statementId => makeNewJustification({
+  rootStatementId: statementId,
+  target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
+})
+
 export const makeNewStatementJustification = (statementProps, justificationProps) => ({
   statement: makeNewStatement(statementProps),
   justification: makeNewJustification(justificationProps),
@@ -98,24 +104,22 @@ export const makeNewCounterJustification = targetJustification => ({
   polarity: JustificationPolarity.NEGATIVE
 })
 
-export const consolidateBasis = justification => {
-  const cloneJustification = cloneDeep(justification);
-  switch (cloneJustification.basis.type) {
+export const consolidateBasis = newJustification => {
+  const justification = cloneDeep(newJustification);
+  switch (justification.basis.type) {
     case JustificationBasisType.STATEMENT:
-      cloneJustification.basis.entity = cloneJustification.basis.statement
+      justification.basis.entity = justification.basis.statement
       break
     case JustificationBasisType.CITATION_REFERENCE:
-      cloneJustification.basis.entity = cloneJustification.basis.citationReference
+      justification.basis.entity = justification.basis.citationReference
       break
     default:
-      logError(`newJustification had impossible basis type: ${cloneJustification.basis.type}.  Defaulting to statement basis`)
-      cloneJustification.basis.entity = cloneJustification.basis.statement
-      break
+      throw newImpossibleError(`${justification.basis.type} exhausted justification basis types`)
   }
-  delete cloneJustification.basis.statement
-  delete cloneJustification.basis.citationReference
+  delete justification.basis.statement
+  delete justification.basis.citationReference
 
-  return cloneJustification
+  return justification
 }
 
 export const makeNewUrl = () => ({url: ''})

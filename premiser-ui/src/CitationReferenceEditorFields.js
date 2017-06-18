@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import TextField from 'react-md/lib/TextFields'
 import FontIcon from 'react-md/lib/FontIcons'
-import Button from 'react-md/lib/Buttons'
+import Button from 'react-md/lib/Buttons/Button'
 import cn from 'classnames'
 import {RETURN_KEY_CODE} from "./keyCodes";
 import CitationTextAutocomplete from "./CitationTextAutocomplete";

@@ -546,7 +546,7 @@ const createJustification = ({authToken, justification}) => withAuth(authToken)
       const now = new Date()
       const validationErrors = justificationValidator.validate(justification)
       if (validationErrors.hasErrors) {
-        throw new ValidationError(validationErrors)
+        throw new ValidationError({justification: validationErrors})
       }
       return [userId, now]
     })

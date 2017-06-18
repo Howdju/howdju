@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux";
-import Button from "react-md/lib/Buttons"
+import Button from 'react-md/lib/Buttons/Button'
 import get from 'lodash/get'
 
 import {
@@ -51,15 +51,13 @@ class StatementEditor extends Component {
     delete rest.editors
     delete rest.editorId
 
-    const statementErrors = errors && errors.statement
-
     return (
         <form onSubmit={this.onSubmit}>
           <StatementEditorFields statement={editEntity}
                                  disabled={isSaving}
                                  suggestionsKey={suggestionsKey}
                                  onPropertyChange={this.onPropertyChange}
-                                 errors={statementErrors}
+                                 errors={errors}
                                  {...rest}
           />
           <Button flat

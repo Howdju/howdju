@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux";
-import Button from "react-md/lib/Buttons"
+import Button from 'react-md/lib/Buttons/Button'
 import get from 'lodash/get'
 
 import {
@@ -35,6 +35,8 @@ class NewJustificationEditor extends Component {
     super()
 
     this.onPropertyChange = this.onPropertyChange.bind(this)
+    this.onAddUrl = this.onAddUrl.bind(this)
+    this.onRemoveUrl = this.onRemoveUrl.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.onCancelEdit = this.onCancelEdit.bind(this)
   }
@@ -44,11 +46,11 @@ class NewJustificationEditor extends Component {
   }
 
   onAddUrl() {
-    this.props.editors.addUrl(EditorTypes.JUSTIFICATION, this.newJustificationEditorId)
+    this.props.editors.addUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
   }
 
   onRemoveUrl(url, index) {
-    this.props.editors.deleteUrl(EditorTypes.JUSTIFICATION, this.newJustificationEditorId, url, index)
+    this.props.editors.deleteUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, url, index)
   }
 
   onSubmit(event) {

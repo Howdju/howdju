@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux";
-import Button from "react-md/lib/Buttons"
+import Button from 'react-md/lib/Buttons/Button'
 import get from 'lodash/get'
 
 import {
@@ -60,8 +60,6 @@ class EditableCitationReference extends Component {
       ...rest
     } = this.props
 
-    const citationReferenceErrors = errors && errors.citationReference
-
     return (
         <form onSubmit={this.onSubmit}>
           <CitationReferenceEditorFields id={id}
@@ -71,7 +69,7 @@ class EditableCitationReference extends Component {
                                          onPropertyChange={this.onPropertyChange}
                                          onAddUrlClick={this.onAddUrlClick}
                                          onDeleteUrlClick={this.onDeleteUrlClick}
-                                         errors={citationReferenceErrors}
+                                         errors={errors}
                                          onSubmit={this.onSubmit}
                                          {...rest}
           />

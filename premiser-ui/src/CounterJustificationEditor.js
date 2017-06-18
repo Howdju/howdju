@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux"
-import Button from "react-md/lib/Buttons"
+import Button from 'react-md/lib/Buttons/Button'
 import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import get from 'lodash/get'
 
@@ -53,7 +53,7 @@ class CounterJustificationEditor extends Component {
     delete rest.editors
     delete rest.editorId
 
-    const statementErrors = errors && errors.fieldErrors.basis.fieldErrors.entity
+    const statementErrors = get(errors, 'fieldErrors.basis.fieldErrors.entity')
 
     return (
         <form onSubmit={this.onSubmit}>

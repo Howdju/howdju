@@ -1,7 +1,7 @@
 import {LOCATION_CHANGE} from 'react-router-redux'
 import paths from '../paths'
 import {handleActions} from "redux-actions";
-import {api, goto} from "../actions";
+import {goto} from "../actions";
 
 export default handleActions({
   [LOCATION_CHANGE]: (state, action) => {
