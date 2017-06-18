@@ -411,7 +411,7 @@ function* editorCommitEdit() {
         }
       }
     },
-    [EditorTypes.JUSTIFICATION]: {
+    [EditorTypes.COUNTER_JUSTIFICATION]: {
       crudActionCreators: {
         [CREATE]: api.createJustification,
       }

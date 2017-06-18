@@ -22,22 +22,24 @@ class CounterJustificationEditor extends Component {
   constructor() {
     super()
 
+    this.editorType = EditorTypes.COUNTER_JUSTIFICATION
+
     this.onPropertyChange = this.onPropertyChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.onCancelEdit = this.onCancelEdit.bind(this)
   }
 
   onPropertyChange(properties) {
-    this.props.editors.propertyChange(EditorTypes.JUSTIFICATION, this.props.editorId, properties)
+    this.props.editors.propertyChange(this.editorType, this.props.editorId, properties)
   }
 
   onSubmit(event) {
     event.preventDefault()
-    this.props.editors.commitEdit(EditorTypes.JUSTIFICATION, this.props.editorId)
+    this.props.editors.commitEdit(this.editorType, this.props.editorId)
   }
 
   onCancelEdit() {
-    this.props.editors.cancelEdit(EditorTypes.JUSTIFICATION, this.props.editorId)
+    this.props.editors.cancelEdit(this.editorType, this.props.editorId)
   }
 
   render() {
@@ -91,7 +93,7 @@ CounterJustificationEditor.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const editorState = get(state.editors, [EditorTypes.JUSTIFICATION, ownProps.editorId], {})
+  const editorState = get(state.editors, [EditorTypes.COUNTER_JUSTIFICATION, ownProps.editorId], {})
   return {
     editorState,
   }

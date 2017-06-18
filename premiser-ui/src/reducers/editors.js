@@ -29,7 +29,7 @@ export const EditorTypes = {
   DEFAULT: 'DEFAULT',
   STATEMENT: 'STATEMENT',
   CITATION_REFERENCE: 'CITATION_REFERENCE',
-  JUSTIFICATION: 'JUSTIFICATION',
+  COUNTER_JUSTIFICATION: 'COUNTER_JUSTIFICATION',
   NEW_JUSTIFICATION: 'NEW_JUSTIFICATION',
   STATEMENT_JUSTIFICATION: 'STATEMENT_JUSTIFICATION',
   LOGIN_CREDENTIALS: 'LOGIN_CREDENTIALS',
@@ -133,7 +133,7 @@ const editorReducerByType = {
     },
   }, defaultEditorState),
 
-  [EditorTypes.JUSTIFICATION]: handleActions({
+  [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
     [editors.addUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.basis.citationReference.urls = editEntity.basis.citationReference.urls.concat([makeNewUrl()])

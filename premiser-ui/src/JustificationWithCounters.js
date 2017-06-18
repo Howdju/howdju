@@ -97,7 +97,7 @@ class JustificationWithCounters extends Component {
 
   onEditNewCounterJustification() {
     const justification = this.props.justification
-    this.props.editors.beginEdit(EditorTypes.JUSTIFICATION, counterJustificationEditorId(justification), makeNewCounterJustification(justification))
+    this.props.editors.beginEdit(EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), makeNewCounterJustification(justification))
   }
 
   onEditBasis() {
@@ -276,7 +276,7 @@ const mapStateToProps = (state, ownProps) => {
   const editEntity = get(state, ['editors', basisEditorType, justificationBasisEditorId(justificationBasis), 'editEntity'])
   const isEditingBasis = !!editEntity
 
-  const newCounterJustification = get(state, ['editors', EditorTypes.JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
+  const newCounterJustification = get(state, ['editors', EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
   return {
     newCounterJustification,
     isEditingBasis,

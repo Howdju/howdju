@@ -30,7 +30,7 @@ import {
   JustificationPolarity,
   isPositive,
   isNegative,
-  makeNewJustification, JustificationTargetType, JustificationBasisType, consolidateBasis,
+  JustificationBasisType,
   makeNewJustificationTargetingStatementId,
 } from "./models";
 
@@ -137,8 +137,6 @@ class StatementJustificationsPage extends Component {
 
   saveNewJustification() {
     this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, ui.hideNewJustificationDialog())
-    // const justification = consolidateBasis(this.props.newJustification)
-    // this.props.flows.createJustificationThenPutActionIfSuccessful(justification, ui.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog() {
