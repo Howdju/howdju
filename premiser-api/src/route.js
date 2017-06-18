@@ -38,6 +38,9 @@ const {
   searchCitations,
 } = require('./search/citations')
 const {logger} = require('./logger')
+const {
+  rethrowTranslatedValidationError
+} = require('./util')
 
 const ok = ({callback, body={}, headers}) => callback({
   httpStatusCode: httpStatusCodes.OK,
@@ -123,6 +126,7 @@ const routes = [
                 }
     }) => createStatement({authToken, statement})
         .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
+        .catch(ValidationError, rethrowTranslatedValidationError('statement'))
   },
   {
     id: 'updateStatement',
@@ -198,6 +202,7 @@ const routes = [
                 }
     }) => createJustification({authToken, justification})
         .then(justification => ok({callback, body: {justification}}))
+        .catch(ValidationError, rethrowTranslatedValidationError('justification'))
   },
   {
     id: 'readCitationReference',
@@ -309,6 +314,10 @@ const routeEvent = ({callback, request}) =>
       return notFound({callback})
     }
   )
+      .catch(e => {
+        logger.silly(e)
+        throw e
+      })
       .catch(ValidationError, e => badRequest({callback, body: {errorCode: apiErrorCodes.VALIDATION_ERROR, errors: e.errors}}))
       .catch(NotFoundError, e => notFound({callback}))
       .catch(AuthenticationError, e => unauthenticated({callback}))

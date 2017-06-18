@@ -82,7 +82,7 @@ class EditStatementJustificationPage extends Component {
 
     this.onPropertyChange = this.onPropertyChange.bind(this)
     this.addJustificationUrl = this.addJustificationUrl.bind(this)
-    this.deleteJustificationUrl = this.deleteJustificationUrl.bind(this)
+    this.removeJustificationUrl = this.removeJustificationUrl.bind(this)
     this.onDoCreateJustificationSwitchChange = this.onDoCreateJustificationSwitchChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.onCancel = this.onCancel.bind(this)
@@ -114,8 +114,8 @@ class EditStatementJustificationPage extends Component {
     this.props.editors.addUrl(this.editorType, this.editorId)
   }
 
-  deleteJustificationUrl(url, index) {
-    this.props.editors.deleteUrl(this.editorType, this.editorId, url, index)
+  removeJustificationUrl(url, index) {
+    this.props.editors.removeUrl(this.editorType, this.editorId, url, index)
   }
 
   onDoCreateJustificationSwitchChange(checked) {
@@ -201,8 +201,8 @@ class EditStatementJustificationPage extends Component {
                                                     suggestionsKey="justification"
                                                     readOnlyBasis={isCreateJustification}
                                                     onPropertyChange={this.onPropertyChange}
-                                                    onAddUrlClick={this.addJustificationUrl}
-                                                    onDeleteUrlClick={this.deleteJustificationUrl}
+                                                    onAddUrl={this.addJustificationUrl}
+                                                    onRemoveUrl={this.removeJustificationUrl}
                                                     errors={newJustificationErrors}
                       />
                     }

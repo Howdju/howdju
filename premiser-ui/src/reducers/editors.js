@@ -139,7 +139,7 @@ const editorReducerByType = {
       editEntity.basis.citationReference.urls = editEntity.basis.citationReference.urls.concat([makeNewUrl()])
       return {...state, editEntity}
     },
-    [editors.deleteUrl]: (state, action) => {
+    [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.basis.citationReference.urls.splice(action.payload.index, 1)
       return {...state, editEntity}
@@ -169,7 +169,7 @@ const editorReducerByType = {
       editEntity.basis.citationReference.urls = editEntity.basis.citationReference.urls.concat([makeNewUrl()])
       return {...state, editEntity}
     },
-    [editors.deleteUrl]: (state, action) => {
+    [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.basis.citationReference.urls.splice(action.payload.index, 1)
       return {...state, editEntity}
@@ -198,7 +198,7 @@ const editorReducerByType = {
       citationReference.urls = citationReference.urls.concat([makeNewUrl()])
       return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
     },
-    [editors.deleteUrl]: (state, action) => {
+    [editors.removeUrl]: (state, action) => {
       const citationReference = {...state.editEntity.justification.basis.citationReference}
       citationReference.urls.splice(action.payload.index, 1)
       return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
@@ -215,7 +215,7 @@ const editorReducerByType = {
       editEntity.urls = editEntity.urls.concat([makeNewUrl()])
       return {...state, editEntity}
     },
-    [editors.deleteUrl]: (state, action) => {
+    [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.urls.splice(action.payload.index, 1)
       return {...state, editEntity}

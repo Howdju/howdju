@@ -150,7 +150,7 @@ export const editors = {
   cancelEdit: actionCreator('EDITORS/CANCEL_EDIT', (editorType, editorId) => ({editorType, editorId})),
 
   addUrl: actionCreator('EDITORS/ADD_URL', (editorType, editorId) => ({editorType, editorId})),
-  deleteUrl: actionCreator('EDITORS/DELETE_URL', (editorType, editorId, url, index) => ({
+  removeUrl: actionCreator('EDITORS/REMOVE_URL', (editorType, editorId, url, index) => ({
     editorType,
     editorId,
     url,

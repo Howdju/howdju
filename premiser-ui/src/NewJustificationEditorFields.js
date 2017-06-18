@@ -56,8 +56,8 @@ class NewJustificationEditorFields extends Component {
       suggestionsKey,
       onSubmit,
       onPropertyChange,
-      onAddUrlClick,
-      onDeleteUrlClick,
+      onAddUrl,
+      onRemoveUrl,
       errors,
     } = this.props
 
@@ -96,8 +96,8 @@ class NewJustificationEditorFields extends Component {
                                name={namePrefix + citationReferenceName}
                                suggestionsKey={suggestionsKeyPrefix + citationReferenceName}
                                onPropertyChange={onPropertyChange}
-                               onAddUrlClick={onAddUrlClick}
-                               onDeleteUrlClick={onDeleteUrlClick}
+                               onAddUrl={onAddUrl}
+                               onRemoveUrl={onRemoveUrl}
                                readOnly={readOnlyBasis}
                                onSubmit={onSubmit}
                                errors={citationReferenceErrors}
@@ -152,8 +152,8 @@ NewJustificationEditorFields.propTypes = {
   /** If present, this string will be prepended to this editor's autocomplete's suggestionKeys, with an intervening "." */
   suggestionsKey: PropTypes.string,
   onPropertyChange: PropTypes.func.isRequired,
-  onDeleteUrlClick: PropTypes.func.isRequired,
-  onAddUrlClick: PropTypes.func.isRequired,
+  onRemoveUrl: PropTypes.func.isRequired,
+  onAddUrl: PropTypes.func.isRequired,
   readOnlyBasis: PropTypes.bool,
   onSubmit: PropTypes.func,
   errors: PropTypes.object,

@@ -2,7 +2,6 @@
 ## MVP
 
 ### Editors/Errors
-* onDeleteUrl => onRemoveUrl
 * Cleanup editor stuff in sagas
 * Disable submit and edits while submitting editors
   * property for entity type and id, so that can watch FETCH actions and show spinner?

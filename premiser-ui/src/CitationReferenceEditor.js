@@ -23,8 +23,8 @@ class EditableCitationReference extends Component {
     this.onPropertyChange = this.onPropertyChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.onCancelEdit = this.onCancelEdit.bind(this)
-    this.onAddUrlClick = this.onAddUrlClick.bind(this)
-    this.onDeleteUrlClick = this.onDeleteUrlClick.bind(this)
+    this.onAddUrl = this.onAddUrl.bind(this)
+    this.onRemoveUrl = this.onRemoveUrl.bind(this)
   }
 
   onPropertyChange(properties) {
@@ -40,12 +40,12 @@ class EditableCitationReference extends Component {
     this.props.editors.cancelEdit(EditorTypes.CITATION_REFERENCE, this.props.editorId)
   }
 
-  onAddUrlClick() {
+  onAddUrl() {
     this.props.editors.addUrl(EditorTypes.CITATION_REFERENCE, this.props.editorId)
   }
 
-  onDeleteUrlClick(url, index) {
-    this.props.editors.deleteUrl(EditorTypes.CITATION_REFERENCE, this.props.editorId, url, index)
+  onRemoveUrl(url, index) {
+    this.props.editors.removeUrl(EditorTypes.CITATION_REFERENCE, this.props.editorId, url, index)
   }
 
   render() {
@@ -67,8 +67,8 @@ class EditableCitationReference extends Component {
                                          disabled={isSaving}
                                          suggestionsKey={suggestionsKey}
                                          onPropertyChange={this.onPropertyChange}
-                                         onAddUrlClick={this.onAddUrlClick}
-                                         onDeleteUrlClick={this.onDeleteUrlClick}
+                                         onAddUrl={this.onAddUrl}
+                                         onRemoveUrl={this.onRemoveUrl}
                                          errors={errors}
                                          onSubmit={this.onSubmit}
                                          {...rest}

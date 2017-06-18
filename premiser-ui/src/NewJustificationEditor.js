@@ -39,7 +39,7 @@ class NewJustificationEditor extends Component {
   }
 
   onRemoveUrl(url, index) {
-    this.props.editors.deleteUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, url, index)
+    this.props.editors.removeUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, url, index)
   }
 
   onSubmit(event) {
@@ -83,8 +83,8 @@ class NewJustificationEditor extends Component {
         <form onSubmit={this.onSubmit}>
           <NewJustificationEditorFields newJustification={editEntity}
                                         onPropertyChange={this.onPropertyChange}
-                                        onAddUrlClick={this.onAddUrl}
-                                        onDeleteUrlClick={this.onRemoveUrl}
+                                        onAddUrl={this.onAddUrl}
+                                        onRemoveUrl={this.onRemoveUrl}
                                         onSubmit={this.onSubmit}
                                         suggestionsKey={suggestionsKey}
                                         errors={errors}

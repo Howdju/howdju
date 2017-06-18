@@ -31,7 +31,13 @@ const logError = (error) => {
   console.error(error)
 }
 
+const rethrowTranslatedValidationError = translationKey => e => {
+  e.errors = {[translationKey]: e.errors}
+  throw e
+}
+
 module.exports = {
   assert,
   logError,
+  rethrowTranslatedValidationError,
 }

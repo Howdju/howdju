@@ -93,6 +93,7 @@ class JustificationValidator {
           errors.hasErrors = true
           errors.fieldErrors.target.fieldErrors.entity.modelErrors.push(modelErrorCodes.IS_REQUIRED)
         } else {
+          debugger
           if (!justification.target.entity.id) {
             // Must have valid props
             const targetEntityErrors = justification.target.type === JustificationTargetType.JUSTIFICATION ?
@@ -171,6 +172,12 @@ class StatementValidator {
     if (!statement) {
       errors.hasErrors = true
       errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      return errors
+    }
+
+    if (statement.id) {
+      // Return no error so that when a statement is targeted by a justification, it doesn't need to include the other fields
+      // TODO create separate validators for statement create, statement update, justification target, justification basis
       return errors
     }
 

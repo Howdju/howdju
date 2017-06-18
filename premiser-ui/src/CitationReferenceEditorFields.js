@@ -136,7 +136,7 @@ class CitationReferenceEditorFields extends Component {
                   value={citationReference.urls[index].url}
                   onChange={this.onChange}
                   leftIcon={<FontIcon>link</FontIcon>}
-                  rightIcon={readOnly ? <div/> : <Button icon onClick={(e) => this.props.onDeleteUrlClick(url, index)}>delete</Button>}
+                  rightIcon={readOnly ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
                   disabled={!!url.id || readOnly}
                   onKeyDown={this.onTextInputKeyDown}
                   {...urlInputProps[index]}
@@ -149,7 +149,7 @@ class CitationReferenceEditorFields extends Component {
                   })}
                   key="addUrlButton"
                   label="Add URL"
-                  onClick={this.props.onAddUrlClick}
+                  onClick={this.props.onAddUrl}
           >add</Button>
         </div>
     )
@@ -164,8 +164,8 @@ CitationReferenceEditorFields.propTypes = {
   /** If present, called when the user presses enter in a text field */
   onSubmit: PropTypes.func,
   onPropertyChange: PropTypes.func.isRequired,
-  onDeleteUrlClick: PropTypes.func.isRequired,
-  onAddUrlClick: PropTypes.func.isRequired,
+  onAddUrl: PropTypes.func.isRequired,
+  onRemoveUrl: PropTypes.func.isRequired,
   errors: PropTypes.object,
 }
 
