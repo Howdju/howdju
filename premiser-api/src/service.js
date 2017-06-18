@@ -571,8 +571,6 @@ const createValidJustificationAsUser = (userId, justification, now) => Promise.a
     ]))
     // merge in the previous stuff, which might have details about the basis and target
     .then( ([justification, dbJustification]) => merge({}, justification, dbJustification))
-    // TODO isExtant
-    .then( justification => ({justification}) )
 
 const createJustificationBasis = (justificationBasis, userId, now) => {
   switch (justificationBasis.type) {

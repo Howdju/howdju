@@ -416,6 +416,16 @@ function* editorCommitEdit() {
         [CREATE]: api.createJustification,
       }
     },
+    [EditorTypes.NEW_JUSTIFICATION]: {
+      crudActionCreators: (model, crudType) => {
+        switch (crudType) {
+          case CREATE: {
+            const justification = consolidateBasis(model)
+            return api.createJustification.bind(null, justification)
+          }
+        }
+      }
+    },
     [EditorTypes.CITATION_REFERENCE]: {
       crudActionCreators: {
         [UPDATE]: api.updateCitationReference
@@ -495,6 +505,23 @@ function* commitEditorThenView() {
       }
     }
   )
+}
+
+function* commitEditThenPutActionOnSuccess() {
+  yield takeEvery(str(flows.commitEditThenPutActionOnSuccess), function* commitEditThenPutActionOnSuccessWorker(action) {
+    const {editorType, editorId} = action.payload
+    yield put(editors.commitEdit(editorType, editorId))
+    let resultAction = null
+    while (!resultAction) {
+      const currResultAction = yield take(str(editors.commitEdit.result))
+      if (currResultAction.payload.editorType === editorType && currResultAction.payload.editorId === editorId) {
+        resultAction = currResultAction
+      }
+    }
+    if (!resultAction.error) {
+      yield put(action.payload.onSuccessAction)
+    }
+  })
 }
 
 function* fetchAndBeginEditOfNewJustificationFromBasis() {
@@ -610,6 +637,7 @@ export default () => [
   editorCommitEdit(),
   goToMainSearch(),
   commitEditorThenView(),
+  commitEditThenPutActionOnSuccess(),
   fetchAndBeginEditOfNewJustificationFromBasis(),
 
   showAlertForUnexpectedApiError(),

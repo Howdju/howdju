@@ -3,22 +3,38 @@ import PropTypes from 'prop-types'
 import Divider from 'react-md/lib/Dividers'
 import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
 import Subheader from 'react-md/lib/Subheaders'
+
 import {JustificationBasisType, JustificationPolarity} from "./models";
 import text, {
   JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE,
   JUSTIFICATION_BASIS_TYPE_STATEMENT, JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE
 } from "./texts";
-
-import './JustificationEditor.scss'
 import CitationReferenceEditorFields from "./CitationReferenceEditorFields";
 import StatementEditorFields from "./StatementEditorFields";
+
+import './NewJustificationEditorFields.scss'
 
 
 const statementName = 'basis.statement'
 const citationReferenceName = "basis.citationReference"
 
-class JustificationEditor extends Component {
+const polarityControls = [{
+  value: JustificationPolarity.POSITIVE,
+  label: text(JUSTIFICATION_POLARITY_POSITIVE),
+}, {
+  value: JustificationPolarity.NEGATIVE,
+  label: text(JUSTIFICATION_POLARITY_NEGATIVE),
+}]
+const basisTypeControls = [{
+  value: JustificationBasisType.STATEMENT,
+  label: text(JUSTIFICATION_BASIS_TYPE_STATEMENT),
+}, {
+  value: JustificationBasisType.CITATION_REFERENCE,
+  label: text(JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE),
+}]
+
+class NewJustificationEditorFields extends Component {
 
   constructor() {
     super()
@@ -33,7 +49,7 @@ class JustificationEditor extends Component {
 
   render() {
     const {
-      justification,
+      newJustification,
       name,
       id,
       readOnlyBasis,
@@ -45,28 +61,12 @@ class JustificationEditor extends Component {
       errors,
     } = this.props
 
-    const polarityControls = [{
-      value: JustificationPolarity.POSITIVE,
-      label: text(JUSTIFICATION_POLARITY_POSITIVE),
-    }, {
-      value: JustificationPolarity.NEGATIVE,
-      label: text(JUSTIFICATION_POLARITY_NEGATIVE),
-    }];
-    const basisTypeControls = [{
-      value: JustificationBasisType.STATEMENT,
-      label: text(JUSTIFICATION_BASIS_TYPE_STATEMENT),
-    }, {
-      value: JustificationBasisType.CITATION_REFERENCE,
-      label: text(JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE),
-    }];
-
     const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
-    const basisEntityErrors = errors && errors.fieldErrors.basis.fieldErrors.entity
-    const statementErrors = justification.basis.type === JustificationBasisType.STATEMENT ? basisEntityErrors : null
-    const citationReferenceErrors = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ? basisEntityErrors : null
+    const statementErrors = errors && errors.fieldErrors.basis.fieldErrors.statement
+    const citationReferenceErrors = errors && errors.fieldErrors.basis.fieldErrors.citationReference
 
     const statementComponents = [
       <Subheader primary
@@ -74,7 +74,7 @@ class JustificationEditor extends Component {
                  component="div"
                  key="statementSubheader"
       />,
-      <StatementEditorFields statement={justification.basis}
+      <StatementEditorFields statement={newJustification.basis.statement}
                              key="statementEditorFields"
                              id={idPrefix + statementName}
                              name={namePrefix + statementName}
@@ -90,7 +90,7 @@ class JustificationEditor extends Component {
                  component="div"
                  key="citationReferenceSubheader"
       />,
-      <CitationReferenceEditorFields citationReference={justification.basis.citationReference}
+      <CitationReferenceEditorFields citationReference={newJustification.basis.citationReference}
                                id={idPrefix + citationReferenceName}
                                key={citationReferenceName}
                                name={namePrefix + citationReferenceName}
@@ -115,7 +115,7 @@ class JustificationEditor extends Component {
               id={idPrefix + "polarity"}
               name={namePrefix + "polarity"}
               type="radio"
-              value={justification.polarity}
+              value={newJustification.polarity}
               onChange={this.onChange}
               controls={polarityControls}
           />
@@ -129,13 +129,13 @@ class JustificationEditor extends Component {
               id={idPrefix + "basis.type"}
               name={namePrefix + "basis.type"}
               type="radio"
-              value={justification.basis.type}
+              value={newJustification.basis.type}
               onChange={this.onChange}
               controls={basisTypeControls}
               disabled={readOnlyBasis}
           />
           <Divider />
-          {justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
+          {newJustification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
               citationReferenceComponents:
               statementComponents
           }
@@ -143,8 +143,8 @@ class JustificationEditor extends Component {
     )
   }
 }
-JustificationEditor.propTypes = {
-  justification: PropTypes.object.isRequired,
+NewJustificationEditorFields.propTypes = {
+  newJustification: PropTypes.object.isRequired,
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
@@ -158,8 +158,8 @@ JustificationEditor.propTypes = {
   onSubmit: PropTypes.func,
   errors: PropTypes.object,
 }
-JustificationEditor.defaultProps = {
+NewJustificationEditorFields.defaultProps = {
   readOnlyBasis: false,
 }
 
-export default JustificationEditor
+export default NewJustificationEditorFields

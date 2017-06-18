@@ -165,8 +165,9 @@ export const flows = {
   fetchAndBeginEditOfNewJustificationFromBasis: actionCreator('FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS',
       (editorType, editorId, basisType, basisId) => ({editorType, editorId, basisType, basisId})),
   commitEditThenView: actionCreator('FLOWS/COMMIT_STATEMENT_THEN_VIEW',
-      (editorType, editorId) => ({editorType, editorId})
-  ),
+      (editorType, editorId) => ({editorType, editorId})),
+  commitEditThenPutActionOnSuccess: actionCreator('FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS',
+      (editorType, editorId, onSuccessAction) => ({editorType, editorId, onSuccessAction})),
 }
 
 export const autocompletes = {

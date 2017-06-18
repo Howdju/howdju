@@ -34,10 +34,10 @@ import {
   editStatementJustificationPageEditorId,
 } from "./editorIds"
 import {logger} from "./util";
-import JustificationEditor from "./JustificationEditor";
+import NewJustificationEditorFields from "./NewJustificationEditorFields";
 import StatementEditorFields from "./StatementEditorFields";
 import {EditorTypes} from "./reducers/editors";
-import ModelErrors from "./ModelErrors";
+import ErrorMessages from "./ErrorMessages";
 
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
@@ -122,9 +122,11 @@ class EditStatementJustificationPage extends Component {
     const {
       mode,
       isEditing,
-      statement,
-      justification,
-      doCreateJustification,
+      editEntity: {
+        statement,
+        justification,
+        doCreateJustification,
+      },
       inProgress,
       errors,
     } = this.props
@@ -135,7 +137,7 @@ class EditStatementJustificationPage extends Component {
 
     const isCreateJustification = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
 
-    const modelErrors = errors && doCreateJustification && errors.statementJustification.modelErrors
+    const modelErrors = get(errors, "statementJustification.modelErrors")
     const statementErrors = errors && (
         doCreateJustification ?
             errors.statementJustification.fieldErrors.statement :
@@ -154,7 +156,7 @@ class EditStatementJustificationPage extends Component {
 
                   {modelErrors &&
                     <CardText>
-                      <ModelErrors errors={modelErrors} />
+                      <ErrorMessages errors={modelErrors} />
                     </CardText>
                   }
 
@@ -186,14 +188,14 @@ class EditStatementJustificationPage extends Component {
 
                   <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
                     {justification &&
-                      <JustificationEditor justification={justification}
-                                           name="justification"
-                                           suggestionsKey="justification"
-                                           readOnlyBasis={isCreateJustification}
-                                           onPropertyChange={this.onPropertyChange}
-                                           onAddUrlClick={this.addJustificationUrl}
-                                           onDeleteUrlClick={this.deleteJustificationUrl}
-                                           errors={justificationErrors}
+                      <NewJustificationEditorFields newJustification={justification}
+                                                    name="justification"
+                                                    suggestionsKey="justification"
+                                                    readOnlyBasis={isCreateJustification}
+                                                    onPropertyChange={this.onPropertyChange}
+                                                    onAddUrlClick={this.addJustificationUrl}
+                                                    onDeleteUrlClick={this.deleteJustificationUrl}
+                                                    errors={justificationErrors}
                       />
                     }
                   </CardText>
@@ -226,10 +228,10 @@ class EditStatementJustificationPage extends Component {
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state.editors, [EditorTypes.STATEMENT_JUSTIFICATION, editStatementJustificationPageEditorId], {})
   const errors = editorState.errors
-  const editEntity = get(editorState, 'editEntity', makeNewStatementJustification())
+  const editEntity = get(editorState, 'editEntity') || {}
   const queryParams = queryString.parse(ownProps.location.search)
   return {
-    ...editEntity,
+    editEntity,
     isEditing: !!editEntity,
     errors,
     queryParams,

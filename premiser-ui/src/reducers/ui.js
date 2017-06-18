@@ -87,7 +87,6 @@ const statementJustificationsPage = handleActions({
         newCounterJustificationsByTargetId,
       }
     },
-    throw: (state, action) => ({...state, newJustificationErrorMessage: text(CREATE_JUSTIFICATION_FAILURE_MESSAGE)})
   },
   [ui.addNewCounterJustification]: (state, action) => {
     const targetJustification = action.payload.targetJustification
@@ -99,20 +98,20 @@ const statementJustificationsPage = handleActions({
       }),
     }
   },
-  [ui.newCounterJustificationPropertyChange]: (state, action) => {
-    const {justification, properties} = action.payload
-    const targetJustificationId = justification.target.entity.id
-    const newCounterJustification = cloneDeep(state.newCounterJustificationsByTargetId[targetJustificationId])
-    forEach(properties, (val, key) => {
-      set(newCounterJustification, key, val)
-    })
-    return {
-      ...state,
-      newCounterJustificationsByTargetId: merge(state.newCounterJustificationsByTargetId, {
-        [targetJustificationId]: newCounterJustification
-      }),
-    }
-  },
+  // [ui.newCounterJustificationPropertyChange]: (state, action) => {
+  //   const {justification, properties} = action.payload
+  //   const targetJustificationId = justification.target.entity.id
+  //   const newCounterJustification = cloneDeep(state.newCounterJustificationsByTargetId[targetJustificationId])
+  //   forEach(properties, (val, key) => {
+  //     set(newCounterJustification, key, val)
+  //   })
+  //   return {
+  //     ...state,
+  //     newCounterJustificationsByTargetId: merge(state.newCounterJustificationsByTargetId, {
+  //       [targetJustificationId]: newCounterJustification
+  //     }),
+  //   }
+  // },
   [ui.cancelNewCounterJustification]: (state, action) => {
     const justification = action.payload.justification
     const targetJustificationId = justification.target.entity.id
@@ -129,7 +128,6 @@ const statementJustificationsPage = handleActions({
   isNewJustificationDialogVisible: false,
   // i.e. newRootJustification
   newJustification: null,
-  newJustificationErrorMessage: '',
   newCounterJustificationsByTargetId: {},
   newCounterJustificationIsCreatingByTargetId: {},
 })

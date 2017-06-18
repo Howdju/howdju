@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {toErrorMessage} from './modelErrorMessages'
 
-class ModelErrors extends Component {
+class ErrorMessages extends Component {
   render() {
     const {
       errors
@@ -14,8 +14,8 @@ class ModelErrors extends Component {
     )
   }
 }
-ModelErrors.propTypes = {
+ErrorMessages.propTypes = {
   errors: PropTypes.array
 }
 
-export default ModelErrors
+export default ErrorMessages

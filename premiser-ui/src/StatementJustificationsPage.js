@@ -46,15 +46,17 @@ import text, {
   CANCEL_BUTTON_LABEL,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL, FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE
 } from "./texts";
-import JustificationEditor from './JustificationEditor'
-
-import "./StatementJustificationsPage.scss";
+import NewJustificationEditor from './NewJustificationEditor'
 import {
-  statementJustificationsPageStatementEditorId,
-  statementJustificationsPageNewJustificationEditorId
+  statementJustificationsPage_statementEditor_editorId,
+  statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
 } from "./editorIds";
 import {EditorTypes} from "./reducers/editors";
 import EditableStatement from "./EditableStatement";
+
+import "./StatementJustificationsPage.scss";
+import {suggestionKeys} from "./autocompleter";
+
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -63,8 +65,8 @@ class StatementJustificationsPage extends Component {
       isOverStatement: false,
     }
 
-    this.statementEditorId = statementJustificationsPageStatementEditorId
-    this.newJustificationEditorId = statementJustificationsPageNewJustificationEditorId
+    this.statementEditorId = statementJustificationsPage_statementEditor_editorId
+    this.newJustificationEditorId = statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
 
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
@@ -74,12 +76,10 @@ class StatementJustificationsPage extends Component {
     this.onUseStatement = this.onUseStatement.bind(this)
 
     this.showNewJustificationDialog = this.showNewJustificationDialog.bind(this)
-    this.onNewJustificationPropertyChange = this.onNewJustificationPropertyChange.bind(this)
-    this.addNewJustificationUrl = this.addNewJustificationUrl.bind(this)
-    this.deleteNewJustificationUrl = this.deleteNewJustificationUrl.bind(this)
-    this.saveNewJustification = this.saveNewJustification.bind(this)
     this.onSubmitNewJustificationDialog = this.onSubmitNewJustificationDialog.bind(this)
     this.cancelNewJustificationDialog = this.cancelNewJustificationDialog.bind(this)
+
+    this.saveNewJustification = this.saveNewJustification.bind(this)
   }
 
   componentWillMount() {
@@ -127,21 +127,9 @@ class StatementJustificationsPage extends Component {
       rootStatementId: statementId,
       target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
     })
-    this.props.editors.beginEdit(EditorTypes.JUSTIFICATION, this.newJustificationEditorId, newJustification)
+    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
 
     this.props.ui.showNewJustificationDialog(statementId)
-  }
-
-  onNewJustificationPropertyChange(properties) {
-    this.props.editors.propertyChange(EditorTypes.JUSTIFICATION, this.newJustificationEditorId, properties)
-  }
-
-  addNewJustificationUrl() {
-    this.props.editors.addUrl(EditorTypes.JUSTIFICATION, this.newJustificationEditorId)
-  }
-
-  deleteNewJustificationUrl(url, index) {
-    this.props.editors.deleteUrl(EditorTypes.JUSTIFICATION, this.newJustificationEditorId, url, index)
   }
 
   onSubmitNewJustificationDialog(e) {
@@ -150,8 +138,9 @@ class StatementJustificationsPage extends Component {
   }
 
   saveNewJustification() {
-    const justification = consolidateBasis(this.props.newJustification)
-    this.props.flows.createJustificationThenPutActionIfSuccessful(justification, ui.hideNewJustificationDialog())
+    this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, ui.hideNewJustificationDialog())
+    // const justification = consolidateBasis(this.props.newJustification)
+    // this.props.flows.createJustificationThenPutActionIfSuccessful(justification, ui.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog() {
@@ -165,9 +154,7 @@ class StatementJustificationsPage extends Component {
       isFetching,
       didFail,
       isNewJustificationDialogVisible,
-      newJustificationErrorMessage,
       isCreatingNewJustification,
-      newJustification,
       match: {params: {statementId} },
       isEditingStatement,
     } = this.props
@@ -241,24 +228,11 @@ class StatementJustificationsPage extends Component {
                   />
                 ]}
         >
-          <div className={classNames({
-            errorMessage: true,
-            hidden: !newJustificationErrorMessage
-          })}>
-            {newJustificationErrorMessage}
-          </div>
-
-          <form onSubmit={this.onSubmitNewJustificationDialog}>
-            {newJustification &&
-              <JustificationEditor justification={newJustification}
-                                   onPropertyChange={this.onNewJustificationPropertyChange}
-                                   onAddUrlClick={this.addNewJustificationUrl}
-                                   onDeleteUrlClick={this.deleteNewJustificationUrl}
-                                   onSubmit={this.saveNewJustification}
-              />
-            }
-          </form>
-
+          <NewJustificationEditor editorId={this.newJustificationEditorId}
+                                  suggestionsKey={suggestionKeys.statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
+                                  onSubmit={this.onSubmitNewJustificationDialog}
+                                  doShowButtons={false}
+          />
         </Dialog>
     )
 
@@ -328,7 +302,7 @@ class StatementJustificationsPage extends Component {
                         {statement && !isEditingStatement && menu}
                         <EditableStatement id={`editableStatement-${statementId}`}
                                            entityId={statementId}
-                                           editorId={statementJustificationsPageStatementEditorId}
+                                           editorId={this.statementEditorId}
                                            suggestionsKey="StatementJustificationsPage-StatementEditor"
                         />
 
@@ -412,22 +386,20 @@ const mapStateToProps = (state, ownProps) => {
     return {}
   }
 
-  const statementEditorModel = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPageStatementEditorId, 'editEntity'])
+  const statementEditorModel = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPage_statementEditor_editorId, 'editEntity'])
   const isEditingStatement = !!statementEditorModel
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
   justifications = sortJustifications(justifications)
 
   const {
-    editEntity: newJustification,
     inProgress: isCreatingNewJustification,
-  } = get(state.editors, [EditorTypes.JUSTIFICATION, statementJustificationsPageNewJustificationEditorId], {})
+  } = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId], {})
 
   return {
     ...state.ui.statementJustificationsPage,
     statement: denormalize(statement, statementSchema, state.entities),
     justifications,
-    newJustification,
     isCreatingNewJustification,
     isEditingStatement,
   }

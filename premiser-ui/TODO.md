@@ -1,6 +1,15 @@
 # Howdju UI TODO
 ## MVP
 
+Error due to null editEntity before dialog closes
+* Can not reset it
+* Can make components resilient to empty values
+* Can use default value that wont' break them
+* Try and use sagas to put success action before callApi response 
+
+Get NewJustificationEditor on StatementJustificationsPage to manage its own URLs
+  * When commit NewJustificationEditor consolidate basis
+
 ### Editors/Errors
 * Can I replace CounterJustificationEditor with JustificationBasisEditor?
   * well, editor behavior needs to be to create a justification...

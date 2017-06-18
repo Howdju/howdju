@@ -82,7 +82,7 @@ export const makeNewJustification = props => merge({
 export const makeNewStatementJustification = (statementProps, justificationProps) => ({
   statement: makeNewStatement(statementProps),
   justification: makeNewJustification(justificationProps),
-  doCreateJustification: false,
+  doCreateJustification: !!justificationProps,
 })
 
 export const makeNewCounterJustification = targetJustification => ({
@@ -119,3 +119,14 @@ export const consolidateBasis = justification => {
 }
 
 export const makeNewUrl = () => ({url: ''})
+
+export const justificationBasisTypeToNewJustificationBasisMemberName = justificationBasisType => {
+  const newJustificationBasisMemberNames = {
+    [JustificationBasisType.STATEMENT]: 'statement',
+    [JustificationBasisType.CITATION_REFERENCE]: 'citationReference'
+  }
+  const newJustificationBasisMemberName = newJustificationBasisMemberNames[justificationBasisType]
+  if (!newJustificationBasisMemberName) {
+    throw newImpossibleError(`${justificationBasisType} exhausted justification basis types`)
+  }
+}

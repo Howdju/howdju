@@ -1,7 +1,8 @@
 export const suggestionKeys = {
   justificationEditor: 'justificationEditor',
   createStatementPageStatement: 'createStatementPageStatement',
-  counterJustificationEditor: targetJustificationId => `counterJustificationEditor_${targetJustificationId}`
+  counterJustificationEditor: targetJustificationId => `counterJustificationEditor_${targetJustificationId}`,
+  statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions: 'statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions',
 }
 
 export default {

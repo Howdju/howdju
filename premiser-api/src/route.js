@@ -153,7 +153,7 @@ const routes = [
                   body: {statement},
                 }
               }) => updateStatement({authToken, statement})
-        .then( (statement) => ok({callback, body: {statement}}))
+        .then( statement => ok({callback, body: {statement}}))
   },
   {
     id: 'readStatement',
@@ -167,7 +167,7 @@ const routes = [
                   authToken,
                 }
               }) => readStatement({statementId, authToken})
-        .then( ({statement}) => ok({callback, body: {statement}}))
+        .then( statement => ok({callback, body: {statement}}))
   },
   {
     id: 'readStatementJustifications',
@@ -215,7 +215,7 @@ const routes = [
                   path,
                 }
     }) => createJustification({authToken, justification})
-        .then( ({justification}) => ok({callback, body: {justification}}))
+        .then(justification => ok({callback, body: {justification}}))
   },
   {
     id: 'readCitationReference',
@@ -297,7 +297,7 @@ const routes = [
     path: 'users',
     method: httpMethods.POST,
     handler: ({callback, request: {body: {credentials: {email, password}, authToken}}}) => createUser(body)
-        .then( ({user}) => ok({callback, body: {user}}))
+        .then( user => ok({callback, body: {user}}))
   },
 ]
 
