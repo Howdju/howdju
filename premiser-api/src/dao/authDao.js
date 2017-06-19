@@ -1,4 +1,5 @@
 const head = require('lodash/head')
+const {query} = require('../db')
 
 class AuthDao {
 

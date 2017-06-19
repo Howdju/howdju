@@ -20,7 +20,7 @@ const groupRootJustifications = (rootStatementId, justification_rows) => {
   for (let justification_row of justification_rows) {
     // There are two types of justifications: those on the (root) statement, and counters
     if (justification_row.target_type === JustificationTargetType.STATEMENT) {
-      assert( () => justification_row.target_id === rootStatementId)
+      assert( () => toString(justification_row.target_id) === rootStatementId)
       rootJustifications.push(justification_row)
     } else {
       assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)
@@ -177,6 +177,17 @@ class JustificationsDao {
           }
           return row.justification_id
         })
+  }
+
+  deleteCounterJustificationsToJustificationIds(justificationIds, now) {
+    return query(`
+        update justifications set deleted = $1 
+        where 
+              target_type = $2
+          and target_id = any ($3) 
+        returning justification_id`,
+        [now, JustificationTargetType.JUSTIFICATION, justificationIds]
+    ).then( ({rows}) => map(rows, row => row.justification_id))
   }
 }
 

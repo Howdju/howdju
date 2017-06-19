@@ -16,7 +16,7 @@ import text, {
   MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE, THAT_JUSTIFICATION_ALREADY_EXISTS, THAT_STATEMENT_ALREADY_EXISTS,
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, YOU_HAVE_BEEN_LOGGED_OUT,
 } from './texts'
 import {fetchJson} from "./api";
 import {logError} from './util'
@@ -651,6 +651,14 @@ function* showAlertForExtantEntities() {
   })
 }
 
+function* showAlertForLogout() {
+  yield takeEvery(str(api.logout.response), function* showAlertForLogoutWorker(action) {
+    if (!action.error) {
+      yield put(ui.addToast(t(YOU_HAVE_BEEN_LOGGED_OUT)))
+    }
+  })
+}
+
 export default () => [
   flagRehydrate(),
   initializeMainSearch(),
@@ -673,4 +681,5 @@ export default () => [
 
   showAlertForUnexpectedApiError(),
   showAlertForExtantEntities(),
+  showAlertForLogout(),
 ]

@@ -26,9 +26,13 @@ class ApiAutocomplete extends Component {
     this.onKeyDown = this.onKeyDown.bind(this)
   }
 
+  componentWillMount() {
+    this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
+  }
+
   componentWillReceiveProps(nextProps) {
     autocompleter.fixOpen(this.autocomplete, nextProps.value, nextProps.transformedSuggestions)
-    if (this.props.autocompleteThrottle !== nextProps.autocompleteThrottle || !this.throttledRefreshAutocomplete) {
+    if (this.props.autocompleteThrottle !== nextProps.autocompleteThrottle) {
       this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), nextProps.autocompleteThrottle)
     }
   }
@@ -42,16 +46,9 @@ class ApiAutocomplete extends Component {
     this.props.onPropertyChange(properties)
     const val = properties[this.props.name]
     if (val) {
-      // TODO I'm not sure why this is undefined the first time this is called...shouldn't it have been set in componentWillReceiveProps?
-      if (this.throttledRefreshAutocomplete) {
-        this.throttledRefreshAutocomplete(val)
-      } else {
-        this.refreshAutocomplete(val)
-      }
+      this.throttledRefreshAutocomplete(val)
     } else {
-      if (this.throttledRefreshAutocomplete) {
-        this.throttledRefreshAutocomplete.cancel()
-      }
+      this.throttledRefreshAutocomplete.cancel()
       this.props.autocompletes.clearSuggestions(this.props.suggestionsKey)
     }
   }

@@ -37,8 +37,8 @@ export const mapActionCreatorGroupToDispatchToProps = (actionCreatorGroups, othe
 
 /** Create an action creator having a property `.response` with another action creator for corresponding API responses */
 const apiActionCreator = (...args) => {
-  const ac = actionCreator(...args)
-  const actionType = args[0]
+  const actionType = 'API' + actionTypeDelim + args[0]
+  const ac = actionCreator(actionType, ...args.slice(1))
   ac.response = actionCreator(actionType + actionTypeDelim + 'RESPONSE', identity, (payload, meta) => meta)
   return ac
 }
@@ -144,6 +144,7 @@ commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RES
     }
 )
 export const editors = {
+  init: actionCreator('EDITORS/INIT', (editorType, editorId, initialState) => ({editorType, editorId, initialState: initialState || {}})),
   beginEdit: actionCreator('EDITORS/BEGIN_EDIT', (editorType, editorId, entity) => ({editorType, editorId, entity})),
   propertyChange: actionCreator('EDITORS/PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
   commitEdit,

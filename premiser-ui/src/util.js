@@ -21,6 +21,8 @@ export function extractDomain(url) {
   return domain;
 }
 
+export const isTruthy = val => !!val
+
 export function assert(test, message) {
   const makeMessage = message =>
       // If there is a message thunk, use it

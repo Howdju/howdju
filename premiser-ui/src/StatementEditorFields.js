@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import FontIcon from 'react-md/lib/FontIcons'
-import StatementTextAutocomplete from './StatementTextAutocomplete'
+import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import TextField from "react-md/lib/TextFields";
+
+import StatementTextAutocomplete from './StatementTextAutocomplete'
 import {toErrorText} from "./modelErrorMessages";
 import {RETURN_KEY_CODE} from "./keyCodes";
 
@@ -33,9 +35,10 @@ class StatementEditorFields extends Component {
       suggestionsKey,
       name,
       id,
-      readOnly,
+      disabled,
       onPropertyChange,
       errors,
+      focusOnMount,
       ...rest,
     } = this.props
 
@@ -48,7 +51,7 @@ class StatementEditorFields extends Component {
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
     const text = statement ? statement.text : ''
 
-    return (suggestionsKey && !readOnly) ?
+    const input = (suggestionsKey && !disabled) ?
         <StatementTextAutocomplete id={idPrefix + "text"}
                                    name={namePrefix + "text"}
                                    label="Text"
@@ -68,10 +71,15 @@ class StatementEditorFields extends Component {
                    required
                    onChange={this.onChange}
                    leftIcon={<FontIcon>text_fields</FontIcon>}
-                   disabled={readOnly}
+                   disabled={disabled}
                    onKeyDown={this.onTextInputKeyDown}
                    {...textInputProps}
         />
+    return (
+        <FocusContainer focusOnMount={focusOnMount}>
+          {input}
+        </FocusContainer>
+    )
   }
 }
 StatementEditorFields.propTypes = {
@@ -83,11 +91,13 @@ StatementEditorFields.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
   onPropertyChange: PropTypes.func.isRequired,
-  readOnly: PropTypes.bool,
   errors: PropTypes.object,
+  disabled: PropTypes.bool,
+  focusOnMount: PropTypes.bool,
 }
 StatementEditorFields.defaultProps = {
-  readOnly: false
+  disabled: false,
+  focusOnMount: true,
 }
 
 export default StatementEditorFields

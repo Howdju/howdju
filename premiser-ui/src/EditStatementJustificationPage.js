@@ -8,6 +8,7 @@ import CardTitle from 'react-md/lib/Cards/CardTitle';
 import CardActions from 'react-md/lib/Cards/CardActions';
 import CardText from 'react-md/lib/Cards/CardText';
 import { Switch } from 'react-md/lib/SelectionControls'
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import cn from 'classnames'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
@@ -15,11 +16,9 @@ import queryString from 'query-string'
 
 
 import {
-  api,
   editors,
   flows,
   mapActionCreatorGroupToDispatchToProps,
-  ui,
 } from './actions'
 import text, {
   default as t,
@@ -38,7 +37,6 @@ import {logger} from "./util";
 import NewJustificationEditorFields from "./NewJustificationEditorFields";
 import StatementEditorFields from "./StatementEditorFields";
 import {EditorTypes} from "./reducers/editors";
-import ErrorMessages from "./ErrorMessages";
 
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
@@ -134,16 +132,20 @@ class EditStatementJustificationPage extends Component {
   render() {
     const {
       mode,
-      isEditing,
-      editEntity,
-      inProgress,
-      errors,
+      editorState,
     } = this.props
+    const {
+      errors,
+      isSaving,
+      editEntity,
+    } = editorState
     const {
       statement,
       justification,
       doCreateJustification,
-    } = editEntity
+    } = editEntity || {}
+
+    const isEditing = !!editEntity
 
     const title = text(titleTextKeyByMode[mode])
     const submitButtonLabel = text(submitButtonLabelTextKeyByMode[mode])
@@ -169,24 +171,23 @@ class EditStatementJustificationPage extends Component {
                   <CardTitle title={title} />
 
                   <CardText>
-                    {statement &&
-                      <StatementEditorFields statement={statement}
-                                             id="statement"
-                                             name="statement"
-                                             suggestionsKey={suggestionKeys.createStatementPageStatement}
-                                             onPropertyChange={this.onPropertyChange}
-                                             errors={statementErrors}
-                      />
-                    }
+                    <StatementEditorFields statement={statement}
+                                           id="statement"
+                                           name="statement"
+                                           suggestionsKey={suggestionKeys.createStatementPageStatement}
+                                           onPropertyChange={this.onPropertyChange}
+                                           errors={statementErrors}
+                                           disabled={isSaving}
+                    />
                   </CardText>
 
-                  {isEditing &&
+                  {!isCreateJustification &&
                     <Switch id="doCreateJustificationSwitch"
                             name="doCreateJustification"
                             label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
-                            className={cn({hidden: isCreateJustification})}
                             checked={doCreateJustification}
                             onChange={this.onDoCreateJustificationSwitchChange}
+                            disabled={isSaving}
                     />
                   }
 
@@ -195,31 +196,35 @@ class EditStatementJustificationPage extends Component {
                   />
 
                   <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
-                    {justification &&
+                    // Don't mount initially so-as to allow the statement to receive focusOnMount
+                    {isCreateJustification || doCreateJustification &&
                       <NewJustificationEditorFields newJustification={justification}
                                                     name="justification"
-                                                    suggestionsKey="justification"
-                                                    readOnlyBasis={isCreateJustification}
+                                                    suggestionsKey={suggestionKeys.createStatementPageJustification}
+                                                    readOnlyBasis={isSaving || isCreateJustification}
                                                     onPropertyChange={this.onPropertyChange}
                                                     onAddUrl={this.addJustificationUrl}
                                                     onRemoveUrl={this.removeJustificationUrl}
                                                     errors={newJustificationErrors}
+                                                    // several weird problems occur with shift-tabbing, so stop focus until have time to fix
+                                                    focusOnMount={false}
                       />
                     }
                   </CardText>
 
                   <CardActions>
+                    {isSaving && <CircularProgress key="progress" id="progress" />}
+                    <Button flat
+                            label="Cancel"
+                            disabled={isSaving}
+                            onClick={this.onCancel}
+                    />
                     <Button raised
                             primary
                             type="submit"
                             label={submitButtonLabel}
                             title={submitButtonTitle}
-                            disabled={inProgress}
-                    />
-                    <Button flat
-                            label="Cancel"
-                            disabled={inProgress}
-                            onClick={this.onCancel}
+                            disabled={isSaving}
                     />
                   </CardActions>
 
@@ -235,21 +240,15 @@ class EditStatementJustificationPage extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state.editors, [EditorTypes.STATEMENT_JUSTIFICATION, editStatementJustificationPageEditorId], {})
-  const errors = editorState.errors
-  const editEntity = get(editorState, 'editEntity') || {}
   const queryParams = queryString.parse(ownProps.location.search)
   return {
-    editEntity,
-    isEditing: !!editEntity,
-    errors,
+    editorState,
     queryParams,
   }
 }
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-  api,
   editors,
-  ui,
   flows,
 }, {
   goBack,

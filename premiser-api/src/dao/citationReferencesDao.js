@@ -98,17 +98,19 @@ class CitationReferencesDao {
         .then( ({rows: [row]}) => toCitationReference(row))
   }
 
-  doOtherCitationReferencesHaveSameQuoteAs(citationReference) {
+  doOtherCitationReferencesHaveSameCitationQuoteAs(citationReference) {
     const sql = `
       select count(*) > 0 has_conflict 
-      from citation_references
+      from citation_references cr join citations c using (citation_id)
         where 
-              citation_reference_id != $1 
-          and quote = $2
-          -- we need to let users recreate things that don't exist
-          and deleted is null
+              cr.citation_reference_id != $1 
+          and (cr.citation_id = $3 or c.text = $4)
+          and cr.quote = $2
+          and cr.deleted is null
+          and c.deleted is null
       `
-    return query(sql, [citationReference.id, citationReference.quote])
+    const args = [citationReference.id, citationReference.quote, citationReference.citation.id, citationReference.citation.text]
+    return query(sql, args)
         .then( ({rows: [{has_conflict}]}) => has_conflict)
   }
 

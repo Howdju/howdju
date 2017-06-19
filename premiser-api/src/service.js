@@ -40,7 +40,7 @@ const {
   citationReferenceValidator,
 } = require('./validators')
 const {
-  OTHER_CITATION_REFERENCES_HAVE_SAME_QUOTE_CONFLICT,
+  OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT,
   OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT,
 } = require("./codes/entityConflictCodes")
 const {
@@ -89,14 +89,14 @@ const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPe
       if (!hasPermission) {
         throw new AuthorizationError(permission)
       }
-      return toNumber(userId)
+      return userId
     })
 
 const withAuth = (authToken) => permissionsDao.getUserId(authToken).then(userId => {
   if (!userId) {
     throw new AuthenticationError()
   }
-  return toNumber(userId)
+  return userId
 })
 
 const readStatements = () => statementsDao.readStatements()
@@ -163,7 +163,7 @@ const login = ({credentials}) => Promise.resolve()
       }
       return Promise.all([
           user,
-          argon2.verify(hash, credentials.password),
+          argon2.verify(user.hash, credentials.password),
       ])
     })
     .then( ([user, isMatch]) => {
@@ -216,7 +216,6 @@ const createVote = ({authToken, vote}) => withAuth(authToken)
         return votesDao.createVote(userId, vote)
       }
     })
-    .then(vote => ({vote}))
 
 const deleteVote = ({authToken, vote}) => withAuth(authToken)
     .then(userId => {
@@ -324,8 +323,8 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
       const entityConflicts = {}
       const userActionConflicts = {}
       if (citationReferenceHasChanged) {
-        entityConflicts[OTHER_CITATION_REFERENCES_HAVE_SAME_QUOTE_CONFLICT] =
-            citationReferencesDao.doOtherCitationReferencesHaveSameQuoteAs(citationReference)
+        entityConflicts[OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT] =
+            citationReferencesDao.doOtherCitationReferencesHaveSameCitationQuoteAs(citationReference)
         assign(userActionConflicts, {
           [OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT]:
               citationReferencesDao.isBasisToJustificationsHavingOtherUsersVotes(userId, citationReference),
@@ -530,7 +529,11 @@ const createValidJustificationAsUser = (justification, userId, now) => Promise.a
       createJustificationBasis(justification.basis, userId, now)
           .catch(ValidationError, rethrowTranslatedValidationError('basis')),
     ])
-    .then( ([now, {targetType, targetEntity}, {basisType, basisEntity}]) => {
+    .then( ([
+        now,
+        {isExtant: isTargetExtant, targetType, targetEntity},
+        {isExtant: isBasisExtant, basisType, basisEntity}
+      ]) => {
       justification = cloneDeep(justification)
 
       justification.target = {
@@ -561,14 +564,17 @@ const createValidJustificationAsUser = (justification, userId, now) => Promise.a
     .then( ([justification, isExtant, dbJustification]) => {
       const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
       asyncRecordAction(userId, actionType, ActionTargetType.JUSTIFICATION, now, dbJustification.id)
-
       return [justification, isExtant, dbJustification]
     })
-    // merge in the previous stuff, which might have details about the basis and target
-    .then( ([justification, isExtant, dbJustification]) => ({
-      isExtant,
-      justification: merge({}, justification, dbJustification),
-    }))
+    .then( ([inJustification, isExtant, dbJustification]) => {
+      const justification = cloneDeep(dbJustification)
+      justification.target.entity = inJustification.target.entity
+      justification.basis.entity = inJustification.basis.entity
+      return {
+        isExtant,
+        justification,
+      }
+    })
 
 const createJustificationTarget = (justificationTarget, userId, now) => {
   switch (justificationTarget.type) {
@@ -576,7 +582,8 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
     case JustificationTargetType.JUSTIFICATION:
       return createJustificationAsUser(justificationTarget.entity, userId, now)
           .catch(ValidationError, rethrowTranslatedValidationError('entity'))
-          .then(justification => ({
+          .then( ({isExtant, justification}) => ({
+            isExtant,
             targetType: justificationTarget.type,
             targetEntity: justification,
           }))
@@ -620,22 +627,28 @@ const createJustificationBasis = (justificationBasis, userId, now) => {
   }
 }
 
-const createCitationReferenceAsUser = (citationReference, userId, now) => Promise.props({
-    citation: createCitationAsUser(citationReference.citation, userId, now),
-    urls: createUrlsAsUser(citationReference.urls, userId, now),
-  })
-    .then( ({citation, urls}) => {
+const createCitationReferenceAsUser = (citationReference, userId, now) =>
+    Promise.all([
+      createCitationAsUser(citationReference.citation, userId, now),
+      createUrlsAsUser(citationReference.urls, userId, now),
+    ])
+    .then( ([citation, urls]) => {
+      citationReference.citation.id = citation.id
+      return Promise.all([
+        citation,
+        urls,
+        createJustCitationReferenceAsUser(citationReference, userId, now)
+      ])
+    })
+    .then( ([citation, urls, citationReference]) => {
       citationReference.citation = citation
       citationReference.urls = urls
-      return createJustCitationReferenceAsUser(citationReference, userId, now)
-    })
-    .then( citationReference => {
-      return Promise.props({
+      return Promise.all([
         citationReference,
-        citationReferenceUrls: createCitationReferenceUrlsAsUser(citationReference, userId, now)
-      })
+        createCitationReferenceUrlsAsUser(citationReference, userId, now)
+      ])
     })
-    .then( ({citationReference}) => citationReference)
+    .then( ([citationReference]) => citationReference)
 
 const createUrlsAsUser = (urls, userId, now) => Promise.resolve()
     .then(() => filter(urls, url => url.url))
@@ -663,8 +676,6 @@ const createJustCitationReferenceAsUser = (citationReference, userId, now) => {
         }
         return citationReferencesDao.createCitationReference(citationReference, userId, now)
             .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.CITATION_REFERENCE, now))
-            // Merge in related entities such as the citation
-            .then(dbCitationReference => merge(citationReference, dbCitationReference))
       })
 }
 
@@ -766,7 +777,14 @@ const deleteJustification = ({authToken, justificationId}) => withAuth(authToken
     .then( ([userId, now, justification]) => Promise.all([
       userId,
       now,
+      justification,
+      deleteCounterJustificationsToJustificationIds([justification.id], userId, now),
+    ]))
+    .then( ([userId, now, justification, deletedCounterJustificationIds]) => Promise.all([
+      userId,
+      now,
       justificationsDao.deleteJustification(justification, now),
+      map(deletedCounterJustificationIds, id => asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.JUSTIFICATION, now, id)),
     ]))
     .then( ([userId, now, deletedJustificationId]) => Promise.all([
       deletedJustificationId,
@@ -775,6 +793,18 @@ const deleteJustification = ({authToken, justificationId}) => withAuth(authToken
     .then( ([deletedJustificationId]) => ({
       deletedJustificationId,
     }))
+
+const deleteCounterJustificationsToJustificationIds = (justificationIds, userId, now, deletedJustificationIds = []) => Promise.resolve()
+    .then(() => {
+      if (justificationIds.length === 0) {
+        return deletedJustificationIds
+      }
+      return justificationsDao.deleteCounterJustificationsToJustificationIds(justificationIds, now)
+          .then(currentlyDeletedJustificationIds =>
+              deleteCounterJustificationsToJustificationIds(currentlyDeletedJustificationIds, userId, now,
+                  deletedJustificationIds.concat(currentlyDeletedJustificationIds))
+          )
+    })
 
 /** Inserts an action record, but returns the entity, so that promises won't block on the query */
 const asyncRecordEntityAction = (userId, actionType, actionTargetType, now) => entity => {
@@ -793,12 +823,12 @@ const asyncRecordAction = (userId, actionType, actionTargetType, now, targetEnti
 }
 
 module.exports = {
-  readStatements,
-  readStatement,
-  readStatementJustifications,
   createUser,
   login,
   logout,
+  readStatements,
+  readStatement,
+  readStatementJustifications,
   createVote,
   deleteVote,
   createStatement,

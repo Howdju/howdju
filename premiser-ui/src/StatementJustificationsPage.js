@@ -84,7 +84,8 @@ class StatementJustificationsPage extends Component {
   }
 
   componentWillMount() {
-    this.props.api.fetchStatementJustifications(this.props.match.params.statementId)
+    this.props.editors.init(EditorTypes.STATEMENT, this.statementEditorId, {entityId: this.statementId()})
+    this.props.api.fetchStatementJustifications(this.statementId())
     this.updateDimensions()
   }
 
@@ -94,6 +95,10 @@ class StatementJustificationsPage extends Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions);
+  }
+
+  statementId() {
+    return this.props.match.params.statementId
   }
 
   onStatementMouseOver() {
@@ -113,7 +118,7 @@ class StatementJustificationsPage extends Component {
   }
 
   onUseStatement() {
-    this.props.goto.createJustification(JustificationBasisType.STATEMENT, this.props.match.params.statementId)
+    this.props.goto.createJustification(JustificationBasisType.STATEMENT, this.statementId())
   }
 
   deleteStatement() {
@@ -123,11 +128,10 @@ class StatementJustificationsPage extends Component {
   showNewJustificationDialog(e) {
     e.preventDefault()
 
-    const statementId = this.props.match.params.statementId
-    const newJustification = makeNewJustificationTargetingStatementId(statementId)
+    const newJustification = makeNewJustificationTargetingStatementId(this.statementId())
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
 
-    this.props.ui.showNewJustificationDialog(statementId)
+    this.props.ui.showNewJustificationDialog(this.statementId())
   }
 
   onSubmitNewJustificationDialog(e) {
@@ -150,7 +154,7 @@ class StatementJustificationsPage extends Component {
       isFetching,
       didFail,
       isNewJustificationDialogVisible,
-      isCreatingNewJustification,
+      isSavingNewJustification,
       match: {params: {statementId} },
       isEditingStatement,
     } = this.props
@@ -214,13 +218,17 @@ class StatementJustificationsPage extends Component {
                 title="Add justification"
                 onHide={this.cancelNewJustificationDialog}
                 actions={[
-                  <Button flat label={text(CANCEL_BUTTON_LABEL)} onClick={this.cancelNewJustificationDialog} />,
                   <Button flat
+                          label={text(CANCEL_BUTTON_LABEL)}
+                          onClick={this.cancelNewJustificationDialog}
+                          disabled={isSavingNewJustification}
+                  />,
+                  <Button raised
                           primary
                           type="submit"
                           label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
                           onClick={this.saveNewJustification}
-                          disabled={isCreatingNewJustification}
+                          disabled={isSavingNewJustification}
                   />
                 ]}
         >
@@ -228,6 +236,7 @@ class StatementJustificationsPage extends Component {
                                   suggestionsKey={suggestionKeys.statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
                                   onSubmit={this.onSubmitNewJustificationDialog}
                                   doShowButtons={false}
+                                  disabled={isSavingNewJustification}
           />
         </Dialog>
     )
@@ -299,7 +308,7 @@ class StatementJustificationsPage extends Component {
                         <EditableStatement id={`editableStatement-${statementId}`}
                                            entityId={statementId}
                                            editorId={this.statementEditorId}
-                                           suggestionsKey="StatementJustificationsPage-StatementEditor"
+                                           suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
                         />
 
                       </div>
@@ -389,14 +398,14 @@ const mapStateToProps = (state, ownProps) => {
   justifications = sortJustifications(justifications)
 
   const {
-    inProgress: isCreatingNewJustification,
+    isSaving: isSavingNewJustification,
   } = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId], {})
 
   return {
     ...state.ui.statementJustificationsPage,
     statement: denormalize(statement, statementSchema, state.entities),
     justifications,
-    isCreatingNewJustification,
+    isSavingNewJustification,
     isEditingStatement,
   }
 }

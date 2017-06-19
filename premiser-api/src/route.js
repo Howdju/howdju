@@ -256,7 +256,7 @@ const routes = [
     method: httpMethods.POST,
     // TODO change to body: {credentials}
     handler: ({callback, request: {body}}) => login(body)
-        .then(({auth}) => ok({callback, body: auth}))
+        .then(({email, authToken}) => ok({callback, body: {email, authToken}}))
   },
   {
     path: 'logout',

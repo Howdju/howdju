@@ -1,5 +1,6 @@
 const {query} = require('./../db')
 const {logger} = require('../logger')
+const toString = require('lodash/toString')
 
 class PermissionsDao {
   userHasPermission(userId, permission) {
@@ -47,7 +48,7 @@ class PermissionsDao {
         return null
       }
       const [{user_id: userId}] = rows
-      return userId
+      return toString(userId)
     })
   }
 
@@ -90,7 +91,7 @@ class PermissionsDao {
             logger.error(`Multiple rows for getUserIdWithPermission ${rows.length}`)
           }
           const [{user_id: userId, has_perm: hasPermission}] = rows
-          return {userId, hasPermission}
+          return {userId: toString(userId), hasPermission}
         })
   }
 }

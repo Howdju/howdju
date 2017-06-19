@@ -2,6 +2,9 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux";
 import Button from 'react-md/lib/Buttons/Button'
+import CardActions from 'react-md/lib/Cards/CardActions';
+import CardText from 'react-md/lib/Cards/CardText';
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import get from 'lodash/get'
 
 import {
@@ -55,35 +58,45 @@ class EditableCitationReference extends Component {
       editorState: {
         errors,
         editEntity,
+        isFetching,
         isSaving,
       },
       ...rest
     } = this.props
 
+    const inProgress = isFetching || isSaving
+
     return (
         <form onSubmit={this.onSubmit}>
-          <CitationReferenceEditorFields id={id}
-                                         citationReference={editEntity}
-                                         disabled={isSaving}
-                                         suggestionsKey={suggestionsKey}
-                                         onPropertyChange={this.onPropertyChange}
-                                         onAddUrl={this.onAddUrl}
-                                         onRemoveUrl={this.onRemoveUrl}
-                                         errors={errors}
-                                         onSubmit={this.onSubmit}
-                                         {...rest}
-          />
-          <Button flat
-                  key="cancelButton"
-                  label={t(CANCEL_BUTTON_LABEL)}
-                  onClick={this.onCancelEdit} />
-          <Button flat
-                  primary
-                  key="submitButton"
-                  type="submit"
-                  label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
-                  disabled={isSaving}
-          />
+          <CardText>
+            <CitationReferenceEditorFields id={id}
+                                           citationReference={editEntity}
+                                           disabled={isSaving}
+                                           suggestionsKey={suggestionsKey}
+                                           onPropertyChange={this.onPropertyChange}
+                                           onAddUrl={this.onAddUrl}
+                                           onRemoveUrl={this.onRemoveUrl}
+                                           errors={errors}
+                                           onSubmit={this.onSubmit}
+                                           {...rest}
+            />
+          </CardText>
+          <CardActions>
+            {inProgress && <CircularProgress key="progress" id="progress" />}
+            <Button flat
+                    key="cancelButton"
+                    label={t(CANCEL_BUTTON_LABEL)}
+                    onClick={this.onCancelEdit}
+                    disabled={inProgress}
+            />
+            <Button raised
+                    primary
+                    key="submitButton"
+                    type="submit"
+                    label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+                    disabled={inProgress}
+            />
+          </CardActions>
         </form>
     )
 

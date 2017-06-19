@@ -12,19 +12,18 @@ import clone from 'lodash/clone'
 import filter from 'lodash/filter'
 import union from 'lodash/union'
 import isNumber from 'lodash/isNumber'
-import toNumber from 'lodash/toNumber'
 import {combineActions, handleActions} from "redux-actions";
 
 import {
   isCounter,
   JustificationTargetType,
-  VotePolarity,
   VoteTargetType
 } from '../models'
 import {api, str} from '../actions'
 import * as httpStatusCodes from "../httpStatusCodes";
 import {normalize} from "normalizr";
 import {statementSchema} from "../schemas";
+import {assert} from './../util'
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {
@@ -172,7 +171,7 @@ export default handleActions({
       // If the deleted justification was a counter-justification, remove it from the target justification's counterJustifications
       let justifications = state.justifications
       if (isCounter(deletedJustification)) {
-        const counteredJustificationId = toNumber(deletedJustification.target.entity.id)
+        const counteredJustificationId = deletedJustification.target.entity.id
         let counteredJustification = justifications[counteredJustificationId]
         counteredJustification = cloneDeep(counteredJustification)
         counteredJustification.counterJustifications = filter(counteredJustification.counterJustifications, cjId => cjId !== deletedJustification.id)
@@ -202,7 +201,8 @@ export default handleActions({
       api.disverifyJustification
   )]: (state, action) => {
     const vote = action.payload.vote
-    const {targetId} = vote
+    const {targetId, targetType} = vote
+    assert(() => targetType === VoteTargetType.JUSTIFICATION)
     const currJustification = state.justifications[targetId]
     // Optimistically apply vote
     const justification = merge({}, currJustification, {vote})

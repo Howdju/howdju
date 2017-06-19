@@ -53,12 +53,14 @@ class NewJustificationEditorFields extends Component {
       name,
       id,
       readOnlyBasis,
+      disabled,
       suggestionsKey,
       onSubmit,
       onPropertyChange,
       onAddUrl,
       onRemoveUrl,
       errors,
+      focusOnMount,
     } = this.props
 
     const namePrefix = name ? name + '.' : ''
@@ -80,8 +82,9 @@ class NewJustificationEditorFields extends Component {
                              name={namePrefix + statementName}
                              suggestionsKey={suggestionsKeyPrefix + statementName}
                              onPropertyChange={onPropertyChange}
-                             readOnly={readOnlyBasis}
+                             disabled={readOnlyBasis || disabled}
                              errors={statementErrors}
+                             focusOnMount={focusOnMount}
       />
     ]
     const citationReferenceComponents =  [
@@ -98,9 +101,10 @@ class NewJustificationEditorFields extends Component {
                                      onPropertyChange={onPropertyChange}
                                      onAddUrl={onAddUrl}
                                      onRemoveUrl={onRemoveUrl}
-                                     readOnly={readOnlyBasis}
+                                     disabled={readOnlyBasis || disabled}
                                      onSubmit={onSubmit}
                                      errors={citationReferenceErrors}
+                                     focusOnMount={focusOnMount}
       />
     ]
 
@@ -118,6 +122,7 @@ class NewJustificationEditorFields extends Component {
               value={newJustification.polarity}
               onChange={this.onChange}
               controls={polarityControls}
+              disabled={disabled}
           />
           <Divider />
           <Subheader primary
@@ -132,7 +137,7 @@ class NewJustificationEditorFields extends Component {
               value={newJustification.basis.type}
               onChange={this.onChange}
               controls={basisTypeControls}
-              disabled={readOnlyBasis}
+              disabled={readOnlyBasis || disabled}
           />
           <Divider />
           {newJustification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
@@ -154,12 +159,16 @@ NewJustificationEditorFields.propTypes = {
   onPropertyChange: PropTypes.func.isRequired,
   onRemoveUrl: PropTypes.func.isRequired,
   onAddUrl: PropTypes.func.isRequired,
+  /** Disables the basis inputs, but the polarity is still active */
   readOnlyBasis: PropTypes.bool,
+  disabled: PropTypes.bool,
   onSubmit: PropTypes.func,
   errors: PropTypes.object,
+  focusOnMount: PropTypes.bool,
 }
 NewJustificationEditorFields.defaultProps = {
   readOnlyBasis: false,
+  focusOnMount: true,
 }
 
 export default NewJustificationEditorFields

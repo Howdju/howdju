@@ -56,6 +56,9 @@ const editorErrorReducer = errorKey => (state, action) => {
 const editorReducerByType = {
 
   [EditorTypes.DEFAULT]: handleActions({
+    [editors.init]: (state, action) => {
+      return state === defaultEditorState ? action.payload.initialState : state
+    },
     [editors.beginEdit]: (state, action) => {
       const {entity} = action.payload
       const editEntity = cloneDeep(entity)
@@ -69,19 +72,19 @@ const editorReducerByType = {
       })
       return {...state, editEntity, errors: null}
     },
-    [editors.commitEdit]: (state, action) => ({...state, errors: null}),
+    [editors.commitEdit]: (state, action) => ({...state, isSaving: true, errors: null}),
     [editors.commitEdit.result]: {
-      next: (state, action) => ({...state, editEntity: null}),
+      next: (state, action) => ({...state, isSaving: false, editEntity: null}),
       throw: (state, action) => {
         const sourceError = action.payload.sourceError
         if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
           const responseBody = sourceError.body
           if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
-            return {...state, errors: responseBody.errors}
+            return {...state, isSaving: false, errors: responseBody.errors}
           }
         }
 
-        return state
+        return {...state, isSaving: false}
       }
     },
     [editors.cancelEdit]: (state, action) => ({...state, editEntity: null}),
@@ -94,39 +97,23 @@ const editorReducerByType = {
       }
       return state
     },
-    [api.fetchStatementJustifications.response]: {
-      next: (state, action) => {
-        if (state.entityId === action.payload.result.statement) {
-          return {...state, isFetching: false}
-        }
-        return state
-      },
-      throw: (state, action) => {
-        if (state.entityId === action.meta.requestPayload.statement.id) {
-          return {...state, isFetching: false}
-        }
-        return state
-      }
-    },
-    [api.updateStatement]: (state, action) => {
-      if (state.entityId === action.payload.statement.id) {
-        return {...state, isUpdating: true}
+    [api.fetchStatement]: (state, action) => {
+      if (state.entityId === action.payload.statementId) {
+        return {...state, isFetching: true}
       }
       return state
     },
-    [api.updateStatement.response]: {
-      next: (state, action) => {
-        if (state.entityId === action.payload.result.statement) {
-          return {...state, isUpdating: false}
-        }
-        return state
-      },
-      throw: (state, action) => {
-        if (state.entityId === action.meta.requestPayload.statement.id) {
-          return {...state, isUpdating: false}
-        }
-        return state
+    [api.fetchStatementJustifications.response]: (state, action) => {
+      if (state.entityId === action.meta.requestPayload.statementId) {
+        return {...state, isFetching: false}
       }
+      return state
+    },
+    [api.fetchStatement.response]: (state, action) => {
+      if (state.entityId === action.meta.requestPayload.statementId) {
+        return {...state, isFetching: false}
+      }
+      return state
     },
     [editors.commitEdit.result]: {
       throw: editorErrorReducer('statement')
@@ -203,10 +190,6 @@ const editorReducerByType = {
       citationReference.urls.splice(action.payload.index, 1)
       return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
     },
-    // TODO uncomment if we switch over to creating a justification instead
-    // [editors.commitEdit.result]: {
-    //   throw: editorErrorReducer('justification')
-    // },
   }, defaultEditorState),
 
   [EditorTypes.CITATION_REFERENCE]: handleActions({
@@ -220,25 +203,17 @@ const editorReducerByType = {
       editEntity.urls.splice(action.payload.index, 1)
       return {...state, editEntity}
     },
-    [api.updateCitationReference]: (state, action) => {
-      if (state.entityId === action.payload.citationReference.id) {
-        return {...state, isUpdating: true}
+    [api.fetchCitationReference]: (state, action) => {
+      if (state.entityId === action.payload.citationReferenceId) {
+        return {...state, isFetching: true}
       }
       return state
     },
-    [api.updateCitationReference.response]: {
-      next: (state, action) => {
-        if (state.entityId === action.payload.result.citationReference) {
-          return {...state, isUpdating: false}
-        }
-        return state
-      },
-      throw: (state, action) => {
-        if (state.entityId === action.meta.requestPayload.citationReference.id) {
-          return {...state, isUpdating: false}
-        }
-        return state
+    [api.fetchCitationReference.response]: (state, action) => {
+      if (state.entityId === action.meta.requestPayload.citationReferenceId) {
+        return {...state, isFetching: false}
       }
+      return state
     },
     [editors.commitEdit.result]: {
       throw: editorErrorReducer('citationReference')
@@ -262,7 +237,7 @@ const handleEditorAction = (state, action) => {
   }
 
   // editorState could be undefined
-  const editorState = get(state, [editorType, editorId], cloneDeep(defaultEditorState))
+  const editorState = get(state, [editorType, editorId], defaultEditorState)
   const editorReducer = editorReducerByType[editorType]
   let newEditorState = editorReducer ? editorReducer(editorState, action) : editorState
   if (newEditorState === editorState) {

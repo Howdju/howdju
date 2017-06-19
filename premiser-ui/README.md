@@ -37,3 +37,16 @@
       disjustifications for the purportedly semantically equivalent statement. If the user disverifies 
       those disjustifications, then the system loses its confidence of the falsehood of the quote for 
       that user and similar users.
+    * System can learn to find these required quote/statement pairs and show them to users for feedback
+      
+# Modification rules
+* Can only delete bases (justifications/quotes) if other users haven't used them as bases
+  * If super user deletes them, must cascade delete to justifications
+  * Can't delete justifications if other users have voted or countered them
+  * if delete justification, must delete counters
+* Update/Delete validation rules
+  _ If modification would conflict with another entity, then disallow
+  - If user has permission to MODIFY_ALL_ENTITIES, then allow
+  - If other users have interacted with the entity, then disallow
+  - If a grace period of 24 hours or so has passed, then disallow
+* For a justificaiton, must check counter justifications (recursively)

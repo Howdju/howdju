@@ -93,7 +93,6 @@ class JustificationValidator {
           errors.hasErrors = true
           errors.fieldErrors.target.fieldErrors.entity.modelErrors.push(modelErrorCodes.IS_REQUIRED)
         } else {
-          debugger
           if (!justification.target.entity.id) {
             // Must have valid props
             const targetEntityErrors = justification.target.type === JustificationTargetType.JUSTIFICATION ?

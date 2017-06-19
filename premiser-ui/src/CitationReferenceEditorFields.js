@@ -3,7 +3,9 @@ import PropTypes from 'prop-types'
 import TextField from 'react-md/lib/TextFields'
 import FontIcon from 'react-md/lib/FontIcons'
 import Button from 'react-md/lib/Buttons/Button'
+import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import cn from 'classnames'
+
 import {RETURN_KEY_CODE} from "./keyCodes";
 import CitationTextAutocomplete from "./CitationTextAutocomplete";
 import {toErrorText} from "./modelErrorMessages";
@@ -42,6 +44,7 @@ class CitationReferenceEditorFields extends Component {
 
   onTextInputKeyDown(event) {
     if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
+      console.log('CitationReferenceEditorFields.onTextInputKeyDown submitting')
       this.props.onSubmit(event)
     }
   }
@@ -52,8 +55,9 @@ class CitationReferenceEditorFields extends Component {
       name,
       id,
       suggestionsKey,
-      readOnly,
-      errors
+      disabled,
+      errors,
+      focusOnMount,
     } = this.props
     const {
       isQuoteEditedAfterMount
@@ -79,25 +83,27 @@ class CitationReferenceEditorFields extends Component {
 
     return (
         <div>
-          <TextField
-              id={idPrefix + quoteName}
-              key="quote"
-              name={namePrefix + quoteName}
-              type="text"
-              label="Quote"
-              rows={2}
-              className={cn({
-                editedAfterMount: isQuoteEditedAfterMount,
-                hasIcon: true,
-                hasValue: !!citationReference.quote,
-              })}
-              value={citationReference.quote || ''}
-              onChange={this.onChange}
-              leftIcon={<FontIcon>format_quote</FontIcon>}
-              disabled={readOnly}
-              {...quoteInputProps}
-          />
-          {suggestionsKey && !readOnly ?
+          <FocusContainer focusOnMount={focusOnMount}>
+            <TextField
+                id={idPrefix + quoteName}
+                key="quote"
+                name={namePrefix + quoteName}
+                type="text"
+                label="Quote"
+                rows={2}
+                className={cn({
+                  editedAfterMount: isQuoteEditedAfterMount,
+                  hasIcon: true,
+                  hasValue: !!citationReference.quote,
+                })}
+                value={citationReference.quote || ''}
+                onChange={this.onChange}
+                leftIcon={<FontIcon>format_quote</FontIcon>}
+                disabled={disabled}
+                {...quoteInputProps}
+            />
+          </FocusContainer>
+          {suggestionsKey && !disabled ?
               <CitationTextAutocomplete
                   id={idPrefix + 'citation.text'}
                   key="citation.text"
@@ -108,7 +114,7 @@ class CitationReferenceEditorFields extends Component {
                   required
                   onPropertyChange={this.onPropertyChange}
                   leftIcon={<FontIcon>book</FontIcon>}
-                  disabled={readOnly}
+                  disabled={disabled}
                   onKeyDown={this.onTextInputKeyDown}
                   {...citationTextInputProps}
               /> :
@@ -120,7 +126,7 @@ class CitationReferenceEditorFields extends Component {
                          required
                          onChange={this.onChange}
                          leftIcon={<FontIcon>book</FontIcon>}
-                         disabled={readOnly}
+                         disabled={disabled}
                          {...citationTextInputProps}
               />
           }
@@ -135,8 +141,8 @@ class CitationReferenceEditorFields extends Component {
                   value={citationReference.urls[index].url}
                   onChange={this.onChange}
                   leftIcon={<FontIcon>link</FontIcon>}
-                  rightIcon={readOnly ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
-                  disabled={!!url.id || readOnly}
+                  rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
+                  disabled={!!url.id || disabled}
                   onKeyDown={this.onTextInputKeyDown}
                   {...urlInputProps[index]}
               />
@@ -144,7 +150,7 @@ class CitationReferenceEditorFields extends Component {
           <Button flat
                   className={cn({
                     addCitationReferenceUrlButton: true,
-                    hidden: readOnly,
+                    hidden: disabled,
                   })}
                   key="addUrlButton"
                   label="Add URL"
@@ -166,6 +172,13 @@ CitationReferenceEditorFields.propTypes = {
   onAddUrl: PropTypes.func.isRequired,
   onRemoveUrl: PropTypes.func.isRequired,
   errors: PropTypes.object,
+  /** Whether to disable the inputs */
+  disabled: PropTypes.bool,
+  focusOnMount: PropTypes.bool,
+}
+CitationReferenceEditorFields.defaultProps = {
+  disabled: false,
+  focusOnMount: true,
 }
 
 export default CitationReferenceEditorFields

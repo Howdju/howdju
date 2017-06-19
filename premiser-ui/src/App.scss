@@ -123,3 +123,14 @@ html, body {
 .md-icon {
   color: $icon-color;
 }
+
+.md-dialog-footer--card > .md-btn {
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+}
+
+.md-dialog-footer--card {
+  // Buttons are right-justified
+  // (Matches .md-dialog-footer)
+  justify-content: flex-end;
+}

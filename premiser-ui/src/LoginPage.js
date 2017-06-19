@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import {goBack} from "react-router-redux";
 import DocumentTitle from 'react-document-title'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
 import Card from 'react-md/lib/Cards'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
+import CardActions from 'react-md/lib/Cards/CardActions';
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import classNames from 'classnames'
 import get from 'lodash/get'
 
@@ -29,6 +33,7 @@ class LoginPage extends Component {
     this.editorId = loginPageEditorId
 
     this.onChange = this.onChange.bind(this)
+    this.onCancel = this.onCancel.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
   }
 
@@ -45,6 +50,10 @@ class LoginPage extends Component {
   onSubmit(event) {
     event.preventDefault()
     this.props.api.login(this.props.credentials)
+  }
+
+  onCancel() {
+    this.props.goBack()
   }
 
   render () {
@@ -78,30 +87,46 @@ class LoginPage extends Component {
                   >
                     {errorMessage}
                   </CardText>
-                  <CardText>
-                    <form onSubmit={this.onSubmit}>
-                      <TextField
-                          id="email"
-                          type="email"
-                          name="email"
-                          label="Email"
-                          value={credentials.email}
-                          required
-                          onChange={this.onChange}
+                  <form onSubmit={this.onSubmit}>
+                    <CardText>
+                      <FocusContainer focusOnMount>
+                        <TextField
+                            id="email"
+                            type="email"
+                            name="email"
+                            label="Email"
+                            value={credentials.email}
+                            required
+                            onChange={this.onChange}
+                            disabled={isLoggingIn}
+                        />
+                        <TextField
+                            id="password"
+                            type="password"
+                            name="password"
+                            label="Password"
+                            value={credentials.password}
+                            required
+                            onChange={this.onChange}
+                            disabled={isLoggingIn}
+                        />
+                      </FocusContainer>
+                    </CardText>
+                    <CardActions>
+                      {isLoggingIn && <CircularProgress key="progress" id="progress" />}
+                      <Button flat
+                              label="Cancel"
+                              disabled={isLoggingIn}
+                              onClick={this.onCancel}
                       />
-                      <TextField
-                          id="password"
-                          type="password"
-                          name="password"
-                          label="Password"
-                          value={credentials.password}
-                          required
-                          onChange={this.onChange}
+                      <Button raised
+                              primary
+                              type="submit"
+                              label="Login"
+                              disabled={isLoggingIn}
                       />
-
-                      <Button raised primary type="submit" label="Login" disabled={isLoggingIn} />
-                    </form>
-                  </CardText>
+                    </CardActions>
+                  </form>
                 </Card>
 
               </div>
@@ -123,4 +148,6 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   ui,
   editors,
+}, {
+  goBack,
 }))(LoginPage)

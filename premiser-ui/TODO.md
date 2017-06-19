@@ -1,24 +1,19 @@
 # Howdju UI TODO
 ## MVP
 
-### Editors/Errors
-* Disable submit and edits while submitting editors
-  * property for entity type and id, so that can watch FETCH actions and show spinner?
+* ApiAutocomplete doesn't seem to be canceling previous autocomplete (try with 2s delay)
+  * Also, cancel autocomplete upon submit.
+  * Add canceling autocompletes; either with cancelable fetch or saga channels
+    * Cancel autocompletes on submit
+    * https://github.com/redux-saga/redux-saga/issues/651#issuecomment-262375964
+    * https://github.com/redux-saga/redux-saga/issues/701#issuecomment-267512606
+    * https://github.com/mzabriskie/axios
 * Autocomplete doesn't hide after searching
   * reappears after clicking on search page (should only reappear upon typing)
-
-### Strong validation
-* Can only delete bases (justifications/quotes) if other users haven't used them as bases
-  * If super user deletes them, must cascade delete to justifications
-  * Can't delete justifications if other users have voted or countered them
-  * if delete justification, must delete counters
-* Update/Delete validation rules
-  _ If modification would conflict with another entity, then disallow
-  - If user has permission to MODIFY_ALL_ENTITIES, then allow
-  - If other users have interacted with the entity, then disallow
-  - If a grace period of 24 hours or so has passed, then disallow
-  
+* Missing idPrefix/namePrefix from NewJustificationEditor (apply idPrefix to progress)
 * simplify reducer by merging all payload.entities?
+  * Or (?): reducers.entities if we just know which entities are returned from which success actions, 
+    we can automatically respond
 
 ### Features
     
@@ -51,50 +46,58 @@
   * unhandled error reporting
   * ensure that log level in prod is at least debug
 
-
-
-
 ### Bugs/stability
-* Difficult to distinguish citationReference having only citation.text from statement justification
-* Validation belongs in route.js, I think
-  * Include type conversion in validation somehow?  toNumber(statementId), e.g.
-* Simplify sagas like login/logout at bottom here: https://github.com/redux-saga/redux-saga/blob/master/docs/advanced/FutureActions.md
-* Reuse code between client/server (Use same javascript syntax in client/server.)  
-  * https://webpack.github.io/docs/commonjs.html
-* don't let a user edit their own entities when they are older than a certain age
 * replace regex with path-to-regexp
 * What happens if we justify a statement with itself?
-* Autocomplete
-  * Does not appear above dialog
-    * [Fix in react-md 1.1](https://github.com/mlaursen/react-md/issues/232)
-  * branch react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
-* Why are IDs sometimes strings and sometimes ints?  (e.g., reducers.entities.DELETE_STATEMENT_SUCCESS)
-  * They will be strings when component props and object keys
 * Figure out if the site works in Firefox
 * Test with mobile device
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
   * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
-* Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
-* If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
-* Do I check return values for delete dao methods and throw NotFoundError when it was missing?
+* When deleting statement, use service method to delete justifications so that counter justifications
+  are deleted.
 
 ### Misc.
 * UI Build
   * ensure that CSS goes to external sheet
   * ensure that google fonts go to external link?
-* CitationReference update
-  * want to use the same schema for data submitted as data returned (why?) or at least same data shape
-  * reducers.entities if we just know which entities are returned from which success actions, we can automatically respond
 
 * Why do I have PostCSS in my project?
 
+
 ## 0.2
+
+### Bugs
+
+* With slow connection, click create justification multiple times
+  * looks like multiple justifications are made
+  * It is possible for several requests submitted around the same time to pass validations
+    and then get to creation of things that violate constraints.  This is hard to fix without
+    transactions, I think.
+  * One fix could be to reconcile on a schedule well enough after the creation so that there won't be
+    the possibility of conflicting creation occurring.
+  * Would need to program as if constraint-violating models could occur, and have some method for
+    reconciling those results on the fly until the scheduled reconciliation occurs 
+* Validation belongs in route.js, I think
+  * Include type conversion in validation somehow?  toNumber(statementId), e.g.
+* Reuse code between client/server (Use same javascript syntax in client/server.)  
+  * https://webpack.github.io/docs/commonjs.html
+* Toasts are under dialog
+* Can't shift-tab out of FocusContainer
+  * Try upgrading react-md first, then fix fork
+* Autocomplete
+  * Does not appear above dialog
+    * [Fix in react-md 1.1](https://github.com/mlaursen/react-md/issues/232)
+  * fork react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
+* If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
+* Do I check return values for delete dao methods and throw NotFoundError when it was missing?
 
 ### Editors
 * Separate JustificationWithCounters into JustificationCard and JustificationTree/CounteredJustification/Argument
   * challenge of card having buttons to create counter
   
 ### Features
+* Implement full model constraints in services
+  * don't let a user edit their own entities when they are older than a certain age
 * JustificationBasisType.List 
   * A list of purported examples of something with links to prove their existence
   * [{text, urls}, ...]
@@ -129,6 +132,7 @@
 * User registration
   * Change email, password, password reset
 * Timeout authentication
+* Location tags for statements
 
 * Add messages for when cannot edit and why
 * When statements or citations or citation references conflict, offer to merge them somehow?
@@ -137,11 +141,17 @@
 ### Improvements
 * Client validation
   * http://redux-form.com/6.8.0/docs/GettingStarted.md/
-Change submit button message to "create justification" when statement exists
+* Change submit button message to "create justification" when statement exists
   * Add link to statement when statement exists
+* Difficult to distinguish citationReference having only citation.text from statement justification
+* Show more error messages, such as OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT
 
 ### Flair
-  * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
+* Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
+* Update slug of path when updating statement on StatementJustificationsPage
+* Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
+* Disable context menu(s) when deleting something, like a statement or justification
+
 
 ### Refactoring/stability
 * Refactor tests to use helpers to cut down on setup noise
@@ -152,6 +162,11 @@ Change submit button message to "create justification" when statement exists
   * Move logic from models.js into prototypes
 * Why store statement autocomplete suggestions in redux?  They are transient; just make them state
   * Or somehow reset them, like navigating away from page
+
+#### Sagas
+* Would like actions issued for all events, for traceability (sometimes now with `call`s, an action is skipped)
+* Would like sagas to be testable, so few if any `yield*`s, which tightly couple the caller and callee
+  * [testing `fork` (createMockTask)](https://redux-saga.js.org/docs/advanced/TaskCancellation.html)
 
 ### UX
 * Statement justification drilling down
@@ -251,3 +266,5 @@ Change submit button message to "create justification" when statement exists
 ## Cool
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
 * https://github.com/mariusandra/kea
+* https://github.com/awslabs/lambda-refarch-voteapp
+* [CrowdIn Localization](https://crowdin.com/)

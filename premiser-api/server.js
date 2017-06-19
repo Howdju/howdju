@@ -35,6 +35,13 @@ app.use('/api/*', function (req, res) {
       return
     }
 
+    const throttle = 1000
+    if (throttle) {
+      const start = (new Date).getTime()
+      const end = start + throttle
+      while ((new Date).getTime() < end) {}
+    }
+
     const {statusCode, headers, body} = response
     if (headers) {
       res.set(headers)
@@ -42,6 +49,7 @@ app.use('/api/*', function (req, res) {
     res.status(statusCode)
     res.send(body)
   }
+
 
   handler(event, context, callback)
 })

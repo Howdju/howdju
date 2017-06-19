@@ -2,6 +2,9 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux";
 import Button from 'react-md/lib/Buttons/Button'
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import CardActions from 'react-md/lib/Cards/CardActions';
+import CardText from 'react-md/lib/Cards/CardText';
 import get from 'lodash/get'
 
 import {
@@ -26,16 +29,16 @@ class StatementEditor extends Component {
   }
 
   onPropertyChange(properties) {
-    this.props.editors.propertyChange(EditorTypes.STATEMENT, this.props.editorId, properties)
+    this.props.editors.propertyChange(StatementEditor.editorType, this.props.editorId, properties)
   }
 
   onSubmit(event) {
     event.preventDefault()
-    this.props.editors.commitEdit(EditorTypes.STATEMENT, this.props.editorId)
+    this.props.editors.commitEdit(StatementEditor.editorType, this.props.editorId)
   }
 
   onCancelEdit() {
-    this.props.editors.cancelEdit(EditorTypes.STATEMENT, this.props.editorId)
+    this.props.editors.cancelEdit(StatementEditor.editorType, this.props.editorId)
   }
 
   render() {
@@ -44,6 +47,7 @@ class StatementEditor extends Component {
       editorState: {
         errors,
         editEntity,
+        isFetching,
         isSaving,
       },
       ...rest,
@@ -51,26 +55,35 @@ class StatementEditor extends Component {
     delete rest.editors
     delete rest.editorId
 
+    const inProgress = isFetching || isSaving
+
     return (
         <form onSubmit={this.onSubmit}>
-          <StatementEditorFields statement={editEntity}
-                                 disabled={isSaving}
-                                 suggestionsKey={suggestionsKey}
-                                 onPropertyChange={this.onPropertyChange}
-                                 errors={errors}
-                                 {...rest}
-          />
-          <Button flat
-                  key="cancelButton"
-                  label={t(CANCEL_BUTTON_LABEL)}
-                  onClick={this.onCancelEdit} />
-          <Button flat
-                  primary
-                  key="submitButton"
-                  type="submit"
-                  label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
-                  disabled={isSaving}
-          />
+          <CardText>
+            <StatementEditorFields statement={editEntity}
+                                   disabled={isSaving}
+                                   suggestionsKey={suggestionsKey}
+                                   onPropertyChange={this.onPropertyChange}
+                                   errors={errors}
+                                   {...rest}
+            />
+          </CardText>
+          <CardActions>
+            {inProgress && <CircularProgress key="progress" id="progress" />}
+            <Button flat
+                    key="cancelButton"
+                    label={t(CANCEL_BUTTON_LABEL)}
+                    onClick={this.onCancelEdit}
+                    disabled={inProgress}
+            />
+            <Button raised
+                    primary
+                    key="submitButton"
+                    type="submit"
+                    label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+                    disabled={inProgress}
+            />
+          </CardActions>
         </form>
     )
   }
@@ -80,10 +93,12 @@ StatementEditor.propTypes = {
   editorId: PropTypes.string.isRequired,
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
+  disabled: PropTypes.bool,
 }
+StatementEditor.editorType = EditorTypes.STATEMENT
 
 const mapStateToProps = (state, ownProps) => {
-  const editorState = get(state.editors, [EditorTypes.STATEMENT, ownProps.editorId], {})
+  const editorState = get(state.editors, [StatementEditor.editorType, ownProps.editorId], {})
   return {
     editorState,
   }

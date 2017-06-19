@@ -1,7 +1,9 @@
+const toString = require('lodash/toString')
+
 const {JustificationBasisType} = require('./models')
 
 const toUser = row => !row ? row : ({
-  id: row.user_id,
+  id: toString(row.user_id),
   email: row.email,
   hash: row.hash,
 })
@@ -9,7 +11,7 @@ const toUser = row => !row ? row : ({
 const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
 const toStatement = row => !row ? row : ({
-  id: row.statement_id,
+  id: toString(row.statement_id),
   text: row.text,
   slug: toSlug(row.text)
 })
@@ -20,19 +22,19 @@ const toJustification = (row, urlsByJustificationId, counterJustificationsByJust
   }
 
   const justification = {
-    id: row.justification_id,
-    creatorUserId: row.creator_user_id,
-    rootStatementId: row.root_statement_id,
+    id: toString(row.justification_id),
+    creatorUserId: toString(row.creator_user_id),
+    rootStatementId: toString(row.root_statement_id),
     target: {
       type: row.target_type,
       entity: {
-        id: row.target_id
+        id: toString(row.target_id)
       }
     },
     basis: {
       type: row.basis_type,
       entity: {
-        id: row.basis_id
+        id: toString(row.basis_id)
       }
     },
     polarity: row.polarity,
@@ -86,7 +88,7 @@ const toJustification = (row, urlsByJustificationId, counterJustificationsByJust
 }
 
 const toCitationReference = row => !row ? row : {
-  id: row.citation_reference_id,
+  id: toString(row.citation_reference_id),
   quote: row.quote,
   citation: toCitation({
     citation_id: row.citation_reference_citation_id,
@@ -94,19 +96,21 @@ const toCitationReference = row => !row ? row : {
   })
 }
 
-const toCitation = row => !row ? row : ({
-  id: row.citation_id,
-  text: row.text
-})
-
+const toCitation = row => {
+  const citation = !row ? row : ({
+    id: toString(row.citation_id),
+    text: row.text
+  })
+  return citation
+}
 const toUrl = row => !row ? row : ({
-  id: row.url_id,
+  id: toString(row.url_id),
   url: row.url
 })
 
 const toVote = row => {
   return {
-    id: row.vote_id,
+    id: toString(row.vote_id),
     polarity: row.polarity,
     targetType: row.target_type,
     targetId: row.target_id,
@@ -114,8 +118,8 @@ const toVote = row => {
 }
 
 const toCitationReferenceUrl = row => !row ? row : ({
-  citationReferenceId: row.citation_reference_id,
-  urlId: row.url_id,
+  citationReferenceId: toString(row.citation_reference_id),
+  urlId: toString(row.url_id),
 })
 
 module.exports = {

@@ -1,3 +1,4 @@
+const {query} = require('../db')
 const {
   toUser,
 } = require('../orm')

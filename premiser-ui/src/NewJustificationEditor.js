@@ -2,8 +2,8 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux";
 import Button from 'react-md/lib/Buttons/Button'
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import get from 'lodash/get'
-import merge from 'lodash/merge'
 
 import {
   editors,
@@ -15,7 +15,7 @@ import {
 } from "./texts";
 import {default as t} from './texts'
 import NewJustificationEditorFields from "./NewJustificationEditorFields";
-import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewJustification} from "./models";
+import {makeNewJustification} from "./models";
 
 
 class NewJustificationEditor extends Component {
@@ -60,6 +60,7 @@ class NewJustificationEditor extends Component {
       suggestionsKey,
       editorState,
       doShowButtons,
+      disabled,
     } = this.props
 
     const {errors, isSaving} = editorState
@@ -88,7 +89,9 @@ class NewJustificationEditor extends Component {
                                         onSubmit={this.onSubmit}
                                         suggestionsKey={suggestionsKey}
                                         errors={errors}
+                                        disabled={disabled}
           />
+          {isSaving && <CircularProgress key="progress" id="progress" />}
           {doShowButtons && buttons}
         </form>
     )
@@ -102,6 +105,7 @@ NewJustificationEditor.propTypes = {
   /** If present, defers submits to this function */
   onSubmit: PropTypes.func,
   doShowButtons: PropTypes.bool,
+  disabled: PropTypes.bool
 }
 NewJustificationEditor.defaultProps = {
   doShowButtons: true

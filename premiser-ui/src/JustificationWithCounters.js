@@ -50,8 +50,8 @@ class JustificationWithCounters extends Component {
     this.onCardMouseOver = this.onCardMouseOver.bind(this)
     this.onCardMouseLeave = this.onCardMouseLeave.bind(this)
 
-    this.onVerifyButtonClick = this.onVerifyButtonClick.bind(this)
-    this.onDisverifyButtonClick = this.onDisverifyButtonClick.bind(this)
+    this.onVerify = this.onVerify.bind(this)
+    this.onDisverify = this.onDisverify.bind(this)
 
     this.onEditNewCounterJustification = this.onEditNewCounterJustification.bind(this)
 
@@ -66,7 +66,7 @@ class JustificationWithCounters extends Component {
     this.setState({isOver: false})
   }
 
-  onVerifyButtonClick() {
+  onVerify() {
     const {justification} = this.props
     if (isVerified(justification)) {
       this.props.api.unVerifyJustification(justification)
@@ -75,7 +75,7 @@ class JustificationWithCounters extends Component {
     }
   }
 
-  onDisverifyButtonClick() {
+  onDisverify() {
     const {justification} = this.props
     if (isDisverified(justification)) {
       this.props.api.unDisverifyJustification(justification)
@@ -180,7 +180,7 @@ class JustificationWithCounters extends Component {
                 otherSelected: _isDisverified,
               })}
               title="Verify this justification"
-              onClick={this.onVerifyButtonClick}
+              onClick={this.onVerify}
       >thumb_up</Button>,
       <Button icon
               key="disverifyButton"
@@ -191,7 +191,7 @@ class JustificationWithCounters extends Component {
                 otherSelected: _isVerified,
               })}
               title="Dis-verify this justification"
-              onClick={this.onDisverifyButtonClick}
+              onClick={this.onDisverify}
       >thumb_down</Button>,
       <Button icon
               key="counterButton"
@@ -217,6 +217,7 @@ class JustificationWithCounters extends Component {
                 <EditableJustificationBasis id={`editableJustificationBasis-${justification.id}-${justification.basis.entity.id}`}
                                             justification={justification}
                                             editorId={justificationBasisEditorId(justification.basis)}
+                                            suggestionsKey={suggestionKeys.justificationBasisEditor(justification)}
                 />
               </div>
 

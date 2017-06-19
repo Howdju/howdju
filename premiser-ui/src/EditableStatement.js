@@ -7,6 +7,8 @@ import get from 'lodash/get'
 import {EditorTypes} from "./reducers/editors";
 import StatementViewer from "./StatementViewer";
 import StatementEditor from "./StatementEditor";
+import {isTruthy} from './util'
+import {editors, mapActionCreatorGroupToDispatchToProps} from './actions'
 
 class EditableStatement extends Component {
 
@@ -58,12 +60,16 @@ EditableStatement.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const statement = state.entities.statements[ownProps.entityId]
-  const editEntity = get(state.editors, [EditorTypes.STATEMENT, ownProps.editorId, 'editEntity'])
-  const isEditing = !!editEntity
+  // IF it hasn't been edited, then there's no editor state...
+  const {editEntity, isFetching} = get(state.editors, [EditorTypes.STATEMENT, ownProps.editorId], {})
+  const isEditing = isTruthy(editEntity)
   return {
     statement,
+    isFetching,
     isEditing,
   }
 }
 
-export default connect(mapStateToProps)(EditableStatement)
+export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+  editors,
+}))(EditableStatement)
