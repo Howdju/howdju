@@ -2,12 +2,15 @@ import {
   delay
 } from 'redux-saga'
 import {
+  take,
   put,
   call,
-  take,
+  fork,
   takeEvery,
   select,
   race,
+  cancel,
+  cancelled,
 } from 'redux-saga/effects'
 import isFunction from 'lodash/isFunction'
 import merge from 'lodash/merge'
@@ -160,12 +163,6 @@ export const resourceApiConfigs = {
     endpoint: `search-statements?searchText=${payload.searchText}`,
     schema: statementsSchema,
   }),
-  [api.fetchMainSearchSuggestions]: payload => ({
-    endpoint: `search-statements?searchText=${payload.searchText}`,
-  }),
-  [api.fetchCitationTextSuggestions]: payload => ({
-    endpoint: `search-citations?searchText=${payload.citationText}`,
-  }),
   [api.verifyJustification]: payload => ({
     endpoint: 'votes',
     fetchInit: {
@@ -205,10 +202,6 @@ export const resourceApiConfigs = {
       }
     },
     schema: {vote: voteSchema},
-  }),
-
-  [api.fetchStatementTextSuggestions]: payload => ({
-    endpoint: `search-statements?searchText=${payload.statementText}`,
   }),
 }
 
@@ -671,11 +664,119 @@ function* showAlertForLogout() {
   })
 }
 
+function* fetchStatementTextSuggestions() {
+  const tasks = {}
+  yield takeEvery(str(api.fetchStatementTextSuggestions), function* fetchStatementTextSuggestionsWorker(action) {
+    const {
+      statementText,
+      suggestionsKey,
+    } = action.payload
+
+    const prevTask = tasks[suggestionsKey]
+    if (prevTask) {
+      yield cancel(prevTask)
+    }
+
+    const endpoint = `search-statements?searchText=${statementText}`
+    tasks[suggestionsKey] = yield fork(callFetchStatementTextSuggestions, action.payload, endpoint)
+  })
+}
+
+function* callFetchStatementTextSuggestions(requestPayload, endpoint) {
+  try {
+    const apiResultAction = yield call(callApi, endpoint)
+
+    const responseMeta = {
+      requestPayload,
+    }
+    return yield put(api.fetchStatementTextSuggestions.response(apiResultAction.payload, responseMeta))
+  } catch (error) {
+    if (yield cancelled()) {
+      logger.info('Canceled callApi for statement text suggestions')
+    }
+    return yield put(api.fetchStatementTextSuggestions.response(error))
+  }
+}
+
+
+function* fetchCitationTextSuggestions() {
+  const tasks = {}
+  yield takeEvery(str(api.fetchCitationTextSuggestions), function* fetchCitationTextSuggestionsWorker(action) {
+    const {
+      citationText,
+      suggestionsKey,
+    } = action.payload
+
+    const prevTask = tasks[suggestionsKey]
+    if (prevTask) {
+      yield cancel(prevTask)
+    }
+
+    const endpoint = `search-citations?searchText=${citationText}`
+    tasks[suggestionsKey] = yield fork(callFetchCitationTextSuggestions, action.payload, endpoint)
+  })
+}
+
+function* callFetchCitationTextSuggestions(requestPayload, endpoint) {
+  try {
+    const apiResultAction = yield call(callApi, endpoint)
+
+    const responseMeta = {
+      requestPayload,
+    }
+    return yield put(api.fetchCitationTextSuggestions.response(apiResultAction.payload, responseMeta))
+  } catch (error) {
+    return yield put(api.fetchCitationTextSuggestions.response(error))
+  } finally {
+    if (yield cancelled()) {
+      logger.info('Canceled callApi for citation text suggestions')
+    }
+  }
+}
+
+function* fetchMainSearchSuggestions() {
+  const tasks = {}
+  yield takeEvery(str(api.fetchMainSearchSuggestions), function* fetchMainSearchSuggestionsWorker(action) {
+    const {
+      searchText,
+      suggestionsKey,
+    } = action.payload
+
+    const prevTask = tasks[suggestionsKey]
+    if (prevTask) {
+      yield cancel(prevTask)
+    }
+
+    const endpoint = `search-statements?searchText=${searchText}`
+    tasks[suggestionsKey] = yield fork(callFetchMainSearchSuggestions, action.payload, endpoint)
+  })
+}
+
+function* callFetchMainSearchSuggestions(requestPayload, endpoint) {
+  try {
+    const apiResultAction = yield call(callApi, endpoint)
+
+    const responseMeta = {
+      requestPayload,
+    }
+    return yield put(api.fetchMainSearchSuggestions.response(apiResultAction.payload, responseMeta))
+  } catch (error) {
+    return yield put(api.fetchMainSearchSuggestions.response(error))
+  } finally {
+    if (yield cancelled()) {
+      logger.info('Canceled callApi for main search suggestions')
+    }
+  }
+}
+
 export default () => [
   flagRehydrate(),
   initializeMainSearch(),
 
   resourceApiCalls(),
+  fetchStatementTextSuggestions(),
+  fetchCitationTextSuggestions(),
+  fetchMainSearchSuggestions(),
 
   redirectToLoginWhenUnauthorized(),
   goTo(),

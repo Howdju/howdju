@@ -1,14 +1,8 @@
 # Howdju UI TODO
 ## MVP
 
-* ApiAutocomplete doesn't seem to be canceling previous autocomplete (try with 2s delay)
-  * To accomplish this, make a saga that keeps track of autocomplete requests by suggestionKey
-    and cancels the previous one as new ones come in.
-  * Also, cancel autocomplete upon submit (add autocomplete keys to submit?  Or cancel all outstanding?).
-  * Move query params into axios parameters
-  * Move schema denormalization to entities
-
 * Statements that differ by special chars or capitalization are treated as different (normalized text etc)
+  * can create two statements that only differ by apostrophe types (' vs. ’), probably whitespace, too.
   * https://lodash.com/docs/#deburr
     
 * Add progress and disabled to vote buttons
@@ -22,13 +16,17 @@
 
 ### Features
     
+* How will I bring over compound justifications?
+  * Maybe look at examples from the old site and see if I can recreate them?
+  * Could it be the List justification type?
+    * Users vote for inclusion/exclusion in the list
 * Show statements justified by statement
 
 * bookmarklet
   * https://chriszarate.github.io/bookmarkleter/
   * https://www.labnol.org/internet/better-twitter-bookmarklet/28028/
 
-* can create two statements that only differ by apostrophe types (' vs. ’), probably whitespace, too.
+
 * Can counter justification with same statement as basis for target justification
 * Add linting 
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
@@ -99,6 +97,8 @@
   * challenge of card having buttons to create counter
   
 ### Features
+* tagging
+  * Home page tag cloud
 * Implement full model constraints in services
   * don't let a user edit their own entities when they are older than a certain age
 * JustificationBasisType.List 
@@ -107,8 +107,6 @@
 * warn if they try and navigate away after entering text
 * Add delete statement/justification confirmation (or better, undo)
 * Author of quote
-* tagging
-  * Home page tag cloud
 * Make URLs (or CitationUrls) voteable.
   * Users can always add new URLs
   * Deleting URLs follow the normal rules (if other users have interacted, or grace period is up)
@@ -148,6 +146,10 @@
   * Add link to statement when statement exists
 * Difficult to distinguish citationReference having only citation.text from statement justification
 * Show more error messages, such as OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT
+* Api
+  * cancel autocomplete upon submit (add autocomplete keys to submit?).
+  * Move query params into axios parameters
+  * Move schema denormalization to entities
 
 ### Flair
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
