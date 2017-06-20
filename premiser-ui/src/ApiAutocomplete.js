@@ -5,7 +5,7 @@ import Autocomplete from 'react-md/lib/Autocompletes'
 import { connect } from 'react-redux'
 
 import {
-  ESCAPE_KEY_CODE
+  ESCAPE_KEY_CODE, RETURN_KEY_CODE
 } from './keyCodes'
 import autocompleter from './autocompleter'
 import {
@@ -58,14 +58,27 @@ class ApiAutocomplete extends Component {
       e.preventDefault()
       e.stopPropagation()
       this.throttledRefreshAutocomplete.cancel()
-      if (this.autocomplete.state.isOpen) {
-        this.autocomplete._close()
+      if (this.isAutocompleteOpen()) {
+        this.closeAutocomplete()
       } else if (this.props.escapeClears) {
         this.onPropertyChange({[this.props.name]: ''})
       }
-    } else if (this.props.onKeyDown) {
-      this.props.onKeyDown(e)
+    } else {
+      if (e.keyCode === RETURN_KEY_CODE) {
+        this.closeAutocomplete()
+      }
+      if (this.props.onKeyDown) {
+        this.props.onKeyDown(e)
+      }
     }
+  }
+
+  isAutocompleteOpen() {
+    return this.autocomplete.state.isOpen
+  }
+
+  closeAutocomplete() {
+    this.autocomplete._close()
   }
 
   refreshAutocomplete(value) {

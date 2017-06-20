@@ -1,8 +1,6 @@
 # Howdju UI TODO
 ## MVP
 
-* Autocomplete doesn't hide after searching
-  * reappears after clicking on search page (should only reappear upon typing)
 * Missing idPrefix/namePrefix from NewJustificationEditor (apply idPrefix to progress)
 * simplify reducer by merging all payload.entities?
   * Or (?): reducers.entities if we just know which entities are returned from which success actions, 
