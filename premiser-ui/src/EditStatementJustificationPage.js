@@ -196,7 +196,7 @@ class EditStatementJustificationPage extends Component {
                   />
 
                   <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
-                    // Don't mount initially so-as to allow the statement to receive focusOnMount
+                    {/* Don't mount initially so-as to allow the statement to receive focusOnMount*/}
                     {isCreateJustification || doCreateJustification &&
                       <NewJustificationEditorFields newJustification={justification}
                                                     name="justification"

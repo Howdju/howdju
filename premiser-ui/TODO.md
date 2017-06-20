@@ -1,11 +1,6 @@
 # Howdju UI TODO
 ## MVP
 
-* Missing idPrefix/namePrefix from NewJustificationEditor (apply idPrefix to progress)
-* simplify reducer by merging all payload.entities?
-  * Or (?): reducers.entities if we just know which entities are returned from which success actions, 
-    we can automatically respond
-
 ### Features
     
 * How will I bring over compound justifications?
@@ -143,6 +138,9 @@
   * cancel autocomplete upon submit (add autocomplete keys to submit?).
   * Move query params into axios parameters
   * Move schema denormalization to entities
+* simplify reducer by merging all payload.entities?
+  * Or (?): reducers.entities if we just know which entities are returned from which success actions, 
+    we can automatically respond
 
 ### Flair
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"

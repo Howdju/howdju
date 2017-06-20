@@ -61,7 +61,11 @@ class NewJustificationEditor extends Component {
       editorState,
       doShowButtons,
       disabled,
+      ...rest
     } = this.props
+    delete rest.editors
+    delete rest.editorId
+    delete rest.onSubmit
 
     const {errors, isSaving} = editorState
     const editEntity = editorState.editEntity || makeNewJustification()
@@ -90,6 +94,7 @@ class NewJustificationEditor extends Component {
                                         suggestionsKey={suggestionsKey}
                                         errors={errors}
                                         disabled={disabled}
+                                        {...rest}
           />
           {isSaving && <CircularProgress key="progress" id="progress" />}
           {doShowButtons && buttons}
