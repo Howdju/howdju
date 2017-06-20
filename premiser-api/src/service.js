@@ -39,9 +39,9 @@ const {
   citationReferenceValidator,
 } = require('./validators')
 const {
-  OTHER_STATEMENTS_HAVE_SAME_TEXT_CONFLICT,
+  OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT,
   OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT,
-  OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT,
+  OTHER_CITATIONS_HAVE_EQUIVALENT_TEXT_CONFLICT,
 } = require("./codes/entityConflictCodes")
 const {
   OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT,
@@ -95,7 +95,7 @@ const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPe
       return userId
     })
 
-const withAuth = (authToken) => permissionsDao.getUserId(authToken).then(userId => {
+const withAuth = (authToken) => authDao.getUserId(authToken).then(userId => {
   if (!userId) {
     throw new AuthenticationError()
   }
@@ -249,7 +249,7 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
     })
     .then(userId => Promise.all([
       userId,
-      statementsDao.countOtherStatementsHavingSameTextAs(statement),
+      statementsDao.countEquivalentStatements(statement),
       Promise.props({
         [OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]: statementsDao.hasOtherUsersRootedJustifications(statement, userId),
         [OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]: statementsDao.hasOtherUsersRootedJustificationsVotes(statement, userId),
@@ -259,15 +259,15 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
     ]))
     .then( ([
         userId,
-        otherStatementsHavingSameTextCount,
+        equivalentStatementsCount,
         userActionConflicts,
         hasPermission,
       ]) => {
-      if (otherStatementsHavingSameTextCount > 0) {
+      if (equivalentStatementsCount > 0) {
         throw new EntityConflictError({
           hasErrors: true,
           fieldErrors: {
-            text: [OTHER_STATEMENTS_HAVE_SAME_TEXT_CONFLICT]
+            text: [OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT]
           }
         })
       } else if (!hasPermission) {
@@ -341,7 +341,7 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
       const userActionConflicts = {}
       if (citationReferenceHasChanged) {
         entityConflicts[OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT] =
-            citationReferencesDao.doOtherCitationReferencesHaveSameCitationQuoteAs(citationReference)
+            citationReferencesDao.hasEquivalentCitationReferences(citationReference)
         assign(userActionConflicts, {
           [OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT]:
               citationReferencesDao.isBasisToJustificationsHavingOtherUsersVotes(userId, citationReference),
@@ -354,7 +354,7 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
       if (citationHasChanged) {
         const citation = citationReference.citation
 
-        entityConflicts[OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT] = citationsDao.doOtherCitationsHaveSameTextAs(citation)
+        entityConflicts[OTHER_CITATIONS_HAVE_EQUIVALENT_TEXT_CONFLICT] = citationsDao.hasEquivalentCitations(citation)
 
         assign(userActionConflicts, {
           [OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT]:
@@ -494,7 +494,7 @@ const deleteStatement = ({authToken, statementId}) => withAuth(authToken)
         return [userId, statement, dependentJustifications]
       }
       if (userId !== statement.creatorUserId) {
-        throw new AuthorizationError([CANNOT_MODIFY_OTHER_USERS_ENTITIES])
+        throw new AuthorizationError({modelErrors: [CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
       }
 
       const created = moment(statement.created)
@@ -520,8 +520,8 @@ const deleteStatement = ({authToken, statementId}) => withAuth(authToken)
     .then( ([userId, now, deletedStatementId, deletedJustificationIds]) => Promise.all([
       deletedStatementId,
       deletedJustificationIds,
-      asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.STATEMENT, now, statementId),
-      Promise.all(map(deletedJustificationIds, id => asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.JUSTIFICATION, id)))
+      asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.STATEMENT, now, deletedStatementId),
+      Promise.all(map(deletedJustificationIds, id => asyncRecordAction(userId, ActionType.DELETE, ActionTargetType.JUSTIFICATION, now, id)))
     ]))
     .then( ([deletedStatementId, deletedJustificationIds]) => ({
       deletedStatementId,
@@ -786,7 +786,7 @@ const deleteJustification = ({authToken, justificationId}) => withAuth(authToken
       }
 
       if (userId !== justification.creatorUserId) {
-        throw new AuthorizationError([CANNOT_MODIFY_OTHER_USERS_ENTITIES])
+        throw new AuthorizationError({modelErrors: [CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
       }
 
       const created = moment(justification.created)

@@ -13,7 +13,8 @@ const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]
 const toStatement = row => !row ? row : ({
   id: toString(row.statement_id),
   text: row.text,
-  slug: toSlug(row.text)
+  slug: toSlug(row.text),
+  creatorUserId: toString(row.creator_user_id),
 })
 
 const toJustification = (row, urlsByJustificationId, counterJustificationsByJustificationId) => {

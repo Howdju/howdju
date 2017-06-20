@@ -11,6 +11,7 @@ create table if not exists actions (
 create table if not exists statements (
   statement_id serial,
   text varchar(2048),
+  normal_text varchar(2048),
   creator_user_id integer,
   created timestamp,
   deleted timestamp
@@ -44,6 +45,7 @@ create table if not exists citation_references (
 create table if not exists citations (
   citation_id serial,
   text varchar(2048),
+  normal_text varchar(2048),
   creator_user_id integer,
   created timestamp,
   deleted timestamp

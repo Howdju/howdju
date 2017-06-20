@@ -98,7 +98,7 @@ class CitationReferencesDao {
         .then( ({rows: [row]}) => toCitationReference(row))
   }
 
-  doOtherCitationReferencesHaveSameCitationQuoteAs(citationReference) {
+  hasEquivalentCitationReferences(citationReference) {
     const sql = `
       select count(*) > 0 has_conflict 
       from citation_references cr join citations c using (citation_id)

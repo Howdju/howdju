@@ -10,6 +10,7 @@ import ListItem from "react-md/lib/Lists/ListItem";
 import Dialog from 'react-md/lib/Dialogs'
 import Positions from "react-md/lib/Menus/Positions";
 import Button from 'react-md/lib/Buttons/Button'
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import toNumber from "lodash/toNumber";
@@ -345,7 +346,7 @@ class StatementJustificationsPage extends Component {
               </div>
             }
             <div className="row">
-              {justificationRows}
+              {isFetching && statement && <CircularProgress key="progress" id="statementJustificationsProgress" /> || justificationRows}
             </div>
 
             {addNewJustificationDialog}

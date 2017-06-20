@@ -46,6 +46,7 @@ const editorErrorReducer = errorKey => (state, action) => {
           apiErrorCodes.VALIDATION_ERROR,
           apiErrorCodes.ENTITY_CONFLICT,
           apiErrorCodes.USER_ACTIONS_CONFLICT,
+          apiErrorCodes.AUTHORIZATION_ERROR,
         ], responseBody.errorCode)) {
       const errors = responseBody.errors[errorKey]
       return {...state, errors, isSaving: false}

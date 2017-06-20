@@ -1,5 +1,6 @@
 const head = require('lodash/head')
 const {query} = require('../db')
+const toString = require('lodash/toString')
 
 class AuthDao {
 
@@ -14,6 +15,25 @@ class AuthDao {
   deleteAuthToken(authToken) {
     return query('delete from authentication_tokens where token = $1 returning token', [authToken])
         .then( ({rows}) => head(rows))
+  }
+
+  getUserId(authToken) {
+    const sql = `
+      select user_id
+      from authentication_tokens
+        where 
+              token = $1 
+          and expires > $2
+          and deleted is null 
+    `
+    return query(sql, [authToken, new Date()]).then( ({rows}) => {
+      if (rows.length < 1) {
+        return null
+      }
+      const [{user_id: userId}] = rows
+
+      return toString(userId)
+    })
   }
 }
 

@@ -185,7 +185,9 @@ const routes = [
                   path,
                   pathParameters: [statementId],
                 }
-    }) => deleteStatement({authToken, statementId}).then( () => ok({callback}) )
+    }) => deleteStatement({authToken, statementId})
+        .then( () => ok({callback}) )
+        .catch(AuthorizationError, rethrowTranslatedErrors('statement'))
   },
   {
     id: 'createJustification',
@@ -250,6 +252,7 @@ const routes = [
                   pathParameters: [justificationId]
                 }
               }) => deleteJustification({authToken, justificationId}).then( () => ok({callback}) )
+        .catch(AuthorizationError, rethrowTranslatedErrors('justification'))
   },
   {
     path: 'login',

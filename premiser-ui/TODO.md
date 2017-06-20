@@ -1,12 +1,6 @@
 # Howdju UI TODO
 ## MVP
 
-* Statements that differ by special chars or capitalization are treated as different (normalized text etc)
-  * can create two statements that only differ by apostrophe types (' vs. ’), probably whitespace, too.
-  * https://lodash.com/docs/#deburr
-    
-* Add progress and disabled to vote buttons
-
 * Autocomplete doesn't hide after searching
   * reappears after clicking on search page (should only reappear upon typing)
 * Missing idPrefix/namePrefix from NewJustificationEditor (apply idPrefix to progress)
@@ -54,8 +48,6 @@
 * Test with mobile device
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
   * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
-* When deleting statement, use service method to delete justifications so that counter justifications
-  are deleted.
 
 ### Misc.
 * UI Build
@@ -77,7 +69,8 @@
   * One fix could be to reconcile on a schedule well enough after the creation so that there won't be
     the possibility of conflicting creation occurring.
   * Would need to program as if constraint-violating models could occur, and have some method for
-    reconciling those results on the fly until the scheduled reconciliation occurs 
+    reconciling those results on the fly until the scheduled reconciliation occurs, such as ordering
+    by created date and taking the earliest
 * Validation belongs in route.js, I think
   * Include type conversion in validation somehow?  toNumber(statementId), e.g.
 * Reuse code between client/server (Use same javascript syntax in client/server.)  
@@ -134,6 +127,8 @@
   * Change email, password, password reset
 * Timeout authentication
 * Location tags for statements
+* Relation between counter to statement-based justification and the statement.  Should it be shown (suggested?) as 
+  a disjustification on that statement?
 
 * Add messages for when cannot edit and why
 * When statements or citations or citation references conflict, offer to merge them somehow?
@@ -156,7 +151,8 @@
 * Update slug of path when updating statement on StatementJustificationsPage
 * Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
 * Disable context menu(s) when deleting something, like a statement or justification
-
+* Add progress and disabled to vote buttons
+  * Don't slide/hide the vote actions until the vote has successfully responded
 
 ### Refactoring/stability
 * Refactor tests to use helpers to cut down on setup noise

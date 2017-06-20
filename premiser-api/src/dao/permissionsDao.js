@@ -34,24 +34,6 @@ class PermissionsDao {
         .then( ({rows: [{has_perm: hasPerm}]}) => hasPerm )
   }
 
-  getUserId(authToken) {
-    const sql = `
-      select user_id
-      from authentication_tokens
-        where 
-              token = $1 
-          and expires > $2
-          and deleted is null 
-    `
-    return query(sql, [authToken, new Date()]).then( ({rows}) => {
-      if (rows.length < 1) {
-        return null
-      }
-      const [{user_id: userId}] = rows
-      return toString(userId)
-    })
-  }
-
   getUserIdWithPermission(authToken, permission) {
     const sql = `
       with
