@@ -69,7 +69,8 @@ class EditableCitationReference extends Component {
     return (
         <form onSubmit={this.onSubmit}>
           <CardText>
-            <CitationReferenceEditorFields id={id}
+            <CitationReferenceEditorFields {...rest}
+                                           id={id}
                                            citationReference={editEntity}
                                            disabled={isSaving}
                                            suggestionsKey={suggestionsKey}
@@ -78,7 +79,6 @@ class EditableCitationReference extends Component {
                                            onRemoveUrl={this.onRemoveUrl}
                                            errors={errors}
                                            onSubmit={this.onSubmit}
-                                           {...rest}
             />
           </CardText>
           <CardActions>

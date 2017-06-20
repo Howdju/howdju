@@ -26,15 +26,15 @@ class EditableStatement extends Component {
 
     // statement is required, so make this lazy.  Is this a problem for react efficiency-wise?
     const editor =
-        <StatementEditor editorId={editorId}
+        <StatementEditor {...rest}
+                         editorId={editorId}
                          id={id}
                          suggestionsKey={suggestionsKey}
-                         {...rest}
         />
     const viewer =
-        <StatementViewer id={id}
+        <StatementViewer {...rest}
+                         id={id}
                          statement={statement}
-                         {...rest}
         />
     const progress =
         <CircularProgress id={`${id}-Progress`} />

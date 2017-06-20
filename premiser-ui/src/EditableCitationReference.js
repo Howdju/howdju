@@ -29,12 +29,11 @@ class EditableCitationReference extends Component {
         <CitationReferenceEditor id={id}
                                  editorId={editorId}
                                  suggestionsKey={suggestionsKey}
-
         />
     const viewer =
-        <CitationReferenceViewer id={id}
+        <CitationReferenceViewer {...rest}
+                                 id={id}
                                  citationReference={citationReference}
-                                 {...rest}
         />
     const progress =
         <CircularProgress id={`${id}-Progress`} />

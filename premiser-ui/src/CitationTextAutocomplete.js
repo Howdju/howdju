@@ -24,12 +24,12 @@ class CitationTextAutocomplete extends Component {
       onPropertyChange,
       suggestionsKey,
       api,
-      ...props
+      ...rest
     } = this.props
 
     return (
         <ApiAutocomplete
-            {...props}
+            {...rest}
             value={value}
             // maxLength={2048}
             pattern=".+"
@@ -39,6 +39,7 @@ class CitationTextAutocomplete extends Component {
             suggestionsKey={suggestionsKey}
             dataLabel="text"
             dataValue="id"
+            onKeyDown={this.props.onKeyDown}
         />
     )
   }
@@ -51,6 +52,8 @@ CitationTextAutocomplete.propTypes = {
   suggestionsKey: PropTypes.string.isRequired,
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
   onPropertyChange: PropTypes.func,
+  /** Passed to ApiAutocomplete */
+  onKeyDown: PropTypes.func,
 }
 
 export default connect(null, mapActionCreatorGroupToDispatchToProps({

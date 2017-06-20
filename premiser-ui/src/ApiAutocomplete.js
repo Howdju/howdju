@@ -53,23 +53,26 @@ class ApiAutocomplete extends Component {
     }
   }
 
-  onKeyDown(e) {
-    if (e.keyCode === ESCAPE_KEY_CODE) {
-      e.preventDefault()
-      e.stopPropagation()
+  onKeyDown(event) {
+    if (event.keyCode === ESCAPE_KEY_CODE) {
       this.throttledRefreshAutocomplete.cancel()
       if (this.isAutocompleteOpen()) {
+        event.preventDefault()
+        event.stopPropagation()
         this.closeAutocomplete()
-      } else if (this.props.escapeClears) {
+        return
+      } else if (this.props.value && this.props.escapeClears) {
+        event.preventDefault()
+        event.stopPropagation()
         this.onPropertyChange({[this.props.name]: ''})
+        return
       }
-    } else {
-      if (e.keyCode === RETURN_KEY_CODE) {
-        this.closeAutocomplete()
-      }
-      if (this.props.onKeyDown) {
-        this.props.onKeyDown(e)
-      }
+    } else if (event.keyCode === RETURN_KEY_CODE) {
+      this.closeAutocomplete()
+    }
+
+    if (this.props.onKeyDown) {
+      this.props.onKeyDown(event)
     }
   }
 
@@ -149,6 +152,7 @@ ApiAutocomplete.propTypes = {
   suggestionTransform: PropTypes.func,
   /** The value to display in the text input */
   value: PropTypes.string,
+  onKeyDown: PropTypes.func,
 }
 ApiAutocomplete.defaultProps = {
   autocompleteThrottle: 250,

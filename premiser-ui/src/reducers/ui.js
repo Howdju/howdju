@@ -1,16 +1,6 @@
 import { combineReducers } from 'redux'
-import merge from 'lodash/merge'
-import forEach from 'lodash/forEach'
-import cloneDeep from 'lodash/cloneDeep'
-import set from 'lodash/set'
 import {LOCATION_CHANGE} from 'react-router-redux'
 import {handleActions} from "redux-actions";
-
-import {
-  isCounter,
-  makeNewCounterJustification,
-} from '../models'
-import paths from '../paths'
 
 import {
   api,
@@ -44,92 +34,13 @@ const loginPage = handleActions({
 })
 
 const statementJustificationsPage = handleActions({
-  [api.fetchStatementJustifications]: (state, action) => ({...state, isFetching: true, didFail: false}),
-  [api.fetchStatementJustifications.response]: {
-    next: (state, action) => ({...state, isFetching: false}),
-    throw: (state, action) => ({...state, isFetching: false, didFail: true}),
-  },
   [ui.showNewJustificationDialog]: (state, action) => ({
     ...state,
     isNewJustificationDialogVisible: true,
   }),
   [ui.hideNewJustificationDialog]: (state, action) => ({...state, isNewJustificationDialogVisible: false}),
-  [api.createJustification]: (state, action) => {
-    const justification = action.payload.justification
-
-    // If it's a counter-justification, update the creating state
-    let newCounterJustificationIsCreatingByTargetId = state.newCounterJustificationIsCreatingByTargetId
-    if (isCounter(justification)) {
-      const targetJustificationId = justification.target.entity.id
-      newCounterJustificationIsCreatingByTargetId = merge(newCounterJustificationIsCreatingByTargetId, {
-        [targetJustificationId]: true
-      })
-    }
-    return {
-      ...state,
-      newCounterJustificationIsCreatingByTargetId,
-    }
-  },
-  [api.createJustification.response]: {
-    next: (state, action) => {
-      const justification = action.payload.entities.justifications[action.payload.result.justification]
-
-      // If we just created a counter justification, ensure that it is no longer editing
-      let newCounterJustificationsByTargetId = state.newCounterJustificationsByTargetId
-      if (isCounter(justification)) {
-        const targetJustificationId = justification.target.entity.id
-        newCounterJustificationsByTargetId = merge(state.newCounterJustificationsByTargetId, {
-          [targetJustificationId]: null
-        })
-      }
-      return {
-        ...state,
-        newCounterJustificationsByTargetId,
-      }
-    },
-  },
-  [ui.addNewCounterJustification]: (state, action) => {
-    const targetJustification = action.payload.targetJustification
-    const newCounterJustification = makeNewCounterJustification(targetJustification)
-    return {
-      ...state,
-      newCounterJustificationsByTargetId: merge(state.newCounterJustificationsByTargetId, {
-        [targetJustification.id]: newCounterJustification
-      }),
-    }
-  },
-  // [ui.newCounterJustificationPropertyChange]: (state, action) => {
-  //   const {justification, properties} = action.payload
-  //   const targetJustificationId = justification.target.entity.id
-  //   const newCounterJustification = cloneDeep(state.newCounterJustificationsByTargetId[targetJustificationId])
-  //   forEach(properties, (val, key) => {
-  //     set(newCounterJustification, key, val)
-  //   })
-  //   return {
-  //     ...state,
-  //     newCounterJustificationsByTargetId: merge(state.newCounterJustificationsByTargetId, {
-  //       [targetJustificationId]: newCounterJustification
-  //     }),
-  //   }
-  // },
-  [ui.cancelNewCounterJustification]: (state, action) => {
-    const justification = action.payload.justification
-    const targetJustificationId = justification.target.entity.id
-    return {
-      ...state,
-      newCounterJustificationsByTargetId: merge(state.newCounterJustificationsByTargetId, {
-        [targetJustificationId]: null
-      }),
-    }
-  },
 }, {
-  isFetching: false,
-  didFail: false,
   isNewJustificationDialogVisible: false,
-  // i.e. newRootJustification
-  newJustification: null,
-  newCounterJustificationsByTargetId: {},
-  newCounterJustificationIsCreatingByTargetId: {},
 })
 
 export const appUi = handleActions({

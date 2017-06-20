@@ -60,12 +60,12 @@ class StatementEditor extends Component {
     return (
         <form onSubmit={this.onSubmit}>
           <CardText>
-            <StatementEditorFields statement={editEntity}
+            <StatementEditorFields {...rest}
+                                   statement={editEntity}
                                    disabled={isSaving}
                                    suggestionsKey={suggestionsKey}
                                    onPropertyChange={this.onPropertyChange}
                                    errors={errors}
-                                   {...rest}
             />
           </CardText>
           <CardActions>

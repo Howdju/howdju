@@ -24,6 +24,7 @@ class StatementTextAutocomplete extends Component {
       onPropertyChange,
       suggestionsKey,
       api,
+      onKeyDown,
       ...props
     } = this.props
 
@@ -39,6 +40,7 @@ class StatementTextAutocomplete extends Component {
           suggestionsKey={suggestionsKey}
           dataLabel="text"
           dataValue="id"
+          onKeyDown={onKeyDown}
       />
     )
   }
@@ -51,6 +53,7 @@ StatementTextAutocomplete.propTypes = {
   suggestionsKey: PropTypes.string.isRequired,
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
   onPropertyChange: PropTypes.func,
+  onKeyDown: PropTypes.func,
 }
 
 export default connect(null, mapActionCreatorGroupToDispatchToProps({

@@ -2,11 +2,8 @@
 ## MVP
 
 * With long quote submission, citation input overlaps with quote input...
-* Escape from quote or url input closes new justification dialog
-  * autocomplete of citation appears while in URL field
-* Rename justifification to newJustification in STATEMENT_JUSTIFICATION editEntity
-* Collect additional bookmarklet data, such as CSS selector of element, count of siblings before and after, 
-  perhaps
+* autocomplete of citation appears while in URL field
+* Do login error messages work? (ui.js)
 
 ### Features
     
@@ -16,6 +13,7 @@
     * Users vote for inclusion/exclusion in the list
     * No, because each compound argument has a 'theme' that voting would screw up.
   * Could be Snippet type, where user puts several statements in a sentence with supporting words.
+    <statement 1> and <statement 2>, but <statement 3>
   
 * Relations
   * Show statements justified by statement
@@ -224,6 +222,7 @@
   * Cache index.html?
   * cdn.premiser.co?
   * [Invalidation vs. versioning](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html)
+* Rename justification to newJustification in STATEMENT_JUSTIFICATION editEntity
 
 ## Maybe
 * https://prerender.io/

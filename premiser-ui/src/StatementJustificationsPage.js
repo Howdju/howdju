@@ -58,6 +58,7 @@ import EditableStatement from "./EditableStatement";
 
 import "./StatementJustificationsPage.scss";
 import {suggestionKeys} from "./autocompleter";
+import {ESCAPE_KEY_CODE} from "./keyCodes";
 
 
 class StatementJustificationsPage extends Component {
@@ -78,6 +79,7 @@ class StatementJustificationsPage extends Component {
     this.onUseStatement = this.onUseStatement.bind(this)
 
     this.showNewJustificationDialog = this.showNewJustificationDialog.bind(this)
+    this.onDialogEditorKeyDown = this.onDialogEditorKeyDown.bind(this)
     this.onSubmitNewJustificationDialog = this.onSubmitNewJustificationDialog.bind(this)
     this.cancelNewJustificationDialog = this.cancelNewJustificationDialog.bind(this)
 
@@ -146,6 +148,13 @@ class StatementJustificationsPage extends Component {
 
   cancelNewJustificationDialog() {
     this.props.ui.hideNewJustificationDialog()
+  }
+
+  onDialogEditorKeyDown(event) {
+    if (event.keyCode === ESCAPE_KEY_CODE) {
+      // Stop the escape from closing the dialog
+      event.stopPropagation()
+    }
   }
 
   render () {
@@ -238,6 +247,7 @@ class StatementJustificationsPage extends Component {
                                   onSubmit={this.onSubmitNewJustificationDialog}
                                   doShowButtons={false}
                                   disabled={isSavingNewJustification}
+                                  onKeyDown={this.onDialogEditorKeyDown}
           />
         </Dialog>
     )
@@ -375,24 +385,16 @@ const sortJustifications = justifications => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const statementId = toNumber(ownProps.match.params.statementId)
+  const statementId = ownProps.match.params.statementId
   if (!statementId) {
     logger.error('Missing required statementId')
     return {}
   }
-  if (!isFinite(statementId)) {
-    logger.error(`Invalid statementId: ${ownProps.match.params.statementId}`)
-    return {}
-  }
-
-  let {isFetching} = state.ui.statementJustificationsPage
   const statement = state.entities.statements[statementId]
-  if (!statement && !isFetching) {
-    // The component may just be mounting
-    return {}
-  }
 
-  const statementEditorModel = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPage_statementEditor_editorId, 'editEntity'])
+  const statementEditorState = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPage_statementEditor_editorId])
+  const statementEditorModel = get(statementEditorState, 'editEntity')
+  const isFetchingStatement = get(statementEditorState, 'isFetching')
   const isEditingStatement = !!statementEditorModel
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
@@ -407,6 +409,7 @@ const mapStateToProps = (state, ownProps) => {
     statement: denormalize(statement, statementSchema, state.entities),
     justifications,
     isSavingNewJustification,
+    isFetchingStatement,
     isEditingStatement,
   }
 }

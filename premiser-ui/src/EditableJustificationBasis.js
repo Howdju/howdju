@@ -16,17 +16,17 @@ class EditableJustificationBasis extends Component {
     } = this.props
 
     return isStatementBased(justification) ?
-        <EditableStatement id={id}
+        <EditableStatement {...rest}
+                           id={id}
                            entityId={justification.basis.entity.id}
                            editorId={editorId}
                            suggestionsKey={suggestionsKey}
-                           {...rest}
         /> :
-        <EditableCitationReference id={id}
+        <EditableCitationReference {...rest}
+                                   id={id}
                                    entityId={justification.basis.entity.id}
                                    editorId={editorId}
                                    suggestionsKey={suggestionsKey}
-                                   {...rest}
         />
   }
 }

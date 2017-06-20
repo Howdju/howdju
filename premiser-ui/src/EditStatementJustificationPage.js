@@ -41,6 +41,7 @@ import {logger} from "./util";
 import NewJustificationEditorFields from "./NewJustificationEditorFields";
 import StatementEditorFields from "./StatementEditorFields";
 import {EditorTypes} from "./reducers/editors";
+import {ESCAPE_KEY_CODE} from "./keyCodes";
 
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */

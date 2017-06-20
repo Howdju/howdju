@@ -27,6 +27,8 @@ class StatementEditorFields extends Component {
     if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
       event.preventDefault()
       this.props.onSubmit(event)
+    } else if (this.props.onKeyDown) {
+      this.props.onKeyDown(event)
     }
   }
 
@@ -42,6 +44,7 @@ class StatementEditorFields extends Component {
       focusOnMount,
       ...rest,
     } = this.props
+    delete rest.onKeyDown
 
 
     const modelErrors = errors && errors.modelErrors
@@ -98,6 +101,7 @@ StatementEditorFields.propTypes = {
   errors: PropTypes.object,
   disabled: PropTypes.bool,
   focusOnMount: PropTypes.bool,
+  onKeyDown: PropTypes.func,
 }
 StatementEditorFields.defaultProps = {
   disabled: false,

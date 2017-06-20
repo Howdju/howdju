@@ -61,6 +61,7 @@ class NewJustificationEditor extends Component {
       editorState,
       doShowButtons,
       disabled,
+      onKeyDown,
       ...rest
     } = this.props
     delete rest.editors
@@ -86,7 +87,8 @@ class NewJustificationEditor extends Component {
 
     return (
         <form onSubmit={this.onSubmit}>
-          <NewJustificationEditorFields newJustification={editEntity}
+          <NewJustificationEditorFields {...rest}
+                                        newJustification={editEntity}
                                         onPropertyChange={this.onPropertyChange}
                                         onAddUrl={this.onAddUrl}
                                         onRemoveUrl={this.onRemoveUrl}
@@ -94,7 +96,7 @@ class NewJustificationEditor extends Component {
                                         suggestionsKey={suggestionsKey}
                                         errors={errors}
                                         disabled={disabled}
-                                        {...rest}
+                                        onKeyDown={onKeyDown}
           />
           {isSaving && <CircularProgress key="progress" id="progress" />}
           {doShowButtons && buttons}
@@ -110,7 +112,8 @@ NewJustificationEditor.propTypes = {
   /** If present, defers submits to this function */
   onSubmit: PropTypes.func,
   doShowButtons: PropTypes.bool,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  onKeyDown: PropTypes.func,
 }
 NewJustificationEditor.defaultProps = {
   doShowButtons: true

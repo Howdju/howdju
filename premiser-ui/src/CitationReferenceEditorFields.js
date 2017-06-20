@@ -44,8 +44,9 @@ class CitationReferenceEditorFields extends Component {
 
   onTextInputKeyDown(event) {
     if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
-      console.log('CitationReferenceEditorFields.onTextInputKeyDown submitting')
       this.props.onSubmit(event)
+    } else if (this.props.onKeyDown) {
+      this.props.onKeyDown(event)
     }
   }
 
@@ -100,6 +101,7 @@ class CitationReferenceEditorFields extends Component {
                 onChange={this.onChange}
                 leftIcon={<FontIcon>format_quote</FontIcon>}
                 disabled={disabled}
+                onKeyDown={this.onTextInputKeyDown}
                 {...quoteInputProps}
             />
           </FocusContainer>
@@ -127,6 +129,7 @@ class CitationReferenceEditorFields extends Component {
                          onChange={this.onChange}
                          leftIcon={<FontIcon>book</FontIcon>}
                          disabled={disabled}
+                         onKeyDown={this.onTextInputKeyDown}
                          {...citationTextInputProps}
               />
           }

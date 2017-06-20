@@ -65,13 +65,13 @@ class CounterJustificationEditor extends Component {
           <CardText>
             <FocusContainer focusOnMount>
               <StatementEditorFields
+                  {...rest}
                   name="basis.entity"
                   statement={editEntity}
                   suggestionsKey={suggestionsKey}
                   onPropertyChange={this.onPropertyChange}
                   disabled={isSaving}
                   errors={statementErrors}
-                  {...rest}
               />
             </FocusContainer>
           </CardText>

@@ -61,6 +61,7 @@ class NewJustificationEditorFields extends Component {
       onRemoveUrl,
       errors,
       focusOnMount,
+      onKeyDown,
     } = this.props
 
     const namePrefix = name ? name + '.' : ''
@@ -85,6 +86,7 @@ class NewJustificationEditorFields extends Component {
                              disabled={readOnlyBasis || disabled}
                              errors={statementErrors}
                              focusOnMount={focusOnMount}
+                             onKeyDown={onKeyDown}
       />
     ]
     const citationReferenceComponents =  [
@@ -105,6 +107,7 @@ class NewJustificationEditorFields extends Component {
                                      onSubmit={onSubmit}
                                      errors={citationReferenceErrors}
                                      focusOnMount={focusOnMount}
+                                     onKeyDown={onKeyDown}
       />
     ]
 
@@ -165,6 +168,8 @@ NewJustificationEditorFields.propTypes = {
   onSubmit: PropTypes.func,
   errors: PropTypes.object,
   focusOnMount: PropTypes.bool,
+  /** Passed to subcontrols */
+  onKeyDown: PropTypes.func,
 }
 NewJustificationEditorFields.defaultProps = {
   readOnlyBasis: false,
