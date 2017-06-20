@@ -143,19 +143,22 @@ class App extends Component {
             <div id="page" className="md-toolbar-relative">
 
               <Route exact path={paths.home()} render={renderHomePath}/>
-              <Route path={paths.login()} component={LoginPage} />
+              <Route exact path={paths.login()} component={LoginPage} />
 
-              <Route path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
+              <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
 
-              <Route path="/create-statement" render={props => (
+              <Route exact path="/create-statement" render={props => (
                   <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
               )} />
-              <Route path={createJustificationPath} render={props => (
+              <Route exact path={createJustificationPath} render={props => (
                   <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
               )} />
+              <Route exact path="/submit" render={props => (
+                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
+              )} />
 
-              <Route path="/tools" component={ToolsPage} />
-              <Route path="/icons" component={IconPage} />
+              <Route exact path="/tools" component={ToolsPage} />
+              <Route exact path="/icons" component={IconPage} />
 
             </div>
 

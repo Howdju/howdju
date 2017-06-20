@@ -1,26 +1,30 @@
 # Howdju UI TODO
 ## MVP
 
+* With long quote submission, citation input overlaps with quote input...
+* Escape from quote or url input closes new justification dialog
+  * autocomplete of citation appears while in URL field
+* Rename justifification to newJustification in STATEMENT_JUSTIFICATION editEntity
+* Collect additional bookmarklet data, such as CSS selector of element, count of siblings before and after, 
+  perhaps
+
 ### Features
     
 * How will I bring over compound justifications?
   * Maybe look at examples from the old site and see if I can recreate them?
   * Could it be the List justification type?
     * Users vote for inclusion/exclusion in the list
-* Show statements justified by statement
-
-* bookmarklet
-  * https://chriszarate.github.io/bookmarkleter/
-  * https://www.labnol.org/internet/better-twitter-bookmarklet/28028/
-
+    * No, because each compound argument has a 'theme' that voting would screw up.
+  * Could be Snippet type, where user puts several statements in a sentence with supporting words.
+  
+* Relations
+  * Show statements justified by statement
+  * show statements justified by basis
+  * Justifications countered by statement
 
 * Can counter justification with same statement as basis for target justification
 * Add linting 
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
-
-* Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
-  * Or should we not be normalizing from API?  Should we normalize in reducer?
-  * Change this for autocomplete fetches in entities
 
 * Jobs (justification score)
 * favicon
@@ -141,6 +145,9 @@
 * simplify reducer by merging all payload.entities?
   * Or (?): reducers.entities if we just know which entities are returned from which success actions, 
     we can automatically respond
+* Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
+  * Or should we not be normalizing from API?  Should we normalize in reducer?
+  * Change this for autocomplete fetches in entities
 
 ### Flair
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"

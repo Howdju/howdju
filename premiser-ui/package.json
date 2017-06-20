@@ -19,10 +19,12 @@
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
     "test:verbose": "cross-env NODE_ENV=test jest --config .jestrc --verbose",
     "test:debug": "cross-env NODE_ENV=test node debug --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
-    "test-dns": "dig +recurse +trace www.premiser.co any"
+    "test-dns": "dig +recurse +trace www.premiser.co any",
+    "bookmarklet": "babel --no-babelrc bookmarklet/submit.js --out-file dist/submit.js --presets=es2015 && uglifyjs --compress --mangle toplevel --output dist/submit.min.js -- dist/submit.js"
   },
   "devDependencies": {
     "aws-sdk": "^2.35.0",
+    "babel-cli": "^6.24.1",
     "babel-core": "^6.23.1",
     "babel-loader": "^6.3.2",
     "babel-plugin-dynamic-import-node": "^1.0.1",
@@ -48,6 +50,7 @@
     "resolve-url-loader": "^2.0.2",
     "sass-loader": "^6.0.3",
     "style-loader": "^0.14.1",
+    "uglify-js": "^3.0.18",
     "url-loader": "^0.5.8",
     "uuid": "^3.0.1",
     "webpack": "^2.2.1",

@@ -29,7 +29,11 @@ import text, {
   CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE, JUSTIFICATION_TITLE,
 } from "./texts";
 import { suggestionKeys } from './autocompleter'
-import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewStatementJustification} from "./models";
+import {
+  justificationBasisTypeToNewJustificationBasisMemberName,
+  makeNewStatementJustification,
+  JustificationBasisType,
+} from "./models";
 import {
   editStatementJustificationPageEditorId,
 } from "./editorIds"
@@ -46,19 +50,24 @@ export const EditStatementJustificationPageMode = {
    * Hide the citation switch.
    */
   CREATE_JUSTIFICATION: 'CREATE_JUSTIFICATION',
+  /** Submit citation reference based justification via query params */
+  SUBMIT_JUSTIFICATION: 'SUBMIT_JUSTIFICATION',
 }
 
 const titleTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_TITLE,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
+  [EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
 }
 const submitButtonLabelTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
+  [EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 }
 const submitButtonTitleTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_TITLE,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
+  [EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
 }
 
 const justificationErrorsToNewJustificationErrors = (justification, errors) => {
@@ -101,6 +110,25 @@ class EditStatementJustificationPage extends Component {
         } = this.props.queryParams
         this.props.flows.fetchAndBeginEditOfNewJustificationFromBasis(this.editorType, this.editorId, basisType, basisId)
         break
+      case EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION:
+        const {
+          url,
+          description,
+          quote,
+          source
+        } = this.props.queryParams
+        this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification({}, {
+          basis: {
+            type: JustificationBasisType.CITATION_REFERENCE,
+            citationReference: {
+              quote,
+              citation: {
+                text: description
+              },
+              urls: [{url}]
+            }
+          }
+        }))
     }
   }
 
@@ -145,13 +173,14 @@ class EditStatementJustificationPage extends Component {
       doCreateJustification,
     } = editEntity || {}
 
-    const isEditing = !!editEntity
+    // const isEditing = !!editEntity
 
     const title = text(titleTextKeyByMode[mode])
     const submitButtonLabel = text(submitButtonLabelTextKeyByMode[mode])
     const submitButtonTitle = text(submitButtonTitleTextKeyByMode[mode])
 
     const isCreateJustification = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
+    const isSubmitJustification = mode === EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION
 
     const statementErrors = errors && (
         doCreateJustification ?
@@ -197,7 +226,7 @@ class EditStatementJustificationPage extends Component {
 
                   <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
                     {/* Don't mount initially so-as to allow the statement to receive focusOnMount*/}
-                    {isCreateJustification || doCreateJustification &&
+                    {(isCreateJustification || isSubmitJustification || doCreateJustification) && justification &&
                       <NewJustificationEditorFields newJustification={justification}
                                                     name="justification"
                                                     suggestionsKey={suggestionKeys.createStatementPageJustification}
