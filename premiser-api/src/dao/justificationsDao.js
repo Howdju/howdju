@@ -1,6 +1,7 @@
 const head = require('lodash/head')
 const map = require('lodash/map')
 const toNumber = require('lodash/toNumber')
+const toString = require('lodash/toString')
 
 const {assert} = require('../util')
 const urlsDao = require('./urlsDao')
@@ -20,7 +21,7 @@ const groupRootJustifications = (rootStatementId, justification_rows) => {
   for (let justification_row of justification_rows) {
     // There are two types of justifications: those on the (root) statement, and counters
     if (justification_row.target_type === JustificationTargetType.STATEMENT) {
-      assert( () => toString(justification_row.target_id) === rootStatementId)
+      assert(() => toString(justification_row.target_id) === rootStatementId)
       rootJustifications.push(justification_row)
     } else {
       assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)

@@ -29,7 +29,6 @@ import config from './config';
 
 import CounterJustificationEditor from "./CounterJustificationEditor";
 
-import {logError} from "./util";
 import EditableJustificationBasis from "./EditableJustificationBasis";
 import {EditorTypes} from "./reducers/editors";
 import {suggestionKeys} from "./autocompleter";

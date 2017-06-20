@@ -39,7 +39,7 @@ const {
 } = require('./search/citations')
 const {logger} = require('./logger')
 const {
-  rethrowTranslatedValidationError
+  rethrowTranslatedErrors
 } = require('./util')
 
 const ok = ({callback, body={}, headers}) => callback({
@@ -126,7 +126,7 @@ const routes = [
                 }
     }) => createStatement({authToken, statement})
         .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
-        .catch(ValidationError, rethrowTranslatedValidationError('statement'))
+        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
   },
   {
     id: 'updateStatement',
@@ -140,6 +140,7 @@ const routes = [
                 }
               }) => updateStatement({authToken, statement})
         .then( statement => ok({callback, body: {statement}}))
+        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
   },
   {
     id: 'readStatement',
@@ -202,7 +203,7 @@ const routes = [
                 }
     }) => createJustification({authToken, justification})
         .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
-        .catch(ValidationError, rethrowTranslatedValidationError('justification'))
+        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification'))
   },
   {
     id: 'readCitationReference',
@@ -230,9 +231,8 @@ const routes = [
           }
         }
     }) => updateCitationReference({authToken, citationReference})
-        .then( citationReference => {
-          return ok({callback, body: {citationReference}})
-        })
+        .then( citationReference => ok({callback, body: {citationReference}}))
+        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('citationReference'))
   },
   {
     id: 'deleteJustification',

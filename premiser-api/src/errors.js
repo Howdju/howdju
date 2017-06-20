@@ -6,7 +6,7 @@ class HowdjuApiError extends Error {
 
 class ValidationError extends HowdjuApiError {
   constructor(errors) {
-    super()
+    super(errors)
 
     this.errors = errors
   }

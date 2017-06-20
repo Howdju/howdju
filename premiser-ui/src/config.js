@@ -5,7 +5,8 @@ const config = {
       flipMoveDuration: 750,
       flipMoveEasing: "ease-out",
     }
-  }
+  },
+  rehydrateTimeoutMs: 5000
 }
 
 export default config

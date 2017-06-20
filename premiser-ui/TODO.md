@@ -2,12 +2,17 @@
 ## MVP
 
 * ApiAutocomplete doesn't seem to be canceling previous autocomplete (try with 2s delay)
-  * Also, cancel autocomplete upon submit.
-  * Add canceling autocompletes; either with cancelable fetch or saga channels
-    * Cancel autocompletes on submit
-    * https://github.com/redux-saga/redux-saga/issues/651#issuecomment-262375964
-    * https://github.com/redux-saga/redux-saga/issues/701#issuecomment-267512606
-    * https://github.com/mzabriskie/axios
+  * To accomplish this, make a saga that keeps track of autocomplete requests by suggestionKey
+    and cancels the previous one as new ones come in.
+  * Also, cancel autocomplete upon submit (add autocomplete keys to submit?  Or cancel all outstanding?).
+  * Move query params into axios parameters
+  * Move schema denormalization to entities
+
+* Statements that differ by special chars or capitalization are treated as different (normalized text etc)
+  * https://lodash.com/docs/#deburr
+    
+* Add progress and disabled to vote buttons
+
 * Autocomplete doesn't hide after searching
   * reappears after clicking on search page (should only reappear upon typing)
 * Missing idPrefix/namePrefix from NewJustificationEditor (apply idPrefix to progress)
@@ -35,8 +40,6 @@
 * Jobs (justification score)
 * favicon
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
-* Statements that differ by special chars or capitalization are treated as different (normalized text etc)
-  * https://lodash.com/docs/#deburr
   
 * Statement example: height of the capitol building limit DC
   

@@ -1,7 +1,4 @@
-import assign from 'lodash/assign'
-import map from 'lodash/map'
 import merge from 'lodash/merge'
-import {logError} from "./util";
 import cloneDeep from 'lodash/cloneDeep'
 import {newImpossibleError} from "./customErrors";
 

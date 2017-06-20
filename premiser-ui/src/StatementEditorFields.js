@@ -7,6 +7,7 @@ import TextField from "react-md/lib/TextFields";
 import StatementTextAutocomplete from './StatementTextAutocomplete'
 import {toErrorText} from "./modelErrorMessages";
 import {RETURN_KEY_CODE} from "./keyCodes";
+import ErrorMessages from "./ErrorMessages";
 
 class StatementEditorFields extends Component {
 
@@ -42,6 +43,8 @@ class StatementEditorFields extends Component {
       ...rest,
     } = this.props
 
+
+    const modelErrors = errors && errors.modelErrors
     const textInputProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
         {...rest, error: true, errorText: toErrorText(errors.fieldErrors.text)} :
         rest
@@ -77,6 +80,7 @@ class StatementEditorFields extends Component {
         />
     return (
         <FocusContainer focusOnMount={focusOnMount}>
+          <ErrorMessages errors={modelErrors}/>
           {input}
         </FocusContainer>
     )

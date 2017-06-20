@@ -23,7 +23,7 @@ import get from 'lodash/get'
 
 import config from './config';
 
-import {logError} from "./util";
+import {logger} from "./util";
 import {
   isVerified,
   isDisverified,
@@ -376,11 +376,11 @@ const sortJustifications = justifications => {
 const mapStateToProps = (state, ownProps) => {
   const statementId = toNumber(ownProps.match.params.statementId)
   if (!statementId) {
-    logError('Missing required statementId')
+    logger.error('Missing required statementId')
     return {}
   }
   if (!isFinite(statementId)) {
-    logError(`Invalid statementId: ${ownProps.match.params.statementId}`)
+    logger.error(`Invalid statementId: ${ownProps.match.params.statementId}`)
     return {}
   }
 

@@ -1,4 +1,4 @@
-import {logError} from "./util";
+import {logger} from "./util";
 import isFunction from 'lodash/isFunction'
 
 export const CREATE_STATEMENT_SUBMIT_BUTTON_LABEL = 'CREATE_STATEMENT_SUBMIT_BUTTON_LABEL'
@@ -133,7 +133,7 @@ const texts = {
 const text = (key, ...args) => {
   const t = texts[key]
   if (!t) {
-    logError(`No text key: ${key}`)
+    logger.error(`No text key: ${key}`)
     return '';
   }
   return isFunction(t) ? t(...args) : t

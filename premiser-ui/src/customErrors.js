@@ -3,6 +3,7 @@ import assign from 'lodash/assign'
 export const customErrorTypes = {
   NETWORK_FAILURE_ERROR: 'NETWORK_FAILURE_ERROR',
   API_RESPONSE_ERROR: 'API_RESPONSE_ERROR',
+  REQUEST_CONFIGURATION_ERROR: 'REQUEST_CONFIGURATION_ERROR',
   COMMIT_EDIT_RESULT_ERROR: 'COMMIT_EDIT_RESULT_ERROR',
   PROGRAMMING_ERROR: 'PROGRAMMING_ERROR',
   IMPOSSIBLE_ERROR: 'IMPOSSIBLE_ERROR',
@@ -22,10 +23,17 @@ const newCustomError = (errorType, message, sourceError, props) => {
 }
 
 /** The network call to the API failed */
-export const newNetworkFailureError = sourceError => newCustomError(customErrorTypes.NETWORK_FAILURE_ERROR, null, sourceError)
+export const newNetworkFailureError = sourceError =>
+    newCustomError(customErrorTypes.NETWORK_FAILURE_ERROR, 'Network failure', sourceError)
 
-export const newApiResponseError = (message, sourceError, httpStatusCode, body) =>
-    newCustomError(customErrorTypes.API_RESPONSE_ERROR, message, sourceError, {httpStatusCode, body})
+export const newApiResponseError = (message, sourceError) =>
+    newCustomError(customErrorTypes.API_RESPONSE_ERROR, message, sourceError, {
+      httpStatusCode: sourceError.response.status,
+      body: sourceError.response.data,
+    })
+
+export const newRequestConfigurationError = (message, sourceError) =>
+    newCustomError(customErrorTypes.REQUEST_CONFIGURATION_ERROR, message, sourceError, {config: sourceError.config})
 
 export const newEditorCommitResultError = (editorType, editorId, sourceError) =>
     newCustomError(customErrorTypes.COMMIT_EDIT_RESULT_ERROR, null, sourceError, {editorType, editorId})

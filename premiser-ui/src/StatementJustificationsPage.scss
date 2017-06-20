@@ -145,6 +145,9 @@ $over-gradient-z-index: 10;
   &.positivey {
 
     & > .justificationCard > .actions {
+      // Override App.scss .md-dialog-footer--card
+      justify-content: flex-start;
+
       .md-icon {
         // When positivey, the icons look better flipped
         transform: scaleX(-1);
@@ -159,6 +162,7 @@ $over-gradient-z-index: 10;
   &.negativey {
 
     & > .justificationCard > .actions {
+      justify-content: flex-start;
       direction: rtl;
 
       .md-icon {

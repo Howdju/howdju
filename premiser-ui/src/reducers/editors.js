@@ -6,6 +6,7 @@ import assign from 'lodash/assign'
 import get from 'lodash/get'
 import reduce from 'lodash/reduce'
 import merge from 'lodash/merge'
+import includes from 'lodash/includes'
 import { handleActions } from 'redux-actions'
 
 import {
@@ -41,9 +42,13 @@ const editorErrorReducer = errorKey => (state, action) => {
   const sourceError = action.payload.sourceError
   if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
     const responseBody = sourceError.body
-    if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
+    if (includes([
+          apiErrorCodes.VALIDATION_ERROR,
+          apiErrorCodes.ENTITY_CONFLICT,
+          apiErrorCodes.USER_ACTIONS_CONFLICT,
+        ], responseBody.errorCode)) {
       const errors = responseBody.errors[errorKey]
-      return {...state, errors}
+      return {...state, errors, isSaving: false}
     }
   }
   return state

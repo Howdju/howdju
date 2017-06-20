@@ -1,10 +1,22 @@
-import { put, call, take, takeEvery, select, race } from 'redux-saga/effects'
+import {
+  delay
+} from 'redux-saga'
+import {
+  put,
+  call,
+  take,
+  takeEvery,
+  select,
+  race,
+} from 'redux-saga/effects'
 import isFunction from 'lodash/isFunction'
 import merge from 'lodash/merge'
 import {REHYDRATE} from 'redux-persist/constants'
 import {push, replace} from 'react-router-redux'
 import map from 'lodash/map'
 import get from 'lodash/get'
+import cloneDeep from 'lodash/cloneDeep'
+import keys from 'lodash/keys'
 
 import text, {
   A_NETWORK_ERROR_OCCURRED,
@@ -18,8 +30,7 @@ import text, {
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, YOU_HAVE_BEEN_LOGGED_OUT,
 } from './texts'
-import {fetchJson} from "./api";
-import {logError} from './util'
+import {request} from "./api";
 import {
   statementJustificationsSchema,
   voteSchema,
@@ -58,6 +69,7 @@ import {logger} from './util'
 import apiErrorCodes from "./apiErrorCodes";
 import {customErrorTypes, newEditorCommitResultError, newImpossibleError} from "./customErrors";
 import {assert} from './util'
+import config from "./config";
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false
@@ -138,6 +150,9 @@ export const resourceApiConfigs = {
   },
   [api.fetchStatementJustifications]: payload => ({
     endpoint: `statements/${payload.statementId}?include=justifications`,
+    fetchInit: {
+      method: httpMethods.GET,
+    },
     schema: statementJustificationsSchema,
     requiresRehydrate: true
   }),
@@ -147,9 +162,6 @@ export const resourceApiConfigs = {
   }),
   [api.fetchMainSearchSuggestions]: payload => ({
     endpoint: `search-statements?searchText=${payload.searchText}`,
-  }),
-  [api.fetchStatementTextSuggestions]: payload => ({
-    endpoint: `search-statements?searchText=${payload.statementText}`,
   }),
   [api.fetchCitationTextSuggestions]: payload => ({
     endpoint: `search-citations?searchText=${payload.citationText}`,
@@ -194,38 +206,38 @@ export const resourceApiConfigs = {
     },
     schema: {vote: voteSchema},
   }),
+
+  [api.fetchStatementTextSuggestions]: payload => ({
+    endpoint: `search-statements?searchText=${payload.statementText}`,
+  }),
 }
 
 function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
   try {
     if (requiresRehydrate && !isRehydrated) {
       logger.debug('Waiting on rehydrate')
-      yield take(REHYDRATE)
-      logger.debug('Proceeding after rehydrate')
+      const {rehydrate, timeout} = yield race({
+          rehydrate: take(REHYDRATE),
+          timeout: delay(config.rehydrateTimeoutMs),
+      })
+      if (rehydrate) {
+        logger.debug('Proceeding after rehydrate')
+      } else {
+        logger.debug('Rehydrate timed out')
+      }
     }
 
-    let fetchInitUpdate = {}
+    fetchInit = cloneDeep(fetchInit)
 
     // Add auth token to all API requests
     const authToken = yield select(selectAuthToken)
     if (authToken) {
-      fetchInitUpdate.headers = merge({}, fetchInitUpdate.headers, {
-        'Authorization': `Bearer ${authToken}`,
+      fetchInit.headers = merge({}, fetchInit.headers, {
+        Authorization: `Bearer ${authToken}`,
       })
     }
 
-    // Prepare data submission
-    if (fetchInit.body) {
-      fetchInitUpdate.headers = merge({}, fetchInitUpdate.headers, {
-        'Content-Type': 'application/json',
-      })
-
-      fetchInitUpdate.body = JSON.stringify(fetchInit.body)
-    }
-
-    fetchInit = merge({}, fetchInit, fetchInitUpdate)
-
-    const result = yield call(fetchJson, endpoint, {init: fetchInit, schema})
+    const result = yield call(request, {endpoint, method: fetchInit.method, body: fetchInit.body, headers: fetchInit.headers, schema})
     return yield put(api.callApi.response(result))
   } catch (error) {
     return yield put(api.callApi.response(error))
@@ -291,7 +303,7 @@ function* redirectAfterLogin() {
 }
 
 function* resourceApiCalls() {
-  const actionTypes = map(api, str)
+  const actionTypes = keys(resourceApiConfigs)
   yield takeEvery(actionTypes, callApiForResource)
 }
 
@@ -455,7 +467,7 @@ function* editorCommitEdit() {
         return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload, meta))
       }
     } catch (error) {
-      logError(error)
+      logger.error(error)
       return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, error), meta))
     }
   })

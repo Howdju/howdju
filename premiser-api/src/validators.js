@@ -1,14 +1,19 @@
-const {
-  JustificationTargetType,
-  JustificationBasisType,
-} = require("./models")
-
 const isArray = require('lodash/isArray')
 const map = require('lodash/map')
 const some = require('lodash/some')
+const has = require('lodash/has')
+const includes = require('lodash/includes')
 const urlParser = require("url");
-const modelErrorCodes = require('./codes/modelErrorCodes')
 
+const {
+  JustificationTargetType,
+  JustificationBasisType,
+  JustificationPolarity,
+} = require("./models")
+const {
+  isTruthy
+} = require('./util')
+const modelErrorCodes = require('./codes/modelErrorCodes')
 
 class CredentialValidator {
   validate(credentials) {
@@ -62,25 +67,27 @@ class JustificationValidator {
       return errors
     }
 
-    if (justification.id) {
-      // If it has an ID already, then it doesn't need anything else?
-      // If we get rid of this, how to deal with target justification that can be only ID?
-      return errors
-    }
+    const isExtant = isTruthy(justification.id)
 
-    if (!justification.rootStatementId && !ignore.rootStatementId) {
+    if (has(justification, 'rootStatementId') || !isExtant && !ignore.rootStatementId) {
       const canReceiveRootStatementIdFromTarget = justification.target && justification.target.type === JustificationTargetType.STATEMENT
       if (!canReceiveRootStatementIdFromTarget) {
         errors.hasErrors = true
         errors.fieldErrors.rootStatementId.push(modelErrorCodes.IS_REQUIRED)
       }
     }
-    if (!justification.polarity) {
+
+    if (has(justification, 'polarity')) {
+      if (!includes(JustificationPolarity, justification.polarity)) {
+        errors.hasErrors = true
+        errors.fieldErrors.polarity.push(modelErrorCodes.INVALID_VALUE)
+      }
+    } else if (!isExtant) {
       errors.hasErrors = true
       errors.fieldErrors.polarity.push(modelErrorCodes.IS_REQUIRED)
     }
 
-    if (!ignore.target) {
+    if (has(justification, 'target')) {
       if (!justification.target) {
         errors.hasErrors = true
         errors.fieldErrors.target.modelErrors.push(modelErrorCodes.IS_REQUIRED)
@@ -105,31 +112,40 @@ class JustificationValidator {
           }
         }
       }
+    } else if (!isExtant && !ignore.target) {
+      errors.hasErrors = true
+      errors.fieldErrors.target.modelErrors.push(modelErrorCodes.IS_REQUIRED)
     }
 
-    if (!justification.basis) {
-      errors.hasErrors = true
-      errors.fieldErrors.basis.modelErrors.push(modelErrorCodes.IS_REQUIRED)
-    } else {
-      if (!justification.basis.type) {
+    if (has(justification, 'basis')) {
+
+      if (!justification.basis) {
         errors.hasErrors = true
-        errors.fieldErrors.basis.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED)
-      }
-      if (!justification.basis.entity) {
-        errors.hasErrors = true
-        errors.fieldErrors.basis.fieldErrors.entity.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+        errors.fieldErrors.basis.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       } else {
-        if (!justification.basis.entity.id) {
-          // Must have valid props
-          const basisEntityErrors = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
-              this.citationReferenceValidator.validate(justification.basis.entity) :
-              this.statementValidator.validate(justification.basis.entity)
-          if (basisEntityErrors.hasErrors) {
-            errors.hasErrors = true
-            errors.fieldErrors.basis.fieldErrors.entity = basisEntityErrors
+        if (!justification.basis.type) {
+          errors.hasErrors = true
+          errors.fieldErrors.basis.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED)
+        }
+        if (!justification.basis.entity) {
+          errors.hasErrors = true
+          errors.fieldErrors.basis.fieldErrors.entity.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+        } else {
+          if (!justification.basis.entity.id) {
+            // Must have valid props
+            const basisEntityErrors = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
+                this.citationReferenceValidator.validate(justification.basis.entity) :
+                this.statementValidator.validate(justification.basis.entity)
+            if (basisEntityErrors.hasErrors) {
+              errors.hasErrors = true
+              errors.fieldErrors.basis.fieldErrors.entity = basisEntityErrors
+            }
           }
         }
       }
+    } else if (!isExtant) {
+      errors.hasErrors = true
+      errors.fieldErrors.basis.modelErrors.push(modelErrorCodes.IS_REQUIRED)
     }
 
     return errors
@@ -174,16 +190,14 @@ class StatementValidator {
       return errors
     }
 
-    if (statement.id) {
-      // Return no error so that when a statement is targeted by a justification, it doesn't need to include the other fields
-      // TODO create separate validators for statement create, statement update, justification target, justification basis
-      return errors
-    }
+    const isExtant = isTruthy(statement.id)
 
-    if (statement.text === '') {
-      errors.hasErrors = true
-      errors.fieldErrors.text.push(modelErrorCodes.MUST_BE_NONEMPTY)
-    } else if (!statement.text) {
+    if (has(statement, 'text')) {
+      if (!statement.text) {
+        errors.hasErrors = true
+        errors.fieldErrors.text.push(modelErrorCodes.MUST_BE_NONEMPTY)
+      }
+    } else if (!isExtant) {
       errors.hasErrors = true
       errors.fieldErrors.text.push(modelErrorCodes.IS_REQUIRED)
     }
@@ -214,18 +228,27 @@ class CitationReferenceValidator {
       return errors
     }
 
-    errors.fieldErrors.citation = this.citationValidator.validate(citationReference.citation)
-    if (errors.fieldErrors.citation.hasErrors) {
+    const isExtant = isTruthy(citationReference.id)
+
+    if (has(citationReference, 'citation')) {
+      errors.fieldErrors.citation = this.citationValidator.validate(citationReference.citation)
+      if (errors.fieldErrors.citation.hasErrors) {
+        errors.hasErrors = true
+      }
+    } else if (!isExtant) {
       errors.hasErrors = true
+      errors.fieldErrors.citation.modelErrors.push(modelErrorCodes.IS_REQUIRED)
     }
 
-    if (citationReference.urls && !isArray(citationReference.urls)) {
-      errors.hasErrors = true
-      errors.fieldErrors.urls.modelErrors.push(modelErrorCodes.IF_PRESENT_MUST_BE_ARRAY)
-    } else {
-      errors.fieldErrors.urls.itemErrors = map(citationReference.urls, this.urlValidator.validate)
-      if (some(errors.fieldErrors.urls.itemErrors, i => i.hasErrors)) {
+    if (has(citationReference, 'urls')) {
+      if (!isArray(citationReference.urls)) {
         errors.hasErrors = true
+        errors.fieldErrors.urls.modelErrors.push(modelErrorCodes.IF_PRESENT_MUST_BE_ARRAY)
+      } else {
+        errors.fieldErrors.urls.itemErrors = map(citationReference.urls, this.urlValidator.validate)
+        if (some(errors.fieldErrors.urls.itemErrors, i => i.hasErrors)) {
+          errors.hasErrors = true
+        }
       }
     }
 

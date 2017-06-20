@@ -7,10 +7,14 @@ class ErrorMessages extends Component {
     const {
       errors
     } = this.props
-    return (
+
+    const errorList = (
         <ul className="errorMessage">
           {errors && errors.map(error => <li key={error}>{toErrorMessage(error)}</li>)}
         </ul>
+    )
+    return (
+        errors && errors.length > 0 ? errorList : null
     )
   }
 }

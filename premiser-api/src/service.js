@@ -11,7 +11,6 @@ const filter = require('lodash/filter')
 const keys = require('lodash/keys')
 const pickBy = require('lodash/pickBy')
 const map = require('lodash/map')
-const toNumber = require('lodash/toNumber')
 const differenceBy = require('lodash/differenceBy')
 const find = require('lodash/find')
 const values = require('lodash/values')
@@ -40,10 +39,14 @@ const {
   citationReferenceValidator,
 } = require('./validators')
 const {
+  OTHER_STATEMENTS_HAVE_SAME_TEXT_CONFLICT,
   OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT,
   OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT,
 } = require("./codes/entityConflictCodes")
 const {
+  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT,
+  OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT,
+  OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT,
   OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT,
   OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_REFERENCE_CONFLICT,
   OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT,
@@ -77,7 +80,7 @@ const {
   EntityTypes,
 } = require('./models')
 const {
-  rethrowTranslatedValidationError
+  rethrowTranslatedErrors
 } = require('./util')
 
 
@@ -110,7 +113,7 @@ const readStatement = ({statementId, authToken}) => statementsDao.readStatementB
     })
 
 const readStatementJustifications = ({statementId, authToken}) => Promise.resolve([
-    toNumber(statementId),
+    statementId,
     authToken,
 ])
     .then( ([statementId, authToken]) => Promise.all([
@@ -247,20 +250,34 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
     .then(userId => Promise.all([
       userId,
       statementsDao.countOtherStatementsHavingSameTextAs(statement),
-      statementsDao.hasOtherUserInteractions(userId, statement),
-      permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY)
+      Promise.props({
+        [OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]: statementsDao.hasOtherUsersRootedJustifications(statement, userId),
+        [OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]: statementsDao.hasOtherUsersRootedJustificationsVotes(statement, userId),
+        [OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT]: statementsDao.isBasisToOtherUsersJustifications(statement, userId),
+      }),
+      permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
     ]))
     .then( ([
         userId,
         otherStatementsHavingSameTextCount,
-        hasOtherUserInteractions,
+        userActionConflicts,
         hasPermission,
       ]) => {
       if (otherStatementsHavingSameTextCount > 0) {
-        throw new EntityConflictError([OTHER_CITATIONS_HAVE_SAME_TEXT_CONFLICT])
-      } else if (hasOtherUserInteractions && !hasPermission) {
-        const conflictCodes = []
-        throw new UserActionsConflictError(conflictCodes)
+        throw new EntityConflictError({
+          hasErrors: true,
+          fieldErrors: {
+            text: [OTHER_STATEMENTS_HAVE_SAME_TEXT_CONFLICT]
+          }
+        })
+      } else if (!hasPermission) {
+        const userActionConflictCodes = keys(pickBy(userActionConflicts))
+        if (userActionConflictCodes.length > 0) {
+          throw new UserActionsConflictError({
+            hasErrors: true,
+            modelErrors: userActionConflictCodes,
+          })
+        }
       }
       return userId
     })
@@ -376,12 +393,20 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
     }) => {
 
       const entityConflictCodes = keys(pickBy(entityConflicts))
-      if (entityConflictCodes.length > 0) throw new EntityConflictError(entityConflictCodes)
+      if (entityConflictCodes.length > 0) {
+        throw new EntityConflictError({
+          hasErrors: true,
+          modelErrors: entityConflictCodes,
+        })
+      }
 
       const userActionsConflictCodes = keys(pickBy(userActionConflicts))
       if (userActionsConflictCodes.length > 0) {
         if (!hasPermission) {
-          throw new UserActionsConflictError(userActionsConflictCodes)
+          throw new UserActionsConflictError({
+            hasErrors: true,
+            modelErrors: userActionsConflictCodes,
+          })
         }
         logger.info(`User ${userId} overriding userActionsConflictCodes ${userActionsConflictCodes}`)
       }
@@ -525,9 +550,9 @@ const createJustificationAsUser = (justification, userId, now) => Promise.resolv
 const createValidJustificationAsUser = (justification, userId, now) => Promise.all([
       now,
       createJustificationTarget(justification.target, userId, now)
-          .catch(ValidationError, rethrowTranslatedValidationError('target')),
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('target')),
       createJustificationBasis(justification.basis, userId, now)
-          .catch(ValidationError, rethrowTranslatedValidationError('basis')),
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('basis')),
     ])
     .then( ([
         now,
@@ -581,7 +606,7 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
 
     case JustificationTargetType.JUSTIFICATION:
       return createJustificationAsUser(justificationTarget.entity, userId, now)
-          .catch(ValidationError, rethrowTranslatedValidationError('entity'))
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
           .then( ({isExtant, justification}) => ({
             isExtant,
             targetType: justificationTarget.type,
@@ -590,7 +615,7 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
 
     case JustificationTargetType.STATEMENT:
       return createStatementAsUser(justificationTarget.entity, userId, now)
-          .catch(ValidationError, rethrowTranslatedValidationError('entity'))
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
           .then(({isExtant, statement}) => ({
             isExtant,
             targetType: justificationTarget.type,
@@ -607,7 +632,7 @@ const createJustificationBasis = (justificationBasis, userId, now) => {
 
     case JustificationBasisType.CITATION_REFERENCE:
       return createCitationReferenceAsUser(justificationBasis.entity, userId, now)
-          .catch(ValidationError, rethrowTranslatedValidationError('entity'))
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
           .then(citationReference => ({
             basisType: JustificationBasisType.CITATION_REFERENCE,
             basisEntity: citationReference,
@@ -615,7 +640,7 @@ const createJustificationBasis = (justificationBasis, userId, now) => {
 
     case JustificationBasisType.STATEMENT:
       return createStatementAsUser(justificationBasis.entity, userId, now)
-          .catch(ValidationError, rethrowTranslatedValidationError('entity'))
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
           .then(({isExtant, statement}) => ({
             isExtant,
               basisType: JustificationBasisType.STATEMENT,

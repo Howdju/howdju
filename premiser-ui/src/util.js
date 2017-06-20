@@ -37,7 +37,7 @@ export function assert(test, message) {
                 // Otherwise, not much else we can do
                 message
 
-  const logError = message => console.error("Failed assertion: " + makeMessage(message))
+  const logError = message => logger.error("Failed assertion: " + makeMessage(message))
 
   if (process.env.DO_ASSERT === 'true') {
     if (isFunction(test)) {
@@ -50,14 +50,10 @@ export function assert(test, message) {
   }
 }
 
-export const logError = (error) => {
-  console.error(error)
-}
-
 export const logger = {
-  error: console.log,
-  warn: console.log,
-  info: console.log,
-  debug: console.log,
-  trace: console.log,
+  error: console.error || console.log,
+  warn: console.warn || console.log,
+  info: console.info || console.log,
+  debug: console.debug || console.log,
+  trace: console.trace || console.log,
 }

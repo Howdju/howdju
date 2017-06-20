@@ -1,55 +1,54 @@
-import { normalize } from 'normalizr';
-import fetch from 'isomorphic-fetch'
+import { normalize } from 'normalizr'
+import Axios, {CancelToken} from 'axios'
+import { CANCEL } from 'redux-saga'
 
-import {logError} from './util'
+import {logger} from './util'
 import {
   newApiResponseError,
-  newNetworkFailureError,
+  newNetworkFailureError, newRequestConfigurationError,
 } from "./customErrors";
+import * as httpMethods from "./httpMethods";
 
-const apiUrl = path => process.env.API_ROOT + path
+const axios = Axios.create({
+  baseURL: process.env.API_ROOT,
+  withCredentials: true,
+});
 
-const extractResponseBodyJson = response => {
-  const contentType = response.headers.get('Content-Type')
-  switch (contentType) {
-    case 'application/json':
-    case 'application/json; charset=utf-8':
-      return response.json().then(
-          bodyJson => ({ bodyJson, response }),
-          error => {
-            logError(error)
-            return Promise.reject(newApiResponseError("Invalid JSON", error, response.status))
-          }
-      )
-    default:
-      const contentLength = response.headers.has('Content-Length') ?
-          parseInt(response.headers.get('Content-Length'), 10) :
-          0
-      if (contentLength !== 0) {
-        logError("Non-empty non-JSON response; API only handles JSON content")
-        return response.text().then(
-          text => Promise.reject(newApiResponseError("Non-JSON response: " + text, null, response.status)),
-          error => Promise.reject(newApiResponseError("Invalid response; error converting response to text", error, response.status))
-        )
-      }
-      return { null, response }
-  }
+export function request({endpoint, method, body, headers, schema}) {
+
+  const source = CancelToken.source();
+
+  // https://github.com/mzabriskie/axios#request-config
+  const request = axios.request({
+    url: endpoint,
+    method: method || httpMethods.GET,
+    headers: headers,
+    data: body,
+    cancelToken: source.token,
+    // onUploadProgress
+    // onDownloadProgress
+  })
+      .then(response => {
+        // https://github.com/mzabriskie/axios#response-schema
+        return schema && response.data ? normalize(response.data, schema) : response.data
+      })
+      .catch(handleError)
+
+  // https://github.com/redux-saga/redux-saga/issues/651#issuecomment-262375964
+  // https://github.com/redux-saga/redux-saga/issues/701#issuecomment-267512606
+  request[CANCEL] = source.cancel
+
+  return request
 }
 
-export function fetchJson(endpoint, {init = {}, schema}) {
-  const fullUrl = apiUrl(endpoint)
-  // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
-  return fetch(fullUrl, init)
-      .then(extractResponseBodyJson, error => {
-        // Any way to detect difference between CORS failure and network failure here?
-        // Might try a fetch with 'no-cors'
-        throw newNetworkFailureError(error)
-      })
-      .then( ({ bodyJson, response }) => {
-        if (!response.ok) {
-          return Promise.reject(newApiResponseError("Api error response", null, response.status, bodyJson))
-        }
-
-        return schema && bodyJson ? normalize(bodyJson, schema) : bodyJson
-      })
+const handleError = error => {
+  if (Axios.isCancel(error)) {
+    logger.debug('Request canceled', error.message);
+  } else if (error.response) {
+    throw newApiResponseError("Api error response", error)
+  } else if (error.request) {
+    throw newNetworkFailureError("Api request failed", error)
+  } else {
+    throw newRequestConfigurationError("Request configuration error", error)
+  }
 }
