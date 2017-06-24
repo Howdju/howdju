@@ -9,6 +9,7 @@ import CardActions from 'react-md/lib/Cards/CardActions';
 import CardText from 'react-md/lib/Cards/CardText';
 import { Switch } from 'react-md/lib/SelectionControls'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import cn from 'classnames'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
@@ -41,7 +42,6 @@ import {logger} from "./util";
 import NewJustificationEditorFields from "./NewJustificationEditorFields";
 import StatementEditorFields from "./StatementEditorFields";
 import {EditorTypes} from "./reducers/editors";
-import {ESCAPE_KEY_CODE} from "./keyCodes";
 
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
@@ -109,6 +109,9 @@ class EditStatementJustificationPage extends Component {
           basisType,
           basisId,
         } = this.props.queryParams
+        // First clear out the editor
+        this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification())
+        // Then fetch the stuff for editing
         this.props.flows.fetchAndBeginEditOfNewJustificationFromBasis(this.editorType, this.editorId, basisType, basisId)
         break
       case EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION:
@@ -194,41 +197,47 @@ class EditStatementJustificationPage extends Component {
     return (
         <DocumentTitle title={`Howdju - ${title}`}>
           <form onSubmit={this.onSubmit}>
-            <div id="addStatementPage" className="md-grid">
-              <div className="md-cell md-cell--12">
+            <FocusContainer initialFocus="#statementEditorText" containFocus={false} focusOnMount={true}>
+              <div id="addStatementPage" className="md-grid">
+                <div className="md-cell md-cell--12">
 
-                <Card>
-                  <CardTitle title={title} />
+                  <Card>
+                    <CardTitle title={title} />
 
-                  <CardText>
-                    <StatementEditorFields statement={statement}
-                                           id="statement"
-                                           name="statement"
-                                           suggestionsKey={suggestionKeys.createStatementPageStatement}
-                                           onPropertyChange={this.onPropertyChange}
-                                           errors={statementErrors}
-                                           disabled={isSaving}
+                    <CardText>
+                      <StatementEditorFields statement={statement}
+                                             textId="statementEditorText"
+                                             name="statement"
+                                             suggestionsKey={suggestionKeys.createStatementPageStatement}
+                                             onPropertyChange={this.onPropertyChange}
+                                             errors={statementErrors}
+                                             disabled={isSaving}
+                      />
+                    </CardText>
+
+                    {!isCreateJustification &&
+                      <Switch id="doCreateJustificationSwitch"
+                              name="doCreateJustification"
+                              label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
+                              checked={doCreateJustification}
+                              onChange={this.onDoCreateJustificationSwitchChange}
+                              disabled={isSaving}
+                      />
+                    }
+
+                    <CardTitle title={t(JUSTIFICATION_TITLE)}
+                               className={cn({hidden: !isCreateJustification && !doCreateJustification})}
                     />
-                  </CardText>
 
-                  {!isCreateJustification &&
-                    <Switch id="doCreateJustificationSwitch"
-                            name="doCreateJustification"
-                            label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
-                            checked={doCreateJustification}
-                            onChange={this.onDoCreateJustificationSwitchChange}
-                            disabled={isSaving}
-                    />
-                  }
-
-                  <CardTitle title={t(JUSTIFICATION_TITLE)}
-                             className={cn({hidden: !isCreateJustification && !doCreateJustification})}
-                  />
-
-                  <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
-                    {/* Don't mount initially so-as to allow the statement to receive focusOnMount*/}
-                    {(isCreateJustification || isSubmitJustification || doCreateJustification) && justification &&
+                    <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
+                      {/* Don't mount initially so-as to allow the statement to receive focusOnMount (can remove this after controlling focus via initialFocus?) */}
+                      {(isCreateJustification || isSubmitJustification || doCreateJustification) && justification &&
+                        null
+                      }
                       <NewJustificationEditorFields newJustification={justification}
+                                                    id="newJustificationEditor"
+                                                    basisStatementTextId="newJustificationBasisStatement"
+                                                    basisCitationReferenceQuoteId="newJustificationBasisCitationReferenceQuote"
                                                     name="justification"
                                                     suggestionsKey={suggestionKeys.createStatementPageJustification}
                                                     readOnlyBasis={isSaving || isCreateJustification}
@@ -236,32 +245,30 @@ class EditStatementJustificationPage extends Component {
                                                     onAddUrl={this.addJustificationUrl}
                                                     onRemoveUrl={this.removeJustificationUrl}
                                                     errors={newJustificationErrors}
-                                                    // several weird problems occur with shift-tabbing, so stop focus until have time to fix
-                                                    focusOnMount={false}
                       />
-                    }
-                  </CardText>
+                    </CardText>
 
-                  <CardActions>
-                    {isSaving && <CircularProgress key="progress" id="progress" />}
-                    <Button flat
-                            label="Cancel"
-                            disabled={isSaving}
-                            onClick={this.onCancel}
-                    />
-                    <Button raised
-                            primary
-                            type="submit"
-                            label={submitButtonLabel}
-                            title={submitButtonTitle}
-                            disabled={isSaving}
-                    />
-                  </CardActions>
+                    <CardActions>
+                      {isSaving && <CircularProgress key="progress" id="progress" />}
+                      <Button flat
+                              children="Cancel"
+                              disabled={isSaving}
+                              onClick={this.onCancel}
+                      />
+                      <Button raised
+                              primary
+                              type="submit"
+                              children={submitButtonLabel}
+                              title={submitButtonTitle}
+                              disabled={isSaving}
+                      />
+                    </CardActions>
 
-                </Card>
+                  </Card>
 
+                </div>
               </div>
-            </div>
+            </FocusContainer>
           </form>
         </DocumentTitle>
     )

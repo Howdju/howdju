@@ -9,6 +9,7 @@ class EditableJustificationBasis extends Component {
   render() {
     const {
       id,
+      statementTextId,
       justification,
       editorId,
       suggestionsKey,
@@ -18,6 +19,7 @@ class EditableJustificationBasis extends Component {
     return isStatementBased(justification) ?
         <EditableStatement {...rest}
                            id={id}
+                           textId={statementTextId}
                            entityId={justification.basis.entity.id}
                            editorId={editorId}
                            suggestionsKey={suggestionsKey}

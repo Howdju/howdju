@@ -39,7 +39,7 @@ class App extends Component {
     super()
     this.handleLogout = this.handleLogout.bind(this)
     this.handleHideNavDrawer = this.handleHideNavDrawer.bind(this)
-    this.onNavDrawerVisibilityToggle = this.onNavDrawerVisibilityToggle.bind(this)
+    this.onNavDrawerVisibilityChange = this.onNavDrawerVisibilityChange.bind(this)
     this.onSnackbarDismiss = this.onSnackbarDismiss.bind(this)
   }
 
@@ -65,7 +65,7 @@ class App extends Component {
     this.props.ui.hideNavDrawer()
   }
 
-  onNavDrawerVisibilityToggle(visible) {
+  onNavDrawerVisibilityChange(visible) {
     this.props.ui.setNavDrawerVisibility({visible})
   }
 
@@ -120,7 +120,7 @@ class App extends Component {
               />,
             ]}
             visible={this.props.isNavDrawerVisible}
-            onVisibilityToggle={this.onNavDrawerVisibilityToggle}
+            onVisibilityChange={this.onNavDrawerVisibilityChange}
             style={{ zIndex: 100 }}
         />)
 

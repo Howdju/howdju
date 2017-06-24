@@ -112,18 +112,17 @@ class ApiAutocomplete extends Component {
     delete props.onPropertyChange
 
     return (
-        <Autocomplete
-            {...props}
-            type="text"
-            value={value}
-            dataLabel={dataLabel}
-            dataValue={dataValue}
-            onChange={this.onChange}
-            data={transformedSuggestions}
-            filter={null}
-            onAutocomplete={this.onAutocomplete}
-            onKeyDown={this.onKeyDown}
-            ref={el => this.autocomplete = el}
+        <Autocomplete {...props}
+                      type="text"
+                      value={value}
+                      dataLabel={dataLabel}
+                      dataValue={dataValue}
+                      onChange={this.onChange}
+                      onKeyDown={this.onKeyDown}
+                      onAutocomplete={this.onAutocomplete}
+                      data={transformedSuggestions}
+                      filter={null}
+                      ref={el => this.autocomplete = el}
         />
     )
   }

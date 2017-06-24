@@ -1,13 +1,16 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import FontIcon from 'react-md/lib/FontIcons'
-import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import TextField from "react-md/lib/TextFields";
+import get from 'lodash/get'
+import has from 'lodash/has'
 
 import StatementTextAutocomplete from './StatementTextAutocomplete'
 import {toErrorText} from "./modelErrorMessages";
 import {RETURN_KEY_CODE} from "./keyCodes";
 import ErrorMessages from "./ErrorMessages";
+
+const textName = 'text'
 
 class StatementEditorFields extends Component {
 
@@ -37,11 +40,10 @@ class StatementEditorFields extends Component {
       statement,
       suggestionsKey,
       name,
-      id,
+      textId,
       disabled,
       onPropertyChange,
       errors,
-      focusOnMount,
       ...rest,
     } = this.props
     delete rest.onKeyDown
@@ -52,47 +54,47 @@ class StatementEditorFields extends Component {
         {...rest, error: true, errorText: toErrorText(errors.fieldErrors.text)} :
         rest
 
-    const idPrefix = id ? id + '.' : ''
     const namePrefix = name ? name + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
-    const text = statement ? statement.text : ''
+    const hasText = has(statement, textName)
+    const text = get(statement, textName, '')
 
-    const input = (suggestionsKey && !disabled) ?
-        <StatementTextAutocomplete id={idPrefix + "text"}
-                                   name={namePrefix + "text"}
+    const input = (suggestionsKey && !disabled && hasText) ?
+        <StatementTextAutocomplete {...textInputProps}
+                                   id={textId}
+                                   name={namePrefix + textName}
                                    label="Text"
                                    required
                                    value={text}
-                                   suggestionsKey={suggestionsKeyPrefix + 'text'}
+                                   suggestionsKey={suggestionsKeyPrefix + textName}
                                    onPropertyChange={onPropertyChange}
                                    leftIcon={<FontIcon>text_fields</FontIcon>}
                                    onKeyDown={this.onTextInputKeyDown}
-                                   {...textInputProps}
         /> :
-        <TextField id={idPrefix + 'text'}
-                   name={namePrefix + "text"}
+        <TextField {...textInputProps}
+                   id={textId}
+                   name={namePrefix + textName}
                    label="Text"
                    type="text"
                    value={text}
                    required
                    onChange={this.onChange}
                    leftIcon={<FontIcon>text_fields</FontIcon>}
-                   disabled={disabled}
+                   disabled={disabled || !hasText}
                    onKeyDown={this.onTextInputKeyDown}
-                   {...textInputProps}
         />
     return (
-        <FocusContainer focusOnMount={focusOnMount}>
+        <div>
           <ErrorMessages errors={modelErrors}/>
           {input}
-        </FocusContainer>
+        </div>
     )
   }
 }
 StatementEditorFields.propTypes = {
   statement: PropTypes.object,
-  /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
-  id: PropTypes.string,
+  /** The id of the input for the statement's text.  Required by react-md's Autocomplete/TextField for accessibility */
+  textId: PropTypes.string.isRequired,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
   /** If omitted, no autocomplete */
@@ -100,12 +102,10 @@ StatementEditorFields.propTypes = {
   onPropertyChange: PropTypes.func.isRequired,
   errors: PropTypes.object,
   disabled: PropTypes.bool,
-  focusOnMount: PropTypes.bool,
   onKeyDown: PropTypes.func,
 }
 StatementEditorFields.defaultProps = {
   disabled: false,
-  focusOnMount: true,
 }
 
 export default StatementEditorFields

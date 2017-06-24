@@ -57,6 +57,7 @@ class NewJustificationEditor extends Component {
 
   render() {
     const {
+      id,
       suggestionsKey,
       editorState,
       doShowButtons,
@@ -71,16 +72,17 @@ class NewJustificationEditor extends Component {
     const {errors, isSaving} = editorState
     const editEntity = editorState.editEntity || makeNewJustification()
 
+
     const buttons = [
       <Button flat
               key="cancelButton"
-              label={t(CANCEL_BUTTON_LABEL)}
+              children={t(CANCEL_BUTTON_LABEL)}
               onClick={this.onCancelEdit} />,
       <Button flat
               primary
               key="submitButton"
               type="submit"
-              label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+              children={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
               disabled={isSaving}
       />
     ]
@@ -89,6 +91,8 @@ class NewJustificationEditor extends Component {
         <form onSubmit={this.onSubmit}>
           <NewJustificationEditorFields {...rest}
                                         newJustification={editEntity}
+                                        basisStatementTextId={id + ".newJustificationBasisStatement"}
+                                        basisCitationReferenceQuoteId={id + ".newJustificationBasisCitationReferenceQuote"}
                                         onPropertyChange={this.onPropertyChange}
                                         onAddUrl={this.onAddUrl}
                                         onRemoveUrl={this.onRemoveUrl}
@@ -107,6 +111,7 @@ class NewJustificationEditor extends Component {
 NewJustificationEditor.propTypes = {
   /** Identifies the editor's state */
   editorId: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
   /** If present, defers submits to this function */

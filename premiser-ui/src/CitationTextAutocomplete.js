@@ -32,7 +32,6 @@ class CitationTextAutocomplete extends Component {
             {...rest}
             value={value}
             // maxLength={2048}
-            pattern=".+"
             onPropertyChange={onPropertyChange}
             onAutocomplete={this.onAutocomplete}
             fetchSuggestions={api.fetchCitationTextSuggestions}

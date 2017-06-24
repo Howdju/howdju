@@ -1,19 +1,21 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import TextField from 'react-md/lib/TextFields'
+import TextField from 'react-md/lib/TextFields/TextField'
 import FontIcon from 'react-md/lib/FontIcons'
 import Button from 'react-md/lib/Buttons/Button'
-import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import cn from 'classnames'
+import map from 'lodash/map'
+import get from 'lodash/get'
+import has from 'lodash/has'
 
 import {RETURN_KEY_CODE} from "./keyCodes";
 import CitationTextAutocomplete from "./CitationTextAutocomplete";
 import {toErrorText} from "./modelErrorMessages";
-import map from 'lodash/map'
 
 import './CitationReferenceEditorFields.scss'
 
 const quoteName = 'quote'
+const citationTextName = 'citation.text'
 
 class CitationReferenceEditorFields extends Component {
   constructor() {
@@ -55,16 +57,16 @@ class CitationReferenceEditorFields extends Component {
       citationReference,
       name,
       id,
+      quoteId,
       suggestionsKey,
       disabled,
       errors,
-      focusOnMount,
     } = this.props
     const {
       isQuoteEditedAfterMount
     } = this.state
 
-    const urls = citationReference.urls
+    const urls = get(citationReference, 'urls', [])
     const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
@@ -82,72 +84,71 @@ class CitationReferenceEditorFields extends Component {
         ) :
         map(urls, () => {})
 
+    const quote = get(citationReference, quoteName, '')
+    const citationText = get(citationReference, citationTextName, '')
+    const hasCitationText = has(citationReference, citationTextName)
+
     return (
         <div>
-          <FocusContainer focusOnMount={focusOnMount}>
-            <TextField
-                id={idPrefix + quoteName}
-                key="quote"
-                name={namePrefix + quoteName}
-                type="text"
-                label="Quote"
-                rows={2}
-                className={cn({
-                  editedAfterMount: isQuoteEditedAfterMount,
-                  hasIcon: true,
-                  hasValue: !!citationReference.quote,
-                })}
-                value={citationReference.quote || ''}
-                onChange={this.onChange}
-                leftIcon={<FontIcon>format_quote</FontIcon>}
-                disabled={disabled}
-                onKeyDown={this.onTextInputKeyDown}
-                {...quoteInputProps}
-            />
-          </FocusContainer>
-          {suggestionsKey && !disabled ?
-              <CitationTextAutocomplete
-                  id={idPrefix + 'citation.text'}
-                  key="citation.text"
-                  name={namePrefix + 'citation.text'}
-                  suggestionsKey={suggestionsKeyPrefix + 'citation.text'}
-                  label="Citation"
-                  value={citationReference.citation.text}
-                  required
-                  onPropertyChange={this.onPropertyChange}
-                  leftIcon={<FontIcon>book</FontIcon>}
-                  disabled={disabled}
-                  onKeyDown={this.onTextInputKeyDown}
-                  {...citationTextInputProps}
+          <TextField {...quoteInputProps}
+                     id={quoteId || (idPrefix + "quote")}
+                     key="quote"
+                     name={namePrefix + quoteName}
+                     type="text"
+                     label="Quote"
+                     rows={2}
+                     maxRows={4}
+                     className={cn('hasIcon', {
+                       editedAfterMount: isQuoteEditedAfterMount,
+                       hasValue: !!quote,
+                     })}
+                     value={quote}
+                     onChange={this.onChange}
+                     leftIcon={<FontIcon>format_quote</FontIcon>}
+                     disabled={disabled || !has(citationReference, quoteName)}
+                     onKeyDown={this.onTextInputKeyDown}
+          />
+          {suggestionsKey && !disabled && hasCitationText ?
+              <CitationTextAutocomplete {...citationTextInputProps}
+                                        id={idPrefix + 'citation.text'}
+                                        key="citation.text"
+                                        name={namePrefix + citationTextName}
+                                        suggestionsKey={suggestionsKeyPrefix + citationTextName}
+                                        label="Citation"
+                                        value={citationText}
+                                        required
+                                        onPropertyChange={this.onPropertyChange}
+                                        leftIcon={<FontIcon>book</FontIcon>}
+                                        disabled={disabled || !hasCitationText}
+                                        onKeyDown={this.onTextInputKeyDown}
               /> :
-              <TextField id={idPrefix + 'citation.text'}
+              <TextField {...citationTextInputProps}
+                         id={idPrefix + 'citation.text'}
                          name={namePrefix + 'citation.text'}
                          label="Citation"
                          type="text"
-                         value={citationReference.citation.text}
+                         value={citationText}
                          required
                          onChange={this.onChange}
                          leftIcon={<FontIcon>book</FontIcon>}
-                         disabled={disabled}
+                         disabled={disabled || !hasCitationText}
                          onKeyDown={this.onTextInputKeyDown}
-                         {...citationTextInputProps}
               />
           }
           {map(urls, (url, index) =>
-              <TextField
-                  id={`${idPrefix}urls[${index}].url`}
-                  key={`urls[${index}].url`}
-                  name={`${namePrefix}urls[${index}].url`}
-                  className="urlInput"
-                  type="url"
-                  label="URL"
-                  value={citationReference.urls[index].url}
-                  onChange={this.onChange}
-                  leftIcon={<FontIcon>link</FontIcon>}
-                  rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
-                  disabled={!!url.id || disabled}
-                  onKeyDown={this.onTextInputKeyDown}
-                  {...urlInputProps[index]}
+              <TextField {...urlInputProps[index]}
+                         id={`${idPrefix}urls[${index}].url`}
+                         key={`urls[${index}].url`}
+                         name={`${namePrefix}urls[${index}].url`}
+                         className="urlInput"
+                         type="url"
+                         label="URL"
+                         value={get(citationReference, `urls[${index}].url`, '')}
+                         onChange={this.onChange}
+                         leftIcon={<FontIcon>link</FontIcon>}
+                         rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
+                         disabled={!!url.id || disabled}
+                         onKeyDown={this.onTextInputKeyDown}
               />
           )}
           <Button flat
@@ -156,17 +157,20 @@ class CitationReferenceEditorFields extends Component {
                     hidden: disabled,
                   })}
                   key="addUrlButton"
-                  label="Add URL"
+                  iconChildren="add"
                   onClick={this.props.onAddUrl}
-          >add</Button>
+          >
+            Add URL
+          </Button>
         </div>
     )
   }
 }
 CitationReferenceEditorFields.propTypes = {
-  citationReference: PropTypes.object.isRequired,
+  citationReference: PropTypes.object,
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: PropTypes.string,
+  quoteId: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
   /** If present, called when the user presses enter in a text field */
@@ -177,11 +181,9 @@ CitationReferenceEditorFields.propTypes = {
   errors: PropTypes.object,
   /** Whether to disable the inputs */
   disabled: PropTypes.bool,
-  focusOnMount: PropTypes.bool,
 }
 CitationReferenceEditorFields.defaultProps = {
   disabled: false,
-  focusOnMount: true,
 }
 
 export default CitationReferenceEditorFields

@@ -50,7 +50,14 @@
       those disjustifications, then the system loses its confidence of the falsehood of the quote for 
       that user and similar users.
     * System can learn to find these required quote/statement pairs and show them to users for feedback
-      
+
+# Quotes and authors
+* What the system is really trying to capture is events.  A quote isn't an event, a person saying something
+  is an event, an organization publishing something is an event.  So video might evidence the former, and
+  a website the latter. But what gets tricky is when an article quotes someone else.  So now the event
+  is the publishing of the article, but it contains an imputation of another event.  It would be great to 
+  capture this.
+
 # Modification rules
 * Can only delete bases (justifications/quotes) if other users haven't used them as bases
   * If super user deletes them, must cascade delete to justifications

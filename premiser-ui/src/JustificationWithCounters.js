@@ -9,7 +9,7 @@ import Button from 'react-md/lib/Buttons/Button'
 import FontIcon from "react-md/lib/FontIcons"
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"
-import Positions from "react-md/lib/Menus/Positions"
+import Menu from "react-md/lib/Menus/Menu";
 import FlipMove from 'react-flip-move'
 import get from 'lodash/get'
 
@@ -140,32 +140,39 @@ class JustificationWithCounters extends Component {
             id={`justification-${justification.id}-context-menu`}
             className={cn({hiding: !isOver})}
             menuClassName="contextMenu justificationContextMenu"
-            buttonChildren={'more_vert'}
-            position={Positions.TOP_RIGHT}
+            children={'more_vert'}
+            position={Menu.Positions.TOP_RIGHT}
+            menuItems={[
+              <ListItem primaryText="Go To"
+                        key="goTo"
+                        leftIcon={<FontIcon>forward</FontIcon>}
+                        onClick={this.goToStatement}
+                        className={cn({hidden: !isStatementBased(justification)})}
+              />,
+              <ListItem primaryText="Counter"
+                        key="counter"
+                        leftIcon={<FontIcon>reply</FontIcon>}
+                        onClick={this.onEditNewCounterJustification}
+              />,
+              <ListItem primaryText="Use"
+                        key="use"
+                        title={basisUseDescription}
+                        leftIcon={<FontIcon>call_made</FontIcon>}
+                        onClick={this.onUseJustification}
+              />,
+              <Divider key="divider" />,
+              <ListItem primaryText="Edit"
+                        key="edit"
+                        leftIcon={<FontIcon>create</FontIcon>}
+                        onClick={this.onEditBasis}
+              />,
+              <ListItem primaryText="Delete"
+                        key="delete"
+                        leftIcon={<FontIcon>delete</FontIcon>}
+                        onClick={this.deleteClick}
+              />,
+            ]}
         >
-          <ListItem primaryText="Go To"
-                    leftIcon={<FontIcon>forward</FontIcon>}
-                    onClick={this.goToStatement}
-                    className={cn({hidden: !isStatementBased(justification)})}
-          />
-          <ListItem primaryText="Counter"
-                    leftIcon={<FontIcon>reply</FontIcon>}
-                    onClick={this.onEditNewCounterJustification}
-          />
-          <ListItem primaryText="Use"
-                    title={basisUseDescription}
-                    leftIcon={<FontIcon>call_made</FontIcon>}
-                    onClick={this.onUseJustification}
-          />
-          <Divider />
-          <ListItem primaryText="Edit"
-                    leftIcon={<FontIcon>create</FontIcon>}
-                    onClick={this.onEditBasis}
-          />
-          <ListItem primaryText="Delete"
-                    leftIcon={<FontIcon>delete</FontIcon>}
-                    onClick={this.deleteClick}
-          />
         </MenuButton>
     )
 
@@ -213,7 +220,8 @@ class JustificationWithCounters extends Component {
 
               <div>
                 {justification && !isEditingBasis && menu}
-                <EditableJustificationBasis id={`editableJustificationBasis-${justification.id}-${justification.basis.entity.id}`}
+                <EditableJustificationBasis id={`justification-${justification.id}-basisEditor`}
+                                            statementTextId={`justification-${justification.id}-basisEditor-statementText`}
                                             justification={justification}
                                             editorId={justificationBasisEditorId(justification.basis)}
                                             suggestionsKey={suggestionKeys.justificationBasisEditor(justification)}

@@ -43,6 +43,7 @@ class StatementEditor extends Component {
 
   render() {
     const {
+      textId,
       suggestionsKey,
       editorState: {
         errors,
@@ -61,6 +62,7 @@ class StatementEditor extends Component {
         <form onSubmit={this.onSubmit}>
           <CardText>
             <StatementEditorFields {...rest}
+                                   textId={textId}
                                    statement={editEntity}
                                    disabled={isSaving}
                                    suggestionsKey={suggestionsKey}
@@ -72,7 +74,7 @@ class StatementEditor extends Component {
             {inProgress && <CircularProgress key="progress" id="progress" />}
             <Button flat
                     key="cancelButton"
-                    label={t(CANCEL_BUTTON_LABEL)}
+                    children={t(CANCEL_BUTTON_LABEL)}
                     onClick={this.onCancelEdit}
                     disabled={inProgress}
             />
@@ -80,7 +82,7 @@ class StatementEditor extends Component {
                     primary
                     key="submitButton"
                     type="submit"
-                    label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+                    children={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
                     disabled={inProgress}
             />
           </CardActions>

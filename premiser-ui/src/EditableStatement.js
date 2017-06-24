@@ -15,6 +15,7 @@ class EditableStatement extends Component {
   render() {
     const {
       id,
+      textId,
       editorId,
       statement,
       suggestionsKey,
@@ -29,6 +30,7 @@ class EditableStatement extends Component {
         <StatementEditor {...rest}
                          editorId={editorId}
                          id={id}
+                         textId={textId}
                          suggestionsKey={suggestionsKey}
         />
     const viewer =

@@ -10,7 +10,7 @@ import CardText from 'react-md/lib/Cards/CardText'
 import CardActions from 'react-md/lib/Cards/CardActions';
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
-import classNames from 'classnames'
+import cn from 'classnames'
 import get from 'lodash/get'
 
 import {
@@ -78,7 +78,7 @@ class LoginPage extends Component {
                   <CardTitle title="Login"
                              subtitle={subtitle}
                   />
-                  <CardText className={classNames({
+                  <CardText className={cn({
                       'md-cell': true,
                       'md-cell--12': true,
                       errorMessage: true,
@@ -88,44 +88,46 @@ class LoginPage extends Component {
                     {errorMessage}
                   </CardText>
                   <form onSubmit={this.onSubmit}>
-                    <CardText>
-                      <FocusContainer focusOnMount>
-                        <TextField
-                            id="email"
-                            type="email"
-                            name="email"
-                            label="Email"
-                            value={credentials.email}
-                            required
-                            onChange={this.onChange}
-                            disabled={isLoggingIn}
-                        />
-                        <TextField
-                            id="password"
-                            type="password"
-                            name="password"
-                            label="Password"
-                            value={credentials.password}
-                            required
-                            onChange={this.onChange}
-                            disabled={isLoggingIn}
-                        />
-                      </FocusContainer>
-                    </CardText>
-                    <CardActions>
-                      {isLoggingIn && <CircularProgress key="progress" id="progress" />}
-                      <Button flat
-                              label="Cancel"
+                    <FocusContainer focusOnMount containFocus={false}>
+
+                      <CardText>
+                          <TextField
+                              id="email"
+                              type="email"
+                              name="email"
+                              label="Email"
+                              value={credentials.email}
+                              required
+                              onChange={this.onChange}
                               disabled={isLoggingIn}
-                              onClick={this.onCancel}
-                      />
-                      <Button raised
-                              primary
-                              type="submit"
-                              label="Login"
+                          />
+                          <TextField
+                              id="password"
+                              type="password"
+                              name="password"
+                              label="Password"
+                              value={credentials.password}
+                              required
+                              onChange={this.onChange}
                               disabled={isLoggingIn}
-                      />
-                    </CardActions>
+                          />
+                      </CardText>
+                      <CardActions>
+                        {isLoggingIn && <CircularProgress key="progress" id="progress" />}
+                        <Button flat
+                                children="Cancel"
+                                disabled={isLoggingIn}
+                                onClick={this.onCancel}
+                        />
+                        <Button raised
+                                primary
+                                type="submit"
+                                children="Login"
+                                disabled={isLoggingIn}
+                        />
+                      </CardActions>
+
+                    </FocusContainer>
                   </form>
                 </Card>
 

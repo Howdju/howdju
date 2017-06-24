@@ -1,8 +1,9 @@
 # Howdju UI TODO
+
 ## MVP
 
-* With long quote submission, citation input overlaps with quote input...
-* autocomplete of citation appears while in URL field
+* Don't say "No justifications" while statement justification is loading
+* Escape when focusing autocomplete item should close autocomplete, return focus to autocomplete input 
 * Do login error messages work? (ui.js)
 
 ### Features
@@ -21,8 +22,6 @@
   * Justifications countered by statement
 
 * Can counter justification with same statement as basis for target justification
-* Add linting 
-  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
 
 * Jobs (justification score)
 * favicon
@@ -52,10 +51,20 @@
 * Why do I have PostCSS in my project?
 
 
+## Tooling
+* Local fonts for development
+  * https://shellmonger.com/2016/01/22/working-with-fonts-with-webpack/
+* https://flow.org/
+* Update webpack 3
+  * scope hoisting and magic comments for chunks
+  * https://github.com/webpack/webpack/releases
+* Add linting 
+  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
+
+
 ## 0.2
 
 ### Bugs
-
 * With slow connection, click create justification multiple times
   * looks like multiple justifications are made
   * It is possible for several requests submitted around the same time to pass validations
@@ -85,13 +94,17 @@
   * challenge of card having buttons to create counter
   
 ### Features
+* JustificationTypes
+  * List (votes for inclusion/exclusion)
+    * A list of purported examples of something with links to prove their existence
+    * [{text, urls}, ...]
+  * Argument (statements connected with joiner words: "or", "because", "then", "therefore", "if")
+  * MEDIA (Image/Video) (how handle editing to add higher-resolution images?)
+    * Button to show image/video URL in-context
 * tagging
   * Home page tag cloud
 * Implement full model constraints in services
   * don't let a user edit their own entities when they are older than a certain age
-* JustificationBasisType.List 
-  * A list of purported examples of something with links to prove their existence
-  * [{text, urls}, ...]
 * warn if they try and navigate away after entering text
 * Add delete statement/justification confirmation (or better, undo)
 * Author of quote
@@ -99,10 +112,6 @@
   * Users can always add new URLs
   * Deleting URLs follow the normal rules (if other users have interacted, or grace period is up)
   * Votes determine order of URLs
-* Justification bases
-  * Button to show image/video URL in-context
-  * JustificationBasisType.IMAGE
-  * JustificationBasisType.VIDEO
 * Analyze sources
   * See list of all domains cited; search cited domains.
   * See citations (quotes?) and/or citations supported by domain name
@@ -111,7 +120,7 @@
       * X said
       * quotation marks
 * Recent votes: see what statement justifications look like when limited to a time period, either pre-selected time periods or according to the 'most recent activity' however recent that most recent activity is
-* Main search:
+* Add facets to main search:
   * citation text
   * url
   * author
@@ -146,6 +155,7 @@
 * Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
   * Or should we not be normalizing from API?  Should we normalize in reducer?
   * Change this for autocomplete fetches in entities
+* Delete citation reference URL right button is misaligned
 
 ### Flair
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
@@ -154,6 +164,7 @@
 * Disable context menu(s) when deleting something, like a statement or justification
 * Add progress and disabled to vote buttons
   * Don't slide/hide the vote actions until the vote has successfully responded
+* EditStatementCitationPage: can I move focus to basis component when first showing them?
 
 ### Refactoring/stability
 * Refactor tests to use helpers to cut down on setup noise
@@ -213,6 +224,7 @@
   * http://redux-form.com/
   * https://gist.github.com/mlaursen/641364cf6114692d470069c56c505880
 
+
 ## Next-next
  * https://github.com/mattkrick/redux-optimistic-ui
 * Time travel to see what libraries made app large
@@ -223,6 +235,8 @@
   * cdn.premiser.co?
   * [Invalidation vs. versioning](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html)
 * Rename justification to newJustification in STATEMENT_JUSTIFICATION editEntity
+* https://github.com/babel/babel-loader#babel-is-injecting-helpers-into-each-file-and-bloating-my-code
+
 
 ## Maybe
 * https://prerender.io/
@@ -266,8 +280,38 @@
   * [normilzr](https://github.com/paularmstrong/normalizr)
   * [ecosystem](http://redux.js.org/docs/introduction/Ecosystem.html)
 
+
 ## Cool
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
 * https://github.com/mariusandra/kea
 * https://github.com/awslabs/lambda-refarch-voteapp
 * [CrowdIn Localization](https://crowdin.com/)
+
+
+## react-md bugs
+  * Autocomplete lists cover toggle inputs
+  * Autocompletes in dialogs are funky aligned
+    * Glossary
+      * anchor/belowAnchor - describe how the child will be introduced relative to the toggle
+      * fixedTo - Child will be hidden if it goes outside this (by default it's the viewport)
+      * toggle - The thing relative to which the layover displays the children
+      * child - The thing(s) the layover is displaying
+    
+    * I think that the issue is that getBoundingClientRect is relative to viewport, while top/left
+      are relative to first positioned ancestor.  So one solution would be to find the first positioned
+      ancestor and subtract its getBoundingClientRect top/left from those calculated for the child.
+      Maybe this is what _dialog and _inFixed are supposed to be doing?
+      * _init fixes top/left based upon _dialog rect, but not if _dialog is falsy (fix this in
+        _setContainer?)
+      * This happens because _setContainer reaches the fixed md-dialog before it reaches its md-dialog-container
+        I think md-dialog must be fixed, so I think the error is that it is not looking for md-dialog
+    * Why doesn't it _positionChild within _fixateChild for md-dialog--centered? 
+    * _init seems to get `left` correct, while positionChild does not
+    
+    * _handleTick and _initialFix
+    * Layover._fixateChild: no _dialog even though in dialog
+      * Takes first of fixed !md-layover-child or dialog
+    * Ultimately, autocomplete needs to be attached to body, not parent?  Or can use overflow?
+      * .md-dialog overflow: visible seems to work
+  * main search autocomplete opening while editing statement below
+    * autocomplete of citation appears while in URL field

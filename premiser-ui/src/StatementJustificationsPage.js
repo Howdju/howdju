@@ -8,17 +8,15 @@ import FontIcon from "react-md/lib/FontIcons";
 import MenuButton from "react-md/lib/Menus/MenuButton";
 import ListItem from "react-md/lib/Lists/ListItem";
 import Dialog from 'react-md/lib/Dialogs'
-import Positions from "react-md/lib/Menus/Positions";
+import Menu from "react-md/lib/Menus/Menu";
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
-import toNumber from "lodash/toNumber";
-import isFinite from "lodash/isFinite";
 import forEach from 'lodash/forEach';
 import some from 'lodash/some'
 import defaults from 'lodash/defaults'
-import classNames from 'classnames'
+import cn from 'classnames'
 import FlipMove from 'react-flip-move';
 import get from 'lodash/get'
 
@@ -187,7 +185,7 @@ class StatementJustificationsPage extends Component {
     const hasAgreement = some(justifications, j => isVerified(j) && isPositive(j))
     const hasDisagreement = some(justifications, j => isVerified(j) && isNegative(j))
 
-    const statementCardClassNames = classNames({
+    const statementCardClassName = cn({
       statementCard: true,
       agreement: hasAgreement,
       disagreement: hasDisagreement,
@@ -196,29 +194,36 @@ class StatementJustificationsPage extends Component {
         <MenuButton
             icon
             id={`statement-${statementId}-context-menu`}
-            className={classNames({hiding: !this.state.isOverStatement})}
+            className={cn({hiding: !this.state.isOverStatement})}
             menuClassName="contextMenu statementContextMenu"
-            buttonChildren={'more_vert'}
-            position={Positions.TOP_RIGHT}
+            children={'more_vert'}
+            position={Menu.Positions.TOP_RIGHT}
+            menuItems={[
+              <ListItem primaryText="Add Justification"
+                        key="addJustification"
+                        leftIcon={<FontIcon>add</FontIcon>}
+                        onClick={this.showNewJustificationDialog}
+              />,
+              <ListItem primaryText="Use"
+                        key="use"
+                        title="Justify another statement with this one"
+                        leftIcon={<FontIcon>call_made</FontIcon>}
+                        onClick={this.onUseStatement}
+              />,
+              <Divider key="divider" />,
+              <ListItem primaryText="Edit"
+                        key="edit"
+                        leftIcon={<FontIcon>create</FontIcon>}
+                        onClick={this.onEditStatement}
+              />,
+              <ListItem primaryText="Delete"
+                        key="delete"
+                        leftIcon={<FontIcon>delete</FontIcon>}
+                        onClick={this.deleteStatement}
+              />,
+            ]}
         >
-          <ListItem primaryText="Add Justification"
-                    leftIcon={<FontIcon>add</FontIcon>}
-                    onClick={this.showNewJustificationDialog}
-          />
-          <ListItem primaryText="Use"
-                    title="Justify another statement with this one"
-                    leftIcon={<FontIcon>call_made</FontIcon>}
-                    onClick={this.onUseStatement}
-          />
-          <Divider />
-          <ListItem primaryText="Edit"
-                    leftIcon={<FontIcon>create</FontIcon>}
-                    onClick={this.onEditStatement}
-          />
-          <ListItem primaryText="Delete"
-                    leftIcon={<FontIcon>delete</FontIcon>}
-                    onClick={this.deleteStatement}
-          />
+
         </MenuButton>
     )
 
@@ -229,20 +234,21 @@ class StatementJustificationsPage extends Component {
                 onHide={this.cancelNewJustificationDialog}
                 actions={[
                   <Button flat
-                          label={text(CANCEL_BUTTON_LABEL)}
+                          children={text(CANCEL_BUTTON_LABEL)}
                           onClick={this.cancelNewJustificationDialog}
                           disabled={isSavingNewJustification}
                   />,
                   <Button raised
                           primary
                           type="submit"
-                          label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+                          children={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
                           onClick={this.saveNewJustification}
                           disabled={isSavingNewJustification}
                   />
                 ]}
         >
           <NewJustificationEditor editorId={this.newJustificationEditorId}
+                                  id="addNewJustificationDialogEditor"
                                   suggestionsKey={suggestionKeys.statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
                                   onSubmit={this.onSubmitNewJustificationDialog}
                                   doShowButtons={false}
@@ -307,7 +313,7 @@ class StatementJustificationsPage extends Component {
 
                 <div className="statement">
 
-                  <Card className={statementCardClassNames}
+                  <Card className={statementCardClassName}
                       onMouseOver={this.onStatementMouseOver}
                       onMouseLeave={this.onStatementMouseLeave}
                   >
@@ -317,6 +323,7 @@ class StatementJustificationsPage extends Component {
 
                         {statement && !isEditingStatement && menu}
                         <EditableStatement id={`editableStatement-${statementId}`}
+                                           textId={`editableStatement-${statementId}-statementEditorText`}
                                            entityId={statementId}
                                            editorId={this.statementEditorId}
                                            suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}

@@ -33,7 +33,6 @@ class StatementTextAutocomplete extends Component {
           {...props}
           value={value}
           // maxLength={2048}
-          pattern=".+"
           onPropertyChange={onPropertyChange}
           onAutocomplete={this.onAutocomplete}
           fetchSuggestions={api.fetchStatementTextSuggestions}

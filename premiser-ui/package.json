@@ -8,7 +8,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "clean": "rm -rf dist",
-    "build:dev": "yarn run clean && cross-env NODE_ENV=development DEBUG=* webpack --config config/webpack.config.js",
+    "build:dev": "yarn run clean && cross-env NODE_ENV=development DEBUG=*,-babel webpack --config config/webpack.config.js",
     "build:prod": "yarn run clean && cross-env NODE_ENV=production DEBUG=* webpack --config config/webpack.config.js",
     "serve:dev": "cross-env NODE_ENV=development DEBUG=premiser-ui:* node bin/dev-server.js",
     "serve:prod": "cross-env NODE_ENV=production DEBUG=premiser-ui:* node bin/dev-server.js",
@@ -75,7 +75,7 @@
     "react-document-title": "^2.0.2",
     "react-dom": "^15.4.2",
     "react-flip-move": "^2.9.2",
-    "react-md": "^1.0.11",
+    "react-md": "file:/Users/tech/code/github-forks/howdju-react-md/",
     "react-redux": "^5.0.3",
     "react-router": "^4.0.0",
     "react-router-dom": "^4.0.0",

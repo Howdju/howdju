@@ -42,7 +42,12 @@ const baseWebpackConfig = {
       {
         test: /\.(js|jsx)$/,
         exclude : /node_modules/,
-        use: { loader: 'babel-loader' },
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+          }
+        },
       },
       {
         test: /\.scss$/,
@@ -103,6 +108,12 @@ const baseWebpackConfig = {
     new HtmlWebpackPlugin(htmlWebpackPluginConfig),
     new webpack.DefinePlugin(definePluginConfig),
   ],
+  // https://webpack.github.io/docs/configuration.html#resolve-alias
+  // resolve: {
+  //   alias: {
+  //     'react': path.resolve('./node_modules/react'),
+  //   }
+  // }
 }
 
 module.exports = merge.smart(baseWebpackConfig, envWebpackConfig)

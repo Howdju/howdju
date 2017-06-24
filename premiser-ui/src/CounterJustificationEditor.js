@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux"
 import Button from 'react-md/lib/Buttons/Button'
-import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import CardActions from 'react-md/lib/Cards/CardActions';
 import CardText from 'react-md/lib/Cards/CardText';
@@ -63,23 +62,21 @@ class CounterJustificationEditor extends Component {
     return (
         <form onSubmit={this.onSubmit}>
           <CardText>
-            <FocusContainer focusOnMount>
-              <StatementEditorFields
-                  {...rest}
-                  name="basis.entity"
-                  statement={editEntity}
-                  suggestionsKey={suggestionsKey}
-                  onPropertyChange={this.onPropertyChange}
-                  disabled={isSaving}
-                  errors={statementErrors}
-              />
-            </FocusContainer>
+            <StatementEditorFields
+                {...rest}
+                name="basis.entity"
+                statement={editEntity}
+                suggestionsKey={suggestionsKey}
+                onPropertyChange={this.onPropertyChange}
+                disabled={isSaving}
+                errors={statementErrors}
+            />
           </CardText>
           <CardActions>
             {isSaving && <CircularProgress key="progress" id="progress" />}
             <Button flat
                     key="cancelButton"
-                    label={t(CANCEL_BUTTON_LABEL)}
+                    children={t(CANCEL_BUTTON_LABEL)}
                     onClick={this.onCancelEdit}
                     disabled={isSaving}
             />
@@ -87,7 +84,7 @@ class CounterJustificationEditor extends Component {
                     primary
                     key="submitButton"
                     type="submit"
-                    label={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+                    children={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
                     disabled={isSaving}
             />
           </CardActions>
