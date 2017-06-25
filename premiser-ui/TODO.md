@@ -1,9 +1,7 @@
 # Howdju UI TODO
 
 ## MVP
-
-* Don't say "No justifications" while statement justification is loading
-* Escape when focusing autocomplete item should close autocomplete, return focus to autocomplete input 
+ 
 * Do login error messages work? (ui.js)
 
 ### Features
@@ -315,3 +313,6 @@
       * .md-dialog overflow: visible seems to work
   * main search autocomplete opening while editing statement below
     * autocomplete of citation appears while in URL field
+
+## React-MD improvements
+  * Escape when focusing autocomplete item should close autocomplete, return focus to autocomplete input?

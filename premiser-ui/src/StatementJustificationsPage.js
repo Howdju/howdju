@@ -157,19 +157,19 @@ class StatementJustificationsPage extends Component {
 
   render () {
     const {
+      statementId,
       statement,
       justifications,
-      isFetching,
-      didFail,
+
+      isFetchingStatement,
+      isEditingStatement,
+      didFetchingStatementFail,
+
       isNewJustificationDialogVisible,
       isSavingNewJustification,
-      match: {params: {statementId} },
-      isEditingStatement,
     } = this.props
 
     const {narrowBreakpoint, flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
-
-    const errorMessage = didFail ? text(FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE) : ''
 
     const isNarrow = this.state.width <= narrowBreakpoint
     const defaultJustificationsByPolarity = {
@@ -339,14 +339,7 @@ class StatementJustificationsPage extends Component {
               </div>
             </div>
 
-            {errorMessage &&
-                <div className="row center-xs">
-                  <div className="col-xs-12 errorMessage">
-                    {errorMessage}
-                  </div>
-                </div>
-            }
-            {!hasJustifications && !isFetching && !errorMessage &&
+            {!hasJustifications && !isFetchingStatement && !didFetchingStatementFail &&
 
               <div className="row center-xs">
                 <div className="col-xs-12">
@@ -363,7 +356,7 @@ class StatementJustificationsPage extends Component {
               </div>
             }
             <div className="row">
-              {isFetching && statement && <CircularProgress key="progress" id="statementJustificationsProgress" /> || justificationRows}
+              {isFetchingStatement && statement && <CircularProgress key="progress" id="statementJustificationsProgress" /> || justificationRows}
             </div>
 
             {addNewJustificationDialog}
@@ -373,13 +366,6 @@ class StatementJustificationsPage extends Component {
         </DocumentTitle>
     )
   }
-}
-StatementJustificationsPage.defaultProps = {
-  isFetching: false,
-  didFail: false,
-  isNewJustificationDialogVisible: false,
-  statement: null,
-  justifications: [],
 }
 
 const sortJustifications = justifications => {
@@ -400,24 +386,26 @@ const mapStateToProps = (state, ownProps) => {
   const statement = state.entities.statements[statementId]
 
   const statementEditorState = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPage_statementEditor_editorId])
-  const statementEditorModel = get(statementEditorState, 'editEntity')
+
   const isFetchingStatement = get(statementEditorState, 'isFetching')
-  const isEditingStatement = !!statementEditorModel
+  const didFetchingStatementFail = get(statementEditorState, ['errors', 'hasErrors'], false)
+  const isEditingStatement = !!get(statementEditorState, ['editEntity', 'editorModel'])
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
   justifications = sortJustifications(justifications)
 
-  const {
-    isSaving: isSavingNewJustification,
-  } = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId], {})
+  const newJustificationDialogEditorState = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId], {})
+  const isSavingNewJustification = newJustificationDialogEditorState.isSaving
 
   return {
     ...state.ui.statementJustificationsPage,
+    statementId,
     statement: denormalize(statement, statementSchema, state.entities),
     justifications,
     isSavingNewJustification,
     isFetchingStatement,
     isEditingStatement,
+    didFetchingStatementFail,
   }
 }
 
