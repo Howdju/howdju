@@ -12,6 +12,7 @@ const {
   EntityConflictError,
   UserActionsConflictError,
   ValidationError,
+  InvalidLoginError,
 } = require("./errors")
 const apiErrorCodes = require('./codes/apiErrorCodes')
 const {
@@ -260,6 +261,10 @@ const routes = [
     // TODO change to body: {credentials}
     handler: ({callback, request: {body}}) => login(body)
         .then(({email, authToken}) => ok({callback, body: {email, authToken}}))
+        .catch(NotFoundError, () => {
+          // Hide NotFoundError to prevent someone from learning that an email does or does not correspond to an account
+          throw new InvalidLoginError()
+        })
   },
   {
     path: 'logout',
@@ -324,6 +329,7 @@ const routeEvent = ({callback, request}) =>
       .catch(ValidationError, e => badRequest({callback, body: {errorCode: apiErrorCodes.VALIDATION_ERROR, errors: e.errors}}))
       .catch(NotFoundError, e => notFound({callback}))
       .catch(AuthenticationError, e => unauthenticated({callback}))
+      .catch(InvalidLoginError, e => badRequest({callback, body: {errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS, errors: e.errors}}))
       .catch(AuthorizationError, e => unauthorized({callback, body: {errorCode: apiErrorCodes.AUTHORIZATION_ERROR, errors: e.errors}}))
       .catch(EntityConflictError, e => error({callback, body: {errorCode: apiErrorCodes.ENTITY_CONFLICT, errors: e.errors}}))
       .catch(UserActionsConflictError, e => error({callback, body: {errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT, errors: e.errors}}))

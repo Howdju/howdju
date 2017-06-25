@@ -1,8 +1,6 @@
 # Howdju UI TODO
 
 ## MVP
- 
-* Do login error messages work? (ui.js)
 
 ### Features
     
@@ -13,13 +11,6 @@
     * No, because each compound argument has a 'theme' that voting would screw up.
   * Could be Snippet type, where user puts several statements in a sentence with supporting words.
     <statement 1> and <statement 2>, but <statement 3>
-  
-* Relations
-  * Show statements justified by statement
-  * show statements justified by basis
-  * Justifications countered by statement
-
-* Can counter justification with same statement as basis for target justification
 
 * Jobs (justification score)
 * favicon
@@ -36,6 +27,7 @@
 ### Bugs/stability
 * replace regex with path-to-regexp
 * What happens if we justify a statement with itself?
+  * Can counter justification with same statement as basis for target justification
 * Figure out if the site works in Firefox
 * Test with mobile device
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
@@ -92,6 +84,10 @@
   * challenge of card having buttons to create counter
   
 ### Features
+* Relations
+  * Show statements justified by statement
+  * show statements justified by basis
+  * Justifications countered by statement
 * JustificationTypes
   * List (votes for inclusion/exclusion)
     * A list of purported examples of something with links to prove their existence
@@ -183,7 +179,7 @@
 * Statement justification drilling down
   * When goto statement, show hierarchy of statements above
   * show sub-justifications in-context
-* Hover statement when scrolling through its justifications
+* Fix statement at top of viewport when scrolling through its justifications
   * Get statement to stay in place and float above justifications? Or maybe collapse to something 
     smaller, but that lets you see the statement still as you scroll.  maybe combine with header.
 

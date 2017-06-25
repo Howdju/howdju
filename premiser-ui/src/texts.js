@@ -68,6 +68,9 @@ export const A_NETWORK_ERROR_OCCURRED = 'A_NETWORK_ERROR_OCCURRED'
 export const THAT_STATEMENT_ALREADY_EXISTS = 'THAT_STATEMENT_ALREADY_EXISTS'
 export const THAT_JUSTIFICATION_ALREADY_EXISTS = 'THAT_JUSTIFICATION_ALREADY_EXISTS'
 
+export const INVALID_LOGIN_CREDENTIALS = 'INVALID_LOGIN_CREDENTIALS'
+export const UNABLE_TO_LOGIN = 'UNABLE_TO_LOGIN'
+
 const texts = {
   [CREATE_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Create statement',
   [CREATE_STATEMENT_SUBMIT_BUTTON_TITLE]: 'Tell the world!',
@@ -128,6 +131,9 @@ const texts = {
   [AN_UNEXPECTED_ERROR_OCCURRED]: 'An unexpected error occurred',
   [A_NETWORK_ERROR_OCCURRED]: 'A network error occurred.  Please check your connection and try again.',
   [COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL]: 'Counter',
+
+  [INVALID_LOGIN_CREDENTIALS]: 'Invalid login credentials',
+  [UNABLE_TO_LOGIN]: 'Unable to login',
 }
 
 const text = (key, ...args) => {

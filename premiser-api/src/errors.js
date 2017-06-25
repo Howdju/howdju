@@ -12,6 +12,7 @@ class ValidationError extends HowdjuApiError {
   }
 }
 
+/** The user tried to do something that requires being logged in, but the user isn't logged in */
 class AuthenticationError extends HowdjuApiError {}
 
 class AuthorizationError extends HowdjuApiError {
@@ -21,6 +22,9 @@ class AuthorizationError extends HowdjuApiError {
     this.errors = errors
   }
 }
+
+/** The user tried to login with invalid credentials */
+class InvalidLoginError extends HowdjuApiError {}
 
 class NotFoundError extends HowdjuApiError {}
 
@@ -65,4 +69,5 @@ module.exports = {
   EntityConflictError,
   UserActionsConflictError,
   EntityTooOldToModifyError,
+  InvalidLoginError,
 }

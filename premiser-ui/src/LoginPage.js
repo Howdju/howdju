@@ -21,9 +21,11 @@ import {
 } from './actions'
 import {loginPageEditorId} from './editorIds'
 import {EditorTypes} from "./reducers/editors";
+import {makeNewCredentials} from "./models";
+import {toErrorText} from "./modelErrorMessages";
+import {default as t} from './texts'
 
 import './LoginPage.scss'
-import {makeNewCredentials} from "./models";
 
 class LoginPage extends Component {
 
@@ -49,7 +51,7 @@ class LoginPage extends Component {
 
   onSubmit(event) {
     event.preventDefault()
-    this.props.api.login(this.props.credentials)
+    this.props.editors.commitEdit(EditorTypes.LOGIN_CREDENTIALS, this.editorId)
   }
 
   onCancel() {
@@ -58,15 +60,27 @@ class LoginPage extends Component {
 
   render () {
     const {
-      credentials,
-      isLoggingIn,
+      editorState,
       isLoginRedirect,
     } = this.props
 
-    // TODO get from editor state
-    const errorMessage = ''
-
     const subtitle = isLoginRedirect && "Please login to continue"
+    const isLoggingIn = get(editorState, 'isSaving')
+
+    const credentials = get(editorState, 'editEntity')
+    const email = get(credentials, 'email', '')
+    const password = get(credentials, 'password', '')
+
+    const errors = get(editorState, 'errors')
+    const credentialsErrors = get(errors, 'credentials')
+    const modelErrors = get(credentialsErrors, 'modelErrors')
+
+    const emailInputProps = errors && errors.hasErrors && errors.fieldErrors.email.length > 0 ?
+        {error: true, errorText: toErrorText(errors.fieldErrors.email)} :
+        {}
+    const passwordInputProps = errors && errors.hasErrors && errors.fieldErrors.password.length > 0 ?
+        {error: true, errorText: toErrorText(errors.fieldErrors.password)} :
+        {}
 
     return (
         <DocumentTitle title={'Login - Howdju'}>
@@ -78,35 +92,37 @@ class LoginPage extends Component {
                   <CardTitle title="Login"
                              subtitle={subtitle}
                   />
-                  <CardText className={cn({
-                      'md-cell': true,
-                      'md-cell--12': true,
-                      errorMessage: true,
-                      hidden: !errorMessage,
+                  <CardText className={cn('errorMessage md-cell md-cell--12', {
+                      hidden: !modelErrors,
                     })}
                   >
-                    {errorMessage}
+                    {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
+                    <ul className="errorMessage">
+                      {modelErrors && modelErrors.map(error => <li key={error}>{t(error)}</li>)}
+                    </ul>
                   </CardText>
                   <form onSubmit={this.onSubmit}>
                     <FocusContainer focusOnMount containFocus={false}>
 
                       <CardText>
                           <TextField
+                              {...emailInputProps}
                               id="email"
                               type="email"
                               name="email"
                               label="Email"
-                              value={credentials.email}
+                              value={email}
                               required
                               onChange={this.onChange}
                               disabled={isLoggingIn}
                           />
                           <TextField
+                              {...passwordInputProps}
                               id="password"
                               type="password"
                               name="password"
                               label="Password"
-                              value={credentials.password}
+                              value={password}
                               required
                               onChange={this.onChange}
                               disabled={isLoggingIn}
@@ -140,11 +156,13 @@ class LoginPage extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  ...state.ui.loginPage,
-  credentials: get(state, ['editors', EditorTypes.LOGIN_CREDENTIALS, loginPageEditorId, 'editEntity'], makeNewCredentials()),
-  isLoginRedirect: !!state.app.loginRedirectLocation,
-})
+const mapStateToProps = state => {
+  const editorState = get(state, ['editors', EditorTypes.LOGIN_CREDENTIALS, loginPageEditorId])
+  return ({
+    editorState,
+    isLoginRedirect: !!state.app.loginRedirectLocation,
+  })
+}
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,

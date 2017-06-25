@@ -2,6 +2,7 @@ import isFunction from 'lodash/isFunction'
 import capitalize from 'lodash/capitalize'
 import join from 'lodash/join'
 import map from 'lodash/map'
+import {logger} from './util'
 
 const modelErrorMessages = {
   MUST_BE_NONEMPTY: 'Must be non-empty',

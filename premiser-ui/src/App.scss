@@ -38,7 +38,8 @@ time, mark, audio, video {
 
 .errorMessage,
   // Must override span color above
-.md-text-field-message-container--error > span {
+.md-text-field-message-container--error > span,
+.errorMessage li {
   color: $md-text-field-error-color;
 }
 

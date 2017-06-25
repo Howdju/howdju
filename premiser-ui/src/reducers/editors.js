@@ -16,6 +16,7 @@ import {
 import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewUrl} from "../models";
 import * as apiErrorCodes from "../apiErrorCodes";
 import {customErrorTypes, newProgrammingError} from "../customErrors";
+import {default as t, INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN} from "../texts";
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   editorActions[actionCreator] = true
@@ -224,7 +225,30 @@ const editorReducerByType = {
     [editors.commitEdit.result]: {
       throw: editorErrorReducer('citationReference')
     },
-  }, defaultEditorState)
+  }, defaultEditorState),
+
+  [EditorTypes.LOGIN_CREDENTIALS]: handleActions({
+    [editors.commitEdit.result]: {
+      throw: (state, action) => {
+        const sourceError = action.payload.sourceError
+        if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+          switch (sourceError.body.errorCode) {
+            case (apiErrorCodes.INVALID_LOGIN_CREDENTIALS): {
+              return {...state, errors: {credentials: {modelErrors: [INVALID_LOGIN_CREDENTIALS]}}, isSaving: false}
+            }
+            case (apiErrorCodes.VALIDATION_ERROR): {
+              const errors = sourceError.body.errors.credentials
+              return {...state, errors, isSaving: false}
+            }
+            default:
+              return {...state, errors: {credentials: {modelErrors: [UNABLE_TO_LOGIN]}}, isSaving: false}
+          }
+        }
+
+        return {...state, isSaving: false}
+      }
+    }
+  }, defaultEditorState),
 }
 
 const defaultEditorReducer = editorReducerByType[EditorTypes.DEFAULT]

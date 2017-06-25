@@ -6,32 +6,7 @@ import {
   api,
   ui
 } from '../actions'
-import text, {CREATE_JUSTIFICATION_FAILURE_MESSAGE} from "../texts";
 import mainSearcher from '../mainSearcher'
-
-
-const loginErrorMessage = (status) => {
-  switch (status) {
-    case 400:
-      return 'Invalid credentials'
-    case 403:
-      return 'Incorrect password'
-    case 404:
-      return 'Email does not exist'
-    default:
-      return 'Unable to complete login at this time'
-  }
-}
-
-const loginPage = handleActions({
-  [api.login]: (state, action) => ({...state, isLoggingIn: true}),
-  [api.login.response]: {
-    next: state => ({...state, isLoggingIn: false}),
-    throw: (state, action) => ({...state, isLoggingIn: false})
-  },
-}, {
-  isLoggingIn: false,
-})
 
 const statementJustificationsPage = handleActions({
   [ui.showNewJustificationDialog]: (state, action) => ({
@@ -82,7 +57,6 @@ export const mainSearchPage = handleActions({
 })
 
 export default combineReducers({
-  loginPage,
   statementJustificationsPage,
   mainSearchPage,
   app: appUi,

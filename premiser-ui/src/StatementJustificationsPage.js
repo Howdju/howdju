@@ -389,7 +389,7 @@ const mapStateToProps = (state, ownProps) => {
 
   const isFetchingStatement = get(statementEditorState, 'isFetching')
   const didFetchingStatementFail = get(statementEditorState, ['errors', 'hasErrors'], false)
-  const isEditingStatement = !!get(statementEditorState, ['editEntity', 'editorModel'])
+  const isEditingStatement = !!get(statementEditorState, ['editEntity'])
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
   justifications = sortJustifications(justifications)

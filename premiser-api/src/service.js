@@ -66,6 +66,7 @@ const {
   UserActionsConflictError,
   ImpossibleError,
   EntityTooOldToModifyError,
+  InvalidLoginError,
 } = require("./errors")
 const {
   CREATE_USERS,
@@ -171,7 +172,7 @@ const login = ({credentials}) => Promise.resolve()
     })
     .then( ([user, isMatch]) => {
       if (!isMatch) {
-        throw new AuthenticationError()
+        throw new InvalidLoginError()
       }
       const authToken = cryptohat(256, 36)
       const created = new Date()

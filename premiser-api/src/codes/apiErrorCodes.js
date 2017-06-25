@@ -5,6 +5,9 @@ module.exports = {
   /** The data submitted was invalid */
   VALIDATION_ERROR: 'VALIDATION_ERROR',
 
+  /** The user tried to login with invalid login credentials */
+  INVALID_LOGIN_CREDENTIALS: 'INVALID_LOGIN_CREDENTIALS',
+
   /** The principle authenticated by the request lacks authority to perform the action */
   AUTHORIZATION_ERROR: 'AUTHORIZATION_ERROR',
 

@@ -420,6 +420,9 @@ function* editorCommitEdit() {
     [EditorTypes.CITATION_REFERENCE]: {
       [UPDATE]: api.updateCitationReference
     },
+    [EditorTypes.LOGIN_CREDENTIALS]: {
+      [CREATE]: api.login,
+    },
   }
 
   const createEditorCommitApiResourceAction = (editorType, editEntity) => {
