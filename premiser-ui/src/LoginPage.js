@@ -27,6 +27,7 @@ import {default as t} from './texts'
 
 import './LoginPage.scss'
 
+
 class LoginPage extends Component {
 
   constructor() {
@@ -144,6 +145,32 @@ class LoginPage extends Component {
                       </CardActions>
 
                     </FocusContainer>
+                  </form>
+                </Card>
+
+              </div>
+              <div className="md-cell md-cell--12">
+
+                <Card>
+                  <form action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
+                        method="post"
+                        target="_blank"
+                  >
+                    <CardText>
+                      Howdju 2.0 is currently in private gamma.  Enter your email to be notified when signups are available:
+                    </CardText>
+                    <CardText>
+                      <TextField id="mce-email"
+                                 type="email"
+                                 name="EMAIL"
+                                 label="Email"
+                                 required
+                      />
+                      <input type="hidden" name="b_ccf334287da1fbf7af0904629_f08c3a775d" tabIndex="-1" />
+                    </CardText>
+                    <CardActions>
+                      <Button raised primary type="submit" children="Subscribe" name="subscribe" />
+                    </CardActions>
                   </form>
                 </Card>
 

@@ -3,26 +3,20 @@
 ## MVP
 
 ### Features
-    
-* How will I bring over compound justifications?
-  * Maybe look at examples from the old site and see if I can recreate them?
-  * Could it be the List justification type?
-    * Users vote for inclusion/exclusion in the list
-    * No, because each compound argument has a 'theme' that voting would screw up.
-  * Could be Snippet type, where user puts several statements in a sentence with supporting words.
-    <statement 1> and <statement 2>, but <statement 3>
+* Conjunctive/Compound/Logical/Combined justifications
 
 * Jobs (justification score)
 * favicon
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
-  
-* Statement example: height of the capitol building limit DC
-  
+
 ### Feedback
 * Error reporting
   * feedback script; 
   * unhandled error reporting
   * ensure that log level in prod is at least debug
+  
+### Marketing
+* Google analytics
 
 ### Bugs/stability
 * replace regex with path-to-regexp
@@ -40,6 +34,9 @@
 
 * Why do I have PostCSS in my project?
 
+### Presentation
+* Statement example: height of the capitol building limit DC
+
 
 ## Tooling
 * Local fonts for development
@@ -50,7 +47,6 @@
   * https://github.com/webpack/webpack/releases
 * Add linting 
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
-
 
 ## 0.2
 
