@@ -8,7 +8,7 @@ const baseConfig = {
   port: 3000,
   names: {
     js: 'premiser-ui.js',
-    index: 'index.html',
+    indexHtml: 'index.html',
   },
   paths: {
     base: path.resolve.bind(path, basePath),

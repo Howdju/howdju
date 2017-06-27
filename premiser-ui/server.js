@@ -1,4 +1,4 @@
-const debug = require('debug')('app:server')
+const debug = require('debug')('premiser-ui:server')
 const express = require('express')
 const morgan = require('morgan')
 const path = require('path')
@@ -13,6 +13,8 @@ app.use(morgan('dev'))
 if (process.env.NODE_ENV === 'development') {
   const compiler = webpack(webpackConfig)
   debug('Enabling webpack dev and HMR middleware')
+
+  // https://github.com/webpack/webpack-dev-middleware#usage
   app.use(require('webpack-dev-middleware')(compiler, {
     publicPath  : webpackConfig.output.publicPath,
     contentBase : projectConfig.paths.src(),
@@ -27,11 +29,8 @@ if (process.env.NODE_ENV === 'development') {
   }))
 }
 
-app.use(express.static(projectConfig.paths.public()))
-app.use(express.static(projectConfig.paths.dist()))
-
 app.use('*', function (req, res) {
-  res.sendFile(projectConfig.paths.dist(projectConfig.names.index))
+  res.sendFile(projectConfig.paths.dist(projectConfig.names.indexHtml))
 })
 
 module.exports = app

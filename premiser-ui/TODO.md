@@ -227,6 +227,10 @@
 * Rename justification to newJustification in STATEMENT_JUSTIFICATION editEntity
 * https://github.com/babel/babel-loader#babel-is-injecting-helpers-into-each-file-and-bloating-my-code
 
+### Flair
+* Favicon versions
+  * https://github.com/audreyr/favicon-cheat-sheet
+  * https://realfavicongenerator.net/
 
 ## Maybe
 * https://prerender.io/

@@ -1,5 +1,6 @@
 const path = require('path')
 
+// const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
@@ -14,8 +15,7 @@ const {
 
 const htmlWebpackPluginConfig = merge({
   appMountId: 'root',
-  // favicon: projectConfig.paths.public('favicon.ico'),
-  filename: projectConfig.names.index,
+  filename: projectConfig.names.indexHtml,
   hash: false,
   inject: false, // The template injects scripts
   minify: {
@@ -24,7 +24,7 @@ const htmlWebpackPluginConfig = merge({
   },
   mobile: true,
   title: 'Howdju',
-  template: projectConfig.paths.src(projectConfig.names.index),
+  template: projectConfig.paths.src(projectConfig.names.indexHtml),
 }, envHtmlWebpackPluginConfig)
 
 const definePluginConfig = merge({
@@ -107,6 +107,15 @@ const baseWebpackConfig = {
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginConfig),
     new webpack.DefinePlugin(definePluginConfig),
+    // TODO how to CDN this in production?
+    // this isn't necessary for development as webpack dev middleware can serve this directly from source
+    // new CopyWebpackPlugin([
+    //   { from: projectConfig.paths.public('*.ico') },
+    //   { from: projectConfig.paths.public('*.png') },
+    //   { from: projectConfig.paths.public('browserconfig.xml'), to: projectConfig.paths.dist('public') },
+    //   { from: projectConfig.paths.public('manifest.json'), to: projectConfig.paths.dist('public') },
+    //   { from: projectConfig.paths.public('safari-pinned-tab.svg'), to: projectConfig.paths.dist('public') },
+    // ]),
   ],
   // https://webpack.github.io/docs/configuration.html#resolve-alias
   // resolve: {
