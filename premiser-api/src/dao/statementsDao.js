@@ -9,12 +9,12 @@ const {
 const map = require('lodash/map')
 const {toStatement} = require("../orm")
 const {logger} = require('../logger')
-const {clean, normalize} = require('./util')
+const {cleanWhitespace, normalizeText} = require('./util')
 
 
 class StatementsDao {
   readStatementByText(statementText) {
-    return query('select * from statements where normal_text = $1 and deleted is null', [normalize(statementText)])
+    return query('select * from statements where normal_text = $1 and deleted is null', [normalizeText(statementText)])
         .then( ({rows}) => {
           if (rows.length > 1) {
             logger.error(`More than one (${rows.length}) statements have text "${statementText}"`)
@@ -41,12 +41,12 @@ class StatementsDao {
   createStatement(userId, statement, now) {
     return query(
         'insert into statements (text, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *',
-        [clean(statement.text), normalize(statement.text), userId, now]
+        [cleanWhitespace(statement.text), normalizeText(statement.text), userId, now]
     ).then( ({rows: [row]}) => toStatement(row))
   }
   updateStatement(statement) {
     return query('update statements set text = $1, normal_text = $2 where statement_id = $3 and deleted is null returning *',
-        [clean(statement.text), normalize(statement.text), statement.id])
+        [cleanWhitespace(statement.text), normalizeText(statement.text), statement.id])
         .then( ({rows}) => {
           if (rows.length > 1) {
             logger.error(`Updated more than one (${rows.length} statements with ID ${statement.id}`)
@@ -75,7 +75,7 @@ class StatementsDao {
           and statement_id != $2 
           and deleted is null
       `
-    return query(sql, [normalize(statement.text), statement.id])
+    return query(sql, [normalizeText(statement.text), statement.id])
         .then (result => {
           return result
         })
@@ -115,13 +115,17 @@ class StatementsDao {
   isBasisToOtherUsersJustifications(statement, userId) {
     const sql = `
       select count(*) > 0 as result
-      from justifications
-        where 
-              basis_type = $2
-          and basis_id = $1
-          and creator_user_id != $3
+      from justifications j 
+        join statement_compounds sc on 
+              j.creator_user_id != $3
+          and j.basis_type = $2
+          and j.basis_id = sc.statement_compound_id
+        join statement_compound_atoms sca using (statement_compound_id)
+        join statements scas on
+              sca.statement_id = scas.statement_id
+          and scas.statement_id = $1
     `
-    return query(sql, [statement.id, JustificationBasisType.STATEMENT, userId])
+    return query(sql, [statement.id, JustificationBasisType.STATEMENT_COMPOUND, userId])
         .then( ({rows: [{result}]}) => result)
   }
 }

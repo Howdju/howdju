@@ -62,7 +62,7 @@ EditableStatement.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const statement = state.entities.statements[ownProps.entityId]
-  // IF it hasn't been edited, then there's no editor state...
+  // If it hasn't been edited, then there's no editor state...
   const {editEntity, isFetching} = get(state.editors, [EditorTypes.STATEMENT, ownProps.editorId], {})
   const isEditing = isTruthy(editEntity)
   return {

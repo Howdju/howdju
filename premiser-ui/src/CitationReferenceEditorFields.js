@@ -82,7 +82,7 @@ class CitationReferenceEditorFields extends Component {
             {error: true, errorText: toErrorText(urlError.fieldErrors.url)} :
             {}
         ) :
-        map(urls, () => {})
+        map(urls, () => null)
 
     const quote = get(citationReference, quoteName, '')
     const citationText = get(citationReference, citationTextName, '')
@@ -152,8 +152,7 @@ class CitationReferenceEditorFields extends Component {
               />
           )}
           <Button flat
-                  className={cn({
-                    addCitationReferenceUrlButton: true,
+                  className={cn('addButton', {
                     hidden: disabled,
                   })}
                   key="addUrlButton"

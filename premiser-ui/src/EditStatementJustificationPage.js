@@ -91,6 +91,8 @@ class EditStatementJustificationPage extends Component {
     this.onPropertyChange = this.onPropertyChange.bind(this)
     this.addJustificationUrl = this.addJustificationUrl.bind(this)
     this.removeJustificationUrl = this.removeJustificationUrl.bind(this)
+    this.addJustificationStatementAtom = this.addJustificationStatementAtom.bind(this)
+    this.removeJustificationStatementAtom = this.removeJustificationStatementAtom.bind(this)
     this.onDoCreateJustificationSwitchChange = this.onDoCreateJustificationSwitchChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.onCancel = this.onCancel.bind(this)
@@ -148,6 +150,14 @@ class EditStatementJustificationPage extends Component {
     this.props.editors.removeUrl(this.editorType, this.editorId, url, index)
   }
 
+  addJustificationStatementAtom(index) {
+    this.props.editors.addStatementAtom(this.editorType, this.editorId, index)
+  }
+
+  removeJustificationStatementAtom(statementAtom, index) {
+    this.props.editors.removeStatementAtom(this.editorType, this.editorId, statementAtom, index)
+  }
+
   onDoCreateJustificationSwitchChange(checked) {
     this.props.editors.propertyChange(this.editorType, this.editorId, {doCreateJustification: checked})
   }
@@ -188,7 +198,7 @@ class EditStatementJustificationPage extends Component {
 
     const statementErrors = errors && (
         doCreateJustification ?
-            errors.justification.fieldErrors.target.fieldErrors.entity :
+            get(errors, 'justification.fieldErrors.target.fieldErrors.entity') :
             errors.statement
         )
     const justificationErrors = errors && doCreateJustification ? errors.justification : null
@@ -230,20 +240,18 @@ class EditStatementJustificationPage extends Component {
                     />
 
                     <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
-                      {/* Don't mount initially so-as to allow the statement to receive focusOnMount (can remove this after controlling focus via initialFocus?) */}
-                      {(isCreateJustification || isSubmitJustification || doCreateJustification) && justification &&
-                        null
-                      }
                       <NewJustificationEditorFields newJustification={justification}
                                                     id="newJustificationEditor"
                                                     basisStatementTextId="newJustificationBasisStatement"
                                                     basisCitationReferenceQuoteId="newJustificationBasisCitationReferenceQuote"
                                                     name="justification"
                                                     suggestionsKey={suggestionKeys.createStatementPageJustification}
-                                                    readOnlyBasis={isSaving || isCreateJustification}
+                                                    disabled={isSaving}
                                                     onPropertyChange={this.onPropertyChange}
                                                     onAddUrl={this.addJustificationUrl}
                                                     onRemoveUrl={this.removeJustificationUrl}
+                                                    onAddStatementAtom={this.addJustificationStatementAtom}
+                                                    onRemoveStatementAtom={this.removeJustificationStatementAtom}
                                                     errors={newJustificationErrors}
                       />
                     </CardText>

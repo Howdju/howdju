@@ -97,6 +97,7 @@ export default handleActions({
       return {
         ...state,
         statements: {...state.statements, ...action.payload.entities.statements},
+        statementCompounds: {...state.statementCompounds, ...action.payload.entities.statementCompounds},
         justifications: {...state.justifications, ...action.payload.entities.justifications},
         votes: {...state.votes, ...action.payload.entities.votes},
         justificationsByRootStatementId: mergeWith({}, state.justificationsByRootStatementId, justificationsByRootStatementId, unionArraysDistinctIdsCustomizer),
@@ -156,6 +157,7 @@ export default handleActions({
           state,
           action.payload.entities,
           counteredJustifications,
+          // TODO this doesn't seem right; should be {justifications: {1: ..., 2: ...}}, but this would be like {justificationByRootStatementId: {1: ..., 2: ...}}
           {justificationsByRootStatementId},
           unionArraysDistinctIdsCustomizer,
       )
@@ -290,6 +292,7 @@ export default handleActions({
   }
 }, {
   statements: {},
+  statementCompounds: {},
   justifications: {},
   justificationsByRootStatementId: {},
   citationReferences: {},

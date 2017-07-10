@@ -12,9 +12,6 @@ import Snackbar from 'react-md/lib/Snackbars'
 import Toolbar from 'react-md/lib/Toolbars';
 import { connect } from 'react-redux'
 
-import './fonts.scss'
-import './App.scss'
-
 import Header from './Header'
 import HomePage from './HomePage'
 import MainSearchPage from './MainSearchPage'
@@ -32,6 +29,9 @@ import paths, {createJustificationPath, mainSearchPathName} from "./paths";
 import mainSearcher from './mainSearcher'
 import IconPage from './IconPage'
 import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage";
+
+import './fonts.scss'
+import './App.scss'
 
 class App extends Component {
 

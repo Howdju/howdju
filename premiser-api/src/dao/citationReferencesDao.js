@@ -1,3 +1,4 @@
+const forEach = require('lodash/forEach')
 const map = require('lodash/map')
 const sortBy = require('lodash/sortBy')
 const head = require('lodash/head')
@@ -5,7 +6,6 @@ const head = require('lodash/head')
 const urlsDao = require('./urlsDao')
 const {
   toCitationReference,
-  toCitation,
   toCitationReferenceUrl,
   toUrl,
 } = require("../orm")
@@ -26,36 +26,78 @@ class CitationReferencesDao {
 
   read(citationReferenceId) {
     return Promise.all([
-      query('select * from citation_references where citation_reference_id = $1 and deleted is null', [citationReferenceId]),
       query(`
-        select * 
-        from citations c 
-          join citation_references cr using (citation_id) 
-            where 
-                  cr.citation_reference_id = $1 
-              and cr.deleted is null 
-              and c.deleted is null`,
-      [citationReferenceId]
-      ),
+        select 
+            cr.citation_reference_id
+          , cr.quote
+          , c.citation_id
+          , c.text as citation_text
+        from citation_references cr join citations c on 
+              cr.citation_reference_id = $1
+          and cr.citation_id = c.citation_id
+          and cr.deleted is null
+          and c.deleted is null
+          `, [citationReferenceId]),
       this.readUrlsByCitationReferenceId(citationReferenceId)
     ])
         .then( ([
-                  {rows: [citationReferenceRow]},
-                  {rows: [citationRow]},
+                  {rows: [row]},
                   urls,
                 ]) => {
-          const citationReference = toCitationReference(citationReferenceRow)
-          citationReference.citation = toCitation(citationRow)
+          const citationReference = toCitationReference(row)
           citationReference.urls = urls
           return citationReference
         })
   }
 
-  readCitationReferencesEquivalentTo(citationReference) {
+  readCitationReferencesByIdForRootStatementId(rootStatementId) {
+    const sql = `
+      select 
+          cr.citation_reference_id
+        , cr.quote
+        , c.citation_id
+        , c.text as citation_text
+      from justifications j 
+          left join citation_references cr on 
+                j.root_statement_id = $1
+            and j.basis_type = $2
+            and j.deleted is null
+            and j.basis_id = cr.citation_reference_id
+          left join citations c using (citation_id)
+      `
+    return Promise.all([
+        query(sql, [rootStatementId, JustificationBasisType.CITATION_REFERENCE]),
+        this.urlsDao.readUrlsByCitationReferenceIdForRootStatementId(rootStatementId)
+    ])
+        .then( ([
+          {rows},
+          urlsByCitationReferenceId
+        ]) => {
+          const citationReferencesById = {}
+          forEach(rows, row => {
+            const citationReference = toCitationReference(row)
+            const citationReferenceId = row.citation_reference_id
+            citationReference.urls = urlsByCitationReferenceId[citationReferenceId]
+            citationReferencesById[citationReferenceId] = citationReference
+          })
+          return citationReferencesById
+        })
+  }
 
-    return query(
-        'select * from citation_references where citation_id = $1 and quote = $2 and deleted is null',
-        [citationReference.citation.id, citationReference.quote]
+  readCitationReferencesEquivalentTo(citationReference) {
+    // Empty strings should be stored as null quotes
+    const quote = citationReference.quote || null
+    // Could also let the citation.text be missing and just look up by citation ID
+    return query(`
+      select * 
+      from citation_references cr join citations c on 
+            cr.citation_id = c.citation_id
+        and case when $1::varchar is null then c.citation_id = $2 else c.text = $1 end
+        and case when $3::varchar is null then cr.quote is null else cr.quote = $3 end
+        and c.deleted is null
+        and cr.deleted is null 
+      `,
+        [citationReference.citation.text, citationReference.citation.id, quote]
     )
         .then( ({rows}) => {
           if (rows.length > 1) {

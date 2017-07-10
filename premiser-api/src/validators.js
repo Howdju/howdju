@@ -1,6 +1,7 @@
 const isArray = require('lodash/isArray')
 const map = require('lodash/map')
 const some = require('lodash/some')
+const get = require('lodash/get')
 const has = require('lodash/has')
 const includes = require('lodash/includes')
 const urlParser = require("url");
@@ -54,8 +55,9 @@ CredentialValidator.blankErrors = () => ({
 })
 
 class JustificationValidator {
-  constructor(statementValidator, citationReferenceValidator) {
+  constructor(statementValidator, statementCompoundValidator, citationReferenceValidator) {
     this.statementValidator = statementValidator
+    this.statementCompoundValidator = statementCompoundValidator
     this.citationReferenceValidator = citationReferenceValidator
   }
   validate(justification, ignore={}) {
@@ -69,7 +71,7 @@ class JustificationValidator {
 
     const isExtant = isTruthy(justification.id)
 
-    if (has(justification, 'rootStatementId') || !isExtant && !ignore.rootStatementId) {
+    if (!has(justification, 'rootStatementId') && !isExtant && !ignore.rootStatementId) {
       const canReceiveRootStatementIdFromTarget = justification.target && justification.target.type === JustificationTargetType.STATEMENT
       if (!canReceiveRootStatementIdFromTarget) {
         errors.hasErrors = true
@@ -118,7 +120,6 @@ class JustificationValidator {
     }
 
     if (has(justification, 'basis')) {
-
       if (!justification.basis) {
         errors.hasErrors = true
         errors.fieldErrors.basis.modelErrors.push(modelErrorCodes.IS_REQUIRED)
@@ -135,7 +136,7 @@ class JustificationValidator {
             // Must have valid props
             const basisEntityErrors = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
                 this.citationReferenceValidator.validate(justification.basis.entity) :
-                this.statementValidator.validate(justification.basis.entity)
+                this.statementCompoundValidator.validate(justification.basis.entity)
             if (basisEntityErrors.hasErrors) {
               errors.hasErrors = true
               errors.fieldErrors.basis.fieldErrors.entity = basisEntityErrors
@@ -211,6 +212,52 @@ StatementValidator.blankErrors = () => ({
   fieldErrors: {
     text: []
   },
+})
+
+class StatementCompoundValidator {
+  constructor(statementValidator) {
+    this.statementValidator = statementValidator
+  }
+
+  validate(statementCompound) {
+    const errors = StatementCompoundValidator.blankErrors()
+
+    if (!statementCompound) {
+      errors.hasErrors = true
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      return errors
+    }
+
+    const atoms = get(statementCompound, 'atoms')
+    if (!atoms) {
+      errors.hasErrors = true
+      errors.fieldErrors.atoms.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+    } else if (atoms.length < 1) {
+      errors.hasErrors = true
+      errors.fieldErrors.atoms.modelErrors.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    } else {
+      errors.fieldErrors.atoms.itemErrors = map(statementCompound.atoms, atom => ({
+        fieldErrors: {
+          statement: this.statementValidator.validate(atom.statement)
+        }
+      }))
+      if (some(errors.fieldErrors.atoms.itemErrors, i => i.fieldErrors.statement.hasErrors)) {
+        errors.hasErrors = true
+      }
+    }
+
+    return errors
+  }
+}
+StatementCompoundValidator.blankErrors = () => ({
+  hasErrors: false,
+  modelErrors: [],
+  fieldErrors: {
+    atoms: {
+      modelErrors: [],
+      itemErrors: [],
+    }
+  }
 })
 
 class CitationReferenceValidator {
@@ -404,14 +451,16 @@ VoteValidator.blankErrors = () => ({
 const urlValidator = new UrlValidator()
 const userValidator = new UserValidator()
 const statementValidator = new StatementValidator()
+const statementCompoundValidator = new StatementCompoundValidator(statementValidator)
 const citationValidator = new CitationValidator()
 const citationReferenceValidator = new CitationReferenceValidator(citationValidator, urlValidator)
-const justificationValidator = new JustificationValidator(statementValidator, citationReferenceValidator)
+const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, citationReferenceValidator)
 const credentialValidator = new CredentialValidator()
 const voteValidator = new VoteValidator()
 
 module.exports = {
   statementValidator,
+  statementCompoundValidator,
   citationReferenceValidator,
   justificationValidator,
   credentialValidator,

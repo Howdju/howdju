@@ -48,7 +48,6 @@ class StatementEditorFields extends Component {
     } = this.props
     delete rest.onKeyDown
 
-
     const modelErrors = errors && errors.modelErrors
     const textInputProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
         {...rest, error: true, errorText: toErrorText(errors.fieldErrors.text)} :
@@ -103,6 +102,8 @@ StatementEditorFields.propTypes = {
   errors: PropTypes.object,
   disabled: PropTypes.bool,
   onKeyDown: PropTypes.func,
+  /** If present, will handle enter-key-presses in text fields */
+  onSubmit: PropTypes.func,
 }
 StatementEditorFields.defaultProps = {
   disabled: false,

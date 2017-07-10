@@ -1,10 +1,10 @@
-import {fetchStatements} from './actions'
+import {api} from './actions'
 
 describe('actions', () => {
   it('should provide its name', () => {
-    expect(fetchStatements.toString()).toBe('FETCH_STATEMENTS')
+    expect(api.fetchStatements.toString()).toBe('API/FETCH_STATEMENTS')
   })
   it('might use toString as object key', () => {
-    expect({[fetchStatements]: true}).toEqual({FETCH_STATEMENTS: true})
+    expect({[api.fetchStatements]: true}).toEqual({'API/FETCH_STATEMENTS': true})
   })
 })

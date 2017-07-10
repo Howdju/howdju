@@ -119,7 +119,7 @@ class StatementJustificationsPage extends Component {
   }
 
   onUseStatement() {
-    this.props.goto.createJustification(JustificationBasisType.STATEMENT, this.statementId())
+    this.props.goto.createJustification(JustificationBasisType.STATEMENT_COMPOUND, this.statementId())
   }
 
   deleteStatement() {

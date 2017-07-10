@@ -22,10 +22,6 @@ $over-gradient-z-index: 10;
   }
 }
 
-.justificationContextMenu {
-  float: right;
-}
-
 .statementCard, .justificationCard, .newJustificationEditorCard {
   margin-bottom: $gutter;
 }
@@ -34,6 +30,8 @@ $over-gradient-z-index: 10;
 }
 
 .contextMenu {
+  float: right;
+
   .hiding {
     .md-icon {
       display: none;

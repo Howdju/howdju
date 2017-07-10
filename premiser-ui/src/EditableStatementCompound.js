@@ -3,43 +3,39 @@ import PropTypes from 'prop-types'
 import {connect} from "react-redux";
 import CircularProgress from "react-md/lib/Progress/CircularProgress";
 import get from 'lodash/get'
+import {denormalize} from "normalizr";
 
 import {EditorTypes} from "./reducers/editors";
-import CitationReferenceViewer from "./CitationReferenceViewer";
-import CitationReferenceEditor from "./CitationReferenceEditor";
+import {logger} from './util'
+import StatementCompoundViewer from "./StatementCompoundViewer";
+import {statementCompoundSchema} from "./schemas";
 
-class EditableCitationReference extends Component {
+class EditableStatementCompound extends Component {
 
   render() {
     const {
       id,
       editorId,
-      citationReference,
+      statementCompound,
       suggestionsKey,
       isFetching,
+      // Currently statement compounds are not editable.  Only their statements are.  Instead create a new statement compound justification
       isEditing,
       ...rest
     } = this.props
 
-    const editor =
-        <CitationReferenceEditor id={id}
-                                 editorId={editorId}
-                                 suggestionsKey={suggestionsKey}
-        />
     const viewer =
-        <CitationReferenceViewer {...rest}
+        <StatementCompoundViewer {...rest}
                                  id={id}
-                                 citationReference={citationReference}
+                                 statementCompound={statementCompound}
         />
     const progress =
         <CircularProgress id={`${id}-Progress`} />
 
-    return isEditing ?
-        editor :
-        isFetching ? progress : viewer
+    return isFetching ? progress : viewer
   }
 }
-EditableCitationReference.propTypes = {
+EditableStatementCompound.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Let's the component fetch its statement from the API and retrieve it from the state */
@@ -54,13 +50,13 @@ EditableCitationReference.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const citationReference = state.entities.citationReferences[ownProps.entityId]
-  const editEntity = get(state.editors, [EditorTypes.CITATION_REFERENCE, ownProps.editorId, 'editEntity'])
-  const isEditing = !!editEntity
+  const normalStatementCompound = state.entities.statementCompounds[ownProps.entityId]
+  const statementCompound = denormalize(normalStatementCompound, statementCompoundSchema, state.entities)
+  const editEntity = get(state.editors, [EditorTypes.STATEMENT_COMPOUND, ownProps.editorId, 'editEntity'])
+
   return {
-    citationReference,
-    isEditing,
+    statementCompound,
   }
 }
 
-export default connect(mapStateToProps)(EditableCitationReference)
+export default connect(mapStateToProps)(EditableStatementCompound)

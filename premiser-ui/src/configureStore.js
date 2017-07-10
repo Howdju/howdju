@@ -5,6 +5,7 @@ import {autoRehydrate, persistStore} from 'redux-persist'
 import createSagaMiddleware from 'redux-saga'
 import rootReducer from './reducers/index';
 import getSagas from './sagas';
+import {logger} from './util';
 
 export const history = createHistory()
 
@@ -28,9 +29,11 @@ export default function configureStore(initialState) {
     whitelist: ['auth']
   });
 
-  let sagaTask = sagaMiddleware.run(function* () {
+  let rootTask = sagaMiddleware.run(function* () {
     yield getSagas()
   })
+  rootTask.done.catch(err => logger.error('Uncaught error in sagas', err))
+
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers/index', () => {
@@ -39,11 +42,12 @@ export default function configureStore(initialState) {
     });
     module.hot.accept('./sagas', () => {
       const getNewSagas = require('./sagas').default;
-      sagaTask.cancel()
-      sagaTask.done.then(() => {
-        sagaTask = sagaMiddleware.run(function* replacedSaga() {
+      rootTask.cancel()
+      rootTask.done.then(() => {
+        rootTask = sagaMiddleware.run(function* replacedSaga() {
           yield getNewSagas()
         })
+        rootTask.done.catch(err => logger.error('Uncaught error in sagas', err))
       })
     })
   }

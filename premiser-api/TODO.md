@@ -16,7 +16,9 @@
     * unique statement text, 
     * citation reference quote, 
     * citation text
+    * citation reference must have citation_id
   * Delete URLS when nothing references them?
+  * Delete statement compounds all of whose statements are deleted
 * Short IDs
 
 * Update prod DB, update queries to handle deleted, add action logging

@@ -2,18 +2,19 @@
 
 ## MVP
 
-### Features
-* Conjunctive/Compound/Logical/Combined justifications
+* What is up with these crazy autocompletes?
+* Focus not working on counter (others too?)
 
+### Features
 * Jobs (justification score)
-* favicon
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
 
 ### Feedback
 * Error reporting
-  * feedback script; 
+  * feedback script
   * unhandled error reporting
   * ensure that log level in prod is at least debug
+  * request ID and cookie ID
   
 ### Marketing
 * Google analytics
@@ -26,6 +27,7 @@
 * Test with mobile device
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
   * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
+* Search TODO
 
 ### Misc.
 * UI Build
@@ -39,8 +41,8 @@
 
 
 ## Tooling
-* Local fonts for development
-  * https://shellmonger.com/2016/01/22/working-with-fonts-with-webpack/
+* Consider copying this
+  * https://github.com/react-boilerplate/react-boilerplate
 * https://flow.org/
 * Update webpack 3
   * scope hoisting and magic comments for chunks
@@ -80,6 +82,13 @@
   * challenge of card having buttons to create counter
   
 ### Features
+* Hyperlink statement text to drill-down to statement
+* Design statement compounds to be text-like instead of paper/card blocks.  This should mirror or relate to the 
+  appearance of how the browser extension marks up text on a page - for continuity and for education.
+* When create statement and redirected to login and return information is gone.
+* Schema.org
+  * https://schema.org/ClaimReview
+  * https://developers.google.com/search/docs/data-types/factcheck (multiple fact checks on a page)
 * Relations
   * Show statements justified by statement
   * show statements justified by basis
@@ -94,7 +103,8 @@
 * tagging
   * Home page tag cloud
 * Implement full model constraints in services
-  * don't let a user edit their own entities when they are older than a certain age
+  * don't let a user edit their own entities when they are older than a certain age (really this is to prevent 
+    anyone from having seen it; so should we track views instead?)
 * warn if they try and navigate away after entering text
 * Add delete statement/justification confirmation (or better, undo)
 * Author of quote
@@ -146,6 +156,7 @@
   * Or should we not be normalizing from API?  Should we normalize in reducer?
   * Change this for autocomplete fetches in entities
 * Delete citation reference URL right button is misaligned
+* Support [pg prepared statements](https://node-postgres.com/features/queries#prepared-statements)
 
 ### Flair
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
@@ -157,6 +168,9 @@
 * EditStatementCitationPage: can I move focus to basis component when first showing them?
 
 ### Refactoring/stability
+* When an error occurs in a saga that transitioned the page (e.g. remove the default value of statementCompounds in
+  the entities reducer and then create a statement justification, causing a transition to the statement justifications
+  page), the app ends up in an inconsistent state that doesn't go away.  So do all saga workers need to be in a try/catch?
 * Refactor tests to use helpers to cut down on setup noise
 * Immutable refactor
   * [React App best practices](https://tonyhb.gitbooks.io/redux-without-profanity/content/transforming_state_per_component.html)
@@ -227,6 +241,10 @@
 * Rename justification to newJustification in STATEMENT_JUSTIFICATION editEntity
 * https://github.com/babel/babel-loader#babel-is-injecting-helpers-into-each-file-and-bloating-my-code
 
+### Tooling
+* Local fonts for development
+  * https://shellmonger.com/2016/01/22/working-with-fonts-with-webpack/
+
 ### Flair
 * Favicon versions
   * https://github.com/audreyr/favicon-cheat-sheet
@@ -280,7 +298,8 @@
 * https://github.com/mariusandra/kea
 * https://github.com/awslabs/lambda-refarch-voteapp
 * [CrowdIn Localization](https://crowdin.com/)
-
+* [Google Factcheck](https://www.blog.google/products/search/fact-check-now-available-google-search-and-news-around-world/)
+* [React virtualized](https://github.com/bvaughn/react-virtualized)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

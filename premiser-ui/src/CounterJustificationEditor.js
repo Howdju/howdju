@@ -7,7 +7,7 @@ import CardActions from 'react-md/lib/Cards/CardActions';
 import CardText from 'react-md/lib/Cards/CardText';
 import get from 'lodash/get'
 
-import StatementEditorFields from "./StatementEditorFields";
+import StatementCompoundEditorFields from "./StatementCompoundEditorFields";
 import {EditorTypes} from "./reducers/editors";
 import {
   editors,
@@ -25,28 +25,33 @@ class CounterJustificationEditor extends Component {
     super()
 
     this.editorType = EditorTypes.COUNTER_JUSTIFICATION
-
-    this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onCancelEdit = this.onCancelEdit.bind(this)
   }
 
-  onPropertyChange(properties) {
+  onPropertyChange = (properties) => {
     this.props.editors.propertyChange(this.editorType, this.props.editorId, properties)
   }
 
-  onSubmit(event) {
+  onAddStatementAtom = () => {
+    this.props.editors.addStatementAtom(this.editorType, this.props.editorId)
+  }
+
+  onRemoveStatementAtom = (statementAtom, index) => {
+    this.props.editors.removeStatementAtom(this.editorType, this.props.editorId, statementAtom, index)
+  }
+
+  onSubmit = (event) => {
     event.preventDefault()
     this.props.editors.commitEdit(this.editorType, this.props.editorId)
   }
 
-  onCancelEdit() {
+  onCancelEdit = () => {
     this.props.editors.cancelEdit(this.editorType, this.props.editorId)
   }
 
   render() {
     const {
       suggestionsKey,
+      textId,
       editorState: {
         errors,
         editEntity,
@@ -57,19 +62,23 @@ class CounterJustificationEditor extends Component {
     delete rest.editors
     delete rest.editorId
 
-    const statementErrors = get(errors, 'fieldErrors.basis.fieldErrors.entity')
+    const statementCompoundErrors = get(errors, 'fieldErrors.basis.fieldErrors.entity')
+    const statementCompound = get(editEntity, 'basis.entity')
 
     return (
         <form onSubmit={this.onSubmit}>
           <CardText>
-            <StatementEditorFields
+            <StatementCompoundEditorFields
                 {...rest}
                 name="basis.entity"
-                statement={editEntity}
+                statementCompound={statementCompound}
+                textId={textId}
                 suggestionsKey={suggestionsKey}
                 onPropertyChange={this.onPropertyChange}
                 disabled={isSaving}
-                errors={statementErrors}
+                errors={statementCompoundErrors}
+                onAddStatementAtom={this.onAddStatementAtom}
+                onRemoveStatementAtom={this.onRemoveStatementAtom}
             />
           </CardText>
           <CardActions>
@@ -95,6 +104,7 @@ class CounterJustificationEditor extends Component {
 CounterJustificationEditor.propTypes = {
   /** Identifies the editor's state */
   editorId: PropTypes.string.isRequired,
+  textId: PropTypes.string.isRequired,
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
 }

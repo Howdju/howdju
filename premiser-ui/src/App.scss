@@ -31,7 +31,6 @@ figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
   font-family: 'Lato', sans-serif;
-  //font-family: 'Source Sans Pro', sans-serif;
   font-weight: 300;
   color: $primary-text-color;
 }
@@ -134,4 +133,20 @@ html, body {
   // Buttons are right-justified
   // (Matches .md-dialog-footer)
   justify-content: flex-end;
+}
+
+.addButton {
+  margin-top: 10px;
+}
+
+// This should be in react-md's _tooltips.scss, but it isn't loaded for some reason
+.inline-rel-container {
+  display: inline-block;
+  margin: 1em;
+  position: relative;
+}
+
+.md-tooltip {
+  font-size: large;
+  padding: 25px;
 }

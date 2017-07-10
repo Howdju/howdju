@@ -3,18 +3,18 @@ const replace = require('lodash/replace')
 const lowerCase = require('lodash/lowerCase')
 const deburr = require('lodash/deburr')
 
-exports.clean = text => {
+exports.cleanWhitespace = text => {
   text = trim(text)
   text = replace(text, /\s+/g, ' ')
   return text
 }
-exports.normalize = text => {
+exports.normalizeText = text => {
 
   // Postgres SQL for the same
   // regexp_replace(lower(regexp_replace(trim(text), '\s+', ' ', 'g')), '[^[:alnum:][:space:]_]', '', 'g')
-  text = exports.clean(text)
+  text = exports.cleanWhitespace(text)
   text = lowerCase(text)
-  text = replace(text, /\W/g, '')
+  text = replace(text, /[^\w\s]/g, '')
   text = deburr(text)
 
   return text

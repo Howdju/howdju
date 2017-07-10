@@ -1,3 +1,4 @@
+import forEach from 'lodash/forEach'
 import merge from 'lodash/merge'
 import cloneDeep from 'lodash/cloneDeep'
 import {newImpossibleError} from "./customErrors";
@@ -13,7 +14,7 @@ export const JustificationPolarity = {
 }
 
 export const JustificationBasisType = {
-  STATEMENT: 'STATEMENT',
+  STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
   CITATION_REFERENCE: 'CITATION_REFERENCE',
 }
 
@@ -32,9 +33,9 @@ export const isNegative = j => j.polarity === JustificationPolarity.NEGATIVE
 export const isVerified = j => j.vote && j.vote.polarity === VotePolarity.POSITIVE
 export const isDisverified = j => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
 export const isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && isNegative(j)
-export const isStatementBased = j => j.basis.type === JustificationBasisType.STATEMENT
 export const hasQuote = j => isCitationReferenceBased(j) && j.basis.entity.quote
-export const isCitationReferenceBased = j =>j.basis.type === JustificationBasisType.CITATION_REFERENCE
+export const isStatementCompoundBased = j => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
+export const isCitationReferenceBased = j => j ? j.basis.type === JustificationBasisType.CITATION_REFERENCE : false
 
 export const decircularizeTarget = justification => {
   if (justification.target.entity.id) {
@@ -60,22 +61,32 @@ export const makeNewJustification = props => merge({
     }
   },
   basis: {
-    type: JustificationBasisType.STATEMENT,
+    type: JustificationBasisType.STATEMENT_COMPOUND,
     // Store both these types directly on the basis for the view-model
     // Before the justification is sent to the server, the one corresponding to the current type should be put on the
     // entity property
-    citationReference: {
-      citation: {
-        text: '',
-      },
-      quote: '',
-      urls: [{url: ''}],
-    },
-    statement: {
-      text: ''
-    }
+    citationReference: makeNewCitationReference(),
+    statementCompound: makeNewStatementCompound()
   }
 }, props)
+
+export const makeNewCitation = () => ({
+  text: '',
+})
+
+export const makeNewCitationReference = () => ({
+  citation: makeNewCitation(),
+  quote: '',
+  urls: [makeNewUrl()],
+})
+
+export const makeNewStatementCompound = () => ({
+  atoms: [makeNewStatementAtom()]
+})
+
+export const makeNewStatementAtom = () => ({
+  statement: makeNewStatement()
+})
 
 export const makeNewJustificationTargetingStatementId = statementId => makeNewJustification({
   rootStatementId: statementId,
@@ -95,17 +106,25 @@ export const makeNewCounterJustification = targetJustification => ({
     entity: targetJustification,
   },
   basis: {
-    type: JustificationBasisType.STATEMENT,
-    entity: {text: ''}
+    type: JustificationBasisType.STATEMENT_COMPOUND,
+    entity: makeNewStatementCompound()
   },
   polarity: JustificationPolarity.NEGATIVE
 })
 
+export const removeStatementCompoundId = statementCompound => {
+  delete statementCompound.id
+  forEach(statementCompound.atoms, atom => {
+    delete atom.statementCompoundId
+  })
+  return statementCompound
+}
+
 export const consolidateBasis = newJustification => {
   const justification = cloneDeep(newJustification);
   switch (justification.basis.type) {
-    case JustificationBasisType.STATEMENT:
-      justification.basis.entity = justification.basis.statement
+    case JustificationBasisType.STATEMENT_COMPOUND:
+      justification.basis.entity = justification.basis.statementCompound
       break
     case JustificationBasisType.CITATION_REFERENCE:
       justification.basis.entity = justification.basis.citationReference
@@ -113,7 +132,7 @@ export const consolidateBasis = newJustification => {
     default:
       throw newImpossibleError(`${justification.basis.type} exhausted justification basis types`)
   }
-  delete justification.basis.statement
+  delete justification.basis.statementCompound
   delete justification.basis.citationReference
 
   return justification
@@ -123,7 +142,7 @@ export const makeNewUrl = () => ({url: ''})
 
 export const justificationBasisTypeToNewJustificationBasisMemberName = justificationBasisType => {
   const newJustificationBasisMemberNames = {
-    [JustificationBasisType.STATEMENT]: 'statement',
+    [JustificationBasisType.STATEMENT_COMPOUND]: 'statementCompound',
     [JustificationBasisType.CITATION_REFERENCE]: 'citationReference'
   }
   const newJustificationBasisMemberName = newJustificationBasisMemberNames[justificationBasisType]

@@ -1,11 +1,11 @@
 import { normalize } from 'normalizr';
 import { statementsSchema } from './schemas'
 
-jest.mock('isomorphic-fetch')
+jest.mock('axios')
 
 beforeEach(done => {
-  import('isomorphic-fetch').then(fetch => {
-    fetch.mockReset()
+  import('axios').then(axios => {
+    axios.mockReset()
     done()
   })
 })
@@ -16,7 +16,7 @@ describe('api', () => {
         { id: 1, text: 'a statement' },
         { id: 2, text: 'another statement' }
       ]
-    Promise.all([import('isomorphic-fetch'), import('./api')]).then( ([fetch, api]) => {
+    Promise.all([import('axios'), import('./api')]).then( ([axios, api]) => {
 
       fetch.mockImplementation( () => Promise.resolve({
         ok: true,

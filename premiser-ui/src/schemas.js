@@ -2,12 +2,19 @@ import { schema } from 'normalizr';
 
 export const statementSchema = new schema.Entity('statements');
 export const statementsSchema = [statementSchema]
+export const statementCompoundSchema = new schema.Entity('statementCompounds', {
+  atoms: [
+    {
+      statement: statementSchema
+    }
+  ]
+})
 export const citationReferenceSchema = new schema.Entity('citationReferences')
 export const voteSchema = new schema.Entity('votes')
 
 export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)
 export const justificationBasisSchema = new schema.Union({
-  STATEMENT: statementSchema,
+  STATEMENT_COMPOUND: statementCompoundSchema,
   CITATION_REFERENCE: citationReferenceSchema
 }, (value, parent) => parent.type)
 

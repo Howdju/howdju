@@ -51,6 +51,7 @@ export const app = {
 export const api = {
   callApi: apiActionCreator('CALL_API'),
   fetchStatement: apiActionCreator('FETCH_STATEMENT', statementId => ({statementId})),
+  fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', statementCompoundId => ({statementCompoundId})),
   fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
   fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
   fetchCitationReference: apiActionCreator('FETCH_CITATION_REFERENCE', citationReferenceId => ({citationReferenceId})),
@@ -157,6 +158,18 @@ export const editors = {
     url,
     index
   })),
+
+  addStatementAtom: actionCreator('EDITORS/ADD_STATEMENT_ATOM', (editorType, editorId, index) => ({
+    editorType,
+    editorId,
+    index,
+  })),
+  removeStatementAtom: actionCreator('EDITORS/REMOVE_STATEMENT_ATOM', (editorType, editorId, statementAtom, index) => ({
+    editorType,
+    editorId,
+    statementAtom,
+    index
+  }))
 }
 
 export const goto = {

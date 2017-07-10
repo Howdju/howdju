@@ -42,6 +42,14 @@ class NewJustificationEditor extends Component {
     this.props.editors.removeUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, url, index)
   }
 
+  onAddStatementAtom = () => {
+    this.props.editors.addStatementAtom(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
+  }
+
+  onRemoveStatementAtom = (statementAtom, index) => {
+    this.props.editors.removeStatementAtom(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, statementAtom, index)
+  }
+
   onSubmit(event) {
     if (!this.props.onSubmit) {
       event.preventDefault()
@@ -96,6 +104,8 @@ class NewJustificationEditor extends Component {
                                         onPropertyChange={this.onPropertyChange}
                                         onAddUrl={this.onAddUrl}
                                         onRemoveUrl={this.onRemoveUrl}
+                                        onAddStatementAtom={this.onAddStatementAtom}
+                                        onRemoveStatementAtom={this.onRemoveStatementAtom}
                                         onSubmit={this.onSubmit}
                                         suggestionsKey={suggestionsKey}
                                         errors={errors}

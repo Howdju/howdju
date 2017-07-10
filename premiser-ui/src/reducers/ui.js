@@ -13,7 +13,10 @@ const statementJustificationsPage = handleActions({
     ...state,
     isNewJustificationDialogVisible: true,
   }),
-  [ui.hideNewJustificationDialog]: (state, action) => ({...state, isNewJustificationDialogVisible: false}),
+  [ui.hideNewJustificationDialog]: (state, action) => ({
+    ...state,
+    isNewJustificationDialogVisible: false
+  }),
 }, {
   isNewJustificationDialogVisible: false,
 })

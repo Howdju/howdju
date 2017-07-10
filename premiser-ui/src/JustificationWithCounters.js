@@ -19,9 +19,8 @@ import {
   editors, mapActionCreatorGroupToDispatchToProps, goto,
 } from './actions'
 import {
-  JustificationBasisType,
   isVerified,
-  isDisverified, isStatementBased, hasQuote, makeNewCounterJustification,
+  isDisverified, isStatementCompoundBased, hasQuote, makeNewCounterJustification,
 } from './models'
 import {counterJustificationEditorId, justificationBasisEditorId} from './editorIds'
 
@@ -41,7 +40,6 @@ class JustificationWithCounters extends Component {
       isOver: false,
     }
 
-    this.goToStatement = this.goToStatement.bind(this)
     this.deleteClick = this.deleteClick.bind(this)
 
     this.onEditBasis = this.onEditBasis.bind(this)
@@ -87,13 +85,6 @@ class JustificationWithCounters extends Component {
     this.props.api.deleteJustification(this.props.justification)
   }
 
-  goToStatement() {
-    const basis = this.props.justification.basis
-    if (basis.type === JustificationBasisType.STATEMENT) {
-      this.props.goto.statement(basis.entity)
-    }
-  }
-
   onEditNewCounterJustification() {
     const justification = this.props.justification
     this.props.editors.beginEdit(EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), makeNewCounterJustification(justification))
@@ -128,11 +119,7 @@ class JustificationWithCounters extends Component {
       isOver,
     } = this.state
 
-    const basisUseDescription = isStatementBased(justification) ?
-        'Justify another statement with this one' :
-        hasQuote(justification) ?
-            'Justify a statement with this quote' :
-            'Justify a statement with this citation'
+    const _isStatementCompoundBased = isStatementCompoundBased(justification)
 
     const menu = (
         <MenuButton
@@ -143,12 +130,6 @@ class JustificationWithCounters extends Component {
             children={'more_vert'}
             position={Menu.Positions.TOP_RIGHT}
             menuItems={[
-              <ListItem primaryText="Go To"
-                        key="goTo"
-                        leftIcon={<FontIcon>forward</FontIcon>}
-                        onClick={this.goToStatement}
-                        className={cn({hidden: !isStatementBased(justification)})}
-              />,
               <ListItem primaryText="Counter"
                         key="counter"
                         leftIcon={<FontIcon>reply</FontIcon>}
@@ -156,7 +137,7 @@ class JustificationWithCounters extends Component {
               />,
               <ListItem primaryText="Use"
                         key="use"
-                        title={basisUseDescription}
+                        title="Justify another statement with this justification’s basis"
                         leftIcon={<FontIcon>call_made</FontIcon>}
                         onClick={this.onUseJustification}
               />,
@@ -164,6 +145,7 @@ class JustificationWithCounters extends Component {
               <ListItem primaryText="Edit"
                         key="edit"
                         leftIcon={<FontIcon>create</FontIcon>}
+                        className={cn({hidden: _isStatementCompoundBased})}
                         onClick={this.onEditBasis}
               />,
               <ListItem primaryText="Delete"
@@ -221,7 +203,6 @@ class JustificationWithCounters extends Component {
               <div>
                 {justification && !isEditingBasis && menu}
                 <EditableJustificationBasis id={`justification-${justification.id}-basisEditor`}
-                                            statementTextId={`justification-${justification.id}-basisEditor-statementText`}
                                             justification={justification}
                                             editorId={justificationBasisEditorId(justification.basis)}
                                             suggestionsKey={suggestionKeys.justificationBasisEditor(justification)}
@@ -246,6 +227,7 @@ class JustificationWithCounters extends Component {
                 <div className="md-grid">
                   <div className="md-cell md-cell--12">
                     <CounterJustificationEditor editorId={counterJustificationEditorId(justification)}
+                                                textId={`justification=${justification.id}-newCounterJustification`}
                                                 suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
                     />
                   </div>

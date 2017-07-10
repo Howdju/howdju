@@ -25,12 +25,25 @@ create table if not exists justifications (
   root_statement_id integer,
   target_type varchar(64), -- 'STATEMENT' or 'JUSTIFICATION'
   target_id integer,
-  basis_type varchar(64), -- 'STATEMENT' or 'CITATION_REFERENCE'
+  basis_type varchar(64), -- 'STATEMENT_COMPOUND', 'CITATION_REFERENCE'
   basis_id integer,
   polarity varchar(32), -- 'POSITIVE' or 'NEGATIVE'.  target_type='JUSTIFICATION' implies polarity='NEGATIVE'
   creator_user_id integer,
   created timestamp,
   deleted timestamp
+);
+
+create table if not exists statement_compounds (
+  statement_compound_id serial,
+  creator_user_id integer,
+  created timestamp,
+  deleted timestamp
+);
+
+create table if not exists statement_compound_atoms (
+  statement_compound_id integer,
+  statement_id integer,
+  order_position integer
 );
 
 create table if not exists citation_references (

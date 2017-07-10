@@ -39,7 +39,7 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  citationReferenceSchema, statementsSchema
+  citationReferenceSchema, statementsSchema, statementCompoundSchema
 } from './schemas'
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
@@ -66,7 +66,7 @@ import {
 import {
   consolidateBasis,
   JustificationBasisType, JustificationTargetType,
-  makeNewStatementJustification
+  makeNewStatementJustification, removeStatementCompoundId
 } from "./models";
 import {logger} from './util'
 import apiErrorCodes from "./apiErrorCodes";
@@ -87,6 +87,10 @@ export const resourceApiConfigs = {
   [api.fetchStatement]: payload => ({
     endpoint: `statements/${payload.statementId}`,
     schema: {statement: statementSchema},
+  }),
+  [api.fetchStatementCompound]: payload => ({
+    endpoint: `statement-compounds/${payload.statementCompoundId}`,
+    schema: {statementCompound: statementCompoundSchema},
   }),
   [api.fetchCitationReference]: payload => ({
     endpoint: `citation-references/${payload.citationReferenceId}`,
@@ -242,6 +246,9 @@ function* callApiForResource(action) {
 
   try {
     let config = resourceApiConfigs[action.type]
+    if (!config) {
+      throw newImpossibleError(`Missing resource API config for action type: ${action.type}`)
+    }
     const {endpoint, fetchInit, schema, requiresRehydrate} = isFunction(config) ?
         config(action.payload) :
         config
@@ -546,7 +553,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
 
   const fetchActionCreatorForBasisType = basisType => {
     const actionCreatorByBasisType = {
-      [JustificationBasisType.STATEMENT]: api.fetchStatement,
+      [JustificationBasisType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
       [JustificationBasisType.CITATION_REFERENCE]: api.fetchCitationReference,
     }
     const actionCreator = actionCreatorByBasisType[basisType]
@@ -566,7 +573,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
     } = fetchResponseAction.meta
 
     const basisGetterByBasisType = {
-      [JustificationBasisType.STATEMENT]: result => result.statement,
+      [JustificationBasisType.STATEMENT_COMPOUND]: result => result.statementCompound,
       [JustificationBasisType.CITATION_REFERENCE]: result => result.citationReference,
     }
 
@@ -590,12 +597,13 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
     const fetchResponseAction = yield call(callApiForResource, actionCreator(basisId))
     if (!fetchResponseAction.error) {
       const basis = extractBasisFromFetchResponseAction(basisType, fetchResponseAction)
-      const statement = basisType === JustificationBasisType.STATEMENT ? basis : undefined
+      const statementCompound = basisType === JustificationBasisType.STATEMENT_COMPOUND ? basis : undefined
+      removeStatementCompoundId(statementCompound)
       const citationReference = basisType === JustificationBasisType.CITATION_REFERENCE ? basis : undefined
       const editModel = makeNewStatementJustification({}, {
         basis: {
           type: basisType,
-          statement: statement,
+          statementCompound: statementCompound,
           citationReference: citationReference,
         }
       })
@@ -772,9 +780,18 @@ function* callFetchMainSearchSuggestions(requestPayload, endpoint) {
   }
 }
 
+function* logErrors() {
+  yield takeEvery('*', function* logErrorsWorker(action) {
+    if (action.error) {
+      logger.error(action.payload)
+    }
+  })
+}
+
 export default () => [
   flagRehydrate(),
   initializeMainSearch(),
+  logErrors(),
 
   resourceApiCalls(),
   fetchStatementTextSuggestions(),

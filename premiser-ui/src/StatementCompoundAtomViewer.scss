@@ -1,0 +1,14 @@
+@import './mixins';
+
+.statementCompoundAtomViewer {
+  @include clearFix;
+}
+
+.statementCompoundAtomViewer {
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.statementAtom:last-child .statementCompoundAtomViewer {
+  margin-bottom: 0;
+}

@@ -7,13 +7,14 @@ import get from 'lodash/get'
 import reduce from 'lodash/reduce'
 import merge from 'lodash/merge'
 import includes from 'lodash/includes'
+import clone from 'lodash/clone'
 import { handleActions } from 'redux-actions'
 
 import {
   api,
   editors
 } from "../actions"
-import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewUrl} from "../models";
+import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewStatementAtom, makeNewUrl} from "../models";
 import * as apiErrorCodes from "../apiErrorCodes";
 import {customErrorTypes, newProgrammingError} from "../customErrors";
 import {default as t, INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN} from "../texts";
@@ -30,9 +31,12 @@ const EditorActions = reduce(editors, (editorActions, actionCreator) => {
 export const EditorTypes = {
   DEFAULT: 'DEFAULT',
   STATEMENT: 'STATEMENT',
+  STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
   CITATION_REFERENCE: 'CITATION_REFERENCE',
   COUNTER_JUSTIFICATION: 'COUNTER_JUSTIFICATION',
+  /* e.g. new justification dialog */
   NEW_JUSTIFICATION: 'NEW_JUSTIFICATION',
+  /* e.g. Statement justification page */
   STATEMENT_JUSTIFICATION: 'STATEMENT_JUSTIFICATION',
   LOGIN_CREDENTIALS: 'LOGIN_CREDENTIALS',
 }
@@ -128,14 +132,19 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
-    [editors.addUrl]: (state, action) => {
+    [editors.addStatementAtom]: (state, action) => {
       const editEntity = {...state.editEntity}
-      editEntity.basis.citationReference.urls = editEntity.basis.citationReference.urls.concat([makeNewUrl()])
+      const atoms = clone(editEntity.basis.entity.atoms)
+      const index = action.payload.index || atoms.length
+      atoms.splice(index, 0, makeNewStatementAtom())
+      editEntity.basis.entity.atoms = atoms
       return {...state, editEntity}
     },
-    [editors.removeUrl]: (state, action) => {
+    [editors.removeStatementAtom]: (state, action) => {
       const editEntity = {...state.editEntity}
-      editEntity.basis.citationReference.urls.splice(action.payload.index, 1)
+      const atoms = clone(editEntity.basis.entity.atoms)
+      atoms.splice(action.payload.index, 1)
+      editEntity.basis.entity.atoms = atoms
       return {...state, editEntity}
     },
     [api.fetchStatementJustifications]: (state, action) => {
@@ -165,7 +174,24 @@ const editorReducerByType = {
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
-      editEntity.basis.citationReference.urls.splice(action.payload.index, 1)
+      const urls = clone(editEntity.basis.citationReference.urls)
+      urls.splice(action.payload.index, 1)
+      editEntity.basis.citationReference.urls = urls
+      return {...state, editEntity}
+    },
+    [editors.addStatementAtom]: (state, action) => {
+      const editEntity = {...state.editEntity}
+      const atoms = clone(editEntity.basis.statementCompound.atoms)
+      const index = action.payload.index || atoms.length
+      atoms.splice(index, 0, makeNewStatementAtom())
+      editEntity.basis.statementCompound.atoms = atoms
+      return {...state, editEntity}
+    },
+    [editors.removeStatementAtom]: (state, action) => {
+      const editEntity = {...state.editEntity}
+      const atoms = clone(editEntity.basis.statementCompound.atoms)
+      atoms.splice(action.payload.index, 1)
+      editEntity.basis.statementCompound.atoms = atoms
       return {...state, editEntity}
     },
     [editors.commitEdit.result]: {
@@ -193,9 +219,26 @@ const editorReducerByType = {
       return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
     },
     [editors.removeUrl]: (state, action) => {
-      const citationReference = {...state.editEntity.justification.basis.citationReference}
-      citationReference.urls.splice(action.payload.index, 1)
-      return merge({...state}, {editEntity: {justification: {basis: {citationReference}}}})
+      const editEntity = {...state.editEntity}
+      const urls = clone(editEntity.justification.basis.citationReference.urls)
+      urls.splice(action.payload.index, 1)
+      editEntity.justification.basis.citationReference.urls = urls
+      return {...state, editEntity}
+    },
+    [editors.addStatementAtom]: (state, action) => {
+      const editEntity = {...state.editEntity}
+      const atoms = clone(editEntity.justification.basis.statementCompound.atoms)
+      const index = action.payload.index || atoms.length
+      atoms.splice(index, 0, makeNewStatementAtom())
+      editEntity.justification.basis.statementCompound.atoms = atoms
+      return {...state, editEntity}
+    },
+    [editors.removeStatementAtom]: (state, action) => {
+      const editEntity = {...state.editEntity}
+      const atoms = clone(editEntity.justification.basis.statementCompound.atoms)
+      atoms.splice(action.payload.index, 1)
+      editEntity.justification.basis.statementCompound.atoms = atoms
+      return {...state, editEntity}
     },
   }, defaultEditorState),
 

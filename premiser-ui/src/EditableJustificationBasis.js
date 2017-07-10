@@ -1,28 +1,26 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import EditableStatement from "./EditableStatement";
+import EditableStatementCompound from "./EditableStatementCompound";
 import EditableCitationReference from "./EditableCitationReference";
-import {isStatementBased} from "./models";
+import {isStatementCompoundBased} from "./models";
 
 class EditableJustificationBasis extends Component {
 
   render() {
     const {
       id,
-      statementTextId,
       justification,
       editorId,
       suggestionsKey,
       ...rest,
     } = this.props
 
-    return isStatementBased(justification) ?
-        <EditableStatement {...rest}
-                           id={id}
-                           textId={statementTextId}
-                           entityId={justification.basis.entity.id}
-                           editorId={editorId}
-                           suggestionsKey={suggestionsKey}
+    return isStatementCompoundBased(justification) ?
+        <EditableStatementCompound {...rest}
+                                   id={id}
+                                   entityId={justification.basis.entity.id}
+                                   editorId={editorId}
+                                   suggestionsKey={suggestionsKey}
         /> :
         <EditableCitationReference {...rest}
                                    id={id}

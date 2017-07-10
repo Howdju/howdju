@@ -13,15 +13,31 @@ describe('schemas', () => {
     const statement1 = { id: 1, text: 'a statement' },
         statement2 = { id: 2, text: 'another statement' },
         statement3 = { id: 3, text: 'yet another statement' },
+        statementCompound1 = {
+          id: 4,
+          atoms: [
+            {
+              statement: statement2
+            }
+          ]
+        },
+        statementCompound2 = {
+          id: 5,
+          atoms: [
+            {
+              statement: statement3
+            }
+          ]
+        },
         justification1 = {
           id: 1,
           target: { type: 'STATEMENT', entity: statement1 },
-          basis: { type: 'STATEMENT', entity: statement2 }
+          basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound1 }
         },
         justification2 = {
           id: 2,
           target: { type: 'STATEMENT', entity: statement1 },
-          basis: { type: 'STATEMENT', entity: statement3 }
+          basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound2 }
         };
     const json = {
       statement: statement1,
@@ -39,8 +55,8 @@ describe('schemas', () => {
           3: statement3,
         },
         justifications: {
-          1: {...justification1, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT', entity: { id: 2, schema: 'STATEMENT' } } },
-          2: {...justification2, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT', entity: { id: 3, schema: 'STATEMENT' } } },
+          1: {...justification1, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT_COMPOUND', entity: { id: 4, schema: 'STATEMENT_COMPOUND' } } },
+          2: {...justification2, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT_COMPOUND', entity: { id: 5, schema: 'STATEMENT_COMPOUND' } } },
         },
       }
     }

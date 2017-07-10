@@ -6,7 +6,7 @@ class HowdjuApiError extends Error {
 
 class ValidationError extends HowdjuApiError {
   constructor(errors) {
-    super(errors)
+    super('(ValidationError) ' + JSON.stringify(errors))
 
     this.errors = errors
   }
@@ -17,7 +17,7 @@ class AuthenticationError extends HowdjuApiError {}
 
 class AuthorizationError extends HowdjuApiError {
   constructor(errors) {
-    super()
+    super('(AuthorizationError)' + JSON.stringify(errors))
 
     this.errors = errors
   }
@@ -37,7 +37,7 @@ class ImpossibleError extends HowdjuApiError {
 /** The request would cause a conflict with one or more other entities */
 class EntityConflictError extends HowdjuApiError {
   constructor(errors) {
-    super()
+    super('(EntityConflictError)' + JSON.stringify(errors))
 
     this.errors = errors
   }
@@ -46,7 +46,7 @@ class EntityConflictError extends HowdjuApiError {
 /** The request would conflict with the actions of one or more other users */
 class UserActionsConflictError extends HowdjuApiError {
   constructor(errors) {
-    super()
+    super('(UserActionsConflictError)' + JSON.stringify(errors))
 
     this.errors = errors
   }
@@ -54,7 +54,7 @@ class UserActionsConflictError extends HowdjuApiError {
 
 class EntityTooOldToModifyError extends HowdjuApiError {
   constructor(duration) {
-    super()
+    super('(EntityTooOldToModifyError)')
 
     this.duration = duration
   }

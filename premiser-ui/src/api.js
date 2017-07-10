@@ -30,10 +30,12 @@ export function request({endpoint, method, body, headers, schema}) {
   })
       .then(response => {
         // https://github.com/mzabriskie/axios#response-schema
-        return schema && response.data ? normalize(response.data, schema) : response.data
+        const result = schema && response.data ? normalize(response.data, schema) : response.data
+        return result
       })
       .catch(handleError)
 
+  // Allows canceling the request when sagas are canceled
   // https://github.com/redux-saga/redux-saga/issues/651#issuecomment-262375964
   // https://github.com/redux-saga/redux-saga/issues/701#issuecomment-267512606
   request[CANCEL] = source.cancel

@@ -423,11 +423,17 @@ describe('reducers', () => {
                     }
                   },
                   basis: {
-                    type: JustificationBasisType.STATEMENT,
+                    type: JustificationBasisType.STATEMENT_COMPOUND,
                     entity: {
-                      id: 75,
-                      text: "Counter 5",
-                      slug: "counter-5"
+                      atoms: [
+                        {
+                          statement: {
+                            id: 75,
+                            text: "Counter 5",
+                            slug: "counter-5"
+                          }
+                        }
+                      ]
                     }
                   },
                   polarity: JustificationPolarity.NEGATIVE,
@@ -437,11 +443,17 @@ describe('reducers', () => {
                 }
               },
               basis: {
-                type: JustificationBasisType.STATEMENT,
+                type: JustificationBasisType.STATEMENT_COMPOUND,
                 entity: {
-                  id: 77,
-                  text: "Counter counter to 5",
-                  slug: "counter-counter-to-5"
+                  atoms: [
+                    {
+                      statement: {
+                        id: 77,
+                        text: "Counter counter to 5",
+                        slug: "counter-counter-to-5"
+                      }
+                    }
+                  ]
                 }
               },
               polarity: JustificationPolarity.NEGATIVE

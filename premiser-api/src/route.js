@@ -18,6 +18,7 @@ const apiErrorCodes = require('./codes/apiErrorCodes')
 const {
   readStatements,
   readStatement,
+  readStatementCompound,
   readStatementJustifications,
   login,
   logout,
@@ -173,6 +174,20 @@ const routes = [
                 }
               }) => readStatementJustifications({statementId, authToken})
         .then( ({statement, justifications}) => ok({callback, body: {statement, justifications}}) )
+  },
+  {
+    id: 'readStatementCompound',
+    path: new RegExp('^statement-compounds/([^/]+)$'),
+    method: httpMethods.GET,
+    queryStringParameters: {},
+    handler: ({
+                callback,
+                request: {
+                  pathParameters: [statementCompoundId],
+                  authToken,
+                }
+              }) => readStatementCompound(authToken, statementCompoundId)
+        .then( statementCompound => ok({callback, body: {statementCompound}}))
   },
   {
     id: 'deleteStatement',

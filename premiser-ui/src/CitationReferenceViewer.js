@@ -1,7 +1,9 @@
 import React from 'react'
-import {extractDomain} from "./util"
+import map from 'lodash/map'
 import FontIcon from 'react-md/lib/FontIcons'
 import cn from 'classnames'
+
+import {extractDomain} from "./util"
 
 import './CitationReferenceViewer.scss'
 
@@ -10,14 +12,17 @@ export default props => {
     citationReference
   } = props
 
-  const urls = citationReference.urls.map(u =>
-      <li id={`url-${u.id}-list-item`} key={`url-${u.id}-list-item`} className="url">
-        <a href={u.url}>
-          {extractDomain(u.url)}
-          <FontIcon>open_in_new</FontIcon>
-        </a>
-      </li>
-  )
+  const urls = map(citationReference.urls, u => {
+    const id = `url-${u.id}-list-item`
+    return (
+        <li id={id} key={id} className="url">
+          <a href={u.url}>
+            {extractDomain(u.url)}
+            <FontIcon>open_in_new</FontIcon>
+          </a>
+        </li>
+    )
+  })
 
   return (
       <div className="citationReferenceViewer">

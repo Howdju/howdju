@@ -17,6 +17,7 @@ const values = require('lodash/values')
 const findIndex = require('lodash/findIndex')
 const groupBy = require('lodash/groupBy')
 const sortBy = require('lodash/sortBy')
+const zip = require('lodash/zip')
 
 const config = require('./config')
 const {logger} = require('./logger')
@@ -30,6 +31,7 @@ const authDao = require('./dao/authDao')
 const votesDao = require('./dao/votesDao')
 const urlsDao = require('./dao/urlsDao')
 const actionsDao = require('./dao/actionsDao')
+const statementCompoundsDao = require('./dao/statementCompoundsDao')
 const {
   statementValidator,
   justificationValidator,
@@ -37,6 +39,7 @@ const {
   userValidator,
   voteValidator,
   citationReferenceValidator,
+  statementCompoundValidator,
 } = require('./validators')
 const {
   OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT,
@@ -81,7 +84,8 @@ const {
   EntityTypes,
 } = require('./models')
 const {
-  rethrowTranslatedErrors
+  rethrowTranslatedErrors,
+  isTruthy,
 } = require('./util')
 
 
@@ -119,7 +123,7 @@ const readStatementJustifications = ({statementId, authToken}) => Promise.resolv
 ])
     .then( ([statementId, authToken]) => Promise.all([
         statementsDao.readStatementById(statementId),
-        justificationsDao.readJustificationsAndVotesByRootStatementId(authToken, statementId),
+        justificationsDao.readJustificationsWithBasesAndVotesByRootStatementId(authToken, statementId),
     ]))
         .then( ([statement, justifications]) => {
           if (!statement) {
@@ -301,18 +305,7 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
 
 const readCitationReference = ({authToken, citationReferenceId}) => citationReferencesDao.read(citationReferenceId)
 
-const diffUrls = citationReference => Promise.resolve()
-    .then(() => citationReferencesDao.readUrlsByCitationReferenceId(citationReference.id))
-    .then(extantUrls => {
-      const addedUrls = differenceBy(citationReference.urls, [extantUrls], url => url.url)
-      const removedUrls = differenceBy(extantUrls, [citationReference.urls], url => url.url)
-      const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
-      return {
-        addedUrls,
-        removedUrls,
-        haveChanged
-      }
-    })
+const readStatementCompound = (authToken, statementCompoundId) => statementCompoundsDao.read(statementCompoundId)
 
 const updateCitationReference = ({authToken, citationReference}) => withAuth(authToken)
     .then(userId => {
@@ -426,7 +419,7 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
                 .then(asyncRecordEntityAction(userId, ActionType.UPDATE, ActionTargetType.CITATION, now)) :
             citationReference.citation,
         urlDiffs.haveChanged ?
-            updateCitationReferenceUrlsAsUser(citationReference, userId, now) :
+            updateCitationReferenceUrlsAsUser(citationReference, urlDiffs, userId, now) :
             citationReference.urls
     ]))
     .then( ([userId, now, citationReference, citation, urls]) => {
@@ -440,7 +433,20 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
       return citationReference
     })
 
-const updateCitationReferenceUrlsAsUser = (citationReference, userId, now) => Promise.resolve()
+const diffUrls = citationReference => Promise.resolve()
+    .then(() => citationReferencesDao.readUrlsByCitationReferenceId(citationReference.id))
+    .then(extantUrls => {
+      const addedUrls = differenceBy(citationReference.urls, [extantUrls], url => url.url)
+      const removedUrls = differenceBy(extantUrls, [citationReference.urls], url => url.url)
+      const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
+      return {
+        addedUrls,
+        removedUrls,
+        haveChanged
+      }
+    })
+
+const updateCitationReferenceUrlsAsUser = (citationReference, urlDiffs, userId, now) => Promise.resolve()
     .then(() => {
       // deduplicate URLs, giving preference to those having IDs
       const urlByUrl = {}
@@ -453,13 +459,14 @@ const updateCitationReferenceUrlsAsUser = (citationReference, userId, now) => Pr
       return values(urlByUrl)
     })
     .then(dedupedUrls => groupBy(dedupedUrls, u => u.id ? 'hasId' : 'noId'))
-    .then( ({'hasId': extantUrls, 'noId': newUrls}) => Promise.all([
+    .then( ({hasId: extantUrls, noId: newUrls}) => Promise.all([
       extantUrls || [],
       newUrls ? createUrlsAsUser(newUrls, userId, now) : [],
     ]))
-    .then( ([extantUrls, createdUrls]) => Promise.all([
+    .then( ([extantUrls, createdUrls]) => extantUrls.concat(createdUrls) )
+    .then( updatedUrls => Promise.all([
       citationReferencesDao.readUrlsByCitationReferenceId(citationReference.id),
-      extantUrls.concat(createdUrls),
+      updatedUrls,
     ]))
     .then( ([currentUrls, updatedUrls]) => ({
       updatedUrls,
@@ -551,9 +558,9 @@ const createJustificationAsUser = (justification, userId, now) => Promise.resolv
 const createValidJustificationAsUser = (justification, userId, now) => Promise.all([
       now,
       createJustificationTarget(justification.target, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('target')),
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.target')),
       createJustificationBasis(justification.basis, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('basis')),
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.basis')),
     ])
     .then( ([
         now,
@@ -567,6 +574,9 @@ const createValidJustificationAsUser = (justification, userId, now) => Promise.a
         entity: targetEntity,
       }
       if (targetType === JustificationTargetType.STATEMENT) {
+        if (justification.rootStatementId && justification.rootStatementId !== targetEntity.id) {
+          logger.warning(`Statement-targeting justification's rootStatementId (${justification.rootStatementId} is not equal to targetEntity.id (${targetEntity.id})`)
+        }
         justification.rootStatementId = targetEntity.id
       }
 
@@ -607,7 +617,7 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
 
     case JustificationTargetType.JUSTIFICATION:
       return createJustificationAsUser(justificationTarget.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, justification}) => ({
             isExtant,
             targetType: justificationTarget.type,
@@ -616,7 +626,7 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
 
     case JustificationTargetType.STATEMENT:
       return createStatementAsUser(justificationTarget.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then(({isExtant, statement}) => ({
             isExtant,
             targetType: justificationTarget.type,
@@ -633,20 +643,21 @@ const createJustificationBasis = (justificationBasis, userId, now) => {
 
     case JustificationBasisType.CITATION_REFERENCE:
       return createCitationReferenceAsUser(justificationBasis.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
-          .then(citationReference => ({
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+          .then( ({isExtant, citationReference}) => ({
+            isExtant,
             basisType: JustificationBasisType.CITATION_REFERENCE,
             basisEntity: citationReference,
           }))
 
-    case JustificationBasisType.STATEMENT:
-      return createStatementAsUser(justificationBasis.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('entity'))
-          .then(({isExtant, statement}) => ({
+    case JustificationBasisType.STATEMENT_COMPOUND:
+      return createStatementCompoundAsUser(justificationBasis.entity, userId, now)
+          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+          .then( ({isExtant, statementCompound}) => ({
             isExtant,
-              basisType: JustificationBasisType.STATEMENT,
-              basisEntity: statement,
-            }))
+            basisType: JustificationBasisType.STATEMENT_COMPOUND,
+            basisEntity: statementCompound,
+          }))
 
     default:
       throw new ImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
@@ -666,15 +677,16 @@ const createCitationReferenceAsUser = (citationReference, userId, now) =>
         createJustCitationReferenceAsUser(citationReference, userId, now)
       ])
     })
-    .then( ([citation, urls, citationReference]) => {
+    .then( ([citation, urls, {isExtant, citationReference}]) => {
       citationReference.citation = citation
       citationReference.urls = urls
       return Promise.all([
+        isExtant,
         citationReference,
         createCitationReferenceUrlsAsUser(citationReference, userId, now)
       ])
     })
-    .then( ([citationReference]) => citationReference)
+    .then( ([isExtant, citationReference, citationReferenceUrls]) => ({isExtant, citationReference}))
 
 const createUrlsAsUser = (urls, userId, now) => Promise.resolve()
     .then(() => filter(urls, url => url.url))
@@ -691,19 +703,20 @@ const createUrlAsUser = (url, userId, now) => {
       })
 }
 
-const createJustCitationReferenceAsUser = (citationReference, userId, now) => {
-  if (citationReference.id) {
-    return citationReference
-  }
-  return citationReferencesDao.readCitationReferencesEquivalentTo(citationReference)
-      .then( equivalentCitationReference => {
-        if (equivalentCitationReference) {
-          return equivalentCitationReference
-        }
-        return citationReferencesDao.createCitationReference(citationReference, userId, now)
-            .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.CITATION_REFERENCE, now))
-      })
-}
+const createJustCitationReferenceAsUser = (citationReference, userId, now) => Promise.resolve()
+    .then(() => citationReference.id ?
+        citationReference :
+        citationReferencesDao.readCitationReferencesEquivalentTo(citationReference)
+    )
+    .then(equivalentCitationReference => Promise.all([
+        !!equivalentCitationReference,
+        equivalentCitationReference || citationReferencesDao.createCitationReference(citationReference, userId, now)
+          .then(asyncRecordEntityAction(userId, ActionType.CREATE, ActionTargetType.CITATION_REFERENCE, now))
+    ]))
+    .then( ([isExtant, citationReference]) => ({
+      isExtant,
+      citationReference,
+    }))
 
 const createCitationReferenceUrlsAsUser = (citationReference, userId, now) => {
   const urls = citationReference.urls
@@ -735,6 +748,65 @@ const createCitationAsUser = (citation, userId, now) => Promise.resolve()
           })
     })
 
+const createStatementCompoundAsUser = (statementCompound, userId, now) => Promise.resolve()
+    .then(() => {
+      const validationErrors = statementCompoundValidator.validate(statementCompound)
+      if (validationErrors.hasErrors) {
+        throw new ValidationError(validationErrors)
+      }
+      return userId
+    })
+    .then(userId => createValidStatementCompoundAsUser(statementCompound, userId, now))
+
+const createValidStatementCompoundAsUser = (statementCompound, userId, now) => Promise.resolve()
+    .then(() => statementCompound.id ?
+        statementCompound :
+        statementCompoundsDao.readStatementCompoundEquivalentTo(statementCompound)
+    )
+    .then(equivalentStatementCompound => {
+      const isExtant = !!equivalentStatementCompound
+      return Promise.all([
+        isExtant,
+        isExtant ? equivalentStatementCompound : statementCompoundsDao.createStatementCompound(userId, statementCompound, now),
+        statementCompound.atoms,
+      ])
+    })
+    .then( ([isExtant, statementCompound, statementCompoundAtoms]) => Promise.all([
+      isExtant,
+      statementCompound,
+      isExtant ? statementCompound.atoms : createStatementCompoundAtoms(statementCompound, statementCompoundAtoms, userId, now)
+    ]))
+    .then( ([isExtant, statementCompound, statementCompoundAtoms]) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      asyncRecordAction(userId, actionType, ActionTargetType.STATEMENT_COMPOUND, now, statementCompound.id)
+
+      statementCompound.atoms = statementCompoundAtoms
+      return {
+        isExtant,
+        statementCompound,
+      }
+    })
+
+const createStatementCompoundAtoms = (statementCompound, statementCompoundAtoms, userId, now) => Promise.resolve()
+    .then(() => Promise.all(map(statementCompoundAtoms, atom =>
+        atom.statement.id ?
+            [atom, {isExtant: true, statement: atom.statement}] :
+            Promise.all([atom, createStatementAsUser(atom.statement, userId, now)])
+    )))
+    .then(atomsWithStatements => map(atomsWithStatements, ([atom, {statement}]) => {
+      atom.statement = statement
+      return atom
+    }))
+    .then(atoms => Promise.all([
+        atoms,
+        Promise.all(map(atoms, (atom, index) => statementCompoundsDao.createStatementCompoundAtom(statementCompound, atom, index)))
+    ]))
+    .then( ([atoms, dbAtoms]) => {
+      // Merging ensures that both the statement text and atom IDs will be present
+      const merged = map(zip(atoms, dbAtoms), ([atom, dbAtom]) => merge(atom, dbAtom))
+      return merged
+    })
+
 const createStatement = ({authToken, statement}) => withAuth(authToken)
     .then(userId => {
       const now = new Date()
@@ -754,15 +826,16 @@ const createStatementAsUser = (statement, userId, now) => Promise.resolve()
 const createValidStatementAsUser = (statement, userId, now) => Promise.resolve()
     .then(() => Promise.all([
       userId,
-      statement.id ? statement : statementsDao.readStatementByText(statement.text),
+      isTruthy(statement.id) ? statement : statementsDao.readStatementByText(statement.text),
       now,
     ]))
     .then( ([userId, extantStatement, now]) => {
+      const isExtant = !!extantStatement
       return Promise.all([
         userId,
         now,
-        !!extantStatement,
-        extantStatement || statementsDao.createStatement(userId, statement, now),
+        isExtant,
+        isExtant ? extantStatement : statementsDao.createStatement(userId, statement, now),
       ])
     })
     .then( ([userId, now, isExtant, statement]) => {
@@ -854,6 +927,7 @@ module.exports = {
   logout,
   readStatements,
   readStatement,
+  readStatementCompound,
   readStatementJustifications,
   createVote,
   deleteVote,

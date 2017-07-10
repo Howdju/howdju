@@ -1,5 +1,6 @@
-const map = require('lodash/map')
+const forEach = require('lodash/forEach')
 const groupBy = require('lodash/groupBy')
+const map = require('lodash/map')
 
 const {
   toUrl,
@@ -9,15 +10,16 @@ const {logger} = require('../logger')
 const head = require('lodash/head')
 
 
-const groupUrlsByJustificationId = urls => {
-  const urlsByJustificationId = {}
-  for (let url of urls) {
-    if (!urlsByJustificationId.hasOwnProperty(url.justification_id)) {
-      urlsByJustificationId[url.justification_id] = []
+const groupUrlsByCitationReferenceId = rows => {
+  const urlsByCitationReferenceId = {}
+  forEach(rows, row => {
+    let urls = urlsByCitationReferenceId[row.citation_reference_id]
+    if (!urls) {
+      urlsByCitationReferenceId[row.citation_reference_id] = urls = []
     }
-    urlsByJustificationId[url.justification_id].push(url)
-  }
-  return urlsByJustificationId
+    urls.push(toUrl(row))
+  })
+  return urlsByCitationReferenceId
 }
 
 class UrlsDao {
@@ -32,22 +34,25 @@ class UrlsDao {
         })
   }
 
-  readUrlsByRootStatementId(rootStatementId) {
+  readUrlsByCitationReferenceIdForRootStatementId(rootStatementId) {
     const sql = `
       select 
-        j.justification_id, 
-        u.* 
+          cr.citation_reference_id
+        , u.url_id
+        , u.url
       from justifications j 
-        join citation_references r ON j.basis_type = 'CITATION_REFERENCE' AND j.basis_id = r.citation_reference_id
-        join citation_reference_urls cru USING (citation_reference_id)
-        join urls u USING (url_id)
-        where
-              j.deleted is null
+        join citation_references cr on
+              j.root_statement_id = $1
+          and j.deleted is null 
+          and j.basis_type = 'CITATION_REFERENCE' 
+          and j.basis_id = cr.citation_reference_id
+        join citation_reference_urls cru on
+              cr.citation_reference_id = cru.citation_reference_id
           and cru.deleted is null
-          and j.root_statement_id = $1
+        join urls u USING (url_id)
         order by j.justification_id
     `
-    return query(sql, [rootStatementId]).then( ({rows}) => groupUrlsByJustificationId(rows))
+    return query(sql, [rootStatementId]).then( ({rows}) => groupUrlsByCitationReferenceId(rows))
   }
 
   createUrls(urls, userId, now) {

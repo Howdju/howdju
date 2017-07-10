@@ -13,12 +13,12 @@ const {
   VoteTargetType,
 } = require('../models')
 const {logger} = require('../logger')
-const {clean, normalize} = require('./util')
+const {cleanWhitespace, normalizeText} = require('./util')
 
 
 class CitationsDao {
   readCitationEquivalentTo(citation) {
-    return query('select * from citations where normal_text = $1 and deleted is null', [normalize(citation.text)])
+    return query('select * from citations where normal_text = $1 and deleted is null', [normalizeText(citation.text)])
         .then( ({rows}) => {
           if (rows.length > 1) {
             logger.error(`${rows.length} equivalent citations found`, citation)
@@ -28,7 +28,7 @@ class CitationsDao {
   }
   createCitation(citation, userId, now) {
     const sql = 'insert into citations (text, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *'
-    return query(sql, [clean(citation.text), normalize(citation.text), userId, now])
+    return query(sql, [cleanWhitespace(citation.text), normalizeText(citation.text), userId, now])
         .then( ({rows: [row]}) => toCitation(row) )
   }
   hasEquivalentCitations(citation) {
@@ -36,7 +36,7 @@ class CitationsDao {
       select count(*) > 0 as has_conflict
       from citations where citation_id != $1 and normal_text = $2 and deleted is null
       `
-    return query(sql, [citation.id, normalize(citation.text)])
+    return query(sql, [citation.id, normalizeText(citation.text)])
         .then( ({rows: [{has_conflict}]}) => has_conflict )
   }
 
@@ -45,7 +45,7 @@ class CitationsDao {
       select count(*) < 1 as has_changed
       from citations where citation_id = $1 and text = $2
       `
-    return query(sql, [citation.id, clean(citation.text)])
+    return query(sql, [citation.id, cleanWhitespace(citation.text)])
         .then( ({rows: [{has_changed}]}) => has_changed )
   }
 
@@ -135,7 +135,7 @@ class CitationsDao {
   update(citation) {
     return query(
         'update citations set text = $1, normal_text = $2 where citation_id = $3 returning *',
-        [clean(citation.text), normalize(citation.text), citation.id]
+        [cleanWhitespace(citation.text), normalizeText(citation.text), citation.id]
     )
         .then( ({rows: [citationRow]}) => toCitation(citationRow) )
   }
