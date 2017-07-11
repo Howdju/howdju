@@ -194,7 +194,6 @@ class EditStatementJustificationPage extends Component {
     const submitButtonTitle = text(submitButtonTitleTextKeyByMode[mode])
 
     const isCreateJustification = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
-    const isSubmitJustification = mode === EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION
 
     const statementErrors = errors && (
         doCreateJustification ?

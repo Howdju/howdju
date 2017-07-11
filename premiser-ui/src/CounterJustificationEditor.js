@@ -5,6 +5,7 @@ import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import CardActions from 'react-md/lib/Cards/CardActions';
 import CardText from 'react-md/lib/Cards/CardText';
+import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import get from 'lodash/get'
 
 import StatementCompoundEditorFields from "./StatementCompoundEditorFields";
@@ -68,18 +69,20 @@ class CounterJustificationEditor extends Component {
     return (
         <form onSubmit={this.onSubmit}>
           <CardText>
-            <StatementCompoundEditorFields
-                {...rest}
-                name="basis.entity"
-                statementCompound={statementCompound}
-                textId={textId}
-                suggestionsKey={suggestionsKey}
-                onPropertyChange={this.onPropertyChange}
-                disabled={isSaving}
-                errors={statementCompoundErrors}
-                onAddStatementAtom={this.onAddStatementAtom}
-                onRemoveStatementAtom={this.onRemoveStatementAtom}
-            />
+            <FocusContainer containFocus={false} focusOnMount={true}>
+              <StatementCompoundEditorFields
+                  {...rest}
+                  name="basis.entity"
+                  statementCompound={statementCompound}
+                  textId={textId}
+                  suggestionsKey={suggestionsKey}
+                  onPropertyChange={this.onPropertyChange}
+                  disabled={isSaving}
+                  errors={statementCompoundErrors}
+                  onAddStatementAtom={this.onAddStatementAtom}
+                  onRemoveStatementAtom={this.onRemoveStatementAtom}
+              />
+            </FocusContainer>
           </CardText>
           <CardActions>
             {isSaving && <CircularProgress key="progress" id="progress" />}

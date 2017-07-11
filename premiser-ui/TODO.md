@@ -2,8 +2,6 @@
 
 ## MVP
 
-* Focus not working on counter (others too?)
-
 ### Features
 * Jobs (justification score)
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it

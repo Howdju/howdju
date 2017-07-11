@@ -58,7 +58,7 @@ class StatementEditorFields extends Component {
     const hasText = has(statement, textName)
     const text = get(statement, textName, '')
 
-    const input = (suggestionsKey && !disabled && hasText) ?
+    const input = (suggestionsKey && !disabled) ?
         <StatementTextAutocomplete {...textInputProps}
                                    id={textId}
                                    name={namePrefix + textName}
