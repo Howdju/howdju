@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import {
   ESCAPE_KEY_CODE, RETURN_KEY_CODE
 } from './keyCodes'
-import autocompleter from './autocompleter'
 import {
   autocompletes,
   mapActionCreatorGroupToDispatchToProps
@@ -15,6 +14,8 @@ import {
 
 const dataLabel = 'data-label'
 const dataValue = 'data-value'
+
+const hasFocus = el => window.document.activeElement === el
 
 class ApiAutocomplete extends Component {
 
@@ -24,6 +25,7 @@ class ApiAutocomplete extends Component {
     this.onChange = this.onChange.bind(this)
     this.onAutocomplete = this.onAutocomplete.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
+    this.onMenuOpen = this.onMenuOpen.bind(this)
   }
 
   componentWillMount() {
@@ -31,7 +33,6 @@ class ApiAutocomplete extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    autocompleter.fixOpen(this.autocomplete, nextProps.value, nextProps.transformedSuggestions)
     if (this.props.autocompleteThrottle !== nextProps.autocompleteThrottle) {
       this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), nextProps.autocompleteThrottle)
     }
@@ -77,7 +78,7 @@ class ApiAutocomplete extends Component {
   }
 
   isAutocompleteOpen() {
-    return this.autocomplete.state.isOpen
+    return this.autocomplete.state.visible
   }
 
   closeAutocomplete() {
@@ -94,6 +95,15 @@ class ApiAutocomplete extends Component {
       this.props.onAutocomplete(suggestion)
     }
   }
+
+  onMenuOpen(event) {
+    // react-md is opening the autocomplete when it doesn't have focus
+    if (!hasFocus(this.autocomplete._field)) {
+      this.closeAutocomplete()
+    }
+  }
+
+  setAutocomplete = autocomplete => this.autocomplete = autocomplete
 
   render() {
     const {
@@ -120,9 +130,10 @@ class ApiAutocomplete extends Component {
                       onChange={this.onChange}
                       onKeyDown={this.onKeyDown}
                       onAutocomplete={this.onAutocomplete}
+                      onMenuOpen={this.onMenuOpen}
                       data={transformedSuggestions}
                       filter={null}
-                      ref={el => this.autocomplete = el}
+                      ref={this.setAutocomplete}
         />
     )
   }

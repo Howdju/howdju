@@ -2,7 +2,6 @@
 
 ## MVP
 
-* What is up with these crazy autocompletes?
 * Focus not working on counter (others too?)
 
 ### Features
@@ -28,6 +27,8 @@
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
   * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
 * Search TODO
+* Fix tests
+* Setup CI?
 
 ### Misc.
 * UI Build
