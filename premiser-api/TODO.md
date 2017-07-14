@@ -19,6 +19,7 @@
     * citation reference must have citation_id
   * Delete URLS when nothing references them?
   * Delete statement compounds all of whose statements are deleted
+  * Sources having internal inconsistencies (citations ultimately both support and oppose the same statement)
 * Short IDs
 
 * Update prod DB, update queries to handle deleted, add action logging

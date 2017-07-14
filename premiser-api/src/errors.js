@@ -4,13 +4,15 @@ class HowdjuApiError extends Error {
   }
 }
 
-class ValidationError extends HowdjuApiError {
+class EntityValidationError extends HowdjuApiError {
   constructor(errors) {
-    super('(ValidationError) ' + JSON.stringify(errors))
+    super('(EntityValidationError) ' + JSON.stringify(errors))
 
     this.errors = errors
   }
 }
+
+class RequestValidationError extends HowdjuApiError {}
 
 /** The user tried to do something that requires being logged in, but the user isn't logged in */
 class AuthenticationError extends HowdjuApiError {}
@@ -61,7 +63,8 @@ class EntityTooOldToModifyError extends HowdjuApiError {
 }
 
 module.exports = {
-  ValidationError,
+  EntityValidationError,
+  RequestValidationError,
   AuthenticationError,
   AuthorizationError,
   NotFoundError,

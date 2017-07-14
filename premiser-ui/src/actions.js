@@ -53,6 +53,8 @@ export const api = {
   fetchStatement: apiActionCreator('FETCH_STATEMENT', statementId => ({statementId})),
   fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', statementCompoundId => ({statementCompoundId})),
   fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
+  fetchRecentStatements: apiActionCreator('FETCH_RECENT_STATEMENTS', (widgetId, count) => ({widgetId, count})),
+  fetchMoreRecentStatements: apiActionCreator('FETCH_MORE_RECENT_STATEMENTS', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
   fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
   fetchCitationReference: apiActionCreator('FETCH_CITATION_REFERENCE', citationReferenceId => ({citationReferenceId})),
   login: apiActionCreator('LOGIN', credentials => ({credentials})),

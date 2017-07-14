@@ -1,6 +1,12 @@
 const Promise = require('bluebird')
 const pg = require('pg')
-const {logger} = require('./logger')
+const moment = require('moment')
+const {logger} = require('../logger')
+const configureTypes = require('./configureTypes')
+const isDate = require('lodash/isDate')
+const map = require('lodash/map')
+
+configureTypes(pg.types)
 
 const config = {
   user: process.env['DB_USER'],
@@ -12,6 +18,19 @@ const config = {
   idleTimeoutMillis: process.env['DB_CLIENT_TIMEOUT'] || 3000,
 }
 
+
+const formatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
+const toUtc = val => {
+  if (isDate(val)) {
+    return moment.utc(val).format(formatString)
+  }
+  if (moment.isMoment(val)) {
+    return val.utc().format(formatString)
+  }
+
+  return val
+}
+
 const pool = new pg.Pool(config)
 
 pool.on('error', (err, client) => console.error('idle client error', err.message, err.stack))
@@ -19,11 +38,13 @@ pool.on('error', (err, client) => console.error('idle client error', err.message
 exports.query = (sql, args) => Promise.resolve(pool.connect())
     .then(client => {
       logger.silly('db.query:', {sql, args})
-      return Promise.resolve(client.query(sql, args)).finally(() => client.release())
+      const utcArgs = map(args, toUtc)
+      return Promise.resolve(client.query(sql, utcArgs)).finally(() => client.release())
     })
 exports.queries = queryAndArgs => Promise.resolve(pool.connect())
     .then(client => Promise.all(queryAndArgs.map( ({sql, args}) => {
-          logger.silly('db.query:', {sql, args})
-          return Promise.resolve(client.query.call(client, sql, args))
-        } ))
+      logger.silly('db.query:', {sql, args})
+      const utcArgs = map(args, toUtc)
+      return Promise.resolve(client.query.call(client, sql, utcArgs))
+    } ))
         .finally(() => client.release()))

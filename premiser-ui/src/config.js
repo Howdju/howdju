@@ -1,4 +1,5 @@
 const config = {
+  humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
   ui: {
     statementJustifications: {
       narrowBreakpoint: 640,

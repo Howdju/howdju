@@ -47,6 +47,7 @@
     "moment": "^2.18.1",
     "node-env-file": "^0.1.8",
     "pg": "^6.1.5",
+    "urlsafe-base64": "^1.0.0",
     "winston": "^2.3.1"
   }
 }

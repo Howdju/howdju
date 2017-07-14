@@ -2,6 +2,16 @@
 
 ## MVP
 
+* Move login status/logout to header
+* Add different color bottom bar to main search
+* Add site sections
+  * ToS/Privacy
+    * harassing/people's right to privacy
+    * May not automate use of system
+  * About
+  * Contact
+* Migrate data
+
 ### Features
 * Jobs (justification score)
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
@@ -49,7 +59,49 @@
 * Add linting 
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
 
+
 ## 0.2
+
+* All statements page with URL pagination for web crawlers
+  * Or just do site map for crawlers
+* All domains page
+  * When click on one, show justifications or show rootStatements?
+  
+* Advanced search
+  * find statements supported/opposed by a domain
+* Source/author truthyness heat map
+* User profile
+* User account (preferences, notifications, email, password)
+
+### Home page ideas
+* Priority
+  * recently created statements (recently active statements?),
+  * Featured positions
+  * Snapmunk has a nice three-column design
+  * all statement tags cloud
+  * Controversial statements
+  * Active pages (cited pages with some measure of activity based upon the justifications/statements)
+    * Provides a way for a user to find interesting content with the extension (requires extension)
+
+* Home page: suggested consumption (what the system thinks the user might like to see, read, learn), 
+  suggested creation (what the user might be able to contribute to or decide or play the game), 
+  and transactional notifications (interactions with things the user has done or notifications that the user has explicitly 
+  configured)
+* What has changed since the user last came to the site that would be interesting to the user
+  * counters to justifications the user has verified (transactional?)
+  * statements with topics of interest to the user
+  * citations from sources or authors that interest the user
+* Where would a user's contributions be most useful?
+  * Controversial statements
+  * One-sided justifications
+  * Statements with no justifications
+* Recently analyzed pages (bringing in the page's statements in order to evaluate them)
+  * Do we need bare citations so that we can argue the truth of the quoted text?
+* Recently cited pages (using the page to make an argument)
+* Recent (statements, verifications)
+* Example statements
+* Topics of interest to user
+  * Activity on statements relevant to the user 
 
 ### Bugs
 * With slow connection, click create justification multiple times
@@ -226,6 +278,7 @@
   * https://www.npmjs.com/package/react-validation
   * http://redux-form.com/
   * https://gist.github.com/mlaursen/641364cf6114692d470069c56c505880
+* [Site map](https://support.google.com/webmasters/answer/183668?hl=en&ref_topic=4581190)
 
 
 ## Next-next
@@ -239,6 +292,7 @@
   * [Invalidation vs. versioning](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html)
 * Rename justification to newJustification in STATEMENT_JUSTIFICATION editEntity
 * https://github.com/babel/babel-loader#babel-is-injecting-helpers-into-each-file-and-bloating-my-code
+* Change to [Preact](https://preactjs.com/) (smaller)? ([switch](https://preactjs.com/guide/switching-to-preact))
 
 ### Tooling
 * Local fonts for development

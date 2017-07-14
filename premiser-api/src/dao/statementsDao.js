@@ -1,4 +1,8 @@
+const concat = require('lodash/concat')
+const forEach = require('lodash/forEach')
 const head = require('lodash/head')
+const isFinite = require('lodash/isFinite')
+const snakeCase = require('lodash/snakeCase')
 const toNumber = require('lodash/toNumber')
 
 const {query} = require('./../db')
@@ -22,9 +26,77 @@ class StatementsDao {
           return toStatement(head(rows))
         })
   }
-  readStatements() {
-    return query('select * from statements where deleted is null')
+  readStatements(sorts, count) {
+    const args = []
+    let countSql = ''
+    if (isFinite(count)) {
+      args.push(count)
+      countSql = `limit $${args.length}`
+    }
+
+    const whereSqls = ['deleted is null']
+    const orderBySqls = []
+    forEach(sorts, sort => {
+      const columnName = sort.property === 'id' ? 'statement_id' : snakeCase(sort.property)
+      const direction = sort.direction === 'descending' ? 'desc' : 'asc'
+      whereSqls.push(`${columnName} is not null`)
+      orderBySqls.push(columnName + ' ' + direction)
+    })
+    const whereSql = whereSqls.join('\nand ')
+    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+
+    const sql = `
+      select * 
+      from statements where ${whereSql}
+      ${orderBySql}
+      ${countSql}
+      `
+    return query(sql, [count])
         .then(({rows}) => map(rows, toStatement))
+  }
+  readMoreStatements(continuationInfos, count) {
+    const args = []
+    let countSql = ''
+    if (isFinite(count)) {
+      args.push(count)
+      countSql = `\nlimit $${args.length}`
+    }
+
+    const whereSqls = ['deleted is null']
+    const continuationWhereSqls = []
+    const prevWhereSqls = []
+    const orderBySqls = []
+    forEach(continuationInfos, (continuationInfo, index) => {
+      const value = continuationInfo.v
+      // The default direction is ascending
+      const direction = continuationInfo.d === 'd' ? 'desc' : 'asc'
+      // 'id' is a special property name for entities. The column is prefixed by the entity type
+      const columnName = continuationInfo.p === 'id' ? 'statement_id' : snakeCase(continuationInfo.p)
+      let operator = direction === 'asc' ? '>' : '<'
+      args.push(value)
+      const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
+      continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
+      prevWhereSqls.push(`${columnName} = $${args.length}`)
+      whereSqls.push(`${columnName} is not null`)
+      orderBySqls.push(`${columnName} ${direction}`)
+    })
+
+    const continuationWhereSql = continuationWhereSqls.join('\n or ')
+    const whereSql = whereSqls.join('\nand ')
+    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+
+    const sql = `
+      select * 
+      from statements where 
+        ${whereSql}
+        and (
+          ${continuationWhereSql}
+        )
+      ${orderBySql}
+      ${countSql}
+      `
+    return query(sql, args)
+        .then( ({rows}) => map(rows, toStatement) )
   }
   readStatementById(statementId) {
     return query(

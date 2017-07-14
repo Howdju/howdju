@@ -1,12 +1,13 @@
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
 
-import auth from './auth'
-import entities from "./entities";
-import editors from "./editors";
-import ui from "./ui";
 import app from "./app";
+import auth from './auth'
 import autocompletes from "./autocompletes";
+import editors from "./editors";
+import entities from "./entities";
+import ui from "./ui";
+import widgets from './widgets'
 
 export default combineReducers({
   app,
@@ -16,4 +17,5 @@ export default combineReducers({
   entities,
   router: routerReducer,
   ui,
+  widgets,
 })

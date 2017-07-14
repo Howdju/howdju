@@ -19,7 +19,7 @@ import {
   JustificationTargetType,
   VoteTargetType
 } from '../models'
-import {api, str} from '../actions'
+import {api} from '../actions'
 import * as httpStatusCodes from "../httpStatusCodes";
 import {normalize} from "normalizr";
 import {statementSchema} from "../schemas";
@@ -88,6 +88,8 @@ export default handleActions({
   [combineActions(
       api.fetchStatement.response,
       api.fetchStatements.response,
+      api.fetchRecentStatements.response,
+      api.fetchMoreRecentStatements.response,
   )]: {
     next: (state, action) => ({...state, statements: {...state.statements, ...action.payload.entities.statements}})
   },

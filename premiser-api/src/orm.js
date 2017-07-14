@@ -16,6 +16,7 @@ const toStatement = row => !row ? row : ({
   text: row.text,
   slug: toSlug(row.text),
   creatorUserId: toString(row.creator_user_id),
+  created: row.created,
 })
 
 const toJustification = (

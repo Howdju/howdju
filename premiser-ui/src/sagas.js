@@ -20,6 +20,8 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import cloneDeep from 'lodash/cloneDeep'
 import keys from 'lodash/keys'
+import pick from 'lodash/pick'
+import queryString from 'query-string'
 
 import text, {
   A_NETWORK_ERROR_OCCURRED,
@@ -83,6 +85,25 @@ export const resourceApiConfigs = {
   [api.fetchStatements]: {
     endpoint: 'statements',
     schema: {statements: statementsSchema},
+  },
+  [api.fetchRecentStatements]: payload => {
+    const queryStringParams = pick(payload, 'count')
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = 'descending'
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'statements?' + queryStringParamsString,
+      schema: {statements: statementsSchema},
+    }
+  },
+  [api.fetchMoreRecentStatements]: payload => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = 'descending'
+    return {
+      endpoint: 'statements?' + queryString.stringify(queryStringParams),
+      schema: {statements: statementsSchema},
+    }
   },
   [api.fetchStatement]: payload => ({
     endpoint: `statements/${payload.statementId}`,

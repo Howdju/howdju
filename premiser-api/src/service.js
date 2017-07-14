@@ -1,23 +1,29 @@
 const argon2 = require('argon2')
 const cryptohat = require('cryptohat')
+const concat = require('lodash/concat')
 const uuid = require('uuid')
 const moment = require('moment')
 const Promise = require('bluebird')
+const isString = require('lodash/isString')
 const merge = require('lodash/merge')
 const assign = require('lodash/assign')
 const forEach = require('lodash/forEach')
+const get = require('lodash/get')
 const cloneDeep = require('lodash/cloneDeep')
 const filter = require('lodash/filter')
 const keys = require('lodash/keys')
+const last = require('lodash/last')
 const pickBy = require('lodash/pickBy')
 const map = require('lodash/map')
 const differenceBy = require('lodash/differenceBy')
 const find = require('lodash/find')
+const URLSafeBase64 = require('urlsafe-base64');
 const values = require('lodash/values')
 const findIndex = require('lodash/findIndex')
 const groupBy = require('lodash/groupBy')
 const sortBy = require('lodash/sortBy')
 const zip = require('lodash/zip')
+const toNumber = require('lodash/toNumber')
 
 const config = require('./config')
 const {logger} = require('./logger')
@@ -65,7 +71,8 @@ const {
   AuthorizationError,
   NotFoundError,
   EntityConflictError,
-  ValidationError,
+  EntityValidationError,
+  RequestValidationError,
   UserActionsConflictError,
   ImpossibleError,
   EntityTooOldToModifyError,
@@ -86,6 +93,7 @@ const {
 const {
   rethrowTranslatedErrors,
   isTruthy,
+  assert,
 } = require('./util')
 
 
@@ -107,7 +115,111 @@ const withAuth = (authToken) => authDao.getUserId(authToken).then(userId => {
   return userId
 })
 
-const readStatements = () => statementsDao.readStatements()
+const parseContinuationToken = continuationToken => {
+  const decoded = URLSafeBase64.decode(new Buffer(continuationToken))
+  const parsed = JSON.parse(decoded)
+  return parsed
+}
+
+const encodeContinuationToken = continuationInfo => URLSafeBase64.encode(new Buffer(JSON.stringify(continuationInfo)))
+
+const readStatements = ({continuationToken, sortProperty = 'created', sortDirection = 'ascending', count = 25 }) => {
+  const countNumber = toNumber(count)
+  if (!isFinite(countNumber)) {
+    throw new RequestValidationError(`count must be a number. ${count} is not a number.`)
+  }
+
+  if (!continuationToken) {
+    const sorts = createSorts(sortProperty, sortDirection)
+    return readInitialStatements(sorts, countNumber)
+  }
+  return readMoreStatements(continuationToken, countNumber)
+}
+
+const createSorts = (sortProperty, sortDirection) => {
+  const sortProperties = isString(sortProperty) ? [sortProperty] : sortProperty
+  const sortDirections = isString(sortDirection) ? [sortDirection] : sortDirection
+  const sorts = []
+  forEach(sortProperties, (sortProperty, index) => {
+    sorts.push({
+      property: sortProperty,
+      direction: sortDirections[index] || 'ascending'
+    })
+  })
+  return sorts
+}
+
+const readInitialStatements = (requestedSorts, count) => {
+  const disambiguationSorts = [{property: 'id', direction: 'ascending'}]
+  const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
+  return statementsDao.readStatements(unambiguousSorts, count).then(statements => {
+    const lastStatement = last(statements)
+    let continuationToken = null
+
+    if (lastStatement) {
+      const continuationInfos = createContinuationInfos(unambiguousSorts, lastStatement)
+      continuationToken = encodeContinuationToken(continuationInfos)
+    }
+
+    return {
+      statements,
+      continuationToken,
+    }
+  })
+}
+
+const createContinuationInfos = (sorts, lastEntity) => {
+  const continuationInfos = map(sorts, ({property, direction}) => {
+    const continuationInfo = {
+      p: property,
+      v: get(lastEntity, property)
+    }
+    // Only set the direction if necessary to overcome the default
+    if (direction === 'descending') {
+      continuationInfo.d = 'd'
+    }
+    return continuationInfo
+  })
+  return continuationInfos
+}
+
+const readMoreStatements = (continuationToken, count) => {
+  /*
+   It seems like the ultimate technique here is to have one or more requested sorts, and then as many
+   fields as necessary as are needed to create a continuity sort when sort value(s) are broken mid-value to
+   keep within the count.  If a continuity sort is requested, don't include it as part of the continuity.
+   The next value recorded for each of these needs to be included in the token, and all should be used as
+   greater-/less-than-or-equal-to except for the most minor of them, which will be strictly greater-/less-than so as
+   not to include the last value passed.
+   */
+  const continuationInfos = parseContinuationToken(continuationToken)
+  return statementsDao.readMoreStatements(continuationInfos, count)
+      .then(statements => {
+        const lastStatement = last(statements)
+
+        let nextContinuationToken
+        if (!lastStatement) {
+          // If there were no statements to continue with, then just reuse the old continuation token
+          nextContinuationToken = continuationToken
+        } else {
+          // Everything from the previous token should be fine except we need to update the values
+          const nextContinuationInfos = updateContinuationInfos(continuationInfos, lastStatement)
+          nextContinuationToken = encodeContinuationToken(nextContinuationInfos)
+        }
+        return {
+          statements,
+          continuationToken: nextContinuationToken
+        }
+      })
+}
+
+const updateContinuationInfos = (continuationInfos, lastEntity) => {
+  return map(continuationInfos, continuationInfo => {
+    const nextContinuationInfo = cloneDeep(continuationInfo)
+    nextContinuationInfo.v = get(lastEntity, continuationInfo.p)
+    return nextContinuationInfo
+  })
+}
 
 const readStatement = ({statementId, authToken}) => statementsDao.readStatementById(statementId)
     .then(statement => {
@@ -139,7 +251,7 @@ const createUser = ({user, authToken}) => withPermission(authToken, CREATE_USERS
     .then(creatorUserId => {
       const validationErrors = userValidator.validate(user)
       if (validationErrors.hasErrors) {
-        throw new ValidationError(({user: validationErrors}))
+        throw new EntityValidationError(({user: validationErrors}))
       }
       return creatorUserId
     })
@@ -157,7 +269,7 @@ const login = ({credentials}) => Promise.resolve()
     .then(() => {
       const validationErrors = credentialValidator.validate(credentials)
       if (validationErrors.hasErrors) {
-        throw new ValidationError({credentials: validationErrors})
+        throw new EntityValidationError({credentials: validationErrors})
       }
       return credentials
     })
@@ -200,7 +312,7 @@ const createVote = ({authToken, vote}) => withAuth(authToken)
     .then(userId => {
       const validationErrors = voteValidator.validate(vote)
       if (validationErrors.hasErrors) {
-        throw new ValidationError({vote: validationErrors})
+        throw new EntityValidationError({vote: validationErrors})
       }
       return userId
     })
@@ -229,7 +341,7 @@ const deleteVote = ({authToken, vote}) => withAuth(authToken)
     .then(userId => {
       const validationErrors = voteValidator.validate(vote)
       if (validationErrors.hasErrors) {
-        throw new ValidationError({vote: validationErrors})
+        throw new EntityValidationError({vote: validationErrors})
       }
       return userId
     })
@@ -248,7 +360,7 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
     .then(userId => {
       const validationErrors = statementValidator.validate(statement)
       if (validationErrors.hasErrors) {
-        throw new ValidationError({statement: validationErrors})
+        throw new EntityValidationError({statement: validationErrors})
       }
       return userId
     })
@@ -311,7 +423,7 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
     .then(userId => {
       const validationErrors = citationReferenceValidator.validate(citationReference)
       if (validationErrors.hasErrors) {
-        throw new ValidationError({citationReference: validationErrors})
+        throw new EntityValidationError({citationReference: validationErrors})
       }
       return userId
     })
@@ -548,7 +660,7 @@ const createJustificationAsUser = (justification, userId, now) => Promise.resolv
           .then(() => {
             const validationErrors = justificationValidator.validate(justification)
             if (validationErrors.hasErrors) {
-              throw new ValidationError(validationErrors)
+              throw new EntityValidationError(validationErrors)
             }
             return [userId, now]
           })
@@ -558,9 +670,9 @@ const createJustificationAsUser = (justification, userId, now) => Promise.resolv
 const createValidJustificationAsUser = (justification, userId, now) => Promise.all([
       now,
       createJustificationTarget(justification.target, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.target')),
+          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.target')),
       createJustificationBasis(justification.basis, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.basis')),
+          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.basis')),
     ])
     .then( ([
         now,
@@ -617,7 +729,7 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
 
     case JustificationTargetType.JUSTIFICATION:
       return createJustificationAsUser(justificationTarget.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, justification}) => ({
             isExtant,
             targetType: justificationTarget.type,
@@ -626,7 +738,7 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
 
     case JustificationTargetType.STATEMENT:
       return createStatementAsUser(justificationTarget.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then(({isExtant, statement}) => ({
             isExtant,
             targetType: justificationTarget.type,
@@ -643,7 +755,7 @@ const createJustificationBasis = (justificationBasis, userId, now) => {
 
     case JustificationBasisType.CITATION_REFERENCE:
       return createCitationReferenceAsUser(justificationBasis.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, citationReference}) => ({
             isExtant,
             basisType: JustificationBasisType.CITATION_REFERENCE,
@@ -652,7 +764,7 @@ const createJustificationBasis = (justificationBasis, userId, now) => {
 
     case JustificationBasisType.STATEMENT_COMPOUND:
       return createStatementCompoundAsUser(justificationBasis.entity, userId, now)
-          .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, statementCompound}) => ({
             isExtant,
             basisType: JustificationBasisType.STATEMENT_COMPOUND,
@@ -752,7 +864,7 @@ const createStatementCompoundAsUser = (statementCompound, userId, now) => Promis
     .then(() => {
       const validationErrors = statementCompoundValidator.validate(statementCompound)
       if (validationErrors.hasErrors) {
-        throw new ValidationError(validationErrors)
+        throw new EntityValidationError(validationErrors)
       }
       return userId
     })
@@ -817,7 +929,7 @@ const createStatementAsUser = (statement, userId, now) => Promise.resolve()
     .then(() => {
       const validationErrors = statementValidator.validate(statement)
       if (validationErrors.hasErrors) {
-        throw new ValidationError(validationErrors)
+        throw new EntityValidationError(validationErrors)
       }
       return userId
     })

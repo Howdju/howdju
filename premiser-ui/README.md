@@ -1,4 +1,5 @@
 # Howdju's Purpose
+0. Howdju's purpose is to connect the world's information
 0. Howdju's purpose is to provide people with the most efficient way to evaluate the truth of any statement
 1. Howdju's purpose is to enable people to engage in informed dialogue about complex issues
 2. Howdju's purpose is to enable people to evaluate the truth of complex issues with efficiency of time and 
@@ -50,7 +51,7 @@
       justifications list (otherwise one might be slightly preferable and then winner-take-all the other, 
       losing data on correlation)
     * And if they are semantically equivalent, then the system's best idea of the truth of the statement
-      for a particular based upon either that user's verification of justification on the statement or
+      for a particular user based upon either that user's verification of justification on the statement or
       the verifications of users whose verification are highly correlated with the user give an indication
       of the predicted truth of the statement and by implication, the quote
     * And it would be possible to correct/tune an assessment of ‘quote is false’ by showing the user 

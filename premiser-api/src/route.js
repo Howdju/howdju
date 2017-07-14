@@ -11,7 +11,8 @@ const {
   NotFoundError,
   EntityConflictError,
   UserActionsConflictError,
-  ValidationError,
+  EntityValidationError,
+  RequestValidationError,
   InvalidLoginError,
 } = require("./errors")
 const apiErrorCodes = require('./codes/apiErrorCodes')
@@ -91,8 +92,16 @@ const routes = [
     id: 'readStatements',
     path: 'statements',
     method: httpMethods.GET,
-    handler: ({callback}) => readStatements()
-        .then(statements => ok({callback, body: {statements}}))
+    handler: ({request, callback}) => {
+      const {
+        continuationToken,
+        count,
+        sortProperty,
+        sortDirection,
+      } = request.queryStringParameters
+      return readStatements({continuationToken, count, sortProperty, sortDirection})
+        .then(({statements, continuationToken}) => ok({callback, body: {statements, continuationToken}}))
+    }
   },
   {
     id: 'searchStatements',
@@ -128,7 +137,7 @@ const routes = [
                 }
     }) => createStatement({authToken, statement})
         .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
-        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
   },
   {
     id: 'updateStatement',
@@ -142,7 +151,7 @@ const routes = [
                 }
               }) => updateStatement({authToken, statement})
         .then( statement => ok({callback, body: {statement}}))
-        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
   },
   {
     id: 'readStatement',
@@ -221,7 +230,7 @@ const routes = [
                 }
     }) => createJustification({authToken, justification})
         .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
-        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification'))
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification'))
   },
   {
     id: 'readCitationReference',
@@ -250,7 +259,7 @@ const routes = [
         }
     }) => updateCitationReference({authToken, citationReference})
         .then( citationReference => ok({callback, body: {citationReference}}))
-        .catch(ValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('citationReference'))
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('citationReference'))
   },
   {
     id: 'deleteJustification',
@@ -341,7 +350,8 @@ const routeEvent = ({callback, request}) =>
         logger.silly(e)
         throw e
       })
-      .catch(ValidationError, e => badRequest({callback, body: {errorCode: apiErrorCodes.VALIDATION_ERROR, errors: e.errors}}))
+      .catch(EntityValidationError, e => badRequest({callback, body: {errorCode: apiErrorCodes.VALIDATION_ERROR, errors: e.errors}}))
+      .catch(RequestValidationError, e => badRequest({callback, body: {message: e.message}}))
       .catch(NotFoundError, e => notFound({callback}))
       .catch(AuthenticationError, e => unauthenticated({callback}))
       .catch(InvalidLoginError, e => badRequest({callback, body: {errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS, errors: e.errors}}))
