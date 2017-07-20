@@ -88,7 +88,7 @@ class CounterJustificationEditor extends Component {
             {isSaving && <CircularProgress key="progress" id="progress" />}
             <Button flat
                     key="cancelButton"
-                    children={t(CANCEL_BUTTON_LABEL)}
+                    label={t(CANCEL_BUTTON_LABEL)}
                     onClick={this.onCancelEdit}
                     disabled={isSaving}
             />
@@ -96,7 +96,7 @@ class CounterJustificationEditor extends Component {
                     primary
                     key="submitButton"
                     type="submit"
-                    children={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+                    label={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
                     disabled={isSaving}
             />
           </CardActions>

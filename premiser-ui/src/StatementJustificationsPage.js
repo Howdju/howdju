@@ -8,7 +8,7 @@ import FontIcon from "react-md/lib/FontIcons";
 import MenuButton from "react-md/lib/Menus/MenuButton";
 import ListItem from "react-md/lib/Lists/ListItem";
 import Dialog from 'react-md/lib/Dialogs'
-import Menu from "react-md/lib/Menus/Menu";
+import Positions from "react-md/lib/Menus/Positions";
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import groupBy from "lodash/groupBy";
@@ -196,9 +196,9 @@ class StatementJustificationsPage extends Component {
             id={`statement-${statementId}-context-menu`}
             className={cn({hiding: !this.state.isOverStatement})}
             menuClassName="contextMenu statementContextMenu"
-            children={'more_vert'}
-            position={Menu.Positions.TOP_RIGHT}
-            menuItems={[
+            buttonChildren={'more_vert'}
+            position={Positions.TOP_RIGHT}
+            children={[
               <ListItem primaryText="Add Justification"
                         key="addJustification"
                         leftIcon={<FontIcon>add</FontIcon>}
@@ -222,9 +222,7 @@ class StatementJustificationsPage extends Component {
                         onClick={this.deleteStatement}
               />,
             ]}
-        >
-
-        </MenuButton>
+        />
     )
 
     const addNewJustificationDialog = (
@@ -234,14 +232,14 @@ class StatementJustificationsPage extends Component {
                 onHide={this.cancelNewJustificationDialog}
                 actions={[
                   <Button flat
-                          children={text(CANCEL_BUTTON_LABEL)}
+                          label={text(CANCEL_BUTTON_LABEL)}
                           onClick={this.cancelNewJustificationDialog}
                           disabled={isSavingNewJustification}
                   />,
                   <Button raised
                           primary
                           type="submit"
-                          children={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+                          label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
                           onClick={this.saveNewJustification}
                           disabled={isSavingNewJustification}
                   />

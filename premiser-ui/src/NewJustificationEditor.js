@@ -84,13 +84,13 @@ class NewJustificationEditor extends Component {
     const buttons = [
       <Button flat
               key="cancelButton"
-              children={t(CANCEL_BUTTON_LABEL)}
+              label={t(CANCEL_BUTTON_LABEL)}
               onClick={this.onCancelEdit} />,
       <Button flat
               primary
               key="submitButton"
               type="submit"
-              children={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+              label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
               disabled={isSaving}
       />
     ]

@@ -75,7 +75,7 @@
     "react-document-title": "^2.0.2",
     "react-dom": "^15.4.2",
     "react-flip-move": "^2.9.2",
-    "react-md": "file:/Users/tech/code/github-forks/howdju-react-md/",
+    "react-md": "^1.0.17",
     "react-redux": "^5.0.3",
     "react-router": "^4.0.0",
     "react-router-dom": "^4.0.0",

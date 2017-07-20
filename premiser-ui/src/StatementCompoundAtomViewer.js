@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import Divider from 'react-md/lib/Dividers/Divider'
 import FontIcon from 'react-md/lib/FontIcons/FontIcon'
 import MenuButton from "react-md/lib/Menus/MenuButton"
-import Menu from "react-md/lib/Menus/Menu"
+import Positions from "react-md/lib/Menus/Positions";
 import Paper from 'react-md/lib/Papers/Paper'
 import ListItem from 'react-md/lib/Lists/ListItem'
 import cn from 'classnames'
@@ -64,9 +64,9 @@ class StatementCompoundAtomViewer extends Component {
             id={`${_baseId}-context-menu`}
             className={cn({hiding: !isOver})}
             menuClassName="contextMenu statementAtomJustificationMenu"
-            children={'more_vert'}
-            position={Menu.Positions.TOP_RIGHT}
-            menuItems={[
+            buttonChildren={'more_vert'}
+            position={Positions.TOP_RIGHT}
+            children={[
               <ListItem primaryText="Go To"
                         key="goTo"
                         leftIcon={<FontIcon>forward</FontIcon>}
@@ -79,8 +79,7 @@ class StatementCompoundAtomViewer extends Component {
                         onClick={this.onEditStatement}
               />,
             ]}
-        >
-        </MenuButton>
+        />
     )
 
     return (

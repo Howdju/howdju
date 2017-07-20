@@ -147,3 +147,8 @@ making the compound equivalent to an existing compound.
 * But what if they don't want to just highlight quotes; what if they want intermediate statements?  So highlight,
   justification statement from quote, collecting justified statements, and finally justify other statement
 * Actually, do we even allow users to create compounds of non-statement-based justifications?  I think not.
+
+# Cryptocurrency ideas
+* offer bounties for research (how to determine whether earned?  Certain degree of acceptance?  Reputation system
+  of bounty-offerors inducing them to offer bounties?)
+* When includes summaries: buy summaries.

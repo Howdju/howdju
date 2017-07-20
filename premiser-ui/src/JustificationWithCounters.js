@@ -9,13 +9,12 @@ import Button from 'react-md/lib/Buttons/Button'
 import FontIcon from "react-md/lib/FontIcons"
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"
-import Menu from "react-md/lib/Menus/Menu";
+import Positions from "react-md/lib/Menus/Positions";
 import FlipMove from 'react-flip-move'
 import get from 'lodash/get'
 
 import {
   api,
-  ui,
   editors, mapActionCreatorGroupToDispatchToProps, goto,
 } from './actions'
 import {
@@ -127,9 +126,9 @@ class JustificationWithCounters extends Component {
             id={`justification-${justification.id}-context-menu`}
             className={cn({hiding: !isOver})}
             menuClassName="contextMenu justificationContextMenu"
-            children={'more_vert'}
-            position={Menu.Positions.TOP_RIGHT}
-            menuItems={[
+            buttonChildren={'more_vert'}
+            position={Positions.TOP_RIGHT}
+            children={[
               <ListItem primaryText="Counter"
                         key="counter"
                         leftIcon={<FontIcon>reply</FontIcon>}
@@ -154,8 +153,7 @@ class JustificationWithCounters extends Component {
                         onClick={this.deleteClick}
               />,
             ]}
-        >
-        </MenuButton>
+        />
     )
 
     const actions = [

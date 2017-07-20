@@ -258,14 +258,14 @@ class EditStatementJustificationPage extends Component {
                     <CardActions>
                       {isSaving && <CircularProgress key="progress" id="progress" />}
                       <Button flat
-                              children="Cancel"
+                              label="Cancel"
                               disabled={isSaving}
                               onClick={this.onCancel}
                       />
                       <Button raised
                               primary
                               type="submit"
-                              children={submitButtonLabel}
+                              label={submitButtonLabel}
                               title={submitButtonTitle}
                               disabled={isSaving}
                       />

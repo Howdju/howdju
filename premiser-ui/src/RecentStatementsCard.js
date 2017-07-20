@@ -43,7 +43,7 @@ class RecentStatementsCard extends Component {
             <RecentStatements recentStatements={recentStatements || []}/>
           </CardText>
           <CardActions>
-            <Button flat children="Fetch more" onClick={this.fetchMoreRecentStatements} />
+            <Button flat label="Fetch more" onClick={this.fetchMoreRecentStatements} />
           </CardActions>
         </Card>
     )

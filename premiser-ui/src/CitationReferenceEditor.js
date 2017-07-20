@@ -85,7 +85,7 @@ class EditableCitationReference extends Component {
             {inProgress && <CircularProgress key="progress" id="progress" />}
             <Button flat
                     key="cancelButton"
-                    children={t(CANCEL_BUTTON_LABEL)}
+                    label={t(CANCEL_BUTTON_LABEL)}
                     onClick={this.onCancelEdit}
                     disabled={inProgress}
             />
@@ -93,7 +93,7 @@ class EditableCitationReference extends Component {
                     primary
                     key="submitButton"
                     type="submit"
-                    children={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+                    label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
                     disabled={inProgress}
             />
           </CardActions>

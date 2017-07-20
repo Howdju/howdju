@@ -1,25 +1,30 @@
 # Howdju UI TODO
 
-## MVP
-* Create indices in postgres
-* Should disjustifications be statement only (forces ML-learnable negation?)?
-* Periods at the end of statements?
-* I'm worried about statement text collision, particularly with counters, which are likely to depend on context a lot
-  * Justifications on the statement might lack the proper context...
+## Update release (I can use it and show it to people)
+* Example where we would want to allow helper conjuctions, but to zone in on the statements:
+  "The tea party shouldn't be labeled racist because some members are racist"
+  * Except that [Most Beatles fans would condemn a rapist]
+    whereas [Few Tea Partiers have condemned racism]
+  * coordinating conjunctions: and, but, for, nor, or, so, and yet
+  * subordinating conjunctions: after, although, as, as if, because, before, even if, even though, if, if only, 
+    rather than, since, that, though, unless, until, when, where, whereas, wherever, whether, which, and while
+* Home page
+  * Featured positions
+    * height of the capitol building limit DC
+    * Hillary's emails
+  * Recent activity (created statements/justifications)
+  * About
 * Remove production.env from git
    * change premiser_api password
 
 ### Features
 * Jobs (justification score)
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
-  
+
 ### Marketing
 * Google analytics
 
 ### Bugs/stability
-
-* What happens if we justify a statement with itself?
-  * Can counter justification with same statement as basis for target justification
 * Testing
   * Mobile Safari
   * Mobile Chrome
@@ -37,11 +42,6 @@
 
 * Why do I have PostCSS in my project?
 
-### Presentation
-* Statement example: 
-  * height of the capitol building limit DC
-  * Hillary's emails
-
 
 ## Tooling
 * Consider copying this
@@ -54,7 +54,7 @@
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
 
 
-## 0.2
+## 0.2 (others can use it)
 
 ### Social login
 * https://developers.facebook.com/docs/facebook-login/web
@@ -226,7 +226,11 @@
   * Or should we not be normalizing from API?  Should we normalize in reducer?
   * Change this for autocomplete fetches in entities
 * Delete citation reference URL right button is misaligned
-* Support [pg prepared statements](https://node-postgres.com/features/queries#prepared-statements)
+* Support [pg prepared statements](https://node-postgres.com/features/queries#prepared-statements)  
+* Create indices in postgres
+
+### ML Support
+* Record raw statement/citation text entered before normalized.  Keep this on a short time-scale
 
 ### Flair
 * Move login status/logout to header
@@ -273,7 +277,14 @@
      page reload.
 
 ### Product/Modeling ideas
+* Should disjustifications be statement only (forces ML-learnable negation?)?
+* Periods at the end of statements?
+* I'm worried about statement text collision, particularly with counters, which are likely to depend on context a lot
+  * Justifications on the statement might lack the proper context...
 * Disjustifications of a statement are counters to a justification using that statement
+* What happens if we justify a statement with itself?
+  * Can counter justification with same statement as basis for target justification
+
   
 ### Bugs
 * react-md autocomplete still shows when there are no results
@@ -374,6 +385,7 @@
 * [CrowdIn Localization](https://crowdin.com/)
 * [Google Factcheck](https://www.blog.google/products/search/fact-check-now-available-google-search-and-news-around-world/)
 * [React virtualized](https://github.com/bvaughn/react-virtualized)
+* [Map](https://github.com/alex3165/react-mapbox-gl)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

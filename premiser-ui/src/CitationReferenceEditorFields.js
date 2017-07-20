@@ -156,11 +156,9 @@ class CitationReferenceEditorFields extends Component {
                     hidden: disabled,
                   })}
                   key="addUrlButton"
-                  iconChildren="add"
+                  label="Add URL"
                   onClick={this.props.onAddUrl}
-          >
-            Add URL
-          </Button>
+          >add</Button>
         </div>
     )
   }

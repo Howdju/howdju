@@ -132,14 +132,14 @@ class LoginPage extends Component {
                       <CardActions>
                         {isLoggingIn && <CircularProgress key="progress" id="progress" />}
                         <Button flat
-                                children="Cancel"
+                                label="Cancel"
                                 disabled={isLoggingIn}
                                 onClick={this.onCancel}
                         />
                         <Button raised
                                 primary
                                 type="submit"
-                                children="Login"
+                                label="Login"
                                 disabled={isLoggingIn}
                         />
                       </CardActions>
@@ -169,7 +169,7 @@ class LoginPage extends Component {
                       <input type="hidden" name="b_ccf334287da1fbf7af0904629_f08c3a775d" tabIndex="-1" />
                     </CardText>
                     <CardActions>
-                      <Button raised primary type="submit" children="Subscribe" name="subscribe" />
+                      <Button raised primary type="submit" label="Subscribe" name="subscribe" />
                     </CardActions>
                   </form>
                 </Card>

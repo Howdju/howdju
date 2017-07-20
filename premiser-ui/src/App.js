@@ -120,7 +120,7 @@ class App extends Component {
               />,
             ]}
             visible={this.props.isNavDrawerVisible}
-            onVisibilityChange={this.onNavDrawerVisibilityChange}
+            onVisibilityToggle={this.onNavDrawerVisibilityChange}
             style={{ zIndex: 100 }}
         />)
 

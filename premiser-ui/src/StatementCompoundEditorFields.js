@@ -113,11 +113,9 @@ class StatementCompoundEditorFields extends Component {
                     hidden: disabled,
                   })}
                   key="addStatementAtomButton"
-                  iconChildren="add"
+                  label="Add Statement"
                   onClick={e => this.props.onAddStatementAtom(atoms.length)}
-          >
-            Add Statement
-          </Button>
+          >add</Button>
         </div>
     )
   }
