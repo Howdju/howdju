@@ -2,16 +2,19 @@
 
 # Perspectives
 * Show justifications at half-width
-  * If perspective has only one polarity, show statement at half-width?
+  * If perspective has only one polarity, show statement at half-width so that another can fit next to it?
   * Only feature perspectives having both polarities?
 # Connections
   * root statement justifying other things
   * root statements participating in compounds
   * justification citation justifying other things
   * justification statement justifying other things
+* Info
+  * Who created (really need a profile page first)
+  * When created
 
 ## Update release (I can use it and show it to people)
-* Example where we would want to allow helper conjuctions, but to zone in on the statements:
+* Example where we would want to allow helper conjunctions, but to zone in on the statements:
   "The tea party shouldn't be labeled racist because some members are racist"
   * Except that [Most Beatles fans would condemn a rapist]
     whereas [Few Tea Partiers have condemned racism]
@@ -33,8 +36,6 @@
   * Scroll to anchor after justifications load
 * Remove production.env from git
    * change premiser_api password
-* Escape on open autocomplete of main search both closes autocomplete and clears field
-* Autocomplete doesn't go away after submitting main search
 
 ### Features
 * Jobs (justification score)

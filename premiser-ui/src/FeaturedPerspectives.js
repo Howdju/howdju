@@ -26,7 +26,6 @@ class FeaturedPerspectives extends Component {
     const nextLength = nextProps.perspectives ? nextProps.perspectives.length : 0
     const didPerspectivesChange = areUnequal || length !== nextLength
     if (didPerspectivesChange && this.props.onPerspectivesLengthChange) {
-      console.log('onPerspectivesLengthChange')
       this.props.onPerspectivesLengthChange()
     }
   }

@@ -13,8 +13,6 @@ import {
 import './Header.scss'
 
 import ApiAutocomplete from "./ApiAutocomplete";
-import {denormalize} from "normalizr";
-import {statementSchema} from "./schemas";
 
 const mainSearchSuggestionsKey = "mainSearch"
 
@@ -22,6 +20,10 @@ class Header extends Component {
 
   constructor() {
     super()
+
+    this.state = {
+      isAutocompleteForcedClosed: true
+    }
 
     this.handleToggleNavDrawerVisibility = this.handleToggleNavDrawerVisibility.bind(this)
     this.onMainSearchChange = this.onMainSearchChange.bind(this)
@@ -39,6 +41,7 @@ class Header extends Component {
 
   onMainSearch(e) {
     e.preventDefault()
+    this.setState({isAutocompleteForcedClosed: true})
     this.props.goto.mainSearch(this.props.mainSearchText)
   }
 
@@ -46,11 +49,18 @@ class Header extends Component {
     this.props.goto.statement(statement)
   }
 
+  onMainSearchKeyDown = event => {
+    this.setState({isAutocompleteForcedClosed: false})
+  }
+
   render() {
     const {
       mainSearchText,
       api,
     } = this.props
+    const {
+      isAutocompleteForcedClosed
+    } = this.state
 
     const dataValue = 'id'
     const dataLabel = 'text'
@@ -88,11 +98,13 @@ class Header extends Component {
               onAutocomplete={this.onMainSearchAutocomplete}
               suggestionTransform={suggestionTransform}
               onPropertyChange={this.onMainSearchChange}
+              onKeyDown={this.onMainSearchKeyDown}
               fetchSuggestions={api.fetchMainSearchSuggestions}
               suggestionsKey={mainSearchSuggestionsKey}
               className="mainSearchAutocomplete"
               inputClassName="md-text-field--toolbar"
               escapeClears={true}
+              forcedClosed={isAutocompleteForcedClosed}
             />
 
         </form>

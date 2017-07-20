@@ -5,6 +5,7 @@ import Autocomplete from 'react-md/lib/Autocompletes'
 import { connect } from 'react-redux'
 import map from 'lodash/map'
 
+import autocompleter from './autocompleter'
 import {
   ESCAPE_KEY_CODE, RETURN_KEY_CODE
 } from './keyCodes'
@@ -34,6 +35,10 @@ class ApiAutocomplete extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    autocompleter.fixOpen(this.autocomplete, nextProps.value, nextProps.transformedSuggestions)
+    if (this.props.forcedClosed) {
+      this.closeAutocomplete()
+    }
     if (this.props.autocompleteThrottle !== nextProps.autocompleteThrottle) {
       this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), nextProps.autocompleteThrottle)
     }
@@ -79,7 +84,7 @@ class ApiAutocomplete extends Component {
   }
 
   isAutocompleteOpen() {
-    return this.autocomplete.state.visible
+    return this.autocomplete.state.isOpen
   }
 
   closeAutocomplete() {
@@ -102,6 +107,9 @@ class ApiAutocomplete extends Component {
     if (!hasFocus(this.autocomplete._field)) {
       this.closeAutocomplete()
     }
+    if (this.props.forcedClosed) {
+      this.closeAutocomplete()
+    }
   }
 
   setAutocomplete = autocomplete => this.autocomplete = autocomplete
@@ -121,6 +129,7 @@ class ApiAutocomplete extends Component {
     delete props.suggestionsKey
     delete props.suggestionTransform
     delete props.onPropertyChange
+    delete props.forcedClosed
 
     return (
         <Autocomplete {...props}
@@ -164,6 +173,8 @@ ApiAutocomplete.propTypes = {
   /** The value to display in the text input */
   value: PropTypes.string,
   onKeyDown: PropTypes.func,
+  /** If true, will try to kee[ autocomplete closed */
+  forcedClosed: PropTypes.bool,
 }
 ApiAutocomplete.defaultProps = {
   autocompleteThrottle: 250,
