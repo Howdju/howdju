@@ -5,7 +5,7 @@ const env = require('node-env-file')
 const path = require('path')
 const Promise = require('bluebird')
 
-const envFilename = process.env.NODE_ENV === 'production' ? '../config/prod.env' : '../src/.env'
+const envFilename = process.env.NODE_ENV === 'production' ? '../config/production.env' : '../src/.env'
 env(path.join(__dirname, envFilename))
 
 const {query} = require('../src/db')
