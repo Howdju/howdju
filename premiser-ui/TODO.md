@@ -1,37 +1,29 @@
 # Howdju UI TODO
 
 ## MVP
-
-* Move login status/logout to header
-* Add different color bottom bar to main search
-* Add site sections
-  * ToS/Privacy
-    * harassing/people's right to privacy
-    * May not automate use of system
-  * About
-  * Contact
-* Migrate data
+* Create indices in postgres
+* Should disjustifications be statement only (forces ML-learnable negation?)?
+* Periods at the end of statements?
+* I'm worried about statement text collision, particularly with counters, which are likely to depend on context a lot
+  * Justifications on the statement might lack the proper context...
+* Remove production.env from git
+   * change premiser_api password
 
 ### Features
 * Jobs (justification score)
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
-
-### Feedback
-* Error reporting
-  * feedback script
-  * unhandled error reporting
-  * ensure that log level in prod is at least debug
-  * request ID and cookie ID
   
 ### Marketing
 * Google analytics
 
 ### Bugs/stability
-* replace regex with path-to-regexp
+
 * What happens if we justify a statement with itself?
   * Can counter justification with same statement as basis for target justification
-* Figure out if the site works in Firefox
-* Test with mobile device
+* Testing
+  * Mobile Safari
+  * Mobile Chrome
+  * Firefox
 * flag rehydrate after a timeout (sometimes rehydrate not flagged and API calls hang)
   * Sometimes verification becomes unresponsive UNTIL you open the nav drawer...
 * Search TODO
@@ -46,7 +38,9 @@
 * Why do I have PostCSS in my project?
 
 ### Presentation
-* Statement example: height of the capitol building limit DC
+* Statement example: 
+  * height of the capitol building limit DC
+  * Hillary's emails
 
 
 ## Tooling
@@ -62,6 +56,25 @@
 
 ## 0.2
 
+### Social login
+* https://developers.facebook.com/docs/facebook-login/web
+
+### Feedback
+* Error reporting
+  * feedback script
+  * unhandled error reporting
+  * ensure that log level in prod is at least debug
+  * request ID and cookie ID
+  
+* Autosubmit cited pages to archive.org
+
+* Add site sections
+  * ToS/Privacy
+    * harassing/people's right to privacy
+    * May not automate use of system
+  * About
+  * Contact
+  
 * All statements page with URL pagination for web crawlers
   * Or just do site map for crawlers
 * All domains page
@@ -133,6 +146,7 @@
   * challenge of card having buttons to create counter
   
 ### Features
+* Add refinement/intervening statement justification (justification drop-down item creating new statement justifying same statement and justified by this justification)
 * Hyperlink statement text to drill-down to statement
 * Design statement compounds to be text-like instead of paper/card blocks.  This should mirror or relate to the 
   appearance of how the browser extension marks up text on a page - for continuity and for education.
@@ -149,6 +163,10 @@
     * A list of purported examples of something with links to prove their existence
     * [{text, urls}, ...]
   * Argument (statements connected with joiner words: "or", "because", "then", "therefore", "if")
+  * Math/formula/calculation: 
+    * basic math expression that result in a number
+    * Spreadsheet style data
+    * Cite scrapable/tabular data?
   * MEDIA (Image/Video) (how handle editing to add higher-resolution images?)
     * Button to show image/video URL in-context
 * tagging
@@ -190,6 +208,7 @@
 * Add time grade period checks to entity update methods
 
 ### Improvements
+* replace regex with path-to-regexp
 * Client validation
   * http://redux-form.com/6.8.0/docs/GettingStarted.md/
 * Change submit button message to "create justification" when statement exists
@@ -210,6 +229,8 @@
 * Support [pg prepared statements](https://node-postgres.com/features/queries#prepared-statements)
 
 ### Flair
+* Move login status/logout to header
+* Add different color bottom bar to main search
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
 * Update slug of path when updating statement on StatementJustificationsPage
 * Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar

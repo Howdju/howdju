@@ -1,3 +1,29 @@
+create table if not exists migration_translations (
+  old_table_name varchar(64),
+  new_table_name varchar(64),
+  old_id varchar(64),
+  new_id varchar(64)
+);
+
+create table if not exists users (
+  user_id serial,
+  email varchar(2048),
+  first_name varchar(128),
+  last_name varchar(128),
+  phone_number varchar(64),
+  hash varchar(4096),
+  creator_user_id integer,
+  is_active bit,
+  last_login timestamp,
+  created timestamp,
+  deleted timestamp,
+);
+
+create table if not exists user_analytics (
+  user_id integer,
+  google_analytics_id varchar(128)
+);
+
 create table if not exists actions (
   user_id integer, -- User who acted
   action_type varchar(128), -- CREATE, DELETE, MODIFY
@@ -114,22 +140,13 @@ create table if not exists votes (
 create table if not exists justification_scores (
   justification_id integer,
   score_type varchar(64), -- GLOBAL_VOTE_SUM
-  score FLOAT
+  score float
 );
 
 create table if not exists tagging_scores (
   tagging_id integer,
   score_type varchar(64),
   score float
-);
-
-create table if not exists users (
-  user_id serial,
-  email varchar(2048),
-  hash varchar(4096),
-  creator_user_id integer,
-  created timestamp,
-  deleted timestamp
 );
 
 create table if not exists groups (

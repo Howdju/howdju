@@ -35,7 +35,13 @@ const pool = new pg.Pool(config)
 
 pool.on('error', (err, client) => console.error('idle client error', err.message, err.stack))
 
-exports.query = (sql, args) => Promise.resolve(pool.connect())
+exports.query = (sql, args) => Promise.resolve()
+    .then(() => {
+      if (!sql) {
+        throw new Error('sql is required')
+      }
+      return Promise.resolve(pool.connect())
+    })
     .then(client => {
       logger.silly('db.query:', {sql, args})
       const utcArgs = map(args, toUtc)
