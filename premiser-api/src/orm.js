@@ -2,6 +2,7 @@ const toString = require('lodash/toString')
 const map = require('lodash/map')
 
 const {JustificationBasisType} = require('./models')
+const {ImpossibleError} = require('./errors')
 
 const toUser = row => !row ? row : ({
   id: toString(row.user_id),
@@ -56,15 +57,17 @@ const toJustification = (
   }
 
   switch (row.basis_type) {
-    case JustificationBasisType.CITATION_REFERENCE:
-      if (row.basis_citation_reference_id) {
-        justification.basis.entity = citationReferencesById[row.basis_citation_reference_id]
+    case JustificationBasisType.CITATION_REFERENCE: {
+        if (row.basis_id) {
+          justification.basis.entity = citationReferencesById[row.basis_id]
+        }
       }
       break
 
-    case JustificationBasisType.STATEMENT_COMPOUND:
-      if (row.basis_statement_compound_id) {
-        justification.basis.entity = statementCompoundsById[row.basis_statement_compound_id]
+    case JustificationBasisType.STATEMENT_COMPOUND: {
+        if (row.basis_id) {
+          justification.basis.entity = statementCompoundsById[row.basis_id]
+        }
       }
       break
 
@@ -75,7 +78,7 @@ const toJustification = (
   if (counterJustificationsByJustificationId) {
     const counterJustifications = counterJustificationsByJustificationId[justification.id]
     if (counterJustifications) {
-      justification.counterJustifications = counterJustifications.map(j =>
+      justification.counterJustifications = map(counterJustifications, j =>
           toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, citationReferencesById))
     }
   }

@@ -12,6 +12,7 @@ import ListItem from "react-md/lib/Lists/ListItem"
 import Positions from "react-md/lib/Menus/Positions";
 import FlipMove from 'react-flip-move'
 import get from 'lodash/get'
+import map from 'lodash/map'
 
 import {
   api,
@@ -22,6 +23,7 @@ import {
   isDisverified, isStatementCompoundBased, hasQuote, makeNewCounterJustification,
 } from './models'
 import {counterJustificationEditorId, justificationBasisEditorId} from './editorIds'
+import paths from './paths'
 
 import config from './config';
 
@@ -111,6 +113,7 @@ class JustificationWithCounters extends Component {
       positivey,
       newCounterJustification,
       isEditingBasis,
+      showControls,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -139,6 +142,13 @@ class JustificationWithCounters extends Component {
                         title="Justify another statement with this justification’s basis"
                         leftIcon={<FontIcon>call_made</FontIcon>}
                         onClick={this.onUseJustification}
+              />,
+              <ListItem primaryText="Link"
+                        key="link"
+                        title="A link to this justification"
+                        leftIcon={<FontIcon>link</FontIcon>}
+                        component="a"
+                        href={paths.justification(justification)}
               />,
               <Divider key="divider" />,
               <ListItem primaryText="Edit"
@@ -192,6 +202,7 @@ class JustificationWithCounters extends Component {
 
     const card = (
         <Card className="justificationCard"
+              id={`justification-${justification.id}`}
               onMouseOver={this.onCardMouseOver}
               onMouseLeave={this.onCardMouseLeave}
         >
@@ -199,7 +210,7 @@ class JustificationWithCounters extends Component {
             <div className="md-cell md-cell--12">
 
               <div>
-                {justification && !isEditingBasis && menu}
+                {justification && !isEditingBasis && showControls && menu}
                 <EditableJustificationBasis id={`justification-${justification.id}-basisEditor`}
                                             justification={justification}
                                             editorId={justificationBasisEditorId(justification.basis)}
@@ -210,9 +221,11 @@ class JustificationWithCounters extends Component {
             </div>
           </div>
 
-          <CardActions className="actions">
-            {!isEditingBasis && actions}
-          </CardActions>
+          {showControls &&
+            <CardActions className="actions">
+              {!isEditingBasis && actions}
+            </CardActions>
+          }
         </Card>
     )
 
@@ -232,10 +245,10 @@ class JustificationWithCounters extends Component {
                 </div>
               </Card>
             }
-            {justification.counterJustifications.map(j =>
+            {map(justification.counterJustifications, j =>
                 <div id={`counter-justification-${j.id}-row`} key={`counter-justification-${j.id}-row`} className="row">
                   <div className="col-xs-12">
-                    <ConnectedJustificationWithCounters justification={j} positivey={!positivey} />
+                    <ConnectedJustificationWithCounters justification={j} positivey={!positivey} showControls={showControls} />
                   </div>
                 </div>
             )}
@@ -255,7 +268,12 @@ class JustificationWithCounters extends Component {
     )
   }
 }
-JustificationWithCounters.propTypes = {}
+JustificationWithCounters.propTypes = {
+  showControls: PropTypes.bool
+}
+JustificationWithCounters.defaultProps = {
+  showControls: true
+}
 
 const mapStateToProps = (state, ownProps) => {
   const justification = ownProps.justification

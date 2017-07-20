@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import {LOCATION_CHANGE} from 'react-router-redux'
 import {handleActions} from "redux-actions";
+import map from 'lodash/map'
 
 import {
   api,
@@ -49,7 +50,7 @@ export const mainSearchPage = handleActions({
   [api.fetchStatementsSearch]: (state, action) => ({...state, isFetching: true}),
   [api.fetchStatementsSearch.response]: {
     next: (state, action) => {
-      const statements = action.payload.result.map(id => action.payload.entities.statements[id])
+      const statements = map(action.payload.result, id => action.payload.entities.statements[id])
       return {...state, isFetching: false, statements: statements || []}
     },
     throw: (state, action) => ({...state, isFetching: false})

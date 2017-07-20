@@ -3,6 +3,9 @@ const replace = require('lodash/replace')
 const lowerCase = require('lodash/lowerCase')
 const deburr = require('lodash/deburr')
 
+const {assert} = require('../util')
+const {JustificationTargetType} = require('../models')
+
 exports.cleanWhitespace = text => {
   text = trim(text)
   text = replace(text, /\s+/g, ' ')
@@ -18,4 +21,25 @@ exports.normalizeText = text => {
   text = deburr(text)
 
   return text
+}
+
+exports.groupRootJustifications = (rootStatementId, justification_rows) => {
+  const rootJustifications = [], counterJustificationsByJustificationId = {}
+  for (let justification_row of justification_rows) {
+    // There are two types of justifications: those on the (root) statement, and counters
+    if (justification_row.target_type === JustificationTargetType.STATEMENT) {
+      assert(() => toString(justification_row.target_id) === rootStatementId)
+      rootJustifications.push(justification_row)
+    } else {
+      assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)
+      if (!counterJustificationsByJustificationId.hasOwnProperty(justification_row.target_id)) {
+        counterJustificationsByJustificationId[justification_row.target_id] = []
+      }
+      counterJustificationsByJustificationId[justification_row.target_id].push(justification_row)
+    }
+  }
+  return {
+    rootJustifications,
+    counterJustificationsByJustificationId,
+  }
 }

@@ -40,3 +40,9 @@ export const statementJustificationsSchema = {
   statement: statementSchema,
   justifications: justificationsSchema
 }
+
+export const perspectiveSchema = new schema.Entity('perspectives', {
+  statement: statementSchema,
+  justifications: justificationsSchema,
+})
+export const perspectivesSchema = [perspectiveSchema]

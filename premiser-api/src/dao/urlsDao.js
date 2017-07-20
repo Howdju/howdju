@@ -8,6 +8,9 @@ const {
 const {query} = require('./../db')
 const {logger} = require('../logger')
 const head = require('lodash/head')
+const {
+  JustificationBasisType
+} = require('../models')
 
 
 const groupUrlsByCitationReferenceId = rows => {
@@ -44,7 +47,7 @@ class UrlsDao {
         join citation_references cr on
               j.root_statement_id = $1
           and j.deleted is null 
-          and j.basis_type = 'CITATION_REFERENCE' 
+          and j.basis_type = $2 
           and j.basis_id = cr.citation_reference_id
         join citation_reference_urls cru on
               cr.citation_reference_id = cru.citation_reference_id
@@ -52,7 +55,8 @@ class UrlsDao {
         join urls u USING (url_id)
         order by j.justification_id
     `
-    return query(sql, [rootStatementId]).then( ({rows}) => groupUrlsByCitationReferenceId(rows))
+    return query(sql, [rootStatementId, JustificationBasisType.CITATION_REFERENCE])
+        .then( ({rows}) => groupUrlsByCitationReferenceId(rows))
   }
 
   createUrls(urls, userId, now) {

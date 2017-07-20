@@ -1,21 +1,40 @@
 # Howdju UI TODO
 
+# Perspectives
+* Show justifications at half-width
+  * If perspective has only one polarity, show statement at half-width?
+  * Only feature perspectives having both polarities?
+# Connections
+  * root statement justifying other things
+  * root statements participating in compounds
+  * justification citation justifying other things
+  * justification statement justifying other things
+
 ## Update release (I can use it and show it to people)
 * Example where we would want to allow helper conjuctions, but to zone in on the statements:
   "The tea party shouldn't be labeled racist because some members are racist"
   * Except that [Most Beatles fans would condemn a rapist]
     whereas [Few Tea Partiers have condemned racism]
+  * Same justification idea as (equivalent justifications?):
+    * Muslim leaders decry extremism, whereas alt-right leaders tolerate or even instigate racism
+    * on statement 1070 (http://localhost:3000/s/1070/racist-members-of-the-alt-right-are-just-like-extremist-adherants-to-islam-you-cant-denounce-the-entire-group-because-of-actions-of-the-few)
   * coordinating conjunctions: and, but, for, nor, or, so, and yet
   * subordinating conjunctions: after, although, as, as if, because, before, even if, even though, if, if only, 
     rather than, since, that, though, unless, until, when, where, whereas, wherever, whether, which, and while
 * Home page
-  * Featured positions
+  * Featured perspectives
     * height of the capitol building limit DC
     * Hillary's emails
   * Recent activity (created statements/justifications)
   * About
+* When someone verifies a justification with weak basis/weak justifications, ask them: "Are you sure? How do you know?" ?
+* Deep link to justification on statement page
+  * Add slug to deep link
+  * Scroll to anchor after justifications load
 * Remove production.env from git
    * change premiser_api password
+* Escape on open autocomplete of main search both closes autocomplete and clears field
+* Autocomplete doesn't go away after submitting main search
 
 ### Features
 * Jobs (justification score)
@@ -89,7 +108,7 @@
 ### Home page ideas
 * Priority
   * recently created statements (recently active statements?),
-  * Featured positions
+  * Featured perspectives
   * Snapmunk has a nice three-column design
   * all statement tags cloud
   * Controversial statements
@@ -139,7 +158,7 @@
     * [Fix in react-md 1.1](https://github.com/mlaursen/react-md/issues/232)
   * fork react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
 * If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
-* Do I check return values for delete dao methods and throw NotFoundError when it was missing?
+* Do I check return values for delete dao methods and throw EntityNotFoundError when it was missing?
 
 ### Editors
 * Separate JustificationWithCounters into JustificationCard and JustificationTree/CounteredJustification/Argument

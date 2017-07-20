@@ -58,12 +58,12 @@ class CitationReferencesDao {
         , c.citation_id
         , c.text as citation_text
       from justifications j 
-          left join citation_references cr on 
+          join citation_references cr on 
                 j.root_statement_id = $1
             and j.basis_type = $2
             and j.deleted is null
             and j.basis_id = cr.citation_reference_id
-          left join citations c using (citation_id)
+          join citations c using (citation_id)
       `
     return Promise.all([
         query(sql, [rootStatementId, JustificationBasisType.CITATION_REFERENCE]),

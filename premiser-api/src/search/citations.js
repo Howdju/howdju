@@ -1,3 +1,5 @@
+const map = require('lodash/map')
+
 const {removeDups} = require("./util")
 const {queries} = require('../db')
 const {toCitation} = require("../orm")
@@ -75,7 +77,7 @@ const searchCitations = (searchText) => {
   // then by any statements that contain the text [ilike]
   // Combine in order, removing duplicate statements.
   const searchTextWords = searchText.split(/\s+/)
-  const tsqueryParts = searchTextWords.map( (w, i) => `to_tsquery('english', $${i+1})`)
+  const tsqueryParts = map(searchTextWords, (w, i) => `to_tsquery('english', $${i+1})`)
   const tsquery = tsqueryParts.join(' || ')
   return queries([
     {
@@ -101,7 +103,7 @@ const searchCitations = (searchText) => {
               {rows: containingRows},
             ]) => {
     const citations = removeDups('citation_id', phraseRows, plainRows, rawRows, containingRows)
-    return citations.map(toCitation)
+    return map(citations, toCitation)
   })
 }
 

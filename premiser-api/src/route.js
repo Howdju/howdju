@@ -8,7 +8,8 @@ const httpStatusCodes = require('./httpStatusCodes')
 const {
   AuthenticationError,
   AuthorizationError,
-  NotFoundError,
+  EntityNotFoundError,
+  NoMatchingRouteError,
   EntityConflictError,
   UserActionsConflictError,
   EntityValidationError,
@@ -33,6 +34,7 @@ const {
   deleteJustification,
   readCitationReference,
   updateCitationReference,
+  readFeaturedPerspectives,
 } = require('./service')
 const {
   searchStatements,
@@ -285,8 +287,8 @@ const routes = [
     // TODO change to body: {credentials}
     handler: ({callback, request: {body}}) => login(body)
         .then(({email, authToken}) => ok({callback, body: {email, authToken}}))
-        .catch(NotFoundError, () => {
-          // Hide NotFoundError to prevent someone from learning that an email does or does not correspond to an account
+        .catch(EntityNotFoundError, () => {
+          // Hide EntityNotFoundError to prevent someone from learning that an email does or does not correspond to an account
           throw new InvalidLoginError()
         })
   },
@@ -307,7 +309,12 @@ const routes = [
     id: 'deleteVote',
     path: new RegExp('^votes$'),
     method: httpMethods.DELETE,
-    handler: ({callback, request: {body: {vote}, authToken, method, path}}) =>
+    handler: ({
+                callback,
+                request: {
+                  body: {vote},
+                  authToken,
+                }}) =>
         deleteVote({authToken, vote})
             .then( () => ok({callback}) )
   },
@@ -318,41 +325,55 @@ const routes = [
     handler: ({callback, request: {body: {credentials: {email, password}, authToken}}}) => createUser(body)
         .then( user => ok({callback, body: {user}}))
   },
+  {
+    id: 'readFeaturedPerspectives',
+    path: new RegExp('^perspectives$'),
+    method: httpMethods.GET,
+    queryStringParameters: {
+      featured: '',
+    },
+    handler: ({
+                callback,
+                request: {authToken}
+              }) => readFeaturedPerspectives({authToken})
+        .then( perspectives => {
+          console.log(authToken)
+          return perspectives
+        })
+        .then( perspectives => ok({callback, body: {perspectives}}) )
+  },
 ]
 
-function selectRoute({path, method, queryStringParameters}) {
+const selectRoute = ({path, method, queryStringParameters}) => Promise.resolve()
+    .then(() => {
 
-  for (let route of routes) {
-    let match
+      for (let route of routes) {
+        let match
 
-    if (route.method && route.method !== method) continue
-    if (typeof route.path === 'string' && route.path !== path) continue
-    if (route.path instanceof RegExp && !(match = route.path.exec(path))) continue
-    if (route.queryStringParameters && !isEqual(route.queryStringParameters, queryStringParameters)) continue
+        if (route.method && route.method !== method) continue
+        if (typeof route.path === 'string' && route.path !== path) continue
+        if (route.path instanceof RegExp && !(match = route.path.exec(path))) continue
+        if (route.queryStringParameters && !isEqual(route.queryStringParameters, queryStringParameters)) continue
 
-    // First item is the whole match, rest are the group matches
-    const pathParameters = match ? match.slice(1) : undefined
-    return Promise.resolve({route, pathParameters})
-  }
+        // First item is the whole match, rest are the group matches
+        const pathParameters = match ? match.slice(1) : undefined
+        return {route, pathParameters}
+      }
 
-  return Promise.reject()
-}
+      throw new NoMatchingRouteError()
+    })
 
 const routeEvent = ({callback, request}) =>
-  selectRoute(request).then(
-    ({route, pathParameters}) => route.handler({callback, request: assign({}, request, {pathParameters})}),
-    () => {
-      logger.debug(`No route for ${request.method} ${request.path}`)
-      return notFound({callback})
-    }
-  )
+  selectRoute(request)
+      .then( ({route, pathParameters}) => route.handler({callback, request: assign({}, request, {pathParameters})}) )
       .catch(e => {
         logger.silly(e)
         throw e
       })
       .catch(EntityValidationError, e => badRequest({callback, body: {errorCode: apiErrorCodes.VALIDATION_ERROR, errors: e.errors}}))
       .catch(RequestValidationError, e => badRequest({callback, body: {message: e.message}}))
-      .catch(NotFoundError, e => notFound({callback}))
+      .catch(EntityNotFoundError, e => notFound({callback}))
+      .catch(NoMatchingRouteError, e => notFound({callback}))
       .catch(AuthenticationError, e => unauthenticated({callback}))
       .catch(InvalidLoginError, e => badRequest({callback, body: {errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS, errors: e.errors}}))
       .catch(AuthorizationError, e => unauthorized({callback, body: {errorCode: apiErrorCodes.AUTHORIZATION_ERROR, errors: e.errors}}))

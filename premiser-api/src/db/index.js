@@ -48,9 +48,9 @@ exports.query = (sql, args) => Promise.resolve()
       return Promise.resolve(client.query(sql, utcArgs)).finally(() => client.release())
     })
 exports.queries = queryAndArgs => Promise.resolve(pool.connect())
-    .then(client => Promise.all(queryAndArgs.map( ({sql, args}) => {
+    .then(client => Promise.all(map(queryAndArgs, ({sql, args}) => {
       logger.silly('db.query:', {sql, args})
       const utcArgs = map(args, toUtc)
       return Promise.resolve(client.query.call(client, sql, utcArgs))
-    } ))
+    }))
         .finally(() => client.release()))

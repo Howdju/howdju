@@ -12,6 +12,7 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import cn from 'classnames'
 import get from 'lodash/get'
+import map from 'lodash/map'
 
 import {
   api,
@@ -99,7 +100,7 @@ class LoginPage extends Component {
                   >
                     {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
                     <ul className="errorMessage">
-                      {modelErrors && modelErrors.map(error => <li key={error}>{t(error)}</li>)}
+                      {modelErrors && map(modelErrors, error => <li key={error}>{t(error)}</li>)}
                     </ul>
                   </CardText>
                   <form onSubmit={this.onSubmit}>

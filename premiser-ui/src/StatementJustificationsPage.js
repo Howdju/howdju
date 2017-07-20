@@ -19,6 +19,7 @@ import defaults from 'lodash/defaults'
 import cn from 'classnames'
 import FlipMove from 'react-flip-move';
 import get from 'lodash/get'
+import map from 'lodash/map'
 
 import config from './config';
 
@@ -260,7 +261,7 @@ class StatementJustificationsPage extends Component {
       <div key="positive-justifications" className="col-xs-6">
 
         <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
-          {justificationsByPolarity[JustificationPolarity.POSITIVE].map(j => (
+          {map(justificationsByPolarity[JustificationPolarity.POSITIVE], j => (
               <div className="row" key={j.id}>
                 <div className="col-xs-12">
                   <JustificationWithCounters justification={j} positivey={true} />
@@ -273,7 +274,7 @@ class StatementJustificationsPage extends Component {
       <div key="negative-justifications" className="col-xs-6">
 
         <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
-          {justificationsByPolarity[JustificationPolarity.NEGATIVE].map(j => (
+          {map(justificationsByPolarity[JustificationPolarity.NEGATIVE], j => (
               <div className="row" key={j.id}>
                 <div className="col-xs-12">
                   <JustificationWithCounters justification={j} positivey={false} />
@@ -288,7 +289,7 @@ class StatementJustificationsPage extends Component {
       <div key="justifications" className="col-xs-12">
 
         <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
-          {justifications.map(j => (
+          {map(justifications, j => (
               <div className="row" key={j.id}>
                 <div className="col-xs-12">
                   <JustificationWithCounters justification={j} positivey={isPositive(j)} />

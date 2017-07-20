@@ -17,6 +17,7 @@ class Paths {
     pathname: mainSearchPathName,
     search: '?' + window.encodeURIComponent(mainSearchText)
   })
+  justification = j => this.statement({id: j.rootStatementId}) + '#justification-' + j.id
 }
 
 export default new Paths()

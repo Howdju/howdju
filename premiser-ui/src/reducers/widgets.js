@@ -19,4 +19,15 @@ export default handleActions({
       return {...state, [action.meta.requestPayload.widgetId]: newWidgetState}
     }
   },
+  [api.fetchFeaturedPerspectives.response]: {
+    next: (state, action) => {
+      const widgetState = get(state, action.meta.requestPayload.widgetId, {featuredPerspectives: []})
+      const newWidgetState = {
+        featuredPerspectives: union(widgetState.featuredPerspectives, action.payload.result.perspectives),
+        continuationToken: action.payload.result.continuationToken
+      }
+
+      return {...state, [action.meta.requestPayload.widgetId]: newWidgetState}
+    }
+  },
 }, {})

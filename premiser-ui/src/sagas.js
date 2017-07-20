@@ -41,7 +41,7 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  citationReferenceSchema, statementsSchema, statementCompoundSchema
+  citationReferenceSchema, statementsSchema, statementCompoundSchema, perspectivesSchema
 } from './schemas'
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
@@ -105,6 +105,11 @@ export const resourceApiConfigs = {
       schema: {statements: statementsSchema},
     }
   },
+  [api.fetchFeaturedPerspectives]: payload => ({
+    endpoint: 'perspectives?featured',
+    schema: {perspectives: perspectivesSchema},
+    requiresRehydrate: true,
+  }),
   [api.fetchStatement]: payload => ({
     endpoint: `statements/${payload.statementId}`,
     schema: {statement: statementSchema},

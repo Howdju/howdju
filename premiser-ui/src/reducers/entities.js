@@ -93,11 +93,15 @@ export default handleActions({
   )]: {
     next: (state, action) => ({...state, statements: {...state.statements, ...action.payload.entities.statements}})
   },
-  [api.fetchStatementJustifications.response]: {
+  [combineActions(
+      api.fetchStatementJustifications.response,
+      api.fetchFeaturedPerspectives.response
+  )]: {
     next: (state, action) => {
       const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
       return {
         ...state,
+        perspectives: {...state.perspectives, ...action.payload.entities.perspectives},
         statements: {...state.statements, ...action.payload.entities.statements},
         statementCompounds: {...state.statementCompounds, ...action.payload.entities.statementCompounds},
         justifications: {...state.justifications, ...action.payload.entities.justifications},

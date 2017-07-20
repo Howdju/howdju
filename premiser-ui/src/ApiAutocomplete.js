@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import throttle from 'lodash/throttle'
 import Autocomplete from 'react-md/lib/Autocompletes'
 import { connect } from 'react-redux'
+import map from 'lodash/map'
 
 import {
   ESCAPE_KEY_CODE, RETURN_KEY_CODE
@@ -178,8 +179,8 @@ const defaultSuggestionTransform = props => model => ({
 const mapStateToProps = (state, ownProps) => {
   const suggestions = state.autocompletes.suggestions[ownProps.suggestionsKey] || []
   const transformedSuggestions = ownProps.suggestionTransform ?
-      suggestions.map(ownProps.suggestionTransform).map(defaultSuggestionTransform(ownProps)) :
-      suggestions.map(defaultSuggestionTransform(ownProps))
+      map(suggestions, ownProps.suggestionTransform).map(defaultSuggestionTransform(ownProps)) :
+      map(suggestions, defaultSuggestionTransform(ownProps))
 
   return {
     suggestions,

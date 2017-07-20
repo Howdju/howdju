@@ -8,7 +8,7 @@ import moment from 'moment'
 import paths from './paths'
 import config from './config'
 
-export default class RecentStatements extends Component {
+export default class RecentStatementsListItems extends Component {
   render () {
     const {
       recentStatements,
@@ -36,6 +36,6 @@ export default class RecentStatements extends Component {
     )
   }
 }
-RecentStatements.propTypes = {
+RecentStatementsListItems.propTypes = {
   recentStatements: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

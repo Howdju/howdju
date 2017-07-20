@@ -38,6 +38,7 @@ const votesDao = require('./dao/votesDao')
 const urlsDao = require('./dao/urlsDao')
 const actionsDao = require('./dao/actionsDao')
 const statementCompoundsDao = require('./dao/statementCompoundsDao')
+const perspectivesDao = require('./dao/perspectivesDao')
 const {
   statementValidator,
   justificationValidator,
@@ -69,7 +70,7 @@ const {
 const {
   AuthenticationError,
   AuthorizationError,
-  NotFoundError,
+  EntityNotFoundError,
   EntityConflictError,
   EntityValidationError,
   RequestValidationError,
@@ -224,7 +225,7 @@ const updateContinuationInfos = (continuationInfos, lastEntity) => {
 const readStatement = ({statementId, authToken}) => statementsDao.readStatementById(statementId)
     .then(statement => {
       if (!statement) {
-        throw new NotFoundError(EntityTypes.STATEMENT, statementId)
+        throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
       }
       return statement
     })
@@ -239,7 +240,7 @@ const readStatementJustifications = ({statementId, authToken}) => Promise.resolv
     ]))
         .then( ([statement, justifications]) => {
           if (!statement) {
-            throw new NotFoundError(EntityTypes.STATEMENT, statementId)
+            throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
           }
           return {
             statement,
@@ -279,7 +280,7 @@ const login = ({credentials}) => Promise.resolve()
     ]))
     .then( ([credentials, user]) => {
       if (!user) {
-        throw new NotFoundError(EntityTypes.USER, credentials.email)
+        throw new EntityNotFoundError(EntityTypes.USER, credentials.email)
       }
       return Promise.all([
           user,
@@ -349,7 +350,7 @@ const deleteVote = ({authToken, vote}) => withAuth(authToken)
     .then(deletedVoteIds => {
       if (deletedVoteIds.length === 0) {
         logger.debug('No votes to unvote')
-        throw new NotFoundError()
+        throw new EntityNotFoundError(EntityTypes.VOTE, vote.id)
       } else if (deletedVoteIds.length > 1) {
         logger.warn(`Deleted ${deletedVoteIds.length} votes at once!`)
       }
@@ -408,7 +409,7 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
     })
     .then( ([userId, now, updatedStatement]) => {
       if (!updatedStatement) {
-        throw new NotFoundError(EntityTypes.STATEMENT, statement.id)
+        throw new EntityNotFoundError(EntityTypes.STATEMENT, statement.id)
       }
 
       asyncRecordAction(userId, ActionType.UPDATE, ActionTargetType.STATEMENT, now, updatedStatement.id)
@@ -608,7 +609,7 @@ const deleteStatement = ({authToken, statementId}) => withAuth(authToken)
     ]))
     .then( ([userId, hasPermission, dependentJustifications, statement]) => {
       if (!statement) {
-        throw new NotFoundError(EntityTypes.STATEMENT, statementId)
+        throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
       }
       if (hasPermission) {
         return [userId, statement, dependentJustifications]
@@ -1017,6 +1018,11 @@ const deleteCounterJustificationsToJustificationIds = (justificationIds, userId,
           )
     })
 
+const readFeaturedPerspectives = ({authToken}) => authDao.getUserId(authToken)
+    .then(userId => {
+      return perspectivesDao.readFeaturedPerspectivesWithVotesForOptionalUserId(userId)
+    })
+
 /** Inserts an action record, but returns the entity, so that promises won't block on the query */
 const asyncRecordEntityAction = (userId, actionType, actionTargetType, now) => entity => {
   if (entity) {
@@ -1050,4 +1056,5 @@ module.exports = {
   deleteJustification,
   readCitationReference,
   updateCitationReference,
+  readFeaturedPerspectives,
 }

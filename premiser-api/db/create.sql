@@ -5,6 +5,19 @@ create table if not exists migration_translations (
   new_id varchar(64)
 );
 
+create table if not exists perspectives (
+  perspective_id serial,
+  creator_user_id integer,
+  is_featured boolean,
+  created timestamp,
+  deleted timestamp
+);
+
+create table if not exists perspective_justifications (
+  perspective_id integer,
+  justification_id integer
+);
+
 create table if not exists users (
   user_id serial,
   email varchar(2048),

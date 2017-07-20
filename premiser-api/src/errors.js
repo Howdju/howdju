@@ -28,7 +28,9 @@ class AuthorizationError extends HowdjuApiError {
 /** The user tried to login with invalid credentials */
 class InvalidLoginError extends HowdjuApiError {}
 
-class NotFoundError extends HowdjuApiError {}
+class EntityNotFoundError extends HowdjuApiError {}
+
+class NoMatchingRouteError extends HowdjuApiError {}
 
 class ImpossibleError extends HowdjuApiError {
   constructor(message) {
@@ -67,10 +69,11 @@ module.exports = {
   RequestValidationError,
   AuthenticationError,
   AuthorizationError,
-  NotFoundError,
+  EntityNotFoundError,
   ImpossibleError,
   EntityConflictError,
   UserActionsConflictError,
   EntityTooOldToModifyError,
   InvalidLoginError,
+  NoMatchingRouteError,
 }

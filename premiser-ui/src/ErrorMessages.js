@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {toErrorMessage} from './modelErrorMessages'
+import map from 'lodash/map'
 
 class ErrorMessages extends Component {
   render() {
@@ -10,7 +11,7 @@ class ErrorMessages extends Component {
 
     const errorList = (
         <ul className="errorMessage">
-          {errors && errors.map(error => <li key={error}>{toErrorMessage(error)}</li>)}
+          {errors && map(errors, error => <li key={error}>{toErrorMessage(error)}</li>)}
         </ul>
     )
     return (

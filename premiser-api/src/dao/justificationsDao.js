@@ -4,7 +4,6 @@ const toNumber = require('lodash/toNumber')
 const toString = require('lodash/toString')
 const forEach = require('lodash/forEach')
 
-const {assert} = require('../util')
 const statementCompoundsDao = require('./statementCompoundsDao')
 const citationReferencesDao = require('./citationReferencesDao')
 const {
@@ -17,27 +16,7 @@ const {
 } = require('../orm')
 const {query} = require('../db')
 const {logger} = require('../logger')
-
-const groupRootJustifications = (rootStatementId, justification_rows) => {
-  const rootJustifications = [], counterJustificationsByJustificationId = {}
-  for (let justification_row of justification_rows) {
-    // There are two types of justifications: those on the (root) statement, and counters
-    if (justification_row.target_type === JustificationTargetType.STATEMENT) {
-      assert(() => toString(justification_row.target_id) === rootStatementId)
-      rootJustifications.push(justification_row)
-    } else {
-      assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)
-      if (!counterJustificationsByJustificationId.hasOwnProperty(justification_row.target_id)) {
-        counterJustificationsByJustificationId[justification_row.target_id] = []
-      }
-      counterJustificationsByJustificationId[justification_row.target_id].push(justification_row)
-    }
-  }
-  return {
-    rootJustifications,
-    counterJustificationsByJustificationId,
-  }
-}
+const {groupRootJustifications} = './util'
 
 class JustificationsDao {
 
@@ -50,8 +29,6 @@ class JustificationsDao {
     const sql = `
       select 
           j.*
-        , sc.statement_compound_id as basis_statement_compound_id
-        , cr.citation_reference_id as basis_citation_reference_id
         , v.vote_id
         , v.polarity AS vote_polarity
         , v.target_type AS vote_target_type
@@ -85,7 +62,7 @@ class JustificationsDao {
         ]) => {
           const {rootJustifications, counterJustificationsByJustificationId} =
               groupRootJustifications(rootStatementId, justification_rows)
-          return rootJustifications.map(j =>
+          return map(rootJustifications, j =>
               toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, citationReferencesById))
         })
   }

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import get from 'lodash/get'
-import RecentStatements from "./RecentStatements";
+import RecentStatementsListItems from "./RecentStatementsListItems";
 import Card from 'react-md/lib/Cards/Card'
 import CardText from 'react-md/lib/Cards/CardText'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
@@ -24,6 +24,14 @@ class RecentStatementsCard extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    const length = this.props.recentStatements ? this.props.recentStatements.length : 0
+    const nextLength = nextProps.recentStatements ? nextProps.recentStatements.length : 0
+    if (length !== nextLength && this.props.onStatementsLengthChange) {
+      this.props.onStatementsLengthChange()
+    }
+  }
+
   fetchMoreRecentStatements = event => {
     event.preventDefault()
     this.props.api.fetchMoreRecentStatements(this.props.widgetId, this.props.continuationToken, this.props.fetchCount)
@@ -31,16 +39,16 @@ class RecentStatementsCard extends Component {
 
   render () {
     const {
-      recentStatements,
+      statements,
     } = this.props
     return (
         <Card>
           <CardTitle title="Recent statements" />
           <CardText>
-            {!recentStatements &&
+            {!statements &&
               <div>Loading...</div>
             }
-            <RecentStatements recentStatements={recentStatements || []}/>
+            <RecentStatementsListItems recentStatements={statements || []}/>
           </CardText>
           <CardActions>
             <Button flat label="Fetch more" onClick={this.fetchMoreRecentStatements} />
@@ -52,18 +60,19 @@ class RecentStatementsCard extends Component {
 RecentStatementsCard.propTypes = {
   widgetId: PropTypes.string.isRequired,
   fetchCount: PropTypes.number.isRequired,
+  onStatementsLengthChange: PropTypes.func,
 }
 RecentStatementsCard.defaultProps = {
-  fetchCount: 5,
+  fetchCount: 20,
 }
 const mapStateToProps = (state, ownProps) => {
   const widgetState = get(state, ['widgets', ownProps.widgetId], {})
-  const recentStatements = denormalize(widgetState.recentStatements, statementsSchema, state.entities)
+  const statements = denormalize(widgetState.recentStatements, statementsSchema, state.entities)
   const {
     continuationToken,
   } = widgetState
   return {
-    recentStatements,
+    statements,
     continuationToken,
   }
 }
