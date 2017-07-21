@@ -33,6 +33,8 @@ const {
   createJustification,
   deleteJustification,
   readCitationReference,
+  readCitations,
+  readJustifications,
   updateCitationReference,
   readFeaturedPerspectives,
 } = require('./service')
@@ -262,6 +264,42 @@ const routes = [
     }) => updateCitationReference({authToken, citationReference})
         .then( citationReference => ok({callback, body: {citationReference}}))
         .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('citationReference'))
+  },
+  {
+    id: 'readCitations',
+    path: 'citations',
+    method: httpMethods.GET,
+    handler: ({request, callback}) => {
+      const {
+        continuationToken,
+        count,
+        sortProperty,
+        sortDirection,
+      } = request.queryStringParameters
+      return readCitations({continuationToken, count, sortProperty, sortDirection})
+          .then(({citations, continuationToken}) => ok({callback, body: {citations, continuationToken}}))
+    }
+  },
+  {
+    id: 'readJustifications',
+    path: 'justifications',
+    method: httpMethods.GET,
+    handler: ({request, callback}) => {
+      const {
+        continuationToken,
+        count,
+        sortProperty,
+        sortDirection,
+        citationId,
+        statementId,
+      } = request.queryStringParameters
+      const filters = {
+        citationId,
+        statementId,
+      }
+      return readJustifications({continuationToken, count, sortProperty, sortDirection, filters})
+          .then(({justifications, continuationToken}) => ok({callback, body: {justifications, continuationToken}}))
+    }
   },
   {
     id: 'deleteJustification',

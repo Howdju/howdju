@@ -5,6 +5,7 @@ import {
   api, mapActionCreatorGroupToDispatchToProps
 } from "./actions";
 import ApiAutocomplete from "./ApiAutocomplete";
+import {statementSchema} from "./schemas";
 
 class StatementTextAutocomplete extends Component {
 
@@ -39,6 +40,7 @@ class StatementTextAutocomplete extends Component {
           suggestionsKey={suggestionsKey}
           dataLabel="text"
           dataValue="id"
+          suggestionSchema={statementSchema}
           onKeyDown={onKeyDown}
       />
     )

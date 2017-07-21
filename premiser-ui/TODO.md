@@ -2,21 +2,14 @@
 
 ## Update release (I can use it and show it to people)
 
-### Recent Activity
-  * Citations
-    * CitationCard
-  * Justifications
-    * JustificationCard
 ### Perspectives
 * Design PerspectiveCard
 * Show justifications at half-width
   * If perspective has only one polarity, show statement at half-width so that another can fit next to it?
   * Only feature perspectives having both polarities?
 ### Connections
-  * root statement justifying/countering other things
-  * root statements participating in compounds
-  * justification citation justifying other things
-  * justification statement justifying/countering other things
+  * statement justifying/disjustifying other statements or countering other justifications
+  * citation justifying/disjustifying other statements
 ### Info
   * Who created (really need a profile page first)
     * Change schema to creator instead of creatorId?

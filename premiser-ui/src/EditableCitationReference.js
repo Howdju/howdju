@@ -7,6 +7,8 @@ import get from 'lodash/get'
 import {EditorTypes} from "./reducers/editors";
 import CitationReferenceViewer from "./CitationReferenceViewer";
 import CitationReferenceEditor from "./CitationReferenceEditor";
+import {denormalize} from "normalizr";
+import {citationReferenceSchema} from "./schemas";
 
 class EditableCitationReference extends Component {
 
@@ -54,7 +56,7 @@ EditableCitationReference.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const citationReference = state.entities.citationReferences[ownProps.entityId]
+  const citationReference = denormalize(state.entities.citationReferences[ownProps.entityId], citationReferenceSchema, state.entities)
   const editEntity = get(state.editors, [EditorTypes.CITATION_REFERENCE, ownProps.editorId, 'editEntity'])
   const isEditing = !!editEntity
   return {

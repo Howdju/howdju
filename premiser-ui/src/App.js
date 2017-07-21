@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route } from 'react-router'
+import { Route, Switch } from 'react-router'
 import { Link, Redirect } from 'react-router-dom'
 
 import { ConnectedRouter } from 'react-router-redux'
@@ -39,6 +39,8 @@ import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage";
 import RecentActivityPage from "./RecentActivityPage";
 import WhatsNextPage from "./WhatsNextPage";
 import AboutPage from "./AboutPage";
+import NotFoundPage from "./NotFoundPage";
+import JustificationsPage from "./JustificationsPage";
 
 
 const tabIndexByPathname = {
@@ -108,10 +110,10 @@ class App extends Component {
 
   onTabChange = (newActiveTabIndex, tabId, tabControlsId, tabChildren, event) => {
     const lookup = {
-      featuredPerspectivesTab: 'featured-perspectives',
-      recentActivityTab: 'recent-activity',
-      whatsNextTab: 'whats-next',
-      aboutTab: 'about'
+      featuredPerspectivesTab: '/featured-perspectives',
+      recentActivityTab: '/recent-activity',
+      whatsNextTab: '/whats-next',
+      aboutTab: '/about'
     }
     const path = lookup[tabId]
     history.push(path)
@@ -234,28 +236,33 @@ class App extends Component {
               "md-toolbar-relative--prominent": !!pageTabs,
             })}>
 
-              <Route exact path={paths.home()} render={renderHomePath}/>
-              <Route exact path={paths.login()} component={LoginPage} />
+              <Switch>
+                <Route exact path={paths.home()} render={renderHomePath}/>
+                <Route exact path={paths.login()} component={LoginPage} />
 
-              <Route exact path="/featured-perspectives" component={FeaturedPerspectivesPage} />
-              <Route exact path="/recent-activity" component={RecentActivityPage} />
-              <Route exact path="/whats-next" component={WhatsNextPage} />
-              <Route exact path="/about" component={AboutPage} />
+                <Route exact path="/featured-perspectives" component={FeaturedPerspectivesPage} />
+                <Route exact path="/recent-activity" component={RecentActivityPage} />
+                <Route exact path="/whats-next" component={WhatsNextPage} />
+                <Route exact path="/about" component={AboutPage} />
 
-              <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
+                <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
+                <Route exact path="/j" component={JustificationsPage} />
 
-              <Route exact path="/create-statement" render={props => (
-                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
-              )} />
-              <Route exact path={createJustificationPath} render={props => (
-                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
-              )} />
-              <Route exact path="/submit" render={props => (
-                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
-              )} />
+                <Route exact path="/create-statement" render={props => (
+                    <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
+                )} />
+                <Route exact path={createJustificationPath} render={props => (
+                    <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
+                )} />
+                <Route exact path="/submit" render={props => (
+                    <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
+                )} />
 
-              <Route exact path="/tools" component={ToolsPage} />
-              <Route exact path="/icons" component={IconPage} />
+                <Route exact path="/tools" component={ToolsPage} />
+                <Route exact path="/icons" component={IconPage} />
+
+                <Route component={NotFoundPage} />
+              </Switch>
 
             </div>
 

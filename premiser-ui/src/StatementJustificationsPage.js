@@ -40,7 +40,7 @@ import {
   ui,
   goto, flows,
 } from "./actions";
-import {justificationSchema, statementSchema} from "./schemas";
+import {justificationSchema, justificationsSchema, statementSchema} from "./schemas";
 import JustificationWithCounters from './JustificationWithCounters'
 import text, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
@@ -390,7 +390,7 @@ const mapStateToProps = (state, ownProps) => {
   const didFetchingStatementFail = get(statementEditorState, ['errors', 'hasErrors'], false)
   const isEditingStatement = !!get(statementEditorState, ['editEntity'])
 
-  let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], [justificationSchema], state.entities)
+  let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], justificationsSchema, state.entities)
   justifications = sortJustifications(justifications)
 
   const newJustificationDialogEditorState = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId], {})

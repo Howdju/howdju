@@ -9,7 +9,11 @@ export const statementCompoundSchema = new schema.Entity('statementCompounds', {
     }
   ]
 })
-export const citationReferenceSchema = new schema.Entity('citationReferences')
+export const citationSchema = new schema.Entity('citations')
+export const citationsSchema = [citationSchema]
+export const citationReferenceSchema = new schema.Entity('citationReferences', {
+  citation: citationSchema
+})
 export const voteSchema = new schema.Entity('votes')
 
 export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)
@@ -20,6 +24,7 @@ export const justificationBasisSchema = new schema.Union({
 
 export const justificationSchema = new schema.Entity('justifications')
 justificationSchema.define({
+  rootStatement: statementSchema,
   target: {
     entity: justificationTargetSchema
   },
@@ -29,7 +34,7 @@ justificationSchema.define({
   counterJustifications: [justificationSchema],
   vote: voteSchema
 })
-const justificationsSchema = [justificationSchema]
+export const justificationsSchema = [justificationSchema]
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there.
 justificationTargetSchema.define({
   STATEMENT: statementSchema,

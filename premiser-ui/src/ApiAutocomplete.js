@@ -13,6 +13,7 @@ import {
   autocompletes,
   mapActionCreatorGroupToDispatchToProps
 } from "./actions";
+import {denormalize} from "normalizr";
 
 const dataLabel = 'data-label'
 const dataValue = 'data-value'
@@ -56,7 +57,7 @@ class ApiAutocomplete extends Component {
       this.throttledRefreshAutocomplete(val)
     } else {
       this.throttledRefreshAutocomplete.cancel()
-      this.props.autocompletes.clearSuggestions(this.props.suggestionsKey)
+      this.clearSuggestions()
     }
   }
 
@@ -112,27 +113,38 @@ class ApiAutocomplete extends Component {
     }
   }
 
+  onBlur = event => {
+    if (this.props.suggestions && this.props.suggestions.length > 0) {
+      this.clearSuggestions()
+    }
+  }
+
+  clearSuggestions = () => {
+    this.props.autocompletes.clearSuggestions(this.props.suggestionsKey)
+  }
+
   setAutocomplete = autocomplete => this.autocomplete = autocomplete
 
   render() {
     const {
       value,
       transformedSuggestions,
-      ...props
+      ...rest
     } = this.props
-    delete props.autocompletes
-    delete props.autocompleteThrottle
-    delete props.dispatch
-    delete props.escapeClears
-    delete props.fetchSuggestions
-    delete props.suggestions
-    delete props.suggestionsKey
-    delete props.suggestionTransform
-    delete props.onPropertyChange
-    delete props.forcedClosed
+    delete rest.autocompletes
+    delete rest.autocompleteThrottle
+    delete rest.dispatch
+    delete rest.escapeClears
+    delete rest.fetchSuggestions
+    delete rest.suggestions
+    delete rest.suggestionsKey
+    delete rest.suggestionTransform
+    delete rest.onPropertyChange
+    delete rest.forcedClosed
+    delete rest.suggestionSchema
 
     return (
-        <Autocomplete {...props}
+        <Autocomplete {...rest}
                       type="text"
                       value={value}
                       dataLabel={dataLabel}
@@ -141,9 +153,11 @@ class ApiAutocomplete extends Component {
                       onKeyDown={this.onKeyDown}
                       onAutocomplete={this.onAutocomplete}
                       onMenuOpen={this.onMenuOpen}
+                      onBlur={this.onBlur}
                       data={transformedSuggestions}
                       filter={null}
                       ref={this.setAutocomplete}
+                      focusInputOnAutocomplete={false}
         />
     )
   }
@@ -175,6 +189,8 @@ ApiAutocomplete.propTypes = {
   onKeyDown: PropTypes.func,
   /** If true, will try to kee[ autocomplete closed */
   forcedClosed: PropTypes.bool,
+  /** The schema which the component uses to denormalize suggestions */
+  suggestionSchema: PropTypes.object.isRequired,
 }
 ApiAutocomplete.defaultProps = {
   autocompleteThrottle: 250,
@@ -188,7 +204,8 @@ const defaultSuggestionTransform = props => model => ({
 })
 
 const mapStateToProps = (state, ownProps) => {
-  const suggestions = state.autocompletes.suggestions[ownProps.suggestionsKey] || []
+  const normalized = state.autocompletes.suggestions[ownProps.suggestionsKey]
+  const suggestions = denormalize(normalized, [ownProps.suggestionSchema], state.entities) || []
   const transformedSuggestions = ownProps.suggestionTransform ?
       map(suggestions, ownProps.suggestionTransform).map(defaultSuggestionTransform(ownProps)) :
       map(suggestions, defaultSuggestionTransform(ownProps))

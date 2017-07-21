@@ -148,14 +148,14 @@ const editorReducerByType = {
       return {...state, editEntity}
     },
     [api.fetchStatementJustifications]: (state, action) => {
-      const rootStatementId = state.editEntity && state.editEntity.rootStatementId
+      const rootStatementId = state.editEntity && state.editEntity.rootStatement.id
       if (rootStatementId && rootStatementId === action.payload.statementId) {
         return {...state, isFetching: true}
       }
       return state
     },
     [api.fetchStatementJustifications.response]: (state, action) => {
-      const rootStatementId = state.editEntity && state.editEntity.rootStatementId
+      const rootStatementId = state.editEntity && state.editEntity.rootStatement.id
       if (rootStatementId && rootStatementId === action.payload.statementId) {
         return {...state, isFetching: false}
       }

@@ -72,7 +72,23 @@ export const featuredPerspectivesPage = handleActions({
     }
   },
 }, {
-  featuredPerspectives: []
+  featuredPerspectives: [],
+  continuationToken: null,
+})
+
+export const justificationsPage = handleActions({
+  [api.fetchJustifications.response]: {
+    next: (state, action) => {
+      return {
+        ...state,
+        justifications: action.payload.result.justifications,
+        continuationToken: action.payload.result.continuationToken,
+      }
+    }
+  }
+}, {
+  justifications: [],
+  continuationToken: null,
 })
 
 export default combineReducers({
@@ -81,4 +97,5 @@ export default combineReducers({
   app: appUi,
   mainSearch,
   featuredPerspectivesPage,
+  justificationsPage,
 })

@@ -1,29 +1,31 @@
 const argon2 = require('argon2')
 const cryptohat = require('cryptohat')
-const concat = require('lodash/concat')
 const uuid = require('uuid')
 const moment = require('moment')
 const Promise = require('bluebird')
-const isString = require('lodash/isString')
-const merge = require('lodash/merge')
+const URLSafeBase64 = require('urlsafe-base64');
+
 const assign = require('lodash/assign')
+const cloneDeep = require('lodash/cloneDeep')
+const concat = require('lodash/concat')
+const differenceBy = require('lodash/differenceBy')
+const filter = require('lodash/filter')
+const find = require('lodash/find')
+const findIndex = require('lodash/findIndex')
 const forEach = require('lodash/forEach')
 const get = require('lodash/get')
-const cloneDeep = require('lodash/cloneDeep')
-const filter = require('lodash/filter')
+const groupBy = require('lodash/groupBy')
+const isString = require('lodash/isString')
 const keys = require('lodash/keys')
 const last = require('lodash/last')
-const pickBy = require('lodash/pickBy')
 const map = require('lodash/map')
-const differenceBy = require('lodash/differenceBy')
-const find = require('lodash/find')
-const URLSafeBase64 = require('urlsafe-base64');
-const values = require('lodash/values')
-const findIndex = require('lodash/findIndex')
-const groupBy = require('lodash/groupBy')
+const merge = require('lodash/merge')
+const pickBy = require('lodash/pickBy')
+const set = require('lodash/set')
 const sortBy = require('lodash/sortBy')
-const zip = require('lodash/zip')
 const toNumber = require('lodash/toNumber')
+const values = require('lodash/values')
+const zip = require('lodash/zip')
 
 const config = require('./config')
 const {logger} = require('./logger')
@@ -137,6 +139,38 @@ const readStatements = ({continuationToken, sortProperty = 'created', sortDirect
   return readMoreStatements(continuationToken, countNumber)
 }
 
+const readCitations = ({continuationToken, sortProperty = 'created', sortDirection = 'ascending', count = 25 }) => {
+  const countNumber = toNumber(count)
+  if (!isFinite(countNumber)) {
+    throw new RequestValidationError(`count must be a number. ${count} is not a number.`)
+  }
+
+  if (!continuationToken) {
+    const sorts = createSorts(sortProperty, sortDirection)
+    return readInitialCitations(sorts, countNumber)
+  }
+  return readMoreCitations(continuationToken, countNumber)
+}
+
+const readJustifications = ({
+                              continuationToken,
+                              sortProperty = 'created',
+                              sortDirection = 'ascending',
+                              count = 25,
+                              filters,
+}) => {
+  const countNumber = toNumber(count)
+  if (!isFinite(countNumber)) {
+    throw new RequestValidationError(`count must be a number. ${count} is not a number.`)
+  }
+
+  if (!continuationToken) {
+    const sorts = createSorts(sortProperty, sortDirection)
+    return readInitialJustifications(sorts, countNumber, filters)
+  }
+  return readMoreJustifications(continuationToken, countNumber, filters)
+}
+
 const createSorts = (sortProperty, sortDirection) => {
   const sortProperties = isString(sortProperty) ? [sortProperty] : sortProperty
   const sortDirections = isString(sortDirection) ? [sortDirection] : sortDirection
@@ -153,24 +187,65 @@ const createSorts = (sortProperty, sortDirection) => {
 const readInitialStatements = (requestedSorts, count) => {
   const disambiguationSorts = [{property: 'id', direction: 'ascending'}]
   const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
-  return statementsDao.readStatements(unambiguousSorts, count).then(statements => {
-    const lastStatement = last(statements)
-    let continuationToken = null
+  return statementsDao.readStatements(unambiguousSorts, count)
+      .then(statements => {
+        const lastStatement = last(statements)
+        let continuationToken = null
 
-    if (lastStatement) {
-      const continuationInfos = createContinuationInfos(unambiguousSorts, lastStatement)
-      continuationToken = encodeContinuationToken(continuationInfos)
-    }
+        if (lastStatement) {
+          const continuationInfos = createContinuationInfo(unambiguousSorts, lastStatement)
+          continuationToken = encodeContinuationToken(continuationInfos)
+        }
 
-    return {
-      statements,
-      continuationToken,
-    }
-  })
+        return {
+          statements,
+          continuationToken,
+        }
+      })
 }
 
-const createContinuationInfos = (sorts, lastEntity) => {
-  const continuationInfos = map(sorts, ({property, direction}) => {
+const readInitialCitations = (requestedSorts, count) => {
+  const disambiguationSorts = [{property: 'id', direction: 'ascending'}]
+  const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
+  return citationsDao.readCitations(unambiguousSorts, count)
+      .then(citations => {
+        const lastCitation = last(citations)
+        let continuationToken = null
+
+        if (lastCitation) {
+          const continuationInfos = createContinuationInfo(unambiguousSorts, lastCitation)
+          continuationToken = encodeContinuationToken(continuationInfos)
+        }
+
+        return {
+          citations,
+          continuationToken,
+        }
+      })
+}
+
+const readInitialJustifications = (requestedSorts, count, filters) => {
+  const disambiguationSorts = [{property: 'id', direction: 'ascending'}]
+  const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
+  return justificationsDao.readJustifications(unambiguousSorts, count, filters)
+      .then(justifications => {
+        const lastJustification = last(justifications)
+        let continuationToken = null
+
+        if (lastJustification) {
+          const continuationInfos = createContinuationInfo(unambiguousSorts, lastJustification, filters)
+          continuationToken = encodeContinuationToken(continuationInfos)
+        }
+
+        return {
+          justifications,
+          continuationToken,
+        }
+      })
+}
+
+const createContinuationInfo = (sorts, lastEntity, filters) => {
+  const sortContinuations = map(sorts, ({property, direction}) => {
     const continuationInfo = {
       p: property,
       v: get(lastEntity, property)
@@ -181,20 +256,15 @@ const createContinuationInfos = (sorts, lastEntity) => {
     }
     return continuationInfo
   })
-  return continuationInfos
+  return {
+    s: sortContinuations,
+    f: filters,
+  }
 }
 
 const readMoreStatements = (continuationToken, count) => {
-  /*
-   It seems like the ultimate technique here is to have one or more requested sorts, and then as many
-   fields as necessary as are needed to create a continuity sort when sort value(s) are broken mid-value to
-   keep within the count.  If a continuity sort is requested, don't include it as part of the continuity.
-   The next value recorded for each of these needs to be included in the token, and all should be used as
-   greater-/less-than-or-equal-to except for the most minor of them, which will be strictly greater-/less-than so as
-   not to include the last value passed.
-   */
-  const continuationInfos = parseContinuationToken(continuationToken)
-  return statementsDao.readMoreStatements(continuationInfos, count)
+  const {s: sortContinuations} = parseContinuationToken(continuationToken)
+  return statementsDao.readMoreStatements(sortContinuations, count)
       .then(statements => {
         const lastStatement = last(statements)
 
@@ -204,8 +274,8 @@ const readMoreStatements = (continuationToken, count) => {
           nextContinuationToken = continuationToken
         } else {
           // Everything from the previous token should be fine except we need to update the values
-          const nextContinuationInfos = updateContinuationInfos(continuationInfos, lastStatement)
-          nextContinuationToken = encodeContinuationToken(nextContinuationInfos)
+          const nextContinuationInfo = updateContinuationInfo(sortContinuations, lastStatement)
+          nextContinuationToken = encodeContinuationToken(nextContinuationInfo)
         }
         return {
           statements,
@@ -214,12 +284,68 @@ const readMoreStatements = (continuationToken, count) => {
       })
 }
 
-const updateContinuationInfos = (continuationInfos, lastEntity) => {
-  return map(continuationInfos, continuationInfo => {
-    const nextContinuationInfo = cloneDeep(continuationInfo)
-    nextContinuationInfo.v = get(lastEntity, continuationInfo.p)
-    return nextContinuationInfo
+const readMoreCitations = (continuationToken, count) => {
+  const {s: sortContinuations} = parseContinuationToken(continuationToken)
+  return citationsDao.readMoreCitations(sortContinuations, count)
+      .then(citations => {
+        const lastCitation = last(citations)
+
+        let nextContinuationToken
+        if (!lastCitation) {
+          // If there were no statements to continue with, then just reuse the old continuation token
+          nextContinuationToken = continuationToken
+        } else {
+          // Everything from the previous token should be fine except we need to update the values
+          const nextContinuationInfo = updateContinuationInfo(sortContinuations, lastCitation)
+          nextContinuationToken = encodeContinuationToken(nextContinuationInfo)
+        }
+        return {
+          citations,
+          continuationToken: nextContinuationToken
+        }
+      })
+}
+
+const readMoreJustifications = (continuationToken, count) => {
+  const {
+    s: sortContinuations,
+    f: filters,
+  } = parseContinuationToken(continuationToken)
+  return justificationsDao.readMoreJustifications(sortContinuations, count, filters)
+      .then(justifications => filter(justifications, j =>
+        j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
+        j.basis.entity.atoms && j.basis.entity.atoms.length > 0
+      ))
+      .then(justifications => {
+        const lastJustification = last(justifications)
+
+        let nextContinuationToken
+        if (!lastJustification) {
+          // If there were no statements to continue with, then just reuse the old continuation token
+          nextContinuationToken = continuationToken
+        } else {
+          // Everything from the previous token should be fine except we need to update the values
+          const nextContinuationInfo = updateContinuationInfo(sortContinuations, lastJustification, filters)
+          nextContinuationToken = encodeContinuationToken(nextContinuationInfo)
+        }
+        return {
+          justifications,
+          continuationToken: nextContinuationToken
+        }
+      })
+}
+
+const updateContinuationInfo = (sortContinuations, lastEntity, filters) => {
+  const newSortContinuations = map(sortContinuations, sortContinuation => {
+    const nextSortContinuation = cloneDeep(sortContinuation)
+    nextSortContinuation.v = get(lastEntity, sortContinuation.p)
+    return nextSortContinuation
   })
+
+  return {
+    s: newSortContinuations,
+    f: filters,
+  }
 }
 
 const readStatement = ({statementId, authToken}) => statementsDao.readStatementById(statementId)
@@ -687,10 +813,11 @@ const createValidJustificationAsUser = (justification, userId, now) => Promise.a
         entity: targetEntity,
       }
       if (targetType === JustificationTargetType.STATEMENT) {
-        if (justification.rootStatementId && justification.rootStatementId !== targetEntity.id) {
-          logger.warning(`Statement-targeting justification's rootStatementId (${justification.rootStatementId} is not equal to targetEntity.id (${targetEntity.id})`)
+        const rootStatementId = get(justification, 'rootStatement.id')
+        if (rootStatementId && rootStatementId !== targetEntity.id) {
+          logger.warning(`Statement-targeting justification's rootStatementId (${rootStatementId} is not equal to targetEntity.id (${targetEntity.id})`)
         }
-        justification.rootStatementId = targetEntity.id
+        set(justification, 'rootStatement.id', targetEntity.id)
       }
 
       justification.basis = {
@@ -1055,6 +1182,8 @@ module.exports = {
   createJustification,
   deleteJustification,
   readCitationReference,
+  readCitations,
+  readJustifications,
   updateCitationReference,
   readFeaturedPerspectives,
 }

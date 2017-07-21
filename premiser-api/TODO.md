@@ -17,6 +17,8 @@
     * citation reference quote, 
     * citation text
     * citation reference must have citation_id
+    * statement_compound must have atoms
+    * statement_compound atoms must match something
   * Delete URLS when nothing references them?
   * Delete statement compounds all of whose statements are deleted
   * Sources having internal inconsistencies (citations ultimately both support and oppose the same statement)

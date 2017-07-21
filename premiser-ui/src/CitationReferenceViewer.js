@@ -1,11 +1,15 @@
 import React from 'react'
 import map from 'lodash/map'
+import truncate from 'lodash/truncate'
 import FontIcon from 'react-md/lib/FontIcons'
 import cn from 'classnames'
 
 import {extractDomain} from "./util"
 
 import './CitationReferenceViewer.scss'
+
+// '…'
+const ellipsis = String.fromCharCode(8230)
 
 export default props => {
   const {
@@ -26,13 +30,19 @@ export default props => {
     )
   })
 
+  const truncateOptions = {
+    length: 256,
+    omission: ellipsis,
+    separator: /\s+/,
+  }
+
   return (
       <div className="citationReferenceViewer">
         <div className={cn({
           quote: true,
           hidden: !citationReference.quote
         })}>
-          <span>{citationReference.quote}</span>
+          <span>{truncate(citationReference.quote, truncateOptions)}</span>
         </div>
         <div className="citationTitle">{citationReference.citation.text}</div>
         <ul>

@@ -52,7 +52,7 @@ export const makeNewCredentials = () => ({email: '', password: ''})
 export const makeNewStatement = props => ({text: '', ...props})
 
 export const makeNewJustification = props => merge({
-  rootStatementId: null,
+  rootStatement: {id: null},
   polarity: JustificationPolarity.POSITIVE,
   target: {
     type: JustificationTargetType.STATEMENT,
@@ -89,7 +89,7 @@ export const makeNewStatementAtom = () => ({
 })
 
 export const makeNewJustificationTargetingStatementId = statementId => makeNewJustification({
-  rootStatementId: statementId,
+  rootStatement: {id: statementId},
   target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
 })
 
@@ -100,7 +100,7 @@ export const makeNewStatementJustification = (statementProps, justificationProps
 })
 
 export const makeNewCounterJustification = targetJustification => ({
-  rootStatementId: targetJustification.rootStatementId,
+  rootStatement: {id: targetJustification.rootStatement.id},
   target: {
     type: JustificationTargetType.JUSTIFICATION,
     entity: targetJustification,
@@ -113,6 +113,7 @@ export const makeNewCounterJustification = targetJustification => ({
 })
 
 export const removeStatementCompoundId = statementCompound => {
+  if (!statementCompound) return statementCompound
   delete statementCompound.id
   forEach(statementCompound.atoms, atom => {
     delete atom.statementCompoundId

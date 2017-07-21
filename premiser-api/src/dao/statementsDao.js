@@ -51,10 +51,10 @@ class StatementsDao {
       ${orderBySql}
       ${countSql}
       `
-    return query(sql, [count])
+    return query(sql, args)
         .then(({rows}) => map(rows, toStatement))
   }
-  readMoreStatements(continuationInfos, count) {
+  readMoreStatements(sortContinuations, count) {
     const args = []
     let countSql = ''
     if (isFinite(count)) {
@@ -66,12 +66,12 @@ class StatementsDao {
     const continuationWhereSqls = []
     const prevWhereSqls = []
     const orderBySqls = []
-    forEach(continuationInfos, (continuationInfo, index) => {
-      const value = continuationInfo.v
+    forEach(sortContinuations, (sortContinuation, index) => {
+      const value = sortContinuation.v
       // The default direction is ascending
-      const direction = continuationInfo.d === 'd' ? 'desc' : 'asc'
+      const direction = sortContinuation.d === 'd' ? 'desc' : 'asc'
       // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = continuationInfo.p === 'id' ? 'statement_id' : snakeCase(continuationInfo.p)
+      const columnName = sortContinuation.p === 'id' ? 'statement_id' : snakeCase(sortContinuation.p)
       let operator = direction === 'asc' ? '>' : '<'
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])

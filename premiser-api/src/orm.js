@@ -33,7 +33,13 @@ const toJustification = (
   const justification = {
     id: toString(row.justification_id),
     creatorUserId: toString(row.creator_user_id),
-    rootStatementId: toString(row.root_statement_id),
+    created: row.created,
+    rootStatement: toStatement({
+      statement_id: row.root_statement_id,
+      text: row.root_statement_text,
+      created: row.root_statement_created,
+      creator_user_id: row.root_statement_creator_user_id,
+    }),
     target: {
       type: row.target_type,
       entity: {
@@ -59,14 +65,31 @@ const toJustification = (
   switch (row.basis_type) {
     case JustificationBasisType.CITATION_REFERENCE: {
         if (row.basis_id) {
-          justification.basis.entity = citationReferencesById[row.basis_id]
+          if (citationReferencesById) {
+            justification.basis.entity = citationReferencesById[row.basis_id]
+          } else if (row.basis_citation_reference_id) {
+            justification.basis.entity = toCitationReference({
+              citation_reference_id: row.basis_citation_reference_id,
+              quote: row.basis_citation_reference_quote,
+              citation_id: row.basis_citation_reference_citation_id,
+              citation_text: row.basis_citation_reference_citation_text,
+            })
+          }
         }
       }
       break
 
     case JustificationBasisType.STATEMENT_COMPOUND: {
         if (row.basis_id) {
-          justification.basis.entity = statementCompoundsById[row.basis_id]
+          if (statementCompoundsById) {
+            justification.basis.entity = statementCompoundsById[row.basis_id]
+          } else if (row.basis_statement_compound_id) {
+            justification.basis.entity = toStatementCompound({
+              statement_compound_id: row.basis_statement_compound_id,
+              created: row.basis_statement_compound_created,
+              creator_user_id: row.basis_statement_compound_creator_user_id,
+            })
+          }
         }
       }
       break
@@ -98,7 +121,8 @@ const toCitationReference = row => !row ? row : {
 const toCitation = row => {
   const citation = !row ? row : ({
     id: toString(row.citation_id),
-    text: row.text
+    text: row.text,
+    created: row.created,
   })
   return citation
 }
@@ -124,6 +148,8 @@ const toCitationReferenceUrl = row => !row ? row : ({
 const toStatementCompound = (row, atoms) => {
   const statementCompound = {
     id: row.statement_compound_id,
+    created: row.created,
+    creator_user_id: row.creator_user_id,
   }
 
   if (atoms) {

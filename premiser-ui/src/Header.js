@@ -12,6 +12,7 @@ import {
 import './Header.scss'
 
 import ApiAutocomplete from "./ApiAutocomplete";
+import {statementSchema} from "./schemas";
 
 const mainSearchSuggestionsKey = "mainSearch"
 
@@ -96,6 +97,7 @@ class Header extends Component {
               placeholder="know that..."
               dataValue={dataValue}
               dataLabel={dataLabel}
+              suggestionSchema={statementSchema}
               value={mainSearchText}
               onAutocomplete={this.onMainSearchAutocomplete}
               suggestionTransform={suggestionTransform}

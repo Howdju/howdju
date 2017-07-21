@@ -48,7 +48,7 @@ describe('reducers', () => {
                 [justification.id]: justification
               }
           expect(indexRootJustificationsByRootStatementId(justificationsById)).toEqual({
-            [justification.rootStatementId]: [justification.id],
+            [justification.rootStatement.id]: [justification.id],
           })
         })
       })
@@ -220,12 +220,12 @@ describe('reducers', () => {
               },
               existingJustification = {
                 id: 1,
-                rootStatementId: 1,
+                rootStatement: {id: 1},
               },
 
               newJustification = {
                 id: 2,
-                rootStatementId: 1,
+                rootStatement: {id: 1},
                 target: {
                   type: JustificationTargetType.STATEMENT,
                   entity: targetStatement
@@ -244,7 +244,7 @@ describe('reducers', () => {
                   [existingJustification.id]: existingJustification
                 },
                 justificationsByRootStatementId: {
-                  [existingJustification.rootStatementId]: [existingJustification.id]
+                  [existingJustification.rootStatement.id]: [existingJustification.id]
                 }
               },
 
@@ -266,7 +266,7 @@ describe('reducers', () => {
               },
 
               mergedJustificationsByRootStatementId =
-                  initialState.justificationsByRootStatementId[existingJustification.rootStatementId].concat([newJustification.id]),
+                  initialState.justificationsByRootStatementId[existingJustification.rootStatement.id].concat([newJustification.id]),
 
               expectedState = {
                 statements: {
@@ -277,7 +277,7 @@ describe('reducers', () => {
                   [newJustification.id]: newJustification,
                 },
                 justificationsByRootStatementId: {
-                  [existingJustification.rootStatementId]: mergedJustificationsByRootStatementId
+                  [existingJustification.rootStatement.id]: mergedJustificationsByRootStatementId
                 },
               }
 
@@ -288,11 +288,11 @@ describe('reducers', () => {
           const
               targetJustification = {
                 id: 1,
-                rootStatementId: 1,
+                rootStatement: {id: 1},
               },
               counterJustification = {
                 id: 2,
-                rootStatementId: 1,
+                rootStatement: {id: 1},
                 target: {
                   type: JustificationTargetType.JUSTIFICATION,
                   entity: targetJustification
@@ -308,7 +308,7 @@ describe('reducers', () => {
                   [targetJustification.id]: targetJustification
                 },
                 justificationsByRootStatementId: {
-                  [targetJustification.rootStatementId]: [
+                  [targetJustification.rootStatement.id]: [
                     targetJustification.id
                   ]
                 }
@@ -334,7 +334,7 @@ describe('reducers', () => {
                   [counterJustification.id]: counterJustification,
                 },
                 justificationsByRootStatementId: {
-                  [targetJustification.rootStatementId]: [targetJustification.id]
+                  [targetJustification.rootStatement.id]: [targetJustification.id]
                 },
               }
 
@@ -346,12 +346,12 @@ describe('reducers', () => {
               existingCounterJustificationId = 3,
               targetJustification = {
                 id: 1,
-                rootStatementId: 1,
+                rootStatement: {id: 1},
                 counterJustifications: [existingCounterJustificationId]
               },
               counterJustification = {
                 id: 2,
-                rootStatementId: 1,
+                rootStatement: {id: 1},
                 target: {
                   type: JustificationTargetType.JUSTIFICATION,
                   entity: targetJustification
@@ -371,7 +371,7 @@ describe('reducers', () => {
                   [targetJustification.id]: targetJustification
                 },
                 justificationsByRootStatementId: {
-                  [targetJustification.rootStatementId]: [
+                  [targetJustification.rootStatement.id]: [
                     targetJustification.id
                   ]
                 }
@@ -397,7 +397,7 @@ describe('reducers', () => {
                   [counterJustification.id]: counterJustification,
                 },
                 justificationsByRootStatementId: {
-                  [targetJustification.rootStatementId]: [targetJustification.id]
+                  [targetJustification.rootStatement.id]: [targetJustification.id]
                 },
               }
 
@@ -408,13 +408,13 @@ describe('reducers', () => {
           const responseBody = {
             justification: {
               id: 81,
-              rootStatementId:19,
+              rootStatement: {id:19},
               target: {
                 type: JustificationTargetType.JUSTIFICATION,
                 // Justification
                 entity: {
                   id: 78,
-                  rootStatementId:19,
+                  rootStatement: {id:19},
                   // Justification
                   target: {
                     type: JustificationTargetType.JUSTIFICATION,
@@ -467,7 +467,7 @@ describe('reducers', () => {
         test('should remove deleted counter-justification from countered justification', () => {
           const
               targetJustification = {
-                rootStatementId: 2,
+                rootStatement: {id: 2},
                 id: 100,
               },
               counterJustification = {
@@ -487,7 +487,7 @@ describe('reducers', () => {
                   [counterJustification.id]: counterJustification,
                 },
                 justificationsByRootStatementId: {
-                  [targetJustification.rootStatementId]: targetJustification
+                  [targetJustification.rootStatement.id]: targetJustification
                 },
               },
 

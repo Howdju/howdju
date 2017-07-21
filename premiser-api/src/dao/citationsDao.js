@@ -2,6 +2,9 @@ const map = require('lodash/map')
 const groupBy = require('lodash/groupBy')
 const sortBy = require('lodash/sortBy')
 const head = require('lodash/head')
+const snakeCase = require('lodash/snakeCase')
+const forEach = require('lodash/forEach')
+const concat = require('lodash/concat')
 
 const {
   toCitation,
@@ -17,6 +20,78 @@ const {cleanWhitespace, normalizeText} = require('./util')
 
 
 class CitationsDao {
+  readCitations(sorts, count) {
+    const args = []
+    let countSql = ''
+    if (isFinite(count)) {
+      args.push(count)
+      countSql = `limit $${args.length}`
+    }
+
+    const whereSqls = ['deleted is null']
+    const orderBySqls = []
+    forEach(sorts, sort => {
+      const columnName = sort.property === 'id' ? 'citation_id' : snakeCase(sort.property)
+      const direction = sort.direction === 'descending' ? 'desc' : 'asc'
+      whereSqls.push(`${columnName} is not null`)
+      orderBySqls.push(columnName + ' ' + direction)
+    })
+    const whereSql = whereSqls.join('\nand ')
+    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+
+    const sql = `
+      select * 
+      from citations where ${whereSql}
+      ${orderBySql}
+      ${countSql}
+      `
+    return query(sql, args)
+        .then(({rows}) => map(rows, toCitation))
+  }
+  readMoreCitations(sortContinuations, count) {
+    const args = []
+    let countSql = ''
+    if (isFinite(count)) {
+      args.push(count)
+      countSql = `\nlimit $${args.length}`
+    }
+
+    const whereSqls = ['deleted is null']
+    const continuationWhereSqls = []
+    const prevWhereSqls = []
+    const orderBySqls = []
+    forEach(sortContinuations, (sortContinuation, index) => {
+      const value = sortContinuation.v
+      // The default direction is ascending
+      const direction = sortContinuation.d === 'd' ? 'desc' : 'asc'
+      // 'id' is a special property name for entities. The column is prefixed by the entity type
+      const columnName = sortContinuation.p === 'id' ? 'citation_id' : snakeCase(sortContinuation.p)
+      let operator = direction === 'asc' ? '>' : '<'
+      args.push(value)
+      const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
+      continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
+      prevWhereSqls.push(`${columnName} = $${args.length}`)
+      whereSqls.push(`${columnName} is not null`)
+      orderBySqls.push(`${columnName} ${direction}`)
+    })
+
+    const continuationWhereSql = continuationWhereSqls.join('\n or ')
+    const whereSql = whereSqls.join('\nand ')
+    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+
+    const sql = `
+      select * 
+      from citations where 
+        ${whereSql}
+        and (
+          ${continuationWhereSql}
+        )
+      ${orderBySql}
+      ${countSql}
+      `
+    return query(sql, args)
+        .then( ({rows}) => map(rows, toCitation) )
+  }
   readCitationEquivalentTo(citation) {
     return query('select * from citations where normal_text = $1 and deleted is null', [normalizeText(citation.text)])
         .then( ({rows}) => {

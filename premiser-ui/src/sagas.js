@@ -6,6 +6,7 @@ import {
   put,
   call,
   fork,
+  join,
   takeEvery,
   select,
   race,
@@ -41,7 +42,8 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  citationReferenceSchema, statementsSchema, statementCompoundSchema, perspectivesSchema
+  citationReferenceSchema, statementsSchema, statementCompoundSchema, perspectivesSchema, citationsSchema,
+  justificationsSchema
 } from './schemas'
 import paths from "./paths";
 import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
@@ -103,6 +105,50 @@ export const resourceApiConfigs = {
     return {
       endpoint: 'statements?' + queryString.stringify(queryStringParams),
       schema: {statements: statementsSchema},
+    }
+  },
+  [api.fetchRecentCitations]: payload => {
+    const queryStringParams = pick(payload, 'count')
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = 'descending'
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'citations?' + queryStringParamsString,
+      schema: {citations: citationsSchema},
+    }
+  },
+  [api.fetchMoreRecentCitations]: payload => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = 'descending'
+    return {
+      endpoint: 'citations?' + queryString.stringify(queryStringParams),
+      schema: {citations: citationsSchema},
+    }
+  },
+  [api.fetchRecentJustifications]: payload => {
+    const queryStringParams = pick(payload, 'count')
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = 'descending'
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'justifications?' + queryStringParamsString,
+      schema: {justifications: justificationsSchema},
+    }
+  },
+  [api.fetchMoreRecentJustifications]: payload => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = 'descending'
+    return {
+      endpoint: 'justifications?' + queryString.stringify(queryStringParams),
+      schema: {justifications: justificationsSchema},
+    }
+  },
+  [api.fetchJustifications]: payload => {
+    return {
+      endpoint: 'justifications?' + queryString.stringify(payload),
+      schema: {justifications: justificationsSchema},
     }
   },
   [api.fetchFeaturedPerspectives]: payload => ({
@@ -233,6 +279,21 @@ export const resourceApiConfigs = {
     },
     schema: {vote: voteSchema},
   }),
+  [api.fetchStatementTextSuggestions]: payload => ({
+    endpoint: `search-statements?searchText=${payload.statementText}`,
+    cancelKey: str(api.fetchStatementTextSuggestions) + '.' + payload.suggestionsKey,
+    schema: statementsSchema,
+  }),
+  [api.fetchCitationTextSuggestions]: payload => ({
+    endpoint: `search-citations?searchText=${payload.citationText}`,
+    cancelKey: str(api.fetchCitationTextSuggestions) + '.' + payload.suggestionsKey,
+    schema: citationsSchema,
+  }),
+  [api.fetchMainSearchSuggestions]: payload => ({
+    endpoint: `search-statements?searchText=${payload.searchText}`,
+    cancelKey: str(api.fetchMainSearchSuggestions) + '.' + payload.suggestionsKey,
+    schema: statementsSchema,
+  })
 }
 
 function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
@@ -267,19 +328,38 @@ function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
   }
 }
 
+const cancelableResourceCallTasks = {}
+
 function* callApiForResource(action) {
   const responseActionCreator = apiActionCreatorsByActionType[action.type].response
 
   try {
     let config = resourceApiConfigs[action.type]
     if (!config) {
-      throw newImpossibleError(`Missing resource API config for action type: ${action.type}`)
+      return yield put(responseActionCreator(newImpossibleError(`Missing resource API config for action type: ${action.type}`)))
     }
-    const {endpoint, fetchInit, schema, requiresRehydrate} = isFunction(config) ?
+    const {endpoint, fetchInit, schema, requiresRehydrate, cancelKey} = isFunction(config) ?
         config(action.payload) :
         config
 
-    const apiResultAction = yield call(callApi, endpoint, schema, fetchInit, requiresRehydrate)
+    if (cancelKey) {
+      const prevTask = cancelableResourceCallTasks[cancelKey]
+      if (prevTask) {
+        yield cancel(prevTask)
+      }
+    }
+
+    const task = yield fork(callApi, endpoint, schema, fetchInit, requiresRehydrate)
+
+    if (cancelKey) {
+      cancelableResourceCallTasks[cancelKey] = task
+    }
+
+    const apiResultAction = yield join(task)
+
+    if (cancelKey) {
+      delete cancelableResourceCallTasks[cancelKey]
+    }
 
     const responseMeta = {
       schema,
@@ -288,6 +368,10 @@ function* callApiForResource(action) {
     return yield put(responseActionCreator(apiResultAction.payload, responseMeta))
   } catch (error) {
     return yield put(responseActionCreator(error))
+  } finally {
+    if (yield cancelled()) {
+      logger.debug(`Canceled ${action.type}`)
+    }
   }
 }
 
@@ -523,7 +607,7 @@ function* commitEditorThenView() {
             break
           }
           default: {
-            statementId = justification.rootStatementId
+            statementId = justification.rootStatement.id
             break
           }
         }
@@ -701,111 +785,6 @@ function* showAlertForLogout() {
   })
 }
 
-function* fetchStatementTextSuggestions() {
-  const tasks = {}
-  yield takeEvery(str(api.fetchStatementTextSuggestions), function* fetchStatementTextSuggestionsWorker(action) {
-    const {
-      statementText,
-      suggestionsKey,
-    } = action.payload
-
-    const prevTask = tasks[suggestionsKey]
-    if (prevTask) {
-      yield cancel(prevTask)
-    }
-
-    const endpoint = `search-statements?searchText=${statementText}`
-    tasks[suggestionsKey] = yield fork(callFetchStatementTextSuggestions, action.payload, endpoint)
-  })
-}
-
-function* callFetchStatementTextSuggestions(requestPayload, endpoint) {
-  try {
-    const apiResultAction = yield call(callApi, endpoint)
-
-    const responseMeta = {
-      requestPayload,
-    }
-    return yield put(api.fetchStatementTextSuggestions.response(apiResultAction.payload, responseMeta))
-  } catch (error) {
-    if (yield cancelled()) {
-      logger.info('Canceled callApi for statement text suggestions')
-    }
-    return yield put(api.fetchStatementTextSuggestions.response(error))
-  }
-}
-
-
-function* fetchCitationTextSuggestions() {
-  const tasks = {}
-  yield takeEvery(str(api.fetchCitationTextSuggestions), function* fetchCitationTextSuggestionsWorker(action) {
-    const {
-      citationText,
-      suggestionsKey,
-    } = action.payload
-
-    const prevTask = tasks[suggestionsKey]
-    if (prevTask) {
-      yield cancel(prevTask)
-    }
-
-    const endpoint = `search-citations?searchText=${citationText}`
-    tasks[suggestionsKey] = yield fork(callFetchCitationTextSuggestions, action.payload, endpoint)
-  })
-}
-
-function* callFetchCitationTextSuggestions(requestPayload, endpoint) {
-  try {
-    const apiResultAction = yield call(callApi, endpoint)
-
-    const responseMeta = {
-      requestPayload,
-    }
-    return yield put(api.fetchCitationTextSuggestions.response(apiResultAction.payload, responseMeta))
-  } catch (error) {
-    return yield put(api.fetchCitationTextSuggestions.response(error))
-  } finally {
-    if (yield cancelled()) {
-      logger.info('Canceled callApi for citation text suggestions')
-    }
-  }
-}
-
-function* fetchMainSearchSuggestions() {
-  const tasks = {}
-  yield takeEvery(str(api.fetchMainSearchSuggestions), function* fetchMainSearchSuggestionsWorker(action) {
-    const {
-      searchText,
-      suggestionsKey,
-    } = action.payload
-
-    const prevTask = tasks[suggestionsKey]
-    if (prevTask) {
-      yield cancel(prevTask)
-    }
-
-    const endpoint = `search-statements?searchText=${searchText}`
-    tasks[suggestionsKey] = yield fork(callFetchMainSearchSuggestions, action.payload, endpoint)
-  })
-}
-
-function* callFetchMainSearchSuggestions(requestPayload, endpoint) {
-  try {
-    const apiResultAction = yield call(callApi, endpoint)
-
-    const responseMeta = {
-      requestPayload,
-    }
-    return yield put(api.fetchMainSearchSuggestions.response(apiResultAction.payload, responseMeta))
-  } catch (error) {
-    return yield put(api.fetchMainSearchSuggestions.response(error))
-  } finally {
-    if (yield cancelled()) {
-      logger.info('Canceled callApi for main search suggestions')
-    }
-  }
-}
-
 function* logErrors() {
   yield takeEvery('*', function* logErrorsWorker(action) {
     if (action.error) {
@@ -820,9 +799,6 @@ export default () => [
   logErrors(),
 
   resourceApiCalls(),
-  fetchStatementTextSuggestions(),
-  fetchCitationTextSuggestions(),
-  fetchMainSearchSuggestions(),
 
   redirectToLoginWhenUnauthorized(),
   goTo(),

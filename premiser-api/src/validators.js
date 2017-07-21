@@ -71,11 +71,11 @@ class JustificationValidator {
 
     const isExtant = isTruthy(justification.id)
 
-    if (!has(justification, 'rootStatementId') && !isExtant && !ignore.rootStatementId) {
+    if (!has(justification, 'rootStatement') && !isExtant && !ignore.rootStatement) {
       const canReceiveRootStatementIdFromTarget = justification.target && justification.target.type === JustificationTargetType.STATEMENT
       if (!canReceiveRootStatementIdFromTarget) {
         errors.hasErrors = true
-        errors.fieldErrors.rootStatementId.push(modelErrorCodes.IS_REQUIRED)
+        errors.fieldErrors.rootStatement.push(modelErrorCodes.IS_REQUIRED)
       }
     }
 
@@ -156,7 +156,7 @@ JustificationValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    rootStatementId: [],
+    rootStatement: [],
     polarity: [],
     target: {
       modelErrors: [],

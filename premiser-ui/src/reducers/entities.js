@@ -1,3 +1,5 @@
+import assignWith from 'lodash/assignWith'
+import has from 'lodash/has'
 import isArray from 'lodash/isArray'
 import merge from 'lodash/merge'
 import mergeWith from 'lodash/mergeWith'
@@ -73,15 +75,39 @@ export const indexRootJustificationsByRootStatementId = justificationsById => {
       // Some justifications that come back are stubs and will lack relations like .target
       j.target &&
       j.target.type === JustificationTargetType.STATEMENT &&
-      j.target.entity.id === j.rootStatementId
+      j.target.entity.id === j.rootStatement
   )
-  let rootJustificationsByRootStatementId = groupBy(rootJustifications, j => j.rootStatementId)
-  rootJustificationsByRootStatementId = mapValues(rootJustificationsByRootStatementId, (justifications, rootStatementId) => map(justifications, j => j.id))
+  let rootJustificationsByRootStatementId = groupBy(rootJustifications, j => j.rootStatement)
+  rootJustificationsByRootStatementId = mapValues(rootJustificationsByRootStatementId, justifications => map(justifications, j => j.id))
   // for (let statementId of Object.keys(justificationsByRootStatementId)) {
   //   justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => j.id)
   //   // justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => normalize(j, justificationSchema).result)
   // }
   return rootJustificationsByRootStatementId
+}
+
+const defaultCustomizer = () => undefined
+
+const justificationsCustomizer = (objValue, srcValue, key, object, source) => {
+  // Don't override a value with one that is missing the relational information
+  if (
+      has(objValue, 'target.type') &&
+      has(objValue, 'target.entity.id') &&
+      (
+          !has(srcValue, 'target.type') ||
+          !has(srcValue, 'target.entity.id')
+      )
+  ) {
+    return objValue
+  }
+  return srcValue
+}
+
+const updateEntityKey = (state, payloadEntities, key, customizer) => {
+  if (has(payloadEntities, key)) {
+    state[key] = assignWith({}, state[key], payloadEntities[key], customizer || defaultCustomizer)
+  }
+  return state
 }
 
 export default handleActions({
@@ -90,26 +116,44 @@ export default handleActions({
       api.fetchStatements.response,
       api.fetchRecentStatements.response,
       api.fetchMoreRecentStatements.response,
-  )]: {
-    next: (state, action) => ({...state, statements: {...state.statements, ...action.payload.entities.statements}})
-  },
-  [combineActions(
+      api.fetchRecentCitations.response,
+      api.fetchMoreRecentCitations.response,
       api.fetchStatementJustifications.response,
-      api.fetchFeaturedPerspectives.response
+      api.fetchFeaturedPerspectives.response,
+      api.fetchJustifications.response,
+      api.fetchRecentJustifications.response,
+      api.fetchMoreRecentJustifications.response,
+      api.fetchCitationReference.response,
+      api.createStatement.response,
+      api.updateStatement.response,
+      api.updateCitationReference.response,
+      api.fetchMainSearchSuggestions.response,
+      api.fetchStatementTextSuggestions.response,
+      api.fetchCitationTextSuggestions.response,
   )]: {
     next: (state, action) => {
-      const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
-      return {
-        ...state,
-        perspectives: {...state.perspectives, ...action.payload.entities.perspectives},
-        statements: {...state.statements, ...action.payload.entities.statements},
-        statementCompounds: {...state.statementCompounds, ...action.payload.entities.statementCompounds},
-        justifications: {...state.justifications, ...action.payload.entities.justifications},
-        votes: {...state.votes, ...action.payload.entities.votes},
-        justificationsByRootStatementId: mergeWith({}, state.justificationsByRootStatementId, justificationsByRootStatementId, unionArraysDistinctIdsCustomizer),
-        citationReferences: {...state.citationReferences, ...action.payload.entities.citationReferences},
+      let newState = {...state}
+      newState = updateEntityKey(newState, action.payload.entities, 'perspectives')
+      newState = updateEntityKey(newState, action.payload.entities, 'statements')
+      newState = updateEntityKey(newState, action.payload.entities, 'statementCompounds')
+      newState = updateEntityKey(newState, action.payload.entities, 'justifications', justificationsCustomizer)
+      newState = updateEntityKey(newState, action.payload.entities, 'votes')
+      newState = updateEntityKey(newState, action.payload.entities, 'citationReferences')
+      newState = updateEntityKey(newState, action.payload.entities, 'citations')
+
+      if (action.payload.entities.justifications) {
+        const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
+        newState.justificationsByRootStatementId = mergeWith(
+            {},
+            state.justificationsByRootStatementId,
+            justificationsByRootStatementId,
+            unionArraysDistinctIdsCustomizer
+        )
       }
-    },
+      return newState
+    }
+  },
+  [api.fetchStatementJustifications.response]: {
     throw: (state, action) => {
       // If a statement is not found (e.g., another user deleted it), then remove it.
       if (action.httpStatusCode === httpStatusCodes.NOT_FOUND) {
@@ -120,21 +164,6 @@ export default handleActions({
       }
       return state
     }
-  },
-  [api.fetchCitationReference]: {
-    next: (state, action) => ({...state, citationReferences: {...state.citationReferences, ...action.payload.entities.citationReferences}})
-  },
-  [api.createStatement.response]: {
-    next: (state, action) => ({
-      ...state,
-      statements: {...state.statements, ...action.payload.entities.statements},
-    })
-  },
-  [api.updateStatement.response]: {
-    next: (state, action) => ({
-      ...state,
-      statements: {...state.statements, ...action.payload.entities.statements}
-    })
   },
   [api.deleteStatement.response]: {
     next: (state, action) => ({
@@ -173,8 +202,8 @@ export default handleActions({
     next: (state, action) => {
       const deletedJustification = action.meta.requestPayload.justification
       const justificationsByRootStatementId = cloneDeep(state.justificationsByRootStatementId)
-      justificationsByRootStatementId[deletedJustification.rootStatementId] =
-          filter(justificationsByRootStatementId[deletedJustification.rootStatementId], id => id !== deletedJustification.id)
+      justificationsByRootStatementId[deletedJustification.rootStatement.id] =
+          filter(justificationsByRootStatementId[deletedJustification.rootStatement.id], id => id !== deletedJustification.id)
 
       // If the deleted justification was a counter-justification, remove it from the target justification's counterJustifications
       let justifications = state.justifications
@@ -194,16 +223,6 @@ export default handleActions({
       }
     }
   },
-  [api.updateCitationReference.response]: {
-    next: (state, action) => ({
-      ...state,
-      citationReferences: {
-        ...state.citationReferences,
-        ...action.payload.entities.citationReferences
-      }
-    })
-  },
-
   [combineActions(
       api.verifyJustification,
       api.disverifyJustification
@@ -271,36 +290,13 @@ export default handleActions({
       }
     }
   },
-
-  [api.fetchStatementTextSuggestions.response]: {
-    next: (state, action) => {
-      const normalized = normalize(action.payload, [statementSchema])
-      return {
-        ...state,
-        statements: {
-          ...state.statements,
-          ...normalized.entities.statements,
-        }
-      }
-    }
-  },
-  [api.fetchMainSearchSuggestions.response]: {
-    next: (state, action) => {
-      const normalized = normalize(action.payload, [statementSchema])
-      return {
-        ...state,
-        statements: {
-          ...state.statements,
-          ...normalized.entities.statements,
-        }
-      }
-    }
-  }
 }, {
   statements: {},
   statementCompounds: {},
+  citations: {},
+  citationReferences: {},
+  votes: {},
   justifications: {},
   justificationsByRootStatementId: {},
-  citationReferences: {},
-  votes: {}
+  perspectives: {},
 })
