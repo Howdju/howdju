@@ -16,7 +16,7 @@ const {
 } = require('../orm')
 const {query} = require('../db')
 const {logger} = require('../logger')
-const {groupRootJustifications} = './util'
+const {groupRootJustifications} = require('./util')
 
 class JustificationsDao {
 

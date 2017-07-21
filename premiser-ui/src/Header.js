@@ -82,6 +82,7 @@ class Header extends Component {
               </span>
             </Link>
           }
+
           actions={<Button icon className="toggleNavDrawerVisibility" onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
       >
         <form className="md-cell--12 md-cell--middle" onSubmit={this.onMainSearch}>
@@ -90,7 +91,6 @@ class Header extends Component {
               id="mainSearch"
               type="search"
               name="mainSearch"
-              block
               placeholder="know that..."
               dataValue={dataValue}
               dataLabel={dataLabel}

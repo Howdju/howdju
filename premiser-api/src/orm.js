@@ -139,6 +139,7 @@ const toStatementCompoundAtom = row => !row ? row : ({
     statement_id: row.statement_id,
     text: row.statement_text,
     creator_user_id: row.statement_creator_user_id,
+    created: row.statement_created,
   }),
   orderPosition: row.order_position,
 })

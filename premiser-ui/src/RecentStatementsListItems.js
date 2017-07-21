@@ -16,9 +16,9 @@ export default class RecentStatementsListItems extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
     // const now = moment()
     const items = map(recentStatements, s => {
-      const age = moment(s.created).fromNow()
+      const age = s.created ? moment(s.created).fromNow() : ''
       // const age = moment.duration(moment(s.created).diff(now)).humanize(true)
-      const created = moment(s.created).format(config.humanDateTimeFormat)
+      const created = s.created ? moment(s.created).format(config.humanDateTimeFormat) : ''
       return (
           <li key={`statement-${s.id}`}>
             <Link to={paths.statement(s)}>{s.text}</Link>

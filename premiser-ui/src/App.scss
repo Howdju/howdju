@@ -68,11 +68,6 @@ html {
 
 }
 
-#page {
-  margin-left: $gutter;
-  margin-right: $gutter;
-}
-
 // TODO remove at some point!
 .md-text-field-container.md-text-field-container--multiline:not(.hasIcon) {
   // the following doens't appear to apply to multiline inputs with an icon (left icon, at least)
@@ -149,4 +144,20 @@ html, body {
 .md-tooltip {
   font-size: large;
   padding: 25px;
+}
+
+// Tabs that appear to be contiguous with the toolbar.  But to avoid handling the navigate ourselves, they are actually not in the toolbar
+.toolbarTabs {
+  * {
+    color: $clouds;
+  }
+
+  // Show the tabs higher than the toolbar so that we hide its shado
+  z-index: 15;
+
+  box-shadow:
+          0 4px 5px 0 rgba(0, 0, 0, 0.14),
+            // Take out this second shadow which will shadow the toolbar above the tabs.
+            //0 1px 10px 0 rgba(0, 0, 0, 0.12),
+          0 2px 4px -1px rgba(0, 0, 0, 0.4);
 }

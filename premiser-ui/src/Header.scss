@@ -19,6 +19,16 @@
   .mainSearchAutocomplete {
     margin-left: 10px;
     padding-right: 20px;
+
+    .md-divider {
+      // Don't show the divider until the input is selected
+      background-color: inherit;
+      &:after {
+        // Make it a little smaller than the default 2px because $clouds is kind of bright
+        height: 1px;
+        background-color: $clouds;
+      }
+    }
   }
 }
 

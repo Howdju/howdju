@@ -36,8 +36,13 @@ export default class HomePage extends Component {
           onTabChange={this.onTabChange}
           panelClassName="md-grid"
           ref={this.setTabsContainer}
+          colored
       >
-        <Tabs tabId="homePageTab" centered>
+        <Tabs
+            tabId="homePageTab"
+            centered
+            className="toolbarTabs"
+        >
           <Tab label="Featured perspectives">
             <div className="md-cell md-cell--12">
               <FeaturedPerspectives widgetId={HomePage.featuredPerspectivesWidgetId}
@@ -47,6 +52,7 @@ export default class HomePage extends Component {
           </Tab>
           <Tab label="Recent activity">
             <div className="md-cell md-cell--12">
+              <h1>Recently created statements</h1>
               <RecentStatementsCard widgetId={HomePage.recentStatementsWidgetId}
                                     onRecentStatementsLengthChange={this.onTabAsyncChange}
               />

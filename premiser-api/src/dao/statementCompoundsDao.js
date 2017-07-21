@@ -193,6 +193,7 @@ class StatementCompoundsDao {
         , sca.order_position
         , scas.creator_user_id as statement_creator_user_id
         , scas.text as statement_text
+        , scas.created as statement_created
       from
         justifications j  
           join statement_compounds sc on 
