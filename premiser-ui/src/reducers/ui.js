@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import {LOCATION_CHANGE} from 'react-router-redux'
 import {handleActions} from "redux-actions";
 import map from 'lodash/map'
+import union from 'lodash/union'
 
 import {
   api,
@@ -60,9 +61,24 @@ export const mainSearchPage = handleActions({
   statements: []
 })
 
+export const featuredPerspectivesPage = handleActions({
+  [api.fetchFeaturedPerspectives.response]: {
+    next: (state, action) => {
+      return {
+        ...state,
+        featuredPerspectives: union(state.featuredPerspectives, action.payload.result.perspectives),
+        continuationToken: action.payload.result.continuationToken
+      }
+    }
+  },
+}, {
+  featuredPerspectives: []
+})
+
 export default combineReducers({
   statementJustificationsPage,
   mainSearchPage,
   app: appUi,
   mainSearch,
+  featuredPerspectivesPage,
 })

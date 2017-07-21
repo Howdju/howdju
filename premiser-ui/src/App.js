@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Route, IndexRoute } from 'react-router'
-import { Link } from 'react-router-dom'
+import { Route } from 'react-router'
+import { Link, Redirect } from 'react-router-dom'
 
 import { ConnectedRouter } from 'react-router-redux'
 import DocumentTitle from 'react-document-title'
@@ -10,10 +10,13 @@ import ListItem from 'react-md/lib/Lists/ListItem'
 import FontIcon from 'react-md/lib/FontIcons'
 import Snackbar from 'react-md/lib/Snackbars'
 import Toolbar from 'react-md/lib/Toolbars';
+import Tabs from 'react-md/lib/Tabs/Tabs';
+import Tab from 'react-md/lib/Tabs/Tab'
 import { connect } from 'react-redux'
+import cn from 'classnames'
+import get from 'lodash/get'
 
 import Header from './Header'
-import HomePage from './HomePage'
 import MainSearchPage from './MainSearchPage'
 import ToolsPage from './ToolsPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
@@ -32,19 +35,45 @@ import EditStatementJustificationPage, {EditStatementJustificationPageMode} from
 
 import './fonts.scss'
 import './App.scss'
+import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage";
+import RecentActivityPage from "./RecentActivityPage";
+import WhatsNextPage from "./WhatsNextPage";
+import AboutPage from "./AboutPage";
+
+
+const tabIndexByPathname = {
+  '/featured-perspectives': 0,
+  '/recent-activity': 1,
+  '/whats-next': 2,
+  '/about-tab': 3,
+}
 
 class App extends Component {
 
   constructor() {
     super()
+
+    this.state = {
+      activeTabIndex: 0,
+    }
+
     this.handleLogout = this.handleLogout.bind(this)
     this.handleHideNavDrawer = this.handleHideNavDrawer.bind(this)
     this.onNavDrawerVisibilityChange = this.onNavDrawerVisibilityChange.bind(this)
     this.onSnackbarDismiss = this.onSnackbarDismiss.bind(this)
   }
 
+  componentWillMount() {
+    this.unlistenToHistory = history.listen(this.onHistoryListen)
+  }
+
   componentDidMount() {
     this.checkInitializeMainSearch()
+    this.initializeTabIndex()
+  }
+
+  componentWillUnmount() {
+    if (this.unlistenToHistory) this.unlistenToHistory()
   }
 
   checkInitializeMainSearch() {
@@ -55,6 +84,10 @@ class App extends Component {
         this.props.app.initializeMainSearch(queryParamSearchText)
       }
     }
+  }
+
+  initializeTabIndex = () => {
+    this.syncTabToPathname(window.location.pathname)
   }
 
   handleLogout() {
@@ -73,7 +106,72 @@ class App extends Component {
     this.props.ui.dismissToast()
   }
 
+  onTabChange = (newActiveTabIndex, tabId, tabControlsId, tabChildren, event) => {
+    const lookup = {
+      featuredPerspectivesTab: 'featured-perspectives',
+      recentActivityTab: 'recent-activity',
+      whatsNextTab: 'whats-next',
+      aboutTab: 'about'
+    }
+    const path = lookup[tabId]
+    history.push(path)
+    this.setState({activeTabIndex: newActiveTabIndex})
+  }
+
+  onHistoryListen = (location, action) => {
+    this.syncTabToPathname(location.pathname)
+  }
+
+  syncTabToPathname = pathname => {
+    const index = get(tabIndexByPathname, location.pathname, -1)
+    this.setState({activeTabIndex: index})
+  }
+
   render () {
+    const {
+      activeTabIndex
+    } = this.state
+
+    const navItems = [
+      <ListItem key="home"
+                primaryText="Home"
+                leftIcon={<FontIcon>home</FontIcon>}
+                component={Link}
+                to="/"
+      />,
+      <ListItem key="createStatement"
+                primaryText="Make a Statement"
+                leftIcon={<FontIcon>add</FontIcon>}
+                component={Link}
+                to="/create-statement"
+      />,
+      <ListItem key="tools"
+                primaryText="Tools"
+                leftIcon={<FontIcon>build</FontIcon>}
+                component={Link}
+                to="/tools"
+      />,
+    ]
+    if (this.props.authToken) {
+      navItems.push(
+          <ListItem key="logout"
+                    primaryText="Logout"
+                    leftIcon={<FontIcon>exit_to_app</FontIcon>}
+                    onClick={this.handleLogout}
+          />
+      )
+    }
+    if (!this.props.authToken) {
+      navItems.push(
+          <ListItem key="login"
+                    primaryText="Login"
+                    leftIcon={<FontIcon>https</FontIcon>}
+                    component={Link}
+                    to="/login"
+          />
+      )
+    }
+
     const navDrawer = (
         <Drawer
             id="appNavDrawer"
@@ -87,38 +185,13 @@ class App extends Component {
                 {this.props.authToken &&
                   <div className="md-grid">
                     <div className="md-cell md-cell--12">
-                      You are logged in as <b>{this.props.authEmail}</b>
+                      <b>{this.props.authEmail}</b>
                     </div>
                   </div>
                 }
               </Toolbar>
             }
-            navItems={[
-              this.props.authToken ?
-                  <ListItem key="logout"
-                            primaryText="Logout"
-                            leftIcon={<FontIcon>exit_to_app</FontIcon>}
-                            onClick={this.handleLogout}
-                  /> :
-                  <ListItem key="login"
-                            primaryText="Login"
-                            leftIcon={<FontIcon>https</FontIcon>}
-                            component={Link}
-                            to="/login"
-                  />,
-              <ListItem key="createStatement"
-                        primaryText="Make a Statement"
-                        leftIcon={<FontIcon>add</FontIcon>}
-                        component={Link}
-                        to="/create-statement"
-              />,
-              <ListItem key="tools"
-                        primaryText="Tools"
-                        leftIcon={<FontIcon>build</FontIcon>}
-                        component={Link}
-                        to="/tools"
-              />,
-            ]}
+            navItems={navItems}
             visible={this.props.isNavDrawerVisible}
             onVisibilityToggle={this.onNavDrawerVisibilityChange}
             style={{ zIndex: 100 }}
@@ -128,22 +201,46 @@ class App extends Component {
       const mainSearchText = mainSearcher.mainSearchText(props.location)
       return mainSearchText ?
           <MainSearchPage {...props} /> :
-          <HomePage {...props} />
+          <Redirect to={{pathname: '/featured-perspectives'}}/>
     }
+
+    const pageTabs = (
+        <Tabs
+            tabId="mainTab"
+            centered
+            className="toolbarTabs"
+            activeTabIndex={activeTabIndex}
+            onTabChange={this.onTabChange}
+            style={{position: 'absolute', left: 0, bottom: 0, right: 0}}
+        >
+          <Tab label="Featured perspectives" id="featuredPerspectivesTab" />
+          <Tab label="Recent activity" id="recentActivityTab" />
+          <Tab label="What’s next" id="whatsNextTab" />
+          <Tab label="About" id="aboutTab" />
+        </Tabs>
+    )
 
     return (
       <DocumentTitle title="Howdju">
         <ConnectedRouter history={history}>
           <div id="app">
 
-            <Header />
+            <Header tabs={pageTabs} />
 
             {navDrawer}
 
-            <div id="page" className="md-toolbar-relative">
+            <div id="page" className={cn({
+              "md-toolbar-relative": !pageTabs,
+              "md-toolbar-relative--prominent": !!pageTabs,
+            })}>
 
               <Route exact path={paths.home()} render={renderHomePath}/>
               <Route exact path={paths.login()} component={LoginPage} />
+
+              <Route exact path="/featured-perspectives" component={FeaturedPerspectivesPage} />
+              <Route exact path="/recent-activity" component={RecentActivityPage} />
+              <Route exact path="/whats-next" component={WhatsNextPage} />
+              <Route exact path="/about" component={AboutPage} />
 
               <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
 

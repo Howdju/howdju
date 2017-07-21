@@ -7,6 +7,7 @@
 $md-primary-color: $primary-color;
 $md-secondary-color: $secondary-color;
 $md-text-field-error-color: $pomegranate;
+
 // TODO figure these out to remove warnings during build
 //$md-data-table-contextual-fallback-color: $md-blue-grey-900;
 //$md-linear-progress-fallback-color: $md-red-800;
@@ -66,6 +67,11 @@ html {
   // On mobile devices, the width of the drawer will be calc(100vw - 56px) and a max width of 320px.
   // On tablets and desktop screens, the width will be equal to the $md-drawer-tablet-width and $md-drawer-desktop-width but no more than 400px.
 
+}
+
+#page {
+  margin-left: $gutter;
+  margin-right: $gutter;
 }
 
 // TODO remove at some point!
@@ -151,13 +157,4 @@ html, body {
   * {
     color: $clouds;
   }
-
-  // Show the tabs higher than the toolbar so that we hide its shado
-  z-index: 15;
-
-  box-shadow:
-          0 4px 5px 0 rgba(0, 0, 0, 0.14),
-            // Take out this second shadow which will shadow the toolbar above the tabs.
-            //0 1px 10px 0 rgba(0, 0, 0, 0.12),
-          0 2px 4px -1px rgba(0, 0, 0, 0.4);
 }

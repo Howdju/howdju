@@ -1,24 +1,32 @@
 # Howdju UI TODO
 
-# Perspectives
+## Update release (I can use it and show it to people)
+
+### Recent Activity
+  * Citations
+    * CitationCard
+  * Justifications
+    * JustificationCard
+### Perspectives
+* Design PerspectiveCard
 * Show justifications at half-width
   * If perspective has only one polarity, show statement at half-width so that another can fit next to it?
   * Only feature perspectives having both polarities?
-# Connections
-  * root statement justifying other things
+### Connections
+  * root statement justifying/countering other things
   * root statements participating in compounds
   * justification citation justifying other things
-  * justification statement justifying other things
-* Info
+  * justification statement justifying/countering other things
+### Info
   * Who created (really need a profile page first)
+    * Change schema to creator instead of creatorId?
   * When created
 
-## Update release (I can use it and show it to people)
 * Example where we would want to allow helper conjunctions, but to zone in on the statements:
   "The tea party shouldn't be labeled racist because some members are racist"
   * Except that [Most Beatles fans would condemn a rapist]
     whereas [Few Tea Partiers have condemned racism]
-  * Same justification idea as (equivalent justifications?):
+  * Same justification idea as (equivalent justifications? Tag with logical fallacy?):
     * Muslim leaders decry extremism, whereas alt-right leaders tolerate or even instigate racism
     * on statement 1070 (http://localhost:3000/s/1070/racist-members-of-the-alt-right-are-just-like-extremist-adherants-to-islam-you-cant-denounce-the-entire-group-because-of-actions-of-the-few)
   * coordinating conjunctions: and, but, for, nor, or, so, and yet
@@ -28,9 +36,7 @@
   * Featured perspectives
     * height of the capitol building limit DC
     * Hillary's emails
-  * Recent activity (created statements/justifications)
   * About
-* When someone verifies a justification with weak basis/weak justifications, ask them: "Are you sure? How do you know?" ?
 * Deep link to justification on statement page
   * Add slug to deep link
   * Scroll to anchor after justifications load
@@ -304,6 +310,7 @@
 * Disjustifications of a statement are counters to a justification using that statement
 * What happens if we justify a statement with itself?
   * Can counter justification with same statement as basis for target justification
+* When someone verifies a justification with weak basis/weak justifications, ask them: "Are you sure? How do you know?" ?
 
   
 ### Bugs

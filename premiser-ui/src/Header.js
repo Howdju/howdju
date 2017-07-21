@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Button from 'react-md/lib/Buttons/Button'
 import Toolbar from 'react-md/lib/Toolbars';
-import get from 'lodash/get'
 
 import {
   api,
@@ -22,7 +21,7 @@ class Header extends Component {
     super()
 
     this.state = {
-      isAutocompleteForcedClosed: true
+      isAutocompleteForcedClosed: true,
     }
 
     this.handleToggleNavDrawerVisibility = this.handleToggleNavDrawerVisibility.bind(this)
@@ -57,9 +56,10 @@ class Header extends Component {
     const {
       mainSearchText,
       api,
+      tabs,
     } = this.props
     const {
-      isAutocompleteForcedClosed
+      isAutocompleteForcedClosed,
     } = this.state
 
     const dataValue = 'id'
@@ -69,6 +69,8 @@ class Header extends Component {
       [dataValue]: `mainSearchSuggestion-${statement.id}`,
       [dataLabel]: statement.text,
     })
+
+    const hasTabs = !!tabs
 
     return (
       <Toolbar
@@ -82,10 +84,10 @@ class Header extends Component {
               </span>
             </Link>
           }
-
+          prominent={hasTabs}
           actions={<Button icon className="toggleNavDrawerVisibility" onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
       >
-        <form className="md-cell--12 md-cell--middle" onSubmit={this.onMainSearch}>
+        <form className="md-cell--12 md-cell--top" onSubmit={this.onMainSearch}>
 
           <ApiAutocomplete
               id="mainSearch"
@@ -108,6 +110,8 @@ class Header extends Component {
             />
 
         </form>
+
+        {tabs}
 
       </Toolbar>
     )
