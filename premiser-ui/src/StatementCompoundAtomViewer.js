@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import {connect} from "react-redux";
 import Divider from 'react-md/lib/Dividers/Divider'
 import FontIcon from 'react-md/lib/FontIcons/FontIcon'
@@ -8,10 +9,14 @@ import Paper from 'react-md/lib/Papers/Paper'
 import ListItem from 'react-md/lib/Lists/ListItem'
 import cn from 'classnames'
 import get from "lodash/get";
+import map from 'lodash/map'
 
+import paths from './paths'
 import EditableStatement from './EditableStatement'
 import {editors, goto, mapActionCreatorGroupToDispatchToProps} from "./actions";
 import {EditorTypes} from "./reducers/editors";
+import JustificationWithCounters from './JustificationWithCounters'
+import {isPositive} from './models'
 
 import './StatementCompoundAtomViewer.scss'
 
@@ -25,10 +30,6 @@ class StatementCompoundAtomViewer extends Component {
 
     this.state = {isOver: false}
     this.editorType = EditorTypes.STATEMENT
-  }
-
-  goToStatement = () => {
-    this.props.goto.statement(this.props.atom.statement)
   }
 
   onEditStatement = () => {
@@ -70,7 +71,8 @@ class StatementCompoundAtomViewer extends Component {
               <ListItem primaryText="Go To"
                         key="goTo"
                         leftIcon={<FontIcon>forward</FontIcon>}
-                        onClick={this.goToStatement}
+                        component="a"
+                        href={paths.statement(statement)}
               />,
               <Divider key="divider" />,
               <ListItem primaryText="Edit"
@@ -94,9 +96,21 @@ class StatementCompoundAtomViewer extends Component {
                              textId={`${_baseId}-statementText`}
                              suggestionsKey={`${_baseId}-statementSuggestions`}
           />
+          {map(statement.justifications, j => {
+                const id = `justification-${j.id}`
+                return <JustificationWithCounters key={id}
+                                                  justification={j}
+                                                  positivey={isPositive(j)}
+                                                  showControls={false}
+                />
+              }
+          )}
         </Paper>
     )
   }
+}
+StatementCompoundAtomViewer.propTypes = {
+  statementAtom: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {

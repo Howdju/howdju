@@ -7,8 +7,9 @@ create table if not exists migration_translations (
 
 create table if not exists perspectives (
   perspective_id serial,
-  creator_user_id integer,
+  statement_id integer,
   is_featured boolean,
+  creator_user_id integer,
   created timestamp,
   deleted timestamp
 );

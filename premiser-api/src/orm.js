@@ -18,6 +18,7 @@ const toStatement = row => !row ? row : ({
   slug: toSlug(row.text),
   creatorUserId: toString(row.creator_user_id),
   created: row.created,
+  justifications: [],
 })
 
 const toJustification = (
@@ -59,15 +60,18 @@ const toJustification = (
       polarity: row.vote_polarity,
       target_type: row.vote_target_type,
       target_id: row.vote_target_id,
-    })
+    }),
+    counterJustifications: [],
   }
 
   switch (row.basis_type) {
     case JustificationBasisType.CITATION_REFERENCE: {
-        if (row.basis_id) {
+        const basisId = row.basis_id || row.basis_citation_reference_id
+        if (basisId) {
           if (citationReferencesById) {
-            justification.basis.entity = citationReferencesById[row.basis_id]
-          } else if (row.basis_citation_reference_id) {
+            justification.basis.entity = citationReferencesById[basisId]
+          }
+          if (!justification.basis.entity && row.basis_citation_reference_id) {
             justification.basis.entity = toCitationReference({
               citation_reference_id: row.basis_citation_reference_id,
               quote: row.basis_citation_reference_quote,
@@ -80,10 +84,12 @@ const toJustification = (
       break
 
     case JustificationBasisType.STATEMENT_COMPOUND: {
-        if (row.basis_id) {
+        const basisId = row.basis_id || row.basis_statement_compound_id
+        if (basisId) {
           if (statementCompoundsById) {
-            justification.basis.entity = statementCompoundsById[row.basis_id]
-          } else if (row.basis_statement_compound_id) {
+            justification.basis.entity = statementCompoundsById[basisId]
+          }
+          if (!justification.basis.entity && row.basis_statement_compound_id) {
             justification.basis.entity = toStatementCompound({
               statement_compound_id: row.basis_statement_compound_id,
               created: row.basis_statement_compound_created,
@@ -96,6 +102,10 @@ const toJustification = (
 
     default:
       throw ImpossibleError(`Unsupported JustificationBasisType: ${row.basis_type}`)
+  }
+
+  if (!justification.basis.entity) {
+    justification.basis.entity = {id: row.basis_id}
   }
 
   if (counterJustificationsByJustificationId) {
@@ -170,6 +180,12 @@ const toStatementCompoundAtom = row => !row ? row : ({
   orderPosition: row.order_position,
 })
 
+const toPerspective = row => !row ? row : ({
+  id: row.perspective_id,
+  statement: {id: row.statement_id},
+  creatorUserId: row.creator_user_id,
+})
+
 module.exports = {
   toUser,
   toStatement,
@@ -181,4 +197,5 @@ module.exports = {
   toCitationReferenceUrl,
   toStatementCompound,
   toStatementCompoundAtom,
+  toPerspective,
 }

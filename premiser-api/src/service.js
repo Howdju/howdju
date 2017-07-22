@@ -9,6 +9,7 @@ const assign = require('lodash/assign')
 const cloneDeep = require('lodash/cloneDeep')
 const concat = require('lodash/concat')
 const differenceBy = require('lodash/differenceBy')
+const every = require('lodash/every')
 const filter = require('lodash/filter')
 const find = require('lodash/find')
 const findIndex = require('lodash/findIndex')
@@ -16,10 +17,12 @@ const forEach = require('lodash/forEach')
 const get = require('lodash/get')
 const groupBy = require('lodash/groupBy')
 const isString = require('lodash/isString')
+const join = require('lodash/join')
 const keys = require('lodash/keys')
 const last = require('lodash/last')
 const map = require('lodash/map')
 const merge = require('lodash/merge')
+const partition = require('lodash/partition')
 const pickBy = require('lodash/pickBy')
 const set = require('lodash/set')
 const sortBy = require('lodash/sortBy')
@@ -98,6 +101,9 @@ const {
   isTruthy,
   assert,
 } = require('./util')
+const {
+  decircularizePerspective
+} = require('./serialization')
 
 
 const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPermission(authToken, permission)
@@ -312,10 +318,19 @@ const readMoreJustifications = (continuationToken, count) => {
     f: filters,
   } = parseContinuationToken(continuationToken)
   return justificationsDao.readMoreJustifications(sortContinuations, count, filters)
-      .then(justifications => filter(justifications, j =>
-        j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
-        j.basis.entity.atoms && j.basis.entity.atoms.length > 0
-      ))
+      .then(justifications => {
+        const [goodJustifications, badJustifications] = partition(justifications, j =>
+            j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
+            j.basis.entity.atoms &&
+            j.basis.entity.atoms.length > 0 &&
+            every(j.basis.entity.atoms, a => isTruthy(a.statement.id))
+        )
+        if (badJustifications.length > 0) {
+          logger.error(`these justifications have invalid statement compounds: ${join(map(badJustifications, j => j.id), ', ')}`)
+          logger.error(badJustifications)
+        }
+        return goodJustifications
+      })
       .then(justifications => {
         const lastJustification = last(justifications)
 
@@ -1146,9 +1161,8 @@ const deleteCounterJustificationsToJustificationIds = (justificationIds, userId,
     })
 
 const readFeaturedPerspectives = ({authToken}) => authDao.getUserId(authToken)
-    .then(userId => {
-      return perspectivesDao.readFeaturedPerspectivesWithVotesForOptionalUserId(userId)
-    })
+    .then(userId => perspectivesDao.readFeaturedPerspectivesWithVotesForOptionalUserId(userId))
+    .then(perspectives => map(perspectives, decircularizePerspective))
 
 /** Inserts an action record, but returns the entity, so that promises won't block on the query */
 const asyncRecordEntityAction = (userId, actionType, actionTargetType, now) => entity => {

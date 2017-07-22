@@ -19,16 +19,18 @@ const {
   toJustification,
   toStatementCompound,
   toStatementCompoundAtom,
+  toCitationReference,
 } = require('../orm')
 const {query} = require('../db')
 const {logger} = require('../logger')
 const {groupRootJustifications} = require('./util')
 
 const mapJustificationRows = ({rows}) => {
-  // Store the justifications in order to preserve the order
+  // Store the justifications in an array to preserve the order
   const justificationRows = []
   // But keep track of whether we've seen the row before since there may be duplicates after joining with statement compound atoms
   const justificationIds = {}
+  const citationReferencesRowsById = {}
   const statementCompoundRowsById = {}
   const statementCompountAtomsByStatementCompoundId = {}
   forEach(rows, row => {
@@ -36,14 +38,25 @@ const mapJustificationRows = ({rows}) => {
       justificationRows.push(row)
     }
 
-    const statementCompoundRow = statementCompoundRowsById[row.basis_statement_compound_id]
-    if (!statementCompoundRow) {
-      statementCompoundRowsById[row.basis_statement_compound_id] = {
-        statement_compound_id: row.basis_statement_compound_id
-      }
+    if (row.basis_citation_reference_id) {
+      citationReferencesRowsById[row.basis_citation_reference_id] = toCitationReference({
+        citation_reference_id: row.basis_citation_reference_id,
+        quote: row.basis_citation_reference_quote,
+        citation_id: row.basis_citation_reference_citation_id,
+        citation_text: row.basis_citation_reference_citation_text,
+        citation_created: row.basis_citation_reference_created,
+        citation_creator_user_id: row.basis_citation_reference_creator_user_id,
+      })
     }
 
-    if (row.basis_statement_compound_atom_statement_id) {
+    if (row.basis_statement_compound_id) {
+      const statementCompoundRow = statementCompoundRowsById[row.basis_statement_compound_id]
+      if (!statementCompoundRow) {
+        statementCompoundRowsById[row.basis_statement_compound_id] = {
+          statement_compound_id: row.basis_statement_compound_id
+        }
+      }
+
       const atom = toStatementCompoundAtom({
         statement_compound_id: row.basis_statement_compound_id,
         statement_id: row.basis_statement_compound_atom_statement_id,
@@ -58,13 +71,14 @@ const mapJustificationRows = ({rows}) => {
       }
       atoms.push(atom)
     }
+
   })
 
   const statementCompoundsById = mapValues(statementCompoundRowsById, (row, id) =>
       toStatementCompound(row, statementCompountAtomsByStatementCompoundId[id])
   )
 
-  return map(justificationRows, row => toJustification(row, null, statementCompoundsById))
+  return map(justificationRows, row => toJustification(row, null, statementCompoundsById, citationReferencesRowsById))
 }
 
 class JustificationsDao {
@@ -132,12 +146,17 @@ class JustificationsDao {
             , c.citation_id as basis_citation_reference_citation_id
             , c.text as basis_citation_reference_citation_text
             , sc.statement_compound_id as basis_statement_compound_id
-          from justifications j
-            join statements s on j.root_statement_id = s.statement_id
-            left join citation_references cr on j.basis_id = cr.citation_reference_id and j.basis_type = $1
-            left join citations c on cr.citation_id = c.citation_id
-            left join statement_compounds sc on j.basis_id = sc.statement_compound_id and j.basis_type = $2
-            left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
+          from 
+            justifications j
+              join statements s on j.root_statement_id = s.statement_id
+              left join citation_references cr on 
+                    j.basis_id = cr.citation_reference_id 
+                and j.basis_type = $1
+              left join citations c on cr.citation_id = c.citation_id
+              left join statement_compounds sc on 
+                    j.basis_id = sc.statement_compound_id 
+                and j.basis_type = $2
+              left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
             where ${whereSql}
           ${orderBySql}
           ${countSql}

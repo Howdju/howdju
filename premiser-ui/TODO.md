@@ -1,6 +1,7 @@
 # Howdju UI TODO
 
 ## Update release (I can use it and show it to people)
+* Deleted statement showed up in suggested text
 
 ### Perspectives
 * Design PerspectiveCard
@@ -11,9 +12,12 @@
   * statement justifying/disjustifying other statements or countering other justifications
   * citation justifying/disjustifying other statements
 ### Info
-  * Who created (really need a profile page first)
-    * Change schema to creator instead of creatorId?
-  * When created
+* Who created (really need a profile page first)
+  * Change schema to creator instead of creatorId?
+* When created
+### Error handling
+* Add some log capturing
+* It would be great to figure out how to ensure that the app doesn't freeze
 
 * Example where we would want to allow helper conjunctions, but to zone in on the statements:
   "The tea party shouldn't be labeled racist because some members are racist"
@@ -74,6 +78,17 @@
 
 
 ## 0.2 (others can use it)
+
+* Add statement.justifications generally, like I did with perspective.statement.justifications?
+* Tools for editing faster
+  * Recent statements
+  * Tagging
+  * in-context creation
+* Add "modal" votes: I think it's true/false but I don't konw the reason and "I don't know"
+* Can users only vote on citations?  And not on statements?  Or at least: analytics about statements you support for which
+  you don't yet support any citations
+* Checkbox next to everything you might include in a perspective so that you can collect them and then create one.
+* More referential integrity before returning (like service.readMoreJustifications
 
 ### Social login
 * https://developers.facebook.com/docs/facebook-login/web

@@ -41,6 +41,10 @@ justificationTargetSchema.define({
   JUSTIFICATION: justificationSchema,
 })
 
+statementSchema.define({
+  justifications: justificationsSchema,
+})
+
 export const statementJustificationsSchema = {
   statement: statementSchema,
   justifications: justificationsSchema

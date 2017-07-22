@@ -18,7 +18,7 @@ export default class PerspectiveCard extends Component {
         <Card>
           <CardTitle title={perspective.statement.text} />
           <CardText>
-            {map(perspective.justifications, j => {
+            {map(perspective.statement.justifications, j => {
               const id = `justification-${j.id}`
               return <JustificationWithCounters key={id}
                                                 justification={j}
