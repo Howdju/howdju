@@ -32,7 +32,7 @@ const mapJustificationRows = ({rows}) => {
   const justificationIds = {}
   const citationReferencesRowsById = {}
   const statementCompoundRowsById = {}
-  const statementCompountAtomsByStatementCompoundId = {}
+  const statementCompoundAtomsByStatementCompoundId = {}
   forEach(rows, row => {
     if (!has(justificationIds, row.justification_id)) {
       justificationRows.push(row)
@@ -57,25 +57,27 @@ const mapJustificationRows = ({rows}) => {
         }
       }
 
-      const atom = toStatementCompoundAtom({
-        statement_compound_id: row.basis_statement_compound_id,
-        statement_id: row.basis_statement_compound_atom_statement_id,
-        statement_text: row.basis_statement_compound_atom_statement_text,
-        statement_created: row.basis_statement_compound_atom_statement_created,
-        statement_creator_user_id: row.basis_statement_compound_atom_statement_creator_user_id,
-        order_position: row.basis_statement_compound_atom_order_position
-      })
-      let atoms = statementCompountAtomsByStatementCompoundId[atom.statementCompoundId]
-      if (!atoms) {
-        statementCompountAtomsByStatementCompoundId[atom.statementCompoundId] = atoms = []
+      const statementCompoundId = row.basis_statement_compound_id
+      let atomsByStatementId = statementCompoundAtomsByStatementCompoundId[statementCompoundId]
+      if (!atomsByStatementId) {
+        statementCompoundAtomsByStatementCompoundId[statementCompoundId] = atomsByStatementId = {}
       }
-      atoms.push(atom)
+      if (!has(atomsByStatementId, row.basis_statement_compound_atom_statement_id)) {
+        const atom = toStatementCompoundAtom({
+          statement_compound_id: row.basis_statement_compound_id,
+          statement_id: row.basis_statement_compound_atom_statement_id,
+          statement_text: row.basis_statement_compound_atom_statement_text,
+          statement_created: row.basis_statement_compound_atom_statement_created,
+          statement_creator_user_id: row.basis_statement_compound_atom_statement_creator_user_id,
+          order_position: row.basis_statement_compound_atom_order_position,
+        })
+        atomsByStatementId[atom.statementId] = atom
+      }
     }
-
   })
 
   const statementCompoundsById = mapValues(statementCompoundRowsById, (row, id) =>
-      toStatementCompound(row, statementCompountAtomsByStatementCompoundId[id])
+      toStatementCompound(row, statementCompoundAtomsByStatementCompoundId[id])
   )
 
   return map(justificationRows, row => toJustification(row, null, statementCompoundsById, citationReferencesRowsById))
