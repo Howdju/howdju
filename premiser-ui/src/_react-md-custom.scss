@@ -1,0 +1,25 @@
+/*
+  Customize React-MD and apply fixes
+ */
+@import '~react-md/src/scss/react-md';
+@import './colors';
+
+$md-primary-color: $primary-color;
+$md-secondary-color: $secondary-color;
+$md-text-field-error-color: $pomegranate;
+$md-font-family: 'Lato', sans-serif;
+
+$md-toolbar-prominent-height: 105px;
+// The docs say that $md-toolbar-prominent-height overrides these.  But in my experience it does not.
+$md-toolbar-desktop-prominent-height: $md-toolbar-prominent-height;
+$md-toolbar-tablet-prominent-height: $md-toolbar-prominent-height;
+$md-toolbar-mobile-prominent-height: $md-toolbar-prominent-height;
+
+// TODO figure these out to remove warnings during build
+//$md-data-table-contextual-fallback-color: $md-blue-grey-900;
+//$md-linear-progress-fallback-color: $md-red-800;
+//$md-switch-ball-fallback-color: $md-indigo-900;
+
+@include react-md-everything;
+
+@import './react-md-fixes';

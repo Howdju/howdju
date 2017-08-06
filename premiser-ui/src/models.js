@@ -1,6 +1,8 @@
+import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
 import merge from 'lodash/merge'
-import cloneDeep from 'lodash/cloneDeep'
+import truncate from 'lodash/truncate'
+
 import {newImpossibleError} from "./customErrors";
 
 export const JustificationTargetType = {
@@ -12,6 +14,8 @@ export const JustificationPolarity = {
   POSITIVE: 'POSITIVE',
   NEGATIVE: 'NEGATIVE',
 }
+// For now they have the same values, but let's at least keep track of the usages separately
+export const JustificationRootPolarity = JustificationPolarity
 
 export const JustificationBasisType = {
   STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
@@ -30,9 +34,14 @@ export const VotePolarity = {
 
 export const isPositive = j => j.polarity === JustificationPolarity.POSITIVE
 export const isNegative = j => j.polarity === JustificationPolarity.NEGATIVE
+export const isRootPositive = j => j.rootPolarity === JustificationRootPolarity.POSITIVE
+export const isRootNegative = j => j.rootPolarity === JustificationRootPolarity.NEGATIVE
 export const isVerified = j => j.vote && j.vote.polarity === VotePolarity.POSITIVE
 export const isDisverified = j => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
 export const isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && isNegative(j)
+export const isRootJustification = j =>
+  j.target.type === JustificationTargetType.STATEMENT &&
+  j.target.entity.id === j.rootStatement.id
 export const hasQuote = j => isCitationReferenceBased(j) && j.basis.entity.quote
 export const isStatementCompoundBased = j => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
 export const isCitationReferenceBased = j => j ? j.basis.type === JustificationBasisType.CITATION_REFERENCE : false
@@ -152,3 +161,18 @@ export const justificationBasisTypeToNewJustificationBasisMemberName = justifica
   }
   return newJustificationBasisMemberName
 }
+
+export const SortDirection = {
+  ASCENDING: 'ascending',
+  DESCENDING: 'descending',
+}
+
+
+// '…'
+const ellipsis = String.fromCharCode(8230)
+const truncateCitationReferenceQuoteOptions = {
+  length: 256,
+  omission: ellipsis,
+  separator: /\s+/,
+}
+export const truncateCitationReferenceQuote = quote => truncate(quote, truncateCitationReferenceQuoteOptions)

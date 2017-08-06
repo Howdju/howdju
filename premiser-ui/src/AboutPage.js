@@ -25,6 +25,15 @@ export default () => (
         anyone can use and share their work with others.
       </CardText>
       <CardText>
+        <h2>Howdju's Goals</h2>
+        <ul>
+          <li>Collect the best information</li>
+          <li>Empower people to have conversations based upon the best information</li>
+          <li>Inform people when events relevant to their interests occur</li>
+          <li>Help people keep track of things they want to follow up on later</li>
+        </ul>
+      </CardText>
+      <CardText>
         <h2>Justifications</h2>
 
         <h3>Justification bases and targets</h3>
@@ -63,6 +72,41 @@ export default () => (
         to published counter-scrutiny, then there may be problems with the source that are not known.  This characteristic
         is one of the fundamental design principles of Howdju: everyone can access the information on
         howdju.com, and anyone can instantly publish critical analysis globally.
+
+
+
+        <h2>Democracy</h2>
+        <p>
+          Democratic government depends upon its citizens getting good information in a timely fashion.  If citizens
+          do not receive good information when they need it, or, worse, if they receive bad information, then
+          democratic government suffers.  Special interests that do not necessarily reflect the best interests of a
+          country can influence opinion with bad information, leading to the break down of the concensus which is
+          necessary for democratic government to survive.
+        </p>
+        <p>
+          As societies grow in population, citizens grow increasingly disconnected from each other.  This is just an
+          outcome of the limit on the human ability to maintain relationships and keep track of information.  At the
+          same time, as technology advances, a society's ability to create and share information increases.  But
+          a society's ability to separate good information from bad information does not necessarily grow at the same time.
+          This creates a dangerous situation where segments of the population can become disconnected from one another
+          in opinion, based upon a lack of consensus of what is true.
+        </p>
+        <p>
+          In smaller, less technologically advanced societies, social cohesion was created by a combination of
+          editorialization and citizen communication.  These two channels of verifying information cannot keep up with
+          a growing society: technology has weakened the power of editorialization, both for good and for bad.  Now
+          that anyone can create "news" in a few easy steps (1. register a domain,
+          2. perform a few clicks to install a blogging platform with a professional theme, 3. write anything you want
+          at all, 4. share via social media and/or advertising.) it can be difficult to tell the good news from the bad.
+          Growing population has weakened citizen communication.
+        </p>
+        <p>
+          Assuming increasing population growth and technological advancement, democratic governments must discover ways
+          to balance the influence of bad information. The thesis of Howdju is that in order to do so, a system must
+          bring together all the information, both the good and the bad, present them side-by-side, and provide tools
+          for tracking the good and the bad information.
+        </p>
+        <h3>Social cohesion</h3>
 
       </CardText>
     </Card>

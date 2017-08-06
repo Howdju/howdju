@@ -63,6 +63,8 @@ create table if not exists justifications (
   -- when target_type = 'STATEMENT", equals target_id.  When target_type = 'JUSTIFICATION',
   -- equals the target_id of the nearest parent justification having target_type = 'STATEMENT'
   root_statement_id integer,
+  -- The polarity relative to the root statement (a counter justification of a disjustification would have positive root_polarity.)
+  root_polarity varchar(32),
   target_type varchar(64), -- 'STATEMENT' or 'JUSTIFICATION'
   target_id integer,
   basis_type varchar(64), -- 'STATEMENT_COMPOUND', 'CITATION_REFERENCE'

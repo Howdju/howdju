@@ -1,27 +1,36 @@
 import React, {Component} from 'react'
 import map from 'lodash/map'
 
+import StatementCompoundViewerAtomListItem from './StatementCompoundViewerAtomListItem'
+
 import './StatementCompoundViewer.scss'
-import StatementCompoundAtomViewer from "./StatementCompoundAtomViewer";
 
 export default class StatementCompoundViewer extends Component {
 
   render() {
     const {
-      statementCompound
+      id,
+      statementCompound,
+      doShowControls,
+      doShowStatementAtomJustifications,
+      isCondensed,
     } = this.props
 
     const atomListItems = map(statementCompound.atoms, atom => {
-      const id = `statement-compound-atom-${atom.statementCompoundId}-${atom.statement.id}-list-item`
+      const atomId = `${id}statement-compound-${atom.statementCompoundId}-statement-atom-${atom.statement.id}-list-item`
       return (
-          <li id={id} key={id} className="statementAtom">
-            <StatementCompoundAtomViewer statementAtom={atom}/>
-          </li>
+          <StatementCompoundViewerAtomListItem id={atomId}
+                                               key={atomId}
+                                               statementAtom={atom}
+                                               doShowControls={doShowControls}
+                                               doShowJustifications={doShowStatementAtomJustifications}
+                                               isCondensed={isCondensed}
+          />
       )
     })
 
     return (
-        <ul className="statementCompoundViewer">
+        <ul className="statement-compound-viewer">
           {atomListItems}
         </ul>
     )

@@ -1,5 +1,8 @@
-const toString = require('lodash/toString')
+const isArray = require('lodash/isArray')
 const map = require('lodash/map')
+const sortBy = require('lodash/sortBy')
+const toString = require('lodash/toString')
+const values = require('lodash/values')
 
 const {JustificationBasisType} = require('./models')
 const {ImpossibleError} = require('./errors')
@@ -18,7 +21,7 @@ const toStatement = row => !row ? row : ({
   slug: toSlug(row.text),
   creatorUserId: toString(row.creator_user_id),
   created: row.created,
-  justifications: [],
+  justifications: null,
 })
 
 const toJustification = (
@@ -41,6 +44,7 @@ const toJustification = (
       created: row.root_statement_created,
       creator_user_id: row.root_statement_creator_user_id,
     }),
+    rootPolarity: row.root_polarity,
     target: {
       type: row.target_type,
       entity: {
@@ -101,7 +105,7 @@ const toJustification = (
       break
 
     default:
-      throw ImpossibleError(`Unsupported JustificationBasisType: ${row.basis_type}`)
+      throw new ImpossibleError(`Unsupported JustificationBasisType: ${row.basis_type}`)
   }
 
   if (!justification.basis.entity) {
@@ -124,7 +128,8 @@ const toCitationReference = row => !row ? row : {
   quote: row.quote,
   citation: toCitation({
     citation_id: row.citation_id,
-    text: row.citation_text
+    text: row.citation_text,
+    created: row.citation_created,
   })
 }
 
@@ -163,6 +168,11 @@ const toStatementCompound = (row, atoms) => {
   }
 
   if (atoms) {
+    if (!isArray(atoms)) {
+      // Assume a non-array is an object of atoms by statementId
+      atoms = values(atoms)
+      atoms = sortBy(atoms, a => a.orderPosition)
+    }
     statementCompound.atoms = atoms
   }
 

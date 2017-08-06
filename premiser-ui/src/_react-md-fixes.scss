@@ -1,0 +1,68 @@
+// TODO remove at some point!
+.md-text-field-container.md-text-field-container--multiline:not(.hasIcon) {
+  // the following doens't appear to apply to multiline inputs with an icon (left icon, at least)
+  // So add .hasIcon to the TextField if you will be adding a left icon to avoid all these style fixes
+
+  // When I enter the first character into a multiline text field, the element height is set to something way too big.
+  // Try and compensate for this with a negative margin.
+  &.editedAfterMount {
+    margin-bottom: -33px;
+  }
+  // The floating label returns into the control even when there is text entered.  Prevent that.
+  &.hasValue {
+    .md-floating-label.md-floating-label--floating {
+      transform: translate3d(0, -20px, 0);
+      font-size: 12px;
+    }
+  }
+
+  // I have no idea why I had to apply these, but the floating label for multiline TextFields was way off otherwise
+  .md-floating-label.md-floating-label--active.md-floating-label--floating {
+    transform: translate3d(0, -20px, 0);
+    font-size: 12px;
+  }
+  .md-floating-label.md-floating-label--inactive.md-floating-label--inactive-sized,
+  .md-floating-label.md-floating-label--floating{
+    transform: translate3d(0, 0px, 0);
+    font-size: 13px;
+  }
+}
+
+.md-dialog {
+  // React-MD doesn't implement scrolling of a dialog contents, so add scroll to the whole dialog, at least.
+  overflow-x: auto;
+  width: 66%;
+}
+
+.md-icon {
+  color: $icon-color;
+}
+
+.md-dialog-footer--card > .md-btn {
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+}
+
+.md-dialog-footer--card {
+  // Buttons are right-justified
+  // (Matches .md-dialog-footer)
+  justify-content: flex-end;
+}
+
+.md-tooltip {
+  font-size: large;
+  padding: 25px;
+}
+
+html, body {
+  &.md-no-scroll {
+    // This is to counteract something weird that React-MD does when showing a dialog:
+    // it adds a class .md-no-scroll to the HTML, with position: fixed, which causes
+    // the content to scrunch up to the left.  It appears React-MD does this for something
+    // related to accessibility, so watch out for how this might affect mobile or alternative
+    // devices...
+
+    // Let's try and take this out for now...since it seems dangerous to override the library's decision
+    //position: static;
+  }
+}

@@ -4,6 +4,7 @@ const assign = require('lodash/assign')
 const isEqual = require('lodash/isEqual')
 const httpMethods = require('./httpMethods')
 const httpStatusCodes = require('./httpStatusCodes')
+const {CircularReferenceDetector} = require('./util/CircularReferenceDetector')
 
 const {
   AuthenticationError,
@@ -34,6 +35,7 @@ const {
   deleteJustification,
   readCitationReference,
   readCitations,
+  readCitationReferences,
   readJustifications,
   updateCitationReference,
   readFeaturedPerspectives,
@@ -281,6 +283,21 @@ const routes = [
     }
   },
   {
+    id: 'readCitationReferences',
+    path: 'citationReferences',
+    method: httpMethods.GET,
+    handler: ({request, callback}) => {
+      const {
+        continuationToken,
+        count,
+        sortProperty,
+        sortDirection,
+      } = request.queryStringParameters
+      return readCitationReferences({continuationToken, count, sortProperty, sortDirection})
+          .then(({citationReferences, continuationToken}) => ok({callback, body: {citationReferences, continuationToken}}))
+    }
+  },
+  {
     id: 'readJustifications',
     path: 'justifications',
     method: httpMethods.GET,
@@ -290,12 +307,16 @@ const routes = [
         count,
         sortProperty,
         sortDirection,
+        citationReferenceId,
         citationId,
         statementId,
+        statementCompoundId,
       } = request.queryStringParameters
       const filters = {
+        citationReferenceId,
         citationId,
         statementId,
+        statementCompoundId,
       }
       return readJustifications({continuationToken, count, sortProperty, sortDirection, filters})
           .then(({justifications, continuationToken}) => ok({callback, body: {justifications, continuationToken}}))
@@ -375,7 +396,8 @@ const routes = [
                 request: {authToken}
               }) => readFeaturedPerspectives({authToken})
         .then( perspectives => {
-          console.log(authToken)
+          const detector = new CircularReferenceDetector();
+          detector.detectCircularReferences(perspectives)
           return perspectives
         })
         .then( perspectives => ok({callback, body: {perspectives}}) )

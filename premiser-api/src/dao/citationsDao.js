@@ -14,9 +14,12 @@ const {
   JustificationBasisType,
   JustificationTargetType,
   VoteTargetType,
+  SortDirection,
+  ContinuationSortDirection,
 } = require('../models')
 const {logger} = require('../logger')
 const {cleanWhitespace, normalizeText} = require('./util')
+const {DatabaseSortDirection} = require('./daoModels')
 
 
 class CitationsDao {
@@ -32,7 +35,9 @@ class CitationsDao {
     const orderBySqls = []
     forEach(sorts, sort => {
       const columnName = sort.property === 'id' ? 'citation_id' : snakeCase(sort.property)
-      const direction = sort.direction === 'descending' ? 'desc' : 'asc'
+      const direction = sort.direction === SortDirection.DESCENDING ?
+          DatabaseSortDirection.DESCENDING :
+          DatabaseSortDirection.ASCENDING
       whereSqls.push(`${columnName} is not null`)
       orderBySqls.push(columnName + ' ' + direction)
     })
@@ -48,6 +53,7 @@ class CitationsDao {
     return query(sql, args)
         .then(({rows}) => map(rows, toCitation))
   }
+
   readMoreCitations(sortContinuations, count) {
     const args = []
     let countSql = ''
@@ -63,7 +69,9 @@ class CitationsDao {
     forEach(sortContinuations, (sortContinuation, index) => {
       const value = sortContinuation.v
       // The default direction is ascending
-      const direction = sortContinuation.d === 'd' ? 'desc' : 'asc'
+      const direction = sortContinuation.d === ContinuationSortDirection.DESCENDING ?
+          DatabaseSortDirection.DESCENDING :
+          DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
       const columnName = sortContinuation.p === 'id' ? 'citation_id' : snakeCase(sortContinuation.p)
       let operator = direction === 'asc' ? '>' : '<'
@@ -92,6 +100,7 @@ class CitationsDao {
     return query(sql, args)
         .then( ({rows}) => map(rows, toCitation) )
   }
+
   readCitationEquivalentTo(citation) {
     return query('select * from citations where normal_text = $1 and deleted is null', [normalizeText(citation.text)])
         .then( ({rows}) => {

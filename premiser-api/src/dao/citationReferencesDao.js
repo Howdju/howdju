@@ -1,7 +1,9 @@
 const forEach = require('lodash/forEach')
-const map = require('lodash/map')
-const sortBy = require('lodash/sortBy')
+const groupBy = require('lodash/groupBy')
 const head = require('lodash/head')
+const map = require('lodash/map')
+const snakeCase = require('lodash/snakeCase')
+const sortBy = require('lodash/sortBy')
 
 const urlsDao = require('./urlsDao')
 const {
@@ -14,8 +16,11 @@ const {
   JustificationBasisType,
   JustificationTargetType,
   VoteTargetType,
+  SortDirection,
+  ContinuationSortDirection,
 } = require('../models')
 const {logger} = require('../logger')
+const {DatabaseSortDirection} = require('./daoModels')
 
 
 class CitationReferencesDao {
@@ -48,6 +53,101 @@ class CitationReferencesDao {
           citationReference.urls = urls
           return citationReference
         })
+  }
+
+  readCitationReferences(sorts, count) {
+    const args = []
+    let countSql = ''
+    if (isFinite(count)) {
+      args.push(count)
+      countSql = `limit $${args.length}`
+    }
+
+    const whereSqls = [
+        'cr.deleted is null',
+        'c.deleted is null',
+    ]
+    const orderBySqls = []
+    forEach(sorts, sort => {
+      const columnName = sort.property === 'id' ? 'citation_reference_id' : snakeCase(sort.property)
+      const direction = sort.direction === SortDirection.DESCENDING ?
+          DatabaseSortDirection.DESCENDING :
+          DatabaseSortDirection.ASCENDING
+      whereSqls.push(`cr.${columnName} is not null`)
+      orderBySqls.push(`cr.${columnName} ${direction}`)
+    })
+    const whereSql = whereSqls.join('\nand ')
+    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+
+    const sql = `
+      select 
+          cr.*
+        , c.text as citation_text
+        , c.created as citation_created
+      from citation_references cr
+          join citations c USING (citation_id)
+        where 
+          ${whereSql}
+      ${orderBySql}
+      ${countSql}
+      `
+    return query(sql, args)
+        .then(({rows}) => map(rows, toCitationReference))
+  }
+
+  readMoreCitationReferences(sortContinuations, count) {
+    const args = []
+    let countSql = ''
+    if (isFinite(count)) {
+      args.push(count)
+      countSql = `\nlimit $${args.length}`
+    }
+
+    const whereSqls = [
+      'cr.deleted is null',
+      'c.deleted is null',
+    ]
+    const continuationWhereSqls = []
+    const prevWhereSqls = []
+    const orderBySqls = []
+    forEach(sortContinuations, (sortContinuation, index) => {
+      const value = sortContinuation.v
+      // The default direction is ascending
+      const direction = sortContinuation.d === ContinuationSortDirection.DESCENDING ?
+          DatabaseSortDirection.DESCENDING :
+          DatabaseSortDirection.ASCENDING
+      // 'id' is a special property name for entities. The column is prefixed by the entity type
+      const columnName = sortContinuation.p === 'id' ? 'citation_reference_id' : snakeCase(sortContinuation.p)
+      let operator = direction === 'asc' ? '>' : '<'
+      args.push(value)
+      const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
+      continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
+      prevWhereSqls.push(`cr.${columnName} = $${args.length}`)
+      whereSqls.push(`cr.${columnName} is not null`)
+      orderBySqls.push(`cr.${columnName} ${direction}`)
+    })
+
+    const continuationWhereSql = continuationWhereSqls.join('\n or ')
+    const whereSql = whereSqls.join('\nand ')
+    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+
+    const sql = `
+      select 
+          cr.*
+        , c.text as citation_text
+        , c.created as citation_created
+      from citation_references cr
+          join citations c using (citation_id)
+        where 
+          ${whereSql}
+        and (
+          ${continuationWhereSql}
+        )
+      ${orderBySql}
+      ${countSql}
+      `
+    return query(sql, args)
+        .then( ({rows}) => map(rows, toCitationReference) )
   }
 
   readCitationReferencesByIdForRootStatementId(rootStatementId) {
@@ -107,10 +207,21 @@ class CitationReferencesDao {
         })
   }
 
+  readCitationReferenceUrlsForCitationReference(citationReference) {
+    return query('select * from citation_reference_urls where citation_reference_id = $1 and deleted is null',
+        [citationReference.id])
+        .then( ({rows}) => map(rows, toCitationReferenceUrl) )
+  }
+
   readCitationReferenceUrl(citationReference, url) {
     return query('select * from citation_reference_urls where citation_reference_id = $1 and url_id = $2 and deleted is null',
         [citationReference.id, url.id])
-        .then( ({rows}) => map(rows, toCitationReferenceUrl))
+        .then( ({rows}) => {
+          if (rows.length > 1) {
+            logger.error(`URL ${url.id} is associated with citation reference ${citationReference.id} multiple times`)
+          }
+          return toCitationReferenceUrl(head(rows))
+        })
   }
 
   createCitationReferenceUrls(citationReference, urls, userId, now) {

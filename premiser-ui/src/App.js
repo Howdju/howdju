@@ -32,16 +32,16 @@ import paths, {createJustificationPath, mainSearchPathName} from "./paths";
 import mainSearcher from './mainSearcher'
 import IconPage from './IconPage'
 import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage";
-
-import './fonts.scss'
-import './App.scss'
 import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage";
 import RecentActivityPage from "./RecentActivityPage";
 import WhatsNextPage from "./WhatsNextPage";
 import AboutPage from "./AboutPage";
 import NotFoundPage from "./NotFoundPage";
-import JustificationsPage from "./JustificationsPage";
+import JustificationsSearchPage from "./JustificationsSearchPage";
+import t, {MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME} from "./texts";
 
+import './fonts.scss'
+import './App.scss'
 
 const tabIndexByPathname = {
   '/featured-perspectives': 0,
@@ -110,10 +110,10 @@ class App extends Component {
 
   onTabChange = (newActiveTabIndex, tabId, tabControlsId, tabChildren, event) => {
     const lookup = {
-      featuredPerspectivesTab: '/featured-perspectives',
-      recentActivityTab: '/recent-activity',
-      whatsNextTab: '/whats-next',
-      aboutTab: '/about'
+      'featured-perspectives-tab': paths.featuredPerspectives(),
+      'recent-activity-tab': paths.recentActivity(),
+      'whats-next-tab': paths.whatsNext(),
+      'about-tab': paths.about()
     }
     const path = lookup[tabId]
     history.push(path)
@@ -125,8 +125,12 @@ class App extends Component {
   }
 
   syncTabToPathname = pathname => {
-    const index = get(tabIndexByPathname, location.pathname, -1)
+    const index = get(tabIndexByPathname, pathname, -1)
     this.setState({activeTabIndex: index})
+  }
+
+  onClick = event => {
+    this.props.ui.unhandledAppClick()
   }
 
   render () {
@@ -176,7 +180,7 @@ class App extends Component {
 
     const navDrawer = (
         <Drawer
-            id="appNavDrawer"
+            id="app-nav-drawer"
             position="right"
             type={Drawer.DrawerTypes.TEMPORARY}
             header={
@@ -185,10 +189,8 @@ class App extends Component {
                   className="md-divider-border md-divider-border--bottom"
               >
                 {this.props.authToken &&
-                  <div className="md-grid">
-                    <div className="md-cell md-cell--12">
-                      <b>{this.props.authEmail}</b>
-                    </div>
+                  <div className="app-nav-drawer-header">
+                    <b>{this.props.authEmail}</b>
                   </div>
                 }
               </Toolbar>
@@ -215,17 +217,27 @@ class App extends Component {
             onTabChange={this.onTabChange}
             style={{position: 'absolute', left: 0, bottom: 0, right: 0}}
         >
-          <Tab label="Featured perspectives" id="featuredPerspectivesTab" />
-          <Tab label="Recent activity" id="recentActivityTab" />
-          <Tab label="What’s next" id="whatsNextTab" />
-          <Tab label="About" id="aboutTab" />
+          <Tab label={<Link to={paths.featuredPerspectives()}>{t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME)}</Link>}
+               id="featured-perspectives-tab"
+          />
+          <Tab label={<Link to={paths.recentActivity()}>Recent activity</Link>}
+               id="recent-activity-tab"
+          />
+          <Tab label={<Link to={paths.whatsNext()}>What’s next</Link>}
+               id="whats-next-tab"
+          />
+          <Tab label={<Link to={paths.about()}>About</Link>}
+               id="about-tab"
+          />
         </Tabs>
     )
 
     return (
       <DocumentTitle title="Howdju">
         <ConnectedRouter history={history}>
-          <div id="app">
+          <div id="app"
+               onClick={this.onClick}
+          >
 
             <Header tabs={pageTabs} />
 
@@ -240,13 +252,13 @@ class App extends Component {
                 <Route exact path={paths.home()} render={renderHomePath}/>
                 <Route exact path={paths.login()} component={LoginPage} />
 
-                <Route exact path="/featured-perspectives" component={FeaturedPerspectivesPage} />
-                <Route exact path="/recent-activity" component={RecentActivityPage} />
-                <Route exact path="/whats-next" component={WhatsNextPage} />
-                <Route exact path="/about" component={AboutPage} />
+                <Route exact path={paths.featuredPerspectives()} component={FeaturedPerspectivesPage} />
+                <Route exact path={paths.recentActivity()} component={RecentActivityPage} />
+                <Route exact path={paths.whatsNext()} component={WhatsNextPage} />
+                <Route exact path={paths.about()} component={AboutPage} />
 
                 <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
-                <Route exact path="/j" component={JustificationsPage} />
+                <Route exact path="/search-justifications" component={JustificationsSearchPage} />
 
                 <Route exact path="/create-statement" render={props => (
                     <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />

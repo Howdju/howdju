@@ -57,12 +57,32 @@ export const api = {
   fetchMoreRecentStatements: apiActionCreator('FETCH_MORE_RECENT_STATEMENTS', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
   fetchRecentCitations: apiActionCreator('FETCH_RECENT_CITATIONS', (widgetId, count) => ({widgetId, count})),
   fetchMoreRecentCitations: apiActionCreator('FETCH_MORE_RECENT_CITATIONS', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
+  fetchRecentCitationReferences: apiActionCreator('FETCH_RECENT_CITATION_REFERENCES', (widgetId, count) => ({widgetId, count})),
+  fetchMoreRecentCitationReferences: apiActionCreator('FETCH_MORE_RECENT_CITATION_REFERENCES', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
   fetchRecentJustifications: apiActionCreator('FETCH_RECENT_JUSTIFICATIONS', (widgetId, count) => ({widgetId, count})),
   fetchMoreRecentJustifications: apiActionCreator('FETCH_MORE_RECENT_JUSTIFICATIONS', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
   fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
   fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
   fetchCitationReference: apiActionCreator('FETCH_CITATION_REFERENCE', citationReferenceId => ({citationReferenceId})),
-  fetchJustifications: apiActionCreator('FETCH_JUSTIFICATIONS', ({citationId, statementId}) => ({citationId, statementId}) ),
+  fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
+      ({citationReferenceId, citationId, statementCompoundId, statementId, count}) => ({
+        citationReferenceId,
+        citationId,
+        statementCompoundId,
+        statementId,
+        count,
+      })
+  ),
+  fetchMoreJustificationsSearch: apiActionCreator('FETCH_MORE_JUSTIFICATIONS_SEARCH',
+      ({citationReferenceId, citationId, statementCompoundId, statementId, continuationToken, count}) => ({
+        citationReferenceId,
+        citationId,
+        statementCompoundId,
+        statementId,
+        continuationToken,
+        count,
+      })
+  ),
   login: apiActionCreator('LOGIN', credentials => ({credentials})),
   logout: apiActionCreator('LOGOUT'),
 
@@ -122,6 +142,7 @@ export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator)
 }, {})
 
 export const ui = {
+  unhandledAppClick: actionCreator('UI/UNHANDLED_APP_CLICK'),
   showNavDrawer: actionCreator('SHOW_NAV_DRAWER'),
   hideNavDrawer: actionCreator('HIDE_NAV_DRAWER'),
   toggleNavDrawerVisibility: actionCreator('TOGGLE_NAV_DRAWER_VISIBILITY'),
@@ -132,12 +153,24 @@ export const ui = {
   showNewJustificationDialog: actionCreator('SHOW_NEW_JUSTIFICATION_DIALOG'),
   hideNewJustificationDialog: actionCreator('HIDE_NEW_JUSTIFICATION_DIALOG'),
 
-  addNewCounterJustification: actionCreator('ADD_NEW_COUNTER_JUSTIFICATION', targetJustification => ({targetJustification})),
-  newCounterJustificationPropertyChange: actionCreator('NEW_COUNTER_JUSTIFICATION_PROPERTY_CHANGE', (justification, properties) => ({justification, properties})),
-  cancelNewCounterJustification: actionCreator('CANCEL_NEW_COUNTER_JUSTIFICATION', justification => ({justification})),
-
   mainSearchTextChange: actionCreator('MAIN_SEARCH_TEXT_CHANGE'),
   loginCredentialChange: actionCreator('LOGIN_CREDENTIAL_CHANGE'),
+  clearJustificationsSearch: actionCreator('UI/CLEAR_JUSTIFICATIONS_SEARCH'),
+
+  clearRecentStatements: actionCreator('UI/CLEAR_RECENT_STATEMENTS', widgetId => ({widgetId})),
+  clearRecentCitations: actionCreator('UI/CLEAR_RECENT_CITATIONS', widgetId => ({widgetId})),
+  clearRecentCitationReferences: actionCreator('UI/CLEAR_RECENT_CITATION_REFERENCES', widgetId => ({widgetId})),
+  clearRecentJustifications: actionCreator('UI/CLEAR_RECENT_JUSTIFICATIONS', widgetId => ({widgetId})),
+
+  beginInteractionWithTransient: actionCreator('UI/BEGIN_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),
+  endInteractionWithTransient: actionCreator('UI/END_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),
+  showTransient: actionCreator('UI/SHOW_TRANSIENT', transientId => ({transientId})),
+  scheduleHideTransient: actionCreator('UI/SCHEDULE_HIDE_TRANSIENT', (transientId, hideDelay) => ({transientId, hideDelay})),
+  tryCancelHideTransient: actionCreator('UI/TRY_CANCEL_HIDE_TRANSIENT', transientId => ({transientId})),
+  cancelHideTransient: actionCreator('UI/CANCEL_HIDE_TRANSIENT', transientId => ({transientId})),
+  hideAllTransients: actionCreator('UI/HIDE_ALL_TRANSIENTS'),
+  hideOtherTransients: actionCreator('UI/HIDE_OTHER_TRANSIENTS', visibleTransientId => ({visibleTransientId})),
+  hideTransient: actionCreator('UI/HIDE_TRANSIENT', transientId => ({transientId})),
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
@@ -184,7 +217,11 @@ export const goto = {
   login: actionCreator('GOTO/LOGIN', loginRedirectLocation => ({loginRedirectLocation})),
   statement: actionCreator('GOTO/STATEMENT', statement => ({statement})),
   mainSearch: actionCreator('GOTO/MAIN_SEARCH', mainSearchText => ({mainSearchText})),
-  createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION', (basisType, basisId) => ({basisType, basisId}))
+  createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION', (basisType, basisId) => ({basisType, basisId})),
+  searchJustifications: actionCreator('GOTO/SEARCH_JUSTIFICATIONS',
+      ({statementId, statementCompoundId, citationReferenceId}) => ({statementId, statementCompoundId, citationReferenceId})),
+  searchCitationReferences: actionCreator('GOTO/SEARCH_CITATION_REFERENCES',
+      ({quoteText, citationText, urlDomain}) => ({quoteText, citationText, urlDomain}))
 }
 
 export const flows = {

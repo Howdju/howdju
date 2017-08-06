@@ -1,19 +1,20 @@
+import assign from 'lodash/assign'
 import assignWith from 'lodash/assignWith'
+import clone from 'lodash/clone'
+import cloneDeep from 'lodash/cloneDeep'
+import filter from 'lodash/filter'
+import forEach from 'lodash/forEach'
+import groupBy from 'lodash/groupBy'
 import has from 'lodash/has'
 import isArray from 'lodash/isArray'
-import merge from 'lodash/merge'
-import mergeWith from 'lodash/mergeWith'
-import groupBy from 'lodash/groupBy'
-import pickBy from 'lodash/pickBy'
+import isNumber from 'lodash/isNumber'
 import map from 'lodash/map'
 import mapValues from 'lodash/mapValues'
-import values from 'lodash/values'
-import forEach from 'lodash/forEach'
-import cloneDeep from 'lodash/cloneDeep'
-import clone from 'lodash/clone'
-import filter from 'lodash/filter'
+import merge from 'lodash/merge'
+import mergeWith from 'lodash/mergeWith'
+import pickBy from 'lodash/pickBy'
 import union from 'lodash/union'
-import isNumber from 'lodash/isNumber'
+import values from 'lodash/values'
 import {combineActions, handleActions} from "redux-actions";
 
 import {
@@ -23,9 +24,8 @@ import {
 } from '../models'
 import {api} from '../actions'
 import * as httpStatusCodes from "../httpStatusCodes";
-import {normalize} from "normalizr";
-import {statementSchema} from "../schemas";
 import {assert} from './../util'
+import {isTruthy} from "../util";
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {
@@ -88,6 +88,13 @@ export const indexRootJustificationsByRootStatementId = justificationsById => {
 
 const defaultCustomizer = () => undefined
 
+const stubSkippingCustomizer = testPropertyName => (objValue, srcValue, key, object, source) => {
+  if (has(srcValue, testPropertyName)) {
+    return srcValue
+  }
+  return objValue
+}
+
 const justificationsCustomizer = (objValue, srcValue, key, object, source) => {
   // Don't override a value with one that is missing the relational information
   if (
@@ -103,11 +110,11 @@ const justificationsCustomizer = (objValue, srcValue, key, object, source) => {
   return srcValue
 }
 
-const updateEntityKey = (state, payloadEntities, key, customizer) => {
+const createEntityUpdate = (state, payloadEntities, key, customizer) => {
   if (has(payloadEntities, key)) {
-    state[key] = assignWith({}, state[key], payloadEntities[key], customizer || defaultCustomizer)
+    return {[key]: assignWith({}, state[key], payloadEntities[key], customizer || defaultCustomizer)}
   }
-  return state
+  return null
 }
 
 export default handleActions({
@@ -118,9 +125,12 @@ export default handleActions({
       api.fetchMoreRecentStatements.response,
       api.fetchRecentCitations.response,
       api.fetchMoreRecentCitations.response,
+      api.fetchRecentCitationReferences.response,
+      api.fetchMoreRecentCitationReferences.response,
       api.fetchStatementJustifications.response,
       api.fetchFeaturedPerspectives.response,
-      api.fetchJustifications.response,
+      api.fetchJustificationsSearch.response,
+      api.fetchMoreJustificationsSearch.response,
       api.fetchRecentJustifications.response,
       api.fetchMoreRecentJustifications.response,
       api.fetchCitationReference.response,
@@ -132,25 +142,35 @@ export default handleActions({
       api.fetchCitationTextSuggestions.response,
   )]: {
     next: (state, action) => {
-      let newState = {...state}
-      newState = updateEntityKey(newState, action.payload.entities, 'perspectives')
-      newState = updateEntityKey(newState, action.payload.entities, 'statements')
-      newState = updateEntityKey(newState, action.payload.entities, 'statementCompounds')
-      newState = updateEntityKey(newState, action.payload.entities, 'justifications', justificationsCustomizer)
-      newState = updateEntityKey(newState, action.payload.entities, 'votes')
-      newState = updateEntityKey(newState, action.payload.entities, 'citationReferences')
-      newState = updateEntityKey(newState, action.payload.entities, 'citations')
+      const updates = map([
+        ['perspectives'],
+        ['statements', stubSkippingCustomizer('text')],
+        ['statementCompounds'],
+        ['justifications', justificationsCustomizer()],
+        ['votes'],
+        ['citationReferences', stubSkippingCustomizer('quote')],
+        ['citations', stubSkippingCustomizer('text')],
+      ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
+      const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
       if (action.payload.entities.justifications) {
         const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
-        newState.justificationsByRootStatementId = mergeWith(
+        nonEmptyUpdates.push({justificationsByRootStatementId: mergeWith(
             {},
             state.justificationsByRootStatementId,
             justificationsByRootStatementId,
             unionArraysDistinctIdsCustomizer
-        )
+        )})
       }
-      return newState
+
+      if (nonEmptyUpdates.length > 0) {
+        const newState = {...state}
+        forEach(nonEmptyUpdates, update => {
+          assign(newState, update)
+        })
+        return newState
+      }
+      return state
     }
   },
   [api.fetchStatementJustifications.response]: {
@@ -159,7 +179,7 @@ export default handleActions({
       if (action.httpStatusCode === httpStatusCodes.NOT_FOUND) {
         return {
           ...state,
-          statements: pickBy(state.statements, (s, id) => +id !== action.meta.statementId)
+          statements: pickBy(state.statements, (s, id) => id !== action.meta.statementId)
         }
       }
       return state
@@ -168,7 +188,7 @@ export default handleActions({
   [api.deleteStatement.response]: {
     next: (state, action) => ({
       ...state,
-      statements: pickBy(state.statements, (s, id) => +id !== action.meta.requestPayload.statement.id )
+      statements: pickBy(state.statements, (s, id) => id !== action.meta.requestPayload.statement.id )
     })
   },
   [api.createJustification.response]: {

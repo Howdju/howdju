@@ -1,1 +1,26 @@
-$gutter: 1.2rem;
+@import "~react-md/src/scss/grids";
+
+@mixin howdju-grid($gutter) {
+
+  .addButton {
+    margin-top: $gutter;
+  }
+
+  .counter-justification-branch {
+    margin-top: $gutter;
+  }
+}
+
+@mixin apply-react-md-grid {
+  @media (max-width: $md-grid-tablet-breakpoint - 1) {
+    @include howdju-grid($md-grid-phone-gutter);
+  }
+
+  @media (min-width: $md-grid-tablet-breakpoint) and (max-width: $md-grid-desktop-breakpoint - 1) {
+    @include howdju-grid($md-grid-tablet-gutter);
+  }
+
+  @media (min-width: $md-grid-desktop-breakpoint) {
+    @include howdju-grid($md-grid-desktop-gutter);
+  }
+}

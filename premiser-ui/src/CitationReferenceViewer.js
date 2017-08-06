@@ -1,19 +1,18 @@
 import React from 'react'
 import map from 'lodash/map'
-import truncate from 'lodash/truncate'
 import FontIcon from 'react-md/lib/FontIcons'
 import cn from 'classnames'
 
+import {truncateCitationReferenceQuote} from "./models";
 import {extractDomain} from "./util"
 
 import './CitationReferenceViewer.scss'
 
-// '…'
-const ellipsis = String.fromCharCode(8230)
 
 export default props => {
   const {
-    citationReference
+    citationReference,
+    doShowControls,
   } = props
 
   const urls = map(citationReference.urls, u => {
@@ -30,22 +29,17 @@ export default props => {
     )
   })
 
-  const truncateOptions = {
-    length: 256,
-    omission: ellipsis,
-    separator: /\s+/,
-  }
 
   return (
-      <div className="citationReferenceViewer">
+      <div className="citation-reference-viewer">
         <div className={cn({
           quote: true,
           hidden: !citationReference.quote
         })}>
-          <span>{truncate(citationReference.quote, truncateOptions)}</span>
+          <span>{truncateCitationReferenceQuote(citationReference.quote)}</span>
         </div>
-        <div className="citationTitle">{citationReference.citation.text}</div>
-        <ul>
+        <div className="citation-title">{citationReference.citation.text}</div>
+        <ul className="citation-reference-urls">
           {urls}
         </ul>
       </div>

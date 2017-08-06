@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import {denormalize} from "normalizr";
 import DocumentTitle from "react-document-title";
 import Divider from "react-md/lib/Dividers";
-import Card from "react-md/lib/Cards/Card";
 import FontIcon from "react-md/lib/FontIcons";
 import MenuButton from "react-md/lib/Menus/MenuButton";
 import ListItem from "react-md/lib/Lists/ListItem";
@@ -22,8 +21,7 @@ import get from 'lodash/get'
 import map from 'lodash/map'
 
 import config from './config';
-
-import {logger} from "./util";
+import {isNarrow, logger} from "./util";
 import {
   isVerified,
   isDisverified,
@@ -33,19 +31,19 @@ import {
   JustificationBasisType,
   makeNewJustificationTargetingStatementId,
 } from "./models";
-
+import GridCard from './GridCard';
 import {
   api,
   editors, mapActionCreatorGroupToDispatchToProps,
   ui,
   goto, flows,
 } from "./actions";
-import {justificationSchema, justificationsSchema, statementSchema} from "./schemas";
-import JustificationWithCounters from './JustificationWithCounters'
+import {justificationsSchema, statementSchema} from "./schemas";
+import JustificationTree from './JustificationTree'
 import text, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
   CANCEL_BUTTON_LABEL,
-  CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL, FETCH_STATEMENT_JUSTIFICATIONS_FAILURE_MESSAGE
+  CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts";
 import NewJustificationEditor from './NewJustificationEditor'
 import {
@@ -54,11 +52,10 @@ import {
 } from "./editorIds";
 import {EditorTypes} from "./reducers/editors";
 import EditableStatement from "./EditableStatement";
-
-import "./StatementJustificationsPage.scss";
 import {suggestionKeys} from "./autocompleter";
 import {ESCAPE_KEY_CODE} from "./keyCodes";
 
+import "./StatementJustificationsPage.scss";
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -72,7 +69,6 @@ class StatementJustificationsPage extends Component {
 
     this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
-    this.updateDimensions = this.updateDimensions.bind(this)
     this.onEditStatement = this.onEditStatement.bind(this)
     this.deleteStatement = this.deleteStatement.bind(this)
     this.onUseStatement = this.onUseStatement.bind(this)
@@ -88,15 +84,6 @@ class StatementJustificationsPage extends Component {
   componentWillMount() {
     this.props.editors.init(EditorTypes.STATEMENT, this.statementEditorId, {entityId: this.statementId()})
     this.props.api.fetchStatementJustifications(this.statementId())
-    this.updateDimensions()
-  }
-
-  componentDidMount() {
-    window.addEventListener("resize", this.updateDimensions);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateDimensions);
   }
 
   statementId() {
@@ -111,16 +98,16 @@ class StatementJustificationsPage extends Component {
     this.setState({isOverStatement: false})
   }
 
-  updateDimensions() {
-    this.setState({width: window.innerWidth, height: window.innerHeight});
-  }
-
   onEditStatement() {
     this.props.editors.beginEdit(EditorTypes.STATEMENT, this.statementEditorId, this.props.statement)
   }
 
   onUseStatement() {
     this.props.goto.createJustification(JustificationBasisType.STATEMENT_COMPOUND, this.statementId())
+  }
+
+  onSeeUsages = () => {
+    this.props.goto.searchJustifications({statementId: this.statementId()})
   }
 
   deleteStatement() {
@@ -170,14 +157,14 @@ class StatementJustificationsPage extends Component {
       isSavingNewJustification,
     } = this.props
 
-    const {narrowBreakpoint, flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
+    const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
 
-    const isNarrow = this.state.width <= narrowBreakpoint
+    const _isNarrow = isNarrow()
     const defaultJustificationsByPolarity = {
       [JustificationPolarity.POSITIVE]: [],
       [JustificationPolarity.NEGATIVE]: [],
     }
-    const justificationsByPolarity = isNarrow ?
+    const justificationsByPolarity = _isNarrow ?
         defaultJustificationsByPolarity :
         defaults(groupBy(justifications, j => j.polarity), defaultJustificationsByPolarity)
 
@@ -186,21 +173,16 @@ class StatementJustificationsPage extends Component {
     const hasAgreement = some(justifications, j => isVerified(j) && isPositive(j))
     const hasDisagreement = some(justifications, j => isVerified(j) && isNegative(j))
 
-    const statementCardClassName = cn({
-      statementCard: true,
-      agreement: hasAgreement,
-      disagreement: hasDisagreement,
-    })
     const menu = (
         <MenuButton
             icon
             id={`statement-${statementId}-context-menu`}
-            className={cn({hiding: !this.state.isOverStatement})}
-            menuClassName="contextMenu statementContextMenu"
+            className={cn({hidden: !this.state.isOverStatement})}
+            menuClassName="context-menu context-menu--statement"
             buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
             children={[
-              <ListItem primaryText="Add Justification"
+              <ListItem primaryText="Add justification"
                         key="addJustification"
                         leftIcon={<FontIcon>add</FontIcon>}
                         onClick={this.showNewJustificationDialog}
@@ -210,6 +192,12 @@ class StatementJustificationsPage extends Component {
                         title="Justify another statement with this one"
                         leftIcon={<FontIcon>call_made</FontIcon>}
                         onClick={this.onUseStatement}
+              />,
+              <ListItem primaryText="See usages"
+                        key="usages"
+                        title="See justifications using this statement"
+                        leftIcon={<FontIcon>call_merge</FontIcon>}
+                        onClick={this.onSeeUsages}
               />,
               <Divider key="divider" />,
               <ListItem primaryText="Edit"
@@ -258,104 +246,100 @@ class StatementJustificationsPage extends Component {
     )
 
     const twoColumnJustifications = [
-      <div key="positive-justifications" className="col-xs-6">
-
-        <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
-          {map(justificationsByPolarity[JustificationPolarity.POSITIVE], j => (
-              <div className="row" key={j.id}>
-                <div className="col-xs-12">
-                  <JustificationWithCounters justification={j} positivey={true} />
-                </div>
-              </div>
-          ))}
-        </FlipMove>
-
-      </div>,
-      <div key="negative-justifications" className="col-xs-6">
-
-        <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
-          {map(justificationsByPolarity[JustificationPolarity.NEGATIVE], j => (
-              <div className="row" key={j.id}>
-                <div className="col-xs-12">
-                  <JustificationWithCounters justification={j} positivey={false} />
-                </div>
-              </div>
-          ))}
-        </FlipMove>
-
-      </div>
+      <FlipMove key="positive-justifications"
+                id="positive-justifications"
+                className="md-cell md-cell--6 md-cell--4-tablet"
+                duration={flipMoveDuration}
+                easing={flipMoveEasing}
+      >
+        {map(justificationsByPolarity[JustificationPolarity.POSITIVE], j => (
+              <JustificationTree justification={j}
+                                 key={j.id}
+              />
+        ))}
+      </FlipMove>,
+      <FlipMove key="negative-justifications"
+                id="negative-justifications"
+                className="md-cell md-cell--6 md-cell--4-tablet"
+                duration={flipMoveDuration}
+                easing={flipMoveEasing}
+      >
+        {map(justificationsByPolarity[JustificationPolarity.NEGATIVE], j => (
+            <JustificationTree justification={j}
+                               key={j.id}
+            />
+        ))}
+      </FlipMove>
     ]
     const singleColumnJustifications = (
-      <div key="justifications" className="col-xs-12">
-
-        <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
-          {map(justifications, j => (
-              <div className="row" key={j.id}>
-                <div className="col-xs-12">
-                  <JustificationWithCounters justification={j} positivey={isPositive(j)} />
-                </div>
-              </div>
-          ))}
-        </FlipMove>
-
-      </div>
+      <FlipMove key="combined-justifications"
+                id="combined-justifications"
+                className="md-cell md-cell--12"
+                duration={flipMoveDuration}
+                easing={flipMoveEasing}
+      >
+        {map(justifications, j => (
+            <JustificationTree justification={j}
+                               key={j.id}
+            />
+        ))}
+      </FlipMove>
     )
-    const justificationRows = isNarrow ? singleColumnJustifications : twoColumnJustifications
+    const justificationTrees = _isNarrow ? singleColumnJustifications : twoColumnJustifications
 
     return (
         <DocumentTitle title={`${statement ? statement.text : 'Loading statement'} - Howdju`}>
           <div className="statement-justifications">
 
-            <div className="row">
-
-              <div className="col-xs-12">
+            <div className="md-grid">
+              <div className="md-cell md-cell--12">
 
                 <div className="statement">
 
-                  <Card className={statementCardClassName}
-                      onMouseOver={this.onStatementMouseOver}
-                      onMouseLeave={this.onStatementMouseLeave}
-                  >
-
-                    <div className="md-grid">
-                      <div className="md-cell md-cell--12 statementText">
-
-                        {statement && !isEditingStatement && menu}
-                        <EditableStatement id={`editableStatement-${statementId}`}
-                                           textId={`editableStatement-${statementId}-statementEditorText`}
-                                           entityId={statementId}
-                                           editorId={this.statementEditorId}
-                                           suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
-                        />
-
-                      </div>
-                    </div>
-
-                  </Card>
+                  <GridCard className={cn('statementCard', {
+                              agreement: hasAgreement,
+                              disagreement: hasDisagreement,
+                            })}
+                            cellClass="statementText"
+                            onMouseOver={this.onStatementMouseOver}
+                            onMouseLeave={this.onStatementMouseLeave}
+                            >
+                    {statement && !isEditingStatement && menu}
+                    <EditableStatement id={`editableStatement-${statementId}`}
+                                       textId={`editableStatement-${statementId}-statementEditorText`}
+                                       entityId={statementId}
+                                       editorId={this.statementEditorId}
+                                       suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
+                    />
+                  </GridCard>
 
                 </div>
-
               </div>
-            </div>
 
-            {!hasJustifications && !isFetchingStatement && !didFetchingStatementFail &&
-
-              <div className="row center-xs">
-                <div className="col-xs-12">
-                  <div>
-                    <div>No justifications.</div>
-                    <div>
-                      <a onClick={this.showNewJustificationDialog} href="#">
-                        {text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
-                      </a>
-                    </div>
-
-                  </div>
+              {!hasJustifications && !isFetchingStatement && !didFetchingStatementFail && [
+                <div className="md-cell md-cell--12 cell--centered-contents"
+                     key="justification-statements-page-no-justifications-message"
+                >
+                  <div>No justifications.</div>
+                </div>,
+                <div className="md-cell md-cell--12 cell--centered-contents"
+                     key="justification-statements-page-no-justifications-add-justification-button"
+                >
+                  <Button flat
+                          label={text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                          onClick={this.showNewJustificationDialog}
+                  />
                 </div>
-              </div>
-            }
-            <div className="row">
-              {isFetchingStatement && statement && <CircularProgress key="progress" id="statementJustificationsProgress" /> || justificationRows}
+
+              ]}
+
+              {isFetchingStatement && statement ?
+                  <div className="md-cell md-cell--12 cell--centered-contents">
+                    <CircularProgress key="progress" id="statementJustificationsProgress" />
+                  </div> :
+                  justificationTrees
+              }
+
             </div>
 
             {addNewJustificationDialog}

@@ -24,6 +24,12 @@ const {ImpossibleError} = require('../errors')
 
 
 class PerspectivesDao {
+  /** All justifications must be included in the perspective.
+   *
+   * See <premiser-processing>/src/perspectiveService for a more complicated approach of inferring included justifications
+   * across root statement boundaries, but that has the added difficulties of multiple paths from perspective-justification
+   * to perspective-statement.
+   */
   readFeaturedPerspectivesWithVotesForOptionalUserId(userId) {
     const args = [
         JustificationBasisType.STATEMENT_COMPOUND,
@@ -73,13 +79,12 @@ class PerspectivesDao {
         ${votesSelectSql}
       from perspectives p 
         join statements ps on 
-             p.statement_id = ps.statement_id
-         and p.deleted is null
-         and ps.deleted is null
-        join perspective_justifications pj on
               p.is_featured
+          and p.statement_id = ps.statement_id
           and p.deleted is null
-          and p.perspective_id = pj.perspective_id
+          and ps.deleted is null
+        join perspective_justifications pj on
+              p.perspective_id = pj.perspective_id
         join justifications j on
               j.deleted is null
           and pj.justification_id = j.justification_id
@@ -275,6 +280,9 @@ class PerspectivesDao {
         case JustificationTargetType.STATEMENT: {
             const targetStatement = statementsById[j.target.entity.id]
             j.target.entity = targetStatement
+            if (!targetStatement.justifications) {
+              targetStatement.justifications = []
+            }
             targetStatement.justifications.push(j)
           }
           break

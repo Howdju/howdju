@@ -14,7 +14,7 @@ exports.cleanWhitespace = text => {
 exports.normalizeText = text => {
 
   // Postgres SQL for the same
-  // regexp_replace(lower(regexp_replace(trim(text), '\s+', ' ', 'g')), '[^[:alnum:][:space:]_]', '', 'g')
+  // regexp_replace(lower(regexp_replace(trim(text), '\s+', ' ', 'g')), '[^[:alnum:][:space:]_.]', '', 'g')
   text = exports.cleanWhitespace(text)
   text = lowerCase(text)
   text = replace(text, /[^\w\s]/g, '')

@@ -1,44 +1,19 @@
-@import url('./reset.css');
-@import url('~flexboxgrid/dist/flexboxgrid.css');
-
-//$md-font-name: Lato;
-@import '~react-md/src/scss/react-md';
+@import './reset';
+@import './util';
 @import './colors';
-$md-primary-color: $primary-color;
-$md-secondary-color: $secondary-color;
-$md-text-field-error-color: $pomegranate;
-
-// TODO figure these out to remove warnings during build
-//$md-data-table-contextual-fallback-color: $md-blue-grey-900;
-//$md-linear-progress-fallback-color: $md-red-800;
-//$md-switch-ball-fallback-color: $md-indigo-900;
-@include react-md-everything;
-
-@import './flatui-colors';
-@import './flexboxgrid';
+@import './react-md-custom';
 @import './grid';
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  font-family: 'Lato', sans-serif;
-  font-weight: 300;
+@include apply-react-md-grid;
+
+html {
+  font-size: 12pt;
+}
+html, a {
   color: $primary-text-color;
 }
 
 .errorMessage,
-  // Must override span color above
-.md-text-field-message-container--error > span,
 .errorMessage li {
   color: $md-text-field-error-color;
 }
@@ -51,15 +26,7 @@ b {
   color: $clouds;
 }
 
-html {
-  font-size: 12pt;
-}
-
-.hidden {
-  display: none;
-}
-
-#appNavDrawer {
+#app-nav-drawer {
   width: min(400px, $md-drawer-desktop-width)
 
   // TODO make this more like the left-nav rules
@@ -69,77 +36,6 @@ html {
 
 }
 
-#page {
-  margin-left: $gutter;
-  margin-right: $gutter;
-}
-
-// TODO remove at some point!
-.md-text-field-container.md-text-field-container--multiline:not(.hasIcon) {
-  // the following doens't appear to apply to multiline inputs with an icon (left icon, at least)
-  // So add .hasIcon to the TextField if you will be adding a left icon to avoid all these style fixes
-
-  // When I enter the first character into a multiline text field, the element height is set to something way too big.
-  // Try and compensate for this with a negative margin.
-  &.editedAfterMount {
-    margin-bottom: -33px;
-  }
-  // The floating label returns into the control even when there is text entered.  Prevent that.
-  &.hasValue {
-    .md-floating-label.md-floating-label--floating {
-      transform: translate3d(0, -20px, 0);
-      font-size: 12px;
-    }
-  }
-
-  // I have no idea why I had to apply these, but the floating label for multiline TextFields was way off otherwise
-  .md-floating-label.md-floating-label--active.md-floating-label--floating {
-    transform: translate3d(0, -20px, 0);
-    font-size: 12px;
-  }
-  .md-floating-label.md-floating-label--inactive.md-floating-label--inactive-sized,
-  .md-floating-label.md-floating-label--floating{
-    transform: translate3d(0, 0px, 0);
-    font-size: 13px;
-  }
-}
-
-.md-dialog {
-  // React-MD doesn't implement scrolling of a dialog contents, so add scroll to the whole dialog, at least.
-  overflow-x: auto;
-  width: 66%;
-}
-
-html, body {
-  &.md-no-scroll {
-    // This is to counteract something weird that React-MD does when showing a dialog:
-    // it adds a class .md-no-scroll to the HTML, with position: fixed, which causes
-    // the content to scrunch up to the left.  It appears React-MD does this for something
-    // related to accessibility, so watch out for how this might affect mobile or alternative
-    // devices...
-    position: static;
-  }
-}
-
-.md-icon {
-  color: $icon-color;
-}
-
-.md-dialog-footer--card > .md-btn {
-  margin-left: 0.25em;
-  margin-right: 0.25em;
-}
-
-.md-dialog-footer--card {
-  // Buttons are right-justified
-  // (Matches .md-dialog-footer)
-  justify-content: flex-end;
-}
-
-.addButton {
-  margin-top: 10px;
-}
-
 // This should be in react-md's _tooltips.scss, but it isn't loaded for some reason
 .inline-rel-container {
   display: inline-block;
@@ -147,14 +43,28 @@ html, body {
   position: relative;
 }
 
-.md-tooltip {
-  font-size: large;
-  padding: 25px;
-}
-
 // Tabs that appear to be contiguous with the toolbar.  But to avoid handling the navigate ourselves, they are actually not in the toolbar
 .toolbarTabs {
   * {
     color: $clouds;
+  }
+}
+
+.app-nav-drawer-header {
+  @include center-contents;
+}
+
+.cell--centered-contents {
+  @include center-contents;
+}
+
+.context-menu--floating {
+  // Must be above the .justification-tree .verified icons
+  z-index: 2;
+  button {
+    background-color: white;
+  }
+  &, &.md-menu-container {
+    position: absolute;
   }
 }

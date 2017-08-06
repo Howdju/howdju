@@ -2,15 +2,10 @@
 
 ## Update release (I can use it and show it to people)
 * Deleted statement showed up in suggested text
+* When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"
+* Does it need to be api.fetchMoreX?  Can I just use api.fetchX with a continuationToken?
+* Improve not found page
 
-### Perspectives
-* Design PerspectiveCard
-* Show justifications at half-width
-  * If perspective has only one polarity, show statement at half-width so that another can fit next to it?
-  * Only feature perspectives having both polarities?
-### Connections
-  * statement justifying/disjustifying other statements or countering other justifications
-  * citation justifying/disjustifying other statements
 ### Info
 * Who created (really need a profile page first)
   * Change schema to creator instead of creatorId?
@@ -35,7 +30,6 @@
     * Hillary's emails
   * About
 * Deep link to justification on statement page
-  * Add slug to deep link
   * Scroll to anchor after justifications load
 * Remove production.env from git
    * change premiser_api password
@@ -79,7 +73,17 @@
 
 ## 0.2 (others can use it)
 
+
+* Need to add a continuation token forwards too, so that when the recents page is reloaded, we can request anything new.
+  * When there is a backwards continuation token, we don't request the initial entities, but can request new ones.
+  * Then can remove sortBy from recent widgets reducer
+
+* Compound justifications must be snippet justifications.  Fee-form text entered by user (limit length or number of sentences?)
+  and then marked up just like it woudl be off-site
+* Tagging
+  
 * Add statement.justifications generally, like I did with perspective.statement.justifications?
+  * Rename page to CreateStatementPage?
 * Tools for editing faster
   * Recent statements
   * Tagging
@@ -421,6 +425,15 @@
 * [Google Factcheck](https://www.blog.google/products/search/fact-check-now-available-google-search-and-news-around-world/)
 * [React virtualized](https://github.com/bvaughn/react-virtualized)
 * [Map](https://github.com/alex3165/react-mapbox-gl)
+* [Cool Card UI](https://codemyui.com/material-design-register-login-form/)
+* https://github.com/Webhose/article-date-extractor
+* https://www.npmjs.com/package/react-sticky
+* https://github.com/ajbrock/Neural-Photo-Editor
+* Community
+  * https://github.com/discourse/discourse/blob/master/docs/INSTALL.md
+* [Parallax](https://github.com/dixonandmoe/rellax) 
+* [Scroll animation](https://github.com/michalsnik/aos)
+* [Web designy repositories](https://github.com/ajlkn?tab=repositories)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

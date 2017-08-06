@@ -14,6 +14,7 @@ export const citationsSchema = [citationSchema]
 export const citationReferenceSchema = new schema.Entity('citationReferences', {
   citation: citationSchema
 })
+export const citationReferencesSchema = [citationReferenceSchema]
 export const voteSchema = new schema.Entity('votes')
 
 export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)

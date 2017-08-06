@@ -5,39 +5,48 @@ import { connect } from 'react-redux'
 import concat from 'lodash/concat'
 import get from 'lodash/get'
 import map from 'lodash/map'
-import {citationsSchema, statementsSchema} from "./schemas";
+import {citationsSchema} from "./schemas";
 import {denormalize} from "normalizr";
 import FlipMove from 'react-flip-move';
 
 import config from './config'
 
-import RecentCitationCard from './RecentCitationCard'
+import CitationCard from './CitationCard'
 
 import {
   api,
+  ui,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 
 class RecentCitations extends Component {
 
   componentWillMount() {
-    if (!this.props.continuationToken) {
-      this.props.api.fetchRecentCitations(this.props.widgetId, this.props.initialFetchCount || this.props.fetchCount)
-    }
+    this.props.ui.clearRecentCitations(this.props.widgetId)
+    this.props.api.fetchRecentCitations(this.props.widgetId, this.props.initialFetchCount || this.props.fetchCount)
   }
 
   fetchMoreRecentCitations = event => {
     event.preventDefault()
-    this.props.api.fetchMoreRecentCitations(this.props.widgetId, this.props.continuationToken, this.props.fetchCount)
+    this.props.api.fetchMoreRecentCitationReferences(this.props.widgetId, this.props.continuationToken, this.props.fetchCount)
   }
 
   render () {
     const {
       citations,
+      // ignore
+      widgetId,
+      continuationToken,
+      api,
+      ui,
+      initialFetchCount,
+      fetchCount,
+      // end-ignore
+      ...rest,
     } = this.props
     const cards = () => map(citations, c => {
-      const id = `recent-statement-${c.id}`
-      return <RecentCitationCard key={id} citation={c} />
+      const id = `recent-citation-${c.id}`
+      return <CitationCard key={id} citation={c} className="md-cell md-cell--3 md-cell--4-tablet" />
     })
     const fetchMoreButton = <Button flat
                                     key="fetch-more-button"
@@ -47,10 +56,10 @@ class RecentCitations extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
 
     return (
-        <FlipMove id="recentCitations"
+        <FlipMove {...rest}
+                  id="recentCitations"
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
-                  className="md-grid"
         >
           {citations && citations.length > 0 ?
               concat(cards(), fetchMoreButton) :
@@ -85,4 +94,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
+  ui,
 }))(RecentCitations)

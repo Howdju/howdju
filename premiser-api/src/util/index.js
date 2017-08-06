@@ -41,9 +41,12 @@ const rethrowTranslatedErrors = translationKey => error => {
 
 const isTruthy = val => !!val
 
+
+
 module.exports = {
   assert,
   logError,
   rethrowTranslatedErrors,
   isTruthy,
 }
+

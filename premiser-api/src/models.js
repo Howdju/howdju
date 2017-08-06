@@ -38,6 +38,7 @@ const JustificationPolarity = {
   POSITIVE: 'POSITIVE',
   NEGATIVE: 'NEGATIVE',
 }
+const JustificationRootPolarity = JustificationPolarity
 
 const VotePolarity = {
   POSITIVE: 'POSITIVE',
@@ -54,7 +55,7 @@ const VoteTargetType = {
   TAGGING: 'TAGGING',
 }
 
-const negatePolarity = polarity => {
+const negateVotePolarity = polarity => {
   switch (polarity) {
     case VotePolarity.POSITIVE:
       return VotePolarity.NEGATIVE
@@ -65,15 +66,41 @@ const negatePolarity = polarity => {
   }
 }
 
+const negateRootPolarity = rootPolarity => {
+  switch (rootPolarity) {
+    case JustificationRootPolarity.POSITIVE:
+      return JustificationRootPolarity.NEGATIVE
+    case JustificationRootPolarity.NEGATIVE:
+      return JustificationRootPolarity.POSITIVE
+    default:
+      throw new ImpossibleError(`unsupported root polarity: ${rootPolarity}`)
+  }
+}
+
+const SortDirection = {
+  ASCENDING: 'ascending',
+  DESCENDING: 'descending',
+}
+
+/** Shorter than SortDirection so that the continuations tokens are smaller */
+const ContinuationSortDirection = {
+  ASCENDING: 'a',
+  DESCENDING: 'd',
+}
+
 module.exports = {
   ActionType,
   ActionTargetType,
   ActionSubjectType,
   JustificationTargetType,
   JustificationPolarity,
+  JustificationRootPolarity,
   JustificationBasisType,
   VotePolarity,
   VoteTargetType,
-  negatePolarity,
+  negateVotePolarity,
+  negateRootPolarity,
   EntityTypes,
+  SortDirection,
+  ContinuationSortDirection,
 }

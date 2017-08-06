@@ -193,7 +193,7 @@ class EditStatementJustificationPage extends Component {
     const submitButtonLabel = text(submitButtonLabelTextKeyByMode[mode])
     const submitButtonTitle = text(submitButtonTitleTextKeyByMode[mode])
 
-    const isCreateJustification = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
+    const isCreateJustificationMode = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
 
     const statementErrors = errors && (
         doCreateJustification ?
@@ -207,7 +207,7 @@ class EditStatementJustificationPage extends Component {
         <DocumentTitle title={`Howdju - ${title}`}>
           <form onSubmit={this.onSubmit}>
             <FocusContainer initialFocus="#statementEditorText" containFocus={false} focusOnMount={true}>
-              <div id="addStatementPage" className="md-grid">
+              <div className="md-grid">
                 <div className="md-cell md-cell--12">
 
                   <Card>
@@ -224,7 +224,7 @@ class EditStatementJustificationPage extends Component {
                       />
                     </CardText>
 
-                    {!isCreateJustification &&
+                    {!isCreateJustificationMode &&
                       <Switch id="doCreateJustificationSwitch"
                               name="doCreateJustification"
                               label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
@@ -235,10 +235,10 @@ class EditStatementJustificationPage extends Component {
                     }
 
                     <CardTitle title={t(JUSTIFICATION_TITLE)}
-                               className={cn({hidden: !isCreateJustification && !doCreateJustification})}
+                               className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}
                     />
 
-                    <CardText className={cn({hidden: !isCreateJustification && !doCreateJustification})}>
+                    <CardText className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}>
                       <NewJustificationEditorFields newJustification={justification}
                                                     id="newJustificationEditor"
                                                     basisStatementTextId="newJustificationBasisStatement"

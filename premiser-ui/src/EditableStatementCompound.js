@@ -21,6 +21,9 @@ class EditableStatementCompound extends Component {
       isFetching,
       // Currently statement compounds are not editable.  Only their statements are.  Instead create a new statement compound justification
       isEditing,
+      doShowControls,
+      doShowStatementAtomJustifications,
+      isCondensed,
       ...rest
     } = this.props
 
@@ -28,6 +31,9 @@ class EditableStatementCompound extends Component {
         <StatementCompoundViewer {...rest}
                                  id={id}
                                  statementCompound={statementCompound}
+                                 doShowControls={doShowControls}
+                                 doShowStatementAtomJustifications={doShowStatementAtomJustifications}
+                                 isCondensed={isCondensed}
         />
     const progress =
         <CircularProgress id={`${id}-Progress`} />

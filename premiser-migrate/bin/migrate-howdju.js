@@ -276,6 +276,18 @@ const getRootStatementId = row => {
       })
 }
 
+const getRootPositive = row => {
+  if (row.statement_id) {
+    row.positive
+  }
+  if (!row.justification_id) throw new Error(`justification ${row.id} has neither statement_id nor justification_id`)
+  return oldQuery('select * from local_justification where id = ?', [row.justification_id])
+      .then( ({rows: [targetRow]}) => {
+        if (!targetRow) throw new Error(`justification ${row.id} targets justification ${row.justification_id}, which was not found`)
+        return getRootPositive(targetRow)
+      })
+}
+
 const getJustificationTargetId = row => Promise.resolve()
     .then(() => {
   if (row.statement_id) {
@@ -393,14 +405,16 @@ const migrateJustifications = ({rows}) => Promise.all(map(rows, row => Promise.a
       row.statement_id ? JustificationTargetType.STATEMENT : JustificationTargetType.JUSTIFICATION,
       getNewUserId(row.creator_id),
       getRootStatementId(row),
+      getRootPositive(row),
     ])
-    .then( ([basisId, basisType, targetId, targetType, userId, rootStatementId]) => {
-      const polarity = row.polarity === 0 ? JustificationPolarity.NEGATIVE : JustificationPolarity.POSITIVE
+    .then( ([basisId, basisType, targetId, targetType, userId, rootStatementId, rootPositive]) => {
+      const polarity = row.positive === 0 ? JustificationPolarity.NEGATIVE : JustificationPolarity.POSITIVE
+      const rootPolarity = rootPositive === 0 ? JustificationPolarity.NEGATIVE : JustificationPolarity.POSITIVE
       return query(
-          `insert into justifications (root_statement_id, target_id, target_type, basis_id, basis_type, polarity, creator_user_id, created) 
+          `insert into justifications (root_statement_id, root_polarity, target_id, target_type, basis_id, basis_type, polarity, creator_user_id, created) 
                 values ($1, $2, $3, $4, $5, $6, $7, $8)
                 returning justification_id`,
-          [rootStatementId, targetId, targetType, basisId, basisType, polarity, userId, row.date_created]
+          [rootStatementId, rootPolarity, targetId, targetType, basisId, basisType, polarity, userId, row.date_created]
       )
           .then( ({rows: [{justification_id}]}) => Promise.all([
               query(

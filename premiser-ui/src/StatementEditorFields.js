@@ -49,38 +49,36 @@ class StatementEditorFields extends Component {
     delete rest.onKeyDown
 
     const modelErrors = errors && errors.modelErrors
-    const textInputProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
-        {...rest, error: true, errorText: toErrorText(errors.fieldErrors.text)} :
-        rest
+    const errorInputProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
+        {error: true, errorText: toErrorText(errors.fieldErrors.text)} :
+        null
 
     const namePrefix = name ? name + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
     const hasText = has(statement, textName)
     const text = get(statement, textName, '')
 
+    const statementTextInputProps = {
+      id: textId,
+      name: namePrefix + textName,
+      label: "Text",
+      value: text,
+      required: true,
+      leftIcon: <FontIcon>short_text</FontIcon>,
+      onKeyDown: this.onTextInputKeyDown,
+    }
     const input = (suggestionsKey && !disabled) ?
-        <StatementTextAutocomplete {...textInputProps}
-                                   id={textId}
-                                   name={namePrefix + textName}
-                                   label="Text"
-                                   required
-                                   value={text}
-                                   suggestionsKey={suggestionsKeyPrefix + textName}
+        <StatementTextAutocomplete {...rest}
+                                   {...errorInputProps}
+                                   {...statementTextInputProps}
                                    onPropertyChange={onPropertyChange}
-                                   leftIcon={<FontIcon>text_fields</FontIcon>}
-                                   onKeyDown={this.onTextInputKeyDown}
+                                   suggestionsKey={suggestionsKeyPrefix + textName}
         /> :
-        <TextField {...textInputProps}
-                   id={textId}
-                   name={namePrefix + textName}
-                   label="Text"
-                   type="text"
-                   value={text}
-                   required
-                   onChange={this.onChange}
-                   leftIcon={<FontIcon>text_fields</FontIcon>}
+        <TextField {...rest}
+                   {...errorInputProps}
+                   {...statementTextInputProps}
                    disabled={disabled || !hasText}
-                   onKeyDown={this.onTextInputKeyDown}
+                   type="text"
         />
     return (
         <div>

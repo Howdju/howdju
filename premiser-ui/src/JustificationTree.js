@@ -1,7 +1,8 @@
-import cn from "classnames"
-import PropTypes from 'prop-types'
 import React, {Component} from "react"
+import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import {connect} from "react-redux"
+import cn from "classnames"
 import Divider from "react-md/lib/Dividers"
 import Card from "react-md/lib/Cards/Card"
 import CardActions from "react-md/lib/Cards/CardActions"
@@ -20,51 +21,39 @@ import {
 } from './actions'
 import {
   isVerified,
-  isDisverified, isStatementCompoundBased, hasQuote, makeNewCounterJustification,
+  isDisverified, isStatementCompoundBased, hasQuote, makeNewCounterJustification, isRootPositive, isRootNegative,
+  JustificationBasisType,
 } from './models'
 import {counterJustificationEditorId, justificationBasisEditorId} from './editorIds'
 import paths from './paths'
-
 import config from './config';
-
 import CounterJustificationEditor from "./CounterJustificationEditor";
-
 import EditableJustificationBasis from "./EditableJustificationBasis";
 import {EditorTypes} from "./reducers/editors";
 import {suggestionKeys} from "./autocompleter";
+import ChatBubble from './ChatBubble'
+
+import './JustificationTree.scss'
+import {newImpossibleError} from "./customErrors";
 
 
-class JustificationWithCounters extends Component {
+class JustificationTree extends Component {
   constructor() {
     super()
     this.state = {
       isOver: false,
     }
-
-    this.deleteClick = this.deleteClick.bind(this)
-
-    this.onEditBasis = this.onEditBasis.bind(this)
-
-    this.onCardMouseOver = this.onCardMouseOver.bind(this)
-    this.onCardMouseLeave = this.onCardMouseLeave.bind(this)
-
-    this.onVerify = this.onVerify.bind(this)
-    this.onDisverify = this.onDisverify.bind(this)
-
-    this.onEditNewCounterJustification = this.onEditNewCounterJustification.bind(this)
-
-    this.onUseJustification = this.onUseJustification.bind(this)
   }
 
-  onCardMouseOver() {
+  onBubbleMouseOver = () => {
     this.setState({isOver: true})
   }
 
-  onCardMouseLeave() {
+  onBubbleMouseLeave = () => {
     this.setState({isOver: false})
   }
 
-  onVerify() {
+  onVerify = () => {
     const {justification} = this.props
     if (isVerified(justification)) {
       this.props.api.unVerifyJustification(justification)
@@ -73,7 +62,7 @@ class JustificationWithCounters extends Component {
     }
   }
 
-  onDisverify() {
+  onDisverify = () => {
     const {justification} = this.props
     if (isDisverified(justification)) {
       this.props.api.unDisverifyJustification(justification)
@@ -82,22 +71,22 @@ class JustificationWithCounters extends Component {
     }
   }
 
-  deleteClick() {
+  deleteClick = () => {
     this.props.api.deleteJustification(this.props.justification)
   }
 
-  onEditNewCounterJustification() {
+  onEditNewCounterJustification = () => {
     const justification = this.props.justification
     this.props.editors.beginEdit(EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), makeNewCounterJustification(justification))
   }
 
-  onEditBasis() {
+  onEditBasis = () => {
     const justificationBasis = this.props.justification.basis
     const basisEditorType = justificationBasis.type
     this.props.editors.beginEdit(basisEditorType, justificationBasisEditorId(justificationBasis), justificationBasis.entity)
   }
 
-  onUseJustification() {
+  onUseBasis = () => {
     const {
       type: basisType,
       entity: {
@@ -107,13 +96,32 @@ class JustificationWithCounters extends Component {
     this.props.goto.createJustification(basisType, basisId)
   }
 
+  onSeeUsages = () => {
+    const justificationBasis = this.props.justification.basis
+    const params = {}
+
+    switch (justificationBasis.type) {
+      case JustificationBasisType.CITATION_REFERENCE:
+        params.citationReferenceId = justificationBasis.entity.id
+        break
+      case JustificationBasisType.STATEMENT_COMPOUND:
+        params.statementCompoundId = justificationBasis.entity.id
+        break
+      default:
+        throw newImpossibleError(`Exhausted JustificationBasisType: ${justificationBasis.type}`)
+    }
+
+    this.props.goto.searchJustifications(params)
+  }
+
   render() {
     const {
       justification,
-      positivey,
       newCounterJustification,
       isEditingBasis,
-      showControls,
+      doShowControls,
+      doShowBasisJustifications,
+      isCondensed,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -122,15 +130,18 @@ class JustificationWithCounters extends Component {
     } = this.state
 
     const _isStatementCompoundBased = isStatementCompoundBased(justification)
+    const _isRootPositive = isRootPositive(justification)
+    const _isRootNegative = isRootNegative(justification)
 
     const menu = (
         <MenuButton
             icon
             id={`justification-${justification.id}-context-menu`}
-            className={cn({hiding: !isOver})}
-            menuClassName="contextMenu justificationContextMenu"
+            className={cn({hidden: !isOver})}
+            menuClassName="context-menu"
             buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
+            title="Justification actions"
             children={[
               <ListItem primaryText="Counter"
                         key="counter"
@@ -139,16 +150,22 @@ class JustificationWithCounters extends Component {
               />,
               <ListItem primaryText="Use"
                         key="use"
-                        title="Justify another statement with this justification’s basis"
+                        title="Justify another statement with this basis"
                         leftIcon={<FontIcon>call_made</FontIcon>}
-                        onClick={this.onUseJustification}
+                        onClick={this.onUseBasis}
+              />,
+              <ListItem primaryText="See usages"
+                        key="usages"
+                        title="See justifications using this basis"
+                        leftIcon={<FontIcon>call_merge</FontIcon>}
+                        onClick={this.onSeeUsages}
               />,
               <ListItem primaryText="Link"
                         key="link"
                         title="A link to this justification"
                         leftIcon={<FontIcon>link</FontIcon>}
-                        component="a"
-                        href={paths.justification(justification)}
+                        component={Link}
+                        to={paths.justification(justification)}
               />,
               <Divider key="divider" />,
               <ListItem primaryText="Edit"
@@ -200,79 +217,80 @@ class JustificationWithCounters extends Component {
       >reply</Button>
     ]
 
-    const card = (
-        <Card className="justificationCard"
-              id={`justification-${justification.id}`}
-              onMouseOver={this.onCardMouseOver}
-              onMouseLeave={this.onCardMouseLeave}
-        >
-          <div className="md-grid">
-            <div className="md-cell md-cell--12">
-
-              <div>
-                {justification && !isEditingBasis && showControls && menu}
-                <EditableJustificationBasis id={`justification-${justification.id}-basisEditor`}
-                                            justification={justification}
-                                            editorId={justificationBasisEditorId(justification.basis)}
-                                            suggestionsKey={suggestionKeys.justificationBasisEditor(justification)}
-                />
-              </div>
-
-            </div>
-          </div>
-
-          {showControls &&
-            <CardActions className="actions">
-              {!isEditingBasis && actions}
-            </CardActions>
-          }
-        </Card>
-    )
-
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
     const counterJustifications = (
-        <div className="counterJustifications">
+        <div className="counter-justifications">
           <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
             {newCounterJustification &&
-              <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justificationCard">
-                <div className="md-grid">
-                  <div className="md-cell md-cell--12">
-                    <CounterJustificationEditor editorId={counterJustificationEditorId(justification)}
-                                                textId={`justification=${justification.id}-newCounterJustification`}
-                                                suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
-                    />
-                  </div>
-                </div>
+              <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justification-card">
+
+                <CounterJustificationEditor editorId={counterJustificationEditorId(justification)}
+                                            textId={`justification=${justification.id}-newCounterJustification`}
+                                            suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
+                />
+
               </Card>
             }
-            {map(justification.counterJustifications, j =>
-                <div id={`counter-justification-${j.id}-row`} key={`counter-justification-${j.id}-row`} className="row">
-                  <div className="col-xs-12">
-                    <ConnectedJustificationWithCounters justification={j} positivey={!positivey} showControls={showControls} />
+            {map(justification.counterJustifications, j => {
+              const id = `counter-justification-${j.id}-branch`
+              return (
+                  <div id={id}
+                       key={id}
+                       className="counter-justification-branch"
+                  >
+                    <ConnectedJustificationTree justification={j}
+                                                doShowControls={doShowControls}
+                                                doShowBasisJustifications={doShowBasisJustifications}
+                                                isCondensed={isCondensed}
+                    />
                   </div>
-                </div>
-            )}
+              )
+            })}
           </FlipMove>
         </div>
     )
 
     return (
-        <div id={`justification-${justification.id}-card-wrapper`} className={cn({
-          justification: true,
-          positivey: positivey,
-          negativey: !positivey,
-        })}>
-          {card}
+        <div className={cn('justification-tree', {
+                positivey: _isRootPositive,
+                negativey: _isRootNegative,
+              })}
+             id={`justification-${justification.id}-tree`}
+        >
+          <ChatBubble className="md-grid"
+                      isPositive={_isRootPositive}
+                      isNegative={_isRootNegative}
+                      onMouseOver={this.onBubbleMouseOver}
+                      onMouseLeave={this.onBubbleMouseLeave}
+          >
+            <div className="md-cell md-cell--12">
+              {justification && !isEditingBasis && doShowControls && menu}
+              <EditableJustificationBasis id={`justification-${justification.id}-basisEditor`}
+                                          justification={justification}
+                                          editorId={justificationBasisEditorId(justification.basis)}
+                                          suggestionsKey={suggestionKeys.justificationBasisEditor(justification)}
+                                          doShowControls={doShowControls}
+                                          doShowBasisJustifications={doShowBasisJustifications}
+                                          isCondensed={isCondensed}
+              />
+            </div>
+
+            {doShowControls && (
+              <div className="md-cell md-cell--12 actions">
+                {!isEditingBasis && actions}
+              </div>
+            )}
+          </ChatBubble>
           {counterJustifications}
         </div>
     )
   }
 }
-JustificationWithCounters.propTypes = {
-  showControls: PropTypes.bool
+JustificationTree.propTypes = {
+  doShowControls: PropTypes.bool
 }
-JustificationWithCounters.defaultProps = {
-  showControls: true
+JustificationTree.defaultProps = {
+  doShowControls: true
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -289,10 +307,10 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const ConnectedJustificationWithCounters = connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+const ConnectedJustificationTree = connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   editors,
   goto,
-}))(JustificationWithCounters)
+}))(JustificationTree)
 
-export default ConnectedJustificationWithCounters
+export default ConnectedJustificationTree

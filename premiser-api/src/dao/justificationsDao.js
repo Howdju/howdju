@@ -1,19 +1,28 @@
+const clone = require('lodash/clone')
+const concat = require('lodash/concat')
+const findIndex = require('lodash/findIndex')
+const forEach = require('lodash/forEach')
+const get = require('lodash/get')
 const has = require('lodash/has')
 const head = require('lodash/head')
+const join = require('lodash/join')
 const map = require('lodash/map')
-const concat = require('lodash/concat')
-const toString = require('lodash/toString')
-const forEach = require('lodash/forEach')
 const mapValues = require('lodash/mapValues')
 const snakeCase = require('lodash/snakeCase')
+const sortBy = require('lodash/sortBy')
+const toString = require('lodash/toString')
+const values = require('lodash/values')
 
-const {ImpossibleError} = require('../errors')
+const {ImpossibleError, EntityNotFoundError} = require('../errors')
 const statementCompoundsDao = require('./statementCompoundsDao')
 const citationReferencesDao = require('./citationReferencesDao')
 const {
   JustificationTargetType,
-  VoteTargetType,
   JustificationBasisType,
+  VoteTargetType,
+  SortDirection,
+  ContinuationSortDirection,
+  negateRootPolarity,
 } = require('../models')
 const {
   toJustification,
@@ -24,54 +33,69 @@ const {
 const {query} = require('../db')
 const {logger} = require('../logger')
 const {groupRootJustifications} = require('./util')
+const {DatabaseSortDirection} = require('./daoModels')
 
-const mapJustificationRows = ({rows}) => {
-  // Store the justifications in an array to preserve the order
-  const justificationRows = []
-  // But keep track of whether we've seen the row before since there may be duplicates after joining with statement compound atoms
+const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
+  const justificationRowsById = {}
+  // Keep track of whether we've seen the row before since there may be duplicates after joining with statement compound atoms
   const justificationIds = {}
   const citationReferencesRowsById = {}
   const statementCompoundRowsById = {}
   const statementCompoundAtomsByStatementCompoundId = {}
   forEach(rows, row => {
-    if (!has(justificationIds, row.justification_id)) {
-      justificationRows.push(row)
+    const rowId = row[idPrefix + 'justification_id']
+    if (!has(justificationIds, rowId)) {
+      justificationRowsById[rowId] = {
+        justification_id: rowId,
+        root_statement_id: row[prefix + 'root_statement_id'],
+        root_polarity: row[prefix + 'root_polarity'],
+        root_statement_text: row[prefix + 'root_statement_text'],
+        root_statement_created: row[prefix + 'root_statement_created'],
+        root_statement_creator_id: row[prefix + 'root_statement_creator_id'],
+        target_type: row[prefix + 'target_type'],
+        target_id: row[prefix + 'target_id'],
+        basis_type: row[prefix + 'basis_type'],
+        basis_id: row[prefix + 'basis_id'],
+        polarity: row[prefix + 'polarity'],
+        creator_user_id: row[prefix + 'creator_user_id'],
+        created: row[prefix + 'created'],
+      }
     }
 
-    if (row.basis_citation_reference_id) {
-      citationReferencesRowsById[row.basis_citation_reference_id] = toCitationReference({
-        citation_reference_id: row.basis_citation_reference_id,
-        quote: row.basis_citation_reference_quote,
-        citation_id: row.basis_citation_reference_citation_id,
-        citation_text: row.basis_citation_reference_citation_text,
-        citation_created: row.basis_citation_reference_created,
-        citation_creator_user_id: row.basis_citation_reference_creator_user_id,
+    if (row[prefix + 'basis_citation_reference_id']) {
+      citationReferencesRowsById[row[prefix + 'basis_citation_reference_id']] = toCitationReference({
+        citation_reference_id: row[prefix + 'basis_citation_reference_id'],
+        quote: row[prefix + 'basis_citation_reference_quote'],
+        citation_id: row[prefix + 'basis_citation_reference_citation_id'],
+        citation_text: row[prefix + 'basis_citation_reference_citation_text'],
+        citation_created: row[prefix + 'basis_citation_reference_created'],
+        citation_creator_user_id: row[prefix + 'basis_citation_reference_creator_user_id'],
       })
     }
 
-    if (row.basis_statement_compound_id) {
-      const statementCompoundRow = statementCompoundRowsById[row.basis_statement_compound_id]
+    if (row[prefix + 'basis_statement_compound_id']) {
+      const statementCompoundRow = statementCompoundRowsById[row[prefix + 'basis_statement_compound_id']]
       if (!statementCompoundRow) {
-        statementCompoundRowsById[row.basis_statement_compound_id] = {
-          statement_compound_id: row.basis_statement_compound_id
+        statementCompoundRowsById[row[prefix + 'basis_statement_compound_id']] = {
+          statement_compound_id: row[prefix + 'basis_statement_compound_id']
         }
       }
 
-      const statementCompoundId = row.basis_statement_compound_id
+      const statementCompoundId = row[prefix + 'basis_statement_compound_id']
       let atomsByStatementId = statementCompoundAtomsByStatementCompoundId[statementCompoundId]
       if (!atomsByStatementId) {
         statementCompoundAtomsByStatementCompoundId[statementCompoundId] = atomsByStatementId = {}
       }
-      if (!has(atomsByStatementId, row.basis_statement_compound_atom_statement_id)) {
+      if (!has(atomsByStatementId, row[prefix + 'basis_statement_compound_atom_statement_id'])) {
         const atom = toStatementCompoundAtom({
-          statement_compound_id: row.basis_statement_compound_id,
-          statement_id: row.basis_statement_compound_atom_statement_id,
-          statement_text: row.basis_statement_compound_atom_statement_text,
-          statement_created: row.basis_statement_compound_atom_statement_created,
-          statement_creator_user_id: row.basis_statement_compound_atom_statement_creator_user_id,
-          order_position: row.basis_statement_compound_atom_order_position,
+          statement_compound_id: row[prefix + 'basis_statement_compound_id'],
+          statement_id: row[prefix + 'basis_statement_compound_atom_statement_id'],
+          statement_text: row[prefix + 'basis_statement_compound_atom_statement_text'],
+          statement_created: row[prefix + 'basis_statement_compound_atom_statement_created'],
+          statement_creator_user_id: row[prefix + 'basis_statement_compound_atom_statement_creator_user_id'],
+          order_position: row[prefix + 'basis_statement_compound_atom_order_position'],
         })
-        atomsByStatementId[atom.statementId] = atom
+        atomsByStatementId[atom.statement.id] = atom
       }
     }
   })
@@ -80,8 +104,158 @@ const mapJustificationRows = ({rows}) => {
       toStatementCompound(row, statementCompoundAtomsByStatementCompoundId[id])
   )
 
-  return map(justificationRows, row => toJustification(row, null, statementCompoundsById, citationReferencesRowsById))
+  return mapValues(justificationRowsById, row => toJustification(row, null, statementCompoundsById, citationReferencesRowsById))
 }
+
+const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isContinuation = false) => {
+  const args = clone(initialArgs)
+  let countSql = ''
+  if (isFinite(count)) {
+    args.push(count)
+    countSql = `\nlimit $${args.length}`
+  }
+
+  const whereSqls = [
+    'j.deleted is null',
+    'cr.deleted is null',
+    'c.deleted is null',
+    'sc.deleted is null',
+  ]
+  const continuationWhereSqls = []
+  const prevWhereSqls = []
+  const orderBySqls = []
+  const sortPropertyMemberName = isContinuation ? 'p' : 'property'
+  const sortDirectionMemberName = isContinuation ? 'd' : 'direction'
+  forEach(sorts, sort => {
+
+    // The default direction is ascending, so if it is missing that's ok
+    const sortDirection = get(sort, sortDirectionMemberName)
+    const isDescending = isContinuation ? sortDirection === ContinuationSortDirection.DESCENDING : SortDirection.DESCENDING
+    const direction = isDescending ?
+        DatabaseSortDirection.DESCENDING :
+        DatabaseSortDirection.ASCENDING
+
+    const sortProperty = get(sort, sortPropertyMemberName)
+    // 'id' is a special property name for entities. The column is prefixed by the entity type
+    const columnName = sortProperty === 'id' ? 'justification_id' : snakeCase(sortProperty)
+
+    whereSqls.push(`j.${columnName} is not null`)
+    orderBySqls.push(`j.${columnName} ${direction}`)
+
+    if (isContinuation) {
+      let operator = direction === 'asc' ? '>' : '<'
+      const value = sort.v
+      args.push(value)
+      const currContinuationWhereSql = concat(prevWhereSqls, [`j.${columnName} ${operator} $${args.length}`])
+      continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
+      prevWhereSqls.push(`j.${columnName} = $${args.length}`)
+    }
+  })
+  forEach(filters, (filterValue, filterName) => {
+    // Note, some filters are incompatible, such as statementId or statementCompoundId and citationRefererenceId.
+    // statementId and statementCompoundId may be incompatible if the statementId doesn't appear in any compound having
+    // the statementCompoundId
+    if (!filterValue) return
+    switch (filterName) {
+      case 'statementId':
+        // Must be handled below because it needs an add'l with clause
+        break
+      case 'statementCompoundId': {
+          args.push(filterValue)
+          whereSqls.push(`sc.statement_compound_id = $${args.length}`)
+        }
+        break
+      case 'citationReferenceId': {
+          args.push(filterValue)
+          whereSqls.push(`cr.citation_reference_id = $${args.length}`)
+        }
+        break
+      case 'citationId': {
+          args.push(filterValue)
+          whereSqls.push(`c.citation_id = $${args.length}`)
+        }
+        break
+      default:
+        throw new ImpossibleError(`Unsupported justification filter: ${filterName}`)
+    }
+  })
+
+  const continuationWhereSql = continuationWhereSqls.length > 0 ?
+      `and (
+          ${continuationWhereSqls.join('\n or ')}
+         )` :
+      ''
+  const whereSql = whereSqls.join('\nand ')
+  const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+
+  const additionalWithClauses = []
+  const additionalJoinClauses = []
+  if (filters.statementId) {
+    args.push(filters.statementId)
+    const statementLimitedJustificationIdsSql = `
+      statement_limited_justification_ids as (
+        select distinct justification_id
+        from justifications j
+              join statement_compounds sc on 
+                    j.basis_id = sc.statement_compound_id 
+                and j.basis_type = $2
+              join statement_compound_atoms sca on
+                    sc.statement_compound_id = sca.statement_compound_id
+                and sca.statement_id = $${args.length}
+      )
+    `
+    additionalWithClauses.push(statementLimitedJustificationIdsSql)
+    additionalJoinClauses.push(`join statement_limited_justification_ids using (justification_id)`)
+  }
+
+  const limitedJustificationsSql = `
+      select distinct
+          j.*
+        , s.text as root_statement_text
+        , s.created as root_statement_created
+        , s.creator_user_id as root_statement_creator_id
+        , cr.citation_reference_id as basis_citation_reference_id
+        , cr.quote as basis_citation_reference_quote
+        , c.citation_id as basis_citation_reference_citation_id
+        , c.text as basis_citation_reference_citation_text
+        , sc.statement_compound_id as basis_statement_compound_id
+      from justifications j
+          ${join(additionalJoinClauses, '\n')}
+          join statements s on j.root_statement_id = s.statement_id
+          left join citation_references cr on 
+                j.basis_id = cr.citation_reference_id 
+            and j.basis_type = $1
+          left join citations c on cr.citation_id = c.citation_id
+          left join statement_compounds sc on 
+                j.basis_id = sc.statement_compound_id 
+            and j.basis_type = $2
+        where 
+          ${whereSql}
+          ${continuationWhereSql}
+      ${orderBySql}
+      ${countSql}
+    `
+
+  return {
+    args,
+    limitedJustificationsSql,
+    additionalWithClauses,
+    orderBySql,
+  }
+}
+
+const getTargetRootPolarity = justification =>
+  query('select root_polarity from justifications where justification_id = $1', [justification.target.entity.id])
+      .then( ({rows}) => {
+        if (rows.length < 1) {
+          throw new EntityNotFoundError(`Could not create justification because target justification having ID ${justification.target.id} did not exist`)
+        } else if (rows.length > 1) {
+          logger.error(`while creating justification, found more than one target justification having ID ${justification.target.id}`)
+        }
+
+        const {root_polarity} = head(rows)
+        return root_polarity
+      })
 
 class JustificationsDao {
 
@@ -90,182 +264,24 @@ class JustificationsDao {
     this.citationReferencesDao = citationReferencesDao
   }
 
-  readJustifications(sorts, count, filter) {
-    const args = [
-        JustificationBasisType.CITATION_REFERENCE,
-        JustificationBasisType.STATEMENT_COMPOUND,
-    ]
-    let countSql = ''
-    if (isFinite(count)) {
-      args.push(count)
-      countSql = `limit $${args.length}`
-    }
-
-    const whereSqls = [
-      'j.deleted is null',
-      'cr.deleted is null',
-      'c.deleted is null',
-      'sc.deleted is null',
-    ]
-    const orderBySqls = []
-    forEach(sorts, sort => {
-      const columnName = sort.property === 'id' ? 'justification_id' : snakeCase(sort.property)
-      const direction = sort.direction === 'descending' ? 'desc' : 'asc'
-      whereSqls.push(`j.${columnName} is not null`)
-      orderBySqls.push(`j.${columnName} ${direction}`)
-    })
-    forEach(filter, (filterValue, filterName) => {
-      if (!filterValue) return
-      switch (filterName) {
-        case 'statementId': {
-            args.push(filterValue)
-            whereSqls.push(`sca.statement_id = $${args.length}`)
-          }
-          break
-        case 'citationId': {
-            args.push(filterValue)
-            whereSqls.push(`cr.citation_id = $${args.length}`)
-          }
-          break
-        default:
-          throw new ImpossibleError(`Unsupported justification filter: ${filterName}`)
-      }
-    })
-    const whereSql = whereSqls.join('\nand ')
-    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
-
-    const sql = `
-      with
-        limited_justifications as (
-          select distinct
-              j.*
-            , s.statement_id as root_statement_id
-            , s.text as root_statement_text
-            , s.created as root_statement_created
-            , s.creator_user_id as root_statement_creator_id
-            , cr.citation_reference_id as basis_citation_reference_id
-            , cr.quote as basis_citation_reference_quote
-            , c.citation_id as basis_citation_reference_citation_id
-            , c.text as basis_citation_reference_citation_text
-            , sc.statement_compound_id as basis_statement_compound_id
-          from 
-            justifications j
-              join statements s on j.root_statement_id = s.statement_id
-              left join citation_references cr on 
-                    j.basis_id = cr.citation_reference_id 
-                and j.basis_type = $1
-              left join citations c on cr.citation_id = c.citation_id
-              left join statement_compounds sc on 
-                    j.basis_id = sc.statement_compound_id 
-                and j.basis_type = $2
-              left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
-            where ${whereSql}
-          ${orderBySql}
-          ${countSql}
-        )
-      select 
-          j.*
-        , sca.order_position as basis_statement_compound_atom_order_position
-        , scas.statement_id as basis_statement_compound_atom_statement_id
-        , scas.text as basis_statement_compound_atom_statement_text
-        , scas.created as basis_statement_compound_atom_statement_created
-        , scas.creator_user_id as basis_statement_compound_atom_statement_creator_user_id
-      from limited_justifications j
-          left join statement_compounds sc on j.basis_id = sc.statement_compound_id and j.basis_type = $2
-          left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
-          left join statements scas on sca.statement_id = scas.statement_id
-        where scas.deleted is null
-      ${orderBySql}
-      `
-    return query(sql, args)
-        .then(mapJustificationRows)
-  }
-
-  readMoreJustifications(sortContinuations, count, filter) {
-    const args = [
+  readJustifications(sorts, count, filters, isContinuation = false) {
+    const {
+      args: justificationsArgs,
+      limitedJustificationsSql: justificationsLimitedJustificationsSql,
+      additionalWithClauses: justificationsAdditionalWithClauses,
+      orderBySql: justificationsOrderBySql,
+    } = makeReadJustificationsQuery(sorts, count, filters, [
       JustificationBasisType.CITATION_REFERENCE,
       JustificationBasisType.STATEMENT_COMPOUND,
-    ]
-    let countSql = ''
-    if (isFinite(count)) {
-      args.push(count)
-      countSql = `\nlimit $${args.length}`
-    }
-
-    const whereSqls = [
-      'j.deleted is null',
-      'cr.deleted is null',
-      'c.deleted is null',
-      'sc.deleted is null',
-    ]
-    const continuationWhereSqls = []
-    const prevWhereSqls = []
-    const orderBySqls = []
-    forEach(sortContinuations, (sortContinuation, index) => {
-      const value = sortContinuation.v
-      // The default direction is ascending
-      const direction = sortContinuation.d === 'd' ? 'desc' : 'asc'
-      // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = sortContinuation.p === 'id' ? 'justification_id' : snakeCase(sortContinuation.p)
-      let operator = direction === 'asc' ? '>' : '<'
-      args.push(value)
-      const currContinuationWhereSql = concat(prevWhereSqls, [`j.${columnName} ${operator} $${args.length}`])
-      continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
-      prevWhereSqls.push(`j.${columnName} = $${args.length}`)
-      whereSqls.push(`j.${columnName} is not null`)
-      orderBySqls.push(`j.${columnName} ${direction}`)
-    })
-    forEach(filter, (filterValue, filterName) => {
-      if (!filterValue) return
-      switch (filterName) {
-        case 'statementId': {
-          args.push(filterValue)
-          whereSqls.push(`sca.statement_id = $${args.length}`)
-        }
-          break
-        case 'citationId': {
-          args.push(filterValue)
-          whereSqls.push(`cr.citation_id = $${args.length}`)
-        }
-          break
-        default:
-          throw new ImpossibleError(`Unsupported justification filter: ${filterName}`)
-      }
-    })
-
-    const continuationWhereSql = continuationWhereSqls.length > 0 ?
-        `and (
-          ${continuationWhereSqls.join('\n or ')}
-         )` :
+    ], isContinuation)
+    const justificationsAdditionalWithClausesSql = justificationsAdditionalWithClauses.length > 0 ?
+        join(map(justificationsAdditionalWithClauses, c => c + ',\n')) :
         ''
-    const whereSql = whereSqls.join('\nand ')
-    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
-
-    const sql = `
+    const justificationsSql = `
       with
+        ${justificationsAdditionalWithClausesSql}
         limited_justifications as (
-          select distinct
-              j.*
-            , s.statement_id as root_statement_id
-            , s.text as root_statement_text
-            , s.created as root_statement_created
-            , s.creator_user_id as root_statement_creator_id
-            , cr.citation_reference_id as basis_citation_reference_id
-            , cr.quote as basis_citation_reference_quote
-            , c.citation_id as basis_citation_reference_citation_id
-            , c.text as basis_citation_reference_citation_text
-            , sc.statement_compound_id as basis_statement_compound_id
-          from justifications j
-            join statements s on j.root_statement_id = s.statement_id
-            left join citation_references cr on j.basis_id = cr.citation_reference_id and j.basis_type = $1
-            left join citations c on cr.citation_id = c.citation_id
-            left join statement_compounds sc on j.basis_id = sc.statement_compound_id and j.basis_type = $2
-            left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
-            where 
-              ${whereSql}
-              ${continuationWhereSql}
-          ${orderBySql}
-          ${countSql}
+          ${justificationsLimitedJustificationsSql}
         )
       select 
           j.*
@@ -275,14 +291,89 @@ class JustificationsDao {
         , scas.created as basis_statement_compound_atom_statement_created
         , scas.creator_user_id as basis_statement_compound_atom_statement_creator_user_id
       from limited_justifications j
-          left join statement_compounds sc on j.basis_id = sc.statement_compound_id and j.basis_type = $2
+          left join statement_compound_atoms sca on j.basis_statement_compound_id = sca.statement_compound_id
+          left join statements scas on sca.statement_id = scas.statement_id
+        where scas.deleted is null
+      ${justificationsOrderBySql}
+      `
+
+    const {
+      args: targetJustificationsArgs,
+      limitedJustificationsSql: targetJustificationsLimitedJustificationsSql,
+      additionalWithClauses: targetJustificationsAdditionalWithClauses,
+      orderBySql: targetJustificationsOrderBySql,
+    } = makeReadJustificationsQuery(sorts, count, filters, [
+      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.STATEMENT_COMPOUND,
+      JustificationTargetType.JUSTIFICATION,
+    ], isContinuation)
+    const targetJustificationsAdditionalWithClausesSql = targetJustificationsAdditionalWithClauses.length > 0 ?
+        join(map(targetJustificationsAdditionalWithClauses, c => c + ',\n')) :
+        ''
+    const targetJustificationsSql = `
+      with
+        ${targetJustificationsAdditionalWithClausesSql}
+        limited_justifications as (
+          ${targetJustificationsLimitedJustificationsSql}
+        )
+      select 
+         -- We don't use this, but just for completeness
+          j.justification_id
+                 
+        , tj.justification_id as target_justification_id
+        , tj.root_statement_id as target_justification_root_statement_id
+        , tj.root_polarity as target_justification_root_polarity
+        , tj.target_type as target_justification_target_type
+        , tj.target_id as target_justification_target_id
+        , tj.basis_type as target_justification_basis_type
+        , tj.basis_id as target_justification_basis_id
+        , tj.polarity as target_justification_polarity
+        , tj.creator_user_id as target_justification_creator_user_id
+        , tj.created as target_justification_created
+        
+        , cr.citation_reference_id as target_justification_basis_citation_reference_id
+        , cr.quote as target_justification_basis_citation_reference_quote
+        , c.citation_id as target_justification_basis_citation_reference_citation_id
+        , c.text as target_justification_basis_citation_reference_citation_text
+        
+        , sc.statement_compound_id as target_justification_basis_statement_compound_id
+        , sca.order_position as target_justification_basis_statement_compound_atom_order_position
+        , scas.statement_id as target_justification_basis_statement_compound_atom_statement_id
+        , scas.text as target_justification_basis_statement_compound_atom_statement_text
+        , scas.created as target_justification_basis_statement_compound_atom_statement_created
+        , scas.creator_user_id as target_justification_basis_statement_compound_atom_statement_creator_user_id
+      from limited_justifications j
+          join justifications tj on 
+                j.target_id = tj.justification_id 
+            and j.target_type = $3
+          left join citation_references cr on 
+                tj.basis_id = cr.citation_reference_id 
+            and tj.basis_type = $1
+          left join citations c on cr.citation_id = c.citation_id
+          left join statement_compounds sc on tj.basis_id = sc.statement_compound_id and tj.basis_type = $2
           left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
           left join statements scas on sca.statement_id = scas.statement_id
         where scas.deleted is null
-      ${orderBySql}
-    `
-    return query(sql, args)
-        .then(mapJustificationRows)
+      ${targetJustificationsOrderBySql}
+      `
+    return Promise.all([
+      query(justificationsSql, justificationsArgs),
+      query(targetJustificationsSql, targetJustificationsArgs),
+    ])
+        .then( ([{rows: justificationRows}, {rows: targetJustificationRows}]) => {
+          const justificationsById = mapJustificationRows(justificationRows)
+          const targetJustificationsById = mapJustificationRows(targetJustificationRows, 'target_', 'target_justification_')
+          forEach(justificationsById, justification => {
+            if (justification.target.type !== JustificationTargetType.JUSTIFICATION) return
+            const target = targetJustificationsById[justification.target.entity.id]
+            justification.target.entity = target
+          })
+
+          let justifications = values(justificationsById)
+          // re-sort the justifications by the query order
+          justifications = sortBy(justifications, j => findIndex(justificationRows, jr => toString(jr.justification_id) === j.id))
+          return justifications
+        })
   }
 
   readJustificationsWithBasesAndVotesByRootStatementId(authToken, rootStatementId) {
@@ -337,7 +428,7 @@ class JustificationsDao {
           join statement_compounds sc on 
                 j.basis_type = $2
             and j.basis_id = sc.statement_compound_id
-          join statement_compound_atoms using (statement_compound_id)
+          join statement_compound_atoms sca using (statement_compound_id)
           join statements scas on
                 sca.statement_id = scas.statement_id
             and scas.statement_id = $1
@@ -384,23 +475,42 @@ class JustificationsDao {
   }
 
   createJustification(justification, userId, now) {
-    const sql = `
-      insert into justifications (root_statement_id, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
-        values ($1, $2, $3, $4, $5, $6, $7, $8) 
-        returning *
-      `
-    const args = [
-      justification.rootStatement.id,
-      justification.target.type,
-      justification.target.entity.id,
-      justification.basis.type,
-      justification.basis.entity.id,
-      justification.polarity,
-      userId,
-      now
-    ]
 
-    return query(sql, args).then( ({rows: [row]}) => toJustification(row))
+    let rootPolarity
+    switch (justification.target.type) {
+      case JustificationTargetType.STATEMENT:
+        // root justifications have root polarity equal to their polarity
+        rootPolarity = justification.polarity
+        break
+      case JustificationTargetType.JUSTIFICATION:
+        rootPolarity = getTargetRootPolarity(justification)
+            .then(rootPolarity => negateRootPolarity(rootPolarity))
+        break
+      default:
+        throw new ImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
+    }
+
+    return Promise.resolve(rootPolarity).then(rootPolarity => {
+      const sql = `
+      insert into justifications
+        (root_statement_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      returning *
+      `
+      const args = [
+        justification.rootStatement.id,
+        rootPolarity,
+        justification.target.type,
+        justification.target.entity.id,
+        justification.basis.type,
+        justification.basis.entity.id,
+        justification.polarity,
+        userId,
+        now,
+      ]
+
+      return query(sql, args).then( ({rows: [row]}) => toJustification(row))
+    })
   }
 
   deleteJustifications(justifications, now) {

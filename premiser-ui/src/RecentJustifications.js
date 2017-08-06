@@ -5,16 +5,16 @@ import { connect } from 'react-redux'
 import concat from 'lodash/concat'
 import get from 'lodash/get'
 import map from 'lodash/map'
-import {citationsSchema, justificationsSchema, statementsSchema} from "./schemas";
+import {justificationsSchema} from "./schemas";
 import {denormalize} from "normalizr";
 import FlipMove from 'react-flip-move';
 
 import config from './config'
 
-import RecentCitationCard from './RecentCitationCard'
 
 import {
   api,
+  ui,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import JustificationCard from "./JustificationCard";
@@ -22,9 +22,8 @@ import JustificationCard from "./JustificationCard";
 class RecentJustifications extends Component {
 
   componentWillMount() {
-    if (!this.props.continuationToken) {
-      this.props.api.fetchRecentJustifications(this.props.widgetId, this.props.initialFetchCount || this.props.fetchCount)
-    }
+    this.props.ui.clearRecentJustifications(this.props.widgetId)
+    this.props.api.fetchRecentJustifications(this.props.widgetId, this.props.initialFetchCount || this.props.fetchCount)
   }
 
   fetchMoreRecentJustifications = event => {
@@ -35,10 +34,22 @@ class RecentJustifications extends Component {
   render () {
     const {
       justifications,
+      // ignore
+      widgetId,
+      continuationToken,
+      api,
+      ui,
+      initialFetchCount,
+      fetchCount,
+      // end-ignore
+      ...rest,
     } = this.props
     const cards = () => map(justifications, j => {
       const id = `recent-statement-${j.id}`
-      return <JustificationCard key={id} justification={j} />
+      return <JustificationCard key={id}
+                                justification={j}
+                                doShowBasisJustifications={false}
+                                className="md-cell md-cell--6 md-cell--4-tablet" />
     })
     const fetchMoreButton = <Button flat
                                     key="fetch-more-button"
@@ -48,14 +59,14 @@ class RecentJustifications extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
 
     return (
-        <FlipMove id="recentJustifications"
+        <FlipMove {...rest}
+                  id="recentJustifications"
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
-                  className="md-grid"
         >
           {justifications && justifications.length > 0 ?
               concat(cards(), fetchMoreButton) :
-              <div>No recent justifications.</div>
+              <div className="md-cell md-cell--12">No recent justifications.</div>
           }
         </FlipMove>
     )
@@ -86,4 +97,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
+  ui,
 }))(RecentJustifications)

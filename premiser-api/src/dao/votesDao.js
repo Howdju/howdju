@@ -1,4 +1,4 @@
-const {negatePolarity} = require('../models')
+const {negateVotePolarity} = require('../models')
 const {toVote} = require('../orm')
 const {query} = require('../db')
 const map = require('lodash/map')
@@ -17,7 +17,7 @@ class VotesDao {
           and polarity = $5 
           and deleted is null
         returning vote_id`
-    return query(sql, [new Date(), userId, targetType, targetId, negatePolarity(polarity)])
+    return query(sql, [new Date(), userId, targetType, targetId, negateVotePolarity(polarity)])
         .then( ({rows}) => map(rows, r => r.vote_id))
   }
 

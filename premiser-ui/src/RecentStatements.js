@@ -11,19 +11,19 @@ import FlipMove from 'react-flip-move';
 
 import config from './config'
 
-import RecentStatementCard from './RecentStatementCard'
+import StatementCard from './StatementCard'
 
 import {
   api,
+  ui,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 
 class RecentStatements extends Component {
 
   componentWillMount() {
-    if (!this.props.continuationToken) {
-      this.props.api.fetchRecentStatements(this.props.widgetId, this.props.initialFetchCount || this.props.fetchCount)
-    }
+    this.props.ui.clearRecentStatements(this.props.widgetId)
+    this.props.api.fetchRecentStatements(this.props.widgetId, this.props.initialFetchCount || this.props.fetchCount)
   }
 
   fetchMoreRecentStatements = event => {
@@ -34,10 +34,19 @@ class RecentStatements extends Component {
   render () {
     const {
       statements,
+      // ignore
+      widgetId,
+      continuationToken,
+      api,
+      ui,
+      initialFetchCount,
+      fetchCount,
+      // end-ignore
+      ...rest,
     } = this.props
     const cards = () => map(statements, s => {
       const id = `recent-statement-${s.id}`
-      return <RecentStatementCard key={id} statement={s} />
+      return <StatementCard key={id} statement={s} className="md-cell md-cell--3 md-cell--4-tablet" />
     })
     const fetchMoreButton = <Button flat
                                     key="fetch-more-button"
@@ -47,10 +56,10 @@ class RecentStatements extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
 
     return (
-        <FlipMove id="recentStatements"
+        <FlipMove {...rest}
+                  id="recentStatements"
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
-                  className="md-grid"
         >
           {statements && statements.length > 0 ?
               concat(cards(), fetchMoreButton) :
@@ -85,4 +94,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
+  ui,
 }))(RecentStatements)

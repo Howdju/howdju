@@ -23,6 +23,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import keys from 'lodash/keys'
 import pick from 'lodash/pick'
 import queryString from 'query-string'
+import {denormalize} from "normalizr";
 
 import text, {
   A_NETWORK_ERROR_OCCURRED,
@@ -35,29 +36,28 @@ import text, {
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, YOU_HAVE_BEEN_LOGGED_OUT,
-} from './texts'
-import {request} from "./api";
+} from '../texts'
+import {request} from "../api";
 import {
   statementJustificationsSchema,
   voteSchema,
   statementSchema,
   justificationSchema,
   citationReferenceSchema, statementsSchema, statementCompoundSchema, perspectivesSchema, citationsSchema,
-  justificationsSchema
-} from './schemas'
-import paths from "./paths";
-import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "./texts";
-import mainSearcher from './mainSearcher'
-import * as httpMethods from './httpMethods'
-import * as httpStatusCodes from './httpStatusCodes'
-import {denormalize} from "normalizr";
+  justificationsSchema, citationReferencesSchema
+} from '../schemas'
+import paths from "../paths";
+import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "../texts";
+import mainSearcher from '../mainSearcher'
+import * as httpMethods from '../httpMethods'
+import * as httpStatusCodes from '../httpStatusCodes'
 import {
   selectAuthToken,
   selectEditorState,
   selectLoginRedirectLocation,
   selectRouterLocation
-} from "./selectors";
-import {EditorTypes} from "./reducers/editors";
+} from "../selectors";
+import {EditorTypes} from "../reducers/editors";
 import {
   api,
   editors,
@@ -66,17 +66,21 @@ import {
   apiActionCreatorsByActionType,
   app,
   flows, str,
-} from "./actions";
+} from "../actions";
 import {
   consolidateBasis,
   JustificationBasisType, JustificationTargetType,
-  makeNewStatementJustification, removeStatementCompoundId
-} from "./models";
-import {logger} from './util'
-import apiErrorCodes from "./apiErrorCodes";
-import {customErrorTypes, newEditorCommitResultError, newImpossibleError} from "./customErrors";
-import {assert} from './util'
-import config from "./config";
+  makeNewStatementJustification, removeStatementCompoundId, SortDirection
+} from "../models";
+import {
+  logger,
+  assert,
+} from '../util'
+import apiErrorCodes from "../apiErrorCodes";
+import {customErrorTypes, newEditorCommitResultError, newImpossibleError} from "../customErrors";
+import config from "../config";
+
+import handleTransientInteractions from './transients'
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false
@@ -91,7 +95,7 @@ export const resourceApiConfigs = {
   [api.fetchRecentStatements]: payload => {
     const queryStringParams = pick(payload, 'count')
     queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = 'descending'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'statements?' + queryStringParamsString,
@@ -101,7 +105,7 @@ export const resourceApiConfigs = {
   [api.fetchMoreRecentStatements]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = 'descending'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
     return {
       endpoint: 'statements?' + queryString.stringify(queryStringParams),
       schema: {statements: statementsSchema},
@@ -110,7 +114,7 @@ export const resourceApiConfigs = {
   [api.fetchRecentCitations]: payload => {
     const queryStringParams = pick(payload, 'count')
     queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = 'descending'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'citations?' + queryStringParamsString,
@@ -120,16 +124,35 @@ export const resourceApiConfigs = {
   [api.fetchMoreRecentCitations]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = 'descending'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
     return {
       endpoint: 'citations?' + queryString.stringify(queryStringParams),
       schema: {citations: citationsSchema},
     }
   },
+  [api.fetchRecentCitationReferences]: payload => {
+    const queryStringParams = pick(payload, 'count')
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'citationReferences?' + queryStringParamsString,
+      schema: {citationReferences: citationReferencesSchema},
+    }
+  },
+  [api.fetchMoreRecentCitations]: payload => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    queryStringParams.sortProperty = 'created'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
+    return {
+      endpoint: 'citationReferences?' + queryString.stringify(queryStringParams),
+      schema: {citationReferences: citationReferencesSchema},
+    }
+  },
   [api.fetchRecentJustifications]: payload => {
     const queryStringParams = pick(payload, 'count')
     queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = 'descending'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'justifications?' + queryStringParamsString,
@@ -139,13 +162,19 @@ export const resourceApiConfigs = {
   [api.fetchMoreRecentJustifications]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = 'descending'
+    queryStringParams.sortDirection = SortDirection.DESCENDING
     return {
       endpoint: 'justifications?' + queryString.stringify(queryStringParams),
       schema: {justifications: justificationsSchema},
     }
   },
-  [api.fetchJustifications]: payload => {
+  [api.fetchJustificationsSearch]: payload => {
+    return {
+      endpoint: 'justifications?' + queryString.stringify(payload),
+      schema: {justifications: justificationsSchema},
+    }
+  },
+  [api.fetchMoreJustificationsSearch]: payload => {
     return {
       endpoint: 'justifications?' + queryString.stringify(payload),
       schema: {justifications: justificationsSchema},
@@ -301,8 +330,8 @@ function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
     if (requiresRehydrate && !isRehydrated) {
       logger.debug('Waiting on rehydrate')
       const {rehydrate, timeout} = yield race({
-          rehydrate: take(REHYDRATE),
-          timeout: delay(config.rehydrateTimeoutMs),
+        rehydrate: take(REHYDRATE),
+        timeout: delay(config.rehydrateTimeoutMs),
       })
       if (rehydrate) {
         logger.debug('Proceeding after rehydrate')
@@ -423,12 +452,32 @@ function* goTo() {
     yield put(push(paths.login()))
   })
 
+  yield takeEvery(str(goto.searchJustifications), function* goToSearchJustificationsWorker(action) {
+    yield put(push(paths.searchJustifications(action.payload)))
+  })
+
   yield takeEvery(str(goto.createJustification), function* goToCreateJustificationWorker(action) {
     const {
       basisType,
       basisId,
     } = action.payload
     yield put(push(paths.createJustification(basisType, basisId)))
+  })
+
+  yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
+    const mainSearchPath = paths.mainSearch(action.payload.mainSearchText)
+    const routerLocation = yield select(selectRouterLocation)
+    const routerMainSearchText = mainSearcher.mainSearchText(routerLocation)
+    const urlSearchText = paths.mainSearch(routerMainSearchText)
+    if (urlSearchText !== mainSearchPath) {
+      yield put(push(mainSearchPath))
+    }
+    yield put(api.fetchStatementsSearch(action.payload.mainSearchText))
+  })
+
+  yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {
+    const {statement} = action.payload
+    yield put(push(paths.statement(statement)))
   })
 }
 
@@ -475,30 +524,10 @@ function* flagRehydrate() {
   })
 }
 
-function* goToMainSearch() {
-  yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
-    const mainSearchPath = paths.mainSearch(action.payload.mainSearchText)
-    const routerLocation = yield select(selectRouterLocation)
-    const routerMainSearchText = mainSearcher.mainSearchText(routerLocation)
-    const urlSearchText = paths.mainSearch(routerMainSearchText)
-    if (urlSearchText !== mainSearchPath) {
-      yield put(push(mainSearchPath))
-    }
-    yield put(api.fetchStatementsSearch(action.payload.mainSearchText))
-  })
-}
-
 function* initializeMainSearch() {
   yield takeEvery(str(app.initializeMainSearch), function* initializeMainSearchWorker(action) {
     yield put(ui.mainSearchTextChange(action.payload.searchText))
     yield put(api.fetchStatementsSearch(action.payload.searchText))
-  })
-}
-
-function* goToStatement() {
-  yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {
-    const {statement} = action.payload
-    yield put(push(paths.statement(statement)))
   })
 }
 
@@ -626,19 +655,19 @@ function* commitEditorThenView() {
   }
 
   yield takeEvery(str(flows.commitEditThenView), function* commitEditThenViewWorker(action) {
-      const {editorType, editorId} = action.payload
-      yield put(editors.commitEdit(editorType, editorId))
-      let resultAction = null
-      while (!resultAction) {
-        const currResultAction = yield take(str(editors.commitEdit.result))
-        if (currResultAction.payload.editorType === editorType && currResultAction.payload.editorId === editorId) {
-          resultAction = currResultAction
+        const {editorType, editorId} = action.payload
+        yield put(editors.commitEdit(editorType, editorId))
+        let resultAction = null
+        while (!resultAction) {
+          const currResultAction = yield take(str(editors.commitEdit.result))
+          if (currResultAction.payload.editorType === editorType && currResultAction.payload.editorId === editorId) {
+            resultAction = currResultAction
+          }
+        }
+        if (!resultAction.error) {
+          yield put(gotoEditorCommitResultAction(editorType, resultAction))
         }
       }
-      if (!resultAction.error) {
-        yield put(gotoEditorCommitResultAction(editorType, resultAction))
-      }
-    }
   )
 }
 
@@ -765,8 +794,8 @@ function* showAlertForExtantEntities() {
   }
 
   yield takeEvery([
-      str(api.createStatement.response),
-      str(api.createJustification.response)
+    str(api.createStatement.response),
+    str(api.createJustification.response)
   ], function* showAlertForExtantEntitiesWorker(action) {
     if (!action.error) {
       if (action.payload.result.isExtant) {
@@ -800,16 +829,14 @@ export default () => [
 
   resourceApiCalls(),
 
-  redirectToLoginWhenUnauthorized(),
   goTo(),
+  redirectToLoginWhenUnauthorized(),
   redirectAfterLogin(),
 
-  goToStatement(),
   goHomeIfDeleteStatementWhileViewing(),
   redirectHomeFromMissingStatement(),
   apiFailureErrorMessages(),
   editorCommitEdit(),
-  goToMainSearch(),
   commitEditorThenView(),
   commitEditThenPutActionOnSuccess(),
   fetchAndBeginEditOfNewJustificationFromBasis(),
@@ -817,4 +844,6 @@ export default () => [
   showAlertForUnexpectedApiError(),
   showAlertForExtantEntities(),
   showAlertForLogout(),
+
+  handleTransientInteractions(),
 ]

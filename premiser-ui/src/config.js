@@ -1,13 +1,21 @@
+/*
+ $md-grid-tablet-breakpoint: 600px !default;
+ $md-grid-desktop-breakpoint: 840px !default;
+
+ Technique to read CSS values directly from style sheets:
+ https://stackoverflow.com/a/27527462/39396
+ */
 const config = {
   humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
   ui: {
     statementJustifications: {
-      narrowBreakpoint: 640,
+      narrowBreakpoint: 600,
       flipMoveDuration: 750,
       flipMoveEasing: "ease-out",
     }
   },
-  rehydrateTimeoutMs: 5000
+  rehydrateTimeoutMs: 5000,
+  transientHideDelay: 1500,
 }
 
 export default config

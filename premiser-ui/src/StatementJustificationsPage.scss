@@ -14,25 +14,17 @@ $slide-size: $md-btn-icon-size;
 $gradient-z-index: 5;
 $over-gradient-z-index: 10;
 
-.statementContextMenu {
+.context-menu--statement {
   z-index: $over-gradient-z-index;
-  float: right;
   .md-list--menu {
     z-index: $over-gradient-z-index + 1;
   }
 }
 
-.statementCard, .justificationCard, .newJustificationEditorCard {
-  margin-bottom: $gutter;
-}
-.statementCard {
-  margin-top: $gutter;
-}
-
-.contextMenu {
+.context-menu {
   float: right;
 
-  .hiding {
+  .hidden {
     .md-icon {
       display: none;
     }
@@ -104,7 +96,7 @@ $over-gradient-z-index: 10;
   }
 }
 
-.justification {
+.justification-tree {
 
   .actions {
     // Create a local stacking context
@@ -140,26 +132,34 @@ $over-gradient-z-index: 10;
     direction: ltr;
   }
 
+  .actions {
+    // Hide the actions as they slide off-screen; else they create horizontal scroll bars
+    // It would be nicer to do this as far out as possible, so as to avoid any clipping of the icons
+    // but this works for now.  Adding this to the .justification-card is a problem because then the dropdown
+    // menu is cipped.
+    overflow: hidden;
+  }
+
   &.positivey {
 
-    & > .justificationCard > .actions {
+    & > * > .actions {
       // Override App.scss .md-dialog-footer--card
       justify-content: flex-start;
 
       .md-icon {
-        // When positivey, the icons look better flipped
+        // When positivey, the icons make more sense flipped
         transform: scaleX(-1);
       }
     }
 
-    & > .counterJustifications {
+    & > .counter-justifications {
       margin-left: 30px;
     }
   }
 
   &.negativey {
 
-    & > .justificationCard > .actions {
+    & > * > .actions {
       justify-content: flex-start;
       direction: rtl;
 
@@ -184,8 +184,19 @@ $over-gradient-z-index: 10;
       }
     }
 
-    & > .counterJustifications {
+    & > .counter-justifications {
       margin-right: 30px;
+    }
+  }
+}
+
+#combined-justifications {
+  & > .justification-tree {
+    &.positivey {
+      margin-right: 30px;
+    }
+    &.negativey {
+      margin-left: 30px;
     }
   }
 }

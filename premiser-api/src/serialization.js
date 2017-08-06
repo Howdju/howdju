@@ -17,6 +17,7 @@ module.exports.decircularizeStatementCompound = statementCompound => {
 }
 module.exports.decircularizeJustification = justification => {
   justification.rootStatement = {id: justification.rootStatement.id}
+  justification.counterJustifications = map(justification.counterJustifications, module.exports.decircularizeJustification)
 
   switch (justification.target.type) {
     case JustificationTargetType.STATEMENT: {
@@ -24,7 +25,7 @@ module.exports.decircularizeJustification = justification => {
       }
       break
     case JustificationTargetType.JUSTIFICATION:
-      // target justifications are ok
+      justification.target.entity = {id: justification.target.entity.id}
       break
     default:
       throw new ImpossibleError(`Unsupported justification target type: ${justification.target.type}`)

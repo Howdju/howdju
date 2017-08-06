@@ -1,0 +1,45 @@
+.context-menu--statement-atom {
+  #positive-justifications & {
+    right: -65px;
+  }
+  #negative-justifications & {
+    left: -65px;
+  }
+  #combined-justifications & {
+
+  }
+
+  &-enter {
+    opacity: 0.01;
+    #positive-justifications & {
+      right: 0;
+    }
+    #negative-justifications & {
+      left: 0;
+    }
+  }
+  &-enter#{&}-enter-active {
+    opacity: 1;
+    transition: opacity 250ms ease-in, right 250ms, left 250ms;
+    #positive-justifications & {
+      right: -65px;
+    }
+    #negative-justifications & {
+      left: -65px;
+    }
+  }
+  &-leave {
+    opacity: 1;
+  }
+  &-leave#{&}-leave-active {
+    opacity: 0.01;
+    transition: opacity 500ms ease-in, right 500ms, left 500ms;
+    #positive-justifications & {
+      right: 0;
+    }
+    #negative-justifications & {
+      left: 0;
+    }
+  }
+}
+

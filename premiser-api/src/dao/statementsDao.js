@@ -9,12 +9,14 @@ const {query} = require('./../db')
 const {
   JustificationBasisType,
   VoteTargetType,
+  SortDirection,
+  ContinuationSortDirection,
 } = require('./../models')
 const map = require('lodash/map')
 const {toStatement} = require("../orm")
 const {logger} = require('../logger')
 const {cleanWhitespace, normalizeText} = require('./util')
-
+const {DatabaseSortDirection} = require('./daoModels')
 
 class StatementsDao {
   readStatementByText(statementText) {
@@ -38,7 +40,9 @@ class StatementsDao {
     const orderBySqls = []
     forEach(sorts, sort => {
       const columnName = sort.property === 'id' ? 'statement_id' : snakeCase(sort.property)
-      const direction = sort.direction === 'descending' ? 'desc' : 'asc'
+      const direction = sort.direction === SortDirection.DESCENDING ?
+          DatabaseSortDirection.DESCENDING :
+          DatabaseSortDirection.ASCENDING
       whereSqls.push(`${columnName} is not null`)
       orderBySqls.push(columnName + ' ' + direction)
     })
@@ -69,10 +73,12 @@ class StatementsDao {
     forEach(sortContinuations, (sortContinuation, index) => {
       const value = sortContinuation.v
       // The default direction is ascending
-      const direction = sortContinuation.d === 'd' ? 'desc' : 'asc'
+      const direction = sortContinuation.d === ContinuationSortDirection.DESCENDING ?
+          DatabaseSortDirection.DESCENDING :
+          DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
       const columnName = sortContinuation.p === 'id' ? 'statement_id' : snakeCase(sortContinuation.p)
-      let operator = direction === 'asc' ? '>' : '<'
+      let operator = direction === DatabaseSortDirection.ASCENDING ? '>' : '<'
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
       continuationWhereSqls.push(currContinuationWhereSql.join(' and '))

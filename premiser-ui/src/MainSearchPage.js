@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import map from 'lodash/map'
 
+import paths from './paths'
+
 class MainSearchPage extends Component {
 
   render () {
@@ -18,7 +20,7 @@ class MainSearchPage extends Component {
               <div>Loading...</div> :
               !statements.length ?
                 <div>No results.</div> :
-                map(statements, s => <li key={s.id}><Link to={'/s/' + s.id + '/' + s.slug}>{s.text}</Link></li>)
+                map(statements, s => <li key={s.id}><Link to={paths.statement(s)}>{s.text}</Link></li>)
             }
           </ul>
         </div>

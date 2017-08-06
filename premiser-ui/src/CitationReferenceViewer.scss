@@ -6,7 +6,7 @@
   position: absolute;
 }
 
-.citationReferenceViewer {
+.citation-reference-viewer {
   .quote {
     border-left: 2px solid $primary-color;
     margin: 0 10px 1em;
@@ -29,13 +29,16 @@
     }
   }
 
-  .citationTitle {
+  .citation-title {
     font-weight: 400;
-    margin: 0.5em 0;
+  }
+
+  .citation-reference-urls {
+    margin-top: 0.8em;
   }
 
   li.url {
-    margin: 1em 1em;
+    margin: 0.2em 1em;
 
     .md-icon {
       font-size: 12px;

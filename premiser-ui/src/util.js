@@ -1,4 +1,5 @@
 import isFunction from 'lodash/isFunction'
+import config from './config'
 
 export function extractDomain(url) {
 
@@ -49,6 +50,8 @@ export function assert(test, message) {
     }
   }
 }
+
+export const isNarrow = () => window.innerWidth < config.narrowBreakpoint
 
 export const logger = {
   error: console.error || console.log,

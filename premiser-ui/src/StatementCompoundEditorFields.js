@@ -72,7 +72,7 @@ class StatementCompoundEditorFields extends Component {
           {map(atoms, (atom, index) => {
             const name = `atoms[${index}].statement.text`
             const value = get(statementCompound, name, '')
-            const leftIcon = <FontIcon>text_fields</FontIcon>
+            const leftIcon = <FontIcon>short_text</FontIcon>
             const rightIcon = disabled ?
                 <div/> :
                 <div>

@@ -12,6 +12,9 @@ class EditableJustificationBasis extends Component {
       justification,
       editorId,
       suggestionsKey,
+      doShowControls,
+      doShowBasisJustifications,
+      isCondensed,
       ...rest,
     } = this.props
 
@@ -21,12 +24,16 @@ class EditableJustificationBasis extends Component {
                                    entityId={justification.basis.entity.id}
                                    editorId={editorId}
                                    suggestionsKey={suggestionsKey}
+                                   doShowControls={doShowControls}
+                                   doShowStatementAtomJustifications={doShowBasisJustifications}
+                                   isCondensed={isCondensed}
         /> :
         <EditableCitationReference {...rest}
                                    id={id}
                                    entityId={justification.basis.entity.id}
                                    editorId={editorId}
                                    suggestionsKey={suggestionsKey}
+                                   doShowControls={doShowControls}
         />
   }
 }

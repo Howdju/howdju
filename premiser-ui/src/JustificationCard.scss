@@ -1,0 +1,5 @@
+@import "./util";
+
+.justification-expander-wrapper {
+  @include center-contents;
+}

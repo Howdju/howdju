@@ -8,16 +8,6 @@ insert into statements (statement_id, text, created) values
 (7, 'The AHCA is only so much shorter because it incorporates or relies upon the existing ACA laws', NOW());
 select setval('statements_statement_id_seq', (select max(statement_id) from statements));
 
-insert into justifications (justification_id, root_statement_id, target_type, target_id, basis_type, basis_id, polarity, created) values
-(1, 1, 'STATEMENT', 1, 'STATEMENT', 2, 'POSITIVE', NOW()),
-(2, 1, 'STATEMENT', 1, 'STATEMENT', 3, 'NEGATIVE', NOW()),
-(3, 1, 'STATEMENT', 1, 'STATEMENT', 4, 'POSITIVE', NOW()),
-(4, 1, 'STATEMENT', 1, 'STATEMENT', 5, 'POSITIVE', NOW()),
-(5, 1, 'STATEMENT', 1, 'STATEMENT', 6, 'NEGATIVE', NOW()),
-(6, 1, 'STATEMENT', 1, 'CITATION_REFERENCE', 1, 'NEGATIVE', NOW()),
-(7, 1, 'JUSTIFICATION', 3, 'STATEMENT', 7, 'NEGATIVE', NOW());
-select setval('justifications_justification_id_seq', (select max(justification_id) from justifications));
-
 insert into citations (citation_id, text, created) values
 (1, 'Tax Credits under the Affordable Care Act vs. the American Health Care Act: An Interactive Map', NOW());
 select setval('citations_citation_id_seq', (select max(citation_id) from citations));
@@ -34,19 +24,12 @@ select setval('urls_url_id_seq', (select max(url_id) from urls));
 insert into reference_urls (reference_id, url_id, created) values
 (1, 1, NOW());
 
-insert into permissions (permission_id, name, comment) values
-(1, 'CREATE_USER', 'can create new users'),
-(2, 'DELETE_STATEMENTS', 'can delete any statement'),
-(3, 'DELETE_JUSTIFICATIONS', 'can delete any justification'),
-(4, 'UPDATE_STATEMENTS', 'can update any statement');
-select setval('permissions_permission_id_seq', (select max(permission_id) from permissions));
-
-insert into groups (group_id, name, created) values
-(1, 'admins', NOW());
-select setval('groups_group_id_seq', (select max(group_id) from groups));
-
-insert into group_permissions (group_id, permission_id) values
-(1, 1),
-(1, 2),
-(1, 3),
-(1, 4);
+insert into justifications (justification_id, root_statement_id, target_type, target_id, basis_type, basis_id, polarity, created) values
+(1, 1, 'STATEMENT', 1, 'STATEMENT', 2, 'POSITIVE', NOW()),
+(2, 1, 'STATEMENT', 1, 'STATEMENT', 3, 'NEGATIVE', NOW()),
+(3, 1, 'STATEMENT', 1, 'STATEMENT', 4, 'POSITIVE', NOW()),
+(4, 1, 'STATEMENT', 1, 'STATEMENT', 5, 'POSITIVE', NOW()),
+(5, 1, 'STATEMENT', 1, 'STATEMENT', 6, 'NEGATIVE', NOW()),
+(6, 1, 'STATEMENT', 1, 'CITATION_REFERENCE', 1, 'NEGATIVE', NOW()),
+(7, 1, 'JUSTIFICATION', 3, 'STATEMENT', 7, 'NEGATIVE', NOW());
+select setval('justifications_justification_id_seq', (select max(justification_id) from justifications));
