@@ -213,7 +213,7 @@ const createContinuationToken = (sorts, entities) => {
   let continuationToken = null
 
   if (lastEntity) {
-    const continuationInfos = createContinuationInfo(unambiguousSorts, lastEntity)
+    const continuationInfos = createContinuationInfo(sorts, lastEntity)
     continuationToken = encodeContinuationToken(continuationInfos)
   }
   return continuationToken
