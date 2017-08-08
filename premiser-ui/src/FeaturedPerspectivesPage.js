@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import FlipMove from 'react-flip-move'
 import { connect } from 'react-redux'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import get from 'lodash/get'
@@ -13,6 +14,7 @@ import {
   api,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
+import config from './config'
 
 class FeaturedPerspectivesPage extends Component {
 
@@ -24,10 +26,18 @@ class FeaturedPerspectivesPage extends Component {
     const {
       perspectives,
     } = this.props
+    const {
+      flipMoveDuration,
+      flipMoveEasing
+    } = config.ui.statementJustifications
+
     return (
         <div id="featuredPerspectives">
           <div className="md-grid">
-            <div className="md-cell md-cell--12 center-text">
+            <FlipMove className="md-cell md-cell--12 center-text"
+                      duration={flipMoveDuration}
+                      easing={flipMoveEasing}
+            >
               {perspectives && perspectives.length > 0 ?
                   map(perspectives, p => {
                     const id = `featured-perspective-${p.id}`
@@ -35,7 +45,7 @@ class FeaturedPerspectivesPage extends Component {
                   }) :
                   <CircularProgress key="progress" id="statementJustificationsProgress" />
               }
-            </div>
+            </FlipMove>
           </div>
         </div>
     )

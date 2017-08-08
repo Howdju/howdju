@@ -282,19 +282,21 @@ class StatementJustificationsPage extends Component {
               ]}
             </div>
 
-            {isFetchingStatement && statement ?
+            {isFetchingStatement &&
                 <div className="md-grid md-grid--bottom">
                   <div className="md-cell md-cell--12 cell--centered-contents">
                     <CircularProgress key="progress" id="statementJustificationsProgress" />
                   </div>
-                </div> :
-                <StatementJustificationTrees justifications={justifications}
-                                             doShowControls={true}
-                                             doShowJustifications={false}
-                                             isCondensed={false}
-                                             className="md-grid--bottom"
-                />
+                </div>
+
             }
+
+            <StatementJustificationTrees justifications={justifications}
+                                         doShowControls={true}
+                                         doShowJustifications={false}
+                                         isCondensed={false}
+                                         className="md-grid--bottom"
+            />
 
             {addNewJustificationDialog}
 

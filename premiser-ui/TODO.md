@@ -1,7 +1,6 @@
 # Howdju UI TODO
 
 ## Update release (I can use it and show it to people)
-* Not loading statement justifications on page navigation
 * Cannot click on justification context menu (li or context menu is in way)
 * Add quote before/after to citation reference cards
 
