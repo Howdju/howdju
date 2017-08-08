@@ -1,17 +1,5 @@
 # Howdju UI TODO
-
-## Update release (I can use it and show it to people)
-* Cannot click on justification context menu (li or context menu is in way)
-* WHen normalizing text, replace periods and quotations with nothing (now is space)
-
-* When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"
-* Does it need to be api.fetchMoreX?  Can I just use api.fetchX with a continuationToken?
-* Improve not found page
-
-### Info
-* Who created (really need a profile page first)
-  * Change schema to creator instead of creatorId?
-* When created
+  
 ### Error handling
 * Add some log capturing
 * It would be great to figure out how to ensure that the app doesn't freeze
@@ -75,7 +63,15 @@
 
 ## 0.2 (others can use it)
 
+## Update release (I can use it and show it to people)
+* When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"
+* Improve not found page
 
+### Info
+* Who created (really need a profile page first)
+  * Change schema to creator instead of creatorId?
+
+* WHen normalizing text, replace periods and quotations with nothing (now is space)
 * Need to add a continuation token forwards too, so that when the recents page is reloaded, we can request anything new.
   * When there is a backwards continuation token, we don't request the initial entities, but can request new ones.
   * Then can remove sortBy from recent widgets reducer
