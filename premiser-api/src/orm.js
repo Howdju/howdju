@@ -126,6 +126,7 @@ const toJustification = (
 const toCitationReference = row => !row ? row : {
   id: toString(row.citation_reference_id),
   quote: row.quote,
+  created: row.created,
   citation: toCitation({
     citation_id: row.citation_id,
     text: row.citation_text,

@@ -126,14 +126,6 @@ const withAuth = (authToken) => authDao.getUserId(authToken).then(userId => {
   return userId
 })
 
-const parseContinuationToken = continuationToken => {
-  const decoded = URLSafeBase64.decode(new Buffer(continuationToken))
-  const parsed = JSON.parse(decoded)
-  return parsed
-}
-
-const encodeContinuationToken = continuationInfo => URLSafeBase64.encode(new Buffer(JSON.stringify(continuationInfo)))
-
 const readStatements = ({continuationToken, sortProperty = 'created', sortDirection = SortDirection.ASCENDING, count = 25 }) => {
   const countNumber = toNumber(count)
   if (!isFinite(countNumber)) {
@@ -192,7 +184,7 @@ const readJustifications = ({
     const sorts = createSorts(sortProperty, sortDirection)
     return readInitialJustifications(sorts, countNumber, filters)
   }
-  return readMoreJustifications(continuationToken, countNumber, filters)
+  return readMoreJustifications(continuationToken, countNumber)
 }
 
 const createSorts = (sortProperty, sortDirection) => {
@@ -208,16 +200,54 @@ const createSorts = (sortProperty, sortDirection) => {
   return sorts
 }
 
-const createContinuationToken = (sorts, entities) => {
+const createContinuationInfo = (sorts, lastEntity, filters) => {
+  const sortContinuations = map(sorts, ({property, direction}) => {
+    const continuationInfo = {
+      p: property,
+      v: get(lastEntity, property)
+    }
+    // Only set the direction if necessary to overcome the default
+    if (direction === SortDirection.DESCENDING) {
+      continuationInfo.d = ContinuationSortDirection.DESCENDING
+    }
+    return continuationInfo
+  })
+  return {
+    s: sortContinuations,
+    f: filters,
+  }
+}
+
+const createNextContinuationToken = (sortContinuations, entities) => {
+  const lastEntity = last(entities)
+  let nextContinuationToken
+  if (lastEntity) {
+    // Everything from the previous token should be fine except we need to update the values
+    const nextContinuationInfo = updateContinuationInfo(sortContinuations, lastEntity)
+    nextContinuationToken = encodeContinuationToken(nextContinuationInfo)
+  }
+  return nextContinuationToken
+}
+
+const createContinuationToken = (sorts, entities, filters) => {
   const lastEntity = last(entities)
   let continuationToken = null
 
   if (lastEntity) {
-    const continuationInfos = createContinuationInfo(sorts, lastEntity)
+    const continuationInfos = createContinuationInfo(sorts, lastEntity, filters)
+    debugger
     continuationToken = encodeContinuationToken(continuationInfos)
   }
   return continuationToken
 }
+
+const decodeContinuationToken = continuationToken => {
+  const decoded = URLSafeBase64.decode(new Buffer(continuationToken))
+  const parsed = JSON.parse(decoded)
+  return parsed
+}
+
+const encodeContinuationToken = continuationInfo => URLSafeBase64.encode(new Buffer(JSON.stringify(continuationInfo)))
 
 const readInitialStatements = (requestedSorts, count) => {
   const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
@@ -263,7 +293,8 @@ const readInitialJustifications = (requestedSorts, count, filters) => {
   const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
   return justificationsDao.readJustifications(unambiguousSorts, count, filters)
       .then(justifications => {
-        const continuationToken = createContinuationToken(unambiguousSorts, justifications)
+        const continuationToken = createContinuationToken(unambiguousSorts, justifications, filters)
+        console.log(decodeContinuationToken(continuationToken))
         return {
           justifications,
           continuationToken,
@@ -271,37 +302,8 @@ const readInitialJustifications = (requestedSorts, count, filters) => {
       })
 }
 
-const createContinuationInfo = (sorts, lastEntity, filters) => {
-  const sortContinuations = map(sorts, ({property, direction}) => {
-    const continuationInfo = {
-      p: property,
-      v: get(lastEntity, property)
-    }
-    // Only set the direction if necessary to overcome the default
-    if (direction === SortDirection.DESCENDING) {
-      continuationInfo.d = ContinuationSortDirection.DESCENDING
-    }
-    return continuationInfo
-  })
-  return {
-    s: sortContinuations,
-    f: filters,
-  }
-}
-
-const createNextContinuationToken = (sortContinuations, entities) => {
-  const lastEntity = last(entities)
-  let nextContinuationToken
-  if (lastEntity) {
-    // Everything from the previous token should be fine except we need to update the values
-    const nextContinuationInfo = updateContinuationInfo(sortContinuations, lastEntity)
-    nextContinuationToken = encodeContinuationToken(nextContinuationInfo)
-  }
-  return nextContinuationToken
-}
-
 const readMoreStatements = (continuationToken, count) => {
-  const {s: sortContinuations} = parseContinuationToken(continuationToken)
+  const {s: sortContinuations} = decodeContinuationToken(continuationToken)
   return statementsDao.readMoreStatements(sortContinuations, count)
       .then(statements => {
         const nextContinuationToken = createNextContinuationToken(sortContinuations, statements) || continuationToken
@@ -313,7 +315,7 @@ const readMoreStatements = (continuationToken, count) => {
 }
 
 const readMoreCitations = (continuationToken, count) => {
-  const {s: sortContinuations} = parseContinuationToken(continuationToken)
+  const {s: sortContinuations} = decodeContinuationToken(continuationToken)
   return citationsDao.readMoreCitations(sortContinuations, count)
       .then(citations => {
         const nextContinuationToken = createNextContinuationToken(sortContinuations, citations) || continuationToken
@@ -325,7 +327,7 @@ const readMoreCitations = (continuationToken, count) => {
 }
 
 const readMoreCitationReferences = (continuationToken, count) => {
-  const {s: sortContinuations} = parseContinuationToken(continuationToken)
+  const {s: sortContinuations} = decodeContinuationToken(continuationToken)
   return citationReferencesDao.readMoreCitationReferences(sortContinuations, count)
       .then(citationReferences => {
         const nextContinuationToken = createNextContinuationToken(sortContinuations, citationReferences) || continuationToken
@@ -340,7 +342,7 @@ const readMoreJustifications = (continuationToken, count) => {
   const {
     s: sortContinuations,
     f: filters,
-  } = parseContinuationToken(continuationToken)
+  } = decodeContinuationToken(continuationToken)
   return justificationsDao.readJustifications(sortContinuations, count, filters, true)
       .then(justifications => {
         const [goodJustifications, badJustifications] = partition(justifications, j =>
@@ -1228,4 +1230,5 @@ module.exports = {
   readJustifications,
   updateCitationReference,
   readFeaturedPerspectives,
+  decodeContinuationToken,
 }

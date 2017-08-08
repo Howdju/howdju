@@ -56,6 +56,7 @@ import {suggestionKeys} from "./autocompleter";
 import {ESCAPE_KEY_CODE} from "./keyCodes";
 
 import "./StatementJustificationsPage.scss";
+import StatementJustificationTrees from "./StatementJustificationTrees";
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -157,18 +158,6 @@ class StatementJustificationsPage extends Component {
       isSavingNewJustification,
     } = this.props
 
-    const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
-
-    const _isNarrow = isNarrow()
-    const defaultJustificationsByPolarity = {
-      [JustificationPolarity.POSITIVE]: [],
-      [JustificationPolarity.NEGATIVE]: [],
-    }
-    const justificationsByPolarity = _isNarrow ?
-        defaultJustificationsByPolarity :
-        defaults(groupBy(justifications, j => j.polarity), defaultJustificationsByPolarity)
-
-
     const hasJustifications = justifications && justifications.length > 0
     const hasAgreement = some(justifications, j => isVerified(j) && isPositive(j))
     const hasDisagreement = some(justifications, j => isVerified(j) && isNegative(j))
@@ -245,53 +234,11 @@ class StatementJustificationsPage extends Component {
         </Dialog>
     )
 
-    const twoColumnJustifications = [
-      <FlipMove key="positive-justifications"
-                id="positive-justifications"
-                className="md-cell md-cell--6 md-cell--4-tablet"
-                duration={flipMoveDuration}
-                easing={flipMoveEasing}
-      >
-        {map(justificationsByPolarity[JustificationPolarity.POSITIVE], j => (
-              <JustificationTree justification={j}
-                                 key={j.id}
-              />
-        ))}
-      </FlipMove>,
-      <FlipMove key="negative-justifications"
-                id="negative-justifications"
-                className="md-cell md-cell--6 md-cell--4-tablet"
-                duration={flipMoveDuration}
-                easing={flipMoveEasing}
-      >
-        {map(justificationsByPolarity[JustificationPolarity.NEGATIVE], j => (
-            <JustificationTree justification={j}
-                               key={j.id}
-            />
-        ))}
-      </FlipMove>
-    ]
-    const singleColumnJustifications = (
-      <FlipMove key="combined-justifications"
-                id="combined-justifications"
-                className="md-cell md-cell--12"
-                duration={flipMoveDuration}
-                easing={flipMoveEasing}
-      >
-        {map(justifications, j => (
-            <JustificationTree justification={j}
-                               key={j.id}
-            />
-        ))}
-      </FlipMove>
-    )
-    const justificationTrees = _isNarrow ? singleColumnJustifications : twoColumnJustifications
-
     return (
         <DocumentTitle title={`${statement ? statement.text : 'Loading statement'} - Howdju`}>
           <div className="statement-justifications">
 
-            <div className="md-grid">
+            <div className="md-grid md-grid--top">
               <div className="md-cell md-cell--12">
 
                 <div className="statement">
@@ -314,6 +261,7 @@ class StatementJustificationsPage extends Component {
                   </GridCard>
 
                 </div>
+
               </div>
 
               {!hasJustifications && !isFetchingStatement && !didFetchingStatementFail && [
@@ -332,15 +280,21 @@ class StatementJustificationsPage extends Component {
                 </div>
 
               ]}
+            </div>
 
-              {isFetchingStatement && statement ?
+            {isFetchingStatement && statement ?
+                <div className="md-grid md-grid--bottom">
                   <div className="md-cell md-cell--12 cell--centered-contents">
                     <CircularProgress key="progress" id="statementJustificationsProgress" />
-                  </div> :
-                  justificationTrees
-              }
-
-            </div>
+                  </div>
+                </div> :
+                <StatementJustificationTrees justifications={justifications}
+                                             doShowControls={true}
+                                             doShowJustifications={false}
+                                             isCondensed={false}
+                                             className="md-grid--bottom"
+                />
+            }
 
             {addNewJustificationDialog}
 

@@ -39,7 +39,7 @@ class JustificationsSearchPage extends Component {
     } = queryString.parse(window.location.search)
     const count = JustificationsSearchPage.fetchCount
     const {continuationToken} = this.props
-    this.props.api.fetchMoreJustificationsSearch({citationReferenceId, citationId, statementCompoundId, statementId, count, continuationToken})
+    this.props.api.fetchJustificationsSearch({citationReferenceId, citationId, statementCompoundId, statementId, count, continuationToken})
   }
 
   render() {

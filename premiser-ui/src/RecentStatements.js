@@ -28,7 +28,7 @@ class RecentStatements extends Component {
 
   fetchMoreRecentStatements = event => {
     event.preventDefault()
-    this.props.api.fetchMoreRecentStatements(this.props.widgetId, this.props.continuationToken, this.props.fetchCount)
+    this.props.api.fetchRecentStatements(this.props.widgetId, this.props.fetchCount, this.props.continuationToken)
   }
 
   render () {
@@ -44,6 +44,7 @@ class RecentStatements extends Component {
       // end-ignore
       ...rest,
     } = this.props
+    const hasStatements = statements && statements.length > 0
     const cards = () => map(statements, s => {
       const id = `recent-statement-${s.id}`
       return <StatementCard key={id} statement={s} className="md-cell md-cell--3 md-cell--4-tablet" />
@@ -56,16 +57,24 @@ class RecentStatements extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
 
     return (
-        <FlipMove {...rest}
-                  id="recentStatements"
-                  duration={flipMoveDuration}
-                  easing={flipMoveEasing}
-        >
-          {statements && statements.length > 0 ?
-              concat(cards(), fetchMoreButton) :
-              <div>No recent statements.</div>
-          }
-        </FlipMove>
+        <div>
+          <FlipMove {...rest}
+                    id="recentStatements"
+                    duration={flipMoveDuration}
+                    easing={flipMoveEasing}
+          >
+            {hasStatements &&
+                concat(cards(), fetchMoreButton)
+            }
+          </FlipMove>
+          <FlipMove duration={flipMoveDuration}
+                    easing={flipMoveEasing}
+          >
+            {!hasStatements &&
+              <div className="md-cell md-cell--12">No recent statements.</div>
+            }
+          </FlipMove>
+        </div>
     )
   }
 }

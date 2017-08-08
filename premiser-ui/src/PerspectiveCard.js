@@ -6,7 +6,7 @@ import CardText from 'react-md/lib/Cards/CardText'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 
 import paths from './paths'
-import StatementJustifications from "./StatementJustifications";
+import StatementJustificationTrees from "./StatementJustificationTrees";
 
 export default class PerspectiveCard extends Component {
 
@@ -15,6 +15,7 @@ export default class PerspectiveCard extends Component {
       perspective,
     } = this.props
 
+    const justifications = perspective.statement.justifications
     return (
         <Card>
           <CardTitle title={
@@ -22,12 +23,13 @@ export default class PerspectiveCard extends Component {
               {perspective.statement.text}
             </Link>
           } />
-          <StatementJustifications statement={perspective.statement}
-                                   WrapperComponent={CardText}
-                                   doShowControls={false}
-                                   doShowJustifications={true}
-                                   isCondensed={true}
+          <StatementJustificationTrees justifications={justifications}
+                                           doShowControls={false}
+                                           doShowJustifications={true}
+                                           isCondensed={true}
+                                           WrapperComponent={CardText}
           />
+
         </Card>
     )
   }

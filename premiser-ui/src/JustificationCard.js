@@ -55,12 +55,15 @@ export default class JustificationCard extends Component {
           {_isCounter && !_doesCounterRootJustification && expander}
           <CardText>
             {_isCounter &&
-                <JustificationChatBubble justification={justification.target.entity}
+                <JustificationChatBubble id={`target-justification-${justification.target.entity.id}`}
+                                         justification={justification.target.entity}
                                          doShowBasisJustifications={doShowBasisJustifications}
+                                         doShowControls={false}
                 />
             }
             <JustificationChatBubble justification={justification}
                                      doShowBasisJustifications={doShowBasisJustifications}
+                                     doShowControls={false}
             />
           </CardText>
         </Card>

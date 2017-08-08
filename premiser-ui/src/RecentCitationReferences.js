@@ -28,7 +28,7 @@ class RecentCitationReferences extends Component {
 
   fetchMoreRecentCitationReferences = event => {
     event.preventDefault()
-    this.props.api.fetchMoreRecentCitationReferences(this.props.widgetId, this.props.continuationToken, this.props.fetchCount)
+    this.props.api.fetchRecentCitationReferences(this.props.widgetId, this.props.fetchCount, this.props.continuationToken)
   }
 
   render () {
@@ -44,6 +44,7 @@ class RecentCitationReferences extends Component {
       // end-ignore
       ...rest,
     } = this.props
+    const hasCitationReferences = citationReferences && citationReferences.length > 0
     const cards = () => map(citationReferences, cr => {
       const id = `recent-citation-reference-${cr.id}`
       return <CitationReferenceCard key={id} citationReference={cr} className="md-cell md-cell--3 md-cell--4-tablet" />
@@ -56,16 +57,24 @@ class RecentCitationReferences extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
 
     return (
-        <FlipMove {...rest}
-                  id="recentCitations"
-                  duration={flipMoveDuration}
-                  easing={flipMoveEasing}
-        >
-          {citationReferences && citationReferences.length > 0 ?
-              concat(cards(), fetchMoreButton) :
-              <div>No recent citations.</div>
-          }
-        </FlipMove>
+        <div>
+          <FlipMove {...rest}
+                    id="recentCitations"
+                    duration={flipMoveDuration}
+                    easing={flipMoveEasing}
+          >
+            {hasCitationReferences &&
+              concat(cards(), fetchMoreButton)
+            }
+          </FlipMove>
+          <FlipMove duration={flipMoveDuration}
+                    easing={flipMoveEasing}
+          >
+            {!hasCitationReferences &&
+              <div className="md-cell md-cell--12">No recent citations.</div>
+            }
+          </FlipMove>
+        </div>
     )
   }
 }

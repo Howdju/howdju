@@ -9,6 +9,7 @@ import './JustificationChatBubble.scss'
 
 export default props => {
   const {
+    id,
     className,
     justification,
     doShowControls,
@@ -18,7 +19,8 @@ export default props => {
   const _isRootPositive = isRootPositive(justification)
   const _isRootNegative = isRootNegative(justification)
 
-  const id = `justification-chat-bubble-justification-basis-viewer-${justification.id}`
+  const basisViewerIdPrefix = id ? id + '-' : ''
+  const basisViewerId = `${basisViewerIdPrefix}justification-chat-bubble-justification-basis-viewer-${justification.id}`
 
   return (
       <ChatBubble {...rest}
@@ -26,7 +28,7 @@ export default props => {
                   isPositive={_isRootPositive}
                   isNegative={_isRootNegative}
       >
-        <JustificationBasisViewer id={id}
+        <JustificationBasisViewer id={basisViewerId}
                                   className="md-cell md-cell--12"
                                   justification={justification}
                                   doShowControls={doShowControls}

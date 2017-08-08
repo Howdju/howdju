@@ -1,3 +1,4 @@
+const concat = require('lodash/concat')
 const forEach = require('lodash/forEach')
 const groupBy = require('lodash/groupBy')
 const head = require('lodash/head')
@@ -120,7 +121,7 @@ class CitationReferencesDao {
       const columnName = sortContinuation.p === 'id' ? 'citation_reference_id' : snakeCase(sortContinuation.p)
       let operator = direction === 'asc' ? '>' : '<'
       args.push(value)
-      const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
+      const currContinuationWhereSql = concat(prevWhereSqls, [`cr.${columnName} ${operator} $${args.length}`])
       continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
       prevWhereSqls.push(`cr.${columnName} = $${args.length}`)
       whereSqls.push(`cr.${columnName} is not null`)

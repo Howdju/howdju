@@ -55,14 +55,8 @@ const defaultJustificationSearchPageState = {
   isFetching: false,
 }
 export const justificationsSearchPage = handleActions({
-  [combineActions(
-      api.fetchJustificationsSearch,
-      api.fetchMoreJustificationsSearch,
-  )]: (state, action) => ({...state, isFetching: true}),
-  [combineActions(
-      api.fetchJustificationsSearch.response,
-      api.fetchMoreJustificationsSearch.response,
-  )]: {
+  [api.fetchJustificationsSearch]: (state, action) => ({...state, isFetching: true}),
+  [api.fetchJustificationsSearch.response]: {
     next: (state, action) => {
       return {
         ...state,

@@ -66,3 +66,11 @@ html, body {
     //position: static;
   }
 }
+
+// In some cases where we need to use two adjacent md-grids but want them to appear like one, remove the interior padding
+.md-grid--top {
+  padding-bottom: 0;
+}
+.md-grid--bottom {
+  padding-top: 0;
+}

@@ -28,7 +28,7 @@ class RecentJustifications extends Component {
 
   fetchMoreRecentJustifications = event => {
     event.preventDefault()
-    this.props.api.fetchMoreRecentJustifications(this.props.widgetId, this.props.continuationToken, this.props.fetchCount)
+    this.props.api.fetchRecentJustifications(this.props.widgetId, this.props.fetchCount, this.props.continuationToken)
   }
 
   render () {
@@ -44,6 +44,7 @@ class RecentJustifications extends Component {
       // end-ignore
       ...rest,
     } = this.props
+    const hasJustifications = justifications && justifications.length > 0
     const cards = () => map(justifications, j => {
       const id = `recent-statement-${j.id}`
       return <JustificationCard key={id}
@@ -59,16 +60,23 @@ class RecentJustifications extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
 
     return (
+        <div>
         <FlipMove {...rest}
                   id="recentJustifications"
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
         >
-          {justifications && justifications.length > 0 ?
-              concat(cards(), fetchMoreButton) :
-              <div className="md-cell md-cell--12">No recent justifications.</div>
+          {hasJustifications &&
+            concat(cards(), fetchMoreButton)
           }
         </FlipMove>
+          <FlipMove>
+            {!hasJustifications &&
+              <div className="md-cell md-cell--12">No recent justifications.</div>
+            }
+          </FlipMove>
+        </div>
+
     )
   }
 }

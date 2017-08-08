@@ -53,34 +53,24 @@ export const api = {
   fetchStatement: apiActionCreator('FETCH_STATEMENT', statementId => ({statementId})),
   fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', statementCompoundId => ({statementCompoundId})),
   fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
-  fetchRecentStatements: apiActionCreator('FETCH_RECENT_STATEMENTS', (widgetId, count) => ({widgetId, count})),
-  fetchMoreRecentStatements: apiActionCreator('FETCH_MORE_RECENT_STATEMENTS', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
-  fetchRecentCitations: apiActionCreator('FETCH_RECENT_CITATIONS', (widgetId, count) => ({widgetId, count})),
-  fetchMoreRecentCitations: apiActionCreator('FETCH_MORE_RECENT_CITATIONS', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
-  fetchRecentCitationReferences: apiActionCreator('FETCH_RECENT_CITATION_REFERENCES', (widgetId, count) => ({widgetId, count})),
-  fetchMoreRecentCitationReferences: apiActionCreator('FETCH_MORE_RECENT_CITATION_REFERENCES', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
-  fetchRecentJustifications: apiActionCreator('FETCH_RECENT_JUSTIFICATIONS', (widgetId, count) => ({widgetId, count})),
-  fetchMoreRecentJustifications: apiActionCreator('FETCH_MORE_RECENT_JUSTIFICATIONS', (widgetId, continuationToken, count) => ({widgetId, continuationToken, count})),
-  fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
   fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
   fetchCitationReference: apiActionCreator('FETCH_CITATION_REFERENCE', citationReferenceId => ({citationReferenceId})),
+
+  fetchRecentStatements: apiActionCreator('FETCH_RECENT_STATEMENTS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
+  fetchRecentCitations: apiActionCreator('FETCH_RECENT_CITATIONS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
+  fetchRecentCitationReferences: apiActionCreator('FETCH_RECENT_CITATION_REFERENCES', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
+  fetchRecentJustifications: apiActionCreator('FETCH_RECENT_JUSTIFICATIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
+
+  fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
+
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
-      ({citationReferenceId, citationId, statementCompoundId, statementId, count}) => ({
+      ({citationReferenceId, citationId, statementCompoundId, statementId, count, continuationToken}) => ({
         citationReferenceId,
         citationId,
         statementCompoundId,
         statementId,
         count,
-      })
-  ),
-  fetchMoreJustificationsSearch: apiActionCreator('FETCH_MORE_JUSTIFICATIONS_SEARCH',
-      ({citationReferenceId, citationId, statementCompoundId, statementId, continuationToken, count}) => ({
-        citationReferenceId,
-        citationId,
-        statementCompoundId,
-        statementId,
         continuationToken,
-        count,
       })
   ),
   login: apiActionCreator('LOGIN', credentials => ({credentials})),

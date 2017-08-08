@@ -19,13 +19,20 @@ import {
 import paths from './paths'
 import {EditorTypes} from './reducers/editors'
 import StatementCompoundAtomViewer from "./StatementCompoundAtomViewer";
-import StatementJustifications from './StatementJustifications'
+import StatementJustificationTrees from './StatementJustificationTrees'
 import TransientMenuButton from './TransientMenuButton'
 
 import './StatementCompoundViewerAtomListItem.scss'
 
 
-const baseId = statementAtom => `statementCompoundAtom-${statementAtom.statementCompoundId}-${statementAtom.statement.id}`
+const baseId = props => {
+  const {
+    id,
+    statementAtom
+  } = props
+  const idPrefix = id ? id + '-' : ''
+  return `${idPrefix}statementCompoundAtom-${statementAtom.statementCompoundId}-${statementAtom.statement.id}`
+}
 const editorId = baseId => `${baseId}-statementEditor`
 
 class StatementCompoundViewerAtomListItem extends Component {
@@ -57,6 +64,7 @@ class StatementCompoundViewerAtomListItem extends Component {
 
   render() {
     const {
+      id,
       statementAtom,
       isEditing,
       doShowControls,
@@ -65,7 +73,7 @@ class StatementCompoundViewerAtomListItem extends Component {
       isCondensed,
     } = this.props
 
-    const _baseId = baseId(statementAtom)
+    const _baseId = baseId(this.props)
     const _editorId = editorId(_baseId)
 
     const menuId = `${_baseId}-context-menu`
@@ -101,9 +109,11 @@ class StatementCompoundViewerAtomListItem extends Component {
     )
 
     const hasJustifications = statementAtom.statement.justifications && statementAtom.statement.justifications.length > 0
+    const justifications = statementAtom.statement.justifications
 
     return (
-        <li className="statementAtom"
+        <li id={id}
+            className="statement-atom"
             onMouseOver={this.onMouseOver}
             onMouseLeave={this.onMouseLeave}
         >
@@ -120,11 +130,11 @@ class StatementCompoundViewerAtomListItem extends Component {
           />
 
           {doShowJustifications && hasJustifications &&
-            <StatementJustifications id={_baseId}
-                                     statement={statementAtom.statement}
-                                     doShowControls={doShowControls}
-                                     doShowJustifications={doShowJustifications}
-                                     isCondensed={isCondensed}
+            <StatementJustificationTrees id={_baseId}
+                                             justifications={justifications}
+                                             doShowControls={doShowControls}
+                                             doShowJustifications={doShowJustifications}
+                                             isCondensed={isCondensed}
             />
           }
         </li>
@@ -132,6 +142,8 @@ class StatementCompoundViewerAtomListItem extends Component {
   }
 }
 StatementCompoundViewerAtomListItem.propTypes = {
+  /** Used to identify the context menu */
+  id: PropTypes.string.isRequired,
   statementAtom: PropTypes.object.isRequired,
   doShowJustifications: PropTypes.bool,
   doShowControls: PropTypes.bool,
@@ -141,7 +153,7 @@ StatementCompoundViewerAtomListItem.defaultProps = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const _baseId = baseId(ownProps.statementAtom)
+  const _baseId = baseId(ownProps)
   const _editorId = editorId(_baseId)
   const editEntity = get(state, ['editors', EditorTypes.STATEMENT, _editorId, 'editEntity'])
   const isEditing = !!editEntity

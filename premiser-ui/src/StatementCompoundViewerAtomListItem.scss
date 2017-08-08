@@ -1,31 +1,41 @@
-.context-menu--statement-atom {
-  #positive-justifications & {
-    right: -65px;
-  }
-  #negative-justifications & {
-    left: -65px;
-  }
-  #combined-justifications & {
+li.statement-atom {
+  // Position so that chat bubble offsets below position relative to this.
+  position: relative;
+}
 
+$context-menu-offset: -80px;
+
+.context-menu--statement-atom {
+  .statement-justifications-justification-trees--positive & {
+    right: $context-menu-offset;
+  }
+  .statement-justifications-justification-trees--negative & {
+    left: $context-menu-offset;
+  }
+  .statement-justifications-justification-trees--combined & {
+    top: $context-menu-offset;
   }
 
   &-enter {
     opacity: 0.01;
-    #positive-justifications & {
+    .statement-justifications-justification-trees--positive & {
       right: 0;
     }
-    #negative-justifications & {
+    .statement-justifications-justification-trees--negative & {
       left: 0;
     }
   }
   &-enter#{&}-enter-active {
     opacity: 1;
     transition: opacity 250ms ease-in, right 250ms, left 250ms;
-    #positive-justifications & {
-      right: -65px;
+    .statement-justifications-justification-trees--positive & {
+      right: $context-menu-offset;
     }
-    #negative-justifications & {
-      left: -65px;
+    .statement-justifications-justification-trees--negative & {
+      left: $context-menu-offset;
+    }
+    .statement-justifications-justification-trees--combined & {
+      top: $context-menu-offset;
     }
   }
   &-leave {
@@ -34,11 +44,14 @@
   &-leave#{&}-leave-active {
     opacity: 0.01;
     transition: opacity 500ms ease-in, right 500ms, left 500ms;
-    #positive-justifications & {
+    .statement-justifications-justification-trees--positive & {
       right: 0;
     }
-    #negative-justifications & {
+    .statement-justifications-justification-trees--negative & {
       left: 0;
+    }
+    .statement-justifications-justification-trees--combined & {
+      top: 0;
     }
   }
 }

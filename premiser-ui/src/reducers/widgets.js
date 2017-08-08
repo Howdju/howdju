@@ -12,10 +12,7 @@ const defaultRecentCitationsWidgetState = {recentCitations: [], continuationToke
 const defaultRecentCitationReferencesWidgetState = {recentCitationReferences: [], continuationToken: null}
 const defaultRecentJustificationsWidgetState = {recentJustifications: [], continuationToken: null}
 export default handleActions({
-  [combineActions(
-      api.fetchRecentStatements.response,
-      api.fetchMoreRecentStatements.response,
-  )]: {
+  [api.fetchRecentStatements.response]: {
     next: (state, action) => {
       const widgetId = action.meta.requestPayload.widgetId
       const widgetState = get(state, widgetId, defaultRecentStatementsWidgetState)
@@ -27,10 +24,7 @@ export default handleActions({
       return {...state, [widgetId]: newWidgetState}
     }
   },
-  [combineActions(
-      api.fetchRecentCitations.response,
-      api.fetchMoreRecentCitations.response,
-  )]: {
+  [api.fetchRecentCitations.response]: {
     next: (state, action) => {
       const widgetId = action.meta.requestPayload.widgetId
       const widgetState = get(state, widgetId, defaultRecentCitationsWidgetState)
@@ -42,10 +36,7 @@ export default handleActions({
       return {...state, [widgetId]: newWidgetState}
     }
   },
-  [combineActions(
-      api.fetchRecentCitationReferences.response,
-      api.fetchMoreRecentCitationReferences.response,
-  )]: {
+  [api.fetchRecentCitationReferences.response]: {
     next: (state, action) => {
       const widgetId = action.meta.requestPayload.widgetId
       const widgetState = get(state, widgetId, defaultRecentCitationReferencesWidgetState)
@@ -57,10 +48,7 @@ export default handleActions({
       return {...state, [widgetId]: newWidgetState}
     }
   },
-  [combineActions(
-      api.fetchRecentJustifications.response,
-      api.fetchMoreRecentJustifications.response,
-  )]: {
+  [api.fetchRecentJustifications.response]: {
     next: (state, action) => {
       const widgetId = action.meta.requestPayload.widgetId
       const widgetState = get(state, widgetId, defaultRecentJustificationsWidgetState)

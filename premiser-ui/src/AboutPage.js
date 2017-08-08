@@ -5,6 +5,23 @@ import CardText from 'react-md/lib/Cards/CardText'
 export default () => (
     <Card>
       <CardText>
+        Howdju is a platform to fight disinformation online premised upon three hypotheses:
+        <ol>
+          <li>
+            We are more open to alternative perspectives when we share why we believe what
+            we believe than when we are told what is correct or incorrect. (&ldquo;How d'ya know that&ellip;?&rdquo;)
+          </li>
+          <li>
+            Doubt and resistance will persist until we we are confident that all sides have had an opportunity
+            to present all perspectives and respond to others' perspectives.
+          </li>
+          <li>
+            We need an efficient way to evaluate new information, because fact-checking everything would take too
+            much time.
+          </li>
+        </ol>
+      </CardText>
+      <CardText>
         Information online is growing fast.  Besides the huge number of facts generated daily by traditional sources
         social media and a menagerie of new media sources are generating information faster than the average person can
         keep up.  How to

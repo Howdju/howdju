@@ -16,11 +16,13 @@ export default class StatementCompoundViewer extends Component {
       isCondensed,
     } = this.props
 
+    const idPrefix = id ? id + '-' : ''
+
     const atomListItems = map(statementCompound.atoms, atom => {
-      const atomId = `${id}statement-compound-${atom.statementCompoundId}-statement-atom-${atom.statement.id}-list-item`
+      const listItemId = `${idPrefix}statement-compound-${atom.statementCompoundId}-statement-atom-${atom.statement.id}-list-item`
       return (
-          <StatementCompoundViewerAtomListItem id={atomId}
-                                               key={atomId}
+          <StatementCompoundViewerAtomListItem id={listItemId}
+                                               key={listItemId}
                                                statementAtom={atom}
                                                doShowControls={doShowControls}
                                                doShowJustifications={doShowStatementAtomJustifications}
