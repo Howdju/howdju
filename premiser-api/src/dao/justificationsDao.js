@@ -66,9 +66,11 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
       citationReferencesRowsById[row[prefix + 'basis_citation_reference_id']] = toCitationReference({
         citation_reference_id: row[prefix + 'basis_citation_reference_id'],
         quote: row[prefix + 'basis_citation_reference_quote'],
+        created: row[prefix + 'basis_citation_reference_created'],
+        creator_user_id: row[prefix + 'basis_citation_reference_creator_user_id'],
         citation_id: row[prefix + 'basis_citation_reference_citation_id'],
         citation_text: row[prefix + 'basis_citation_reference_citation_text'],
-        citation_created: row[prefix + 'basis_citation_reference_created'],
+        citation_created: row[prefix + 'basis_citation_reference_citation_created'],
         citation_creator_user_id: row[prefix + 'basis_citation_reference_creator_user_id'],
       })
     }
@@ -211,14 +213,18 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
   const limitedJustificationsSql = `
       select distinct
           j.*
-        , s.text as root_statement_text
-        , s.created as root_statement_created
-        , s.creator_user_id as root_statement_creator_id
-        , cr.citation_reference_id as basis_citation_reference_id
-        , cr.quote as basis_citation_reference_quote
-        , c.citation_id as basis_citation_reference_citation_id
-        , c.text as basis_citation_reference_citation_text
-        , sc.statement_compound_id as basis_statement_compound_id
+        , s.text as                    root_statement_text
+        , s.created as                 root_statement_created
+        , s.creator_user_id as         root_statement_creator_id
+        , cr.citation_reference_id as  basis_citation_reference_id
+        , cr.quote as                  basis_citation_reference_quote
+        , cr.created as                basis_citation_reference_created
+        , cr.creator_user_id as        basis_citation_reference_creator_user_id
+        , c.citation_id as             basis_citation_reference_citation_id
+        , c.text as                    basis_citation_reference_citation_text
+        , c.created as                 basis_citation_reference_citation_created
+        , c.creator_user_id as         basis_citation_reference_citation_creator_user_id
+        , sc.statement_compound_id as  basis_statement_compound_id
       from justifications j
           ${join(additionalJoinClauses, '\n')}
           join statements s on j.root_statement_id = s.statement_id
@@ -333,8 +339,12 @@ class JustificationsDao {
         
         , cr.citation_reference_id as tj_basis_citation_reference_id
         , cr.quote as                 tj_basis_citation_reference_quote
+        , cr.created as               tj_basis_citation_reference_created
+        , cr.creator_user_id as       tj_basis_citation_reference_creator_user_id
         , c.citation_id as            tj_basis_citation_reference_citation_id
         , c.text as                   tj_basis_citation_reference_citation_text
+        , c.created as                tj_basis_citation_reference_citation_created
+        , c.creator_user_id as        tj_basis_citation_reference_citation_creator_user_id
         
         , sc.statement_compound_id as tj_basis_statement_compound_id
         , sca.order_position as       tj_basis_statement_compound_atom_order_position

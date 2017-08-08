@@ -2,7 +2,7 @@
 
 ## Update release (I can use it and show it to people)
 * Cannot click on justification context menu (li or context menu is in way)
-* Add quote before/after to citation reference cards
+* WHen normalizing text, replace periods and quotations with nothing (now is space)
 
 * When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"
 * Does it need to be api.fetchMoreX?  Can I just use api.fetchX with a continuationToken?

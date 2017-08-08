@@ -32,11 +32,10 @@ export default props => {
 
   return (
       <div className="citation-reference-viewer">
-        <div className={cn({
-          quote: true,
+        <div className={cn("quote", {
           hidden: !citationReference.quote
         })}>
-          <span>{truncateCitationReferenceQuote(citationReference.quote)}</span>
+          <span className="quote-text">{truncateCitationReferenceQuote(citationReference.quote)}</span>
         </div>
         <div className="citation-title">{citationReference.citation.text}</div>
         <ul className="citation-reference-urls">

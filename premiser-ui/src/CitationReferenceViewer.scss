@@ -1,33 +1,7 @@
-@import './colors';
-
-@mixin quote {
-  color: $asbestos;
-  font-size: 200%;
-  position: absolute;
-}
+@import './components';
 
 .citation-reference-viewer {
-  .quote {
-    border-left: 2px solid $primary-color;
-    margin: 0 10px 1em;
-    padding: 0.5em 10px;
-    quotes: "\201C" "\201D" "\2018" "\2019";
-
-    span {
-      // Push it out past the position:absolute quote
-      margin-left: 20px;
-    }
-
-    &:before {
-      @include quote;
-      content: open-quote;
-    }
-    &:after {
-      @include quote;
-      margin-left: 10px;
-      content: close-quote;
-    }
-  }
+  @include quote;
 
   .citation-title {
     font-weight: 400;

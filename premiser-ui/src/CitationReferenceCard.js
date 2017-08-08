@@ -11,6 +11,8 @@ import config from './config'
 import {truncateCitationReferenceQuote} from "./models";
 import paths from './paths'
 
+import './CitationReferenceCard.scss'
+
 export default class CitationReferenceCard extends Component {
 
   render () {
@@ -36,8 +38,10 @@ export default class CitationReferenceCard extends Component {
                 </span>
               }
           />
-          <CardText>
-            {truncateCitationReferenceQuote(citationReference.quote)}
+          <CardText className="card-quote">
+            <div className="quote">
+              <span className="quote-text">{truncateCitationReferenceQuote(citationReference.quote)}</span>
+            </div>
           </CardText>
         </Card>
     )
