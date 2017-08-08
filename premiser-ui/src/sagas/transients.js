@@ -24,7 +24,6 @@ import config from "../config";
 const delayedHideTransientTaskByTransientId = {}
 
 function* tryCancelHideTransient(transientId) {
-  // console.log(transientId, delayedHideTransientTaskByTransientId)
   const hideTask = delayedHideTransientTaskByTransientId[transientId]
   if (hideTask) {
     yield put(ui.cancelHideTransient(transientId))

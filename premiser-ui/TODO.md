@@ -3,7 +3,6 @@
 ## Update release (I can use it and show it to people)
 * Not loading statement justifications on page navigation
 * Cannot click on justification context menu (li or context menu is in way)
-* RecentJustifications has missing target justification text
 * Add quote before/after to citation reference cards
 
 * When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"

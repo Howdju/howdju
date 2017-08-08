@@ -235,7 +235,6 @@ const createContinuationToken = (sorts, entities, filters) => {
 
   if (lastEntity) {
     const continuationInfos = createContinuationInfo(sorts, lastEntity, filters)
-    debugger
     continuationToken = encodeContinuationToken(continuationInfos)
   }
   return continuationToken
@@ -294,7 +293,6 @@ const readInitialJustifications = (requestedSorts, count, filters) => {
   return justificationsDao.readJustifications(unambiguousSorts, count, filters)
       .then(justifications => {
         const continuationToken = createContinuationToken(unambiguousSorts, justifications, filters)
-        console.log(decodeContinuationToken(continuationToken))
         return {
           justifications,
           continuationToken,

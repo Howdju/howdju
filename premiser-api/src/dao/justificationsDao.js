@@ -320,28 +320,28 @@ class JustificationsDao {
          -- We don't use this, but just for completeness
           j.justification_id
                  
-        , tj.justification_id as target_justification_id
-        , tj.root_statement_id as target_justification_root_statement_id
-        , tj.root_polarity as target_justification_root_polarity
-        , tj.target_type as target_justification_target_type
-        , tj.target_id as target_justification_target_id
-        , tj.basis_type as target_justification_basis_type
-        , tj.basis_id as target_justification_basis_id
-        , tj.polarity as target_justification_polarity
-        , tj.creator_user_id as target_justification_creator_user_id
-        , tj.created as target_justification_created
+        , tj.justification_id as      target_justification_id
+        , tj.root_statement_id as     tj_root_statement_id
+        , tj.root_polarity as         tj_root_polarity
+        , tj.target_type as           tj_target_type
+        , tj.target_id as             tj_target_id
+        , tj.basis_type as            tj_basis_type
+        , tj.basis_id as              tj_basis_id
+        , tj.polarity as              tj_polarity
+        , tj.creator_user_id as       tj_creator_user_id
+        , tj.created as               tj_created
         
-        , cr.citation_reference_id as target_justification_basis_citation_reference_id
-        , cr.quote as target_justification_basis_citation_reference_quote
-        , c.citation_id as target_justification_basis_citation_reference_citation_id
-        , c.text as target_justification_basis_citation_reference_citation_text
+        , cr.citation_reference_id as tj_basis_citation_reference_id
+        , cr.quote as                 tj_basis_citation_reference_quote
+        , c.citation_id as            tj_basis_citation_reference_citation_id
+        , c.text as                   tj_basis_citation_reference_citation_text
         
-        , sc.statement_compound_id as target_justification_basis_statement_compound_id
-        , sca.order_position as target_justification_basis_statement_compound_atom_order_position
-        , scas.statement_id as target_justification_basis_statement_compound_atom_statement_id
-        , scas.text as target_justification_basis_statement_compound_atom_statement_text
-        , scas.created as target_justification_basis_statement_compound_atom_statement_created
-        , scas.creator_user_id as target_justification_basis_statement_compound_atom_statement_creator_user_id
+        , sc.statement_compound_id as tj_basis_statement_compound_id
+        , sca.order_position as       tj_basis_statement_compound_atom_order_position
+        , scas.statement_id as        tj_basis_statement_compound_atom_statement_id
+        , scas.text as                tj_basis_statement_compound_atom_statement_text
+        , scas.created as             tj_basis_statement_compound_atom_statement_created
+        , scas.creator_user_id as     tj_basis_statement_compound_atom_statement_creator_user_id
       from limited_justifications j
           join justifications tj on 
                 j.target_id = tj.justification_id 
@@ -362,7 +362,7 @@ class JustificationsDao {
     ])
         .then( ([{rows: justificationRows}, {rows: targetJustificationRows}]) => {
           const justificationsById = mapJustificationRows(justificationRows)
-          const targetJustificationsById = mapJustificationRows(targetJustificationRows, 'target_', 'target_justification_')
+          const targetJustificationsById = mapJustificationRows(targetJustificationRows, 'target_', 'tj_')
           forEach(justificationsById, justification => {
             if (justification.target.type !== JustificationTargetType.JUSTIFICATION) return
             const target = targetJustificationsById[justification.target.entity.id]
