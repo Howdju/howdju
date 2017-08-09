@@ -10,7 +10,13 @@ const {ImpossibleError} = require('./errors')
 const toUser = row => !row ? row : ({
   id: toString(row.user_id),
   email: row.email,
-  hash: row.hash,
+  firstName: row.first_name,
+  lastName: row.last_name,
+  created: row.created,
+  externalIds: {
+    googleAnalyticsId: row.google_analytics_id,
+    sentryId: row.sentry_id,
+  }
 })
 
 const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
@@ -197,6 +203,11 @@ const toPerspective = row => !row ? row : ({
   creatorUserId: row.creator_user_id,
 })
 
+const toUserHash = row => !row ? row : ({
+  userId: row.user_id,
+  hash: row.hash,
+})
+
 module.exports = {
   toUser,
   toStatement,
@@ -209,4 +220,5 @@ module.exports = {
   toStatementCompound,
   toStatementCompoundAtom,
   toPerspective,
+  toUserHash,
 }

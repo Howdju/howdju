@@ -343,9 +343,8 @@ const routes = [
   {
     path: 'login',
     method: httpMethods.POST,
-    // TODO change to body: {credentials}
-    handler: ({callback, request: {body}}) => login(body)
-        .then(({email, authToken}) => ok({callback, body: {email, authToken}}))
+    handler: ({callback, request: {body: {credentials}}}) => login(credentials)
+        .then(({user, authToken}) => ok({callback, body: {user, authToken}}))
         .catch(EntityNotFoundError, () => {
           // Hide EntityNotFoundError to prevent someone from learning that an email does or does not correspond to an account
           throw new InvalidLoginError()
@@ -354,7 +353,7 @@ const routes = [
   {
     path: 'logout',
     method: httpMethods.POST,
-    handler: ({callback, request: {authToken}}) => logout({authToken}).then( () => ok({callback}) )
+    handler: ({callback, request: {authToken}}) => logout(authToken).then( () => ok({callback}) )
   },
   {
     id: 'createVote',
@@ -394,7 +393,7 @@ const routes = [
     handler: ({
                 callback,
                 request: {authToken}
-              }) => readFeaturedPerspectives({authToken})
+              }) => readFeaturedPerspectives(authToken)
         .then( perspectives => {
           const detector = new CircularReferenceDetector();
           detector.detectCircularReferences(perspectives)

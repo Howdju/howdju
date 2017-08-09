@@ -1,5 +1,6 @@
 import isFunction from 'lodash/isFunction'
 import config from './config'
+import * as sentry from './sentry'
 
 export function extractDomain(url) {
 
@@ -53,10 +54,28 @@ export function assert(test, message) {
 
 export const isNarrow = () => window.innerWidth < config.narrowBreakpoint
 
-export const logger = {
+const logFunctions = {
   error: console.error || console.log,
   warn: console.warn || console.log,
   info: console.info || console.log,
   debug: console.debug || console.log,
   trace: console.trace || console.log,
+}
+export const logger = {
+  error: message => {
+    logFunctions.error(message)
+    sentry.captureMessage(message)
+    if (process.env.NODE_ENV !== 'development') {
+      sentry.showReportDialog()
+    }
+  },
+  warn: console.warn || console.log,
+  info: console.info || console.log,
+  debug: console.debug || console.log,
+  trace: console.trace || console.log,
+  exception: (ex, context) => {
+    sentry.captureException(ex)
+    /*eslint no-console:0*/
+    logger.error(ex);
+  }
 }

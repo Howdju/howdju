@@ -119,7 +119,7 @@ const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPe
       return userId
     })
 
-const withAuth = (authToken) => authDao.getUserId(authToken).then(userId => {
+const withAuth = (authToken) => authDao.getUserIdForAuthToken(authToken).then(userId => {
   if (!userId) {
     throw new AuthenticationError()
   }
@@ -421,7 +421,7 @@ const createUser = ({user, authToken}) => withPermission(authToken, CREATE_USERS
             .then(asyncRecordEntityAction(creatorUserId, ActionType.CREATE, ActionTargetType.USER, now))
     )
 
-const login = ({credentials}) => Promise.resolve()
+const login = (credentials) => Promise.resolve()
     .then(() => {
       const validationErrors = credentialValidator.validate(credentials)
       if (validationErrors.hasErrors) {
@@ -431,38 +431,40 @@ const login = ({credentials}) => Promise.resolve()
     })
     .then(credentials => Promise.all([
         credentials,
-        usersDao.readAuthUserByEmail(credentials.email),
+        authDao.readUserHashForEmail(credentials.email),
     ]))
-    .then( ([credentials, user]) => {
-      if (!user) {
+    .then( ([credentials, userHash]) => {
+      if (!userHash) {
         throw new EntityNotFoundError(EntityTypes.USER, credentials.email)
       }
       return Promise.all([
-          user,
-          argon2.verify(user.hash, credentials.password),
-      ])
+          argon2.verify(userHash.hash, credentials.password),
+          userHash.userId,
+        ])
     })
-    .then( ([user, isMatch]) => {
+    .then( ([isMatch, userId]) => {
       if (!isMatch) {
         throw new InvalidLoginError()
       }
+
+      return usersDao.readUserForId(userId)
+    })
+    .then(user => {
       const authToken = cryptohat(256, 36)
       const created = new Date()
       const expires = moment().add(moment.duration.apply(moment.duration, config.authTokenDuration)).toDate()
 
       return Promise.all([
           user,
-          authToken,
-          authDao.insertAuthToken(user.id, authToken, created, expires)
+          authDao.insertAuthToken(user.id, authToken, created, expires),
       ])
     })
     .then( ([user, authToken]) => ({
-      email: user.email,
+      user,
       authToken,
-      // ignore insertion result, so long as it succeeded
     }))
 
-const logout = ({authToken}) => authDao.deleteAuthToken(authToken)
+const logout = authToken => authDao.deleteAuthToken(authToken)
 
 const createVote = ({authToken, vote}) => withAuth(authToken)
     .then(userId => {
@@ -1187,7 +1189,7 @@ const deleteCounterJustificationsToJustificationIds = (justificationIds, userId,
           )
     })
 
-const readFeaturedPerspectives = ({authToken}) => authDao.getUserId(authToken)
+const readFeaturedPerspectives = authToken => authDao.getUserIdForAuthToken(authToken)
     .then(userId => perspectivesDao.readFeaturedPerspectivesWithVotesForOptionalUserId(userId))
     .then(perspectives => map(perspectives, decircularizePerspective))
 

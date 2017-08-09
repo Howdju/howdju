@@ -1,7 +1,5 @@
 # Howdju UI TODO
   
-### Error handling
-* Add some log capturing
 * It would be great to figure out how to ensure that the app doesn't freeze
 
 * Example where we would want to allow helper conjunctions, but to zone in on the statements:
@@ -432,6 +430,9 @@
 * [Parallax](https://github.com/dixonandmoe/rellax) 
 * [Scroll animation](https://github.com/michalsnik/aos)
 * [Web designy repositories](https://github.com/ajlkn?tab=repositories)
+* [Obfuscate auth](https://github.com/rt2zz/redux-persist-transform-compress)
+* [redux-persist-migrate](https://github.com/wildlifela/redux-persist-migrate)
+* [Storage](https://github.com/localForage/localForage)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

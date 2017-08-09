@@ -6,6 +6,7 @@ import createSagaMiddleware from 'redux-saga'
 import rootReducer from './reducers/index';
 import getSagas from './sagas';
 import {logger} from './util';
+import config from './config'
 
 export const history = createHistory()
 
@@ -26,7 +27,7 @@ export default function configureStore(initialState) {
   )
 
   persistStore(store, {
-    whitelist: ['auth']
+    whitelist: config.reduxPersistWhitelist
   });
 
   let rootTask = sagaMiddleware.run(function* () {

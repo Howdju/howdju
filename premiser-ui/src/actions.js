@@ -226,3 +226,7 @@ export const flows = {
 export const autocompletes = {
   clearSuggestions: actionCreator('AUTOCOMPLETES/CLEAR_SUGGESTIONS', suggestionsKey => ({suggestionsKey}))
 }
+
+export const errors = {
+  clearLoggedErrors: actionCreator('ERRORS/CLEAR_LOGGED_ERRORS'),
+}

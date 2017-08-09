@@ -13,14 +13,15 @@ import {
   cancel,
   cancelled,
 } from 'redux-saga/effects'
-import isFunction from 'lodash/isFunction'
-import merge from 'lodash/merge'
 import {REHYDRATE} from 'redux-persist/constants'
 import {push, replace} from 'react-router-redux'
-import map from 'lodash/map'
-import get from 'lodash/get'
 import cloneDeep from 'lodash/cloneDeep'
+import find from 'lodash/find'
+import get from 'lodash/get'
+import isFunction from 'lodash/isFunction'
 import keys from 'lodash/keys'
+import map from 'lodash/map'
+import merge from 'lodash/merge'
 import pick from 'lodash/pick'
 import queryString from 'query-string'
 import {denormalize} from "normalizr";
@@ -53,9 +54,9 @@ import * as httpMethods from '../httpMethods'
 import * as httpStatusCodes from '../httpStatusCodes'
 import {
   selectAuthToken,
-  selectEditorState,
+  selectEditorState, selectLoggedErrors,
   selectLoginRedirectLocation,
-  selectRouterLocation
+  selectRouterLocation, selectUserExternalIds
 } from "../selectors";
 import {EditorTypes} from "../reducers/editors";
 import {
@@ -65,7 +66,9 @@ import {
   ui,
   apiActionCreatorsByActionType,
   app,
-  flows, str,
+  flows,
+  str,
+  errors,
 } from "../actions";
 import {
   consolidateBasis,
@@ -79,8 +82,10 @@ import {
 import apiErrorCodes from "../apiErrorCodes";
 import {customErrorTypes, newEditorCommitResultError, newImpossibleError} from "../customErrors";
 import config from "../config";
+import * as sentry from '../sentry'
 
 import handleTransientInteractions from './transients'
+
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
 let isRehydrated = false
@@ -405,6 +410,17 @@ function* redirectAfterLogin() {
   })
 }
 
+function* configureAfterLogin() {
+  yield takeEvery(str(api.login.response), function* setSentryUserContextAfterLoginWorker(action) {
+    if (!action.error) {
+      const {sentryId} = yield select(selectUserExternalIds)
+      if (sentryId) {
+        sentry.setUserContext(sentryId)
+      }
+    }
+  })
+}
+
 function* resourceApiCalls() {
   const actionTypes = keys(resourceApiConfigs)
   yield takeEvery(actionTypes, callApiForResource)
@@ -482,9 +498,16 @@ function* apiFailureErrorMessages() {
   })]
 }
 
-function* flagRehydrate() {
+function* onRehydrate() {
   yield takeEvery(REHYDRATE, function* flagRehydrateWorker() {
     isRehydrated = true
+  })
+
+  yield takeEvery(REHYDRATE, function* setSentryUserContextWorker() {
+    const {sentryId} = yield select(selectUserExternalIds, {})
+    if (sentryId) {
+      sentry.setUserContext(sentryId)
+    }
   })
 }
 
@@ -779,15 +802,29 @@ function* showAlertForLogout() {
 }
 
 function* logErrors() {
+
   yield takeEvery('*', function* logErrorsWorker(action) {
+    const error = action.payload
     if (action.error) {
-      logger.error(action.payload)
+      const loggedErrors = yield select(selectLoggedErrors)
+      // Sometimes we wrap the same exception in multiple actions, such as callApi.response and then fetchStatements.response
+      // So don't log the same error multiple times
+      if (!find(loggedErrors, e => e === error)) {
+        loggedErrors.push(error)
+        logger.exception(error)
+      }
     }
+  })
+
+  yield takeEvery(str(errors.clearLoggedErrors), function* clearLoggedErrorsWorker(action) {
+    // Periodically clear the logged errors since the find above is linear
+    yield call(delay, 10000)
+    yield put(errors.clearLoggedErrors())
   })
 }
 
 export default () => [
-  flagRehydrate(),
+  onRehydrate(),
   initializeMainSearch(),
   logErrors(),
 
@@ -795,6 +832,7 @@ export default () => [
 
   goTo(),
   redirectToLoginWhenUnauthorized(),
+  configureAfterLogin(),
   redirectAfterLogin(),
 
   goHomeIfDeleteStatementWhileViewing(),

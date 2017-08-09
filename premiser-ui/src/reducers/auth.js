@@ -3,13 +3,17 @@ import {
 } from '../actions'
 import { handleActions } from 'redux-actions'
 
+const defaultState = { authToken: null, user: null }
 export default handleActions({
-  [api.login.response]: (state, action) => {
-    const {
-      authToken,
-      email
-    } = action.payload
-    return {...state, authToken, email}
+  [api.login.response]: {
+    next: (state, action) => {
+      const {
+        authToken,
+        user,
+      } = action.payload
+      return {...state, authToken, user}
     },
-  [api.logout.response]: (state, action) => ({...state, authToken: null, email: null})
-}, { authToken: null, email: null })
+    throw: (state, action) => ({...defaultState})
+  },
+  [api.logout.response]: (state, action) => ({...defaultState})
+}, defaultState)

@@ -22,3 +22,14 @@
   * Contains fields for editing
 * ThingViewer
   * Display of Thing
+  
+  
+The further a society drifts from truth, the more it will hate those that speak it - George Orwell
+
+
+
+* Add visible score to person making comment, telling them it is not so good to not include citations of their comment.
+  * And fold comments without strong score
+* wikipedia, politifact, 
+ * https://blog.okfn.org/2016/02/01/google-funds-frictionless-data-initiative-at-open-knowledge/
+* Private subscription, bounties, news subscription referral/bundling

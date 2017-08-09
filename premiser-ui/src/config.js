@@ -16,6 +16,7 @@ const config = {
   },
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
+  reduxPersistWhitelist: ['auth'],
 }
 
 export default config

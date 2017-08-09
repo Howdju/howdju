@@ -401,7 +401,7 @@ class JustificationsDao {
         left join citation_references cr on 
               j.basis_type = $4 
           and j.basis_id = cr.citation_reference_id
-        left join authentication_tokens auth on auth.token = $2
+        left join user_auth_tokens auth on auth.auth_token = $2
         left join votes v on 
               v.target_type = $3
           and j.justification_id = v.target_id

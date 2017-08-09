@@ -1,5 +1,4 @@
 delete from actions;
-delete from authentication_tokens;
 delete from citations;
 delete from citation_references;
 delete from citation_reference_urls;
@@ -17,7 +16,9 @@ delete from tags;
 delete from tagging_scores;
 delete from urls;
 -- delete from users;
-delete from user_analytics;
+-- delete from user_auth;
+-- delete from user_external_ids;
+delete from user_auth_tokens;
 delete from user_groups;
 delete from user_permissions;
 delete from votes;

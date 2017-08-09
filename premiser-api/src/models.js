@@ -1,7 +1,11 @@
 const {ImpossibleError} = require('./errors')
 
 const EntityTypes = {
-  STATEMENT: 'STATEMENT'
+  STATEMENT: 'STATEMENT',
+  CITATION: 'CITATION',
+  CITATION_REFERENCE: 'CITATION_REFERENCE',
+  JUSTIFICATION: 'JUSTIFICATION',
+  USER: 'USER',
 }
 
 const ActionType = {

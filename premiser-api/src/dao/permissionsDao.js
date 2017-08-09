@@ -42,9 +42,9 @@ class PermissionsDao {
         )
         , "user" AS (
           select users.*
-          from authentication_tokens auth join users using (user_id)
+          from user_auth_tokens auth join users using (user_id)
             where
-                auth.token = $1
+                auth.auth_token = $1
             and auth.expires > $3
             and auth.deleted is null
             and users.deleted is null

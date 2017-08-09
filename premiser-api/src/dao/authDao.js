@@ -1,28 +1,35 @@
+const get = require('lodash/get')
 const head = require('lodash/head')
 const {query} = require('../db')
 const toString = require('lodash/toString')
+const {toUserHash} = require('../orm')
 
 class AuthDao {
 
+  readUserHashForEmail(email) {
+    return query('select ua.user_id, ua.hash from users u join user_auth ua using (user_id) where u.email = $1', [email])
+        .then( ({rows: [row]}) => toUserHash(row))
+  }
+
   insertAuthToken(userId, authToken, created, expires) {
     return query(
-        'insert into authentication_tokens (user_id, token, created, expires) values ($1, $2, $3, $4)',
+        'insert into user_auth_tokens (user_id, auth_token, created, expires) values ($1, $2, $3, $4) returning auth_token',
         [userId, authToken, created, expires]
     )
-        .then( ({rows: [row]}) => row )
+        .then( ({rows: [row]}) => get(row, 'auth_token') )
   }
 
   deleteAuthToken(authToken) {
-    return query('delete from authentication_tokens where token = $1 returning token', [authToken])
-        .then( ({rows}) => head(rows))
+    return query('delete from user_auth_tokens where auth_token = $1 returning user_id', [authToken])
+        .then( ({rows: [row]}) => get(row, 'user_id'))
   }
 
-  getUserId(authToken) {
+  getUserIdForAuthToken(authToken) {
     const sql = `
       select user_id
-      from authentication_tokens
+      from user_auth_tokens
         where 
-              token = $1 
+              auth_token = $1 
           and expires > $2
           and deleted is null 
     `

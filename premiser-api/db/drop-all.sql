@@ -1,5 +1,4 @@
 drop table if exists actions;
-drop table if exists authentication_tokens;
 drop table if exists citations;
 drop table if exists group_permissions;
 drop table if exists groups;
@@ -13,6 +12,7 @@ drop table if exists taggings;
 drop table if exists tags;
 drop table if exists tagging_scores;
 drop table if exists urls;
+drop table if exists user_auth_tokens;
 drop table if exists user_groups;
 drop table if exists user_permissions;
 drop table if exists users;

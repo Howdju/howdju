@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Route, Switch } from 'react-router'
 import { Link, Redirect } from 'react-router-dom'
-
 import { ConnectedRouter } from 'react-router-redux'
 import DocumentTitle from 'react-document-title'
 import Button from 'react-md/lib/Buttons/Button'
@@ -24,8 +23,8 @@ import LoginPage from './LoginPage'
 import {
   api,
   app,
-  mapActionCreatorGroupToDispatchToProps,
   ui,
+  mapActionCreatorGroupToDispatchToProps,
 } from "./actions";
 import {history} from './configureStore'
 import paths, {createJustificationPath, mainSearchPathName} from "./paths";
@@ -135,6 +134,12 @@ class App extends Component {
 
   render () {
     const {
+      authToken,
+      email,
+      isNavDrawerVisible,
+      toasts,
+    } = this.props
+    const {
       activeTabIndex
     } = this.state
 
@@ -158,7 +163,7 @@ class App extends Component {
                 to="/tools"
       />,
     ]
-    if (this.props.authToken) {
+    if (authToken) {
       navItems.push(
           <ListItem key="logout"
                     primaryText="Logout"
@@ -167,7 +172,7 @@ class App extends Component {
           />
       )
     }
-    if (!this.props.authToken) {
+    if (!authToken) {
       navItems.push(
           <ListItem key="login"
                     primaryText="Login"
@@ -188,15 +193,15 @@ class App extends Component {
                   nav={<Button icon onClick={this.handleHideNavDrawer}>close</Button>}
                   className="md-divider-border md-divider-border--bottom"
               >
-                {this.props.authToken &&
+                {authToken &&
                   <div className="app-nav-drawer-header">
-                    <b>{this.props.authEmail}</b>
+                    <b>{email}</b>
                   </div>
                 }
               </Toolbar>
             }
             navItems={navItems}
-            visible={this.props.isNavDrawerVisible}
+            visible={isNavDrawerVisible}
             onVisibilityToggle={this.onNavDrawerVisibilityChange}
             style={{ zIndex: 100 }}
         />)
@@ -278,7 +283,7 @@ class App extends Component {
 
             </div>
 
-            <Snackbar toasts={this.props.toasts} onDismiss={this.onSnackbarDismiss} />
+            <Snackbar toasts={toasts} onDismiss={this.onSnackbarDismiss} />
 
           </div>
         </ConnectedRouter>
@@ -289,19 +294,15 @@ class App extends Component {
 
 const mapStateToProps = state => {
   const {
-    auth: {
-      email: authEmail,
-      authToken,
-    },
-    ui: {
-      app: {
-        isNavDrawerVisible,
-        toasts,
-      }
-    }
+    auth,
+    ui,
   } = state
+  const email = get(auth, ['user', 'email'])
+  const authToken = auth.authToken
+  const isNavDrawerVisible = get(ui, ['app', 'isNavDrawerVisible'])
+  const toasts = get(ui, ['app', 'toasts'])
   return {
-    authEmail,
+    email,
     authToken,
     isNavDrawerVisible,
     toasts,

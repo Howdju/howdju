@@ -74,3 +74,10 @@ html, body {
 .md-grid--bottom {
   padding-top: 0;
 }
+
+#header {
+  .md-divider--text-field {
+    // For some reason the non-zero (4-8px depending on screen width) margin-bottom was disappearing this divider
+    margin-bottom: 0;
+  }
+}

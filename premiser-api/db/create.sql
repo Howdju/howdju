@@ -25,7 +25,6 @@ create table if not exists users (
   first_name varchar(128),
   last_name varchar(128),
   phone_number varchar(64),
-  hash varchar(4096),
   creator_user_id integer,
   is_active bit,
   last_login timestamp,
@@ -33,9 +32,23 @@ create table if not exists users (
   deleted timestamp,
 );
 
-create table if not exists user_analytics (
+create table if not exists user_external_ids (
   user_id integer,
-  google_analytics_id varchar(128)
+  google_analytics_id varchar(128),
+  sentry_id varchar(128)
+);
+
+create table if not exists user_auth (
+  user_id integer,
+  hash varchar(4096)
+);
+
+create table if not exists user_auth_tokens (
+  user_id integer,
+  auth_token varchar(1024),
+  created timestamp,
+  expires timestamp,
+  deleted timestamp
 );
 
 create table if not exists actions (
@@ -203,13 +216,5 @@ create table if not exists group_permissions (
   permission_id integer,
   creator_user_id integer,
   created timestamp,
-  deleted timestamp
-);
-
-create table if not exists authentication_tokens (
-  user_id integer,
-  token varchar(1024),
-  created timestamp,
-  expires timestamp,
   deleted timestamp
 );

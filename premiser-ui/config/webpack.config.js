@@ -1,4 +1,8 @@
 const path = require('path')
+const {
+  gitShortSha,
+  nodePackageVersion
+} = require('./util')
 
 // const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -15,7 +19,9 @@ const {
 
 const htmlWebpackPluginConfig = merge({
   appMountId: 'root',
+  environment: process.env.NODE_ENV,
   filename: projectConfig.names.indexHtml,
+  gitCommit: gitShortSha(),
   hash: false,
   inject: false, // The template injects scripts
   minify: {
@@ -25,6 +31,7 @@ const htmlWebpackPluginConfig = merge({
   mobile: true,
   title: 'Howdju',
   template: projectConfig.paths.src(projectConfig.names.indexHtml),
+  version: nodePackageVersion(),
 }, envHtmlWebpackPluginConfig)
 
 const definePluginConfig = merge({
