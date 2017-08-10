@@ -1,16 +1,36 @@
 // https://docs.sentry.io/clients/javascript/tips/
 
 // https://docs.sentry.io/clients/javascript/usage/#raven-js-reporting-errors
-export const captureMessage = (message, options) => Raven.captureMessage(message, options)
+export const captureMessage = (message, options) => {
+  if (window.Raven) {
+    window.Raven.captureMessage(message, options)
+  }
+}
 
-export const setUserContext = sentryExternalId => Raven.setUserContext({
-  id: sentryExternalId
-})
+export const setUserContext = sentryExternalId => {
+  if (window.Raven) {
+    window.Raven.setUserContext({
+      id: sentryExternalId
+    })
+  }
+}
 
-export const clearUserContext = () => Raven.setUserContext()
+export const clearUserContext = () => {
+  if (window.Raven) {
+    window.Raven.setUserContext()
+  }
+}
 
-export const captureException = (ex, context) => Raven.captureException(ex, {
-  extra: context
-})
+export const captureException = (ex, context) => {
+  if (window.Raven) {
+    window.Raven.captureException(ex, {
+      extra: context
+    })
+  }
+}
 
-export const showReportDialog = () => Raven.showReportDialog()
+export const showReportDialog = () => {
+  if (window.Raven) {
+    window.Raven.showReportDialog()
+  }
+}
