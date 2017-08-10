@@ -161,6 +161,7 @@ class LoginPage extends Component {
                   <form action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
                         method="post"
                         target="_blank"
+                        rel="noopener"
                         onSubmit={this.onSubscribeSubmit}
                   >
                     <CardText>

@@ -6,6 +6,8 @@ module.exports.htmlWebpackPluginConfig = {
   minify: {
     preserveLineBreaks: true,
   },
+  smallChat: true,
+  sentry: true,
   googleAnalytics: {
     trackingId: 'UA-104314283-2',
   },

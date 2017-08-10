@@ -29,6 +29,8 @@ if (process.env.NODE_ENV === 'development') {
   }))
 }
 
+app.use(express.static('public'))
+
 app.use('*', function (req, res) {
   res.sendFile(projectConfig.paths.dist(projectConfig.names.indexHtml))
 })

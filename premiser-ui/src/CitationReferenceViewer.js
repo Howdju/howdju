@@ -21,6 +21,7 @@ export default props => {
         <li id={id} key={id} className="url">
           <a href={u.url}
              target="_blank"
+             rel="noopener"
           >
             {extractDomain(u.url)}
             <FontIcon>open_in_new</FontIcon>

@@ -2,21 +2,6 @@
   
 * It would be great to figure out how to ensure that the app doesn't freeze
 
-* Example where we would want to allow helper conjunctions, but to zone in on the statements:
-  "The tea party shouldn't be labeled racist because some members are racist"
-  * Except that [Most Beatles fans would condemn a rapist]
-    whereas [Few Tea Partiers have condemned racism]
-  * Same justification idea as (equivalent justifications? Tag with logical fallacy?):
-    * Muslim leaders decry extremism, whereas alt-right leaders tolerate or even instigate racism
-    * on statement 1070 (http://localhost:3000/s/1070/racist-members-of-the-alt-right-are-just-like-extremist-adherants-to-islam-you-cant-denounce-the-entire-group-because-of-actions-of-the-few)
-  * coordinating conjunctions: and, but, for, nor, or, so, and yet
-  * subordinating conjunctions: after, although, as, as if, because, before, even if, even though, if, if only, 
-    rather than, since, that, though, unless, until, when, where, whereas, wherever, whether, which, and while
-* Home page
-  * Featured perspectives
-    * height of the capitol building limit DC
-    * Hillary's emails
-  * About
 * Deep link to justification on statement page
   * Scroll to anchor after justifications load
 * Remove production.env from git
@@ -25,9 +10,6 @@
 ### Features
 * Jobs (justification score)
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
-
-### Marketing
-* Google analytics
 
 ### Bugs/stability
 * Testing
