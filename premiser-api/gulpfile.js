@@ -14,8 +14,10 @@ gulp.task('js', () =>
     gulp.src([
       'src/**/*.js',
       '!src/**/*.test.js',
-      '!src/config/config.*.js',
-      'src/config/config.production.js'
+      // Only include the necessary production app config
+      'src/config/config.production.js',
+      '!src/config/config.development.js',
+      '!src/config/config.test.js',
     ])
       .pipe(gulp.dest('dist/premiser-api')))
 
@@ -30,7 +32,10 @@ gulp.task('env', () =>
       .pipe(gulp.dest('./dist/premiser-api')))
 
 gulp.task('zip', () =>
-  gulp.src(['dist/premiser-api/**/*', '!dist/package.json', 'dist/premiser-api/.*'])
+  gulp.src([
+    'dist/premiser-api/**/*',
+    '!dist/package.json',
+  ])
       .pipe(zip('premiser-api.zip'))
       .pipe(gulp.dest('./dist/')))
 

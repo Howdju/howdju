@@ -1,6 +1,9 @@
 const merge = require('lodash/merge')
+const {logger} = require('../logger')
 
-const envConfig = require(`./config.${process.env.NODE_ENV}.js`)
+const envConfigFilename = `./config.${process.env.NODE_ENV}.js`
+logger.info(`Loading app config file: ${envConfigFilename}`)
+const envConfig = require(envConfigFilename)
 
 const baseConfig = {
   // https://en.wikipedia.org/wiki/ISO_8601#Time_intervals
