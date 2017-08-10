@@ -29,7 +29,7 @@ create table if not exists users (
   is_active bit,
   last_login timestamp,
   created timestamp,
-  deleted timestamp,
+  deleted timestamp
 );
 
 create table if not exists user_external_ids (
@@ -207,7 +207,7 @@ create table if not exists permissions (
 
 create table if not exists user_permissions (
   user_id integer,
-  permission_id integer
+  permission_id integer,
   creator_user_id integer,
   created timestamp,
   deleted timestamp

@@ -13,7 +13,7 @@ const mysql = require('mysql')
 const {normalizeText} = require("../../premiser-api/src/dao/util");
 const {JustificationBasisType, JustificationTargetType, JustificationPolarity} = require('../../premiser-api/src/models')
 
-const envFilename = process.env.NODE_ENV === 'production' ? '../../premiser-api/config/production.env' : '../../premiser-api/src/.env'
+const envFilename = process.env.NODE_ENV === 'production' ? '../config/production-local-tunnel.env' : '../../premiser-api/src/.env'
 env(path.join(__dirname, envFilename))
 
 const {query} = require('../../premiser-api/src/db')
@@ -79,15 +79,22 @@ const migrateUsers = () => {
         return Promise.all(map(rows, row => {
           if (has(userIdTranslations, row.id)) return Promise.resolve()
           const sql = `
-            insert into users (email, first_name, last_name, hash, created, last_login) 
-            values ($1, $2, $3, $4, $5, $6) 
+            insert into users (email, first_name, last_name, created, last_login) 
+            values ($1, $2, $3, $4, $5) 
             returning user_id`
-          const args = [row.email, row.first_name, row.last_name, row.password, row.date_joined, row.last_login]
+          const args = [row.email, row.first_name, row.last_name, row.date_joined, row.last_login]
           return query(sql, args)
-              .then( ({rows: [{user_id}]}) => {
+              .then( ({rows: [{user_id}]}) => user_id)
+              .then( userId =>
+                Promise.all([
+                  userId,
+                  query(`insert into user_auth (user_id, hash) values ($1, $2) returning user_id`, [userId, row.password]),
+                ])
+              )
+              .then( ([userId]) => {
                 return query(
                     'insert into migration_translations (old_table_name, new_table_name, old_id, new_id) values ($1, $2, $3, $4)',
-                    ['auth_user', 'users', row.id, user_id]
+                    ['auth_user', 'users', row.id, userId]
                 )
               })
         }))
@@ -278,7 +285,7 @@ const getRootStatementId = row => {
 
 const getRootPositive = row => {
   if (row.statement_id) {
-    row.positive
+    return row.positive
   }
   if (!row.justification_id) throw new Error(`justification ${row.id} has neither statement_id nor justification_id`)
   return oldQuery('select * from local_justification where id = ?', [row.justification_id])
@@ -290,19 +297,19 @@ const getRootPositive = row => {
 
 const getJustificationTargetId = row => Promise.resolve()
     .then(() => {
-  if (row.statement_id) {
-    return query(
-        'select new_id from migration_translations where old_table_name = $1 and new_table_name = $2 and old_id = $3',
-        ['local_statement', 'statements', row.statement_id]
-    )
-  }
-  if (row.justification_id) {
-    return query(
-        'select new_id from migration_translations where old_table_name = $1 and new_table_name = $2 and old_id = $3',
-        ['local_justification', 'justifications', row.justification_id]
-    )
-  }
-})
+      if (row.statement_id) {
+        return query(
+            'select new_id from migration_translations where old_table_name = $1 and new_table_name = $2 and old_id = $3',
+            ['local_statement', 'statements', row.statement_id]
+        )
+      }
+      if (row.justification_id) {
+        return query(
+            'select new_id from migration_translations where old_table_name = $1 and new_table_name = $2 and old_id = $3',
+            ['local_justification', 'justifications', row.justification_id]
+        )
+      }
+    })
     .then( ({rows: [targetRow]}) => {
       if (!targetRow) {
         const targetType = row.statement_id ? JustificationTargetType.STATEMENT : JustificationTargetType.JUSTIFICATION

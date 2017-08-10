@@ -17,21 +17,21 @@ gulp.task('js', () =>
       '!src/config/config.*.js',
       'src/config/config.production.js'
     ])
-      .pipe(gulp.dest('dist/')))
+      .pipe(gulp.dest('dist/premiser-api')))
 
 gulp.task('npm', () =>
   gulp.src('./package.json')
-      .pipe(gulp.dest('./dist/'))
+      .pipe(gulp.dest('./dist/premiser-api'))
       .pipe(install({production: true})))
 
 gulp.task('env', () =>
   gulp.src('./config/production.env')
       .pipe(rename('.env'))
-      .pipe(gulp.dest('./dist')))
+      .pipe(gulp.dest('./dist/premiser-api')))
 
 gulp.task('zip', () =>
-  gulp.src(['dist/**/*', '!dist/package.json', 'dist/.*'])
-      .pipe(zip('premiserApi.zip'))
+  gulp.src(['dist/premiser-api/**/*', '!dist/package.json', 'dist/premiser-api/.*'])
+      .pipe(zip('premiser-api.zip'))
       .pipe(gulp.dest('./dist/')))
 
 // See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
@@ -42,7 +42,7 @@ gulp.task('upload', () => {
   const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
   const FunctionName = 'premiserApi'
 
-  fs.readFile('./dist/premiserApi.zip', (err, data) => {
+  fs.readFile('./dist/premiser-api.zip', (err, data) => {
     if (err) throw err
 
     const params = {

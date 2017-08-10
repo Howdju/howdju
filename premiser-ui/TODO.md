@@ -1,6 +1,6 @@
 # Howdju UI TODO
-  
-* It would be great to figure out how to ensure that the app doesn't freeze
+
+* 404s go to sentry
 
 * Deep link to justification on statement page
   * Scroll to anchor after justifications load
@@ -42,6 +42,10 @@
 
 
 ## 0.2 (others can use it)
+
+* Bot/spam/abuse detection
+  * IP rate limiting
+  * account rate limiting (sharing account)
 
 ## Update release (I can use it and show it to people)
 * When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"

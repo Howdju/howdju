@@ -2,8 +2,12 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const moment = require('moment')
 const webpack = require('webpack')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
-const {gitShortSha} = require("./util")
+const {
+  gitShortSha,
+  nodePackageVersion
+} = require("./util")
 
 const projectConfig = require('./project.config')
 
@@ -27,7 +31,22 @@ module.exports.definePluginConfig = {
 }
 
 
-const banner = `${projectConfig.names.js} ${moment().format()} ${gitShortSha()}`
+/*
+Supposed to support more stuff like this:
+
+ hash:[hash]
+ chunkhash:[chunkhash]
+ name:[name]
+ filebase:[filebase]
+ query:[query]
+ file:[file]
+
+ but didn't work; maybe in a newer version
+*/
+const banner = `name: ${projectConfig.names.js}
+version: ${nodePackageVersion()}
+timstamp: ${moment().format()}
+git_commit: ${gitShortSha()}`
 
 const extractTextPlugin = new ExtractTextPlugin({
   filename: "[name].[contenthash].css",
@@ -56,6 +75,7 @@ module.exports.webpackConfig = {
     new webpack.BannerPlugin({
       banner: banner,
       entryOnly: true,
+      test: /\.js$/,
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
@@ -66,5 +86,10 @@ module.exports.webpackConfig = {
     }),
     new CopyWebpackPlugin([ { from: projectConfig.paths.src('error.html') }]),
     extractTextPlugin,
+    new OptimizeCssAssetsPlugin({
+      cssProcessor: require('cssnano'),
+      // cssProcessorOptions: { discardComments: {removeAll: true } },
+      canPrint: true
+    })
   ],
 }

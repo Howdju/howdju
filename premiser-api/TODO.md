@@ -23,6 +23,7 @@
   * Delete statement compounds all of whose statements are deleted
   * Sources having internal inconsistencies (citations ultimately both support and oppose the same statement)
 * Short IDs
+* [Build using Vagrant?](https://stackoverflow.com/a/30440198/39396)
 
 * Update prod DB, update queries to handle deleted, add action logging
 ##

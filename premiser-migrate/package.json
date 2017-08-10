@@ -5,6 +5,10 @@
   "main": "index.js",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
+  "scripts": {
+    "migrate:local": "node bin/migrate-howdju.js",
+    "migrate:prod": "NODE_ENV=production node bin/migrate-howdju.js"
+  },
   "dependencies": {
     "argparse": "^1.0.9",
     "bluebird": "^3.5.0",
