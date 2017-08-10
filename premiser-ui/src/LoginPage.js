@@ -25,6 +25,7 @@ import {EditorTypes} from "./reducers/editors";
 import {makeNewCredentials} from "./models";
 import {toErrorText} from "./modelErrorMessages";
 import {default as t} from './texts'
+import analytics from "./analytics";
 
 import './LoginPage.scss'
 
@@ -58,6 +59,10 @@ class LoginPage extends Component {
 
   onCancel() {
     this.props.goBack()
+  }
+
+  onSubscribeSubmit = event => {
+    analytics.sendEvent('Mailing List Signup Form', 'submit')
   }
 
   render () {
@@ -156,6 +161,7 @@ class LoginPage extends Component {
                   <form action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
                         method="post"
                         target="_blank"
+                        onSubmit={this.onSubscribeSubmit}
                   >
                     <CardText>
                       Howdju 2.0 is currently in private gamma.  Enter your email to be notified when signups are available:

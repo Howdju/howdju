@@ -25,7 +25,8 @@
   
   
 The further a society drifts from truth, the more it will hate those that speak it - George Orwell
-
+Sunlight is the best disinfectent - Justice Louis D. Brandeis
+Howdju: fighting disinformation, enabling democracy
 
 
 * Add visible score to person making comment, telling them it is not so good to not include citations of their comment.

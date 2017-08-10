@@ -15,6 +15,8 @@ const toUser = row => !row ? row : ({
   created: row.created,
   externalIds: {
     googleAnalyticsId: row.google_analytics_id,
+    heapAnalyticsId: row.heap_analytics_id,
+    mixpanelId: row.mixpanel_id,
     sentryId: row.sentry_id,
   }
 })

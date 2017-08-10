@@ -35,6 +35,8 @@ create table if not exists users (
 create table if not exists user_external_ids (
   user_id integer,
   google_analytics_id varchar(128),
+  mixpanel_id varchar(128),
+  heap_analytics_id varchar(128),
   sentry_id varchar(128)
 );
 

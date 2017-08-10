@@ -433,6 +433,9 @@
 * [Obfuscate auth](https://github.com/rt2zz/redux-persist-transform-compress)
 * [redux-persist-migrate](https://github.com/wildlifela/redux-persist-migrate)
 * [Storage](https://github.com/localForage/localForage)
+* [Freebase data](https://developers.google.com/freebase/)
+* [Data containers](https://blog.okfn.org/2016/02/01/google-funds-frictionless-data-initiative-at-open-knowledge/)
+* [Public data sets?](https://www.google.com/publicdata/directory)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

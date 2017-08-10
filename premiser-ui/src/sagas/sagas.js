@@ -14,7 +14,7 @@ import {
   cancelled,
 } from 'redux-saga/effects'
 import {REHYDRATE} from 'redux-persist/constants'
-import {push, replace} from 'react-router-redux'
+import {push, replace, LOCATION_CHANGE} from 'react-router-redux'
 import cloneDeep from 'lodash/cloneDeep'
 import find from 'lodash/find'
 import get from 'lodash/get'
@@ -83,6 +83,7 @@ import apiErrorCodes from "../apiErrorCodes";
 import {customErrorTypes, newEditorCommitResultError, newImpossibleError} from "../customErrors";
 import config from "../config";
 import * as sentry from '../sentry'
+import analytics from "../analytics"
 
 import handleTransientInteractions from './transients'
 
@@ -413,10 +414,12 @@ function* redirectAfterLogin() {
 function* configureAfterLogin() {
   yield takeEvery(str(api.login.response), function* setSentryUserContextAfterLoginWorker(action) {
     if (!action.error) {
-      const {sentryId} = yield select(selectUserExternalIds)
+      const externalIds = yield select(selectUserExternalIds)
+      const {sentryId} = externalIds
       if (sentryId) {
         sentry.setUserContext(sentryId)
       }
+      analytics.identify(externalIds)
     }
   })
 }
@@ -504,10 +507,12 @@ function* onRehydrate() {
   })
 
   yield takeEvery(REHYDRATE, function* setSentryUserContextWorker() {
-    const {sentryId} = yield select(selectUserExternalIds, {})
+    const externalIds = yield select(selectUserExternalIds, {})
+    const {sentryId} = externalIds
     if (sentryId) {
       sentry.setUserContext(sentryId)
     }
+    analytics.identify(externalIds)
   })
 }
 
@@ -823,6 +828,13 @@ function* logErrors() {
   })
 }
 
+function* onLocationChange() {
+  yield takeEvery(LOCATION_CHANGE, function* locationChangeWorker(action) {
+    const location = action.payload
+    analytics.sendPageView(location.pathname)
+  })
+}
+
 export default () => [
   onRehydrate(),
   initializeMainSearch(),
@@ -848,4 +860,6 @@ export default () => [
   showAlertForLogout(),
 
   handleTransientInteractions(),
+
+  onLocationChange(),
 ]
