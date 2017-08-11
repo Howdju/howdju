@@ -1,11 +1,15 @@
 const path = require('path')
 const merge = require('webpack-merge')
-
+const {
+  hostAddress,
+  devWebServerPort,
+} = require("./util")
 
 const basePath = path.resolve(__dirname, '..')
 
 const baseConfig = {
-  port: 3000,
+  devWebServerPort: devWebServerPort(),
+  hostAddress: hostAddress(),
   names: {
     js: 'premiser-ui.js',
     indexHtml: 'index.html',
@@ -28,5 +32,6 @@ const baseConfig = {
 }
 
 const envConfig = require(`./project.${process.env.NODE_ENV}.config.js`)
+
 
 module.exports = merge(baseConfig, envConfig)

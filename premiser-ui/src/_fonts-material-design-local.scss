@@ -4,9 +4,9 @@
   font-style: normal;
   font-weight: 400;
   src: local('Material Icons'),
-       local('MaterialIcons-Regular'),
-       url(https://localhost/fonts/Material-Design.woff2)
-       format('woff2');
+  local('MaterialIcons-Regular'),
+  $dev-material-design-font-url
+  format('woff2');
 }
 
 .material-icons {

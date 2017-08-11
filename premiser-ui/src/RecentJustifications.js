@@ -50,7 +50,7 @@ class RecentJustifications extends Component {
       return <JustificationCard key={id}
                                 justification={j}
                                 doShowBasisJustifications={false}
-                                className="md-cell md-cell--6 md-cell--4-tablet" />
+                                className="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone" />
     })
     const fetchMoreButton = <Button flat
                                     key="fetch-more-button"

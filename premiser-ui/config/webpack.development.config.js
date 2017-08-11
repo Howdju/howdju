@@ -1,4 +1,9 @@
 const webpack = require('webpack')
+const {
+  hostAddress,
+  devApiServerPort,
+  devWebServerPort,
+} = require('./util')
 
 const projectConfig = require('./project.config')
 
@@ -20,7 +25,7 @@ module.exports.htmlWebpackPluginConfig = {
 }
 
 module.exports.definePluginConfig = {
-  'process.env.API_ROOT': JSON.stringify('http://localhost:8081/api/'),
+  'process.env.API_ROOT': JSON.stringify(`http://${hostAddress()}:${devApiServerPort()}/api/`),
   'process.env.DO_ASSERT': JSON.stringify('true'),
 }
 

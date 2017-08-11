@@ -39,7 +39,7 @@ import NotFoundPage from "./NotFoundPage";
 import JustificationsSearchPage from "./JustificationsSearchPage";
 import t, {MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME} from "./texts";
 
-import './fonts.scss'
+import './fonts.js'
 import './App.scss'
 
 const tabIndexByPathname = {

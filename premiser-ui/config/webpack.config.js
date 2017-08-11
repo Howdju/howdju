@@ -1,7 +1,8 @@
-const path = require('path')
 const {
   gitShortSha,
-  nodePackageVersion
+  nodePackageVersion,
+  hostAddress,
+  devWebServerPort,
 } = require('./util')
 
 // const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -62,7 +63,15 @@ const baseWebpackConfig = {
           "style-loader",
           "css-loader?sourceMap",
           "resolve-url-loader",
-          "sass-loader?sourceMap",
+          {
+            loader: "sass-loader",
+            options: {
+              sourceMap: true,
+              // http://$DEV-ASSETS-SERVER-HOST:$DEV-ASSETS-SERVER-PORT/fonts/Material-Design.woff2
+              data: `$dev-material-design-font-url: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Material-Design.woff2);`,
+            }
+          },
+          // 'sass-loader?sourceMap',
         ]
       },
       {

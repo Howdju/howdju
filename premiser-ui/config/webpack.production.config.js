@@ -30,7 +30,6 @@ module.exports.definePluginConfig = {
   'process.env.API_ROOT': JSON.stringify('https://ewl0mezq3f.execute-api.us-east-1.amazonaws.com/dev/api/')
 }
 
-
 /*
 Supposed to support more stuff like this:
 

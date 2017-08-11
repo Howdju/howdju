@@ -11,6 +11,7 @@ const {routeEvent} = require('./route')
 // config for settings that can be unencrypted at rest and that wait for a deploy to change
 const config = require('./config')
 const {logger} = require('./logger')
+const {apiHost} = require('./util')
 
 const makeObj = (iterable) => reduce(iterable, (acc, o) => {
   acc[o] = o
@@ -34,7 +35,7 @@ const makeResponse = ({httpStatusCode, headers={}, body, origin}) => {
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
     // https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
     // realm=<realm> A description of the protected area. If no realm is specified, clients often display a formatted hostname instead.
-    headers['WWW-Authenticate'] = `Bearer realm=${process.env['API_HOST']}`
+    headers['WWW-Authenticate'] = `Bearer realm=${apiHost()}`
   }
 
   const response = {

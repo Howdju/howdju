@@ -64,14 +64,14 @@ class StatementJustificationTrees extends Component {
       const negativeTreeClass = "statement-justifications-justification-trees--negative"
       treeCells = [
         <FlipMove key={positiveTreeClass}
-                  className={`md-cell md-cell--6 md-cell--4-tablet ${positiveTreeClass}`}
+                  className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${positiveTreeClass}`}
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
         >
           {map(positiveJustifications, this.toTree)}
         </FlipMove>,
         <FlipMove key={negativeTreeClass}
-                  className={`md-cell md-cell--6 md-cell--4-tablet ${negativeTreeClass}`}
+                  className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${negativeTreeClass}`}
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
         >

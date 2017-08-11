@@ -47,7 +47,7 @@ class RecentStatements extends Component {
     const hasStatements = statements && statements.length > 0
     const cards = () => map(statements, s => {
       const id = `recent-statement-${s.id}`
-      return <StatementCard key={id} statement={s} className="md-cell md-cell--3 md-cell--4-tablet" />
+      return <StatementCard key={id} statement={s} className="md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone" />
     })
     const fetchMoreButton = <Button flat
                                     key="fetch-more-button"

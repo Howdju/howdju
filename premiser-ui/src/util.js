@@ -65,7 +65,7 @@ export const logger = {
   error: message => {
     logFunctions.error(message)
     sentry.captureMessage(message)
-    sentry.showReportDialog()
+    // sentry.showReportDialog()
   },
   warn: console.warn || console.log,
   info: console.info || console.log,

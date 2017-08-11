@@ -1,6 +1,17 @@
 # Howdju UI TODO
 
+* Featured Perspectives are scrunched on mobile
+* iOS safari fails
+  * I think it was Firefox Focus blocker
 * 404s go to sentry
+* No message for no featured perspectives
+* tab names need to be smaller on mobile.  Or icons
+* How to get touch/hover parity (e.g. created date)
+* Clicking on statement of Justification in JustificationCard should go to justifiation not basis statement?
+* Search page needs some work, perhaps especially in mobile
+* Figure out HTTPS for submitting passwords and generally just requesting the site
+* If I get a sentry error from an unauthenticated user, how do I connect that with analytics or API logging?
+   * Need a cookie ID, and perhaps request IDs
 
 * Deep link to justification on statement page
   * Scroll to anchor after justifications load
@@ -422,6 +433,7 @@
 * [Freebase data](https://developers.google.com/freebase/)
 * [Data containers](https://blog.okfn.org/2016/02/01/google-funds-frictionless-data-initiative-at-open-knowledge/)
 * [Public data sets?](https://www.google.com/publicdata/directory)
+* [SASS Variable to Javascript](https://github.com/nordnet/sass-variable-loader)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

@@ -47,7 +47,7 @@ class RecentCitationReferences extends Component {
     const hasCitationReferences = citationReferences && citationReferences.length > 0
     const cards = () => map(citationReferences, cr => {
       const id = `recent-citation-reference-${cr.id}`
-      return <CitationReferenceCard key={id} citationReference={cr} className="md-cell md-cell--3 md-cell--4-tablet" />
+      return <CitationReferenceCard key={id} citationReference={cr} className="md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone" />
     })
     const fetchMoreButton = <Button flat
                                     key="fetch-more-button"
