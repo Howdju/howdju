@@ -14,13 +14,15 @@ exports.gitVersionTag = () => childProcess
 exports.nodePackageVersion = () => require('../package.json').version
 
 exports.hostAddress = () => {
-  let address = null;
-  let done = false
-  dns.lookup(os.hostname(), function (err, add, fam) {
-    address = add;
-    done = true
-  })
-  deasync.loopWhile(() => !done)
+  let address = process.env.HOST_ADDRESS;
+  if (!address) {
+    let done = false
+    dns.lookup(os.hostname(), function (err, add, fam) {
+      address = add;
+      done = true
+    })
+    deasync.loopWhile(() => !done)
+  }
   return address
 }
 

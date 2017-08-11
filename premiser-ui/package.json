@@ -13,6 +13,7 @@
     "serve:dev": "cross-env NODE_ENV=development DEBUG=premiser-ui:* node bin/dev-server.js",
     "serve:prod": "cross-env NODE_ENV=production DEBUG=premiser-ui:* node bin/dev-server.js",
     "dev": "yarn run build:dev && yarn run serve:dev",
+    "local": "HOST_ADDRESS=localhost yarn run dev",
     "invalidate": "cross-env NODE_ENV=production DEBUG=* node bin/create-invalidation.js",
     "upload": "cross-env NODE_ENV=production DEBUG=* node bin/upload-to-s3.js",
     "deploy": "yarn run build:prod && yarn run upload && yarn run invalidate",

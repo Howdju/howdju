@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const sass = require('node-sass')
 const {
   hostAddress,
   devApiServerPort,
@@ -27,6 +28,13 @@ module.exports.htmlWebpackPluginConfig = {
 module.exports.definePluginConfig = {
   'process.env.API_ROOT': JSON.stringify(`http://${hostAddress()}:${devApiServerPort()}/api/`),
   'process.env.DO_ASSERT': JSON.stringify('true'),
+}
+
+// module.exports.sassLoaderData = `$dev-material-design-font-url: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Material-Design.woff2);`
+module.exports.sassLoaderFunctions = {
+  'local-font-url-string($font-name)': function(fontName) {
+    return new sass.types.String(`http://${hostAddress()}:${devWebServerPort()}/fonts/${fontName}.woff2`)
+  }
 }
 
 module.exports.webpackConfig = {

@@ -9,6 +9,7 @@ const {
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
+const assign = require('lodash/assign')
 
 const projectConfig = require('./project.config')
 
@@ -16,6 +17,8 @@ const {
   htmlWebpackPluginConfig: envHtmlWebpackPluginConfig,
   definePluginConfig: envDefinePluginConfig,
   webpackConfig: envWebpackConfig,
+  sassLoaderData: envSassLoaderData,
+  sassLoaderFunctions: envSassLoaderFunctions,
 } = require(`./webpack.${process.env.NODE_ENV}.config.js`)
 
 const htmlWebpackPluginConfig = merge({
@@ -38,6 +41,8 @@ const htmlWebpackPluginConfig = merge({
 const definePluginConfig = merge({
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
 }, envDefinePluginConfig)
+
+const sassLoaderFunctions = assign({}, envSassLoaderFunctions)
 
 const baseWebpackConfig = {
   output: {
@@ -67,11 +72,10 @@ const baseWebpackConfig = {
             loader: "sass-loader",
             options: {
               sourceMap: true,
-              // http://$DEV-ASSETS-SERVER-HOST:$DEV-ASSETS-SERVER-PORT/fonts/Material-Design.woff2
-              data: `$dev-material-design-font-url: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Material-Design.woff2);`,
+              data: envSassLoaderData,
+              functions: sassLoaderFunctions,
             }
           },
-          // 'sass-loader?sourceMap',
         ]
       },
       {

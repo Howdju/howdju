@@ -13,8 +13,6 @@
 
 * Deep link to justification on statement page
   * Scroll to anchor after justifications load
-* Remove production.env from git
-   * change premiser_api password
 
 ### Features
 * Jobs (justification score)

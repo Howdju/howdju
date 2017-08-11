@@ -1,12 +1,15 @@
+// contents of https://fonts.googleapis.com/icon?family=Material+Icons with url replaced with local one
+
 /* fallback */
 @font-face {
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: local('Material Icons'),
-  local('MaterialIcons-Regular'),
-  $dev-material-design-font-url
-  format('woff2');
+  src:
+          local('Material Icons'),
+          local('MaterialIcons-Regular'),
+          url(local-font-url-string('Material-Icons'))
+          format('woff2');
 }
 
 .material-icons {

@@ -73,7 +73,8 @@ export const logger = {
   info: console.info || console.log,
   debug: console.debug || console.log,
   trace: console.trace || console.log,
-  exception: (ex, {level = 'error', extra}) => {
+  exception: (ex, options = {}) => {
+    const {level = 'error', extra} = options
     sentry.captureException(ex, extra)
     logger[level](ex);
   }
