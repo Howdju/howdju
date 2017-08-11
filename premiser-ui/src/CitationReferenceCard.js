@@ -6,6 +6,7 @@ import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import FontIcon from 'react-md/lib/FontIcons'
 import moment from 'moment'
+import cn from 'classnames'
 
 import config from './config'
 import {truncateCitationReferenceQuote} from "./models";
@@ -18,13 +19,16 @@ export default class CitationReferenceCard extends Component {
   render () {
     const {
       citationReference,
+      className,
       ...rest,
     } = this.props
     const citation = citationReference.citation
     const age = citationReference.created ? moment(citationReference.created).fromNow() : ''
     const created = citationReference.created ? moment(citationReference.created).format(config.humanDateTimeFormat) : ''
     return (
-        <Card {...rest}>
+        <Card {...rest}
+              className={cn(className, "citation-reference-card")}
+        >
           <CardTitle
               avatar={<FontIcon role="presentation">book</FontIcon>}
               title={

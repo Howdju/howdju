@@ -5,6 +5,7 @@ import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import FontIcon from 'react-md/lib/FontIcons'
 import moment from 'moment'
+import cn from 'classnames'
 
 import paths from './paths'
 import config from './config'
@@ -14,12 +15,15 @@ export default class CitationCard extends Component {
   render () {
     const {
       citation,
+      className,
       ...rest,
     } = this.props
     const age = citation.created ? moment(citation.created).fromNow() : ''
     const created = citation.created ? moment(citation.created).format(config.humanDateTimeFormat) : ''
     return (
-        <Card {...rest}>
+        <Card {...rest}
+              className={cn(className, "citation-card")}
+        >
           <CardTitle
               avatar={<FontIcon role="presentation">book</FontIcon>}
               title={
