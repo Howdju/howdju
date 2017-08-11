@@ -68,14 +68,17 @@ const baseWebpackConfig = {
           "style-loader",
           "css-loader?sourceMap",
           "resolve-url-loader",
-          {
-            loader: "sass-loader",
-            options: {
-              sourceMap: true,
-              data: envSassLoaderData,
-              functions: sassLoaderFunctions,
-            }
-          },
+          // This causes error when deploying to production if it isn't like the first option
+          process.env.NODE_ENV !== 'development' ?
+              "sass-loader?sourceMap" :
+              {
+                loader: "sass-loader",
+                options: {
+                  sourceMap: true,
+                  data: envSassLoaderData,
+                  functions: sassLoaderFunctions,
+                }
+              },
         ]
       },
       {
