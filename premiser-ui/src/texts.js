@@ -74,6 +74,9 @@ export const UNABLE_TO_LOGIN = 'UNABLE_TO_LOGIN'
 
 
 export const MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME = 'MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME'
+export const MAIN_TABS_RECENT_ACTIVITY_TAB_NAME = 'MAIN_TABS_RECENT_ACTIVITY_TAB_NAME'
+export const MAIN_TABS_WHATS_NEXT_TAB_NAME = 'MAIN_TABS_WHATS_NEXT_TAB_NAME'
+export const MAIN_TABS_ABOUT_TAB_NAME = 'MAIN_TABS_ABOUT_TAB_NAME'
 
 const texts = {
   [CREATE_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Create statement',
@@ -139,7 +142,10 @@ const texts = {
   [INVALID_LOGIN_CREDENTIALS]: 'Invalid login credentials',
   [UNABLE_TO_LOGIN]: 'Unable to login',
 
-  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME: isNarrow() ? "Featured" : "Featured perspectives",
+  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME: () => isNarrow() ? "Featured" : "Featured perspectives",
+  MAIN_TABS_RECENT_ACTIVITY_TAB_NAME: () => isNarrow() ? 'Recent' : 'Recent activity',
+  MAIN_TABS_WHATS_NEXT_TAB_NAME: () => isNarrow() ? 'Next' : "What's next",
+  MAIN_TABS_ABOUT_TAB_NAME: 'About',
 }
 
 const text = (key, ...args) => {

@@ -37,7 +37,12 @@ import WhatsNextPage from "./WhatsNextPage";
 import AboutPage from "./AboutPage";
 import NotFoundPage from "./NotFoundPage";
 import JustificationsSearchPage from "./JustificationsSearchPage";
-import t, {MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME} from "./texts";
+import t, {
+  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME,
+  MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
+  MAIN_TABS_WHATS_NEXT_TAB_NAME,
+  MAIN_TABS_ABOUT_TAB_NAME,
+} from "./texts";
 
 import './fonts.js'
 import './App.scss'
@@ -222,16 +227,32 @@ class App extends Component {
             onTabChange={this.onTabChange}
             style={{position: 'absolute', left: 0, bottom: 0, right: 0}}
         >
-          <Tab label={<Link to={paths.featuredPerspectives()}>{t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME)}</Link>}
+          <Tab label={
+                 <Link to={paths.featuredPerspectives()}>
+                   {t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME)}
+                 </Link>
+               }
                id="featured-perspectives-tab"
           />
-          <Tab label={<Link to={paths.recentActivity()}>Recent activity</Link>}
+          <Tab label={
+                 <Link to={paths.recentActivity()}>
+                   {t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME)}
+                 </Link>
+               }
                id="recent-activity-tab"
           />
-          <Tab label={<Link to={paths.whatsNext()}>What’s next</Link>}
+          <Tab label={
+                 <Link to={paths.whatsNext()}>
+                   {t(MAIN_TABS_WHATS_NEXT_TAB_NAME)}
+                 </Link>
+               }
                id="whats-next-tab"
           />
-          <Tab label={<Link to={paths.about()}>About</Link>}
+          <Tab label={
+                 <Link to={paths.about()}>
+                   {t(MAIN_TABS_ABOUT_TAB_NAME)}
+                 </Link>
+               }
                id="about-tab"
           />
         </Tabs>

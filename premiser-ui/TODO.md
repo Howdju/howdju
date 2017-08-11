@@ -1,17 +1,15 @@
 # Howdju UI TODO
 
 * Featured Perspectives are scrunched on mobile
-* iOS safari fails
-  * I think it was Firefox Focus blocker
 * 404s go to sentry
 * No message for no featured perspectives
-* tab names need to be smaller on mobile.  Or icons
 * How to get touch/hover parity (e.g. created date)
-* Clicking on statement of Justification in JustificationCard should go to justifiation not basis statement?
-* Search page needs some work, perhaps especially in mobile
+* Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
 * Figure out HTTPS for submitting passwords and generally just requesting the site
+* Add citations and quotes to main search
 * If I get a sentry error from an unauthenticated user, how do I connect that with analytics or API logging?
    * Need a cookie ID, and perhaps request IDs
+* Cards: who created, number of justifications or justifications based upon
 
 * Deep link to justification on statement page
   * Scroll to anchor after justifications load
@@ -53,6 +51,11 @@
 
 
 ## 0.2 (others can use it)
+
+* Mobile app
+  * Can I use a webview to insert the extension javascript?
+  * https://stackoverflow.com/a/13473498/39396
+  * https://stackoverflow.com/a/45228364/39396
 
 * Bot/spam/abuse detection
   * IP rate limiting

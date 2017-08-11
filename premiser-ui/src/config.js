@@ -7,16 +7,14 @@
  */
 const config = {
   humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
-  ui: {
-    statementJustifications: {
-      narrowBreakpoint: 600,
-      flipMoveDuration: 750,
-      flipMoveEasing: "ease-out",
-    }
-  },
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
   reduxPersistWhitelist: ['auth'],
+  ui: {
+    narrowBreakpoint: 600,
+    flipMoveDuration: 750,
+    flipMoveEasing: "ease-out",
+  },
 }
 
 export default config

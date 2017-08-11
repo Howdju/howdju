@@ -52,7 +52,9 @@ export function assert(test, message) {
   }
 }
 
-export const isNarrow = () => window.innerWidth < config.narrowBreakpoint
+export const isNarrow = () => {
+  return window.innerWidth < config.ui.narrowBreakpoint
+}
 
 const logFunctions = {
   error: console.error || console.log,
@@ -71,9 +73,8 @@ export const logger = {
   info: console.info || console.log,
   debug: console.debug || console.log,
   trace: console.trace || console.log,
-  exception: (ex, context) => {
-    sentry.captureException(ex)
-    /*eslint no-console:0*/
-    logger.error(ex);
+  exception: (ex, {level = 'error', extra}) => {
+    sentry.captureException(ex, extra)
+    logger[level](ex);
   }
 }

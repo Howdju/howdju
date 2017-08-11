@@ -217,7 +217,7 @@ class JustificationTree extends Component {
       >reply</Button>
     ]
 
-    const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
+    const {flipMoveDuration, flipMoveEasing} = config.ui
     const counterJustifications = (
         <div className="counter-justifications">
           <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>

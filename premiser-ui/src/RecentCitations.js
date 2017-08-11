@@ -54,7 +54,7 @@ class RecentCitations extends Component {
                                     label="Fetch more"
                                     onClick={this.fetchMoreRecentCitations}
     />
-    const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
+    const {flipMoveDuration, flipMoveEasing} = config.ui
 
     return (
         <div>

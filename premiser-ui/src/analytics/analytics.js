@@ -2,6 +2,7 @@ import * as googleAnalytics from "./googleAnalytics";
 import * as mixpanel from "./mixpanel";
 import * as heapAnalytics from './heapAnalytics'
 
+
 export const sendPageView = path => {
   googleAnalytics.sendPageView(path)
 }

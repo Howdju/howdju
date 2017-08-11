@@ -13,6 +13,7 @@ import './Header.scss'
 
 import ApiAutocomplete from "./ApiAutocomplete";
 import {statementSchema} from "./schemas";
+import {ellipsis} from "./characters";
 
 const mainSearchSuggestionsKey = "mainSearch"
 
@@ -94,7 +95,7 @@ class Header extends Component {
               id="mainSearch"
               type="search"
               name="mainSearch"
-              placeholder="know that..."
+              placeholder={"know that" + ellipsis}
               dataValue={dataValue}
               dataLabel={dataLabel}
               suggestionSchema={statementSchema}

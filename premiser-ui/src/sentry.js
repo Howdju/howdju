@@ -21,11 +21,10 @@ export const clearUserContext = () => {
   }
 }
 
-export const captureException = (ex, context) => {
+export const captureException = (ex, extra) => {
   if (window.Raven) {
-    window.Raven.captureException(ex, {
-      extra: context
-    })
+    let data = extra ? {extra} : null
+    window.Raven.captureException(ex, data)
   }
 }
 

@@ -68,3 +68,18 @@ b {
     position: absolute;
   }
 }
+
+/* When the cards are vertically aligned, the spacing just distracts */
+.md-grid--card-list {
+  .md-cell {
+    margin: 0;
+  }
+}
+
+@media (max-width: $md-grid-desktop-breakpoint - 1) {
+  .md-grid--card-list--tablet {
+    .md-cell {
+      margin: 0;
+    }
+  }
+}

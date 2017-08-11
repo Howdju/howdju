@@ -42,7 +42,7 @@ class StatementJustificationTrees extends Component {
     const {
       flipMoveDuration,
       flipMoveEasing
-    } = config.ui.statementJustifications
+    } = config.ui
 
 
     const _isNarrow = isNarrow()

@@ -10,22 +10,16 @@ import Dialog from 'react-md/lib/Dialogs'
 import Positions from "react-md/lib/Menus/Positions";
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import forEach from 'lodash/forEach';
 import some from 'lodash/some'
-import defaults from 'lodash/defaults'
 import cn from 'classnames'
-import FlipMove from 'react-flip-move';
 import get from 'lodash/get'
-import map from 'lodash/map'
 
-import config from './config';
 import {isNarrow, logger} from "./util";
 import {
   isVerified,
   isDisverified,
-  JustificationPolarity,
   isPositive,
   isNegative,
   JustificationBasisType,

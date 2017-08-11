@@ -29,7 +29,7 @@ class FeaturedPerspectivesPage extends Component {
     const {
       flipMoveDuration,
       flipMoveEasing
-    } = config.ui.statementJustifications
+    } = config.ui
 
     return (
         <div id="featuredPerspectives">

@@ -4,6 +4,7 @@ import merge from 'lodash/merge'
 import truncate from 'lodash/truncate'
 
 import {newImpossibleError} from "./customErrors";
+import {ellipsis} from "./characters";
 
 export const JustificationTargetType = {
   STATEMENT: 'STATEMENT',
@@ -168,8 +169,6 @@ export const SortDirection = {
 }
 
 
-// '…'
-const ellipsis = String.fromCharCode(8230)
 const truncateCitationReferenceQuoteOptions = {
   length: 256,
   omission: ellipsis,

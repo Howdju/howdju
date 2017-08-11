@@ -57,7 +57,7 @@ class RecentJustifications extends Component {
                                     label="Fetch more"
                                     onClick={this.fetchMoreRecentJustifications}
     />
-    const {flipMoveDuration, flipMoveEasing} = config.ui.statementJustifications
+    const {flipMoveDuration, flipMoveEasing} = config.ui
 
     return (
         <div>
