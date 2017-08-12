@@ -1,12 +1,9 @@
 # Howdju UI TODO
 
 * Featured Perspectives are scrunched on mobile
-* 404s go to sentry
-* No message for no featured perspectives
-  * No justifications, fetch more, and progress showing at the same time on Justifications search page
 * How to get touch/hover parity (e.g. created date)
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
-* Figure out HTTPS for submitting passwords and generally just requesting the site
+* Figure out HTTPS for submitting passwords and generally just requesting the site, can use https of API Gateway?
 * Add citations and quotes to main search
 * If I get a sentry error from an unauthenticated user, how do I connect that with analytics or API logging?
    * Need a cookie ID, and perhaps request IDs

@@ -5,7 +5,8 @@ import { CANCEL } from 'redux-saga'
 import {logger} from './util'
 import {
   newApiResponseError,
-  newNetworkFailureError, newRequestConfigurationError,
+  newNetworkFailureError,
+  newRequestConfigurationError,
 } from "./customErrors";
 import * as httpMethods from "./httpMethods";
 

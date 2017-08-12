@@ -54,9 +54,11 @@ import * as httpMethods from '../httpMethods'
 import * as httpStatusCodes from '../httpStatusCodes'
 import {
   selectAuthToken,
-  selectEditorState, selectLoggedErrors,
+  selectEditorState,
+  selectLoggedErrors,
   selectLoginRedirectLocation,
-  selectRouterLocation, selectUserExternalIds
+  selectRouterLocation,
+  selectUserExternalIds,
 } from "../selectors";
 import {EditorTypes} from "../reducers/editors";
 import {
@@ -72,15 +74,23 @@ import {
 } from "../actions";
 import {
   consolidateBasis,
-  JustificationBasisType, JustificationTargetType,
-  makeNewStatementJustification, removeStatementCompoundId, SortDirection
+  JustificationBasisType,
+  JustificationTargetType,
+  makeNewStatementJustification,
+  removeStatementCompoundId,
+  SortDirection,
 } from "../models";
 import {
   logger,
   assert,
 } from '../util'
 import apiErrorCodes from "../apiErrorCodes";
-import {customErrorTypes, newEditorCommitResultError, newImpossibleError} from "../customErrors";
+import {
+  customErrorTypes,
+  newEditorCommitResultError,
+  newImpossibleError,
+  newProgrammingError,
+} from "../customErrors";
 import config from "../config";
 import * as sentry from '../sentry'
 import analytics from "../analytics"
@@ -582,10 +592,10 @@ function* editorCommitEdit() {
     } = action.payload
 
     if (!editorType) {
-      throw new Error("editorType is required")
+      throw newProgrammingError("editorType is required")
     }
     if (!editorId) {
-      throw new Error("editorId is required")
+      throw newProgrammingError("editorId is required")
     }
 
     const {editEntity} = yield select(selectEditorState(editorType, editorId))
@@ -770,9 +780,10 @@ function* showAlertForUnexpectedApiError() {
           }
         }
       } else {
-        yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+        logger.error(`${str(api.callApi.response)} missing errorType`)
         logger.error(`Unexpected error type: ${action.payload}`)
         logger.error(action.payload)
+        yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
       }
     }
   })

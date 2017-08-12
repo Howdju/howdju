@@ -25,11 +25,14 @@ class FeaturedPerspectivesPage extends Component {
   render () {
     const {
       perspectives,
+      isFetching,
     } = this.props
     const {
       flipMoveDuration,
       flipMoveEasing
     } = config.ui
+
+    const hasPerspectives = perspectives && perspectives.length > 0
 
     return (
         <div id="featuredPerspectives">
@@ -38,14 +41,20 @@ class FeaturedPerspectivesPage extends Component {
                       duration={flipMoveDuration}
                       easing={flipMoveEasing}
             >
-              {perspectives && perspectives.length > 0 ?
-                  map(perspectives, p => {
-                    const id = `featured-perspective-${p.id}`
-                    return <PerspectiveCard key={id} perspective={p} />
-                  }) :
-                  <CircularProgress key="progress" id="statementJustificationsProgress" />
-              }
+              {map(perspectives, p => {
+                const id = `featured-perspective-${p.id}`
+                return <PerspectiveCard key={id} perspective={p} />
+              })}
             </FlipMove>
+
+            {isFetching &&
+              <CircularProgress key="progress" id="featured-perspectives-progress" />
+            }
+            {!isFetching && !hasPerspectives &&
+              <div key="no-featured-perspectives-message" className="md-cell md-cell--12 center-text">
+                No featured perspectives
+              </div>
+            }
           </div>
         </div>
     )
@@ -56,10 +65,12 @@ const mapStateToProps = (state, ownProps) => {
   const perspectives = denormalize(pageState.featuredPerspectives, perspectivesSchema, state.entities)
   const {
     continuationToken,
+    isFetching,
   } = pageState
   return {
     perspectives,
     continuationToken,
+    isFetching,
   }
 }
 

@@ -35,18 +35,21 @@ export const mainSearchPage = handleActions({
 })
 
 export const featuredPerspectivesPage = handleActions({
+  [api.fetchFeaturedPerspectives]: state => ({...state, isFetching: true}),
   [api.fetchFeaturedPerspectives.response]: {
     next: (state, action) => {
       return {
         ...state,
         featuredPerspectives: union(state.featuredPerspectives, action.payload.result.perspectives),
-        continuationToken: action.payload.result.continuationToken
+        continuationToken: action.payload.result.continuationToken,
+        isFetching: false
       }
     }
   },
 }, {
   featuredPerspectives: [],
   continuationToken: null,
+  isFetching: false,
 })
 
 const defaultJustificationSearchPageState = {
@@ -65,7 +68,7 @@ export const justificationsSearchPage = handleActions({
         isFetching: false,
       }
     },
-    throw: (state, action) => ({...state, ...defaultJustificationSearchPageState})
+    throw: (state, action) => ({...state, isFetching: true}),
   },
   [ui.clearJustificationsSearch]: (state, action) => ({...state, ...defaultJustificationSearchPageState})
 }, defaultJustificationSearchPageState)

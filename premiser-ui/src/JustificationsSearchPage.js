@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import FlipMove from 'react-flip-move'
 import {connect} from "react-redux";
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
@@ -14,6 +15,7 @@ import {
 import JustificationCard from "./JustificationCard";
 import {denormalize} from "normalizr";
 import {justificationsSchema} from "./schemas";
+import config from './config'
 
 class JustificationsSearchPage extends Component {
 
@@ -47,30 +49,46 @@ class JustificationsSearchPage extends Component {
       isFetching,
       justifications,
     } = this.props
+    const {
+      flipMoveDuration,
+      flipMoveEasing
+    } = config.ui
 
-    const fetchMoreButton = <Button flat
-                                    key="fetch-more-button"
-                                    label="Fetch more"
-                                    onClick={this.fetchMore}
-    />
+    const hasJustifications = justifications && justifications.length > 0
+
+    const fetchMoreButton = (
+        <Button flat
+          key="fetch-more-button"
+          label="Fetch more"
+          disabled={isFetching}
+          onClick={this.fetchMore}
+        />
+    )
+
     return (
         <div className="md-grid">
           <h1 className="md-cell md-cell--12">Justifications</h1>
-          {justifications && justifications.length > 0 ?
-              map(justifications, j => (
+
+          <FlipMove className="md-cell md-cell--12 center-text"
+                    duration={flipMoveDuration}
+                    easing={flipMoveEasing}
+          >
+            {map(justifications, j => (
                 <JustificationCard className="md-cell md-cell--12"
                                    key={`justification-card-${j.id}`}
                                    justification={j}
                 />
-            )) :
+            ))}
+          </FlipMove>
+          {!isFetching && !hasJustifications &&
             <div className="md-cell md-cell--12 text-center">
               No justifications
             </div>
           }
           {isFetching && (
-              <div className="md-cell md-cell--12 cell--centered-contents">
-                <CircularProgress id={`$justificationsSearchPage-Progress`} />
-              </div>
+            <div className="md-cell md-cell--12 cell--centered-contents">
+              <CircularProgress id={`$justificationsSearchPage-Progress`} />
+            </div>
           )}
           <div className="md-cell md-cell--12 cell--centered-contents">
             {fetchMoreButton}

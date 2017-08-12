@@ -7,7 +7,7 @@ delete from groups;
 delete from justification_scores;
 delete from justifications;
 
--- delete from migration_translations;
+delete from migration_translations;
 
 delete from permissions;
 delete from perspectives;
