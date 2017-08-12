@@ -419,7 +419,7 @@ const migrateJustifications = ({rows}) => Promise.all(map(rows, row => Promise.a
       const rootPolarity = rootPositive === 0 ? JustificationPolarity.NEGATIVE : JustificationPolarity.POSITIVE
       return query(
           `insert into justifications (root_statement_id, root_polarity, target_id, target_type, basis_id, basis_type, polarity, creator_user_id, created) 
-                values ($1, $2, $3, $4, $5, $6, $7, $8)
+                values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 returning justification_id`,
           [rootStatementId, rootPolarity, targetId, targetType, basisId, basisType, polarity, userId, row.date_created]
       )
@@ -428,6 +428,7 @@ const migrateJustifications = ({rows}) => Promise.all(map(rows, row => Promise.a
                   'insert into migration_translations (old_table_name, new_table_name, old_id, new_id) values ($1, $2, $3, $4)',
                   ['local_justification', 'justifications', row.id, justification_id]
               ),
+              // Must keep track of migrated justifications in old db so that we can join on it to 'migrate remaining justifications'
               oldQuery(
                   'insert into migration_translations (old_table_name, new_table_name, old_id, new_id) values (?, ?, ?, ?)',
                   ['local_justification', 'justifications', row.id, justification_id]
