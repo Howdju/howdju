@@ -8,7 +8,7 @@
   src:
           local('Material Icons'),
           local('MaterialIcons-Regular'),
-          url(local-font-url-string('Material-Icons'))
+          $dev-font-url-material-icons
           format('woff2');
 }
 

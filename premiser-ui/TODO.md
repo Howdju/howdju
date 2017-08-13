@@ -1,7 +1,10 @@
 # Howdju UI TODO
 
-* Featured Perspectives are scrunched on mobile
 * How to get touch/hover parity (e.g. created date)
+  * Too hard to click on controls right after touch;
+    controls should disappear over time or whenever the next card is touched
+* Featured Perspectives are scrunched on mobile
+
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
 * Figure out HTTPS for submitting passwords and generally just requesting the site, can use https of API Gateway?
 * Add citations and quotes to main search

@@ -8,7 +8,7 @@
   src:
           local('Lato Light'),
           local('Lato-Light'),
-          url(local-font-url-string('Lato-Light_LatinExt'))
+          $dev-font-url-lato-light-latin-ext
           format('woff2');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
@@ -20,7 +20,7 @@
   src:
           local('Lato Light'),
           local('Lato-Light'),
-          url(local-font-url-string('Lato-Light_Latin'))
+          $dev-font-url-lato-light-latin
           format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
@@ -32,7 +32,7 @@
   src:
           local('Lato Regular'),
           local('Lato-Regular'),
-          url(local-font-url-string('Lato-Regular_LatinExt'))
+          $dev-font-url-lato-regular-latin-ext
           format('woff2');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
@@ -44,7 +44,7 @@
   src:
           local('Lato Regular'),
           local('Lato-Regular'),
-          url(local-font-url-string('Lato-Regular_Latin'))
+          $dev-font-url-lato-regular-latin
           format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
@@ -56,7 +56,7 @@
   src:
           local('Orbitron Regular'),
           local('Orbitron-Regular'),
-          url(local-font-url-string('Orbitron-Regular_Latin'))
+          $dev-font-url-orbitron-regular-latin
           format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }

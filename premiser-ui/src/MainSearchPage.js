@@ -7,7 +7,7 @@ import StatementCard from './StatementCard'
 class MainSearchPage extends Component {
 
   toCard = entity => (
-      <StatementCard className="md-cell md-cell--12" statement={entity}
+      <StatementCard key={`statement-card-${entity.id}`} className="md-cell md-cell--12" statement={entity}
       />
   )
 
@@ -20,8 +20,10 @@ class MainSearchPage extends Component {
     const noResults = <div className="md-cell md-cell--12">No results.</div>
     return (
       <div className="md-grid md-grid--card-list">
-        {isFetching ? loading : !statements.length ? noResults :
-            map(statements, this.toCard)
+        {isFetching ?
+            loading :
+            !statements.length ? noResults :
+              map(statements, this.toCard)
         }
       </div>
     )

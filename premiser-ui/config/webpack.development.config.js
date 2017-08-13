@@ -30,12 +30,20 @@ module.exports.definePluginConfig = {
   'process.env.DO_ASSERT': JSON.stringify('true'),
 }
 
-// module.exports.sassLoaderData = `$dev-material-design-font-url: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Material-Design.woff2);`
-module.exports.sassLoaderFunctions = {
-  'local-font-url-string($font-name)': function(fontName) {
-    return new sass.types.String(`http://${hostAddress()}:${devWebServerPort()}/fonts/${fontName}.woff2`)
-  }
-}
+module.exports.sassLoaderData =
+  `$dev-font-url-material-icons: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Material-Icons.woff2);` +
+  `$dev-font-url-lato-light-latin-ext: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Light_LatinExt.woff2);` +
+  `$dev-font-url-lato-light-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Light_Latin.woff2);` +
+  `$dev-font-url-lato-regular-latin-ext: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Regular_LatinExt.woff2);` +
+  `$dev-font-url-lato-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Regular_Latin.woff2);` +
+  `$dev-font-url-orbitron-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Orbitron-Regular_Latin.woff2);`
+//`$dev-font-urlo paramaterize the fonts didn't work, so use the literal replacements above
+// const fontsPrefix = `http://${hostAddress()}:${devWebServerPort()}/fonts/`
+// module.exports.sassLoaderFunctions = {
+//   'local-font-url-string($font-name)': function(fontName) {
+//     return new sass.types.String(`http://${hostAddress()}:${devWebServerPort()}/fonts/${fontName}.woff2`)
+//   }
+// }
 
 module.exports.webpackConfig = {
   entry: [

@@ -1,16 +1,15 @@
+const webpack = require('webpack')
+// const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const merge = require('webpack-merge')
+const assign = require('lodash/assign')
+
 const {
   gitShortSha,
   nodePackageVersion,
   hostAddress,
   devWebServerPort,
 } = require('./util')
-
-// const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const webpack = require('webpack')
-const merge = require('webpack-merge')
-const assign = require('lodash/assign')
-
 const projectConfig = require('./project.config')
 
 const {
