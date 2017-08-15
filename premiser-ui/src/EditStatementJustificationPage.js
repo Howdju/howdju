@@ -88,20 +88,15 @@ class EditStatementJustificationPage extends Component {
   constructor() {
     super()
 
-    this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.addJustificationUrl = this.addJustificationUrl.bind(this)
-    this.removeJustificationUrl = this.removeJustificationUrl.bind(this)
-    this.addJustificationStatementAtom = this.addJustificationStatementAtom.bind(this)
-    this.removeJustificationStatementAtom = this.removeJustificationStatementAtom.bind(this)
-    this.onDoCreateJustificationSwitchChange = this.onDoCreateJustificationSwitchChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onCancel = this.onCancel.bind(this)
-
     this.editorId = editStatementJustificationPageEditorId
     this.editorType = EditorTypes.STATEMENT_JUSTIFICATION
   }
 
   componentWillMount() {
+    this.initializeEditor()
+  }
+
+  initializeEditor = () => {
     switch (this.props.mode) {
       case EditStatementJustificationPageMode.CREATE_STATEMENT:
         this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification())
@@ -138,36 +133,36 @@ class EditStatementJustificationPage extends Component {
     }
   }
 
-  onPropertyChange(properties) {
+  onPropertyChange = (properties) => {
     this.props.editors.propertyChange(this.editorType, this.editorId, properties)
   }
 
-  addJustificationUrl() {
+  addJustificationUrl = () => {
     this.props.editors.addUrl(this.editorType, this.editorId)
   }
 
-  removeJustificationUrl(url, index) {
+  removeJustificationUrl = (url, index) => {
     this.props.editors.removeUrl(this.editorType, this.editorId, url, index)
   }
 
-  addJustificationStatementAtom(index) {
+  addJustificationStatementAtom = (index) => {
     this.props.editors.addStatementAtom(this.editorType, this.editorId, index)
   }
 
-  removeJustificationStatementAtom(statementAtom, index) {
+  removeJustificationStatementAtom = (statementAtom, index) => {
     this.props.editors.removeStatementAtom(this.editorType, this.editorId, statementAtom, index)
   }
 
-  onDoCreateJustificationSwitchChange(checked) {
+  onDoCreateJustificationSwitchChange = (checked) => {
     this.props.editors.propertyChange(this.editorType, this.editorId, {doCreateJustification: checked})
   }
 
-  onSubmit(event) {
+  onSubmit = (event) => {
     event.preventDefault()
     this.props.flows.commitEditThenView(this.editorType, this.editorId)
   }
 
-  onCancel() {
+  onCancel = () => {
     this.props.goBack()
   }
 

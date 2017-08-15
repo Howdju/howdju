@@ -62,11 +62,6 @@ class App extends Component {
     this.state = {
       activeTabIndex: 0,
     }
-
-    this.handleLogout = this.handleLogout.bind(this)
-    this.handleHideNavDrawer = this.handleHideNavDrawer.bind(this)
-    this.onNavDrawerVisibilityChange = this.onNavDrawerVisibilityChange.bind(this)
-    this.onSnackbarDismiss = this.onSnackbarDismiss.bind(this)
   }
 
   componentWillMount() {
@@ -88,7 +83,7 @@ class App extends Component {
     this.context.store.dispatch(ui.windowResize())
   }
 
-  checkInitializeMainSearch() {
+  checkInitializeMainSearch = () => {
     const location = window.location
     if (location.pathname === mainSearchPathName) {
       const queryParamSearchText = mainSearcher.mainSearchText(location)
@@ -102,19 +97,19 @@ class App extends Component {
     this.syncTabToPathname(window.location.pathname)
   }
 
-  handleLogout() {
+  handleLogout = () => {
     this.props.api.logout()
   }
 
-  handleHideNavDrawer() {
+  handleHideNavDrawer = () => {
     this.props.ui.hideNavDrawer()
   }
 
-  onNavDrawerVisibilityChange(visible) {
+  onNavDrawerVisibilityChange = (visible) => {
     this.props.ui.setNavDrawerVisibility({visible})
   }
 
-  onSnackbarDismiss() {
+  onSnackbarDismiss = () => {
     this.props.ui.dismissToast()
   }
 
@@ -134,12 +129,12 @@ class App extends Component {
     this.syncTabToPathname(location.pathname)
   }
 
-  syncTabToPathname = pathname => {
+  syncTabToPathname = (pathname) => {
     const index = get(tabIndexByPathname, pathname, -1)
     this.setState({activeTabIndex: index})
   }
 
-  onClick = event => {
+  onClick = (event) => {
     this.props.ui.unhandledAppClick()
   }
 

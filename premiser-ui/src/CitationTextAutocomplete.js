@@ -9,13 +9,7 @@ import {citationSchema} from "./schemas";
 
 class CitationTextAutocomplete extends Component {
 
-  constructor() {
-    super()
-
-    this.onAutocomplete = this.onAutocomplete.bind(this)
-  }
-
-  onAutocomplete(citation) {
+  onAutocomplete = (citation) => {
     this.props.onPropertyChange({[this.props.name]: citation.text})
   }
 

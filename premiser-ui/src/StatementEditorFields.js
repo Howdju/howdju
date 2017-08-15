@@ -14,19 +14,7 @@ const textName = 'text'
 
 class StatementEditorFields extends Component {
 
-  constructor() {
-    super()
-
-    this.onChange = this.onChange.bind(this)
-    this.onTextInputKeyDown = this.onTextInputKeyDown.bind(this)
-  }
-
-  onChange(val, event) {
-    const name = event.target.name
-    this.props.onPropertyChange({[name]: val})
-  }
-
-  onTextInputKeyDown(event) {
+  onTextInputKeyDown = (event) => {
     if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
       event.preventDefault()
       this.props.onSubmit(event)

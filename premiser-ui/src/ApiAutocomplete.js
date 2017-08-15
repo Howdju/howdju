@@ -22,15 +22,6 @@ const hasFocus = el => window.document.activeElement === el
 
 class ApiAutocomplete extends Component {
 
-  constructor() {
-    super()
-
-    this.onChange = this.onChange.bind(this)
-    this.onAutocomplete = this.onAutocomplete.bind(this)
-    this.onKeyDown = this.onKeyDown.bind(this)
-    this.onMenuOpen = this.onMenuOpen.bind(this)
-  }
-
   componentWillMount() {
     this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
   }
@@ -45,12 +36,12 @@ class ApiAutocomplete extends Component {
     }
   }
 
-  onChange(val, e) {
-    const name = e.target.name
+  onChange = (val, event) => {
+    const name = event.target.name
     this.onPropertyChange({[name]: val})
   }
 
-  onPropertyChange(properties) {
+  onPropertyChange = (properties) => {
     this.props.onPropertyChange(properties)
     const val = properties[this.props.name]
     if (val) {
@@ -61,7 +52,7 @@ class ApiAutocomplete extends Component {
     }
   }
 
-  onKeyDown(event) {
+  onKeyDown = (event) => {
     if (event.keyCode === ESCAPE_KEY_CODE) {
       this.throttledRefreshAutocomplete.cancel()
       if (this.isAutocompleteOpen()) {
@@ -84,26 +75,26 @@ class ApiAutocomplete extends Component {
     }
   }
 
-  isAutocompleteOpen() {
+  isAutocompleteOpen = () => {
     return this.autocomplete.state.isOpen
   }
 
-  closeAutocomplete() {
+  closeAutocomplete = () => {
     this.autocomplete._close()
   }
 
-  refreshAutocomplete(value) {
+  refreshAutocomplete = (value) => {
     this.props.fetchSuggestions(value, this.props.suggestionsKey)
   }
 
-  onAutocomplete(label, index, transformedSuggestions) {
+  onAutocomplete = (label, index, transformedSuggestions) => {
     if (this.props.onAutocomplete) {
       const suggestion = this.props.suggestions[index]
       this.props.onAutocomplete(suggestion)
     }
   }
 
-  onMenuOpen(event) {
+  onMenuOpen = (event) => {
     // react-md is opening the autocomplete when it doesn't have focus
     if (!hasFocus(this.autocomplete._field)) {
       this.closeAutocomplete()
@@ -113,7 +104,7 @@ class ApiAutocomplete extends Component {
     }
   }
 
-  onBlur = event => {
+  onBlur = (event) => {
     if (this.props.suggestions && this.props.suggestions.length > 0) {
       this.clearSuggestions()
     }
@@ -123,7 +114,7 @@ class ApiAutocomplete extends Component {
     this.props.autocompletes.clearSuggestions(this.props.suggestionsKey)
   }
 
-  setAutocomplete = autocomplete => this.autocomplete = autocomplete
+  setAutocomplete = (autocomplete) => this.autocomplete = autocomplete
 
   render() {
     const {

@@ -20,24 +20,16 @@ import {default as t} from './texts'
 
 class StatementEditor extends Component {
 
-  constructor() {
-    super()
-
-    this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onCancelEdit = this.onCancelEdit.bind(this)
-  }
-
-  onPropertyChange(properties) {
+  onPropertyChange = (properties) => {
     this.props.editors.propertyChange(StatementEditor.editorType, this.props.editorId, properties)
   }
 
-  onSubmit(event) {
+  onSubmit = (event) => {
     event.preventDefault()
     this.props.editors.commitEdit(StatementEditor.editorType, this.props.editorId)
   }
 
-  onCancelEdit() {
+  onCancelEdit = () => {
     this.props.editors.cancelEdit(StatementEditor.editorType, this.props.editorId)
   }
 

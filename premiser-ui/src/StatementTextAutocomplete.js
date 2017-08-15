@@ -9,13 +9,7 @@ import {statementSchema} from "./schemas";
 
 class StatementTextAutocomplete extends Component {
 
-  constructor() {
-    super()
-
-    this.onAutocomplete = this.onAutocomplete.bind(this)
-  }
-
-  onAutocomplete(statement) {
+  onAutocomplete = (statement) => {
     this.props.onPropertyChange({[this.props.name]: statement.text})
   }
 

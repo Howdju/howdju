@@ -59,13 +59,7 @@ const basisTypeControls = [{
 
 class NewJustificationEditorFields extends Component {
 
-  constructor() {
-    super()
-
-    this.onChange = this.onChange.bind(this)
-  }
-
-  onChange(value, event) {
+  onChange = (value, event) => {
     const name = event.target.name
     this.props.onPropertyChange({[name]: value})
   }

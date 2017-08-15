@@ -20,34 +20,24 @@ import CitationReferenceEditorFields from "./CitationReferenceEditorFields";
 
 class EditableCitationReference extends Component {
 
-  constructor() {
-    super()
-
-    this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onCancelEdit = this.onCancelEdit.bind(this)
-    this.onAddUrl = this.onAddUrl.bind(this)
-    this.onRemoveUrl = this.onRemoveUrl.bind(this)
-  }
-
-  onPropertyChange(properties) {
+  onPropertyChange = (properties) => {
     this.props.editors.propertyChange(EditorTypes.CITATION_REFERENCE, this.props.editorId, properties)
   }
 
-  onSubmit(event) {
+  onSubmit = (event) => {
     event.preventDefault()
     this.props.editors.commitEdit(EditorTypes.CITATION_REFERENCE, this.props.editorId)
   }
 
-  onCancelEdit() {
+  onCancelEdit = () => {
     this.props.editors.cancelEdit(EditorTypes.CITATION_REFERENCE, this.props.editorId)
   }
 
-  onAddUrl() {
+  onAddUrl = () => {
     this.props.editors.addUrl(EditorTypes.CITATION_REFERENCE, this.props.editorId)
   }
 
-  onRemoveUrl(url, index) {
+  onRemoveUrl = (url, index) => {
     this.props.editors.removeUrl(EditorTypes.CITATION_REFERENCE, this.props.editorId, url, index)
   }
 

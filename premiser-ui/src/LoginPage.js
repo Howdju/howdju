@@ -36,28 +36,24 @@ class LoginPage extends Component {
     super()
 
     this.editorId = loginPageEditorId
-
-    this.onChange = this.onChange.bind(this)
-    this.onCancel = this.onCancel.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
   }
 
   componentWillMount() {
     this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, this.editorId, makeNewCredentials())
   }
 
-  onChange(value, event) {
+  onChange = (value, event) => {
     const target = event.target;
     const name = target.name
     this.props.editors.propertyChange(EditorTypes.LOGIN_CREDENTIALS, this.editorId, {[name]: value})
   }
 
-  onSubmit(event) {
+  onSubmit = (event) => {
     event.preventDefault()
     this.props.editors.commitEdit(EditorTypes.LOGIN_CREDENTIALS, this.editorId)
   }
 
-  onCancel() {
+  onCancel = () => {
     this.props.goBack()
   }
 

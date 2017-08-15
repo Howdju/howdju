@@ -6,8 +6,10 @@ import StatementCard from './StatementCard'
 
 class MainSearchPage extends Component {
 
-  toCard = entity => (
-      <StatementCard key={`statement-card-${entity.id}`} className="md-cell md-cell--12" statement={entity}
+  toCard = (entity) => (
+      <StatementCard key={`statement-card-${entity.id}`}
+                     className="md-cell md-cell--12"
+                     statement={entity}
       />
   )
 

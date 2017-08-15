@@ -20,25 +20,15 @@ import {makeNewJustification} from "./models";
 
 class NewJustificationEditor extends Component {
 
-  constructor() {
-    super()
-
-    this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.onAddUrl = this.onAddUrl.bind(this)
-    this.onRemoveUrl = this.onRemoveUrl.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.onCancelEdit = this.onCancelEdit.bind(this)
-  }
-
-  onPropertyChange(properties) {
+  onPropertyChange = (properties) => {
     this.props.editors.propertyChange(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, properties)
   }
 
-  onAddUrl() {
+  onAddUrl = () => {
     this.props.editors.addUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
   }
 
-  onRemoveUrl(url, index) {
+  onRemoveUrl = (url, index) => {
     this.props.editors.removeUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, url, index)
   }
 
@@ -50,7 +40,7 @@ class NewJustificationEditor extends Component {
     this.props.editors.removeStatementAtom(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, statementAtom, index)
   }
 
-  onSubmit(event) {
+  onSubmit = (event) => {
     if (!this.props.onSubmit) {
       event.preventDefault()
       this.props.editors.commitEdit(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
@@ -59,7 +49,7 @@ class NewJustificationEditor extends Component {
     }
   }
 
-  onCancelEdit() {
+  onCancelEdit = () => {
     this.props.editors.cancelEdit(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
   }
 

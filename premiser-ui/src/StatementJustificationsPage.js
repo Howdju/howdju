@@ -62,18 +62,6 @@ class StatementJustificationsPage extends Component {
 
     this.statementEditorId = statementJustificationsPage_statementEditor_editorId
     this.newJustificationEditorId = statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
-
-    this.onStatementMouseOver = this.onStatementMouseOver.bind(this)
-    this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
-    this.onEditStatement = this.onEditStatement.bind(this)
-    this.deleteStatement = this.deleteStatement.bind(this)
-
-    this.showNewJustificationDialog = this.showNewJustificationDialog.bind(this)
-    this.onDialogEditorKeyDown = this.onDialogEditorKeyDown.bind(this)
-    this.onSubmitNewJustificationDialog = this.onSubmitNewJustificationDialog.bind(this)
-    this.cancelNewJustificationDialog = this.cancelNewJustificationDialog.bind(this)
-
-    this.saveNewJustification = this.saveNewJustification.bind(this)
   }
 
   componentWillMount() {
@@ -81,19 +69,17 @@ class StatementJustificationsPage extends Component {
     this.props.api.fetchStatementJustifications(this.statementId())
   }
 
-  statementId() {
-    return this.props.match.params.statementId
-  }
+  statementId = () => this.props.match.params.statementId
 
-  onStatementMouseOver() {
+  onStatementMouseOver = () => {
     this.setState({isOverStatement: true})
   }
 
-  onStatementMouseLeave() {
+  onStatementMouseLeave = () => {
     this.setState({isOverStatement: false})
   }
 
-  onEditStatement() {
+  editStatement = () => {
     this.props.editors.beginEdit(EditorTypes.STATEMENT, this.statementEditorId, this.props.statement)
   }
 
@@ -105,12 +91,12 @@ class StatementJustificationsPage extends Component {
     return paths.searchJustifications({statementId: this.statementId()})
   }
 
-  deleteStatement() {
+  deleteStatement = () => {
     this.props.api.deleteStatement(this.props.statement)
   }
 
-  showNewJustificationDialog(e) {
-    e.preventDefault()
+  showNewJustificationDialog = (event) => {
+    event.preventDefault()
 
     const newJustification = makeNewJustificationTargetingStatementId(this.statementId())
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
@@ -118,20 +104,20 @@ class StatementJustificationsPage extends Component {
     this.props.ui.showNewJustificationDialog(this.statementId())
   }
 
-  onSubmitNewJustificationDialog(e) {
-    e.preventDefault()
+  onSubmitNewJustificationDialog = (event) => {
+    event.preventDefault()
     this.saveNewJustification()
   }
 
-  saveNewJustification() {
+  saveNewJustification = () => {
     this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, ui.hideNewJustificationDialog())
   }
 
-  cancelNewJustificationDialog() {
+  cancelNewJustificationDialog = () => {
     this.props.ui.hideNewJustificationDialog()
   }
 
-  onDialogEditorKeyDown(event) {
+  onDialogEditorKeyDown = (event) => {
     if (event.keyCode === ESCAPE_KEY_CODE) {
       // Stop the escape from closing the dialog
       event.stopPropagation()
@@ -194,7 +180,7 @@ class StatementJustificationsPage extends Component {
               <ListItem primaryText="Edit"
                         key="edit"
                         leftIcon={<FontIcon>create</FontIcon>}
-                        onClick={this.onEditStatement}
+                        onClick={this.editStatement}
               />,
               <ListItem primaryText="Delete"
                         key="delete"

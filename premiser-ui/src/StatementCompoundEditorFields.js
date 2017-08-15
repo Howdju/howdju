@@ -17,25 +17,18 @@ import StatementTextAutocomplete from "./StatementTextAutocomplete";
 const atomsName = 'atoms'
 
 class StatementCompoundEditorFields extends Component {
-  constructor() {
-    super()
 
-    this.onChange = this.onChange.bind(this)
-    this.onPropertyChange = this.onPropertyChange.bind(this)
-    this.onTextInputKeyDown = this.onTextInputKeyDown.bind(this)
-  }
-
-  onChange(value, event) {
+  onChange = (value, event) => {
     const target = event.target;
     const name = target.name
     this.props.onPropertyChange({[name]: value})
   }
 
-  onPropertyChange(properties) {
+  onPropertyChange = (properties) => {
     this.props.onPropertyChange(properties)
   }
 
-  onTextInputKeyDown(event) {
+  onTextInputKeyDown = (event) => {
     if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
       this.props.onSubmit(event)
     } else if (this.props.onKeyDown) {

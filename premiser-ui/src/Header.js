@@ -25,28 +25,23 @@ class Header extends Component {
     this.state = {
       isAutocompleteForcedClosed: true,
     }
-
-    this.handleToggleNavDrawerVisibility = this.handleToggleNavDrawerVisibility.bind(this)
-    this.onMainSearchChange = this.onMainSearchChange.bind(this)
-    this.onMainSearch = this.onMainSearch.bind(this)
-    this.onMainSearchAutocomplete = this.onMainSearchAutocomplete.bind(this)
   }
 
-  handleToggleNavDrawerVisibility() {
+  handleToggleNavDrawerVisibility = () => {
     this.props.ui.toggleNavDrawerVisibility()
   }
 
-  onMainSearchChange(properties) {
+  onMainSearchChange = (properties) => {
     this.props.ui.mainSearchTextChange(properties['mainSearch'])
   }
 
-  onMainSearch(e) {
-    e.preventDefault()
+  onMainSearch = (event) => {
+    event.preventDefault()
     this.setState({isAutocompleteForcedClosed: true})
     this.props.goto.mainSearch(this.props.mainSearchText)
   }
 
-  onMainSearchAutocomplete(statement) {
+  onMainSearchAutocomplete = (statement) => {
     this.props.goto.statement(statement)
   }
 
