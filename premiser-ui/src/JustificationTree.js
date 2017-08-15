@@ -17,14 +17,24 @@ import map from 'lodash/map'
 
 import {
   api,
-  editors, mapActionCreatorGroupToDispatchToProps, goto,
+  editors,
+  goto,
+  mapActionCreatorGroupToDispatchToProps,
+  ui,
 } from './actions'
 import {
   isVerified,
-  isDisverified, isStatementCompoundBased, hasQuote, makeNewCounterJustification, isRootPositive, isRootNegative,
+  isDisverified,
+  isStatementCompoundBased,
+  makeNewCounterJustification,
+  isRootPositive,
+  isRootNegative,
   JustificationBasisType,
 } from './models'
-import {counterJustificationEditorId, justificationBasisEditorId} from './editorIds'
+import {
+  counterJustificationEditorId,
+  justificationBasisEditorId
+} from './editorIds'
 import paths from './paths'
 import config from './config';
 import CounterJustificationEditor from "./CounterJustificationEditor";
@@ -37,6 +47,13 @@ import './JustificationTree.scss'
 import {newImpossibleError} from "./customErrors";
 
 
+const justificationTreeId = props => {
+  const {
+    justification
+  } = props
+  return `justification-${justification.id}-tree`
+}
+
 class JustificationTree extends Component {
   constructor() {
     super()
@@ -45,11 +62,11 @@ class JustificationTree extends Component {
     }
   }
 
-  onBubbleMouseOver = () => {
+  onBubbleMouseOver = event => {
     this.setState({isOver: true})
   }
 
-  onBubbleMouseLeave = () => {
+  onBubbleMouseLeave = event => {
     this.setState({isOver: false})
   }
 
@@ -86,17 +103,17 @@ class JustificationTree extends Component {
     this.props.editors.beginEdit(basisEditorType, justificationBasisEditorId(justificationBasis), justificationBasis.entity)
   }
 
-  onUseBasis = () => {
+  createJustificationPath = () => {
     const {
       type: basisType,
       entity: {
         id: basisId
       }
     } = this.props.justification.basis
-    this.props.goto.createJustification(basisType, basisId)
+    return paths.createJustification(basisType, basisId)
   }
 
-  onSeeUsages = () => {
+  seeUsagesPath = () => {
     const justificationBasis = this.props.justification.basis
     const params = {}
 
@@ -111,7 +128,7 @@ class JustificationTree extends Component {
         throw newImpossibleError(`Exhausted JustificationBasisType: ${justificationBasis.type}`)
     }
 
-    this.props.goto.searchJustifications(params)
+    return paths.searchJustifications(params)
   }
 
   render() {
@@ -122,6 +139,8 @@ class JustificationTree extends Component {
       doShowControls,
       doShowBasisJustifications,
       isCondensed,
+      isUnCondensed,
+      isWindowNarrow,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -133,11 +152,13 @@ class JustificationTree extends Component {
     const _isRootPositive = isRootPositive(justification)
     const _isRootNegative = isRootNegative(justification)
 
+    const doHideControls = !isOver && !isWindowNarrow
+
     const menu = (
         <MenuButton
             icon
             id={`justification-${justification.id}-context-menu`}
-            className={cn({hidden: !isOver})}
+            className={cn({hidden: doHideControls})}
             menuClassName="context-menu"
             buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
@@ -152,13 +173,15 @@ class JustificationTree extends Component {
                         key="use"
                         title="Justify another statement with this basis"
                         leftIcon={<FontIcon>call_made</FontIcon>}
-                        onClick={this.onUseBasis}
+                        component={Link}
+                        to={this.createJustificationPath()}
               />,
               <ListItem primaryText="See usages"
                         key="usages"
                         title="See justifications using this basis"
                         leftIcon={<FontIcon>call_merge</FontIcon>}
-                        onClick={this.onSeeUsages}
+                        component={Link}
+                        to={this.seeUsagesPath()}
               />,
               <ListItem primaryText="Link"
                         key="link"
@@ -188,8 +211,8 @@ class JustificationTree extends Component {
               key="verifyButton"
               className={cn({
                 verified: _isVerified,
-                inactive: !isOver,
-                hiding: !_isVerified && !isOver,
+                inactive: doHideControls,
+                hiding: !_isVerified && doHideControls,
                 otherSelected: _isDisverified,
               })}
               title="Verify this justification"
@@ -199,8 +222,8 @@ class JustificationTree extends Component {
               key="disverifyButton"
               className={cn({
                 disverified: _isDisverified,
-                inactive: !isOver,
-                hiding: !_isDisverified && !isOver,
+                inactive: doHideControls,
+                hiding: !_isDisverified && doHideControls,
                 otherSelected: _isVerified,
               })}
               title="Dis-verify this justification"
@@ -209,7 +232,7 @@ class JustificationTree extends Component {
       <Button icon
               key="counterButton"
               className={cn({
-                hiding: !isOver,
+                hiding: doHideControls,
                 otherSelected: _isVerified || _isDisverified,
               })}
               title="Counter this justification"
@@ -242,6 +265,7 @@ class JustificationTree extends Component {
                                                 doShowControls={doShowControls}
                                                 doShowBasisJustifications={doShowBasisJustifications}
                                                 isCondensed={isCondensed}
+                                                isUnCondensed={isUnCondensed}
                     />
                   </div>
               )
@@ -255,7 +279,7 @@ class JustificationTree extends Component {
                 positivey: _isRootPositive,
                 negativey: _isRootNegative,
               })}
-             id={`justification-${justification.id}-tree`}
+             id={justificationTreeId(this.props)}
         >
           <ChatBubble className="md-grid"
                       isPositive={_isRootPositive}
@@ -272,6 +296,7 @@ class JustificationTree extends Component {
                                           doShowControls={doShowControls}
                                           doShowBasisJustifications={doShowBasisJustifications}
                                           isCondensed={isCondensed}
+                                          isUnCondensed={isUnCondensed}
               />
             </div>
 
@@ -301,9 +326,12 @@ const mapStateToProps = (state, ownProps) => {
   const isEditingBasis = !!editEntity
 
   const newCounterJustification = get(state, ['editors', EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
+
+  const isWindowNarrow = get(state, ['ui', 'app', 'isWindowNarrow'])
   return {
     newCounterJustification,
     isEditingBasis,
+    isWindowNarrow,
   }
 }
 
@@ -311,6 +339,7 @@ const ConnectedJustificationTree = connect(mapStateToProps, mapActionCreatorGrou
   api,
   editors,
   goto,
+  ui,
 }))(JustificationTree)
 
 export default ConnectedJustificationTree

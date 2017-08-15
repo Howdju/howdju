@@ -6,11 +6,10 @@ import Button from 'react-md/lib/Buttons/Button'
 import cn from 'classnames'
 import map from 'lodash/map'
 import get from 'lodash/get'
-import has from 'lodash/has'
 
 import {RETURN_KEY_CODE} from "./keyCodes";
-import CitationTextAutocomplete from "./CitationTextAutocomplete";
 import {toErrorText} from "./modelErrorMessages";
+import ErrorMessages from './ErrorMessages'
 
 import './CitationReferenceEditorFields.scss'
 import StatementTextAutocomplete from "./StatementTextAutocomplete";
@@ -60,7 +59,8 @@ class StatementCompoundEditorFields extends Component {
 
     const atoms = get(statementCompound, atomsName, '')
 
-    const atomInputProps = (errors && errors.hasErrors) ?
+    const hasErrors = errors && errors.hasErrors
+    const atomInputProps = hasErrors ?
         map(errors.fieldErrors.atoms.itemErrors, atomError => atomError.fieldErrors.statement.fieldErrors.text.length > 0 ?
             {error: true, errorText: toErrorText(atomError.fieldErrors.statement.fieldErrors.text)} :
             {}
@@ -116,6 +116,9 @@ class StatementCompoundEditorFields extends Component {
                   label="Add Statement"
                   onClick={e => this.props.onAddStatementAtom(atoms.length)}
           >add</Button>
+          {hasErrors && errors.modelErrors &&
+            <ErrorMessages errors={errors.modelErrors} />
+          }
         </div>
     )
   }

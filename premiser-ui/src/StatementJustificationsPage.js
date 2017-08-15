@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {denormalize} from "normalizr";
+import { Link } from 'react-router-dom'
 import DocumentTitle from "react-document-title";
 import Divider from "react-md/lib/Dividers";
 import FontIcon from "react-md/lib/FontIcons";
@@ -16,14 +17,14 @@ import some from 'lodash/some'
 import cn from 'classnames'
 import get from 'lodash/get'
 
-import {isNarrow, logger} from "./util";
+import {logger} from "./util";
 import {
   isVerified,
   isDisverified,
   isPositive,
   isNegative,
-  JustificationBasisType,
   makeNewJustificationTargetingStatementId,
+  JustificationBasisSourceType,
 } from "./models";
 import GridCard from './GridCard';
 import {
@@ -33,7 +34,7 @@ import {
   goto, flows,
 } from "./actions";
 import {justificationsSchema, statementSchema} from "./schemas";
-import JustificationTree from './JustificationTree'
+import paths from './paths'
 import text, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
   CANCEL_BUTTON_LABEL,
@@ -66,7 +67,6 @@ class StatementJustificationsPage extends Component {
     this.onStatementMouseLeave = this.onStatementMouseLeave.bind(this)
     this.onEditStatement = this.onEditStatement.bind(this)
     this.deleteStatement = this.deleteStatement.bind(this)
-    this.onUseStatement = this.onUseStatement.bind(this)
 
     this.showNewJustificationDialog = this.showNewJustificationDialog.bind(this)
     this.onDialogEditorKeyDown = this.onDialogEditorKeyDown.bind(this)
@@ -97,12 +97,12 @@ class StatementJustificationsPage extends Component {
     this.props.editors.beginEdit(EditorTypes.STATEMENT, this.statementEditorId, this.props.statement)
   }
 
-  onUseStatement() {
-    this.props.goto.createJustification(JustificationBasisType.STATEMENT_COMPOUND, this.statementId())
+  createJustificationPath = () => {
+    return paths.createJustification(JustificationBasisSourceType.STATEMENT, this.statementId())
   }
 
-  onSeeUsages = () => {
-    this.props.goto.searchJustifications({statementId: this.statementId()})
+  seeUsagesPath = () => {
+    return paths.searchJustifications({statementId: this.statementId()})
   }
 
   deleteStatement() {
@@ -150,7 +150,13 @@ class StatementJustificationsPage extends Component {
 
       isNewJustificationDialogVisible,
       isSavingNewJustification,
+      isWindowNarrow,
     } = this.props
+    const {
+      isOverStatement,
+    } = this.state
+
+    const doHideControls = !isOverStatement && !isWindowNarrow
 
     const hasJustifications = justifications && justifications.length > 0
     const hasAgreement = some(justifications, j => isVerified(j) && isPositive(j))
@@ -160,7 +166,7 @@ class StatementJustificationsPage extends Component {
         <MenuButton
             icon
             id={`statement-${statementId}-context-menu`}
-            className={cn({hidden: !this.state.isOverStatement})}
+            className={cn({hidden: doHideControls})}
             menuClassName="context-menu context-menu--statement"
             buttonChildren={'more_vert'}
             position={Positions.TOP_RIGHT}
@@ -174,13 +180,15 @@ class StatementJustificationsPage extends Component {
                         key="use"
                         title="Justify another statement with this one"
                         leftIcon={<FontIcon>call_made</FontIcon>}
-                        onClick={this.onUseStatement}
+                        component={Link}
+                        to={this.createJustificationPath()}
               />,
               <ListItem primaryText="See usages"
                         key="usages"
                         title="See justifications using this statement"
                         leftIcon={<FontIcon>call_merge</FontIcon>}
-                        onClick={this.onSeeUsages}
+                        component={Link}
+                        to={this.seeUsagesPath()}
               />,
               <Divider key="divider" />,
               <ListItem primaryText="Edit"
@@ -197,26 +205,40 @@ class StatementJustificationsPage extends Component {
         />
     )
 
+    const addNewJustificationDialogActions = [
+      <Button flat
+              key="addNewJustificationDialogCancelButton"
+              label={text(CANCEL_BUTTON_LABEL)}
+              onClick={this.cancelNewJustificationDialog}
+              disabled={isSavingNewJustification}
+      />,
+      <Button raised
+              primary
+              key="addNewJustificationDialogSubmitButton"
+              type="submit"
+              label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+              onClick={this.saveNewJustification}
+              disabled={isSavingNewJustification}
+      />
+    ]
+    // react-md bug: even though fullPage is documented as a boolean property, its presence appears to be interpreted as true
+    const addNewJustificationDialogTitle = "Add justification"
+    const fullPageProps = isWindowNarrow ? {fullPage: true} : {title: addNewJustificationDialogTitle}
     const addNewJustificationDialog = (
         <Dialog id="newJustificationDialog"
+                aria-label={addNewJustificationDialogTitle}
                 visible={isNewJustificationDialogVisible}
-                title="Add justification"
                 onHide={this.cancelNewJustificationDialog}
-                actions={[
-                  <Button flat
-                          label={text(CANCEL_BUTTON_LABEL)}
-                          onClick={this.cancelNewJustificationDialog}
-                          disabled={isSavingNewJustification}
-                  />,
-                  <Button raised
-                          primary
-                          type="submit"
-                          label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-                          onClick={this.saveNewJustification}
-                          disabled={isSavingNewJustification}
-                  />
-                ]}
+                {...fullPageProps}
+                className="md-overlay--wide-dialog"
+                actions={addNewJustificationDialogActions}
         >
+          {/* react-md bug: Title disappears when full page*/}
+          {isWindowNarrow &&
+            <h2 id="newJustificationDialogTitle" className="md-title md-title--dialog">
+              Add justification
+            </h2>
+          }
           <NewJustificationEditor editorId={this.newJustificationEditorId}
                                   id="addNewJustificationDialogEditor"
                                   suggestionsKey={suggestionKeys.statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
@@ -225,6 +247,12 @@ class StatementJustificationsPage extends Component {
                                   disabled={isSavingNewJustification}
                                   onKeyDown={this.onDialogEditorKeyDown}
           />
+          {/* react-md bug: actions disappears when full page*/}
+          {isWindowNarrow &&
+            <footer className="md-dialog-footer md-dialog-footer--inline">
+              {addNewJustificationDialogActions}
+            </footer>
+          }
         </Dialog>
     )
 
@@ -288,7 +316,7 @@ class StatementJustificationsPage extends Component {
             <StatementJustificationTrees justifications={justifications}
                                          doShowControls={true}
                                          doShowJustifications={false}
-                                         isCondensed={false}
+                                         isUnCondensed={true}
                                          className="md-grid--bottom"
             />
 
@@ -300,6 +328,7 @@ class StatementJustificationsPage extends Component {
     )
   }
 }
+StatementJustificationsPage.transientId = 'statement-justifications-page-statement'
 
 const sortJustifications = justifications => {
   justifications = sortBy(justifications, j => j.score)
@@ -327,8 +356,13 @@ const mapStateToProps = (state, ownProps) => {
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], justificationsSchema, state.entities)
   justifications = sortJustifications(justifications)
 
-  const newJustificationDialogEditorState = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId], {})
+  const newJustificationDialogEditorState = get(state.editors, [
+    EditorTypes.NEW_JUSTIFICATION,
+    statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
+  ], {})
   const isSavingNewJustification = newJustificationDialogEditorState.isSaving
+
+  const isWindowNarrow = get(state, ['ui', 'app', 'isWindowNarrow'])
 
   return {
     ...state.ui.statementJustificationsPage,
@@ -339,6 +373,7 @@ const mapStateToProps = (state, ownProps) => {
     isFetchingStatement,
     isEditingStatement,
     didFetchingStatementFail,
+    isWindowNarrow,
   }
 }
 

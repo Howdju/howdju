@@ -76,10 +76,22 @@ b {
   }
 }
 
+$small-chat-iframe-z-index: 999999999;
 @media (max-width: $md-grid-desktop-breakpoint - 1) {
+  // Two different ways to try and make sure the context menu is obscured by the small chat launcher
+  //#Smallchat iframe {
+  //  right: auto !important;
+  //  left: 0;
+  //}
+  //.context-menu {
+  //  z-index: $small-chat-iframe-z-index + 1;
+  //}
+
   .md-grid--card-list--tablet {
     .md-cell {
       margin: 0;
     }
   }
 }
+
+

@@ -22,6 +22,11 @@ export const JustificationBasisType = {
   STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
   CITATION_REFERENCE: 'CITATION_REFERENCE',
 }
+// Anything you can start with to create a justification based upon.
+// (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
+export const JustificationBasisSourceType = {
+  STATEMENT: 'STATEMENT',
+}
 
 export const VoteTargetType = {
   JUSTIFICATION: 'JUSTIFICATION',
@@ -90,13 +95,18 @@ export const makeNewCitationReference = () => ({
   urls: [makeNewUrl()],
 })
 
-export const makeNewStatementCompound = () => ({
-  atoms: [makeNewStatementAtom()]
+export const makeNewStatementCompound = props => ({
+  atoms: [makeNewStatementAtom()],
+  ...props,
 })
 
-export const makeNewStatementAtom = () => ({
-  statement: makeNewStatement()
+export const makeNewStatementAtom = props => ({
+  statement: makeNewStatement(),
+  ...props,
 })
+
+export const makeNewStatementCompoundForStatement = statement =>
+    makeNewStatementCompound({atoms: [makeNewStatementAtom({statement})]})
 
 export const makeNewJustificationTargetingStatementId = statementId => makeNewJustification({
   rootStatement: {id: statementId},

@@ -1,6 +1,5 @@
-import {isNarrow, logger} from "./util";
+import {isWindowNarrow, logger} from "./util";
 import isFunction from 'lodash/isFunction'
-import config from './config'
 
 export const CREATE_STATEMENT_SUBMIT_BUTTON_LABEL = 'CREATE_STATEMENT_SUBMIT_BUTTON_LABEL'
 export const CREATE_STATEMENT_SUBMIT_BUTTON_TITLE = 'CREATE_STATEMENT_BUTTON_TITLE'
@@ -142,9 +141,9 @@ const texts = {
   [INVALID_LOGIN_CREDENTIALS]: 'Invalid login credentials',
   [UNABLE_TO_LOGIN]: 'Unable to login',
 
-  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME: () => isNarrow() ? "Featured" : "Featured perspectives",
-  MAIN_TABS_RECENT_ACTIVITY_TAB_NAME: () => isNarrow() ? 'Recent' : 'Recent activity',
-  MAIN_TABS_WHATS_NEXT_TAB_NAME: () => isNarrow() ? 'Next' : "What's next",
+  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME: () => isWindowNarrow() ? "Featured" : "Featured perspectives",
+  MAIN_TABS_RECENT_ACTIVITY_TAB_NAME: () => isWindowNarrow() ? 'Recent' : 'Recent activity',
+  MAIN_TABS_WHATS_NEXT_TAB_NAME: () => isWindowNarrow() ? 'Next' : "What's next",
   MAIN_TABS_ABOUT_TAB_NAME: 'About',
 }
 

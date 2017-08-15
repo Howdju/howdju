@@ -1,3 +1,4 @@
+
 class HowdjuApiError extends Error {
   constructor(message) {
     super(message)

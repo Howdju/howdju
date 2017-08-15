@@ -23,14 +23,14 @@ import config from "../config";
 
 const delayedHideTransientTaskByTransientId = {}
 
-function* tryCancelHideTransient(transientId) {
+function* tryCancelDelayedHideTransient(transientId) {
   const hideTask = delayedHideTransientTaskByTransientId[transientId]
   if (hideTask) {
-    yield put(ui.cancelHideTransient(transientId))
+    yield put(ui.cancelDelayedHideTransient(transientId))
   }
 }
 
-function* cancelHideTransient(transientId) {
+function* cancelDelayedHideTransient(transientId) {
   const hideTask = delayedHideTransientTaskByTransientId[transientId]
   delayedHideTransientTaskByTransientId[transientId] = null
   yield cancel(hideTask)
@@ -43,13 +43,13 @@ function* hideOtherTransient(visibleTransientId, transientId) {
 }
 
 function* hideTransient(transientId) {
-  yield put(ui.tryCancelHideTransient(transientId))
+  yield put(ui.tryCancelDelayedHideTransient(transientId))
   yield put(ui.hideTransient(transientId))
 }
 
-function* delayedHide(hideDelay, transientId) {
+function* delayedHide(hideDelay, transientId, cause) {
   yield call(delay, hideDelay)
-  yield put(ui.hideTransient(transientId))
+  yield put(ui.hideTransient(transientId, cause))
 }
 
 export default function* handleTransientInteractions() {
@@ -59,13 +59,13 @@ export default function* handleTransientInteractions() {
   })
 
   yield takeEvery(str(ui.hideAllTransients), function* hideAllTransientsWorker() {
-    yield map(delayedHideTransientTaskByTransientId, (task, transientId) => call(hideTransient, transientId))
+    yield map(delayedHideTransientTaskByTransientId, (task, transientId) => task && call(hideTransient, transientId))
   })
 
   yield takeEvery(str(ui.beginInteractionWithTransient), function* beginInteractionWithTransientWorker(action) {
     const transientId = action.payload.transientId
 
-    yield put(ui.tryCancelHideTransient(transientId))
+    yield put(ui.tryCancelDelayedHideTransient(transientId))
     yield put(ui.showTransient(transientId))
     yield put(ui.hideOtherTransients(transientId))
   })
@@ -74,7 +74,7 @@ export default function* handleTransientInteractions() {
     const transientId = action.payload.transientId
     const hideDelay = config.transientHideDelay
 
-    yield put(ui.scheduleHideTransient(transientId, hideDelay))
+    yield put(ui.scheduleDelayedHideTransient(transientId, hideDelay))
   })
 
   yield takeEvery(str(ui.hideOtherTransients), function* hideOtherTransientsWorker(action) {
@@ -85,31 +85,31 @@ export default function* handleTransientInteractions() {
         call(hideOtherTransient, visibleTransientId, transientId))
   })
 
-  yield takeEvery(str(ui.scheduleHideTransient), function* scheduleHideTransientWorker(action) {
+  yield takeEvery(str(ui.scheduleDelayedHideTransient), function* scheduleDelayedHideTransientWorker(action) {
     const {
       transientId,
       hideDelay,
     } = action.payload
 
-    yield put(ui.tryCancelHideTransient(transientId))
-    delayedHideTransientTaskByTransientId[transientId] = yield fork(delayedHide, hideDelay, transientId)
+    yield put(ui.tryCancelDelayedHideTransient(transientId, action))
+    delayedHideTransientTaskByTransientId[transientId] = yield fork(delayedHide, hideDelay, transientId, action)
   })
 
-  yield takeEvery(str(ui.tryCancelHideTransient), function* cancelHideTransientWorker(action) {
+  yield takeEvery(str(ui.tryCancelDelayedHideTransient), function* cancelDelayedHideTransientWorker(action) {
     const transientId = action.payload.transientId
 
-    yield call(tryCancelHideTransient, transientId)
+    yield call(tryCancelDelayedHideTransient, transientId)
   })
 
-  yield takeEvery(str(ui.cancelHideTransient), function* cancelHideTransientWorker(action) {
+  yield takeEvery(str(ui.cancelDelayedHideTransient), function* cancelDelayedHideTransientWorker(action) {
     const transientId = action.payload.transientId
 
-    yield call(cancelHideTransient, transientId)
+    yield call(cancelDelayedHideTransient, transientId)
   })
 
   yield takeEvery(str(ui.hideTransient), function* hideTransientWorker(action) {
     const transientId = action.payload.transientId
 
-    yield put(ui.tryCancelHideTransient(transientId))
+    yield put(ui.tryCancelDelayedHideTransient(transientId))
   })
 }

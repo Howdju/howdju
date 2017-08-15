@@ -26,7 +26,6 @@ export default class PerspectiveCard extends Component {
           <StatementJustificationTrees justifications={justifications}
                                            doShowControls={false}
                                            doShowJustifications={true}
-                                           isCondensed={true}
                                            WrapperComponent={CardText}
           />
 

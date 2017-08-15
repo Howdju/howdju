@@ -24,6 +24,7 @@ class EditableStatementCompound extends Component {
       doShowControls,
       doShowStatementAtomJustifications,
       isCondensed,
+      isUnCondensed,
       ...rest
     } = this.props
 
@@ -34,6 +35,7 @@ class EditableStatementCompound extends Component {
                                  doShowControls={doShowControls}
                                  doShowStatementAtomJustifications={doShowStatementAtomJustifications}
                                  isCondensed={isCondensed}
+                                 isUnCondensed={isUnCondensed}
         />
     const progress =
         <CircularProgress id={`${id}-Progress`} />

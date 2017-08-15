@@ -14,6 +14,7 @@ export default class StatementCompoundViewer extends Component {
       doShowControls,
       doShowStatementAtomJustifications,
       isCondensed,
+      isUnCondensed,
     } = this.props
 
     const idPrefix = id ? id + '-' : ''
@@ -27,6 +28,7 @@ export default class StatementCompoundViewer extends Component {
                                                doShowControls={doShowControls}
                                                doShowJustifications={doShowStatementAtomJustifications}
                                                isCondensed={isCondensed}
+                                               isUnCondensed={isUnCondensed}
           />
       )
     })

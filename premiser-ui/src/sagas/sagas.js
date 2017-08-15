@@ -76,9 +76,11 @@ import {
   consolidateBasis,
   JustificationBasisType,
   JustificationTargetType,
+  makeNewStatementCompoundForStatement,
   makeNewStatementJustification,
   removeStatementCompoundId,
   SortDirection,
+  JustificationBasisSourceType,
 } from "../models";
 import {
   logger,
@@ -445,18 +447,6 @@ function* goTo() {
     yield put(push(paths.login()))
   })
 
-  yield takeEvery(str(goto.searchJustifications), function* goToSearchJustificationsWorker(action) {
-    yield put(push(paths.searchJustifications(action.payload)))
-  })
-
-  yield takeEvery(str(goto.createJustification), function* goToCreateJustificationWorker(action) {
-    const {
-      basisType,
-      basisId,
-    } = action.payload
-    yield put(push(paths.createJustification(basisType, basisId)))
-  })
-
   yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
     const mainSearchPath = paths.mainSearch(action.payload.mainSearchText)
     const routerLocation = yield select(selectRouterLocation)
@@ -611,7 +601,6 @@ function* editorCommitEdit() {
         return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload, meta))
       }
     } catch (error) {
-      logger.error(error)
       return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, error), meta))
     }
   })
@@ -696,6 +685,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
     const actionCreatorByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
       [JustificationBasisType.CITATION_REFERENCE]: api.fetchCitationReference,
+      [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
     }
     const actionCreator = actionCreatorByBasisType[basisType]
     if (!actionCreator) {
@@ -716,6 +706,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
     const basisGetterByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: result => result.statementCompound,
       [JustificationBasisType.CITATION_REFERENCE]: result => result.citationReference,
+      [JustificationBasisSourceType.STATEMENT]: result => result.statement,
     }
 
     const basisGetter = basisGetterByBasisType[basisType]
@@ -738,12 +729,18 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
     const fetchResponseAction = yield call(callApiForResource, actionCreator(basisId))
     if (!fetchResponseAction.error) {
       const basis = extractBasisFromFetchResponseAction(basisType, fetchResponseAction)
-      const statementCompound = basisType === JustificationBasisType.STATEMENT_COMPOUND ? basis : undefined
-      removeStatementCompoundId(statementCompound)
+
+      let statementCompound = undefined
+      if (basisType === JustificationBasisType.STATEMENT_COMPOUND) {
+        statementCompound = basis
+        removeStatementCompoundId(statementCompound)
+      } else if (basisType === JustificationBasisSourceType.STATEMENT) {
+        statementCompound = makeNewStatementCompoundForStatement(basis)
+      }
       const citationReference = basisType === JustificationBasisType.CITATION_REFERENCE ? basis : undefined
       const editModel = makeNewStatementJustification({}, {
         basis: {
-          type: basisType,
+          type: basisType !== JustificationBasisSourceType.STATEMENT ? basisType : JustificationBasisType.STATEMENT_COMPOUND,
           statementCompound: statementCompound,
           citationReference: citationReference,
         }

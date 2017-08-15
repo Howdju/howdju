@@ -1,5 +1,7 @@
 @import "~react-md/src/scss/grids";
 
+$polarity-offset: 2em;
+
 @mixin howdju-grid($gutter) {
 
   .addButton {

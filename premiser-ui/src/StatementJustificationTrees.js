@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import FlipMove from 'react-flip-move';
+import {connect} from "react-redux"
+import FlipMove from 'react-flip-move'
 import get from 'lodash/get'
 import groupBy from 'lodash/groupBy'
 import map from 'lodash/map'
@@ -12,7 +13,6 @@ import config from './config'
 import JustificationTree from './JustificationTree'
 
 import './StatementJustificationTrees.scss'
-import {isNarrow} from "./util";
 
 class StatementJustificationTrees extends Component {
 
@@ -22,6 +22,7 @@ class StatementJustificationTrees extends Component {
       doShowControls,
       doShowJustifications,
       isCondensed,
+      isUnCondensed,
     } = this.props
     const treeId = `${id}-justification-tree-${j.id}`
     return <JustificationTree key={treeId}
@@ -29,6 +30,7 @@ class StatementJustificationTrees extends Component {
                               doShowControls={doShowControls}
                               doShowBasisJustifications={doShowJustifications}
                               isCondensed={isCondensed}
+                              isUnCondensed={isUnCondensed}
     />
   }
 
@@ -36,16 +38,16 @@ class StatementJustificationTrees extends Component {
     const {
       justifications,
       isCondensed,
+      isUnCondensed,
       WrapperComponent,
       className,
+      isWindowNarrow,
     } = this.props
     const {
       flipMoveDuration,
       flipMoveEasing
     } = config.ui
 
-
-    const _isNarrow = isNarrow()
     const justificationsByPolarity = groupBy(justifications, j => j.polarity)
     const positiveJustifications = get(justificationsByPolarity, JustificationPolarity.POSITIVE, [])
     const negativeJustifications = get(justificationsByPolarity, JustificationPolarity.NEGATIVE, [])
@@ -59,7 +61,18 @@ class StatementJustificationTrees extends Component {
      spatially whether they are positive or negative.
      */
     let treeCells = null
-    if (!_isNarrow && hasBothSides || !isCondensed) {
+    if (isWindowNarrow || isCondensed || !hasBothSides && !isUnCondensed) {
+      const treesClass = "statement-justifications-justification-trees--combined"
+      treeCells = (
+          <FlipMove key={treesClass}
+                    className={`md-cell md-cell--12 ${treesClass}`}
+                    duration={flipMoveDuration}
+                    easing={flipMoveEasing}
+          >
+            {map(justifications, this.toTree)}
+          </FlipMove>
+      )
+    } else {
       const positiveTreeClass = "statement-justifications-justification-trees--positive"
       const negativeTreeClass = "statement-justifications-justification-trees--negative"
       treeCells = [
@@ -78,17 +91,6 @@ class StatementJustificationTrees extends Component {
           {map(negativeJustifications, this.toTree)}
         </FlipMove>
       ]
-    } else if (hasJustifications) {
-      const treesClass = "statement-justifications-justification-trees--combined"
-      treeCells = (
-          <FlipMove key={treesClass}
-                    className={`md-cell md-cell--12 ${treesClass}`}
-                    duration={flipMoveDuration}
-                    easing={flipMoveEasing}
-          >
-            {map(justifications, this.toTree)}
-          </FlipMove>
-      )
     }
 
     return (
@@ -102,7 +104,16 @@ StatementJustificationTrees.defaultProps = {
   doShowControls: false,
   doShowJustifications: false,
   isCondensed: false,
+  isUnCondensed: false,
   WrapperComponent: 'div',
 }
 
-export default StatementJustificationTrees
+const mapStateToProps = (state, ownProps) => {
+  const isWindowNarrow = get(state, ['ui', 'app', 'isWindowNarrow'])
+
+  return {
+    isWindowNarrow,
+  }
+}
+
+export default connect(mapStateToProps)(StatementJustificationTrees)

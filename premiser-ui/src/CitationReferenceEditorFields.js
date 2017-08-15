@@ -11,6 +11,7 @@ import has from 'lodash/has'
 import {RETURN_KEY_CODE} from "./keyCodes";
 import CitationTextAutocomplete from "./CitationTextAutocomplete";
 import {toErrorText} from "./modelErrorMessages";
+import ErrorMessages from './ErrorMessages'
 
 import './CitationReferenceEditorFields.scss'
 
@@ -71,13 +72,14 @@ class CitationReferenceEditorFields extends Component {
     const idPrefix = id ? id + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
-    const quoteInputProps = errors && errors.hasErrors && errors.fieldErrors.quote.length > 0 ?
+    const hasErrors = get(errors, 'hasErrors')
+    const quoteInputProps = hasErrors && errors.fieldErrors.quote.length > 0 ?
         {error: true, errorText: toErrorText(errors.fieldErrors.quote)} :
         {}
-    const citationTextInputProps = errors && errors.hasErrors && errors.fieldErrors.citation.fieldErrors.text.length > 0 ?
+    const citationTextInputProps = hasErrors && errors.fieldErrors.citation.fieldErrors.text.length > 0 ?
         {error: true, errorText: toErrorText(errors.fieldErrors.citation.fieldErrors.text)} :
         {}
-    const urlInputProps = (errors && errors.hasErrors) ?
+    const urlInputProps = hasErrors ?
         map(errors.fieldErrors.urls.itemErrors, urlError => urlError.fieldErrors.url.length > 0 ?
             {error: true, errorText: toErrorText(urlError.fieldErrors.url)} :
             {}
@@ -159,6 +161,9 @@ class CitationReferenceEditorFields extends Component {
                   label="Add URL"
                   onClick={this.props.onAddUrl}
           >add</Button>
+          {hasErrors && errors.modelErrors &&
+            <ErrorMessages errors={errors.modelErrors} />
+          }
         </div>
     )
   }

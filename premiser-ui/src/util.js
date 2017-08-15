@@ -52,7 +52,7 @@ export function assert(test, message) {
   }
 }
 
-export const isNarrow = () => {
+export const isWindowNarrow = () => {
   return window.innerWidth < config.ui.narrowBreakpoint
 }
 

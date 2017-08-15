@@ -1,8 +1,23 @@
 # Howdju UI TODO
 
-* How to get touch/hover parity (e.g. created date)
-  * Too hard to click on controls right after touch;
-    controls should disappear over time or whenever the next card is touched
+* When statement ID changes on statement justifications page, need to request data
+* The small chat tab gets in the way of the mobile full screen dialog.
+  * Also the context menus
+  * I think we have to hide it on scroll down, reshow on scroll up
+  * Smallchat.hide() and Smallchat.show() 
+  window.smallchat = {
+      sessionData: {
+          name: example.user.name,
+          email: example.user.email,
+          ...whateverElseYouWant
+      }
+  }
+* On tap in input need to hide autocomplete results (otherwise hides things below it)
+
+* Add prompt for opposing/supporting justification
+* If slug is not equal to current slug, change path
+
+* Fix rootPolarity in prod
 * Featured Perspectives are scrunched on mobile
 
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
@@ -11,6 +26,8 @@
 * If I get a sentry error from an unauthenticated user, how do I connect that with analytics or API logging?
    * Need a cookie ID, and perhaps request IDs
 * Cards: who created, number of justifications or justifications based upon
+  * perspective: whose!?
+  * perspective: see all justifications
 
 * Deep link to justification on statement page
   * Scroll to anchor after justifications load
@@ -348,7 +365,9 @@
 
 
 ## Next-next
- * https://github.com/mattkrick/redux-optimistic-ui
+* Look for a UI framework that allows us to cancel touch events (so that they don't cause downstream hover events)
+  * react-md relies upon onClick everywhere, and not onTouch*
+* https://github.com/mattkrick/redux-optimistic-ui
 * Time travel to see what libraries made app large
   * Figure out how to minimize lodash import
 * Deploy to S3
@@ -389,6 +408,8 @@
 * Plugins
   * [favicons](https://github.com/jantimon/favicons-webpack-plugin)
   * [Launch browser](https://github.com/1337programming/webpack-browser-plugin)
+* [Mobifying](https://www.html5rocks.com/en/mobile/mobifying/)
+  * [Mobile Web App Best Practices](https://www.w3.org/TR/mwabp/)
 
 ## Done?
 * HMR

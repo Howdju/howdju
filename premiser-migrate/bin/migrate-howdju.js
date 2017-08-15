@@ -283,15 +283,15 @@ const getRootStatementId = row => {
       })
 }
 
-const getRootPositive = row => {
+const getRootPositive = (row, isOpposite = false) => {
   if (row.statement_id) {
-    return row.positive
+    return isOpposite ? !row.positive : row.positive
   }
   if (!row.justification_id) throw new Error(`justification ${row.id} has neither statement_id nor justification_id`)
   return oldQuery('select * from local_justification where id = ?', [row.justification_id])
       .then( ({rows: [targetRow]}) => {
         if (!targetRow) throw new Error(`justification ${row.id} targets justification ${row.justification_id}, which was not found`)
-        return getRootPositive(targetRow)
+        return getRootPositive(targetRow, !isOpposite)
       })
 }
 

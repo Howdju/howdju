@@ -30,8 +30,12 @@
 
 .md-dialog {
   // React-MD doesn't implement scrolling of a dialog contents, so add scroll to the whole dialog, at least.
-  overflow-x: auto;
-  width: 66%;
+  //overflow-x: auto;
+}
+
+.md-overlay--wide-dialog > .md-dialog {
+  // Evoke react-md .md-dialog's max-width;
+  width: 100%;
 }
 
 .md-icon {

@@ -13,17 +13,20 @@ import {
   justificationsSearchPage,
 } from './pages'
 import transients from './transients'
+import {isWindowNarrow} from "../../util";
 
-export const appUi = handleActions({
+export const app = handleActions({
   [ui.showNavDrawer]: (state, action) => ({...state, isNavDrawerVisible: true}),
   [ui.hideNavDrawer]: (state, action) => ({...state, isNavDrawerVisible: false}),
   [ui.toggleNavDrawerVisibility]: (state, action) => ({...state, isNavDrawerVisible: !state.isNavDrawerVisible}),
   [ui.setNavDrawerVisibility]: (state, action) => ({...state, isNavDrawerVisible: action.payload.visible}),
   [ui.addToast]: (state, action) => ({...state, toasts: state.toasts.concat(action.payload)}),
   [ui.dismissToast]: (state, action) => ({...state, toasts: state.toasts.slice(1)}),
+  [ui.windowResize]: state => ({...state, isWindowNarrow: isWindowNarrow()})
 }, {
   isNavDrawerVisible: false,
-  toasts: []
+  toasts: [],
+  isWindowNarrow: isWindowNarrow(),
 })
 
 export const mainSearch = handleActions({
@@ -41,7 +44,7 @@ export const mainSearch = handleActions({
 export default combineReducers({
   statementJustificationsPage,
   mainSearchPage,
-  app: appUi,
+  app,
   mainSearch,
   featuredPerspectivesPage,
   justificationsSearchPage,

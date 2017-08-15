@@ -76,10 +76,16 @@ class App extends Component {
   componentDidMount() {
     this.checkInitializeMainSearch()
     this.initializeTabIndex()
+    window.addEventListener('resize', this.onWindowResize)
   }
 
   componentWillUnmount() {
     if (this.unlistenToHistory) this.unlistenToHistory()
+    window.removeEventListener('resize', this.onWindowResize)
+  }
+
+  onWindowResize = () => {
+    this.context.store.dispatch(ui.windowResize())
   }
 
   checkInitializeMainSearch() {
@@ -311,6 +317,9 @@ class App extends Component {
       </DocumentTitle>
     )
   }
+}
+App.contextTypes = {
+  store: React.PropTypes.object
 }
 
 const mapStateToProps = state => {

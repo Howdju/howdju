@@ -2,7 +2,7 @@ import {LOCATION_CHANGE} from 'react-router-redux'
 import { parsePath } from 'history/PathUtils';
 
 import {
-  appUi, mainSearch,
+  app, mainSearch,
 } from './ui'
 import paths from '../paths'
 
@@ -29,7 +29,7 @@ describe('reducers', () => {
           type: LOCATION_CHANGE,
           payload: parsePath(paths.mainSearch(mainSearchText)),
         }
-        const newState = appUi(initialState, action)
+        const newState = app(initialState, action)
         expect(newState.mainSearchText).toEqual(mainSearchText)
       })
 

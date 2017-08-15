@@ -1,10 +1,8 @@
-const dns = require('dns')
-const os = require('os')
-const deasync = require('deasync')
 const isFunction = require('lodash/isFunction')
-const {logger} = require('./logger')
-
-exports.isTruthy = val => !!val
+const set = require('lodash/set')
+const dns = require('dns')
+const deasync = require('deasync')
+const os = require('os')
 
 exports.assert = (test, message) => {
   const makeMessage = message =>
@@ -20,7 +18,7 @@ exports.assert = (test, message) => {
                   // Otherwise, not much else we can do
                   message
 
-  const logError = message => logger.error("Failed assertion: " + makeMessage(message))
+  const logError = message => console.error("Failed assertion: " + makeMessage(message))
 
   if (process.env.DO_ASSERT === 'true') {
     if (isFunction(test)) {
@@ -32,6 +30,19 @@ exports.assert = (test, message) => {
     }
   }
 }
+
+exports.logError = (error) => {
+  console.error(error)
+}
+
+exports.rethrowTranslatedErrors = translationKey => error => {
+  const errors = {}
+  set(errors, translationKey, error.errors)
+  error.errors = errors
+  throw error
+}
+
+exports.isTruthy = val => !!val
 
 exports.apiHost = () => {
   let apiHost = process.env['API_HOST']

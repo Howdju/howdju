@@ -41,7 +41,10 @@ export const EditorTypes = {
   LOGIN_CREDENTIALS: 'LOGIN_CREDENTIALS',
 }
 
-const defaultEditorState = {}
+const defaultEditorState = {
+  errors: null,
+  isSaving: false,
+}
 
 const editorErrorReducer = errorKey => (state, action) => {
   const sourceError = action.payload.sourceError
@@ -73,7 +76,7 @@ const editorReducerByType = {
     [editors.beginEdit]: (state, action) => {
       const {entity} = action.payload
       const editEntity = cloneDeep(entity)
-      return {...state, editEntity}
+      return {...state, editEntity, errors: null}
     },
     [editors.propertyChange]: (state, action) => {
       const editEntity = cloneDeep(state.editEntity)

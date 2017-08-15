@@ -43,23 +43,15 @@ class StatementCompoundViewerAtomListItem extends Component {
     this.editorType = EditorTypes.STATEMENT
   }
 
-  onMouseOver = () => {
-    this.props.ui.beginInteractionWithTransient(this.props.id)
-  }
-
-  onMouseLeave = () => {
-    this.props.ui.endInteractionWithTransient(this.props.id)
-  }
-
   onEditStatement = () => {
     const _editorId = editorId(baseId(this.props))
     const statement = this.props.statementAtom.statement
     this.props.editors.beginEdit(this.editorType, _editorId, statement)
   }
 
-  onSeeUsages = () => {
+  seeUsagesPath = () => {
     const {statementAtom: {statement}} = this.props
-    this.props.goto.searchJustifications({statementId: statement.id})
+    return paths.searchJustifications({statementId: statement.id})
   }
 
   render() {
@@ -71,6 +63,7 @@ class StatementCompoundViewerAtomListItem extends Component {
       doShowJustifications,
       isMenuVisible,
       isCondensed,
+      isUnCondensed,
     } = this.props
 
     const _baseId = baseId(this.props)
@@ -96,7 +89,8 @@ class StatementCompoundViewerAtomListItem extends Component {
                         key="usages"
                         title="See justifications using this statement"
                         leftIcon={<FontIcon>call_merge</FontIcon>}
-                        onClick={() => this.onSeeUsages()}
+                        component={Link}
+                        to={this.seeUsagesPath()}
               />,
               <Divider key="divider" />,
               <ListItem primaryText="Edit"
@@ -114,8 +108,6 @@ class StatementCompoundViewerAtomListItem extends Component {
     return (
         <li id={id}
             className="statement-atom"
-            onMouseOver={this.onMouseOver}
-            onMouseLeave={this.onMouseLeave}
         >
           <ReactCSSTransitionGroup
               transitionName="context-menu--statement-atom"
@@ -135,6 +127,7 @@ class StatementCompoundViewerAtomListItem extends Component {
                                              doShowControls={doShowControls}
                                              doShowJustifications={doShowJustifications}
                                              isCondensed={isCondensed}
+                                             isUnCondensed={isUnCondensed}
             />
           }
         </li>

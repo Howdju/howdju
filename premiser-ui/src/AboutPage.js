@@ -9,7 +9,7 @@ export default () => (
         <ol>
           <li>
             We are more open to alternative perspectives when we share why we believe what
-            we believe than when we are told what is correct or incorrect. (&ldquo;How d'ya know that&ellip;?&rdquo;)
+            we believe than when we are told what is correct or incorrect. (&ldquo;How d'ya know that&hellip;?&rdquo;)
           </li>
           <li>
             Doubt and resistance will persist until we we are confident that all sides have had an opportunity

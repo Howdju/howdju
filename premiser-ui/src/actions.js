@@ -133,6 +133,7 @@ export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator)
 
 export const ui = {
   unhandledAppClick: actionCreator('UI/UNHANDLED_APP_CLICK'),
+  unhandledAppTouch: actionCreator('UI/UNHANDLED_APP_TOUCH'),
   showNavDrawer: actionCreator('SHOW_NAV_DRAWER'),
   hideNavDrawer: actionCreator('HIDE_NAV_DRAWER'),
   toggleNavDrawerVisibility: actionCreator('TOGGLE_NAV_DRAWER_VISIBILITY'),
@@ -155,12 +156,19 @@ export const ui = {
   beginInteractionWithTransient: actionCreator('UI/BEGIN_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),
   endInteractionWithTransient: actionCreator('UI/END_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),
   showTransient: actionCreator('UI/SHOW_TRANSIENT', transientId => ({transientId})),
-  scheduleHideTransient: actionCreator('UI/SCHEDULE_HIDE_TRANSIENT', (transientId, hideDelay) => ({transientId, hideDelay})),
-  tryCancelHideTransient: actionCreator('UI/TRY_CANCEL_HIDE_TRANSIENT', transientId => ({transientId})),
-  cancelHideTransient: actionCreator('UI/CANCEL_HIDE_TRANSIENT', transientId => ({transientId})),
+  scheduleDelayedHideTransient: actionCreator('UI/SCHEDULE_DELAYED_HIDE_TRANSIENT', (transientId, hideDelay) => ({transientId, hideDelay})),
+  tryCancelDelayedHideTransient: actionCreator('UI/TRY_CANCEL_DELAYED_HIDE_TRANSIENT',
+      (transientId, cause) => ({transientId}),
+      (transientId, cause) => ({cause}),
+  ),
+  cancelDelayedHideTransient: actionCreator('UI/CANCEL_DELAYED_HIDE_TRANSIENT', transientId => ({transientId})),
   hideAllTransients: actionCreator('UI/HIDE_ALL_TRANSIENTS'),
   hideOtherTransients: actionCreator('UI/HIDE_OTHER_TRANSIENTS', visibleTransientId => ({visibleTransientId})),
-  hideTransient: actionCreator('UI/HIDE_TRANSIENT', transientId => ({transientId})),
+  hideTransient: actionCreator('UI/HIDE_TRANSIENT',
+      (transientId, cause) => ({transientId}),
+      (transientId, cause) => ({cause}),
+  ),
+  windowResize: actionCreator('UI/WINDOW_RESIZE'),
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
@@ -207,11 +215,6 @@ export const goto = {
   login: actionCreator('GOTO/LOGIN', loginRedirectLocation => ({loginRedirectLocation})),
   statement: actionCreator('GOTO/STATEMENT', statement => ({statement})),
   mainSearch: actionCreator('GOTO/MAIN_SEARCH', mainSearchText => ({mainSearchText})),
-  createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION', (basisType, basisId) => ({basisType, basisId})),
-  searchJustifications: actionCreator('GOTO/SEARCH_JUSTIFICATIONS',
-      ({statementId, statementCompoundId, citationReferenceId}) => ({statementId, statementCompoundId, citationReferenceId})),
-  searchCitationReferences: actionCreator('GOTO/SEARCH_CITATION_REFERENCES',
-      ({quoteText, citationText, urlDomain}) => ({quoteText, citationText, urlDomain}))
 }
 
 export const flows = {

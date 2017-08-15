@@ -15,6 +15,7 @@ class EditableJustificationBasis extends Component {
       doShowControls,
       doShowBasisJustifications,
       isCondensed,
+      isUnCondensed,
       ...rest,
     } = this.props
 
@@ -27,6 +28,7 @@ class EditableJustificationBasis extends Component {
                                    doShowControls={doShowControls}
                                    doShowStatementAtomJustifications={doShowBasisJustifications}
                                    isCondensed={isCondensed}
+                                   isUnCondensed={isUnCondensed}
         /> :
         <EditableCitationReference {...rest}
                                    id={id}

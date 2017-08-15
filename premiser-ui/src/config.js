@@ -11,7 +11,7 @@ const config = {
   transientHideDelay: 1500,
   reduxPersistWhitelist: ['auth'],
   ui: {
-    narrowBreakpoint: 600,
+    narrowBreakpoint: 840,
     flipMoveDuration: 750,
     flipMoveEasing: "ease-out",
   },

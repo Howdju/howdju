@@ -307,10 +307,7 @@ CitationReferenceValidator.blankErrors = () => ({
   modelErrors: [],
   fieldErrors: {
     quote: [],
-    citation: {
-      modelErrors: [],
-      fieldErrors: {},
-    },
+    citation: CitationValidator.blankErrors(),
     urls: {
       modelErrors: [],
       itemErrors: [],
@@ -459,11 +456,15 @@ const credentialValidator = new CredentialValidator()
 const voteValidator = new VoteValidator()
 
 module.exports = {
+  StatementValidator,
+  CitationReferenceValidator,
+  urlValidator,
+  userValidator,
   statementValidator,
   statementCompoundValidator,
+  citationValidator,
   citationReferenceValidator,
   justificationValidator,
   credentialValidator,
-  userValidator,
   voteValidator,
 }

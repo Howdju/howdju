@@ -13,7 +13,17 @@ const modelErrorMessages = {
   OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT: 'Another statement already has equivalent text',
   OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT: 'Another citation reference already has the same citation and quote',
   OTHER_CITATIONS_HAVE_EQUIVALENT_TEXT_CONFLICT: 'Another citation already has equivalent text',
-  CANNOT_MODIFY_OTHER_USERS_ENTITIES: "Cannot modify another user's entities"
+  CANNOT_MODIFY_OTHER_USERS_ENTITIES: "Cannot modify another user's entities",
+
+  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT: 'Other users have created justifications rooted in this statement',
+  OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT: 'Other users have voted on justifications rooted in this statement',
+  OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT: 'Other users have based justifications on this statement',
+  OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT: 'Other users have verified justifications based on this quote',
+  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_REFERENCE_CONFLICT: 'Other users have created justifications using this quote',
+  OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT: 'Other users have verified justifications based upon this citation',
+  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_CONFLICT: 'Other users have created justifications based upon this citation',
+  OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT: 'Other users have countered justifications based upon this quote',
+  OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT: 'Other users have countered justifications based upon this citation',
 }
 
 export const toErrorMessage = (modelErrorCode, ...args) => {

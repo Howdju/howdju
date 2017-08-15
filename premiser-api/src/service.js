@@ -52,6 +52,8 @@ const {
   voteValidator,
   citationReferenceValidator,
   statementCompoundValidator,
+  CitationReferenceValidator,
+  StatementValidator,
 } = require('./validators')
 const {
   OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT,
@@ -539,19 +541,25 @@ const updateStatement = ({authToken, statement}) => withAuth(authToken)
         hasPermission,
       ]) => {
       if (equivalentStatementsCount > 0) {
-        throw new EntityConflictError({
-          hasErrors: true,
-          fieldErrors: {
-            text: [OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT]
-          }
-        })
+        throw new EntityConflictError(merge(
+            StatementValidator.blankErrors(),
+            {
+              hasErrors: true,
+              fieldErrors: {
+                text: [OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT]
+              }
+            }
+          ))
       } else if (!hasPermission) {
         const userActionConflictCodes = keys(pickBy(userActionConflicts))
         if (userActionConflictCodes.length > 0) {
-          throw new UserActionsConflictError({
-            hasErrors: true,
-            modelErrors: userActionConflictCodes,
-          })
+          throw new UserActionsConflictError(merge(
+            StatementValidator.blankErrors(),
+            {
+              hasErrors: true,
+              modelErrors: userActionConflictCodes,
+            }
+          ))
         }
       }
       return userId
@@ -658,19 +666,25 @@ const updateCitationReference = ({authToken, citationReference}) => withAuth(aut
 
       const entityConflictCodes = keys(pickBy(entityConflicts))
       if (entityConflictCodes.length > 0) {
-        throw new EntityConflictError({
-          hasErrors: true,
-          modelErrors: entityConflictCodes,
-        })
+        throw new EntityConflictError(merge(
+            CitationReferenceValidator.blankErrors(),
+            {
+              hasErrors: true,
+              modelErrors: entityConflictCodes,
+            }
+          ))
       }
 
       const userActionsConflictCodes = keys(pickBy(userActionConflicts))
       if (userActionsConflictCodes.length > 0) {
         if (!hasPermission) {
-          throw new UserActionsConflictError({
-            hasErrors: true,
-            modelErrors: userActionsConflictCodes,
-          })
+          throw new UserActionsConflictError(merge(
+            CitationReferenceValidator.blankErrors(),
+            {
+              hasErrors: true,
+              modelErrors: userActionsConflictCodes,
+            }
+          ))
         }
         logger.info(`User ${userId} overriding userActionsConflictCodes ${userActionsConflictCodes}`)
       }
