@@ -46,6 +46,7 @@ import t, {
 
 import './fonts.js'
 import './App.scss'
+import {selectRouterLocation} from "./selectors";
 
 const tabIndexByPathname = {
   '/featured-perspectives': 0,
@@ -69,9 +70,16 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.checkInitializeMainSearch()
     this.initializeTabIndex()
     window.addEventListener('resize', this.onWindowResize)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const queryParamSearchText = this.props.queryParamSearchText
+    const nextQueryParamSearchText = nextProps.queryParamSearchText
+    if (nextQueryParamSearchText && nextQueryParamSearchText !== queryParamSearchText) {
+      this.props.app.initializeMainSearch(nextQueryParamSearchText)
+    }
   }
 
   componentWillUnmount() {
@@ -83,25 +91,15 @@ class App extends Component {
     this.context.store.dispatch(ui.windowResize())
   }
 
-  checkInitializeMainSearch = () => {
-    const location = window.location
-    if (location.pathname === mainSearchPathName) {
-      const queryParamSearchText = mainSearcher.mainSearchText(location)
-      if (queryParamSearchText) {
-        this.props.app.initializeMainSearch(queryParamSearchText)
-      }
-    }
-  }
-
   initializeTabIndex = () => {
     this.syncTabToPathname(window.location.pathname)
   }
 
-  handleLogout = () => {
+  logout = () => {
     this.props.api.logout()
   }
 
-  handleHideNavDrawer = () => {
+  hideNavDrawer = () => {
     this.props.ui.hideNavDrawer()
   }
 
@@ -109,7 +107,7 @@ class App extends Component {
     this.props.ui.setNavDrawerVisibility({visible})
   }
 
-  onSnackbarDismiss = () => {
+  dismissSnackbar = () => {
     this.props.ui.dismissToast()
   }
 
@@ -174,7 +172,7 @@ class App extends Component {
           <ListItem key="logout"
                     primaryText="Logout"
                     leftIcon={<FontIcon>exit_to_app</FontIcon>}
-                    onClick={this.handleLogout}
+                    onClick={this.logout}
           />
       )
     }
@@ -196,7 +194,7 @@ class App extends Component {
             type={Drawer.DrawerTypes.TEMPORARY}
             header={
               <Toolbar
-                  nav={<Button icon onClick={this.handleHideNavDrawer}>close</Button>}
+                  nav={<Button icon onClick={this.hideNavDrawer}>close</Button>}
                   className="md-divider-border md-divider-border--bottom"
               >
                 {authToken &&
@@ -305,7 +303,7 @@ class App extends Component {
 
             </div>
 
-            <Snackbar toasts={toasts} onDismiss={this.onSnackbarDismiss} />
+            <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
 
           </div>
         </ConnectedRouter>
@@ -326,11 +324,19 @@ const mapStateToProps = state => {
   const authToken = auth.authToken
   const isNavDrawerVisible = get(ui, ['app', 'isNavDrawerVisible'])
   const toasts = get(ui, ['app', 'toasts'])
+
+  const location = selectRouterLocation(state)
+  const pathname = get(location, 'pathname')
+  const queryParamSearchText = pathname === mainSearchPathName ?
+      mainSearcher.mainSearchText(location) :
+      null
+
   return {
     email,
     authToken,
     isNavDrawerVisible,
     toasts,
+    queryParamSearchText,
   }
 }
 

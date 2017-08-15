@@ -1,6 +1,5 @@
 # Howdju UI TODO
 
-* When statement ID changes on statement justifications page, need to request data
 * The small chat tab gets in the way of the mobile full screen dialog.
   * Also the context menus
   * I think we have to hide it on scroll down, reshow on scroll up

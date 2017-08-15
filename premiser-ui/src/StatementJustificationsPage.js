@@ -53,6 +53,8 @@ import {ESCAPE_KEY_CODE} from "./keyCodes";
 import "./StatementJustificationsPage.scss";
 import StatementJustificationTrees from "./StatementJustificationTrees";
 
+const statementIdFromProps = (props) => get(props, 'match.params.statementId')
+
 class StatementJustificationsPage extends Component {
   constructor() {
     super()
@@ -65,11 +67,23 @@ class StatementJustificationsPage extends Component {
   }
 
   componentWillMount() {
-    this.props.editors.init(EditorTypes.STATEMENT, this.statementEditorId, {entityId: this.statementId()})
-    this.props.api.fetchStatementJustifications(this.statementId())
+    this.fetchAndEditForStatementId(statementIdFromProps(this.props))
   }
 
-  statementId = () => this.props.match.params.statementId
+  componentWillReceiveProps(nextProps) {
+    const statementId = statementIdFromProps(this.props)
+    const nextStatementId = statementIdFromProps(nextProps)
+    if (statementId !== nextStatementId) {
+      this.fetchAndEditForStatementId(nextStatementId)
+    }
+  }
+
+  fetchAndEditForStatementId = (statementId) => {
+    this.props.editors.init(EditorTypes.STATEMENT, this.statementEditorId, {entityId: statementId})
+    this.props.api.fetchStatementJustifications(statementId)
+  }
+
+  statementId = () => statementIdFromProps(this.props)
 
   onStatementMouseOver = () => {
     this.setState({isOverStatement: true})

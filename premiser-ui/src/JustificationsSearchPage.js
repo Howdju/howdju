@@ -16,32 +16,38 @@ import JustificationCard from "./JustificationCard";
 import {denormalize} from "normalizr";
 import {justificationsSchema} from "./schemas";
 import config from './config'
+import {selectRouterLocation} from "./selectors";
 
 class JustificationsSearchPage extends Component {
 
   componentWillMount() {
     this.props.ui.clearJustificationsSearch()
-    const {
-      citationReferenceId,
-      citationId,
-      statementCompoundId,
-      statementId,
-    } = queryString.parse(window.location.search)
+    const searchParams = this.justificationSearchParams()
     const count = JustificationsSearchPage.fetchCount
-    this.props.api.fetchJustificationsSearch({citationReferenceId, citationId, statementCompoundId, statementId, count})
+    this.props.api.fetchJustificationsSearch({...searchParams, count})
   }
 
   fetchMore = event => {
     event.preventDefault()
+    const searchParams = this.justificationSearchParams()
+    const count = JustificationsSearchPage.fetchCount
+    const {continuationToken} = this.props
+    this.props.api.fetchJustificationsSearch({...searchParams, count, continuationToken})
+  }
+
+  justificationSearchParams = () => {
     const {
       citationReferenceId,
       citationId,
       statementCompoundId,
       statementId,
-    } = queryString.parse(window.location.search)
-    const count = JustificationsSearchPage.fetchCount
-    const {continuationToken} = this.props
-    this.props.api.fetchJustificationsSearch({citationReferenceId, citationId, statementCompoundId, statementId, count, continuationToken})
+    } = queryString.parse(this.props.locationSearch)
+    return {
+      citationReferenceId,
+      citationId,
+      statementCompoundId,
+      statementId,
+    }
   }
 
   render() {
@@ -105,9 +111,12 @@ const mapStateToProps = (state, ownProps) => {
     isFetching
   } = pageState
   const justifications = denormalize(pageState.justifications, justificationsSchema, state.entities)
+  const location = selectRouterLocation(state)
+  const locationSearch = get(location, 'search')
   return {
     isFetching,
     justifications,
+    locationSearch,
   }
 }
 
