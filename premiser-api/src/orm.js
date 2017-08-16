@@ -10,14 +10,15 @@ const {ImpossibleError} = require('./errors')
 const toUser = row => !row ? row : ({
   id: toString(row.user_id),
   email: row.email,
-  firstName: row.first_name,
-  lastName: row.last_name,
+  shortName: row.short_name,
+  fullName: row.full_name,
   created: row.created,
   externalIds: {
     googleAnalyticsId: row.google_analytics_id,
     heapAnalyticsId: row.heap_analytics_id,
     mixpanelId: row.mixpanel_id,
     sentryId: row.sentry_id,
+    smallchatId: row.smallchat_id,
   }
 })
 

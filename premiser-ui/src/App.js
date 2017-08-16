@@ -14,6 +14,7 @@ import Tab from 'react-md/lib/Tabs/Tab'
 import { connect } from 'react-redux'
 import cn from 'classnames'
 import get from 'lodash/get'
+import throttle from 'lodash/throttle'
 
 import Header from './Header'
 import MainSearchPage from './MainSearchPage'
@@ -46,7 +47,9 @@ import t, {
 
 import './fonts.js'
 import './App.scss'
-import {selectRouterLocation} from "./selectors";
+import {selectIsWindowNarrow, selectRouterLocation} from "./selectors";
+import * as smallchat from './smallchat'
+import {isScrollPastBottom, isScrollPastTop} from "./util";
 
 const tabIndexByPathname = {
   '/featured-perspectives': 0,
@@ -62,7 +65,12 @@ class App extends Component {
 
     this.state = {
       activeTabIndex: 0,
+      windowPageYOffset: window.pageYOffset,
+      isOverscrolledTop: false,
+      isOverscrolledBottom: false,
     }
+
+    this.throttledOnWindowScroll = throttle(this.onWindowScroll, 100)
   }
 
   componentWillMount() {
@@ -72,6 +80,7 @@ class App extends Component {
   componentDidMount() {
     this.initializeTabIndex()
     window.addEventListener('resize', this.onWindowResize)
+    window.addEventListener('scroll', this.throttledOnWindowScroll)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -85,10 +94,70 @@ class App extends Component {
   componentWillUnmount() {
     if (this.unlistenToHistory) this.unlistenToHistory()
     window.removeEventListener('resize', this.onWindowResize)
+    window.removeEventListener('scroll', this.throttledOnWindowScroll)
   }
 
   onWindowResize = () => {
     this.context.store.dispatch(ui.windowResize())
+  }
+
+  updateOverscrollState = () => {
+    if (isScrollPastTop()) {
+      this.setState({
+        isOverscrolledTop: true,
+        isOverscrolledBottom: false,
+      })
+    } else if (isScrollPastBottom()) {
+      this.setState({
+        isOverscrolledTop: false,
+        isOverscrolledBottom: true,
+      })
+    }
+  }
+
+  updateSmallchatLauncherVisibility = () => {
+    // The smallchat tab obscures UI (context menus and dialog buttons) on narrow screens.  Show allow the user to hide
+    // it by scrolling down.
+    const didScrollDown = window.pageYOffset > this.state.windowPageYOffset
+    const didScrollUp = window.pageYOffset < this.state.windowPageYOffset
+    const {
+      isOverscrolledTop,
+      isOverscrolledBottom,
+    } = this.state
+    if (didScrollDown && !isOverscrolledTop) {
+      smallchat.hide()
+    } else if (didScrollUp && !isOverscrolledBottom) {
+      smallchat.show()
+    }
+  }
+
+  resetOverscrollState = () => {
+    const newState = {
+      windowPageYOffset: window.pageYOffset
+    }
+    // reset overscrolls
+    if (this.state.isOverscrolledTop && !isScrollPastTop()) {
+      newState.isOverscrolledTop = false
+    }
+    if (this.state.isOverscrolledBottom && !isScrollPastBottom()) {
+      newState.isOverscrolledBottom = false
+    }
+    this.setState(newState)
+  }
+
+  onWindowScroll = () => {
+
+    this.updateOverscrollState()
+
+    // The code below won't necessarily see the state updates from above and that should be okay.
+    // I think we expect the scroll events that need to respond to overscrolls to occur many throttled-events after
+    // the overscroll is detected.
+
+    if (this.props.isWindowNarrow) {
+      this.updateSmallchatLauncherVisibility()
+    }
+
+    this.resetOverscrollState()
   }
 
   initializeTabIndex = () => {
@@ -331,12 +400,15 @@ const mapStateToProps = state => {
       mainSearcher.mainSearchText(location) :
       null
 
+  const isWindowNarrow = selectIsWindowNarrow(state)
+
   return {
     email,
     authToken,
     isNavDrawerVisible,
     toasts,
     queryParamSearchText,
+    isWindowNarrow,
   }
 }
 

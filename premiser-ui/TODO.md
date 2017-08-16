@@ -1,22 +1,11 @@
 # Howdju UI TODO
 
-* The small chat tab gets in the way of the mobile full screen dialog.
-  * Also the context menus
-  * I think we have to hide it on scroll down, reshow on scroll up
-  * Smallchat.hide() and Smallchat.show() 
-  window.smallchat = {
-      sessionData: {
-          name: example.user.name,
-          email: example.user.email,
-          ...whateverElseYouWant
-      }
-  }
 * On tap in input need to hide autocomplete results (otherwise hides things below it)
 
 * Add prompt for opposing/supporting justification
-* If slug is not equal to current slug, change path
 
 * Fix rootPolarity in prod
+  * Migrate external IDs for smallchat, and short_name/long_name
 * Featured Perspectives are scrunched on mobile
 
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
@@ -282,6 +271,7 @@
 * Record raw statement/citation text entered before normalized.  Keep this on a short time-scale
 
 ### Flair
+* If slug is not equal to current slug, change path
 * Move login status/logout to header
 * Add different color bottom bar to main search
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"

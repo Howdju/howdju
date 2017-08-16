@@ -52,6 +52,7 @@ import {ESCAPE_KEY_CODE} from "./keyCodes";
 
 import "./StatementJustificationsPage.scss";
 import StatementJustificationTrees from "./StatementJustificationTrees";
+import {selectIsWindowNarrow} from "./selectors";
 
 const statementIdFromProps = (props) => get(props, 'match.params.statementId')
 
@@ -362,7 +363,7 @@ const mapStateToProps = (state, ownProps) => {
   ], {})
   const isSavingNewJustification = newJustificationDialogEditorState.isSaving
 
-  const isWindowNarrow = get(state, ['ui', 'app', 'isWindowNarrow'])
+  const isWindowNarrow = selectIsWindowNarrow(state)
 
   return {
     ...state.ui.statementJustificationsPage,

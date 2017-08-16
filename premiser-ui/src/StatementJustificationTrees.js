@@ -13,6 +13,7 @@ import config from './config'
 import JustificationTree from './JustificationTree'
 
 import './StatementJustificationTrees.scss'
+import {selectIsWindowNarrow} from "./selectors";
 
 class StatementJustificationTrees extends Component {
 
@@ -109,7 +110,7 @@ StatementJustificationTrees.defaultProps = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const isWindowNarrow = get(state, ['ui', 'app', 'isWindowNarrow'])
+  const isWindowNarrow = selectIsWindowNarrow(state)
 
   return {
     isWindowNarrow,

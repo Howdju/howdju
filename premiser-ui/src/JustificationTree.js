@@ -45,6 +45,7 @@ import ChatBubble from './ChatBubble'
 
 import './JustificationTree.scss'
 import {newImpossibleError} from "./customErrors";
+import {selectIsWindowNarrow} from "./selectors";
 
 
 const justificationTreeId = props => {
@@ -327,7 +328,7 @@ const mapStateToProps = (state, ownProps) => {
 
   const newCounterJustification = get(state, ['editors', EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
 
-  const isWindowNarrow = get(state, ['ui', 'app', 'isWindowNarrow'])
+  const isWindowNarrow = selectIsWindowNarrow(state)
   return {
     newCounterJustification,
     isEditingBasis,

@@ -22,8 +22,8 @@ create table if not exists perspective_justifications (
 create table if not exists users (
   user_id serial,
   email varchar(2048),
-  first_name varchar(128),
-  last_name varchar(128),
+  short_name varchar(128),
+  full_name varchar(1024),
   phone_number varchar(64),
   creator_user_id integer,
   is_active bit,
@@ -37,7 +37,8 @@ create table if not exists user_external_ids (
   google_analytics_id varchar(128),
   mixpanel_id varchar(128),
   heap_analytics_id varchar(128),
-  sentry_id varchar(128)
+  sentry_id varchar(128),
+  smallchat_id varchar(128)
 );
 
 create table if not exists user_auth (

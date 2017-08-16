@@ -79,3 +79,46 @@ export const logger = {
     logger[level](ex);
   }
 }
+
+export const isScrollPastTop = () => window.document.body.scrollTop < 0
+
+export const isScrollPastBottom = () => {
+  // Some references for figuring this issue out:
+  // https://stackoverflow.com/a/40370876/39396
+  // https://stackoverflow.com/a/27335321/39396
+  const body = window.document.body
+  return body.scrollTop + window.innerHeight > body.scrollHeight
+}
+
+export const getDimensionInfo = () => {
+  const {
+    documentElement,
+    body
+  } = window.document
+  const dimensionInfo = {
+    window: {
+      innerHeight: window.innerHeight,
+      outerHeight: window.outerHeight,
+      pageYOffset: window.pageYOffset,
+      scrollY: window.scrollY,
+    },
+    documentElement: {
+      scrollTop: documentElement.scrollTop,
+      scrollHeight: documentElement.scrollHeight,
+      clientHeight: documentElement.clientHeight,
+      offsetHeight: documentElement.offsetHeight,
+    },
+    body: {
+      scrollTop: body.scrollTop,
+      clientHeight: body.clientHeight,
+      offsetHeight: body.offsetHeight,
+      scrollHeight: body.scrollHeight,
+    },
+    conditions: {
+      [`window.innerHeight + window.pageYOffset >= document.body.offsetHeight : ${window.innerHeight} + ${window.pageYOffset} = ${window.innerHeight + window.pageYOffset} >= ${document.body.offsetHeight}`]: (window.innerHeight + window.pageYOffset >= document.body.offsetHeight),
+      [`documentElement.clientHeight + window.pageYOffset >= document.body.offsetHeight : ${documentElement.clientHeight} + ${window.pageYOffset} = ${documentElement.clientHeight + window.pageYOffset} >= ${document.body.offsetHeight}`]: (documentElement.clientHeight + window.pageYOffset >= document.body.offsetHeight),
+      [`body.scrollTop + window.innerHeight >= body.scrollHeight : ${body.scrollTop} + ${window.innerHeight} = ${body.scrollTop + window.innerHeight} >= body.scrollHeight`]: body.scrollTop + window.innerHeight >= body.scrollHeight,
+    }
+  }
+  return dimensionInfo
+}

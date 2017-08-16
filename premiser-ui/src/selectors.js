@@ -6,3 +6,5 @@ export const selectLoginRedirectLocation = state => state.app.loginRedirectLocat
 export const selectUserExternalIds = (state, defaultValue) => get(state, ['auth', 'user', 'externalIds'], defaultValue)
 export const selectAuthToken = state => state.auth.authToken
 export const selectLoggedErrors = state => state.errors.loggedErrors
+export const selectIsWindowNarrow = state => get(state, ['ui', 'app', 'isWindowNarrow'])
+export const selectUser = state => get(state, ['auth', 'user'])

@@ -57,7 +57,7 @@ import {
   selectEditorState,
   selectLoggedErrors,
   selectLoginRedirectLocation,
-  selectRouterLocation,
+  selectRouterLocation, selectUser,
   selectUserExternalIds,
 } from "../selectors";
 import {EditorTypes} from "../reducers/editors";
@@ -98,6 +98,7 @@ import * as sentry from '../sentry'
 import analytics from "../analytics"
 
 import handleTransientInteractions from './transients'
+import * as smallchat from "../smallchat";
 
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -427,9 +428,17 @@ function* configureAfterLogin() {
   yield takeEvery(str(api.login.response), function* setSentryUserContextAfterLoginWorker(action) {
     if (!action.error) {
       const externalIds = yield select(selectUserExternalIds)
-      const {sentryId} = externalIds
+      const {
+        sentryId,
+        smallchatId,
+      } = externalIds
       if (sentryId) {
         sentry.setUserContext(sentryId)
+      }
+
+      const {shortName, fullName} = yield select(selectUser)
+      if (smallchatId) {
+        smallchat.identify(smallchatId, shortName, fullName)
       }
       analytics.identify(externalIds)
     }
