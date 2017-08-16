@@ -1,7 +1,5 @@
 # Howdju UI TODO
 
-* On tap in input need to hide autocomplete results (otherwise hides things below it)
-
 * Add prompt for opposing/supporting justification
 
 * Fix rootPolarity in prod

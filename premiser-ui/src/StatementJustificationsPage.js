@@ -206,38 +206,50 @@ class StatementJustificationsPage extends Component {
         />
     )
 
-    const addNewJustificationDialogActions = [
-      <Button flat
-              key="addNewJustificationDialogCancelButton"
-              label={text(CANCEL_BUTTON_LABEL)}
-              onClick={this.cancelNewJustificationDialog}
-              disabled={isSavingNewJustification}
-      />,
-      <Button raised
-              primary
-              key="addNewJustificationDialogSubmitButton"
-              type="submit"
-              label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-              onClick={this.saveNewJustification}
-              disabled={isSavingNewJustification}
-      />
-    ]
+    // Putting these buttons in an array to reuse in both places requires giving them a key, which led to the warning
+    // "ButtonTooltipedInked: `key` is not a prop. Trying to access it will result in `undefined` being returned."
+    // So just handle them separately so that we don't need to give them a key
+    const addNewJustificationDialogCancelButton = (
+        <Button flat
+                label={text(CANCEL_BUTTON_LABEL)}
+                onClick={this.cancelNewJustificationDialog}
+                disabled={isSavingNewJustification}
+        />
+    )
+    const addNewJustificationDialogSubmitButton = (
+        <Button raised
+                primary
+                type="submit"
+                label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+                onClick={this.saveNewJustification}
+                disabled={isSavingNewJustification}
+        />
+    )
     // react-md bug: even though fullPage is documented as a boolean property, its presence appears to be interpreted as true
     const addNewJustificationDialogTitle = "Add justification"
-    const fullPageProps = isWindowNarrow ? {fullPage: true} : {title: addNewJustificationDialogTitle}
+    const narrowDialogAttributes = {
+      fullPage: true,
+      'aria-label': addNewJustificationDialogTitle
+    }
+    const notNarrowDialogAttributes = {
+      title: addNewJustificationDialogTitle,
+      actions: [
+        addNewJustificationDialogCancelButton,
+        addNewJustificationDialogSubmitButton,
+      ],
+    }
+    const widthDependentAttributes = isWindowNarrow ? narrowDialogAttributes : notNarrowDialogAttributes
     const addNewJustificationDialog = (
         <Dialog id="newJustificationDialog"
-                aria-label={addNewJustificationDialogTitle}
                 visible={isNewJustificationDialogVisible}
                 onHide={this.cancelNewJustificationDialog}
-                {...fullPageProps}
                 className="md-overlay--wide-dialog"
-                actions={addNewJustificationDialogActions}
+                {...widthDependentAttributes}
         >
           {/* react-md bug: Title disappears when full page*/}
           {isWindowNarrow &&
             <h2 id="newJustificationDialogTitle" className="md-title md-title--dialog">
-              Add justification
+              {addNewJustificationDialogTitle}
             </h2>
           }
           <NewJustificationEditor editorId={this.newJustificationEditorId}
@@ -251,7 +263,8 @@ class StatementJustificationsPage extends Component {
           {/* react-md bug: actions disappears when full page*/}
           {isWindowNarrow &&
             <footer className="md-dialog-footer md-dialog-footer--inline">
-              {addNewJustificationDialogActions}
+              {addNewJustificationDialogCancelButton}
+              {addNewJustificationDialogSubmitButton}
             </footer>
           }
         </Dialog>

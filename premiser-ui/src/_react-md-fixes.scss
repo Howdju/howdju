@@ -1,3 +1,5 @@
+@import '~react-md/src/scss/react-md';
+
 // TODO remove at some point!
 .md-text-field-container.md-text-field-container--multiline:not(.hasIcon) {
   // the following doens't appear to apply to multiline inputs with an icon (left icon, at least)
@@ -29,17 +31,20 @@
 }
 
 .md-dialog {
-  // React-MD doesn't implement scrolling of a dialog contents, so add scroll to the whole dialog, at least.
-  //overflow-x: auto;
+  // React-MD doesn't implement scrolling of md-dialog-content, so add scroll to the whole dialog and md-dialog-contents
+  // overflow will need to be visible.
+  overflow: auto;
+  .md-dialog-content {
+    // When we have big autocomplets, let them be visible outside the content.  Otherwise we get two scrollbars in the
+    // dialog, one for the content and one for the dialog.
+    overflow: visible;
+  }
 }
 
 .md-overlay--wide-dialog > .md-dialog {
   // Evoke react-md .md-dialog's max-width;
   width: 100%;
-}
-
-.md-icon {
-  color: $icon-color;
+  height: 100%;
 }
 
 .md-dialog-footer--card > .md-btn {
@@ -56,6 +61,10 @@
 .md-tooltip {
   font-size: large;
   padding: 25px;
+}
+
+.md-icon {
+  color: $icon-color;
 }
 
 html, body {
@@ -83,5 +92,26 @@ html, body {
   .md-divider--text-field {
     // For some reason the non-zero (4-8px depending on screen width) margin-bottom was disappearing this divider
     margin-bottom: 0;
+  }
+}
+
+
+@media (max-width: $md-grid-desktop-breakpoint - 1) {
+  .md-autocomplete-list {
+    // Instead of displaying md-list-tiles at a constant height (which works for single line of text, which we are
+    // removing below) unset the height and give them a margin
+    .md-list-item {
+      margin-top: $md-grid-phone-gutter;
+      margin-bottom: $md-grid-phone-gutter;
+      .md-list-tile {
+        height: unset;
+      }
+    }
+    // On mobile, allow autoomplete suggestions to wrap so that they don't go off-screen
+    .md-tile-text--primary, .md-tile-text--secondary {
+      overflow: visible;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
   }
 }

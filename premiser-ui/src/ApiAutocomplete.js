@@ -75,6 +75,19 @@ class ApiAutocomplete extends Component {
     }
   }
 
+  onTouchEnd = () => {
+    console.log('onTouchEnd')
+    // Mobile devices need some way to hide the autocomplete, since they lack escape button or the screen space to click around
+    // (Sometimes the touchend fires a click and sometimes it doesn't, so handle touch explicitly)
+    this.closeAutocomplete()
+  }
+
+  onClick = () => {
+    console.log('onClick')
+    // For parity with mobile devices, close the auto complete upon click
+    this.closeAutocomplete()
+  }
+
   isAutocompleteOpen = () => {
     return this.autocomplete.state.isOpen
   }
@@ -145,6 +158,8 @@ class ApiAutocomplete extends Component {
                       onAutocomplete={this.onAutocomplete}
                       onMenuOpen={this.onMenuOpen}
                       onBlur={this.onBlur}
+                      onTouchEnd={this.onTouchEnd}
+                      onClick={this.onClick}
                       data={transformedSuggestions}
                       filter={null}
                       ref={this.setAutocomplete}
@@ -189,7 +204,7 @@ ApiAutocomplete.defaultProps = {
 }
 
 /** Pluck the properties from the model and give them names appropriate to a DOM element; react-md will put all its members as attributes on the element */
-const defaultSuggestionTransform = props => model => ({
+const defaultSuggestionTransform = (props) => (model) => ({
   [dataLabel]: model[props.dataLabel],
   [dataValue]: model[props.dataValue],
 })

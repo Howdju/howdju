@@ -12,6 +12,5 @@ export const identify = (smallchatId, shortName, fullName) => {
     fullName,
     smallchatId,
   }
-  console.log(sessionData)
   window.smallchat = {sessionData}
 }

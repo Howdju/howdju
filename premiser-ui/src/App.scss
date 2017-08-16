@@ -78,7 +78,7 @@ b {
 
 $small-chat-iframe-z-index: 999999999;
 @media (max-width: $md-grid-desktop-breakpoint - 1) {
-  // Two different ways to try and make sure the context menu is obscured by the small chat launcher
+  // Two different ways to try and make sure the context menu is not obscured by the small chat launcher
   //#Smallchat iframe {
   //  right: auto !important;
   //  left: 0;
@@ -94,4 +94,9 @@ $small-chat-iframe-z-index: 999999999;
   }
 }
 
-
+// Hide the small chat launcher when a no-scroll dialog is present on mobile
+.md-no-scroll {
+  #Smallchat {
+    display: none;
+  }
+}
