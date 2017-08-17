@@ -77,6 +77,8 @@ exports.handler = (event, context, callback) => {
       return callback(null, response)
     }
 
+    console.log(event)
+
     routeEvent({
       callback: respond,
       request: {
