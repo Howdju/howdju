@@ -1,9 +1,10 @@
 # Howdju UI TODO
 
-* Fix rootPolarity in prod
-  * Migrate external IDs for smallchat, and short_name/long_name
+* Whats next / About page
+
 
 ## Stuff not necessary before switch
+* Terms / Privacy
 * Add prompt for opposing/supporting justification
 * Featured Perspectives are scrunched on mobile
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?

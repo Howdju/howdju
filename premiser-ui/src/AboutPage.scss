@@ -1,0 +1,17 @@
+@import './colors';
+
+#about-page {
+  ol, ul {
+    margin-left: 15px;
+  }
+  ol {
+    list-style: decimal;
+  }
+  ul {
+    list-style: disc;
+  }
+
+  a {
+    color: $secondary-color;
+  }
+}

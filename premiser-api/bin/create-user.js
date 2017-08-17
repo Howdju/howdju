@@ -33,7 +33,6 @@ function createUserWithPassword(error, password) {
   if (error) throw error
 
   const creatorUserId = args.creatorUserId
-  console.log(args)
   const user = {
     email: args.email,
     password,

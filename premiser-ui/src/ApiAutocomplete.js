@@ -76,14 +76,12 @@ class ApiAutocomplete extends Component {
   }
 
   onTouchEnd = () => {
-    console.log('onTouchEnd')
     // Mobile devices need some way to hide the autocomplete, since they lack escape button or the screen space to click around
     // (Sometimes the touchend fires a click and sometimes it doesn't, so handle touch explicitly)
     this.closeAutocomplete()
   }
 
   onClick = () => {
-    console.log('onClick')
     // For parity with mobile devices, close the auto complete upon click
     this.closeAutocomplete()
   }
