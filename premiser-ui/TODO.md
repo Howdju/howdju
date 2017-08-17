@@ -1,9 +1,29 @@
 # Howdju UI TODO
 
+* howdju.com -> www.howdju.com redirect
+  * Can this be faster with namecheap or Route 53?
+* can't login in prod
+  * Doesn't show error message
+
+* am I updating last login?
+
+* logo and main search alignment is off 
+
+* change is_active to boolean
+  * Only write to is_active_bool now
+  * added is_active_bool and read from either is_active or is_active_bool
+  * Need to change it so that: is_active is a boolean, we write to is_active
+* create carl@howdju admin account
+  * Prevent admins from creating statements?
+* fill out carl.gieringer normal account
+
 * Whats next / About page
 * favicons are missing from prod?
 * sentry errors not showing up for howdju.com?
-* How to send howdju.com to cloudfront or S3 so that I can redirect with S3 or howdju-ui.js?
+* Not serving /index.html for non-root paths
+* How to send howdju.com to cloudfront or S3 so that I can control redirect with S3 or howdju-ui.js?
+  * Dreamhost wouldn't let me enter a CNAME for howdju.com, so how to point bare domain to other domain?
+  * Maybe you must have an A record, and then must have some server that responds with logic
 
 
 ## Stuff not necessary before switch

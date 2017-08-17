@@ -3,8 +3,21 @@
 https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html
 
 * Create buckets howdju.com and www.howdju.com
-* Configure howdju.com to redirect to www.howdju.com
-* Configure www.howdju.com to serve
+* Configure howdju.com bucket to redirect to www.howdju.com
+* Configure www.howdju.com to serve static website
+* DO NOT configure www.howdju.com bucket to redirect all paths to index.html, because then it changes the path when the user reloads on page with a path
+  * DO NOT DO THIS Add redirect for S3 static website hosting
+    <RoutingRules>
+      <RoutingRule>
+        <Condition>
+          <HttpErrorCodeReturnedEquals>404</HttpErrorCodeReturnedEquals>
+        </Condition>
+        <Redirect>
+          <HostName>www.howdju.com.s3-website-us-east-1.amazonaws.com</HostName>
+          <ReplaceKeyWith></ReplaceKeyWith>
+        </Redirect>
+      </RoutingRule>
+    </RoutingRules>
 * Add www.howdju.com bucket policy
    {
      "Version":"2012-10-17",
@@ -17,8 +30,10 @@ https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-wa
        }
      ]
    }
-* Create cloudfront distro
+* Create cloudfront distro, pointing to S3 static website URL, NOT S3 URL
  https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-cloudfront-walkthrough.html
+* Configure cloudflare 404 error handler responding with 200 index.html to support SPA
+  * https://keita.blog/2015/11/24/hosting-a-single-page-app-on-s3-with-proper-urls/
 * Add domain, s3 domain, and cloudfront distro domain to allowed origins
 
 
