@@ -23,3 +23,4 @@ $md-toolbar-mobile-prominent-height: $md-toolbar-prominent-height;
 @include react-md-everything;
 
 @import './react-md-fixes';
+@include react-md-fixes($md-grid-desktop-breakpoint, $md-grid-phone-gutter)
