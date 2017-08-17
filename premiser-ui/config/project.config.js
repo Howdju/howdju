@@ -23,11 +23,21 @@ const baseConfig = {
   aws: {
     profile: 'premiser',
     region: 'us-east-1',
-    bucket: 'www.premiser.co',
+    bucket: 'www.howdju.com',
+    // bucket: 'www.premiser.co',
     cacheDuration: 'P10M',
-    s3Domain: 'www.premiser.co.s3-website-us-east-1.amazonaws.com',
-    distributionId: 'E1MVR22QSL38AV',
-    cloudfrontDomain: 'd15uu6icvq1y8z.cloudfront.net',
+    // s3Domain: 'www.howdju.com.s3-website-us-east-1.amazonaws.com',
+    // s3Domain: 'www.premiser.co,.s3-website-us-east-1.amazonaws.com',
+
+    // howdju
+    distributionId: 'E3ALDHFXYJRKKJ',
+    //premiser
+    // distributionId: 'E1MVR22QSL38AV',
+
+    // howdju
+    // cloudfrontDomain: 'd1fcdpsoaaf9i6.cloudfront.net',
+    // premiser
+    // cloudfrontDomain: 'd15uu6icvq1y8z.cloudfront.net',
   }
 }
 

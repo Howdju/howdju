@@ -1,3 +1,27 @@
+# S3 Hosting
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html
+
+* Create buckets howdju.com and www.howdju.com
+* Configure howdju.com to redirect to www.howdju.com
+* Configure www.howdju.com to serve
+* Add www.howdju.com bucket policy
+   {
+     "Version":"2012-10-17",
+     "Statement":[{
+   	"Sid":"PublicReadGetObject",
+           "Effect":"Allow",
+   	  "Principal": "*",
+         "Action":["s3:GetObject"],
+         "Resource":["arn:aws:s3:::www.howdju.com/*"]
+       }
+     ]
+   }
+* Create cloudfront distro
+ https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-cloudfront-walkthrough.html
+* Add domain, s3 domain, and cloudfront distro domain to allowed origins
+
+
 https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html
 
 1. create RDS not publicly accessible in default VPC (see warning below about slow name resolution)

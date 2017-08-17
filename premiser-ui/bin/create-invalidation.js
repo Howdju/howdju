@@ -11,6 +11,9 @@ AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfi
 const cloudfront = new AWS.CloudFront({apiVersion: '2017-03-25'});
 
 const distributionId = projectConfig.aws.distributionId
+if (!distributionId) {
+  throw new Error("distributionId is required")
+}
 const items = [
   '/index.html',
 ]

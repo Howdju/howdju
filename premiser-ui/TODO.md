@@ -1,6 +1,9 @@
 # Howdju UI TODO
 
 * Whats next / About page
+* favicons are missing from prod?
+* sentry errors not showing up for howdju.com?
+* How to send howdju.com to cloudfront or S3 so that I can redirect with S3 or howdju-ui.js?
 
 
 ## Stuff not necessary before switch
