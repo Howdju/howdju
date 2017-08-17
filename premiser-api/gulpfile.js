@@ -34,7 +34,8 @@ gulp.task('env', () =>
 gulp.task('zip', () =>
   gulp.src([
     'dist/premiser-api/**/*',
-    '!dist/package.json',
+    'dist/premiser-api/.env',
+    '!dist/premiser-api/package.json',
   ])
       .pipe(zip('premiser-api.zip'))
       .pipe(gulp.dest('./dist/')))
