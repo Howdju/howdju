@@ -436,9 +436,9 @@ function* configureAfterLogin() {
         sentry.setUserContext(sentryId)
       }
 
-      const {shortName, fullName} = yield select(selectUser)
+      const {shortName, longName} = yield select(selectUser)
       if (smallchatId) {
-        smallchat.identify(smallchatId, shortName, fullName)
+        smallchat.identify(smallchatId, shortName, longName)
       }
       analytics.identify(externalIds)
     }

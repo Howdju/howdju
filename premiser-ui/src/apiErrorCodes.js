@@ -12,6 +12,9 @@ module.exports = {
   /** The principle authenticated by the request lacks authority to perform the action */
   AUTHORIZATION_ERROR: 'AUTHORIZATION_ERROR',
 
+  /** The user account is inactive.  Should only respond with this if the correct password was provided */
+  USER_IS_INACTIVE_ERROR: 'USER_IS_INACTIVE_ERROR',
+
   /** The request would conflict with one or more other entities
    * (e.g. a user tries to update one statement's text to a value equal to another statement's text)
    */

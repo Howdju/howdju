@@ -3,7 +3,6 @@ const debug = require('debug')('premiser-ui:upload-to-s3')
 const fs = require('fs')
 const moment = require('moment');
 const path = require('path')
-const uuid = require('uuid');
 
 
 const projectConfig = require('../config/project.config')

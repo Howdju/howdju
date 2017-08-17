@@ -9,7 +9,7 @@
   "scripts": {
     "db:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
     "db:shell:dev": "psql premiser",
-    "create-user": "NODE_ENV=development node bin/create-user.js",
+    "create-user:dev": "NODE_ENV=development node bin/create-user.js",
     "serve:dev": "DEBUG=premiser-api:* NODE_ENV=development DO_ASSERT=true nodemon --watch src bin/dev-server.js",
     "debug": "DEBUG=premiser-api:* NODE_ENV=development node debug bin/dev-server.js",
     "inspect": "DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",

@@ -1,6 +1,5 @@
 const argon2 = require('argon2')
 const cryptohat = require('cryptohat')
-const uuid = require('uuid')
 const moment = require('moment')
 const Promise = require('bluebird')
 const URLSafeBase64 = require('urlsafe-base64');
@@ -44,6 +43,7 @@ const urlsDao = require('./dao/urlsDao')
 const actionsDao = require('./dao/actionsDao')
 const statementCompoundsDao = require('./dao/statementCompoundsDao')
 const perspectivesDao = require('./dao/perspectivesDao')
+const userExternalIdsDao = require('./dao/userExternalIdsDao')
 const {
   statementValidator,
   justificationValidator,
@@ -78,6 +78,7 @@ const {
   AuthenticationError,
   AuthorizationError,
   EntityNotFoundError,
+  UserIsInactiveError,
   EntityConflictError,
   EntityValidationError,
   RequestValidationError,
@@ -405,23 +406,35 @@ const readStatementJustifications = ({statementId, authToken}) => Promise.resolv
           }
         })
 
-const createUser = ({user, authToken}) => withPermission(authToken, CREATE_USERS)
-    .then(creatorUserId => {
+const createUser = (authToken, user) => withPermission(authToken, CREATE_USERS)
+    .then(creatorUserId => createUserAsUser(creatorUserId, user))
+
+const createUserAsUser = (creatorUserId, user) => Promise.resolve()
+    .then(() => {
       const validationErrors = userValidator.validate(user)
       if (validationErrors.hasErrors) {
         throw new EntityValidationError(({user: validationErrors}))
       }
-      return creatorUserId
     })
-    .then(creatorUserId => Promise.all([
-        creatorUserId,
-        argon2.generateSalt().then(salt => argon2.hash(user.password, salt)),
-        new Date(),
+    .then(() => Promise.all([
+      argon2.generateSalt().then(salt => argon2.hash(user.password, salt)),
+      new Date(),
     ]))
-    .then( ([creatorUserId, hash, now]) =>
-        usersDao.createUser(user, hash, creatorUserId, now)
-            .then(asyncRecordEntityAction(creatorUserId, ActionType.CREATE, ActionTargetType.USER, now))
-    )
+    .then( ([hash, now]) => Promise.all([
+      usersDao.createUser(user, creatorUserId, now),
+      hash,
+      now,
+    ]))
+    .then( ([dbUser, hash, now]) => Promise.all([
+      dbUser,
+      now,
+      authDao.createUserAuthForUserId(dbUser.id, hash),
+      userExternalIdsDao.createExternalIdsForUserId(dbUser.id)
+    ]))
+    .then( ([dbUser, now]) => {
+      asyncRecordAction(creatorUserId, ActionType.CREATE, ActionTargetType.USER, now, dbUser.id)
+      return dbUser
+    })
 
 const login = (credentials) => Promise.resolve()
     .then(() => {
@@ -450,6 +463,12 @@ const login = (credentials) => Promise.resolve()
       }
 
       return usersDao.readUserForId(userId)
+    })
+    .then(user => {
+      if (!user.isActive) {
+        throw new UserIsInactiveError(user.userId)
+      }
+      return user
     })
     .then(user => {
       const authToken = cryptohat(256, 36)
@@ -1225,6 +1244,7 @@ const asyncRecordAction = (userId, actionType, actionTargetType, now, targetEnti
 
 module.exports = {
   createUser,
+  createUserAsUser,
   login,
   logout,
   readStatements,

@@ -29,7 +29,21 @@ class AuthorizationError extends HowdjuApiError {
 /** The user tried to login with invalid credentials */
 class InvalidLoginError extends HowdjuApiError {}
 
-class EntityNotFoundError extends HowdjuApiError {}
+class EntityNotFoundError extends HowdjuApiError {
+  constructor(entityType, identifier) {
+    super(`(EntityNotFoundError) entityType: ${entityType}; identifier: ${identifier}`)
+
+    this.entityType = entityType
+    this.identifier = identifier
+  }
+}
+
+class UserIsInactiveError extends HowdjuApiError {
+  constructor(userId) {
+    super(`(UserIsInactiveError) userId: ${userId}`)
+    this.userId = userId
+  }
+}
 
 class NoMatchingRouteError extends HowdjuApiError {}
 
@@ -71,6 +85,7 @@ module.exports = {
   AuthenticationError,
   AuthorizationError,
   EntityNotFoundError,
+  UserIsInactiveError,
   ImpossibleError,
   EntityConflictError,
   UserActionsConflictError,

@@ -79,7 +79,7 @@ const migrateUsers = () => {
         return Promise.all(map(rows, row => {
           if (has(userIdTranslations, row.id)) return Promise.resolve()
           const sql = `
-            insert into users (email, short_name, full_name, created, last_login) 
+            insert into users (email, short_name, long_name, created, last_login) 
             values ($1, $2, $3, $4, $5) 
             returning user_id`
           const args = [row.email, row.first_name, `${row.first_name} ${row.last_name}`, row.date_joined, row.last_login]

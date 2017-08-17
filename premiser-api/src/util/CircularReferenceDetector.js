@@ -15,7 +15,6 @@ exports.CircularReferenceDetector = class CircularReferenceDetector {
       serializationKeyStackWithNewKey.push(key);
       try {
         JSON.stringify(value);
-        logger.debug(`path "${joinStrings(serializationKeyStack)}" is ok`);
       } catch (error) {
         logger.debug(`path "${joinStrings(serializationKeyStack)}" JSON.stringify results in error: ${error}`);
 

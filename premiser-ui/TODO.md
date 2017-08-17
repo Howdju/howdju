@@ -1,11 +1,11 @@
 # Howdju UI TODO
 
-* Add prompt for opposing/supporting justification
-
 * Fix rootPolarity in prod
   * Migrate external IDs for smallchat, and short_name/long_name
-* Featured Perspectives are scrunched on mobile
 
+## Stuff not necessary before switch
+* Add prompt for opposing/supporting justification
+* Featured Perspectives are scrunched on mobile
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
 * Figure out HTTPS for submitting passwords and generally just requesting the site, can use https of API Gateway?
 * Add citations and quotes to main search
@@ -444,6 +444,7 @@
 * [Data containers](https://blog.okfn.org/2016/02/01/google-funds-frictionless-data-initiative-at-open-knowledge/)
 * [Public data sets?](https://www.google.com/publicdata/directory)
 * [SASS Variable to Javascript](https://github.com/nordnet/sass-variable-loader)
+* [Node Postgres Migrations](https://www.npmjs.com/package/node-pg-migrate)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

@@ -69,6 +69,7 @@ export const THAT_STATEMENT_ALREADY_EXISTS = 'THAT_STATEMENT_ALREADY_EXISTS'
 export const THAT_JUSTIFICATION_ALREADY_EXISTS = 'THAT_JUSTIFICATION_ALREADY_EXISTS'
 
 export const INVALID_LOGIN_CREDENTIALS = 'INVALID_LOGIN_CREDENTIALS'
+export const USER_IS_INACTIVE_ERROR = 'USER_IS_INACTIVE_ERROR'
 export const UNABLE_TO_LOGIN = 'UNABLE_TO_LOGIN'
 
 
@@ -139,6 +140,7 @@ const texts = {
   [COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL]: 'Counter',
 
   [INVALID_LOGIN_CREDENTIALS]: 'Invalid login credentials',
+  [USER_IS_INACTIVE_ERROR]: 'The account is currently inactive.  Please contact support.',
   [UNABLE_TO_LOGIN]: 'Unable to login',
 
   MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME: () => isWindowNarrow() ? "Featured" : "Featured perspectives",

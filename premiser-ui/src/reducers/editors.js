@@ -17,7 +17,7 @@ import {
 import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewStatementAtom, makeNewUrl} from "../models";
 import * as apiErrorCodes from "../apiErrorCodes";
 import {customErrorTypes, newProgrammingError} from "../customErrors";
-import {default as t, INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN} from "../texts";
+import {default as t, INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts";
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   editorActions[actionCreator] = true
@@ -281,6 +281,9 @@ const editorReducerByType = {
           switch (sourceError.body.errorCode) {
             case (apiErrorCodes.INVALID_LOGIN_CREDENTIALS): {
               return {...state, errors: {credentials: {modelErrors: [INVALID_LOGIN_CREDENTIALS]}}, isSaving: false}
+            }
+            case (apiErrorCodes.USER_IS_INACTIVE_ERROR): {
+              return {...state, errors: {credentials: {modelErrors: [USER_IS_INACTIVE_ERROR]}}, isSaving: false}
             }
             case (apiErrorCodes.VALIDATION_ERROR): {
               const errors = sourceError.body.errors.credentials

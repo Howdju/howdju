@@ -11,15 +11,18 @@ const toUser = row => !row ? row : ({
   id: toString(row.user_id),
   email: row.email,
   shortName: row.short_name,
-  fullName: row.full_name,
+  longName: row.long_name,
   created: row.created,
-  externalIds: {
-    googleAnalyticsId: row.google_analytics_id,
-    heapAnalyticsId: row.heap_analytics_id,
-    mixpanelId: row.mixpanel_id,
-    sentryId: row.sentry_id,
-    smallchatId: row.smallchat_id,
-  }
+  isActive: row.is_active,
+  externalIds: toUserExternalIds(row),
+})
+
+const toUserExternalIds = row => !row ? row : ({
+  googleAnalyticsId: row.google_analytics_id,
+  heapAnalyticsId: row.heap_analytics_id,
+  mixpanelId: row.mixpanel_id,
+  sentryId: row.sentry_id,
+  smallchatId: row.smallchat_id,
 })
 
 const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
@@ -224,4 +227,5 @@ module.exports = {
   toStatementCompoundAtom,
   toPerspective,
   toUserHash,
+  toUserExternalIds,
 }

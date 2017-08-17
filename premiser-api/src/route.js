@@ -9,6 +9,7 @@ const {CircularReferenceDetector} = require('./util/CircularReferenceDetector')
 const {
   AuthenticationError,
   AuthorizationError,
+  UserIsInactiveError,
   EntityNotFoundError,
   NoMatchingRouteError,
   EntityConflictError,
@@ -380,7 +381,7 @@ const routes = [
     id: 'createUser',
     path: 'users',
     method: httpMethods.POST,
-    handler: ({callback, request: {body: {credentials: {email, password}, authToken}}}) => createUser(body)
+    handler: ({callback, request: {body: {authToken, user}}}) => createUser(authToken, user)
         .then( user => ok({callback, body: {user}}))
   },
   {
@@ -436,6 +437,7 @@ const routeEvent = ({callback, request}) =>
       .catch(AuthenticationError, e => unauthenticated({callback}))
       .catch(InvalidLoginError, e => badRequest({callback, body: {errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS, errors: e.errors}}))
       .catch(AuthorizationError, e => unauthorized({callback, body: {errorCode: apiErrorCodes.AUTHORIZATION_ERROR, errors: e.errors}}))
+      .catch(UserIsInactiveError, e => error({callback, body: {errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR}}))
       .catch(EntityConflictError, e => error({callback, body: {errorCode: apiErrorCodes.ENTITY_CONFLICT, errors: e.errors}}))
       .catch(UserActionsConflictError, e => error({callback, body: {errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT, errors: e.errors}}))
       .catch(e => {

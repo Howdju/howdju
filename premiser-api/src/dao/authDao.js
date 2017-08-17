@@ -7,7 +7,17 @@ const {toUserHash} = require('../orm')
 class AuthDao {
 
   readUserHashForEmail(email) {
-    return query('select ua.user_id, ua.hash from users u join user_auth ua using (user_id) where u.email = $1', [email])
+    return query(`
+      select ua.user_id, ua.hash 
+      from users u join user_auth ua using (user_id) 
+        where
+              u.deleted is null
+          and u.email = $1`, [email])
+        .then( ({rows: [row]}) => toUserHash(row))
+  }
+
+  createUserAuthForUserId(userId, hash) {
+    return query('insert into user_auth (user_id, hash) values ($1, $2) returning *', [userId, hash])
         .then( ({rows: [row]}) => toUserHash(row))
   }
 

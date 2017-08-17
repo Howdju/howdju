@@ -23,7 +23,7 @@ create table if not exists users (
   user_id serial,
   email varchar(2048),
   short_name varchar(128),
-  full_name varchar(1024),
+  long_name varchar(1024),
   phone_number varchar(64),
   creator_user_id integer,
   is_active bit,

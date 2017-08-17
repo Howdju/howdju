@@ -6,10 +6,10 @@ export const show = () => {
   window.Smallchat.show()
 }
 
-export const identify = (smallchatId, shortName, fullName) => {
+export const identify = (smallchatId, shortName, longName) => {
   const sessionData = {
     name: shortName,
-    fullName,
+    longName,
     smallchatId,
   }
   window.smallchat = {sessionData}
