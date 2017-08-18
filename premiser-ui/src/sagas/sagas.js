@@ -36,7 +36,7 @@ import text, {
   MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE, THAT_JUSTIFICATION_ALREADY_EXISTS, THAT_STATEMENT_ALREADY_EXISTS,
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, YOU_HAVE_BEEN_LOGGED_OUT,
+  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, YOU_ARE_LOGGED_IN_AS, YOU_HAVE_BEEN_LOGGED_OUT,
 } from '../texts'
 import {request} from "../api";
 import {
@@ -815,6 +815,14 @@ function* showAlertForExtantEntities() {
   })
 }
 
+function* showAlertForLogin() {
+  yield takeEvery(str(api.login.response), function* showAlertForLoginWorker(action) {
+    if (!action.error) {
+      yield put(ui.addToast(t(YOU_ARE_LOGGED_IN_AS, action.payload.user.email)))
+    }
+  })
+}
+
 function* showAlertForLogout() {
   yield takeEvery(str(api.logout.response), function* showAlertForLogoutWorker(action) {
     if (!action.error) {
@@ -874,6 +882,7 @@ export default () => [
 
   showAlertForUnexpectedApiError(),
   showAlertForExtantEntities(),
+  showAlertForLogin(),
   showAlertForLogout(),
 
   handleTransientInteractions(),

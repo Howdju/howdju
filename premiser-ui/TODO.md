@@ -1,36 +1,34 @@
 # Howdju UI TODO
-
-* howdju.com -> www.howdju.com redirect
-  * Can this be faster with namecheap or Route 53?
-* can't login in prod
-  * Doesn't show error message
-* password protect id_rsa on bastion
-* TODO version API
-
 * am I updating last login?
+
+* password protect id_rsa on bastion
+* TODO version API (add path parameter and add version to routing)
+
+* Featured perspectives don't load in safari iOS
+  * Errors from safari iOS aren't going to sentry
+
+* Start with twitter login/integration
+  * Use twitter identity model: verification but not necessarily tied to real identity
+  * Don't kill myself about getting highlighting arbitrary text on a page...?
+
 
 * logo and main search alignment is off 
 
-* change is_active to boolean
-  * After deploying, change is_active to bool, maintaining both
-    * Then can deploy again reading/writing this column instead
-  * Only write to is_active_bool now
-  * added is_active_bool and read from either is_active or is_active_bool
-  * Need to change it so that: is_active is a boolean, we write to is_active
-* create carl@howdju admin account
-  * Prevent admins from creating statements?
 * fill out carl.gieringer normal account
 
 * Whats next / About page
 * favicons are missing from prod?
+  * Other stuff
 * sentry errors not showing up for howdju.com?
-* Not serving /index.html for non-root paths
 * How to send howdju.com to cloudfront or S3 so that I can control redirect with S3 or howdju-ui.js?
   * Dreamhost wouldn't let me enter a CNAME for howdju.com, so how to point bare domain to other domain?
   * Maybe you must have an A record, and then must have some server that responds with logic
 
 
 ## Stuff not necessary before switch
+
+* howdju.com -> www.howdju.com redirect
+  * Can this be faster with namecheap or Route 53?
 * Terms / Privacy
 * Add prompt for opposing/supporting justification
 * Featured Perspectives are scrunched on mobile

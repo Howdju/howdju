@@ -13,7 +13,7 @@ class UsersDao {
       user.longName,
       user.phoneNumber,
       creatorUserId,
-      user.isActive ? 1 : 0,
+      user.isActive,
       now,
     ]
     return query(`insert into users (email, short_name, long_name, phone_number, creator_user_id, is_active, created) 

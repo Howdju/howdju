@@ -26,7 +26,7 @@ create table if not exists users (
   long_name varchar(1024),
   phone_number varchar(64),
   creator_user_id integer,
-  is_active bit,
+  is_active boolean,
   last_login timestamp,
   created timestamp,
   deleted timestamp
