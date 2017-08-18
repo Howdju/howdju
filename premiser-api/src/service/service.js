@@ -29,37 +29,36 @@ const toNumber = require('lodash/toNumber')
 const values = require('lodash/values')
 const zip = require('lodash/zip')
 
-const config = require('./config')
-const {logger} = require('./logger')
-const statementsDao = require('./dao/statementsDao')
-const permissionsDao = require('./dao/permissionsDao')
-const citationReferencesDao = require('./dao/citationReferencesDao')
-const citationsDao = require('./dao/citationsDao')
-const justificationsDao = require('./dao/justificationsDao')
-const usersDao = require('./dao/usersDao')
-const authDao = require('./dao/authDao')
-const votesDao = require('./dao/votesDao')
-const urlsDao = require('./dao/urlsDao')
-const actionsDao = require('./dao/actionsDao')
-const statementCompoundsDao = require('./dao/statementCompoundsDao')
-const perspectivesDao = require('./dao/perspectivesDao')
-const userExternalIdsDao = require('./dao/userExternalIdsDao')
+const config = require('../config')
+const {logger} = require('../logger')
+const statementsDao = require('../dao/statementsDao')
+const permissionsDao = require('../dao/permissionsDao')
+const citationReferencesDao = require('../dao/citationReferencesDao')
+const citationsDao = require('../dao/citationsDao')
+const justificationsDao = require('../dao/justificationsDao')
+const usersDao = require('../dao/usersDao')
+const authDao = require('../dao/authDao')
+const votesDao = require('../dao/votesDao')
+const urlsDao = require('../dao/urlsDao')
+const actionsDao = require('../dao/actionsDao')
+const statementCompoundsDao = require('../dao/statementCompoundsDao')
+const perspectivesDao = require('../dao/perspectivesDao')
+const userExternalIdsDao = require('../dao/userExternalIdsDao')
 const {
   statementValidator,
   justificationValidator,
-  credentialValidator,
   userValidator,
   voteValidator,
   citationReferenceValidator,
   statementCompoundValidator,
   CitationReferenceValidator,
   StatementValidator,
-} = require('./validators')
+} = require('../validators')
 const {
   OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT,
   OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT,
   OTHER_CITATIONS_HAVE_EQUIVALENT_TEXT_CONFLICT,
-} = require("./codes/entityConflictCodes")
+} = require("../codes/entityConflictCodes")
 const {
   OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT,
   OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT,
@@ -70,10 +69,10 @@ const {
   OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
   OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_CONFLICT,
   OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
-} = require("./codes/userActionsConflictCodes")
+} = require("../codes/userActionsConflictCodes")
 const {
   CANNOT_MODIFY_OTHER_USERS_ENTITIES
-} = require('./codes/authorizationErrorCodes')
+} = require('../codes/authorizationErrorCodes')
 const {
   AuthenticationError,
   AuthorizationError,
@@ -86,11 +85,11 @@ const {
   ImpossibleError,
   EntityTooOldToModifyError,
   InvalidLoginError,
-} = require("./errors")
+} = require("../errors")
 const {
   CREATE_USERS,
   EDIT_ANY_ENTITY,
-} = require("./permissions")
+} = require("../permissions")
 const {
   JustificationTargetType,
   JustificationBasisType,
@@ -100,15 +99,15 @@ const {
   EntityTypes,
   SortDirection,
   ContinuationSortDirection,
-} = require('./models')
+} = require('../models')
 const {
   rethrowTranslatedErrors,
   isTruthy,
   assert,
-} = require('./util')
+} = require('../util')
 const {
   decircularizePerspective
-} = require('./serialization')
+} = require('../serialization')
 
 
 const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPermission(authToken, permission)
@@ -435,57 +434,6 @@ const createUserAsUser = (creatorUserId, user) => Promise.resolve()
       asyncRecordAction(creatorUserId, ActionType.CREATE, ActionTargetType.USER, now, dbUser.id)
       return dbUser
     })
-
-const login = (credentials) => Promise.resolve()
-    .then(() => {
-      const validationErrors = credentialValidator.validate(credentials)
-      if (validationErrors.hasErrors) {
-        throw new EntityValidationError({credentials: validationErrors})
-      }
-      return credentials
-    })
-    .then(credentials => Promise.all([
-        credentials,
-        authDao.readUserHashForEmail(credentials.email),
-    ]))
-    .then( ([credentials, userHash]) => {
-      if (!userHash) {
-        throw new EntityNotFoundError(EntityTypes.USER, credentials.email)
-      }
-      return Promise.all([
-          argon2.verify(userHash.hash, credentials.password),
-          userHash.userId,
-        ])
-    })
-    .then( ([isMatch, userId]) => {
-      if (!isMatch) {
-        throw new InvalidLoginError()
-      }
-
-      return usersDao.readUserForId(userId)
-    })
-    .then(user => {
-      if (!user.isActive) {
-        throw new UserIsInactiveError(user.userId)
-      }
-      return user
-    })
-    .then(user => {
-      const authToken = cryptohat(256, 36)
-      const created = new Date()
-      const expires = moment().add(moment.duration.apply(moment.duration, config.authTokenDuration)).toDate()
-
-      return Promise.all([
-          user,
-          authDao.insertAuthToken(user.id, authToken, created, expires),
-      ])
-    })
-    .then( ([user, authToken]) => ({
-      user,
-      authToken,
-    }))
-
-const logout = authToken => authDao.deleteAuthToken(authToken)
 
 const createVote = ({authToken, vote}) => withAuth(authToken)
     .then(userId => {
@@ -1245,8 +1193,6 @@ const asyncRecordAction = (userId, actionType, actionTargetType, now, targetEnti
 module.exports = {
   createUser,
   createUserAsUser,
-  login,
-  logout,
   readStatements,
   readStatement,
   readStatementCompound,

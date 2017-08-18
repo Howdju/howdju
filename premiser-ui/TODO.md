@@ -1,7 +1,7 @@
 # Howdju UI TODO
-* am I updating last login?
 
-* password protect id_rsa on bastion
+* No login toast in prod
+
 * TODO version API (add path parameter and add version to routing)
 
 * Featured perspectives don't load in safari iOS

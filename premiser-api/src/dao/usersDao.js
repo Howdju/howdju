@@ -25,6 +25,10 @@ class UsersDao {
     return query('select * from users join user_external_ids using (user_id) where user_id = $1', [userId])
         .then( ({rows: [row]}) => toUser(row) )
   }
+
+  updateLastLoginForUserId(userId, now) {
+    return query('update users set last_login = $1 where user_id = $2', [now, userId])
+  }
 }
 
 module.exports = new UsersDao()

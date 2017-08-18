@@ -1,9 +1,13 @@
 export const hide = () => {
-  window.Smallchat.hide()
+  if (window.Smallchat) {
+    window.Smallchat.hide()
+  }
 }
 
 export const show = () => {
-  window.Smallchat.show()
+  if (window.Smallchat) {
+    window.Smallchat.show()
+  }
 }
 
 export const identify = (smallchatId, shortName, longName) => {
