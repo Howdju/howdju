@@ -22,7 +22,7 @@ app.use('/api/*', function (req, res) {
     },
     httpMethod: req.method,
     queryStringParameters: req.query,
-    body: req.body,
+    body: JSON.stringify(req.body),
   }
 
   const context = {}

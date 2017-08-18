@@ -132,10 +132,10 @@ const texts = {
   [EDIT_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Save',
 
   [LOGIN_TO_CONTINUE]: 'Login to continue',
-  [YOU_HAVE_BEEN_LOGGED_OUT]: 'You have been logged out',
+  [YOU_HAVE_BEEN_LOGGED_OUT]: 'You have been logged out.',
 
   [JUSTIFICATION_TITLE]: 'Justification',
-  [AN_UNEXPECTED_ERROR_OCCURRED]: 'An unexpected error occurred',
+  [AN_UNEXPECTED_ERROR_OCCURRED]: 'An unexpected error occurred.',
   [A_NETWORK_ERROR_OCCURRED]: 'A network error occurred.  Please check your connection and try again.',
   [COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL]: 'Counter',
 

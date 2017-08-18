@@ -4,12 +4,16 @@
   * Can this be faster with namecheap or Route 53?
 * can't login in prod
   * Doesn't show error message
+* password protect id_rsa on bastion
+* TODO version API
 
 * am I updating last login?
 
 * logo and main search alignment is off 
 
 * change is_active to boolean
+  * After deploying, change is_active to bool, maintaining both
+    * Then can deploy again reading/writing this column instead
   * Only write to is_active_bool now
   * added is_active_bool and read from either is_active or is_active_bool
   * Need to change it so that: is_active is a boolean, we write to is_active

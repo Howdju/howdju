@@ -67,6 +67,12 @@ const extractAuthToken = event => {
   return authorizationHeader.substring('Bearer '.length)
 }
 
+const parseBody = event => {
+  // TODO throw error if cant' support content-type.  handle application/form?
+  // example: 'content-type':'application/json;charset=UTF-8',
+  return JSON.parse(event.body)
+}
+
 exports.handler = (event, context, callback) => {
   try {
     // Otherwise the pg.Pool timeout keeps us alive
@@ -77,8 +83,6 @@ exports.handler = (event, context, callback) => {
       return callback(null, response)
     }
 
-    console.log(event)
-
     routeEvent({
       callback: respond,
       request: {
@@ -87,7 +91,7 @@ exports.handler = (event, context, callback) => {
         path: event.pathParameters.proxy,
         method: event.httpMethod,
         queryStringParameters: event.queryStringParameters,
-        body: event.body,
+        body: parseBody(event),
       },
     }).then(null, error => {
       logger.error('uncaught error after routeEvent')

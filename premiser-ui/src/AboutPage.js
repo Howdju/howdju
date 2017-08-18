@@ -38,10 +38,10 @@ export default () => (
 
           <h2>Introduction</h2>
           <p>
-            Information online is growing fast.  Besides the huge number of facts generated daily by traditional reporting and institutional sources,
-            social media and a variety of new media sources are generating information faster than the average person can
-            keep up.  New tools are needed to help people aggregate and filter the content that is most relevant to them
-            and to help them to evalute new information efficiently.
+            Information online is growing fast.  Besides the large amount of information generated daily by traditional
+            news and institutional sources, social media and a variety of new media sources are generating information
+            faster than the average person can keep up.  New tools are needed to help people aggregate and filter the
+            content that is most relevant to them and to help them to evalute new information efficiently.
           </p>
           <p>
             One of the greatest impediments to human well-being is lack of mutual understanding.  Howdju is designed
@@ -52,7 +52,7 @@ export default () => (
           <p>
             Howdju is a platform to help people stay informed.  Its primary objective is to help people effectively understand
             the massive amount of information that we increasingly need to digest to make decisions about our lives.  Howdju's
-            vision is both to help people remain informed about the high level events and currents of our societies (the forest),
+            vision is both to help people remain informed about the high level events and currents of our societies,
             while allowing them to dig deeply into the specifics of those events, all while helping us to keep track of what
             was learned.
           </p>

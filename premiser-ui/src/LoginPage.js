@@ -24,7 +24,10 @@ import {loginPageEditorId} from './editorIds'
 import {EditorTypes} from "./reducers/editors";
 import {makeNewCredentials} from "./models";
 import {toErrorText} from "./modelErrorMessages";
-import {default as t} from './texts'
+import {
+  default as t,
+  AN_UNEXPECTED_ERROR_OCCURRED
+} from './texts'
 import analytics from "./analytics";
 
 import './LoginPage.scss'
@@ -85,6 +88,17 @@ class LoginPage extends Component {
         {error: true, errorText: toErrorText(errors.fieldErrors.password)} :
         {}
 
+    const modelErrorMessages = modelErrors && modelErrors.length && (
+        <CardText className={cn('errorMessage md-cell md-cell--12')}>
+          {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
+          <ul className="errorMessage">
+            {map(modelErrors, error => <li key={error}>{t(error)}</li>) ||
+              <li>t(AN_UNEXPECTED_ERROR_OCCURRED)</li>
+            }
+          </ul>
+        </CardText>
+    )
+
     return (
         <DocumentTitle title={'Login - Howdju'}>
           <div id="loginPage">
@@ -95,15 +109,7 @@ class LoginPage extends Component {
                   <CardTitle title="Login"
                              subtitle={subtitle}
                   />
-                  <CardText className={cn('errorMessage md-cell md-cell--12', {
-                      hidden: !modelErrors,
-                    })}
-                  >
-                    {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
-                    <ul className="errorMessage">
-                      {modelErrors && map(modelErrors, error => <li key={error}>{t(error)}</li>)}
-                    </ul>
-                  </CardText>
+                  {modelErrorMessages}
                   <form onSubmit={this.onSubmit}>
                     <FocusContainer focusOnMount containFocus={false}>
 
