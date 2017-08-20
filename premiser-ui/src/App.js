@@ -50,6 +50,7 @@ import './App.scss'
 import {selectIsWindowNarrow, selectRouterLocation} from "./selectors";
 import * as smallchat from './smallchat'
 import {isScrollPastBottom, isScrollPastTop} from "./util";
+import {getOrCreateSessionStorageId, getOrCreateSessionCookieId} from "./identifiers";
 
 const tabIndexByPathname = {
   '/featured-perspectives': 0,
@@ -71,6 +72,9 @@ class App extends Component {
     }
 
     this.throttledOnWindowScroll = throttle(this.onWindowScroll, 100)
+
+    getOrCreateSessionStorageId()
+    getOrCreateSessionCookieId()
   }
 
   componentWillMount() {

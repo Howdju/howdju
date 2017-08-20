@@ -1,14 +1,19 @@
 import { normalize } from 'normalizr'
 import Axios, {CancelToken} from 'axios'
 import { CANCEL } from 'redux-saga'
+import get from 'lodash/get'
+import pick from 'lodash/pick'
 
 import {logger} from './util'
 import {
+  makeIdentifiersMessage,
   newApiResponseError,
   newNetworkFailureError,
   newRequestConfigurationError,
 } from "./customErrors";
 import * as httpMethods from "./httpMethods";
+import {newId} from "./identifiers";
+import * as customHeaderKeys from "./customHeaderKeys";
 
 const axios = Axios.create({
   baseURL: process.env.API_ROOT,
@@ -18,6 +23,9 @@ const axios = Axios.create({
 export function request({endpoint, method, body, headers, schema}) {
 
   const source = CancelToken.source();
+
+  const requestId = newId()
+  headers = {...headers, [customHeaderKeys.REQUEST_ID]: requestId}
 
   // https://github.com/mzabriskie/axios#request-config
   const request = axios.request({
@@ -45,13 +53,15 @@ export function request({endpoint, method, body, headers, schema}) {
 }
 
 const handleError = error => {
+  const headers = get(error, ['config', 'headers'])
+  const identifierHeaders = pick(headers, customHeaderKeys.identifierKeys)
   if (Axios.isCancel(error)) {
-    logger.debug('Request canceled', error.message);
+    logger.debug(makeIdentifiersMessage('Request canceled', {[customHeaderKeys.REQUEST_ID]: identifierHeaders[customHeaderKeys.REQUEST_ID]}), error.message);
   } else if (error.response) {
-    throw newApiResponseError("Api error response", error)
+    throw newApiResponseError("Api error response", identifierHeaders, error)
   } else if (error.request) {
-    throw newNetworkFailureError("Api request failed", error)
+    throw newNetworkFailureError("Api request failed", identifierHeaders, error)
   } else {
-    throw newRequestConfigurationError("Request configuration error", error)
+    throw newRequestConfigurationError("Request configuration error", identifierHeaders, error)
   }
 }

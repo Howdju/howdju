@@ -23,6 +23,7 @@ import keys from 'lodash/keys'
 import map from 'lodash/map'
 import merge from 'lodash/merge'
 import pick from 'lodash/pick'
+import isEmpty from 'lodash/isEmpty'
 import queryString from 'query-string'
 import {denormalize} from "normalizr";
 
@@ -99,6 +100,8 @@ import analytics from "../analytics"
 
 import handleTransientInteractions from './transients'
 import * as smallchat from "../smallchat";
+import {pageLoadId, getSessionStorageId, newId} from "../identifiers";
+import * as customHeaderKeys from "../customHeaderKeys";
 
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -308,30 +311,48 @@ export const resourceApiConfigs = {
   })
 }
 
-function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
-  try {
-    if (requiresRehydrate && !isRehydrated) {
-      logger.debug('Waiting on rehydrate')
-      const {rehydrate, timeout} = yield race({
-        rehydrate: take(REHYDRATE),
-        timeout: delay(config.rehydrateTimeoutMs),
-      })
-      if (rehydrate) {
-        logger.debug('Proceeding after rehydrate')
-      } else {
-        logger.debug('Rehydrate timed out')
-      }
+function* constructHeaders(fetchInit) {
+  const headersUpdate = {}
+  // Add auth token to all API requests
+  const authToken = yield select(selectAuthToken)
+  if (authToken) {
+    headersUpdate.Authorization = `Bearer ${authToken}`
+  }
+  const sessionStorageId = getSessionStorageId();
+  if (sessionStorageId) {
+    headersUpdate[customHeaderKeys.SESSION_STORAGE_ID] = sessionStorageId
+  }
+  if (pageLoadId) {
+    headersUpdate[customHeaderKeys.PAGE_LOAD_ID] = pageLoadId
+  }
+
+  return isEmpty(headersUpdate) ?
+      fetchInit.headers :
+      {...fetchInit.headers, ...headersUpdate}
+}
+
+function* tryWaitOnRehydrate(requiresRehydrate) {
+  if (requiresRehydrate && !isRehydrated) {
+    logger.debug('Waiting on rehydrate')
+    const {rehydrate, timeout} = yield race({
+      rehydrate: take(REHYDRATE),
+      timeout: delay(config.rehydrateTimeoutMs),
+    })
+    if (rehydrate) {
+      logger.debug('Proceeding after rehydrate')
+    } else {
+      logger.warn('Rehydrate timed out')
     }
+  }
+}
+
+function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
+
+  try {
+    yield* tryWaitOnRehydrate(requiresRehydrate)
 
     fetchInit = cloneDeep(fetchInit)
-
-    // Add auth token to all API requests
-    const authToken = yield select(selectAuthToken)
-    if (authToken) {
-      fetchInit.headers = merge({}, fetchInit.headers, {
-        Authorization: `Bearer ${authToken}`,
-      })
-    }
+    fetchInit.headers = yield* constructHeaders(fetchInit)
 
     const result = yield call(request, {endpoint, method: fetchInit.method, body: fetchInit.body, headers: fetchInit.headers, schema})
     return yield put(api.callApi.response(result))
@@ -834,14 +855,16 @@ function* showAlertForLogout() {
 function* logErrors() {
 
   yield takeEvery('*', function* logErrorsWorker(action) {
-    const error = action.payload
     if (action.error) {
+      const error = action.payload
       const loggedErrors = yield select(selectLoggedErrors)
       // Sometimes we wrap the same exception in multiple actions, such as callApi.response and then fetchStatements.response
       // So don't log the same error multiple times
       if (!find(loggedErrors, e => e === error)) {
         loggedErrors.push(error)
-        logger.exception(error)
+        const identifierKeys = pick(error, customHeaderKeys.identifierKeys)
+        const options = isEmpty(identifierKeys) ? undefined : {extra: identifierKeys}
+        logger.exception(error, options)
       }
     }
   })

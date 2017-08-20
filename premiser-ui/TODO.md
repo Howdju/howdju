@@ -1,5 +1,5 @@
 # Howdju UI TODO
-
+   
 * No login toast in prod
 
 * TODO version API (add path parameter and add version to routing)
@@ -20,23 +20,24 @@
 * favicons are missing from prod?
   * Other stuff
 * sentry errors not showing up for howdju.com?
-* How to send howdju.com to cloudfront or S3 so that I can control redirect with S3 or howdju-ui.js?
-  * Dreamhost wouldn't let me enter a CNAME for howdju.com, so how to point bare domain to other domain?
-  * Maybe you must have an A record, and then must have some server that responds with logic
-
+* Terms / Privacy
+* Figure out HTTPS for submitting passwords and generally just requesting the site, can use https of API Gateway?
+* Add citations and quotes to main search
 
 ## Stuff not necessary before switch
 
 * howdju.com -> www.howdju.com redirect
   * Can this be faster with namecheap or Route 53?
-* Terms / Privacy
+  * How to send howdju.com to cloudfront or S3 so that I can control redirect with S3 or howdju-ui.js?
+    * Dreamhost wouldn't let me enter a CNAME for howdju.com, so how to point bare domain to other domain?
+    * Maybe you must have an A record, and then must have some server that responds with logic
+
 * Add prompt for opposing/supporting justification
 * Featured Perspectives are scrunched on mobile
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
-* Figure out HTTPS for submitting passwords and generally just requesting the site, can use https of API Gateway?
-* Add citations and quotes to main search
-* If I get a sentry error from an unauthenticated user, how do I connect that with analytics or API logging?
-   * Need a cookie ID, and perhaps request IDs
+
+
+
 * Cards: who created, number of justifications or justifications based upon
   * perspective: whose!?
   * perspective: see all justifications

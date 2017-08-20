@@ -10,7 +10,7 @@ export const captureMessage = (message, options) => {
 export const setUserContext = sentryExternalId => {
   if (window.Raven) {
     window.Raven.setUserContext({
-      id: sentryExternalId
+      id: sentryExternalId,
     })
   }
 }

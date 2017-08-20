@@ -75,8 +75,11 @@ export const logger = {
   trace: console.trace || console.log,
   exception: (ex, options = {}) => {
     const {level = 'error', extra} = options
+    if (process.env.NODE_ENV === 'development') {
+      // Sentry wraps all console methods and so will send this to the system too
+      logger[level](ex);
+    }
     sentry.captureException(ex, extra)
-    logger[level](ex);
   }
 }
 

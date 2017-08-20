@@ -39,7 +39,7 @@ export const mapActionCreatorGroupToDispatchToProps = (actionCreatorGroups, othe
 const apiActionCreator = (...args) => {
   const actionType = 'API' + actionTypeDelim + args[0]
   const ac = actionCreator(actionType, ...args.slice(1))
-  ac.response = actionCreator(actionType + actionTypeDelim + 'RESPONSE', identity, (payload, meta) => meta)
+  ac.response = actionCreator(actionType + actionTypeDelim + 'RESPONSE', (payload, meta) => payload, (payload, meta) => meta)
   return ac
 }
 
