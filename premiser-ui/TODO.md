@@ -7,6 +7,8 @@
     * Errors from safari iOS aren't going to sentry
   
   * sentry errors not showing up for howdju.com?
+  
+* Must add loading indicators for recent Xs
 
 * Whats next / About page
   * Other stuff
