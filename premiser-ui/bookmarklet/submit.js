@@ -15,8 +15,12 @@
   }
   const queryParamsString = queryParams.join('&')
   const schema = 'http'
-  const host = 'localhost'
-  const port = 3000
-  const submitUrl = `${schema}://${host}:${port}/submit?${queryParamsString}`
+  const host = 'www.howdju.com'
+  const port = 80
+  let portString = ''
+  if (schema === 'http' && port !== 80 || schema === 'https' && port !== 443) {
+    portString = `:${port}`
+  }
+  const submitUrl = `${schema}://${host}${portString}/submit?${queryParamsString}`
   window.open(submitUrl)
 })()

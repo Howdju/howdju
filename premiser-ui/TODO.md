@@ -1,28 +1,32 @@
 # Howdju UI TODO
+
+* Figure out HTTPS for submitting passwords and generally just requesting the site (authToken!), 
+  can use https of API Gateway?
+    
+  * Featured perspectives don't load in safari iOS
+    * Errors from safari iOS aren't going to sentry
+  
+  * sentry errors not showing up for howdju.com?
+
+* Whats next / About page
+  * Other stuff
+* Terms / Privacy
+
+* favicons are missing from prod?
    
 * No login toast in prod
+* logo and main search alignment is off
 
 * TODO version API (add path parameter and add version to routing)
 
-* Featured perspectives don't load in safari iOS
-  * Errors from safari iOS aren't going to sentry
+* Add citations and quotes to main search
 
 * Start with twitter login/integration
   * Use twitter identity model: verification but not necessarily tied to real identity
   * Don't kill myself about getting highlighting arbitrary text on a page...?
 
-
-* logo and main search alignment is off 
-
 * fill out carl.gieringer normal account
 
-* Whats next / About page
-* favicons are missing from prod?
-  * Other stuff
-* sentry errors not showing up for howdju.com?
-* Terms / Privacy
-* Figure out HTTPS for submitting passwords and generally just requesting the site, can use https of API Gateway?
-* Add citations and quotes to main search
 
 ## Stuff not necessary before switch
 
@@ -35,8 +39,6 @@
 * Add prompt for opposing/supporting justification
 * Featured Perspectives are scrunched on mobile
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
-
-
 
 * Cards: who created, number of justifications or justifications based upon
   * perspective: whose!?
