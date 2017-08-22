@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Button from 'react-md/lib/Buttons/Button'
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import { connect } from 'react-redux'
 import concat from 'lodash/concat'
 import get from 'lodash/get'
@@ -10,8 +11,8 @@ import {denormalize} from "normalizr";
 import FlipMove from 'react-flip-move';
 
 import config from './config'
-
 import StatementCard from './StatementCard'
+import FetchButton from './FetchButton'
 
 import {
   api,
@@ -28,12 +29,18 @@ class RecentStatements extends Component {
 
   fetchMoreRecentStatements = event => {
     event.preventDefault()
-    this.props.api.fetchRecentStatements(this.props.widgetId, this.props.fetchCount, this.props.continuationToken)
+    const {
+      statements
+    } = this.props
+    const fetchCount = statements && statements.length > 0 ? this.props.fetchCount : this.props.initialFetchCount
+    this.props.api.fetchRecentStatements(this.props.widgetId, fetchCount, this.props.continuationToken)
   }
 
   render () {
     const {
       statements,
+      isFetching,
+      didError,
       // ignore
       widgetId,
       continuationToken,
@@ -44,15 +51,29 @@ class RecentStatements extends Component {
       // end-ignore
       ...rest,
     } = this.props
+    const cellClasses = "md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
     const hasStatements = statements && statements.length > 0
     const cards = () => map(statements, s => {
       const id = `recent-statement-${s.id}`
-      return <StatementCard key={id} statement={s} className="md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone" />
+      return <StatementCard key={id} statement={s} className={cellClasses} />
     })
-    const fetchMoreButton = <Button flat
-                                    key="fetch-more-button"
-                                    label="Fetch more"
-                                    onClick={this.fetchMoreRecentStatements}
+    const fetchMoreButtonCell = <FetchButton flat
+                                             className={cellClasses}
+                                             key="fetch-more-button"
+                                             progressId="fetch-more-button-progress"
+                                             label="Fetch more"
+                                             onClick={this.fetchMoreRecentStatements}
+                                             disabled={isFetching}
+                                             isFetching={isFetching}
+    />
+    const retryButtonCell = <FetchButton flat
+                                         className={cellClasses}
+                                         key="retry-button"
+                                         progressId="retry-button-progress"
+                                         label="Retry"
+                                         disabled={isFetching}
+                                         isFetching={isFetching}
+                                         onClick={this.fetchMoreRecentStatements}
     />
     const {flipMoveDuration, flipMoveEasing} = config.ui
 
@@ -63,17 +84,24 @@ class RecentStatements extends Component {
                     duration={flipMoveDuration}
                     easing={flipMoveEasing}
           >
-            {hasStatements &&
-                concat(cards(), fetchMoreButton)
+            {hasStatements && concat(cards(), fetchMoreButtonCell)}
+          </FlipMove>
+          <FlipMove duration={flipMoveDuration}
+                    easing={flipMoveEasing}
+          >
+            {!hasStatements && !isFetching &&
+              <div className="md-cell md-cell--12">No recent statements.</div>
             }
           </FlipMove>
           <FlipMove duration={flipMoveDuration}
                     easing={flipMoveEasing}
           >
-            {!hasStatements &&
-              <div className="md-cell md-cell--12">No recent statements.</div>
+            {!hasStatements && !didError && isFetching &&
+              <CircularProgress key="progress" id="recent-statements-progress" className="md-cell md-cell--12" />
             }
           </FlipMove>
+          {didError && <span className="error-message">There was an error fetching the recent statements.</span>}
+          {didError && !hasStatements && retryButtonCell}
         </div>
     )
   }
@@ -91,13 +119,18 @@ RecentStatements.defaultProps = {
 }
 const mapStateToProps = (state, ownProps) => {
   const widgetState = get(state, ['widgets', ownProps.widgetId], {})
-  const statements = denormalize(widgetState.recentStatements, statementsSchema, state.entities)
   const {
+    recentStatements,
     continuationToken,
+    isFetching,
+    didError,
   } = widgetState
+  const statements = denormalize(recentStatements, statementsSchema, state.entities)
   return {
     statements,
     continuationToken,
+    isFetching,
+    didError,
   }
 }
 

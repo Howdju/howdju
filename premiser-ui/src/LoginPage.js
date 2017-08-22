@@ -89,9 +89,9 @@ class LoginPage extends Component {
         {}
 
     const modelErrorMessages = modelErrors && modelErrors.length && (
-        <CardText className={cn('errorMessage md-cell md-cell--12')}>
+        <CardText className={cn('error-message md-cell md-cell--12')}>
           {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
-          <ul className="errorMessage">
+          <ul className="error-message">
             {map(modelErrors, error => <li key={error}>{t(error)}</li>) ||
               <li>t(AN_UNEXPECTED_ERROR_OCCURRED)</li>
             }

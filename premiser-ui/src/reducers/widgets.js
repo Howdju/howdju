@@ -12,15 +12,28 @@ const defaultRecentCitationsWidgetState = {recentCitations: [], continuationToke
 const defaultRecentCitationReferencesWidgetState = {recentCitationReferences: [], continuationToken: null}
 const defaultRecentJustificationsWidgetState = {recentJustifications: [], continuationToken: null}
 export default handleActions({
+  [api.fetchRecentStatements]: (state, action) => {
+    const widgetId = action.payload.widgetId
+    const widgetState = get(state, widgetId, defaultRecentStatementsWidgetState)
+    const newWidgetState = {...widgetState, isFetching: true}
+    return {...state, [widgetId]: newWidgetState}
+  },
   [api.fetchRecentStatements.response]: {
     next: (state, action) => {
       const widgetId = action.meta.requestPayload.widgetId
       const widgetState = get(state, widgetId, defaultRecentStatementsWidgetState)
       const newWidgetState = {
         recentStatements: union(widgetState.recentStatements, action.payload.result.statements),
-        continuationToken: action.payload.result.continuationToken
+        continuationToken: action.payload.result.continuationToken,
+        isFetching: false,
       }
 
+      return {...state, [widgetId]: newWidgetState}
+    },
+    throw: (state, action) => {
+      const widgetId = action.meta.requestPayload.widgetId
+      const widgetState = get(state, widgetId, defaultRecentStatementsWidgetState)
+      const newWidgetState = {...widgetState, isFetching: false, didError: true}
       return {...state, [widgetId]: newWidgetState}
     }
   },
@@ -33,8 +46,8 @@ export default handleActions({
         continuationToken: action.payload.result.continuationToken
       }
 
-      return {...state, [widgetId]: newWidgetState}
-    }
+      return {...state, [widgetId]: newWidgetState, isFetching: false}
+    },
   },
   [api.fetchRecentCitationReferences.response]: {
     next: (state, action) => {
@@ -45,8 +58,8 @@ export default handleActions({
         continuationToken: action.payload.result.continuationToken
       }
 
-      return {...state, [widgetId]: newWidgetState}
-    }
+      return {...state, [widgetId]: newWidgetState, isFetching: false}
+    },
   },
   [api.fetchRecentJustifications.response]: {
     next: (state, action) => {
@@ -57,8 +70,8 @@ export default handleActions({
         continuationToken: action.payload.result.continuationToken
       }
 
-      return {...state, [widgetId]: newWidgetState}
-    }
+      return {...state, [widgetId]: newWidgetState, isFetching: false}
+    },
   },
   [ui.clearRecentStatements]: (state, action) => {
     const widgetId = action.payload.widgetId

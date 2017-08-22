@@ -1,0 +1,10 @@
+.fetching-label {
+  display: flex;
+  flex-direction: row;
+
+  .md-progress {
+    // react-md uses auto to center the progress.  But we want it to hangout next to the button label
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+  }
+}

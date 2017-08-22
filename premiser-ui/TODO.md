@@ -1,6 +1,12 @@
 # Howdju UI TODO
 
-
+* I can use the system
+* I can share the system
+  * Collapse counters
+  * Collapse long statement text/quote text
+* Others can use the sytem
+* On-page analysis
+  * Start with Twitter?
  
 * Figure out HTTPS for submitting passwords and generally just requesting the site (authToken!), 
   can use https of API Gateway?

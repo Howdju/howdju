@@ -44,7 +44,7 @@ app.use('/api/*', function (req, res) {
   }
 
   // Introduce artificial latency
-  setTimeout(() => handler(event, context, callback), 200)
+  setTimeout(() => handler(event, context, callback), 500)
 })
 
 module.exports = app
