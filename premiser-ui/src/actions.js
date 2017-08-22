@@ -21,7 +21,7 @@ const identity = x => x
  * into dispatched versions.  This helper accomplishes the same for an object the properties of which are action creator
  * groups like those defined below.
  */
-export const mapActionCreatorGroupToDispatchToProps = (actionCreatorGroups, otherActions) => dispatch => {
+export const mapActionCreatorGroupToDispatchToProps = (actionCreatorGroups, otherActions) => (dispatch) => {
   const dispatchProps = mapValues(actionCreatorGroups, (actionCreatorGroup) =>
       mapValues(actionCreatorGroup, (actionCreator) =>
           (...args) => dispatch(actionCreator.apply(null, args))

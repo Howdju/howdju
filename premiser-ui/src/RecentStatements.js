@@ -111,7 +111,6 @@ RecentStatements.propTypes = {
   fetchCount: PropTypes.number.isRequired,
   /** If defined, the number of statements to fetch the first time */
   initialFetchCount: PropTypes.number,
-  onStatementsLengthChange: PropTypes.func,
 }
 RecentStatements.defaultProps = {
   initialFetchCount: 7,

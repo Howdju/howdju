@@ -153,11 +153,27 @@ const texts = {
   [YOU_ARE_LOGGED_IN_AS]: email => `You are logged in as ${email}`
 }
 
+const keyRegEx = /^[A-Z_]+$/
+const loggedMissingTranslations = {}
+
 const text = (key, ...args) => {
   const t = texts[key]
   if (!t) {
-    logger.error(`No text key: ${key}`)
-    return '';
+    const looksLikeKey = keyRegEx.test(key)
+    if (!looksLikeKey) {
+      // For convenience, allow inputting text that needs to be translated.
+      // We try to distinguish by assuming that input that isn't all capitals and underscores is untranslated text and not a key
+      const haveLogged = loggedMissingTranslations[key]
+      // Only complain about each one once
+      if (!haveLogged) {
+        loggedMissingTranslations[key] = true
+        logger.info(`No translation for text: "${key}"`)
+      }
+      return key
+    } else {
+      logger.error(`No text key: ${key}`)
+      return '';
+    }
   }
   return isFunction(t) ? t(...args) : t
 }

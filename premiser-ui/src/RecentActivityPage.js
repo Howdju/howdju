@@ -3,7 +3,7 @@ import React  from 'react'
 import RecentStatements from "./RecentStatements";
 import RecentCitations from "./RecentCitations";
 import RecentCitationReferences from './RecentCitationReferences'
-import RecentJustifications from './RecentJustifications'
+import RecentJustificationsWidget from './RecentJustificationsWidget'
 
 const recentStatementsWidgetId = 'RecentActivityPage.recentStatementsWidgetId'
 const recentCitationsWidgetId = 'RecentActivityPage.recentCitationsWidgetId'
@@ -22,6 +22,8 @@ export default props => (
       <RecentCitations className="md-grid md-cell md-cell--12 md-grid--card-list--tablet" widgetId={recentCitationsWidgetId} />
 
       <h1 className="md-cell--12">Recent justifications</h1>
-      <RecentJustifications className="md-grid md-cell md-cell--12 md-grid--card-list--tablet" widgetId={recentJustificationsWidgetId} />
+      <RecentJustificationsWidget id="recent-justifications"
+                                  className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
+                                  widgetId={recentJustificationsWidgetId} />
     </div>
 )

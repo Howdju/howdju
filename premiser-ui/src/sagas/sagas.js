@@ -115,7 +115,7 @@ export const resourceApiConfigs = {
     schema: {statements: statementsSchema},
   },
   [api.fetchRecentStatements]: payload => {
-    const queryStringParams = pick(payload, 'count')
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
@@ -124,21 +124,13 @@ export const resourceApiConfigs = {
       schema: {statements: statementsSchema},
     }
   },
-  [api.fetchRecentStatements]: payload => {
-    const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = SortDirection.DESCENDING
-    return {
-      endpoint: 'statements?' + queryString.stringify(queryStringParams),
-      schema: {statements: statementsSchema},
-    }
-  },
   [api.fetchRecentCitations]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
+    const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'citations?' + queryString.stringify(queryStringParams),
+      endpoint: 'citations?' + queryStringParamsString,
       schema: {citations: citationsSchema},
     }
   },
@@ -146,8 +138,9 @@ export const resourceApiConfigs = {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
+    const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'citationReferences?' + queryString.stringify(queryStringParams),
+      endpoint: 'citationReferences?' + queryStringParamsString,
       schema: {citationReferences: citationReferencesSchema},
     }
   },
@@ -155,8 +148,9 @@ export const resourceApiConfigs = {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
+    const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'justifications?' + queryString.stringify(queryStringParams),
+      endpoint: 'justifications?' + queryStringParamsString,
       schema: {justifications: justificationsSchema},
     }
   },

@@ -1,27 +1,38 @@
 # Howdju UI TODO
 
 * I can use the system
+  * Quote capture mechanics
+    * Bookmarklet should import script
 * I can share the system
-  * Collapse counters
+  * Factor out RecentEntitiesWidget
+  
+  * Collapse counter justifications
   * Collapse long statement text/quote text
-* Others can use the sytem
+    * On recent cards and justification bases
+  
+  * favicons are missing from prod?
+  * Whats next / About page
+    * Other stuff
+  * Terms / Privacy
+  * Tags
+    * paraphrases and quotes are amenable to tagging becasu they have context.  
+      statements might be amenable, depending on how specifically they are written.
+      Justification text could be too, depending on how specifically written and 
+      particularly if the tagging is adjusted for the context: i.e. more likely when
+      the statement justified implicates a similar context.
+* Others can use the system
+  * Job to score justifications
+  * Semantic equivalence
+  * On-page analysis, so that people use on-page analysis for on-site text justifications?
 * On-page analysis
   * Start with Twitter?
- 
+
 * Figure out HTTPS for submitting passwords and generally just requesting the site (authToken!), 
   can use https of API Gateway?
   * Featured perspectives don't load in safari iOS
     * Errors from safari iOS aren't going to sentry
   * sentry errors not showing up for howdju.com?
-  
-* Must add loading indicators for recent Xs
 
-* Whats next / About page
-  * Other stuff
-* Terms / Privacy
-
-* favicons are missing from prod?
-   
 * No login toast in prod
 * logo and main search alignment is off
 

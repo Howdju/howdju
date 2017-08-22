@@ -220,12 +220,12 @@ const createContinuationInfo = (sorts, lastEntity, filters) => {
   }
 }
 
-const createNextContinuationToken = (sortContinuations, entities) => {
+const createNextContinuationToken = (sortContinuations, entities, filters) => {
   const lastEntity = last(entities)
   let nextContinuationToken
   if (lastEntity) {
     // Everything from the previous token should be fine except we need to update the values
-    const nextContinuationInfo = updateContinuationInfo(sortContinuations, lastEntity)
+    const nextContinuationInfo = updateContinuationInfo(sortContinuations, lastEntity, filters)
     nextContinuationToken = encodeContinuationToken(nextContinuationInfo)
   }
   return nextContinuationToken
@@ -303,10 +303,13 @@ const readInitialJustifications = (requestedSorts, count, filters) => {
 }
 
 const readMoreStatements = (continuationToken, count) => {
-  const {s: sortContinuations} = decodeContinuationToken(continuationToken)
+  const {
+    s: sortContinuations,
+    f: filters,
+  } = decodeContinuationToken(continuationToken)
   return statementsDao.readMoreStatements(sortContinuations, count)
       .then(statements => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, statements) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sortContinuations, statements, filters) || continuationToken
         return {
           statements,
           continuationToken: nextContinuationToken
@@ -315,10 +318,13 @@ const readMoreStatements = (continuationToken, count) => {
 }
 
 const readMoreCitations = (continuationToken, count) => {
-  const {s: sortContinuations} = decodeContinuationToken(continuationToken)
+  const {
+    s: sortContinuations,
+    f: filters,
+  } = decodeContinuationToken(continuationToken)
   return citationsDao.readMoreCitations(sortContinuations, count)
       .then(citations => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, citations) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sortContinuations, citations, filters) || continuationToken
         return {
           citations,
           continuationToken: nextContinuationToken
@@ -327,10 +333,13 @@ const readMoreCitations = (continuationToken, count) => {
 }
 
 const readMoreCitationReferences = (continuationToken, count) => {
-  const {s: sortContinuations} = decodeContinuationToken(continuationToken)
+  const {
+    s: sortContinuations,
+    f: filters,
+  } = decodeContinuationToken(continuationToken)
   return citationReferencesDao.readMoreCitationReferences(sortContinuations, count)
       .then(citationReferences => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, citationReferences) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sortContinuations, citationReferences, filters) || continuationToken
         return {
           citationReferences,
           continuationToken: nextContinuationToken
@@ -339,10 +348,12 @@ const readMoreCitationReferences = (continuationToken, count) => {
 }
 
 const readMoreJustifications = (continuationToken, count) => {
+  const continuationInfo = decodeContinuationToken(continuationToken)
+  logger.silly('continuationInfo', continuationInfo)
   const {
     s: sortContinuations,
     f: filters,
-  } = decodeContinuationToken(continuationToken)
+  } = continuationInfo
   return justificationsDao.readJustifications(sortContinuations, count, filters, true)
       .then(justifications => {
         const [goodJustifications, badJustifications] = partition(justifications, j =>
@@ -358,7 +369,7 @@ const readMoreJustifications = (continuationToken, count) => {
         return goodJustifications
       })
       .then(justifications => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, justifications) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sortContinuations, justifications, filters) || continuationToken
         return {
           justifications,
           continuationToken: nextContinuationToken
