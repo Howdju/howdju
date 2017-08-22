@@ -27,7 +27,7 @@ module.exports.htmlWebpackPluginConfig = {
 }
 
 module.exports.definePluginConfig = {
-  'process.env.API_ROOT': JSON.stringify('https://ewl0mezq3f.execute-api.us-east-1.amazonaws.com/dev/api/')
+  'process.env.API_ROOT': JSON.stringify('https://api.howdju.com/api/')
 }
 
 /*

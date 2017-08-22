@@ -1,11 +1,11 @@
 # Howdju UI TODO
 
+
+ 
 * Figure out HTTPS for submitting passwords and generally just requesting the site (authToken!), 
   can use https of API Gateway?
-    
   * Featured perspectives don't load in safari iOS
     * Errors from safari iOS aren't going to sentry
-  
   * sentry errors not showing up for howdju.com?
   
 * Must add loading indicators for recent Xs
@@ -34,6 +34,12 @@
 
 * howdju.com -> www.howdju.com redirect
   * Can this be faster with namecheap or Route 53?
+  
+  * https://serverfault.com/a/576469/148410
+  * http://building.vts.com/blog/2015/11/02/route53-ssl-naked-domain-redirect/
+  * https://stackoverflow.com/a/20230670/39396
+    * https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html
+    
   * How to send howdju.com to cloudfront or S3 so that I can control redirect with S3 or howdju-ui.js?
     * Dreamhost wouldn't let me enter a CNAME for howdju.com, so how to point bare domain to other domain?
     * Maybe you must have an A record, and then must have some server that responds with logic

@@ -1,3 +1,17 @@
+/**
+ * * modes:
+ *   - local (localhost, doesn't need network)
+ *   - internal (uses internal IP.  Allows mobile testing)
+ *   - development (CD environment.  Initial testing.  Can break)
+ *   - candidate (pre-release testing.  Load testing)
+ *   - production
+ * stages
+ *   - local/internal
+ *   - dev
+ *   - candi
+ *   - prod
+ */
+
 const path = require('path')
 const merge = require('webpack-merge')
 const {
@@ -29,9 +43,9 @@ const baseConfig = {
     // s3Domain: 'www.howdju.com.s3-website-us-east-1.amazonaws.com',
     // s3Domain: 'www.premiser.co,.s3-website-us-east-1.amazonaws.com',
 
-    // howdju
+    // howdju.com
     distributionId: 'E3ALDHFXYJRKKJ',
-    //premiser
+    //premiser.co
     // distributionId: 'E1MVR22QSL38AV',
 
     // howdju

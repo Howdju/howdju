@@ -28,6 +28,11 @@ if (process.env.NODE_ENV === 'development') {
     path: '/__webpack_hmr'
   }))
 }
+if (process.env.NODE_ENV === 'production') {
+  // I think the dev middleware intercepts requests for premiser-ui.js
+  // When testing out the prod build, we need express to serve that file
+  app.use(express.static('dist'))
+}
 
 app.use(express.static('public'))
 
