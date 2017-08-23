@@ -7,106 +7,66 @@ import {
   ui
 } from '../actions'
 
+const widgetRequestReducer = (defaultWidgetState) => (state, action) => {
+  const widgetId = action.payload.widgetId
+  const widgetState = get(state, widgetId, defaultWidgetState)
+  const newWidgetState = {...widgetState, isFetching: true}
+  return {...state, [widgetId]: newWidgetState}
+}
+const widgetResponseReducer = (defaultWidgetState, entitiesWidgetStateKey, entitiesResultKey) => (state, action) => {
+  const widgetId = action.meta.requestPayload.widgetId
+  const widgetState = get(state, widgetId, defaultWidgetState)
+  const newWidgetState = {
+    [entitiesWidgetStateKey]: union(widgetState[entitiesWidgetStateKey], action.payload.result[entitiesResultKey]),
+    continuationToken: action.payload.result.continuationToken,
+    isFetching: false,
+  }
+
+  return {...state, [widgetId]: newWidgetState}
+}
+const widgetResponseErrorReducer = (defaultWidgetState) => (state, action) => {
+  const widgetId = action.meta.requestPayload.widgetId
+  const widgetState = get(state, widgetId, defaultWidgetState)
+  const newWidgetState = {...widgetState, isFetching: false, didError: true}
+  return {...state, [widgetId]: newWidgetState}
+}
+const clearWidgetStateReducer = (defaultWidgetState) => (state, action) => {
+  const widgetId = action.payload.widgetId
+  const widgetState = get(state, widgetId)
+  if (widgetState) {
+    const newWidgetState = {...widgetState, ...defaultWidgetState}
+    return {...state, [widgetId]: newWidgetState}
+  }
+  return state
+}
+
 const defaultRecentStatementsWidgetState = {recentStatements: [], continuationToken: null}
 const defaultRecentCitationsWidgetState = {recentCitations: [], continuationToken: null}
 const defaultRecentCitationReferencesWidgetState = {recentCitationReferences: [], continuationToken: null}
 const defaultRecentJustificationsWidgetState = {recentJustifications: [], continuationToken: null}
 export default handleActions({
-  [api.fetchRecentStatements]: (state, action) => {
-    const widgetId = action.payload.widgetId
-    const widgetState = get(state, widgetId, defaultRecentStatementsWidgetState)
-    const newWidgetState = {...widgetState, isFetching: true}
-    return {...state, [widgetId]: newWidgetState}
-  },
+  [api.fetchRecentStatements]: widgetRequestReducer(defaultRecentStatementsWidgetState),
   [api.fetchRecentStatements.response]: {
-    next: (state, action) => {
-      const widgetId = action.meta.requestPayload.widgetId
-      const widgetState = get(state, widgetId, defaultRecentStatementsWidgetState)
-      const newWidgetState = {
-        recentStatements: union(widgetState.recentStatements, action.payload.result.statements),
-        continuationToken: action.payload.result.continuationToken,
-        isFetching: false,
-      }
-
-      return {...state, [widgetId]: newWidgetState}
-    },
-    throw: (state, action) => {
-      const widgetId = action.meta.requestPayload.widgetId
-      const widgetState = get(state, widgetId, defaultRecentStatementsWidgetState)
-      const newWidgetState = {...widgetState, isFetching: false, didError: true}
-      return {...state, [widgetId]: newWidgetState}
-    }
+    next: widgetResponseReducer(defaultRecentStatementsWidgetState, 'recentStatements', 'statements'),
+    throw: widgetResponseErrorReducer(defaultRecentStatementsWidgetState),
   },
+  [api.fetchRecentCitations]: widgetRequestReducer(defaultRecentCitationsWidgetState),
   [api.fetchRecentCitations.response]: {
-    next: (state, action) => {
-      const widgetId = action.meta.requestPayload.widgetId
-      const widgetState = get(state, widgetId, defaultRecentCitationsWidgetState)
-      const newWidgetState = {
-        recentCitations: union(widgetState.recentCitations, action.payload.result.citations),
-        continuationToken: action.payload.result.continuationToken
-      }
-
-      return {...state, [widgetId]: newWidgetState, isFetching: false}
-    },
+    next: widgetResponseReducer(defaultRecentCitationsWidgetState, 'recentCitations', 'citations'),
+    throw: widgetResponseErrorReducer(defaultRecentCitationsWidgetState),
   },
+  [api.fetchRecentCitationReferences]: widgetRequestReducer(defaultRecentCitationReferencesWidgetState),
   [api.fetchRecentCitationReferences.response]: {
-    next: (state, action) => {
-      const widgetId = action.meta.requestPayload.widgetId
-      const widgetState = get(state, widgetId, defaultRecentCitationReferencesWidgetState)
-      const newWidgetState = {
-        recentCitationReferences: union(widgetState.recentCitationReferences, action.payload.result.citationReferences),
-        continuationToken: action.payload.result.continuationToken
-      }
-
-      return {...state, [widgetId]: newWidgetState, isFetching: false}
-    },
+    next: widgetResponseReducer(defaultRecentCitationReferencesWidgetState, 'recentCitationReferences', 'citationReferences'),
+    throw: widgetResponseErrorReducer(defaultRecentCitationReferencesWidgetState),
   },
+  [api.fetchRecentJustifications]: widgetRequestReducer(defaultRecentJustificationsWidgetState),
   [api.fetchRecentJustifications.response]: {
-    next: (state, action) => {
-      const widgetId = action.meta.requestPayload.widgetId
-      const widgetState = get(state, widgetId, defaultRecentJustificationsWidgetState)
-      const newWidgetState = {
-        recentJustifications: union(widgetState.recentJustifications, action.payload.result.justifications),
-        continuationToken: action.payload.result.continuationToken
-      }
-
-      return {...state, [widgetId]: newWidgetState, isFetching: false}
-    },
+    next: widgetResponseReducer(defaultRecentJustificationsWidgetState, 'recentJustifications', 'justifications'),
+    throw: widgetResponseErrorReducer(defaultRecentJustificationsWidgetState),
   },
-  [ui.clearRecentStatements]: (state, action) => {
-    const widgetId = action.payload.widgetId
-    const widgetState = get(state, widgetId)
-    if (widgetState) {
-      const newWidgetState = {...widgetState, ...defaultRecentStatementsWidgetState}
-      return {...state, [widgetId]: newWidgetState}
-    }
-    return state
-  },
-  [ui.clearRecentCitations]: (state, action) => {
-    const widgetId = action.payload.widgetId
-    const widgetState = get(state, widgetId)
-    if (widgetState) {
-      const newWidgetState = {...widgetState, ...defaultRecentCitationsWidgetState}
-      return {...state, [widgetId]: newWidgetState}
-    }
-    return state
-  },
-  [ui.clearRecentCitationReferences]: (state, action) => {
-    const widgetId = action.payload.widgetId
-    const widgetState = get(state, widgetId)
-    if (widgetState) {
-      const newWidgetState = {...widgetState, ...defaultRecentCitationReferencesWidgetState}
-      return {...state, [widgetId]: newWidgetState}
-    }
-    return state
-  },
-  [ui.clearRecentJustifications]: (state, action) => {
-    const widgetId = action.payload.widgetId
-    const widgetState = get(state, widgetId)
-    if (widgetState) {
-      const newWidgetState = {...widgetState, ...defaultRecentJustificationsWidgetState}
-      return {...state, [widgetId]: newWidgetState}
-    }
-    return state
-  },
+  [ui.clearRecentStatements]: clearWidgetStateReducer(defaultRecentStatementsWidgetState),
+  [ui.clearRecentCitations]: clearWidgetStateReducer(defaultRecentCitationsWidgetState),
+  [ui.clearRecentCitationReferences]: clearWidgetStateReducer(defaultRecentCitationReferencesWidgetState),
+  [ui.clearRecentJustifications]: clearWidgetStateReducer(defaultRecentJustificationsWidgetState),
 }, {})

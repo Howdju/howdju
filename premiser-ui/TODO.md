@@ -3,9 +3,11 @@
 * I can use the system
   * Quote capture mechanics
     * Bookmarklet should import script
+  * Two bookmarklet capabilities:
+    - Capture quote justification (do I ask them to paraphrase the quote?)
+    - target quote paraphrase
+  * Collect source author, date
 * I can share the system
-  * Factor out RecentEntitiesWidget
-  
   * Collapse counter justifications
   * Collapse long statement text/quote text
     * On recent cards and justification bases
@@ -23,6 +25,8 @@
 * Others can use the system
   * Job to score justifications
   * Semantic equivalence
+    * Vote on equivalence?
+    * Paraphrase as part of quote capture?
   * On-page analysis, so that people use on-page analysis for on-site text justifications?
 * On-page analysis
   * Start with Twitter?
@@ -38,7 +42,7 @@
 
 * TODO version API (add path parameter and add version to routing)
 
-* Add citations and quotes to main search
+* Add citations, quotes, tags to main search
 
 * Start with twitter login/integration
   * Use twitter identity model: verification but not necessarily tied to real identity

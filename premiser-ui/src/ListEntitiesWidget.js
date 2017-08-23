@@ -47,6 +47,7 @@ class ListEntitiesWidget extends Component {
       didError,
       emptyEntitiesMessage,
       loadErrorMessage,
+      cellClasses,
       // ignore
       widgetId,
       entitiesWidgetStateKey,
@@ -60,7 +61,6 @@ class ListEntitiesWidget extends Component {
       // end-ignore
       ...rest,
     } = this.props
-    const cellClasses = "md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
     const hasEntities = this.hasEntities()
     const cards = () => map(entities, this.props.entityToCard)
     const fetchMoreButtonCell = <FetchButton flat
@@ -133,11 +133,16 @@ ListEntitiesWidget.propTypes = {
   /** The message to display when there are no entities */
   emptyEntitiesMessage: PropTypes.string.isRequired,
   loadErrorMessage: PropTypes.string.isRequired,
+  /** The classes to use for the fetch buttons that take up the space of a cell */
+  cellClasses: PropTypes.string,
 }
+ListEntitiesWidget.smallCellClasses = "md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+ListEntitiesWidget.largeCellClasses = "md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone"
 ListEntitiesWidget.defaultProps = {
   // This way the fetchMoreButton takes up the last column
   initialFetchCount: 7,
   fetchCount: 8,
+  cellClasses: ListEntitiesWidget.smallCellClasses,
 }
 const mapStateToProps = (state, ownProps) => {
   const widgetState = get(state, ['widgets', ownProps.widgetId], {})

@@ -11,13 +11,16 @@ import {justificationsSchema} from "./schemas";
 
 export default class RecentJustificationsWidget extends Component {
 
-  justificationToCard = j => {
+  justificationToCard = justification => {
     const id = this.props.id
-    const cardId = `${id}-recent-justification-${j.id}`
-    return <JustificationCard key={cardId}
-                              justification={j}
-                              doShowBasisJustifications={false}
-                              className="md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone" />
+    const cardId = `${id}-justification-${justification.id}`
+    return (
+      <JustificationCard key={cardId}
+                         justification={justification}
+                         doShowBasisJustifications={false}
+                         className={ListEntitiesWidget.largeCellClasses}
+      />
+    )
   }
 
   render() {
@@ -30,6 +33,7 @@ export default class RecentJustificationsWidget extends Component {
         <ListEntitiesWidget {...rest}
                             id={id}
                             widgetId={widgetId}
+                            cellClasses={ListEntitiesWidget.largeCellClasses}
                             entitiesWidgetStateKey="recentJustifications"
                             clearEntities={ui.clearRecentJustifications}
                             fetchEntities={api.fetchRecentJustifications}
@@ -41,4 +45,3 @@ export default class RecentJustificationsWidget extends Component {
     )
   }
 }
-
