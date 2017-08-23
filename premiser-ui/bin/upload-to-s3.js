@@ -13,6 +13,11 @@ const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 const contentTypes = {
   '.js': 'application/javascript',
+  '.png': 'image/png',
+  '.xml': 'application/xml',
+  '.ico': 'image/x-icon',
+  '.json': 'application/json',
+  '.svg': 'image/svg+xml',
   '.html': 'text/html',
   '.css': 'text/css',
   '.map': 'application/octet-stream',

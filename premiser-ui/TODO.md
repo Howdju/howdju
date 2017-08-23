@@ -35,6 +35,10 @@
   * Start with Twitter?
 * Improve the system
   * Gamification
+* Stability
+  * Dev environment
+    * Continuous delivery
+    * Automated testing (browserstack?)
 
 * Figure out HTTPS for submitting passwords and generally just requesting the site (authToken!), 
   can use https of API Gateway?

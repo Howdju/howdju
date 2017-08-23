@@ -83,7 +83,15 @@ module.exports.webpackConfig = {
         warnings: false,
       }
     }),
-    new CopyWebpackPlugin([ { from: projectConfig.paths.src('error.html') }]),
+    new CopyWebpackPlugin([
+      { from: projectConfig.paths.src('error.html') },
+      // Copy everything from public directly into dist, except for the fonts, which the client requests from CDN in prod
+      {
+        from: projectConfig.paths.public(),
+        to: projectConfig.paths.dist(),
+        ignore: '*.woff2',
+      },
+    ]),
     extractTextPlugin,
     new OptimizeCssAssetsPlugin({
       cssProcessor: require('cssnano'),
