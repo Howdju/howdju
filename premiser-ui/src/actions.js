@@ -169,6 +169,9 @@ export const ui = {
       (transientId, cause) => ({cause}),
   ),
   windowResize: actionCreator('UI/WINDOW_RESIZE'),
+
+  expand: actionCreator('UI/EXPAND', widgetId => ({widgetId})),
+  collapse: actionCreator('UI/COLLAPSE', widgetId => ({widgetId})),
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))

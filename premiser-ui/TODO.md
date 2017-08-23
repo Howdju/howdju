@@ -1,16 +1,21 @@
 # Howdju UI TODO
 
 * I can use the system
-  * Quote capture mechanics
+  * Quote capture mechanics (capture Xpath, surrounding text, etc.)
     * Bookmarklet should import script
   * Two bookmarklet capabilities:
     - Capture quote justification (do I ask them to paraphrase the quote?)
     - target quote paraphrase
   * Collect source author, date
 * I can share the system
-  * Collapse counter justifications
   * Collapse long statement text/quote text
     * On recent cards and justification bases
+  * Collapse counter justifications
+    * Show all
+    * Show approved
+    * Show recommended (machine learning score)
+    * Hide disapproved
+    * Hide all
   
   * favicons are missing from prod?
   * Whats next / About page
@@ -30,6 +35,8 @@
   * On-page analysis, so that people use on-page analysis for on-site text justifications?
 * On-page analysis
   * Start with Twitter?
+* Improve the system
+  * Gamification
 
 * Figure out HTTPS for submitting passwords and generally just requesting the site (authToken!), 
   can use https of API Gateway?

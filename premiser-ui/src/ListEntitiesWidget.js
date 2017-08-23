@@ -90,23 +90,15 @@ class ListEntitiesWidget extends Component {
                     easing={flipMoveEasing}
           >
             {hasEntities && concat(cards(), fetchMoreButtonCell)}
-          </FlipMove>
-          <FlipMove duration={flipMoveDuration}
-                    easing={flipMoveEasing}
-          >
             {!hasEntities && !isFetching &&
-            <div className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
+              <div className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
             }
-          </FlipMove>
-          <FlipMove duration={flipMoveDuration}
-                    easing={flipMoveEasing}
-          >
             {!hasEntities && !didError && isFetching &&
-            <CircularProgress key="progress" id={`${id}-progress`} className="md-cell md-cell--12" />
+              <CircularProgress key="progress" id={`${id}-progress`} className="md-cell md-cell--12" />
             }
+            {didError && <span className="error-message">{loadErrorMessage}</span>}
+            {didError && !hasEntities && retryButtonCell}
           </FlipMove>
-          {didError && <span className="error-message">{loadErrorMessage}</span>}
-          {didError && !hasEntities && retryButtonCell}
         </div>
     )
   }
@@ -145,7 +137,7 @@ ListEntitiesWidget.defaultProps = {
   cellClasses: ListEntitiesWidget.smallCellClasses,
 }
 const mapStateToProps = (state, ownProps) => {
-  const widgetState = get(state, ['widgets', ownProps.widgetId], {})
+  const widgetState = get(state, ['widgets', 'listEntities', ownProps.widgetId], {})
   const {
     continuationToken,
     isFetching,

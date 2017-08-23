@@ -1,11 +1,11 @@
-import {combineActions, handleActions} from "redux-actions";
+import {handleActions} from "redux-actions";
 import get from 'lodash/get'
 import union from 'lodash/union'
 
 import {
   api,
   ui
-} from '../actions'
+} from '../../actions'
 
 const widgetRequestReducer = (defaultWidgetState) => (state, action) => {
   const widgetId = action.payload.widgetId

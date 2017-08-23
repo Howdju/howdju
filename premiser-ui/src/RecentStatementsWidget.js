@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
-import StatementCard from './StatementCard'
+import StatementCardContainer from './StatementCardContainer'
 import {default as t} from './texts'
 import {
   api,
@@ -15,9 +15,10 @@ export default class RecentStatementsWidget extends Component {
     const id = this.props.id
     const cardId = `${id}-statement-${statement.id}`
     return (
-      <StatementCard key={cardId}
-                     statement={statement}
-                     className={ListEntitiesWidget.smallCellClasses}
+      <StatementCardContainer key={cardId}
+                              widgetId={cardId}
+                              statement={statement}
+                              className={ListEntitiesWidget.smallCellClasses}
       />
     )
   }

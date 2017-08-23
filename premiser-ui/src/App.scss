@@ -100,3 +100,14 @@ $small-chat-iframe-z-index: 999999999;
     display: none;
   }
 }
+
+.md-inline-block.text-expand-toggle {
+  vertical-align: text-top;
+}
+
+.clickable {
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}

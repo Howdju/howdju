@@ -1,10 +1,12 @@
+import assign from 'lodash/assign'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
 import merge from 'lodash/merge'
 import truncate from 'lodash/truncate'
 
-import {newImpossibleError} from "./customErrors";
-import {ellipsis} from "./characters";
+import config from './config'
+import {newImpossibleError} from './customErrors'
+import {ellipsis} from './characters'
 
 export const JustificationTargetType = {
   STATEMENT: 'STATEMENT',
@@ -179,9 +181,11 @@ export const SortDirection = {
 }
 
 
-const truncateCitationReferenceQuoteOptions = {
-  length: 256,
+const truncateOptions = {
+  length: config.ui.shortTextLength,
   omission: ellipsis,
-  separator: /\s+/,
+  separator: /[,.]*\s+/,
 }
-export const truncateCitationReferenceQuote = quote => truncate(quote, truncateCitationReferenceQuoteOptions)
+export const isTextLong = (text) => text ? text.length > config.ui.shortTextLength : false
+export const truncateCitationReferenceQuote = quote => truncate(quote, truncateOptions)
+export const truncateStatementText = (text, options) => truncate(text, assign({}, truncateOptions, options))

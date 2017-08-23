@@ -14,6 +14,7 @@ const config = {
     narrowBreakpoint: 840,
     flipMoveDuration: 750,
     flipMoveEasing: "ease-out",
+    shortTextLength: 256,
   },
 }
 
