@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
+import ExpandableTextCard from './ExpandableTextCard'
 import CitationReferenceCard from './CitationReferenceCard'
 import {default as t} from './texts'
 import {
@@ -15,9 +16,11 @@ export default class RecentCitationReferencesWidget extends Component {
     const id = this.props.id
     const cardId = `${id}-citation-reference-${citationReference.id}`
     return (
-      <CitationReferenceCard key={cardId}
-                             citationReference={citationReference}
-                             className={ListEntitiesWidget.smallCellClasses}
+      <ExpandableTextCard CardComponent={CitationReferenceCard}
+                          widgetId={cardId}
+                          key={cardId}
+                          citationReference={citationReference}
+                          className={ListEntitiesWidget.smallCellClasses}
       />
     )
 

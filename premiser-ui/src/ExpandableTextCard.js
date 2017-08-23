@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import get from 'lodash/get'
 
@@ -6,9 +7,8 @@ import {
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from './actions'
-import StatementCard from './StatementCard'
 
-class StatementCardContainer extends Component {
+class ExpandableTextCard extends Component {
 
   onExpand = () => {
     const {
@@ -27,6 +27,7 @@ class StatementCardContainer extends Component {
   render() {
     const {
       isExpanded,
+      CardComponent,
       // ignore
       widgetId,
       ui,
@@ -34,13 +35,19 @@ class StatementCardContainer extends Component {
       ...rest
     } = this.props
     return (
-        <StatementCard {...rest}
+        <CardComponent {...rest}
                        isExpanded={isExpanded}
                        onExpand={this.onExpand}
                        onCollapse={this.onCollapse}
         />
     )
   }
+}
+ExpandableTextCard.propTypes = {
+  CardComponent: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+  ]).isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -58,4 +65,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   ui,
-}))(StatementCardContainer)
+}))(ExpandableTextCard)

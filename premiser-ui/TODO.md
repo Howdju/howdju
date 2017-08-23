@@ -8,8 +8,6 @@
     - target quote paraphrase
   * Collect source author, date
 * I can share the system
-  * Collapse long statement text/quote text
-    * On recent cards and justification bases
   * Collapse counter justifications
     * Show all
     * Show approved
@@ -17,7 +15,7 @@
     * Hide disapproved
     * Hide all
   
-  * favicons are missing from prod?
+  * => favicons are missing from prod?
   * Whats next / About page
     * Other stuff
   * Terms / Privacy

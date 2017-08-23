@@ -187,5 +187,5 @@ const truncateOptions = {
   separator: /[,.]*\s+/,
 }
 export const isTextLong = (text) => text ? text.length > config.ui.shortTextLength : false
-export const truncateCitationReferenceQuote = quote => truncate(quote, truncateOptions)
+export const truncateCitationReferenceQuote = (quote, options) => truncate(quote, assign({}, truncateOptions, options))
 export const truncateStatementText = (text, options) => truncate(text, assign({}, truncateOptions, options))

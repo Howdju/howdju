@@ -5,12 +5,15 @@ import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import FontIcon from 'react-md/lib/FontIcons'
+import Button from 'react-md/lib/Buttons/Button'
 import moment from 'moment'
 import cn from 'classnames'
 
 import config from './config'
-import {truncateCitationReferenceQuote} from "./models";
+import {truncateCitationReferenceQuote, isTextLong} from "./models";
 import paths from './paths'
+import {default as t} from './texts'
+import * as characters from './characters'
 
 import './CitationReferenceCard.scss'
 
@@ -20,11 +23,18 @@ export default class CitationReferenceCard extends Component {
     const {
       citationReference,
       className,
+      isExpanded,
+      onExpand,
+      onCollapse,
       ...rest,
     } = this.props
     const citation = citationReference.citation
     const age = citationReference.created ? moment(citationReference.created).fromNow() : ''
     const created = citationReference.created ? moment(citationReference.created).format(config.humanDateTimeFormat) : ''
+    const _isQuoteLong = isTextLong(citationReference.quote)
+    const quote = !_isQuoteLong || isExpanded ?
+        citationReference.quote :
+        truncateCitationReferenceQuote(citationReference.quote, {omission: ''})
     return (
         <Card {...rest}
               className={cn(className, "citation-reference-card")}
@@ -44,7 +54,25 @@ export default class CitationReferenceCard extends Component {
           />
           <CardText className="card-quote">
             <div className="quote">
-              <span className="quote-text">{truncateCitationReferenceQuote(citationReference.quote)}</span>
+              <span className="quote-text">
+                {quote}
+                {_isQuoteLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
+                {_isQuoteLong && ' '}
+                {_isQuoteLong && !isExpanded &&
+                  <Button flat
+                          label={t('More')}
+                          className="text-expand-toggle"
+                          onClick={onExpand}
+                  />
+                }
+                {_isQuoteLong && isExpanded &&
+                  <Button flat
+                          label={t('Less')}
+                          className="text-expand-toggle"
+                          onClick={onCollapse}
+                  />
+                }
+              </span>
             </div>
           </CardText>
         </Card>
