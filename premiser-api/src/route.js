@@ -40,13 +40,9 @@ const {
   readJustifications,
   updateCitationReference,
   readFeaturedPerspectives,
-} = require('./service')
-const {
   searchStatements,
-} = require('./search/statements')
-const {
   searchCitations,
-} = require('./search/citations')
+} = require('./service')
 const {logger} = require('./logger')
 const {
   rethrowTranslatedErrors

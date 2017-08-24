@@ -31,19 +31,25 @@ const zip = require('lodash/zip')
 
 const config = require('../config')
 const {logger} = require('../logger')
-const statementsDao = require('../dao/statementsDao')
-const permissionsDao = require('../dao/permissionsDao')
-const citationReferencesDao = require('../dao/citationReferencesDao')
-const citationsDao = require('../dao/citationsDao')
-const justificationsDao = require('../dao/justificationsDao')
-const usersDao = require('../dao/usersDao')
-const authDao = require('../dao/authDao')
-const votesDao = require('../dao/votesDao')
-const urlsDao = require('../dao/urlsDao')
-const actionsDao = require('../dao/actionsDao')
-const statementCompoundsDao = require('../dao/statementCompoundsDao')
-const perspectivesDao = require('../dao/perspectivesDao')
-const userExternalIdsDao = require('../dao/userExternalIdsDao')
+const {
+  statementsDao,
+  permissionsDao,
+  citationReferencesDao,
+  citationsDao,
+  justificationsDao,
+  usersDao,
+  authDao,
+  votesDao,
+  urlsDao,
+  actionsDao,
+  statementCompoundsDao,
+  perspectivesDao,
+  userExternalIdsDao,
+} = require('../dao')
+const {
+  statementTextSearcher,
+  citationTextSearcher,
+} = require('../search')
 const {
   statementValidator,
   justificationValidator,
@@ -1185,6 +1191,15 @@ const readFeaturedPerspectives = authToken => authDao.getUserIdForAuthToken(auth
     .then(userId => perspectivesDao.readFeaturedPerspectivesWithVotesForOptionalUserId(userId))
     .then(perspectives => map(perspectives, decircularizePerspective))
 
+
+const searchStatements = (searchText) => {
+  return statementTextSearcher.search(searchText)
+}
+
+const searchCitations = (searchText) => {
+  return citationTextSearcher.search(searchText)
+}
+
 /** Inserts an action record, but returns the entity, so that promises won't block on the query */
 const asyncRecordEntityAction = (userId, actionType, actionTargetType, now) => entity => {
   if (entity) {
@@ -1222,4 +1237,6 @@ module.exports = {
   updateCitationReference,
   readFeaturedPerspectives,
   decodeContinuationToken,
+  searchStatements,
+  searchCitations,
 }
