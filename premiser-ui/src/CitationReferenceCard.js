@@ -54,25 +54,26 @@ export default class CitationReferenceCard extends Component {
           />
           <CardText className="card-quote">
             <div className="quote">
-              <span className="quote-text">
-                {quote}
-                {_isQuoteLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
-                {_isQuoteLong && ' '}
-                {_isQuoteLong && !isExpanded &&
-                  <Button flat
-                          label={t('More')}
-                          className="text-expand-toggle"
-                          onClick={onExpand}
-                  />
-                }
-                {_isQuoteLong && isExpanded &&
-                  <Button flat
-                          label={t('Less')}
-                          className="text-expand-toggle"
-                          onClick={onCollapse}
-                  />
-                }
-              </span>
+              <div className="quote-text-wrapper">
+                <span className="quote-text">
+                  {quote}
+                  {_isQuoteLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
+                </span>
+              </div>
+              {_isQuoteLong && !isExpanded && (
+                <Button flat
+                        label={t('More')}
+                        className="text-expand-toggle"
+                        onClick={onExpand}
+                />
+              )}
+              {_isQuoteLong && isExpanded && (
+                <Button flat
+                        label={t('Less')}
+                        className="text-expand-toggle"
+                        onClick={onCollapse}
+                />
+              )}
             </div>
           </CardText>
         </Card>

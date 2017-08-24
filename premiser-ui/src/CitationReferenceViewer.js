@@ -1,10 +1,16 @@
 import React from 'react'
-import map from 'lodash/map'
 import FontIcon from 'react-md/lib/FontIcons'
+import Button from 'react-md/lib/Buttons/Button'
+import map from 'lodash/map'
 import cn from 'classnames'
 
-import {truncateCitationReferenceQuote} from "./models";
+import {
+  truncateCitationReferenceQuote,
+  isTextLong,
+} from "./models";
 import {extractDomain} from "./util"
+import * as characters from './characters'
+import {default as t} from './texts'
 
 import './CitationReferenceViewer.scss'
 
@@ -13,6 +19,9 @@ export default props => {
   const {
     citationReference,
     doShowControls,
+    isExpanded,
+    onExpand,
+    onCollapse,
   } = props
 
   const urls = map(citationReference.urls, u => {
@@ -30,13 +39,37 @@ export default props => {
     )
   })
 
+  const _isQuoteLong = isTextLong(citationReference.quote)
+  const hasQuote = !!citationReference.quote
+  const quote = !_isQuoteLong || isExpanded ?
+      citationReference.quote :
+      truncateCitationReferenceQuote(citationReference.quote, {omission: ''})
 
   return (
       <div className="citation-reference-viewer">
         <div className={cn("quote", {
-          hidden: !citationReference.quote
+          hidden: !hasQuote
         })}>
-          <span className="quote-text">{truncateCitationReferenceQuote(citationReference.quote)}</span>
+          <div className="quote-text-wrapper">
+            <span className="quote-text">
+            {quote}
+            {_isQuoteLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
+            </span>
+          </div>
+          {_isQuoteLong && !isExpanded && (
+            <Button flat
+                    label={t('More')}
+                    className="text-expand-toggle"
+                    onClick={onExpand}
+            />
+          )}
+          {_isQuoteLong && isExpanded && (
+            <Button flat
+                    label={t('Less')}
+                    className="text-expand-toggle"
+                    onClick={onCollapse}
+            />
+          )}
         </div>
         <div className="citation-title">{citationReference.citation.text}</div>
         <ul className="citation-reference-urls">

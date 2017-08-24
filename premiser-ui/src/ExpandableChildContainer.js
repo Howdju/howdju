@@ -8,7 +8,7 @@ import {
   ui,
 } from './actions'
 
-class ExpandableTextCard extends Component {
+class ExpandableChildContainer extends Component {
 
   onExpand = () => {
     const {
@@ -27,7 +27,7 @@ class ExpandableTextCard extends Component {
   render() {
     const {
       isExpanded,
-      CardComponent,
+      ExpandableChildComponent,
       // ignore
       widgetId,
       ui,
@@ -35,7 +35,7 @@ class ExpandableTextCard extends Component {
       ...rest
     } = this.props
     return (
-        <CardComponent {...rest}
+        <ExpandableChildComponent {...rest}
                        isExpanded={isExpanded}
                        onExpand={this.onExpand}
                        onCollapse={this.onCollapse}
@@ -43,8 +43,8 @@ class ExpandableTextCard extends Component {
     )
   }
 }
-ExpandableTextCard.propTypes = {
-  CardComponent: PropTypes.oneOfType([
+ExpandableChildContainer.propTypes = {
+  ExpandableChildComponent: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
   ]).isRequired
@@ -65,4 +65,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   ui,
-}))(ExpandableTextCard)
+}))(ExpandableChildContainer)

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
-import ExpandableTextCard from './ExpandableTextCard'
+import ExpandableChildContainer from './ExpandableChildContainer'
 import StatementCard from './StatementCard'
 import {default as t} from './texts'
 import {
@@ -16,11 +16,11 @@ export default class RecentStatementsWidget extends Component {
     const id = this.props.id
     const cardId = `${id}-statement-${statement.id}`
     return (
-      <ExpandableTextCard CardComponent={StatementCard}
-                          widgetId={cardId}
-                          key={cardId}
-                          statement={statement}
-                          className={ListEntitiesWidget.smallCellClasses}
+      <ExpandableChildContainer ExpandableChildComponent={StatementCard}
+                                widgetId={cardId}
+                                key={cardId}
+                                statement={statement}
+                                className={ListEntitiesWidget.smallCellClasses}
       />
     )
   }

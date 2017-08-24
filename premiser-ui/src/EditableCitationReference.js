@@ -9,6 +9,7 @@ import CitationReferenceViewer from "./CitationReferenceViewer";
 import CitationReferenceEditor from "./CitationReferenceEditor";
 import {denormalize} from "normalizr";
 import {citationReferenceSchema} from "./schemas";
+import ExpandableChildContainer from './ExpandableChildContainer'
 
 class EditableCitationReference extends Component {
 
@@ -28,11 +29,13 @@ class EditableCitationReference extends Component {
                                  editorId={editorId}
                                  suggestionsKey={suggestionsKey}
         />
-    const viewer =
-        <CitationReferenceViewer {...rest}
-                                 id={id}
-                                 citationReference={citationReference}
-        />
+    const viewer = (
+          <ExpandableChildContainer ExpandableChildComponent={CitationReferenceViewer}
+                                    widgetId={id}
+                                    key={id}
+                                    citationReference={citationReference}
+          />
+        )
     const progress =
         <CircularProgress id={`${id}-Progress`} />
 

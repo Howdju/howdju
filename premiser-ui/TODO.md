@@ -1,6 +1,6 @@
 # Howdju UI TODO
 
-* Allow expanding citation quote text in justification bases/perspective cards
+* https://howdju.com/ is insecure
 * Redirect to https
 
 ## Bugs
@@ -31,7 +31,7 @@
     * Terms / Privacy
   
   * Tags
-    * paraphrases and quotes are amenable to tagging becasu they have context.  
+    * paraphrases and quotes are amenable to tagging because they have context.  
       statements might be amenable, depending on how specifically they are written.
       Justification text could be too, depending on how specifically written and 
       particularly if the tagging is adjusted for the context: i.e. more likely when
@@ -48,7 +48,9 @@
 * On-page analysis
   * Start with Twitter?
 * Improve the system
-  * Add citations, quotes, tags to main search
+  3) Add citations, quotes, tags to main search
+  * SEO
+    * Server-side rendering
   * Gamification
   
 * Other devs can contribute

@@ -3,11 +3,13 @@ import {isCitationReferenceBased, isStatementCompoundBased} from "./models";
 import StatementCompoundViewer from "./StatementCompoundViewer";
 import CitationReferenceViewer from "./CitationReferenceViewer";
 import {newImpossibleError} from "./customErrors";
+import ExpandableChildContainer from './ExpandableChildContainer'
 
 export default class JustificationBasisViewer extends Component {
 
   render() {
     const {
+      id,
       justification,
       doShowControls,
       doShowBasisJustifications,
@@ -17,16 +19,23 @@ export default class JustificationBasisViewer extends Component {
 
     if (isStatementCompoundBased(justification)) {
       return <StatementCompoundViewer {...rest}
+                                      id={id}
                                       statementCompound={basis}
                                       doShowControls={doShowControls}
                                       doShowStatementAtomJustifications={doShowBasisJustifications}
       />
     }
     if (isCitationReferenceBased(justification)) {
-      return <CitationReferenceViewer {...rest}
-                                      doShowControls={doShowControls}
-                                      citationReference={basis}
-      />
+      return (
+          <ExpandableChildContainer {...rest}
+                                    ExpandableChildComponent={CitationReferenceViewer}
+                                    widgetId={id}
+                                    id={id}
+                                    key={id}
+                                    citationReference={basis}
+                                    doShowControls={doShowControls}
+          />
+      )
     }
     throw newImpossibleError(`Exhausted JustificationBasisTypes: ${justification.basis.type}`)
   }
