@@ -22,11 +22,14 @@ export const app = handleActions({
   [ui.setNavDrawerVisibility]: (state, action) => ({...state, isNavDrawerVisible: action.payload.visible}),
   [ui.addToast]: (state, action) => ({...state, toasts: state.toasts.concat(action.payload)}),
   [ui.dismissToast]: (state, action) => ({...state, toasts: state.toasts.slice(1)}),
-  [ui.windowResize]: state => ({...state, isWindowNarrow: isWindowNarrow()})
+  [ui.windowResize]: state => ({...state, isWindowNarrow: isWindowNarrow()}),
+  [ui.disableMobileSite]: (state) => ({...state, isMobileSiteDisabled: true}),
+  [ui.enableMobileSite]: (state) => ({...state, isMobileSiteDisabled: false}),
 }, {
   isNavDrawerVisible: false,
   toasts: [],
   isWindowNarrow: isWindowNarrow(),
+  isMobileSiteDisabled: false,
 })
 
 export const mainSearch = handleActions({

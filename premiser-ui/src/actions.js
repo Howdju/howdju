@@ -172,6 +172,9 @@ export const ui = {
 
   expand: actionCreator('UI/EXPAND', widgetId => ({widgetId})),
   collapse: actionCreator('UI/COLLAPSE', widgetId => ({widgetId})),
+
+  enableMobileSite: actionCreator('UI/ENABLE_MOBILE_SITE'),
+  disableMobileSite: actionCreator('UI/DISABLE_MOBILE_SITE'),
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))

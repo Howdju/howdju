@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {denormalize} from "normalizr";
 import { Link } from 'react-router-dom'
-import DocumentTitle from "react-document-title";
+import Helmet from "react-helmet"
 import Divider from "react-md/lib/Dividers";
 import FontIcon from "react-md/lib/FontIcons";
 import MenuButton from "react-md/lib/Menus/MenuButton";
@@ -271,74 +271,74 @@ class StatementJustificationsPage extends Component {
     )
 
     return (
-        <DocumentTitle title={`${statement ? statement.text : 'Loading statement'} - Howdju`}>
-          <div className="statement-justifications">
+      <div id="statement-justifications">
+        <Helmet>
+          <title>{statement ? statement.text : 'Loading statement'} — Howdju</title>
+        </Helmet>
 
-            <div className="md-grid md-grid--top">
-              <div className="md-cell md-cell--12">
+        <div className="md-grid md-grid--top">
+          <div className="md-cell md-cell--12">
 
-                <div className="statement">
+            <div className="statement">
 
-                  <GridCard className={cn('statementCard', {
-                              agreement: hasAgreement,
-                              disagreement: hasDisagreement,
-                            })}
-                            cellClass="statementText"
-                            onMouseOver={this.onStatementMouseOver}
-                            onMouseLeave={this.onStatementMouseLeave}
-                            >
-                    {statement && !isEditingStatement && menu}
-                    <EditableStatement id={`editableStatement-${statementId}`}
-                                       textId={`editableStatement-${statementId}-statementEditorText`}
-                                       entityId={statementId}
-                                       editorId={this.statementEditorId}
-                                       suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
-                    />
-                  </GridCard>
+              <GridCard className={cn('statementCard', {
+                          agreement: hasAgreement,
+                          disagreement: hasDisagreement,
+                        })}
+                        cellClass="statementText"
+                        onMouseOver={this.onStatementMouseOver}
+                        onMouseLeave={this.onStatementMouseLeave}
+                        >
+                {statement && !isEditingStatement && menu}
+                <EditableStatement id={`editableStatement-${statementId}`}
+                                   textId={`editableStatement-${statementId}-statementEditorText`}
+                                   entityId={statementId}
+                                   editorId={this.statementEditorId}
+                                   suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
+                />
+              </GridCard>
 
-                </div>
-
-              </div>
-
-              {!hasJustifications && !isFetchingStatement && !didFetchingStatementFail && [
-                <div className="md-cell md-cell--12 cell--centered-contents"
-                     key="justification-statements-page-no-justifications-message"
-                >
-                  <div>No justifications.</div>
-                </div>,
-                <div className="md-cell md-cell--12 cell--centered-contents"
-                     key="justification-statements-page-no-justifications-add-justification-button"
-                >
-                  <Button flat
-                          label={text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
-                          onClick={this.showNewJustificationDialog}
-                  />
-                </div>
-
-              ]}
             </div>
-
-            {isFetchingStatement &&
-                <div className="md-grid md-grid--bottom">
-                  <div className="md-cell md-cell--12 cell--centered-contents">
-                    <CircularProgress key="progress" id="statementJustificationsProgress" />
-                  </div>
-                </div>
-
-            }
-
-            <StatementJustificationTrees justifications={justifications}
-                                         doShowControls={true}
-                                         doShowJustifications={false}
-                                         isUnCondensed={true}
-                                         className="md-grid--bottom"
-            />
-
-            {addNewJustificationDialog}
 
           </div>
 
-        </DocumentTitle>
+          {!hasJustifications && !isFetchingStatement && !didFetchingStatementFail && [
+            <div className="md-cell md-cell--12 cell--centered-contents"
+                 key="justification-statements-page-no-justifications-message"
+            >
+              <div>No justifications.</div>
+            </div>,
+            <div className="md-cell md-cell--12 cell--centered-contents"
+                 key="justification-statements-page-no-justifications-add-justification-button"
+            >
+              <Button flat
+                      label={text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      onClick={this.showNewJustificationDialog}
+              />
+            </div>
+
+          ]}
+        </div>
+
+        {isFetchingStatement &&
+            <div className="md-grid md-grid--bottom">
+              <div className="md-cell md-cell--12 cell--centered-contents">
+                <CircularProgress key="progress" id="statementJustificationsProgress" />
+              </div>
+            </div>
+
+        }
+
+        <StatementJustificationTrees justifications={justifications}
+                                     doShowControls={true}
+                                     doShowJustifications={false}
+                                     isUnCondensed={true}
+                                     className="md-grid--bottom"
+        />
+
+        {addNewJustificationDialog}
+
+      </div>
     )
   }
 }

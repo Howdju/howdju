@@ -1,5 +1,16 @@
 # Howdju UI TODO
 
+* Allow expanding citation quote text in justification bases/perspective cards
+* Redirect to https
+
+## Bugs
+
+* iOS content blocker blocking google fonts
+* Errors from safari iOS aren't going to sentry
+* sentry errors not showing up for howdju.com?
+
+* No login toast in prod
+
 * I can use the system
   * Quote capture mechanics (capture Xpath, surrounding text, etc.)
     * Bookmarklet should import script
@@ -15,10 +26,10 @@
     * Hide disapproved
     * Hide all
   
-  * => favicons are missing from prod?
-  * Whats next / About page
-    * Other stuff
-  * Terms / Privacy
+  1) Whats next / About page
+    * Other stuff: documentation, document bookmarklet
+    * Terms / Privacy
+  
   * Tags
     * paraphrases and quotes are amenable to tagging becasu they have context.  
       statements might be amenable, depending on how specifically they are written.
@@ -26,39 +37,33 @@
       particularly if the tagging is adjusted for the context: i.e. more likely when
       the statement justified implicates a similar context.
 * Others can use the system
-  * Job to score justifications
+  2) Job to score justifications
+  
   * Semantic equivalence
     * Vote on equivalence?
     * Paraphrase as part of quote capture?
   * On-page analysis, so that people use on-page analysis for on-site text justifications?
+    * (Don't want this to grow too quickly before we are collecting the correct data)
+  * TODO version API (add path parameter and add version to routing)
 * On-page analysis
   * Start with Twitter?
 * Improve the system
+  * Add citations, quotes, tags to main search
   * Gamification
-* Stability
+  
+* Other devs can contribute
   * Dev environment
     * Continuous delivery
     * Automated testing (browserstack?)
+  * Unit testing
 
-* Figure out HTTPS for submitting passwords and generally just requesting the site (authToken!), 
-  can use https of API Gateway?
-  * Featured perspectives don't load in safari iOS
-    * Errors from safari iOS aren't going to sentry
-  * sentry errors not showing up for howdju.com?
-
-* No login toast in prod
 * logo and main search alignment is off
-
-* TODO version API (add path parameter and add version to routing)
-
-* Add citations, quotes, tags to main search
 
 * Start with twitter login/integration
   * Use twitter identity model: verification but not necessarily tied to real identity
   * Don't kill myself about getting highlighting arbitrary text on a page...?
 
 * fill out carl.gieringer normal account
-
 
 ## Stuff not necessary before switch
 

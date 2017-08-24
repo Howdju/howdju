@@ -1,4 +1,7 @@
+import get from 'lodash/get'
 import isFunction from 'lodash/isFunction'
+import isUndefined from 'lodash/isUndefined'
+
 import config from './config'
 import * as sentry from './sentry'
 
@@ -52,8 +55,24 @@ export function assert(test, message) {
   }
 }
 
+export const isDefined = val => !isUndefined(val)
+
 export const isWindowNarrow = () => {
   return window.innerWidth < config.ui.narrowBreakpoint
+}
+
+/** Is it something handheldy that rotates? */
+export const isDevice = () => isDefined(window.orientation)
+
+export const isScreenPortrait = () => {
+  const orientationType = get(window, ['screen', 'orientation', 'type'])
+  if (orientationType) {
+    return /portrait/.test(orientationType)
+  } else if (isDefined(window.orientation)) {
+    return window.orientation === 0 || window.orientation === 180
+  } else {
+    return window.innerWidth > window.innerHeight
+  }
 }
 
 const logFunctions = {

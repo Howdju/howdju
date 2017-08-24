@@ -1,7 +1,7 @@
 import React, {Component} from "react"
 import { connect } from 'react-redux'
 import {goBack} from "react-router-redux";
-import DocumentTitle from 'react-document-title'
+import Helmet from 'react-helmet'
 import Button from 'react-md/lib/Buttons/Button'
 import Card from 'react-md/lib/Cards'
 import CardTitle from 'react-md/lib/Cards/CardTitle';
@@ -14,7 +14,6 @@ import cn from 'classnames'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
 import queryString from 'query-string'
-
 
 import {
   editors,
@@ -199,7 +198,10 @@ class EditStatementJustificationPage extends Component {
     const newJustificationErrors = justificationErrorsToNewJustificationErrors(justification, justificationErrors)
 
     return (
-        <DocumentTitle title={`Howdju - ${title}`}>
+        <div id="edit-statement-justification-page">
+          <Helmet>
+            <title>{title} — Howdju</title>
+          </Helmet>
           <form onSubmit={this.onSubmit}>
             <FocusContainer initialFocus="#statementEditorText" containFocus={false} focusOnMount={true}>
               <div className="md-grid">
@@ -272,7 +274,7 @@ class EditStatementJustificationPage extends Component {
               </div>
             </FocusContainer>
           </form>
-        </DocumentTitle>
+        </div>
     )
   }
 }

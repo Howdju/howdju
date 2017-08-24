@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {goBack} from "react-router-redux";
-import DocumentTitle from 'react-document-title'
+import Helmet from 'react-helmet'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
 import Card from 'react-md/lib/Cards'
@@ -26,7 +26,6 @@ import {makeNewCredentials} from "./models";
 import {toErrorText} from "./modelErrorMessages";
 import {
   default as t,
-  AN_UNEXPECTED_ERROR_OCCURRED
 } from './texts'
 import analytics from "./analytics";
 
@@ -100,95 +99,96 @@ class LoginPage extends Component {
     )
 
     return (
-        <DocumentTitle title={'Login - Howdju'}>
-          <div id="loginPage">
-            <div className="md-grid">
-              <div className="md-cell md-cell--12">
+      <div id="login-page">
+        <Helmet>
+          <title>Login — Howdju</title>
+        </Helmet>
+        <div className="md-grid">
+          <div className="md-cell md-cell--12">
 
-                <Card>
-                  <CardTitle title="Login"
-                             subtitle={subtitle}
-                  />
-                  {modelErrorMessages}
-                  <form onSubmit={this.onSubmit}>
-                    <FocusContainer focusOnMount containFocus={false}>
+            <Card>
+              <CardTitle title="Login"
+                         subtitle={subtitle}
+              />
+              {modelErrorMessages}
+              <form onSubmit={this.onSubmit}>
+                <FocusContainer focusOnMount containFocus={false}>
 
-                      <CardText>
-                          <TextField
-                              {...emailInputProps}
-                              id="email"
-                              type="email"
-                              name="email"
-                              label="Email"
-                              value={email}
-                              required
-                              onChange={this.onChange}
-                              disabled={isLoggingIn}
-                          />
-                          <TextField
-                              {...passwordInputProps}
-                              id="password"
-                              type="password"
-                              name="password"
-                              label="Password"
-                              value={password}
-                              required
-                              onChange={this.onChange}
-                              disabled={isLoggingIn}
-                          />
-                      </CardText>
-                      <CardActions>
-                        {isLoggingIn && <CircularProgress key="progress" id="progress" />}
-                        <Button flat
-                                label="Cancel"
-                                disabled={isLoggingIn}
-                                onClick={this.onCancel}
-                        />
-                        <Button raised
-                                primary
-                                type="submit"
-                                label="Login"
-                                disabled={isLoggingIn}
-                        />
-                      </CardActions>
-
-                    </FocusContainer>
-                  </form>
-                </Card>
-
-              </div>
-              <div className="md-cell md-cell--12">
-
-                <Card>
-                  <form action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
-                        method="post"
-                        target="_blank"
-                        rel="noopener"
-                        onSubmit={this.onSubscribeSubmit}
-                  >
-                    <CardText>
-                      Howdju 2.0 is currently in private gamma.  Enter your email to be notified when signups are available:
-                    </CardText>
-                    <CardText>
-                      <TextField id="mce-email"
-                                 type="email"
-                                 name="EMAIL"
-                                 label="Email"
-                                 required
+                  <CardText>
+                      <TextField
+                          {...emailInputProps}
+                          id="email"
+                          type="email"
+                          name="email"
+                          label="Email"
+                          value={email}
+                          required
+                          onChange={this.onChange}
+                          disabled={isLoggingIn}
                       />
-                      <input type="hidden" name="b_ccf334287da1fbf7af0904629_f08c3a775d" tabIndex="-1" />
-                    </CardText>
-                    <CardActions>
-                      <Button raised primary type="submit" label="Subscribe" name="subscribe" />
-                    </CardActions>
-                  </form>
-                </Card>
+                      <TextField
+                          {...passwordInputProps}
+                          id="password"
+                          type="password"
+                          name="password"
+                          label="Password"
+                          value={password}
+                          required
+                          onChange={this.onChange}
+                          disabled={isLoggingIn}
+                      />
+                  </CardText>
+                  <CardActions>
+                    {isLoggingIn && <CircularProgress key="progress" id="progress" />}
+                    <Button flat
+                            label="Cancel"
+                            disabled={isLoggingIn}
+                            onClick={this.onCancel}
+                    />
+                    <Button raised
+                            primary
+                            type="submit"
+                            label="Login"
+                            disabled={isLoggingIn}
+                    />
+                  </CardActions>
 
-              </div>
-            </div>
+                </FocusContainer>
+              </form>
+            </Card>
 
           </div>
-        </DocumentTitle>
+          <div className="md-cell md-cell--12">
+
+            <Card>
+              <form action="//howdju.us16.list-manage.com/subscribe/post?u=ccf334287da1fbf7af0904629&amp;id=f08c3a775d"
+                    method="post"
+                    target="_blank"
+                    rel="noopener"
+                    onSubmit={this.onSubscribeSubmit}
+              >
+                <CardText>
+                  Howdju 2.0 is currently in private gamma.  Enter your email to be notified when signups are available:
+                </CardText>
+                <CardText>
+                  <TextField id="mce-email"
+                             type="email"
+                             name="EMAIL"
+                             label="Email"
+                             required
+                  />
+                  <input type="hidden" name="b_ccf334287da1fbf7af0904629_f08c3a775d" tabIndex="-1" />
+                </CardText>
+                <CardActions>
+                  <Button raised primary type="submit" label="Subscribe" name="subscribe" />
+                </CardActions>
+              </form>
+            </Card>
+
+          </div>
+        </div>
+
+      </div>
     )
   }
 }

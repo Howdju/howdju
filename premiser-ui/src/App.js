@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Route, Switch } from 'react-router'
 import { Link, Redirect } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
-import DocumentTitle from 'react-document-title'
+import Helmet from 'react-helmet'
 import Button from 'react-md/lib/Buttons/Button'
 import Drawer from 'react-md/lib/Drawers/Drawer';
 import ListItem from 'react-md/lib/Lists/ListItem'
@@ -14,6 +14,8 @@ import Tab from 'react-md/lib/Tabs/Tab'
 import { connect } from 'react-redux'
 import cn from 'classnames'
 import get from 'lodash/get'
+import isFinite from 'lodash/isFinite'
+import map from 'lodash/map'
 import throttle from 'lodash/throttle'
 
 import Header from './Header'
@@ -49,7 +51,11 @@ import './fonts.js'
 import './App.scss'
 import {selectIsWindowNarrow, selectRouterLocation} from "./selectors";
 import * as smallchat from './smallchat'
-import {isScrollPastBottom, isScrollPastTop} from "./util";
+import {
+  isScrollPastBottom,
+  isScrollPastTop,
+  isDevice,
+} from "./util";
 import {getOrCreateSessionStorageId, getOrCreateSessionCookieId} from "./identifiers";
 
 const tabIndexByPathname = {
@@ -205,8 +211,16 @@ class App extends Component {
     this.setState({activeTabIndex: index})
   }
 
-  onClick = (event) => {
+  onClickApp = (event) => {
     this.props.ui.unhandledAppClick()
+  }
+
+  disableMobileSite = () => {
+    this.props.ui.disableMobileSite()
+  }
+
+  enableMobileSite = () => {
+    this.props.ui.enableMobileSite()
   }
 
   render () {
@@ -215,6 +229,7 @@ class App extends Component {
       email,
       isNavDrawerVisible,
       toasts,
+      isMobileSiteDisabled,
     } = this.props
     const {
       activeTabIndex
@@ -228,7 +243,7 @@ class App extends Component {
                 to="/"
       />,
       <ListItem key="createStatement"
-                primaryText="Make a Statement"
+                primaryText="Make a statement"
                 leftIcon={<FontIcon>add</FontIcon>}
                 component={Link}
                 to="/create-statement"
@@ -240,6 +255,25 @@ class App extends Component {
                 to="/tools"
       />,
     ]
+    if (isDevice()) {
+      if (isMobileSiteDisabled) {
+        navItems.push(
+            <ListItem key="mobile-site"
+                      primaryText="Mobile site"
+                      leftIcon={<FontIcon>smartphone</FontIcon>}
+                      onClick={this.enableMobileSite}
+            />
+        )
+      } else {
+        navItems.push(
+            <ListItem key="desktop-site"
+                      primaryText="Desktop site"
+                      leftIcon={<FontIcon>desktop_windows</FontIcon>}
+                      onClick={this.disableMobileSite}
+            />
+        )
+      }
+    }
     if (authToken) {
       navItems.push(
           <ListItem key="logout"
@@ -290,6 +324,29 @@ class App extends Component {
           <Redirect to={{pathname: '/featured-perspectives'}}/>
     }
 
+    const tabInfos = [
+      {
+        path: paths.featuredPerspectives(),
+        text: t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME),
+        id: "featured-perspectives-tab"
+      },
+      {
+        path: paths.recentActivity(),
+        text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),
+        id: "recent-activity-tab"
+      },
+      {
+        path: paths.whatsNext(),
+        text: t(MAIN_TABS_WHATS_NEXT_TAB_NAME),
+        id: "whats-next-tab"
+      },
+      {
+        path: paths.about(),
+        text: t(MAIN_TABS_ABOUT_TAB_NAME),
+        id: "about-tab"
+      },
+    ]
+
     const pageTabs = (
         <Tabs
             tabId="mainTab"
@@ -299,88 +356,80 @@ class App extends Component {
             onTabChange={this.onTabChange}
             style={{position: 'absolute', left: 0, bottom: 0, right: 0}}
         >
-          <Tab label={
-                 <Link to={paths.featuredPerspectives()}>
-                   {t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME)}
-                 </Link>
-               }
-               id="featured-perspectives-tab"
-          />
-          <Tab label={
-                 <Link to={paths.recentActivity()}>
-                   {t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME)}
-                 </Link>
-               }
-               id="recent-activity-tab"
-          />
-          <Tab label={
-                 <Link to={paths.whatsNext()}>
-                   {t(MAIN_TABS_WHATS_NEXT_TAB_NAME)}
-                 </Link>
-               }
-               id="whats-next-tab"
-          />
-          <Tab label={
-                 <Link to={paths.about()}>
-                   {t(MAIN_TABS_ABOUT_TAB_NAME)}
-                 </Link>
-               }
-               id="about-tab"
-          />
+          {map(tabInfos, ti => (
+              <Tab label={
+                     <Link to={ti.path}>
+                       {ti.text}
+                     </Link>
+                   }
+                   id={ti.id}
+                   key={ti.id}
+              />
+          ))}
         </Tabs>
     )
 
+    const title = isFinite(activeTabIndex) && activeTabIndex >= 0 ?
+        `${tabInfos[activeTabIndex].text} — Howdju` :
+        'Howdju'
+
+    const viewportContent = isMobileSiteDisabled ?
+        'width=1024, initial-scale=1' :
+        'width=device-width, initial-scale=1, user-scalable=no'
+
     return (
-      <DocumentTitle title="Howdju">
-        <ConnectedRouter history={history}>
-          <div id="app"
-               onClick={this.onClick}
-          >
+      <ConnectedRouter history={history}>
+        <div id="app"
+             onClick={this.onClickApp}
+        >
+          <Helmet>
+            <title>{title}</title>
+            <meta name="viewport" content={viewportContent} />
+          </Helmet>
 
-            <Header tabs={pageTabs} />
+          <Header tabs={pageTabs} />
 
-            {navDrawer}
+          {navDrawer}
 
-            <div id="page" className={cn({
-              "md-toolbar-relative": !pageTabs,
-              "md-toolbar-relative--prominent": !!pageTabs,
-            })}>
+          <div id="page" className={cn({
+            "md-toolbar-relative": !pageTabs,
+            "md-toolbar-relative--prominent": !!pageTabs,
+          })}>
 
-              <Switch>
-                <Route exact path={paths.home()} render={renderHomePath}/>
-                <Route exact path={paths.login()} component={LoginPage} />
+            <Switch>
+              <Route exact path={paths.home()} render={renderHomePath}/>
+              <Route exact path={paths.login()} component={LoginPage} />
 
-                <Route exact path={paths.featuredPerspectives()} component={FeaturedPerspectivesPage} />
-                <Route exact path={paths.recentActivity()} component={RecentActivityPage} />
-                <Route exact path={paths.whatsNext()} component={WhatsNextPage} />
-                <Route exact path={paths.about()} component={AboutPage} />
+              <Route exact path={paths.featuredPerspectives()} component={FeaturedPerspectivesPage} />
+              <Route exact path={paths.recentActivity()} component={RecentActivityPage} />
+              <Route exact path={paths.whatsNext()} component={WhatsNextPage} />
+              <Route exact path={paths.about()} component={AboutPage} />
 
-                <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
-                <Route exact path="/search-justifications" component={JustificationsSearchPage} />
+              <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
+              <Route exact path="/search-justifications" component={JustificationsSearchPage} />
 
-                <Route exact path="/create-statement" render={props => (
-                    <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
-                )} />
-                <Route exact path={createJustificationPath} render={props => (
-                    <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
-                )} />
-                <Route exact path="/submit" render={props => (
-                    <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
-                )} />
+              <Route exact path="/create-statement" render={props => (
+                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
+              )} />
+              <Route exact path={createJustificationPath} render={props => (
+                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
+              )} />
+              <Route exact path="/submit" render={props => (
+                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
+              )} />
 
-                <Route exact path="/tools" component={ToolsPage} />
-                <Route exact path="/icons" component={IconPage} />
+              <Route exact path="/tools" component={ToolsPage} />
+              <Route exact path="/icons" component={IconPage} />
 
-                <Route component={NotFoundPage} />
-              </Switch>
-
-            </div>
-
-            <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
+              <Route component={NotFoundPage} />
+            </Switch>
 
           </div>
-        </ConnectedRouter>
-      </DocumentTitle>
+
+          <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
+
+        </div>
+      </ConnectedRouter>
     )
   }
 }
@@ -398,6 +447,8 @@ const mapStateToProps = state => {
   const isNavDrawerVisible = get(ui, ['app', 'isNavDrawerVisible'])
   const toasts = get(ui, ['app', 'toasts'])
 
+  const isMobileSiteDisabled = get(ui, ['app', 'isMobileSiteDisabled'])
+
   const location = selectRouterLocation(state)
   const pathname = get(location, 'pathname')
   const queryParamSearchText = pathname === mainSearchPathName ?
@@ -413,6 +464,7 @@ const mapStateToProps = state => {
     toasts,
     queryParamSearchText,
     isWindowNarrow,
+    isMobileSiteDisabled,
   }
 }
 
