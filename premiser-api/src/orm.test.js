@@ -9,7 +9,7 @@ const _ = require('lodash')
 describe('orm', () => {
 
   test('toVote', () => {
-    const voteId = 100,
+    const voteId = '100',
         polarity = 'POSITIVE',
         targetType = 'STATEMENT',
         targetId = 200

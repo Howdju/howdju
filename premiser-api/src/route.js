@@ -60,9 +60,9 @@ const noContent = args => {
     httpStatusCode: httpStatusCodes.NO_CONTENT
   })
 }
-const notFound = ({callback, body={errorCode: apiErrorCodes.NOT_FOUND} }) => callback({
+const notFound = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.NOT_FOUND,
-  body
+  body,
 })
 const unauthenticated = ({callback, body={errorCode: apiErrorCodes.UNAUTHENTICATED} }) => callback({
   httpStatusCode: httpStatusCodes.UNAUTHORIZED,
@@ -437,7 +437,7 @@ const routeEvent = ({callback, request}) =>
       .catch(EntityNotFoundError, e => notFound({
         callback,
         body: {
-          errorCode: apiErrorCodes.NOT_FOUND,
+          errorCode: apiErrorCodes.ENTITY_NOT_FOUND,
           entityType: e.entityType,
           identifier: e.identifier
         }
@@ -445,7 +445,7 @@ const routeEvent = ({callback, request}) =>
       .catch(NoMatchingRouteError, e => notFound({
         callback,
         body: {
-          errorCode: apiErrorCodes.NOT_FOUND,
+          errorCode: apiErrorCodes.ROUTE_NOT_FOUND,
           reason: 'No matching route'
         }
       }))

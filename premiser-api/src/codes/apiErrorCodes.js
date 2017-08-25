@@ -24,7 +24,13 @@ module.exports = {
    */
   USER_ACTIONS_CONFLICT: 'USER_ACTIONS_CONFLICT',
 
-  NOT_FOUND: 'NOT_FOUND',
+  /** An entity whose existence was entailed by the request was not found.  The API may return information
+   * about the type and identifier of the missing entity, but may not for privacy or security reasons
+   */
+  ENTITY_NOT_FOUND: 'ENTITY_NOT_FOUND',
+
+  /** The requested route was not found */
+  ROUTE_NOT_FOUND: 'ROUTE_NOT_FOUND',
 
   UNEXPECTED_ERROR: 'UNEXPECTED_ERROR',
 }
