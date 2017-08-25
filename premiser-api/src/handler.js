@@ -98,27 +98,45 @@ const parseBody = event => {
   return JSON.parse(event.body)
 }
 
+const configureContext = (context) => {
+  // Otherwise the pg.Pool timeout keeps us alive
+  context.callbackWaitsForEmptyEventLoop = false
+}
+
+const makeResponder = (event, callback) => ({httpStatusCode, headers, body}) => {
+  const origin = getHeaderValue(event.headers, headerKeys.ORIGIN)
+  const response = makeResponse({httpStatusCode, headers, body, origin})
+  return callback(null, response)
+}
+
+const configureLogger = (clientRequestId, serverRequestId) => {
+  rewriterContext.meta = {
+    clientRequestId,
+    serverRequestId
+  }
+}
+
+const requestIds = (event) => {
+  const clientRequestId = getHeaderValue(event.headers, customHeaderKeys.REQUEST_ID)
+  const serverRequestId = uuid.v4()
+  return {
+    clientRequestId,
+    serverRequestId,
+  }
+}
+
 exports.handler = (event, context, callback) => {
   try {
-    // Otherwise the pg.Pool timeout keeps us alive
-    context.callbackWaitsForEmptyEventLoop = false
+    logger.silly({event, context})
 
-    function respond({httpStatusCode, headers, body}) {
-      const origin = getHeaderValue(event.headers, headerKeys.ORIGIN)
-      const response = makeResponse({httpStatusCode, headers, body, origin})
-      return callback(null, response)
-    }
+    configureContext(context)
+    const {
+      clientRequestId,
+      serverRequestId
+    } = requestIds(event)
+    configureLogger(clientRequestId, serverRequestId)
 
-    const clientRequestId = getHeaderValue(event.headers, customHeaderKeys.REQUEST_ID)
-    const serverRequestId = uuid.v4()
-    if (clientRequestId) {
-      rewriterContext.meta = {
-        clientRequestId,
-        serverRequestId
-      }
-    } else if (has(rewriterContext, 'meta')) {
-      delete rewriterContext.meta
-    }
+    const respond = makeResponder(event, callback)
 
     routeEvent({
       callback: respond,
