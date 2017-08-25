@@ -1,5 +1,20 @@
 # Howdju UI TODO
 
+* Using a statement doesnt' load on the create justification page
+  * 404 retrieving statement
+  * Creating an opposing statement-based justification after entering the statement manually didn't create it!
+
+* Prod featured perspectives (DC building height, Hillary email)
+* User signup
+* Justification job scoring
+* Tagging for me to keep track of what I am working on
+* Metrics: new users, daily active users (visit, vote, create)
+  
+1) Whats next / About page
+  * Other stuff: documentation, document bookmarklet
+  * Terms / Privacy
+2) Add citations, quotes, tags to main search (requires result type)
+
 * https://howdju.com/ is insecure
 * Redirect to https
 
@@ -12,12 +27,18 @@
 * No login toast in prod
 
 * I can use the system
-  * Quote capture mechanics (capture Xpath, surrounding text, etc.)
+  * Quote capture mechanics (capture Xpath, surrounding text, make it source-specific: title instead of description; capture vs. request later for author, date)
     * Bookmarklet should import script
   * Two bookmarklet capabilities:
     - Capture quote justification (do I ask them to paraphrase the quote?)
     - target quote paraphrase
-  * Collect source author, date
+  * Collect source author, date, publication, article title
+* I can show off the system
+  * perspectives should include creator and (dis)approval
+  * Can explore topics
+    * tags
+  * Allows someone to quickly understand a complicated issue, such as Hillary's emails
+    * in-context highlighting of text/text-based justifications
 * I can share the system
   * Collapse counter justifications
     * Show all
@@ -25,10 +46,18 @@
     * Show recommended (machine learning score)
     * Hide disapproved
     * Hide all
-  
-  1) Whats next / About page
-    * Other stuff: documentation, document bookmarklet
-    * Terms / Privacy
+  * Sort justifications/counters by
+    * rank
+    * created
+    * updated
+    * checkbox: show approved first
+    * checkbox: show disapproved last
+  * filter justifications/counters by
+    * mine
+    * people I follow
+    * specific user
+    * all
+    * contains text (input text)
   
   * Tags
     * paraphrases and quotes are amenable to tagging because they have context.  
@@ -37,8 +66,6 @@
       particularly if the tagging is adjusted for the context: i.e. more likely when
       the statement justified implicates a similar context.
 * Others can use the system
-  2) Job to score justifications
-  
   * Semantic equivalence
     * Vote on equivalence?
     * Paraphrase as part of quote capture?
@@ -48,7 +75,6 @@
 * On-page analysis
   * Start with Twitter?
 * Improve the system
-  3) Add citations, quotes, tags to main search
   * SEO
     * Server-side rendering
   * Gamification
@@ -81,7 +107,7 @@
     * Dreamhost wouldn't let me enter a CNAME for howdju.com, so how to point bare domain to other domain?
     * Maybe you must have an A record, and then must have some server that responds with logic
 
-* Add prompt for opposing/supporting justification
+* Add prompt for adding the other when only one of opposing/supporting justifications is present
 * Featured Perspectives are scrunched on mobile
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
 
@@ -151,7 +177,7 @@
   * Then can remove sortBy from recent widgets reducer
 
 * Compound justifications must be snippet justifications.  Fee-form text entered by user (limit length or number of sentences?)
-  and then marked up just like it woudl be off-site
+  and then marked up just like it would be off-site
 * Tagging
   
 * Add statement.justifications generally, like I did with perspective.statement.justifications?
@@ -160,7 +186,7 @@
   * Recent statements
   * Tagging
   * in-context creation
-* Add "modal" votes: I think it's true/false but I don't konw the reason and "I don't know"
+* Add "modal" votes?: I think it's true/false but I don't konw the reason and "I don't know"
 * Can users only vote on citations?  And not on statements?  Or at least: analytics about statements you support for which
   you don't yet support any citations
 * Checkbox next to everything you might include in a perspective so that you can collect them and then create one.
@@ -168,13 +194,6 @@
 
 ### Social login
 * https://developers.facebook.com/docs/facebook-login/web
-
-### Feedback
-* Error reporting
-  * feedback script
-  * unhandled error reporting
-  * ensure that log level in prod is at least debug
-  * request ID and cookie ID
   
 * Autosubmit cited pages to archive.org
 
@@ -198,7 +217,7 @@
 
 ### Home page ideas
 * Priority
-  * recently created statements (recently active statements?),
+  * Recently active statements
   * Featured perspectives
   * Snapmunk has a nice three-column design
   * all statement tags cloud
@@ -353,6 +372,7 @@
 * Add progress and disabled to vote buttons
   * Don't slide/hide the vote actions until the vote has successfully responded
 * EditStatementCitationPage: can I move focus to basis component when first showing them?
+* Escape key while focusing (i.e. arrow-keying onto it) autocomplete list should close it 
 
 ### Refactoring/stability
 * When an error occurs in a saga that transitioned the page (e.g. remove the default value of statementCompounds in

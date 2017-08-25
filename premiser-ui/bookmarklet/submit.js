@@ -14,7 +14,7 @@
     }
   }
   const queryParamsString = queryParams.join('&')
-  const schema = 'http'
+  const schema = 'https'
   const host = 'www.howdju.com'
   const port = 80
   let portString = ''

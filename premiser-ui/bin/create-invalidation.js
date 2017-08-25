@@ -16,6 +16,17 @@ if (!distributionId) {
 }
 const items = [
   '/index.html',
+  '/error.html',
+  '/android-chrome-192x192.png',
+  '/android-chrome-256x256.png',
+  '/apple-touch-icon.png',
+  '/browserconfig.xml',
+  '/favicon.ico',
+  '/favicon-16x16.png',
+  '/favicon-32x32.png',
+  '/manifest.json',
+  '/mstile-150x150.png',
+  '/safari-pinned-tab.svg',
 ]
 const invalidate = () => {
   const reference = uuid.v4()

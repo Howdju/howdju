@@ -426,16 +426,64 @@ const routeEvent = ({callback, request}) =>
         logger.silly(e)
         throw e
       })
-      .catch(EntityValidationError, e => badRequest({callback, body: {errorCode: apiErrorCodes.VALIDATION_ERROR, errors: e.errors}}))
+      .catch(EntityValidationError, e => badRequest({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.VALIDATION_ERROR,
+          errors: e.errors
+        }
+      }))
       .catch(RequestValidationError, e => badRequest({callback, body: {message: e.message}}))
-      .catch(EntityNotFoundError, e => notFound({callback}))
-      .catch(NoMatchingRouteError, e => notFound({callback}))
+      .catch(EntityNotFoundError, e => notFound({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.NOT_FOUND,
+          entityType: e.entityType,
+          identifier: e.identifier
+        }
+      }))
+      .catch(NoMatchingRouteError, e => notFound({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.NOT_FOUND,
+          reason: 'No matching route'
+        }
+      }))
       .catch(AuthenticationError, e => unauthenticated({callback}))
-      .catch(InvalidLoginError, e => badRequest({callback, body: {errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS, errors: e.errors}}))
-      .catch(AuthorizationError, e => unauthorized({callback, body: {errorCode: apiErrorCodes.AUTHORIZATION_ERROR, errors: e.errors}}))
-      .catch(UserIsInactiveError, e => error({callback, body: {errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR}}))
-      .catch(EntityConflictError, e => error({callback, body: {errorCode: apiErrorCodes.ENTITY_CONFLICT, errors: e.errors}}))
-      .catch(UserActionsConflictError, e => error({callback, body: {errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT, errors: e.errors}}))
+      .catch(InvalidLoginError, e => badRequest({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS,
+          errors: e.errors
+        }
+      }))
+      .catch(AuthorizationError, e => unauthorized({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.AUTHORIZATION_ERROR,
+          errors: e.errors
+        }
+      }))
+      .catch(UserIsInactiveError, e => error({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR
+        }
+      }))
+      .catch(EntityConflictError, e => error({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.ENTITY_CONFLICT,
+          errors: e.errors
+        }
+      }))
+      .catch(UserActionsConflictError, e => error({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT,
+          errors: e.errors
+        }
+      }))
       .catch(e => {
         logger.error("Unexpected error")
         logger.error(e)

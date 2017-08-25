@@ -9,7 +9,10 @@ const config = {
   humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
-  reduxPersistWhitelist: ['auth'],
+  reduxPersistWhitelist: [
+      'auth',
+      'ui.isMobileSiteDisabled',
+  ],
   ui: {
     narrowBreakpoint: 840,
     flipMoveDuration: 750,
