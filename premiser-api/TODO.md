@@ -10,7 +10,8 @@
 * scheduled jobs
   * calculate scores
   * sweep authentication tokens
-  * aggregate old votes (delete intervening deletions)
+  * collapse old votes (delete intervening deletions)
+  * re-calculate normal text
   * enforce constraints, 
     * like unique IDs, 
     * unique statement text, 
