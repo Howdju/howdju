@@ -95,7 +95,16 @@ const extractAuthToken = event => {
 const parseBody = event => {
   // TODO throw error if cant' support content-type.  handle application/form?
   // example: 'content-type':'application/json;charset=UTF-8',
-  return JSON.parse(event.body)
+  const body = event.body
+  if (!body) {
+    return null
+  }
+  try {
+    return JSON.parse(body)
+  } catch (err) {
+    logger.error(`Error parsing JSON body (${body})`, err)
+    return null
+  }
 }
 
 const configureContext = (context) => {
@@ -130,6 +139,7 @@ exports.handler = (event, context, callback) => {
     logger.silly({event, context})
     logger.silly('Event:', JSON.stringify(event, null, 2))
     logger.silly('Context:', JSON.stringify(context, null, 2))
+    console.log(JSON.stringify(event, null, 2))
 
     configureContext(context)
     const {
@@ -162,8 +172,8 @@ exports.handler = (event, context, callback) => {
     })
   } catch(error) {
     logger.error(error)
-    logger.error('Event:', JSON.stringify(event, null, 2))
-    logger.error('Context:', JSON.stringify(context, null, 2))
+    logger.error('Event:', JSON.stringify(event, null, 4))
+    logger.error('Context:', JSON.stringify(context, null, 4))
     callback(error)
   }
 }
