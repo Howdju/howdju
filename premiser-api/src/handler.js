@@ -127,6 +127,7 @@ const requestIds = (event) => {
 
 exports.handler = (event, context, callback) => {
   try {
+    logger.silly({event, context})
     logger.silly('Event:', JSON.stringify(event, null, 2))
     logger.silly('Context:', JSON.stringify(context, null, 2))
 
