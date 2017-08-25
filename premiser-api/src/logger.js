@@ -12,8 +12,10 @@ const contextRewriter = (level, msg, meta) => {
   return meta
 }
 
+const logLevel = process.env.LOG_LEVEL || process.env.DEFAULT_LOG_LEVEL || 'warn'
+console.log(`Logging at level: ${logLevel}`)
 const logger = new winston.Logger({
-  level: process.env.LOG_LEVEL || 'warn',
+  level: logLevel,
   transports: [
     new winston.transports.Console(),
   ],
