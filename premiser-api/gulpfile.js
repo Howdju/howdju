@@ -1,12 +1,14 @@
+const fs = require('fs')
+const os = require('os')
+
+const AWS = require('aws-sdk')
+const del = require('del')
 const gulp = require('gulp')
 const gutil = require('gulp-util')
-const del = require('del')
 const install = require('gulp-install')
 const rename = require('gulp-rename')
-const zip = require('gulp-zip')
-const AWS = require('aws-sdk')
-const fs = require('fs')
 const runSequence = require('run-sequence')
+const zip = require('gulp-zip')
 
 gulp.task('clean', next => del('./dist', next))
 
@@ -63,6 +65,12 @@ gulp.task('upload', () => {
   })
 })
 
+gulp.task('ensureLinux', () => {
+  if (os.platform() !== 'linux') {
+    throw new Error("Must deploy on a Linux box because argon2 has native dependencies that are built during build")
+  }
+})
+
 gulp.task('build', next => runSequence(
     ['clean'],
     ['js', 'npm', 'env'],
@@ -71,6 +79,7 @@ gulp.task('build', next => runSequence(
 ))
 
 gulp.task('deploy', next => runSequence(
+    ['ensureLinux'],
     ['build'],
     ['upload'],
     next
