@@ -5,6 +5,7 @@ const AWS = require('aws-sdk')
 
 AWS.config.region = 'us-east-1'
 AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'});
+// See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
 const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
 const FunctionName = 'premiserApi'
 
@@ -14,7 +15,7 @@ const getGitDescription = () => childProcess
     .toString()
     .trim()
 
-module.exports.updateFunctionCode = (fileName, log) => {
+module.exports.updateFunctionCode = (fileName) => {
   fs.readFile(fileName, (err, data) => {
     if (err) throw err
 
@@ -25,24 +26,24 @@ module.exports.updateFunctionCode = (fileName, log) => {
     }
     lambda.updateFunctionCode(params, (err, data) => {
       if (err) throw err
-      log(`Uploaded ${FunctionName}`)
+      console.log(`Uploaded ${FunctionName}`)
     })
   })
 }
 
-module.exports.publishVersion = (log) => {
+module.exports.publishVersion = () => {
   const params = {
     FunctionName,
     Description: getGitDescription(),
   };
   lambda.publishVersion(params, function(err, data) {
     if (err) throw err
-    const version = data[Version]
-    log(`Published lambda ${FunctionName} as version ${version}`)
+    const version = data.Version
+    console.log(`Published lambda ${FunctionName} as version ${version}`)
   });
 }
 
-module.exports.updateAlias = (log) => {
+module.exports.updateAlias = () => {
   const Name = process.argv[2]
   const FunctionVersion = process.argv[3]
   const params = {
@@ -52,6 +53,6 @@ module.exports.updateAlias = (log) => {
   };
   lambda.updateAlias(params, function(err, data) {
     if (err) throw err
-    log(`Updated alias "${Name} to version ${FunctionVersion}`)
+    console.log(`Updated alias "${Name}" to version ${FunctionVersion}`)
   });
 }

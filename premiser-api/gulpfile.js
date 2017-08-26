@@ -47,35 +47,9 @@ gulp.task('zip', () =>
       .pipe(zip('premiser-api.zip'))
       .pipe(gulp.dest('./dist/')))
 
-// See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
-gulp.task('updateFunctionCode', () => {
-  updateFunctionCode('./dist/premiser-api.zip', gutil.log)
-})
-
-gulp.task('ensureLinux', () => {
-  if (os.platform() !== 'linux') {
-    throw new Error("Must deploy on a Linux box because argon2 has native dependencies that are built during build")
-  }
-})
-
-gulp.task('build', next => runSequence(
+gulp.task('build', (next) => runSequence(
     ['clean'],
     ['js', 'npm', 'env'],
     ['zip'],
     next
 ))
-
-gulp.task('updateLambda', next => runSequence(
-    ['ensureLinux'],
-    ['build'],
-    ['updateFunctionCode'],
-    next
-))
-
-gulp.task('publishVersion', () => {
-  publishVersion(gutil.log)
-})
-
-gulp.task('updateAlias', () => {
-  updateAlias(gutil.log)
-})
