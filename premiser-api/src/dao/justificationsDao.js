@@ -31,7 +31,7 @@ const {
   toCitationReference,
 } = require('../orm')
 const {query} = require('../db')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 const {groupRootJustifications} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 

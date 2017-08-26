@@ -1,7 +1,6 @@
 const fs = require('fs')
 const os = require('os')
 
-const AWS = require('aws-sdk')
 const del = require('del')
 const gulp = require('gulp')
 const gutil = require('gulp-util')
@@ -9,6 +8,12 @@ const install = require('gulp-install')
 const rename = require('gulp-rename')
 const runSequence = require('run-sequence')
 const zip = require('gulp-zip')
+
+const {
+  updateFunctionCode,
+  publishLambda,
+  updateAlias,
+} = require('./lib/lambda')
 
 gulp.task('clean', next => del('./dist', next))
 
@@ -43,26 +48,8 @@ gulp.task('zip', () =>
       .pipe(gulp.dest('./dist/')))
 
 // See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
-gulp.task('upload', () => {
-
-  AWS.config.region = 'us-east-1'
-  AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'});
-  const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
-  const FunctionName = 'premiserApi'
-
-  fs.readFile('./dist/premiser-api.zip', (err, data) => {
-    if (err) throw err
-
-    const params = {
-      FunctionName,
-      Publish: false, // This boolean parameter can be used to request AWS Lambda to update the Lambda function and publish a version as an atomic operation.
-      ZipFile: data
-    }
-    lambda.updateFunctionCode(params, (err, data) => {
-      if (err) throw err
-      gutil.log(`Uploaded ${FunctionName}`)
-    })
-  })
+gulp.task('updateFunctionCode', () => {
+  updateFunctionCode('./dist/premiser-api.zip', gutil.log)
 })
 
 gulp.task('ensureLinux', () => {
@@ -78,9 +65,17 @@ gulp.task('build', next => runSequence(
     next
 ))
 
-gulp.task('deploy', next => runSequence(
+gulp.task('updateLambda', next => runSequence(
     ['ensureLinux'],
     ['build'],
-    ['upload'],
+    ['updateFunctionCode'],
     next
 ))
+
+gulp.task('publishLambda', () => {
+  publishLambda(gutil.log)
+})
+
+gulp.task('updateAlias', () => {
+  updateAlias(gutil.log)
+})

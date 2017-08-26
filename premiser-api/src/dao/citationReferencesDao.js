@@ -20,7 +20,7 @@ const {
   SortDirection,
   ContinuationSortDirection,
 } = require('../models')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 const {DatabaseSortDirection} = require('./daoModels')
 
 

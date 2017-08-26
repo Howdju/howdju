@@ -1,4 +1,4 @@
-const {logger} = require("../logger")
+const {logger} = require("../logging")
 
 const joinStrings = (arr, separator) => {
   if (arr.length === 0) return "";

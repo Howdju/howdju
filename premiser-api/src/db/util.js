@@ -1,7 +1,7 @@
 const moment = require('moment')
 const isDate = require('lodash/isDate')
 const isString = require('lodash/isString')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 
 
 const formatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'

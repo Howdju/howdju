@@ -5,7 +5,7 @@ const Promise = require('bluebird')
 
 
 const config = require('../config')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 const usersDao = require('../dao/usersDao')
 const authDao = require('../dao/authDao')
 const {

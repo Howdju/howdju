@@ -1,5 +1,5 @@
 const {query} = require('./../db')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 const toString = require('lodash/toString')
 
 class PermissionsDao {

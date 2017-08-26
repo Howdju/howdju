@@ -6,7 +6,7 @@ const {
   toUrl,
 } = require("../orm")
 const {query} = require('./../db')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 const head = require('lodash/head')
 const {
   JustificationBasisType

@@ -1,6 +1,7 @@
 const Promise = require('bluebird')
 const merge = require('lodash/merge')
 const assign = require('lodash/assign')
+const isEmpty = require('lodash/isEmpty')
 const isEqual = require('lodash/isEqual')
 const httpMethods = require('./httpMethods')
 const httpStatusCodes = require('./httpStatusCodes')
@@ -43,7 +44,7 @@ const {
   searchStatements,
   searchCitations,
 } = require('./service')
-const {logger} = require('./logger')
+const {logger} = require('./logging')
 const {
   rethrowTranslatedErrors
 } = require('./util')
@@ -409,7 +410,14 @@ const selectRoute = ({path, method, queryStringParameters}) => Promise.resolve()
         if (route.method && route.method !== method) continue
         if (typeof route.path === 'string' && route.path !== path) continue
         if (route.path instanceof RegExp && !(match = route.path.exec(path))) continue
-        if (route.queryStringParameters && !isEqual(route.queryStringParameters, queryStringParameters)) continue
+        if (route.queryStringParameters) {
+          if (isEmpty(route.queryStringParameters) && !isEmpty(queryStringParameters)) {
+            continue
+          }
+          if (!isEmpty(route.queryStringParameters) && !isEqual(route.queryStringParameters, queryStringParameters)) {
+            continue
+          }
+        }
 
         // First item is the whole match, rest are the group matches
         const pathParameters = match ? match.slice(1) : undefined
@@ -442,13 +450,7 @@ const routeEvent = ({callback, request}) =>
           identifier: e.identifier
         }
       }))
-      .catch(NoMatchingRouteError, e => notFound({
-        callback,
-        body: {
-          errorCode: apiErrorCodes.ROUTE_NOT_FOUND,
-          reason: 'No matching route'
-        }
-      }))
+      .catch(NoMatchingRouteError, e => notFound({ callback, body: {errorCode: apiErrorCodes.ROUTE_NOT_FOUND,} }))
       .catch(AuthenticationError, e => unauthenticated({callback}))
       .catch(InvalidLoginError, e => badRequest({
         callback,

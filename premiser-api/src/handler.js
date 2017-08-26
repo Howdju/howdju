@@ -16,7 +16,7 @@ env(__dirname + '/.env')
 const {routeEvent} = require('./route')
 // config for settings that can be unencrypted at rest and that wait for a deploy to change
 const config = require('./config')
-const {rewriterContext, logger} = require('./logger')
+const {logger} = require('./logging')
 const {apiHost} = require('./util')
 const httpStatusCodes = require('./httpStatusCodes')
 const customHeaderKeys = require('./customHeaderKeys')
@@ -118,34 +118,25 @@ const makeResponder = (event, callback) => ({httpStatusCode, headers, body}) => 
   return callback(null, response)
 }
 
-const configureLogger = (clientRequestId, serverRequestId) => {
-  rewriterContext.meta = {
+const configureLogger = (gatewayContext, clientRequestId, serverRequestId) => {
+  if (gatewayContext.isLocal) {
+    logger.doUseCarriageReturns = false
+  }
+  logger.context = {
     clientRequestId,
     serverRequestId
   }
 }
 
-const requestIds = (event) => {
-  const clientRequestId = getHeaderValue(event.headers, customHeaderKeys.REQUEST_ID)
-  const serverRequestId = uuid.v4()
-  return {
-    clientRequestId,
-    serverRequestId,
-  }
-}
-
 exports.handler = (event, context, callback) => {
   try {
-    logger.silly('Event:', JSON.stringify(event, null, 2).replace('\n', '\r'))
-    logger.silly('Context:', JSON.stringify(context, null, 2).replace('\n', '\r'))
-    console.log(JSON.stringify(event, null, 2))
-
     configureContext(context)
-    const {
-      clientRequestId,
-      serverRequestId
-    } = requestIds(event)
-    configureLogger(clientRequestId, serverRequestId)
+    const clientRequestId = getHeaderValue(event.headers, customHeaderKeys.REQUEST_ID)
+    const serverRequestId = uuid.v4()
+    configureLogger(context, clientRequestId, serverRequestId)
+
+    logger.silly('Event:', event)
+    logger.silly('Context:', context)
 
     const respond = makeResponder(event, callback)
 

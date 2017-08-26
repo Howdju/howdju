@@ -14,7 +14,7 @@ const {
 } = require('./../models')
 const map = require('lodash/map')
 const {toStatement} = require("../orm")
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 const {cleanWhitespace, normalizeText} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 

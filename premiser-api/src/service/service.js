@@ -30,7 +30,7 @@ const values = require('lodash/values')
 const zip = require('lodash/zip')
 
 const config = require('../config')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 const {
   statementsDao,
   permissionsDao,

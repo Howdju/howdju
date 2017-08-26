@@ -5,7 +5,7 @@ const morgan = require('morgan')
 const path = require('path')
 
 const handler = require('./src/index').handler
-const {logger} = require('./src/logger')
+const {logger} = require('./src/logging')
 
 const app = express()
 
@@ -25,7 +25,7 @@ app.use('/api/*', function (req, res) {
     body: JSON.stringify(req.body),
   }
 
-  const context = {}
+  const context = {isLocal: true}
 
   const callback = (error, response) => {
     if (error) {

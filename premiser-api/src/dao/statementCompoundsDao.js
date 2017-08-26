@@ -15,7 +15,7 @@ const {
   toStatementCompound,
   toStatementCompoundAtom,
 } = require('../orm')
-const {logger} = require('../logger')
+const {logger} = require('../logging')
 
 const atomOrderPositionRegExp = new RegExp(/^atom_order_position_(\d+)$/)
 const atomStatementTextRegExp = new RegExp(/^atom_statement_text_(\d+)$/)
