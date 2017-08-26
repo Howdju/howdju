@@ -20,7 +20,6 @@ module.exports.updateFunctionCode = (fileName, log) => {
 
     const params = {
       FunctionName,
-      Description: getGitDescription(),
       Publish: false, // This boolean parameter can be used to request AWS Lambda to update the Lambda function and publish a version as an atomic operation.
       ZipFile: data
     }
@@ -31,9 +30,10 @@ module.exports.updateFunctionCode = (fileName, log) => {
   })
 }
 
-module.exports.publishLambda = (log) => {
+module.exports.publishVersion = (log) => {
   const params = {
     FunctionName,
+    Description: getGitDescription(),
   };
   lambda.publishVersion(params, function(err, data) {
     if (err) throw err

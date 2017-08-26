@@ -11,7 +11,7 @@ const zip = require('gulp-zip')
 
 const {
   updateFunctionCode,
-  publishLambda,
+  publishVersion,
   updateAlias,
 } = require('./lib/lambda')
 
@@ -72,8 +72,8 @@ gulp.task('updateLambda', next => runSequence(
     next
 ))
 
-gulp.task('publishLambda', () => {
-  publishLambda(gutil.log)
+gulp.task('publishVersion', () => {
+  publishVersion(gutil.log)
 })
 
 gulp.task('updateAlias', () => {

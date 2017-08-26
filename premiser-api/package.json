@@ -18,7 +18,7 @@
     "localhost": "API_HOST=localhost yarn run local",
     "build": "gulp build",
     "update-lambda": "gulp updateLambda",
-    "publish-lambda": "gulp publishLambda",
+    "publish-version": "gulp publishVersion",
     "update-alias": "gulp updateAlias",
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
     "test-debug": "node --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
