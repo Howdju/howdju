@@ -163,9 +163,7 @@ class App extends Component {
     // I think we expect the scroll events that need to respond to overscrolls to occur many throttled-events after
     // the overscroll is detected.
 
-    if (this.props.isWindowNarrow) {
-      this.updateSmallchatLauncherVisibility()
-    }
+    this.updateSmallchatLauncherVisibility()
 
     this.resetOverscrollState()
   }
