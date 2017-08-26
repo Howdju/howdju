@@ -20,6 +20,8 @@
     "update-lambda-function-code": "npm run build && node bin/update-lambda-function-code.js",
     "publish-lambda-version": "node bin/publish-lambda-version.js",
     "update-lambda-alias": "node bin/update-lambda-alias.js",
+    "update-normal-text:local": "NODE_ENV=development node bin/update-normal-text.js",
+    "update-normal-text:prod": "NODE_ENV=production node bin/update-normal-text.js",
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
     "test-debug": "node --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
     "test-inspect": "yarn run test:debug &; node-inspector",

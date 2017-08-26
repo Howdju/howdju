@@ -15,10 +15,10 @@ exports.normalizeText = text => {
 
   // Postgres SQL for the same
   // regexp_replace(lower(regexp_replace(trim(text), '\s+', ' ', 'g')), '[^[:alnum:][:space:]_.]', '', 'g')
-  text = exports.cleanWhitespace(text)
   text = toLower(text)
   text = deburr(text)
   text = replace(text, /[^\w\s]/g, '')
+  text = exports.cleanWhitespace(text)
 
   return text
 }
