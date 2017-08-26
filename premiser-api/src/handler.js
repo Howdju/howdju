@@ -127,10 +127,11 @@ const configureLogger = (gatewayEvent, gatewayContext, requestIdentifiers) => {
     logger.doUseCarriageReturns = false
   }
 
-  const logLevel = get(gatewayContext, ['stageVariables', 'logLevel'])
+  const logLevel = get(gatewayEvent, ['stageVariables', 'logLevel'])
   if (logLevel) {
     previousLogLevel = logger.logLevel
     logger.logLevel = logLevel
+    logger.silly(`Setting logger to stage logLevel ${logLevel} (was ${previousLogLevel})`)
   }
 
   // We don't want the logger to log the awsContext, since AWS will do that for us
@@ -201,6 +202,7 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
     // Possibly we can't even safely change the log level globally, if it is possible for stages to share instances mid-request
     // In that case we'd need to keep a logger per stage, or per logLevel, or pool loggers and pass them along with the requests
     if (previousLogLevel) {
+      logger.silly(`Returning logger to previous logLevel ${previousLogLevel} (is ${logger.logLevel})`)
       logger.logLevel = previousLogLevel
       previousLogLevel = null
     }
