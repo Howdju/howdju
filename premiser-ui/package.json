@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build:local": "yarn run clean && cross-env NODE_ENV=development DEBUG=*,-babel webpack --config config/webpack.config.js",
-    "build:pre-prod": "yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel API_ROOT=https://pre-prod.api.howdju.com/api/ webpack --config config/webpack.config.js",
+    "build:pre-prod": "yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel API_ROOT=https://pre-prod-api.howdju.com/api/ webpack --config config/webpack.config.js",
     "build:prod": "yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel webpack --config config/webpack.config.js",
     "serve:local": "cross-env NODE_ENV=development DEBUG=premiser-ui:* node bin/dev-server.js",
     "serve:local-prod": "cross-env NODE_ENV=production DEBUG=premiser-ui:* node bin/dev-server.js",
