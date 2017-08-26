@@ -48,7 +48,9 @@ timstamp: ${moment().format()}
 git_commit: ${gitShortSha()}`
 
 const extractTextPlugin = new ExtractTextPlugin({
-  filename: "[name].[contenthash].css",
+  // filename: "[name].[contenthash].css",
+  // Although the hash may be good for cache-busting, for now it is creating a lot of files in our S3 bucket
+  filename: "[name].css",
 })
 
 module.exports.webpackConfig = {
