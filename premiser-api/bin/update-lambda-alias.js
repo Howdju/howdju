@@ -6,7 +6,7 @@ const parser = new ArgumentParser({
   description: 'Update an AWS Lambda function alias'
 })
 parser.addArgument('aliasName')
-parser.addArgument('functionVersion')
+parser.addArgument('newTarget')
 const args = parser.parseArgs()
 
-updateAlias(args.aliasName, args.functionVersion)
+updateAlias(args.aliasName, args.newTarget)

@@ -43,9 +43,14 @@ module.exports.publishVersion = () => {
   });
 }
 
-module.exports.updateAlias = () => {
-  const Name = process.argv[2]
-  const FunctionVersion = process.argv[3]
+module.exports.updateAlias = (aliasName, newTarget) => {
+  if (!isNumber(toNumber(newTarget))) {
+    // TODO allow passing a target alias
+    throw new Error('newTarget must be a number')
+  }
+
+  const Name = aliasName
+  const FunctionVersion = newTarget
   const params = {
     FunctionName,
     Name,

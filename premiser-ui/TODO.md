@@ -1,6 +1,5 @@
 # Howdju UI TODO
 
-* Need to update normal_texts (justifying statement created a new one due to mismatch)
 * Creating an opposing statement-based justification after entering the statement manually didn't create it!
 * deleting a justification when not logged in prod right now causes error, does not redirect to login 
 
@@ -30,6 +29,7 @@
 * iOS content blocker blocking google fonts
 * Errors from safari iOS aren't going to sentry
 * sentry errors not showing up for howdju.com?
+* Start editing citation on statement justifications page; navigate away; use back button, is still editing.  Bug? Feature?
 
 * No login toast in prod
 

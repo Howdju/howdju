@@ -83,8 +83,8 @@ class CitationReferenceEditorFields extends Component {
         ) :
         map(urls, () => null)
 
-    const quote = get(citationReference, quoteName, '')
-    const citationText = get(citationReference, citationTextName, '')
+    const quote = get(citationReference, quoteName) || ''
+    const citationText = get(citationReference, citationTextName) || ''
     const hasCitationText = has(citationReference, citationTextName)
 
     return (
