@@ -11,7 +11,7 @@
 * Justification job scoring
 * Tagging for me to keep track of what I am working on
 * Metrics: new users, daily active users (visit, vote, create)
-  
+
 1) Whats next / About page
   * Other stuff: documentation, document bookmarklet
   * Terms / Privacy
@@ -22,9 +22,10 @@
 
 * Revealing levels
   * paragraph indicator - mouse-over and runs of text having annotations get underlines
-    * click on the run of text and it reveals a list of all paraphrases (ideally semantically equivalent clusters of paraphrases)
+    * click on the run of text and it pops-up a list of all paraphrases (ideally semantically equivalent clusters of paraphrases)
       along with status(es).  What statuses would be interesting? (number of justifications?)
     * Anyway, clicking on a paraphrase brings up...the justification usages or the supporting/opposing justifications?
+  * Show: only mine, only people I follow, only verified users
 
 ## Bugs
 

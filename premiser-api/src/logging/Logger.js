@@ -11,8 +11,11 @@ const dateFormatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
 
 const cleanArg = (arg, doUseCarriageReturns) => {
   let cleaned = arg
-  if (isObject(arg)) {
-    cleaned = JSON.stringify(arg, null, 2)
+  if (cleaned instanceof Error) {
+    cleaned = cleaned.stack
+  }
+  if (isObject(cleaned)) {
+    cleaned = JSON.stringify(cleaned, null, 2)
   }
   if (!isString(cleaned)) {
     cleaned = toString(cleaned)
