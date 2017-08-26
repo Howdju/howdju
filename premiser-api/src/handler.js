@@ -1,10 +1,12 @@
 process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT']
 
+const assign = require('lodash/assign')
 const concat = require('lodash/concat')
 const get = require('lodash/get')
 const has = require('lodash/has')
 const isArray = require('lodash/isArray')
 const join = require('lodash/join')
+const pick = require('lodash/pick')
 const reduce = require('lodash/reduce')
 const toLower = require('lodash/toLower')
 const uuid = require('uuid')
@@ -26,6 +28,8 @@ const makeObj = (iterable) => reduce(iterable, (acc, o) => {
   acc[o] = o
   return acc
 }, {})
+
+let previousLogLevel = null
 
 const allowedOrigins = isArray(config.corsAllowOrigin) ? makeObj(config.corsAllowOrigin) : makeObj([config.corsAllowOrigin])
 const allowedHeaders = concat([
@@ -107,63 +111,92 @@ const parseBody = event => {
   }
 }
 
-const configureContext = (context) => {
+const configureGatewayContext = (gatewayContext) => {
   // Otherwise the pg.Pool timeout keeps us alive
-  context.callbackWaitsForEmptyEventLoop = false
+  gatewayContext.callbackWaitsForEmptyEventLoop = false
 }
 
-const makeResponder = (event, callback) => ({httpStatusCode, headers, body}) => {
-  const origin = getHeaderValue(event.headers, headerKeys.ORIGIN)
+const makeResponder = (gatewayEvent, gatewayCallback) => ({httpStatusCode, headers, body}) => {
+  const origin = getHeaderValue(gatewayEvent.headers, headerKeys.ORIGIN)
   const response = makeResponse({httpStatusCode, headers, body, origin})
-  return callback(null, response)
+  return gatewayCallback(null, response)
 }
 
-const configureLogger = (gatewayContext, clientRequestId, serverRequestId) => {
+const configureLogger = (gatewayContext, requestIdentifiers) => {
   if (gatewayContext.isLocal) {
     logger.doUseCarriageReturns = false
   }
-  logger.context = {
+
+  const logLevel = get(gatewayContext, ['stageVariables', 'logLevel'])
+  if (logLevel) {
+    previousLogLevel = logger.logLevel
+    logger.logLevel = logLevel
+  }
+
+  // We don't want the logger to log the awsContext, since AWS will do that for us
+  logger.context = pick(requestIdentifiers, ['clientRequestId', 'serverRequestId'])
+}
+
+const makeRequestIdentifiers = (gatewayEvent, gatewayContext) => {
+  const clientRequestId = getHeaderValue(gatewayEvent.headers, customHeaderKeys.REQUEST_ID)
+  const requestIdentifiers = {
     clientRequestId,
-    serverRequestId
+  }
+  // We only need one identifier generated server-side; if AWS provides one, use it
+  if (gatewayContext.awsRequestId) {
+    requestIdentifiers.awsRequestId = gatewayContext.awsRequestId
+  } else {
+    requestIdentifiers.serverRequestId = uuid.v4()
+  }
+  return requestIdentifiers
+}
+
+const makeRequest = (gatewayEvent, gatewayCallback, requestIdentifiers) => {
+  const respond = makeResponder(gatewayEvent, gatewayCallback)
+  return {
+    callback: respond,
+    request: {
+      authToken: extractAuthToken(gatewayEvent),
+      requestIdentifiers,
+      clientIdentifiers: {
+        sessionStorageId: getHeaderValue(gatewayEvent.headers, customHeaderKeys.SESSION_STORAGE_ID),
+        pageLoadId: getHeaderValue(gatewayEvent.headers, customHeaderKeys.PAGE_LOAD_ID),
+      },
+      // TODO strip out leading /v1/ as {version: 'v1'}
+      path: gatewayEvent.pathParameters.proxy,
+      method: gatewayEvent.httpMethod,
+      queryStringParameters: gatewayEvent.queryStringParameters,
+      body: parseBody(gatewayEvent),
+    },
   }
 }
 
-exports.handler = (event, context, callback) => {
+exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
   try {
-    configureContext(context)
-    const clientRequestId = getHeaderValue(event.headers, customHeaderKeys.REQUEST_ID)
-    const serverRequestId = uuid.v4()
-    configureLogger(context, clientRequestId, serverRequestId)
+    configureGatewayContext(gatewayContext)
+    const requestIdentifiers = makeRequestIdentifiers(gatewayEvent, gatewayContext)
+    configureLogger(gatewayContext, requestIdentifiers)
 
-    logger.silly('Event:', event)
-    logger.silly('Context:', context)
+    logger.silly('gatewayEvent:', gatewayEvent)
+    logger.silly('gatewayContext:', gatewayContext)
 
-    const respond = makeResponder(event, callback)
-
-    routeEvent({
-      callback: respond,
-      request: {
-        authToken: extractAuthToken(event),
-        clientRequestId,
-        serverRequestId,
-        clientIdentifiers: {
-          sessionStorageId: getHeaderValue(event.headers, customHeaderKeys.SESSION_STORAGE_ID),
-          pageLoadId: getHeaderValue(event.headers, customHeaderKeys.PAGE_LOAD_ID),
-        },
-        // TODO strip out leading /v1/ as {version: 'v1'}
-        path: event.pathParameters.proxy,
-        method: event.httpMethod,
-        queryStringParameters: event.queryStringParameters,
-        body: parseBody(event),
-      },
-    }).then(null, error => {
+    const request = makeRequest(gatewayEvent, gatewayCallback, requestIdentifiers)
+    routeEvent(request).then(null, error => {
       logger.error('uncaught error after routeEvent')
-      callback(error)
+      gatewayCallback(error)
     })
   } catch(error) {
     logger.error(error)
-    logger.error('Event:', JSON.stringify(event, null, 4))
-    logger.error('Context:', JSON.stringify(context, null, 4))
-    callback(error)
+    logger.error('gatewayEvent:', gatewayEvent)
+    logger.error('gatewayContext:', gatewayContext)
+    gatewayCallback(error)
+  } finally {
+    // I'm not sure if stages can share lambda function instances, but if they can, then we can't overwrite the log level without returning it
+    // Possibly we can't even safely change the log level globally, if it is possible for stages to share instances mid-request
+    // In that case we'd need to keep a logger per stage, or per logLevel, or pool loggers and pass them along with the requests
+    if (previousLogLevel) {
+      logger.logLevel = previousLogLevel
+      previousLogLevel = null
+    }
   }
 }

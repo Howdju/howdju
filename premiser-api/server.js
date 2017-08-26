@@ -4,7 +4,7 @@ const express = require('express')
 const morgan = require('morgan')
 const path = require('path')
 
-const handler = require('./src/index').handler
+const {handler} = require('./src/index')
 const {logger} = require('./src/logging')
 
 const app = express()

@@ -1,8 +1,10 @@
 const moment = require('moment')
 const assign = require('lodash/assign')
 const concat = require('lodash/concat')
+const get = require('lodash/get')
 const isObject = require('lodash/isObject')
 const isString = require('lodash/isString')
+const join = require('lodash/join')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const toString = require('lodash/toString')
@@ -36,30 +38,48 @@ const logLevelNumbers = {
   warn: 1,
   error: 0,
 }
+// Anything at or below this is error-ish
+const logLevelErrorMaxNumber = 1
+
 
 const makeContextString = (context) => {
   if (!context) return ''
-  map(context, (val, key) => `${key}=${cleanArg(val)}`)
+  const contextParts = map(context, (val, key) => `${key}=${cleanArg(val)}`)
+  const contextString = join(contextParts, '; ')
+  return contextString
 }
 
-const makeLogMethod = (logLevel) => (...args) => {
-  const logLevelNumber = logLevelNumbers[logLevel]
+const writeToStd = (logLevelNumber, output) => {
+  if (logLevelNumber <= logLevelErrorMaxNumber) {
+    process.stderr.write(output + this.eol)
+  } else {
+    process.stdout.write(output + this.eol)
+  }
+}
+
+function isLoggingToAws() {
+  return !!get(this.context, 'awsRequestId')
+}
+
+// Must return a function instead of a lambda so that it will bind `this` when called
+const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
   const loggerLevelNumber = logLevelNumbers[this.logLevel]
   if (logLevelNumber > loggerLevelNumber) return
 
   const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
-  const loggerArgs = [
-    moment.utc().format(dateFormatString),
-    logLevel,
-  ]
+  const loggerArgs = []
+  if (!this.isLoggingToAws()) {
+    loggerArgs.push(moment.utc().format(dateFormatString))
+  }
+  loggerArgs.push(logLevel)
   const contextString = makeContextString(this.context)
   if (contextString) {
-    loggerArgs.push(contextString)
+    loggerArgs.push(`[${contextString}]`)
   }
-  const loggingArgs = concat(loggerArgs, cleanArgs)
+  const combinedArgs = concat(loggerArgs, cleanArgs)
   // Something about using console.log seems to work better for Lambda, allowing multi-line logs to work
   // (Apparently needs carriage-returns instead of newlines)
-  console.log.apply(console, loggingArgs)
+  console.log.apply(console, combinedArgs)
 }
 
 class Logger {
@@ -68,7 +88,8 @@ class Logger {
     this.doUseCarriageReturns = true
   }
 }
-const logMethods = mapValues(logLevelNumbers, (n, logLevel) => makeLogMethod(logLevel))
+const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) => makeLogMethod(logLevel, logLevelNumber))
 assign(Logger.prototype, logMethods)
+Logger.prototype.isLoggingToAws = isLoggingToAws
 
 module.exports = Logger
