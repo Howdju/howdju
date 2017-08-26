@@ -328,9 +328,6 @@ const routes = [
                 callback,
                 request: {
                   authToken,
-                  body: {
-                    justification
-                  },
                   method,
                   path,
                   pathParameters: [justificationId]
