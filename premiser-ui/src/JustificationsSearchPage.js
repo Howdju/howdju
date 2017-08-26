@@ -3,8 +3,9 @@ import FlipMove from 'react-flip-move'
 import {connect} from "react-redux";
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import map from 'lodash/map'
 import get from 'lodash/get'
+import isEqual from 'lodash/isEqual'
+import map from 'lodash/map'
 import queryString from 'query-string'
 
 import {
@@ -16,38 +17,49 @@ import JustificationCard from "./JustificationCard";
 import {denormalize} from "normalizr";
 import {justificationsSchema} from "./schemas";
 import config from './config'
-import {selectRouterLocation} from "./selectors";
+
+const justificationSearchParams = (locationSearch) => {
+  const {
+    citationReferenceId,
+    citationId,
+    statementCompoundId,
+    statementId,
+  } = queryString.parse(locationSearch)
+  return {
+    citationReferenceId,
+    citationId,
+    statementCompoundId,
+    statementId,
+  }
+}
 
 class JustificationsSearchPage extends Component {
 
-  componentWillMount() {
-    this.props.ui.clearJustificationsSearch()
-    const searchParams = this.justificationSearchParams()
-    const count = JustificationsSearchPage.fetchCount
-    this.props.api.fetchJustificationsSearch({...searchParams, count})
+  componentDidMount() {
+    const searchParams = justificationSearchParams(this.props.location.search)
+    this.refreshResults(searchParams)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const searchParams = justificationSearchParams(this.props.location.search)
+    const nextSearchParams = justificationSearchParams(nextProps.location.search)
+    if (!isEqual(nextSearchParams, searchParams)) {
+      this.refreshResults(nextSearchParams)
+    }
   }
 
   fetchMore = event => {
     event.preventDefault()
-    const searchParams = this.justificationSearchParams()
+    const searchParams = justificationSearchParams(this.props.location.search)
     const count = JustificationsSearchPage.fetchCount
     const {continuationToken} = this.props
     this.props.api.fetchJustificationsSearch({...searchParams, count, continuationToken})
   }
 
-  justificationSearchParams = () => {
-    const {
-      citationReferenceId,
-      citationId,
-      statementCompoundId,
-      statementId,
-    } = queryString.parse(this.props.locationSearch)
-    return {
-      citationReferenceId,
-      citationId,
-      statementCompoundId,
-      statementId,
-    }
+  refreshResults = (searchParams) => {
+    this.props.ui.clearJustificationsSearch()
+    const count = JustificationsSearchPage.fetchCount
+    this.props.api.fetchJustificationsSearch({...searchParams, count})
   }
 
   render() {
@@ -111,12 +123,9 @@ const mapStateToProps = (state, ownProps) => {
     isFetching
   } = pageState
   const justifications = denormalize(pageState.justifications, justificationsSchema, state.entities)
-  const location = selectRouterLocation(state)
-  const locationSearch = get(location, 'search')
   return {
     isFetching,
     justifications,
-    locationSearch,
   }
 }
 

@@ -30,7 +30,7 @@ import {
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions";
 import {history} from './configureStore'
-import paths, {createJustificationPath, mainSearchPathName} from "./paths";
+import paths, {createJustificationPath} from "./paths";
 import mainSearcher from './mainSearcher'
 import IconPage from './IconPage'
 import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage";
@@ -91,14 +91,6 @@ class App extends Component {
     this.initializeTabIndex()
     window.addEventListener('resize', this.onWindowResize)
     window.addEventListener('scroll', this.throttledOnWindowScroll)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const queryParamSearchText = this.props.queryParamSearchText
-    const nextQueryParamSearchText = nextProps.queryParamSearchText
-    if (nextQueryParamSearchText && nextQueryParamSearchText !== queryParamSearchText) {
-      this.props.app.initializeMainSearch(nextQueryParamSearchText)
-    }
   }
 
   componentWillUnmount() {
@@ -447,12 +439,6 @@ const mapStateToProps = state => {
 
   const isMobileSiteDisabled = get(ui, ['app', 'isMobileSiteDisabled'])
 
-  const location = selectRouterLocation(state)
-  const pathname = get(location, 'pathname')
-  const queryParamSearchText = pathname === mainSearchPathName ?
-      mainSearcher.mainSearchText(location) :
-      null
-
   const isWindowNarrow = selectIsWindowNarrow(state)
 
   return {
@@ -460,7 +446,6 @@ const mapStateToProps = state => {
     authToken,
     isNavDrawerVisible,
     toasts,
-    queryParamSearchText,
     isWindowNarrow,
     isMobileSiteDisabled,
   }
@@ -468,6 +453,5 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
-  app,
   ui,
 }))(App)

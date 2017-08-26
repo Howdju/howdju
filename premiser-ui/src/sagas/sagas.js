@@ -540,8 +540,8 @@ function* onRehydrate() {
   })
 }
 
-function* initializeMainSearch() {
-  yield takeEvery(str(app.initializeMainSearch), function* initializeMainSearchWorker(action) {
+function* fetchMainSearchResults() {
+  yield takeEvery(str(app.fetchMainSearchResults), function* fetchMainSearchResultsWorker(action) {
     yield put(ui.mainSearchTextChange(action.payload.searchText))
     yield put(api.fetchStatementsSearch(action.payload.searchText))
   })
@@ -879,7 +879,7 @@ function* onLocationChange() {
 
 export default () => [
   onRehydrate(),
-  initializeMainSearch(),
+  fetchMainSearchResults(),
   logErrors(),
 
   resourceApiCalls(),

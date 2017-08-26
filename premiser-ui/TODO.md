@@ -1,9 +1,7 @@
 # Howdju UI TODO
 
-* Viewing a statement's usages, then clicking on that statement (say in an opposing justification) then clicking back, 
-  loads a bunch of justifications not related to the statement
 * Creating an opposing statement-based justification after entering the statement manually didn't create it!
-* deleting a justification when not logged in prod right now causes error, does not redirect to login 
+* When logout, refresh page (votes should go away)?
 
 * Prod featured perspectives (Hillary email)
   * Show whose perspective it is.

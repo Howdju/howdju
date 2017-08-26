@@ -45,7 +45,7 @@ const apiActionCreator = (...args) => {
 
 export const app = {
   /** If the query params indicate a main search, initialize the results */
-  initializeMainSearch: actionCreator('INITIALIZE_MAIN_SEARCH', searchText => ({searchText})),
+  fetchMainSearchResults: actionCreator('APP/FETCH_MAIN_SEARCH_RESULTS', searchText => ({searchText})),
 }
 
 export const api = {
