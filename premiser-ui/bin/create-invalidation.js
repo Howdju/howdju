@@ -1,19 +1,22 @@
+const {ArgumentParser} = require('argparse')
 const AWS = require('aws-sdk')
 const debug = require('debug')('premiser-ui:upload-to-s3')
 const fs = require('fs')
-const uuid = require('uuid');
+const uuid = require('uuid')
 
 
 const projectConfig = require('../config/project.config')
+
+const argParser = new ArgumentParser({
+  description: 'Create a Cloudfront invalidation'
+})
+argParser.addArgument('distributionId')
+const args = argParser.parseArgs()
 
 AWS.config.region = projectConfig.aws.region
 AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile});
 const cloudfront = new AWS.CloudFront({apiVersion: '2017-03-25'});
 
-const distributionId = projectConfig.aws.distributionId
-if (!distributionId) {
-  throw new Error("distributionId is required")
-}
 const items = [
   '/index.html',
   '/error.html',
@@ -31,7 +34,7 @@ const items = [
 const invalidate = () => {
   const reference = uuid.v4()
   const params = {
-    DistributionId: distributionId,
+    DistributionId: args.distributionId,
     InvalidationBatch: {
       CallerReference: reference,
       Paths: {
@@ -40,11 +43,11 @@ const invalidate = () => {
       }
     }
   };
-  debug(`Invalidating ${distributionId} (reference: ${reference}...`)
+  debug(`Invalidating ${args.distributionId} (reference: ${reference}...`)
   cloudfront.createInvalidation(params, function(err, data) {
     if (err) throw err
     else {
-      debug(`Successfully invalidated ${distributionId} (invalidation: ${data.Invalidation.Id}; caller reference: ${reference})`)
+      debug(`Successfully invalidated distribution ${args.distributionId} (Invalidation.Id: ${data.Invalidation.Id}; CallerReference: ${reference})`)
     }
   });
 }

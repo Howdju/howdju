@@ -25,8 +25,9 @@ module.exports.htmlWebpackPluginConfig = {
   }
 }
 
+const apiRoot = process.env.API_ROOT || `http://${hostAddress()}:${devApiServerPort()}/api/`
 module.exports.definePluginConfig = {
-  'process.env.API_ROOT': JSON.stringify(`http://${hostAddress()}:${devApiServerPort()}/api/`),
+  'process.env.API_ROOT': JSON.stringify(apiRoot),
   'process.env.DO_ASSERT': JSON.stringify('true'),
 }
 

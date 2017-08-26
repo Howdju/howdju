@@ -1,11 +1,18 @@
+const {ArgumentParser} = require('argparse')
 const AWS = require('aws-sdk')
 const debug = require('debug')('premiser-ui:upload-to-s3')
 const fs = require('fs')
-const moment = require('moment');
+const moment = require('moment')
+const nth = require('lodash/nth')
 const path = require('path')
 
-
 const projectConfig = require('../config/project.config')
+
+const argParser = new ArgumentParser({
+  description: 'Upload the app to S3'
+})
+argParser.addArgument('bucket')
+const args = argParser.parseArgs()
 
 AWS.config.region = projectConfig.aws.region
 AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile});
@@ -23,7 +30,6 @@ const contentTypes = {
   '.map': 'application/octet-stream',
 }
 
-const bucket = projectConfig.aws.bucket
 const upload = (filename) => {
   fs.readFile(projectConfig.paths.dist(filename), (err, data) => {
     if (err) throw err
@@ -32,7 +38,7 @@ const upload = (filename) => {
     const duration = moment.duration(projectConfig.aws.cacheDuration)
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
     const params = {
-      Bucket: bucket,
+      Bucket: args.bucket,
       Key: filename,
       Body: data,
       ACL: 'public-read',
@@ -42,7 +48,7 @@ const upload = (filename) => {
     };
     s3.upload(params, function(err, data) {
       if (err) throw err
-      debug(`Uploaded ${filename} to ${bucket} (ETag: ${data.ETag})`)
+      debug(`Uploaded ${filename} to ${args.bucket} (ETag: ${data.ETag})`)
     });
   })
 }

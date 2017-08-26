@@ -1,8 +1,10 @@
 # Howdju UI TODO
 
-* Using a statement doesnt' load on the create justification page
-  * 404 retrieving statement
+* Using a statement doesnt' load on the create justification page in prod!
+  * (http://www.howdju.com/create-justification?basisId=1418&basisType=STATEMENT)
+  * 404 retrieving statement / query params are different in prod than in dev
   * Creating an opposing statement-based justification after entering the statement manually didn't create it!
+* deleting a justification when not logged in prod right now causes error, does not redirect to login 
 
 * Prod featured perspectives (DC building height, Hillary email)
 * User signup
@@ -17,6 +19,12 @@
 
 * https://howdju.com/ is insecure
 * Redirect to https
+
+* Revealing levels
+  * paragraph indicator - mouse-over and runs of text having annotations get underlines
+    * click on the run of text and it reveals a list of all paraphrases (ideally semantically equivalent clusters of paraphrases)
+      along with status(es).  What statuses would be interesting? (number of justifications?)
+    * Anyway, clicking on a paraphrase brings up...the justification usages or the supporting/opposing justifications?
 
 ## Bugs
 
