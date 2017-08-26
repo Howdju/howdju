@@ -122,7 +122,7 @@ const makeResponder = (gatewayEvent, gatewayCallback) => ({httpStatusCode, heade
   return gatewayCallback(null, response)
 }
 
-const configureLogger = (gatewayContext, requestIdentifiers) => {
+const configureLogger = (gatewayEvent, gatewayContext, requestIdentifiers) => {
   if (gatewayContext.isLocal) {
     logger.doUseCarriageReturns = false
   }
@@ -134,13 +134,19 @@ const configureLogger = (gatewayContext, requestIdentifiers) => {
   }
 
   // We don't want the logger to log the awsContext, since AWS will do that for us
-  logger.context = pick(requestIdentifiers, ['clientRequestId', 'serverRequestId'])
+  const loggingContext = pick(requestIdentifiers, ['clientRequestId', 'serverRequestId'])
+  const stage = get(gatewayEvent, ['requestContext', 'stage'])
+  if (stage) {
+    loggingContext.stage = stage
+  }
+  logger.context = loggingContext
 }
 
 const makeRequestIdentifiers = (gatewayEvent, gatewayContext) => {
+  const requestIdentifiers = {}
   const clientRequestId = getHeaderValue(gatewayEvent.headers, customHeaderKeys.REQUEST_ID)
-  const requestIdentifiers = {
-    clientRequestId,
+  if (clientRequestId) {
+    requestIdentifiers.clientRequestId = clientRequestId
   }
   // We only need one identifier generated server-side; if AWS provides one, use it
   if (gatewayContext.awsRequestId) {
@@ -175,7 +181,7 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
   try {
     configureGatewayContext(gatewayContext)
     const requestIdentifiers = makeRequestIdentifiers(gatewayEvent, gatewayContext)
-    configureLogger(gatewayContext, requestIdentifiers)
+    configureLogger(gatewayEvent, gatewayContext, requestIdentifiers)
 
     logger.silly('gatewayEvent:', gatewayEvent)
     logger.silly('gatewayContext:', gatewayContext)

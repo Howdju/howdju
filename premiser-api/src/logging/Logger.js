@@ -57,10 +57,6 @@ const writeToStd = (logLevelNumber, output) => {
   }
 }
 
-function isLoggingToAws() {
-  return !!get(this.context, 'awsRequestId')
-}
-
 // Must return a function instead of a lambda so that it will bind `this` when called
 const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
   const loggerLevelNumber = logLevelNumbers[this.logLevel]
@@ -68,7 +64,7 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
 
   const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
   const loggerArgs = []
-  if (!this.isLoggingToAws()) {
+  if (this.doLogTimestamp) {
     loggerArgs.push(moment.utc().format(dateFormatString))
   }
   loggerArgs.push(logLevel)
@@ -83,13 +79,13 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
 }
 
 class Logger {
-  constructor({logLevel}) {
+  constructor({logLevel, doUseCarriageReturns=true, doLogTimestamp=true}) {
     this.logLevel = logLevel
-    this.doUseCarriageReturns = true
+    this.doUseCarriageReturns = doUseCarriageReturns
+    this.doLogTimestamp = doLogTimestamp
   }
 }
 const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) => makeLogMethod(logLevel, logLevelNumber))
 assign(Logger.prototype, logMethods)
-Logger.prototype.isLoggingToAws = isLoggingToAws
 
 module.exports = Logger

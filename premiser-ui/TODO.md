@@ -1,9 +1,6 @@
 # Howdju UI TODO
 
-* Using a statement doesnt' load on the create justification page in prod!
-  * (http://www.howdju.com/create-justification?basisId=1418&basisType=STATEMENT)
-  * 404 retrieving statement / query params are different in prod than in dev
-  * Creating an opposing statement-based justification after entering the statement manually didn't create it!
+* Creating an opposing statement-based justification after entering the statement manually didn't create it!
 * deleting a justification when not logged in prod right now causes error, does not redirect to login 
 
 * Prod featured perspectives (DC building height, Hillary email)
@@ -382,6 +379,7 @@
   * Don't slide/hide the vote actions until the vote has successfully responded
 * EditStatementCitationPage: can I move focus to basis component when first showing them?
 * Escape key while focusing (i.e. arrow-keying onto it) autocomplete list should close it 
+* Need loading indicator when using basis to create a justification (especially on lambda prime, justification can be empty for awhile)
 
 ### Refactoring/stability
 * When an error occurs in a saga that transitioned the page (e.g. remove the default value of statementCompounds in
