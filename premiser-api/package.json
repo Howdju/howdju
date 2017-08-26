@@ -17,7 +17,7 @@
     "local": "yarn run serve:local",
     "localhost": "API_HOST=localhost yarn run local",
     "build": "gulp build",
-    "update-lambda-function-code": "node bin/update-lambda-function-code.js",
+    "update-lambda-function-code": "npm run build && node bin/update-lambda-function-code.js",
     "publish-lambda-version": "node bin/publish-lambda-version.js",
     "update-lambda-alias": "node bin/update-lambda-alias.js",
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
