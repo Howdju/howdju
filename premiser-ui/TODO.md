@@ -1,5 +1,6 @@
 # Howdju UI TODO
 
+* Need to update normal_texts (justifying statement created a new one due to mismatch)
 * Creating an opposing statement-based justification after entering the statement manually didn't create it!
 * deleting a justification when not logged in prod right now causes error, does not redirect to login 
 
@@ -168,6 +169,8 @@
 * Bot/spam/abuse detection
   * IP rate limiting
   * account rate limiting (sharing account)
+  
+* When two tabs are open and authentication changes in one, it doesn't propagate to other tabs
 
 ## Update release (I can use it and show it to people)
 * When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"

@@ -1,16 +1,30 @@
-const bodyParser = require('body-parser')
+const path = require('path')
+
 const debug = require('debug')('app:server')
 const express = require('express')
 const morgan = require('morgan')
-const path = require('path')
+const isString = require('lodash/isString')
+
 
 const {handler} = require('./src/index')
 const {logger} = require('./src/logging')
 
 const app = express()
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+function rawBody(req, res, next) {
+  req.setEncoding('utf8');
+  req.rawBody = null
+  req.on('data', function(chunk) {
+    if (!isString(req.rawBody)) {
+      req.rawBody = ''
+    }
+    req.rawBody += chunk;
+  })
+  req.on('end', function(){
+    next();
+  })
+}
+app.use(rawBody)
 app.use(morgan('dev'))
 
 app.use('/api/*', function (req, res) {
@@ -22,7 +36,7 @@ app.use('/api/*', function (req, res) {
     },
     httpMethod: req.method,
     queryStringParameters: req.query,
-    body: JSON.stringify(req.body),
+    body: req.rawBody,
   }
 
   const context = {isLocal: true}
