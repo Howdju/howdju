@@ -33,11 +33,6 @@ const ActionSubjectType = {
   URL: 'URL',
 }
 
-const JustificationTargetType = {
-  STATEMENT: 'STATEMENT',
-  JUSTIFICATION: 'JUSTIFICATION'
-}
-
 const JustificationPolarity = {
   POSITIVE: 'POSITIVE',
   NEGATIVE: 'NEGATIVE',
@@ -96,7 +91,6 @@ module.exports = {
   ActionType,
   ActionTargetType,
   ActionSubjectType,
-  JustificationTargetType,
   JustificationPolarity,
   JustificationRootPolarity,
   JustificationBasisType,

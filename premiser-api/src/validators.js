@@ -7,10 +7,12 @@ const includes = require('lodash/includes')
 const urlParser = require("url");
 
 const {
-  JustificationTargetType,
   JustificationBasisType,
   JustificationPolarity,
 } = require("./models")
+const {
+  JustificationTargetType,
+} = require('howdju-models')
 const {
   isTruthy
 } = require('./util')

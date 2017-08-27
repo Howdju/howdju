@@ -4,7 +4,9 @@ const toLower = require('lodash/toLower')
 const trim = require('lodash/trim')
 
 const {assert} = require('../util')
-const {JustificationTargetType} = require('../models')
+const {
+  JustificationTargetType,
+} = require('howdju-models')
 
 exports.cleanWhitespace = text => {
   text = trim(text)

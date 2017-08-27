@@ -5,10 +5,12 @@ const map = require('lodash/map')
 const range = require('lodash/range')
 
 const {
-  JustificationTargetType,
   VoteTargetType,
   JustificationBasisType,
 } = require('../models')
+const {
+  JustificationTargetType,
+} = require('howdju-models')
 const {
   toPerspective,
   toJustification,

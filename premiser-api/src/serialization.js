@@ -1,8 +1,10 @@
 const map = require('lodash/map')
 const {
   JustificationBasisType,
-  JustificationTargetType,
 } = require('./models')
+const {
+  JustificationTargetType,
+} = require('howdju-models')
 const {
   ImpossibleError
 } = require('./errors')

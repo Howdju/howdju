@@ -1,0 +1,7 @@
+{
+  "name": "howdju-models",
+  "version": "1.0.0",
+  "description": "Models representing shared concepts between all Howdju platform applications.  Suitable for inclusion in client and server applications.",
+  "main": "index.js",
+  "license": "UNLICENSED"
+}

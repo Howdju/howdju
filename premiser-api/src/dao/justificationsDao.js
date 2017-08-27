@@ -17,13 +17,15 @@ const {ImpossibleError, EntityNotFoundError} = require('../errors')
 const statementCompoundsDao = require('./statementCompoundsDao')
 const citationReferencesDao = require('./citationReferencesDao')
 const {
-  JustificationTargetType,
   JustificationBasisType,
   VoteTargetType,
   SortDirection,
   ContinuationSortDirection,
   negateRootPolarity,
 } = require('../models')
+const {
+  JustificationTargetType,
+} = require('howdju-models')
 const {
   toJustification,
   toStatementCompound,

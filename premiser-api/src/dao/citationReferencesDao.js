@@ -15,11 +15,13 @@ const {
 const {query} = require('./../db')
 const {
   JustificationBasisType,
-  JustificationTargetType,
   VoteTargetType,
   SortDirection,
   ContinuationSortDirection,
 } = require('../models')
+const {
+  JustificationTargetType,
+} = require('howdju-models')
 const {logger} = require('../logging')
 const {DatabaseSortDirection} = require('./daoModels')
 

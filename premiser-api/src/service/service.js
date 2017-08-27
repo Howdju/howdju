@@ -97,7 +97,6 @@ const {
   EDIT_ANY_ENTITY,
 } = require("../permissions")
 const {
-  JustificationTargetType,
   JustificationBasisType,
   ActionTargetType,
   ActionSubjectType,
@@ -106,6 +105,9 @@ const {
   SortDirection,
   ContinuationSortDirection,
 } = require('../models')
+const {
+  JustificationTargetType,
+} = require('howdju-models')
 const {
   rethrowTranslatedErrors,
   isTruthy,
