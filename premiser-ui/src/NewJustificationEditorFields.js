@@ -10,7 +10,7 @@ import cn from 'classnames'
 import {
   isCitationReferenceBased, isStatementCompoundBased, JustificationBasisType,
   JustificationPolarity
-} from "./models";
+} from "howdju-common";
 import text, {
   JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE,
   JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND, JUSTIFICATION_POLARITY_NEGATIVE,

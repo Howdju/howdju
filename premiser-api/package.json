@@ -11,7 +11,7 @@
     "db:local:shell": "psql premiser",
     "create-user:prod": "NODE_ENV=production node bin/create-user.js",
     "create-user:local": "NODE_ENV=development node bin/create-user.js",
-    "serve:local": "DEBUG=premiser-api:* NODE_ENV=development DO_ASSERT=true nodemon --watch src --watch ../howdju-models/lib bin/dev-server.js",
+    "serve:local": "bin/serve-local.sh",
     "debug": "DEBUG=premiser-api:* NODE_ENV=development node debug bin/dev-server.js",
     "inspect": "DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",
     "local": "yarn run serve:local",

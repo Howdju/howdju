@@ -22,7 +22,7 @@ import {
 } from './actions'
 import {loginPageEditorId} from './editorIds'
 import {EditorTypes} from "./reducers/editors";
-import {makeNewCredentials} from "./models";
+import {makeNewCredentials} from "howdju-common";
 import {toErrorText} from "./modelErrorMessages";
 import {
   default as t,

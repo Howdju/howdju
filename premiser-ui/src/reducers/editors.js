@@ -14,9 +14,14 @@ import {
   api,
   editors
 } from "../actions"
-import {justificationBasisTypeToNewJustificationBasisMemberName, makeNewStatementAtom, makeNewUrl} from "../models";
+import {
+  makeNewStatementAtom,
+  makeNewUrl,
+  newProgrammingError,
+} from "howdju-common";
+import {justificationBasisTypeToNewJustificationBasisMemberName} from '../viewModels'
 import * as apiErrorCodes from "../apiErrorCodes";
-import {customErrorTypes, newProgrammingError} from "../customErrors";
+import {uiErrorTypes} from "../uiErrors";
 import {default as t, INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts";
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
@@ -48,7 +53,7 @@ const defaultEditorState = {
 
 const editorErrorReducer = errorKey => (state, action) => {
   const sourceError = action.payload.sourceError
-  if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+  if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
     const responseBody = sourceError.body
     if (includes([
           apiErrorCodes.VALIDATION_ERROR,
@@ -91,7 +96,7 @@ const editorReducerByType = {
       next: (state, action) => ({...state, isSaving: false, editEntity: null}),
       throw: (state, action) => {
         const sourceError = action.payload.sourceError
-        if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+        if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
           const responseBody = sourceError.body
           if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
             return {...state, isSaving: false, errors: responseBody.errors}
@@ -200,7 +205,7 @@ const editorReducerByType = {
     [editors.commitEdit.result]: {
       throw: (state, action) => {
         const sourceError = action.payload.sourceError
-        if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+        if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
           const responseBody = sourceError.body
           if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
             const errors = cloneDeep(responseBody.errors.justification)
@@ -277,7 +282,7 @@ const editorReducerByType = {
     [editors.commitEdit.result]: {
       throw: (state, action) => {
         const sourceError = action.payload.sourceError
-        if (sourceError.errorType === customErrorTypes.API_RESPONSE_ERROR) {
+        if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
           switch (sourceError.body.errorCode) {
             case (apiErrorCodes.INVALID_LOGIN_CREDENTIALS): {
               return {...state, errors: {credentials: {modelErrors: [INVALID_LOGIN_CREDENTIALS]}}, isSaving: false}

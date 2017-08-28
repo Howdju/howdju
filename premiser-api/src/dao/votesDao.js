@@ -1,7 +1,10 @@
-const {negateVotePolarity} = require('../models')
+const map = require('lodash/map')
+
+const {negateVotePolarity} = require('howdju-common')
+
 const {toVote} = require('../orm')
 const {query} = require('../db')
-const map = require('lodash/map')
+
 
 class VotesDao {
   deleteOpposingVotes(userId, vote) {

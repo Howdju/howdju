@@ -47,12 +47,6 @@ class UserIsInactiveError extends HowdjuApiError {
 
 class NoMatchingRouteError extends HowdjuApiError {}
 
-class ImpossibleError extends HowdjuApiError {
-  constructor(message) {
-    super(message)
-  }
-}
-
 /** The request would cause a conflict with one or more other entities */
 class EntityConflictError extends HowdjuApiError {
   constructor(errors) {
@@ -86,7 +80,6 @@ module.exports = {
   AuthorizationError,
   EntityNotFoundError,
   UserIsInactiveError,
-  ImpossibleError,
   EntityConflictError,
   UserActionsConflictError,
   EntityTooOldToModifyError,

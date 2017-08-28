@@ -10,7 +10,9 @@ const values = require('lodash/values')
 const {normalizeText} = require("./util")
 
 const {query} = require('../db')
-const {JustificationBasisType} = require('../models')
+const {
+  JustificationBasisType
+} = require('howdju-common')
 const {
   toStatementCompound,
   toStatementCompoundAtom,

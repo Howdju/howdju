@@ -11,7 +11,7 @@ const {
   VoteTargetType,
   SortDirection,
   ContinuationSortDirection,
-} = require('./../models')
+} = require('howdju-common')
 const map = require('lodash/map')
 const {toStatement} = require("../orm")
 const {logger} = require('../logging')

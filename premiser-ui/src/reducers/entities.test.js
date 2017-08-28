@@ -6,7 +6,7 @@ import entities, {
   unionArraysDistinctIdsCustomizer,
 } from './entities'
 import {CREATE_JUSTIFICATION_SUCCESS, DELETE_JUSTIFICATION_SUCCESS} from "../actions";
-import {JustificationBasisType, JustificationPolarity, JustificationTargetType} from "../models";
+import {JustificationBasisType, JustificationPolarity, JustificationTargetType} from "howdju-common"
 
 
 describe('lodash', () => {

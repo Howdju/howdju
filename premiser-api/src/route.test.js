@@ -1,9 +1,6 @@
 const {routes, selectRoute} = require('./route')
 const _ = require('lodash')
 const httpMethods = require('./httpMethods')
-const {
-  UserActionsConflictError,
-} = require('./errors')
 
 describe('routes', () => {
 

@@ -18,7 +18,7 @@ const {
   EntityValidationError,
   RequestValidationError,
   InvalidLoginError,
-} = require("./errors")
+} = require("./apiErrors")
 const apiErrorCodes = require('./codes/apiErrorCodes')
 const {
   readStatements,

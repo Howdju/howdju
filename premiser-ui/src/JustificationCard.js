@@ -8,7 +8,7 @@ import FontIcon from 'react-md/lib/FontIcons'
 import moment from 'moment'
 
 import paths from './paths'
-import {isCounter, isRootJustification} from "./models";
+import {isCounter, isRootJustification} from "howdju-common"
 import config from './config'
 import JustificationChatBubble from "./JustificationChatBubble"
 

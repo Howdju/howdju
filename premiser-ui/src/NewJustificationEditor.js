@@ -15,7 +15,7 @@ import {
 } from "./texts";
 import {default as t} from './texts'
 import NewJustificationEditorFields from "./NewJustificationEditorFields";
-import {makeNewJustification} from "./models";
+import {makeNewJustification} from "howdju-common";
 
 
 class NewJustificationEditor extends Component {

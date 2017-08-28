@@ -1,7 +1,7 @@
 import React from 'react'
 import cn from 'classnames'
 
-import {isRootNegative, isRootPositive} from './models'
+import {isRootNegative, isRootPositive} from 'howdju-common'
 import JustificationBasisViewer from './JustificationBasisViewer'
 import ChatBubble from './ChatBubble'
 

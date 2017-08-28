@@ -30,10 +30,10 @@ import text, {
 } from "./texts";
 import { suggestionKeys } from './autocompleter'
 import {
-  justificationBasisTypeToNewJustificationBasisMemberName,
   makeNewStatementJustification,
   JustificationBasisType,
-} from "./models";
+} from "howdju-common"
+import {justificationBasisTypeToNewJustificationBasisMemberName} from './viewModels'
 import {
   editStatementJustificationPageEditorId,
 } from "./editorIds"

@@ -1,8 +1,11 @@
 import React, {Component} from 'react'
-import {isCitationReferenceBased, isStatementCompoundBased} from "./models";
+import {
+  isCitationReferenceBased,
+  isStatementCompoundBased,
+  newImpossibleError,
+} from "howdju-common";
 import StatementCompoundViewer from "./StatementCompoundViewer";
 import CitationReferenceViewer from "./CitationReferenceViewer";
-import {newImpossibleError} from "./customErrors";
 import ExpandableChildContainer from './ExpandableChildContainer'
 
 export default class JustificationBasisViewer extends Component {

@@ -1,9 +1,7 @@
 const {
   JustificationRootPolarity,
-} = require('../src/models')
-const {
   JustificationTargetType,
-} = require('howdju-models')
+} = require('howdju-common')
 
 const updateRootPolarity = () => query(`
       update justifications j1

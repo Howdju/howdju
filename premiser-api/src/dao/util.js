@@ -6,7 +6,7 @@ const trim = require('lodash/trim')
 const {assert} = require('../util')
 const {
   JustificationTargetType,
-} = require('howdju-models')
+} = require('howdju-common')
 
 exports.cleanWhitespace = text => {
   text = trim(text)

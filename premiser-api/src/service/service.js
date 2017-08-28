@@ -29,6 +29,19 @@ const toNumber = require('lodash/toNumber')
 const values = require('lodash/values')
 const zip = require('lodash/zip')
 
+const {
+  JustificationBasisType,
+  ActionTargetType,
+  ActionSubjectType,
+  ActionType,
+  EntityTypes,
+  SortDirection,
+  ContinuationSortDirection,
+  JustificationTargetType,
+  newImpossibleError,
+  decircularizePerspective,
+} = require('howdju-common')
+
 const config = require('../config')
 const {logger} = require('../logging')
 const {
@@ -88,34 +101,17 @@ const {
   EntityValidationError,
   RequestValidationError,
   UserActionsConflictError,
-  ImpossibleError,
   EntityTooOldToModifyError,
-  InvalidLoginError,
-} = require("../errors")
+} = require("../apiErrors")
 const {
   CREATE_USERS,
   EDIT_ANY_ENTITY,
 } = require("../permissions")
 const {
-  JustificationBasisType,
-  ActionTargetType,
-  ActionSubjectType,
-  ActionType,
-  EntityTypes,
-  SortDirection,
-  ContinuationSortDirection,
-} = require('../models')
-const {
-  JustificationTargetType,
-} = require('howdju-models')
-const {
   rethrowTranslatedErrors,
   isTruthy,
   assert,
 } = require('../util')
-const {
-  decircularizePerspective
-} = require('../serialization')
 
 
 const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPermission(authToken, permission)
@@ -909,7 +905,7 @@ const createJustificationTarget = (justificationTarget, userId, now) => {
           }))
 
     default:
-      throw new ImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
+      throw newImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
   }
 }
 
@@ -935,7 +931,7 @@ const createJustificationBasis = (justificationBasis, userId, now) => {
           }))
 
     default:
-      throw new ImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
+      throw newImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
   }
 }
 

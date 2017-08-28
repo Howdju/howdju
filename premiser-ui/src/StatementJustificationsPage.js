@@ -25,7 +25,7 @@ import {
   isNegative,
   makeNewJustificationTargetingStatementId,
   JustificationBasisSourceType,
-} from "./models";
+} from "howdju-common";
 import GridCard from './GridCard';
 import {
   api,

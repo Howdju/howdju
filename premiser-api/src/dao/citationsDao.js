@@ -15,10 +15,8 @@ const {
   VoteTargetType,
   SortDirection,
   ContinuationSortDirection,
-} = require('../models')
-const {
   JustificationTargetType,
-} = require('howdju-models')
+} = require('howdju-common')
 const {logger} = require('../logging')
 const {cleanWhitespace, normalizeText} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')

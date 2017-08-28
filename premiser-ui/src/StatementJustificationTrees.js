@@ -8,7 +8,7 @@ import cn from 'classnames'
 
 import {
   JustificationPolarity,
-} from './models'
+} from 'howdju-common'
 import config from './config'
 import JustificationTree from './JustificationTree'
 

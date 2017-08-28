@@ -13,19 +13,19 @@ const sortBy = require('lodash/sortBy')
 const toString = require('lodash/toString')
 const values = require('lodash/values')
 
-const {ImpossibleError, EntityNotFoundError} = require('../errors')
-const statementCompoundsDao = require('./statementCompoundsDao')
-const citationReferencesDao = require('./citationReferencesDao')
 const {
+  JustificationTargetType,
   JustificationBasisType,
   VoteTargetType,
   SortDirection,
   ContinuationSortDirection,
   negateRootPolarity,
-} = require('../models')
-const {
-  JustificationTargetType,
-} = require('howdju-models')
+  newImpossibleError,
+} = require('howdju-common')
+
+const {EntityNotFoundError} = require('../apiErrors')
+const statementCompoundsDao = require('./statementCompoundsDao')
+const citationReferencesDao = require('./citationReferencesDao')
 const {
   toJustification,
   toStatementCompound,
@@ -180,7 +180,7 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
         }
         break
       default:
-        throw new ImpossibleError(`Unsupported justification filter: ${filterName}`)
+        throw newImpossibleError(`Unsupported justification filter: ${filterName}`)
     }
   })
 
@@ -499,7 +499,7 @@ class JustificationsDao {
             .then(rootPolarity => negateRootPolarity(rootPolarity))
         break
       default:
-        throw new ImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
+        throw newImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
     }
 
     return Promise.resolve(rootPolarity).then(rootPolarity => {

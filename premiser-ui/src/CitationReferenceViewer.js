@@ -7,7 +7,7 @@ import cn from 'classnames'
 import {
   truncateCitationReferenceQuote,
   isTextLong,
-} from "./models";
+} from "./viewModels";
 import {extractDomain} from "./util"
 import * as characters from './characters'
 import {default as t} from './texts'

@@ -4,8 +4,10 @@ const sortBy = require('lodash/sortBy')
 const toString = require('lodash/toString')
 const values = require('lodash/values')
 
-const {JustificationBasisType} = require('./models')
-const {ImpossibleError} = require('./errors')
+const {
+  JustificationBasisType,
+  newImpossibleError,
+} = require('howdju-common')
 
 const toUser = row => !row ? row : ({
   id: toString(row.user_id),
@@ -117,7 +119,7 @@ const toJustification = (
       break
 
     default:
-      throw new ImpossibleError(`Unsupported JustificationBasisType: ${row.basis_type}`)
+      throw newImpossibleError(`Unsupported JustificationBasisType: ${row.basis_type}`)
   }
 
   if (!justification.basis.entity) {

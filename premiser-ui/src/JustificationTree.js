@@ -16,13 +16,6 @@ import get from 'lodash/get'
 import map from 'lodash/map'
 
 import {
-  api,
-  editors,
-  goto,
-  mapActionCreatorGroupToDispatchToProps,
-  ui,
-} from './actions'
-import {
   isVerified,
   isDisverified,
   isStatementCompoundBased,
@@ -30,7 +23,16 @@ import {
   isRootPositive,
   isRootNegative,
   JustificationBasisType,
-} from './models'
+  newImpossibleError,
+} from 'howdju-common'
+
+import {
+  api,
+  editors,
+  goto,
+  mapActionCreatorGroupToDispatchToProps,
+  ui,
+} from './actions'
 import {
   counterJustificationEditorId,
   justificationBasisEditorId
@@ -42,10 +44,9 @@ import EditableJustificationBasis from "./EditableJustificationBasis";
 import {EditorTypes} from "./reducers/editors";
 import {suggestionKeys} from "./autocompleter";
 import ChatBubble from './ChatBubble'
+import {selectIsWindowNarrow} from "./selectors";
 
 import './JustificationTree.scss'
-import {newImpossibleError} from "./customErrors";
-import {selectIsWindowNarrow} from "./selectors";
 
 
 const justificationTreeId = props => {

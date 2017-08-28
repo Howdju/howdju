@@ -10,7 +10,7 @@ import {
   newApiResponseError,
   newNetworkFailureError,
   newRequestConfigurationError,
-} from "./customErrors";
+} from "./uiErrors";
 import * as httpMethods from "./httpMethods";
 import {newId} from "./identifiers";
 import * as customHeaderKeys from "./customHeaderKeys";

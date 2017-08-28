@@ -74,7 +74,6 @@ import {
   errors,
 } from "../actions";
 import {
-  consolidateBasis,
   JustificationBasisType,
   JustificationTargetType,
   makeNewStatementCompoundForStatement,
@@ -82,18 +81,19 @@ import {
   removeStatementCompoundId,
   SortDirection,
   JustificationBasisSourceType,
-} from "../models";
+  newImpossibleError,
+  newProgrammingError,
+} from "howdju-common";
+import {consolidateBasis} from '../viewModels'
 import {
   logger,
   assert,
 } from '../util'
 import apiErrorCodes from "../apiErrorCodes";
 import {
-  customErrorTypes,
+  uiErrorTypes,
   newEditorCommitResultError,
-  newImpossibleError,
-  newProgrammingError,
-} from "../customErrors";
+} from "../uiErrors";
 import config from "../config";
 import * as sentry from '../sentry'
 import analytics from "../analytics"
@@ -779,11 +779,11 @@ function* showAlertForUnexpectedApiError() {
     if (action.error) {
       if (action.payload.errorType) {
         switch (action.payload.errorType) {
-          case customErrorTypes.NETWORK_FAILURE_ERROR: {
+          case uiErrorTypes.NETWORK_FAILURE_ERROR: {
             yield put(ui.addToast(t(A_NETWORK_ERROR_OCCURRED)))
             break
           }
-          case customErrorTypes.API_RESPONSE_ERROR: {
+          case uiErrorTypes.API_RESPONSE_ERROR: {
             const errorCode = get(action.payload, ['body', 'errorCode'])
             if (!errorCode) {
               logger.error('API response error missing error code')

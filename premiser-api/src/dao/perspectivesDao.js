@@ -7,10 +7,10 @@ const range = require('lodash/range')
 const {
   VoteTargetType,
   JustificationBasisType,
-} = require('../models')
-const {
   JustificationTargetType,
-} = require('howdju-models')
+  newImpossibleError,
+} = require('howdju-common')
+
 const {
   toPerspective,
   toJustification,
@@ -22,7 +22,6 @@ const {
   toCitationReference,
 } = require('../orm')
 const {query} = require('../db')
-const {ImpossibleError} = require('../errors')
 
 
 class PerspectivesDao {
@@ -295,7 +294,7 @@ class PerspectivesDao {
           }
           break
         default:
-          throw new ImpossibleError(`justification ${j.id} has unsupported target type ${j.target.type}`)
+          throw newImpossibleError(`justification ${j.id} has unsupported target type ${j.target.type}`)
       }
 
       switch (j.basis.type) {
@@ -308,7 +307,7 @@ class PerspectivesDao {
         }
           break
         default:
-          throw new ImpossibleError(`justification ${j.id} has unsupported basis type ${j.target.type}`)
+          throw newImpossibleError(`justification ${j.id} has unsupported basis type ${j.target.type}`)
       }
     })
 

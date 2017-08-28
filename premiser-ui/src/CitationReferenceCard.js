@@ -10,7 +10,10 @@ import moment from 'moment'
 import cn from 'classnames'
 
 import config from './config'
-import {truncateCitationReferenceQuote, isTextLong} from "./models";
+import {
+  truncateCitationReferenceQuote,
+  isTextLong
+} from "./viewModels";
 import paths from './paths'
 import {default as t} from './texts'
 import * as characters from './characters'

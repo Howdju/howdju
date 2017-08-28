@@ -9,10 +9,8 @@ const urlParser = require("url");
 const {
   JustificationBasisType,
   JustificationPolarity,
-} = require("./models")
-const {
   JustificationTargetType,
-} = require('howdju-models')
+} = require('howdju-common')
 const {
   isTruthy
 } = require('./util')

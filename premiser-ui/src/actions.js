@@ -1,5 +1,9 @@
 import { createAction as actionCreator } from 'redux-actions';
-import {decircularizeTarget, VotePolarity, VoteTargetType} from "./models";
+import {
+  decircularizeJustification,
+  VotePolarity,
+  VoteTargetType,
+} from "howdju-common";
 import reduce from 'lodash/reduce'
 import mapValues from 'lodash/mapValues'
 import assign from 'lodash/assign'

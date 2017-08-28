@@ -3,14 +3,15 @@ const groupBy = require('lodash/groupBy')
 const map = require('lodash/map')
 
 const {
+  JustificationBasisType
+} = require('howdju-common')
+
+const {
   toUrl,
 } = require("../orm")
 const {query} = require('./../db')
 const {logger} = require('../logging')
 const head = require('lodash/head')
-const {
-  JustificationBasisType
-} = require('../models')
 
 
 const groupUrlsByCitationReferenceId = rows => {

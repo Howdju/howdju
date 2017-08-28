@@ -3,6 +3,9 @@ const cryptohat = require('cryptohat')
 const moment = require('moment')
 const Promise = require('bluebird')
 
+const {
+  EntityTypes,
+} = require('howdju-common')
 
 const config = require('../config')
 const {logger} = require('../logging')
@@ -16,10 +19,7 @@ const {
   UserIsInactiveError,
   EntityValidationError,
   InvalidLoginError,
-} = require("../errors")
-const {
-  EntityTypes,
-} = require('../models')
+} = require("../apiErrors")
 
 const validateCredentials = (credentials) => {
   const validationErrors = credentialValidator.validate(credentials)

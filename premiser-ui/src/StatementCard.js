@@ -9,7 +9,7 @@ import moment from 'moment'
 
 import paths from './paths'
 import config from './config'
-import {truncateStatementText, isTextLong} from './models'
+import {truncateStatementText, isTextLong} from './viewModels'
 import {default as t} from './texts'
 import * as characters from './characters'
 

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import EditableStatementCompound from "./EditableStatementCompound";
 import EditableCitationReference from "./EditableCitationReference";
-import {isStatementCompoundBased} from "./models";
+import {isStatementCompoundBased} from "howdju-common";
 
 class EditableJustificationBasis extends Component {
 
