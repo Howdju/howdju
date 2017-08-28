@@ -1,14 +1,18 @@
 # Howdju UI TODO
 
-* Creating an opposing statement-based justification after entering the statement manually didn't create it!
-* When logout, refresh page (votes should go away)?
+* Code-sharing
+  * howdju-models works for server and client?
+  * howdju-models linking works for deployment?
+  * Need to yarn add in addition to yarn link?
+  * Need to change UI to use ECMAScript of server?
+  * howdju-common for shared server components
 
+* Justification job scoring
 * Prod featured perspectives (Hillary email)
   * Show whose perspective it is.
   * Show when created
   * Show votes
 * User signup
-* Justification job scoring
 * Tagging for me to keep track of what I am working on
 * Metrics: new users, daily active users (visit, vote, create)
 
@@ -19,9 +23,6 @@
   * Other stuff: documentation, document bookmarklet
   * Terms / Privacy
 2) Add citations, quotes, tags to main search (requires result type)
-
-* https://howdju.com/ is insecure
-* Redirect to https
 
 * Revealing levels
   * paragraph indicator - mouse-over and runs of text having annotations get underlines
@@ -36,6 +37,9 @@
 * Errors from safari iOS aren't going to sentry
 * sentry errors not showing up for howdju.com?
 * Start editing citation on statement justifications page; navigate away; use back button, is still editing.  Bug? Feature?
+
+* Creating an opposing statement-based justification after entering the statement manually didn't create it!
+* When logout, refresh page (votes should go away)?
 
 * No login toast in prod
 

@@ -13,7 +13,7 @@
     "build:prod": "yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel webpack --config config/webpack.config.js",
     "serve:local": "cross-env NODE_ENV=development DEBUG=premiser-ui:* node bin/dev-server.js",
     "serve:local-prod": "cross-env NODE_ENV=production DEBUG=premiser-ui:* node bin/dev-server.js",
-    "local": "yarn run build:dev && yarn run serve:local",
+    "local": "yarn run build:local && yarn run serve:local",
     "localhost": "HOST_ADDRESS=localhost yarn run local",
     "upload:pre-prod": "cross-env NODE_ENV=production DEBUG=* node bin/upload-to-s3.js pre-prod-www.howdju.com",
     "upload:prod": "cross-env NODE_ENV=production DEBUG=* node bin/upload-to-s3.js www.howdju.com",

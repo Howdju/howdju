@@ -19,9 +19,11 @@ import {combineActions, handleActions} from "redux-actions";
 
 import {
   isCounter,
-  JustificationTargetType,
   VoteTargetType
 } from '../models'
+import {
+  JustificationTargetType,
+} from 'howdju-models'
 import {api} from '../actions'
 import * as httpStatusCodes from "../httpStatusCodes";
 import {assert} from './../util'
