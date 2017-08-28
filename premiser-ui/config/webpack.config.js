@@ -1,14 +1,11 @@
-const webpack = require('webpack')
-// const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack')
 const merge = require('webpack-merge')
 const assign = require('lodash/assign')
 
 const {
   gitShortSha,
   nodePackageVersion,
-  hostAddress,
-  devWebServerPort,
 } = require('./util')
 const projectConfig = require('./project.config')
 
@@ -53,13 +50,20 @@ const baseWebpackConfig = {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        exclude : /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
             cacheDirectory: true,
-          }
+            // These are necessary for compiling npm-linked libraries
+            presets: [
+              ["es2015", { "modules": false }],
+              "stage-0",
+              "react",
+            ]
+          },
         },
+        // TAG: NEW_LIB
+        exclude: /node_modules\/(?!howdju-common)/,
       },
       {
         test: /\.scss$/,

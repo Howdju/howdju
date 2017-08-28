@@ -8,6 +8,8 @@
 #  to a node repository.)  If necessary, during build steps, we may temporarily install the local libraries to the
 #  application libraries and then remove them afterwards.
 
+# TAG: NEW_LIB
+
 script_dir="$( dirname "${BASH_SOURCE[0]}" )"
 base_dir=${script_dir}/../
 
