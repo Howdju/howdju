@@ -9,12 +9,6 @@ const rename = require('gulp-rename')
 const runSequence = require('run-sequence')
 const zip = require('gulp-zip')
 
-const {
-  updateFunctionCode,
-  publishVersion,
-  updateAlias,
-} = require('./lib/lambda')
-
 gulp.task('clean', next => del('./dist', next))
 
 gulp.task('js', () =>

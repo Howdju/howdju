@@ -1,6 +1,9 @@
 const childProcess = require('child_process')
 const fs = require('fs')
 
+const isNumber = require('lodash/isNumber')
+const toNumber = require('lodash/toNumber')
+
 const AWS = require('aws-sdk')
 
 AWS.config.region = 'us-east-1'
