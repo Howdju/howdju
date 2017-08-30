@@ -2,6 +2,7 @@ const concat = require('lodash/concat')
 const forEach = require('lodash/forEach')
 const head = require('lodash/head')
 const isFinite = require('lodash/isFinite')
+const map = require('lodash/map')
 const snakeCase = require('lodash/snakeCase')
 const toNumber = require('lodash/toNumber')
 
@@ -12,8 +13,9 @@ const {
   SortDirection,
   ContinuationSortDirection,
 } = require('howdju-common')
-const map = require('lodash/map')
-const {toStatement} = require("../orm")
+
+const {toStatement} = require("howdju-service-common")
+
 const {logger} = require('../logging')
 const {cleanWhitespace, normalizeText} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')

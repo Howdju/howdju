@@ -22,16 +22,16 @@ const {
   negateRootPolarity,
   newImpossibleError,
 } = require('howdju-common')
-
-const {EntityNotFoundError} = require('../apiErrors')
-const statementCompoundsDao = require('./statementCompoundsDao')
-const citationReferencesDao = require('./citationReferencesDao')
 const {
   toJustification,
   toStatementCompound,
   toStatementCompoundAtom,
   toCitationReference,
-} = require('../orm')
+} = require('howdju-service-common')
+
+const {EntityNotFoundError} = require('../apiErrors')
+const statementCompoundsDao = require('./statementCompoundsDao')
+const citationReferencesDao = require('./citationReferencesDao')
 const {query} = require('../db')
 const {logger} = require('../logging')
 const {groupRootJustifications} = require('./util')

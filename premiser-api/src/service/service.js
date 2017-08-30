@@ -52,7 +52,6 @@ const {
   justificationsDao,
   usersDao,
   authDao,
-  votesDao,
   urlsDao,
   actionsDao,
   statementCompoundsDao,
@@ -112,6 +111,9 @@ const {
   isTruthy,
   assert,
 } = require('../util')
+const {
+  votesDao
+} = require('../initialization')
 
 
 const withPermission = (authToken, permission) => permissionsDao.getUserIdWithPermission(authToken, permission)

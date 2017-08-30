@@ -5,10 +5,10 @@ const map = require('lodash/map')
 const {
   JustificationBasisType
 } = require('howdju-common')
-
 const {
   toUrl,
-} = require("../orm")
+} = require("howdju-service-common")
+
 const {query} = require('./../db')
 const {logger} = require('../logging')
 const head = require('lodash/head')

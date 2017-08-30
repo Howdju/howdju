@@ -8,7 +8,8 @@ const concat = require('lodash/concat')
 
 const {
   toCitation,
-} = require("../orm")
+} = require("howdju-service-common")
+
 const {query} = require('./../db')
 const {
   JustificationBasisType,

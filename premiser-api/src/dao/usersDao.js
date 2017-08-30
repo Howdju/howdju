@@ -1,9 +1,10 @@
 const get = require('lodash/get')
 
-const {query} = require('../db')
 const {
   toUser,
-} = require('../orm')
+} = require('howdju-service-common')
+
+const {query} = require('../db')
 
 class UsersDao {
   createUser(user, creatorUserId, now) {

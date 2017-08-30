@@ -2,11 +2,14 @@ const map = require('lodash/map')
 
 const {negateVotePolarity} = require('howdju-common')
 
-const {toVote} = require('../orm')
-const {query} = require('../db')
+const {toVote} = require('./orm')
 
 
-class VotesDao {
+exports.VotesDao = class VotesDao {
+  constructor(query) {
+    this.query = query
+  }
+
   deleteOpposingVotes(userId, vote) {
     const {targetType, targetId, polarity} = vote
 
@@ -20,7 +23,7 @@ class VotesDao {
           and polarity = $5 
           and deleted is null
         returning vote_id`
-    return query(sql, [new Date(), userId, targetType, targetId, negateVotePolarity(polarity)])
+    return this.query(sql, [new Date(), userId, targetType, targetId, negateVotePolarity(polarity)])
         .then( ({rows}) => map(rows, r => r.vote_id))
   }
 
@@ -35,7 +38,7 @@ class VotesDao {
           and target_id = $3 
           and polarity = $4
           and deleted is null`
-    return query(sql, [userId, targetType, targetId, polarity])
+    return this.query(sql, [userId, targetType, targetId, polarity])
         .then( ({rows}) => map(rows, toVote))
   }
 
@@ -45,7 +48,7 @@ class VotesDao {
       insert into votes (user_id, target_type, target_id, polarity, created) 
       values ($1, $2, $3, $4, $5) 
       returning *`
-    return query(sql, [userId, targetType, targetId, polarity, new Date()])
+    return this.query(sql, [userId, targetType, targetId, polarity, new Date()])
         .then( ({rows: [row]}) => toVote(row) )
   }
 
@@ -61,9 +64,7 @@ class VotesDao {
           and polarity = $5 
           and deleted is null
         returning vote_id`
-    return query(sql, [new Date(), userId, targetType, targetId, polarity])
+    return this.query(sql, [new Date(), userId, targetType, targetId, polarity])
         .then( ({rows}) => map(rows, r => r.vote_id))
   }
 }
-
-module.exports = new VotesDao()

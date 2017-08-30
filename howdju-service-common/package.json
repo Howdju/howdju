@@ -1,0 +1,13 @@
+{
+  "name": "howdju-service-common",
+  "version": "1.0.0",
+  "description": "Contains code common to services.  Not suitable for client code.",
+  "main": "lib/index.js",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1"
+  }
+}

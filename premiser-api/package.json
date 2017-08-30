@@ -1,10 +1,10 @@
 {
   "name": "premiser-api",
   "version": "0.1.0",
-  "description": "API for premiser.co.  Proprietary and confidential.  Copyright Carl Gieringer",
+  "description": "API for howdju.com.  Proprietary and confidential.  Copyright Carl Gieringer",
   "main": "index.js",
-  "repository": "git@bitbucket.org:premiser/premiser.git",
-  "author": "Carl Gieringer <carl@premiser.co>",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
     "db:local:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",

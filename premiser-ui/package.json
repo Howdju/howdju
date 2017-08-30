@@ -1,10 +1,10 @@
 {
   "name": "premiser-ui",
   "version": "0.1.0",
-  "description": "UI for premiser.co.  Proprietary and confidential.  Copyright Carl Gieringer",
-  "main": "index.js",
-  "repository": "git@bitbucket.org:premiser/premiser.git",
-  "author": "Carl Gieringer <carl@premiser.co>",
+  "description": "UI for howdju.com.  Proprietary and confidential.  Copyright Carl Gieringer",
+  "main": "server.js",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
     "clean": "rm -rf dist",

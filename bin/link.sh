@@ -13,8 +13,16 @@
 script_dir="$( dirname "${BASH_SOURCE[0]}" )"
 base_dir=${script_dir}/../
 
+cd ${base_dir}/howdju-service-common
+npm link ../howdju-common
+
 cd ${base_dir}/premiser-api
 npm link ../howdju-common
+npm link ../howdju-service-common
+
+cd ${base_dir}/premiser-processing
+npm link ../howdju-common
+npm link ../howdju-service-common
 
 cd ${base_dir}/premiser-ui
 npm link ../howdju-common

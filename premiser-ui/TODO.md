@@ -6,6 +6,7 @@
   * Need to yarn add in addition to yarn link?
   * Need to change UI to use ECMAScript of server?
   * howdju-common for shared server components
+  * setup dependency initialization files
 
 * Justification job scoring
 * Prod featured perspectives (Hillary email)
@@ -99,6 +100,11 @@
 * Other devs can contribute
   * Dev environment
     * Continuous delivery
+      * Jenkins/Spot-instances
+        * https://jenkins.io/blog/2016/06/10/save-costs-with-ec2-spot-fleet/
+        * https://d0.awsstatic.com/whitepapers/DevOps/Jenkins_on_AWS.pdf
+        * https://aws.amazon.com/blogs/devops/set-up-a-build-pipeline-with-jenkins-and-amazon-ecs/
+        * https://aws.amazon.com/getting-started/projects/setup-jenkins-build-server/
     * Automated testing (browserstack?)
   * Unit testing
 
@@ -559,6 +565,7 @@
 * [Public data sets?](https://www.google.com/publicdata/directory)
 * [SASS Variable to Javascript](https://github.com/nordnet/sass-variable-loader)
 * [Node Postgres Migrations](https://www.npmjs.com/package/node-pg-migrate)
+* [SFSafariViewController](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

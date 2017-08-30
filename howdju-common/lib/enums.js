@@ -75,3 +75,7 @@ _e.ContinuationSortDirection = {
   ASCENDING: 'a',
   DESCENDING: 'd',
 }
+
+_e.JustificationScoreType = {
+  GLOBAL_VOTE_SUM: 'GLOBAL_VOTE_SUM',
+}

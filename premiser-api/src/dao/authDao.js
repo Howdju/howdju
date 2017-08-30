@@ -2,7 +2,7 @@ const get = require('lodash/get')
 const head = require('lodash/head')
 const {query} = require('../db')
 const toString = require('lodash/toString')
-const {toUserHash} = require('../orm')
+const {toUserHash} = require('howdju-service-common')
 
 class AuthDao {
 

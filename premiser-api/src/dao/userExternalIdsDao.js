@@ -4,7 +4,8 @@ const head = require('lodash/head')
 const {query} = require('../db')
 const toString = require('lodash/toString')
 const uuid = require('uuid')
-const {toUserExternalIds} = require('../orm')
+
+const {toUserExternalIds} = require('howdju-service-common')
 
 class UserExternalIdsDao {
 

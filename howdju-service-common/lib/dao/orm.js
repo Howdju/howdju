@@ -84,38 +84,38 @@ const toJustification = (
 
   switch (row.basis_type) {
     case JustificationBasisType.CITATION_REFERENCE: {
-        const basisId = row.basis_id || row.basis_citation_reference_id
-        if (basisId) {
-          if (citationReferencesById) {
-            justification.basis.entity = citationReferencesById[basisId]
-          }
-          if (!justification.basis.entity && row.basis_citation_reference_id) {
-            justification.basis.entity = toCitationReference({
-              citation_reference_id: row.basis_citation_reference_id,
-              quote: row.basis_citation_reference_quote,
-              citation_id: row.basis_citation_reference_citation_id,
-              citation_text: row.basis_citation_reference_citation_text,
-            })
-          }
+      const basisId = row.basis_id || row.basis_citation_reference_id
+      if (basisId) {
+        if (citationReferencesById) {
+          justification.basis.entity = citationReferencesById[basisId]
+        }
+        if (!justification.basis.entity && row.basis_citation_reference_id) {
+          justification.basis.entity = toCitationReference({
+            citation_reference_id: row.basis_citation_reference_id,
+            quote: row.basis_citation_reference_quote,
+            citation_id: row.basis_citation_reference_citation_id,
+            citation_text: row.basis_citation_reference_citation_text,
+          })
         }
       }
+    }
       break
 
     case JustificationBasisType.STATEMENT_COMPOUND: {
-        const basisId = row.basis_id || row.basis_statement_compound_id
-        if (basisId) {
-          if (statementCompoundsById) {
-            justification.basis.entity = statementCompoundsById[basisId]
-          }
-          if (!justification.basis.entity && row.basis_statement_compound_id) {
-            justification.basis.entity = toStatementCompound({
-              statement_compound_id: row.basis_statement_compound_id,
-              created: row.basis_statement_compound_created,
-              creator_user_id: row.basis_statement_compound_creator_user_id,
-            })
-          }
+      const basisId = row.basis_id || row.basis_statement_compound_id
+      if (basisId) {
+        if (statementCompoundsById) {
+          justification.basis.entity = statementCompoundsById[basisId]
+        }
+        if (!justification.basis.entity && row.basis_statement_compound_id) {
+          justification.basis.entity = toStatementCompound({
+            statement_compound_id: row.basis_statement_compound_id,
+            created: row.basis_statement_compound_created,
+            creator_user_id: row.basis_statement_compound_creator_user_id,
+          })
         }
       }
+    }
       break
 
     default:

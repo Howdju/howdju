@@ -1,6 +1,5 @@
 const {removeDups} = require("./util")
 const {queries} = require('../db')
-const {toStatement} = require("../orm")
 const map = require('lodash/map')
 
 const emptyResults = Promise.resolve([])

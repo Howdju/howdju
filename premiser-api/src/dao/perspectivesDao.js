@@ -10,7 +10,6 @@ const {
   JustificationTargetType,
   newImpossibleError,
 } = require('howdju-common')
-
 const {
   toPerspective,
   toJustification,
@@ -20,7 +19,8 @@ const {
   toUrl,
   toCitation,
   toCitationReference,
-} = require('../orm')
+} = require('howdju-service-common')
+
 const {query} = require('../db')
 
 

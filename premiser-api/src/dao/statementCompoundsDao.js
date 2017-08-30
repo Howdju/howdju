@@ -9,14 +9,15 @@ const sortBy = require('lodash/sortBy')
 const values = require('lodash/values')
 const {normalizeText} = require("./util")
 
-const {query} = require('../db')
 const {
   JustificationBasisType
 } = require('howdju-common')
 const {
   toStatementCompound,
   toStatementCompoundAtom,
-} = require('../orm')
+} = require('howdju-service-common')
+
+const {query} = require('../db')
 const {logger} = require('../logging')
 
 const atomOrderPositionRegExp = new RegExp(/^atom_order_position_(\d+)$/)

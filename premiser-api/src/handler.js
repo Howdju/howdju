@@ -15,6 +15,8 @@ const env = require('node-env-file')
 // ENV vars for either sensitive information or things that may need to be changed via the AWS lambda console
 env(__dirname + '/.env')
 
+const {configureGatewayContext} = require('howdju-service-common')
+
 const {routeEvent} = require('./route')
 // config for settings that can be unencrypted at rest and that wait for a deploy to change
 const config = require('./config')
@@ -111,11 +113,6 @@ const parseBody = event => {
   }
 }
 
-const configureGatewayContext = (gatewayContext) => {
-  // Otherwise the pg.Pool timeout keeps us alive
-  gatewayContext.callbackWaitsForEmptyEventLoop = false
-}
-
 const makeResponder = (gatewayEvent, gatewayCallback) => ({httpStatusCode, headers, body}) => {
   const origin = getHeaderValue(gatewayEvent.headers, headerKeys.ORIGIN)
   const response = makeResponse({httpStatusCode, headers, body, origin})
@@ -134,7 +131,6 @@ const configureLogger = (gatewayEvent, gatewayContext, requestIdentifiers) => {
     logger.silly(`Setting logger to stage logLevel ${logLevel} (was ${previousLogLevel})`)
   }
 
-  // We don't want the logger to log the awsContext, since AWS will do that for us
   const loggingContext = pick(requestIdentifiers, ['clientRequestId', 'serverRequestId'])
   const stage = get(gatewayEvent, ['requestContext', 'stage'])
   if (stage) {

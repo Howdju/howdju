@@ -6,12 +6,13 @@ const map = require('lodash/map')
 const snakeCase = require('lodash/snakeCase')
 const sortBy = require('lodash/sortBy')
 
-const urlsDao = require('./urlsDao')
 const {
   toCitationReference,
   toCitationReferenceUrl,
   toUrl,
-} = require("../orm")
+} = require('howdju-service-common')
+
+const urlsDao = require('./urlsDao')
 const {query} = require('./../db')
 const {
   JustificationBasisType,

@@ -6,7 +6,6 @@ module.exports = {
   justificationsDao: require('./justificationsDao'),
   usersDao: require('./usersDao'),
   authDao: require('./authDao'),
-  votesDao: require('./votesDao'),
   urlsDao: require('./urlsDao'),
   actionsDao: require('./actionsDao'),
   statementCompoundsDao: require('./statementCompoundsDao'),
