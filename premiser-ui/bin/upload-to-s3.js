@@ -3,7 +3,6 @@ const AWS = require('aws-sdk')
 const debug = require('debug')('premiser-ui:upload-to-s3')
 const fs = require('fs')
 const moment = require('moment')
-const nth = require('lodash/nth')
 const path = require('path')
 
 const projectConfig = require('../config/project.config')
@@ -15,8 +14,8 @@ argParser.addArgument('bucket')
 const args = argParser.parseArgs()
 
 AWS.config.region = projectConfig.aws.region
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile});
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile})
+const s3 = new AWS.S3({apiVersion: '2006-03-01'})
 
 const contentTypes = {
   '.js': 'application/javascript',
@@ -45,11 +44,11 @@ const upload = (filename) => {
       CacheControl: `public, max-age=${duration.seconds()}`,
       Expires: moment().add(duration).toDate(),
       ContentType: contentTypes[extension] || 'application/octet-stream',
-    };
+    }
     s3.upload(params, function(err, data) {
       if (err) throw err
       debug(`Uploaded ${filename} to ${args.bucket} (ETag: ${data.ETag})`)
-    });
+    })
   })
 }
 
@@ -57,5 +56,5 @@ const upload = (filename) => {
 fs.readdir(projectConfig.paths.dist(), (err, files) => {
   files.forEach(file => {
     upload(file)
-  });
+  })
 })

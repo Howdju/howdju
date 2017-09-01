@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {connect} from "react-redux";
+import {connect} from "react-redux"
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import get from 'lodash/get'
@@ -9,13 +9,13 @@ import {
   editors,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
-import {EditorTypes} from "./reducers/editors";
+import {EditorTypes} from "./reducers/editors"
 import {
   CANCEL_BUTTON_LABEL, EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
-} from "./texts";
+} from "./texts"
 import {default as t} from './texts'
-import NewJustificationEditorFields from "./NewJustificationEditorFields";
-import {makeNewJustification} from "howdju-common";
+import NewJustificationEditorFields from "./NewJustificationEditorFields"
+import {makeNewJustification} from "howdju-common"
 
 
 class NewJustificationEditor extends Component {
@@ -86,25 +86,25 @@ class NewJustificationEditor extends Component {
     ]
 
     return (
-        <form onSubmit={this.onSubmit}>
-          <NewJustificationEditorFields {...rest}
-                                        newJustification={editEntity}
-                                        basisStatementTextId={id + ".newJustificationBasisStatement"}
-                                        basisCitationReferenceQuoteId={id + ".newJustificationBasisCitationReferenceQuote"}
-                                        onPropertyChange={this.onPropertyChange}
-                                        onAddUrl={this.onAddUrl}
-                                        onRemoveUrl={this.onRemoveUrl}
-                                        onAddStatementAtom={this.onAddStatementAtom}
-                                        onRemoveStatementAtom={this.onRemoveStatementAtom}
-                                        onSubmit={this.onSubmit}
-                                        suggestionsKey={suggestionsKey}
-                                        errors={errors}
-                                        disabled={disabled}
-                                        onKeyDown={onKeyDown}
-          />
-          {isSaving && <CircularProgress key="progress" id="progress" />}
-          {doShowButtons && buttons}
-        </form>
+      <form onSubmit={this.onSubmit}>
+        <NewJustificationEditorFields {...rest}
+                                      newJustification={editEntity}
+                                      basisStatementTextId={id + ".newJustificationBasisStatement"}
+                                      basisCitationReferenceQuoteId={id + ".newJustificationBasisCitationReferenceQuote"}
+                                      onPropertyChange={this.onPropertyChange}
+                                      onAddUrl={this.onAddUrl}
+                                      onRemoveUrl={this.onRemoveUrl}
+                                      onAddStatementAtom={this.onAddStatementAtom}
+                                      onRemoveStatementAtom={this.onRemoveStatementAtom}
+                                      onSubmit={this.onSubmit}
+                                      suggestionsKey={suggestionsKey}
+                                      errors={errors}
+                                      disabled={disabled}
+                                      onKeyDown={onKeyDown}
+        />
+        {isSaving && <CircularProgress key="progress" id="progress" />}
+        {doShowButtons && buttons}
+      </form>
     )
   }
 }

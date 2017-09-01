@@ -1,14 +1,17 @@
 # Howdju UI TODO
 
+* Test app
+* Services should use other services
+* yarn run lint:app
+* markdown for AboutPage?
+
 * Code-sharing
-  * howdju-models works for server and client?
-  * howdju-models linking works for deployment?
-  * Need to yarn add in addition to yarn link?
-  * Need to change UI to use ECMAScript of server?
-  * howdju-common for shared server components
+  * Move remaining DAOs & services into howdju-service-common
   * setup dependency initialization files
+  * Remove unnecessary deps from apps
 
 * Justification job scoring
+* JustificationType.CitationReferenceParaphrase
 * Prod featured perspectives (Hillary email)
   * Show whose perspective it is.
   * Show when created

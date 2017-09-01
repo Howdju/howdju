@@ -2,24 +2,19 @@ import {
   delay
 } from 'redux-saga'
 import {
-  take,
   put,
   call,
   fork,
-  join,
   takeEvery,
-  select,
-  race,
   cancel,
-  cancelled,
 } from 'redux-saga/effects'
 import map from 'lodash/map'
 
 import {
   ui,
   str,
-} from "../actions";
-import config from "../config";
+} from "../actions"
+import config from "../config"
 
 const delayedHideTransientTaskByTransientId = {}
 
@@ -82,7 +77,7 @@ export default function* handleTransientInteractions() {
 
     // TODO update to yield all([...]) in v0.15
     yield map(delayedHideTransientTaskByTransientId, (task, transientId) =>
-        call(hideOtherTransient, visibleTransientId, transientId))
+      call(hideOtherTransient, visibleTransientId, transientId))
   })
 
   yield takeEvery(str(ui.scheduleDelayedHideTransient), function* scheduleDelayedHideTransientWorker(action) {

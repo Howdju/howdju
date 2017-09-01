@@ -4,10 +4,11 @@ import MenuButton from "react-md/lib/Menus/MenuButton"
 /** A MenuButton that stops click propagation so that clicks don't hide it. */
 class TransientMenuButton extends Component {
 
-  onMenuClick = event => {
+  onMenuClick = (...args) => {
+    const event = args[0]
     event.stopPropagation()
     if (this.props.onClick) {
-      this.props.onClick.apply(this, arguments)
+      this.props.onClick.apply(this, args)
     }
   }
 
@@ -16,10 +17,10 @@ class TransientMenuButton extends Component {
       ...rest
     } = this.props
     return (
-        <MenuButton {...rest}
-                    floating
-                    onClick={this.onMenuClick}
-        />
+      <MenuButton {...rest}
+                  floating
+                  onClick={this.onMenuClick}
+      />
     )
   }
 }

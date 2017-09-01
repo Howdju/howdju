@@ -15,7 +15,12 @@ import mergeWith from 'lodash/mergeWith'
 import pickBy from 'lodash/pickBy'
 import union from 'lodash/union'
 import values from 'lodash/values'
-import {combineActions, handleActions} from "redux-actions";
+import {combineActions, handleActions} from "redux-actions"
+
+import {
+  assert,
+  isTruthy,
+} from 'howdju-common'
 
 import {
   isCounter,
@@ -23,9 +28,7 @@ import {
   JustificationTargetType,
 } from 'howdju-common'
 import {api} from '../actions'
-import * as httpStatusCodes from "../httpStatusCodes";
-import {assert} from './../util'
-import {isTruthy} from "../util";
+import * as httpStatusCodes from "../httpStatusCodes"
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {
@@ -70,12 +73,12 @@ export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
 export const indexRootJustificationsByRootStatementId = justificationsById => {
   const justifications = values(justificationsById)
   const rootJustifications = filter(justifications, j =>
-      // TODO do we need a more thorough approach to ensuring that only fully entities are present?
-      // I'd like to send/receive them as stubs, and denormalize them somewhere standard
-      // Some justifications that come back are stubs and will lack relations like .target
-      j.target &&
-      j.target.type === JustificationTargetType.STATEMENT &&
-      j.target.entity.id === j.rootStatement
+    // TODO do we need a more thorough approach to ensuring that only fully entities are present?
+    // I'd like to send/receive them as stubs, and denormalize them somewhere standard
+    // Some justifications that come back are stubs and will lack relations like .target
+    j.target &&
+    j.target.type === JustificationTargetType.STATEMENT &&
+    j.target.entity.id === j.rootStatement
   )
   let rootJustificationsByRootStatementId = groupBy(rootJustifications, j => j.rootStatement)
   rootJustificationsByRootStatementId = mapValues(rootJustificationsByRootStatementId, justifications => map(justifications, j => j.id))
@@ -98,12 +101,12 @@ const stubSkippingCustomizer = testPropertyName => (objValue, srcValue, key, obj
 const justificationsCustomizer = (objValue, srcValue, key, object, source) => {
   // Don't override a value with one that is missing the relational information
   if (
-      has(objValue, 'target.type') &&
-      has(objValue, 'target.entity.id') &&
-      (
-          !has(srcValue, 'target.type') ||
-          !has(srcValue, 'target.entity.id')
-      )
+    has(objValue, 'target.type') &&
+    has(objValue, 'target.entity.id') &&
+    (
+      !has(srcValue, 'target.type') ||
+      !has(srcValue, 'target.entity.id')
+    )
   ) {
     return objValue
   }
@@ -119,22 +122,22 @@ const createEntityUpdate = (state, payloadEntities, key, customizer) => {
 
 export default handleActions({
   [combineActions(
-      api.fetchStatement.response,
-      api.fetchStatements.response,
-      api.fetchRecentStatements.response,
-      api.fetchRecentCitations.response,
-      api.fetchRecentCitationReferences.response,
-      api.fetchStatementJustifications.response,
-      api.fetchFeaturedPerspectives.response,
-      api.fetchJustificationsSearch.response,
-      api.fetchRecentJustifications.response,
-      api.fetchCitationReference.response,
-      api.createStatement.response,
-      api.updateStatement.response,
-      api.updateCitationReference.response,
-      api.fetchMainSearchSuggestions.response,
-      api.fetchStatementTextSuggestions.response,
-      api.fetchCitationTextSuggestions.response,
+    api.fetchStatement.response,
+    api.fetchStatements.response,
+    api.fetchRecentStatements.response,
+    api.fetchRecentCitations.response,
+    api.fetchRecentCitationReferences.response,
+    api.fetchStatementJustifications.response,
+    api.fetchFeaturedPerspectives.response,
+    api.fetchJustificationsSearch.response,
+    api.fetchRecentJustifications.response,
+    api.fetchCitationReference.response,
+    api.createStatement.response,
+    api.updateStatement.response,
+    api.updateCitationReference.response,
+    api.fetchMainSearchSuggestions.response,
+    api.fetchStatementTextSuggestions.response,
+    api.fetchCitationTextSuggestions.response,
   )]: {
     next: (state, action) => {
       const updates = map([
@@ -151,10 +154,10 @@ export default handleActions({
       if (action.payload.entities.justifications) {
         const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
         nonEmptyUpdates.push({justificationsByRootStatementId: mergeWith(
-            {},
-            state.justificationsByRootStatementId,
-            justificationsByRootStatementId,
-            unionArraysDistinctIdsCustomizer
+          {},
+          state.justificationsByRootStatementId,
+          justificationsByRootStatementId,
+          unionArraysDistinctIdsCustomizer
         )})
       }
 
@@ -197,19 +200,19 @@ export default handleActions({
       if (isCounter(justification)) {
         const counteredJustification = state.justifications[justification.target.entity.id]
         counteredJustification.counterJustifications = counteredJustification.counterJustifications ?
-            counteredJustification.counterJustifications.concat([justification.id]) :
-            [justification.id]
+          counteredJustification.counterJustifications.concat([justification.id]) :
+          [justification.id]
         counteredJustifications = {justifications: { [counteredJustification.id]: counteredJustification }}
       }
 
       return mergeWith(
-          {},
-          state,
-          action.payload.entities,
-          counteredJustifications,
-          // TODO this doesn't seem right; should be {justifications: {1: ..., 2: ...}}, but this would be like {justificationByRootStatementId: {1: ..., 2: ...}}
-          {justificationsByRootStatementId},
-          unionArraysDistinctIdsCustomizer,
+        {},
+        state,
+        action.payload.entities,
+        counteredJustifications,
+        // TODO this doesn't seem right; should be {justifications: {1: ..., 2: ...}}, but this would be like {justificationByRootStatementId: {1: ..., 2: ...}}
+        {justificationsByRootStatementId},
+        unionArraysDistinctIdsCustomizer,
       )
     }
   },
@@ -218,7 +221,7 @@ export default handleActions({
       const deletedJustification = action.meta.requestPayload.justification
       const justificationsByRootStatementId = cloneDeep(state.justificationsByRootStatementId)
       justificationsByRootStatementId[deletedJustification.rootStatement.id] =
-          filter(justificationsByRootStatementId[deletedJustification.rootStatement.id], id => id !== deletedJustification.id)
+        filter(justificationsByRootStatementId[deletedJustification.rootStatement.id], id => id !== deletedJustification.id)
 
       // If the deleted justification was a counter-justification, remove it from the target justification's counterJustifications
       let justifications = state.justifications
@@ -239,8 +242,8 @@ export default handleActions({
     }
   },
   [combineActions(
-      api.verifyJustification,
-      api.disverifyJustification
+    api.verifyJustification,
+    api.disverifyJustification
   )]: (state, action) => {
     const vote = action.payload.vote
     const {targetId, targetType} = vote
@@ -254,8 +257,8 @@ export default handleActions({
     }
   },
   [combineActions(
-      api.unVerifyJustification,
-      api.unDisverifyJustification
+    api.unVerifyJustification,
+    api.unDisverifyJustification
   )]: (state, action) => {
     const {
       targetId,
@@ -269,8 +272,8 @@ export default handleActions({
     }
   },
   [combineActions(
-      api.verifyJustification.response,
-      api.disverifyJustification.response
+    api.verifyJustification.response,
+    api.disverifyJustification.response
   )]: {
     next: (state, action) => {
       const vote = action.payload.entities.votes[action.payload.result.vote]
@@ -284,10 +287,10 @@ export default handleActions({
     }
   },
   [combineActions(
-      api.verifyJustification.response,
-      api.unVerifyJustification.response,
-      api.disverifyJustification.response,
-      api.unDisverifyJustification.response
+    api.verifyJustification.response,
+    api.unVerifyJustification.response,
+    api.disverifyJustification.response,
+    api.unDisverifyJustification.response
   )]: {
     throw: (state, action) => {
       // Undo optimistic vote

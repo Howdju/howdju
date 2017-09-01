@@ -8,9 +8,9 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import has from 'lodash/has'
 
-import {RETURN_KEY_CODE} from "./keyCodes";
-import CitationTextAutocomplete from "./CitationTextAutocomplete";
-import {toErrorText} from "./modelErrorMessages";
+import {RETURN_KEY_CODE} from "./keyCodes"
+import CitationTextAutocomplete from "./CitationTextAutocomplete"
+import {toErrorText} from "./modelErrorMessages"
 import ErrorMessages from './ErrorMessages'
 
 import './CitationReferenceEditorFields.scss'
@@ -33,7 +33,7 @@ class CitationReferenceEditorFields extends Component {
   }
 
   onChange = (value, event) => {
-    const target = event.target;
+    const target = event.target
     const name = target.name
     this.props.onPropertyChange({[name]: value})
   }
@@ -71,97 +71,97 @@ class CitationReferenceEditorFields extends Component {
 
     const hasErrors = get(errors, 'hasErrors')
     const quoteInputProps = hasErrors && errors.fieldErrors.quote.length > 0 ?
-        {error: true, errorText: toErrorText(errors.fieldErrors.quote)} :
-        {}
+      {error: true, errorText: toErrorText(errors.fieldErrors.quote)} :
+      {}
     const citationTextInputProps = hasErrors && errors.fieldErrors.citation.fieldErrors.text.length > 0 ?
-        {error: true, errorText: toErrorText(errors.fieldErrors.citation.fieldErrors.text)} :
-        {}
+      {error: true, errorText: toErrorText(errors.fieldErrors.citation.fieldErrors.text)} :
+      {}
     const urlInputProps = hasErrors ?
-        map(errors.fieldErrors.urls.itemErrors, urlError => urlError.fieldErrors.url.length > 0 ?
-            {error: true, errorText: toErrorText(urlError.fieldErrors.url)} :
-            {}
-        ) :
-        map(urls, () => null)
+      map(errors.fieldErrors.urls.itemErrors, urlError => urlError.fieldErrors.url.length > 0 ?
+        {error: true, errorText: toErrorText(urlError.fieldErrors.url)} :
+        {}
+      ) :
+      map(urls, () => null)
 
     const quote = get(citationReference, quoteName) || ''
     const citationText = get(citationReference, citationTextName) || ''
     const hasCitationText = has(citationReference, citationTextName)
 
     return (
-        <div>
-          <TextField {...quoteInputProps}
-                     id={quoteId || (idPrefix + "quote")}
-                     key="quote"
-                     name={namePrefix + quoteName}
+      <div>
+        <TextField {...quoteInputProps}
+                   id={quoteId || (idPrefix + "quote")}
+                   key="quote"
+                   name={namePrefix + quoteName}
+                   type="text"
+                   label="Quote"
+                   rows={2}
+                   maxRows={4}
+                   className={cn('hasIcon', {
+                     editedAfterMount: isQuoteEditedAfterMount,
+                     hasValue: !!quote,
+                   })}
+                   value={quote}
+                   onChange={this.onChange}
+                   leftIcon={<FontIcon>format_quote</FontIcon>}
+                   disabled={disabled || !has(citationReference, quoteName)}
+                   onKeyDown={this.onTextInputKeyDown}
+        />
+        {suggestionsKey && !disabled && hasCitationText ?
+          <CitationTextAutocomplete {...citationTextInputProps}
+                                    id={idPrefix + 'citation.text'}
+                                    key="citation.text"
+                                    name={namePrefix + citationTextName}
+                                    suggestionsKey={suggestionsKeyPrefix + citationTextName}
+                                    label="Citation"
+                                    value={citationText}
+                                    required
+                                    onPropertyChange={this.onPropertyChange}
+                                    leftIcon={<FontIcon>book</FontIcon>}
+                                    disabled={disabled || !hasCitationText}
+                                    onKeyDown={this.onTextInputKeyDown}
+          /> :
+          <TextField {...citationTextInputProps}
+                     id={idPrefix + 'citation.text'}
+                     name={namePrefix + 'citation.text'}
+                     label="Citation"
                      type="text"
-                     label="Quote"
-                     rows={2}
-                     maxRows={4}
-                     className={cn('hasIcon', {
-                       editedAfterMount: isQuoteEditedAfterMount,
-                       hasValue: !!quote,
-                     })}
-                     value={quote}
+                     value={citationText}
+                     required
                      onChange={this.onChange}
-                     leftIcon={<FontIcon>format_quote</FontIcon>}
-                     disabled={disabled || !has(citationReference, quoteName)}
+                     leftIcon={<FontIcon>book</FontIcon>}
+                     disabled={disabled || !hasCitationText}
                      onKeyDown={this.onTextInputKeyDown}
           />
-          {suggestionsKey && !disabled && hasCitationText ?
-              <CitationTextAutocomplete {...citationTextInputProps}
-                                        id={idPrefix + 'citation.text'}
-                                        key="citation.text"
-                                        name={namePrefix + citationTextName}
-                                        suggestionsKey={suggestionsKeyPrefix + citationTextName}
-                                        label="Citation"
-                                        value={citationText}
-                                        required
-                                        onPropertyChange={this.onPropertyChange}
-                                        leftIcon={<FontIcon>book</FontIcon>}
-                                        disabled={disabled || !hasCitationText}
-                                        onKeyDown={this.onTextInputKeyDown}
-              /> :
-              <TextField {...citationTextInputProps}
-                         id={idPrefix + 'citation.text'}
-                         name={namePrefix + 'citation.text'}
-                         label="Citation"
-                         type="text"
-                         value={citationText}
-                         required
-                         onChange={this.onChange}
-                         leftIcon={<FontIcon>book</FontIcon>}
-                         disabled={disabled || !hasCitationText}
-                         onKeyDown={this.onTextInputKeyDown}
-              />
-          }
-          {map(urls, (url, index) =>
-              <TextField {...urlInputProps[index]}
-                         id={`${idPrefix}urls[${index}].url`}
-                         key={`urls[${index}].url`}
-                         name={`${namePrefix}urls[${index}].url`}
-                         className="urlInput"
-                         type="url"
-                         label="URL"
-                         value={get(citationReference, `urls[${index}].url`, '')}
-                         onChange={this.onChange}
-                         leftIcon={<FontIcon>link</FontIcon>}
-                         rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
-                         disabled={!!url.id || disabled}
-                         onKeyDown={this.onTextInputKeyDown}
-              />
-          )}
-          <Button flat
-                  className={cn('addButton', {
-                    hidden: disabled,
-                  })}
-                  key="addUrlButton"
-                  label="Add URL"
-                  onClick={this.props.onAddUrl}
-          >add</Button>
-          {hasErrors && errors.modelErrors &&
-            <ErrorMessages errors={errors.modelErrors} />
-          }
-        </div>
+        }
+        {map(urls, (url, index) =>
+          <TextField {...urlInputProps[index]}
+                     id={`${idPrefix}urls[${index}].url`}
+                     key={`urls[${index}].url`}
+                     name={`${namePrefix}urls[${index}].url`}
+                     className="urlInput"
+                     type="url"
+                     label="URL"
+                     value={get(citationReference, `urls[${index}].url`, '')}
+                     onChange={this.onChange}
+                     leftIcon={<FontIcon>link</FontIcon>}
+                     rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
+                     disabled={!!url.id || disabled}
+                     onKeyDown={this.onTextInputKeyDown}
+          />
+        )}
+        <Button flat
+                className={cn('addButton', {
+                  hidden: disabled,
+                })}
+                key="addUrlButton"
+                label="Add URL"
+                onClick={this.props.onAddUrl}
+        >add</Button>
+        {hasErrors && errors.modelErrors && (
+          <ErrorMessages errors={errors.modelErrors} />
+        )}
+      </div>
     )
   }
 }

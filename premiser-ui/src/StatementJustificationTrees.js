@@ -13,7 +13,7 @@ import config from './config'
 import JustificationTree from './JustificationTree'
 
 import './StatementJustificationTrees.scss'
-import {selectIsWindowNarrow} from "./selectors";
+import {selectIsWindowNarrow} from "./selectors"
 
 class StatementJustificationTrees extends Component {
 
@@ -53,7 +53,6 @@ class StatementJustificationTrees extends Component {
     const positiveJustifications = get(justificationsByPolarity, JustificationPolarity.POSITIVE, [])
     const negativeJustifications = get(justificationsByPolarity, JustificationPolarity.NEGATIVE, [])
     const hasBothSides = positiveJustifications.length > 0 && negativeJustifications.length > 0
-    const hasJustifications = justifications && justifications.length > 0
 
     /*
      When there are both positive and negative justifications, don't add any margin, but split them into two columns
@@ -65,13 +64,13 @@ class StatementJustificationTrees extends Component {
     if (isWindowNarrow || isCondensed || !hasBothSides && !isUnCondensed) {
       const treesClass = "statement-justifications-justification-trees--combined"
       treeCells = (
-          <FlipMove key={treesClass}
-                    className={`md-cell md-cell--12 ${treesClass}`}
-                    duration={flipMoveDuration}
-                    easing={flipMoveEasing}
-          >
-            {map(justifications, this.toTree)}
-          </FlipMove>
+        <FlipMove key={treesClass}
+                  className={`md-cell md-cell--12 ${treesClass}`}
+                  duration={flipMoveDuration}
+                  easing={flipMoveEasing}
+        >
+          {map(justifications, this.toTree)}
+        </FlipMove>
       )
     } else {
       const positiveTreeClass = "statement-justifications-justification-trees--positive"
@@ -95,9 +94,9 @@ class StatementJustificationTrees extends Component {
     }
 
     return (
-        <WrapperComponent className={cn(className, "md-grid")}>
-          {treeCells}
-        </WrapperComponent>
+      <WrapperComponent className={cn(className, "md-grid")}>
+        {treeCells}
+      </WrapperComponent>
     )
   }
 }

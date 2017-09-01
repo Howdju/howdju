@@ -14,10 +14,10 @@ export default class FetchButton extends Component {
       ...rest
     } = this.props
     const fetchingLabel = (
-        <div>
-          {label}
-          <CircularProgress key={progressId} id={progressId} />
-        </div>
+      <div>
+        {label}
+        <CircularProgress key={progressId} id={progressId} />
+      </div>
     )
     const fetchLabel = isFetching ? fetchingLabel : label
     return (

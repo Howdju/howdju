@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Route, Switch } from 'react-router'
 import { Link, Redirect } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
 import Helmet from 'react-helmet'
 import Button from 'react-md/lib/Buttons/Button'
-import Drawer from 'react-md/lib/Drawers/Drawer';
+import Drawer from 'react-md/lib/Drawers/Drawer'
 import ListItem from 'react-md/lib/Lists/ListItem'
 import FontIcon from 'react-md/lib/FontIcons'
 import Snackbar from 'react-md/lib/Snackbars'
-import Toolbar from 'react-md/lib/Toolbars';
-import Tabs from 'react-md/lib/Tabs/Tabs';
+import Toolbar from 'react-md/lib/Toolbars'
+import Tabs from 'react-md/lib/Tabs/Tabs'
 import Tab from 'react-md/lib/Tabs/Tab'
 import { connect } from 'react-redux'
 import cn from 'classnames'
@@ -25,38 +26,37 @@ import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
 import {
   api,
-  app,
   ui,
   mapActionCreatorGroupToDispatchToProps,
-} from "./actions";
+} from "./actions"
 import {history} from './configureStore'
-import paths, {createJustificationPath} from "./paths";
+import paths, {createJustificationPath} from "./paths"
 import mainSearcher from './mainSearcher'
 import IconPage from './IconPage'
-import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage";
-import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage";
-import RecentActivityPage from "./RecentActivityPage";
-import WhatsNextPage from "./WhatsNextPage";
-import AboutPage from "./AboutPage";
-import NotFoundPage from "./NotFoundPage";
-import JustificationsSearchPage from "./JustificationsSearchPage";
+import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage"
+import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage"
+import RecentActivityPage from "./RecentActivityPage"
+import WhatsNextPage from "./WhatsNextPage"
+import AboutPage from "./AboutPage"
+import NotFoundPage from "./NotFoundPage"
+import JustificationsSearchPage from "./JustificationsSearchPage"
 import t, {
   MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME,
   MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
   MAIN_TABS_WHATS_NEXT_TAB_NAME,
   MAIN_TABS_ABOUT_TAB_NAME,
-} from "./texts";
+} from "./texts"
 
 import './fonts.js'
 import './App.scss'
-import {selectIsWindowNarrow, selectRouterLocation} from "./selectors";
+import {selectIsWindowNarrow} from "./selectors"
 import * as smallchat from './smallchat'
 import {
   isScrollPastBottom,
   isScrollPastTop,
   isDevice,
-} from "./util";
-import {getOrCreateSessionStorageId, getOrCreateSessionCookieId} from "./identifiers";
+} from "./util"
+import {getOrCreateSessionStorageId, getOrCreateSessionCookieId} from "./identifiers"
 
 const tabIndexByPathname = {
   '/featured-perspectives': 0,
@@ -248,70 +248,70 @@ class App extends Component {
     if (isDevice()) {
       if (isMobileSiteDisabled) {
         navItems.push(
-            <ListItem key="mobile-site"
-                      primaryText="Mobile site"
-                      leftIcon={<FontIcon>smartphone</FontIcon>}
-                      onClick={this.enableMobileSite}
-            />
+          <ListItem key="mobile-site"
+                    primaryText="Mobile site"
+                    leftIcon={<FontIcon>smartphone</FontIcon>}
+                    onClick={this.enableMobileSite}
+          />
         )
       } else {
         navItems.push(
-            <ListItem key="desktop-site"
-                      primaryText="Desktop site"
-                      leftIcon={<FontIcon>desktop_windows</FontIcon>}
-                      onClick={this.disableMobileSite}
-            />
+          <ListItem key="desktop-site"
+                    primaryText="Desktop site"
+                    leftIcon={<FontIcon>desktop_windows</FontIcon>}
+                    onClick={this.disableMobileSite}
+          />
         )
       }
     }
     if (authToken) {
       navItems.push(
-          <ListItem key="logout"
-                    primaryText="Logout"
-                    leftIcon={<FontIcon>exit_to_app</FontIcon>}
-                    onClick={this.logout}
-          />
+        <ListItem key="logout"
+                  primaryText="Logout"
+                  leftIcon={<FontIcon>exit_to_app</FontIcon>}
+                  onClick={this.logout}
+        />
       )
     }
     if (!authToken) {
       navItems.push(
-          <ListItem key="login"
-                    primaryText="Login"
-                    leftIcon={<FontIcon>https</FontIcon>}
-                    component={Link}
-                    to="/login"
-          />
+        <ListItem key="login"
+                  primaryText="Login"
+                  leftIcon={<FontIcon>https</FontIcon>}
+                  component={Link}
+                  to="/login"
+        />
       )
     }
 
     const navDrawer = (
-        <Drawer
-            id="app-nav-drawer"
-            position="right"
-            type={Drawer.DrawerTypes.TEMPORARY}
-            header={
-              <Toolbar
-                  nav={<Button icon onClick={this.hideNavDrawer}>close</Button>}
-                  className="md-divider-border md-divider-border--bottom"
-              >
-                {authToken &&
-                  <div className="app-nav-drawer-header">
-                    <b>{email}</b>
-                  </div>
-                }
-              </Toolbar>
+      <Drawer
+        id="app-nav-drawer"
+        position="right"
+        type={Drawer.DrawerTypes.TEMPORARY}
+        header={
+          <Toolbar
+            nav={<Button icon onClick={this.hideNavDrawer}>close</Button>}
+            className="md-divider-border md-divider-border--bottom"
+          >
+            {authToken &&
+            <div className="app-nav-drawer-header">
+              <b>{email}</b>
+            </div>
             }
-            navItems={navItems}
-            visible={isNavDrawerVisible}
-            onVisibilityToggle={this.onNavDrawerVisibilityChange}
-            style={{ zIndex: 100 }}
-        />)
+          </Toolbar>
+        }
+        navItems={navItems}
+        visible={isNavDrawerVisible}
+        onVisibilityToggle={this.onNavDrawerVisibilityChange}
+        style={{ zIndex: 100 }}
+      />)
 
     const renderHomePath = props => {
       const mainSearchText = mainSearcher.mainSearchText(props.location)
       return mainSearchText ?
-          <MainSearchPage {...props} /> :
-          <Redirect to={{pathname: '/featured-perspectives'}}/>
+        <MainSearchPage {...props} /> :
+        <Redirect to={{pathname: '/featured-perspectives'}}/>
     }
 
     const tabInfos = [
@@ -338,34 +338,34 @@ class App extends Component {
     ]
 
     const pageTabs = (
-        <Tabs
-            tabId="mainTab"
-            centered
-            className="toolbarTabs"
-            activeTabIndex={activeTabIndex}
-            onTabChange={this.onTabChange}
-            style={{position: 'absolute', left: 0, bottom: 0, right: 0}}
-        >
-          {map(tabInfos, ti => (
-              <Tab label={
-                     <Link to={ti.path}>
-                       {ti.text}
-                     </Link>
-                   }
-                   id={ti.id}
-                   key={ti.id}
-              />
-          ))}
-        </Tabs>
+      <Tabs
+        tabId="mainTab"
+        centered
+        className="toolbarTabs"
+        activeTabIndex={activeTabIndex}
+        onTabChange={this.onTabChange}
+        style={{position: 'absolute', left: 0, bottom: 0, right: 0}}
+      >
+        {map(tabInfos, ti => (
+          <Tab label={
+            <Link to={ti.path}>
+              {ti.text}
+            </Link>
+          }
+               id={ti.id}
+               key={ti.id}
+          />
+        ))}
+      </Tabs>
     )
 
     const title = isFinite(activeTabIndex) && activeTabIndex >= 0 ?
-        `${tabInfos[activeTabIndex].text} — Howdju` :
-        'Howdju'
+      `${tabInfos[activeTabIndex].text} — Howdju` :
+      'Howdju'
 
     const viewportContent = isMobileSiteDisabled ?
-        'width=1024, initial-scale=1' :
-        'width=device-width, initial-scale=1, user-scalable=no'
+      'width=1024, initial-scale=1' :
+      'width=device-width, initial-scale=1, user-scalable=no'
 
     return (
       <ConnectedRouter history={history}>
@@ -399,13 +399,13 @@ class App extends Component {
               <Route exact path="/search-justifications" component={JustificationsSearchPage} />
 
               <Route exact path="/create-statement" render={props => (
-                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
+                <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
               )} />
               <Route exact path={createJustificationPath} render={props => (
-                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
+                <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
               )} />
               <Route exact path="/submit" render={props => (
-                  <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
+                <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
               )} />
 
               <Route exact path="/tools" component={ToolsPage} />
@@ -424,7 +424,7 @@ class App extends Component {
   }
 }
 App.contextTypes = {
-  store: React.PropTypes.object
+  store: PropTypes.object
 }
 
 const mapStateToProps = state => {

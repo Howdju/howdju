@@ -29,10 +29,10 @@ class MainSearchPage extends Component {
   }
 
   toCard = (entity) => (
-      <StatementCard key={`statement-card-${entity.id}`}
-                     className="md-cell md-cell--12"
-                     statement={entity}
-      />
+    <StatementCard key={`statement-card-${entity.id}`}
+                   className="md-cell md-cell--12"
+                   statement={entity}
+    />
   )
 
   render () {
@@ -46,9 +46,9 @@ class MainSearchPage extends Component {
     return (
       <div className="md-grid md-grid--card-list">
         {isFetching ?
-            loading :
-            !statements.length ? noResults :
-              map(statements, this.toCard)
+          loading :
+          !statements.length ? noResults :
+            map(statements, this.toCard)
         }
       </div>
     )

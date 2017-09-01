@@ -22,7 +22,7 @@ export const removeStatementCompoundId = statementCompound => {
 }
 
 export const consolidateBasis = newJustification => {
-  const justification = cloneDeep(newJustification);
+  const justification = cloneDeep(newJustification)
   switch (justification.basis.type) {
     case JustificationBasisType.STATEMENT_COMPOUND:
       justification.basis.entity = justification.basis.statementCompound

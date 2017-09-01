@@ -6,8 +6,19 @@
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint lib/"
+  },
   "dependencies": {
+    "argon2": "^0.16.1",
+    "bluebird": "^3.5.0",
+    "cryptohat": "^1.0.1",
     "lodash": "^4.17.4",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "urlsafe-base64": "^1.0.0",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.5.0"
   }
 }

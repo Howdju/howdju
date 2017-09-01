@@ -19,7 +19,7 @@ _e.isRootPositive = j => j.rootPolarity === JustificationRootPolarity.POSITIVE
 _e.isRootNegative = j => j.rootPolarity === JustificationRootPolarity.NEGATIVE
 _e.isVerified = j => j.vote && j.vote.polarity === VotePolarity.POSITIVE
 _e.isDisverified = j => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
-_e.isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && isNegative(j)
+_e.isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && _e.isNegative(j)
 _e.isRootJustification = j =>
   j.target.type === JustificationTargetType.STATEMENT &&
   j.target.entity.id === j.rootStatement.id
@@ -93,9 +93,9 @@ _e.makeNewStatementAtom = props => assign(
 )
 
 _e.makeNewStatementCompoundForStatement = statement =>
-    _e.makeNewStatementCompound({atoms: [_e.makeNewStatementAtom({statement})]})
+  _e.makeNewStatementCompound({atoms: [_e.makeNewStatementAtom({statement})]})
 
-_e.makeNewJustificationTargetingStatementId = statementId => makeNewJustification({
+_e.makeNewJustificationTargetingStatementId = statementId => _e.makeNewJustification({
   rootStatement: {id: statementId},
   target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
 })

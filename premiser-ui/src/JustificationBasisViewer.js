@@ -3,9 +3,9 @@ import {
   isCitationReferenceBased,
   isStatementCompoundBased,
   newImpossibleError,
-} from "howdju-common";
-import StatementCompoundViewer from "./StatementCompoundViewer";
-import CitationReferenceViewer from "./CitationReferenceViewer";
+} from "howdju-common"
+import StatementCompoundViewer from "./StatementCompoundViewer"
+import CitationReferenceViewer from "./CitationReferenceViewer"
 import ExpandableChildContainer from './ExpandableChildContainer'
 
 export default class JustificationBasisViewer extends Component {
@@ -30,14 +30,14 @@ export default class JustificationBasisViewer extends Component {
     }
     if (isCitationReferenceBased(justification)) {
       return (
-          <ExpandableChildContainer {...rest}
-                                    ExpandableChildComponent={CitationReferenceViewer}
-                                    widgetId={id}
-                                    id={id}
-                                    key={id}
-                                    citationReference={basis}
-                                    doShowControls={doShowControls}
-          />
+        <ExpandableChildContainer {...rest}
+                                  ExpandableChildComponent={CitationReferenceViewer}
+                                  widgetId={id}
+                                  id={id}
+                                  key={id}
+                                  citationReference={basis}
+                                  doShowControls={doShowControls}
+        />
       )
     }
     throw newImpossibleError(`Exhausted JustificationBasisTypes: ${justification.basis.type}`)

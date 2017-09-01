@@ -10,6 +10,8 @@ import includes from 'lodash/includes'
 import clone from 'lodash/clone'
 import { handleActions } from 'redux-actions'
 
+import apiErrorCodes from "howdju-common/lib/codes/apiErrorCodes"
+
 import {
   api,
   editors
@@ -18,11 +20,11 @@ import {
   makeNewStatementAtom,
   makeNewUrl,
   newProgrammingError,
-} from "howdju-common";
+} from "howdju-common"
 import {justificationBasisTypeToNewJustificationBasisMemberName} from '../viewModels'
-import * as apiErrorCodes from "../apiErrorCodes";
-import {uiErrorTypes} from "../uiErrors";
-import {default as t, INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts";
+
+import {uiErrorTypes} from "../uiErrors"
+import {INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts"
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   editorActions[actionCreator] = true
@@ -56,11 +58,11 @@ const editorErrorReducer = errorKey => (state, action) => {
   if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
     const responseBody = sourceError.body
     if (includes([
-          apiErrorCodes.VALIDATION_ERROR,
-          apiErrorCodes.ENTITY_CONFLICT,
-          apiErrorCodes.USER_ACTIONS_CONFLICT,
-          apiErrorCodes.AUTHORIZATION_ERROR,
-        ], responseBody.errorCode)) {
+      apiErrorCodes.VALIDATION_ERROR,
+      apiErrorCodes.ENTITY_CONFLICT,
+      apiErrorCodes.USER_ACTIONS_CONFLICT,
+      apiErrorCodes.AUTHORIZATION_ERROR,
+    ], responseBody.errorCode)) {
       const errors = responseBody.errors[errorKey]
       return {...state, errors, isSaving: false}
     }
@@ -332,8 +334,8 @@ const handleEditorAction = (state, action) => {
     newEditorState = defaultEditorReducer(editorState, action)
   }
   return editorState === newEditorState ?
-      state :
-      assign({}, state, {[editorType]: assign({}, state[editorType], {[editorId]: newEditorState} )})
+    state :
+    assign({}, state, {[editorType]: assign({}, state[editorType], {[editorId]: newEditorState} )})
 }
 
 const handleNonEditorAction = (state, action) => {

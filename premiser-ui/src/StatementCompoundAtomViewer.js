@@ -35,19 +35,19 @@ class StatementCompoundAtomViewer extends Component {
     const statement = statementAtom.statement
 
     return (
-        <span className={cn("statement-compound-atom-viewer", {
-                 active: isOver,
-               })}
-               onMouseOver={this.onMouseOver}
-               onMouseLeave={this.onMouseLeave}
-        >
-          <EditableStatement id={`${id}-statement`}
-                             entityId={statement.id}
-                             editorId={editorId}
-                             textId={`${id}-statementText`}
-                             suggestionsKey={`${id}-statementSuggestions`}
-          />
-        </span>
+      <span className={cn("statement-compound-atom-viewer", {
+        active: isOver,
+      })}
+            onMouseOver={this.onMouseOver}
+            onMouseLeave={this.onMouseLeave}
+      >
+        <EditableStatement id={`${id}-statement`}
+                           entityId={statement.id}
+                           editorId={editorId}
+                           textId={`${id}-statementText`}
+                           suggestionsKey={`${id}-statementSuggestions`}
+        />
+      </span>
     )
   }
 }

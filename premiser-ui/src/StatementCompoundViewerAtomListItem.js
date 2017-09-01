@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import Divider from 'react-md/lib/Dividers/Divider'
 import FontIcon from 'react-md/lib/FontIcons/FontIcon'
 
-import Positions from "react-md/lib/Menus/Positions";
+import Positions from "react-md/lib/Menus/Positions"
 import ListItem from 'react-md/lib/Lists/ListItem'
 import get from 'lodash/get'
 
@@ -18,7 +18,7 @@ import {
 } from './actions'
 import paths from './paths'
 import {EditorTypes} from './reducers/editors'
-import StatementCompoundAtomViewer from "./StatementCompoundAtomViewer";
+import StatementCompoundAtomViewer from "./StatementCompoundAtomViewer"
 import StatementJustificationTrees from './StatementJustificationTrees'
 import TransientMenuButton from './TransientMenuButton'
 
@@ -71,66 +71,66 @@ class StatementCompoundViewerAtomListItem extends Component {
 
     const menuId = `${_baseId}-context-menu`
     const menu = (
-        <TransientMenuButton
-            id={menuId}
-            key={menuId}
-            menuClassName="context-menu context-menu--statement-atom context-menu--floating"
-            buttonChildren="more_vert"
-            position={Positions.TOP_RIGHT}
-            title="Statement actions"
-            children={[
-              <ListItem primaryText="Go To"
-                        key="goTo"
-                        leftIcon={<FontIcon>forward</FontIcon>}
-                        component={Link}
-                        to={paths.statement(statementAtom.statement)}
-              />,
-              <ListItem primaryText="See usages"
-                        key="usages"
-                        title="See justifications using this statement"
-                        leftIcon={<FontIcon>call_merge</FontIcon>}
-                        component={Link}
-                        to={this.seeUsagesPath()}
-              />,
-              <Divider key="divider" />,
-              <ListItem primaryText="Edit"
-                        key="edit"
-                        leftIcon={<FontIcon>create</FontIcon>}
-                        onClick={this.onEditStatement}
-              />,
-            ]}
-        />
+      <TransientMenuButton
+        id={menuId}
+        key={menuId}
+        menuClassName="context-menu context-menu--statement-atom context-menu--floating"
+        buttonChildren="more_vert"
+        position={Positions.TOP_RIGHT}
+        title="Statement actions"
+        children={[
+          <ListItem primaryText="Go To"
+                    key="goTo"
+                    leftIcon={<FontIcon>forward</FontIcon>}
+                    component={Link}
+                    to={paths.statement(statementAtom.statement)}
+          />,
+          <ListItem primaryText="See usages"
+                    key="usages"
+                    title="See justifications using this statement"
+                    leftIcon={<FontIcon>call_merge</FontIcon>}
+                    component={Link}
+                    to={this.seeUsagesPath()}
+          />,
+          <Divider key="divider" />,
+          <ListItem primaryText="Edit"
+                    key="edit"
+                    leftIcon={<FontIcon>create</FontIcon>}
+                    onClick={this.onEditStatement}
+          />,
+        ]}
+      />
     )
 
     const hasJustifications = statementAtom.statement.justifications && statementAtom.statement.justifications.length > 0
     const justifications = statementAtom.statement.justifications
 
     return (
-        <li id={id}
-            className="statement-atom"
+      <li id={id}
+          className="statement-atom"
+      >
+        <ReactCSSTransitionGroup
+          transitionName="context-menu--statement-atom"
+          transitionEnterTimeout={500}
+          transitionLeaveTimeout={300}
         >
-          <ReactCSSTransitionGroup
-              transitionName="context-menu--statement-atom"
-              transitionEnterTimeout={500}
-              transitionLeaveTimeout={300}
-          >
-            {!isEditing && doShowControls && isMenuVisible && menu}
-          </ReactCSSTransitionGroup>
-          <StatementCompoundAtomViewer id={_baseId}
-                                       editorId={_editorId}
-                                       statementAtom={statementAtom}
-          />
+          {!isEditing && doShowControls && isMenuVisible && menu}
+        </ReactCSSTransitionGroup>
+        <StatementCompoundAtomViewer id={_baseId}
+                                     editorId={_editorId}
+                                     statementAtom={statementAtom}
+        />
 
-          {doShowJustifications && hasJustifications &&
-            <StatementJustificationTrees id={_baseId}
-                                             justifications={justifications}
-                                             doShowControls={doShowControls}
-                                             doShowJustifications={doShowJustifications}
-                                             isCondensed={isCondensed}
-                                             isUnCondensed={isUnCondensed}
-            />
-          }
-        </li>
+        {doShowJustifications && hasJustifications && (
+          <StatementJustificationTrees id={_baseId}
+                                       justifications={justifications}
+                                       doShowControls={doShowControls}
+                                       doShowJustifications={doShowJustifications}
+                                       isCondensed={isCondensed}
+                                       isUnCondensed={isUnCondensed}
+          />
+        )}
+      </li>
     )
   }
 }

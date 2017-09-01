@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import {goBack} from "react-router-redux";
+import {goBack} from "react-router-redux"
 import Helmet from 'react-helmet'
 import TextField from 'react-md/lib/TextFields'
 import Button from 'react-md/lib/Buttons/Button'
 import Card from 'react-md/lib/Cards'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
-import CardActions from 'react-md/lib/Cards/CardActions';
+import CardActions from 'react-md/lib/Cards/CardActions'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import cn from 'classnames'
@@ -21,13 +21,13 @@ import {
   ui,
 } from './actions'
 import {loginPageEditorId} from './editorIds'
-import {EditorTypes} from "./reducers/editors";
-import {makeNewCredentials} from "howdju-common";
-import {toErrorText} from "./modelErrorMessages";
+import {EditorTypes} from "./reducers/editors"
+import {makeNewCredentials} from "howdju-common"
+import {toErrorText} from "./modelErrorMessages"
 import {
   default as t,
 } from './texts'
-import analytics from "./analytics";
+import analytics from "./analytics"
 
 import './LoginPage.scss'
 
@@ -45,7 +45,7 @@ class LoginPage extends Component {
   }
 
   onChange = (value, event) => {
-    const target = event.target;
+    const target = event.target
     const name = target.name
     this.props.editors.propertyChange(EditorTypes.LOGIN_CREDENTIALS, this.editorId, {[name]: value})
   }
@@ -81,21 +81,21 @@ class LoginPage extends Component {
     const modelErrors = get(credentialsErrors, 'modelErrors')
 
     const emailInputProps = errors && errors.hasErrors && errors.fieldErrors.email.length > 0 ?
-        {error: true, errorText: toErrorText(errors.fieldErrors.email)} :
-        {}
+      {error: true, errorText: toErrorText(errors.fieldErrors.email)} :
+      {}
     const passwordInputProps = errors && errors.hasErrors && errors.fieldErrors.password.length > 0 ?
-        {error: true, errorText: toErrorText(errors.fieldErrors.password)} :
-        {}
+      {error: true, errorText: toErrorText(errors.fieldErrors.password)} :
+      {}
 
     const modelErrorMessages = modelErrors && modelErrors.length && (
-        <CardText className={cn('error-message md-cell md-cell--12')}>
-          {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
-          <ul className="error-message">
-            {map(modelErrors, error => <li key={error}>{t(error)}</li>) ||
-              <li>t(AN_UNEXPECTED_ERROR_OCCURRED)</li>
-            }
-          </ul>
-        </CardText>
+      <CardText className={cn('error-message md-cell md-cell--12')}>
+        {/* This somewhat duplicates ErrorMessages; but the error codes for these credentials don't really seem to belong there */}
+        <ul className="error-message">
+          {map(modelErrors, error => <li key={error}>{t(error)}</li>) ||
+          <li>t(AN_UNEXPECTED_ERROR_OCCURRED)</li>
+          }
+        </ul>
+      </CardText>
     )
 
     return (
@@ -115,28 +115,28 @@ class LoginPage extends Component {
                 <FocusContainer focusOnMount containFocus={false}>
 
                   <CardText>
-                      <TextField
-                          {...emailInputProps}
-                          id="email"
-                          type="email"
-                          name="email"
-                          label="Email"
-                          value={email}
-                          required
-                          onChange={this.onChange}
-                          disabled={isLoggingIn}
-                      />
-                      <TextField
-                          {...passwordInputProps}
-                          id="password"
-                          type="password"
-                          name="password"
-                          label="Password"
-                          value={password}
-                          required
-                          onChange={this.onChange}
-                          disabled={isLoggingIn}
-                      />
+                    <TextField
+                      {...emailInputProps}
+                      id="email"
+                      type="email"
+                      name="email"
+                      label="Email"
+                      value={email}
+                      required
+                      onChange={this.onChange}
+                      disabled={isLoggingIn}
+                    />
+                    <TextField
+                      {...passwordInputProps}
+                      id="password"
+                      type="password"
+                      name="password"
+                      label="Password"
+                      value={password}
+                      required
+                      onChange={this.onChange}
+                      disabled={isLoggingIn}
+                    />
                   </CardText>
                   <CardActions>
                     {isLoggingIn && <CircularProgress key="progress" id="progress" />}

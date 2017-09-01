@@ -2,14 +2,20 @@
   "name": "howdju-common",
   "version": "1.0.0",
   "description": "Models representing shared concepts between all Howdju platform applications.  Suitable for inclusion in client and server applications.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint lib/"
+  },
   "dependencies": {
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "eslint": "^4.5.0"
   }
 }

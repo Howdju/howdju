@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {connect} from "react-redux";
-import CircularProgress from "react-md/lib/Progress/CircularProgress";
+import {connect} from "react-redux"
+import CircularProgress from "react-md/lib/Progress/CircularProgress"
 import get from 'lodash/get'
 
-import {EditorTypes} from "./reducers/editors";
-import CitationReferenceViewer from "./CitationReferenceViewer";
-import CitationReferenceEditor from "./CitationReferenceEditor";
-import {denormalize} from "normalizr";
-import {citationReferenceSchema} from "./schemas";
+import {EditorTypes} from "./reducers/editors"
+import CitationReferenceViewer from "./CitationReferenceViewer"
+import CitationReferenceEditor from "./CitationReferenceEditor"
+import {denormalize} from "normalizr"
+import {citationReferenceSchema} from "./schemas"
 import ExpandableChildContainer from './ExpandableChildContainer'
 
 class EditableCitationReference extends Component {
@@ -25,23 +25,25 @@ class EditableCitationReference extends Component {
     } = this.props
 
     const editor =
-        <CitationReferenceEditor id={id}
-                                 editorId={editorId}
-                                 suggestionsKey={suggestionsKey}
-        />
+      <CitationReferenceEditor {...rest}
+                               id={id}
+                               editorId={editorId}
+                               suggestionsKey={suggestionsKey}
+      />
     const viewer = (
-          <ExpandableChildContainer ExpandableChildComponent={CitationReferenceViewer}
-                                    widgetId={id}
-                                    key={id}
-                                    citationReference={citationReference}
-          />
-        )
+      <ExpandableChildContainer {...rest}
+                                ExpandableChildComponent={CitationReferenceViewer}
+                                widgetId={id}
+                                key={id}
+                                citationReference={citationReference}
+      />
+    )
     const progress =
-        <CircularProgress id={`${id}-Progress`} />
+      <CircularProgress id={`${id}-Progress`} />
 
     return isEditing ?
-        editor :
-        isFetching ? progress : viewer
+      editor :
+      isFetching ? progress : viewer
   }
 }
 EditableCitationReference.propTypes = {

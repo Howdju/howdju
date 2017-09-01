@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import EditableStatementCompound from "./EditableStatementCompound";
-import EditableCitationReference from "./EditableCitationReference";
-import {isStatementCompoundBased} from "howdju-common";
+import EditableStatementCompound from "./EditableStatementCompound"
+import EditableCitationReference from "./EditableCitationReference"
+import {isStatementCompoundBased} from "howdju-common"
 
 class EditableJustificationBasis extends Component {
 
@@ -20,23 +20,23 @@ class EditableJustificationBasis extends Component {
     } = this.props
 
     return isStatementCompoundBased(justification) ?
-        <EditableStatementCompound {...rest}
-                                   id={id}
-                                   entityId={justification.basis.entity.id}
-                                   editorId={editorId}
-                                   suggestionsKey={suggestionsKey}
-                                   doShowControls={doShowControls}
-                                   doShowStatementAtomJustifications={doShowBasisJustifications}
-                                   isCondensed={isCondensed}
-                                   isUnCondensed={isUnCondensed}
-        /> :
-        <EditableCitationReference {...rest}
-                                   id={id}
-                                   entityId={justification.basis.entity.id}
-                                   editorId={editorId}
-                                   suggestionsKey={suggestionsKey}
-                                   doShowControls={doShowControls}
-        />
+      <EditableStatementCompound {...rest}
+                                 id={id}
+                                 entityId={justification.basis.entity.id}
+                                 editorId={editorId}
+                                 suggestionsKey={suggestionsKey}
+                                 doShowControls={doShowControls}
+                                 doShowStatementAtomJustifications={doShowBasisJustifications}
+                                 isCondensed={isCondensed}
+                                 isUnCondensed={isUnCondensed}
+      /> :
+      <EditableCitationReference {...rest}
+                                 id={id}
+                                 entityId={justification.basis.entity.id}
+                                 editorId={editorId}
+                                 suggestionsKey={suggestionsKey}
+                                 doShowControls={doShowControls}
+      />
   }
 }
 EditableJustificationBasis.propTypes = {

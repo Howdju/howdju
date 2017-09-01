@@ -29,39 +29,41 @@ export default class StatementCard extends Component {
     const _isTextLong = isTextLong(statement.text)
     const text = !_isTextLong || isExpanded ? statement.text : truncateStatementText(statement.text, {omission: ''})
     return (
-        <Card {...rest}>
-          <CardTitle
-              avatar={<FontIcon role="presentation">short_text</FontIcon>}
-              title={
-                <span>
-                  <Link to={paths.statement(statement)}>
-                    {text}
-                  </Link>
-                  {_isTextLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
-                  {_isTextLong && ' '}
-                  {_isTextLong && !isExpanded &&
-                    <Button flat
-                            label={t('More')}
-                            className="text-expand-toggle"
-                            onClick={onExpand}
-                    />
-                  }
-                  {_isTextLong && isExpanded &&
-                    <Button flat
-                            label={t('Less')}
-                            className="text-expand-toggle"
-                            onClick={onCollapse}
-                    />
-                  }
-                </span>
-              }
-              subtitle={
-                <span className="recent-statement-status-text">
-                  created <span title={created}>{age}</span>
-                </span>
-              }
-          />
-        </Card>
+      <Card {...rest}>
+        <CardTitle
+          avatar={<FontIcon role="presentation">short_text</FontIcon>}
+          title={
+            <span>
+              <Link to={paths.statement(statement)}>
+                {text}
+              </Link>
+              {_isTextLong && !isExpanded && (
+                <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>
+              )}
+              {_isTextLong && ' '}
+              {_isTextLong && !isExpanded && (
+                <Button flat
+                        label={t('More')}
+                        className="text-expand-toggle"
+                        onClick={onExpand}
+                />
+              )}
+              {_isTextLong && isExpanded && (
+                <Button flat
+                        label={t('Less')}
+                        className="text-expand-toggle"
+                        onClick={onCollapse}
+                />
+              )}
+            </span>
+          }
+          subtitle={
+            <span className="recent-statement-status-text">
+              created <span title={created}>{age}</span>
+            </span>
+          }
+        />
+      </Card>
     )
   }
 }

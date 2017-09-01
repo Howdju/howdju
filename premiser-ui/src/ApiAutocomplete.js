@@ -12,8 +12,8 @@ import {
 import {
   autocompletes,
   mapActionCreatorGroupToDispatchToProps
-} from "./actions";
-import {denormalize} from "normalizr";
+} from "./actions"
+import {denormalize} from "normalizr"
 
 const dataLabel = 'data-label'
 const dataValue = 'data-value'
@@ -146,23 +146,23 @@ class ApiAutocomplete extends Component {
     delete rest.suggestionSchema
 
     return (
-        <Autocomplete {...rest}
-                      type="text"
-                      value={value}
-                      dataLabel={dataLabel}
-                      dataValue={dataValue}
-                      onChange={this.onChange}
-                      onKeyDown={this.onKeyDown}
-                      onAutocomplete={this.onAutocomplete}
-                      onMenuOpen={this.onMenuOpen}
-                      onBlur={this.onBlur}
-                      onTouchEnd={this.onTouchEnd}
-                      onClick={this.onClick}
-                      data={transformedSuggestions}
-                      filter={null}
-                      ref={this.setAutocomplete}
-                      focusInputOnAutocomplete={false}
-        />
+      <Autocomplete {...rest}
+                    type="text"
+                    value={value}
+                    dataLabel={dataLabel}
+                    dataValue={dataValue}
+                    onChange={this.onChange}
+                    onKeyDown={this.onKeyDown}
+                    onAutocomplete={this.onAutocomplete}
+                    onMenuOpen={this.onMenuOpen}
+                    onBlur={this.onBlur}
+                    onTouchEnd={this.onTouchEnd}
+                    onClick={this.onClick}
+                    data={transformedSuggestions}
+                    filter={null}
+                    ref={this.setAutocomplete}
+                    focusInputOnAutocomplete={false}
+      />
     )
   }
 }
@@ -211,8 +211,8 @@ const mapStateToProps = (state, ownProps) => {
   const normalized = state.autocompletes.suggestions[ownProps.suggestionsKey]
   const suggestions = denormalize(normalized, [ownProps.suggestionSchema], state.entities) || []
   const transformedSuggestions = ownProps.suggestionTransform ?
-      map(suggestions, ownProps.suggestionTransform).map(defaultSuggestionTransform(ownProps)) :
-      map(suggestions, defaultSuggestionTransform(ownProps))
+    map(suggestions, ownProps.suggestionTransform).map(defaultSuggestionTransform(ownProps)) :
+    map(suggestions, defaultSuggestionTransform(ownProps))
 
   return {
     suggestions,

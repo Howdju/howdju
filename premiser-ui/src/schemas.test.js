@@ -1,4 +1,4 @@
-import { normalize } from 'normalizr';
+import { normalize } from 'normalizr'
 import { statementSchema, statementJustificationsSchema} from './schemas'
 
 describe('schemas', () => {
@@ -11,34 +11,34 @@ describe('schemas', () => {
 
   test('statementJustificationsSchema', () => {
     const statement1 = { id: 1, text: 'a statement' },
-        statement2 = { id: 2, text: 'another statement' },
-        statement3 = { id: 3, text: 'yet another statement' },
-        statementCompound1 = {
-          id: 4,
-          atoms: [
-            {
-              statement: statement2
-            }
-          ]
-        },
-        statementCompound2 = {
-          id: 5,
-          atoms: [
-            {
-              statement: statement3
-            }
-          ]
-        },
-        justification1 = {
-          id: 1,
-          target: { type: 'STATEMENT', entity: statement1 },
-          basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound1 }
-        },
-        justification2 = {
-          id: 2,
-          target: { type: 'STATEMENT', entity: statement1 },
-          basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound2 }
-        };
+      statement2 = { id: 2, text: 'another statement' },
+      statement3 = { id: 3, text: 'yet another statement' },
+      statementCompound1 = {
+        id: 4,
+        atoms: [
+          {
+            statement: statement2
+          }
+        ]
+      },
+      statementCompound2 = {
+        id: 5,
+        atoms: [
+          {
+            statement: statement3
+          }
+        ]
+      },
+      justification1 = {
+        id: 1,
+        target: { type: 'STATEMENT', entity: statement1 },
+        basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound1 }
+      },
+      justification2 = {
+        id: 2,
+        target: { type: 'STATEMENT', entity: statement1 },
+        basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound2 }
+      }
     const json = {
       statement: statement1,
       justifications: [justification1, justification2]

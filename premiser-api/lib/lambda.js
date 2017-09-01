@@ -1,22 +1,23 @@
+const AWS = require('aws-sdk')
 const childProcess = require('child_process')
 const fs = require('fs')
-
 const isNumber = require('lodash/isNumber')
 const toNumber = require('lodash/toNumber')
 
-const AWS = require('aws-sdk')
+const logger = require('./logger')
+
 
 AWS.config.region = 'us-east-1'
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'});
+AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'})
 // See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
 const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
 const FunctionName = 'premiserApi'
 
 // e.g.: 15da8df Testing logging JSON
 const getGitDescription = () => childProcess
-    .execSync('git log --oneline -1')
-    .toString()
-    .trim()
+  .execSync('git log --oneline -1')
+  .toString()
+  .trim()
 
 module.exports.updateFunctionCode = (fileName) => {
   fs.readFile(fileName, (err, data) => {
@@ -29,7 +30,7 @@ module.exports.updateFunctionCode = (fileName) => {
     }
     lambda.updateFunctionCode(params, (err, data) => {
       if (err) throw err
-      console.log(`Uploaded ${FunctionName}`)
+      logger.info(`Uploaded ${FunctionName} (CodeSha256: ${data['CodeSha256']}`)
     })
   })
 }
@@ -38,12 +39,12 @@ module.exports.publishVersion = () => {
   const params = {
     FunctionName,
     Description: getGitDescription(),
-  };
+  }
   lambda.publishVersion(params, function(err, data) {
     if (err) throw err
     const version = data.Version
-    console.log(`Published lambda ${FunctionName} as version ${version}`)
-  });
+    logger.info(`Published lambda ${FunctionName} as version ${version}`)
+  })
 }
 
 module.exports.updateAlias = (aliasName, newTarget) => {
@@ -58,9 +59,9 @@ module.exports.updateAlias = (aliasName, newTarget) => {
     FunctionName,
     Name,
     FunctionVersion,
-  };
+  }
   lambda.updateAlias(params, function(err, data) {
     if (err) throw err
-    console.log(`Updated alias "${Name}" to version ${FunctionVersion}`)
-  });
+    logger.info(`Updated alias "${Name}" to FunctionVersion ${data['FunctionVersion']}`)
+  })
 }

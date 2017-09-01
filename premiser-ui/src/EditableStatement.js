@@ -1,13 +1,14 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {connect} from "react-redux";
-import CircularProgress from "react-md/lib/Progress/CircularProgress";
+import {connect} from "react-redux"
+import CircularProgress from "react-md/lib/Progress/CircularProgress"
 import get from 'lodash/get'
 
-import {EditorTypes} from "./reducers/editors";
-import StatementViewer from "./StatementViewer";
-import StatementEditor from "./StatementEditor";
-import {isTruthy} from './util'
+import {isTruthy} from 'howdju-common'
+
+import {EditorTypes} from "./reducers/editors"
+import StatementViewer from "./StatementViewer"
+import StatementEditor from "./StatementEditor"
 import {editors, mapActionCreatorGroupToDispatchToProps} from './actions'
 
 class EditableStatement extends Component {
@@ -27,23 +28,23 @@ class EditableStatement extends Component {
 
     // statement is required, so make this lazy.  Is this a problem for react efficiency-wise?
     const editor =
-        <StatementEditor {...rest}
-                         editorId={editorId}
-                         id={id}
-                         textId={textId}
-                         suggestionsKey={suggestionsKey}
-        />
+      <StatementEditor {...rest}
+                       editorId={editorId}
+                       id={id}
+                       textId={textId}
+                       suggestionsKey={suggestionsKey}
+      />
     const viewer =
-        <StatementViewer {...rest}
-                         id={id}
-                         statement={statement}
-        />
+      <StatementViewer {...rest}
+                       id={id}
+                       statement={statement}
+      />
     const progress =
-        <CircularProgress id={`${id}-Progress`} />
+      <CircularProgress id={`${id}-Progress`} />
 
     return isEditing ?
-        editor :
-        isFetching ? progress : viewer
+      editor :
+      isFetching ? progress : viewer
   }
 }
 EditableStatement.propTypes = {

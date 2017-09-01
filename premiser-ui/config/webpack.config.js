@@ -73,15 +73,15 @@ const baseWebpackConfig = {
           "resolve-url-loader",
           // This causes error when deploying to production if it isn't like the first option
           process.env.NODE_ENV !== 'development' ?
-              "sass-loader?sourceMap" :
-              {
-                loader: "sass-loader",
-                options: {
-                  sourceMap: true,
-                  data: envSassLoaderData,
-                  functions: sassLoaderFunctions,
-                }
-              },
+            "sass-loader?sourceMap" :
+            {
+              loader: "sass-loader",
+              options: {
+                sourceMap: true,
+                data: envSassLoaderData,
+                functions: sassLoaderFunctions,
+              }
+            },
         ]
       },
       {

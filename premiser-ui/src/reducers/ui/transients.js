@@ -1,4 +1,4 @@
-import {handleActions} from "redux-actions";
+import {handleActions} from "redux-actions"
 import set from 'lodash/set'
 
 import {

@@ -35,11 +35,11 @@ class ExpandableChildContainer extends Component {
       ...rest
     } = this.props
     return (
-        <ExpandableChildComponent {...rest}
-                       isExpanded={isExpanded}
-                       onExpand={this.onExpand}
-                       onCollapse={this.onCollapse}
-        />
+      <ExpandableChildComponent {...rest}
+                                isExpanded={isExpanded}
+                                onExpand={this.onExpand}
+                                onCollapse={this.onCollapse}
+      />
     )
   }
 }

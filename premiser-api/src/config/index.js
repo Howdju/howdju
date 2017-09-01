@@ -1,5 +1,5 @@
 const merge = require('lodash/merge')
-const {logger} = require('../logging')
+const {logger} = require('../initialization/loggerInitialization')
 
 const envConfigFilename = `./config.${process.env.NODE_ENV}.js`
 logger.info(`Loading app config file: ${envConfigFilename}`)

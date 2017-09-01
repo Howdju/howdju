@@ -21,23 +21,23 @@ export default class CitationCard extends Component {
     const age = citation.created ? moment(citation.created).fromNow() : ''
     const created = citation.created ? moment(citation.created).format(config.humanDateTimeFormat) : ''
     return (
-        <Card {...rest}
-              className={cn(className, "citation-card")}
-        >
-          <CardTitle
-              avatar={<FontIcon role="presentation">book</FontIcon>}
-              title={
-                <Link to={paths.citationUsages(citation)}>
-                  {citation.text}
-                </Link>
-              }
-              subtitle={
-                <span className="recent-statement-status-text">
-                  created <span title={created}>{age}</span>
-                </span>
-              }
-          />
-        </Card>
+      <Card {...rest}
+            className={cn(className, "citation-card")}
+      >
+        <CardTitle
+          avatar={<FontIcon role="presentation">book</FontIcon>}
+          title={
+            <Link to={paths.citationUsages(citation)}>
+              {citation.text}
+            </Link>
+          }
+          subtitle={
+            <span className="recent-statement-status-text">
+              created <span title={created}>{age}</span>
+            </span>
+          }
+        />
+      </Card>
     )
   }
 }

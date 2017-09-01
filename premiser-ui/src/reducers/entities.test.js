@@ -5,8 +5,8 @@ import entities, {
   indexRootJustificationsByRootStatementId,
   unionArraysDistinctIdsCustomizer,
 } from './entities'
-import {CREATE_JUSTIFICATION_SUCCESS, DELETE_JUSTIFICATION_SUCCESS} from "../actions";
-import {JustificationBasisType, JustificationPolarity, JustificationTargetType} from "howdju-common"
+import {CREATE_JUSTIFICATION_SUCCESS, DELETE_JUSTIFICATION_SUCCESS} from "../actions"
+import {JustificationPolarity, JustificationTargetType} from "howdju-common"
 
 
 describe('lodash', () => {
@@ -31,22 +31,22 @@ describe('reducers', () => {
       describe('indexRootJustificationsByRootStatementId', () => {
         test('should work', () => {
           const
-              rootStatement = {
-                id: 42,
-              },
-              justification = {
-                id: 1,
-                rootStatementId: rootStatement.id,
-                target: {
-                  type: JustificationTargetType.STATEMENT,
-                  entity: {
-                    id: rootStatement.id,
-                  },
+            rootStatement = {
+              id: 42,
+            },
+            justification = {
+              id: 1,
+              rootStatementId: rootStatement.id,
+              target: {
+                type: JustificationTargetType.STATEMENT,
+                entity: {
+                  id: rootStatement.id,
                 },
               },
-              justificationsById = {
-                [justification.id]: justification
-              }
+            },
+            justificationsById = {
+              [justification.id]: justification
+            }
           expect(indexRootJustificationsByRootStatementId(justificationsById)).toEqual({
             [justification.rootStatement.id]: [justification.id],
           })
@@ -210,255 +210,255 @@ describe('reducers', () => {
 
         test('should merge justificationsByRootStatementId', () => {
           const
-              targetStatement = {
-                id: 1,
-                text: 'target statement',
-              },
-              basisStatement = {
-                id: 2,
-                text: 'basis statement',
-              },
-              existingJustification = {
-                id: 1,
-                rootStatement: {id: 1},
-              },
+            targetStatement = {
+              id: 1,
+              text: 'target statement',
+            },
+            basisStatement = {
+              id: 2,
+              text: 'basis statement',
+            },
+            existingJustification = {
+              id: 1,
+              rootStatement: {id: 1},
+            },
 
-              newJustification = {
-                id: 2,
-                rootStatement: {id: 1},
-                target: {
-                  type: JustificationTargetType.STATEMENT,
-                  entity: targetStatement
-                },
-                basis: {
-                  type: JustificationTargetType.STATEMENT,
-                  entity: basisStatement
-                },
+            newJustification = {
+              id: 2,
+              rootStatement: {id: 1},
+              target: {
+                type: JustificationTargetType.STATEMENT,
+                entity: targetStatement
               },
-
-              initialState = {
-                statements: {
-                  [targetStatement.id]: targetStatement,
-                },
-                justifications: {
-                  [existingJustification.id]: existingJustification
-                },
-                justificationsByRootStatementId: {
-                  [existingJustification.rootStatement.id]: [existingJustification.id]
-                }
+              basis: {
+                type: JustificationTargetType.STATEMENT,
+                entity: basisStatement
               },
+            },
 
-              action = {
-                type: CREATE_JUSTIFICATION_SUCCESS,
-                payload: {
-                  result: {
-                    justification: newJustification.id
+            initialState = {
+              statements: {
+                [targetStatement.id]: targetStatement,
+              },
+              justifications: {
+                [existingJustification.id]: existingJustification
+              },
+              justificationsByRootStatementId: {
+                [existingJustification.rootStatement.id]: [existingJustification.id]
+              }
+            },
+
+            action = {
+              type: CREATE_JUSTIFICATION_SUCCESS,
+              payload: {
+                result: {
+                  justification: newJustification.id
+                },
+                entities: {
+                  statements: {
+                    [targetStatement.id]: targetStatement,
                   },
-                  entities: {
-                    statements: {
-                      [targetStatement.id]: targetStatement,
-                    },
-                    justifications: {
-                      [newJustification.id]: newJustification,
-                    }
-                  },
-                }
-              },
-
-              mergedJustificationsByRootStatementId =
-                  initialState.justificationsByRootStatementId[existingJustification.rootStatement.id].concat([newJustification.id]),
-
-              expectedState = {
-                statements: {
-                  [targetStatement.id]: targetStatement,
-                },
-                justifications: {
-                  [existingJustification.id]: existingJustification,
-                  [newJustification.id]: newJustification,
-                },
-                justificationsByRootStatementId: {
-                  [existingJustification.rootStatement.id]: mergedJustificationsByRootStatementId
+                  justifications: {
+                    [newJustification.id]: newJustification,
+                  }
                 },
               }
+            },
+
+            mergedJustificationsByRootStatementId =
+              initialState.justificationsByRootStatementId[existingJustification.rootStatement.id].concat([newJustification.id]),
+
+            expectedState = {
+              statements: {
+                [targetStatement.id]: targetStatement,
+              },
+              justifications: {
+                [existingJustification.id]: existingJustification,
+                [newJustification.id]: newJustification,
+              },
+              justificationsByRootStatementId: {
+                [existingJustification.rootStatement.id]: mergedJustificationsByRootStatementId
+              },
+            }
 
           expect(entities(initialState, action)).toEqual(expectedState)
         })
 
         test('should add counter-justifications to a target with no counter-justifications', () => {
           const
-              targetJustification = {
-                id: 1,
-                rootStatement: {id: 1},
+            targetJustification = {
+              id: 1,
+              rootStatement: {id: 1},
+            },
+            counterJustification = {
+              id: 2,
+              rootStatement: {id: 1},
+              target: {
+                type: JustificationTargetType.JUSTIFICATION,
+                entity: targetJustification
               },
-              counterJustification = {
-                id: 2,
-                rootStatement: {id: 1},
-                target: {
-                  type: JustificationTargetType.JUSTIFICATION,
-                  entity: targetJustification
-                },
-                polarity: JustificationPolarity.NEGATIVE,
+              polarity: JustificationPolarity.NEGATIVE,
+            },
+            expectedTargetJustification = {
+              ...targetJustification,
+              counterJustifications: [counterJustification.id]
+            },
+            initialState = {
+              justifications: {
+                [targetJustification.id]: targetJustification
               },
-              expectedTargetJustification = {
-                ...targetJustification,
-                counterJustifications: [counterJustification.id]
-              },
-              initialState = {
-                justifications: {
-                  [targetJustification.id]: targetJustification
-                },
-                justificationsByRootStatementId: {
-                  [targetJustification.rootStatement.id]: [
-                    targetJustification.id
-                  ]
-                }
-              },
+              justificationsByRootStatementId: {
+                [targetJustification.rootStatement.id]: [
+                  targetJustification.id
+                ]
+              }
+            },
 
-              action = {
-                type: CREATE_JUSTIFICATION_SUCCESS,
-                payload: {
-                  result: {
-                    justification: counterJustification.id
-                  },
-                  entities: {
-                    justifications: {
-                      [counterJustification.id]: counterJustification,
-                    }
-                  },
-                }
-              },
-
-              expectedState = {
-                justifications: {
-                  [expectedTargetJustification.id]: expectedTargetJustification,
-                  [counterJustification.id]: counterJustification,
+            action = {
+              type: CREATE_JUSTIFICATION_SUCCESS,
+              payload: {
+                result: {
+                  justification: counterJustification.id
                 },
-                justificationsByRootStatementId: {
-                  [targetJustification.rootStatement.id]: [targetJustification.id]
+                entities: {
+                  justifications: {
+                    [counterJustification.id]: counterJustification,
+                  }
                 },
               }
+            },
+
+            expectedState = {
+              justifications: {
+                [expectedTargetJustification.id]: expectedTargetJustification,
+                [counterJustification.id]: counterJustification,
+              },
+              justificationsByRootStatementId: {
+                [targetJustification.rootStatement.id]: [targetJustification.id]
+              },
+            }
 
           expect(entities(initialState, action)).toEqual(expectedState)
         })
 
         test('should add counter-justifications to a target with existing counter-justifications', () => {
           const
-              existingCounterJustificationId = 3,
-              targetJustification = {
-                id: 1,
-                rootStatement: {id: 1},
-                counterJustifications: [existingCounterJustificationId]
+            existingCounterJustificationId = 3,
+            targetJustification = {
+              id: 1,
+              rootStatement: {id: 1},
+              counterJustifications: [existingCounterJustificationId]
+            },
+            counterJustification = {
+              id: 2,
+              rootStatement: {id: 1},
+              target: {
+                type: JustificationTargetType.JUSTIFICATION,
+                entity: targetJustification
               },
-              counterJustification = {
-                id: 2,
-                rootStatement: {id: 1},
-                target: {
-                  type: JustificationTargetType.JUSTIFICATION,
-                  entity: targetJustification
-                },
-                polarity: JustificationPolarity.NEGATIVE,
+              polarity: JustificationPolarity.NEGATIVE,
+            },
+            expectedTargetJustification = {
+              ...targetJustification,
+              counterJustifications: [
+                existingCounterJustificationId,
+                counterJustification.id,
+              ]
+            },
+
+            initialState = {
+              justifications: {
+                [targetJustification.id]: targetJustification
               },
-              expectedTargetJustification = {
-                ...targetJustification,
-                counterJustifications: [
-                  existingCounterJustificationId,
-                  counterJustification.id,
+              justificationsByRootStatementId: {
+                [targetJustification.rootStatement.id]: [
+                  targetJustification.id
                 ]
-              },
+              }
+            },
 
-              initialState = {
-                justifications: {
-                  [targetJustification.id]: targetJustification
+            action = {
+              type: CREATE_JUSTIFICATION_SUCCESS,
+              payload: {
+                result: {
+                  justification: counterJustification.id
                 },
-                justificationsByRootStatementId: {
-                  [targetJustification.rootStatement.id]: [
-                    targetJustification.id
-                  ]
-                }
-              },
-
-              action = {
-                type: CREATE_JUSTIFICATION_SUCCESS,
-                payload: {
-                  result: {
-                    justification: counterJustification.id
-                  },
-                  entities: {
-                    justifications: {
-                      [counterJustification.id]: counterJustification,
-                    }
-                  },
-                }
-              },
-
-              expectedState = {
-                justifications: {
-                  [expectedTargetJustification.id]: expectedTargetJustification,
-                  [counterJustification.id]: counterJustification,
-                },
-                justificationsByRootStatementId: {
-                  [targetJustification.rootStatement.id]: [targetJustification.id]
+                entities: {
+                  justifications: {
+                    [counterJustification.id]: counterJustification,
+                  }
                 },
               }
+            },
+
+            expectedState = {
+              justifications: {
+                [expectedTargetJustification.id]: expectedTargetJustification,
+                [counterJustification.id]: counterJustification,
+              },
+              justificationsByRootStatementId: {
+                [targetJustification.rootStatement.id]: [targetJustification.id]
+              },
+            }
 
           expect(entities(initialState, action)).toEqual(expectedState)
         })
 
         test('should handle counter-counter-justifications', () => {
-          const responseBody = {
-            justification: {
-              id: 81,
-              rootStatement: {id:19},
-              target: {
-                type: JustificationTargetType.JUSTIFICATION,
-                // Justification
-                entity: {
-                  id: 78,
-                  rootStatement: {id:19},
-                  // Justification
-                  target: {
-                    type: JustificationTargetType.JUSTIFICATION,
-                    entity: {
-                      id: 49
-                    }
-                  },
-                  basis: {
-                    type: JustificationBasisType.STATEMENT_COMPOUND,
-                    entity: {
-                      atoms: [
-                        {
-                          statement: {
-                            id: 75,
-                            text: "Counter 5",
-                            slug: "counter-5"
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  polarity: JustificationPolarity.NEGATIVE,
-                  vote: null,
-                  // TODO this is inaccurate: it has counter-justifications
-                  counterJustifications: []
-                }
-              },
-              basis: {
-                type: JustificationBasisType.STATEMENT_COMPOUND,
-                entity: {
-                  atoms: [
-                    {
-                      statement: {
-                        id: 77,
-                        text: "Counter counter to 5",
-                        slug: "counter-counter-to-5"
-                      }
-                    }
-                  ]
-                }
-              },
-              polarity: JustificationPolarity.NEGATIVE
-            }
-          }
+          // const responseBody = {
+          //   justification: {
+          //     id: 81,
+          //     rootStatement: {id:19},
+          //     target: {
+          //       type: JustificationTargetType.JUSTIFICATION,
+          //       // Justification
+          //       entity: {
+          //         id: 78,
+          //         rootStatement: {id:19},
+          //         // Justification
+          //         target: {
+          //           type: JustificationTargetType.JUSTIFICATION,
+          //           entity: {
+          //             id: 49
+          //           }
+          //         },
+          //         basis: {
+          //           type: JustificationBasisType.STATEMENT_COMPOUND,
+          //           entity: {
+          //             atoms: [
+          //               {
+          //                 statement: {
+          //                   id: 75,
+          //                   text: "Counter 5",
+          //                   slug: "counter-5"
+          //                 }
+          //               }
+          //             ]
+          //           }
+          //         },
+          //         polarity: JustificationPolarity.NEGATIVE,
+          //         vote: null,
+          //         // TODO this is inaccurate: it has counter-justifications
+          //         counterJustifications: []
+          //       }
+          //     },
+          //     basis: {
+          //       type: JustificationBasisType.STATEMENT_COMPOUND,
+          //       entity: {
+          //         atoms: [
+          //           {
+          //             statement: {
+          //               id: 77,
+          //               text: "Counter counter to 5",
+          //               slug: "counter-counter-to-5"
+          //             }
+          //           }
+          //         ]
+          //       }
+          //     },
+          //     polarity: JustificationPolarity.NEGATIVE
+          //   }
+          // }
 
         })
       })
@@ -466,37 +466,37 @@ describe('reducers', () => {
       describe('DELETE_JUSTIFICATION_SUCCESS', () => {
         test('should remove deleted counter-justification from countered justification', () => {
           const
-              targetJustification = {
-                rootStatement: {id: 2},
-                id: 100,
+            targetJustification = {
+              rootStatement: {id: 2},
+              id: 100,
+            },
+            counterJustification = {
+              id: 42,
+              target: {
+                type: JustificationTargetType.JUSTIFICATION,
+                entity: {
+                  id: targetJustification.id,
+                }
               },
-              counterJustification = {
-                id: 42,
-                target: {
-                  type: JustificationTargetType.JUSTIFICATION,
-                  entity: {
-                    id: targetJustification.id,
-                  }
-                },
-                polarity: JustificationPolarity.NEGATIVE,
-              },
+              polarity: JustificationPolarity.NEGATIVE,
+            },
 
-              initialState = {
-                justifications: {
-                  [targetJustification.id]: targetJustification,
-                  [counterJustification.id]: counterJustification,
-                },
-                justificationsByRootStatementId: {
-                  [targetJustification.rootStatement.id]: targetJustification
-                },
+            initialState = {
+              justifications: {
+                [targetJustification.id]: targetJustification,
+                [counterJustification.id]: counterJustification,
               },
+              justificationsByRootStatementId: {
+                [targetJustification.rootStatement.id]: targetJustification
+              },
+            },
 
-              action = {
-                type: DELETE_JUSTIFICATION_SUCCESS,
-                meta: {
-                  requestPayload: {justification: counterJustification}
-                },
-              }
+            action = {
+              type: DELETE_JUSTIFICATION_SUCCESS,
+              meta: {
+                requestPayload: {justification: counterJustification}
+              },
+            }
 
           // Add in counterJustification
           targetJustification.counterJustifications = [counterJustification.id]

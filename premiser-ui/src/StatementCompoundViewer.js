@@ -22,21 +22,21 @@ export default class StatementCompoundViewer extends Component {
     const atomListItems = map(statementCompound.atoms, atom => {
       const listItemId = `${idPrefix}statement-compound-${atom.statementCompoundId}-statement-atom-${atom.statement.id}-list-item`
       return (
-          <StatementCompoundViewerAtomListItem id={listItemId}
-                                               key={listItemId}
-                                               statementAtom={atom}
-                                               doShowControls={doShowControls}
-                                               doShowJustifications={doShowStatementAtomJustifications}
-                                               isCondensed={isCondensed}
-                                               isUnCondensed={isUnCondensed}
-          />
+        <StatementCompoundViewerAtomListItem id={listItemId}
+                                             key={listItemId}
+                                             statementAtom={atom}
+                                             doShowControls={doShowControls}
+                                             doShowJustifications={doShowStatementAtomJustifications}
+                                             isCondensed={isCondensed}
+                                             isUnCondensed={isUnCondensed}
+        />
       )
     })
 
     return (
-        <ul className="statement-compound-viewer">
-          {atomListItems}
-        </ul>
+      <ul className="statement-compound-viewer">
+        {atomListItems}
+      </ul>
     )
   }
 }

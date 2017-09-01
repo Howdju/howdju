@@ -8,7 +8,7 @@ import {
   api,
   ui,
 } from './actions'
-import {citationReferencesSchema} from "./schemas";
+import {citationReferencesSchema} from "./schemas"
 
 export default class RecentCitationReferencesWidget extends Component {
 
@@ -33,17 +33,17 @@ export default class RecentCitationReferencesWidget extends Component {
       ...rest
     } = this.props
     return (
-        <ListEntitiesWidget {...rest}
-                            id={id}
-                            widgetId={widgetId}
-                            entitiesWidgetStateKey="recentCitationReferences"
-                            clearEntities={ui.clearRecentCitationReferences}
-                            fetchEntities={api.fetchRecentCitationReferences}
-                            entityToCard={this.citationReferenceToCard}
-                            entitiesSchema={citationReferencesSchema}
-                            emptyEntitiesMessage={t("No recent quotes")}
-                            loadErrorMessage={t("There was an error fetching the recent quotes.")}
-        />
+      <ListEntitiesWidget {...rest}
+                          id={id}
+                          widgetId={widgetId}
+                          entitiesWidgetStateKey="recentCitationReferences"
+                          clearEntities={ui.clearRecentCitationReferences}
+                          fetchEntities={api.fetchRecentCitationReferences}
+                          entityToCard={this.citationReferenceToCard}
+                          entitiesSchema={citationReferencesSchema}
+                          emptyEntitiesMessage={t("No recent quotes")}
+                          loadErrorMessage={t("There was an error fetching the recent quotes.")}
+      />
     )
   }
 }

@@ -7,7 +7,7 @@ import ChatBubble from './ChatBubble'
 
 import './JustificationChatBubble.scss'
 
-export default props => {
+const JustificationChatBubble = props => {
   const {
     id,
     className,
@@ -23,17 +23,18 @@ export default props => {
   const basisViewerId = `${basisViewerIdPrefix}justification-chat-bubble-justification-basis-viewer-${justification.id}`
 
   return (
-      <ChatBubble {...rest}
-                  className={cn(className, "md-grid")}
-                  isPositive={_isRootPositive}
-                  isNegative={_isRootNegative}
-      >
-        <JustificationBasisViewer id={basisViewerId}
-                                  className="md-cell md-cell--12"
-                                  justification={justification}
-                                  doShowControls={doShowControls}
-                                  doShowBasisJustifications={doShowBasisJustifications}
-        />
-      </ChatBubble>
+    <ChatBubble {...rest}
+                className={cn(className, "md-grid")}
+                isPositive={_isRootPositive}
+                isNegative={_isRootNegative}
+    >
+      <JustificationBasisViewer id={basisViewerId}
+                                className="md-cell md-cell--12"
+                                justification={justification}
+                                doShowControls={doShowControls}
+                                doShowBasisJustifications={doShowBasisJustifications}
+      />
+    </ChatBubble>
   )
 }
+export default JustificationChatBubble

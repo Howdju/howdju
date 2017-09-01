@@ -3,7 +3,7 @@ import cn from 'classnames'
 
 import './ChatBubble.scss'
 
-export default props => {
+const ChatBubble = props => {
   const {
     className,
     isPositive,
@@ -12,13 +12,14 @@ export default props => {
     ...rest,
   } = props
   return (
-      <div {...rest}
-           className={cn(className, "chat-bubble", {
-             'chat-bubble--positive': isPositive,
-             'chat-bubble--negative': isNegative,
-           })}
-      >
-        {children}
-      </div>
+    <div {...rest}
+         className={cn(className, "chat-bubble", {
+           'chat-bubble--positive': isPositive,
+           'chat-bubble--negative': isNegative,
+         })}
+    >
+      {children}
+    </div>
   )
 }
+export default ChatBubble

@@ -1,5 +1,5 @@
 const debug = require('debug')('premiser-api:dev-server')
-const {apiHost, devApiServerPort} = require('../src/util')
+const {apiHost, devApiServerPort} = require('../src/config/util')
 
 const server = require('../server')
 

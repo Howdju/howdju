@@ -1,11 +1,10 @@
-require('./util/env')
+require('../lib/env')
 
-const argon2 = require('argon2')
 const {ArgumentParser} = require('argparse')
 const read = require('read')
 const Promise = require('bluebird')
-const map = require('lodash/map')
 
+const logger = require('../lib/logger')
 const {createUserAsUser} = require('../src/service')
 const userPermissionsDao = require('../src/dao/userPermissionsDao')
 const userGroupsDao = require('../src/dao/userGroupsDao')
@@ -39,18 +38,18 @@ function createUserWithPassword(error, password) {
   }
   return createUserAsUser(creatorUserId, user)
     .then( user => {
-      console.log(`Created user ${user.id} (${user.email})`)
+      logger.info(`Created user ${user.id} (${user.email})`)
       return user
     })
     .then( (user) => {
       return Promise.all([
-          user,
-          addPermissionsToUser(user, args.permissions)
+        user,
+        addPermissionsToUser(user, args.permissions)
       ])
     })
     .then( ([user]) => Promise.all([
-        user,
-        addUserToGroups(user, args.groups)
+      user,
+      addUserToGroups(user, args.groups)
     ]))
 }
 
@@ -58,7 +57,7 @@ const addPermissionsToUser = (user, permissions) => {
   if (permissions) {
     const permissionNames = permissions.split(',')
     return userPermissionsDao.addPermissionsToUser(user, permissionNames)
-        .then(() => console.log(`Granted user ${user.id} permissions: ${permissions}`))
+      .then(() => logger.info(`Granted user ${user.id} permissions: ${permissions}`))
   }
   return Promise.resolve()
 }
@@ -67,7 +66,7 @@ const addUserToGroups = (user, groups) => {
   if (groups) {
     const groupNames = groups.split(',')
     return userGroupsDao.addUserToGroups(user, groupNames)
-        .then(() => console.log(`Added user ${user.id} to groups: ${groups}`))
+      .then(() => logger.info(`Added user ${user.id} to groups: ${groups}`))
   }
   return Promise.resolve()
 }

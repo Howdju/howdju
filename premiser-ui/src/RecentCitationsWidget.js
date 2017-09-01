@@ -7,7 +7,7 @@ import {
   api,
   ui,
 } from './actions'
-import {citationsSchema} from "./schemas";
+import {citationsSchema} from "./schemas"
 
 export default class RecentCitationsWidget extends Component {
 
@@ -15,10 +15,10 @@ export default class RecentCitationsWidget extends Component {
     const id = this.props.id
     const cardId = `${id}-citation-${citation.id}`
     return (
-        <CitationCard key={cardId}
-                      citation={citation}
-                      className={ListEntitiesWidget.smallCellClasses}
-        />
+      <CitationCard key={cardId}
+                    citation={citation}
+                    className={ListEntitiesWidget.smallCellClasses}
+      />
     )
 
   }
@@ -30,17 +30,17 @@ export default class RecentCitationsWidget extends Component {
       ...rest
     } = this.props
     return (
-        <ListEntitiesWidget {...rest}
-                            id={id}
-                            widgetId={widgetId}
-                            entitiesWidgetStateKey="recentCitations"
-                            clearEntities={ui.clearRecentCitations}
-                            fetchEntities={api.fetchRecentCitations}
-                            entityToCard={this.citationToCard}
-                            entitiesSchema={citationsSchema}
-                            emptyEntitiesMessage={t("No recent citations")}
-                            loadErrorMessage={t("There was an error fetching the recent citations.")}
-        />
+      <ListEntitiesWidget {...rest}
+                          id={id}
+                          widgetId={widgetId}
+                          entitiesWidgetStateKey="recentCitations"
+                          clearEntities={ui.clearRecentCitations}
+                          fetchEntities={api.fetchRecentCitations}
+                          entityToCard={this.citationToCard}
+                          entitiesSchema={citationsSchema}
+                          emptyEntitiesMessage={t("No recent citations")}
+                          loadErrorMessage={t("There was an error fetching the recent citations.")}
+      />
     )
   }
 }

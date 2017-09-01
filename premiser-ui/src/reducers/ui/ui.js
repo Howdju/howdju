@@ -13,7 +13,7 @@ import {
   justificationsSearchPage,
 } from './pages'
 import transients from './transients'
-import {isWindowNarrow} from "../../util";
+import {isWindowNarrow} from "../../util"
 
 export const app = handleActions({
   [ui.showNavDrawer]: (state, action) => ({...state, isNavDrawerVisible: true}),

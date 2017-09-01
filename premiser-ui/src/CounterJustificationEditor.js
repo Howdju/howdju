@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import {connect} from "react-redux"
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import CardActions from 'react-md/lib/Cards/CardActions';
-import CardText from 'react-md/lib/Cards/CardText';
+import CardActions from 'react-md/lib/Cards/CardActions'
+import CardText from 'react-md/lib/Cards/CardText'
 import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import get from 'lodash/get'
 
-import StatementCompoundEditorFields from "./StatementCompoundEditorFields";
-import {EditorTypes} from "./reducers/editors";
+import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
+import {EditorTypes} from "./reducers/editors"
 import {
   editors,
   mapActionCreatorGroupToDispatchToProps,
@@ -18,7 +18,7 @@ import {
   default as t,
   CANCEL_BUTTON_LABEL,
   COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
-} from "./texts";
+} from "./texts"
 
 
 class CounterJustificationEditor extends Component {
@@ -67,40 +67,40 @@ class CounterJustificationEditor extends Component {
     const statementCompound = get(editEntity, 'basis.entity')
 
     return (
-        <form onSubmit={this.onSubmit}>
-          <CardText>
-            <FocusContainer containFocus={false} focusOnMount={true}>
-              <StatementCompoundEditorFields
-                  {...rest}
-                  name="basis.entity"
-                  statementCompound={statementCompound}
-                  textId={textId}
-                  suggestionsKey={suggestionsKey}
-                  onPropertyChange={this.onPropertyChange}
+      <form onSubmit={this.onSubmit}>
+        <CardText>
+          <FocusContainer containFocus={false} focusOnMount={true}>
+            <StatementCompoundEditorFields
+              {...rest}
+              name="basis.entity"
+              statementCompound={statementCompound}
+              textId={textId}
+              suggestionsKey={suggestionsKey}
+              onPropertyChange={this.onPropertyChange}
+              disabled={isSaving}
+              errors={statementCompoundErrors}
+              onAddStatementAtom={this.onAddStatementAtom}
+              onRemoveStatementAtom={this.onRemoveStatementAtom}
+            />
+          </FocusContainer>
+        </CardText>
+        <CardActions>
+          {isSaving && <CircularProgress key="progress" id="progress" />}
+          <Button flat
+                  key="cancelButton"
+                  label={t(CANCEL_BUTTON_LABEL)}
+                  onClick={this.onCancelEdit}
                   disabled={isSaving}
-                  errors={statementCompoundErrors}
-                  onAddStatementAtom={this.onAddStatementAtom}
-                  onRemoveStatementAtom={this.onRemoveStatementAtom}
-              />
-            </FocusContainer>
-          </CardText>
-          <CardActions>
-            {isSaving && <CircularProgress key="progress" id="progress" />}
-            <Button flat
-                    key="cancelButton"
-                    label={t(CANCEL_BUTTON_LABEL)}
-                    onClick={this.onCancelEdit}
-                    disabled={isSaving}
-            />
-            <Button raised
-                    primary
-                    key="submitButton"
-                    type="submit"
-                    label={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-                    disabled={isSaving}
-            />
-          </CardActions>
-        </form>
+          />
+          <Button raised
+                  primary
+                  key="submitButton"
+                  type="submit"
+                  label={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+                  disabled={isSaving}
+          />
+        </CardActions>
+      </form>
     )
   }
 }

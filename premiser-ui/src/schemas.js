@@ -1,6 +1,6 @@
-import { schema } from 'normalizr';
+import { schema } from 'normalizr'
 
-export const statementSchema = new schema.Entity('statements');
+export const statementSchema = new schema.Entity('statements')
 export const statementsSchema = [statementSchema]
 export const statementCompoundSchema = new schema.Entity('statementCompounds', {
   atoms: [

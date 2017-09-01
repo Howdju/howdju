@@ -5,8 +5,8 @@ import { connect } from 'react-redux'
 import concat from 'lodash/concat'
 import get from 'lodash/get'
 import map from 'lodash/map'
-import {denormalize} from "normalizr";
-import FlipMove from 'react-flip-move';
+import {denormalize} from "normalizr"
+import FlipMove from 'react-flip-move'
 
 import config from './config'
 import FetchButton from './FetchButton'
@@ -84,22 +84,22 @@ class ListEntitiesWidget extends Component {
     const {flipMoveDuration, flipMoveEasing} = config.ui
 
     return (
-        <div id={id}>
-          <FlipMove {...rest}
-                    duration={flipMoveDuration}
-                    easing={flipMoveEasing}
-          >
-            {hasEntities && concat(cards(), fetchMoreButtonCell)}
-            {!hasEntities && !isFetching &&
-              <div className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
-            }
-            {!hasEntities && !didError && isFetching &&
-              <CircularProgress key="progress" id={`${id}-progress`} className="md-cell md-cell--12" />
-            }
-            {didError && <span className="error-message">{loadErrorMessage}</span>}
-            {didError && !hasEntities && retryButtonCell}
-          </FlipMove>
-        </div>
+      <div id={id}>
+        <FlipMove {...rest}
+                  duration={flipMoveDuration}
+                  easing={flipMoveEasing}
+        >
+          {hasEntities && concat(cards(), fetchMoreButtonCell)}
+          {!hasEntities && !isFetching && (
+            <div className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
+          )}
+          {!hasEntities && !didError && isFetching && (
+            <CircularProgress key="progress" id={`${id}-progress`} className="md-cell md-cell--12" />
+          )}
+          {didError && <span className="error-message">{loadErrorMessage}</span>}
+          {didError && !hasEntities && retryButtonCell}
+        </FlipMove>
+      </div>
     )
   }
 }
@@ -119,8 +119,8 @@ ListEntitiesWidget.propTypes = {
   entityToCard: PropTypes.func.isRequired,
   /** The schema with which to denormalize the entities returned by {@see entitiesWidgetStateKey} */
   entitiesSchema: PropTypes.oneOfType([
-      PropTypes.object,
-      PropTypes.arrayOf(PropTypes.object),
+    PropTypes.object,
+    PropTypes.arrayOf(PropTypes.object),
   ]).isRequired,
   /** The message to display when there are no entities */
   emptyEntitiesMessage: PropTypes.string.isRequired,

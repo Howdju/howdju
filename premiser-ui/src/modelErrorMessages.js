@@ -2,7 +2,7 @@ import isFunction from 'lodash/isFunction'
 import capitalize from 'lodash/capitalize'
 import join from 'lodash/join'
 import map from 'lodash/map'
-import {logger} from './util'
+import {logger} from './logger'
 
 const modelErrorMessages = {
   MUST_BE_NONEMPTY: 'Must be non-empty',
@@ -30,7 +30,7 @@ export const toErrorMessage = (modelErrorCode, ...args) => {
   const t = modelErrorMessages[modelErrorCode]
   if (!t) {
     logger.error(`No modelErrorMessages key: ${modelErrorCode}`)
-    return '';
+    return ''
   }
   return isFunction(t) ? t(...args) : t
 }

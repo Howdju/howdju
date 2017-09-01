@@ -1,9 +1,9 @@
-import { createAction as actionCreator } from 'redux-actions';
+import { createAction as actionCreator } from 'redux-actions'
 import {
-  decircularizeJustification,
   VotePolarity,
   VoteTargetType,
-} from "howdju-common";
+  decircularizeJustification,
+} from "howdju-common"
 import reduce from 'lodash/reduce'
 import mapValues from 'lodash/mapValues'
 import assign from 'lodash/assign'
@@ -16,8 +16,6 @@ const actionTypeDelim = '/'
  */
 export const str = ac => ac.toString()
 
-const identity = x => x
-
 /** Helper to easily allow us to pass an object with 'action groups' to redux-react's connect method.
  * Action groups are what we call the objects below with react-actions action creators.  They are just
  * a way to organize related action creators.  The convention with redux-react's connect method's mapDispatchToProps
@@ -27,9 +25,9 @@ const identity = x => x
  */
 export const mapActionCreatorGroupToDispatchToProps = (actionCreatorGroups, otherActions) => (dispatch) => {
   const dispatchProps = mapValues(actionCreatorGroups, (actionCreatorGroup) =>
-      mapValues(actionCreatorGroup, (actionCreator) =>
-          (...args) => dispatch(actionCreator.apply(null, args))
-      )
+    mapValues(actionCreatorGroup, (actionCreator) =>
+      (...args) => dispatch(actionCreator.apply(null, args))
+    )
   )
 
   if (otherActions) {
@@ -68,14 +66,14 @@ export const api = {
   fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
 
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
-      ({citationReferenceId, citationId, statementCompoundId, statementId, count, continuationToken}) => ({
-        citationReferenceId,
-        citationId,
-        statementCompoundId,
-        statementId,
-        count,
-        continuationToken,
-      })
+    ({citationReferenceId, citationId, statementCompoundId, statementId, count, continuationToken}) => ({
+      citationReferenceId,
+      citationId,
+      statementCompoundId,
+      statementId,
+      count,
+      continuationToken,
+    })
   ),
   login: apiActionCreator('LOGIN', credentials => ({credentials})),
   logout: apiActionCreator('LOGOUT'),
@@ -124,7 +122,7 @@ export const api = {
     citationText,
     suggestionsKey,
   })),
-  createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeTarget(justification)})),
+  createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeJustification(justification)})),
   updateCitationReference: apiActionCreator('UPDATE_CITATION_REFERENCE', citationReference => ({citationReference})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', justification => ({justification})),
   fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', searchText => ({searchText})),
@@ -162,15 +160,15 @@ export const ui = {
   showTransient: actionCreator('UI/SHOW_TRANSIENT', transientId => ({transientId})),
   scheduleDelayedHideTransient: actionCreator('UI/SCHEDULE_DELAYED_HIDE_TRANSIENT', (transientId, hideDelay) => ({transientId, hideDelay})),
   tryCancelDelayedHideTransient: actionCreator('UI/TRY_CANCEL_DELAYED_HIDE_TRANSIENT',
-      (transientId, cause) => ({transientId}),
-      (transientId, cause) => ({cause}),
+    (transientId, cause) => ({transientId}),
+    (transientId, cause) => ({cause}),
   ),
   cancelDelayedHideTransient: actionCreator('UI/CANCEL_DELAYED_HIDE_TRANSIENT', transientId => ({transientId})),
   hideAllTransients: actionCreator('UI/HIDE_ALL_TRANSIENTS'),
   hideOtherTransients: actionCreator('UI/HIDE_OTHER_TRANSIENTS', visibleTransientId => ({visibleTransientId})),
   hideTransient: actionCreator('UI/HIDE_TRANSIENT',
-      (transientId, cause) => ({transientId}),
-      (transientId, cause) => ({cause}),
+    (transientId, cause) => ({transientId}),
+    (transientId, cause) => ({cause}),
   ),
   windowResize: actionCreator('UI/WINDOW_RESIZE'),
 
@@ -183,15 +181,15 @@ export const ui = {
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
 commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RESULT',
-    (editorType, editorId, result) => ({editorType, editorId, result}),
-    (...args) => {
-        if (args.length === 4) {
-          return args[3]
-        } else if (args.length === 2 && args[0] instanceof Error) {
-          return args[1]
-        }
-        return undefined
+  (editorType, editorId, result) => ({editorType, editorId, result}),
+  (...args) => {
+    if (args.length === 4) {
+      return args[3]
+    } else if (args.length === 2 && args[0] instanceof Error) {
+      return args[1]
     }
+    return undefined
+  }
 )
 export const editors = {
   init: actionCreator('EDITORS/INIT', (editorType, editorId, initialState) => ({editorType, editorId, initialState: initialState || {}})),
@@ -229,11 +227,11 @@ export const goto = {
 
 export const flows = {
   fetchAndBeginEditOfNewJustificationFromBasis: actionCreator('FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS',
-      (editorType, editorId, basisType, basisId) => ({editorType, editorId, basisType, basisId})),
+    (editorType, editorId, basisType, basisId) => ({editorType, editorId, basisType, basisId})),
   commitEditThenView: actionCreator('FLOWS/COMMIT_STATEMENT_THEN_VIEW',
-      (editorType, editorId) => ({editorType, editorId})),
+    (editorType, editorId) => ({editorType, editorId})),
   commitEditThenPutActionOnSuccess: actionCreator('FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS',
-      (editorType, editorId, onSuccessAction) => ({editorType, editorId, onSuccessAction})),
+    (editorType, editorId, onSuccessAction) => ({editorType, editorId, onSuccessAction})),
 }
 
 export const autocompletes = {

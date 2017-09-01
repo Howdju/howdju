@@ -8,7 +8,7 @@ import {
   api,
   ui,
 } from './actions'
-import {statementsSchema} from "./schemas";
+import {statementsSchema} from "./schemas"
 
 export default class RecentStatementsWidget extends Component {
 
@@ -32,17 +32,17 @@ export default class RecentStatementsWidget extends Component {
       ...rest
     } = this.props
     return (
-        <ListEntitiesWidget {...rest}
-                            id={id}
-                            widgetId={widgetId}
-                            entitiesWidgetStateKey="recentStatements"
-                            clearEntities={ui.clearRecentStatements}
-                            fetchEntities={api.fetchRecentStatements}
-                            entityToCard={this.statementToCard}
-                            entitiesSchema={statementsSchema}
-                            emptyEntitiesMessage={t("No recent statements")}
-                            loadErrorMessage={t("There was an error fetching the recent statements.")}
-        />
+      <ListEntitiesWidget {...rest}
+                          id={id}
+                          widgetId={widgetId}
+                          entitiesWidgetStateKey="recentStatements"
+                          clearEntities={ui.clearRecentStatements}
+                          fetchEntities={api.fetchRecentStatements}
+                          entityToCard={this.statementToCard}
+                          entitiesSchema={statementsSchema}
+                          emptyEntitiesMessage={t("No recent statements")}
+                          loadErrorMessage={t("There was an error fetching the recent statements.")}
+      />
     )
   }
 }

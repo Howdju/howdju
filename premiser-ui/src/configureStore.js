@@ -1,11 +1,13 @@
+/* Hot module replace needs these dynamic import globals */
+/* globals module require */
 import { createStore, applyMiddleware, compose as reduxCompose } from 'redux'
 import createHistory from 'history/createBrowserHistory'
 import { routerMiddleware } from 'react-router-redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
 import createSagaMiddleware from 'redux-saga'
-import rootReducer from './reducers/index';
-import getSagas from './sagas';
-import {logger} from './util';
+import rootReducer from './reducers/index'
+import getSagas from './sagas'
+import {logger} from './logger'
 import config from './config'
 
 export const history = createHistory()
@@ -15,20 +17,20 @@ export default function configureStore(initialState) {
   const sagaMiddleware = createSagaMiddleware()
 
   const store = createStore(
-      rootReducer,
-      initialState,
-      compose(
-          autoRehydrate(),
-          applyMiddleware(
-              routerMiddleware(history),
-              sagaMiddleware
-          ),
-      )
+    rootReducer,
+    initialState,
+    compose(
+      autoRehydrate(),
+      applyMiddleware(
+        routerMiddleware(history),
+        sagaMiddleware
+      ),
+    )
   )
 
   persistStore(store, {
     whitelist: config.reduxPersistWhitelist
-  });
+  })
 
   let rootTask = sagaMiddleware.run(function* () {
     yield getSagas()
@@ -38,11 +40,11 @@ export default function configureStore(initialState) {
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers/index', () => {
-      const nextRootReducer = require('./reducers/index').default;
-      store.replaceReducer(nextRootReducer);
-    });
+      const nextRootReducer = require('./reducers/index').default
+      store.replaceReducer(nextRootReducer)
+    })
     module.hot.accept('./sagas', () => {
-      const getNewSagas = require('./sagas').default;
+      const getNewSagas = require('./sagas').default
       rootTask.cancel()
       rootTask.done.then(() => {
         rootTask = sagaMiddleware.run(function* replacedSaga() {
@@ -53,5 +55,5 @@ export default function configureStore(initialState) {
     })
   }
 
-  return store;
+  return store
 }

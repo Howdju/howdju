@@ -1,4 +1,4 @@
-import { createPath } from 'history/PathUtils';
+import { createPath } from 'history/PathUtils'
 import queryString from 'query-string'
 
 export const mainSearchPathName = '/'

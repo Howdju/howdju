@@ -1,4 +1,4 @@
-import {handleActions} from "redux-actions";
+import {handleActions} from "redux-actions"
 import get from 'lodash/get'
 import union from 'lodash/union'
 

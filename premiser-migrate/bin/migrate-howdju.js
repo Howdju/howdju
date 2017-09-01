@@ -10,8 +10,13 @@ const head = require('lodash/head')
 const toNumber = require('lodash/toNumber')
 const mysql = require('mysql')
 
-const {normalizeText} = require("../../premiser-api/src/dao/util");
-const {JustificationBasisType, JustificationTargetType, JustificationPolarity} = require('../../premiser-api/src/models')
+const {
+  JustificationBasisType,
+  JustificationPolarity,
+  JustificationTargetType,
+} = require('howdju-common')
+
+const {normalizeText} = require("howdju-service-common/lib/daos/util")
 
 const envFilename = process.env.NODE_ENV === 'production' ? '../config/production-local-tunnel.env' : '../../premiser-api/src/.env'
 env(path.join(__dirname, envFilename))

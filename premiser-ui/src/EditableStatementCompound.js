@@ -1,14 +1,13 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {connect} from "react-redux";
-import CircularProgress from "react-md/lib/Progress/CircularProgress";
+import {connect} from "react-redux"
+import CircularProgress from "react-md/lib/Progress/CircularProgress"
 import get from 'lodash/get'
-import {denormalize} from "normalizr";
+import {denormalize} from "normalizr"
 
-import {EditorTypes} from "./reducers/editors";
-import {logger} from './util'
-import StatementCompoundViewer from "./StatementCompoundViewer";
-import {statementCompoundSchema} from "./schemas";
+import {EditorTypes} from "./reducers/editors"
+import StatementCompoundViewer from "./StatementCompoundViewer"
+import {statementCompoundSchema} from "./schemas"
 
 class EditableStatementCompound extends Component {
 
@@ -20,7 +19,7 @@ class EditableStatementCompound extends Component {
       suggestionsKey,
       isFetching,
       // Currently statement compounds are not editable.  Only their statements are.  Instead create a new statement compound justification
-      isEditing,
+      // isEditing,
       doShowControls,
       doShowStatementAtomJustifications,
       isCondensed,
@@ -61,9 +60,11 @@ const mapStateToProps = (state, ownProps) => {
   const normalStatementCompound = state.entities.statementCompounds[ownProps.entityId]
   const statementCompound = denormalize(normalStatementCompound, statementCompoundSchema, state.entities)
   const editEntity = get(state.editors, [EditorTypes.STATEMENT_COMPOUND, ownProps.editorId, 'editEntity'])
+  const isEditing = !!editEntity
 
   return {
     statementCompound,
+    isEditing,
   }
 }
 

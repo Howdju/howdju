@@ -1,8 +1,8 @@
 import React from 'react'
 import cn from 'classnames'
-import Card from "react-md/lib/Cards/Card";
+import Card from "react-md/lib/Cards/Card"
 
-export default props => {
+const GridCard = props => {
   const {
     cellClass,
     cellClasses,
@@ -13,18 +13,19 @@ export default props => {
 
   return (
 
-      <Card {...rest}>
+    <Card {...rest}>
 
-        <div className="md-grid">
-          <div className={cn(`md-cell md-cell--12 ${cellClass}`, cellClasses)}>
+      <div className="md-grid">
+        <div className={cn(`md-cell md-cell--12 ${cellClass}`, cellClasses)}>
 
-            {children}
+          {children}
 
-          </div>
         </div>
+      </div>
 
-        {actions}
+      {actions}
 
-      </Card>
+    </Card>
   )
 }
+export default GridCard

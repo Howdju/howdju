@@ -1,6 +1,6 @@
-import React, {Component} from "react";
+import React, {Component} from "react"
 import FlipMove from 'react-flip-move'
-import {connect} from "react-redux";
+import {connect} from "react-redux"
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import get from 'lodash/get'
@@ -12,10 +12,10 @@ import {
   api,
   ui,
   mapActionCreatorGroupToDispatchToProps,
-} from "./actions";
-import JustificationCard from "./JustificationCard";
-import {denormalize} from "normalizr";
-import {justificationsSchema} from "./schemas";
+} from "./actions"
+import JustificationCard from "./JustificationCard"
+import {denormalize} from "normalizr"
+import {justificationsSchema} from "./schemas"
 import config from './config'
 
 const justificationSearchParams = (locationSearch) => {
@@ -75,43 +75,43 @@ class JustificationsSearchPage extends Component {
     const hasJustifications = justifications && justifications.length > 0
 
     const fetchMoreButton = (
-        <Button flat
-          key="fetch-more-button"
-          label="Fetch more"
-          disabled={isFetching}
-          onClick={this.fetchMore}
-        />
+      <Button flat
+              key="fetch-more-button"
+              label="Fetch more"
+              disabled={isFetching}
+              onClick={this.fetchMore}
+      />
     )
 
     return (
-        <div className="md-grid">
-          <h1 className="md-cell md-cell--12">Justifications</h1>
+      <div className="md-grid">
+        <h1 className="md-cell md-cell--12">Justifications</h1>
 
-          <FlipMove className="md-cell md-cell--12 center-text"
-                    duration={flipMoveDuration}
-                    easing={flipMoveEasing}
-          >
-            {map(justifications, j => (
-                <JustificationCard className="md-cell md-cell--12"
-                                   key={`justification-card-${j.id}`}
-                                   justification={j}
-                />
-            ))}
-          </FlipMove>
-          {!isFetching && !hasJustifications &&
-            <div className="md-cell md-cell--12 text-center">
-              No justifications
-            </div>
-          }
-          {isFetching && (
-            <div className="md-cell md-cell--12 cell--centered-contents">
-              <CircularProgress id={`$justificationsSearchPage-Progress`} />
-            </div>
-          )}
-          <div className="md-cell md-cell--12 cell--centered-contents">
-            {fetchMoreButton}
+        <FlipMove className="md-cell md-cell--12 center-text"
+                  duration={flipMoveDuration}
+                  easing={flipMoveEasing}
+        >
+          {map(justifications, j => (
+            <JustificationCard className="md-cell md-cell--12"
+                               key={`justification-card-${j.id}`}
+                               justification={j}
+            />
+          ))}
+        </FlipMove>
+        {!isFetching && !hasJustifications && (
+          <div className="md-cell md-cell--12 text-center">
+            No justifications
           </div>
+        )}
+        {isFetching && (
+          <div className="md-cell md-cell--12 cell--centered-contents">
+            <CircularProgress id={`$justificationsSearchPage-Progress`} />
+          </div>
+        )}
+        <div className="md-cell md-cell--12 cell--centered-contents">
+          {fetchMoreButton}
         </div>
+      </div>
     )
   }
 }

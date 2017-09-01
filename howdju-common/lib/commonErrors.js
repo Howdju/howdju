@@ -21,7 +21,7 @@ const newCustomError = _e.newCustomError = (errorType, message, sourceError, pro
 }
 
 _e.newImpossibleError = (message) =>
-    newCustomError(commonErrorTypes.IMPOSSIBLE_ERROR, message)
+  newCustomError(commonErrorTypes.IMPOSSIBLE_ERROR, message)
 
 _e.newProgrammingError = (message) =>
-    newCustomError(commonErrorTypes.PROGRAMMING_ERROR, message)
+  newCustomError(commonErrorTypes.PROGRAMMING_ERROR, message)

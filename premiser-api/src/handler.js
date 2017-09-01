@@ -1,9 +1,7 @@
 process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT']
 
-const assign = require('lodash/assign')
 const concat = require('lodash/concat')
 const get = require('lodash/get')
-const has = require('lodash/has')
 const isArray = require('lodash/isArray')
 const join = require('lodash/join')
 const pick = require('lodash/pick')
@@ -20,8 +18,8 @@ const {configureGatewayContext} = require('howdju-service-common')
 const {routeEvent} = require('./route')
 // config for settings that can be unencrypted at rest and that wait for a deploy to change
 const config = require('./config')
-const {logger} = require('./logging')
-const {apiHost} = require('./util')
+const {logger} = require('./initialization')
+const {apiHost} = require('./config/util')
 const httpStatusCodes = require('./httpStatusCodes')
 const customHeaderKeys = require('./customHeaderKeys')
 const headerKeys = require('./headerKeys')

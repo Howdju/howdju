@@ -1,27 +1,24 @@
-const path = require('path')
-
-const debug = require('debug')('app:server')
 const express = require('express')
 const morgan = require('morgan')
 const isString = require('lodash/isString')
 
-
 const {handler} = require('./src/index')
-const {logger} = require('./src/logging')
+const {logger} = require('./src/initialization/loggerInitialization')
+
 
 const app = express()
 
 function rawBody(req, res, next) {
-  req.setEncoding('utf8');
+  req.setEncoding('utf8')
   req.rawBody = null
   req.on('data', function(chunk) {
     if (!isString(req.rawBody)) {
       req.rawBody = ''
     }
-    req.rawBody += chunk;
+    req.rawBody += chunk
   })
   req.on('end', function(){
-    next();
+    next()
   })
 }
 app.use(rawBody)

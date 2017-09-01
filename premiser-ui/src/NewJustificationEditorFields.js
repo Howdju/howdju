@@ -2,23 +2,20 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Divider from 'react-md/lib/Dividers'
 import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
-import FontIcon from 'react-md/lib/FontIcons/FontIcon'
 import Subheader from 'react-md/lib/Subheaders'
 import get from 'lodash/get'
-import cn from 'classnames'
 
 import {
   isCitationReferenceBased, isStatementCompoundBased, JustificationBasisType,
   JustificationPolarity
-} from "howdju-common";
+} from "howdju-common"
 import text, {
   JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE,
   JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND, JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE
-} from "./texts";
-import CitationReferenceEditorFields from "./CitationReferenceEditorFields";
-import StatementCompoundEditorFields from "./StatementCompoundEditorFields";
-import TooltipFontIcon from "./TooltipFontIcon";
+} from "./texts"
+import CitationReferenceEditorFields from "./CitationReferenceEditorFields"
+import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
 
 import './NewJustificationEditorFields.scss'
 
@@ -29,31 +26,31 @@ const citationReferenceName = "basis.citationReference"
 const polarityControls = [{
   value: JustificationPolarity.POSITIVE,
   label: (
-      <div title="Support the truth of the statement">
-        {text(JUSTIFICATION_POLARITY_POSITIVE)}
-      </div>
+    <div title="Support the truth of the statement">
+      {text(JUSTIFICATION_POLARITY_POSITIVE)}
+    </div>
   ),
 }, {
   value: JustificationPolarity.NEGATIVE,
   label: (
-      <div title="Oppose the truth of the statement">
-        {text(JUSTIFICATION_POLARITY_NEGATIVE)}
-      </div>
+    <div title="Oppose the truth of the statement">
+      {text(JUSTIFICATION_POLARITY_NEGATIVE)}
+    </div>
   ),
 }]
 const basisTypeControls = [{
   value: JustificationBasisType.STATEMENT_COMPOUND,
   label: (
-      <div title="A list of statements that when taken together logically imply the target">
-        {text(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
-      </div>
+    <div title="A list of statements that when taken together logically imply the target">
+      {text(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
+    </div>
   ),
 }, {
   value: JustificationBasisType.CITATION_REFERENCE,
   label: (
-      <div title="An external reference">
-        {text(JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE)}
-      </div>
+    <div title="An external reference">
+      {text(JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE)}
+    </div>
   ),
 }]
 
@@ -132,36 +129,36 @@ class NewJustificationEditorFields extends Component {
     const polarity = get(newJustification, 'polarity')
 
     return (
-        <div>
-          <SelectionControlGroup
-              inline
-              id={idPrefix + "polarity"}
-              name={namePrefix + "polarity"}
-              type="radio"
-              value={polarity}
-              onChange={this.onChange}
-              controls={polarityControls}
-              disabled={disabled}
-          />
-          <Divider />
-          <Subheader primary
-                     primaryText="Type"
-                     component="div"
-          />
-          <SelectionControlGroup
-              inline
-              id={idPrefix + "basis.type"}
-              name={namePrefix + "basis.type"}
-              type="radio"
-              value={basisType}
-              onChange={this.onChange}
-              controls={basisTypeControls}
-              disabled={readOnlyBasis || disabled}
-          />
-          <Divider />
-          {_isStatementCompoundBased && statementCompoundComponents}
-          {_isCitationReferenceBased && citationReferenceComponents}
-        </div>
+      <div>
+        <SelectionControlGroup
+          inline
+          id={idPrefix + "polarity"}
+          name={namePrefix + "polarity"}
+          type="radio"
+          value={polarity}
+          onChange={this.onChange}
+          controls={polarityControls}
+          disabled={disabled}
+        />
+        <Divider />
+        <Subheader primary
+                   primaryText="Type"
+                   component="div"
+        />
+        <SelectionControlGroup
+          inline
+          id={idPrefix + "basis.type"}
+          name={namePrefix + "basis.type"}
+          type="radio"
+          value={basisType}
+          onChange={this.onChange}
+          controls={basisTypeControls}
+          disabled={readOnlyBasis || disabled}
+        />
+        <Divider />
+        {_isStatementCompoundBased && statementCompoundComponents}
+        {_isCitationReferenceBased && citationReferenceComponents}
+      </div>
     )
   }
 }

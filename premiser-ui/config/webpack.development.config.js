@@ -1,5 +1,4 @@
 const webpack = require('webpack')
-const sass = require('node-sass')
 const {
   hostAddress,
   devApiServerPort,
@@ -38,13 +37,6 @@ module.exports.sassLoaderData =
   `$dev-font-url-lato-regular-latin-ext: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Regular_LatinExt.woff2);` +
   `$dev-font-url-lato-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Regular_Latin.woff2);` +
   `$dev-font-url-orbitron-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Orbitron-Regular_Latin.woff2);`
-//`$dev-font-urlo paramaterize the fonts didn't work, so use the literal replacements above
-// const fontsPrefix = `http://${hostAddress()}:${devWebServerPort()}/fonts/`
-// module.exports.sassLoaderFunctions = {
-//   'local-font-url-string($font-name)': function(fontName) {
-//     return new sass.types.String(`http://${hostAddress()}:${devWebServerPort()}/fonts/${fontName}.woff2`)
-//   }
-// }
 
 module.exports.webpackConfig = {
   entry: [

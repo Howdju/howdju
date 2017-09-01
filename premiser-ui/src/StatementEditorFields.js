@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import FontIcon from 'react-md/lib/FontIcons'
-import TextField from "react-md/lib/TextFields";
+import TextField from "react-md/lib/TextFields"
 import get from 'lodash/get'
 import has from 'lodash/has'
 
 import StatementTextAutocomplete from './StatementTextAutocomplete'
-import {toErrorText} from "./modelErrorMessages";
-import {RETURN_KEY_CODE} from "./keyCodes";
-import ErrorMessages from "./ErrorMessages";
+import {toErrorText} from "./modelErrorMessages"
+import {RETURN_KEY_CODE} from "./keyCodes"
+import ErrorMessages from "./ErrorMessages"
 
 const textName = 'text'
 
@@ -38,8 +38,8 @@ class StatementEditorFields extends Component {
 
     const modelErrors = errors && errors.modelErrors
     const errorInputProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
-        {error: true, errorText: toErrorText(errors.fieldErrors.text)} :
-        null
+      {error: true, errorText: toErrorText(errors.fieldErrors.text)} :
+      null
 
     const namePrefix = name ? name + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
@@ -56,23 +56,23 @@ class StatementEditorFields extends Component {
       onKeyDown: this.onTextInputKeyDown,
     }
     const input = (suggestionsKey && !disabled) ?
-        <StatementTextAutocomplete {...rest}
-                                   {...errorInputProps}
-                                   {...statementTextInputProps}
-                                   onPropertyChange={onPropertyChange}
-                                   suggestionsKey={suggestionsKeyPrefix + textName}
-        /> :
-        <TextField {...rest}
-                   {...errorInputProps}
-                   {...statementTextInputProps}
-                   disabled={disabled || !hasText}
-                   type="text"
-        />
+      <StatementTextAutocomplete {...rest}
+                                 {...errorInputProps}
+                                 {...statementTextInputProps}
+                                 onPropertyChange={onPropertyChange}
+                                 suggestionsKey={suggestionsKeyPrefix + textName}
+      /> :
+      <TextField {...rest}
+                 {...errorInputProps}
+                 {...statementTextInputProps}
+                 disabled={disabled || !hasText}
+                 type="text"
+      />
     return (
-        <div>
-          <ErrorMessages errors={modelErrors}/>
-          {input}
-        </div>
+      <div>
+        <ErrorMessages errors={modelErrors}/>
+        {input}
+      </div>
     )
   }
 }

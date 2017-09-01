@@ -1,7 +1,7 @@
 const {
   apiHost,
   devWebServerPort
-} = require('../util')
+} = require('./util')
 
 module.exports = {
   corsAllowOrigin: [

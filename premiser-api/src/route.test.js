@@ -1,5 +1,4 @@
-const {routes, selectRoute} = require('./route')
-const _ = require('lodash')
+const {selectRoute} = require('./route')
 const httpMethods = require('./httpMethods')
 
 describe('routes', () => {

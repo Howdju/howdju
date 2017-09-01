@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Button from 'react-md/lib/Buttons/Button'
-import Toolbar from 'react-md/lib/Toolbars';
+import Toolbar from 'react-md/lib/Toolbars'
 
 import {
   api,
@@ -11,9 +11,9 @@ import {
 } from "./actions"
 import './Header.scss'
 
-import ApiAutocomplete from "./ApiAutocomplete";
-import {statementSchema} from "./schemas";
-import {ellipsis} from "./characters";
+import ApiAutocomplete from "./ApiAutocomplete"
+import {statementSchema} from "./schemas"
+import {ellipsis} from "./characters"
 
 const mainSearchSuggestionsKey = "mainSearch"
 
@@ -71,41 +71,41 @@ class Header extends Component {
 
     return (
       <Toolbar
-          id="header"
-          colored
-          fixed
-          title={
-            <Link to="/">
-              <span id="title">
-                howdju?
-              </span>
-            </Link>
-          }
-          prominent={hasTabs}
-          actions={<Button icon className="toggleNavDrawerVisibility" onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
+        id="header"
+        colored
+        fixed
+        title={
+          <Link to="/">
+            <span id="title">
+              howdju?
+            </span>
+          </Link>
+        }
+        prominent={hasTabs}
+        actions={<Button icon className="toggleNavDrawerVisibility" onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
       >
         <form className="md-cell--12 md-cell--top" onSubmit={this.onMainSearch}>
 
           <ApiAutocomplete
-              id="mainSearch"
-              type="search"
-              name="mainSearch"
-              placeholder={"know that" + ellipsis}
-              dataValue={dataValue}
-              dataLabel={dataLabel}
-              suggestionSchema={statementSchema}
-              value={mainSearchText}
-              onAutocomplete={this.onMainSearchAutocomplete}
-              suggestionTransform={suggestionTransform}
-              onPropertyChange={this.onMainSearchChange}
-              onKeyDown={this.onMainSearchKeyDown}
-              fetchSuggestions={api.fetchMainSearchSuggestions}
-              suggestionsKey={mainSearchSuggestionsKey}
-              className="mainSearchAutocomplete"
-              inputClassName="md-text-field--toolbar"
-              escapeClears={true}
-              forcedClosed={isAutocompleteForcedClosed}
-            />
+            id="mainSearch"
+            type="search"
+            name="mainSearch"
+            placeholder={"know that" + ellipsis}
+            dataValue={dataValue}
+            dataLabel={dataLabel}
+            suggestionSchema={statementSchema}
+            value={mainSearchText}
+            onAutocomplete={this.onMainSearchAutocomplete}
+            suggestionTransform={suggestionTransform}
+            onPropertyChange={this.onMainSearchChange}
+            onKeyDown={this.onMainSearchKeyDown}
+            fetchSuggestions={api.fetchMainSearchSuggestions}
+            suggestionsKey={mainSearchSuggestionsKey}
+            className="mainSearchAutocomplete"
+            inputClassName="md-text-field--toolbar"
+            escapeClears={true}
+            forcedClosed={isAutocompleteForcedClosed}
+          />
 
         </form>
 

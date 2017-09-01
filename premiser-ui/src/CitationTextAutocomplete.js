@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
   api, mapActionCreatorGroupToDispatchToProps
-} from "./actions";
-import ApiAutocomplete from "./ApiAutocomplete";
-import {citationSchema} from "./schemas";
+} from "./actions"
+import ApiAutocomplete from "./ApiAutocomplete"
+import {citationSchema} from "./schemas"
 
 class CitationTextAutocomplete extends Component {
 
@@ -23,19 +23,19 @@ class CitationTextAutocomplete extends Component {
     } = this.props
 
     return (
-        <ApiAutocomplete
-            {...rest}
-            value={value}
-            // maxLength={2048}
-            onPropertyChange={onPropertyChange}
-            onAutocomplete={this.onAutocomplete}
-            fetchSuggestions={api.fetchCitationTextSuggestions}
-            suggestionsKey={suggestionsKey}
-            dataLabel="text"
-            dataValue="id"
-            suggestionSchema={citationSchema}
-            onKeyDown={this.props.onKeyDown}
-        />
+      <ApiAutocomplete
+        {...rest}
+        value={value}
+        // maxLength={2048}
+        onPropertyChange={onPropertyChange}
+        onAutocomplete={this.onAutocomplete}
+        fetchSuggestions={api.fetchCitationTextSuggestions}
+        suggestionsKey={suggestionsKey}
+        dataLabel="text"
+        dataValue="id"
+        suggestionSchema={citationSchema}
+        onKeyDown={this.props.onKeyDown}
+      />
     )
   }
 }

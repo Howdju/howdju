@@ -16,13 +16,11 @@ const path = require('path')
 const merge = require('webpack-merge')
 const {
   hostAddress,
-  devWebServerPort,
 } = require("./util")
 
 const basePath = path.resolve(__dirname, '..')
 
 const baseConfig = {
-  devWebServerPort: devWebServerPort(),
   hostAddress: hostAddress(),
   names: {
     js: 'premiser-ui.js',

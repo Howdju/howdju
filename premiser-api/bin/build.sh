@@ -4,6 +4,8 @@
 # TAG: NEW_LIB
 npm install --save ../howdju-common
 npm install --save ../howdju-service-common
+
 gulp build
+
 npm uninstall --save howdju-common
 npm uninstall --save howdju-service-common

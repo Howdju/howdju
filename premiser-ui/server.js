@@ -1,7 +1,6 @@
 const debug = require('debug')('premiser-ui:server')
 const express = require('express')
 const morgan = require('morgan')
-const path = require('path')
 const projectConfig = require('./config/project.config')
 const webpack = require('webpack')
 const webpackConfig = require('./config/webpack.config')

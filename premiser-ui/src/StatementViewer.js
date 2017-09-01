@@ -1,25 +1,28 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import CircularProgress from "react-md/lib/Progress/CircularProgress";
+import CircularProgress from "react-md/lib/Progress/CircularProgress"
 
 import paths from './paths'
 
-export default props => {
+const StatementViewer = props => {
   const {
     id,
     statement,
     isFetching,
   } = props
   return (
-      <span className="statement-viewer">
-        {statement ?
-            <Link to={paths.statement(statement)}>
-              {statement.text}
-            </Link> :
-            isFetching ?
-                <CircularProgress /> :
-                ''
-        }
-      </span>
+    <span id={id}
+          className="statement-viewer"
+    >
+      {statement ?
+        <Link to={paths.statement(statement)}>
+          {statement.text}
+        </Link> :
+        isFetching ?
+          <CircularProgress /> :
+          ''
+      }
+    </span>
   )
 }
+export default StatementViewer

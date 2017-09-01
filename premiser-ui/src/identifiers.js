@@ -37,7 +37,7 @@ export const getOrCreateSessionCookieId = () => {
 
 const createSessionCookieId = () => {
   const scid = newId()
-  Cookies.set('scid', scid);
+  Cookies.set('scid', scid)
   return scid
 }
 

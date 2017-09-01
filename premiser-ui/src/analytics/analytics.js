@@ -1,5 +1,5 @@
-import * as googleAnalytics from "./googleAnalytics";
-import * as mixpanel from "./mixpanel";
+import * as googleAnalytics from "./googleAnalytics"
+import * as mixpanel from "./mixpanel"
 import * as heapAnalytics from './heapAnalytics'
 
 

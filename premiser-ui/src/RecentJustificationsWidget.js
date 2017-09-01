@@ -7,7 +7,7 @@ import {
   api,
   ui,
 } from './actions'
-import {justificationsSchema} from "./schemas";
+import {justificationsSchema} from "./schemas"
 
 export default class RecentJustificationsWidget extends Component {
 
@@ -30,18 +30,18 @@ export default class RecentJustificationsWidget extends Component {
       ...rest
     } = this.props
     return (
-        <ListEntitiesWidget {...rest}
-                            id={id}
-                            widgetId={widgetId}
-                            cellClasses={ListEntitiesWidget.largeCellClasses}
-                            entitiesWidgetStateKey="recentJustifications"
-                            clearEntities={ui.clearRecentJustifications}
-                            fetchEntities={api.fetchRecentJustifications}
-                            entityToCard={this.justificationToCard}
-                            entitiesSchema={justificationsSchema}
-                            emptyEntitiesMessage={t("No recent justifications")}
-                            loadErrorMessage={t("There was an error fetching the recent justifications.")}
-        />
+      <ListEntitiesWidget {...rest}
+                          id={id}
+                          widgetId={widgetId}
+                          cellClasses={ListEntitiesWidget.largeCellClasses}
+                          entitiesWidgetStateKey="recentJustifications"
+                          clearEntities={ui.clearRecentJustifications}
+                          fetchEntities={api.fetchRecentJustifications}
+                          entityToCard={this.justificationToCard}
+                          entitiesSchema={justificationsSchema}
+                          emptyEntitiesMessage={t("No recent justifications")}
+                          loadErrorMessage={t("There was an error fetching the recent justifications.")}
+      />
     )
   }
 }

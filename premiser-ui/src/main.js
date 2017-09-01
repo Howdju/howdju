@@ -1,3 +1,4 @@
+/* globals module */
 import 'babel-polyfill'
 
 import React from 'react'
@@ -14,12 +15,12 @@ const store = configureStore(window.__INITIAL_STATE__)
 
 const renderApp = AppComponent => {
   ReactDOM.render(
-      <ReactHotLoaderContainer>
-        <Provider store={store}>
-          <AppComponent />
-        </Provider>
-      </ReactHotLoaderContainer>,
-      root
+    <ReactHotLoaderContainer>
+      <Provider store={store}>
+        <AppComponent />
+      </Provider>
+    </ReactHotLoaderContainer>,
+    root
   )
 }
 

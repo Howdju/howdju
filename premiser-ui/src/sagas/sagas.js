@@ -21,11 +21,12 @@ import get from 'lodash/get'
 import isFunction from 'lodash/isFunction'
 import keys from 'lodash/keys'
 import map from 'lodash/map'
-import merge from 'lodash/merge'
 import pick from 'lodash/pick'
 import isEmpty from 'lodash/isEmpty'
 import queryString from 'query-string'
-import {denormalize} from "normalizr";
+import {denormalize} from "normalizr"
+
+import apiErrorCodes from "howdju-common/lib/codes/apiErrorCodes"
 
 import text, {
   A_NETWORK_ERROR_OCCURRED,
@@ -39,7 +40,7 @@ import text, {
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, YOU_ARE_LOGGED_IN_AS, YOU_HAVE_BEEN_LOGGED_OUT,
 } from '../texts'
-import {request} from "../api";
+import {request} from "../api"
 import {
   statementJustificationsSchema,
   voteSchema,
@@ -48,8 +49,8 @@ import {
   citationReferenceSchema, statementsSchema, statementCompoundSchema, perspectivesSchema, citationsSchema,
   justificationsSchema, citationReferencesSchema
 } from '../schemas'
-import paths from "../paths";
-import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "../texts";
+import paths from "../paths"
+import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "../texts"
 import mainSearcher from '../mainSearcher'
 import * as httpMethods from '../httpMethods'
 import * as httpStatusCodes from '../httpStatusCodes'
@@ -60,8 +61,8 @@ import {
   selectLoginRedirectLocation,
   selectRouterLocation, selectUser,
   selectUserExternalIds,
-} from "../selectors";
-import {EditorTypes} from "../reducers/editors";
+} from "../selectors"
+import {EditorTypes} from "../reducers/editors"
 import {
   api,
   editors,
@@ -72,7 +73,7 @@ import {
   flows,
   str,
   errors,
-} from "../actions";
+} from "../actions"
 import {
   JustificationBasisType,
   JustificationTargetType,
@@ -83,25 +84,22 @@ import {
   JustificationBasisSourceType,
   newImpossibleError,
   newProgrammingError,
-} from "howdju-common";
-import {consolidateBasis} from '../viewModels'
-import {
-  logger,
   assert,
-} from '../util'
-import apiErrorCodes from "../apiErrorCodes";
+} from "howdju-common"
+import {consolidateBasis} from '../viewModels'
+import {logger} from '../logger'
 import {
   uiErrorTypes,
   newEditorCommitResultError,
-} from "../uiErrors";
-import config from "../config";
+} from "../uiErrors"
+import config from "../config"
 import * as sentry from '../sentry'
 import analytics from "../analytics"
 
 import handleTransientInteractions from './transients'
-import * as smallchat from "../smallchat";
-import {pageLoadId, getSessionStorageId, newId} from "../identifiers";
-import * as customHeaderKeys from "../customHeaderKeys";
+import * as smallchat from "../smallchat"
+import {pageLoadId, getSessionStorageId} from "../identifiers"
+import * as customHeaderKeys from "../customHeaderKeys"
 
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -312,7 +310,7 @@ function* constructHeaders(fetchInit) {
   if (authToken) {
     headersUpdate.Authorization = `Bearer ${authToken}`
   }
-  const sessionStorageId = getSessionStorageId();
+  const sessionStorageId = getSessionStorageId()
   if (sessionStorageId) {
     headersUpdate[customHeaderKeys.SESSION_STORAGE_ID] = sessionStorageId
   }
@@ -321,8 +319,8 @@ function* constructHeaders(fetchInit) {
   }
 
   return isEmpty(headersUpdate) ?
-      fetchInit.headers :
-      {...fetchInit.headers, ...headersUpdate}
+    fetchInit.headers :
+    {...fetchInit.headers, ...headersUpdate}
 }
 
 function* tryWaitOnRehydrate(requiresRehydrate) {
@@ -334,8 +332,10 @@ function* tryWaitOnRehydrate(requiresRehydrate) {
     })
     if (rehydrate) {
       logger.debug('Proceeding after rehydrate')
-    } else {
+    } else if (timeout) {
       logger.warn('Rehydrate timed out')
+    } else {
+      logger.error('Unknown rehydrate race condition')
     }
   }
 }
@@ -366,8 +366,8 @@ function* callApiForResource(action) {
       return yield put(responseActionCreator(newImpossibleError(`Missing resource API config for action type: ${action.type}`)))
     }
     const {endpoint, fetchInit, schema, requiresRehydrate, cancelKey} = isFunction(config) ?
-        config(action.payload) :
-        config
+      config(action.payload) :
+      config
 
     if (cancelKey) {
       const prevTask = cancelableResourceCallTasks[cancelKey]
@@ -495,9 +495,9 @@ function* redirectHomeFromMissingStatement() {
       // Try to determine whether we are on the page for a statement that was not found
       const path = paths.statement({id: action.meta.requestPayload.statementId})
       if (
-          action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND &&
-          // startsWith because we don't have a slug
-          routerLocation.pathname.startsWith(path)
+        action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND &&
+        // startsWith because we don't have a slug
+        routerLocation.pathname.startsWith(path)
       ) {
         yield put(ui.addToast(text(MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE)))
         yield put(push(paths.home()))
@@ -591,8 +591,8 @@ function* editorCommitEdit() {
     const crudType = editEntity.id ? UPDATE : CREATE
     const editorCommitApiResourceActions = editorTypeCommitApiResourceActions[editorType]
     const actionCreator = isFunction(editorCommitApiResourceActions) ?
-        editorCommitApiResourceActions(editEntity, crudType) :
-        editorCommitApiResourceActions[crudType]
+      editorCommitApiResourceActions(editEntity, crudType) :
+      editorCommitApiResourceActions[crudType]
     if (!actionCreator) {
       throw new Error(`Missing ${crudType} action creator to commit edit of ${editorType}.`)
     }
@@ -670,20 +670,19 @@ function* commitEditorThenView() {
   }
 
   yield takeEvery(str(flows.commitEditThenView), function* commitEditThenViewWorker(action) {
-        const {editorType, editorId} = action.payload
-        yield put(editors.commitEdit(editorType, editorId))
-        let resultAction = null
-        while (!resultAction) {
-          const currResultAction = yield take(str(editors.commitEdit.result))
-          if (currResultAction.payload.editorType === editorType && currResultAction.payload.editorId === editorId) {
-            resultAction = currResultAction
-          }
-        }
-        if (!resultAction.error) {
-          yield put(gotoEditorCommitResultAction(editorType, resultAction))
-        }
+    const {editorType, editorId} = action.payload
+    yield put(editors.commitEdit(editorType, editorId))
+    let resultAction = null
+    while (!resultAction) {
+      const currResultAction = yield take(str(editors.commitEdit.result))
+      if (currResultAction.payload.editorType === editorType && currResultAction.payload.editorId === editorId) {
+        resultAction = currResultAction
       }
-  )
+    }
+    if (!resultAction.error) {
+      yield put(gotoEditorCommitResultAction(editorType, resultAction))
+    }
+  })
 }
 
 function* commitEditThenPutActionOnSuccess() {

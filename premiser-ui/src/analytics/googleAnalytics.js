@@ -41,6 +41,6 @@ export const trackOutboundLinkClick = url => {
 
 export const setUserId = googleAnalyticsUserId => {
   if (window.ga) {
-    window.ga('set', 'userId', googleAnalyticsUserId);
+    window.ga('set', 'userId', googleAnalyticsUserId)
   }
 }
