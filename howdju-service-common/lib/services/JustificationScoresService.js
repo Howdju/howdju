@@ -82,6 +82,7 @@ exports.JustificationScoresService = class JustificationScoresService {
 
   updateJustificationScoresHavingNewVotes() {
     const startedAt = moment()
+    logger.silly(`Starting updateJustificationScoresHavingNewVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
       .then( (job) => Promise.all([
         this.justificationScoresDao.readNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
@@ -99,6 +100,7 @@ exports.JustificationScoresService = class JustificationScoresService {
         })
         .then( () => {
           const completedAt = moment()
+          logger.silly(`Ending updateJustificationScoresHavingNewVotes at ${completedAt}`)
           return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
         })
         .catch( (err) => {

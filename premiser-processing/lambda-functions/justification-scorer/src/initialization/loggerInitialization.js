@@ -8,6 +8,8 @@ const isAws = !!process.env.IS_AWS
 const doLogTimestamp = !isAws
 const doUseCarriageReturns = isAws
 
+console.log('initializing logger')
+
 exports.logger = new AwsLogger(console, {logLevel, doLogTimestamp, doUseCarriageReturns})
 
 exports.logger.debug('logLevel', logLevel)
