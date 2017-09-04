@@ -12,7 +12,7 @@ parser.addArgument('--aliasName', {required: true})
 parser.addArgument('--newTarget', {required: true})
 const args = parser.parseArgs()
 
-const lambdarcPath = path.join(args.lambdaDir, 'lambdarc')
+const lambdarcPath = path.resolve('lambda-functions', args.lambdaDir, 'lambdarc')
 const lambdarc = require(lambdarcPath)
 
 lambda.updateAlias(lambdarc.name, args.aliasName, args.newTarget)
