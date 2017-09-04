@@ -1,3 +1,4 @@
+const Promise = require('bluebird')
 const pg = require('pg')
 
 const {
@@ -18,10 +19,22 @@ const config = {
   host: process.env['DB_HOST'],
   port: process.env['DB_PORT'] || 5432,
   max: process.env['DB_POOL_MAX_CLIENTS'] || 10,
+  // min: 1,
+  // ssl: true,
   idleTimeoutMillis: process.env['DB_CLIENT_TIMEOUT'] || 3000,
+  connectionTimeoutMillis: process.env['DB_CLIENT_CONNECT_TIMEOUT'] || 5000,
+  Promise,
 }
 
 const pool = new pg.Pool(config)
-pool.on('error', (err, client) => logger.error('idle client error', err.message, err.stack))
+pool.on('error', (err, client) =>
+  logger.error('database pool error', err.message, err.stack)
+)
+pool.on('connect', (client) => {
+  logger.silly('database pool connected')
+})
+pool.on('acquire', (client) =>
+  logger.silly('database pool acquired')
+)
 
 exports.database = new Database(logger, pool)

@@ -23,33 +23,20 @@ exports.Database = class Database {
     this.logger = logger
     this.pool = pool
   }
-
+  
   query(sql, args) {
-    return Promise.resolve()
-      .then(() => {
-        if (!sql) {
-          throw new Error('sql is required')
-        }
-        return this.pool.connect()
-      })
-      .then( (client) => {
-        const utcArgs = map(args, toUtc)
-        this.logger.silly('db.query sql:', sql)
-        this.logger.silly('db.query utcArgs:', utcArgs)
-        return Promise.resolve(client.query(sql, utcArgs))
-          .finally(() => client.release())
-      })
+    if (!sql) {
+      throw new Error('sql is required')
+    }
+
+    const utcArgs = map(args, toUtc)
+    this.logger.silly('Database.query sql:', sql)
+    this.logger.silly('Database.query utcArgs:', utcArgs)
+    return this.pool.query(sql, utcArgs)
   }
 
   queries(queryAndArgs) {
-    return Promise.resolve(this.pool.connect())
-      .then(client => Promise.all(map(queryAndArgs, ({sql, args}) => {
-        const utcArgs = map(args, toUtc)
-        this.logger.silly('db.query sql:', sql)
-        this.logger.silly('db.query utcArgs:', utcArgs)
-        return Promise.resolve(client.query.call(client, sql, utcArgs))
-      }))
-        .finally(() => client.release()))
+    return Promise.all(map(queryAndArgs, ({sql, args}) => this.query(sql, args)))
   }
 }
 

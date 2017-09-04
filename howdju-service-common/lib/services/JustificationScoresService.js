@@ -1,8 +1,8 @@
+const Promise = require('bluebird')
 const forEach = require('lodash/forEach')
+const isUndefined = require('lodash/isUndefined')
 const map = require('lodash/map')
 const moment = require('moment')
-const isUndefined = require('lodash/isUndefined')
-const Promise = require('bluebird')
 
 const {
   JustificationVotePolarity,
@@ -85,29 +85,29 @@ exports.JustificationScoresService = class JustificationScoresService {
     this.logger.silly(`Starting updateJustificationScoresHavingNewVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
       .then( (job) => Promise.all([
-        this.justificationScoresDao.readNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
-        this.justificationScoresDao.deleteScoresHavingNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM,
-          job.startedAt, job.id),
-      ])
-        .then( ([votes, deletions]) => {
-          this.logger.info(`Deleted ${deletions.length} scores`)
-          this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
-          return votes
-        })
-        .then( (votes) => this.processVoteScores(job, votes, this.createSummedJustificationScore))
-        .then( (updates) => {
-          this.logger.info(`Recalculated ${updates.length} scores`)
-        })
-        .then( () => {
-          const completedAt = moment()
-          this.logger.silly(`Ending updateJustificationScoresHavingNewVotes at ${completedAt}`)
-          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
-        })
-        .catch( (err) => {
-          const completedAt = moment()
-          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
-          throw err
-        })
+          this.justificationScoresDao.readNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
+          this.justificationScoresDao.deleteScoresHavingNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM,
+            job.startedAt, job.id),
+        ])
+          .then( ([votes, deletions]) => {
+            this.logger.info(`Deleted ${deletions.length} scores`)
+            this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
+            return votes
+          })
+          .then( (votes) => this.processVoteScores(job, votes, this.createSummedJustificationScore))
+          .then( (updates) => {
+            this.logger.info(`Recalculated ${updates.length} scores`)
+          })
+          .then( () => {
+            const completedAt = moment()
+            this.logger.silly(`Ending updateJustificationScoresHavingNewVotes at ${completedAt}`)
+            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+          })
+          .catch( (err) => {
+            const completedAt = moment()
+            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+            throw err
+          })
       )
   }
 
