@@ -1,17 +1,8 @@
 # Howdju UI TODO
 
-* Test app
-* Services should use other services
-* yarn run lint:app
-* markdown for AboutPage?
+* Add eslint-plugin-promise to api
 
-* Code-sharing
-  * Move remaining DAOs & services into howdju-service-common
-  * setup dependency initialization files
-  * Remove unnecessary deps from apps
-
-* Justification job scoring
-* JustificationType.CitationReferenceParaphrase
+* JustificationType.CitationReferenceParaphraseCompound
 * Prod featured perspectives (Hillary email)
   * Show whose perspective it is.
   * Show when created
@@ -26,6 +17,7 @@
 1) Whats next / About page
   * Other stuff: documentation, document bookmarklet
   * Terms / Privacy
+    * https://www.reddit.com/help/useragreement
 2) Add citations, quotes, tags to main search (requires result type)
 
 * Revealing levels
@@ -544,6 +536,7 @@
 
 
 ## Cool
+* [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
 * https://github.com/mariusandra/kea
 * https://github.com/awslabs/lambda-refarch-voteapp

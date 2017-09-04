@@ -11,7 +11,6 @@ AWS.config.region = 'us-east-1'
 AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'})
 // See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
 const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
-const FunctionName = 'premiserApi'
 
 // e.g.: 15da8df Testing logging JSON
 const getGitDescription = () => childProcess
@@ -19,35 +18,35 @@ const getGitDescription = () => childProcess
   .toString()
   .trim()
 
-module.exports.updateFunctionCode = (fileName) => {
-  fs.readFile(fileName, (err, data) => {
+const updateFunctionCode = (functionName, functionCodeZipPath) => {
+  fs.readFile(functionCodeZipPath, (err, data) => {
     if (err) throw err
 
     const params = {
-      FunctionName,
+      FunctionName: functionName,
       Publish: false, // This boolean parameter can be used to request AWS Lambda to update the Lambda function and publish a version as an atomic operation.
       ZipFile: data
     }
     lambda.updateFunctionCode(params, (err, data) => {
       if (err) throw err
-      logger.info(`Uploaded ${FunctionName} (CodeSha256: ${data['CodeSha256']}`)
+      logger.info(`Uploaded ${functionName} (CodeSha256: ${data['CodeSha256']}`)
     })
   })
 }
 
-module.exports.publishVersion = () => {
+const publishVersion = (functionName) => {
   const params = {
-    FunctionName,
+    FunctionName: functionName,
     Description: getGitDescription(),
   }
   lambda.publishVersion(params, function(err, data) {
     if (err) throw err
     const version = data.Version
-    logger.info(`Published lambda ${FunctionName} as version ${version}`)
+    logger.info(`Published lambda ${functionName} as version ${version}`)
   })
 }
 
-module.exports.updateAlias = (aliasName, newTarget) => {
+const updateAlias = (functionName, aliasName, newTarget) => {
   if (!isNumber(toNumber(newTarget))) {
     // TODO allow passing a target alias
     throw new Error('newTarget must be a number')
@@ -56,7 +55,7 @@ module.exports.updateAlias = (aliasName, newTarget) => {
   const Name = aliasName
   const FunctionVersion = newTarget
   const params = {
-    FunctionName,
+    FunctionName: functionName,
     Name,
     FunctionVersion,
   }
@@ -64,4 +63,10 @@ module.exports.updateAlias = (aliasName, newTarget) => {
     if (err) throw err
     logger.info(`Updated alias "${Name}" to FunctionVersion ${data['FunctionVersion']}`)
   })
+}
+
+exports.lambda = {
+  updateFunctionCode,
+  publishVersion,
+  updateAlias,
 }

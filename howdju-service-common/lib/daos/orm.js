@@ -216,6 +216,21 @@ const toUserHash = row => !row ? row : ({
   hash: row.hash,
 })
 
+const toJobHistory = row => !row ? row : ({
+  id: row.job_history_id,
+  type: row.job_type,
+  startedAt: row.started_at,
+  completedAt: row.completed_at,
+  wasSuccess: row.was_success,
+  message: row.message,
+})
+
+const toJustificationScore = row => row && ({
+  justificationId: row.justification_id,
+  scoreType: row.score_type,
+  score: row.score,
+})
+
 module.exports = {
   toUser,
   toStatement,
@@ -230,4 +245,6 @@ module.exports = {
   toPerspective,
   toUserHash,
   toUserExternalIds,
+  toJobHistory,
+  toJustificationScore,
 }

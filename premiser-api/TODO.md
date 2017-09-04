@@ -1,7 +1,7 @@
 # TODO
 
 * Version API
-* Add correlation ID to all logging
+* Add compression to response (npm: oppressor)
 
 * rename callback to respond
 * http://ramdajs.com/ ? 
@@ -22,6 +22,7 @@
     * statement_compound atoms must match something
   * Delete URLS when nothing references them?
   * Delete statement compounds all of whose statements are deleted
+  * Delete old scores
   * Sources having internal inconsistencies (citations ultimately both support and oppose the same statement)
 * Short IDs
 * [Build using Vagrant?](https://stackoverflow.com/a/30440198/39396)

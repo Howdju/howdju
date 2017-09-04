@@ -68,4 +68,15 @@ exports.VotesDao = class VotesDao {
     return this.database.query(sql, [new Date(), userId, targetType, targetId, polarity])
       .then( ({rows}) => map(rows, r => r.vote_id))
   }
+
+  readVotesForTypeSince(voteTargetType, lastRun) {
+    return this.database.query('select * from votes where target_type = $1 and created > $2 and deleted is null',
+      [voteTargetType, lastRun])
+      .then( ({rows}) => map(rows, toVote))
+  }
+
+  readVotesForType(voteTargetType) {
+    return this.database.query('select * from votes where target_type = $1 and deleted is null', [voteTargetType])
+      .then( ({rows}) => map(rows, toVote))
+  }
 }

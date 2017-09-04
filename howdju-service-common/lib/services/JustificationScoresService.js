@@ -7,13 +7,14 @@ const Promise = require('bluebird')
 const {
   JustificationVotePolarity,
   JustificationScoreType,
-  zeroDate,
+  JobHistoryStatus,
   VoteTargetType,
 } = require('howdju-common')
 
 const {
-  JobTypes
-} = require('../jobTypes')
+  JobTypes,
+  JobScopes,
+} = require('../jobEnums')
 
 const sumVotesByJustificationId = (votes, logger) => {
   const voteSumByJustificationId = {}
@@ -37,31 +38,112 @@ const sumVotesByJustificationId = (votes, logger) => {
 
     voteSumByJustificationId[vote.targetId] = sum
   })
+
+  return voteSumByJustificationId
 }
 
 exports.JustificationScoresService = class JustificationScoresService {
-  constructor(logger, justificationScoresDao, jobsDao, votesDao) {
+
+
+  constructor(logger, justificationScoresDao, jobHistoryDao, votesDao) {
     this.logger = logger
     this.justificationScoresDao = justificationScoresDao
-    this.jobHistoryDao = jobsDao
+    this.jobHistoryDao = jobHistoryDao
     this.votesDao = votesDao
   }
 
-  scoreJustificationsVotedUponSinceLastRun() {
-    const lastRunHistory = this.jobHistoryDao.lastRunForJobType(JobTypes.SCORE_JUSTIFICATIONS)
-    const lastRun = lastRunHistory ? lastRunHistory.completedAt : moment(zeroDate())
-    // How deal with timing edge cases?  Really need some sort of continuation token or something
-    const votes = this.votesDao.readVotesForTypeSince(VoteTargetType.JUSTIFICATION, lastRun)
-    const voteSumByJustificationId = sumVotesByJustificationId(votes, this.logger)
-    return Promise.all(map(voteSumByJustificationId, (voteSum, justificationId) =>
-      this.updateJustificationScore(justificationId, voteSum)
-    ))
+  scoreJustificationsUsingAllVotes() {
+    const startedAt = moment()
+    const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
+    this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
+      .then( (job) => Promise.all([
+        this.votesDao.readVotesForType(VoteTargetType.JUSTIFICATION),
+        this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+      ])
+        .then( ([votes, deletions]) => {
+          this.logger.info(`Deleted ${deletions.length} scores`)
+          this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
+          return votes
+        })
+        .then( (votes) => this.processVoteScores(job, votes, this.createJustificationScore))
+        .then( (updates) => {
+          this.logger.info(`Recalculated ${updates.length} scores`)
+        })
+        .then( () => {
+          const completedAt = moment()
+          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+        })
+        .catch( (err) => {
+          const completedAt = moment()
+          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+          throw err
+        })
+    )
   }
 
-  updateJustificationScore(justificationId, voteSum) {
+  updateJustificationScoresHavingNewVotes() {
+    const startedAt = moment()
+    this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
+      .then( (job) => Promise.all([
+        this.justificationScoresDao.readNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
+        this.justificationScoresDao.deleteScoresHavingNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM,
+          job.startedAt, job.id),
+      ])
+        .then( ([votes, deletions]) => {
+          this.logger.info(`Deleted ${deletions.length} scores`)
+          this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
+          return votes
+        })
+        .then( (votes) => this.processVoteScores(job, votes, this.createSummedJustificationScore))
+        .then( (updates) => {
+          this.logger.info(`Recalculated ${updates.length} scores`)
+        })
+        .then( () => {
+          const completedAt = moment()
+          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+        })
+        .catch( (err) => {
+          const completedAt = moment()
+          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+          throw err
+        })
+      )
+  }
+
+  processVoteScores(job, votes, processVote) {
+    return Promise.resolve(sumVotesByJustificationId(votes, this.logger))
+      .then( (voteSumByJustificationId) =>
+        Promise.all(map(voteSumByJustificationId, (voteSum, justificationId) =>
+          processVote.call(this, justificationId, voteSum, job)
+        ))
+      )
+  }
+
+  createJustificationScore(justificationId, score, job) {
+    const scoreType = JustificationScoreType.GLOBAL_VOTE_SUM
+    this.justificationScoresDao.createJustificationScore(justificationId, scoreType, score, job.startedAt, job.id)
+      .then( (justificationScore) => {
+        this.logger.debug(`Set justification ${justificationScore.justificationId}'s score to ${justificationScore.score}`)
+      })
+  }
+
+  createSummedJustificationScore(justificationId, voteSum, job) {
     const scoreType = JustificationScoreType.GLOBAL_VOTE_SUM
     return this.justificationScoresDao.readJustificationScoreForJustificationIdAndType(justificationId, scoreType)
-      .then( (justificationScore) =>
-        this.justificationScoresDao.updateJustificationScore(justificationId, scoreType, justificationScore.score + voteSum))
+      .then( (justificationScore) => {
+        const currentScore = justificationScore ?
+          justificationScore.score :
+          0
+        const newScore = currentScore + voteSum
+        return Promise.all([
+          justificationId,
+          newScore,
+          this.justificationScoresDao.createJustificationScore(justificationId, scoreType, newScore, job.startedAt, job.id)
+        ])
+      })
+      .then( (justificationScore) => {
+        const diffSign = voteSum >= 0 ? '+' : ''
+        this.logger.debug(`Updated justification ${justificationScore.justificationId}'s score to ${justificationScore.score} (${diffSign}${voteSum})`)
+      })
   }
 }

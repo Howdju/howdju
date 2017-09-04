@@ -1,3 +1,4 @@
-const {publishVersion} = require('../lib/lambda')
+const {lambda} = require('howdju-ops')
+const lambdarc = require('../lambdarc')
 
-publishVersion()
+lambda.publishVersion(lambdarc.name)

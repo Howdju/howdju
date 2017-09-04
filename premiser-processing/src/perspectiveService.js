@@ -1,16 +1,16 @@
 const Promise = require('bluebird')
+const concat = require('lodash/concat')
 const forEach = require('lodash/forEach')
 const join = require('lodash/join')
 const map = require('lodash/map')
 const range = require('lodash/range')
 
 const {
-  JustificationTargetType,
   VoteTargetType,
   JustificationBasisType,
-} = require('../models')
+  JustificationTargetType,
+} = require('howdju-common')
 const {toJustification} = require('../orm')
-const {query} = require('../db')
 const statementsDao = require('./statementsDao')
 const {groupRootJustifications} = require('./util')
 const statementCompoundsDao = require('./statementCompoundsDao')
@@ -18,7 +18,8 @@ const citationReferencesDao = require('./citationReferencesDao')
 
 
 class PerspectivesDao {
-  constructor(statementsDao, statementCompoundsDao, citationReferencesDao) {
+  constructor(database, statementsDao, statementCompoundsDao, citationReferencesDao) {
+    this.database = database
     this.statementsDao = statementsDao
     this.statementCompoundsDao = statementCompoundsDao
     this.citationReferencesDao = citationReferencesDao
@@ -31,7 +32,7 @@ class PerspectivesDao {
         , v.target_type AS vote_target_type
         , v.target_id AS vote_target_id
         ` :
-        ''
+      ''
     const votesJoinSql = userId ? `
         left join votes v on 
               v.target_type = $1
@@ -39,7 +40,7 @@ class PerspectivesDao {
           and v.user_id = $2
           and v.deleted IS NULL
         ` :
-        ''
+      ''
     const perspectiveJustificationsSql = `
       select 
           p.perspective_id
@@ -57,20 +58,20 @@ class PerspectivesDao {
         ${votesJoinSql}
     `
     const args = userId ? [VoteTargetType.JUSTIFICATION, userId] : undefined
-    return query(perspectiveJustificationsSql, args)
-        .then( ({rows}) => {
-          const transitiveRowsPromise =
-              this._readFeaturedPerspectiveJustificationTransitiveJustifications(userId, 1, 4, rows)
-          if (rows.length > 0) {
-            return Promise.all([
-              transitiveRowsPromise,
-              this._readFeaturedPerspectivesCounteredJustifications(userId, 1, rows),
-            ])
-                .then( ([transitiveRows, counteredRows]) => concat(transitiveRows, counteredRows))
-          }
-          return transitiveRowsPromise
-        })
-        .then(rows => this._addStatementAndMapPerspectives(rows))
+    return this.database.query(perspectiveJustificationsSql, args)
+      .then( ({rows}) => {
+        const transitiveRowsPromise =
+          this._readFeaturedPerspectiveJustificationTransitiveJustifications(userId, 1, 4, rows)
+        if (rows.length > 0) {
+          return Promise.all([
+            transitiveRowsPromise,
+            this._readFeaturedPerspectivesCounteredJustifications(userId, 1, rows),
+          ])
+            .then( ([transitiveRows, counteredRows]) => concat(transitiveRows, counteredRows))
+        }
+        return transitiveRowsPromise
+      })
+      .then(rows => this._addStatementAndMapPerspectives(rows))
   }
 
   /** Search up to maxDepth jumps, via statement compounds, from the perspective's justifications
@@ -95,7 +96,7 @@ class PerspectivesDao {
         , v.target_type AS vote_target_type
         , v.target_id AS vote_target_id
         ` :
-        ''
+      ''
     const votesJoinSql = userId ? `
         left join votes v on 
               v.target_type = $1
@@ -103,7 +104,7 @@ class PerspectivesDao {
           and v.user_id = $2
           and v.deleted IS NULL
         ` :
-        ''
+      ''
     const transitiveSql = map(range(1, targetDepth+1), currentDepth => `
       join statements s${currentDepth} on
             j${currentDepth-1}.target_id = s${currentDepth}.statement_id
@@ -137,15 +138,15 @@ class PerspectivesDao {
           ${transitiveSql}
           ${votesJoinSql}
     `
-    return query(sql, args)
-        .then( ({rows: newRows}) => {
+    return this.database.query(sql, args)
+      .then( ({rows: newRows}) => {
 
-          const combinedRows = concat(rows, newRows)
-          if (targetDepth === maxDepth) {
-            return combinedRows
-          }
-          return this._readFeaturedPerspectiveJustificationTransitiveJustifications(userId, targetDepth+1, maxDepth, combinedRows)
-        })
+        const combinedRows = concat(rows, newRows)
+        if (targetDepth === maxDepth) {
+          return combinedRows
+        }
+        return this._readFeaturedPerspectiveJustificationTransitiveJustifications(userId, targetDepth+1, maxDepth, combinedRows)
+      })
   }
 
 
@@ -163,7 +164,7 @@ class PerspectivesDao {
         , v.target_type AS vote_target_type
         , v.target_id AS vote_target_id
         ` :
-        ''
+      ''
     const votesJoinSql = userId ? `
         left join votes v on 
               v.target_type = $1
@@ -171,7 +172,7 @@ class PerspectivesDao {
           and v.user_id = $2
           and v.deleted IS NULL
         ` :
-        ''
+      ''
     const justificationsJoinSqls = map(range(1, targetHeight+1), currentHeight => `join justifications j${currentHeight} on
                     j${currentHeight-1}.target_type = $3
                 and j${currentHeight-1}.target_id = j${currentHeight}.justification_id
@@ -193,13 +194,13 @@ class PerspectivesDao {
               ${justificationsJoinSql}
               ${votesJoinSql}
           `
-    return query(counteredJustificationsSql, [VoteTargetType.JUSTIFICATION, userId, JustificationTargetType.JUSTIFICATION])
-        .then( ({rows: newRows}) => {
-          if (newRows.length > 0) {
-            return this._readFeaturedPerspectivesCounteredJustifications(userId, targetHeight + 1, rows.concat(newRows))
-          }
-          return this._addStatementAndMapPerspectives(rows)
-        })
+    return this.database.query(counteredJustificationsSql, [VoteTargetType.JUSTIFICATION, userId, JustificationTargetType.JUSTIFICATION])
+      .then( ({rows: newRows}) => {
+        if (newRows.length > 0) {
+          return this._readFeaturedPerspectivesCounteredJustifications(userId, targetHeight + 1, rows.concat(newRows))
+        }
+        return this._addStatementAndMapPerspectives(rows)
+      })
   }
 
   _addStatementAndMapPerspectives(rows) {
@@ -218,32 +219,33 @@ class PerspectivesDao {
       }
     })
 
-    return Promise.all(map(rootStatementIdByPerspectiveId, (rootStatementId, perspectiveId) => Promise.all([
-          this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
-          this.citationReferencesDao.readCitationReferencesByIdForRootStatementId(rootStatementId),
-        ])
-            .then( ([
-                      statementCompoundsById,
-                      citationReferencesById
-                    ]) => {
-              const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(rootStatementId, rows)
-              const justifications = map(rootJustifications, j =>
-                  toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, citationReferencesById))
-              return Promise.props({
-                perspectiveId,
-                statement: this.statementsDao.readStatementById(rootStatementId),
-                justifications,
-              })
-            })
-    ))
-        .then( rootStatementAndPerspectiveIds => {
-          return map(rootStatementAndPerspectiveIds, ({perspectiveId, statement, justifications}) => {
-            const perspective = perspectivesById[perspectiveId]
-            perspective.statement = statement
-            perspective.justifications = justifications
-            return perspective
+    return Promise.all(map(rootStatementIdByPerspectiveId, (rootStatementId, perspectiveId) =>
+      Promise.all([
+        this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
+        this.citationReferencesDao.readCitationReferencesByIdForRootStatementId(rootStatementId),
+      ])
+        .then( ([
+          statementCompoundsById,
+          citationReferencesById
+        ]) => {
+          const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(rootStatementId, rows)
+          const justifications = map(rootJustifications, j =>
+            toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, citationReferencesById))
+          return Promise.props({
+            perspectiveId,
+            statement: this.statementsDao.readStatementById(rootStatementId),
+            justifications,
           })
         })
+    ))
+      .then( rootStatementAndPerspectiveIds => {
+        return map(rootStatementAndPerspectiveIds, ({perspectiveId, statement, justifications}) => {
+          const perspective = perspectivesById[perspectiveId]
+          perspective.statement = statement
+          perspective.justifications = justifications
+          return perspective
+        })
+      })
   }
 }
 

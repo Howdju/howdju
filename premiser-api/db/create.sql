@@ -171,14 +171,22 @@ create table if not exists votes (
 
 create table if not exists justification_scores (
   justification_id integer,
+  creator_job_history_id integer,
+  deletor_job_history_id integer,
   score_type varchar(64), -- GLOBAL_VOTE_SUM
-  score float
+  score float,
+  created timestamp,
+  deleted timestamp
 );
 
 create table if not exists tagging_scores (
   tagging_id integer,
+  creator_job_history_id integer,
+  deletor_job_history_id integer,
   score_type varchar(64),
-  score float
+  score float,
+  created timestamp,
+  deleted timestamp
 );
 
 create table if not exists groups (
@@ -220,4 +228,13 @@ create table if not exists group_permissions (
   creator_user_id integer,
   created timestamp,
   deleted timestamp
+);
+
+create table if not exists job_history (
+  job_history_id serial,
+  job_type varchar(256),
+  job_scope varchar(256),
+  completed_at timestamp,
+  status varchar(64),
+  message varchar(65536)
 );

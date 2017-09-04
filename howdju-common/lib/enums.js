@@ -45,11 +45,6 @@ _e.JustificationPolarity = {
 // For now they have the same values, but let's at least keep track of the usages separately
 _e.JustificationRootPolarity = _e.JustificationPolarity
 
-_e.VotePolarity = {
-  POSITIVE: 'POSITIVE',
-  NEGATIVE: 'NEGATIVE',
-}
-
 _e.JustificationBasisType = {
   STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
   CITATION_REFERENCE: 'CITATION_REFERENCE',
@@ -65,6 +60,12 @@ _e.VoteTargetType = {
   TAGGING: 'TAGGING',
 }
 
+_e.VotePolarity = {
+  POSITIVE: 'POSITIVE',
+  NEGATIVE: 'NEGATIVE',
+}
+_e.JustificationVotePolarity = _e.VotePolarity
+
 _e.SortDirection = {
   ASCENDING: 'ascending',
   DESCENDING: 'descending',
@@ -78,4 +79,9 @@ _e.ContinuationSortDirection = {
 
 _e.JustificationScoreType = {
   GLOBAL_VOTE_SUM: 'GLOBAL_VOTE_SUM',
+}
+
+_e.JobHistoryStatus = {
+  SUCCESS: 'SUCCESS',
+  FAILURE: 'FAILURE',
 }

@@ -79,7 +79,7 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
   this.console.log.apply(console, combinedArgs)
 }
 
-class Logger {
+class AwsLogger {
   constructor(console, {logLevel, doUseCarriageReturns=true, doLogTimestamp=true}) {
     this.console = console
     this.logLevel = logLevel
@@ -88,6 +88,6 @@ class Logger {
   }
 }
 const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) => makeLogMethod(logLevel, logLevelNumber))
-assign(Logger.prototype, logMethods)
+assign(AwsLogger.prototype, logMethods)
 
-module.exports = Logger
+exports.AwsLogger = AwsLogger

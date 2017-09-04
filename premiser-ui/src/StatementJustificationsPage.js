@@ -17,7 +17,7 @@ import some from 'lodash/some'
 import cn from 'classnames'
 import get from 'lodash/get'
 
-import {logger} from "./util"
+import {logger} from "./logger"
 import {
   isVerified,
   isDisverified,

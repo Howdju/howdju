@@ -1,9 +1,10 @@
-require('../lib/env')
-
 const Promise = require('bluebird')
 const map = require('lodash/map')
 
-const logger = require('../lib/logger')
+const {loadEnvironmentEnvVars} = require('howdju-ops')
+loadEnvironmentEnvVars()
+
+const {logger} = require('howdju-ops')
 const {database} = require('../src/initialization/databaseInitialization')
 const {normalizeText} = require("howdju-service-common/lib/daos/util")
 

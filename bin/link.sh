@@ -20,10 +20,12 @@ npm link ../howdju-common
 cd ${base_dir}/premiser-api
 npm link ../howdju-common
 npm link ../howdju-service-common
+npm link ../howdju-ops
 
 cd ${base_dir}/premiser-processing
 npm link ../howdju-common
 npm link ../howdju-service-common
+npm link ../howdju-ops
 
 cd ${base_dir}/premiser-ui
 npm link ../howdju-common

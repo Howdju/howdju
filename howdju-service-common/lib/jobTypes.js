@@ -1,3 +1,0 @@
-exports.JobTypes = {
-  SCORE_JUSTIFICATIONS: 'SCORE_JUSTIFICATIONS',
-}

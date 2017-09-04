@@ -1,0 +1,27 @@
+{
+  "name": "premiser-processing",
+  "version": "1.0.0",
+  "description": "Jobs and server-side processes supporting the Howdju platform",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint bin/ src/ lambda-functions/",
+    "score-justifications:local": "NODE_ENV=development node bin/score-justifications.js",
+    "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
+    "update-lambda-function-code": "node bin/update-lambda-function-code.js",
+    "publish-lambda-function-version": "node bin/publish-lambda-function-publish.js",
+    "update-lambda-function-alias": "node bin/update-lambda-function-alias.js"
+  },
+  "devDependencies": {
+    "argparse": "^1.0.9",
+    "eslint": "^4.5.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-install": "^1.1.0",
+    "gulp-zip": "^4.0.0",
+    "inspect-process": "^0.5.0",
+    "run-sequence": "^2.1.0"
+  },
+  "dependencies": {}
+}

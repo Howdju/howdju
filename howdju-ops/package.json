@@ -1,0 +1,20 @@
+{
+  "name": "howdju-ops",
+  "version": "1.0.0",
+  "description": "Build and deployment code.  Should never be included in an application.",
+  "main": "lib/index.js",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint lib/"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.108.0",
+    "lodash": "^4.17.4",
+    "node-env-file": "^0.1.8"
+  },
+  "devDependencies": {
+    "eslint": "^4.6.0"
+  }
+}

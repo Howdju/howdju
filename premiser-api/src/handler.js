@@ -1,4 +1,5 @@
-process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT']
+// was this just to support loading the env file?
+// process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT']
 
 const concat = require('lodash/concat')
 const get = require('lodash/get')
@@ -8,10 +9,6 @@ const pick = require('lodash/pick')
 const reduce = require('lodash/reduce')
 const toLower = require('lodash/toLower')
 const uuid = require('uuid')
-
-const env = require('node-env-file')
-// ENV vars for either sensitive information or things that may need to be changed via the AWS lambda console
-env(__dirname + '/.env')
 
 const {configureGatewayContext} = require('howdju-service-common')
 

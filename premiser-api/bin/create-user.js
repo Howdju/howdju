@@ -1,10 +1,11 @@
-require('../lib/env')
-
 const {ArgumentParser} = require('argparse')
 const read = require('read')
 const Promise = require('bluebird')
 
-const logger = require('../lib/logger')
+const {loadEnvironmentEnvVars} = require('howdju-ops')
+loadEnvironmentEnvVars()
+
+const {logger} = require('howdju-ops')
 const {createUserAsUser} = require('../src/service')
 const userPermissionsDao = require('../src/dao/userPermissionsDao')
 const userGroupsDao = require('../src/dao/userGroupsDao')

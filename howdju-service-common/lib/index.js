@@ -4,6 +4,8 @@ module.exports = assign(
   require('./apiGateway'),
   require('./daos'),
   require('./database'),
+  require('./jobEnums'),
+  require('./logging'),
   require('./searchers'),
   require('./services'),
   require('./util'),

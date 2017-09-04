@@ -51,14 +51,9 @@
     "run-sequence": "^1.2.2"
   },
   "dependencies": {
-    "argon2": "^0.15.0",
     "bluebird": "^3.5.0",
-    "cryptohat": "^1.0.1",
     "deasync": "^0.1.10",
     "moment": "^2.18.1",
-    "node-env-file": "^0.1.8",
-    "pg": "^6.1.5",
-    "urlsafe-base64": "^1.0.0",
-    "winston": "^2.3.1"
+    "pg": "^6.1.5"
   }
 }

@@ -1,7 +1,6 @@
 const del = require('del')
 const gulp = require('gulp')
 const install = require('gulp-install')
-const rename = require('gulp-rename')
 const runSequence = require('run-sequence')
 const zip = require('gulp-zip')
 
@@ -23,15 +22,9 @@ gulp.task('npm', () =>
     .pipe(gulp.dest('./dist/premiser-api'))
     .pipe(install({production: true})))
 
-gulp.task('env', () =>
-  gulp.src('./config/production.env')
-    .pipe(rename('.env'))
-    .pipe(gulp.dest('./dist/premiser-api')))
-
 gulp.task('zip', () =>
   gulp.src([
     'dist/premiser-api/**/*',
-    'dist/premiser-api/.env',
     '!dist/premiser-api/package.json',
   ])
     .pipe(zip('premiser-api.zip'))
@@ -39,7 +32,7 @@ gulp.task('zip', () =>
 
 gulp.task('build', (next) => runSequence(
   ['clean'],
-  ['js', 'npm', 'env'],
+  ['js', 'npm'],
   ['zip'],
   next
 ))

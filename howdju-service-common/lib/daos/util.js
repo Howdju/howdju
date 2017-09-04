@@ -31,10 +31,12 @@ exports.normalizeText = text => {
 exports.mapSingle = (logger, mapper, tableName, identifiers) => ({rows}) => {
   if (rows.length > 1) {
     const identifiersString = join(map(identifiers, (val, key) => `${key} ${val}`), ', ')
-    this.logger.warning(`Multiple ${tableName} for ${identifiersString}`)
+    logger.warn(`Multiple ${tableName} for ${identifiersString}`)
   }
   return mapper(head(rows))
 }
+
+exports.mapMany = (mapper) => ({rows}) => map(rows, mapper)
 
 exports.groupRootJustifications = (rootStatementId, justification_rows) => {
   const rootJustifications = [], counterJustificationsByJustificationId = {}
