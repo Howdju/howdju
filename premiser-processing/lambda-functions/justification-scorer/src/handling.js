@@ -15,5 +15,8 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
 
   justificationScoresService.updateJustificationScoresHavingNewVotes()
     .then(() => gatewayCallback(null, `Scoring justifications succeeded`))
-    .catch( (err) => gatewayCallback(err, `Scoring justifications failed`))
+    .catch( (err) => {
+      logger.error(err)
+      return gatewayCallback(err)
+    })
 }

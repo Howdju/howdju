@@ -23,7 +23,7 @@ exports.Database = class Database {
     this.logger = logger
     this.pool = pool
   }
-  
+
   query(sql, args) {
     if (!sql) {
       throw new Error('sql is required')
