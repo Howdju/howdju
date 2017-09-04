@@ -10,7 +10,7 @@
     "score-justifications:local": "NODE_ENV=development node bin/score-justifications.js",
     "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
     "update-lambda-function-code": "node bin/update-lambda-function-code.js",
-    "publish-lambda-function-version": "node bin/publish-lambda-function-publish.js",
+    "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "update-lambda-function-alias": "node bin/update-lambda-function-alias.js"
   },
   "devDependencies": {
