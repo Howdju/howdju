@@ -234,6 +234,7 @@ create table if not exists job_history (
   job_history_id serial,
   job_type varchar(256),
   job_scope varchar(256),
+  started_at timestamp,
   completed_at timestamp,
   status varchar(64),
   message varchar(65536)

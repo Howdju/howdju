@@ -122,7 +122,7 @@ exports.JustificationScoresService = class JustificationScoresService {
 
   createJustificationScore(justificationId, score, job) {
     const scoreType = JustificationScoreType.GLOBAL_VOTE_SUM
-    this.justificationScoresDao.createJustificationScore(justificationId, scoreType, score, job.startedAt, job.id)
+    return this.justificationScoresDao.createJustificationScore(justificationId, scoreType, score, job.startedAt, job.id)
       .then( (justificationScore) => {
         this.logger.debug(`Set justification ${justificationScore.justificationId}'s score to ${justificationScore.score}`)
       })
@@ -136,11 +136,7 @@ exports.JustificationScoresService = class JustificationScoresService {
           justificationScore.score :
           0
         const newScore = currentScore + voteSum
-        return Promise.all([
-          justificationId,
-          newScore,
-          this.justificationScoresDao.createJustificationScore(justificationId, scoreType, newScore, job.startedAt, job.id)
-        ])
+        return this.justificationScoresDao.createJustificationScore(justificationId, scoreType, newScore, job.startedAt, job.id)
       })
       .then( (justificationScore) => {
         const diffSign = voteSum >= 0 ? '+' : ''
