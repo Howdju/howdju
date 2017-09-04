@@ -1,5 +1,3 @@
-const map = require('lodash/map')
-
 const {
   VoteTargetType,
 } = require('howdju-common')

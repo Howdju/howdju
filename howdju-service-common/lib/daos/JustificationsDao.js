@@ -249,7 +249,7 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
   }
 }
 
-const getTargetRootPolarity = (query, justification) =>
+const getTargetRootPolarity = (logger, query, justification) =>
   query('select root_polarity from justifications where justification_id = $1', [justification.target.entity.id])
     .then( ({rows}) => {
       if (rows.length < 1) {
@@ -494,7 +494,7 @@ exports.JustificationsDao = class JustificationsDao {
         rootPolarity = justification.polarity
         break
       case JustificationTargetType.JUSTIFICATION:
-        rootPolarity = getTargetRootPolarity(this.database.query, justification)
+        rootPolarity = getTargetRootPolarity(this.logger, this.database.query, justification)
           .then(rootPolarity => negateRootPolarity(rootPolarity))
         break
       default:

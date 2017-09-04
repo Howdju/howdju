@@ -1,5 +1,3 @@
-const head = require('lodash/head')
-
 const {
   mapSingle,
 } = require('./util')

@@ -56,33 +56,33 @@ exports.JustificationScoresService = class JustificationScoresService {
     const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
       .then( (job) => Promise.all([
-        this.votesDao.readVotesForType(VoteTargetType.JUSTIFICATION),
-        this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
-      ])
-        .then( ([votes, deletions]) => {
-          this.logger.info(`Deleted ${deletions.length} scores`)
-          this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
-          return votes
-        })
-        .then( (votes) => this.processVoteScores(job, votes, this.createJustificationScore))
-        .then( (updates) => {
-          this.logger.info(`Recalculated ${updates.length} scores`)
-        })
-        .then( () => {
-          const completedAt = moment()
-          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
-        })
-        .catch( (err) => {
-          const completedAt = moment()
-          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
-          throw err
-        })
-    )
+          this.votesDao.readVotesForType(VoteTargetType.JUSTIFICATION),
+          this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+        ])
+          .then( ([votes, deletions]) => {
+            this.logger.info(`Deleted ${deletions.length} scores`)
+            this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
+            return votes
+          })
+          .then( (votes) => this.processVoteScores(job, votes, this.createJustificationScore))
+          .then( (updates) => {
+            this.logger.info(`Recalculated ${updates.length} scores`)
+          })
+          .then( () => {
+            const completedAt = moment()
+            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+          })
+          .catch( (err) => {
+            const completedAt = moment()
+            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+            throw err
+          })
+      )
   }
 
   updateJustificationScoresHavingNewVotes() {
     const startedAt = moment()
-    logger.silly(`Starting updateJustificationScoresHavingNewVotes at ${startedAt}`)
+    this.logger.silly(`Starting updateJustificationScoresHavingNewVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
       .then( (job) => Promise.all([
         this.justificationScoresDao.readNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
@@ -100,7 +100,7 @@ exports.JustificationScoresService = class JustificationScoresService {
         })
         .then( () => {
           const completedAt = moment()
-          logger.silly(`Ending updateJustificationScoresHavingNewVotes at ${completedAt}`)
+          this.logger.silly(`Ending updateJustificationScoresHavingNewVotes at ${completedAt}`)
           return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
         })
         .catch( (err) => {
