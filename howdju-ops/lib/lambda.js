@@ -29,7 +29,7 @@ const updateFunctionCode = (functionName, functionCodeZipPath) => {
     }
     lambda.updateFunctionCode(params, (err, data) => {
       if (err) throw err
-      logger.info(`Uploaded ${functionName} (CodeSha256: ${data['CodeSha256']}`)
+      logger.info(`Uploaded ${functionName} (CodeSha256: ${data['CodeSha256']})`)
     })
   })
 }

@@ -44,7 +44,6 @@ const sumVotesByJustificationId = (votes, logger) => {
 
 exports.JustificationScoresService = class JustificationScoresService {
 
-
   constructor(logger, justificationScoresDao, jobHistoryDao, votesDao) {
     this.logger = logger
     this.justificationScoresDao = justificationScoresDao
@@ -55,7 +54,7 @@ exports.JustificationScoresService = class JustificationScoresService {
   scoreJustificationsUsingAllVotes() {
     const startedAt = moment()
     const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
-    this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
+    return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
       .then( (job) => Promise.all([
         this.votesDao.readVotesForType(VoteTargetType.JUSTIFICATION),
         this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
@@ -83,7 +82,7 @@ exports.JustificationScoresService = class JustificationScoresService {
 
   updateJustificationScoresHavingNewVotes() {
     const startedAt = moment()
-    this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
+    return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
       .then( (job) => Promise.all([
         this.justificationScoresDao.readNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
         this.justificationScoresDao.deleteScoresHavingNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM,

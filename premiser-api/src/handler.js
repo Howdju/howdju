@@ -115,10 +115,6 @@ const makeResponder = (gatewayEvent, gatewayCallback) => ({httpStatusCode, heade
 }
 
 const configureLogger = (gatewayEvent, gatewayContext, requestIdentifiers) => {
-  if (gatewayContext.isLocal) {
-    logger.doUseCarriageReturns = false
-  }
-
   const logLevel = get(gatewayEvent, ['stageVariables', 'logLevel'])
   if (logLevel) {
     previousLogLevel = logger.logLevel
