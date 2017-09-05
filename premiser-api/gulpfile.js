@@ -1,8 +1,9 @@
 const del = require('del')
 const gulp = require('gulp')
 const install = require('gulp-install')
-const runSequence = require('run-sequence')
 const zip = require('gulp-zip')
+const path = require('path')
+const runSequence = require('run-sequence')
 
 const lambdarcPath = path.resolve('lambdarc')
 const lambdarc = require(lambdarcPath)
