@@ -4,10 +4,12 @@ const fs = require('fs')
 
 const envVarRegEx = /^\s*(?:export\s+)([\w.-]+)\s*=\s*(.*)?\s*$/
 
-exports.loadEnvironmentEnvVars = () => {
-  const envFilename = process.env.NODE_ENV === 'production' ?
-    '../../config/production.env' :
-    '../../config/local.env'
+exports.loadEnvironmentEnvVars = (envFileName) => {
+  if (!envFileName) {
+    envFilename = process.env.NODE_ENV === 'production' ?
+      '../../config/production.env' :
+      '../../config/local.env'
+  }
 
   const envVars = exports.parseEnvVars(fs.readFileSync(path.join(__dirname, envFilename)))
   assign(process.env, envVars)

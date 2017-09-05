@@ -11,8 +11,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.108.0",
-    "lodash": "^4.17.4",
-    "node-env-file": "^0.1.8"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "eslint": "^4.6.0"

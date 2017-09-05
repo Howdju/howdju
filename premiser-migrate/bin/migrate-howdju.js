@@ -1,4 +1,3 @@
-const env = require('node-env-file')
 const path = require('path')
 const Promise = require('bluebird')
 const pg = require('pg')
@@ -14,11 +13,14 @@ const {
   JustificationPolarity,
   JustificationTargetType,
 } = require('howdju-common')
+const {
+  loadEnvironmentEnvVars
+} = require('howdju-ops')
 
 const {normalizeText} = require("howdju-service-common/lib/daos/util")
 
 const envFilename = process.env.NODE_ENV === 'production' ? '../config/production-local-tunnel.env' : '../../premiser-api/src/.env'
-env(path.join(__dirname, envFilename))
+loadEnvironmentEnvVars(envFilename)
 
 const {query} = require('../../premiser-api/src/db')
 
