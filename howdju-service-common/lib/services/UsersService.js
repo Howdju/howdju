@@ -36,6 +36,7 @@ exports.UsersService = class UsersService {
         if (validationErrors.hasErrors) {
           throw new EntityValidationError(({user: validationErrors}))
         }
+        return validationErrors
       })
       .then(() => Promise.all([
         argon2.generateSalt().then(salt => argon2.hash(user.password, salt)),

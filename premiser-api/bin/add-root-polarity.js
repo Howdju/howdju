@@ -22,13 +22,11 @@ const updateRootPolarity = () => database.query(`
       `, [JustificationTargetType.JUSTIFICATION, JustificationRootPolarity.POSITIVE, JustificationRootPolarity.NEGATIVE])
   .then( ({rows}) => {
     // Continue until no more have been updated
-    if (rows.length > 0) {
-      updateRootPolarity()
-    }
+    return rows.length > 0 ? updateRootPolarity() : null
   })
 
-const updateRootJustifications =
+const updateRootJustificationsRootPolarity =
   database.query(`update justifications set root_polarity = polarity where target_type = $1 and root_polarity is null`, [JustificationTargetType.STATEMENT])
     .then(updateRootPolarity)
 
-updateRootJustifications()
+updateRootJustificationsRootPolarity()

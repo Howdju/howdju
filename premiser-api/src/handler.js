@@ -175,10 +175,11 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
     logger.silly('gatewayContext:', gatewayContext)
 
     const request = makeRequest(gatewayEvent, gatewayCallback, requestIdentifiers)
-    routeEvent(request).then(null, error => {
-      logger.error('uncaught error after routeEvent')
-      gatewayCallback(error)
-    })
+    routeEvent(request)
+      .catch(error => {
+        logger.error('uncaught error after routeEvent')
+        gatewayCallback(error)
+      })
   } catch(error) {
     logger.error(error)
     logger.error('gatewayEvent:', gatewayEvent)

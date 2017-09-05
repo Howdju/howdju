@@ -53,6 +53,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "deasync": "^0.1.10",
+    "eslint-plugin-promise": "^3.5.0",
     "moment": "^2.18.1",
     "pg": "^6.1.5"
   }

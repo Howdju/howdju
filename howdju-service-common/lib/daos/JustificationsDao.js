@@ -500,28 +500,26 @@ exports.JustificationsDao = class JustificationsDao {
       default:
         throw newImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
     }
-
-    return Promise.resolve(rootPolarity).then(rootPolarity => {
-      const sql = `
+    
+    const sql = `
       insert into justifications
         (root_statement_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
         values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       returning *
       `
-      const args = [
-        justification.rootStatement.id,
-        rootPolarity,
-        justification.target.type,
-        justification.target.entity.id,
-        justification.basis.type,
-        justification.basis.entity.id,
-        justification.polarity,
-        userId,
-        now,
-      ]
+    const args = [
+      justification.rootStatement.id,
+      rootPolarity,
+      justification.target.type,
+      justification.target.entity.id,
+      justification.basis.type,
+      justification.basis.entity.id,
+      justification.polarity,
+      userId,
+      now,
+    ]
 
-      return this.database.query(sql, args).then( ({rows: [row]}) => toJustification(row))
-    })
+    return this.database.query(sql, args).then( ({rows: [row]}) => toJustification(row))
   }
 
   deleteJustifications(justifications, now) {

@@ -3,7 +3,13 @@ module.exports = {
     "es6": true,
     "node": true
   },
-  "extends": "eslint:recommended",
+  "plugins": [
+    "promise"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:promise/recommended",
+  ],
   "rules": {
     "indent": [
       "warn",
@@ -46,6 +52,10 @@ module.exports = {
         "describe": false,
         "expect": false,
         "test": false,
+      },
+      rules: {
+        // Tests don't need to catch errors.  If we are asserting properly, then the tests should fail if the error causes us to miss the assertion
+        "promise/catch-or-return": "off",
       }
     },
   ],

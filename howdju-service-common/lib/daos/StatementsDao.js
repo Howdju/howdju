@@ -147,7 +147,7 @@ exports.StatementsDao = class StatementsDao {
         if (rows.length > 1) {
           this.logger.error(`More than one (${rows.length}) statements have ID ${statementId}`)
         }
-        head(map(rows, r => r.statement_id))
+        return head(map(rows, r => r.statement_id))
       })
   }
   countEquivalentStatements(statement) {

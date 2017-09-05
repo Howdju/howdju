@@ -13,6 +13,7 @@
     "argon2": "^0.16.1",
     "bluebird": "^3.5.0",
     "cryptohat": "^1.0.1",
+    "eslint-plugin-promise": "^3.5.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "pg": "^7.2.0",

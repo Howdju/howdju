@@ -1,4 +1,3 @@
-const moment = require('moment')
 const assign = require('lodash/assign')
 const concat = require('lodash/concat')
 const isObject = require('lodash/isObject')

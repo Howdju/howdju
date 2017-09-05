@@ -339,9 +339,8 @@ exports.CitationReferencesService = class CitationReferencesService {
       .then(equivalentCitationReference => Promise.all([
         !!equivalentCitationReference,
         equivalentCitationReference || this.citationReferencesDao.createCitationReference(citationReference, userId, now)
-          .then((citationReference) => {
-            this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE, ActionTargetType.CITATION_REFERENCE, citationReference.id)
-          })
+          .then((citationReference) => this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE,
+            ActionTargetType.CITATION_REFERENCE, citationReference.id))
       ]))
       .then( ([isExtant, citationReference]) => ({
         isExtant,

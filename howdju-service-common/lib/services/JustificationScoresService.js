@@ -55,6 +55,7 @@ exports.JustificationScoresService = class JustificationScoresService {
     const startedAt = utcNow()
     const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
+      /* eslint-disable indent */
       .then( (job) => Promise.all([
           this.votesDao.readVotesForType(VoteTargetType.JUSTIFICATION),
           this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
@@ -65,9 +66,7 @@ exports.JustificationScoresService = class JustificationScoresService {
             return votes
           })
           .then( (votes) => this.processVoteScores(job, votes, this.createJustificationScore))
-          .then( (updates) => {
-            this.logger.info(`Recalculated ${updates.length} scores`)
-          })
+          .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
           .then( () => {
             const completedAt = utcNow()
             return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
@@ -78,12 +77,14 @@ exports.JustificationScoresService = class JustificationScoresService {
             throw err
           })
       )
+    /* eslint-enable indent */
   }
 
   updateJustificationScoresUsingUnscoredVotes() {
     const startedAt = utcNow()
     this.logger.silly(`Starting updateJustificationScoresUsingUnscoredVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
+      /* eslint-disable indent */
       .then( (job) =>
           this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM)
           .then( (votes) => {
@@ -91,9 +92,7 @@ exports.JustificationScoresService = class JustificationScoresService {
             return votes
           })
           .then( (votes) => this.processVoteScores(job, votes, this.createSummedJustificationScore))
-          .then( (updates) => {
-            this.logger.info(`Recalculated ${updates.length} scores`)
-          })
+          .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
           .then( () => {
             const completedAt = utcNow()
             this.logger.silly(`Ending updateJustificationScoresUsingUnscoredVotes at ${completedAt}`)
@@ -105,6 +104,7 @@ exports.JustificationScoresService = class JustificationScoresService {
             throw err
           })
       )
+    /* eslint-enable indent */
   }
 
   processVoteScores(job, votes, processVote) {
@@ -121,6 +121,7 @@ exports.JustificationScoresService = class JustificationScoresService {
     return this.justificationScoresDao.createJustificationScore(justificationId, scoreType, score, job.startedAt, job.id)
       .then( (justificationScore) => {
         this.logger.debug(`Set justification ${justificationScore.justificationId}'s score to ${justificationScore.score}`)
+        return justificationScore
       })
   }
 
@@ -139,6 +140,7 @@ exports.JustificationScoresService = class JustificationScoresService {
       .then( (justificationScore) => {
         const diffSign = voteSum >= 0 ? '+' : ''
         this.logger.debug(`Updated justification ${justificationScore.justificationId}'s score to ${justificationScore.score} (${diffSign}${voteSum})`)
+        return justificationScore
       })
   }
 }

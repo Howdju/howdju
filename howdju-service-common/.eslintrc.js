@@ -3,7 +3,13 @@ module.exports = {
     "es6": true,
     "node": true
   },
-  "extends": "eslint:recommended",
+  "plugins": [
+    "promise"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:promise/recommended",
+  ],
   "rules": {
     "indent": [
       "warn",
