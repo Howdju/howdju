@@ -4,6 +4,10 @@ const install = require('gulp-install')
 const runSequence = require('run-sequence')
 const zip = require('gulp-zip')
 
+const lambdarcPath = path.resolve('lambdarc')
+const lambdarc = require(lambdarcPath)
+const lambdaName = lambdarc.name
+
 gulp.task('clean', next => del('./dist', next))
 
 gulp.task('js', () =>
@@ -27,7 +31,7 @@ gulp.task('zip', () =>
     'dist/premiser-api/**/*',
     '!dist/premiser-api/package.json',
   ])
-    .pipe(zip('premiser-api.zip'))
+    .pipe(zip(`${lambdaName}.zip`))
     .pipe(gulp.dest('./dist/')))
 
 gulp.task('build', (next) => runSequence(
