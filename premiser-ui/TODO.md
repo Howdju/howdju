@@ -1,6 +1,9 @@
 # Howdju UI TODO
 
 * Add eslint-plugin-promise to api
+* can I release API now?
+* The migration didn't migrate citations properly; we have many with identical text
+  * Also one of these is blank text.
 
 * JustificationType.CitationReferenceParaphraseCompound
 * Prod featured perspectives (Hillary email)

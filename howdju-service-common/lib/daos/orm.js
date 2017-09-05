@@ -9,7 +9,7 @@ const {
   newImpossibleError,
 } = require('howdju-common')
 
-const toUser = row => !row ? row : ({
+const toUser = row => row && ({
   id: toString(row.user_id),
   email: row.email,
   shortName: row.short_name,
@@ -19,7 +19,7 @@ const toUser = row => !row ? row : ({
   externalIds: toUserExternalIds(row),
 })
 
-const toUserExternalIds = row => !row ? row : ({
+const toUserExternalIds = row => row && ({
   googleAnalyticsId: row.google_analytics_id,
   heapAnalyticsId: row.heap_analytics_id,
   mixpanelId: row.mixpanel_id,
@@ -29,7 +29,7 @@ const toUserExternalIds = row => !row ? row : ({
 
 const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
-const toStatement = row => !row ? row : ({
+const toStatement = row => row && ({
   id: toString(row.statement_id),
   text: row.text,
   slug: toSlug(row.text),
@@ -137,7 +137,7 @@ const toJustification = (
   return justification
 }
 
-const toCitationReference = row => !row ? row : {
+const toCitationReference = row => row && {
   id: toString(row.citation_reference_id),
   quote: row.quote,
   created: row.created,
@@ -149,28 +149,28 @@ const toCitationReference = row => !row ? row : {
 }
 
 const toCitation = row => {
-  const citation = !row ? row : ({
+  const citation = row && ({
     id: toString(row.citation_id),
     text: row.text,
     created: row.created,
   })
   return citation
 }
-const toUrl = row => !row ? row : ({
+const toUrl = row => row && ({
   id: toString(row.url_id),
   url: row.url
 })
 
-const toVote = row => {
-  return {
-    id: toString(row.vote_id),
-    polarity: row.polarity,
-    targetType: row.target_type,
-    targetId: row.target_id,
-  }
-}
+const toVote = row => row && ({
+  id: toString(row.vote_id),
+  polarity: row.polarity,
+  targetType: row.target_type,
+  targetId: row.target_id,
+  created: row.created,
+  deleted: row.deleted,
+})
 
-const toCitationReferenceUrl = row => !row ? row : ({
+const toCitationReferenceUrl = row => row && ({
   citationReferenceId: toString(row.citation_reference_id),
   urlId: toString(row.url_id),
 })
@@ -194,7 +194,7 @@ const toStatementCompound = (row, atoms) => {
   return statementCompound
 }
 
-const toStatementCompoundAtom = row => !row ? row : ({
+const toStatementCompoundAtom = row => row && ({
   statementCompoundId: row.statement_compound_id,
   statement: toStatement({
     statement_id: row.statement_id,
@@ -205,18 +205,18 @@ const toStatementCompoundAtom = row => !row ? row : ({
   orderPosition: row.order_position,
 })
 
-const toPerspective = row => !row ? row : ({
+const toPerspective = row => row && ({
   id: row.perspective_id,
   statement: {id: row.statement_id},
   creatorUserId: row.creator_user_id,
 })
 
-const toUserHash = row => !row ? row : ({
+const toUserHash = row => row && ({
   userId: row.user_id,
   hash: row.hash,
 })
 
-const toJobHistory = row => !row ? row : ({
+const toJobHistory = row => row && ({
   id: row.job_history_id,
   type: row.job_type,
   startedAt: row.started_at,
@@ -229,6 +229,10 @@ const toJustificationScore = row => row && ({
   justificationId: row.justification_id,
   scoreType: row.score_type,
   score: row.score,
+  created: row.created,
+  deleted: row.deleted,
+  creatorJobHistoryId: row.creator_job_history_id,
+  deleotrJobHistoryId: row.deletor_job_history_id,
 })
 
 module.exports = {

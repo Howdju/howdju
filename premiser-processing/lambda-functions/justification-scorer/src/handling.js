@@ -13,7 +13,7 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
   logger.silly('gatewayEvent:', gatewayEvent)
   logger.silly('gatewayContext:', gatewayContext)
 
-  justificationScoresService.updateJustificationScoresHavingNewVotes()
+  justificationScoresService.updateJustificationScoresUsingUnscoredVotes()
     .then(() => gatewayCallback(null, 'Scoring justifications succeeded'))
     .catch( (err) => {
       logger.error('Scoring justifications failed', err)

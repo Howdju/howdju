@@ -41,7 +41,7 @@ exports.JustificationScoresDao = class JustificationScoresDao {
       .then(mapSingle(this.logger, toJustificationScore, 'justification_scores'))
   }
 
-  readNewVotesForScoreType(scoreType) {
+  readUnscoredVotesForScoreType(scoreType) {
     return this.database.query(`
       select v.* 
       from votes v
@@ -52,12 +52,18 @@ exports.JustificationScoresDao = class JustificationScoresDao {
         where 
               v.deleted is null
           and (
-            -- either the vote is newer than its score
+            -- unscored votes either:
+            -- are created after their score,
             (
                    js.score_type = $2
                and v.created > js.created
             )
-            -- or it has no score 
+            -- are deleted after their score,
+            or (
+                   js.score_type = $2
+               and v.deleted > js.created
+            )
+            -- or haven't been scored yet
             or js.justification_id is null
           )
     `, [VoteTargetType.JUSTIFICATION, scoreType])
@@ -73,23 +79,27 @@ exports.JustificationScoresDao = class JustificationScoresDao {
     )
   }
 
-  deleteScoresHavingNewVotesForScoreType(scoreType, deleted, jobHistoryId) {
+  deleteScoresHavingUnscoredVotesForScoreType(scoreType, deleted, jobHistoryId) {
     return this.database.query(`
       with 
-        scores_having_new_votes as (
-          select distinct js.justification_id
+        scores_having_unscored_votes as (
+          select distinct 
+            js.justification_id
           from justification_scores js
             join votes v on 
                   v.target_type = $1
               and v.target_id = js.justification_id
               and v.deleted is null
-              and v.created > js.created
+              and (
+                   v.created > js.created
+                or v.deleted > js.created
+              )
             where 
                   js.deleted is null
               and js.score_type = $2
         )
       update justification_scores js set deleted = $3, deletor_job_history_id = $4 
-      from scores_having_new_votes new
+      from scores_having_unscored_votes new
         where 
               js.justification_id = new.justification_id  
           and js.score_type = $2

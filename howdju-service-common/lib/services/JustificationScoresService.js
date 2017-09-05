@@ -26,10 +26,10 @@ const sumVotesByJustificationId = (votes, logger) => {
 
     switch (vote.polarity) {
       case JustificationVotePolarity.POSITIVE:
-        sum += 1
+        sum += vote.deleted ? -1 : 1
         break
       case JustificationVotePolarity.NEGATIVE:
-        sum -= 1
+        sum -= vote.deleted ? 1 : -1
         break
       default:
         logger.error(`Unknown JustificationVotePolarity "${vote.polarity} in vote ID ${vote.id}`)
@@ -51,7 +51,7 @@ exports.JustificationScoresService = class JustificationScoresService {
     this.votesDao = votesDao
   }
 
-  scoreJustificationsUsingAllVotes() {
+  setJustificationScoresUsingAllVotes() {
     const startedAt = moment()
     const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
@@ -80,13 +80,13 @@ exports.JustificationScoresService = class JustificationScoresService {
       )
   }
 
-  updateJustificationScoresHavingNewVotes() {
+  updateJustificationScoresUsingUnscoredVotes() {
     const startedAt = moment()
-    this.logger.silly(`Starting updateJustificationScoresHavingNewVotes at ${startedAt}`)
+    this.logger.silly(`Starting updateJustificationScoresUsingUnscoredVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
       .then( (job) => Promise.all([
-          this.justificationScoresDao.readNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
-          this.justificationScoresDao.deleteScoresHavingNewVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM,
+          this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
+          this.justificationScoresDao.deleteScoresHavingUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM,
             job.startedAt, job.id),
         ])
           .then( ([votes, deletions]) => {
@@ -100,7 +100,7 @@ exports.JustificationScoresService = class JustificationScoresService {
           })
           .then( () => {
             const completedAt = moment()
-            this.logger.silly(`Ending updateJustificationScoresHavingNewVotes at ${completedAt}`)
+            this.logger.silly(`Ending updateJustificationScoresUsingUnscoredVotes at ${completedAt}`)
             return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
           })
           .catch( (err) => {

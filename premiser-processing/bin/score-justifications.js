@@ -23,10 +23,10 @@ logger.info(`Scoring justifications with scope: ${args.scope}`)
 
 switch (args.scope) {
   case JobScopes.INCREMENTAL:
-    justificationScoresService.updateJustificationScoresHavingNewVotes()
+    justificationScoresService.updateJustificationScoresUsingUnscoredVotes()
     break
   case JobScopes.FULL:
-    justificationScoresService.scoreJustificationsUsingAllVotes()
+    justificationScoresService.setJustificationScoresUsingAllVotes()
     break
   default:
     throw new Error(`Unsupported JobScope: ${args.scope}`)
