@@ -65,6 +65,8 @@ class StatementEditorFields extends Component {
       <TextField {...rest}
                  {...errorInputProps}
                  {...statementTextInputProps}
+                 rows={1}
+                 maxRows={4}
                  disabled={disabled || !hasText}
                  type="text"
       />

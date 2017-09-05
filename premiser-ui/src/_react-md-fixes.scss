@@ -1,33 +1,4 @@
 @mixin react-md-fixes($grid-desktop-breakpoint, $grid-phone-gutter) {
-  // TODO remove at some point!
-  .md-text-field-container.md-text-field-container--multiline:not(.hasIcon) {
-    // the following doens't appear to apply to multiline inputs with an icon (left icon, at least)
-    // So add .hasIcon to the TextField if you will be adding a left icon to avoid all these style fixes
-
-    // When I enter the first character into a multiline text field, the element height is set to something way too big.
-    // Try and compensate for this with a negative margin.
-    &.editedAfterMount {
-      margin-bottom: -33px;
-    }
-    // The floating label returns into the control even when there is text entered.  Prevent that.
-    &.hasValue {
-      .md-floating-label.md-floating-label--floating {
-        transform: translate3d(0, -20px, 0);
-        font-size: 12px;
-      }
-    }
-
-    // I have no idea why I had to apply these, but the floating label for multiline TextFields was way off otherwise
-    .md-floating-label.md-floating-label--active.md-floating-label--floating {
-      transform: translate3d(0, -20px, 0);
-      font-size: 12px;
-    }
-    .md-floating-label.md-floating-label--inactive.md-floating-label--inactive-sized,
-    .md-floating-label.md-floating-label--floating{
-      transform: translate3d(0, 0px, 0);
-      font-size: 13px;
-    }
-  }
 
   .md-dialog {
     // React-MD doesn't implement scrolling of md-dialog-content, so add scroll to the whole dialog and md-dialog-contents

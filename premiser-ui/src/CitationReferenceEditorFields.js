@@ -19,18 +19,6 @@ const quoteName = 'quote'
 const citationTextName = 'citation.text'
 
 class CitationReferenceEditorFields extends Component {
-  constructor() {
-    super()
-    this.state = {
-      isQuoteEditedAfterMount: false
-    }
-  }
-
-  componentDidMount() {
-    this.setState({
-      isQuoteEditedAfterMount: false
-    })
-  }
 
   onChange = (value, event) => {
     const target = event.target
@@ -60,9 +48,6 @@ class CitationReferenceEditorFields extends Component {
       disabled,
       errors,
     } = this.props
-    const {
-      isQuoteEditedAfterMount
-    } = this.state
 
     const urls = get(citationReference, 'urls', [])
     const namePrefix = name ? name + '.' : ''
@@ -97,10 +82,6 @@ class CitationReferenceEditorFields extends Component {
                    label="Quote"
                    rows={2}
                    maxRows={4}
-                   className={cn('hasIcon', {
-                     editedAfterMount: isQuoteEditedAfterMount,
-                     hasValue: !!quote,
-                   })}
                    value={quote}
                    onChange={this.onChange}
                    leftIcon={<FontIcon>format_quote</FontIcon>}

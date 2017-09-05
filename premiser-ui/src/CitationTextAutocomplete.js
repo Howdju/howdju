@@ -1,6 +1,7 @@
-import React, {Component} from "react"
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+
 import {
   api, mapActionCreatorGroupToDispatchToProps
 } from "./actions"
@@ -27,6 +28,8 @@ class CitationTextAutocomplete extends Component {
         {...rest}
         value={value}
         // maxLength={2048}
+        rows={1}
+        maxRows={4}
         onPropertyChange={onPropertyChange}
         onAutocomplete={this.onAutocomplete}
         fetchSuggestions={api.fetchCitationTextSuggestions}
