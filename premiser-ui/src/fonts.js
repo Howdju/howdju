@@ -1,6 +1,5 @@
-/* globals require */
-import config from './config'
-if (config.isDev) {
+/* globals require process */
+if (process.env.NODE_ENV === 'development') {
   require("style-loader!./_fonts.development.scss")
 } else {
   require("style-loader!./_fonts.production.scss")

@@ -1,6 +1,5 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
-const moment = require('moment')
 const webpack = require('webpack')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
