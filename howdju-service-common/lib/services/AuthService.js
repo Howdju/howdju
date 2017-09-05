@@ -5,6 +5,7 @@ const Promise = require('bluebird')
 
 const {
   EntityTypes,
+  utcNow,
 } = require('howdju-common')
 
 const {
@@ -95,7 +96,7 @@ exports.AuthService = class AuthService {
       .then(this.usersDao.readUserForId)
       .then(ensureActive)
       .then(user => {
-        const now = moment()
+        const now = utcNow()
         return Promise.all([
           user,
           this.createAuthToken(user, now),

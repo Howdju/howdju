@@ -18,19 +18,6 @@ exports.JustificationScoresDao = class JustificationScoresDao {
     this.database = database
   }
 
-  readJustificationScoreForJustificationIdAndType(justificationId, justificationScoreType) {
-    return this.database.query(
-      `select * 
-       from justification_scores 
-       where 
-             justification_id = $1 
-         and score_type = $2 
-         and deleted is null
-       `,
-      [justificationId, justificationScoreType])
-      .then(mapSingle(this.logger, toJustificationScore, 'justification_scores', {justificationId, justificationScoreType}))
-  }
-
   createJustificationScore(justificationId, justificationScoreType, score, created, jobHistoryId) {
     return this.database.query(
       `insert into justification_scores (justification_id, score_type, score, created, creator_job_history_id) values
@@ -50,21 +37,19 @@ exports.JustificationScoresDao = class JustificationScoresDao {
           and v.target_id = js.justification_id
           and js.deleted is null
         where 
-              v.deleted is null
-          and (
-            -- unscored votes either:
-            -- are created after their score,
-            (
-                   js.score_type = $2
-               and v.created > js.created
+          -- the vote's justification has no score (and isn't already deleted)
+          (
+                js.justification_id IS NULL
+            AND v.deleted IS NULL
+          )
+          -- or its justification has a score, but the vote was either created or deleted after the score was created
+          or (
+                js.score_type = $2
+            and js.created IS NOT NULL
+            and (
+                 v.created > js.created
+              or v.deleted > js.created
             )
-            -- are deleted after their score,
-            or (
-                   js.score_type = $2
-               and v.deleted > js.created
-            )
-            -- or haven't been scored yet
-            or js.justification_id is null
           )
     `, [VoteTargetType.JUSTIFICATION, scoreType])
       .then(mapMany(toVote))
@@ -79,32 +64,22 @@ exports.JustificationScoresDao = class JustificationScoresDao {
     )
   }
 
-  deleteScoresHavingUnscoredVotesForScoreType(scoreType, deleted, jobHistoryId) {
-    return this.database.query(`
-      with 
-        scores_having_unscored_votes as (
-          select distinct 
-            js.justification_id
-          from justification_scores js
-            join votes v on 
-                  v.target_type = $1
-              and v.target_id = js.justification_id
-              and v.deleted is null
-              and (
-                   v.created > js.created
-                or v.deleted > js.created
-              )
-            where 
-                  js.deleted is null
-              and js.score_type = $2
-        )
-      update justification_scores js set deleted = $3, deletor_job_history_id = $4 
-      from scores_having_unscored_votes new
-        where 
-              js.justification_id = new.justification_id  
-          and js.score_type = $2
-      returning *
-    `, [VoteTargetType.JUSTIFICATION, scoreType, deleted, jobHistoryId])
-      .then(mapMany(toJustificationScore))
+  deleteJustificationScoreForJustificationIdAndType(
+    justificationId,
+    justificationScoreType,
+    deletedAt,
+    deletorJobHistoryId
+  ) {
+    return this.database.query(
+      `update justification_scores 
+       set deletor_job_history_id = $1, deleted = $2
+       where 
+             justification_id = $3
+         and score_type = $4
+         and deleted is null
+       returning *
+       `,
+      [deletorJobHistoryId, deletedAt, justificationId, justificationScoreType])
+      .then(mapSingle(this.logger, toJustificationScore, 'justification_scores', {justificationId, justificationScoreType}))
   }
 }

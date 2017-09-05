@@ -1,5 +1,6 @@
 const isFunction = require('lodash/isFunction')
 const isUndefined = require('lodash/isUndefined')
+const moment = require('moment')
 
 const _e = module.exports
 
@@ -41,3 +42,9 @@ _e.assert = (test, message) => {
 }
 
 _e.isDefined = val => !isUndefined(val)
+
+_e.utcNow = () => moment.utc()
+
+_e.timestampFormatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
+
+_e.utcTimestamp = () => _e.utcNow().format(_e.timestampFormatString)

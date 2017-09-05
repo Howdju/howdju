@@ -2,13 +2,13 @@ const Promise = require('bluebird')
 const forEach = require('lodash/forEach')
 const isUndefined = require('lodash/isUndefined')
 const map = require('lodash/map')
-const moment = require('moment')
 
 const {
   JustificationVotePolarity,
   JustificationScoreType,
   JobHistoryStatus,
   VoteTargetType,
+  utcNow,
 } = require('howdju-common')
 
 const {
@@ -52,7 +52,7 @@ exports.JustificationScoresService = class JustificationScoresService {
   }
 
   setJustificationScoresUsingAllVotes() {
-    const startedAt = moment()
+    const startedAt = utcNow()
     const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
       .then( (job) => Promise.all([
@@ -69,11 +69,11 @@ exports.JustificationScoresService = class JustificationScoresService {
             this.logger.info(`Recalculated ${updates.length} scores`)
           })
           .then( () => {
-            const completedAt = moment()
+            const completedAt = utcNow()
             return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
           })
           .catch( (err) => {
-            const completedAt = moment()
+            const completedAt = utcNow()
             this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
             throw err
           })
@@ -81,16 +81,12 @@ exports.JustificationScoresService = class JustificationScoresService {
   }
 
   updateJustificationScoresUsingUnscoredVotes() {
-    const startedAt = moment()
+    const startedAt = utcNow()
     this.logger.silly(`Starting updateJustificationScoresUsingUnscoredVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
-      .then( (job) => Promise.all([
-          this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM),
-          this.justificationScoresDao.deleteScoresHavingUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM,
-            job.startedAt, job.id),
-        ])
-          .then( ([votes, deletions]) => {
-            this.logger.info(`Deleted ${deletions.length} scores`)
+      .then( (job) =>
+          this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM)
+          .then( (votes) => {
             this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
             return votes
           })
@@ -99,12 +95,12 @@ exports.JustificationScoresService = class JustificationScoresService {
             this.logger.info(`Recalculated ${updates.length} scores`)
           })
           .then( () => {
-            const completedAt = moment()
+            const completedAt = utcNow()
             this.logger.silly(`Ending updateJustificationScoresUsingUnscoredVotes at ${completedAt}`)
             return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
           })
           .catch( (err) => {
-            const completedAt = moment()
+            const completedAt = utcNow()
             this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
             throw err
           })
@@ -130,13 +126,15 @@ exports.JustificationScoresService = class JustificationScoresService {
 
   createSummedJustificationScore(justificationId, voteSum, job) {
     const scoreType = JustificationScoreType.GLOBAL_VOTE_SUM
-    return this.justificationScoresDao.readJustificationScoreForJustificationIdAndType(justificationId, scoreType)
+    return this.justificationScoresDao.deleteJustificationScoreForJustificationIdAndType(justificationId, scoreType,
+      job.startedAt, job.id)
       .then( (justificationScore) => {
         const currentScore = justificationScore ?
           justificationScore.score :
           0
         const newScore = currentScore + voteSum
-        return this.justificationScoresDao.createJustificationScore(justificationId, scoreType, newScore, job.startedAt, job.id)
+        return this.justificationScoresDao.createJustificationScore(justificationId, scoreType, newScore,
+          job.startedAt, job.id)
       })
       .then( (justificationScore) => {
         const diffSign = voteSum >= 0 ? '+' : ''

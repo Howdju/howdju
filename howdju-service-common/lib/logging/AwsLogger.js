@@ -8,7 +8,10 @@ const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const toString = require('lodash/toString')
 
-const dateFormatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
+const {
+  utcTimestamp
+} = require('howdju-common')
+
 
 const cleanArg = (arg, doUseCarriageReturns) => {
   let cleaned = arg
@@ -66,7 +69,7 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
   const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
   const loggerArgs = []
   if (this.doLogTimestamp) {
-    loggerArgs.push(moment.utc().format(dateFormatString))
+    loggerArgs.push(utcTimestamp())
   }
   loggerArgs.push(logLevel)
   const contextString = makeContextString(this.context)

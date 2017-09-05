@@ -4,6 +4,9 @@
 * can I release API now?
 * The migration didn't migrate citations properly; we have many with identical text
   * Also one of these is blank text.
+  
+* Can use async/await in node?
+* pg native?
 
 * JustificationType.CitationReferenceParaphraseCompound
 * Prod featured perspectives (Hillary email)
@@ -540,6 +543,7 @@
 
 ## Cool
 * [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
+* [Bundle Buddy helps optimize webpack bundles](https://github.com/samccone/bundle-buddy)
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
 * https://github.com/mariusandra/kea
 * https://github.com/awslabs/lambda-refarch-voteapp

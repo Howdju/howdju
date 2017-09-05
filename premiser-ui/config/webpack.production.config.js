@@ -4,6 +4,11 @@ const moment = require('moment')
 const webpack = require('webpack')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
+
+const {
+  utcTimestamp
+} = require('howdju-common')
+
 const {
   gitShortSha,
   nodePackageVersion
@@ -45,7 +50,7 @@ Supposed to support more stuff like this:
 */
 const banner = `name: ${projectConfig.names.js}
 version: ${nodePackageVersion()}
-timstamp: ${moment().format()}
+timstamp: ${utcTimestamp()}
 git_commit: ${gitShortSha()}`
 
 const extractTextPlugin = new ExtractTextPlugin({

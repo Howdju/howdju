@@ -5,6 +5,11 @@ const fs = require('fs')
 const moment = require('moment')
 const path = require('path')
 
+const {
+  utcNow
+} = require('howdju-common')
+
+
 const projectConfig = require('../config/project.config')
 
 const argParser = new ArgumentParser({
@@ -42,7 +47,7 @@ const upload = (filename) => {
       Body: data,
       ACL: 'public-read',
       CacheControl: `public, max-age=${duration.seconds()}`,
-      Expires: moment().add(duration).toDate(),
+      Expires: utcNow().add(duration).toDate(),
       ContentType: contentTypes[extension] || 'application/octet-stream',
     }
     s3.upload(params, function(err, data) {

@@ -3,15 +3,17 @@ const moment = require('moment')
 const isDate = require('lodash/isDate')
 const map = require('lodash/map')
 
+const {
+  timstampFormatString
+} = require('howdju-common')
 
-const formatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
 
 const toUtc = val => {
   if (isDate(val)) {
-    return moment.utc(val).format(formatString)
+    return moment.utc(val).format(timstampFormatString)
   }
   if (moment.isMoment(val)) {
-    return val.utc().format(formatString)
+    return val.utc().format(timstampFormatString)
   }
 
   return val
@@ -39,4 +41,3 @@ exports.Database = class Database {
     return Promise.all(map(queryAndArgs, ({sql, args}) => this.query(sql, args)))
   }
 }
-

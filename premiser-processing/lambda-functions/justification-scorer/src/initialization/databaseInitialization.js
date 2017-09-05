@@ -3,14 +3,14 @@ const pg = require('pg')
 
 const {
   Database,
-  setTimestampParser,
   makeTimestampToUtcMomentParser,
+  PgTypeOids,
 } = require('howdju-service-common')
 
 const {logger} = require('./loggerInitialization')
 
 
-setTimestampParser(makeTimestampToUtcMomentParser(logger))
+pg.types.setTypeParser(PgTypeOids.TIMESTAMP, makeTimestampToUtcMomentParser(logger))
 
 const config = {
   user: process.env['DB_USER'],
@@ -28,11 +28,6 @@ const pool = new pg.Pool(config)
 pool.on('error', (err, client) =>
   logger.error('database pool error', err.message, err.stack)
 )
-pool.on('connect', (client) => {
-  logger.silly('database pool connected')
-})
-pool.on('acquire', (client) =>
-  logger.silly('database pool acquired')
-)
 
+exports.pool = pool
 exports.database = new Database(logger, pool)
