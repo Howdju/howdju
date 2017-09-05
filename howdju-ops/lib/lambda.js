@@ -19,6 +19,7 @@ const getGitDescription = () => childProcess
   .trim()
 
 const updateFunctionCode = (functionName, functionCodeZipPath) => {
+  logger.info(`Updating ${functionName} from ${functionCodeZipPath}`)
   fs.readFile(functionCodeZipPath, (err, data) => {
     if (err) throw err
 
