@@ -1,17 +1,34 @@
 # Howdju UI TODO
 
+* Cannot create justification
+* Go through services for this.method to look for missing dependencies
+* Add icons to indicate justification vs. counter
+* Hover to explain Supports, Opposes, counters
+* Recently viewed statements, tags (of statements viewed), recent searches
+
 * The migration didn't migrate citations properly; we have many with identical text
   * Also one of these is blank text.
+* What is my data backup strategy?  Should I switch to Aurora Postgres?
   
 * Can use async/await in node?
 * pg native?
 
 * JustificationType.CitationReferenceParaphraseCompound
+  * Might be nice to have a generic compound justification type
+  * It should probably allow mixing atom types because, why not? (Statement, Paraphrase (CitationReference, ImageRegion, VideoSegment))
+    * But I don't think that allowing two or more Text type would make sense...just write it all in one Text
+  * Should everything be paraphrases?  Even the targets of justifications?  So no bare statements?
+     * maybe not everything, because how to let people counter using something logical or prima facie?
+     * But could make a paraphse into a statement + source.  The StatementJustifications page could be rooted at either
+       a statement or a paraphrase.  On that page we can show all other sources for which that statement is a paraphrase.
+     * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
+
 * Prod featured perspectives (Hillary email)
   * Show whose perspective it is.
   * Show when created
   * Show votes
 * User signup
+  * Terms, Privileges, Points, Rate limiting
 * Tagging for me to keep track of what I am working on
 * Metrics: new users, daily active users (visit, vote, create)
 
@@ -31,6 +48,8 @@
     * Anyway, clicking on a paraphrase brings up...the justification usages or the supporting/opposing justifications?
   * Show: only mine, only people I follow, only verified users
 
+
+* Minimize react-md (don't use react-md-everything): https://react-md.mlaursen.com/customization/minimizing-bundle
 ## Bugs
 
 * iOS content blocker blocking google fonts

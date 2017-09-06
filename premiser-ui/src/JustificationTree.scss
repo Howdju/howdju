@@ -4,6 +4,20 @@
 
 $slide-size: $md-btn-icon-size;
 
+.counter-justifications {
+  width: 100%;
+}
+.chat-bubble--negative {
+  & > .counter-justifications {
+    margin-right: $polarity-offset;
+  }
+}
+.chat-bubble--positive {
+   & > .counter-justifications {
+     margin-left: $polarity-offset;
+   }
+ }
+
 .justification-tree {
 
   .actions {
@@ -59,10 +73,6 @@ $slide-size: $md-btn-icon-size;
         transform: scaleX(-1);
       }
     }
-
-    & > .counter-justifications {
-      margin-left: $polarity-offset;
-    }
   }
 
   &.negativey {
@@ -90,10 +100,6 @@ $slide-size: $md-btn-icon-size;
           opacity: 0;
         }
       }
-    }
-
-    & > .counter-justifications {
-      margin-right: $polarity-offset;
     }
   }
 }

@@ -8,13 +8,11 @@
   border-radius: 0.4em;
 
   &.chat-bubble--positive {
-    background-color: #ddd;
     margin-right: 60px;
     border: 1px solid #bbb;
   }
   &.chat-bubble--negative {
-    background-color: rgba(255, 13, 21, 0.11);
     margin-left: 60px;
-    border: 1px solid rgba(255, 5, 12, 0.25);
+    border: 1px solid rgb(255, 176, 164);
   }
 }

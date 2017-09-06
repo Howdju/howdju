@@ -13,21 +13,21 @@ const {
 
 const _e = module.exports
 
-_e.isPositive = j => j.polarity === JustificationPolarity.POSITIVE
-_e.isNegative = j => j.polarity === JustificationPolarity.NEGATIVE
-_e.isRootPositive = j => j.rootPolarity === JustificationRootPolarity.POSITIVE
-_e.isRootNegative = j => j.rootPolarity === JustificationRootPolarity.NEGATIVE
-_e.isVerified = j => j.vote && j.vote.polarity === VotePolarity.POSITIVE
-_e.isDisverified = j => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
-_e.isCounter = j => j.target.type === JustificationTargetType.JUSTIFICATION && _e.isNegative(j)
-_e.isRootJustification = j =>
+_e.isPositive = (j) => j.polarity === JustificationPolarity.POSITIVE
+_e.isNegative = (j) => j.polarity === JustificationPolarity.NEGATIVE
+_e.isRootPositive = (j) => j.rootPolarity === JustificationRootPolarity.POSITIVE
+_e.isRootNegative = (j) => j.rootPolarity === JustificationRootPolarity.NEGATIVE
+_e.isVerified = (j) => j.vote && j.vote.polarity === VotePolarity.POSITIVE
+_e.isDisverified = (j) => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
+_e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION && _e.isNegative(j)
+_e.isRootJustification = (j) =>
   j.target.type === JustificationTargetType.STATEMENT &&
   j.target.entity.id === j.rootStatement.id
-_e.hasQuote = j => _e.isCitationReferenceBased(j) && j.basis.entity.quote
-_e.isStatementCompoundBased = j => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
-_e.isCitationReferenceBased = j => j ? j.basis.type === JustificationBasisType.CITATION_REFERENCE : false
+_e.hasQuote = (j) => _e.isCitationReferenceBased(j) && j.basis.entity.quote
+_e.isStatementCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
+_e.isCitationReferenceBased = (j) => j ? j.basis.type === JustificationBasisType.CITATION_REFERENCE : false
 
-_e.negateVotePolarity = polarity => {
+_e.negateVotePolarity = (polarity) => {
   switch (polarity) {
     case VotePolarity.POSITIVE:
       return VotePolarity.NEGATIVE
@@ -38,7 +38,7 @@ _e.negateVotePolarity = polarity => {
   }
 }
 
-_e.negateRootPolarity = rootPolarity => {
+_e.negateRootPolarity = (rootPolarity) => {
   switch (rootPolarity) {
     case JustificationRootPolarity.POSITIVE:
       return JustificationRootPolarity.NEGATIVE
@@ -51,9 +51,9 @@ _e.negateRootPolarity = rootPolarity => {
 
 _e.makeNewCredentials = () => ({email: '', password: ''})
 
-_e.makeNewStatement = props => assign({text: ''}, props)
+_e.makeNewStatement = (props) => assign({text: ''}, props)
 
-_e.makeNewJustification = props => merge({
+_e.makeNewJustification = (props) => merge({
   rootStatement: {id: null},
   polarity: JustificationPolarity.POSITIVE,
   target: {
@@ -82,21 +82,27 @@ _e.makeNewCitationReference = () => ({
   urls: [_e.makeNewUrl()],
 })
 
-_e.makeNewStatementCompound = props => assign(
+_e.makeNewStatementCompound = (props) => assign(
   {atoms: [_e.makeNewStatementAtom()]},
   props
 )
 
-_e.makeNewStatementAtom = props => assign(
+_e.makeNewStatementAtom = (props) => assign(
   {statement: _e.makeNewStatement()},
   props
 )
 
-_e.makeNewStatementCompoundForStatement = statement =>
+_e.makeNewStatementCompoundForStatement = (statement) =>
   _e.makeNewStatementCompound({atoms: [_e.makeNewStatementAtom({statement})]})
 
-_e.makeNewJustificationTargetingStatementId = statementId => _e.makeNewJustification({
+_e.makeNewJustificationTargetingStatementId = (statementId) => _e.makeNewJustification({
   rootStatement: {id: statementId},
+  target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
+})
+
+_e.makeNewJustificationTargetingStatementIdWithPolarity = (statementId, polarity) => _e.makeNewJustification({
+  rootStatement: {id: statementId},
+  polarity,
   target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
 })
 
@@ -106,7 +112,7 @@ _e.makeNewStatementJustification = (statementProps, justificationProps) => ({
   doCreateJustification: !!justificationProps,
 })
 
-_e.makeNewCounterJustification = targetJustification => ({
+_e.makeNewCounterJustification = (targetJustification) => ({
   rootStatement: {id: targetJustification.rootStatement.id},
   target: {
     type: JustificationTargetType.JUSTIFICATION,

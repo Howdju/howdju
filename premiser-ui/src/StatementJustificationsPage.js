@@ -24,6 +24,8 @@ import {
   isPositive,
   isNegative,
   makeNewJustificationTargetingStatementId,
+  makeNewJustificationTargetingStatementIdWithPolarity,
+  JustificationPolarity,
   JustificationBasisSourceType,
 } from "howdju-common"
 import GridCard from './GridCard'
@@ -110,10 +112,22 @@ class StatementJustificationsPage extends Component {
     this.props.api.deleteStatement(this.props.statement)
   }
 
-  showNewJustificationDialog = (event) => {
-    event.preventDefault()
-
+  showNewJustificationDialog = () => {
     const newJustification = makeNewJustificationTargetingStatementId(this.statementId())
+    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
+
+    this.props.ui.showNewJustificationDialog(this.statementId())
+  }
+
+  showNewPositiveJustificationDialog = () => {
+    const newJustification = makeNewJustificationTargetingStatementIdWithPolarity(this.statementId(), JustificationPolarity.POSITIVE)
+    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
+
+    this.props.ui.showNewJustificationDialog(this.statementId())
+  }
+
+  showNewNegativeJustificationDialog = () => {
+    const newJustification = makeNewJustificationTargetingStatementIdWithPolarity(this.statementId(), JustificationPolarity.NEGATIVE)
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
 
     this.props.ui.showNewJustificationDialog(this.statementId())
@@ -316,7 +330,6 @@ class StatementJustificationsPage extends Component {
                       onClick={this.showNewJustificationDialog}
               />
             </div>
-
           ]}
         </div>
 
@@ -332,6 +345,8 @@ class StatementJustificationsPage extends Component {
                                      doShowControls={true}
                                      doShowJustifications={false}
                                      isUnCondensed={true}
+                                     showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
+                                     showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
                                      className="md-grid--bottom"
         />
 

@@ -44,6 +44,7 @@ import {EditorTypes} from "./reducers/editors"
 import {suggestionKeys} from "./autocompleter"
 import ChatBubble from './ChatBubble'
 import {selectIsWindowNarrow} from "./selectors"
+import {default as t} from './texts'
 
 import './JustificationTree.scss'
 
@@ -60,6 +61,7 @@ class JustificationTree extends Component {
     super()
     this.state = {
       isOver: false,
+      areCounterJustificationsExpanded: true,
     }
   }
 
@@ -132,6 +134,12 @@ class JustificationTree extends Component {
     return paths.searchJustifications(params)
   }
 
+  toggleCounterJustificationsExpanded = () => {
+    this.setState({
+      areCounterJustificationsExpanded: !this.state.areCounterJustificationsExpanded
+    })
+  }
+
   render() {
     const {
       justification,
@@ -147,6 +155,7 @@ class JustificationTree extends Component {
     const _isDisverified = isDisverified(justification)
     const {
       isOver,
+      areCounterJustificationsExpanded,
     } = this.state
 
     const _isStatementCompoundBased = isStatementCompoundBased(justification)
@@ -234,12 +243,25 @@ class JustificationTree extends Component {
               key="counterButton"
               className={cn({
                 hiding: doHideControls,
-                otherSelected: _isVerified || _isDisverified,
               })}
               title="Counter this justification"
               onClick={this.onEditNewCounterJustification}
       >reply</Button>
     ]
+    const hasCounterJustifications = justification.counterJustifications && justification.counterJustifications.length > 0
+    if (hasCounterJustifications) {
+      const toggleCounterJustificationsExpandedButtonIcon = areCounterJustificationsExpanded ? 'expand_more' : 'expand_less'
+      actions.push(
+        <Button icon
+                key="toggleCounterJustificationsExpandedButton"
+                className={cn({
+                  hiding: doHideControls,
+                })}
+                title={areCounterJustificationsExpanded ? t("Collapse counter-justifications") : t("Expand counter justifications")}
+                onClick={this.toggleCounterJustificationsExpanded}
+        >{toggleCounterJustificationsExpandedButtonIcon}</Button>
+      )
+    }
 
     const {flipMoveDuration, flipMoveEasing} = config.ui
     const counterJustifications = (
@@ -307,8 +329,9 @@ class JustificationTree extends Component {
               {!isEditingBasis && actions}
             </div>
           )}
+
+          {areCounterJustificationsExpanded && counterJustifications}
         </ChatBubble>
-        {counterJustifications}
       </div>
     )
   }

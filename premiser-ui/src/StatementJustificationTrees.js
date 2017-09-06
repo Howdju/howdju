@@ -1,19 +1,22 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import {connect} from "react-redux"
 import FlipMove from 'react-flip-move'
 import get from 'lodash/get'
 import groupBy from 'lodash/groupBy'
 import map from 'lodash/map'
 import cn from 'classnames'
+import Button from 'react-md/lib/Buttons/Button'
 
 import {
   JustificationPolarity,
 } from 'howdju-common'
 import config from './config'
 import JustificationTree from './JustificationTree'
+import {selectIsWindowNarrow} from "./selectors"
+import {default as t, ADD_JUSTIFICATION_CALL_TO_ACTION} from './texts'
 
 import './StatementJustificationTrees.scss'
-import {selectIsWindowNarrow} from "./selectors"
 
 class StatementJustificationTrees extends Component {
 
@@ -43,6 +46,8 @@ class StatementJustificationTrees extends Component {
       WrapperComponent,
       className,
       isWindowNarrow,
+      showNewPositiveJustificationDialog,
+      showNewNegativeJustificationDialog,
     } = this.props
     const {
       flipMoveDuration,
@@ -52,7 +57,10 @@ class StatementJustificationTrees extends Component {
     const justificationsByPolarity = groupBy(justifications, j => j.polarity)
     const positiveJustifications = get(justificationsByPolarity, JustificationPolarity.POSITIVE, [])
     const negativeJustifications = get(justificationsByPolarity, JustificationPolarity.NEGATIVE, [])
-    const hasBothSides = positiveJustifications.length > 0 && negativeJustifications.length > 0
+    const hasPositiveJustifications = positiveJustifications.length > 0
+    const hasNegativeJustifications = negativeJustifications.length > 0
+    const hasBothSides = hasPositiveJustifications && hasNegativeJustifications
+    const hasJustifications = positiveJustifications.length > 0 || negativeJustifications.length > 0
 
     /*
      When there are both positive and negative justifications, don't add any margin, but split them into two columns
@@ -81,6 +89,24 @@ class StatementJustificationTrees extends Component {
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
         >
+          {hasJustifications && (
+            <h2 className="md-cell md-cell--6" key="supporting-justifications-header">Supporting Justifications</h2>
+          )}
+          {hasJustifications && !hasPositiveJustifications && ([
+            <div className="md-cell md-cell--12 cell--centered-contents"
+                 key="justification-statements-page-no-positive-justifications-message"
+            >
+              <div>None</div>
+            </div>,
+            <div className="md-cell md-cell--12 cell--centered-contents"
+                 key="justification-statements-page-no-positive-justifications-add-justification-button"
+            >
+              <Button flat
+                      label={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      onClick={showNewPositiveJustificationDialog}
+              />
+            </div>
+          ])}
           {map(positiveJustifications, this.toTree)}
         </FlipMove>,
         <FlipMove key={negativeTreeClass}
@@ -88,6 +114,24 @@ class StatementJustificationTrees extends Component {
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
         >
+          {hasJustifications && (
+            <h2 className="md-cell md-cell--6" key="opposting-justifications-header">Opposing Justifications</h2>
+          )}
+          {hasJustifications && !hasNegativeJustifications && ([
+            <div className="md-cell md-cell--12 cell--centered-contents"
+                 key="justification-statements-page-no-negative-justifications-message"
+            >
+              None
+            </div>,
+            <div className="md-cell md-cell--12 cell--centered-contents"
+                 key="justification-statements-page-no-negative-justifications-add-justification-button"
+            >
+              <Button flat
+                      label={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      onClick={showNewNegativeJustificationDialog}
+              />
+            </div>
+          ])}
           {map(negativeJustifications, this.toTree)}
         </FlipMove>
       ]
@@ -99,6 +143,14 @@ class StatementJustificationTrees extends Component {
       </WrapperComponent>
     )
   }
+}
+StatementJustificationTrees.propTypes = {
+  justifications: PropTypes.arrayOf(PropTypes.object),
+  doShowControls: PropTypes.bool,
+  doShowJustifications: PropTypes.bool,
+  isUnCondensed: PropTypes.bool,
+  showNewPositiveJustificationDialog: PropTypes.func,
+  showNewNegativeJustificationDialog: PropTypes.func,
 }
 StatementJustificationTrees.defaultProps = {
   doShowControls: false,
