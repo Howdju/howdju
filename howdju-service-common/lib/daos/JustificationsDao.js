@@ -17,11 +17,13 @@ const values = require('lodash/values')
 const {
   JustificationTargetType,
   JustificationBasisType,
+  JustificationPolarity,
   VoteTargetType,
   SortDirection,
   ContinuationSortDirection,
   negateRootPolarity,
   newImpossibleError,
+  assert,
 } = require('howdju-common')
 
 const {
@@ -249,8 +251,26 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
   }
 }
 
-const getTargetRootPolarity = (logger, query, justification) =>
-  query('select root_polarity from justifications where justification_id = $1', [justification.target.entity.id])
+const getNewJustificationRootPolarity = (justification, logger, database) => Promise.resolve()
+  .then(() => {
+    switch (justification.target.type) {
+      case JustificationTargetType.STATEMENT:
+        // root justifications have root polarity equal to their polarity
+        return justification.polarity
+      case JustificationTargetType.JUSTIFICATION:
+        return getTargetRootPolarity(logger, database, justification)
+          .then(rootPolarity => {
+            assert(justification.polarity === JustificationPolarity.NEGATIVE, "Justifications targeting justifications must be negative")
+            return negateRootPolarity(rootPolarity)
+          })
+        break
+      default:
+        throw newImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
+    }
+  })
+
+const getTargetRootPolarity = (logger, database, justification) =>
+  database.query('select root_polarity from justifications where justification_id = $1', [justification.target.entity.id])
     .then( ({rows}) => {
       if (rows.length < 1) {
         throw new EntityNotFoundError(`Could not create justification because target justification having ID ${justification.target.id} did not exist`)
@@ -487,39 +507,29 @@ exports.JustificationsDao = class JustificationsDao {
 
   createJustification(justification, userId, now) {
 
-    let rootPolarity
-    switch (justification.target.type) {
-      case JustificationTargetType.STATEMENT:
-        // root justifications have root polarity equal to their polarity
-        rootPolarity = justification.polarity
-        break
-      case JustificationTargetType.JUSTIFICATION:
-        rootPolarity = getTargetRootPolarity(this.logger, this.database.query, justification)
-          .then(rootPolarity => negateRootPolarity(rootPolarity))
-        break
-      default:
-        throw newImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
-    }
-    
-    const sql = `
-      insert into justifications
-        (root_statement_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
-        values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      returning *
-      `
-    const args = [
-      justification.rootStatement.id,
-      rootPolarity,
-      justification.target.type,
-      justification.target.entity.id,
-      justification.basis.type,
-      justification.basis.entity.id,
-      justification.polarity,
-      userId,
-      now,
-    ]
+    return getNewJustificationRootPolarity(justification, this.logger, this.database)
+      .then((rootPolarity) => {
 
-    return this.database.query(sql, args).then( ({rows: [row]}) => toJustification(row))
+        const sql = `
+          insert into justifications
+            (root_statement_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
+            values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          returning *
+          `
+        const args = [
+          justification.rootStatement.id,
+          rootPolarity,
+          justification.target.type,
+          justification.target.entity.id,
+          justification.basis.type,
+          justification.basis.entity.id,
+          justification.polarity,
+          userId,
+          now,
+        ]
+
+        return this.database.query(sql, args).then( ({rows: [row]}) => toJustification(row))
+      })
   }
 
   deleteJustifications(justifications, now) {

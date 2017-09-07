@@ -30,7 +30,7 @@
   * Show when created
   * Show votes
 * User signup
-  * Terms, Share auth between tabs, Privileges, Points, Rate limiting
+  * Redirect login to https, Terms, Share auth between tabs, Privileges, Points, Rate limiting
 * Tagging for me to keep track of what I am working on
 * Metrics: new users, daily active users (visit, vote, create)
 
