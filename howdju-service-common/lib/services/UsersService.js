@@ -4,6 +4,7 @@ const {
   ActionType,
   ActionTargetType,
   EntityTypes,
+  utcNow,
 } = require('howdju-common')
 
 const {
@@ -52,7 +53,7 @@ exports.UsersService = class UsersService {
       })
       .then(() => {
         const now = utcNow()
-        this.usersDao.createUser(user, creatorUserId, now)
+        return this.usersDao.createUser(user, creatorUserId, now)
       })
       .then((dbUser) => Promise.all([
         dbUser,

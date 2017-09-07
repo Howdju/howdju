@@ -1,6 +1,5 @@
 const {ArgumentParser} = require('argparse')
 const read = require('read')
-const Promise = require('bluebird')
 
 const {loadEnvironmentEnvVars} = require('howdju-ops')
 loadEnvironmentEnvVars()
@@ -21,7 +20,7 @@ read({ prompt: `Please enter the new password for ${args.email}:`, silent: true 
 function setUserPassword(error, password) {
   if (error) throw error
 
-  usersService.updatePasswordForEmail(args.email, password)
+  return usersService.updatePasswordForEmail(args.email, password)
     .catch(err => logger.error(err))
     .finally(() => pool.end())
 }
