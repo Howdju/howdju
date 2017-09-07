@@ -22,6 +22,7 @@ import throttle from 'lodash/throttle'
 import Header from './Header'
 import MainSearchPage from './MainSearchPage'
 import ToolsPage from './ToolsPage'
+import PrivacyPage from './PrivacyPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
 import {
@@ -244,6 +245,12 @@ class App extends Component {
                 component={Link}
                 to="/tools"
       />,
+      <ListItem key="privacy"
+                primaryText="Privacy Policy"
+                leftIcon={<FontIcon>laptop_chromebook</FontIcon>}
+                component={Link}
+                to="/privacy"
+      />,
     ]
     if (isDevice()) {
       if (isMobileSiteDisabled) {
@@ -409,6 +416,7 @@ class App extends Component {
               )} />
 
               <Route exact path="/tools" component={ToolsPage} />
+              <Route exact path="/privacy" component={PrivacyPage} />
               <Route exact path="/icons" component={IconPage} />
 
               <Route component={NotFoundPage} />

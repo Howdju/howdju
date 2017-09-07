@@ -1,5 +1,20 @@
 # Howdju UI TODO
 
+* Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
+  and leave it in-memory
+
+* JustificationType.CitationReferenceParaphraseCompound
+  * Might be nice to have a generic compound justification type
+  * It should probably allow mixing atom types because, why not? (Statement, Paraphrase (CitationReference, ImageRegion, VideoSegment))
+    * But I don't think that allowing two or more Text type would make sense...just write it all in one Text
+  * Should everything be paraphrases?  Even the targets of justifications?  So no bare statements?
+     * maybe not everything, because how to let people counter using something logical or prima facie?
+     * But could make a paraphse into a statement + source.  The StatementJustifications page could be rooted at either
+       a statement or a paraphrase.  On that page we can show all other sources for which that statement is a paraphrase.
+     * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
+
+* App cold load can be >10s
+
 * Fade unhovered disapproved justifications
 * Add icons to indicate justification vs. counter
 * Hover to explain Supports, Opposes, counters
@@ -14,16 +29,7 @@
   
 * Can use async/await in node?
 * pg native?
-
-* JustificationType.CitationReferenceParaphraseCompound
-  * Might be nice to have a generic compound justification type
-  * It should probably allow mixing atom types because, why not? (Statement, Paraphrase (CitationReference, ImageRegion, VideoSegment))
-    * But I don't think that allowing two or more Text type would make sense...just write it all in one Text
-  * Should everything be paraphrases?  Even the targets of justifications?  So no bare statements?
-     * maybe not everything, because how to let people counter using something logical or prima facie?
-     * But could make a paraphse into a statement + source.  The StatementJustifications page could be rooted at either
-       a statement or a paraphrase.  On that page we can show all other sources for which that statement is a paraphrase.
-     * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
+  * https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
 
 * Prod featured perspectives (Hillary email)
   * Show whose perspective it is.
