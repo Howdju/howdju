@@ -236,20 +236,33 @@ exports.CitationReferencesService = class CitationReferencesService {
         return {userId, now, citationReferenceHasChanged, citationHasChanged, urlDiffs}
       })
       .then( ({userId, now, citationReferenceHasChanged, citationHasChanged, urlDiffs}) => Promise.all([
+        userId,
         citationReferenceHasChanged ?
-          this.citationReferencesDao.updateCitationReference(citationReference)
-            .then( (citationReference) => {
-              this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE, citationReference.id)
-              return citationReference
-            }) :
+          this.citationReferencesDao.updateCitationReference(citationReference) :
           citationReference,
         citationHasChanged ?
           this.citationsService.updateCitationAsUser(userId, citationReference.citation, now) :
           citationReference.citation,
         urlDiffs.haveChanged ?
           this.updateCitationReferenceUrlsAsUser(citationReference, urlDiffs, userId, now) :
-          citationReference.urls
+          citationReference.urls,
+        citationReferenceHasChanged,
+        citationHasChanged,
+        urlDiffs.haveChanged,
       ]))
+      .then( ([
+        userId,
+        citationReference,
+        citation,
+        urls,
+        citationReferenceHasChanged,
+      ]) => {
+        if (citationReferenceHasChanged) {
+          this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE,
+            citationReference.id)
+        }
+        return [citationReference, citation, urls]
+      })
       .then( ([citationReference, citation, urls]) => {
         if (citationReference.citation !== citation) {
           citationReference = assign({}, citationReference, {citation})
@@ -296,12 +309,13 @@ exports.CitationReferencesService = class CitationReferencesService {
         removedUrls.length > 0 ? this.citationReferencesDao.deleteCitationReferenceUrls(citationReference, removedUrls, now) : removedUrls,
       ]))
       .then( ([updatedUrls, createdCitationReferenceUrls, deletedCitationReferenceUrls]) => {
-        map(createdCitationReferenceUrls, citationReferenceUrl => this.actionsService.asyncRecordAction(userId, now,
-          ActionType.ASSOCIATE, ActionTargetType.CITATION_REFERENCE, citationReferenceUrl.citationReferenceId,
-          ActionSubjectType.URL, citationReferenceUrl.urlId))
-        map(deletedCitationReferenceUrls, citationReferenceUrl => this.actionsService.asyncRecordAction(userId, now,
-          ActionType.DISASSOCIATE, ActionTargetType.CITATION_REFERENCE, citationReferenceUrl.citationReferenceId,
-          ActionSubjectType.URL, citationReferenceUrl.urlId))
+        map(createdCitationReferenceUrls, citationReferenceUrl =>
+          this.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.CITATION_REFERENCE,
+            citationReferenceUrl.citationReferenceId, ActionSubjectType.URL, citationReferenceUrl.urlId))
+        map(deletedCitationReferenceUrls, citationReferenceUrl =>
+          this.actionsService.asyncRecordAction(userId, now, ActionType.DISASSOCIATE,
+            ActionTargetType.CITATION_REFERENCE, citationReferenceUrl.citationReferenceId, ActionSubjectType.URL,
+            citationReferenceUrl.urlId))
         return updatedUrls
       })
       .then(updatedUrls => sortBy(updatedUrls, url => url.url))
@@ -341,13 +355,15 @@ exports.CitationReferencesService = class CitationReferencesService {
       .then(equivalentCitationReference => Promise.all([
         !!equivalentCitationReference,
         equivalentCitationReference || this.citationReferencesDao.createCitationReference(citationReference, userId, now)
-          .then((citationReference) => this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE,
-            ActionTargetType.CITATION_REFERENCE, citationReference.id))
       ]))
-      .then( ([isExtant, citationReference]) => ({
-        isExtant,
-        citationReference,
-      }))
+      .then( ([isExtant, citationReference]) => {
+        const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.CITATION_REFERENCE, citationReference.id)
+        return {
+          isExtant,
+          citationReference,
+        }
+      })
   }
 
   createCitationReferenceUrlsAsUser(citationReference, userId, now) {
