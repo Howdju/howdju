@@ -38,7 +38,7 @@ const {
   createNextContinuationToken,
 } = require('./pagination')
 const {
-  EDIT_ANY_ENTITY,
+  permissions,
 } = require("../permissions")
 const {
   EntityConflictError,
@@ -192,7 +192,7 @@ exports.CitationReferencesService = class CitationReferencesService {
           citationReferenceHasChanged,
           citationHasChanged,
           urlDiffs,
-          hasPermission: this.permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
+          hasPermission: this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
           entityConflicts: Promise.props(entityConflicts),
           userActionConflicts: Promise.props(userActionConflicts)
         })

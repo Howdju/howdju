@@ -1,5 +1,9 @@
 const toString = require('lodash/toString')
 
+const {
+  requireArgs
+} = require('howdju-common')
+
 exports.PermissionsDao = class PermissionsDao {
 
   constructor(logger, database) {
@@ -8,6 +12,8 @@ exports.PermissionsDao = class PermissionsDao {
   }
 
   userHasPermission(userId, permission) {
+    requireArgs({userId, permission})
+
     const sql = `
       with
         permission AS (

@@ -1,6 +1,12 @@
+const forEach = require('lodash/forEach')
 const isFunction = require('lodash/isFunction')
 const isUndefined = require('lodash/isUndefined')
 const moment = require('moment')
+
+
+const {
+  newArgumentsError
+} = require('./commonErrors')
 
 const _e = module.exports
 
@@ -48,3 +54,17 @@ _e.utcNow = () => moment.utc()
 _e.timestampFormatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
 
 _e.utcTimestamp = () => _e.utcNow().format(_e.timestampFormatString)
+
+_e.requireArgs = (requiredArgs) => {
+  const missing = []
+  forEach(requiredArgs, (value, name) => {
+    if (!_e.isDefined(value)) {
+      missing.push(name)
+    }
+  })
+
+  if (missing.length > 0) {
+    throw newArgumentsError(`Required arguments are undefined: ${missing.join(', ')}`)
+  }
+  return true
+}

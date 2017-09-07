@@ -26,7 +26,7 @@ const {
   StatementValidator,
 } = require('../validators')
 const {
-  EDIT_ANY_ENTITY
+  permissions
 } = require('../permissions')
 const {
   createSorts,
@@ -124,7 +124,7 @@ exports.StatementsService = class StatementsService {
           [OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]: this.statementsDao.hasOtherUsersRootedJustificationsVotes(statement, userId),
           [OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT]: this.statementsDao.isBasisToOtherUsersJustifications(statement, userId),
         }),
-        this.permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
+        this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
       ]))
       .then(([
         userId,
@@ -178,7 +178,7 @@ exports.StatementsService = class StatementsService {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => Promise.all([
         userId,
-        this.permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
+        this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
         this.justificationsDao.readJustificationsDependentUponStatementId(statementId),
         this.statementsDao.readStatementById(statementId),
       ]))

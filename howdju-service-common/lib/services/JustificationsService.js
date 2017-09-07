@@ -19,7 +19,6 @@ const {
   isTruthy,
   JustificationTargetType,
   CANNOT_MODIFY_OTHER_USERS_ENTITIES,
-  EDIT_ANY_ENTITY,
   ActionType,
   ActionTargetType,
   newImpossibleError,
@@ -39,6 +38,9 @@ const {
   EntityValidationError,
   AuthorizationError,
 } = require('../serviceErrors')
+const {
+  permissions,
+} = require('../permissions')
 const {
   rethrowTranslatedErrors
 } = require('../util')
@@ -292,7 +294,7 @@ exports.JustificationsService = class JustificationsService {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => Promise.all([
         userId,
-        this.permissionsDao.userHasPermission(userId, EDIT_ANY_ENTITY),
+        this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
         this.justificationsDao.readJustificationById(justificationId),
       ]))
       .then(([userId, hasPermission, justification]) => {

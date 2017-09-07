@@ -5,6 +5,7 @@ const _e = module.exports
 const commonErrorTypes = _e.commonErrorTypes = {
   PROGRAMMING_ERROR: 'PROGRAMMING_ERROR',
   IMPOSSIBLE_ERROR: 'IMPOSSIBLE_ERROR',
+  ARGUMENTS_EXCEPTION: 'ARGUMENTS_EXCEPTION',
 }
 
 /* Identify custom errors with an errorType property.  Subclassing builtins like Error is not widely supported,
@@ -25,3 +26,6 @@ _e.newImpossibleError = (message) =>
 
 _e.newProgrammingError = (message) =>
   newCustomError(commonErrorTypes.PROGRAMMING_ERROR, message)
+
+_e.newArgumentsError = (message) =>
+  newCustomError(commonErrorTypes.ARGUMENTS_EXCEPTION, message)

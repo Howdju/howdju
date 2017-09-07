@@ -6,6 +6,7 @@ module.exports = assign(
   require('./database'),
   require('./jobEnums'),
   require('./logging'),
+  require('./permissions'),
   require('./searchers'),
   require('./services'),
   require('./util'),

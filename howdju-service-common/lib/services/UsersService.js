@@ -8,7 +8,7 @@ const {
 } = require('howdju-common')
 
 const {
-  CREATE_USERS
+  permissions
 } = require('../permissions')
 const {
   EntityValidationError,
@@ -27,7 +27,7 @@ exports.UsersService = class UsersService {
   }
 
   createUser(authToken, user) {
-    return this.permissionsService.readUserIdHavingPermissionForAuthToken(authToken, CREATE_USERS)
+    return this.permissionsService.readUserIdHavingPermissionForAuthToken(authToken, permissions.CREATE_USERS)
       .then(creatorUserId => this.createUserAsUser(creatorUserId, user))
   }
 
