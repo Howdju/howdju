@@ -263,7 +263,6 @@ const getNewJustificationRootPolarity = (justification, logger, database) => Pro
             assert(justification.polarity === JustificationPolarity.NEGATIVE, "Justifications targeting justifications must be negative")
             return negateRootPolarity(rootPolarity)
           })
-        break
       default:
         throw newImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
     }

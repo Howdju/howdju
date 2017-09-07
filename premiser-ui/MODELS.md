@@ -6,8 +6,8 @@ Paraphrase
   - Statement
   - SourceReference (CitationQuote (CitationReference), ImageRegion, VideoSegment, etc.)
 Justification
-  - target (Statement)
-  - basis (ParaphraseCompound)
+  - target (Statement, Justification (counter-justification))
+  - basis (JustificationBasisCompound<[]Statement/Paraphrase>)
 
 ## SourceReferences
 CitationReference

@@ -4,7 +4,7 @@ const fs = require('fs')
 const isNumber = require('lodash/isNumber')
 const toNumber = require('lodash/toNumber')
 
-const logger = require('./logger')
+const {logger} = require('./logger')
 
 
 AWS.config.region = 'us-east-1'

@@ -2,13 +2,20 @@ const {ArgumentParser} = require('argparse')
 const read = require('read')
 const Promise = require('bluebird')
 
-const {loadEnvironmentEnvVars} = require('howdju-ops')
-loadEnvironmentEnvVars()
+const {
+  loadEnvironmentEnvVars,
+  logger,
+} = require('howdju-ops')
+loadEnvironmentEnvVars('../../config/local-prod.env')
 
-const {logger} = require('howdju-ops')
-const {createUserAsUser} = require('../src/service')
-const userPermissionsDao = require('../src/dao/userPermissionsDao')
-const userGroupsDao = require('../src/dao/userGroupsDao')
+const {
+  pool
+} = require('../src/initialization/databaseInitialization')
+const {
+  usersService,
+  permissionsService,
+  groupsService,
+} = require('../src/initialization')
 
 const parser = new ArgumentParser({
   description: 'Add a user'
@@ -31,13 +38,12 @@ function createUserWithPassword(error, password) {
   const creatorUserId = args.creatorUserId
   const user = {
     email: args.email,
-    password,
     shortName: args.shortName,
     longName: args.longName,
     phoneNumber: args.phoneNumber,
     isActive: !args.inactive,
   }
-  return createUserAsUser(creatorUserId, user)
+  return usersService.createUserAsUser(creatorUserId, user, password)
     .then( user => {
       logger.info(`Created user ${user.id} (${user.email})`)
       return user
@@ -52,12 +58,13 @@ function createUserWithPassword(error, password) {
       user,
       addUserToGroups(user, args.groups)
     ]))
+    .finally(() => pool.end())
 }
 
 const addPermissionsToUser = (user, permissions) => {
   if (permissions) {
     const permissionNames = permissions.split(',')
-    return userPermissionsDao.addPermissionsToUser(user, permissionNames)
+    return permissionsService.addPermissionsToUser(user, permissionNames)
       .then(() => logger.info(`Granted user ${user.id} permissions: ${permissions}`))
   }
   return Promise.resolve()
@@ -66,7 +73,7 @@ const addPermissionsToUser = (user, permissions) => {
 const addUserToGroups = (user, groups) => {
   if (groups) {
     const groupNames = groups.split(',')
-    return userGroupsDao.addUserToGroups(user, groupNames)
+    return groupsService.addUserToGroups(user, groupNames)
       .then(() => logger.info(`Added user ${user.id} to groups: ${groups}`))
   }
   return Promise.resolve()

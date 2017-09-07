@@ -1,3 +1,20 @@
+const {
+  ActionsService,
+  AuthService,
+  CitationReferencesService,
+  CitationsService,
+  GroupsService,
+  JustificationsService,
+  PermissionsService,
+  PerspectivesService,
+  StatementCompoundsService,
+  StatementJustificationsService,
+  StatementsService,
+  UrlsService,
+  UsersService,
+  VotesService,
+} = require('howdju-service-common')
+
 const config = require('../config')
 const {
   logger
@@ -25,22 +42,9 @@ const {
   usersDao,
   userExternalIdsDao,
   votesDao,
+  userGroupsDao,
+  userPermissionsDao,
 } = require('./daosInitialization')
-const {
-  ActionsService,
-  AuthService,
-  CitationReferencesService,
-  CitationsService,
-  JustificationsService,
-  PermissionsService,
-  PerspectivesService,
-  StatementCompoundsService,
-  StatementJustificationsService,
-  StatementsService,
-  UrlsService,
-  UsersService,
-  VotesService,
-} = require('howdju-service-common')
 
 
 const actionsService = new ActionsService(actionsDao)
@@ -62,10 +66,11 @@ const statementsService = new StatementsService(config, statementValidator, acti
   permissionsDao, justificationsDao)
 const statementCompoundsService = new StatementCompoundsService(statementCompoundValidator, actionsService,
   statementsService, statementCompoundsDao)
+const groupsService = new GroupsService(logger, userGroupsDao)
 const justificationsService = new JustificationsService(config, logger, justificationValidator, actionsService,
   authService, statementsService, citationReferencesService, statementCompoundsService, justificationsDao,
   permissionsDao)
-const permissionsService = new PermissionsService(permissionsDao)
+const permissionsService = new PermissionsService(permissionsDao, userPermissionsDao)
 const perspectivesService = new PerspectivesService(authDao, perspectivesDao)
 const statementJustificationsService = new StatementJustificationsService(statementsDao, justificationsDao)
 const usersService = new UsersService(userValidator, actionsService, authService, permissionsService,
@@ -77,6 +82,7 @@ module.exports = {
   authService,
   citationReferencesService,
   citationsService,
+  groupsService,
   justificationsService,
   permissionsService,
   perspectivesService,

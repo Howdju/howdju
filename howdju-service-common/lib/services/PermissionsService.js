@@ -5,8 +5,9 @@ const {
 
 exports.PermissionsService = class PermissionsService {
 
-  constructor(permissionsDao) {
+  constructor(permissionsDao, userPermissionsDao) {
     this.permissionsDao = permissionsDao
+    this.userPermissionsDao = userPermissionsDao
   }
 
   readUserIdHavingPermissionForAuthToken(authToken, permission) {
@@ -20,5 +21,9 @@ exports.PermissionsService = class PermissionsService {
         }
         return userId
       })
+  }
+
+  addPermissionsToUser(user, permissionNames) {
+    return this.userPermissionsDao.addPermissionsToUser(user, permissionNames)
   }
 }

@@ -385,14 +385,6 @@ class UserValidator {
       errors.fieldErrors.email.push(modelErrorCodes.IS_REQUIRED)
     }
 
-    if (user.password === '') {
-      errors.hasErrors = true
-      errors.fieldErrors.password.push(modelErrorCodes.MUST_BE_NONEMPTY)
-    } else if (!user.password) {
-      errors.hasErrors = true
-      errors.fieldErrors.password.push(modelErrorCodes.IS_REQUIRED)
-    }
-
     return errors
   }
 }

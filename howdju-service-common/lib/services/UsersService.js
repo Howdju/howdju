@@ -4,6 +4,7 @@ const {
   ActionType,
   ActionTargetType,
   EntityTypes,
+  requireArgs,
   utcNow,
 } = require('howdju-common')
 
@@ -45,6 +46,8 @@ exports.UsersService = class UsersService {
   createUserAsUser(creatorUserId, user, password) {
     return Promise.resolve()
       .then(() => {
+        requireArgs({creatorUserId, user, password})
+
         const validationErrors = this.userValidator.validate(user)
         if (validationErrors.hasErrors) {
           throw new EntityValidationError(({user: validationErrors}))
@@ -57,7 +60,7 @@ exports.UsersService = class UsersService {
       })
       .then((dbUser) => Promise.all([
         dbUser,
-        this.authService.createAuthForUserIdWithPassword(dbUser, password),
+        this.authService.createAuthForUserIdWithPassword(dbUser.id, password),
         this.userExternalIdsDao.createExternalIdsForUserId(dbUser.id)
       ]))
       .then(([dbUser]) => {

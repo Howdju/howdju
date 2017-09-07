@@ -237,6 +237,7 @@ exports.CitationReferencesService = class CitationReferencesService {
       })
       .then( ({userId, now, citationReferenceHasChanged, citationHasChanged, urlDiffs}) => Promise.all([
         userId,
+        now,
         citationReferenceHasChanged ?
           this.citationReferencesDao.updateCitationReference(citationReference) :
           citationReference,
@@ -252,6 +253,7 @@ exports.CitationReferencesService = class CitationReferencesService {
       ]))
       .then( ([
         userId,
+        now,
         citationReference,
         citation,
         urls,

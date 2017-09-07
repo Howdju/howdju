@@ -1,7 +1,16 @@
 # Howdju UI TODO
 
-* Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
-  and leave it in-memory
+* Can't create statement with justifications
+
+* Statement text larger
+* Remove Justifications (supporting/countering)
+* Need a search icon
+* when click main searhc, change prompt to "type what you want to know about"
+* Paper clip tags to bookmark for later
+
+
+* Statement non-negated, negated
+* Instead of hamburger, profile icon
 
 * JustificationType.CitationReferenceParaphraseCompound
   * Might be nice to have a generic compound justification type
@@ -12,6 +21,11 @@
      * But could make a paraphse into a statement + source.  The StatementJustifications page could be rooted at either
        a statement or a paraphrase.  On that page we can show all other sources for which that statement is a paraphrase.
      * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
+
+* Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
+  and leave it in-memory
+  
+* Data science: voting on negations, recognizing triplet negations
 
 * App cold load can be >10s
 

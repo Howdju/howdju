@@ -6,6 +6,7 @@ module.exports = assign(
   require('./AuthService'),
   require('./CitationReferencesService'),
   require('./CitationsService'),
+  require('./GroupsService'),
   require('./JustificationsService'),
   require('./JustificationScoresService'),
   require('./PermissionsService'),
