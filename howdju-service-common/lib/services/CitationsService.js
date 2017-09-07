@@ -3,7 +3,6 @@ const Promise = require('bluebird')
 const toNumber = require('lodash/toNumber')
 
 const {
-  RequestValidationError,
   SortDirection,
   ActionType,
   ActionTargetType,
@@ -15,6 +14,9 @@ const {
   decodeContinuationToken,
   createNextContinuationToken,
 } = require('./pagination')
+const {
+  RequestValidationError,
+} = require('../serviceErrors')
 
 exports.CitationsService = class CitationsService {
 

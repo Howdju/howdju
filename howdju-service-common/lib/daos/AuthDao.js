@@ -2,10 +2,12 @@ const get = require('lodash/get')
 const toString = require('lodash/toString')
 
 const {toUserHash} = require('./orm')
+const {mapSingle} = require('./util')
 
 exports.AuthDao = class AuthDao {
 
-  constructor(database) {
+  constructor(logger, database) {
+    this.logger = logger
     this.database = database
   }
 
@@ -22,6 +24,11 @@ exports.AuthDao = class AuthDao {
   createUserAuthForUserId(userId, hash) {
     return this.database.query('insert into user_auth (user_id, hash) values ($1, $2) returning *', [userId, hash])
       .then( ({rows: [row]}) => toUserHash(row))
+  }
+
+  updateUserAuthForUserId(userId, hash) {
+    return this.database.query('update user_auth set hash = $2 where user_id = $1 returning *', [userId, hash])
+      .then(mapSingle(this.logger, toUserHash, 'user_auth', {userId}))
   }
 
   insertAuthToken(userId, authToken, created, expires) {

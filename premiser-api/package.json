@@ -9,12 +9,13 @@
   "scripts": {
     "db:local:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
     "db:local:shell": "psql premiser",
+    "db:local": "yarn run db:local:start && yarn run db:local:shell",
     "create-user:prod": "NODE_ENV=production node bin/create-user.js",
     "create-user:local": "NODE_ENV=development node bin/create-user.js",
     "lint": "eslint bin lib src gulpfile.js server.js",
     "serve:local": "npm run lint && bin/serve-local.sh",
-    "debug": "DEBUG=premiser-api:* NODE_ENV=development node debug bin/dev-server.js",
-    "inspect": "DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",
+    "debug": "source ../config/local.env && DEBUG=premiser-api:* NODE_ENV=development node debug bin/dev-server.js",
+    "inspect": "source ../config/local.env && DEBUG=premiser-api:* NODE_ENV=development inspect bin/dev-server.js",
     "local": "yarn run serve:local",
     "localhost": "API_HOST=localhost yarn run local",
     "build": "npm run lint && bin/build.sh",
@@ -27,7 +28,8 @@
     "test-debug": "node --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
     "test-inspect": "yarn run test:debug &; node-inspector",
     "db:prod:tunnel": "ssh -N -L 5433:premiser.cc4gfeuy5z8h.us-east-1.rds.amazonaws.com:5432 premiser.bastion",
-    "db:prod:tunnel:shell": "psql -h 127.0.0.1 -p 5433 -d premiser -U premiser_rds"
+    "db:prod:tunnel:shell": "psql -h 127.0.0.1 -p 5433 -d premiser -U premiser_rds",
+    "change-password:local": "source ../config/local.env && node bin/change-user-password.js"
   },
   "devDependencies": {
     "argparse": "https://github.com/nodeca/argparse.git",

@@ -17,11 +17,7 @@ const {
   JustificationBasisType,
   SortDirection,
   isTruthy,
-  UserActionsConflictError,
-  EntityConflictError,
-  EntityValidationError,
   JustificationTargetType,
-  AuthorizationError,
   CANNOT_MODIFY_OTHER_USERS_ENTITIES,
   EDIT_ANY_ENTITY,
   ActionType,
@@ -38,6 +34,10 @@ const {
 const {
   RequestValidationError,
   EntityTooOldToModifyError,
+  UserActionsConflictError,
+  EntityConflictError,
+  EntityValidationError,
+  AuthorizationError,
 } = require('../serviceErrors')
 const {
   rethrowTranslatedErrors
@@ -58,19 +58,33 @@ const deleteCounterJustificationsToJustificationIds = (
       }
       return justificationsDao.deleteCounterJustificationsToJustificationIds(justificationIds, now)
         .then(currentlyDeletedJustificationIds =>
-          deleteCounterJustificationsToJustificationIds(currentlyDeletedJustificationIds, userId, now,
+          deleteCounterJustificationsToJustificationIds(justificationsDao, currentlyDeletedJustificationIds, userId, now,
             deletedJustificationIds.concat(currentlyDeletedJustificationIds))
         )
     })
 
 exports.JustificationsService = class JustificationsService {
 
-  constructor(config, logger, justificationValidator, actionsService, authService, justificationsDao, permissionsDao) {
+  constructor(
+    config,
+    logger,
+    justificationValidator,
+    actionsService,
+    authService,
+    statementsService,
+    citationReferencesService,
+    statementCompoundsService,
+    justificationsDao,
+    permissionsDao
+  ) {
     this.config = config
     this.logger = logger
     this.justificationValidator = justificationValidator
     this.actionsService = actionsService
     this.authService = authService
+    this.statementsService = statementsService
+    this.citationReferencesService = citationReferencesService
+    this.statementCompoundsService = statementCompoundsService
     this.justificationsDao = justificationsDao
     this.permissionsDao = permissionsDao
   }
@@ -235,7 +249,7 @@ exports.JustificationsService = class JustificationsService {
           }))
 
       case JustificationTargetType.STATEMENT:
-        return this.createStatementAsUser(justificationTarget.entity, userId, now)
+        return this.statementsService.createStatementAsUser(justificationTarget.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then(({isExtant, statement}) => ({
             isExtant,
@@ -252,7 +266,7 @@ exports.JustificationsService = class JustificationsService {
     switch (justificationBasis.type) {
 
       case JustificationBasisType.CITATION_REFERENCE:
-        return this.createCitationReferenceAsUser(justificationBasis.entity, userId, now)
+        return this.citationReferencesService.createCitationReferenceAsUser(justificationBasis.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, citationReference}) => ({
             isExtant,
@@ -261,7 +275,7 @@ exports.JustificationsService = class JustificationsService {
           }))
 
       case JustificationBasisType.STATEMENT_COMPOUND:
-        return this.createStatementCompoundAsUser(justificationBasis.entity, userId, now)
+        return this.statementCompoundsService.createStatementCompoundAsUser(justificationBasis.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, statementCompound}) => ({
             isExtant,
@@ -306,7 +320,7 @@ exports.JustificationsService = class JustificationsService {
         userId,
         now,
         justification,
-        deleteCounterJustificationsToJustificationIds([justification.id], userId, now),
+        deleteCounterJustificationsToJustificationIds(this.justificationsDao, [justification.id], userId, now),
       ]))
       .then(([userId, now, justification, deletedCounterJustificationIds]) => Promise.all([
         userId,

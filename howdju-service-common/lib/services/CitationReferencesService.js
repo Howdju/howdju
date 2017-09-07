@@ -26,10 +26,6 @@ const {
   OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
   OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_CONFLICT,
   OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
-  EntityConflictError,
-  EntityValidationError,
-  RequestValidationError,
-  UserActionsConflictError,
 } = require('howdju-common')
 
 const {
@@ -44,6 +40,12 @@ const {
 const {
   EDIT_ANY_ENTITY,
 } = require("../permissions")
+const {
+  EntityConflictError,
+  EntityValidationError,
+  RequestValidationError,
+  UserActionsConflictError,
+} = require('../serviceErrors')
 
 const diffUrls = (citationReferencesDao, citationReference) => Promise.resolve()
   .then(() => citationReferencesDao.readUrlsByCitationReferenceId(citationReference.id))

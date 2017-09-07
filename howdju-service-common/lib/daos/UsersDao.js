@@ -1,11 +1,15 @@
 const {
   toUser,
 } = require('./orm')
+const {
+  mapSingle
+} = require('./util')
 
 
 exports.UsersDao = class UsersDao {
 
-  constructor(database) {
+  constructor(logger, database) {
+    this.logger = logger
     this.database = database
   }
 
@@ -27,6 +31,11 @@ exports.UsersDao = class UsersDao {
   readUserForId(userId) {
     return this.database.query('select * from users join user_external_ids using (user_id) where user_id = $1', [userId])
       .then( ({rows: [row]}) => toUser(row) )
+  }
+
+  readUserForEmail(email) {
+    return this.database.query('select * from users where email = $1', [email])
+      .then(mapSingle(this.logger, toUser, 'users', {email}))
   }
 
   updateLastLoginForUserId(userId, now) {

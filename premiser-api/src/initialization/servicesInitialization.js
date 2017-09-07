@@ -58,14 +58,15 @@ const citationReferencesService = new CitationReferencesService(
   citationsDao,
   permissionsDao
 )
-const justificationsService = new JustificationsService(config, logger, justificationValidator, actionsService,
-  authService, justificationsDao, permissionsDao)
-const permissionsService = new PermissionsService(permissionsDao)
-const perspectivesService = new PerspectivesService(authDao, perspectivesDao)
 const statementsService = new StatementsService(config, statementValidator, actionsService, authService, statementsDao,
   permissionsDao, justificationsDao)
 const statementCompoundsService = new StatementCompoundsService(statementCompoundValidator, actionsService,
   statementsService, statementCompoundsDao)
+const justificationsService = new JustificationsService(config, logger, justificationValidator, actionsService,
+  authService, statementsService, citationReferencesService, statementCompoundsService, justificationsDao,
+  permissionsDao)
+const permissionsService = new PermissionsService(permissionsDao)
+const perspectivesService = new PerspectivesService(authDao, perspectivesDao)
 const statementJustificationsService = new StatementJustificationsService(statementsDao, justificationsDao)
 const usersService = new UsersService(userValidator, actionsService, authService, permissionsService,
   userExternalIdsDao, usersDao)

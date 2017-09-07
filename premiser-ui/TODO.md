@@ -1,10 +1,12 @@
 # Howdju UI TODO
 
-* Cannot create justification
-* Go through services for this.method to look for missing dependencies
+* Fade unhovered disapproved justifications
 * Add icons to indicate justification vs. counter
 * Hover to explain Supports, Opposes, counters
 * Recently viewed statements, tags (of statements viewed), recent searches
+* Somehow provide ability to roll back UI.  Either output current version of UI when updating or have a history somewhere
+
+* Return in statement/citation text should submit field
 
 * The migration didn't migrate citations properly; we have many with identical text
   * Also one of these is blank text.
@@ -28,7 +30,7 @@
   * Show when created
   * Show votes
 * User signup
-  * Terms, Privileges, Points, Rate limiting
+  * Terms, Share auth between tabs, Privileges, Points, Rate limiting
 * Tagging for me to keep track of what I am working on
 * Metrics: new users, daily active users (visit, vote, create)
 
@@ -586,6 +588,10 @@
 * [SASS Variable to Javascript](https://github.com/nordnet/sass-variable-loader)
 * [Node Postgres Migrations](https://www.npmjs.com/package/node-pg-migrate)
 * [SFSafariViewController](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller)
+* http://blog.mgechev.com/2017/01/30/implementing-dependency-injection-react-angular-element-injectors/
+* Quality tools:
+  * https://greenkeeper.io/
+  * https://www.codacy.com/app/ranisalt/node-argon2/dashboard)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

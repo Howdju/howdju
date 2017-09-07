@@ -1,16 +1,17 @@
-const argon2 = require('argon2')
 const Promise = require('bluebird')
 
 const {
   ActionType,
   ActionTargetType,
+  EntityTypes,
 } = require('howdju-common')
 
 const {
   CREATE_USERS
 } = require('../permissions')
 const {
-  EntityValidationError
+  EntityValidationError,
+  EntityNotFoundError,
 } = require('../serviceErrors')
 
 exports.UsersService = class UsersService {
@@ -29,7 +30,18 @@ exports.UsersService = class UsersService {
       .then(creatorUserId => this.createUserAsUser(creatorUserId, user))
   }
 
-  createUserAsUser(creatorUserId, user) {
+  updatePasswordForEmail(email, password) {
+    return this.usersDao.readUserForEmail(email)
+      .then((user) => {
+        if (!user) {
+          throw new EntityNotFoundError(EntityTypes.USER, email)
+        }
+
+        return this.authService.updateAuthForUserIdWithPassword(user.id, password)
+      })
+  }
+
+  createUserAsUser(creatorUserId, user, password) {
     return Promise.resolve()
       .then(() => {
         const validationErrors = this.userValidator.validate(user)
@@ -38,23 +50,17 @@ exports.UsersService = class UsersService {
         }
         return validationErrors
       })
-      .then(() => Promise.all([
-        argon2.generateSalt().then(salt => argon2.hash(user.password, salt)),
-        new Date(),
-      ]))
-      .then(([hash, now]) => Promise.all([
-        this.usersDao.createUser(user, creatorUserId, now),
-        hash,
-        now,
-      ]))
-      .then(([dbUser, hash, now]) => Promise.all([
+      .then(() => {
+        const now = utcNow()
+        this.usersDao.createUser(user, creatorUserId, now)
+      })
+      .then((dbUser) => Promise.all([
         dbUser,
-        now,
-        this.authService.createUserAuthForUserId(dbUser.id, hash),
+        this.authService.createAuthForUserIdWithPassword(dbUser, password),
         this.userExternalIdsDao.createExternalIdsForUserId(dbUser.id)
       ]))
-      .then(([dbUser, now]) => {
-        this.actionsService.asyncRecordAction(creatorUserId, now, ActionType.CREATE, ActionTargetType.USER, dbUser.id)
+      .then(([dbUser]) => {
+        this.actionsService.asyncRecordAction(creatorUserId, dbUser.created, ActionType.CREATE, ActionTargetType.USER, dbUser.id)
         return dbUser
       })
   }

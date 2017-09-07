@@ -31,4 +31,5 @@ pool.on('error', (err, client) =>
   logger.error('database pool error', err.message, err.stack)
 )
 
+exports.pool = pool
 exports.database = new Database(logger, pool)

@@ -25,7 +25,7 @@ const {
 } = require('./loggerInitialization')
 
 exports.actionsDao = new ActionsDao(database)
-exports.authDao = new AuthDao(database)
+exports.authDao = new AuthDao(logger, database)
 
 exports.urlsDao = new UrlsDao(logger, database)
 exports.citationReferencesDao = new CitationReferencesDao(logger, database, exports.urlsDao)
@@ -43,5 +43,5 @@ exports.statementsDao = new StatementsDao(logger, database)
 exports.userExternalIdsDao = new UserExternalIdsDao(database)
 exports.userGroupsDao = new UserGroupsDao(database)
 exports.userPermissionsDao = new UserPermissionsDao(database)
-exports.usersDao = new UsersDao(database)
+exports.usersDao = new UsersDao(logger, database)
 exports.votesDao = new VotesDao(database)

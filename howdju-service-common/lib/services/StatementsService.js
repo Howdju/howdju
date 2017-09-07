@@ -17,12 +17,14 @@ const {
   OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT,
   OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT,
   CANNOT_MODIFY_OTHER_USERS_ENTITIES,
-  StatementValidator,
   ActionType,
   ActionTargetType,
   isTruthy,
 } = require('howdju-common')
 
+const {
+  StatementValidator,
+} = require('../validators')
 const {
   EDIT_ANY_ENTITY
 } = require('../permissions')

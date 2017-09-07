@@ -54,8 +54,14 @@ exports.AuthService = class AuthService {
     return this.authDao.insertAuthToken(user.id, authToken, now, expires)
   }
 
-  createUserAuthForUserId(userId, hash) {
-    return this.authDao.createUserAuthForUserId(userId, hash)
+  createAuthForUserIdWithPassword(userId, password) {
+    return argon2.hash(password)
+      .then(hash => this.authDao.createUserAuthForUserId(userId, hash))
+  }
+
+  updateAuthForUserIdWithPassword(userId, password) {
+    return argon2.hash(password)
+      .then(hash => this.authDao.updateUserAuthForUserId(userId, hash))
   }
 
   verifyPassword(credentials) {
@@ -91,10 +97,10 @@ exports.AuthService = class AuthService {
 
   login(credentials) {
     return Promise.resolve(credentials)
-      .then(this.validateCredentials)
-      .then(this.verifyPassword)
-      .then(this.usersDao.readUserForId)
-      .then(ensureActive)
+      .then(credentials => this.validateCredentials(credentials))
+      .then(credentials => this.verifyPassword(credentials))
+      .then(userId => this.usersDao.readUserForId(userId))
+      .then(user => ensureActive(user))
       .then(user => {
         const now = utcNow()
         return Promise.all([
