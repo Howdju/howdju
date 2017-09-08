@@ -559,11 +559,12 @@ function* editorCommitEdit() {
       switch (crudType) {
         case CREATE: {
           if (model.doCreateJustification) {
+            debugger
             const justification = consolidateBasis(model.justification)
             justification.target.entity = model.statement
-            return api.createJustification.bind(null, justification)
+            return api.createJustification(justification)
           } else {
-            return api.createStatement.bind(null, model.statement)
+            return api.createStatement(model.statement)
           }
         }
       }
@@ -575,7 +576,7 @@ function* editorCommitEdit() {
       switch (crudType) {
         case CREATE: {
           const justification = consolidateBasis(model)
-          return api.createJustification.bind(null, justification)
+          return api.createJustification(justification)
         }
       }
     },
@@ -588,15 +589,25 @@ function* editorCommitEdit() {
   }
 
   const createEditorCommitApiResourceAction = (editorType, editEntity) => {
-    const crudType = editEntity.id ? UPDATE : CREATE
+
     const editorCommitApiResourceActions = editorTypeCommitApiResourceActions[editorType]
-    const actionCreator = isFunction(editorCommitApiResourceActions) ?
-      editorCommitApiResourceActions(editEntity, crudType) :
-      editorCommitApiResourceActions[crudType]
-    if (!actionCreator) {
-      throw new Error(`Missing ${crudType} action creator to commit edit of ${editorType}.`)
+    if (!editorCommitApiResourceActions) {
+      throw new Error(`Missing editor type ${editorType} action creator config.`)
     }
-    return actionCreator(editEntity)
+
+    const crudType = editEntity.id ? UPDATE : CREATE
+    let action
+    debugger
+    if (isFunction(editorCommitApiResourceActions)) {
+      action = editorCommitApiResourceActions(editEntity, crudType)
+    } else {
+      const actionCreator = editorCommitApiResourceActions[crudType]
+      if (!actionCreator) {
+        throw new Error(`Missing ${crudType} action creator to commit edit of ${editorType}.`)
+      }
+      action = actionCreator(editEntity)
+    }
+    return action
   }
 
   yield takeEvery(str(editors.commitEdit), function* editorCommitEditWorker(action) {

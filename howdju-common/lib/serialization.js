@@ -16,16 +16,21 @@ exports.decircularizeStatementCompound = statementCompound => {
   return statementCompound
 }
 exports.decircularizeJustification = justification => {
-  justification.rootStatement = {id: justification.rootStatement.id}
+  if (justification.rootStatement.id) {
+    justification.rootStatement = {id: justification.rootStatement.id}
+  }
   justification.counterJustifications = map(justification.counterJustifications, exports.decircularizeJustification)
 
   switch (justification.target.type) {
-    case JustificationTargetType.STATEMENT: {
-      justification.target.entity = {id: justification.target.entity.id}
-    }
+    case JustificationTargetType.STATEMENT:
+      if (justification.target.entity.id) {
+        justification.target.entity = {id: justification.target.entity.id}
+      }
       break
     case JustificationTargetType.JUSTIFICATION:
-      justification.target.entity = {id: justification.target.entity.id}
+      if (justification.target.entity.id) {
+        justification.target.entity = {id: justification.target.entity.id}
+      }
       break
     default:
       throw newImpossibleError(`Unsupported justification target type: ${justification.target.type}`)
