@@ -1,69 +1,73 @@
+const {
+  arrayToObject
+} = require('./general')
+
 const _e = module.exports
 
-_e.EntityTypes = {
-  STATEMENT: 'STATEMENT',
-  TEXTUAL_SOURCE: 'TEXTUAL_SOURCE',
-  TEXTUAL_SOURCE_QUOTE: 'TEXTUAL_SOURCE_QUOTE',
-  JUSTIFICATION: 'JUSTIFICATION',
-  USER: 'USER',
-}
+_e.EntityTypes = arrayToObject([
+  'STATEMENT',
+  'WRITING',
+  'WRITING_QUOTE',
+  'JUSTIFICATION',
+  'USER',
+])
 
-_e.ActionType = {
+_e.ActionType = arrayToObject([
   /** The user created something */
-  CREATE: 'CREATE',
+  'CREATE',
   /** The user tried to create something that was a duplicate of something existing; nothing was created */
-  TRY_CREATE_DUPLICATE: 'TRY_CREATE_DUPLICATE',
-  UPDATE: 'UPDATE',
-  DELETE: 'DELETE',
-  ASSOCIATE: 'ASSOCIATE',
-  DISASSOCIATE: 'DISASSOCIATE',
-}
+  'TRY_CREATE_DUPLICATE',
+  'UPDATE',
+  'DELETE',
+  'ASSOCIATE',
+  'DISASSOCIATE',
+])
 
-_e.ActionTargetType = {
-  STATEMENT: 'STATEMENT',
-  STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
-  JUSTIFICATION: 'JUSTIFICATION',
-  TEXTUAL_SOURCE_QUOTE: 'TEXTUAL_SOURCE_QUOTE',
-  CITATION: 'CITATION',
-  USER: 'USER',
-  URL: 'URL',
-}
+_e.ActionTargetType = arrayToObject([
+  'STATEMENT',
+  'STATEMENT_COMPOUND',
+  'JUSTIFICATION',
+  'WRITING_QUOTE',
+  'WRITING',
+  'USER',
+  'URL',
+])
 
-_e.ActionSubjectType = {
-  URL: 'URL',
-}
+_e.ActionSubjectType = arrayToObject([
+  'URL',
+])
 
-_e.JustificationTargetType = {
-  STATEMENT: 'STATEMENT',
-  JUSTIFICATION: 'JUSTIFICATION'
-}
+_e.JustificationTargetType = arrayToObject([
+  'STATEMENT',
+  'JUSTIFICATION',
+])
 
-_e.JustificationPolarity = {
-  POSITIVE: 'POSITIVE',
-  NEGATIVE: 'NEGATIVE',
-}
+_e.JustificationPolarity = arrayToObject([
+  'POSITIVE',
+  'NEGATIVE',
+])
 // For now they have the same values, but let's at least keep track of the usages separately
 _e.JustificationRootPolarity = _e.JustificationPolarity
 
-_e.JustificationBasisType = {
-  STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
-  TEXTUAL_SOURCE_QUOTE: 'TEXTUAL_SOURCE_QUOTE',
-}
+_e.JustificationBasisType = arrayToObject([
+  'STATEMENT_COMPOUND',
+  'WRITING_QUOTE',
+])
 // Anything you can start with to create a justification based upon.
 // (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
-_e.JustificationBasisSourceType = {
-  STATEMENT: 'STATEMENT',
-}
+_e.JustificationBasisSourceType = arrayToObject([
+  'STATEMENT',
+])
 
-_e.VoteTargetType = {
-  JUSTIFICATION: 'JUSTIFICATION',
-  TAGGING: 'TAGGING',
-}
+_e.VoteTargetType = arrayToObject([
+  'JUSTIFICATION',
+  'TAGGING',
+])
 
-_e.VotePolarity = {
-  POSITIVE: 'POSITIVE',
-  NEGATIVE: 'NEGATIVE',
-}
+_e.VotePolarity = arrayToObject([
+  'POSITIVE',
+  'NEGATIVE',
+])
 _e.JustificationVotePolarity = _e.VotePolarity
 
 _e.SortDirection = {
@@ -77,11 +81,16 @@ _e.ContinuationSortDirection = {
   DESCENDING: 'd',
 }
 
-_e.JustificationScoreType = {
-  GLOBAL_VOTE_SUM: 'GLOBAL_VOTE_SUM',
-}
+_e.JustificationScoreType = arrayToObject([
+  'GLOBAL_VOTE_SUM',
+])
 
-_e.JobHistoryStatus = {
-  SUCCESS: 'SUCCESS',
-  FAILURE: 'FAILURE',
-}
+_e.JobHistoryStatus = arrayToObject([
+  'SUCCESS',
+  'FAILURE',
+])
+
+_e.JustificationBasisAtomType = arrayToObject([
+  'STATEMENT',
+  'SOURCE_EXCERPT_PARAPHRASE',
+])

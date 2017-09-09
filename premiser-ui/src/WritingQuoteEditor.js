@@ -16,29 +16,29 @@ import {
   CANCEL_BUTTON_LABEL, EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
 } from "./texts"
 import {default as t} from './texts'
-import CitationReferenceEditorFields from "./CitationReferenceEditorFields"
+import WritingQuoteEditorFields from "./WritingQuoteEditorFields"
 
-class CitationReferenceEditor extends Component {
+class WritingQuoteEditor extends Component {
 
   onPropertyChange = (properties) => {
-    this.props.editors.propertyChange(CitationReferenceEditor.editorType, this.props.editorId, properties)
+    this.props.editors.propertyChange(WritingQuoteEditor.editorType, this.props.editorId, properties)
   }
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.editors.commitEdit(EditorTypes.CITATION_REFERENCE, this.props.editorId)
+    this.props.editors.commitEdit(WritingQuoteEditor.editorType, this.props.editorId)
   }
 
   onCancelEdit = () => {
-    this.props.editors.cancelEdit(EditorTypes.CITATION_REFERENCE, this.props.editorId)
+    this.props.editors.cancelEdit(WritingQuoteEditor.editorType, this.props.editorId)
   }
 
   onAddUrl = () => {
-    this.props.editors.addUrl(EditorTypes.CITATION_REFERENCE, this.props.editorId)
+    this.props.editors.addUrl(WritingQuoteEditor.editorType, this.props.editorId)
   }
 
   onRemoveUrl = (url, index) => {
-    this.props.editors.removeUrl(EditorTypes.CITATION_REFERENCE, this.props.editorId, url, index)
+    this.props.editors.removeUrl(WritingQuoteEditor.editorType, this.props.editorId, url, index)
   }
 
   render() {
@@ -59,9 +59,9 @@ class CitationReferenceEditor extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <CitationReferenceEditorFields {...rest}
+          <WritingQuoteEditorFields {...rest}
                                          id={id}
-                                         citationReference={editEntity}
+                                         writingQuote={editEntity}
                                          disabled={isSaving}
                                          suggestionsKey={suggestionsKey}
                                          onPropertyChange={this.onPropertyChange}
@@ -92,7 +92,7 @@ class CitationReferenceEditor extends Component {
 
   }
 }
-CitationReferenceEditor.propTypes = {
+WritingQuoteEditor.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Identifies the editor's state */
@@ -100,10 +100,10 @@ CitationReferenceEditor.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
 }
-CitationReferenceEditor.editorType = EditorTypes.TEXTUAL_SOURCE_QUOTE
+WritingQuoteEditor.editorType = EditorTypes.WRITING_QUOTE
 
 const mapStateToProps = (state, ownProps) => {
-  const editorState = get(state.editors, [CitationReferenceEditor.editorType, ownProps.editorId], {})
+  const editorState = get(state.editors, [WritingQuoteEditor.editorType, ownProps.editorId], {})
   return {
     editorState,
   }
@@ -111,4 +111,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   editors,
-}))(CitationReferenceEditor)
+}))(WritingQuoteEditor)

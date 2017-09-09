@@ -1,8 +1,8 @@
 const {
   ActionsService,
   AuthService,
-  CitationReferencesService,
-  CitationsService,
+  WritingQuotesService,
+  WritingsService,
   GroupsService,
   JustificationsService,
   PermissionsService,
@@ -21,7 +21,7 @@ const {
 } = require('./loggerInitialization')
 const {
   credentialValidator,
-  citationReferenceValidator,
+  writingQuoteValidator,
   justificationValidator,
   statementCompoundValidator,
   statementValidator,
@@ -31,8 +31,8 @@ const {
 const {
   actionsDao,
   authDao,
-  citationsDao,
-  citationReferencesDao,
+  writingsDao,
+  writingQuotesDao,
   justificationsDao,
   permissionsDao,
   perspectivesDao,
@@ -49,17 +49,17 @@ const {
 
 const actionsService = new ActionsService(actionsDao)
 const authService = new AuthService(config, logger, credentialValidator, authDao, usersDao)
-const citationsService = new CitationsService(actionsService, citationsDao)
+const writingsService = new WritingsService(actionsService, writingsDao)
 const urlsService = new UrlsService(actionsService, urlsDao)
-const citationReferencesService = new CitationReferencesService(
+const writingQuotesService = new WritingQuotesService(
   logger,
-  citationReferenceValidator,
+  writingQuoteValidator,
   actionsService,
   authService,
-  citationsService,
+  writingsService,
   urlsService,
-  citationReferencesDao,
-  citationsDao,
+  writingQuotesDao,
+  writingsDao,
   permissionsDao
 )
 const statementsService = new StatementsService(config, statementValidator, actionsService, authService, statementsDao,
@@ -68,7 +68,7 @@ const statementCompoundsService = new StatementCompoundsService(statementCompoun
   statementsService, statementCompoundsDao)
 const groupsService = new GroupsService(logger, userGroupsDao)
 const justificationsService = new JustificationsService(config, logger, justificationValidator, actionsService,
-  authService, statementsService, citationReferencesService, statementCompoundsService, justificationsDao,
+  authService, statementsService, writingQuotesService, statementCompoundsService, justificationsDao,
   permissionsDao)
 const permissionsService = new PermissionsService(permissionsDao, userPermissionsDao)
 const perspectivesService = new PerspectivesService(authDao, perspectivesDao)
@@ -80,8 +80,8 @@ const votesService = new VotesService(logger, voteValidator, authService, votesD
 module.exports = {
   actionsService,
   authService,
-  citationReferencesService,
-  citationsService,
+  writingQuotesService,
+  writingsService,
   groupsService,
   justificationsService,
   permissionsService,

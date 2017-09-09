@@ -5,26 +5,26 @@ import map from 'lodash/map'
 import cn from 'classnames'
 
 import {
-  truncateCitationReferenceQuote,
+  truncateWritingQuoteText,
   isTextLong,
 } from "./viewModels"
 import {extractDomain} from "./util"
 import * as characters from './characters'
 import {default as t} from './texts'
 
-import './CitationReferenceViewer.scss'
+import './WritingQuoteViewer.scss'
 
 
-const CitationReferenceViewer = props => {
+const WritingQuoteViewer = props => {
   const {
-    citationReference,
+    writingQuote,
     // doShowControls,
     isExpanded,
     onExpand,
     onCollapse,
   } = props
 
-  const urls = map(citationReference.urls, u => {
+  const urls = map(writingQuote.urls, u => {
     const id = `url-${u.id}-list-item`
     return (
       <li id={id} key={id} className="url">
@@ -39,31 +39,31 @@ const CitationReferenceViewer = props => {
     )
   })
 
-  const _isQuoteLong = isTextLong(citationReference.quote)
-  const hasQuote = !!citationReference.quote
-  const quote = !_isQuoteLong || isExpanded ?
-    citationReference.quote :
-    truncateCitationReferenceQuote(citationReference.quote, {omission: ''})
+  const _isQuoteTextLong = isTextLong(writingQuote.quoteText)
+  const hasQuote = !!writingQuote.quoteText
+  const quoteText = !_isQuoteTextLong || isExpanded ?
+    writingQuote.quoteText :
+    truncateWritingQuoteText(writingQuote.quoteText, {omission: ''})
 
   return (
-    <div className="citation-reference-viewer">
+    <div className="writing-quote-viewer">
       <div className={cn("quote", {
         hidden: !hasQuote
       })}>
         <div className="quote-text-wrapper">
           <span className="quote-text">
-            {quote}
-            {_isQuoteLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
+            {quoteText}
+            {_isQuoteTextLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
           </span>
         </div>
-        {_isQuoteLong && !isExpanded && (
+        {_isQuoteTextLong && !isExpanded && (
           <Button flat
                   label={t('More')}
                   className="text-expand-toggle"
                   onClick={onExpand}
           />
         )}
-        {_isQuoteLong && isExpanded && (
+        {_isQuoteTextLong && isExpanded && (
           <Button flat
                   label={t('Less')}
                   className="text-expand-toggle"
@@ -71,11 +71,11 @@ const CitationReferenceViewer = props => {
           />
         )}
       </div>
-      <div className="citation-title">{citationReference.citation.text}</div>
-      <ul className="citation-reference-urls">
+      <div className="writing-title">{writingQuote.writing.title}</div>
+      <ul className="writing-quote-urls">
         {urls}
       </ul>
     </div>
   )
 }
-export default CitationReferenceViewer
+export default WritingQuoteViewer

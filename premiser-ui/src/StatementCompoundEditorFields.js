@@ -11,7 +11,7 @@ import {RETURN_KEY_CODE} from "./keyCodes"
 import {toErrorText} from "./modelErrorMessages"
 import ErrorMessages from './ErrorMessages'
 
-import './CitationReferenceEditorFields.scss'
+import './WritingQuoteEditorFields.scss'
 import StatementTextAutocomplete from "./StatementTextAutocomplete"
 
 const atomsName = 'atoms'
@@ -117,7 +117,7 @@ class StatementCompoundEditorFields extends Component {
   }
 }
 StatementCompoundEditorFields.propTypes = {
-  citationReference: PropTypes.object,
+  writingQuote: PropTypes.object,
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */

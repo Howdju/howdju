@@ -22,9 +22,9 @@ const apiErrorCodes = require('howdju-common/lib/codes/apiErrorCodes')
 const {
   logger,
   authService,
-  citationsTextSearcher,
-  citationReferencesService,
-  citationsService,
+  writingsTitleSearcher,
+  writingQuotesService,
+  writingsService,
   justificationsService,
   perspectivesService,
   statementsService,
@@ -102,13 +102,13 @@ const routes = [
         })
   },
   {
-    id: 'searchCitations',
-    path: 'search-citations',
+    id: 'searchWritings',
+    path: 'search-writings',
     method: httpMethods.GET,
     handler: ({callback, request: { queryStringParameters: { searchText }}}) =>
-      citationsTextSearcher.search(searchText)
+      writingsTitleSearcher.search(searchText)
         .then(rankedStatements => {
-          logger.debug(`Returning ${rankedStatements.length} citations from search`)
+          logger.debug(`Returning ${rankedStatements.length} writings from search`)
           return ok({callback, body: rankedStatements})
         })
   },
@@ -262,14 +262,14 @@ const routes = [
         count,
         sortProperty,
         sortDirection,
-        citationReferenceId,
-        citationId,
+        writingQuoteId,
+        writingId,
         statementId,
         statementCompoundId,
       } = request.queryStringParameters
       const filters = {
-        citationReferenceId,
-        citationId,
+        writingQuoteId,
+        writingId,
         statementId,
         statementCompoundId,
       }
@@ -294,11 +294,11 @@ const routes = [
   },
 
   /*
-   * Citation references
+   * Writing quotes
    */
   {
-    id: 'readCitationReferences',
-    path: 'citationReferences',
+    id: 'readWritingQuotes',
+    path: 'writingQuotes',
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
@@ -307,13 +307,13 @@ const routes = [
         sortProperty,
         sortDirection,
       } = request.queryStringParameters
-      return citationReferencesService.readCitationReferences({continuationToken, count, sortProperty, sortDirection})
-        .then(({citationReferences, continuationToken}) => ok({callback, body: {citationReferences, continuationToken}}))
+      return writingQuotesService.readWritingQuotes({continuationToken, count, sortProperty, sortDirection})
+        .then(({writingQuotes, continuationToken}) => ok({callback, body: {writingQuotes, continuationToken}}))
     }
   },
   {
-    id: 'readCitationReference',
-    path: new RegExp('^citation-references/([^/]+)$'),
+    id: 'readWritingQuote',
+    path: new RegExp('^writing-quotes/([^/]+)$'),
     method: httpMethods.GET,
     handler: ({
       callback,
@@ -321,34 +321,34 @@ const routes = [
         pathParameters,
       }
     }) => {
-      const citationReferenceId = pathParameters[0]
-      return citationReferencesService.readCitationReference(citationReferenceId)
-        .then(citationReference => ok({callback, body: {citationReference}}))
+      const writingQuoteId = pathParameters[0]
+      return writingQuotesService.readWritingQuote(writingQuoteId)
+        .then(writingQuote => ok({callback, body: {writingQuote}}))
     }
   },
   {
-    id: 'updateCitationReference',
-    path: new RegExp('^citation-references/([^/]+)$'),
+    id: 'updateWritingQuote',
+    path: new RegExp('^writing-quotes/([^/]+)$'),
     method: httpMethods.PUT,
     handler: ({
       callback,
       request: {
         authToken,
         body: {
-          citationReference
+          writingQuote
         }
       }
-    }) => citationReferencesService.updateCitationReference({authToken, citationReference})
-      .then( citationReference => ok({callback, body: {citationReference}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('citationReference'))
+    }) => writingQuotesService.updateWritingQuote({authToken, writingQuote})
+      .then( writingQuote => ok({callback, body: {writingQuote}}))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('writingQuote'))
   },
 
   /*
-   * Citations
+   * Writings
    */
   {
-    id: 'readCitations',
-    path: 'citations',
+    id: 'readWritings',
+    path: 'writings',
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
@@ -357,8 +357,8 @@ const routes = [
         sortProperty,
         sortDirection,
       } = request.queryStringParameters
-      return citationsService.readCitations({continuationToken, count, sortProperty, sortDirection})
-        .then(({citations, continuationToken}) => ok({callback, body: {citations, continuationToken}}))
+      return writingsService.readWritings({continuationToken, count, sortProperty, sortDirection})
+        .then(({writings, continuationToken}) => ok({callback, body: {writings, continuationToken}}))
     }
   },
 

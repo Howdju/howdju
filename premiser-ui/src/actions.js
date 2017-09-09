@@ -56,19 +56,19 @@ export const api = {
   fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', statementCompoundId => ({statementCompoundId})),
   fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
   fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
-  fetchCitationReference: apiActionCreator('FETCH_TEXTUAL_SOURCE_QUOTE', citationReferenceId => ({citationReferenceId})),
+  fetchWritingQuote: apiActionCreator('FETCH_WRITING_QUOTE', writingQuoteId => ({writingQuoteId})),
 
   fetchRecentStatements: apiActionCreator('FETCH_RECENT_STATEMENTS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
-  fetchRecentCitations: apiActionCreator('FETCH_RECENT_CITATIONS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
-  fetchRecentCitationReferences: apiActionCreator('FETCH_RECENT_TEXTUAL_SOURCE_QUOTES', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
+  fetchRecentWritings: apiActionCreator('FETCH_RECENT_WRITINGS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
+  fetchRecentWritingQuotes: apiActionCreator('FETCH_RECENT_WRITING_QUOTES', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentJustifications: apiActionCreator('FETCH_RECENT_JUSTIFICATIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
 
   fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
 
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
-    ({citationReferenceId, citationId, statementCompoundId, statementId, count, continuationToken}) => ({
-      citationReferenceId,
-      citationId,
+    ({writingQuoteId, writingId, statementCompoundId, statementId, count, continuationToken}) => ({
+      writingQuoteId,
+      writingId,
       statementCompoundId,
       statementId,
       count,
@@ -118,12 +118,12 @@ export const api = {
     statementText,
     suggestionsKey,
   })),
-  fetchCitationTextSuggestions: apiActionCreator('API/FETCH_CITATION_TEXT_SUGGESTIONS', (citationText, suggestionsKey) => ({
-    citationText,
+  fetchWritingTitleSuggestions: apiActionCreator('API/FETCH_WRITING_TITLE_SUGGESTIONS', (writingTitle, suggestionsKey) => ({
+    writingTitle,
     suggestionsKey,
   })),
   createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeJustification(justification)})),
-  updateCitationReference: apiActionCreator('UPDATE_TEXTUAL_SOURCE_QUOTE', citationReference => ({citationReference})),
+  updateWritingQuote: apiActionCreator('UPDATE_WRITING_QUOTE', writingQuote => ({writingQuote})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', justification => ({justification})),
   fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', searchText => ({searchText})),
   fetchMainSearchSuggestions: apiActionCreator('FETCH_MAIN_SEARCH_SUGGESTIONS', (searchText, suggestionsKey) => ({searchText, suggestionsKey})),
@@ -151,8 +151,8 @@ export const ui = {
   clearJustificationsSearch: actionCreator('UI/CLEAR_JUSTIFICATIONS_SEARCH'),
 
   clearRecentStatements: actionCreator('UI/CLEAR_RECENT_STATEMENTS', widgetId => ({widgetId})),
-  clearRecentCitations: actionCreator('UI/CLEAR_RECENT_CITATIONS', widgetId => ({widgetId})),
-  clearRecentCitationReferences: actionCreator('UI/CLEAR_RECENT_TEXTUAL_SOURCE_QUOTES', widgetId => ({widgetId})),
+  clearRecentWritings: actionCreator('UI/CLEAR_RECENT_WRITINGS', widgetId => ({widgetId})),
+  clearRecentWritingQuotes: actionCreator('UI/CLEAR_RECENT_WRITING_QUOTES', widgetId => ({widgetId})),
   clearRecentJustifications: actionCreator('UI/CLEAR_RECENT_JUSTIFICATIONS', widgetId => ({widgetId})),
 
   beginInteractionWithTransient: actionCreator('UI/BEGIN_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),
@@ -226,8 +226,10 @@ export const goto = {
 }
 
 export const flows = {
-  fetchAndBeginEditOfNewJustificationFromBasis: actionCreator('FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS',
-    (editorType, editorId, basisType, basisId) => ({editorType, editorId, basisType, basisId})),
+  fetchAndBeginEditOfNewJustificationFromBasisSource: actionCreator(
+    'FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS_SOURCE',
+    (editorType, editorId, basisSourceType, basisId) => ({editorType, editorId, basisSourceType, basisId})
+  ),
   commitEditThenView: actionCreator('FLOWS/COMMIT_STATEMENT_THEN_VIEW',
     (editorType, editorId) => ({editorType, editorId})),
   commitEditThenPutActionOnSuccess: actionCreator('FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS',

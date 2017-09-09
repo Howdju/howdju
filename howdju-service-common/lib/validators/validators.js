@@ -53,10 +53,10 @@ CredentialValidator.blankErrors = () => ({
 })
 
 class JustificationValidator {
-  constructor(statementValidator, statementCompoundValidator, citationReferenceValidator) {
+  constructor(statementValidator, statementCompoundValidator, writingQuoteValidator) {
     this.statementValidator = statementValidator
     this.statementCompoundValidator = statementCompoundValidator
-    this.citationReferenceValidator = citationReferenceValidator
+    this.writingQuoteValidator = writingQuoteValidator
   }
   validate(justification, ignore={}) {
     const errors = JustificationValidator.blankErrors()
@@ -132,9 +132,18 @@ class JustificationValidator {
         } else {
           if (!justification.basis.entity.id) {
             // Must have valid props
-            const basisEntityErrors = justification.basis.type === JustificationBasisType.TEXTUAL_SOURCE_QUOTE ?
-              this.citationReferenceValidator.validate(justification.basis.entity) :
-              this.statementCompoundValidator.validate(justification.basis.entity)
+            let basisEntityErrors
+            switch (justification.basis.type) {
+              case JustificationBasisType.WRITING_QUOTE:
+                basisEntityErrors = this.writingQuoteValidator.validate(justification.basis.entity)
+                break
+              case JustificationBasisType.STATEMENT_COMPOUND:
+                basisEntityErrors = this.statementCompoundValidator.validate(justification.basis.entity)
+                break;
+              default:
+                throw newImpossibleError(`Unsupported JustificationBasisType: ${justification.basis.type}`)
+            }
+
             if (basisEntityErrors.hasErrors) {
               errors.hasErrors = true
               errors.fieldErrors.basis.fieldErrors.entity = basisEntityErrors
@@ -258,39 +267,39 @@ StatementCompoundValidator.blankErrors = () => ({
   }
 })
 
-class CitationReferenceValidator {
-  constructor(citationValidator, urlValidator) {
-    this.citationValidator = citationValidator
+class WritingQuoteValidator {
+  constructor(writingValidator, urlValidator) {
+    this.writingValidator = writingValidator
     this.urlValidator = urlValidator
   }
 
-  validate(citationReference) {
-    const errors = CitationReferenceValidator.blankErrors()
+  validate(writingQuote) {
+    const errors = WritingQuoteValidator.blankErrors()
 
-    if (!citationReference) {
+    if (!writingQuote) {
       errors.hasErrors = true
       errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
-    const isExtant = isTruthy(citationReference.id)
+    const isExtant = isTruthy(writingQuote.id)
 
-    if (has(citationReference, 'citation')) {
-      errors.fieldErrors.citation = this.citationValidator.validate(citationReference.citation)
-      if (errors.fieldErrors.citation.hasErrors) {
+    if (has(writingQuote, 'writing')) {
+      errors.fieldErrors.writing = this.writingValidator.validate(writingQuote.writing)
+      if (errors.fieldErrors.writing.hasErrors) {
         errors.hasErrors = true
       }
     } else if (!isExtant) {
       errors.hasErrors = true
-      errors.fieldErrors.citation.modelErrors.push(modelErrorCodes.IS_REQUIRED)
+      errors.fieldErrors.source.modelErrors.push(modelErrorCodes.IS_REQUIRED)
     }
 
-    if (has(citationReference, 'urls')) {
-      if (!isArray(citationReference.urls)) {
+    if (has(writingQuote, 'urls')) {
+      if (!isArray(writingQuote.urls)) {
         errors.hasErrors = true
         errors.fieldErrors.urls.modelErrors.push(modelErrorCodes.IF_PRESENT_MUST_BE_ARRAY)
       } else {
-        errors.fieldErrors.urls.itemErrors = map(citationReference.urls, this.urlValidator.validate)
+        errors.fieldErrors.urls.itemErrors = map(writingQuote.urls, this.urlValidator.validate)
         if (some(errors.fieldErrors.urls.itemErrors, i => i.hasErrors)) {
           errors.hasErrors = true
         }
@@ -300,12 +309,12 @@ class CitationReferenceValidator {
     return errors
   }
 }
-CitationReferenceValidator.blankErrors = () => ({
+WritingQuoteValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    quote: [],
-    citation: CitationValidator.blankErrors(),
+    quoteText: [],
+    source: WritingValidator.blankErrors(),
     urls: {
       modelErrors: [],
       itemErrors: [],
@@ -338,32 +347,32 @@ UrlValidator.blankErrors = () => ({
   },
 })
 
-class CitationValidator {
-  validate(citation) {
-    const errors = CitationValidator.blankErrors()
+class WritingValidator {
+  validate(writing) {
+    const errors = WritingValidator.blankErrors()
 
-    if (!citation) {
+    if (!writing) {
       errors.hasErrors = true
       errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
-    if (citation.text === '') {
+    if (writing.title === '') {
       errors.hasErrors = true
-      errors.fieldErrors.text.push(modelErrorCodes.MUST_BE_NONEMPTY)
-    } else if (!citation.text) {
+      errors.fieldErrors.title.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    } else if (!writing.title) {
       errors.hasErrors = true
-      errors.fieldErrors.text.push(modelErrorCodes.IS_REQUIRED)
+      errors.fieldErrors.title.push(modelErrorCodes.IS_REQUIRED)
     }
 
     return errors
   }
 }
-CitationValidator.blankErrors = () => ({
+WritingValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    text: []
+    title: []
   },
 })
 
@@ -436,8 +445,8 @@ VoteValidator.blankErrors = () => ({
 })
 
 module.exports = {
-  CitationValidator,
-  CitationReferenceValidator,
+  WritingValidator,
+  WritingQuoteValidator,
   CredentialValidator,
   JustificationValidator,
   StatementValidator,

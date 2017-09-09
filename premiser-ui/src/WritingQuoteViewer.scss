@@ -1,13 +1,13 @@
 @import './components';
 
-.citation-reference-viewer {
+.writing-quote-viewer {
   @include quote;
 
-  .citation-title {
+  .writing-title {
     font-weight: 400;
   }
 
-  .citation-reference-urls {
+  .writing-quote-urls {
     margin-top: 0.8em;
   }
 

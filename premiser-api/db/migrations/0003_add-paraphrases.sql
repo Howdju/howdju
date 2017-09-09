@@ -24,19 +24,26 @@ create table source_excerpt_paraphrases (
   source_excerpt_paraphrase_id serial,
   paraphrasing_statement_id integer,
   source_excerpt_id integer,
-  source_excerpt_type varchar(64) -- TEXTUAL_SOURCE_QUOTE, IMAGE_SOURCE_REGION, VIDEO_SOURCE_SEGMENT, etc.
+  source_excerpt_type varchar(64) -- WRITING_QUOTE, IMAGE_REGION, VIDEO_SEGMENT, etc.
 );
 
 -- Rename citation references and citations to match the new naming
-alter table citation_references rename to textual_source_quotes;
-alter table textual_source_quotes rename column citation_reference_id to textual_source_quote_id;
-alter table textual_source_quotes rename column citation_id to textual_source_id;
+alter table citation_references rename to writing_quotes;
+alter table writing_quotes rename column citation_reference_id to writing_quote_id;
+alter table writing_quotes rename column citation_id to writing_id;
+alter table writing_quotes rename column quote to quote_text;
 
-alter table citation_reference_urls rename to textual_source_quote_urls;
-alter table citation_reference_urls rename column citation_reference_id to textual_source_quote_id;
+alter table citation_reference_urls rename to writing_quote_urls;
+alter table writing_quote_urls rename column citation_reference_id to writing_quote_id;
 
-alter table citations rename to textual_sources;
-alter table textual_sources rename column citation_id to textual_source_id;
+alter table citations rename to writings;
+alter table writings rename column citation_id to writing_id;
+alter table writings rename column text to title;
+alter table writings rename column normal_text to normal_title;
 
--- Update CITATION_REFERENCE to TEXTUAL_SOURCE_QUOTE
-update justifications set basis_type = 'TEXTUAL_SOURCE_QUOTE' where basis_type = 'CITATION_REFERENCE'
+
+update justifications set basis_type = 'WRITING_QUOTE' where basis_type = 'CITATION_REFERENCE';
+
+alter index statements_idx rename to statement_text_fulltext_idx;
+drop index citations_idx;
+create index writing_title_fulltext_idx ON writings USING GIN (to_tsvector('english', title));

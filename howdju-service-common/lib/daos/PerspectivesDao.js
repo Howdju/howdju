@@ -15,8 +15,8 @@ const {
   toStatement,
   toStatementCompoundAtom,
   toUrl,
-  toCitation,
-  toCitationReference,
+  toWriting,
+  toWritingQuote,
 } = require('./orm')
 
 
@@ -36,7 +36,7 @@ exports.PerspectivesDao = class PerspectivesDao {
   readFeaturedPerspectivesWithVotesForOptionalUserId(userId) {
     const args = [
       JustificationBasisType.STATEMENT_COMPOUND,
-      JustificationBasisType.TEXTUAL_SOURCE_QUOTE
+      JustificationBasisType.WRITING_QUOTE
     ]
     if (userId) {
       args.push(VoteTargetType.JUSTIFICATION)
@@ -61,24 +61,24 @@ exports.PerspectivesDao = class PerspectivesDao {
     const perspectiveJustificationsSql = `
       select 
           p.perspective_id
-        , p.creator_user_id as perspective_creator_user_id
-        , p.statement_id as perspective_statement_id
-        , ps.text as perspective_statement_text
-        , ps.creator_user_id as perspective_statement_creator_user_id
-        , ps.created as perspective_statement_created
+        , p.creator_user_id         as perspective_creator_user_id
+        , p.statement_id            as perspective_statement_id
+        , ps.text                   as perspective_statement_text
+        , ps.creator_user_id        as perspective_statement_creator_user_id
+        , ps.created                as perspective_statement_created
         , j.*
-        , sc.statement_compound_id as basis_statement_compound_id
-        , sca.statement_id as basis_statement_compound_atom_statement_id
-        , sca.order_position as basis_statement_compound_atom_order_position
-        , scas.text as basis_statement_compound_atom_statement_text
-        , scas.created as basis_statement_compound_atom_statement_created
-        , scas.creator_user_id as basis_statement_compound_atom_statement_creator_user_id
-        , cr.citation_reference_id as basis_citation_reference_id
-        , cr.quote as basis_citation_reference_quote
-        , c.citation_id as basis_citation_reference_citation_id
-        , c.text as basis_citation_reference_citation_text
-        , cru.url_id as basis_citation_reference_url_id
-        , u.url as basis_citation_reference_url_url
+        , sc.statement_compound_id  as basis_statement_compound_id
+        , sca.statement_id          as basis_statement_compound_atom_statement_id
+        , sca.order_position        as basis_statement_compound_atom_order_position
+        , scas.text                 as basis_statement_compound_atom_statement_text
+        , scas.created              as basis_statement_compound_atom_statement_created
+        , scas.creator_user_id      as basis_statement_compound_atom_statement_creator_user_id
+        , wq.writing_quote_id       as basis_writing_quote_id
+        , wq.quote_text             as basis_writing_quote_quote_text
+        , w.writing_id              as basis_writing_quote_writing_id
+        , w.title                   as basis_writing_quote_writing_title
+        , cru.url_id                as basis_writing_quote_url_id
+        , u.url                     as basis_writing_quote_url_url
         ${votesSelectSql}
       from perspectives p 
         join statements ps on 
@@ -102,15 +102,15 @@ exports.PerspectivesDao = class PerspectivesDao {
               sca.statement_id = scas.statement_id
           and scas.deleted is null
           
-        left join citation_references cr on
+        left join writing_quotes wq on
               j.basis_type = $2
-          and j.basis_id = cr.citation_reference_id
-          and cr.deleted is null
-        left join citations c on
-              cr.citation_id = c.citation_id
-          and c.deleted is null
-        left join citation_reference_urls cru on
-             cr.citation_reference_id = cru.citation_reference_id
+          and j.basis_id = wq.writing_quote_id
+          and wq.deleted is null
+        left join writings w on
+              wq.writing_id = w.writing_id
+          and w.deleted is null
+        left join writing_quote_urls cru on
+             wq.writing_quote_id = cru.writing_quote_id
          and cru.deleted is null
         left join urls u on
               cru.url_id = u.url_id
@@ -129,9 +129,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       statementCompoundsById,
       statementCompoundAtomsByStatementCompoundId,
       statementsById,
-      citationReferencesById,
-      citationsById,
-      urlsByCitationReferenceId,
+      writingQuotesById,
+      writingsById,
+      urlsByWritingQuoteId,
     } = this._indexRows(rows)
 
     this._connectEverything(
@@ -140,9 +140,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       statementCompoundsById,
       statementCompoundAtomsByStatementCompoundId,
       statementsById,
-      citationReferencesById,
-      citationsById,
-      urlsByCitationReferenceId
+      writingQuotesById,
+      writingsById,
+      urlsByWritingQuoteId
     )
 
     return map(perspectivesById, p => p)
@@ -154,10 +154,10 @@ exports.PerspectivesDao = class PerspectivesDao {
     const statementCompoundsById = {}
     const statementCompoundAtomsByStatementCompoundId = {}
     const statementsById = {}
-    const citationReferencesById = {}
-    const citationsById = {}
+    const writingQuotesById = {}
+    const writingsById = {}
     const urlsById = {}
-    const urlsByCitationReferenceId = {}
+    const urlsByWritingQuoteId = {}
 
     forEach(rows, row => {
 
@@ -214,35 +214,35 @@ exports.PerspectivesDao = class PerspectivesDao {
         }
       }
 
-      if (row.basis_citation_reference_id) {
-        let citationReference = citationReferencesById[row.basis_citation_reference_id]
-        if (!citationReference) {
-          citationReferencesById[row.basis_citation_reference_id] = citationReference = toCitationReference({
-            citation_reference_id: row.basis_citation_reference_id,
-            citation_id: row.basis_citation_reference_citation_id,
-            quote: row.basis_citation_reference_quote
+      if (row.basis_writing_quote_id) {
+        let writingQuote = writingQuotesById[row.basis_writing_quote_id]
+        if (!writingQuote) {
+          writingQuotesById[row.basis_writing_quote_id] = writingQuote = toWritingQuote({
+            writing_quote_id: row.basis_writing_quote_id,
+            writing_id: row.basis_writing_quote_writing_id,
+            quote_text: row.basis_writing_quote_quote_text,
           })
         }
 
-        const citation = citationsById[citationReference.citation.id]
-        if (!citation) {
-          citationsById[row.basis_citation_reference_citation_id] = toCitation({
-            citation_id: row.basis_citation_reference_citation_id,
-            text: row.basis_citation_reference_citation_text
+        const writing = writingsById[writingQuote.writing.id]
+        if (!writing) {
+          writingsById[row.basis_writing_quote_writing_id] = toWriting({
+            writing_id: row.basis_writing_quote_writing_id,
+            title: row.basis_writing_quote_writing_title
           })
         }
 
-        if (row.basis_citation_reference_url_id) {
-          let url = urlsById[row.basis_citation_reference_url_id]
+        if (row.basis_writing_quote_url_id) {
+          let url = urlsById[row.basis_writing_quote_url_id]
           if (!url) {
-            urlsById[row.basis_citation_reference_url_id] = url = toUrl({
-              url_id: row.basis_citation_reference_url_id,
-              url: row.basis_citation_reference_url_url
+            urlsById[row.basis_writing_quote_url_id] = url = toUrl({
+              url_id: row.basis_writing_quote_url_id,
+              url: row.basis_writing_quote_url_url
             })
           }
-          let urls = urlsByCitationReferenceId[citationReference.id]
+          let urls = urlsByWritingQuoteId[writingQuote.id]
           if (!urls) {
-            urlsByCitationReferenceId[citationReference.id] = urls = []
+            urlsByWritingQuoteId[writingQuote.id] = urls = []
           }
           urls.push(url)
         }
@@ -255,9 +255,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       statementCompoundsById,
       statementCompoundAtomsByStatementCompoundId,
       statementsById,
-      citationReferencesById,
-      citationsById,
-      urlsByCitationReferenceId,
+      writingQuotesById,
+      writingsById,
+      urlsByWritingQuoteId,
     }
   }
 
@@ -267,9 +267,9 @@ exports.PerspectivesDao = class PerspectivesDao {
     statementCompoundsById,
     statementCompoundAtomsByStatementCompoundId,
     statementsById,
-    citationReferencesById,
-    citationsById,
-    urlsByCitationReferenceId
+    writingQuotesById,
+    writingsById,
+    urlsByWritingQuoteId
   ) {
     forEach(perspectivesById, p => {
       p.statement = statementsById[p.statement.id]
@@ -304,8 +304,8 @@ exports.PerspectivesDao = class PerspectivesDao {
           j.basis.entity = statementCompoundsById[j.basis.entity.id]
         }
           break
-        case JustificationBasisType.TEXTUAL_SOURCE_QUOTE: {
-          j.basis.entity = citationReferencesById[j.basis.entity.id]
+        case JustificationBasisType.WRITING_QUOTE: {
+          j.basis.entity = writingQuotesById[j.basis.entity.id]
         }
           break
         default:
@@ -323,9 +323,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       })
     )
 
-    forEach(citationReferencesById, cr => {
-      cr.citation = citationsById[cr.citation.id]
-      cr.urls = urlsByCitationReferenceId[cr.id]
+    forEach(writingQuotesById, wq => {
+      wq.writing = writingsById[wq.writing.id]
+      wq.urls = urlsByWritingQuoteId[wq.id]
     })
   }
 }

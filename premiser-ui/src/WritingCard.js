@@ -10,25 +10,25 @@ import cn from 'classnames'
 import paths from './paths'
 import config from './config'
 
-export default class CitationCard extends Component {
+export default class WritingCard extends Component {
 
   render () {
     const {
-      citation,
+      writing,
       className,
       ...rest,
     } = this.props
-    const age = citation.created ? moment(citation.created).fromNow() : ''
-    const created = citation.created ? moment(citation.created).format(config.humanDateTimeFormat) : ''
+    const age = writing.created ? moment(writing.created).fromNow() : ''
+    const created = writing.created ? moment(writing.created).format(config.humanDateTimeFormat) : ''
     return (
       <Card {...rest}
-            className={cn(className, "citation-card")}
+            className={cn(className, "writing-card")}
       >
         <CardTitle
           avatar={<FontIcon role="presentation">book</FontIcon>}
           title={
-            <Link to={paths.citationUsages(citation)}>
-              {citation.text}
+            <Link to={paths.writingUsages(writing)}>
+              {writing.title}
             </Link>
           }
           subtitle={
@@ -41,6 +41,6 @@ export default class CitationCard extends Component {
     )
   }
 }
-CitationCard.propTypes = {
-  citation: PropTypes.object.isRequired,
+WritingCard.propTypes = {
+  writing: PropTypes.object.isRequired,
 }

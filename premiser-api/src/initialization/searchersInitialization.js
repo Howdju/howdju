@@ -3,8 +3,8 @@ const {
 } = require('./databaseInitialization')
 const {
   makeStatementTextSearcher,
-  makeCitationTextSearcher,
+  makeWritingTitleSearcher,
 } = require('howdju-service-common')
 
 exports.statementsTextSearcher = makeStatementTextSearcher(database)
-exports.citationsTextSearcher = makeCitationTextSearcher(database)
+exports.writingsTitleSearcher = makeWritingTitleSearcher(database)

@@ -30,7 +30,7 @@ const {
   toJustification,
   toStatementCompound,
   toStatementCompoundAtom,
-  toCitationReference,
+  toWritingQuote,
 } = require('./orm')
 const {EntityNotFoundError} = require('../serviceErrors')
 const {groupRootJustifications} = require('./util')
@@ -40,7 +40,7 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
   const justificationRowsById = {}
   // Keep track of whether we've seen the row before since there may be duplicates after joining with statement compound atoms
   const justificationIds = {}
-  const citationReferencesRowsById = {}
+  const writingQuotesRowsById = {}
   const statementCompoundRowsById = {}
   const statementCompoundAtomsByStatementCompoundId = {}
   forEach(rows, row => {
@@ -63,16 +63,16 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
       }
     }
 
-    if (row[prefix + 'basis_citation_reference_id']) {
-      citationReferencesRowsById[row[prefix + 'basis_citation_reference_id']] = toCitationReference({
-        citation_reference_id: row[prefix + 'basis_citation_reference_id'],
-        quote: row[prefix + 'basis_citation_reference_quote'],
-        created: row[prefix + 'basis_citation_reference_created'],
-        creator_user_id: row[prefix + 'basis_citation_reference_creator_user_id'],
-        citation_id: row[prefix + 'basis_citation_reference_citation_id'],
-        citation_text: row[prefix + 'basis_citation_reference_citation_text'],
-        citation_created: row[prefix + 'basis_citation_reference_citation_created'],
-        citation_creator_user_id: row[prefix + 'basis_citation_reference_creator_user_id'],
+    if (row[prefix + 'basis_writing_quote_id']) {
+      writingQuotesRowsById[row[prefix + 'basis_writing_quote_id']] = toWritingQuote({
+        writing_quote_id: row[prefix + 'basis_writing_quote_id'],
+        quote_text: row[prefix + 'basis_writing_quote_quote_text'],
+        created: row[prefix + 'basis_writing_quote_created'],
+        creator_user_id: row[prefix + 'basis_writing_quote_creator_user_id'],
+        writing_id: row[prefix + 'basis_writing_quote_writing_id'],
+        writing_text: row[prefix + 'basis_writing_quote_writing_text'],
+        writing_created: row[prefix + 'basis_writing_quote_writing_created'],
+        writing_creator_user_id: row[prefix + 'basis_writing_quote_creator_user_id'],
       })
     }
 
@@ -107,7 +107,7 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
     toStatementCompound(row, statementCompoundAtomsByStatementCompoundId[id])
   )
 
-  return mapValues(justificationRowsById, row => toJustification(row, null, statementCompoundsById, citationReferencesRowsById))
+  return mapValues(justificationRowsById, row => toJustification(row, null, statementCompoundsById, writingQuotesRowsById))
 }
 
 const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isContinuation = false) => {
@@ -120,8 +120,8 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
 
   const whereSqls = [
     'j.deleted is null',
-    'cr.deleted is null',
-    'c.deleted is null',
+    'wq.deleted is null',
+    'w.deleted is null',
     'sc.deleted is null',
   ]
   const continuationWhereSqls = []
@@ -155,7 +155,7 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
     }
   })
   forEach(filters, (filterValue, filterName) => {
-    // Note, some filters are incompatible, such as statementId or statementCompoundId and citationRefererenceId.
+    // Note, some filters are incompatible, such as statementId or statementCompoundId and writingQuoteId.
     // statementId and statementCompoundId may be incompatible if the statementId doesn't appear in any compound having
     // the statementCompoundId
     if (!filterValue) return
@@ -168,14 +168,14 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
         whereSqls.push(`sc.statement_compound_id = $${args.length}`)
         break
       }
-      case 'citationReferenceId': {
+      case 'writingQuoteId': {
         args.push(filterValue)
-        whereSqls.push(`cr.citation_reference_id = $${args.length}`)
+        whereSqls.push(`wq.writing_quote_id = $${args.length}`)
         break
       }
-      case 'citationId': {
+      case 'writingId': {
         args.push(filterValue)
-        whereSqls.push(`c.citation_id = $${args.length}`)
+        whereSqls.push(`w.writing_id = $${args.length}`)
         break
       }
       default:
@@ -214,25 +214,25 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
   const limitedJustificationsSql = `
       select distinct
           j.*
-        , s.text as                    root_statement_text
-        , s.created as                 root_statement_created
-        , s.creator_user_id as         root_statement_creator_id
-        , cr.citation_reference_id as  basis_citation_reference_id
-        , cr.quote as                  basis_citation_reference_quote
-        , cr.created as                basis_citation_reference_created
-        , cr.creator_user_id as        basis_citation_reference_creator_user_id
-        , c.citation_id as             basis_citation_reference_citation_id
-        , c.text as                    basis_citation_reference_citation_text
-        , c.created as                 basis_citation_reference_citation_created
-        , c.creator_user_id as         basis_citation_reference_citation_creator_user_id
-        , sc.statement_compound_id as  basis_statement_compound_id
+        , s.text                   as root_statement_text
+        , s.created                as root_statement_created
+        , s.creator_user_id        as root_statement_creator_id
+        , wq.writing_quote_id      as basis_writing_quote_id
+        , wq.quote_text            as basis_writing_quote_quote_text
+        , wq.created               as basis_writing_quote_created
+        , wq.creator_user_id       as basis_writing_quote_creator_user_id
+        , w.writing_id             as basis_writing_quote_writing_id
+        , w.title                  as basis_writing_quote_writing_title
+        , w.created                as basis_writing_quote_writing_created
+        , w.creator_user_id        as basis_writing_quote_writing_creator_user_id
+        , sc.statement_compound_id as basis_statement_compound_id
       from justifications j
           ${join(additionalJoinClauses, '\n')}
           join statements s on j.root_statement_id = s.statement_id
-          left join citation_references cr on 
-                j.basis_id = cr.citation_reference_id 
+          left join writing_quotes wq on 
+                j.basis_id = wq.writing_quote_id 
             and j.basis_type = $1
-          left join citations c on cr.citation_id = c.citation_id
+          left join writings w on wq.writing_id = w.writing_id
           left join statement_compounds sc on 
                 j.basis_id = sc.statement_compound_id 
             and j.basis_type = $2
@@ -283,11 +283,11 @@ const getTargetRootPolarity = (logger, database, justification) =>
 
 exports.JustificationsDao = class JustificationsDao {
 
-  constructor(logger, database, statementCompoundsDao, citationReferencesDao) {
+  constructor(logger, database, statementCompoundsDao, writingQuotesDao) {
     this.logger = logger
     this.database = database
     this.statementCompoundsDao = statementCompoundsDao
-    this.citationReferencesDao = citationReferencesDao
+    this.writingQuotesDao = writingQuotesDao
   }
 
   readJustifications(sorts, count, filters, isContinuation = false) {
@@ -297,7 +297,7 @@ exports.JustificationsDao = class JustificationsDao {
       additionalWithClauses: justificationsAdditionalWithClauses,
       orderBySql: justificationsOrderBySql,
     } = makeReadJustificationsQuery(sorts, count, filters, [
-      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
+      JustificationBasisType.WRITING_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
     ], isContinuation)
     const justificationsAdditionalWithClausesSql = justificationsAdditionalWithClauses.length > 0 ?
@@ -329,7 +329,7 @@ exports.JustificationsDao = class JustificationsDao {
       additionalWithClauses: targetJustificationsAdditionalWithClauses,
       orderBySql: targetJustificationsOrderBySql,
     } = makeReadJustificationsQuery(sorts, count, filters, [
-      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
+      JustificationBasisType.WRITING_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
       JustificationTargetType.JUSTIFICATION,
     ], isContinuation)
@@ -346,40 +346,40 @@ exports.JustificationsDao = class JustificationsDao {
          -- We don't use this, but just for completeness
           j.justification_id
                  
-        , tj.justification_id as      target_justification_id
-        , tj.root_statement_id as     tj_root_statement_id
-        , tj.root_polarity as         tj_root_polarity
-        , tj.target_type as           tj_target_type
-        , tj.target_id as             tj_target_id
-        , tj.basis_type as            tj_basis_type
-        , tj.basis_id as              tj_basis_id
-        , tj.polarity as              tj_polarity
-        , tj.creator_user_id as       tj_creator_user_id
-        , tj.created as               tj_created
+        , tj.justification_id       as target_justification_id
+        , tj.root_statement_id      as tj_root_statement_id
+        , tj.root_polarity          as tj_root_polarity
+        , tj.target_type            as tj_target_type
+        , tj.target_id              as tj_target_id
+        , tj.basis_type             as tj_basis_type
+        , tj.basis_id               as tj_basis_id
+        , tj.polarity               as tj_polarity
+        , tj.creator_user_id        as tj_creator_user_id
+        , tj.created                as tj_created
         
-        , cr.citation_reference_id as tj_basis_citation_reference_id
-        , cr.quote as                 tj_basis_citation_reference_quote
-        , cr.created as               tj_basis_citation_reference_created
-        , cr.creator_user_id as       tj_basis_citation_reference_creator_user_id
-        , c.citation_id as            tj_basis_citation_reference_citation_id
-        , c.text as                   tj_basis_citation_reference_citation_text
-        , c.created as                tj_basis_citation_reference_citation_created
-        , c.creator_user_id as        tj_basis_citation_reference_citation_creator_user_id
+        , wq.writing_quote_id       as tj_basis_writing_quote_id
+        , wq.quote_text             as tj_basis_writing_quote_quote_text
+        , wq.created                as tj_basis_writing_quote_created
+        , wq.creator_user_id        as tj_basis_writing_quote_creator_user_id
+        , w.writing_id              as tj_basis_writing_quote_writing_id
+        , w.title                   as tj_basis_writing_quote_writing_title
+        , w.created                 as tj_basis_writing_quote_writing_created
+        , w.creator_user_id         as tj_basis_writing_quote_writing_creator_user_id
         
-        , sc.statement_compound_id as tj_basis_statement_compound_id
-        , sca.order_position as       tj_basis_statement_compound_atom_order_position
-        , scas.statement_id as        tj_basis_statement_compound_atom_statement_id
-        , scas.text as                tj_basis_statement_compound_atom_statement_text
-        , scas.created as             tj_basis_statement_compound_atom_statement_created
-        , scas.creator_user_id as     tj_basis_statement_compound_atom_statement_creator_user_id
+        , sc.statement_compound_id  as tj_basis_statement_compound_id
+        , sca.order_position        as tj_basis_statement_compound_atom_order_position
+        , scas.statement_id         as tj_basis_statement_compound_atom_statement_id
+        , scas.text                 as tj_basis_statement_compound_atom_statement_text
+        , scas.created              as tj_basis_statement_compound_atom_statement_created
+        , scas.creator_user_id      as tj_basis_statement_compound_atom_statement_creator_user_id
       from limited_justifications j
           join justifications tj on 
                 j.target_id = tj.justification_id 
             and j.target_type = $3
-          left join citation_references cr on 
-                tj.basis_id = cr.citation_reference_id 
+          left join writing_quotes wq on 
+                tj.basis_id = wq.writing_quote_id 
             and tj.basis_type = $1
-          left join citations c on cr.citation_id = c.citation_id
+          left join writings w on wq.writing_id = w.writing_id
           left join statement_compounds sc on tj.basis_id = sc.statement_compound_id and tj.basis_type = $2
           left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
           left join statements scas on sca.statement_id = scas.statement_id
@@ -418,9 +418,9 @@ exports.JustificationsDao = class JustificationsDao {
         left join statement_compounds sc on 
               j.basis_type = $5 
           and j.basis_id = sc.statement_compound_id 
-        left join citation_references cr on 
+        left join writing_quotes wq on 
               j.basis_type = $4 
-          and j.basis_id = cr.citation_reference_id
+          and j.basis_id = wq.writing_quote_id
         left join user_auth_tokens auth on auth.auth_token = $2
         left join votes v on 
               v.target_type = $3
@@ -432,19 +432,19 @@ exports.JustificationsDao = class JustificationsDao {
           and j.root_statement_id = $1
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, authToken, VoteTargetType.JUSTIFICATION, JustificationBasisType.TEXTUAL_SOURCE_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
+      this.database.query(sql, [rootStatementId, authToken, VoteTargetType.JUSTIFICATION, JustificationBasisType.WRITING_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
       this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
-      this.citationReferencesDao.readCitationReferencesByIdForRootStatementId(rootStatementId),
+      this.writingQuotesDao.readWritingQuotesByIdForRootStatementId(rootStatementId),
     ])
       .then( ([
         {rows: justification_rows},
         statementCompoundsById,
-        citationReferencesById
+        writingQuotesById
       ]) => {
         const {rootJustifications, counterJustificationsByJustificationId} =
           groupRootJustifications(rootStatementId, justification_rows)
         return map(rootJustifications, j =>
-          toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, citationReferencesById))
+          toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writingQuotesById))
       })
   }
 

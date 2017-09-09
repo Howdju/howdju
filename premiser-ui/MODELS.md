@@ -3,12 +3,12 @@ Statement
   - text
 Paraphrase
   - Paraphrasing Statement
-  - SourceExcerpt (TextualSourceQuote, ImageRegion, VideoSegment, etc.)
+  - SourceExcerpt (WritQuote, ImajRegion, VidSegment, etc.)
     - excerpt, fragment, piece, portion, selection, pericope (an 'around-cutting'), lection (a version of a passage in 
       a particular copy or edition of a text; a variant reading.)
 Justification
   - target (Statement, Justification (counter-justification))
-  - basis (JustificationBasisCompound<JustificationBasisAtom>, intermediate: StatementCompound, TextualSourceQuote)
+  - basis (JustificationBasisCompound<JustificationBasisAtom>, intermediate: StatementCompound, WritingQuote)
 JustificationBasisAtom
   - type: Statement|Paraphrase
     - The creator of a statement-based atom can add a paraphrase later?  But then they can't remove it?
@@ -29,7 +29,7 @@ VideoSegment
 
 ## Source/SourceExcerpt Attributes:
 
-### TextualSources
+### Writs
 Document
   - Title
   - publisher (organization)
@@ -40,12 +40,12 @@ Document
   - Identifiers (ISBN, ISSN, DOI, PMID)
   - URLs
 DocumentQuote
-  - Citation
+  - Document
   - quote
   - Speaker (if different from citation authors; the person being quoted; the actual source)
   - root citation? (the ultimate source of the quote, e.g. when someone quotes an article on their blog)
   
-Book (Document)
+Book (Writing)
   - title
   - author(s)
   - editor(s)
@@ -54,7 +54,7 @@ Book (Document)
   - publication date
   - edition
   - ISBN
-Article (Document)
+Article (Writing)
   - title
   - author(s)
   - publisher

@@ -131,19 +131,20 @@ class ApiAutocomplete extends Component {
     const {
       value,
       transformedSuggestions,
+      // ignore
+      autocompletes,
+      autocompleteThrottle,
+      dispatch,
+      escapeClears,
+      fetchSuggestions,
+      suggestions,
+      suggestionsKey,
+      suggestionTransform,
+      onPropertyChange,
+      forcedClosed,
+      suggestionSchema,
       ...rest
     } = this.props
-    delete rest.autocompletes
-    delete rest.autocompleteThrottle
-    delete rest.dispatch
-    delete rest.escapeClears
-    delete rest.fetchSuggestions
-    delete rest.suggestions
-    delete rest.suggestionsKey
-    delete rest.suggestionTransform
-    delete rest.onPropertyChange
-    delete rest.forcedClosed
-    delete rest.suggestionSchema
 
     return (
       <Autocomplete {...rest}

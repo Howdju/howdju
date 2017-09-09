@@ -11,42 +11,42 @@ import cn from 'classnames'
 
 import config from './config'
 import {
-  truncateCitationReferenceQuote,
+  truncateWritingQuoteText,
   isTextLong
 } from "./viewModels"
 import paths from './paths'
 import {default as t} from './texts'
 import * as characters from './characters'
 
-import './CitationReferenceCard.scss'
+import './WritingQuoteCard.scss'
 
-export default class CitationReferenceCard extends Component {
+export default class WritingQuoteCard extends Component {
 
   render () {
     const {
-      citationReference,
+      writingQuote,
       className,
       isExpanded,
       onExpand,
       onCollapse,
       ...rest,
     } = this.props
-    const citation = citationReference.citation
-    const age = citationReference.created ? moment(citationReference.created).fromNow() : ''
-    const created = citationReference.created ? moment(citationReference.created).format(config.humanDateTimeFormat) : ''
-    const _isQuoteLong = isTextLong(citationReference.quote)
-    const quote = !_isQuoteLong || isExpanded ?
-      citationReference.quote :
-      truncateCitationReferenceQuote(citationReference.quote, {omission: ''})
+    const writing = writingQuote.writing
+    const age = writingQuote.created ? moment(writingQuote.created).fromNow() : ''
+    const created = writingQuote.created ? moment(writingQuote.created).format(config.humanDateTimeFormat) : ''
+    const _isQuoteTextLong = isTextLong(writingQuote.quoteText)
+    const quoteText = !_isQuoteTextLong || isExpanded ?
+      writingQuote.quoteText :
+      truncateWritingQuoteText(writingQuote.quoteText, {omission: ''})
     return (
       <Card {...rest}
-            className={cn(className, "citation-reference-card")}
+            className={cn(className, "writing-quote-card")}
       >
         <CardTitle
           avatar={<FontIcon role="presentation">book</FontIcon>}
           title={
-            <Link to={paths.citationReferenceUsages(citation)}>
-              {citation.text}
+            <Link to={paths.writingQuoteUsages(writing)}>
+              {writing.title}
             </Link>
           }
           subtitle={
@@ -59,18 +59,18 @@ export default class CitationReferenceCard extends Component {
           <div className="quote">
             <div className="quote-text-wrapper">
               <span className="quote-text">
-                {quote}
-                {_isQuoteLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
+                {quoteText}
+                {_isQuoteTextLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
               </span>
             </div>
-            {_isQuoteLong && !isExpanded && (
+            {_isQuoteTextLong && !isExpanded && (
               <Button flat
                       label={t('More')}
                       className="text-expand-toggle"
                       onClick={onExpand}
               />
             )}
-            {_isQuoteLong && isExpanded && (
+            {_isQuoteTextLong && isExpanded && (
               <Button flat
                       label={t('Less')}
                       className="text-expand-toggle"
@@ -83,6 +83,6 @@ export default class CitationReferenceCard extends Component {
     )
   }
 }
-CitationReferenceCard.propTypes = {
-  citationReference: PropTypes.object.isRequired,
+WritingQuoteCard.propTypes = {
+  writingQuote: PropTypes.object.isRequired,
 }

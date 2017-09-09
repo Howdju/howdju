@@ -1,13 +1,13 @@
 import React  from 'react'
 
 import RecentStatementsWidget from "./RecentStatementsWidget"
-import RecentCitationsWidget from "./RecentCitationsWidget"
-import RecentCitationReferencesWidget from './RecentCitationReferencesWidget'
+import RecentWritingsWidget from "./RecentWritingsWidget"
+import RecentWritingQuotesWidget from './RecentWritingQuotesWidget'
 import RecentJustificationsWidget from './RecentJustificationsWidget'
 
 const recentStatementsWidgetId = 'RecentActivityPage.recentStatementsWidgetId'
-const recentCitationsWidgetId = 'RecentActivityPage.recentCitationsWidgetId'
-const recentCitationReferencesWidgetId = 'RecentActivityPage.recentCitationReferencesWidgetId'
+const recentWritingsWidgetId = 'RecentActivityPage.recentWritingsWidgetId'
+const recentWritingQuotesWidgetId = 'RecentActivityPage.recentWritingQuotesWidgetId'
 const recentJustificationsWidgetId = 'RecentActivityPage.recentJustificationsWidgetId'
 
 const RecentActivityPage = props => (
@@ -19,15 +19,15 @@ const RecentActivityPage = props => (
     />
 
     <h1 className="md-cell--12">Recent quotes</h1>
-    <RecentCitationReferencesWidget id="recent-activity-page-citation-references"
+    <RecentWritingQuotesWidget id="recent-activity-page-writing-quotes"
                                     className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
-                                    widgetId={recentCitationReferencesWidgetId}
+                                    widgetId={recentWritingQuotesWidgetId}
     />
 
-    <h1 className="md-cell--12">Recent citations</h1>
-    <RecentCitationsWidget id="recent-activity-page-citations"
+    <h1 className="md-cell--12">Recent writings</h1>
+    <RecentWritingsWidget id="recent-activity-page-writings"
                            className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
-                           widgetId={recentCitationsWidgetId}
+                           widgetId={recentWritingsWidgetId}
     />
 
 

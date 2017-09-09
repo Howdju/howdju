@@ -125,19 +125,19 @@ export default handleActions({
     api.fetchStatement.response,
     api.fetchStatements.response,
     api.fetchRecentStatements.response,
-    api.fetchRecentCitations.response,
-    api.fetchRecentCitationReferences.response,
+    api.fetchRecentWritings.response,
+    api.fetchRecentWritingQuotes.response,
     api.fetchStatementJustifications.response,
     api.fetchFeaturedPerspectives.response,
     api.fetchJustificationsSearch.response,
     api.fetchRecentJustifications.response,
-    api.fetchCitationReference.response,
+    api.fetchWritingQuote.response,
     api.createStatement.response,
     api.updateStatement.response,
-    api.updateCitationReference.response,
+    api.updateWritingQuote.response,
     api.fetchMainSearchSuggestions.response,
     api.fetchStatementTextSuggestions.response,
-    api.fetchCitationTextSuggestions.response,
+    api.fetchWritingTitleSuggestions.response,
   )]: {
     next: (state, action) => {
       const updates = map([
@@ -146,8 +146,8 @@ export default handleActions({
         ['statementCompounds'],
         ['justifications', justificationsCustomizer()],
         ['votes'],
-        ['citationReferences', stubSkippingCustomizer('quote')],
-        ['citations', stubSkippingCustomizer('text')],
+        ['writingQuotes', stubSkippingCustomizer('text')],
+        ['writings', stubSkippingCustomizer('title')],
       ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
@@ -311,8 +311,8 @@ export default handleActions({
 }, {
   statements: {},
   statementCompounds: {},
-  citations: {},
-  citationReferences: {},
+  writings: {},
+  writingQuotes: {},
   votes: {},
   justifications: {},
   justificationsByRootStatementId: {},

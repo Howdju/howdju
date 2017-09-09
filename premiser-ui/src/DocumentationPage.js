@@ -35,9 +35,9 @@ const DocumentationPage = props => (
           of the justification depends upon whether the basis is aptly chosen for the target.
         </p>
 
-        <h4>Citation basis</h4>
+        <h4>Quote basis</h4>
         <p>
-          A citation is some reference to an external source of information.  In our day-to-day lives when we refer to
+          A quote is an excerpt from a text-based source of information.  In our day-to-day lives when we refer to
           books, news articles, expert opinion, research, etc. we are citing these sources of information to support
           some conclusion.  The strength of the support depends on how reliable we think the cited source is.  If we have
           a good reason to believe that the cited source is accurate.  See below for details on the nature of good sources.

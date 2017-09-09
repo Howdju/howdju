@@ -90,7 +90,7 @@ class NewJustificationEditor extends Component {
         <NewJustificationEditorFields {...rest}
                                       newJustification={editEntity}
                                       basisStatementTextId={id + ".newJustificationBasisStatement"}
-                                      basisCitationReferenceQuoteId={id + ".newJustificationBasisCitationReferenceQuote"}
+                                      basisWritingQuoteTextId={id + ".newJustificationBasisWritingQuoteText"}
                                       onPropertyChange={this.onPropertyChange}
                                       onAddUrl={this.onAddUrl}
                                       onRemoveUrl={this.onRemoveUrl}

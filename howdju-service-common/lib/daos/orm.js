@@ -42,7 +42,7 @@ const toJustification = (
   row,
   counterJustificationsByJustificationId,
   statementCompoundsById,
-  citationReferencesById
+  writingQuotesById
 ) => {
   if (!row) {
     return row
@@ -83,18 +83,18 @@ const toJustification = (
   }
 
   switch (row.basis_type) {
-    case JustificationBasisType.TEXTUAL_SOURCE_QUOTE: {
-      const basisId = row.basis_id || row.basis_citation_reference_id
+    case JustificationBasisType.WRITING_QUOTE: {
+      const basisId = row.basis_id || row.basis_writing_quote_id
       if (basisId) {
-        if (citationReferencesById) {
-          justification.basis.entity = citationReferencesById[basisId]
+        if (writingQuotesById) {
+          justification.basis.entity = writingQuotesById[basisId]
         }
-        if (!justification.basis.entity && row.basis_citation_reference_id) {
-          justification.basis.entity = toCitationReference({
-            citation_reference_id: row.basis_citation_reference_id,
-            quote: row.basis_citation_reference_quote,
-            citation_id: row.basis_citation_reference_citation_id,
-            citation_text: row.basis_citation_reference_citation_text,
+        if (!justification.basis.entity && row.basis_writing_quote_id) {
+          justification.basis.entity = toWritingQuote({
+            writing_quote_id: row.basis_writing_quote_id,
+            quote_text: row.basis_writing_quote_quote_text,
+            writing_id: row.basis_writing_quote_writing_id,
+            writing_title: row.basis_writing_quote_writing_title,
           })
         }
       }
@@ -130,31 +130,31 @@ const toJustification = (
     const counterJustifications = counterJustificationsByJustificationId[justification.id]
     if (counterJustifications) {
       justification.counterJustifications = map(counterJustifications, j =>
-        toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, citationReferencesById))
+        toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writingQuotesById))
     }
   }
 
   return justification
 }
 
-const toCitationReference = row => row && {
-  id: toString(row.citation_reference_id),
-  quote: row.quote,
+const toWritingQuote = row => row && {
+  id: toString(row.writing_quote_id),
+  quote_text: row.quote_text,
   created: row.created,
-  citation: toCitation({
-    citation_id: row.citation_id,
-    text: row.citation_text,
-    created: row.citation_created,
+  writing: toWriting({
+    writing_id: row.writing_id,
+    title: row.writing_title,
+    created: row.writing_created,
   })
 }
 
-const toCitation = row => {
-  const citation = row && ({
-    id: toString(row.citation_id),
-    text: row.text,
+const toWriting = row => {
+  const writing = row && ({
+    id: toString(row.writing_id),
+    title: row.title,
     created: row.created,
   })
-  return citation
+  return writing
 }
 const toUrl = row => row && ({
   id: toString(row.url_id),
@@ -170,8 +170,8 @@ const toVote = row => row && ({
   deleted: row.deleted,
 })
 
-const toCitationReferenceUrl = row => row && ({
-  citationReferenceId: toString(row.citation_reference_id),
+const toWritingQuoteUrl = row => row && ({
+  writingQuoteId: toString(row.writing_quote_id),
   urlId: toString(row.url_id),
 })
 
@@ -239,11 +239,11 @@ module.exports = {
   toUser,
   toStatement,
   toJustification,
-  toCitationReference,
-  toCitation,
+  toWritingQuote,
+  toWriting,
   toUrl,
   toVote,
-  toCitationReferenceUrl,
+  toWritingQuoteUrl,
   toStatementCompound,
   toStatementCompoundAtom,
   toPerspective,

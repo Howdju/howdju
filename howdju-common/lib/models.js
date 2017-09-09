@@ -8,6 +8,7 @@ const {
   VotePolarity,
   JustificationBasisType,
   JustificationTargetType,
+  JustificationBasisAtomType,
 } = require('./enums')
 
 
@@ -23,9 +24,9 @@ _e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION &&
 _e.isRootJustification = (j) =>
   j.target.type === JustificationTargetType.STATEMENT &&
   j.target.entity.id === j.rootStatement.id
-_e.hasQuote = (j) => _e.isTextualSourceQuoteBased(j) && j.basis.entity.quote
+_e.hasQuote = (j) => _e.isWritingQuoteBased(j) && j.basis.entity.quoteText
 _e.isStatementCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
-_e.isTextualSourceQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.TEXTUAL_SOURCE_QUOTE : false
+_e.isWritingQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRITING_QUOTE : false
 
 _e.negateVotePolarity = (polarity) => {
   switch (polarity) {
@@ -67,18 +68,28 @@ _e.makeNewJustification = (props) => merge({
     // Store both these types directly on the basis for the view-model
     // Before the justification is sent to the server, the one corresponding to the current type should be put on the
     // entity property
-    citationReference: _e.makeNewCitationReference(),
-    statementCompound: _e.makeNewStatementCompound()
+    writingQuote: _e.makeNewWritingQuote(),
+    statementCompound: _e.makeNewStatementCompound(),
+    justificationBasisCompound: _e.makeNewJustificationBasisCompound(),
   }
 }, props)
 
-_e.makeNewCitation = () => ({
-  text: '',
+_e.makeNewWriting = () => ({
+  title: '',
 })
 
-_e.makeNewCitationReference = () => ({
-  citation: _e.makeNewCitation(),
-  quote: '',
+_e.makeNewJustificationBasisCompound = () => ({
+  atoms: [_e.makeNewJustificationBasisAtom()]
+})
+
+_e.makeNewJustificationBasisAtom = () => ({
+  type: JustificationBasisAtomType.STATEMENT,
+  entity: _e.makeNewStatement()
+})
+
+_e.makeNewWritingQuote = () => ({
+  writing: _e.makeNewWriting(),
+  quoteText: '',
   urls: [_e.makeNewUrl()],
 })
 

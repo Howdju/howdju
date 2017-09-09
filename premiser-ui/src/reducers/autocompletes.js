@@ -5,7 +5,7 @@ export default handleActions({
 
   [combineActions(
     api.fetchStatementTextSuggestions.response,
-    api.fetchCitationTextSuggestions.response,
+    api.fetchWritingTitleSuggestions.response,
     api.fetchMainSearchSuggestions.response,
   )]: {
     next: (state, action) => ({

@@ -252,20 +252,20 @@ const migrateCitationUrls = () => log('migrating citation URLs')
               ['local_citation', 'citation_references', row.citation_id]
           ),
         ])
-        .then( ([{rows: [urlMigrationRow]}, {rows: [citationReferenceMigrationRow]}]) => {
+        .then( ([{rows: [urlMigrationRow]}, {rows: [writingQuoteMigrationRow]}]) => {
           if (!urlMigrationRow) {
             throw new Error(`No URL migrated having old ID ${row.url_id}`)
           }
-          if (!citationReferenceMigrationRow) {
+          if (!writingQuoteMigrationRow) {
             throw new Error(`No citation reference migrated from old citation having ID ${row.citation_id}`)
           }
           const urlId = urlMigrationRow.new_id,
-              citationReferenceId = citationReferenceMigrationRow.new_id
+              writingQuoteId = writingQuoteMigrationRow.new_id
 
-          return query('insert into citation_reference_urls (citation_reference_id, url_id) values ($1, $2)', [citationReferenceId, urlId])
+          return query('insert into citation_reference_urls (citation_reference_id, url_id) values ($1, $2)', [writingQuoteId, urlId])
               .then(() => query(
                   'insert into migration_translations (old_table_name, new_table_name, old_id, new_id) values ($1, $2, $3, $4)',
-                  ['local_citation_urls', 'citation_reference_urls', row.id, citationReferenceId + '-' + urlId]
+                  ['local_citation_urls', 'citation_reference_urls', row.id, writingQuoteId + '-' + urlId]
               ))
         })
     )))
@@ -413,7 +413,7 @@ const migrateCompoundJustificationBasis = row => {
 
 const migrateJustifications = ({rows}) => Promise.all(map(rows, row => Promise.all([
       migrateJustificationBasis(row),
-      row.citation_id ? JustificationBasisType.TEXTUAL_SOURCE_QUOTE : JustificationBasisType.STATEMENT_COMPOUND,
+      row.citation_id ? JustificationBasisType.CITATION_REFERENCE : JustificationBasisType.STATEMENT_COMPOUND,
       getJustificationTargetId(row),
       row.statement_id ? JustificationTargetType.STATEMENT : JustificationTargetType.JUSTIFICATION,
       getNewUserId(row.creator_id),

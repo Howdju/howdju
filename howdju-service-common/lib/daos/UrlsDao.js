@@ -11,16 +11,16 @@ const {
 const head = require('lodash/head')
 
 
-const groupUrlsByCitationReferenceId = rows => {
-  const urlsByCitationReferenceId = {}
+const groupUrlsByWritingQuoteId = rows => {
+  const urlsByWritingQuoteId = {}
   forEach(rows, row => {
-    let urls = urlsByCitationReferenceId[row.citation_reference_id]
+    let urls = urlsByWritingQuoteId[row.writing_quote_id]
     if (!urls) {
-      urlsByCitationReferenceId[row.citation_reference_id] = urls = []
+      urlsByWritingQuoteId[row.writing_quote_id] = urls = []
     }
     urls.push(toUrl(row))
   })
-  return urlsByCitationReferenceId
+  return urlsByWritingQuoteId
 }
 
 exports.UrlsDao = class UrlsDao {
@@ -40,26 +40,26 @@ exports.UrlsDao = class UrlsDao {
       })
   }
 
-  readUrlsByCitationReferenceIdForRootStatementId(rootStatementId) {
+  readUrlsByWritingQuoteIdForRootStatementId(rootStatementId) {
     const sql = `
       select 
-          cr.citation_reference_id
+          cr.writing_quote_id
         , u.url_id
         , u.url
       from justifications j 
-        join citation_references cr on
+        join writing_quotes cr on
               j.root_statement_id = $1
           and j.deleted is null 
           and j.basis_type = $2 
-          and j.basis_id = cr.citation_reference_id
-        join citation_reference_urls cru on
-              cr.citation_reference_id = cru.citation_reference_id
+          and j.basis_id = cr.writing_quote_id
+        join writing_quote_urls cru on
+              cr.writing_quote_id = cru.writing_quote_id
           and cru.deleted is null
         join urls u USING (url_id)
         order by j.justification_id
     `
-    return this.database.query(sql, [rootStatementId, JustificationBasisType.TEXTUAL_SOURCE_QUOTE])
-      .then( ({rows}) => groupUrlsByCitationReferenceId(rows))
+    return this.database.query(sql, [rootStatementId, JustificationBasisType.WRITING_QUOTE])
+      .then( ({rows}) => groupUrlsByWritingQuoteId(rows))
   }
 
   createUrls(urls, userId, now) {

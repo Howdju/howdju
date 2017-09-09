@@ -37,7 +37,7 @@ import {
 } from "./actions"
 import {justificationsSchema, statementSchema} from "./schemas"
 import paths from './paths'
-import text, {
+import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
   CANCEL_BUTTON_LABEL,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
@@ -225,7 +225,7 @@ class StatementJustificationsPage extends Component {
     // So just handle them separately so that we don't need to give them a key
     const addNewJustificationDialogCancelButton = (
       <Button flat
-              label={text(CANCEL_BUTTON_LABEL)}
+              label={t(CANCEL_BUTTON_LABEL)}
               onClick={this.cancelNewJustificationDialog}
               disabled={isSavingNewJustification}
       />
@@ -234,7 +234,7 @@ class StatementJustificationsPage extends Component {
       <Button raised
               primary
               type="submit"
-              label={text(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+              label={t(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
               onClick={this.saveNewJustification}
               disabled={isSavingNewJustification}
       />
@@ -326,7 +326,7 @@ class StatementJustificationsPage extends Component {
                  key="justification-statements-page-no-justifications-add-justification-button"
             >
               <Button flat
-                      label={text(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      label={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                       onClick={this.showNewJustificationDialog}
               />
             </div>

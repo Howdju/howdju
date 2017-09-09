@@ -20,7 +20,7 @@ import {
   flows,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
-import text, {
+import t, {
   default as t,
   ADD_JUSTIFICATION_TO_CREATE_STATEMENT,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
@@ -44,12 +44,12 @@ import {EditorTypes} from "./reducers/editors"
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
   CREATE_STATEMENT: 'CREATE_STATEMENT',
-  /** Blank statement editor, pre-populated justification information (e.g. citation reference from bookmarklet)
+  /** Blank statement editor, pre-populated justification information (e.g. writing quote from bookmarklet)
    *
-   * Hide the citation switch.
+   * Hide the writing switch.
    */
   CREATE_JUSTIFICATION: 'CREATE_JUSTIFICATION',
-  /** Submit citation reference based justification via query params */
+  /** Submit writing quote-based justification via query params */
   SUBMIT_JUSTIFICATION: 'SUBMIT_JUSTIFICATION',
 }
 
@@ -107,22 +107,22 @@ class EditStatementJustificationPage extends Component {
         // First clear out the editor
         this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification())
         // Then fetch the stuff for editing
-        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasis(this.editorType, this.editorId, basisType, basisId)
+        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(this.editorType, this.editorId, basisType, basisId)
         break
       }
       case EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION: {
         const {
           url,
-          description,
-          quote,
+          title,
+          quoteText,
         } = this.props.queryParams
         this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification({}, {
           basis: {
-            type: JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
-            citationReference: {
-              quote,
-              citation: {
-                text: description
+            type: JustificationBasisType.WRITING_QUOTE,
+            writingQuote: {
+              quoteText,
+              writing: {
+                title
               },
               urls: [{url}]
             }
@@ -184,9 +184,9 @@ class EditStatementJustificationPage extends Component {
 
     // const isEditing = !!editEntity
 
-    const title = text(titleTextKeyByMode[mode])
-    const submitButtonLabel = text(submitButtonLabelTextKeyByMode[mode])
-    const submitButtonTitle = text(submitButtonTitleTextKeyByMode[mode])
+    const title = t(titleTextKeyByMode[mode])
+    const submitButtonLabel = t(submitButtonLabelTextKeyByMode[mode])
+    const submitButtonTitle = t(submitButtonTitleTextKeyByMode[mode])
 
     const isCreateJustificationMode = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
 
@@ -225,7 +225,7 @@ class EditStatementJustificationPage extends Component {
                   {!isCreateJustificationMode && (
                     <Switch id="doCreateJustificationSwitch"
                             name="doCreateJustification"
-                            label={text(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
+                            label={t(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
                             checked={doCreateJustification}
                             onChange={this.onDoCreateJustificationSwitchChange}
                             disabled={isSaving}
@@ -240,7 +240,7 @@ class EditStatementJustificationPage extends Component {
                     <NewJustificationEditorFields newJustification={justification}
                                                   id="newJustificationEditor"
                                                   basisStatementTextId="newJustificationBasisStatement"
-                                                  basisCitationReferenceQuoteId="newJustificationBasisCitationReferenceQuote"
+                                                  basisWritingQuoteTextId="newJustificationBasisWritingQuoteText"
                                                   name="justification"
                                                   suggestionsKey={suggestionKeys.createStatementPageJustification}
                                                   disabled={isSaving}

@@ -50,13 +50,13 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  textualSourceQuoteSchema,
+  writingQuoteSchema,
   statementsSchema,
   statementCompoundSchema,
   perspectivesSchema,
-  textualSourcesSchema,
+  writingsSchema,
   justificationsSchema,
-  textualSourceQuotesSchema,
+  writingQuotesSchema,
 } from '../schemas'
 import paths from "../paths"
 import mainSearcher from '../mainSearcher'
@@ -130,24 +130,24 @@ export const resourceApiConfigs = {
       schema: {statements: statementsSchema},
     }
   },
-  [api.fetchRecentCitations]: payload => {
+  [api.fetchRecentWritings]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'citations?' + queryStringParamsString,
-      schema: {citations: textualSourcesSchema},
+      endpoint: 'writings?' + queryStringParamsString,
+      schema: {writings: writingsSchema},
     }
   },
-  [api.fetchRecentCitationReferences]: payload => {
+  [api.fetchRecentWritingQuotes]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'citationReferences?' + queryStringParamsString,
-      schema: {citationReferences: textualSourceQuotesSchema},
+      endpoint: 'writing-quotes?' + queryStringParamsString,
+      schema: {writingQuotes: writingQuotesSchema},
     }
   },
   [api.fetchRecentJustifications]: payload => {
@@ -179,17 +179,17 @@ export const resourceApiConfigs = {
     endpoint: `statement-compounds/${payload.statementCompoundId}`,
     schema: {statementCompound: statementCompoundSchema},
   }),
-  [api.fetchCitationReference]: payload => ({
-    endpoint: `citation-references/${payload.citationReferenceId}`,
-    schema: {citationReference: textualSourceQuoteSchema},
+  [api.fetchWritingQuote]: payload => ({
+    endpoint: `writing-quotes/${payload.writingQuoteId}`,
+    schema: {writingQuote: writingQuoteSchema},
   }),
-  [api.updateCitationReference]: payload => ({
-    endpoint: `citation-references/${payload.citationReference.id}`,
+  [api.updateWritingQuote]: payload => ({
+    endpoint: `writing-quotes/${payload.writingQuote.id}`,
     fetchInit: {
       method: httpMethods.PUT,
       body: payload
     },
-    schema: {citationReference: textualSourceQuoteSchema},
+    schema: {writingQuote: writingQuoteSchema},
   }),
   [api.createStatement]: payload => ({
     endpoint: 'statements',
@@ -299,10 +299,10 @@ export const resourceApiConfigs = {
     cancelKey: str(api.fetchStatementTextSuggestions) + '.' + payload.suggestionsKey,
     schema: statementsSchema,
   }),
-  [api.fetchCitationTextSuggestions]: payload => ({
-    endpoint: `search-citations?searchText=${payload.citationText}`,
-    cancelKey: str(api.fetchCitationTextSuggestions) + '.' + payload.suggestionsKey,
-    schema: textualSourcesSchema,
+  [api.fetchWritingTitleSuggestions]: payload => ({
+    endpoint: `search-writings?searchText=${payload.writingTitle}`,
+    cancelKey: str(api.fetchWritingTitleSuggestions) + '.' + payload.suggestionsKey,
+    schema: writingsSchema,
   }),
   [api.fetchMainSearchSuggestions]: payload => ({
     endpoint: `search-statements?searchText=${payload.searchText}`,
@@ -587,8 +587,8 @@ function* editorCommitEdit() {
         }
       }
     },
-    [EditorTypes.TEXTUAL_SOURCE_QUOTE]: {
-      [UPDATE]: api.updateCitationReference
+    [EditorTypes.WRITING_QUOTE]: {
+      [UPDATE]: api.updateWritingQuote
     },
     [EditorTypes.LOGIN_CREDENTIALS]: {
       [CREATE]: api.login,
@@ -719,12 +719,12 @@ function* commitEditThenPutActionOnSuccess() {
   })
 }
 
-function* fetchAndBeginEditOfNewJustificationFromBasis() {
+function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
 
   const fetchActionCreatorForBasisType = basisType => {
     const actionCreatorByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
-      [JustificationBasisType.TEXTUAL_SOURCE_QUOTE]: api.fetchCitationReference,
+      [JustificationBasisType.WRITING_QUOTE]: api.fetchWritingQuote,
       [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
     }
     const actionCreator = actionCreatorByBasisType[basisType]
@@ -745,7 +745,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
 
     const basisGetterByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: result => result.statementCompound,
-      [JustificationBasisType.TEXTUAL_SOURCE_QUOTE]: result => result.citationReference,
+      [JustificationBasisType.WRITING_QUOTE]: result => result.writingQuote,
       [JustificationBasisSourceType.STATEMENT]: result => result.statement,
     }
 
@@ -758,31 +758,39 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
     return basis
   }
 
-  yield takeEvery(str(flows.fetchAndBeginEditOfNewJustificationFromBasis), function* fetchAndBeginEditOfNewJustificationFromBasisWorker(action) {
+  yield takeEvery(str(flows.fetchAndBeginEditOfNewJustificationFromBasisSource), function* fetchAndBeginEditOfNewJustificationFromBasisSourceWorker(action) {
     const {
       editorId,
       editorType,
-      basisType,
+      basisSourceType,
       basisId,
     } = action.payload
-    const actionCreator = fetchActionCreatorForBasisType(basisType)
+    const actionCreator = fetchActionCreatorForBasisType(basisSourceType)
     const fetchResponseAction = yield call(callApiForResource, actionCreator(basisId))
     if (!fetchResponseAction.error) {
-      const basis = extractBasisFromFetchResponseAction(basisType, fetchResponseAction)
+      const basis = extractBasisFromFetchResponseAction(basisSourceType, fetchResponseAction)
+
+      let basisType = basisSourceType
 
       let statementCompound = undefined
-      if (basisType === JustificationBasisType.STATEMENT_COMPOUND) {
+      if (basisSourceType === JustificationBasisType.STATEMENT_COMPOUND) {
         statementCompound = basis
         removeStatementCompoundId(statementCompound)
-      } else if (basisType === JustificationBasisSourceType.STATEMENT) {
+      } else if (basisSourceType === JustificationBasisSourceType.STATEMENT) {
+        basisType = JustificationBasisType.STATEMENT_COMPOUND
         statementCompound = makeNewStatementCompoundForStatement(basis)
       }
-      const citationReference = basisType === JustificationBasisType.TEXTUAL_SOURCE_QUOTE ? basis : undefined
+
+      let writingQuote = undefined
+      if (basisType === JustificationBasisType.WRITING_QUOTE) {
+        writingQuote = basis
+      }
+
       const editModel = makeNewStatementJustification({}, {
         basis: {
-          type: basisType !== JustificationBasisSourceType.STATEMENT ? basisType : JustificationBasisType.STATEMENT_COMPOUND,
-          statementCompound: statementCompound,
-          citationReference: citationReference,
+          type: basisType,
+          statementCompound,
+          writingQuote,
         }
       })
       yield put(editors.beginEdit(editorType, editorId, editModel))
@@ -911,7 +919,7 @@ export default () => [
   editorCommitEdit(),
   commitEditorThenView(),
   commitEditThenPutActionOnSuccess(),
-  fetchAndBeginEditOfNewJustificationFromBasis(),
+  fetchAndBeginEditOfNewJustificationFromBasisSource(),
 
   showAlertForUnexpectedApiError(),
   showAlertForExtantEntities(),

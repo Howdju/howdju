@@ -27,14 +27,14 @@ export const consolidateBasis = newJustification => {
     case JustificationBasisType.STATEMENT_COMPOUND:
       justification.basis.entity = justification.basis.statementCompound
       break
-    case JustificationBasisType.TEXTUAL_SOURCE_QUOTE:
-      justification.basis.entity = justification.basis.textualSourceQuote
+    case JustificationBasisType.WRITING_QUOTE:
+      justification.basis.entity = justification.basis.writingQuote
       break
     default:
       throw newImpossibleError(`${justification.basis.type} exhausted justification basis types`)
   }
   delete justification.basis.statementCompound
-  delete justification.basis.textualSourceQuote
+  delete justification.basis.writingQuote
 
   return justification
 }
@@ -42,7 +42,7 @@ export const consolidateBasis = newJustification => {
 export const justificationBasisTypeToNewJustificationBasisMemberName = justificationBasisType => {
   const newJustificationBasisMemberNames = {
     [JustificationBasisType.STATEMENT_COMPOUND]: 'statementCompound',
-    [JustificationBasisType.TEXTUAL_SOURCE_QUOTE]: 'textualSourceQuote'
+    [JustificationBasisType.WRITING_QUOTE]: 'writingQuote'
   }
   const newJustificationBasisMemberName = newJustificationBasisMemberNames[justificationBasisType]
   if (!newJustificationBasisMemberName) {
@@ -58,5 +58,5 @@ const truncateOptions = {
   separator: /[,.]*\s+/,
 }
 export const isTextLong = (text) => text ? text.length > config.ui.shortTextLength : false
-export const truncateCitationReferenceQuote = (quote, options) => truncate(quote, assign({}, truncateOptions, options))
+export const truncateWritingQuoteText = (quoteText, options) => truncate(quoteText, assign({}, truncateOptions, options))
 export const truncateStatementText = (text, options) => truncate(text, assign({}, truncateOptions, options))

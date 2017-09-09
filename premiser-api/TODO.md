@@ -15,15 +15,15 @@
   * enforce constraints, 
     * like unique IDs, 
     * unique statement text, 
-    * citation reference quote, 
-    * citation text
-    * citation reference must have citation_id
+    * writing quote text, 
+    * writing title
+    * writing quote must have writing_id
     * statement_compound must have atoms
     * statement_compound atoms must match something
   * Delete URLS when nothing references them?
   * Delete statement compounds all of whose statements are deleted
   * Delete old scores
-  * Sources having internal inconsistencies (citations ultimately both support and oppose the same statement)
+  * Sources having internal inconsistencies (writings ultimately both support and oppose the same statement)
 * Short IDs
 * [Build using Vagrant?](https://stackoverflow.com/a/30440198/39396)
 

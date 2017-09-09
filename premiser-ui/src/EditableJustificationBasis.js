@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import EditableStatementCompound from "./EditableStatementCompound"
-import EditableCitationReference from "./EditableCitationReference"
+import EditableWritingQuote from "./EditableWritingQuote"
 import {isStatementCompoundBased} from "howdju-common"
 
 class EditableJustificationBasis extends Component {
@@ -30,7 +30,7 @@ class EditableJustificationBasis extends Component {
                                  isCondensed={isCondensed}
                                  isUnCondensed={isUnCondensed}
       /> :
-      <EditableCitationReference {...rest}
+      <EditableWritingQuote {...rest}
                                  id={id}
                                  entityId={justification.basis.entity.id}
                                  editorId={editorId}

@@ -5,19 +5,19 @@ import CircularProgress from "react-md/lib/Progress/CircularProgress"
 import get from 'lodash/get'
 
 import {EditorTypes} from "./reducers/editors"
-import CitationReferenceViewer from "./CitationReferenceViewer"
-import CitationReferenceEditor from "./CitationReferenceEditor"
+import WritingQuoteViewer from "./WritingQuoteViewer"
+import WritingQuoteEditor from "./WritingQuoteEditor"
 import {denormalize} from "normalizr"
-import {textualSourceQuoteSchema} from "./schemas"
+import {writingQuoteSchema} from "./schemas"
 import ExpandableChildContainer from './ExpandableChildContainer'
 
-class EditableCitationReference extends Component {
+class EditableWritingQuote extends Component {
 
   render() {
     const {
       id,
       editorId,
-      citationReference,
+      writingQuote,
       suggestionsKey,
       isFetching,
       isEditing,
@@ -25,17 +25,17 @@ class EditableCitationReference extends Component {
     } = this.props
 
     const editor =
-      <CitationReferenceEditor {...rest}
+      <WritingQuoteEditor {...rest}
                                id={id}
                                editorId={editorId}
                                suggestionsKey={suggestionsKey}
       />
     const viewer = (
       <ExpandableChildContainer {...rest}
-                                ExpandableChildComponent={CitationReferenceViewer}
+                                ExpandableChildComponent={WritingQuoteViewer}
                                 widgetId={id}
                                 key={id}
-                                citationReference={citationReference}
+                                writingQuote={writingQuote}
       />
     )
     const progress =
@@ -46,7 +46,7 @@ class EditableCitationReference extends Component {
       isFetching ? progress : viewer
   }
 }
-EditableCitationReference.propTypes = {
+EditableWritingQuote.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Let's the component fetch its statement from the API and retrieve it from the state */
@@ -61,13 +61,13 @@ EditableCitationReference.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const citationReference = denormalize(state.entities.citationReferences[ownProps.entityId], textualSourceQuoteSchema, state.entities)
-  const editEntity = get(state.editors, [EditorTypes.TEXTUAL_SOURCE_QUOTE, ownProps.editorId, 'editEntity'])
+  const writingQuote = denormalize(state.entities.writingQuotes[ownProps.entityId], writingQuoteSchema, state.entities)
+  const editEntity = get(state.editors, [EditorTypes.WRITING_QUOTE, ownProps.editorId, 'editEntity'])
   const isEditing = !!editEntity
   return {
-    citationReference,
+    writingQuote,
     isEditing,
   }
 }
 
-export default connect(mapStateToProps)(EditableCitationReference)
+export default connect(mapStateToProps)(EditableWritingQuote)

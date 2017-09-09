@@ -5,7 +5,7 @@ const forEach = require('lodash/forEach')
 const concat = require('lodash/concat')
 
 const {
-  toCitation,
+  toWriting,
 } = require('./orm')
 
 const {
@@ -19,14 +19,14 @@ const {cleanWhitespace, normalizeText} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 
 
-exports.CitationsDao = class CitationsDao {
+exports.WritingsDao = class WritingsDao {
 
   constructor(logger, database) {
     this.logger = logger
     this.database = database
   }
 
-  readCitations(sorts, count) {
+  readWritings(sorts, count) {
     const args = []
     let countSql = ''
     if (isFinite(count)) {
@@ -37,7 +37,7 @@ exports.CitationsDao = class CitationsDao {
     const whereSqls = ['deleted is null']
     const orderBySqls = []
     forEach(sorts, sort => {
-      const columnName = sort.property === 'id' ? 'citation_id' : snakeCase(sort.property)
+      const columnName = sort.property === 'id' ? 'writing_id' : snakeCase(sort.property)
       const direction = sort.direction === SortDirection.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
@@ -49,15 +49,15 @@ exports.CitationsDao = class CitationsDao {
 
     const sql = `
       select * 
-      from citations where ${whereSql}
+      from writings where ${whereSql}
       ${orderBySql}
       ${countSql}
       `
     return this.database.query(sql, args)
-      .then(({rows}) => map(rows, toCitation))
+      .then(({rows}) => map(rows, toWriting))
   }
 
-  readMoreCitations(sortContinuations, count) {
+  readMoreWritings(sortContinuations, count) {
     const args = []
     let countSql = ''
     if (isFinite(count)) {
@@ -76,7 +76,7 @@ exports.CitationsDao = class CitationsDao {
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = sortContinuation.p === 'id' ? 'citation_id' : snakeCase(sortContinuation.p)
+      const columnName = sortContinuation.p === 'id' ? 'writing_id' : snakeCase(sortContinuation.p)
       let operator = direction === 'asc' ? '>' : '<'
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
@@ -92,7 +92,7 @@ exports.CitationsDao = class CitationsDao {
 
     const sql = `
       select * 
-      from citations where 
+      from writings where 
         ${whereSql}
         and (
           ${continuationWhereSql}
@@ -101,53 +101,53 @@ exports.CitationsDao = class CitationsDao {
       ${countSql}
       `
     return this.database.query(sql, args)
-      .then( ({rows}) => map(rows, toCitation) )
+      .then( ({rows}) => map(rows, toWriting) )
   }
 
-  readCitationEquivalentTo(citation) {
-    return this.database.query('select * from citations where normal_text = $1 and deleted is null', [normalizeText(citation.text)])
+  readWritingEquivalentTo(writing) {
+    return this.database.query('select * from writings where normal_title = $1 and deleted is null', [normalizeText(writing.title)])
       .then( ({rows}) => {
         if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent citations found`, citation)
+          this.logger.error(`${rows.length} equivalent writings found`, writing)
         }
-        return toCitation(head(rows))
+        return toWriting(head(rows))
       })
   }
-  createCitation(citation, userId, now) {
-    const sql = 'insert into citations (text, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *'
-    return this.database.query(sql, [cleanWhitespace(citation.text), normalizeText(citation.text), userId, now])
-      .then( ({rows: [row]}) => toCitation(row) )
+  createWriting(writing, userId, now) {
+    const sql = 'insert into writings (title, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *'
+    return this.database.query(sql, [cleanWhitespace(writing.title), normalizeText(writing.title), userId, now])
+      .then( ({rows: [row]}) => toWriting(row) )
   }
-  hasEquivalentCitations(citation) {
+  hasEquivalentWritings(writing) {
     const sql = `
       select count(*) > 0 as has_conflict
-      from citations where citation_id != $1 and normal_text = $2 and deleted is null
+      from writings where writing_id != $1 and normal_text = $2 and deleted is null
       `
-    return this.database.query(sql, [citation.id, normalizeText(citation.text)])
+    return this.database.query(sql, [writing.id, normalizeText(writing.title)])
       .then( ({rows: [{has_conflict}]}) => has_conflict )
   }
 
-  hasCitationChanged(citation) {
+  hasWritingChanged(writing) {
     const sql = `
       select count(*) < 1 as has_changed
-      from citations where citation_id = $1 and text = $2
+      from writings where writing_id = $1 and title = $2
       `
-    return this.database.query(sql, [citation.id, cleanWhitespace(citation.text)])
+    return this.database.query(sql, [writing.id, cleanWhitespace(writing.title)])
       .then( ({rows: [{has_changed}]}) => has_changed )
   }
 
-  isCitationOfBasisToJustificationsHavingOtherUsersVotes(userId, citation) {
+  isWritingOfBasisToJustificationsHavingOtherUsersVotes(userId, writing) {
     const sql = `
       with
-        citation_citation_references as (
+        writing_writing_quotes as (
           select *
-          from citation_references where citation_id = $1 and deleted is null
+          from writing_quotes where writing_id = $1 and deleted is null
         )
         , basis_justifications as (
           select *
-          from justifications j join citation_citation_references cr on 
+          from justifications j join writing_writing_quotes wq on 
                 j.basis_type = $2
-            and j.basis_id = cr.citation_reference_id
+            and j.basis_id = wq.writing_quote_id
             and j.deleted is null
         )
         , basis_justification_votes as (
@@ -161,46 +161,46 @@ exports.CitationsDao = class CitationsDao {
       select count(*) > 0 as has_votes from basis_justification_votes
     `
     return this.database.query(sql, [
-      citation.id,
-      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
+      writing.id,
+      JustificationBasisType.WRITING_QUOTE,
       userId,
       VoteTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
   }
 
-  isCitationOfBasisToOtherUsersJustifications(userId, citation) {
+  isWritingOfBasisToOtherUsersJustifications(userId, writing) {
     const sql = `
       with 
-        citation_citation_references as (
+        writing_writing_quotes as (
           select *
-          from citation_references where citation_id = $1 and deleted is null
+          from writing_quotes where writing_id = $1 and deleted is null
         )
       select count(*) > 0 as has_other_users_justifications 
-      from justifications j join citation_citation_references cr on
-            j.basis_id = cr.citation_reference_id
+      from justifications j join writing_writing_quotes wq on
+            j.basis_id = wq.writing_quote_id
         and j.basis_type = $2 
         and j.creator_user_id != $3
         and j.deleted is null
     `
     return this.database.query(sql, [
-      citation.id,
-      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
+      writing.id,
+      JustificationBasisType.WRITING_QUOTE,
       userId,
     ]).then( ({rows: [{has_other_users_justifications: isBasisToOtherUsersJustifications}]}) => isBasisToOtherUsersJustifications)
   }
 
-  isCitationOfBasisToJustificationsHavingOtherUsersCounters(userId, citation) {
+  isWritingOfBasisToJustificationsHavingOtherUsersCounters(userId, writing) {
     const sql = `
       with
-        citation_citation_references as (
+        writing_writing_quotes as (
           select *
-          from citation_references where citation_id = $1 and deleted is null
+          from writing_quotes where writing_id = $1 and deleted is null
         )
         , basis_justifications as (
           select *
-          from justifications j join citation_citation_references cr on
+          from justifications j join writing_writing_quotes wq on
                 basis_type = $2 
-            and j.basis_id = cr.citation_reference_id and j.deleted is null
+            and j.basis_id = wq.writing_quote_id and j.deleted is null
         )
         , counters as (
           select * from justifications cj join basis_justifications j on 
@@ -212,18 +212,18 @@ exports.CitationsDao = class CitationsDao {
       select count(*) > 0 as has_other_user_counters from counters
     `
     return this.database.query(sql, [
-      citation.id,
-      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
+      writing.id,
+      JustificationBasisType.WRITING_QUOTE,
       userId,
       JustificationTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_other_user_counters: isBasisToJustificationsHavingOtherUsersCounters}]}) => isBasisToJustificationsHavingOtherUsersCounters)
   }
 
-  update(citation) {
+  update(writing) {
     return this.database.query(
-      'update citations set text = $1, normal_text = $2 where citation_id = $3 returning *',
-      [cleanWhitespace(citation.text), normalizeText(citation.text), citation.id]
+      'update writings set text = $1, normal_title = $2 where writing_id = $3 returning *',
+      [cleanWhitespace(writing.title), normalizeText(writing.title), writing.id]
     )
-      .then( ({rows: [citationRow]}) => toCitation(citationRow) )
+      .then( ({rows: [writingRow]}) => toWriting(writingRow) )
   }
 }
