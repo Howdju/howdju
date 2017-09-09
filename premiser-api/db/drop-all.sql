@@ -1,5 +1,5 @@
 drop table if exists actions;
-drop table if exists writings;
+drop table if exists writs;
 drop table if exists group_permissions;
 drop table if exists groups;
 drop table if exists justification_scores;

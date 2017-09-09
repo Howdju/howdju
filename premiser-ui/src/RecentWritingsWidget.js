@@ -1,24 +1,24 @@
 import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
-import WritingCard from './WritingCard'
+import WritCard from './WritCard'
 import {default as t} from './texts'
 import {
   api,
   ui,
 } from './actions'
 import {
-  writingsSchema
+  writsSchema
 } from "./schemas"
 
-export default class RecentWritingsWidget extends Component {
+export default class RecentWritsWidget extends Component {
 
-  writingToCard = writing => {
+  writToCard = writ => {
     const id = this.props.id
-    const cardId = `${id}-writing-${writing.id}`
+    const cardId = `${id}-writ-${writ.id}`
     return (
-      <WritingCard key={cardId}
-                    writing={writing}
+      <WritCard key={cardId}
+                    writ={writ}
                     className={ListEntitiesWidget.smallCellClasses}
       />
     )
@@ -35,13 +35,13 @@ export default class RecentWritingsWidget extends Component {
       <ListEntitiesWidget {...rest}
                           id={id}
                           widgetId={widgetId}
-                          entitiesWidgetStateKey="recentWritings"
-                          clearEntities={ui.clearRecentWritings}
-                          fetchEntities={api.fetchRecentWritings}
-                          entityToCard={this.writingToCard}
-                          entitiesSchema={writingsSchema}
-                          emptyEntitiesMessage={t("No recent writings")}
-                          loadErrorMessage={t("There was an error fetching the recent writings.")}
+                          entitiesWidgetStateKey="recentWrits"
+                          clearEntities={ui.clearRecentWrits}
+                          fetchEntities={api.fetchRecentWrits}
+                          entityToCard={this.writToCard}
+                          entitiesSchema={writsSchema}
+                          emptyEntitiesMessage={t("No recent writs")}
+                          loadErrorMessage={t("There was an error fetching the recent writs.")}
       />
     )
   }

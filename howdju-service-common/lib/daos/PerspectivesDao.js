@@ -15,8 +15,8 @@ const {
   toStatement,
   toStatementCompoundAtom,
   toUrl,
-  toWriting,
-  toWritingQuote,
+  toWrit,
+  toWritQuote,
 } = require('./orm')
 
 
@@ -36,7 +36,7 @@ exports.PerspectivesDao = class PerspectivesDao {
   readFeaturedPerspectivesWithVotesForOptionalUserId(userId) {
     const args = [
       JustificationBasisType.STATEMENT_COMPOUND,
-      JustificationBasisType.WRITING_QUOTE
+      JustificationBasisType.WRIT_QUOTE
     ]
     if (userId) {
       args.push(VoteTargetType.JUSTIFICATION)
@@ -73,12 +73,12 @@ exports.PerspectivesDao = class PerspectivesDao {
         , scas.text                 as basis_statement_compound_atom_statement_text
         , scas.created              as basis_statement_compound_atom_statement_created
         , scas.creator_user_id      as basis_statement_compound_atom_statement_creator_user_id
-        , wq.writing_quote_id       as basis_writing_quote_id
-        , wq.quote_text             as basis_writing_quote_quote_text
-        , w.writing_id              as basis_writing_quote_writing_id
-        , w.title                   as basis_writing_quote_writing_title
-        , cru.url_id                as basis_writing_quote_url_id
-        , u.url                     as basis_writing_quote_url_url
+        , wq.writ_quote_id       as basis_writ_quote_id
+        , wq.quote_text             as basis_writ_quote_quote_text
+        , w.writ_id              as basis_writ_quote_writ_id
+        , w.title                   as basis_writ_quote_writ_title
+        , cru.url_id                as basis_writ_quote_url_id
+        , u.url                     as basis_writ_quote_url_url
         ${votesSelectSql}
       from perspectives p 
         join statements ps on 
@@ -102,15 +102,15 @@ exports.PerspectivesDao = class PerspectivesDao {
               sca.statement_id = scas.statement_id
           and scas.deleted is null
           
-        left join writing_quotes wq on
+        left join writ_quotes wq on
               j.basis_type = $2
-          and j.basis_id = wq.writing_quote_id
+          and j.basis_id = wq.writ_quote_id
           and wq.deleted is null
-        left join writings w on
-              wq.writing_id = w.writing_id
+        left join writs w on
+              wq.writ_id = w.writ_id
           and w.deleted is null
-        left join writing_quote_urls cru on
-             wq.writing_quote_id = cru.writing_quote_id
+        left join writ_quote_urls cru on
+             wq.writ_quote_id = cru.writ_quote_id
          and cru.deleted is null
         left join urls u on
               cru.url_id = u.url_id
@@ -129,9 +129,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       statementCompoundsById,
       statementCompoundAtomsByStatementCompoundId,
       statementsById,
-      writingQuotesById,
-      writingsById,
-      urlsByWritingQuoteId,
+      writQuotesById,
+      writsById,
+      urlsByWritQuoteId,
     } = this._indexRows(rows)
 
     this._connectEverything(
@@ -140,9 +140,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       statementCompoundsById,
       statementCompoundAtomsByStatementCompoundId,
       statementsById,
-      writingQuotesById,
-      writingsById,
-      urlsByWritingQuoteId
+      writQuotesById,
+      writsById,
+      urlsByWritQuoteId
     )
 
     return map(perspectivesById, p => p)
@@ -154,10 +154,10 @@ exports.PerspectivesDao = class PerspectivesDao {
     const statementCompoundsById = {}
     const statementCompoundAtomsByStatementCompoundId = {}
     const statementsById = {}
-    const writingQuotesById = {}
-    const writingsById = {}
+    const writQuotesById = {}
+    const writsById = {}
     const urlsById = {}
-    const urlsByWritingQuoteId = {}
+    const urlsByWritQuoteId = {}
 
     forEach(rows, row => {
 
@@ -214,35 +214,35 @@ exports.PerspectivesDao = class PerspectivesDao {
         }
       }
 
-      if (row.basis_writing_quote_id) {
-        let writingQuote = writingQuotesById[row.basis_writing_quote_id]
-        if (!writingQuote) {
-          writingQuotesById[row.basis_writing_quote_id] = writingQuote = toWritingQuote({
-            writing_quote_id: row.basis_writing_quote_id,
-            writing_id: row.basis_writing_quote_writing_id,
-            quote_text: row.basis_writing_quote_quote_text,
+      if (row.basis_writ_quote_id) {
+        let writQuote = writQuotesById[row.basis_writ_quote_id]
+        if (!writQuote) {
+          writQuotesById[row.basis_writ_quote_id] = writQuote = toWritQuote({
+            writ_quote_id: row.basis_writ_quote_id,
+            writ_id: row.basis_writ_quote_writ_id,
+            quote_text: row.basis_writ_quote_quote_text,
           })
         }
 
-        const writing = writingsById[writingQuote.writing.id]
-        if (!writing) {
-          writingsById[row.basis_writing_quote_writing_id] = toWriting({
-            writing_id: row.basis_writing_quote_writing_id,
-            title: row.basis_writing_quote_writing_title
+        const writ = writsById[writQuote.writ.id]
+        if (!writ) {
+          writsById[row.basis_writ_quote_writ_id] = toWrit({
+            writ_id: row.basis_writ_quote_writ_id,
+            title: row.basis_writ_quote_writ_title
           })
         }
 
-        if (row.basis_writing_quote_url_id) {
-          let url = urlsById[row.basis_writing_quote_url_id]
+        if (row.basis_writ_quote_url_id) {
+          let url = urlsById[row.basis_writ_quote_url_id]
           if (!url) {
-            urlsById[row.basis_writing_quote_url_id] = url = toUrl({
-              url_id: row.basis_writing_quote_url_id,
-              url: row.basis_writing_quote_url_url
+            urlsById[row.basis_writ_quote_url_id] = url = toUrl({
+              url_id: row.basis_writ_quote_url_id,
+              url: row.basis_writ_quote_url_url
             })
           }
-          let urls = urlsByWritingQuoteId[writingQuote.id]
+          let urls = urlsByWritQuoteId[writQuote.id]
           if (!urls) {
-            urlsByWritingQuoteId[writingQuote.id] = urls = []
+            urlsByWritQuoteId[writQuote.id] = urls = []
           }
           urls.push(url)
         }
@@ -255,9 +255,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       statementCompoundsById,
       statementCompoundAtomsByStatementCompoundId,
       statementsById,
-      writingQuotesById,
-      writingsById,
-      urlsByWritingQuoteId,
+      writQuotesById,
+      writsById,
+      urlsByWritQuoteId,
     }
   }
 
@@ -267,9 +267,9 @@ exports.PerspectivesDao = class PerspectivesDao {
     statementCompoundsById,
     statementCompoundAtomsByStatementCompoundId,
     statementsById,
-    writingQuotesById,
-    writingsById,
-    urlsByWritingQuoteId
+    writQuotesById,
+    writsById,
+    urlsByWritQuoteId
   ) {
     forEach(perspectivesById, p => {
       p.statement = statementsById[p.statement.id]
@@ -304,8 +304,8 @@ exports.PerspectivesDao = class PerspectivesDao {
           j.basis.entity = statementCompoundsById[j.basis.entity.id]
         }
           break
-        case JustificationBasisType.WRITING_QUOTE: {
-          j.basis.entity = writingQuotesById[j.basis.entity.id]
+        case JustificationBasisType.WRIT_QUOTE: {
+          j.basis.entity = writQuotesById[j.basis.entity.id]
         }
           break
         default:
@@ -323,9 +323,9 @@ exports.PerspectivesDao = class PerspectivesDao {
       })
     )
 
-    forEach(writingQuotesById, wq => {
-      wq.writing = writingsById[wq.writing.id]
-      wq.urls = urlsByWritingQuoteId[wq.id]
+    forEach(writQuotesById, wq => {
+      wq.writ = writsById[wq.writ.id]
+      wq.urls = urlsByWritQuoteId[wq.id]
     })
   }
 }

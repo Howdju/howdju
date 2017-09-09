@@ -6,25 +6,25 @@ import Subheader from 'react-md/lib/Subheaders'
 import get from 'lodash/get'
 
 import {
-  isWritingQuoteBased,
+  isWritQuoteBased,
   isStatementCompoundBased,
   JustificationBasisType,
   JustificationPolarity
 } from "howdju-common"
 import t, {
-  JUSTIFICATION_BASIS_TYPE_WRITING_QUOTE,
+  JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
   JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND,
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,
 } from "./texts"
-import WritingQuoteEditorFields from "./WritingQuoteEditorFields"
+import WritQuoteEditorFields from "./WritQuoteEditorFields"
 import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
 
 import './NewJustificationEditorFields.scss'
 
 
 const statementCompoundName = 'basis.statementCompound'
-const writingQuoteName = "basis.writingQuote"
+const writQuoteName = "basis.writQuote"
 
 const polarityControls = [{
   value: JustificationPolarity.POSITIVE,
@@ -49,10 +49,10 @@ const basisTypeControls = [{
     </div>
   ),
 }, {
-  value: JustificationBasisType.WRITING_QUOTE,
+  value: JustificationBasisType.WRIT_QUOTE,
   label: (
     <div title="An external reference">
-      {t(JUSTIFICATION_BASIS_TYPE_WRITING_QUOTE)}
+      {t(JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE)}
     </div>
   ),
 }]
@@ -70,7 +70,7 @@ class NewJustificationEditorFields extends Component {
       name,
       id,
       basisStatementTextId,
-      basisWritingQuoteTextId,
+      basisWritQuoteTextId,
       readOnlyBasis,
       disabled,
       suggestionsKey,
@@ -89,13 +89,13 @@ class NewJustificationEditorFields extends Component {
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
     const statementErrors = errors && errors.fieldErrors.basis.fieldErrors.statement
-    const writingQuoteErrors = errors && errors.fieldErrors.basis.fieldErrors.writingQuote
+    const writQuoteErrors = errors && errors.fieldErrors.basis.fieldErrors.writQuote
 
     const basisStatementCompound = get(newJustification, statementCompoundName)
-    const basisWritingQuote = get(newJustification, writingQuoteName)
+    const basisWritQuote = get(newJustification, writQuoteName)
     const basisType = get(newJustification, 'basis.type')
     const _isStatementCompoundBased = isStatementCompoundBased(newJustification)
-    const _isWritingQuoteBased = isWritingQuoteBased(newJustification)
+    const _isWritQuoteBased = isWritQuoteBased(newJustification)
 
     const statementCompoundComponents = [
       <StatementCompoundEditorFields statementCompound={basisStatementCompound}
@@ -112,19 +112,19 @@ class NewJustificationEditorFields extends Component {
                                      onKeyDown={onKeyDown}
       />
     ]
-    const writingQuoteComponents =  [
-      <WritingQuoteEditorFields writingQuote={basisWritingQuote}
-                                     id={idPrefix + writingQuoteName}
-                                     quoteTextId={basisWritingQuoteTextId}
-                                     key={writingQuoteName}
-                                     name={namePrefix + writingQuoteName}
-                                     suggestionsKey={suggestionsKeyPrefix + writingQuoteName}
+    const writQuoteComponents =  [
+      <WritQuoteEditorFields writQuote={basisWritQuote}
+                                     id={idPrefix + writQuoteName}
+                                     quoteTextId={basisWritQuoteTextId}
+                                     key={writQuoteName}
+                                     name={namePrefix + writQuoteName}
+                                     suggestionsKey={suggestionsKeyPrefix + writQuoteName}
                                      onPropertyChange={onPropertyChange}
                                      onAddUrl={onAddUrl}
                                      onRemoveUrl={onRemoveUrl}
                                      disabled={readOnlyBasis || disabled}
                                      onSubmit={onSubmit}
-                                     errors={writingQuoteErrors}
+                                     errors={writQuoteErrors}
                                      onKeyDown={onKeyDown}
       />
     ]
@@ -160,7 +160,7 @@ class NewJustificationEditorFields extends Component {
         />
         <Divider />
         {_isStatementCompoundBased && statementCompoundComponents}
-        {_isWritingQuoteBased && writingQuoteComponents}
+        {_isWritQuoteBased && writQuoteComponents}
       </div>
     )
   }
@@ -170,7 +170,7 @@ NewJustificationEditorFields.propTypes = {
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: PropTypes.string,
   basisStatementTextId: PropTypes.string.isRequired,
-  basisWritingQuoteTextId: PropTypes.string,
+  basisWritQuoteTextId: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
   /** If present, this string will be prepended to this editor's autocomplete's suggestionKeys, with an intervening "." */

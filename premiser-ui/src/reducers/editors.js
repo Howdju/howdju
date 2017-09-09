@@ -39,7 +39,7 @@ export const EditorTypes = arrayToObject([
   'DEFAULT',
   'STATEMENT',
   'STATEMENT_COMPOUND',
-  'WRITING_QUOTE',
+  'WRIT_QUOTE',
   'COUNTER_JUSTIFICATION',
   /* e.g. new justification dialog */
   'NEW_JUSTIFICATION',
@@ -179,14 +179,14 @@ const editorReducerByType = {
   [EditorTypes.NEW_JUSTIFICATION]: handleActions({
     [editors.addUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
-      editEntity.basis.writingQuote.urls = editEntity.basis.writingQuote.urls.concat([makeNewUrl()])
+      editEntity.basis.writQuote.urls = editEntity.basis.writQuote.urls.concat([makeNewUrl()])
       return {...state, editEntity}
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
-      const urls = clone(editEntity.basis.writingQuote.urls)
+      const urls = clone(editEntity.basis.writQuote.urls)
       urls.splice(action.payload.index, 1)
-      editEntity.basis.writingQuote.urls = urls
+      editEntity.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
     [editors.addStatementAtom]: (state, action) => {
@@ -224,15 +224,15 @@ const editorReducerByType = {
 
   [EditorTypes.STATEMENT_JUSTIFICATION]: handleActions({
     [editors.addUrl]: (state, action) => {
-      const writingQuote = {...state.editEntity.justification.basis.writingQuote}
-      writingQuote.urls = writingQuote.urls.concat([makeNewUrl()])
-      return merge({...state}, {editEntity: {justification: {basis: {writingQuote}}}})
+      const writQuote = {...state.editEntity.justification.basis.writQuote}
+      writQuote.urls = writQuote.urls.concat([makeNewUrl()])
+      return merge({...state}, {editEntity: {justification: {basis: {writQuote}}}})
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
-      const urls = clone(editEntity.justification.basis.writingQuote.urls)
+      const urls = clone(editEntity.justification.basis.writQuote.urls)
       urls.splice(action.payload.index, 1)
-      editEntity.justification.basis.writingQuote.urls = urls
+      editEntity.justification.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
     [editors.addStatementAtom]: (state, action) => {
@@ -252,7 +252,7 @@ const editorReducerByType = {
     },
   }, defaultEditorState),
 
-  [EditorTypes.WRITING_QUOTE]: handleActions({
+  [EditorTypes.WRIT_QUOTE]: handleActions({
     [editors.addUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.urls = editEntity.urls.concat([makeNewUrl()])
@@ -263,20 +263,20 @@ const editorReducerByType = {
       editEntity.urls.splice(action.payload.index, 1)
       return {...state, editEntity}
     },
-    [api.fetchWritingQuote]: (state, action) => {
-      if (state.entityId === action.payload.writingQuoteId) {
+    [api.fetchWritQuote]: (state, action) => {
+      if (state.entityId === action.payload.writQuoteId) {
         return {...state, isFetching: true}
       }
       return state
     },
-    [api.fetchWritingQuote.response]: (state, action) => {
-      if (state.entityId === action.meta.requestPayload.writingQuoteId) {
+    [api.fetchWritQuote.response]: (state, action) => {
+      if (state.entityId === action.meta.requestPayload.writQuoteId) {
         return {...state, isFetching: false}
       }
       return state
     },
     [editors.commitEdit.result]: {
-      throw: editorErrorReducer('writingQuote')
+      throw: editorErrorReducer('writQuote')
     },
   }, defaultEditorState),
 

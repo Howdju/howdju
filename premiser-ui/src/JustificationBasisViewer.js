@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
 import {
-  isWritingQuoteBased,
+  isWritQuoteBased,
   isStatementCompoundBased,
   newImpossibleError,
 } from "howdju-common"
 import StatementCompoundViewer from "./StatementCompoundViewer"
-import WritingQuoteViewer from "./WritingQuoteViewer"
+import WritQuoteViewer from "./WritQuoteViewer"
 import ExpandableChildContainer from './ExpandableChildContainer'
 
 export default class JustificationBasisViewer extends Component {
@@ -28,14 +28,14 @@ export default class JustificationBasisViewer extends Component {
                                       doShowStatementAtomJustifications={doShowBasisJustifications}
       />
     }
-    if (isWritingQuoteBased(justification)) {
+    if (isWritQuoteBased(justification)) {
       return (
         <ExpandableChildContainer {...rest}
-                                  ExpandableChildComponent={WritingQuoteViewer}
+                                  ExpandableChildComponent={WritQuoteViewer}
                                   widgetId={id}
                                   id={id}
                                   key={id}
-                                  writingQuote={basis}
+                                  writQuote={basis}
                                   doShowControls={doShowControls}
         />
       )

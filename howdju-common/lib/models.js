@@ -24,9 +24,9 @@ _e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION &&
 _e.isRootJustification = (j) =>
   j.target.type === JustificationTargetType.STATEMENT &&
   j.target.entity.id === j.rootStatement.id
-_e.hasQuote = (j) => _e.isWritingQuoteBased(j) && j.basis.entity.quoteText
+_e.hasQuote = (j) => _e.isWritQuoteBased(j) && j.basis.entity.quoteText
 _e.isStatementCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
-_e.isWritingQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRITING_QUOTE : false
+_e.isWritQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRIT_QUOTE : false
 
 _e.negateVotePolarity = (polarity) => {
   switch (polarity) {
@@ -68,13 +68,13 @@ _e.makeNewJustification = (props) => merge({
     // Store both these types directly on the basis for the view-model
     // Before the justification is sent to the server, the one corresponding to the current type should be put on the
     // entity property
-    writingQuote: _e.makeNewWritingQuote(),
+    writQuote: _e.makeNewWritQuote(),
     statementCompound: _e.makeNewStatementCompound(),
     justificationBasisCompound: _e.makeNewJustificationBasisCompound(),
   }
 }, props)
 
-_e.makeNewWriting = () => ({
+_e.makeNewWrit = () => ({
   title: '',
 })
 
@@ -87,8 +87,8 @@ _e.makeNewJustificationBasisAtom = () => ({
   entity: _e.makeNewStatement()
 })
 
-_e.makeNewWritingQuote = () => ({
-  writing: _e.makeNewWriting(),
+_e.makeNewWritQuote = () => ({
+  writ: _e.makeNewWrit(),
   quoteText: '',
   urls: [_e.makeNewUrl()],
 })

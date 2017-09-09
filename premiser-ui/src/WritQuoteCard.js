@@ -11,42 +11,42 @@ import cn from 'classnames'
 
 import config from './config'
 import {
-  truncateWritingQuoteText,
+  truncateWritQuoteText,
   isTextLong
 } from "./viewModels"
 import paths from './paths'
 import {default as t} from './texts'
 import * as characters from './characters'
 
-import './WritingQuoteCard.scss'
+import './WritQuoteCard.scss'
 
-export default class WritingQuoteCard extends Component {
+export default class WritQuoteCard extends Component {
 
   render () {
     const {
-      writingQuote,
+      writQuote,
       className,
       isExpanded,
       onExpand,
       onCollapse,
       ...rest,
     } = this.props
-    const writing = writingQuote.writing
-    const age = writingQuote.created ? moment(writingQuote.created).fromNow() : ''
-    const created = writingQuote.created ? moment(writingQuote.created).format(config.humanDateTimeFormat) : ''
-    const _isQuoteTextLong = isTextLong(writingQuote.quoteText)
+    const writ = writQuote.writ
+    const age = writQuote.created ? moment(writQuote.created).fromNow() : ''
+    const created = writQuote.created ? moment(writQuote.created).format(config.humanDateTimeFormat) : ''
+    const _isQuoteTextLong = isTextLong(writQuote.quoteText)
     const quoteText = !_isQuoteTextLong || isExpanded ?
-      writingQuote.quoteText :
-      truncateWritingQuoteText(writingQuote.quoteText, {omission: ''})
+      writQuote.quoteText :
+      truncateWritQuoteText(writQuote.quoteText, {omission: ''})
     return (
       <Card {...rest}
-            className={cn(className, "writing-quote-card")}
+            className={cn(className, "writ-quote-card")}
       >
         <CardTitle
           avatar={<FontIcon role="presentation">book</FontIcon>}
           title={
-            <Link to={paths.writingQuoteUsages(writing)}>
-              {writing.title}
+            <Link to={paths.writQuoteUsages(writ)}>
+              {writ.title}
             </Link>
           }
           subtitle={
@@ -83,6 +83,6 @@ export default class WritingQuoteCard extends Component {
     )
   }
 }
-WritingQuoteCard.propTypes = {
-  writingQuote: PropTypes.object.isRequired,
+WritQuoteCard.propTypes = {
+  writQuote: PropTypes.object.isRequired,
 }

@@ -1,7 +1,7 @@
 delete from actions;
-delete from writings;
-delete from writing_quotes;
-delete from writing_quote_urls;
+delete from writs;
+delete from writ_quotes;
+delete from writ_quote_urls;
 
 -- delete from group_permissions;
 -- delete from groups;
@@ -35,8 +35,8 @@ delete from user_auth_tokens;
 delete from votes;
 
 
-alter sequence writings_writing_id_seq restart with 1;
-alter sequence writing_quotes_writing_quote_id_seq restart with 1;
+alter sequence writs_writ_id_seq restart with 1;
+alter sequence writ_quotes_writ_quote_id_seq restart with 1;
 -- alter sequence groups_group_id_seq restart with 1;
 alter sequence justifications_justification_id_seq restart with 1;
 -- alter sequence permissions_permission_id_seq restart with 1;

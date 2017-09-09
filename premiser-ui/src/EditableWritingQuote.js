@@ -5,19 +5,19 @@ import CircularProgress from "react-md/lib/Progress/CircularProgress"
 import get from 'lodash/get'
 
 import {EditorTypes} from "./reducers/editors"
-import WritingQuoteViewer from "./WritingQuoteViewer"
-import WritingQuoteEditor from "./WritingQuoteEditor"
+import WritQuoteViewer from "./WritQuoteViewer"
+import WritQuoteEditor from "./WritQuoteEditor"
 import {denormalize} from "normalizr"
-import {writingQuoteSchema} from "./schemas"
+import {writQuoteSchema} from "./schemas"
 import ExpandableChildContainer from './ExpandableChildContainer'
 
-class EditableWritingQuote extends Component {
+class EditableWritQuote extends Component {
 
   render() {
     const {
       id,
       editorId,
-      writingQuote,
+      writQuote,
       suggestionsKey,
       isFetching,
       isEditing,
@@ -25,17 +25,17 @@ class EditableWritingQuote extends Component {
     } = this.props
 
     const editor =
-      <WritingQuoteEditor {...rest}
+      <WritQuoteEditor {...rest}
                                id={id}
                                editorId={editorId}
                                suggestionsKey={suggestionsKey}
       />
     const viewer = (
       <ExpandableChildContainer {...rest}
-                                ExpandableChildComponent={WritingQuoteViewer}
+                                ExpandableChildComponent={WritQuoteViewer}
                                 widgetId={id}
                                 key={id}
-                                writingQuote={writingQuote}
+                                writQuote={writQuote}
       />
     )
     const progress =
@@ -46,7 +46,7 @@ class EditableWritingQuote extends Component {
       isFetching ? progress : viewer
   }
 }
-EditableWritingQuote.propTypes = {
+EditableWritQuote.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Let's the component fetch its statement from the API and retrieve it from the state */
@@ -61,13 +61,13 @@ EditableWritingQuote.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const writingQuote = denormalize(state.entities.writingQuotes[ownProps.entityId], writingQuoteSchema, state.entities)
-  const editEntity = get(state.editors, [EditorTypes.WRITING_QUOTE, ownProps.editorId, 'editEntity'])
+  const writQuote = denormalize(state.entities.writQuotes[ownProps.entityId], writQuoteSchema, state.entities)
+  const editEntity = get(state.editors, [EditorTypes.WRIT_QUOTE, ownProps.editorId, 'editEntity'])
   const isEditing = !!editEntity
   return {
-    writingQuote,
+    writQuote,
     isEditing,
   }
 }
 
-export default connect(mapStateToProps)(EditableWritingQuote)
+export default connect(mapStateToProps)(EditableWritQuote)

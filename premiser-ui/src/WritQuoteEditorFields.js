@@ -9,16 +9,16 @@ import get from 'lodash/get'
 import has from 'lodash/has'
 
 import {RETURN_KEY_CODE} from "./keyCodes"
-import WritingTitleAutocomplete from "./WritingTitleAutocomplete"
+import WritTitleAutocomplete from "./WritTitleAutocomplete"
 import {toErrorText} from "./modelErrorMessages"
 import ErrorMessages from './ErrorMessages'
 
-import './WritingQuoteEditorFields.scss'
+import './WritQuoteEditorFields.scss'
 
-const writingQuoteTextName = 'text'
-const writingTitleName = 'writing.title'
+const writQuoteTextName = 'text'
+const writTitleName = 'writ.title'
 
-class WritingQuoteEditorFields extends Component {
+class WritQuoteEditorFields extends Component {
 
   onChange = (value, event) => {
     const target = event.target
@@ -40,7 +40,7 @@ class WritingQuoteEditorFields extends Component {
 
   render() {
     const {
-      writingQuote,
+      writQuote,
       name,
       id,
       quoteTextId,
@@ -49,7 +49,7 @@ class WritingQuoteEditorFields extends Component {
       errors,
     } = this.props
 
-    const urls = get(writingQuote, 'urls', [])
+    const urls = get(writQuote, 'urls', [])
     const namePrefix = name ? name + '.' : ''
     const idPrefix = id ? id + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
@@ -58,8 +58,8 @@ class WritingQuoteEditorFields extends Component {
     const quoteInputProps = hasErrors && errors.fieldErrors.quoteText.length > 0 ?
       {error: true, errorText: toErrorText(errors.fieldErrors.quoteText)} :
       {}
-    const writingTitleInputProps = hasErrors && errors.fieldErrors.writing.fieldErrors.title.length > 0 ?
-      {error: true, errorText: toErrorText(errors.fieldErrors.writing.fieldErrors.title)} :
+    const writTitleInputProps = hasErrors && errors.fieldErrors.writ.fieldErrors.title.length > 0 ?
+      {error: true, errorText: toErrorText(errors.fieldErrors.writ.fieldErrors.title)} :
       {}
     const urlInputProps = hasErrors ?
       map(errors.fieldErrors.urls.itemErrors, urlError => urlError.fieldErrors.url.length > 0 ?
@@ -68,16 +68,16 @@ class WritingQuoteEditorFields extends Component {
       ) :
       map(urls, () => null)
 
-    const quoteText = get(writingQuote, writingQuoteTextName) || ''
-    const writingTitle = get(writingQuote, writingTitleName) || ''
-    const hasWritingTitle = has(writingQuote, writingTitleName)
+    const quoteText = get(writQuote, writQuoteTextName) || ''
+    const writTitle = get(writQuote, writTitleName) || ''
+    const hasWritTitle = has(writQuote, writTitleName)
 
     return (
       <div>
         <TextField {...quoteInputProps}
                    id={quoteTextId || (idPrefix + "quoteText")}
                    key="quoteText"
-                   name={namePrefix + writingQuoteTextName}
+                   name={namePrefix + writQuoteTextName}
                    type="text"
                    label="Quote"
                    rows={2}
@@ -85,33 +85,33 @@ class WritingQuoteEditorFields extends Component {
                    value={quoteText}
                    onChange={this.onChange}
                    leftIcon={<FontIcon>format_quote</FontIcon>}
-                   disabled={disabled || !has(writingQuote, writingQuoteTextName)}
+                   disabled={disabled || !has(writQuote, writQuoteTextName)}
                    onKeyDown={this.onTextInputKeyDown}
         />
-        {suggestionsKey && !disabled && hasWritingTitle ?
-          <WritingTitleAutocomplete {...writingTitleInputProps}
-                                    id={idPrefix + writingTitleName}
-                                    key={writingTitleName}
-                                    name={namePrefix + writingTitleName}
-                                    suggestionsKey={suggestionsKeyPrefix + writingTitleName}
-                                    label="Writing"
-                                    value={writingTitle}
+        {suggestionsKey && !disabled && hasWritTitle ?
+          <WritTitleAutocomplete {...writTitleInputProps}
+                                    id={idPrefix + writTitleName}
+                                    key={writTitleName}
+                                    name={namePrefix + writTitleName}
+                                    suggestionsKey={suggestionsKeyPrefix + writTitleName}
+                                    label="Writ"
+                                    value={writTitle}
                                     required
                                     onPropertyChange={this.onPropertyChange}
                                     leftIcon={<FontIcon>book</FontIcon>}
-                                    disabled={disabled || !hasWritingTitle}
+                                    disabled={disabled || !hasWritTitle}
                                     onKeyDown={this.onTextInputKeyDown}
           /> :
-          <TextField {...writingTitleInputProps}
-                     id={idPrefix + writingTitleName}
-                     name={namePrefix + writingTitleName}
+          <TextField {...writTitleInputProps}
+                     id={idPrefix + writTitleName}
+                     name={namePrefix + writTitleName}
                      label="Citation"
                      type="text"
-                     value={writingTitle}
+                     value={writTitle}
                      required
                      onChange={this.onChange}
                      leftIcon={<FontIcon>book</FontIcon>}
-                     disabled={disabled || !hasWritingTitle}
+                     disabled={disabled || !hasWritTitle}
                      onKeyDown={this.onTextInputKeyDown}
           />
         }
@@ -123,7 +123,7 @@ class WritingQuoteEditorFields extends Component {
                      className="urlInput"
                      type="url"
                      label="URL"
-                     value={get(writingQuote, `urls[${index}].url`, '')}
+                     value={get(writQuote, `urls[${index}].url`, '')}
                      onChange={this.onChange}
                      leftIcon={<FontIcon>link</FontIcon>}
                      rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
@@ -146,8 +146,8 @@ class WritingQuoteEditorFields extends Component {
     )
   }
 }
-WritingQuoteEditorFields.propTypes = {
-  writingQuote: PropTypes.object,
+WritQuoteEditorFields.propTypes = {
+  writQuote: PropTypes.object,
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: PropTypes.string,
   quoteTextId: PropTypes.string,
@@ -162,8 +162,8 @@ WritingQuoteEditorFields.propTypes = {
   /** Whether to disable the inputs */
   disabled: PropTypes.bool,
 }
-WritingQuoteEditorFields.defaultProps = {
+WritQuoteEditorFields.defaultProps = {
   disabled: false,
 }
 
-export default WritingQuoteEditorFields
+export default WritQuoteEditorFields

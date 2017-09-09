@@ -6,12 +6,12 @@ import {
   api, mapActionCreatorGroupToDispatchToProps
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
-import {writingSchema} from "./schemas"
+import {writSchema} from "./schemas"
 
-class WritingTitleAutocomplete extends Component {
+class WritTitleAutocomplete extends Component {
 
-  onAutocomplete = (writing) => {
-    this.props.onPropertyChange({[this.props.name]: writing.title})
+  onAutocomplete = (writ) => {
+    this.props.onPropertyChange({[this.props.name]: writ.title})
   }
 
   render() {
@@ -32,17 +32,17 @@ class WritingTitleAutocomplete extends Component {
         maxRows={4}
         onPropertyChange={onPropertyChange}
         onAutocomplete={this.onAutocomplete}
-        fetchSuggestions={api.fetchWritingTitleSuggestions}
+        fetchSuggestions={api.fetchWritTitleSuggestions}
         suggestionsKey={suggestionsKey}
         dataLabel="text"
         dataValue="id"
-        suggestionSchema={writingSchema}
+        suggestionSchema={writSchema}
         onKeyDown={this.props.onKeyDown}
       />
     )
   }
 }
-WritingTitleAutocomplete.propTypes = {
+WritTitleAutocomplete.propTypes = {
   name: PropTypes.string.isRequired,
   /** The value to display in the text input */
   value: PropTypes.string,
@@ -56,4 +56,4 @@ WritingTitleAutocomplete.propTypes = {
 
 export default connect(null, mapActionCreatorGroupToDispatchToProps({
   api
-}))(WritingTitleAutocomplete)
+}))(WritTitleAutocomplete)

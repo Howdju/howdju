@@ -1,13 +1,13 @@
 @import './components';
 
-.writing-quote-viewer {
+.writ-quote-viewer {
   @include quote;
 
-  .writing-title {
+  .writ-title {
     font-weight: 400;
   }
 
-  .writing-quote-urls {
+  .writ-quote-urls {
     margin-top: 0.8em;
   }
 

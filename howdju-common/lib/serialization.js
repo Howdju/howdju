@@ -41,8 +41,8 @@ exports.decircularizeJustification = justification => {
       justification.basis.entity = exports.decircularizeStatementCompound(justification.basis.entity)
     }
       break
-    case JustificationBasisType.WRITING_QUOTE:
-      // writing quotes don't reference other entities
+    case JustificationBasisType.WRIT_QUOTE:
+      // writ quotes can't have circular dependencies.  They reference writs, which are leaf entities.
       break
     default:
       throw newImpossibleError(`Unsupported justification basis type: ${justification.basis.type}`)

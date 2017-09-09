@@ -1,6 +1,6 @@
 const {
-  WritingValidator,
-  WritingQuoteValidator,
+  WritValidator,
+  WritQuoteValidator,
   CredentialValidator,
   JustificationValidator,
   StatementValidator,
@@ -15,9 +15,9 @@ const urlValidator = new UrlValidator()
 const userValidator = new UserValidator()
 const statementValidator = new StatementValidator()
 const statementCompoundValidator = new StatementCompoundValidator(statementValidator)
-const writingValidator = new WritingValidator()
-const writingQuoteValidator = new WritingQuoteValidator(writingValidator, urlValidator)
-const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, writingQuoteValidator)
+const writValidator = new WritValidator()
+const writQuoteValidator = new WritQuoteValidator(writValidator, urlValidator)
+const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, writQuoteValidator)
 const credentialValidator = new CredentialValidator()
 const voteValidator = new VoteValidator()
 
@@ -26,8 +26,8 @@ module.exports = {
   userValidator,
   statementValidator,
   statementCompoundValidator,
-  writingValidator,
-  writingQuoteValidator,
+  writValidator,
+  writQuoteValidator,
   justificationValidator,
   credentialValidator,
   voteValidator,

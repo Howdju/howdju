@@ -50,13 +50,13 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  writingQuoteSchema,
+  writQuoteSchema,
   statementsSchema,
   statementCompoundSchema,
   perspectivesSchema,
-  writingsSchema,
+  writsSchema,
   justificationsSchema,
-  writingQuotesSchema,
+  writQuotesSchema,
 } from '../schemas'
 import paths from "../paths"
 import mainSearcher from '../mainSearcher'
@@ -130,24 +130,24 @@ export const resourceApiConfigs = {
       schema: {statements: statementsSchema},
     }
   },
-  [api.fetchRecentWritings]: payload => {
+  [api.fetchRecentWrits]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'writings?' + queryStringParamsString,
-      schema: {writings: writingsSchema},
+      endpoint: 'writs?' + queryStringParamsString,
+      schema: {writs: writsSchema},
     }
   },
-  [api.fetchRecentWritingQuotes]: payload => {
+  [api.fetchRecentWritQuotes]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     queryStringParams.sortProperty = 'created'
     queryStringParams.sortDirection = SortDirection.DESCENDING
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'writing-quotes?' + queryStringParamsString,
-      schema: {writingQuotes: writingQuotesSchema},
+      endpoint: 'writ-quotes?' + queryStringParamsString,
+      schema: {writQuotes: writQuotesSchema},
     }
   },
   [api.fetchRecentJustifications]: payload => {
@@ -179,17 +179,17 @@ export const resourceApiConfigs = {
     endpoint: `statement-compounds/${payload.statementCompoundId}`,
     schema: {statementCompound: statementCompoundSchema},
   }),
-  [api.fetchWritingQuote]: payload => ({
-    endpoint: `writing-quotes/${payload.writingQuoteId}`,
-    schema: {writingQuote: writingQuoteSchema},
+  [api.fetchWritQuote]: payload => ({
+    endpoint: `writ-quotes/${payload.writQuoteId}`,
+    schema: {writQuote: writQuoteSchema},
   }),
-  [api.updateWritingQuote]: payload => ({
-    endpoint: `writing-quotes/${payload.writingQuote.id}`,
+  [api.updateWritQuote]: payload => ({
+    endpoint: `writ-quotes/${payload.writQuote.id}`,
     fetchInit: {
       method: httpMethods.PUT,
       body: payload
     },
-    schema: {writingQuote: writingQuoteSchema},
+    schema: {writQuote: writQuoteSchema},
   }),
   [api.createStatement]: payload => ({
     endpoint: 'statements',
@@ -299,10 +299,10 @@ export const resourceApiConfigs = {
     cancelKey: str(api.fetchStatementTextSuggestions) + '.' + payload.suggestionsKey,
     schema: statementsSchema,
   }),
-  [api.fetchWritingTitleSuggestions]: payload => ({
-    endpoint: `search-writings?searchText=${payload.writingTitle}`,
-    cancelKey: str(api.fetchWritingTitleSuggestions) + '.' + payload.suggestionsKey,
-    schema: writingsSchema,
+  [api.fetchWritTitleSuggestions]: payload => ({
+    endpoint: `search-writs?searchText=${payload.writTitle}`,
+    cancelKey: str(api.fetchWritTitleSuggestions) + '.' + payload.suggestionsKey,
+    schema: writsSchema,
   }),
   [api.fetchMainSearchSuggestions]: payload => ({
     endpoint: `search-statements?searchText=${payload.searchText}`,
@@ -587,8 +587,8 @@ function* editorCommitEdit() {
         }
       }
     },
-    [EditorTypes.WRITING_QUOTE]: {
-      [UPDATE]: api.updateWritingQuote
+    [EditorTypes.WRIT_QUOTE]: {
+      [UPDATE]: api.updateWritQuote
     },
     [EditorTypes.LOGIN_CREDENTIALS]: {
       [CREATE]: api.login,
@@ -724,7 +724,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
   const fetchActionCreatorForBasisType = basisType => {
     const actionCreatorByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
-      [JustificationBasisType.WRITING_QUOTE]: api.fetchWritingQuote,
+      [JustificationBasisType.WRIT_QUOTE]: api.fetchWritQuote,
       [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
     }
     const actionCreator = actionCreatorByBasisType[basisType]
@@ -745,7 +745,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
 
     const basisGetterByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: result => result.statementCompound,
-      [JustificationBasisType.WRITING_QUOTE]: result => result.writingQuote,
+      [JustificationBasisType.WRIT_QUOTE]: result => result.writQuote,
       [JustificationBasisSourceType.STATEMENT]: result => result.statement,
     }
 
@@ -781,16 +781,16 @@ function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
         statementCompound = makeNewStatementCompoundForStatement(basis)
       }
 
-      let writingQuote = undefined
-      if (basisType === JustificationBasisType.WRITING_QUOTE) {
-        writingQuote = basis
+      let writQuote = undefined
+      if (basisType === JustificationBasisType.WRIT_QUOTE) {
+        writQuote = basis
       }
 
       const editModel = makeNewStatementJustification({}, {
         basis: {
           type: basisType,
           statementCompound,
-          writingQuote,
+          writQuote,
         }
       })
       yield put(editors.beginEdit(editorType, editorId, editModel))

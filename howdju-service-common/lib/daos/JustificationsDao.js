@@ -30,7 +30,7 @@ const {
   toJustification,
   toStatementCompound,
   toStatementCompoundAtom,
-  toWritingQuote,
+  toWritQuote,
 } = require('./orm')
 const {EntityNotFoundError} = require('../serviceErrors')
 const {groupRootJustifications} = require('./util')
@@ -40,39 +40,39 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
   const justificationRowsById = {}
   // Keep track of whether we've seen the row before since there may be duplicates after joining with statement compound atoms
   const justificationIds = {}
-  const writingQuotesRowsById = {}
+  const writQuotesRowsById = {}
   const statementCompoundRowsById = {}
   const statementCompoundAtomsByStatementCompoundId = {}
   forEach(rows, row => {
     const rowId = row[idPrefix + 'justification_id']
     if (!has(justificationIds, rowId)) {
       justificationRowsById[rowId] = {
-        justification_id: rowId,
-        root_statement_id: row[prefix + 'root_statement_id'],
-        root_polarity: row[prefix + 'root_polarity'],
-        root_statement_text: row[prefix + 'root_statement_text'],
-        root_statement_created: row[prefix + 'root_statement_created'],
+        justification_id:          rowId,
+        root_statement_id:         row[prefix + 'root_statement_id'],
+        root_polarity:             row[prefix + 'root_polarity'],
+        root_statement_text:       row[prefix + 'root_statement_text'],
+        root_statement_created:    row[prefix + 'root_statement_created'],
         root_statement_creator_id: row[prefix + 'root_statement_creator_id'],
-        target_type: row[prefix + 'target_type'],
-        target_id: row[prefix + 'target_id'],
-        basis_type: row[prefix + 'basis_type'],
-        basis_id: row[prefix + 'basis_id'],
-        polarity: row[prefix + 'polarity'],
-        creator_user_id: row[prefix + 'creator_user_id'],
-        created: row[prefix + 'created'],
+        target_type:               row[prefix + 'target_type'],
+        target_id:                 row[prefix + 'target_id'],
+        basis_type:                row[prefix + 'basis_type'],
+        basis_id:                  row[prefix + 'basis_id'],
+        polarity:                  row[prefix + 'polarity'],
+        creator_user_id:           row[prefix + 'creator_user_id'],
+        created:                   row[prefix + 'created'],
       }
     }
 
-    if (row[prefix + 'basis_writing_quote_id']) {
-      writingQuotesRowsById[row[prefix + 'basis_writing_quote_id']] = toWritingQuote({
-        writing_quote_id: row[prefix + 'basis_writing_quote_id'],
-        quote_text: row[prefix + 'basis_writing_quote_quote_text'],
-        created: row[prefix + 'basis_writing_quote_created'],
-        creator_user_id: row[prefix + 'basis_writing_quote_creator_user_id'],
-        writing_id: row[prefix + 'basis_writing_quote_writing_id'],
-        writing_text: row[prefix + 'basis_writing_quote_writing_text'],
-        writing_created: row[prefix + 'basis_writing_quote_writing_created'],
-        writing_creator_user_id: row[prefix + 'basis_writing_quote_creator_user_id'],
+    if (row[prefix + 'basis_writ_quote_id']) {
+      writQuotesRowsById[row[prefix + 'basis_writ_quote_id']] = toWritQuote({
+        writ_quote_id:        row[prefix + 'basis_writ_quote_id'],
+        quote_text:           row[prefix + 'basis_writ_quote_quote_text'],
+        created:              row[prefix + 'basis_writ_quote_created'],
+        creator_user_id:      row[prefix + 'basis_writ_quote_creator_user_id'],
+        writ_id:              row[prefix + 'basis_writ_quote_writ_id'],
+        writ_text:            row[prefix + 'basis_writ_quote_writ_text'],
+        writ_created:         row[prefix + 'basis_writ_quote_writ_created'],
+        writ_creator_user_id: row[prefix + 'basis_writ_quote_creator_user_id'],
       })
     }
 
@@ -91,12 +91,12 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
       }
       if (!has(atomsByStatementId, row[prefix + 'basis_statement_compound_atom_statement_id'])) {
         const atom = toStatementCompoundAtom({
-          statement_compound_id: row[prefix + 'basis_statement_compound_id'],
-          statement_id: row[prefix + 'basis_statement_compound_atom_statement_id'],
-          statement_text: row[prefix + 'basis_statement_compound_atom_statement_text'],
-          statement_created: row[prefix + 'basis_statement_compound_atom_statement_created'],
+          statement_compound_id:     row[prefix + 'basis_statement_compound_id'],
+          statement_id:              row[prefix + 'basis_statement_compound_atom_statement_id'],
+          statement_text:            row[prefix + 'basis_statement_compound_atom_statement_text'],
+          statement_created:         row[prefix + 'basis_statement_compound_atom_statement_created'],
           statement_creator_user_id: row[prefix + 'basis_statement_compound_atom_statement_creator_user_id'],
-          order_position: row[prefix + 'basis_statement_compound_atom_order_position'],
+          order_position:            row[prefix + 'basis_statement_compound_atom_order_position'],
         })
         atomsByStatementId[atom.statement.id] = atom
       }
@@ -107,7 +107,7 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
     toStatementCompound(row, statementCompoundAtomsByStatementCompoundId[id])
   )
 
-  return mapValues(justificationRowsById, row => toJustification(row, null, statementCompoundsById, writingQuotesRowsById))
+  return mapValues(justificationRowsById, row => toJustification(row, null, statementCompoundsById, writQuotesRowsById))
 }
 
 const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isContinuation = false) => {
@@ -155,7 +155,7 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
     }
   })
   forEach(filters, (filterValue, filterName) => {
-    // Note, some filters are incompatible, such as statementId or statementCompoundId and writingQuoteId.
+    // Note, some filters are incompatible, such as statementId or statementCompoundId and writQuoteId.
     // statementId and statementCompoundId may be incompatible if the statementId doesn't appear in any compound having
     // the statementCompoundId
     if (!filterValue) return
@@ -168,14 +168,14 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
         whereSqls.push(`sc.statement_compound_id = $${args.length}`)
         break
       }
-      case 'writingQuoteId': {
+      case 'writQuoteId': {
         args.push(filterValue)
-        whereSqls.push(`wq.writing_quote_id = $${args.length}`)
+        whereSqls.push(`wq.writ_quote_id = $${args.length}`)
         break
       }
-      case 'writingId': {
+      case 'writId': {
         args.push(filterValue)
-        whereSqls.push(`w.writing_id = $${args.length}`)
+        whereSqls.push(`w.writ_id = $${args.length}`)
         break
       }
       default:
@@ -217,22 +217,22 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
         , s.text                   as root_statement_text
         , s.created                as root_statement_created
         , s.creator_user_id        as root_statement_creator_id
-        , wq.writing_quote_id      as basis_writing_quote_id
-        , wq.quote_text            as basis_writing_quote_quote_text
-        , wq.created               as basis_writing_quote_created
-        , wq.creator_user_id       as basis_writing_quote_creator_user_id
-        , w.writing_id             as basis_writing_quote_writing_id
-        , w.title                  as basis_writing_quote_writing_title
-        , w.created                as basis_writing_quote_writing_created
-        , w.creator_user_id        as basis_writing_quote_writing_creator_user_id
+        , wq.writ_quote_id         as basis_writ_quote_id
+        , wq.quote_text            as basis_writ_quote_quote_text
+        , wq.created               as basis_writ_quote_created
+        , wq.creator_user_id       as basis_writ_quote_creator_user_id
+        , w.writ_id                as basis_writ_quote_writ_id
+        , w.title                  as basis_writ_quote_writ_title
+        , w.created                as basis_writ_quote_writ_created
+        , w.creator_user_id        as basis_writ_quote_writ_creator_user_id
         , sc.statement_compound_id as basis_statement_compound_id
       from justifications j
           ${join(additionalJoinClauses, '\n')}
           join statements s on j.root_statement_id = s.statement_id
-          left join writing_quotes wq on 
-                j.basis_id = wq.writing_quote_id 
+          left join writ_quotes wq on 
+                j.basis_id = wq.writ_quote_id 
             and j.basis_type = $1
-          left join writings w on wq.writing_id = w.writing_id
+          left join writs w on wq.writ_id = w.writ_id
           left join statement_compounds sc on 
                 j.basis_id = sc.statement_compound_id 
             and j.basis_type = $2
@@ -283,11 +283,11 @@ const getTargetRootPolarity = (logger, database, justification) =>
 
 exports.JustificationsDao = class JustificationsDao {
 
-  constructor(logger, database, statementCompoundsDao, writingQuotesDao) {
+  constructor(logger, database, statementCompoundsDao, writQuotesDao) {
     this.logger = logger
     this.database = database
     this.statementCompoundsDao = statementCompoundsDao
-    this.writingQuotesDao = writingQuotesDao
+    this.writQuotesDao = writQuotesDao
   }
 
   readJustifications(sorts, count, filters, isContinuation = false) {
@@ -297,7 +297,7 @@ exports.JustificationsDao = class JustificationsDao {
       additionalWithClauses: justificationsAdditionalWithClauses,
       orderBySql: justificationsOrderBySql,
     } = makeReadJustificationsQuery(sorts, count, filters, [
-      JustificationBasisType.WRITING_QUOTE,
+      JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
     ], isContinuation)
     const justificationsAdditionalWithClausesSql = justificationsAdditionalWithClauses.length > 0 ?
@@ -311,11 +311,11 @@ exports.JustificationsDao = class JustificationsDao {
         )
       select 
           j.*
-        , sca.order_position as basis_statement_compound_atom_order_position
-        , scas.statement_id as basis_statement_compound_atom_statement_id
-        , scas.text as basis_statement_compound_atom_statement_text
-        , scas.created as basis_statement_compound_atom_statement_created
-        , scas.creator_user_id as basis_statement_compound_atom_statement_creator_user_id
+        , sca.order_position    as basis_statement_compound_atom_order_position
+        , scas.statement_id     as basis_statement_compound_atom_statement_id
+        , scas.text             as basis_statement_compound_atom_statement_text
+        , scas.created          as basis_statement_compound_atom_statement_created
+        , scas.creator_user_id  as basis_statement_compound_atom_statement_creator_user_id
       from limited_justifications j
           left join statement_compound_atoms sca on j.basis_statement_compound_id = sca.statement_compound_id
           left join statements scas on sca.statement_id = scas.statement_id
@@ -329,7 +329,7 @@ exports.JustificationsDao = class JustificationsDao {
       additionalWithClauses: targetJustificationsAdditionalWithClauses,
       orderBySql: targetJustificationsOrderBySql,
     } = makeReadJustificationsQuery(sorts, count, filters, [
-      JustificationBasisType.WRITING_QUOTE,
+      JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
       JustificationTargetType.JUSTIFICATION,
     ], isContinuation)
@@ -357,14 +357,14 @@ exports.JustificationsDao = class JustificationsDao {
         , tj.creator_user_id        as tj_creator_user_id
         , tj.created                as tj_created
         
-        , wq.writing_quote_id       as tj_basis_writing_quote_id
-        , wq.quote_text             as tj_basis_writing_quote_quote_text
-        , wq.created                as tj_basis_writing_quote_created
-        , wq.creator_user_id        as tj_basis_writing_quote_creator_user_id
-        , w.writing_id              as tj_basis_writing_quote_writing_id
-        , w.title                   as tj_basis_writing_quote_writing_title
-        , w.created                 as tj_basis_writing_quote_writing_created
-        , w.creator_user_id         as tj_basis_writing_quote_writing_creator_user_id
+        , wq.writ_quote_id          as tj_basis_writ_quote_id
+        , wq.quote_text             as tj_basis_writ_quote_quote_text
+        , wq.created                as tj_basis_writ_quote_created
+        , wq.creator_user_id        as tj_basis_writ_quote_creator_user_id
+        , w.writ_id                 as tj_basis_writ_quote_writ_id
+        , w.title                   as tj_basis_writ_quote_writ_title
+        , w.created                 as tj_basis_writ_quote_writ_created
+        , w.creator_user_id         as tj_basis_writ_quote_writ_creator_user_id
         
         , sc.statement_compound_id  as tj_basis_statement_compound_id
         , sca.order_position        as tj_basis_statement_compound_atom_order_position
@@ -376,10 +376,10 @@ exports.JustificationsDao = class JustificationsDao {
           join justifications tj on 
                 j.target_id = tj.justification_id 
             and j.target_type = $3
-          left join writing_quotes wq on 
-                tj.basis_id = wq.writing_quote_id 
+          left join writ_quotes wq on 
+                tj.basis_id = wq.writ_quote_id 
             and tj.basis_type = $1
-          left join writings w on wq.writing_id = w.writing_id
+          left join writs w on wq.writ_id = w.writ_id
           left join statement_compounds sc on tj.basis_id = sc.statement_compound_id and tj.basis_type = $2
           left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
           left join statements scas on sca.statement_id = scas.statement_id
@@ -411,16 +411,16 @@ exports.JustificationsDao = class JustificationsDao {
       select 
           j.*
         , v.vote_id
-        , v.polarity AS vote_polarity
-        , v.target_type AS vote_target_type
-        , v.target_id AS vote_target_id
+        , v.polarity    as vote_polarity
+        , v.target_type as vote_target_type
+        , v.target_id   as vote_target_id
       from justifications j 
         left join statement_compounds sc on 
               j.basis_type = $5 
           and j.basis_id = sc.statement_compound_id 
-        left join writing_quotes wq on 
+        left join writ_quotes wq on 
               j.basis_type = $4 
-          and j.basis_id = wq.writing_quote_id
+          and j.basis_id = wq.writ_quote_id
         left join user_auth_tokens auth on auth.auth_token = $2
         left join votes v on 
               v.target_type = $3
@@ -432,19 +432,19 @@ exports.JustificationsDao = class JustificationsDao {
           and j.root_statement_id = $1
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, authToken, VoteTargetType.JUSTIFICATION, JustificationBasisType.WRITING_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
+      this.database.query(sql, [rootStatementId, authToken, VoteTargetType.JUSTIFICATION, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
       this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
-      this.writingQuotesDao.readWritingQuotesByIdForRootStatementId(rootStatementId),
+      this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
     ])
       .then( ([
         {rows: justification_rows},
         statementCompoundsById,
-        writingQuotesById
+        writQuotesById
       ]) => {
         const {rootJustifications, counterJustificationsByJustificationId} =
           groupRootJustifications(rootStatementId, justification_rows)
         return map(rootJustifications, j =>
-          toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writingQuotesById))
+          toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById))
       })
   }
 

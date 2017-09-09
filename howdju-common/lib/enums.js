@@ -6,8 +6,8 @@ const _e = module.exports
 
 _e.EntityTypes = arrayToObject([
   'STATEMENT',
-  'WRITING',
-  'WRITING_QUOTE',
+  'WRIT',
+  'WRIT_QUOTE',
   'JUSTIFICATION',
   'USER',
 ])
@@ -27,8 +27,8 @@ _e.ActionTargetType = arrayToObject([
   'STATEMENT',
   'STATEMENT_COMPOUND',
   'JUSTIFICATION',
-  'WRITING_QUOTE',
-  'WRITING',
+  'WRIT_QUOTE',
+  'WRIT',
   'USER',
   'URL',
 ])
@@ -51,7 +51,7 @@ _e.JustificationRootPolarity = _e.JustificationPolarity
 
 _e.JustificationBasisType = arrayToObject([
   'STATEMENT_COMPOUND',
-  'WRITING_QUOTE',
+  'WRIT_QUOTE',
 ])
 // Anything you can start with to create a justification based upon.
 // (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)

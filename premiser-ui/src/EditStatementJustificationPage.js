@@ -44,12 +44,12 @@ import {EditorTypes} from "./reducers/editors"
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
   CREATE_STATEMENT: 'CREATE_STATEMENT',
-  /** Blank statement editor, pre-populated justification information (e.g. writing quote from bookmarklet)
+  /** Blank statement editor, pre-populated justification information (e.g. writ quote from bookmarklet)
    *
-   * Hide the writing switch.
+   * Hide the writ switch.
    */
   CREATE_JUSTIFICATION: 'CREATE_JUSTIFICATION',
-  /** Submit writing quote-based justification via query params */
+  /** Submit writ quote-based justification via query params */
   SUBMIT_JUSTIFICATION: 'SUBMIT_JUSTIFICATION',
 }
 
@@ -118,10 +118,10 @@ class EditStatementJustificationPage extends Component {
         } = this.props.queryParams
         this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification({}, {
           basis: {
-            type: JustificationBasisType.WRITING_QUOTE,
-            writingQuote: {
+            type: JustificationBasisType.WRIT_QUOTE,
+            writQuote: {
               quoteText,
-              writing: {
+              writ: {
                 title
               },
               urls: [{url}]
@@ -240,7 +240,7 @@ class EditStatementJustificationPage extends Component {
                     <NewJustificationEditorFields newJustification={justification}
                                                   id="newJustificationEditor"
                                                   basisStatementTextId="newJustificationBasisStatement"
-                                                  basisWritingQuoteTextId="newJustificationBasisWritingQuoteText"
+                                                  basisWritQuoteTextId="newJustificationBasisWritQuoteText"
                                                   name="justification"
                                                   suggestionsKey={suggestionKeys.createStatementPageJustification}
                                                   disabled={isSaving}

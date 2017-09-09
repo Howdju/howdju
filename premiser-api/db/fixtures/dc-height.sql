@@ -52,9 +52,9 @@ insert into citation_reference_urls (citation_reference_id, url_id, created) val
 (2, 2, NOW());
 
 insert into justifications (justification_id, root_statement_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, created) values
-(8,  8, 'POSITIVE', 'STATEMENT', 8, 'WRITING_QUOTE', 2, 'POSITIVE', NOW()),
+(8,  8, 'POSITIVE', 'STATEMENT', 8, 'WRIT_QUOTE', 2, 'POSITIVE', NOW()),
 (9,  8, 'NEGATIVE', 'JUSTIFICATION', 8, 'STATEMENT_COMPOUND', 1, 'NEGATIVE', NOW()),
-(10, 8, 'NEGATIVE', 'STATEMENT', 8, 'WRITING_QUOTE', 1, 'NEGATIVE', NOW()),
+(10, 8, 'NEGATIVE', 'STATEMENT', 8, 'WRIT_QUOTE', 1, 'NEGATIVE', NOW()),
 (11, 8, 'NEGATIVE', 'STATEMENT', 8, 'STATEMENT_COMPOUND', 1, 'NEGATIVE', NOW()),
 (12, 8, 'NEGATIVE', 'STATEMENT', 8, 'STATEMENT_COMPOUND', 1, 'NEGATIVE', NOW()),
 select setval('justifications_justification_id_seq', (select max(justification_id) from justifications));

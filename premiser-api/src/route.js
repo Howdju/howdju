@@ -22,9 +22,9 @@ const apiErrorCodes = require('howdju-common/lib/codes/apiErrorCodes')
 const {
   logger,
   authService,
-  writingsTitleSearcher,
-  writingQuotesService,
-  writingsService,
+  writsTitleSearcher,
+  writQuotesService,
+  writsService,
   justificationsService,
   perspectivesService,
   statementsService,
@@ -102,13 +102,13 @@ const routes = [
         })
   },
   {
-    id: 'searchWritings',
-    path: 'search-writings',
+    id: 'searchWrits',
+    path: 'search-writs',
     method: httpMethods.GET,
     handler: ({callback, request: { queryStringParameters: { searchText }}}) =>
-      writingsTitleSearcher.search(searchText)
+      writsTitleSearcher.search(searchText)
         .then(rankedStatements => {
-          logger.debug(`Returning ${rankedStatements.length} writings from search`)
+          logger.debug(`Returning ${rankedStatements.length} writs from search`)
           return ok({callback, body: rankedStatements})
         })
   },
@@ -262,14 +262,14 @@ const routes = [
         count,
         sortProperty,
         sortDirection,
-        writingQuoteId,
-        writingId,
+        writQuoteId,
+        writId,
         statementId,
         statementCompoundId,
       } = request.queryStringParameters
       const filters = {
-        writingQuoteId,
-        writingId,
+        writQuoteId,
+        writId,
         statementId,
         statementCompoundId,
       }
@@ -294,11 +294,11 @@ const routes = [
   },
 
   /*
-   * Writing quotes
+   * Writ quotes
    */
   {
-    id: 'readWritingQuotes',
-    path: 'writingQuotes',
+    id: 'readWritQuotes',
+    path: 'writQuotes',
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
@@ -307,13 +307,13 @@ const routes = [
         sortProperty,
         sortDirection,
       } = request.queryStringParameters
-      return writingQuotesService.readWritingQuotes({continuationToken, count, sortProperty, sortDirection})
-        .then(({writingQuotes, continuationToken}) => ok({callback, body: {writingQuotes, continuationToken}}))
+      return writQuotesService.readWritQuotes({continuationToken, count, sortProperty, sortDirection})
+        .then(({writQuotes, continuationToken}) => ok({callback, body: {writQuotes, continuationToken}}))
     }
   },
   {
-    id: 'readWritingQuote',
-    path: new RegExp('^writing-quotes/([^/]+)$'),
+    id: 'readWritQuote',
+    path: new RegExp('^writ-quotes/([^/]+)$'),
     method: httpMethods.GET,
     handler: ({
       callback,
@@ -321,34 +321,34 @@ const routes = [
         pathParameters,
       }
     }) => {
-      const writingQuoteId = pathParameters[0]
-      return writingQuotesService.readWritingQuote(writingQuoteId)
-        .then(writingQuote => ok({callback, body: {writingQuote}}))
+      const writQuoteId = pathParameters[0]
+      return writQuotesService.readWritQuote(writQuoteId)
+        .then(writQuote => ok({callback, body: {writQuote}}))
     }
   },
   {
-    id: 'updateWritingQuote',
-    path: new RegExp('^writing-quotes/([^/]+)$'),
+    id: 'updateWritQuote',
+    path: new RegExp('^writ-quotes/([^/]+)$'),
     method: httpMethods.PUT,
     handler: ({
       callback,
       request: {
         authToken,
         body: {
-          writingQuote
+          writQuote
         }
       }
-    }) => writingQuotesService.updateWritingQuote({authToken, writingQuote})
-      .then( writingQuote => ok({callback, body: {writingQuote}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('writingQuote'))
+    }) => writQuotesService.updateWritQuote({authToken, writQuote})
+      .then( writQuote => ok({callback, body: {writQuote}}))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('writQuote'))
   },
 
   /*
-   * Writings
+   * Writs
    */
   {
-    id: 'readWritings',
-    path: 'writings',
+    id: 'readWrits',
+    path: 'writs',
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
@@ -357,8 +357,8 @@ const routes = [
         sortProperty,
         sortDirection,
       } = request.queryStringParameters
-      return writingsService.readWritings({continuationToken, count, sortProperty, sortDirection})
-        .then(({writings, continuationToken}) => ok({callback, body: {writings, continuationToken}}))
+      return writsService.readWrits({continuationToken, count, sortProperty, sortDirection})
+        .then(({writs, continuationToken}) => ok({callback, body: {writs, continuationToken}}))
     }
   },
 

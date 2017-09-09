@@ -6,8 +6,8 @@ const Promise = require('bluebird')
 const snakeCase = require('lodash/snakeCase')
 
 const {
-  toWritingQuote,
-  toWritingQuoteUrl,
+  toWritQuote,
+  toWritQuoteUrl,
   toUrl,
 } = require('./orm')
 
@@ -21,7 +21,7 @@ const {
 const {DatabaseSortDirection} = require('./daoModels')
 
 
-exports.WritingQuotesDao = class WritingQuotesDao {
+exports.WritQuotesDao = class WritQuotesDao {
 
   constructor(logger, database, urlsDao) {
     this.logger = logger
@@ -29,33 +29,33 @@ exports.WritingQuotesDao = class WritingQuotesDao {
     this.urlsDao = urlsDao
   }
 
-  read(writingQuoteId) {
+  read(writQuoteId) {
     return Promise.all([
       this.database.query(`
         select 
-            wq.writing_quote_id
+            wq.writ_quote_id
           , wq.quote_text
-          , w.writing_id
-          , w.title as writing_title
-        from writing_quotes wq join writings w on 
-              wq.writing_quote_id = $1
-          and wq.writing_id = w.writing_id
+          , w.writ_id
+          , w.title as writ_title
+        from writ_quotes wq join writs w on 
+              wq.writ_quote_id = $1
+          and wq.writ_id = w.writ_id
           and wq.deleted is null
           and w.deleted is null
-          `, [writingQuoteId]),
-      this.readUrlsByWritingQuoteId(writingQuoteId)
+          `, [writQuoteId]),
+      this.readUrlsByWritQuoteId(writQuoteId)
     ])
       .then( ([
         {rows: [row]},
         urls,
       ]) => {
-        const writingQuote = toWritingQuote(row)
-        writingQuote.urls = urls
-        return writingQuote
+        const writQuote = toWritQuote(row)
+        writQuote.urls = urls
+        return writQuote
       })
   }
 
-  readWritingQuotes(sorts, count) {
+  readWritQuotes(sorts, count) {
     const args = []
     let countSql = ''
     if (isFinite(count)) {
@@ -69,7 +69,7 @@ exports.WritingQuotesDao = class WritingQuotesDao {
     ]
     const orderBySqls = []
     forEach(sorts, sort => {
-      const columnName = sort.property === 'id' ? 'writing_quote_id' : snakeCase(sort.property)
+      const columnName = sort.property === 'id' ? 'writ_quote_id' : snakeCase(sort.property)
       const direction = sort.direction === SortDirection.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
@@ -82,20 +82,20 @@ exports.WritingQuotesDao = class WritingQuotesDao {
     const sql = `
       select 
           wq.*
-        , w.title as writing_title
-        , w.created as writing_created
-      from writing_quotes wq
-          join writings w USING (writing_id)
+        , w.title as writ_title
+        , w.created as writ_created
+      from writ_quotes wq
+          join writs w USING (writ_id)
         where 
           ${whereSql}
       ${orderBySql}
       ${countSql}
       `
     return this.database.query(sql, args)
-      .then(({rows}) => map(rows, toWritingQuote))
+      .then(({rows}) => map(rows, toWritQuote))
   }
 
-  readMoreWritingQuotes(sortContinuations, count) {
+  readMoreWritQuotes(sortContinuations, count) {
     const args = []
     let countSql = ''
     if (isFinite(count)) {
@@ -117,7 +117,7 @@ exports.WritingQuotesDao = class WritingQuotesDao {
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = sortContinuation.p === 'id' ? 'writing_quote_id' : snakeCase(sortContinuation.p)
+      const columnName = sortContinuation.p === 'id' ? 'writ_quote_id' : snakeCase(sortContinuation.p)
       let operator = direction === 'asc' ? '>' : '<'
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`wq.${columnName} ${operator} $${args.length}`])
@@ -134,10 +134,10 @@ exports.WritingQuotesDao = class WritingQuotesDao {
     const sql = `
       select 
           wq.*
-        , w.title as writing_title
-        , w.created as writing_created
-      from writing_quotes wq
-          join writings w using (writing_id)
+        , w.title as writ_title
+        , w.created as writ_created
+      from writ_quotes wq
+          join writs w using (writ_id)
         where 
           ${whereSql}
         and (
@@ -147,149 +147,149 @@ exports.WritingQuotesDao = class WritingQuotesDao {
       ${countSql}
       `
     return this.database.query(sql, args)
-      .then( ({rows}) => map(rows, toWritingQuote) )
+      .then( ({rows}) => map(rows, toWritQuote) )
   }
 
-  readWritingQuotesByIdForRootStatementId(rootStatementId) {
+  readWritQuotesByIdForRootStatementId(rootStatementId) {
     const sql = `
       select 
-          wq.writing_quote_id
+          wq.writ_quote_id
         , wq.quote_text
-        , w.writing_id
-        , w.title as writing_title
+        , w.writ_id
+        , w.title as writ_title
       from justifications j 
-          join writing_quotes wq on 
+          join writ_quotes wq on 
                 j.root_statement_id = $1
             and j.basis_type = $2
             and j.deleted is null
-            and j.basis_id = wq.writing_quote_id
-          join writings w using (writing_id)
+            and j.basis_id = wq.writ_quote_id
+          join writs w using (writ_id)
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, JustificationBasisType.WRITING_QUOTE]),
-      this.urlsDao.readUrlsByWritingQuoteIdForRootStatementId(rootStatementId)
+      this.database.query(sql, [rootStatementId, JustificationBasisType.WRIT_QUOTE]),
+      this.urlsDao.readUrlsByWritQuoteIdForRootStatementId(rootStatementId)
     ])
       .then( ([
         {rows},
-        urlsByWritingQuoteId
+        urlsByWritQuoteId
       ]) => {
-        const writingQuotesById = {}
+        const writQuotesById = {}
         forEach(rows, row => {
-          const writingQuote = toWritingQuote(row)
-          const writingQuoteId = row.writing_quote_id
-          writingQuote.urls = urlsByWritingQuoteId[writingQuoteId]
-          writingQuotesById[writingQuoteId] = writingQuote
+          const writQuote = toWritQuote(row)
+          const writQuoteId = row.writ_quote_id
+          writQuote.urls = urlsByWritQuoteId[writQuoteId]
+          writQuotesById[writQuoteId] = writQuote
         })
-        return writingQuotesById
+        return writQuotesById
       })
   }
 
-  readWritingQuotesEquivalentTo(writingQuote) {
+  readWritQuotesEquivalentTo(writQuote) {
     // Empty strings should be stored as null quotes
-    const quoteText = writingQuote.quoteText || null
-    // Could also let the writing.title be missing and just look up by ID
+    const quoteText = writQuote.quoteText || null
+    // Could also let the writ.title be missing and just look up by ID
     return this.database.query(`
       select * 
-      from writing_quotes wq join writings w on 
-            wq.writing_id = w.writing_id
-        and case when $1::varchar is null then w.writing_id = $2 else w.title = $1 end
+      from writ_quotes wq join writs w on 
+            wq.writ_id = w.writ_id
+        and case when $1::varchar is null then w.writ_id = $2 else w.title = $1 end
         and case when $3::varchar is null then wq.quote_text is null else wq.quote_text = $3 end
         and w.deleted is null
         and wq.deleted is null 
       `,
-      [writingQuote.writing.title, writingQuote.writing.id, quoteText]
+      [writQuote.writ.title, writQuote.writ.id, quoteText]
     )
       .then( ({rows}) => {
         if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent writings`, writingQuote)
+          this.logger.error(`${rows.length} equivalent writs`, writQuote)
         }
-        return toWritingQuote(head(rows))
+        return toWritQuote(head(rows))
       })
   }
 
-  readWritingQuoteUrlsForWritingQuote(writingQuote) {
-    return this.database.query('select * from writing_quote_urls where writing_quote_id = $1 and deleted is null',
-      [writingQuote.id])
-      .then( ({rows}) => map(rows, toWritingQuoteUrl) )
+  readWritQuoteUrlsForWritQuote(writQuote) {
+    return this.database.query('select * from writ_quote_urls where writ_quote_id = $1 and deleted is null',
+      [writQuote.id])
+      .then( ({rows}) => map(rows, toWritQuoteUrl) )
   }
 
-  readWritingQuoteUrl(writingQuote, url) {
-    return this.database.query('select * from writing_quote_urls where writing_quote_id = $1 and url_id = $2 and deleted is null',
-      [writingQuote.id, url.id])
+  readWritQuoteUrl(writQuote, url) {
+    return this.database.query('select * from writ_quote_urls where writ_quote_id = $1 and url_id = $2 and deleted is null',
+      [writQuote.id, url.id])
       .then( ({rows}) => {
         if (rows.length > 1) {
-          this.logger.error(`URL ${url.id} is associated with writing quote ${writingQuote.id} multiple times`)
+          this.logger.error(`URL ${url.id} is associated with writ quote ${writQuote.id} multiple times`)
         }
-        return toWritingQuoteUrl(head(rows))
+        return toWritQuoteUrl(head(rows))
       })
   }
 
-  createWritingQuoteUrls(writingQuote, urls, userId, now) {
-    return Promise.all(map(urls, url => this.createWritingQuoteUrl(writingQuote, url, userId, now)))
+  createWritQuoteUrls(writQuote, urls, userId, now) {
+    return Promise.all(map(urls, url => this.createWritQuoteUrl(writQuote, url, userId, now)))
   }
 
-  createWritingQuoteUrl(writingQuote, url, userId, now) {
+  createWritQuoteUrl(writQuote, url, userId, now) {
     return this.database.query(`
-      insert into writing_quote_urls (writing_quote_id, url_id, creator_user_id, created) 
+      insert into writ_quote_urls (writ_quote_id, url_id, creator_user_id, created) 
       values ($1, $2, $3, $4)
       returning *
       `,
-      [writingQuote.id, url.id, userId, now]
+      [writQuote.id, url.id, userId, now]
     )
-      .then( ({rows}) => map(rows, toWritingQuoteUrl))
+      .then( ({rows}) => map(rows, toWritQuoteUrl))
   }
 
-  createWritingQuote(writingQuote, userId, now) {
+  createWritQuote(writQuote, userId, now) {
     const sql = `
-      insert into writing_quotes (quote_text, writing_id, creator_user_id, created) 
+      insert into writ_quotes (quote_text, writ_id, creator_user_id, created) 
       values ($1, $2, $3, $4) 
       returning *
     `
     // Don't insert an empty quote
-    const quoteText = writingQuote.quoteText || null
-    return this.database.query(sql, [quoteText, writingQuote.writing.id, userId, now])
-      .then( ({rows: [row]}) => toWritingQuote(row))
+    const quoteText = writQuote.quoteText || null
+    return this.database.query(sql, [quoteText, writQuote.writ.id, userId, now])
+      .then( ({rows: [row]}) => toWritQuote(row))
   }
 
-  hasEquivalentWritingQuotes(writingQuote) {
+  hasEquivalentWritQuotes(writQuote) {
     const sql = `
       select count(*) > 0 has_conflict 
-      from writing_quotes wq join writings w using (writing_id)
+      from writ_quotes wq join writs w using (writ_id)
         where 
-              wq.writing_quote_id != $1 
-          and (wq.writing_id = $3 or w.title = $4)
+              wq.writ_quote_id != $1 
+          and (wq.writ_id = $3 or w.title = $4)
           and wq.quote_text = $2
           and wq.deleted is null
           and w.deleted is null
       `
-    const args = [writingQuote.id, writingQuote.quoteText, writingQuote.writing.id, writingQuote.writing.title]
+    const args = [writQuote.id, writQuote.quoteText, writQuote.writ.id, writQuote.writ.title]
     return this.database.query(sql, args)
       .then( ({rows: [{has_conflict}]}) => has_conflict)
   }
 
-  hasWritingQuoteChanged(writingQuote) {
+  hasWritQuoteChanged(writQuote) {
     const sql = `
       select count(*) < 1 as has_changed 
-      from writing_quotes 
-        where writing_quote_id = $1 and quote_text = $2
+      from writ_quotes 
+        where writ_quote_id = $1 and quote_text = $2
       `
-    return this.database.query(sql, [writingQuote.id, writingQuote.quoteText])
+    return this.database.query(sql, [writQuote.id, writQuote.quoteText])
       .then( ({rows: [{has_changed}]}) => has_changed )
   }
 
-  readUrlsByWritingQuoteId(writingQuoteId) {
+  readUrlsByWritQuoteId(writQuoteId) {
     return this.database.query(`
       select u.* 
-      from urls u join writing_quote_urls wqu using (url_id) 
+      from urls u join writ_quote_urls wqu using (url_id) 
         where 
-                wqu.writing_quote_id = $1
+                wqu.writ_quote_id = $1
             and u.deleted is null
             and wqu.deleted is null
-      `, [writingQuoteId])
+      `, [writQuoteId])
       .then( ({rows}) => map(rows, toUrl))
   }
 
-  isBasisToJustificationsHavingOtherUsersVotes(userId, writingQuote) {
+  isBasisToJustificationsHavingOtherUsersVotes(userId, writQuote) {
     const sql = `
       with
         basis_justifications as (
@@ -308,14 +308,14 @@ exports.WritingQuotesDao = class WritingQuotesDao {
       select count(*) > 0 as has_votes from basis_justification_votes
     `
     return this.database.query(sql, [
-      JustificationBasisType.WRITING_QUOTE,
-      writingQuote.id,
+      JustificationBasisType.WRIT_QUOTE,
+      writQuote.id,
       userId,
       VoteTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
   }
 
-  isBasisToOtherUsersJustifications(userId, writingQuote) {
+  isBasisToOtherUsersJustifications(userId, writQuote) {
     const sql = `
       select count(*) > 0 as has_other_users_justifications 
       from justifications where 
@@ -325,13 +325,13 @@ exports.WritingQuotesDao = class WritingQuotesDao {
         and deleted is null
         `
     return this.database.query(sql, [
-      JustificationBasisType.WRITING_QUOTE,
-      writingQuote.id,
+      JustificationBasisType.WRIT_QUOTE,
+      writQuote.id,
       userId,
     ]).then( ({rows: [{has_other_users_justifications: isBasisToOtherUsersJustifications}]}) => isBasisToOtherUsersJustifications)
   }
 
-  isBasisToJustificationsHavingOtherUsersCounters(userId, writingQuote) {
+  isBasisToJustificationsHavingOtherUsersCounters(userId, writQuote) {
     const sql = `
       with
         basis_justifications as (
@@ -349,33 +349,33 @@ exports.WritingQuotesDao = class WritingQuotesDao {
       select count(*) > 0 as has_other_user_counters from counters
     `
     return this.database.query(sql, [
-      JustificationBasisType.WRITING_QUOTE,
-      writingQuote.id,
+      JustificationBasisType.WRIT_QUOTE,
+      writQuote.id,
       userId,
       JustificationTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_other_user_counters: isBasisToJustificationsHavingOtherUsersCounters}]}) => isBasisToJustificationsHavingOtherUsersCounters)
   }
 
-  updateWritingQuote(writingQuote) {
+  updateWritQuote(writQuote) {
     return this.database.query(
-      'update writing_quotes set quote_text = $1 where writing_quote_id = $2 and deleted is null returning *',
-      [writingQuote.quoteText, writingQuote.id]
+      'update writ_quotes set quote_text = $1 where writ_quote_id = $2 and deleted is null returning *',
+      [writQuote.quoteText, writQuote.id]
     )
-      .then( ({rows: [writingQuoteRow]}) => {
-        const updatedWritingQuote = toWritingQuote(writingQuoteRow)
-        updatedWritingQuote.writing = writingQuote.writing
-        updatedWritingQuote.urls = writingQuoteRow.urls
-        return updatedWritingQuote
+      .then( ({rows: [writQuoteRow]}) => {
+        const updatedWritQuote = toWritQuote(writQuoteRow)
+        updatedWritQuote.writ = writQuote.writ
+        updatedWritQuote.urls = writQuoteRow.urls
+        return updatedWritQuote
       })
   }
 
-  deleteWritingQuoteUrls(writingQuote, urls, now) {
+  deleteWritQuoteUrls(writQuote, urls, now) {
     const sql = `
-      update writing_quote_urls set deleted = $1 
-        where writing_quote_id = $2 and url_id = any ($3) 
+      update writ_quote_urls set deleted = $1 
+        where writ_quote_id = $2 and url_id = any ($3) 
         returning *
     `
-    return this.database.query(sql, [now, writingQuote.id, map(urls, url => url.id)])
-      .then( ({rows}) => map(rows, toWritingQuoteUrl) )
+    return this.database.query(sql, [now, writQuote.id, map(urls, url => url.id)])
+      .then( ({rows}) => map(rows, toWritQuoteUrl) )
   }
 }

@@ -1,12 +1,11 @@
 # Howdju UI TODO
 
 * Paraphrases
-  * textualSourceQuote.source => .writing
-  * quote => quote_text, citation.text => .title
+  * rename files to Writ
   
-  * Replace citation\s*reference with WritingQuote
+  * Replace citation\s*reference with WritQuote
   * citation_reference with textual_source_quote
-  * Replace Citation with Writing
+  * Replace Citation with Writ
   * routing URLs, actions, 
   * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
   * Create staging DB for testing schema changes?
@@ -397,7 +396,7 @@ Cat meeting design notes:
   a disjustification on that statement?
 
 * Add messages for when cannot edit and why
-* When statements or writings or writing quotes conflict, offer to merge them somehow?
+* When statements or writs or writ quotes conflict, offer to merge them somehow?
 * Add time grade period checks to entity update methods
 
 ### Improvements
@@ -406,7 +405,7 @@ Cat meeting design notes:
   * http://redux-form.com/6.8.0/docs/GettingStarted.md/
 * Change submit button message to "create justification" when statement exists
   * Add link to statement when statement exists
-* Difficult to distinguish writingQuote having only citation.text from statement justification
+* Difficult to distinguish writQuote having only citation.text from statement justification
 * Show more error messages, such as OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT
 * Api
   * cancel autocomplete upon submit (add autocomplete keys to submit?).
@@ -418,7 +417,7 @@ Cat meeting design notes:
 * Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
   * Or should we not be normalizing from API?  Should we normalize in reducer?
   * Change this for autocomplete fetches in entities
-* Delete writing quote URL right button is misaligned
+* Delete writ quote URL right button is misaligned
 * Support [pg prepared statements](https://node-postgres.com/features/queries#prepared-statements)  
 * Create indices in postgres
 

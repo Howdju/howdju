@@ -91,6 +91,7 @@ export const indexRootJustificationsByRootStatementId = justificationsById => {
 
 const defaultCustomizer = () => undefined
 
+/** Identifies non-stubs (objects that have more than the ID) by testing for the presence of a property */
 const stubSkippingCustomizer = testPropertyName => (objValue, srcValue, key, object, source) => {
   if (has(srcValue, testPropertyName)) {
     return srcValue
@@ -125,19 +126,19 @@ export default handleActions({
     api.fetchStatement.response,
     api.fetchStatements.response,
     api.fetchRecentStatements.response,
-    api.fetchRecentWritings.response,
-    api.fetchRecentWritingQuotes.response,
+    api.fetchRecentWrits.response,
+    api.fetchRecentWritQuotes.response,
     api.fetchStatementJustifications.response,
     api.fetchFeaturedPerspectives.response,
     api.fetchJustificationsSearch.response,
     api.fetchRecentJustifications.response,
-    api.fetchWritingQuote.response,
+    api.fetchWritQuote.response,
     api.createStatement.response,
     api.updateStatement.response,
-    api.updateWritingQuote.response,
+    api.updateWritQuote.response,
     api.fetchMainSearchSuggestions.response,
     api.fetchStatementTextSuggestions.response,
-    api.fetchWritingTitleSuggestions.response,
+    api.fetchWritTitleSuggestions.response,
   )]: {
     next: (state, action) => {
       const updates = map([
@@ -146,8 +147,8 @@ export default handleActions({
         ['statementCompounds'],
         ['justifications', justificationsCustomizer()],
         ['votes'],
-        ['writingQuotes', stubSkippingCustomizer('text')],
-        ['writings', stubSkippingCustomizer('title')],
+        ['writQuotes', stubSkippingCustomizer('quoteText')],
+        ['writs', stubSkippingCustomizer('title')],
       ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
@@ -311,8 +312,8 @@ export default handleActions({
 }, {
   statements: {},
   statementCompounds: {},
-  writings: {},
-  writingQuotes: {},
+  writs: {},
+  writQuotes: {},
   votes: {},
   justifications: {},
   justificationsByRootStatementId: {},

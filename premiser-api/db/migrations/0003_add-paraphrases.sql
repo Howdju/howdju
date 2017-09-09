@@ -24,26 +24,26 @@ create table source_excerpt_paraphrases (
   source_excerpt_paraphrase_id serial,
   paraphrasing_statement_id integer,
   source_excerpt_id integer,
-  source_excerpt_type varchar(64) -- WRITING_QUOTE, IMAGE_REGION, VIDEO_SEGMENT, etc.
+  source_excerpt_type varchar(64) -- WRIT_QUOTE, IMAGE_REGION, VIDEO_SEGMENT, etc.
 );
 
 -- Rename citation references and citations to match the new naming
-alter table citation_references rename to writing_quotes;
-alter table writing_quotes rename column citation_reference_id to writing_quote_id;
-alter table writing_quotes rename column citation_id to writing_id;
-alter table writing_quotes rename column quote to quote_text;
+alter table citation_references rename to writ_quotes;
+alter table writ_quotes rename column citation_reference_id to writ_quote_id;
+alter table writ_quotes rename column citation_id to writ_id;
+alter table writ_quotes rename column quote to quote_text;
 
-alter table citation_reference_urls rename to writing_quote_urls;
-alter table writing_quote_urls rename column citation_reference_id to writing_quote_id;
+alter table citation_reference_urls rename to writ_quote_urls;
+alter table writ_quote_urls rename column citation_reference_id to writ_quote_id;
 
-alter table citations rename to writings;
-alter table writings rename column citation_id to writing_id;
-alter table writings rename column text to title;
-alter table writings rename column normal_text to normal_title;
+alter table citations rename to writs;
+alter table writs rename column citation_id to writ_id;
+alter table writs rename column text to title;
+alter table writs rename column normal_text to normal_title;
 
 
-update justifications set basis_type = 'WRITING_QUOTE' where basis_type = 'CITATION_REFERENCE';
+update justifications set basis_type = 'WRIT_QUOTE' where basis_type = 'CITATION_REFERENCE';
 
 alter index statements_idx rename to statement_text_fulltext_idx;
 drop index citations_idx;
-create index writing_title_fulltext_idx ON writings USING GIN (to_tsvector('english', title));
+create index writ_title_fulltext_idx ON writs USING GIN (to_tsvector('english', title));

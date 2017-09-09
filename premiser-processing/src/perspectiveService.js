@@ -14,15 +14,15 @@ const {toJustification} = require('../orm')
 const statementsDao = require('./statementsDao')
 const {groupRootJustifications} = require('./util')
 const statementCompoundsDao = require('./statementCompoundsDao')
-const writingQuotesDao = require('./writingQuotesDao')
+const writQuotesDao = require('./writQuotesDao')
 
 
 class PerspectivesDao {
-  constructor(database, statementsDao, statementCompoundsDao, writingQuotesDao) {
+  constructor(database, statementsDao, statementCompoundsDao, writQuotesDao) {
     this.database = database
     this.statementsDao = statementsDao
     this.statementCompoundsDao = statementCompoundsDao
-    this.writingQuotesDao = writingQuotesDao
+    this.writQuotesDao = writQuotesDao
   }
 
   readFeaturedPerspectivesWithVotesForOptionalUserId(userId) {
@@ -222,15 +222,15 @@ class PerspectivesDao {
     return Promise.all(map(rootStatementIdByPerspectiveId, (rootStatementId, perspectiveId) =>
       Promise.all([
         this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
-        this.writingQuotesDao.readWritingQuotesByIdForRootStatementId(rootStatementId),
+        this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
       ])
         .then( ([
           statementCompoundsById,
-          writingQuotesById
+          writQuotesById
         ]) => {
           const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(rootStatementId, rows)
           const justifications = map(rootJustifications, j =>
-            toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writingQuotesById))
+            toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById))
           return Promise.props({
             perspectiveId,
             statement: this.statementsDao.readStatementById(rootStatementId),
@@ -249,4 +249,4 @@ class PerspectivesDao {
   }
 }
 
-module.exports = new PerspectivesDao(statementsDao, statementCompoundsDao, writingQuotesDao)
+module.exports = new PerspectivesDao(statementsDao, statementCompoundsDao, writQuotesDao)

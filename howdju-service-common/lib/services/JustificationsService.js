@@ -74,7 +74,7 @@ exports.JustificationsService = class JustificationsService {
     actionsService,
     authService,
     statementsService,
-    writingQuotesService,
+    writQuotesService,
     statementCompoundsService,
     justificationsDao,
     permissionsDao
@@ -85,7 +85,7 @@ exports.JustificationsService = class JustificationsService {
     this.actionsService = actionsService
     this.authService = authService
     this.statementsService = statementsService
-    this.writingQuotesService = writingQuotesService
+    this.writQuotesService = writQuotesService
     this.statementCompoundsService = statementCompoundsService
     this.justificationsDao = justificationsDao
     this.permissionsDao = permissionsDao
@@ -267,13 +267,13 @@ exports.JustificationsService = class JustificationsService {
   createJustificationBasis(justificationBasis, userId, now) {
     switch (justificationBasis.type) {
 
-      case JustificationBasisType.WRITING_QUOTE:
-        return this.writingQuotesService.createWritingQuoteAsUser(justificationBasis.entity, userId, now)
+      case JustificationBasisType.WRIT_QUOTE:
+        return this.writQuotesService.createWritQuoteAsUser(justificationBasis.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-          .then( ({isExtant, writingQuote}) => ({
+          .then( ({isExtant, writQuote}) => ({
             isExtant,
-            basisType: JustificationBasisType.WRITING_QUOTE,
-            basisEntity: writingQuote,
+            basisType: JustificationBasisType.WRIT_QUOTE,
+            basisEntity: writQuote,
           }))
 
       case JustificationBasisType.STATEMENT_COMPOUND:

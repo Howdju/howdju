@@ -252,20 +252,20 @@ const migrateCitationUrls = () => log('migrating citation URLs')
               ['local_citation', 'citation_references', row.citation_id]
           ),
         ])
-        .then( ([{rows: [urlMigrationRow]}, {rows: [writingQuoteMigrationRow]}]) => {
+        .then( ([{rows: [urlMigrationRow]}, {rows: [writQuoteMigrationRow]}]) => {
           if (!urlMigrationRow) {
             throw new Error(`No URL migrated having old ID ${row.url_id}`)
           }
-          if (!writingQuoteMigrationRow) {
+          if (!writQuoteMigrationRow) {
             throw new Error(`No citation reference migrated from old citation having ID ${row.citation_id}`)
           }
           const urlId = urlMigrationRow.new_id,
-              writingQuoteId = writingQuoteMigrationRow.new_id
+              writQuoteId = writQuoteMigrationRow.new_id
 
-          return query('insert into citation_reference_urls (citation_reference_id, url_id) values ($1, $2)', [writingQuoteId, urlId])
+          return query('insert into citation_reference_urls (citation_reference_id, url_id) values ($1, $2)', [writQuoteId, urlId])
               .then(() => query(
                   'insert into migration_translations (old_table_name, new_table_name, old_id, new_id) values ($1, $2, $3, $4)',
-                  ['local_citation_urls', 'citation_reference_urls', row.id, writingQuoteId + '-' + urlId]
+                  ['local_citation_urls', 'citation_reference_urls', row.id, writQuoteId + '-' + urlId]
               ))
         })
     )))

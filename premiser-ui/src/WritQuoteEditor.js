@@ -16,29 +16,29 @@ import {
   CANCEL_BUTTON_LABEL, EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
 } from "./texts"
 import {default as t} from './texts'
-import WritingQuoteEditorFields from "./WritingQuoteEditorFields"
+import WritQuoteEditorFields from "./WritQuoteEditorFields"
 
-class WritingQuoteEditor extends Component {
+class WritQuoteEditor extends Component {
 
   onPropertyChange = (properties) => {
-    this.props.editors.propertyChange(WritingQuoteEditor.editorType, this.props.editorId, properties)
+    this.props.editors.propertyChange(WritQuoteEditor.editorType, this.props.editorId, properties)
   }
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.editors.commitEdit(WritingQuoteEditor.editorType, this.props.editorId)
+    this.props.editors.commitEdit(WritQuoteEditor.editorType, this.props.editorId)
   }
 
   onCancelEdit = () => {
-    this.props.editors.cancelEdit(WritingQuoteEditor.editorType, this.props.editorId)
+    this.props.editors.cancelEdit(WritQuoteEditor.editorType, this.props.editorId)
   }
 
   onAddUrl = () => {
-    this.props.editors.addUrl(WritingQuoteEditor.editorType, this.props.editorId)
+    this.props.editors.addUrl(WritQuoteEditor.editorType, this.props.editorId)
   }
 
   onRemoveUrl = (url, index) => {
-    this.props.editors.removeUrl(WritingQuoteEditor.editorType, this.props.editorId, url, index)
+    this.props.editors.removeUrl(WritQuoteEditor.editorType, this.props.editorId, url, index)
   }
 
   render() {
@@ -59,9 +59,9 @@ class WritingQuoteEditor extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <WritingQuoteEditorFields {...rest}
+          <WritQuoteEditorFields {...rest}
                                          id={id}
-                                         writingQuote={editEntity}
+                                         writQuote={editEntity}
                                          disabled={isSaving}
                                          suggestionsKey={suggestionsKey}
                                          onPropertyChange={this.onPropertyChange}
@@ -92,7 +92,7 @@ class WritingQuoteEditor extends Component {
 
   }
 }
-WritingQuoteEditor.propTypes = {
+WritQuoteEditor.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Identifies the editor's state */
@@ -100,10 +100,10 @@ WritingQuoteEditor.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
 }
-WritingQuoteEditor.editorType = EditorTypes.WRITING_QUOTE
+WritQuoteEditor.editorType = EditorTypes.WRIT_QUOTE
 
 const mapStateToProps = (state, ownProps) => {
-  const editorState = get(state.editors, [WritingQuoteEditor.editorType, ownProps.editorId], {})
+  const editorState = get(state.editors, [WritQuoteEditor.editorType, ownProps.editorId], {})
   return {
     editorState,
   }
@@ -111,4 +111,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   editors,
-}))(WritingQuoteEditor)
+}))(WritQuoteEditor)

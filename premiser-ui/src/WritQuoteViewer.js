@@ -5,26 +5,26 @@ import map from 'lodash/map'
 import cn from 'classnames'
 
 import {
-  truncateWritingQuoteText,
+  truncateWritQuoteText,
   isTextLong,
 } from "./viewModels"
 import {extractDomain} from "./util"
 import * as characters from './characters'
 import {default as t} from './texts'
 
-import './WritingQuoteViewer.scss'
+import './WritQuoteViewer.scss'
 
 
-const WritingQuoteViewer = props => {
+const WritQuoteViewer = props => {
   const {
-    writingQuote,
+    writQuote,
     // doShowControls,
     isExpanded,
     onExpand,
     onCollapse,
   } = props
 
-  const urls = map(writingQuote.urls, u => {
+  const urls = map(writQuote.urls, u => {
     const id = `url-${u.id}-list-item`
     return (
       <li id={id} key={id} className="url">
@@ -39,14 +39,14 @@ const WritingQuoteViewer = props => {
     )
   })
 
-  const _isQuoteTextLong = isTextLong(writingQuote.quoteText)
-  const hasQuote = !!writingQuote.quoteText
+  const _isQuoteTextLong = isTextLong(writQuote.quoteText)
+  const hasQuote = !!writQuote.quoteText
   const quoteText = !_isQuoteTextLong || isExpanded ?
-    writingQuote.quoteText :
-    truncateWritingQuoteText(writingQuote.quoteText, {omission: ''})
+    writQuote.quoteText :
+    truncateWritQuoteText(writQuote.quoteText, {omission: ''})
 
   return (
-    <div className="writing-quote-viewer">
+    <div className="writ-quote-viewer">
       <div className={cn("quote", {
         hidden: !hasQuote
       })}>
@@ -71,11 +71,11 @@ const WritingQuoteViewer = props => {
           />
         )}
       </div>
-      <div className="writing-title">{writingQuote.writing.title}</div>
-      <ul className="writing-quote-urls">
+      <div className="writ-title">{writQuote.writ.title}</div>
+      <ul className="writ-quote-urls">
         {urls}
       </ul>
     </div>
   )
 }
-export default WritingQuoteViewer
+export default WritQuoteViewer

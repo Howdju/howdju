@@ -1,8 +1,8 @@
 const {
   ActionsDao,
   AuthDao,
-  WritingQuotesDao,
-  WritingsDao,
+  WritQuotesDao,
+  WritsDao,
   JobHistoryDao,
   JustificationScoresDao,
   JustificationsDao,
@@ -28,14 +28,14 @@ exports.actionsDao = new ActionsDao(database)
 exports.authDao = new AuthDao(logger, database)
 
 exports.urlsDao = new UrlsDao(logger, database)
-exports.writingQuotesDao = new WritingQuotesDao(logger, database, exports.urlsDao)
+exports.writQuotesDao = new WritQuotesDao(logger, database, exports.urlsDao)
 
-exports.writingsDao = new WritingsDao(logger, database)
+exports.writsDao = new WritsDao(logger, database)
 exports.jobHistoryDao = new JobHistoryDao(database)
 exports.justificationScoresDao = new JustificationScoresDao(database)
 
 exports.statementCompoundsDao = new StatementCompoundsDao(logger, database)
-exports.justificationsDao = new JustificationsDao(logger, database, exports.statementCompoundsDao, exports.writingQuotesDao)
+exports.justificationsDao = new JustificationsDao(logger, database, exports.statementCompoundsDao, exports.writQuotesDao)
 
 exports.permissionsDao = new PermissionsDao(logger, database)
 exports.perspectivesDao = new PerspectivesDao(logger, database)

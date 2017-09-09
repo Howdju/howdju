@@ -2,24 +2,24 @@ import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
 import ExpandableChildContainer from './ExpandableChildContainer'
-import WritingQuoteCard from './WritingQuoteCard'
+import WritQuoteCard from './WritQuoteCard'
 import {default as t} from './texts'
 import {
   api,
   ui,
 } from './actions'
-import {writingQuotesSchema} from "./schemas"
+import {writQuotesSchema} from "./schemas"
 
-export default class RecentWritingQuotesWidget extends Component {
+export default class RecentWritQuotesWidget extends Component {
 
-  writingQuoteToCard = writingQuote => {
+  writQuoteToCard = writQuote => {
     const id = this.props.id
-    const cardId = `${id}-writing-reference-${writingQuote.id}`
+    const cardId = `${id}-writ-reference-${writQuote.id}`
     return (
-      <ExpandableChildContainer ExpandableChildComponent={WritingQuoteCard}
+      <ExpandableChildContainer ExpandableChildComponent={WritQuoteCard}
                                 widgetId={cardId}
                                 key={cardId}
-                                writingQuote={writingQuote}
+                                writQuote={writQuote}
                                 className={ListEntitiesWidget.smallCellClasses}
       />
     )
@@ -36,11 +36,11 @@ export default class RecentWritingQuotesWidget extends Component {
       <ListEntitiesWidget {...rest}
                           id={id}
                           widgetId={widgetId}
-                          entitiesWidgetStateKey="recentWritingQuotes"
-                          clearEntities={ui.clearRecentWritingQuotes}
-                          fetchEntities={api.fetchRecentWritingQuotes}
-                          entityToCard={this.writingQuoteToCard}
-                          entitiesSchema={writingQuotesSchema}
+                          entitiesWidgetStateKey="recentWritQuotes"
+                          clearEntities={ui.clearRecentWritQuotes}
+                          fetchEntities={api.fetchRecentWritQuotes}
+                          entityToCard={this.writQuoteToCard}
+                          entitiesSchema={writQuotesSchema}
                           emptyEntitiesMessage={t("No recent quotes")}
                           loadErrorMessage={t("There was an error fetching the recent quotes.")}
       />

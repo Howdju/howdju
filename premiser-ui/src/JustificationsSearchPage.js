@@ -20,14 +20,14 @@ import config from './config'
 
 const justificationSearchParams = (locationSearch) => {
   const {
-    writingQuoteId,
-    writingId,
+    writQuoteId,
+    writId,
     statementCompoundId,
     statementId,
   } = queryString.parse(locationSearch)
   return {
-    writingQuoteId,
-    writingId,
+    writQuoteId,
+    writId,
     statementCompoundId,
     statementId,
   }

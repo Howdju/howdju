@@ -17,8 +17,8 @@ class Paths {
 
   statement = ({id, slug}) => `/s/${id}/${slug || ''}`
   justification = j => this.statement(j.rootStatement) + '#justification-' + j.id
-  writingUsages = writing => this.searchJustifications({writingId: writing.id})
-  writingQuoteUsages = writingQuote => this.searchJustifications({writingQuoteId: writingQuote.id})
+  writUsages = writ => this.searchJustifications({writId: writ.id})
+  writQuoteUsages = writQuote => this.searchJustifications({writQuoteId: writQuote.id})
 
   createJustification = (basisType, basisId) => createPath({
     pathname: createJustificationPath,

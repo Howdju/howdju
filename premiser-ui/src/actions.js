@@ -56,19 +56,19 @@ export const api = {
   fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', statementCompoundId => ({statementCompoundId})),
   fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
   fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
-  fetchWritingQuote: apiActionCreator('FETCH_WRITING_QUOTE', writingQuoteId => ({writingQuoteId})),
+  fetchWritQuote: apiActionCreator('FETCH_WRIT_QUOTE', writQuoteId => ({writQuoteId})),
 
   fetchRecentStatements: apiActionCreator('FETCH_RECENT_STATEMENTS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
-  fetchRecentWritings: apiActionCreator('FETCH_RECENT_WRITINGS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
-  fetchRecentWritingQuotes: apiActionCreator('FETCH_RECENT_WRITING_QUOTES', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
+  fetchRecentWrits: apiActionCreator('FETCH_RECENT_WRITS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
+  fetchRecentWritQuotes: apiActionCreator('FETCH_RECENT_WRIT_QUOTES', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentJustifications: apiActionCreator('FETCH_RECENT_JUSTIFICATIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
 
   fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
 
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
-    ({writingQuoteId, writingId, statementCompoundId, statementId, count, continuationToken}) => ({
-      writingQuoteId,
-      writingId,
+    ({writQuoteId, writId, statementCompoundId, statementId, count, continuationToken}) => ({
+      writQuoteId,
+      writId,
       statementCompoundId,
       statementId,
       count,
@@ -118,12 +118,12 @@ export const api = {
     statementText,
     suggestionsKey,
   })),
-  fetchWritingTitleSuggestions: apiActionCreator('API/FETCH_WRITING_TITLE_SUGGESTIONS', (writingTitle, suggestionsKey) => ({
-    writingTitle,
+  fetchWritTitleSuggestions: apiActionCreator('API/FETCH_WRIT_TITLE_SUGGESTIONS', (writTitle, suggestionsKey) => ({
+    writTitle,
     suggestionsKey,
   })),
   createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeJustification(justification)})),
-  updateWritingQuote: apiActionCreator('UPDATE_WRITING_QUOTE', writingQuote => ({writingQuote})),
+  updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', writQuote => ({writQuote})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', justification => ({justification})),
   fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', searchText => ({searchText})),
   fetchMainSearchSuggestions: apiActionCreator('FETCH_MAIN_SEARCH_SUGGESTIONS', (searchText, suggestionsKey) => ({searchText, suggestionsKey})),
@@ -151,8 +151,8 @@ export const ui = {
   clearJustificationsSearch: actionCreator('UI/CLEAR_JUSTIFICATIONS_SEARCH'),
 
   clearRecentStatements: actionCreator('UI/CLEAR_RECENT_STATEMENTS', widgetId => ({widgetId})),
-  clearRecentWritings: actionCreator('UI/CLEAR_RECENT_WRITINGS', widgetId => ({widgetId})),
-  clearRecentWritingQuotes: actionCreator('UI/CLEAR_RECENT_WRITING_QUOTES', widgetId => ({widgetId})),
+  clearRecentWrits: actionCreator('UI/CLEAR_RECENT_WRITS', widgetId => ({widgetId})),
+  clearRecentWritQuotes: actionCreator('UI/CLEAR_RECENT_WRIT_QUOTES', widgetId => ({widgetId})),
   clearRecentJustifications: actionCreator('UI/CLEAR_RECENT_JUSTIFICATIONS', widgetId => ({widgetId})),
 
   beginInteractionWithTransient: actionCreator('UI/BEGIN_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),

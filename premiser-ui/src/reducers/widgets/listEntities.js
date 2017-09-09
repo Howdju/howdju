@@ -41,8 +41,8 @@ const clearWidgetStateReducer = (defaultWidgetState) => (state, action) => {
 }
 
 const defaultRecentStatementsWidgetState = {recentStatements: [], continuationToken: null}
-const defaultRecentWritingsWidgetState = {recentWritings: [], continuationToken: null}
-const defaultRecentWritingQuotesWidgetState = {recentWritingQuotes: [], continuationToken: null}
+const defaultRecentWritsWidgetState = {recentWrits: [], continuationToken: null}
+const defaultRecentWritQuotesWidgetState = {recentWritQuotes: [], continuationToken: null}
 const defaultRecentJustificationsWidgetState = {recentJustifications: [], continuationToken: null}
 export default handleActions({
   [api.fetchRecentStatements]: widgetRequestReducer(defaultRecentStatementsWidgetState),
@@ -50,15 +50,15 @@ export default handleActions({
     next: widgetResponseReducer(defaultRecentStatementsWidgetState, 'recentStatements', 'statements'),
     throw: widgetResponseErrorReducer(defaultRecentStatementsWidgetState),
   },
-  [api.fetchRecentWritings]: widgetRequestReducer(defaultRecentWritingsWidgetState),
-  [api.fetchRecentWritings.response]: {
-    next: widgetResponseReducer(defaultRecentWritingsWidgetState, 'recentWritings', 'writings'),
-    throw: widgetResponseErrorReducer(defaultRecentWritingsWidgetState),
+  [api.fetchRecentWrits]: widgetRequestReducer(defaultRecentWritsWidgetState),
+  [api.fetchRecentWrits.response]: {
+    next: widgetResponseReducer(defaultRecentWritsWidgetState, 'recentWrits', 'writs'),
+    throw: widgetResponseErrorReducer(defaultRecentWritsWidgetState),
   },
-  [api.fetchRecentWritingQuotes]: widgetRequestReducer(defaultRecentWritingQuotesWidgetState),
-  [api.fetchRecentWritingQuotes.response]: {
-    next: widgetResponseReducer(defaultRecentWritingQuotesWidgetState, 'recentWritingQuotes', 'writingQuotes'),
-    throw: widgetResponseErrorReducer(defaultRecentWritingQuotesWidgetState),
+  [api.fetchRecentWritQuotes]: widgetRequestReducer(defaultRecentWritQuotesWidgetState),
+  [api.fetchRecentWritQuotes.response]: {
+    next: widgetResponseReducer(defaultRecentWritQuotesWidgetState, 'recentWritQuotes', 'writQuotes'),
+    throw: widgetResponseErrorReducer(defaultRecentWritQuotesWidgetState),
   },
   [api.fetchRecentJustifications]: widgetRequestReducer(defaultRecentJustificationsWidgetState),
   [api.fetchRecentJustifications.response]: {
@@ -66,7 +66,7 @@ export default handleActions({
     throw: widgetResponseErrorReducer(defaultRecentJustificationsWidgetState),
   },
   [ui.clearRecentStatements]: clearWidgetStateReducer(defaultRecentStatementsWidgetState),
-  [ui.clearRecentWritings]: clearWidgetStateReducer(defaultRecentWritingsWidgetState),
-  [ui.clearRecentWritingQuotes]: clearWidgetStateReducer(defaultRecentWritingQuotesWidgetState),
+  [ui.clearRecentWrits]: clearWidgetStateReducer(defaultRecentWritsWidgetState),
+  [ui.clearRecentWritQuotes]: clearWidgetStateReducer(defaultRecentWritQuotesWidgetState),
   [ui.clearRecentJustifications]: clearWidgetStateReducer(defaultRecentJustificationsWidgetState),
 }, {})

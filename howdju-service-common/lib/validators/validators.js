@@ -12,6 +12,7 @@ const {
   JustificationTargetType,
   isTruthy,
   modelErrorCodes,
+  newImpossibleError,
 } = require('howdju-common')
 
 class CredentialValidator {
@@ -53,10 +54,10 @@ CredentialValidator.blankErrors = () => ({
 })
 
 class JustificationValidator {
-  constructor(statementValidator, statementCompoundValidator, writingQuoteValidator) {
+  constructor(statementValidator, statementCompoundValidator, writQuoteValidator) {
     this.statementValidator = statementValidator
     this.statementCompoundValidator = statementCompoundValidator
-    this.writingQuoteValidator = writingQuoteValidator
+    this.writQuoteValidator = writQuoteValidator
   }
   validate(justification, ignore={}) {
     const errors = JustificationValidator.blankErrors()
@@ -134,12 +135,12 @@ class JustificationValidator {
             // Must have valid props
             let basisEntityErrors
             switch (justification.basis.type) {
-              case JustificationBasisType.WRITING_QUOTE:
-                basisEntityErrors = this.writingQuoteValidator.validate(justification.basis.entity)
+              case JustificationBasisType.WRIT_QUOTE:
+                basisEntityErrors = this.writQuoteValidator.validate(justification.basis.entity)
                 break
               case JustificationBasisType.STATEMENT_COMPOUND:
                 basisEntityErrors = this.statementCompoundValidator.validate(justification.basis.entity)
-                break;
+                break
               default:
                 throw newImpossibleError(`Unsupported JustificationBasisType: ${justification.basis.type}`)
             }
@@ -267,26 +268,26 @@ StatementCompoundValidator.blankErrors = () => ({
   }
 })
 
-class WritingQuoteValidator {
-  constructor(writingValidator, urlValidator) {
-    this.writingValidator = writingValidator
+class WritQuoteValidator {
+  constructor(writValidator, urlValidator) {
+    this.writValidator = writValidator
     this.urlValidator = urlValidator
   }
 
-  validate(writingQuote) {
-    const errors = WritingQuoteValidator.blankErrors()
+  validate(writQuote) {
+    const errors = WritQuoteValidator.blankErrors()
 
-    if (!writingQuote) {
+    if (!writQuote) {
       errors.hasErrors = true
       errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
-    const isExtant = isTruthy(writingQuote.id)
+    const isExtant = isTruthy(writQuote.id)
 
-    if (has(writingQuote, 'writing')) {
-      errors.fieldErrors.writing = this.writingValidator.validate(writingQuote.writing)
-      if (errors.fieldErrors.writing.hasErrors) {
+    if (has(writQuote, 'writ')) {
+      errors.fieldErrors.writ = this.writValidator.validate(writQuote.writ)
+      if (errors.fieldErrors.writ.hasErrors) {
         errors.hasErrors = true
       }
     } else if (!isExtant) {
@@ -294,12 +295,12 @@ class WritingQuoteValidator {
       errors.fieldErrors.source.modelErrors.push(modelErrorCodes.IS_REQUIRED)
     }
 
-    if (has(writingQuote, 'urls')) {
-      if (!isArray(writingQuote.urls)) {
+    if (has(writQuote, 'urls')) {
+      if (!isArray(writQuote.urls)) {
         errors.hasErrors = true
         errors.fieldErrors.urls.modelErrors.push(modelErrorCodes.IF_PRESENT_MUST_BE_ARRAY)
       } else {
-        errors.fieldErrors.urls.itemErrors = map(writingQuote.urls, this.urlValidator.validate)
+        errors.fieldErrors.urls.itemErrors = map(writQuote.urls, this.urlValidator.validate)
         if (some(errors.fieldErrors.urls.itemErrors, i => i.hasErrors)) {
           errors.hasErrors = true
         }
@@ -309,12 +310,12 @@ class WritingQuoteValidator {
     return errors
   }
 }
-WritingQuoteValidator.blankErrors = () => ({
+WritQuoteValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
     quoteText: [],
-    source: WritingValidator.blankErrors(),
+    source: WritValidator.blankErrors(),
     urls: {
       modelErrors: [],
       itemErrors: [],
@@ -347,20 +348,20 @@ UrlValidator.blankErrors = () => ({
   },
 })
 
-class WritingValidator {
-  validate(writing) {
-    const errors = WritingValidator.blankErrors()
+class WritValidator {
+  validate(writ) {
+    const errors = WritValidator.blankErrors()
 
-    if (!writing) {
+    if (!writ) {
       errors.hasErrors = true
       errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
       return errors
     }
 
-    if (writing.title === '') {
+    if (writ.title === '') {
       errors.hasErrors = true
       errors.fieldErrors.title.push(modelErrorCodes.MUST_BE_NONEMPTY)
-    } else if (!writing.title) {
+    } else if (!writ.title) {
       errors.hasErrors = true
       errors.fieldErrors.title.push(modelErrorCodes.IS_REQUIRED)
     }
@@ -368,7 +369,7 @@ class WritingValidator {
     return errors
   }
 }
-WritingValidator.blankErrors = () => ({
+WritValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
@@ -445,8 +446,8 @@ VoteValidator.blankErrors = () => ({
 })
 
 module.exports = {
-  WritingValidator,
-  WritingQuoteValidator,
+  WritValidator,
+  WritQuoteValidator,
   CredentialValidator,
   JustificationValidator,
   StatementValidator,
