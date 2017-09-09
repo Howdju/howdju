@@ -559,7 +559,6 @@ function* editorCommitEdit() {
       switch (crudType) {
         case CREATE: {
           if (model.doCreateJustification) {
-            debugger
             const justification = consolidateBasis(model.justification)
             justification.target.entity = model.statement
             return api.createJustification(justification)
@@ -597,7 +596,6 @@ function* editorCommitEdit() {
 
     const crudType = editEntity.id ? UPDATE : CREATE
     let action
-    debugger
     if (isFunction(editorCommitApiResourceActions)) {
       action = editorCommitApiResourceActions(editEntity, crudType)
     } else {
