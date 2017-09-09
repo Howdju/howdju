@@ -142,7 +142,7 @@ const migrateCitations = () => {
           return getNewUserId(row.creator_id)
               .then( userId => {
                 // The old system duplicated citation descriptions (text). we want to normalize them.
-                return query('select * from citations where normal_text = $1', [normalizeText(row.description)])
+                return query('select * from citations where normal_title = $1', [normalizeText(row.description)])
                     .then( ({rows}) => {
                       const extantRow = head(rows)
                       if (extantRow) {
@@ -155,7 +155,7 @@ const migrateCitations = () => {
                         ])
                       } else {
                         const sql = `
-                          insert into citations (text, normal_text, creator_user_id, created) 
+                          insert into citations (text, normal_title, creator_user_id, created) 
                           values ($1, $2, $3, $4) 
                           returning citation_id`
                         const args = [row.description, normalizeText(row.description), userId, row.date_created]

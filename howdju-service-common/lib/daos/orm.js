@@ -139,7 +139,7 @@ const toJustification = (
 
 const toWritQuote = row => row && {
   id: toString(row.writ_quote_id),
-  quote_text: row.quote_text,
+  quoteText: row.quote_text,
   created: row.created,
   writ: toWrit({
     writ_id: row.writ_id,

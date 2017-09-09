@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import ListEntitiesWidget from './ListEntitiesWidget'
 import ExpandableChildContainer from './ExpandableChildContainer'
 import StatementCard from './StatementCard'
-import {default as t} from './texts'
+import t from './texts'
 import {
   api,
   ui,

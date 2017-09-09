@@ -114,14 +114,14 @@ exports.WritsDao = class WritsDao {
       })
   }
   createWrit(writ, userId, now) {
-    const sql = 'insert into writs (title, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *'
+    const sql = 'insert into writs (title, normal_title, creator_user_id, created) values ($1, $2, $3, $4) returning *'
     return this.database.query(sql, [cleanWhitespace(writ.title), normalizeText(writ.title), userId, now])
       .then( ({rows: [row]}) => toWrit(row) )
   }
   hasEquivalentWrits(writ) {
     const sql = `
       select count(*) > 0 as has_conflict
-      from writs where writ_id != $1 and normal_text = $2 and deleted is null
+      from writs where writ_id != $1 and normal_title = $2 and deleted is null
       `
     return this.database.query(sql, [writ.id, normalizeText(writ.title)])
       .then( ({rows: [{has_conflict}]}) => has_conflict )

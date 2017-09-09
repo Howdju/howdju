@@ -15,7 +15,7 @@ import ErrorMessages from './ErrorMessages'
 
 import './WritQuoteEditorFields.scss'
 
-const writQuoteTextName = 'text'
+const writQuoteTextName = 'quoteText'
 const writTitleName = 'writ.title'
 
 class WritQuoteEditorFields extends Component {
@@ -94,7 +94,7 @@ class WritQuoteEditorFields extends Component {
                                     key={writTitleName}
                                     name={namePrefix + writTitleName}
                                     suggestionsKey={suggestionsKeyPrefix + writTitleName}
-                                    label="Writ"
+                                    label="Title"
                                     value={writTitle}
                                     required
                                     onPropertyChange={this.onPropertyChange}
@@ -105,7 +105,7 @@ class WritQuoteEditorFields extends Component {
           <TextField {...writTitleInputProps}
                      id={idPrefix + writTitleName}
                      name={namePrefix + writTitleName}
-                     label="Citation"
+                     label="Title"
                      type="text"
                      value={writTitle}
                      required

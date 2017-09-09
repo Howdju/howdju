@@ -298,7 +298,7 @@ const routes = [
    */
   {
     id: 'readWritQuotes',
-    path: 'writQuotes',
+    path: 'writ-quotes',
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {

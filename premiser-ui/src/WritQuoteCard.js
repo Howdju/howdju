@@ -15,7 +15,7 @@ import {
   isTextLong
 } from "./viewModels"
 import paths from './paths'
-import {default as t} from './texts'
+import t from './texts'
 import * as characters from './characters'
 
 import './WritQuoteCard.scss'

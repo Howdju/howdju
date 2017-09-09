@@ -14,7 +14,9 @@ import {
 import config from './config'
 import JustificationTree from './JustificationTree'
 import {selectIsWindowNarrow} from "./selectors"
-import {default as t, ADD_JUSTIFICATION_CALL_TO_ACTION} from './texts'
+import t, {
+  ADD_JUSTIFICATION_CALL_TO_ACTION
+} from './texts'
 
 import './StatementJustificationTrees.scss'
 

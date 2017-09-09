@@ -16,7 +16,7 @@ import StatementEditorFields from "./StatementEditorFields"
 import {
   CANCEL_BUTTON_LABEL, EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
 } from "./texts"
-import {default as t} from './texts'
+import t from './texts'
 
 class StatementEditor extends Component {
 

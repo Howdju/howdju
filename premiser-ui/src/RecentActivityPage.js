@@ -24,7 +24,7 @@ const RecentActivityPage = props => (
                                     widgetId={recentWritQuotesWidgetId}
     />
 
-    <h1 className="md-cell--12">Recent writs</h1>
+    <h1 className="md-cell--12">Recent citations</h1>
     <RecentWritsWidget id="recent-activity-page-writs"
                            className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
                            widgetId={recentWritsWidgetId}

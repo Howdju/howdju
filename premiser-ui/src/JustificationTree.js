@@ -44,7 +44,7 @@ import {EditorTypes} from "./reducers/editors"
 import {suggestionKeys} from "./autocompleter"
 import ChatBubble from './ChatBubble'
 import {selectIsWindowNarrow} from "./selectors"
-import {default as t} from './texts'
+import t from './texts'
 
 import './JustificationTree.scss'
 

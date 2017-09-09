@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
 import JustificationCard from './JustificationCard'
-import {default as t} from './texts'
+import t from './texts'
 import {
   api,
   ui,

@@ -10,7 +10,7 @@ import {
 } from "./viewModels"
 import {extractDomain} from "./util"
 import * as characters from './characters'
-import {default as t} from './texts'
+import t from './texts'
 
 import './WritQuoteViewer.scss'
 

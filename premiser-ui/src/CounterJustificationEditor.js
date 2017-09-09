@@ -14,8 +14,7 @@ import {
   editors,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
-import {
-  default as t,
+import t, {
   CANCEL_BUTTON_LABEL,
   COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts"

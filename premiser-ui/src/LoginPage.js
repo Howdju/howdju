@@ -24,9 +24,7 @@ import {loginPageEditorId} from './editorIds'
 import {EditorTypes} from "./reducers/editors"
 import {makeNewCredentials} from "howdju-common"
 import {toErrorText} from "./modelErrorMessages"
-import {
-  default as t,
-} from './texts'
+import t from './texts'
 import analytics from "./analytics"
 
 import './LoginPage.scss'
