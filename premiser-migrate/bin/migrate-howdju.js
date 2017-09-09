@@ -413,7 +413,7 @@ const migrateCompoundJustificationBasis = row => {
 
 const migrateJustifications = ({rows}) => Promise.all(map(rows, row => Promise.all([
       migrateJustificationBasis(row),
-      row.citation_id ? JustificationBasisType.CITATION_REFERENCE : JustificationBasisType.STATEMENT_COMPOUND,
+      row.citation_id ? JustificationBasisType.TEXTUAL_SOURCE_QUOTE : JustificationBasisType.STATEMENT_COMPOUND,
       getJustificationTargetId(row),
       row.statement_id ? JustificationTargetType.STATEMENT : JustificationTargetType.JUSTIFICATION,
       getNewUserId(row.creator_id),

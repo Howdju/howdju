@@ -166,7 +166,7 @@ exports.CitationReferencesDao = class CitationReferencesDao {
           join citations c using (citation_id)
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, JustificationBasisType.CITATION_REFERENCE]),
+      this.database.query(sql, [rootStatementId, JustificationBasisType.TEXTUAL_SOURCE_QUOTE]),
       this.urlsDao.readUrlsByCitationReferenceIdForRootStatementId(rootStatementId)
     ])
       .then( ([
@@ -308,7 +308,7 @@ exports.CitationReferencesDao = class CitationReferencesDao {
       select count(*) > 0 as has_votes from basis_justification_votes
     `
     return this.database.query(sql, [
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       citationReference.id,
       userId,
       VoteTargetType.JUSTIFICATION,
@@ -325,7 +325,7 @@ exports.CitationReferencesDao = class CitationReferencesDao {
         and deleted is null
         `
     return this.database.query(sql, [
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       citationReference.id,
       userId,
     ]).then( ({rows: [{has_other_users_justifications: isBasisToOtherUsersJustifications}]}) => isBasisToOtherUsersJustifications)
@@ -349,7 +349,7 @@ exports.CitationReferencesDao = class CitationReferencesDao {
       select count(*) > 0 as has_other_user_counters from counters
     `
     return this.database.query(sql, [
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       citationReference.id,
       userId,
       JustificationTargetType.JUSTIFICATION,

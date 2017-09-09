@@ -118,7 +118,7 @@ class EditStatementJustificationPage extends Component {
         } = this.props.queryParams
         this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification({}, {
           basis: {
-            type: JustificationBasisType.CITATION_REFERENCE,
+            type: JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
             citationReference: {
               quote,
               citation: {

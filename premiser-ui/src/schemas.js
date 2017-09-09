@@ -9,18 +9,18 @@ export const statementCompoundSchema = new schema.Entity('statementCompounds', {
     }
   ]
 })
-export const citationSchema = new schema.Entity('citations')
-export const citationsSchema = [citationSchema]
-export const citationReferenceSchema = new schema.Entity('citationReferences', {
-  citation: citationSchema
+export const textualSourceSchema = new schema.Entity('textualSources')
+export const textualSourcesSchema = [textualSourceSchema]
+export const textualSourceQuoteSchema = new schema.Entity('textualSourceQuotes', {
+  source: textualSourceSchema
 })
-export const citationReferencesSchema = [citationReferenceSchema]
+export const textualSourceQuotesSchema = [textualSourceQuoteSchema]
 export const voteSchema = new schema.Entity('votes')
 
 export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)
 export const justificationBasisSchema = new schema.Union({
   STATEMENT_COMPOUND: statementCompoundSchema,
-  CITATION_REFERENCE: citationReferenceSchema
+  TEXTUAL_SOURCE_QUOTE: textualSourceQuoteSchema
 }, (value, parent) => parent.type)
 
 export const justificationSchema = new schema.Entity('justifications')

@@ -7,7 +7,9 @@ import {
   api,
   ui,
 } from './actions'
-import {citationsSchema} from "./schemas"
+import {
+  textualSourcesSchema
+} from "./schemas"
 
 export default class RecentCitationsWidget extends Component {
 
@@ -37,7 +39,7 @@ export default class RecentCitationsWidget extends Component {
                           clearEntities={ui.clearRecentCitations}
                           fetchEntities={api.fetchRecentCitations}
                           entityToCard={this.citationToCard}
-                          entitiesSchema={citationsSchema}
+                          entitiesSchema={textualSourcesSchema}
                           emptyEntitiesMessage={t("No recent citations")}
                           loadErrorMessage={t("There was an error fetching the recent citations.")}
       />

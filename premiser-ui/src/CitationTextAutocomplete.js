@@ -6,7 +6,7 @@ import {
   api, mapActionCreatorGroupToDispatchToProps
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
-import {citationSchema} from "./schemas"
+import {textualSourceSchema} from "./schemas"
 
 class CitationTextAutocomplete extends Component {
 
@@ -36,7 +36,7 @@ class CitationTextAutocomplete extends Component {
         suggestionsKey={suggestionsKey}
         dataLabel="text"
         dataValue="id"
-        suggestionSchema={citationSchema}
+        suggestionSchema={textualSourceSchema}
         onKeyDown={this.props.onKeyDown}
       />
     )

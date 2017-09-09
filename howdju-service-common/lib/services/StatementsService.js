@@ -12,11 +12,9 @@ const toNumber = require('lodash/toNumber')
 const {
   EntityTypes,
   SortDirection,
-  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT,
-  OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT,
-  OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT,
-  OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT,
-  CANNOT_MODIFY_OTHER_USERS_ENTITIES,
+  userActionsConflictCodes,
+  entityConflictCodes,
+  authorizationErrorCodes,
   ActionType,
   ActionTargetType,
   isTruthy,
@@ -120,9 +118,12 @@ exports.StatementsService = class StatementsService {
         userId,
         this.statementsDao.countEquivalentStatements(statement),
         Promise.props({
-          [OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]: this.statementsDao.hasOtherUsersRootedJustifications(statement, userId),
-          [OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]: this.statementsDao.hasOtherUsersRootedJustificationsVotes(statement, userId),
-          [OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT]: this.statementsDao.isBasisToOtherUsersJustifications(statement, userId),
+          [userActionsConflictCodes.OTHER_USERS_HAVE_ROOTED_JUSTIFICATIONS_IN_THIS_STATEMENT]:
+            this.statementsDao.hasOtherUsersRootedJustifications(statement, userId),
+          [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]:
+            this.statementsDao.hasOtherUsersRootedJustificationsVotes(statement, userId),
+          [userActionsConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT]:
+            this.statementsDao.isBasisToOtherUsersJustifications(statement, userId),
         }),
         this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
       ]))
@@ -138,7 +139,7 @@ exports.StatementsService = class StatementsService {
             {
               hasErrors: true,
               fieldErrors: {
-                text: [OTHER_STATEMENTS_HAVE_EQUIVALENT_TEXT_CONFLICT]
+                text: [entityConflictCodes.ANOTHER_STATEMENT_HAS_EQUIVALENT_TEXT]
               }
             }
           ))
@@ -193,7 +194,7 @@ exports.StatementsService = class StatementsService {
           return result
         }
         if (userId !== statement.creatorUserId) {
-          throw new AuthorizationError({modelErrors: [CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
+          throw new AuthorizationError({modelErrors: [authorizationErrorCodes.CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
         }
 
         const created = moment(statement.created)

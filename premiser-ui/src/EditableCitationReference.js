@@ -8,7 +8,7 @@ import {EditorTypes} from "./reducers/editors"
 import CitationReferenceViewer from "./CitationReferenceViewer"
 import CitationReferenceEditor from "./CitationReferenceEditor"
 import {denormalize} from "normalizr"
-import {citationReferenceSchema} from "./schemas"
+import {textualSourceQuoteSchema} from "./schemas"
 import ExpandableChildContainer from './ExpandableChildContainer'
 
 class EditableCitationReference extends Component {
@@ -61,8 +61,8 @@ EditableCitationReference.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const citationReference = denormalize(state.entities.citationReferences[ownProps.entityId], citationReferenceSchema, state.entities)
-  const editEntity = get(state.editors, [EditorTypes.CITATION_REFERENCE, ownProps.editorId, 'editEntity'])
+  const citationReference = denormalize(state.entities.citationReferences[ownProps.entityId], textualSourceQuoteSchema, state.entities)
+  const editEntity = get(state.editors, [EditorTypes.TEXTUAL_SOURCE_QUOTE, ownProps.editorId, 'editEntity'])
   const isEditing = !!editEntity
   return {
     citationReference,

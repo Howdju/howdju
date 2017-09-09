@@ -36,7 +36,7 @@ exports.PerspectivesDao = class PerspectivesDao {
   readFeaturedPerspectivesWithVotesForOptionalUserId(userId) {
     const args = [
       JustificationBasisType.STATEMENT_COMPOUND,
-      JustificationBasisType.CITATION_REFERENCE
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE
     ]
     if (userId) {
       args.push(VoteTargetType.JUSTIFICATION)
@@ -304,7 +304,7 @@ exports.PerspectivesDao = class PerspectivesDao {
           j.basis.entity = statementCompoundsById[j.basis.entity.id]
         }
           break
-        case JustificationBasisType.CITATION_REFERENCE: {
+        case JustificationBasisType.TEXTUAL_SOURCE_QUOTE: {
           j.basis.entity = citationReferencesById[j.basis.entity.id]
         }
           break

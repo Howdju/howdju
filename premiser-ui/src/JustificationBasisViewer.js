@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {
-  isCitationReferenceBased,
+  isTextualSourceQuoteBased,
   isStatementCompoundBased,
   newImpossibleError,
 } from "howdju-common"
@@ -28,7 +28,7 @@ export default class JustificationBasisViewer extends Component {
                                       doShowStatementAtomJustifications={doShowBasisJustifications}
       />
     }
-    if (isCitationReferenceBased(justification)) {
+    if (isTextualSourceQuoteBased(justification)) {
       return (
         <ExpandableChildContainer {...rest}
                                   ExpandableChildComponent={CitationReferenceViewer}

@@ -83,7 +83,7 @@ const toJustification = (
   }
 
   switch (row.basis_type) {
-    case JustificationBasisType.CITATION_REFERENCE: {
+    case JustificationBasisType.TEXTUAL_SOURCE_QUOTE: {
       const basisId = row.basis_id || row.basis_citation_reference_id
       if (basisId) {
         if (citationReferencesById) {

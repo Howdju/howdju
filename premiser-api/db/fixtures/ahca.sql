@@ -30,6 +30,6 @@ insert into justifications (justification_id, root_statement_id, target_type, ta
 (3, 1, 'STATEMENT', 1, 'STATEMENT', 4, 'POSITIVE', NOW()),
 (4, 1, 'STATEMENT', 1, 'STATEMENT', 5, 'POSITIVE', NOW()),
 (5, 1, 'STATEMENT', 1, 'STATEMENT', 6, 'NEGATIVE', NOW()),
-(6, 1, 'STATEMENT', 1, 'CITATION_REFERENCE', 1, 'NEGATIVE', NOW()),
+(6, 1, 'STATEMENT', 1, 'TEXTUAL_SOURCE_QUOTE', 1, 'NEGATIVE', NOW()),
 (7, 1, 'JUSTIFICATION', 3, 'STATEMENT', 7, 'NEGATIVE', NOW());
 select setval('justifications_justification_id_seq', (select max(justification_id) from justifications));

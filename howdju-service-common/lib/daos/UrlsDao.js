@@ -58,7 +58,7 @@ exports.UrlsDao = class UrlsDao {
         join urls u USING (url_id)
         order by j.justification_id
     `
-    return this.database.query(sql, [rootStatementId, JustificationBasisType.CITATION_REFERENCE])
+    return this.database.query(sql, [rootStatementId, JustificationBasisType.TEXTUAL_SOURCE_QUOTE])
       .then( ({rows}) => groupUrlsByCitationReferenceId(rows))
   }
 

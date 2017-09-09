@@ -10,9 +10,9 @@ const {
   JustificationBasisType,
   JustificationPolarity,
   JustificationTargetType,
-  isTruthy
+  isTruthy,
+  modelErrorCodes,
 } = require('howdju-common')
-const modelErrorCodes = require('howdju-common/lib/codes/modelErrorCodes')
 
 class CredentialValidator {
   validate(credentials) {
@@ -132,7 +132,7 @@ class JustificationValidator {
         } else {
           if (!justification.basis.entity.id) {
             // Must have valid props
-            const basisEntityErrors = justification.basis.type === JustificationBasisType.CITATION_REFERENCE ?
+            const basisEntityErrors = justification.basis.type === JustificationBasisType.TEXTUAL_SOURCE_QUOTE ?
               this.citationReferenceValidator.validate(justification.basis.entity) :
               this.statementCompoundValidator.validate(justification.basis.entity)
             if (basisEntityErrors.hasErrors) {

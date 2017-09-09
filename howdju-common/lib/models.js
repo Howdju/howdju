@@ -23,9 +23,9 @@ _e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION &&
 _e.isRootJustification = (j) =>
   j.target.type === JustificationTargetType.STATEMENT &&
   j.target.entity.id === j.rootStatement.id
-_e.hasQuote = (j) => _e.isCitationReferenceBased(j) && j.basis.entity.quote
+_e.hasQuote = (j) => _e.isTextualSourceQuoteBased(j) && j.basis.entity.quote
 _e.isStatementCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
-_e.isCitationReferenceBased = (j) => j ? j.basis.type === JustificationBasisType.CITATION_REFERENCE : false
+_e.isTextualSourceQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.TEXTUAL_SOURCE_QUOTE : false
 
 _e.negateVotePolarity = (polarity) => {
   switch (polarity) {

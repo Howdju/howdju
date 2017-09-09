@@ -18,14 +18,8 @@ const {
   ActionSubjectType,
   ActionType,
   SortDirection,
-  OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT,
-  OTHER_CITATIONS_HAVE_EQUIVALENT_TEXT_CONFLICT,
-  OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT,
-  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_REFERENCE_CONFLICT,
-  OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT,
-  OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
-  OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_CONFLICT,
-  OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT,
+  entityConflictCodes,
+  userActionConflictCodes,
 } = require('howdju-common')
 
 const {
@@ -156,28 +150,29 @@ exports.CitationReferencesService = class CitationReferencesService {
         const entityConflicts = {}
         const userActionConflicts = {}
         if (citationReferenceHasChanged) {
-          entityConflicts[OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT] =
+          entityConflicts[entityConflictCodes.ANOTHER_TEXTUAL_SOURCE_QUOTE_HAS_SAME_QUOTE] =
             this.citationReferencesDao.hasEquivalentCitationReferences(citationReference)
           assign(userActionConflicts, {
-            [OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT]:
+            [userActionConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_TEXTUAL_SOURCE_QUOTE]:
               this.citationReferencesDao.isBasisToJustificationsHavingOtherUsersVotes(userId, citationReference),
-            [OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_REFERENCE_CONFLICT]:
+            [userActionConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_TEXTUAL_SOURCE_QUOTE]:
               this.citationReferencesDao.isBasisToOtherUsersJustifications(userId, citationReference),
-            [OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_REFERENCE_CONFLICT]:
+            [userActionConflictCodes.OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_TEXTUAL_SOURCE_QUOTE]:
               this.citationReferencesDao.isBasisToJustificationsHavingOtherUsersCounters(userId, citationReference),
           })
         }
         if (citationHasChanged) {
           const citation = citationReference.citation
 
-          entityConflicts[OTHER_CITATIONS_HAVE_EQUIVALENT_TEXT_CONFLICT] = this.citationsDao.hasEquivalentCitations(citation)
+          entityConflicts[entityConflictCodes.ANOTHER_TEXTUAL_SOURCE_HAS_EQUIVALENT_TEXT] =
+            this.citationsDao.hasEquivalentCitations(citation)
 
           assign(userActionConflicts, {
-            [OTHER_USERS_HAVE_VERIFIED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT]:
+            [userActionConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_TEXTUAL_SOURCE]:
               this.citationsDao.isCitationOfBasisToOtherUsersJustifications(userId, citation),
-            [OTHER_USERS_HAVE_CREATED_JUSTIFICATIONS_USING_THIS_CITATION_CONFLICT]:
+            [userActionConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_TEXTUAL_SOURCE]:
               this.citationsDao.isCitationOfBasisToJustificationsHavingOtherUsersVotes(userId, citation),
-            [OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_CITATION_CONFLICT]:
+            [userActionConflictCodes.OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_TEXTUAL_SOURCE]:
               this.citationsDao.isCitationOfBasisToJustificationsHavingOtherUsersCounters(userId, citation),
           })
         }
@@ -260,7 +255,7 @@ exports.CitationReferencesService = class CitationReferencesService {
         citationReferenceHasChanged,
       ]) => {
         if (citationReferenceHasChanged) {
-          this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.CITATION_REFERENCE,
+          this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.TEXTUAL_SOURCE_QUOTE,
             citationReference.id)
         }
         return [citationReference, citation, urls]
@@ -312,11 +307,11 @@ exports.CitationReferencesService = class CitationReferencesService {
       ]))
       .then( ([updatedUrls, createdCitationReferenceUrls, deletedCitationReferenceUrls]) => {
         map(createdCitationReferenceUrls, citationReferenceUrl =>
-          this.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.CITATION_REFERENCE,
+          this.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.TEXTUAL_SOURCE_QUOTE,
             citationReferenceUrl.citationReferenceId, ActionSubjectType.URL, citationReferenceUrl.urlId))
         map(deletedCitationReferenceUrls, citationReferenceUrl =>
           this.actionsService.asyncRecordAction(userId, now, ActionType.DISASSOCIATE,
-            ActionTargetType.CITATION_REFERENCE, citationReferenceUrl.citationReferenceId, ActionSubjectType.URL,
+            ActionTargetType.TEXTUAL_SOURCE_QUOTE, citationReferenceUrl.citationReferenceId, ActionSubjectType.URL,
             citationReferenceUrl.urlId))
         return updatedUrls
       })
@@ -360,7 +355,7 @@ exports.CitationReferencesService = class CitationReferencesService {
       ]))
       .then( ([isExtant, citationReference]) => {
         const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.CITATION_REFERENCE, citationReference.id)
+        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.TEXTUAL_SOURCE_QUOTE, citationReference.id)
         return {
           isExtant,
           citationReference,

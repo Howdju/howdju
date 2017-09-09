@@ -297,7 +297,7 @@ exports.JustificationsDao = class JustificationsDao {
       additionalWithClauses: justificationsAdditionalWithClauses,
       orderBySql: justificationsOrderBySql,
     } = makeReadJustificationsQuery(sorts, count, filters, [
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
     ], isContinuation)
     const justificationsAdditionalWithClausesSql = justificationsAdditionalWithClauses.length > 0 ?
@@ -329,7 +329,7 @@ exports.JustificationsDao = class JustificationsDao {
       additionalWithClauses: targetJustificationsAdditionalWithClauses,
       orderBySql: targetJustificationsOrderBySql,
     } = makeReadJustificationsQuery(sorts, count, filters, [
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
       JustificationTargetType.JUSTIFICATION,
     ], isContinuation)
@@ -432,7 +432,7 @@ exports.JustificationsDao = class JustificationsDao {
           and j.root_statement_id = $1
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, authToken, VoteTargetType.JUSTIFICATION, JustificationBasisType.CITATION_REFERENCE, JustificationBasisType.STATEMENT_COMPOUND]),
+      this.database.query(sql, [rootStatementId, authToken, VoteTargetType.JUSTIFICATION, JustificationBasisType.TEXTUAL_SOURCE_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
       this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
       this.citationReferencesDao.readCitationReferencesByIdForRootStatementId(rootStatementId),
     ])

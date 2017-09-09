@@ -162,7 +162,7 @@ exports.CitationsDao = class CitationsDao {
     `
     return this.database.query(sql, [
       citation.id,
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       userId,
       VoteTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
@@ -184,7 +184,7 @@ exports.CitationsDao = class CitationsDao {
     `
     return this.database.query(sql, [
       citation.id,
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       userId,
     ]).then( ({rows: [{has_other_users_justifications: isBasisToOtherUsersJustifications}]}) => isBasisToOtherUsersJustifications)
   }
@@ -213,7 +213,7 @@ exports.CitationsDao = class CitationsDao {
     `
     return this.database.query(sql, [
       citation.id,
-      JustificationBasisType.CITATION_REFERENCE,
+      JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
       userId,
       JustificationTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_other_user_counters: isBasisToJustificationsHavingOtherUsersCounters}]}) => isBasisToJustificationsHavingOtherUsersCounters)

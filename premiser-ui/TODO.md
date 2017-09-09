@@ -1,29 +1,25 @@
 # Howdju UI TODO
 
-* Can't create statement with justifications
-
-* Statement text larger
-* Remove Justifications (supporting/countering)
-* Need a search icon
-* when click main searhc, change prompt to "type what you want to know about"
-* Paper clip tags to bookmark for later
-
-
-* Statement non-negated, negated
-* Instead of hamburger, profile icon
-
-* JustificationType.CitationReferenceParaphraseCompound
-  * Might be nice to have a generic compound justification type
-  * It should probably allow mixing atom types because, why not? (Statement, Paraphrase (CitationReference, ImageRegion, VideoSegment))
-    * But I don't think that allowing two or more Text type would make sense...just write it all in one Text
-  * Should everything be paraphrases?  Even the targets of justifications?  So no bare statements?
-     * maybe not everything, because how to let people counter using something logical or prima facie?
-     * But could make a paraphse into a statement + source.  The StatementJustifications page could be rooted at either
-       a statement or a paraphrase.  On that page we can show all other sources for which that statement is a paraphrase.
-     * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
+* Paraphrases
+  * Replace citation\s*reference with TextualSourceQuote
+  * citation_reference with textual_source_quote
+  * Replace Citation with TextualSource
+  * routing URLs, actions, 
+  * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
+  * Create staging DB for testing schema changes?
 
 * Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
   and leave it in-memory
+  * RESPECT DO NOT TRACK
+
+Cat meeting design notes:
+  * Statement text larger
+  * Remove Justifications (supporting/countering)
+  * Need a search icon
+  * when click main searhc, change prompt to "type what you want to know about"
+  * Paper clip tags to bookmark for later
+  * Statement non-negated, negated
+  * Instead of hamburger, profile icon
   
 * Data science: voting on negations, recognizing triplet negations
 
@@ -539,6 +535,8 @@
 * https://prerender.io/
 
 ### Performance
+* https://developers.google.com/speed/pagespeed/insights/?url=howdju.com&tab=mobile
+* https://tools.pingdom.com/#!/ek204K/howdju.com
 * [Resource hints](https://github.com/jantimon/resource-hints-webpack-plugin)
   * [faster](https://hackernoon.com/10-things-i-learned-making-the-fastest-site-in-the-world-18a0e1cdf4a7)
   * https://github.com/brillout/awesome-react-components#performance

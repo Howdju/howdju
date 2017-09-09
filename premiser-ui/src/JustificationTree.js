@@ -121,7 +121,7 @@ class JustificationTree extends Component {
     const params = {}
 
     switch (justificationBasis.type) {
-      case JustificationBasisType.CITATION_REFERENCE:
+      case JustificationBasisType.TEXTUAL_SOURCE_QUOTE:
         params.citationReferenceId = justificationBasis.entity.id
         break
       case JustificationBasisType.STATEMENT_COMPOUND:

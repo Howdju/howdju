@@ -41,8 +41,8 @@ exports.decircularizeJustification = justification => {
       justification.basis.entity = exports.decircularizeStatementCompound(justification.basis.entity)
     }
       break
-    case JustificationBasisType.CITATION_REFERENCE:
-      // citation references don't have any references
+    case JustificationBasisType.TEXTUAL_SOURCE_QUOTE:
+      // textual source quotes don't reference other entities
       break
     default:
       throw newImpossibleError(`Unsupported justification basis type: ${justification.basis.type}`)

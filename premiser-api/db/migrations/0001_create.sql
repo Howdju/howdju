@@ -59,7 +59,7 @@ create table if not exists actions (
   action_type varchar(128), -- CREATE, DELETE, MODIFY
   target_id integer, -- Thing acted upon
   target_type varchar(64),
-  subject_id integer, -- The thing used to act, if applicable (e.g. URL, when associated with a target CITATION_REFERENCE)
+  subject_id integer, -- The thing used to act, if applicable (e.g. URL, when associated with a target TEXTUAL_SOURCE_QUOTE)
   subject_type varchar(64),
   tstamp timestamp
 );
@@ -83,7 +83,7 @@ create table if not exists justifications (
   root_polarity varchar(32),
   target_type varchar(64), -- 'STATEMENT' or 'JUSTIFICATION'
   target_id integer,
-  basis_type varchar(64), -- 'STATEMENT_COMPOUND', 'CITATION_REFERENCE'
+  basis_type varchar(64), -- 'STATEMENT_COMPOUND', 'TEXTUAL_SOURCE_QUOTE' (was 'CITATION_REFERENCE'), or 'COMPOUND_JUSTIFICATION_BASIS'
   basis_id integer,
   polarity varchar(32), -- 'POSITIVE' or 'NEGATIVE'.  target_type='JUSTIFICATION' implies polarity='NEGATIVE'
   creator_user_id integer,

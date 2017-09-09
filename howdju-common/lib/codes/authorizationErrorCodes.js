@@ -1,3 +1,9 @@
+const {arrayToObject} = require('../general')
+
+const authorizationErrorCodes = arrayToObject([
+  'CANNOT_MODIFY_OTHER_USERS_ENTITIES'
+])
+
 module.exports = {
-  CANNOT_MODIFY_OTHER_USERS_ENTITIES: 'CANNOT_MODIFY_OTHER_USERS_ENTITIES',
+  authorizationErrorCodes,
 }

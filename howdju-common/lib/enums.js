@@ -2,8 +2,8 @@ const _e = module.exports
 
 _e.EntityTypes = {
   STATEMENT: 'STATEMENT',
-  CITATION: 'CITATION',
-  CITATION_REFERENCE: 'CITATION_REFERENCE',
+  TEXTUAL_SOURCE: 'TEXTUAL_SOURCE',
+  TEXTUAL_SOURCE_QUOTE: 'TEXTUAL_SOURCE_QUOTE',
   JUSTIFICATION: 'JUSTIFICATION',
   USER: 'USER',
 }
@@ -23,7 +23,7 @@ _e.ActionTargetType = {
   STATEMENT: 'STATEMENT',
   STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
   JUSTIFICATION: 'JUSTIFICATION',
-  CITATION_REFERENCE: 'CITATION_REFERENCE',
+  TEXTUAL_SOURCE_QUOTE: 'TEXTUAL_SOURCE_QUOTE',
   CITATION: 'CITATION',
   USER: 'USER',
   URL: 'URL',
@@ -47,7 +47,7 @@ _e.JustificationRootPolarity = _e.JustificationPolarity
 
 _e.JustificationBasisType = {
   STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
-  CITATION_REFERENCE: 'CITATION_REFERENCE',
+  TEXTUAL_SOURCE_QUOTE: 'TEXTUAL_SOURCE_QUOTE',
 }
 // Anything you can start with to create a justification based upon.
 // (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)

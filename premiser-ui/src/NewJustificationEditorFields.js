@@ -6,13 +6,16 @@ import Subheader from 'react-md/lib/Subheaders'
 import get from 'lodash/get'
 
 import {
-  isCitationReferenceBased, isStatementCompoundBased, JustificationBasisType,
+  isTextualSourceQuoteBased,
+  isStatementCompoundBased,
+  JustificationBasisType,
   JustificationPolarity
 } from "howdju-common"
-import text, {
-  JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE,
-  JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND, JUSTIFICATION_POLARITY_NEGATIVE,
-  JUSTIFICATION_POLARITY_POSITIVE
+import t, {
+  JUSTIFICATION_BASIS_TYPE_TEXTUAL_SOURCE_QUOTE,
+  JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND,
+  JUSTIFICATION_POLARITY_NEGATIVE,
+  JUSTIFICATION_POLARITY_POSITIVE,
 } from "./texts"
 import CitationReferenceEditorFields from "./CitationReferenceEditorFields"
 import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
@@ -27,14 +30,14 @@ const polarityControls = [{
   value: JustificationPolarity.POSITIVE,
   label: (
     <div title="Support the truth of the statement">
-      {text(JUSTIFICATION_POLARITY_POSITIVE)}
+      {t(JUSTIFICATION_POLARITY_POSITIVE)}
     </div>
   ),
 }, {
   value: JustificationPolarity.NEGATIVE,
   label: (
     <div title="Oppose the truth of the statement">
-      {text(JUSTIFICATION_POLARITY_NEGATIVE)}
+      {t(JUSTIFICATION_POLARITY_NEGATIVE)}
     </div>
   ),
 }]
@@ -42,14 +45,14 @@ const basisTypeControls = [{
   value: JustificationBasisType.STATEMENT_COMPOUND,
   label: (
     <div title="A list of statements that when taken together logically imply the target">
-      {text(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
+      {t(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
     </div>
   ),
 }, {
-  value: JustificationBasisType.CITATION_REFERENCE,
+  value: JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
   label: (
     <div title="An external reference">
-      {text(JUSTIFICATION_BASIS_TYPE_CITATION_REFERENCE)}
+      {t(JUSTIFICATION_BASIS_TYPE_TEXTUAL_SOURCE_QUOTE)}
     </div>
   ),
 }]
@@ -92,7 +95,7 @@ class NewJustificationEditorFields extends Component {
     const basisCitationReference = get(newJustification, citationReferenceName)
     const basisType = get(newJustification, 'basis.type')
     const _isStatementCompoundBased = isStatementCompoundBased(newJustification)
-    const _isCitationReferenceBased = isCitationReferenceBased(newJustification)
+    const _isTextualSourceQuoteBased = isTextualSourceQuoteBased(newJustification)
 
     const statementCompoundComponents = [
       <StatementCompoundEditorFields statementCompound={basisStatementCompound}
@@ -157,7 +160,7 @@ class NewJustificationEditorFields extends Component {
         />
         <Divider />
         {_isStatementCompoundBased && statementCompoundComponents}
-        {_isCitationReferenceBased && citationReferenceComponents}
+        {_isTextualSourceQuoteBased && citationReferenceComponents}
       </div>
     )
   }

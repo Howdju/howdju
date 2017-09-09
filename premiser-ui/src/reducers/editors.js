@@ -10,19 +10,19 @@ import includes from 'lodash/includes'
 import clone from 'lodash/clone'
 import { handleActions } from 'redux-actions'
 
-import apiErrorCodes from "howdju-common/lib/codes/apiErrorCodes"
+import {
+  apiErrorCodes,
+  arrayToObject,
+  makeNewStatementAtom,
+  makeNewUrl,
+  newProgrammingError,
+} from "howdju-common"
 
 import {
   api,
   editors
 } from "../actions"
-import {
-  makeNewStatementAtom,
-  makeNewUrl,
-  newProgrammingError,
-} from "howdju-common"
 import {justificationBasisTypeToNewJustificationBasisMemberName} from '../viewModels'
-
 import {uiErrorTypes} from "../uiErrors"
 import {INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts"
 
@@ -35,18 +35,18 @@ const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   return editorActions
 }, {})
 
-export const EditorTypes = {
-  DEFAULT: 'DEFAULT',
-  STATEMENT: 'STATEMENT',
-  STATEMENT_COMPOUND: 'STATEMENT_COMPOUND',
-  CITATION_REFERENCE: 'CITATION_REFERENCE',
-  COUNTER_JUSTIFICATION: 'COUNTER_JUSTIFICATION',
+export const EditorTypes = arrayToObject([
+  'DEFAULT',
+  'STATEMENT',
+  'STATEMENT_COMPOUND',
+  'TEXTUAL_SOURCE_QUOTE',
+  'COUNTER_JUSTIFICATION',
   /* e.g. new justification dialog */
-  NEW_JUSTIFICATION: 'NEW_JUSTIFICATION',
+  'NEW_JUSTIFICATION',
   /* e.g. Statement justification page */
-  STATEMENT_JUSTIFICATION: 'STATEMENT_JUSTIFICATION',
-  LOGIN_CREDENTIALS: 'LOGIN_CREDENTIALS',
-}
+  'STATEMENT_JUSTIFICATION',
+  'LOGIN_CREDENTIALS',
+])
 
 const defaultEditorState = {
   errors: null,
@@ -252,7 +252,7 @@ const editorReducerByType = {
     },
   }, defaultEditorState),
 
-  [EditorTypes.CITATION_REFERENCE]: handleActions({
+  [EditorTypes.TEXTUAL_SOURCE_QUOTE]: handleActions({
     [editors.addUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       editEntity.urls = editEntity.urls.concat([makeNewUrl()])

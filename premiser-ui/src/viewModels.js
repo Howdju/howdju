@@ -27,14 +27,14 @@ export const consolidateBasis = newJustification => {
     case JustificationBasisType.STATEMENT_COMPOUND:
       justification.basis.entity = justification.basis.statementCompound
       break
-    case JustificationBasisType.CITATION_REFERENCE:
-      justification.basis.entity = justification.basis.citationReference
+    case JustificationBasisType.TEXTUAL_SOURCE_QUOTE:
+      justification.basis.entity = justification.basis.textualSourceQuote
       break
     default:
       throw newImpossibleError(`${justification.basis.type} exhausted justification basis types`)
   }
   delete justification.basis.statementCompound
-  delete justification.basis.citationReference
+  delete justification.basis.textualSourceQuote
 
   return justification
 }
@@ -42,7 +42,7 @@ export const consolidateBasis = newJustification => {
 export const justificationBasisTypeToNewJustificationBasisMemberName = justificationBasisType => {
   const newJustificationBasisMemberNames = {
     [JustificationBasisType.STATEMENT_COMPOUND]: 'statementCompound',
-    [JustificationBasisType.CITATION_REFERENCE]: 'citationReference'
+    [JustificationBasisType.TEXTUAL_SOURCE_QUOTE]: 'textualSourceQuote'
   }
   const newJustificationBasisMemberName = newJustificationBasisMemberNames[justificationBasisType]
   if (!newJustificationBasisMemberName) {

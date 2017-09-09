@@ -267,12 +267,12 @@ exports.JustificationsService = class JustificationsService {
   createJustificationBasis(justificationBasis, userId, now) {
     switch (justificationBasis.type) {
 
-      case JustificationBasisType.CITATION_REFERENCE:
+      case JustificationBasisType.TEXTUAL_SOURCE_QUOTE:
         return this.citationReferencesService.createCitationReferenceAsUser(justificationBasis.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, citationReference}) => ({
             isExtant,
-            basisType: JustificationBasisType.CITATION_REFERENCE,
+            basisType: JustificationBasisType.TEXTUAL_SOURCE_QUOTE,
             basisEntity: citationReference,
           }))
 

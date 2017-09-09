@@ -28,17 +28,21 @@ import {denormalize} from "normalizr"
 
 import apiErrorCodes from "howdju-common/lib/codes/apiErrorCodes"
 
-import text, {
+import t, {
   A_NETWORK_ERROR_OCCURRED,
   AN_UNEXPECTED_ERROR_OCCURRED,
-  default as t,
   DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
   DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-  MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE, THAT_JUSTIFICATION_ALREADY_EXISTS, THAT_STATEMENT_ALREADY_EXISTS,
+  MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
+  THAT_JUSTIFICATION_ALREADY_EXISTS,
+  THAT_STATEMENT_ALREADY_EXISTS,
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE, YOU_ARE_LOGGED_IN_AS, YOU_HAVE_BEEN_LOGGED_OUT,
+  VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+  YOU_ARE_LOGGED_IN_AS,
+  YOU_HAVE_BEEN_LOGGED_OUT,
+  DELETE_STATEMENT_FAILURE_TOAST_MESSAGE,
 } from '../texts'
 import {request} from "../api"
 import {
@@ -46,11 +50,15 @@ import {
   voteSchema,
   statementSchema,
   justificationSchema,
-  citationReferenceSchema, statementsSchema, statementCompoundSchema, perspectivesSchema, citationsSchema,
-  justificationsSchema, citationReferencesSchema
+  textualSourceQuoteSchema,
+  statementsSchema,
+  statementCompoundSchema,
+  perspectivesSchema,
+  textualSourcesSchema,
+  justificationsSchema,
+  textualSourceQuotesSchema,
 } from '../schemas'
 import paths from "../paths"
-import {DELETE_STATEMENT_FAILURE_TOAST_MESSAGE} from "../texts"
 import mainSearcher from '../mainSearcher'
 import * as httpMethods from '../httpMethods'
 import * as httpStatusCodes from '../httpStatusCodes'
@@ -129,7 +137,7 @@ export const resourceApiConfigs = {
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'citations?' + queryStringParamsString,
-      schema: {citations: citationsSchema},
+      schema: {citations: textualSourcesSchema},
     }
   },
   [api.fetchRecentCitationReferences]: payload => {
@@ -139,7 +147,7 @@ export const resourceApiConfigs = {
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'citationReferences?' + queryStringParamsString,
-      schema: {citationReferences: citationReferencesSchema},
+      schema: {citationReferences: textualSourceQuotesSchema},
     }
   },
   [api.fetchRecentJustifications]: payload => {
@@ -173,7 +181,7 @@ export const resourceApiConfigs = {
   }),
   [api.fetchCitationReference]: payload => ({
     endpoint: `citation-references/${payload.citationReferenceId}`,
-    schema: {citationReference: citationReferenceSchema},
+    schema: {citationReference: textualSourceQuoteSchema},
   }),
   [api.updateCitationReference]: payload => ({
     endpoint: `citation-references/${payload.citationReference.id}`,
@@ -181,7 +189,7 @@ export const resourceApiConfigs = {
       method: httpMethods.PUT,
       body: payload
     },
-    schema: {citationReference: citationReferenceSchema},
+    schema: {citationReference: textualSourceQuoteSchema},
   }),
   [api.createStatement]: payload => ({
     endpoint: 'statements',
@@ -294,7 +302,7 @@ export const resourceApiConfigs = {
   [api.fetchCitationTextSuggestions]: payload => ({
     endpoint: `search-citations?searchText=${payload.citationText}`,
     cancelKey: str(api.fetchCitationTextSuggestions) + '.' + payload.suggestionsKey,
-    schema: citationsSchema,
+    schema: textualSourcesSchema,
   }),
   [api.fetchMainSearchSuggestions]: payload => ({
     endpoint: `search-statements?searchText=${payload.searchText}`,
@@ -407,7 +415,7 @@ function* goHomeIfDeleteStatementWhileViewing() {
     if (!action.error) {
       const routerLocation = yield select(selectRouterLocation)
       if (routerLocation.pathname === paths.statement(action.meta.requestPayload.statement)) {
-        yield put(ui.addToast(text(DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE)))
+        yield put(ui.addToast(t(DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE)))
         yield put(push(paths.home()))
       }
     }
@@ -499,7 +507,7 @@ function* redirectHomeFromMissingStatement() {
         // startsWith because we don't have a slug
         routerLocation.pathname.startsWith(path)
       ) {
-        yield put(ui.addToast(text(MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE)))
+        yield put(ui.addToast(t(MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE)))
         yield put(push(paths.home()))
       }
     }
@@ -519,7 +527,7 @@ function* apiFailureErrorMessages() {
   yield [map(messageKeysByActionType, function* apiFailureErrorMessagesWorker(messageKey, actionType) {
     yield takeEvery(actionType, function* (action) {
       if (action.error) {
-        yield put(ui.addToast(text(messageKey)))
+        yield put(ui.addToast(t(messageKey)))
       }
     })
   })]
@@ -579,7 +587,7 @@ function* editorCommitEdit() {
         }
       }
     },
-    [EditorTypes.CITATION_REFERENCE]: {
+    [EditorTypes.TEXTUAL_SOURCE_QUOTE]: {
       [UPDATE]: api.updateCitationReference
     },
     [EditorTypes.LOGIN_CREDENTIALS]: {
@@ -716,7 +724,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
   const fetchActionCreatorForBasisType = basisType => {
     const actionCreatorByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
-      [JustificationBasisType.CITATION_REFERENCE]: api.fetchCitationReference,
+      [JustificationBasisType.TEXTUAL_SOURCE_QUOTE]: api.fetchCitationReference,
       [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
     }
     const actionCreator = actionCreatorByBasisType[basisType]
@@ -737,7 +745,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
 
     const basisGetterByBasisType = {
       [JustificationBasisType.STATEMENT_COMPOUND]: result => result.statementCompound,
-      [JustificationBasisType.CITATION_REFERENCE]: result => result.citationReference,
+      [JustificationBasisType.TEXTUAL_SOURCE_QUOTE]: result => result.citationReference,
       [JustificationBasisSourceType.STATEMENT]: result => result.statement,
     }
 
@@ -769,7 +777,7 @@ function* fetchAndBeginEditOfNewJustificationFromBasis() {
       } else if (basisType === JustificationBasisSourceType.STATEMENT) {
         statementCompound = makeNewStatementCompoundForStatement(basis)
       }
-      const citationReference = basisType === JustificationBasisType.CITATION_REFERENCE ? basis : undefined
+      const citationReference = basisType === JustificationBasisType.TEXTUAL_SOURCE_QUOTE ? basis : undefined
       const editModel = makeNewStatementJustification({}, {
         basis: {
           type: basisType !== JustificationBasisSourceType.STATEMENT ? basisType : JustificationBasisType.STATEMENT_COMPOUND,

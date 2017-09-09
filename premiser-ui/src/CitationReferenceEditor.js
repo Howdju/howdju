@@ -18,10 +18,10 @@ import {
 import {default as t} from './texts'
 import CitationReferenceEditorFields from "./CitationReferenceEditorFields"
 
-class EditableCitationReference extends Component {
+class CitationReferenceEditor extends Component {
 
   onPropertyChange = (properties) => {
-    this.props.editors.propertyChange(EditorTypes.CITATION_REFERENCE, this.props.editorId, properties)
+    this.props.editors.propertyChange(CitationReferenceEditor.editorType, this.props.editorId, properties)
   }
 
   onSubmit = (event) => {
@@ -92,7 +92,7 @@ class EditableCitationReference extends Component {
 
   }
 }
-EditableCitationReference.propTypes = {
+CitationReferenceEditor.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Identifies the editor's state */
@@ -100,9 +100,10 @@ EditableCitationReference.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
 }
+CitationReferenceEditor.editorType = EditorTypes.TEXTUAL_SOURCE_QUOTE
 
 const mapStateToProps = (state, ownProps) => {
-  const editorState = get(state.editors, [EditorTypes.CITATION_REFERENCE, ownProps.editorId], {})
+  const editorState = get(state.editors, [CitationReferenceEditor.editorType, ownProps.editorId], {})
   return {
     editorState,
   }
@@ -110,4 +111,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   editors,
-}))(EditableCitationReference)
+}))(CitationReferenceEditor)
