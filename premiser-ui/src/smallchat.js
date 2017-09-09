@@ -1,11 +1,11 @@
 export const hide = () => {
-  if (window.Smallchat) {
+  if (window.Smallchat && window.Smallchat.hide) {
     window.Smallchat.hide()
   }
 }
 
 export const show = () => {
-  if (window.Smallchat) {
+  if (window.Smallchat && window.Smallchat.show) {
     window.Smallchat.show()
   }
 }
