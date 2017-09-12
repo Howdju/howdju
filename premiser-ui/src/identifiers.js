@@ -18,8 +18,13 @@ export const getOrCreateSessionStorageId = () => {
 const createSessionStorageId = () => {
   if (window.sessionStorage) {
     const ssid = newId()
-    window.sessionStorage.ssid = ssid
-    return ssid
+    try {
+      window.sessionStorage.ssid = ssid
+      return ssid
+    } catch (err) {
+      // sessionStorage is unavailable in Safari private mode
+      return null
+    }
   }
 }
 
