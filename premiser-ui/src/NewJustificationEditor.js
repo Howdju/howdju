@@ -85,12 +85,12 @@ class NewJustificationEditor extends Component {
       />
     ]
 
+    const idPrefix = id ? id + '.' : ''
     return (
       <form onSubmit={this.onSubmit}>
         <NewJustificationEditorFields {...rest}
                                       newJustification={editEntity}
-                                      basisStatementTextId={id + ".newJustificationBasisStatement"}
-                                      basisWritQuoteTextId={id + ".newJustificationBasisWritQuoteText"}
+                                      id={idPrefix + 'editor'}
                                       onPropertyChange={this.onPropertyChange}
                                       onAddUrl={this.onAddUrl}
                                       onRemoveUrl={this.onRemoveUrl}

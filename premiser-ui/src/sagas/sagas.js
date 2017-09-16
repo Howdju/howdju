@@ -723,8 +723,8 @@ function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
 
   const fetchActionCreatorForBasisType = basisType => {
     const actionCreatorByBasisType = {
-      [JustificationBasisType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
-      [JustificationBasisType.WRIT_QUOTE]: api.fetchWritQuote,
+      [JustificationBasisSourceType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
+      [JustificationBasisSourceType.WRIT_QUOTE]: api.fetchWritQuote,
       [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
     }
     const actionCreator = actionCreatorByBasisType[basisType]
@@ -744,9 +744,10 @@ function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
     } = fetchResponseAction.meta
 
     const basisGetterByBasisType = {
-      [JustificationBasisType.STATEMENT_COMPOUND]: result => result.statementCompound,
-      [JustificationBasisType.WRIT_QUOTE]: result => result.writQuote,
+      [JustificationBasisSourceType.STATEMENT_COMPOUND]: result => result.statementCompound,
+      [JustificationBasisSourceType.WRIT_QUOTE]: result => result.writQuote,
       [JustificationBasisSourceType.STATEMENT]: result => result.statement,
+      [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: result => result.justificationBasisCompound,
     }
 
     const basisGetter = basisGetterByBasisType[basisType]
@@ -786,11 +787,17 @@ function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
         writQuote = basis
       }
 
+      let justificationBasisCompound = undefined
+      if (basisType === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND) {
+        justificationBasisCompound = basis
+      }
+
       const editModel = makeNewStatementJustification({}, {
         basis: {
           type: basisType,
           statementCompound,
           writQuote,
+          justificationBasisCompound,
         }
       })
       yield put(editors.beginEdit(editorType, editorId, editModel))

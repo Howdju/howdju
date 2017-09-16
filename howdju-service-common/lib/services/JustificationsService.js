@@ -76,6 +76,7 @@ exports.JustificationsService = class JustificationsService {
     statementsService,
     writQuotesService,
     statementCompoundsService,
+    justificationBasisCompoundsService,
     justificationsDao,
     permissionsDao
   ) {
@@ -87,6 +88,7 @@ exports.JustificationsService = class JustificationsService {
     this.statementsService = statementsService
     this.writQuotesService = writQuotesService
     this.statementCompoundsService = statementCompoundsService
+    this.justificationBasisCompoundsService = justificationBasisCompoundsService
     this.justificationsDao = justificationsDao
     this.permissionsDao = permissionsDao
   }
@@ -127,12 +129,11 @@ exports.JustificationsService = class JustificationsService {
   }
 
   readMoreJustifications(continuationToken, count) {
-    const continuationInfo = decodeContinuationToken(continuationToken)
     const {
-      s: sortContinuations,
-      f: filters,
-    } = continuationInfo
-    return this.justificationsDao.readJustifications(sortContinuations, count, filters, true)
+      sorts,
+      filters,
+    } = decodeContinuationToken(continuationToken)
+    return this.justificationsDao.readJustifications(sorts, count, filters, true)
       .then(justifications => {
         const [goodJustifications, badJustifications] = partition(justifications, j =>
           j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
@@ -147,7 +148,7 @@ exports.JustificationsService = class JustificationsService {
         return goodJustifications
       })
       .then(justifications => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, justifications, filters) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sorts, justifications, filters) || continuationToken
         return {
           justifications,
           continuationToken: nextContinuationToken
@@ -201,8 +202,8 @@ exports.JustificationsService = class JustificationsService {
           const rootStatementId = get(justification, 'rootStatement.id')
           if (rootStatementId && rootStatementId !== targetEntity.id) {
             this.logger.warning(`Statement-targeting justification's rootStatementId (${rootStatementId} is not equal to targetEntity.id (${targetEntity.id})`)
+            set(justification, 'rootStatement.id', targetEntity.id)
           }
-          set(justification, 'rootStatement.id', targetEntity.id)
         }
 
         justification.basis = {
@@ -283,6 +284,15 @@ exports.JustificationsService = class JustificationsService {
             isExtant,
             basisType: JustificationBasisType.STATEMENT_COMPOUND,
             basisEntity: statementCompound,
+          }))
+
+      case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+        return this.justificationBasisCompoundsService.getOrCreateJustificationBasisCompoundAsUser(justificationBasis.entity, userId, now)
+          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+          .then( ({isExtant, justificationBasisCompound}) => ({
+            isExtant,
+            basisType: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+            basisEntity: justificationBasisCompound,
           }))
 
       default:

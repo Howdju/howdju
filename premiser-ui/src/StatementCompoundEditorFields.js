@@ -117,7 +117,7 @@ class StatementCompoundEditorFields extends Component {
   }
 }
 StatementCompoundEditorFields.propTypes = {
-  writQuote: PropTypes.object,
+  statementCompound: PropTypes.object,
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */

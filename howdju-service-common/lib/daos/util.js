@@ -29,7 +29,13 @@ exports.normalizeText = text => {
 }
 
 exports.mapSingle = (logger, mapper, tableName, identifiers) => ({rows}) => {
-  if (rows.length > 1) {
+  // Some queries, such as insert, have no chance for returning multiple rows.  So then the caller doesnt' pass the logger
+  if (!mapper) {
+    mapper = logger
+    logger = null
+  }
+
+  if (logger && rows.length > 1) {
     const identifiersString = join(map(identifiers, (val, key) => `${key} ${val}`), ', ')
     logger.warn(`Multiple ${tableName} for ${identifiersString}`)
   }

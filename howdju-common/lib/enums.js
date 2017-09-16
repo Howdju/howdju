@@ -1,3 +1,5 @@
+const assign = require('lodash/assign')
+
 const {
   arrayToObject
 } = require('./general')
@@ -50,13 +52,29 @@ _e.JustificationPolarity = arrayToObject([
 _e.JustificationRootPolarity = _e.JustificationPolarity
 
 _e.JustificationBasisType = arrayToObject([
+  /* One or more statements */
   'STATEMENT_COMPOUND',
+  /* A quote */
   'WRIT_QUOTE',
+  /* One or more {@see JustificationBasisCompoundAtomType}s
+   *
+   * This type will replace the others
+   */
+  'JUSTIFICATION_BASIS_COMPOUND',
 ])
 // Anything you can start with to create a justification based upon.
 // (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
-_e.JustificationBasisSourceType = arrayToObject([
+_e.JustificationBasisSourceType = assign({}, _e.JustificationBasisType, arrayToObject([
   'STATEMENT',
+]))
+
+_e.JustificationBasisCompoundAtomType = arrayToObject([
+  'STATEMENT',
+  'SOURCE_EXCERPT_PARAPHRASE',
+])
+
+_e.SourceExcerptType = arrayToObject([
+  'WRIT_QUOTE',
 ])
 
 _e.VoteTargetType = arrayToObject([
@@ -75,12 +93,6 @@ _e.SortDirection = {
   DESCENDING: 'descending',
 }
 
-/** Shorter than SortDirection so that the continuations tokens are smaller */
-_e.ContinuationSortDirection = {
-  ASCENDING: 'a',
-  DESCENDING: 'd',
-}
-
 _e.JustificationScoreType = arrayToObject([
   'GLOBAL_VOTE_SUM',
 ])
@@ -88,9 +100,4 @@ _e.JustificationScoreType = arrayToObject([
 _e.JobHistoryStatus = arrayToObject([
   'SUCCESS',
   'FAILURE',
-])
-
-_e.JustificationBasisAtomType = arrayToObject([
-  'STATEMENT',
-  'SOURCE_EXCERPT_PARAPHRASE',
 ])

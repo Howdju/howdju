@@ -1,0 +1,1 @@
+exports.VidSegmentsDao = class VidSegmentsDao {}

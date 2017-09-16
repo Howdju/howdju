@@ -6,18 +6,20 @@ const Promise = require('bluebird')
 const snakeCase = require('lodash/snakeCase')
 
 const {
+  JustificationBasisType,
+  VoteTargetType,
+  SortDirection,
+  JustificationTargetType,
+} = require('howdju-common')
+
+const {
   toWritQuote,
   toWritQuoteUrl,
   toUrl,
 } = require('./orm')
-
 const {
-  JustificationBasisType,
-  VoteTargetType,
-  SortDirection,
-  ContinuationSortDirection,
-  JustificationTargetType,
-} = require('howdju-common')
+  mapSingle
+} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 
 
@@ -29,7 +31,7 @@ exports.WritQuotesDao = class WritQuotesDao {
     this.urlsDao = urlsDao
   }
 
-  read(writQuoteId) {
+  readWritQuoteForId(writQuoteId) {
     return Promise.all([
       this.database.query(`
         select 
@@ -53,6 +55,14 @@ exports.WritQuotesDao = class WritQuotesDao {
         writQuote.urls = urls
         return writQuote
       })
+  }
+
+  readWritQuoteHavingWritIdAndNormalQuoteText(writId, normalQuoteText) {
+    return this.database.query(
+      `select * from writ_quotes where writ_id = $1 and normal_quote_text = $2 and deleted is null`,
+      [writId, normalQuoteText]
+    )
+      .then(mapSingle(this.logger, toWritQuote, 'writ_quotes', {writId, normalQuoteText}))
   }
 
   readWritQuotes(sorts, count) {
@@ -111,13 +121,13 @@ exports.WritQuotesDao = class WritQuotesDao {
     const prevWhereSqls = []
     const orderBySqls = []
     forEach(sortContinuations, (sortContinuation) => {
-      const value = sortContinuation.v
+      const value = sortContinuation.value
       // The default direction is ascending
-      const direction = sortContinuation.d === ContinuationSortDirection.DESCENDING ?
+      const direction = sortContinuation.direction === SortDirection.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = sortContinuation.p === 'id' ? 'writ_quote_id' : snakeCase(sortContinuation.p)
+      const columnName = sortContinuation.property === 'id' ? 'writ_quote_id' : snakeCase(sortContinuation.property)
       let operator = direction === 'asc' ? '>' : '<'
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`wq.${columnName} ${operator} $${args.length}`])

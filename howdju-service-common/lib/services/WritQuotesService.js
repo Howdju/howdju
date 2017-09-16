@@ -40,19 +40,9 @@ const {
   RequestValidationError,
   UserActionsConflictError,
 } = require('../serviceErrors')
-
-const diffUrls = (writQuotesDao, writQuote) => Promise.resolve()
-  .then(() => writQuotesDao.readUrlsByWritQuoteId(writQuote.id))
-  .then(extantUrls => {
-    const addedUrls = differenceBy(writQuote.urls, [extantUrls], url => url.url)
-    const removedUrls = differenceBy(extantUrls, [writQuote.urls], url => url.url)
-    const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
-    return {
-      addedUrls,
-      removedUrls,
-      haveChanged
-    }
-  })
+const {
+  normalizeText
+} = require('../daos/util')
 
 exports.WritQuotesService = class WritQuotesService {
   constructor(
@@ -78,7 +68,20 @@ exports.WritQuotesService = class WritQuotesService {
   }
 
   readWritQuote(writQuoteId) {
-    return this.writQuotesDao.read(writQuoteId)
+    return this.writQuotesDao.readWritQuoteForId(writQuoteId)
+  }
+
+  readWritQuoteEquivalentTo(writQuote) {
+    const normalTitle = normalizeText(writQuote.writ.title)
+    return this.writsDao.readWritHavingNormalTitle(normalTitle)
+      .then( (writ) => {
+        if (writ) {
+          const normalQuoteText = normalizeText(writQuote.quoteText)
+          return this.writQuotesDao.readWritQuoteHavingWritIdAndNormalQuoteText(writ.id, normalQuoteText)
+        }
+
+        return null
+      })
   }
 
   readWritQuotes({continuationToken, sortProperty = 'created', sortDirection = SortDirection.ASCENDING, count = 25 }) {
@@ -109,12 +112,12 @@ exports.WritQuotesService = class WritQuotesService {
 
   readMoreWritQuotes(continuationToken, count) {
     const {
-      s: sortContinuations,
-      f: filters,
+      sorts,
+      filters,
     } = decodeContinuationToken(continuationToken)
-    return this.writQuotesDao.readMoreWritQuotes(sortContinuations, count)
+    return this.writQuotesDao.readMoreWritQuotes(sorts, count)
       .then(writQuotes => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, writQuotes, filters) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sorts, writQuotes, filters) || continuationToken
         return {
           writQuotes,
           continuationToken: nextContinuationToken
@@ -346,7 +349,7 @@ exports.WritQuotesService = class WritQuotesService {
   createJustWritQuoteAsUser(writQuote, userId, now) {
     return Promise.resolve()
       .then(() => writQuote.id ?
-        writQuote :
+        this.writQuotesDao.readWritQuoteForId(writQuote.id) :
         this.writQuotesDao.readWritQuotesEquivalentTo(writQuote)
       )
       .then(equivalentWritQuote => Promise.all([
@@ -377,4 +380,20 @@ exports.WritQuotesService = class WritQuotesService {
         )
       })
   }
+}
+
+
+function diffUrls(writQuotesDao, writQuote) {
+  return Promise.resolve()
+    .then(() => writQuotesDao.readUrlsByWritQuoteId(writQuote.id))
+    .then(extantUrls => {
+      const addedUrls = differenceBy(writQuote.urls, [extantUrls], url => url.url)
+      const removedUrls = differenceBy(extantUrls, [writQuote.urls], url => url.url)
+      const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
+      return {
+        addedUrls,
+        removedUrls,
+        haveChanged
+      }
+    })
 }

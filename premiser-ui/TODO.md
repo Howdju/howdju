@@ -1,12 +1,25 @@
 # Howdju UI TODO
 
 * Paraphrases
-  * rename files to Writ
   
-  * Replace citation\s*reference with WritQuote
-  * citation_reference with textual_source_quote
-  * Replace Citation with Writ
-  * routing URLs, actions, 
+  * JustificationsDao.readCompoundBasedJustification
+    * Get the justifications from whatever mean, distinctly union, order by sort
+      * Then from this list, add in all the required stuff
+    * statementId: paraphrasing statementID or atom statement ID
+    * WritQuote: paraphrased sourceExcerpt
+
+  * Do for JustificationBasisCompoundsService what I did for SourceExcerptParaphrasesService
+    * Finish WritQuoteService?
+    * Add atoms to readJustificationBasisCompoundForId
+  * getWritQuoteForId vs. readWritQuoteForId
+  
+  * justificationBasisCompoundsDao
+    * .createJustificationBasisCompound 
+    * .createJustificationBasisCompoundAtom
+    * .readJustificationBasisCompoundEquivalentTo
+  
+  * Use writQuote.normalQuoteText for equivalence
+    
   * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
   * Create staging DB for testing schema changes?
 
@@ -16,14 +29,30 @@
 
 Cat meeting design notes:
   * Statement text larger
-  * Remove Justifications (supporting/countering)
+  * Remove "Justification", since is implied? (supporting/opposing)
   * Need a search icon
-  * when click main searhc, change prompt to "type what you want to know about"
+  * when click main search, change prompt to "type what you want to know about"
   * Paper clip tags to bookmark for later
   * Statement non-negated, negated
   * Instead of hamburger, profile icon
+  * Main search should also be for creating a justification.  Add suggestion to create
+    on main search results page
+  * Figure out a 'feed' of suggested content
+    * How relates to 'notifications', which are more transactional?
+    * Distinction is whether you can ignore the thing; if you ignore a thing, will somebody be 
+      disappointed; is someone expecting you to respond?
+  * How to deal with diverse content issue?  People might post about the best beer?
+    * Stackoverflow approach: no opinions
+      * But the multiple stackexchange concept has broadened the vision
+    * Reddit approach: subreddits
   
-* Data science: voting on negations, recognizing triplet negations
+* Data science:
+  * Clustering users
+  * Recognizing statements phrased as questions
+  * Rewriting statements phrased as questions as statements 
+  * Identifying semantically equivalent statements
+  * Identifying negations of statements (semantically opposite statements)
+  * fact-checking pages
 
 * App cold load can be >10s
 
@@ -612,6 +641,7 @@ Cat meeting design notes:
 * Quality tools:
   * https://greenkeeper.io/
   * https://www.codacy.com/app/ranisalt/node-argon2/dashboard)
+* [Transcribe audio](https://github.com/oTranscribe/oTranscribe)
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

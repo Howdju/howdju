@@ -216,7 +216,23 @@ export const editors = {
     editorId,
     statementAtom,
     index
-  }))
+  })),
+
+  addJustificationBasisCompoundAtom: actionCreator('EDITORS/ADD_JUSTIFICATION_BASIS_COMPOUND_ATOM',
+    (editorType, editorId, index) => ({
+      editorType,
+      editorId,
+      index,
+    })
+  ),
+  removeJustificationBasisCompoundAtom: actionCreator('EDITORS/REMOVE_JUSTIFICATION_BASIS_COMPOUND_ATOM',
+    (editorType, editorId, atom, index) => ({
+      editorType,
+      editorId,
+      atom,
+      index
+    })
+  ),
 }
 
 export const goto = {

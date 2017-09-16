@@ -12,10 +12,13 @@ const {
   JustificationBasisType,
   VoteTargetType,
   SortDirection,
-  ContinuationSortDirection,
   JustificationTargetType,
 } = require('howdju-common')
-const {cleanWhitespace, normalizeText} = require('./util')
+const {
+  cleanWhitespace,
+  normalizeText,
+  mapSingle,
+} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 
 
@@ -24,6 +27,11 @@ exports.WritsDao = class WritsDao {
   constructor(logger, database) {
     this.logger = logger
     this.database = database
+  }
+
+  readWritHavingNormalTitle(normalTitle) {
+    return this.database.query(`select * from writs where normal_title = $1 and deleted is null`, [normalTitle])
+      .then(mapSingle(this.logger, toWrit, 'writs', {normalTitle}))
   }
 
   readWrits(sorts, count) {
@@ -70,13 +78,13 @@ exports.WritsDao = class WritsDao {
     const prevWhereSqls = []
     const orderBySqls = []
     forEach(sortContinuations, (sortContinuation) => {
-      const value = sortContinuation.v
+      const value = sortContinuation.value
       // The default direction is ascending
-      const direction = sortContinuation.d === ContinuationSortDirection.DESCENDING ?
+      const direction = sortContinuation.direction === SortDirection.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = sortContinuation.p === 'id' ? 'writ_id' : snakeCase(sortContinuation.p)
+      const columnName = sortContinuation.property === 'id' ? 'writ_id' : snakeCase(sortContinuation.property)
       let operator = direction === 'asc' ? '>' : '<'
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
@@ -118,6 +126,7 @@ exports.WritsDao = class WritsDao {
     return this.database.query(sql, [cleanWhitespace(writ.title), normalizeText(writ.title), userId, now])
       .then( ({rows: [row]}) => toWrit(row) )
   }
+
   hasEquivalentWrits(writ) {
     const sql = `
       select count(*) > 0 as has_conflict

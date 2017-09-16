@@ -8,7 +8,7 @@ const PrivacyPage = props => (
       <CardText>
         <h3>How Howdju uses information on your computer</h3>
         <p>
-          Howdju.com uses browser features such as local and session storage and to persist information to improve your
+          Howdju.com uses browser features such as local and session storage to persist information to improve your
           experience using the application. For example, we store an authentication token in your browser&rsquo;s local
           storage so that requests for information after you login are automatically authorized.
         </p>

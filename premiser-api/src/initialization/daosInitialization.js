@@ -6,8 +6,11 @@ const {
   JobHistoryDao,
   JustificationScoresDao,
   JustificationsDao,
+  JustificationBasisCompoundsDao,
   PermissionsDao,
   PerspectivesDao,
+  PicRegionsDao,
+  SourceExcerptParaphrasesDao,
   StatementCompoundsDao,
   StatementsDao,
   UserExternalIdsDao,
@@ -16,6 +19,7 @@ const {
   UsersDao,
   UrlsDao,
   VotesDao,
+  VidSegmentsDao,
 } = require('howdju-service-common')
 const {
   database,
@@ -36,10 +40,16 @@ exports.justificationScoresDao = new JustificationScoresDao(database)
 
 exports.statementCompoundsDao = new StatementCompoundsDao(logger, database)
 exports.justificationsDao = new JustificationsDao(logger, database, exports.statementCompoundsDao, exports.writQuotesDao)
+exports.justificationBasisCompoundsDao = new JustificationBasisCompoundsDao(logger, database)
 
 exports.permissionsDao = new PermissionsDao(logger, database)
 exports.perspectivesDao = new PerspectivesDao(logger, database)
 exports.statementsDao = new StatementsDao(logger, database)
+exports.picRegionsDao = new PicRegionsDao(logger, database)
+exports.vidSegmentsDao = new VidSegmentsDao(logger, database)
+exports.sourceExcerptParaphrasesDao = new SourceExcerptParaphrasesDao(logger, database, exports.statementsDao,
+  exports.writQuotesDao, exports.picRegionsDao, exports.vidSegmentsDao)
+
 exports.userExternalIdsDao = new UserExternalIdsDao(database)
 exports.userGroupsDao = new UserGroupsDao(database)
 exports.userPermissionsDao = new UserPermissionsDao(database)

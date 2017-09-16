@@ -43,7 +43,6 @@ class WritQuoteEditorFields extends Component {
       writQuote,
       name,
       id,
-      quoteTextId,
       suggestionsKey,
       disabled,
       errors,
@@ -75,7 +74,7 @@ class WritQuoteEditorFields extends Component {
     return (
       <div>
         <TextField {...quoteInputProps}
-                   id={quoteTextId || (idPrefix + "quoteText")}
+                   id={idPrefix + "quoteText"}
                    key="quoteText"
                    name={namePrefix + writQuoteTextName}
                    type="text"

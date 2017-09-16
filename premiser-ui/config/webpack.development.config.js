@@ -12,7 +12,7 @@ module.exports.htmlWebpackPluginConfig = {
     preserveLineBreaks: true,
   },
   smallChat: true,
-  sentry: true,
+  sentry: false,
   googleAnalytics: {
     trackingId: 'UA-104314283-2',
   },

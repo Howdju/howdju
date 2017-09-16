@@ -1,8 +1,6 @@
 const clone = require('lodash/clone')
 const concat = require('lodash/concat')
-const findIndex = require('lodash/findIndex')
 const forEach = require('lodash/forEach')
-const get = require('lodash/get')
 const has = require('lodash/has')
 const head = require('lodash/head')
 const join = require('lodash/join')
@@ -10,9 +8,7 @@ const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const Promise = require('bluebird')
 const snakeCase = require('lodash/snakeCase')
-const sortBy = require('lodash/sortBy')
 const toString = require('lodash/toString')
-const values = require('lodash/values')
 
 const {
   JustificationTargetType,
@@ -20,7 +16,6 @@ const {
   JustificationPolarity,
   VoteTargetType,
   SortDirection,
-  ContinuationSortDirection,
   negateRootPolarity,
   newImpossibleError,
   assert,
@@ -36,15 +31,36 @@ const {EntityNotFoundError} = require('../serviceErrors')
 const {groupRootJustifications} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 
-const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
+/** Directly return an object of the justifications keyed by their ID */
+const mapJustificationRowsById = (rows, prefix = '') => {
+  const [justificationsById] = mapJustificationRowsWithOrdering(rows, prefix)
+  return justificationsById
+}
+
+/** Use the ordering to return the justifications as an array in query-order */
+const mapJustificationRows = (rows, prefix = '') => {
+  const [justificationsById, orderedJustificationIds] = mapJustificationRowsWithOrdering(rows, prefix)
+  const orderedJustifications = []
+  forEach(orderedJustificationIds, justificationId => {
+    orderedJustifications.push(justificationsById[justificationId])
+  })
+  return orderedJustifications
+}
+
+const mapJustificationRowsWithOrdering = (rows, prefix = '') => {
+  // Keep track of the order so that we can efficiently put them back in order
+  const orderedJustificationIds = []
   const justificationRowsById = {}
   // Keep track of whether we've seen the row before since there may be duplicates after joining with statement compound atoms
   const justificationIds = {}
   const writQuotesRowsById = {}
   const statementCompoundRowsById = {}
   const statementCompoundAtomsByStatementCompoundId = {}
+
   forEach(rows, row => {
-    const rowId = row[idPrefix + 'justification_id']
+    const rowId = row[prefix + 'justification_id']
+    orderedJustificationIds.push(rowId)
+
     if (!has(justificationIds, rowId)) {
       justificationRowsById[rowId] = {
         justification_id:          rowId,
@@ -107,10 +123,22 @@ const mapJustificationRows = (rows, idPrefix = '', prefix = '') => {
     toStatementCompound(row, statementCompoundAtomsByStatementCompoundId[id])
   )
 
-  return mapValues(justificationRowsById, row => toJustification(row, null, statementCompoundsById, writQuotesRowsById))
+  const justificationsById = mapValues(justificationRowsById, row => toJustification(row, null, statementCompoundsById, writQuotesRowsById))
+  return [justificationsById, orderedJustificationIds]
 }
 
-const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isContinuation = false) => {
+/** Creates a few things for making an ordered and limited query an number of justifications.  Good for pagination.
+ * Because the query needs to join in bases to support filtering, it will include not only the justifications, but also
+ * any basis columns that can be joined in while preserving a one-to-one (because otherwise we would have multiple rows
+ * per justification, screwing up the LIMIT clause.)
+ *
+ * @param sorts {property, direction}  | {p, d} - an array of instructions for sorting the justifications
+ * @param count integer - the maximum number of justifications to return
+ * @param filters object - key values of values upon which to filter.
+ * @param initialArgs Array<any> - args the caller wants to appear in the returned args. In hindsight, the caller could just add these, so we should refactor so that this is not a parameter
+ * @param isContinuation boolean - whether the query is a continuation of a pagination query
+ */
+const makeReadLimitedJustificationsQueryParts = (logger, sorts, count, filters, initialArgs, isContinuation = false) => {
   const args = clone(initialArgs)
   let countSql = ''
   if (isFinite(count)) {
@@ -127,18 +155,16 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
   const continuationWhereSqls = []
   const prevWhereSqls = []
   const orderBySqls = []
-  const sortPropertyMemberName = isContinuation ? 'p' : 'property'
-  const sortDirectionMemberName = isContinuation ? 'd' : 'direction'
+  const extraWithClauses = []
+  const extraJoinClauses = []
   forEach(sorts, sort => {
 
     // The default direction is ascending, so if it is missing that's ok
-    const sortDirection = get(sort, sortDirectionMemberName)
-    const isDescending = isContinuation ? sortDirection === ContinuationSortDirection.DESCENDING : SortDirection.DESCENDING
-    const direction = isDescending ?
+    const direction = sort.direction === SortDirection.DESCENDING ?
       DatabaseSortDirection.DESCENDING :
       DatabaseSortDirection.ASCENDING
 
-    const sortProperty = get(sort, sortPropertyMemberName)
+    const sortProperty = sort.property
     // 'id' is a special property name for entities. The column is prefixed by the entity type
     const columnName = sortProperty === 'id' ? 'justification_id' : snakeCase(sortProperty)
 
@@ -146,23 +172,42 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
     orderBySqls.push(`j.${columnName} ${direction}`)
 
     if (isContinuation) {
-      let operator = direction === 'asc' ? '>' : '<'
-      const value = sort.v
+      let operator = direction === DatabaseSortDirection.ASCENDING ? '>' : '<'
+      const value = sort.value
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`j.${columnName} ${operator} $${args.length}`])
       continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
       prevWhereSqls.push(`j.${columnName} = $${args.length}`)
     }
   })
+
   forEach(filters, (filterValue, filterName) => {
     // Note, some filters are incompatible, such as statementId or statementCompoundId and writQuoteId.
     // statementId and statementCompoundId may be incompatible if the statementId doesn't appear in any compound having
     // the statementCompoundId
-    if (!filterValue) return
+    if (!filterValue) {
+      logger.warn(`skipping filter ${filterName} because it has no value`)
+      return
+    }
     switch (filterName) {
-      case 'statementId':
-        // Must be handled below because it needs an add'l with clause
+      case 'statementId': {
+        args.push(filters.statementId)
+        const statementLimitedJustificationIdsSql = `
+          statement_limited_justification_ids as (
+            select distinct justification_id
+            from justifications j
+                  join statement_compounds sc on 
+                        j.basis_id = sc.statement_compound_id 
+                    and j.basis_type = $2
+                  join statement_compound_atoms sca on
+                        sc.statement_compound_id = sca.statement_compound_id
+                    and sca.statement_id = $${args.length}
+          )
+        `
+        extraWithClauses.push(statementLimitedJustificationIdsSql)
+        extraJoinClauses.push(`join statement_limited_justification_ids using (justification_id)`)
         break
+      }
       case 'statementCompoundId': {
         args.push(filterValue)
         whereSqls.push(`sc.statement_compound_id = $${args.length}`)
@@ -191,26 +236,6 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
   const whereSql = whereSqls.join('\nand ')
   const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
 
-  const additionalWithClauses = []
-  const additionalJoinClauses = []
-  if (filters.statementId) {
-    args.push(filters.statementId)
-    const statementLimitedJustificationIdsSql = `
-      statement_limited_justification_ids as (
-        select distinct justification_id
-        from justifications j
-              join statement_compounds sc on 
-                    j.basis_id = sc.statement_compound_id 
-                and j.basis_type = $2
-              join statement_compound_atoms sca on
-                    sc.statement_compound_id = sca.statement_compound_id
-                and sca.statement_id = $${args.length}
-      )
-    `
-    additionalWithClauses.push(statementLimitedJustificationIdsSql)
-    additionalJoinClauses.push(`join statement_limited_justification_ids using (justification_id)`)
-  }
-
   const limitedJustificationsSql = `
       select distinct
           j.*
@@ -227,7 +252,7 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
         , w.creator_user_id        as basis_writ_quote_writ_creator_user_id
         , sc.statement_compound_id as basis_statement_compound_id
       from justifications j
-          ${join(additionalJoinClauses, '\n')}
+          ${join(extraJoinClauses, '\n')}
           join statements s on j.root_statement_id = s.statement_id
           left join writ_quotes wq on 
                 j.basis_id = wq.writ_quote_id 
@@ -244,9 +269,10 @@ const makeReadJustificationsQuery = (sorts, count, filters, initialArgs, isConti
     `
 
   return {
+    /** The arguments to the  */
     args,
     limitedJustificationsSql,
-    additionalWithClauses,
+    extraWithClauses,
     orderBySql,
   }
 }
@@ -294,18 +320,18 @@ exports.JustificationsDao = class JustificationsDao {
     const {
       args: justificationsArgs,
       limitedJustificationsSql: justificationsLimitedJustificationsSql,
-      additionalWithClauses: justificationsAdditionalWithClauses,
+      extraWithClauses: justificationsExtraWithClauses,
       orderBySql: justificationsOrderBySql,
-    } = makeReadJustificationsQuery(sorts, count, filters, [
+    } = makeReadLimitedJustificationsQueryParts(this.logger, sorts, count, filters, [
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
     ], isContinuation)
-    const justificationsAdditionalWithClausesSql = justificationsAdditionalWithClauses.length > 0 ?
-      join(map(justificationsAdditionalWithClauses, c => c + ',\n')) :
+    const justificationsExtraWithClausesSql = justificationsExtraWithClauses.length > 0 ?
+      join(map(justificationsExtraWithClauses, c => c + ',\n')) :
       ''
     const justificationsSql = `
       with
-        ${justificationsAdditionalWithClausesSql}
+        ${justificationsExtraWithClausesSql}
         limited_justifications as (
           ${justificationsLimitedJustificationsSql}
         )
@@ -326,15 +352,15 @@ exports.JustificationsDao = class JustificationsDao {
     const {
       args: targetJustificationsArgs,
       limitedJustificationsSql: targetJustificationsLimitedJustificationsSql,
-      additionalWithClauses: targetJustificationsAdditionalWithClauses,
+      extraWithClauses: targetJustificationsExtraWithClauses,
       orderBySql: targetJustificationsOrderBySql,
-    } = makeReadJustificationsQuery(sorts, count, filters, [
+    } = makeReadLimitedJustificationsQueryParts(this.logger, sorts, count, filters, [
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
       JustificationTargetType.JUSTIFICATION,
     ], isContinuation)
-    const targetJustificationsAdditionalWithClausesSql = targetJustificationsAdditionalWithClauses.length > 0 ?
-      join(map(targetJustificationsAdditionalWithClauses, c => c + ',\n')) :
+    const targetJustificationsAdditionalWithClausesSql = targetJustificationsExtraWithClauses.length > 0 ?
+      join(map(targetJustificationsExtraWithClauses, c => c + ',\n')) :
       ''
     const targetJustificationsSql = `
       with
@@ -346,7 +372,7 @@ exports.JustificationsDao = class JustificationsDao {
          -- We don't use this, but just for completeness
           j.justification_id
                  
-        , tj.justification_id       as target_justification_id
+        , tj.justification_id       as tj_justification_id
         , tj.root_statement_id      as tj_root_statement_id
         , tj.root_polarity          as tj_root_polarity
         , tj.target_type            as tj_target_type
@@ -391,17 +417,20 @@ exports.JustificationsDao = class JustificationsDao {
       this.database.query(targetJustificationsSql, targetJustificationsArgs),
     ])
       .then( ([{rows: justificationRows}, {rows: targetJustificationRows}]) => {
-        const justificationsById = mapJustificationRows(justificationRows)
-        const targetJustificationsById = mapJustificationRows(targetJustificationRows, 'target_', 'tj_')
-        forEach(justificationsById, justification => {
-          if (justification.target.type !== JustificationTargetType.JUSTIFICATION) return
+        const justifications = mapJustificationRows(justificationRows)
+        const targetJustificationsById = mapJustificationRowsById(targetJustificationRows, 'tj_')
+        forEach(justifications, justification => {
+          if (justification.target.type !== JustificationTargetType.JUSTIFICATION) {
+            return
+          }
           const target = targetJustificationsById[justification.target.entity.id]
+          if (!target) {
+            this.logger.warning(`Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`)
+          }
+          // TODO ensure that if a justification is in both justifications and targetJustifications that we use the same object in both places?
           justification.target.entity = target
         })
 
-        let justifications = values(justificationsById)
-        // re-sort the justifications by the query order
-        justifications = sortBy(justifications, j => findIndex(justificationRows, jr => toString(jr.justification_id) === j.id))
         return justifications
       })
   }
@@ -535,6 +564,7 @@ exports.JustificationsDao = class JustificationsDao {
     const justificationIds = map(justifications, j => j.id)
     return this.deleteJustificationsById(justificationIds, now)
   }
+
   deleteJustificationsById(justificationIds, now) {
     return Promise.all(map(justificationIds, id => this.deleteJustificationById(id, now) ))
   }

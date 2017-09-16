@@ -64,6 +64,10 @@ exports.StatementsService = class StatementsService {
       })
   }
 
+  readStatementEquivalentTo(statement) {
+    return this.statementsDao.readStatementByText(statement.text)
+  }
+
   readStatements({continuationToken = null, sortProperty = 'created', sortDirection = SortDirection.ASCENDING, count = 25 }) {
     const countNumber = toNumber(count)
     if (!isFinite(countNumber)) {
@@ -92,12 +96,12 @@ exports.StatementsService = class StatementsService {
 
   readMoreStatements(continuationToken, count) {
     const {
-      s: sortContinuations,
-      f: filters,
+      sorts,
+      filters,
     } = decodeContinuationToken(continuationToken)
-    return this.statementsDao.readMoreStatements(sortContinuations, count)
+    return this.statementsDao.readMoreStatements(sorts, count)
       .then(statements => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, statements, filters) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sorts, statements, filters) || continuationToken
         return {
           statements,
           continuationToken: nextContinuationToken
@@ -231,15 +235,15 @@ exports.StatementsService = class StatementsService {
       }))
   }
 
-  createStatement({authToken, statement}) {
+  getOrCreateStatement(authToken, statement) {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => {
         const now = new Date()
-        return this.createStatementAsUser(statement, userId, now)
+        return this.getOrCreateStatementAsUser(statement, userId, now)
       })
   }
 
-  createStatementAsUser(statement, userId, now) {
+  getOrCreateStatementAsUser(statement, userId, now) {
     return Promise.resolve()
       .then(() => {
         const validationErrors = this.statementValidator.validate(statement)
@@ -248,14 +252,16 @@ exports.StatementsService = class StatementsService {
         }
         return userId
       })
-      .then(userId => this.createValidStatementAsUser(statement, userId, now))
+      .then(userId => this.getOrCreateValidStatementAsUser(statement, userId, now))
   }
 
-  createValidStatementAsUser(statement, userId, now) {
+  getOrCreateValidStatementAsUser(statement, userId, now) {
     return Promise.resolve()
       .then(() => Promise.all([
         userId,
-        isTruthy(statement.id) ? statement : this.statementsDao.readStatementByText(statement.text),
+        isTruthy(statement.id) ?
+          this.statementsDao.readStatementForId(statement.id) :
+          this.statementsDao.readStatementByText(statement.text),
         now,
       ]))
       .then(([userId, extantStatement, now]) => {

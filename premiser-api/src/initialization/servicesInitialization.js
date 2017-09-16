@@ -5,13 +5,17 @@ const {
   WritsService,
   GroupsService,
   JustificationsService,
+  JustificationBasisCompoundsService,
   PermissionsService,
   PerspectivesService,
+  PicRegionsService,
+  SourceExcerptParaphrasesService,
   StatementCompoundsService,
   StatementJustificationsService,
   StatementsService,
   UrlsService,
   UsersService,
+  VidSegmentsService,
   VotesService,
 } = require('howdju-service-common')
 
@@ -23,6 +27,7 @@ const {
   credentialValidator,
   writQuoteValidator,
   justificationValidator,
+  justificationBasisCompoundValidator,
   statementCompoundValidator,
   statementValidator,
   userValidator,
@@ -34,8 +39,10 @@ const {
   writsDao,
   writQuotesDao,
   justificationsDao,
+  justificationBasisCompoundsDao,
   permissionsDao,
   perspectivesDao,
+  sourceExcerptParaphrasesDao,
   statementsDao,
   statementCompoundsDao,
   urlsDao,
@@ -67,9 +74,30 @@ const statementsService = new StatementsService(config, statementValidator, acti
 const statementCompoundsService = new StatementCompoundsService(statementCompoundValidator, actionsService,
   statementsService, statementCompoundsDao)
 const groupsService = new GroupsService(logger, userGroupsDao)
+
+const picRegionsService = new PicRegionsService()
+const vidSegmentsService = new VidSegmentsService()
+const sourceExcerptParaphrasesService = new SourceExcerptParaphrasesService(
+  logger,
+  sourceExcerptParaphrasesDao,
+  statementsService,
+  writQuotesService,
+  picRegionsService,
+  vidSegmentsService
+)
+const justificationBasisCompoundsService = new JustificationBasisCompoundsService(
+  logger,
+  justificationBasisCompoundValidator,
+  actionsService,
+  statementsService,
+  sourceExcerptParaphrasesService,
+  justificationBasisCompoundsDao
+)
+
 const justificationsService = new JustificationsService(config, logger, justificationValidator, actionsService,
-  authService, statementsService, writQuotesService, statementCompoundsService, justificationsDao,
-  permissionsDao)
+  authService, statementsService, writQuotesService, statementCompoundsService, justificationBasisCompoundsService,
+  justificationsDao, permissionsDao)
+
 const permissionsService = new PermissionsService(permissionsDao, userPermissionsDao)
 const perspectivesService = new PerspectivesService(authDao, perspectivesDao)
 const statementJustificationsService = new StatementJustificationsService(statementsDao, justificationsDao)

@@ -152,6 +152,14 @@ class EditStatementJustificationPage extends Component {
     this.props.editors.removeStatementAtom(this.editorType, this.editorId, statementAtom, index)
   }
 
+  addJustificationBasisCompoundAtom = (index) => {
+    this.props.editors.addJustificationBasisCompoundAtom(this.editorType, this.editorId, index)
+  }
+
+  removeJustificationBasisCompoundAtom = (atom, index) => {
+    this.props.editors.removeJustificationBasisCompoundAtom(this.editorType, this.editorId, atom, index)
+  }
+
   onDoCreateJustificationSwitchChange = (checked) => {
     this.props.editors.propertyChange(this.editorType, this.editorId, {doCreateJustification: checked})
   }
@@ -177,7 +185,7 @@ class EditStatementJustificationPage extends Component {
     } = editorState
     const {
       statement,
-      justification,
+      newJustification,
       doCreateJustification,
     } = editEntity || {}
 
@@ -195,7 +203,7 @@ class EditStatementJustificationPage extends Component {
         errors.statement
     )
     const justificationErrors = errors && doCreateJustification ? errors.justification : null
-    const newJustificationErrors = justificationErrorsToNewJustificationErrors(justification, justificationErrors)
+    const newJustificationErrors = justificationErrorsToNewJustificationErrors(newJustification, justificationErrors)
 
     return (
       <div id="edit-statement-justification-page">
@@ -236,11 +244,9 @@ class EditStatementJustificationPage extends Component {
                   />
 
                   <CardText className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}>
-                    <NewJustificationEditorFields newJustification={justification}
+                    <NewJustificationEditorFields newJustification={newJustification}
                                                   id="newJustificationEditor"
-                                                  basisStatementTextId="newJustificationBasisStatement"
-                                                  basisWritQuoteTextId="newJustificationBasisWritQuoteText"
-                                                  name="justification"
+                                                  name="newJustification"
                                                   suggestionsKey={suggestionKeys.createStatementPageJustification}
                                                   disabled={isSaving}
                                                   onPropertyChange={this.onPropertyChange}
@@ -248,6 +254,8 @@ class EditStatementJustificationPage extends Component {
                                                   onRemoveUrl={this.removeJustificationUrl}
                                                   onAddStatementAtom={this.addJustificationStatementAtom}
                                                   onRemoveStatementAtom={this.removeJustificationStatementAtom}
+                                                  onAddAtom={this.addJustificationBasisCompoundAtom}
+                                                  onRemoveAtom={this.removeJustificationBasisCompoundAtom}
                                                   errors={newJustificationErrors}
                     />
                   </CardText>

@@ -10,7 +10,6 @@ const {
   JustificationBasisType,
   VoteTargetType,
   SortDirection,
-  ContinuationSortDirection,
 } = require('howdju-common')
 
 const {toStatement} = require("./orm")
@@ -77,13 +76,13 @@ exports.StatementsDao = class StatementsDao {
     const prevWhereSqls = []
     const orderBySqls = []
     forEach(sortContinuations, (sortContinuation) => {
-      const value = sortContinuation.v
+      const value = sortContinuation.value
       // The default direction is ascending
-      const direction = sortContinuation.d === ContinuationSortDirection.DESCENDING ?
+      const direction = sortContinuation.direction === SortDirection.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = sortContinuation.p === 'id' ? 'statement_id' : snakeCase(sortContinuation.p)
+      const columnName = sortContinuation.property === 'id' ? 'statement_id' : snakeCase(sortContinuation.property)
       let operator = direction === DatabaseSortDirection.ASCENDING ? '>' : '<'
       args.push(value)
       const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])

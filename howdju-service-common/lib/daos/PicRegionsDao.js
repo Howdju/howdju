@@ -1,0 +1,1 @@
+exports.PicRegionsDao = class PicRegionsDao {}

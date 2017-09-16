@@ -1,12 +1,18 @@
 const assign = require('lodash/assign')
 
+const {
+  arrayToObject
+} = require('./general')
+
 const _e = module.exports
 
-const commonErrorTypes = _e.commonErrorTypes = {
-  PROGRAMMING_ERROR: 'PROGRAMMING_ERROR',
-  IMPOSSIBLE_ERROR: 'IMPOSSIBLE_ERROR',
-  ARGUMENTS_EXCEPTION: 'ARGUMENTS_EXCEPTION',
-}
+const commonErrorTypes = _e.commonErrorTypes = arrayToObject([
+  'PROGRAMMING_ERROR',
+  'IMPOSSIBLE_ERROR',
+  'ARGUMENTS_EXCEPTION',
+  'EXHAUSTED_ENUM',
+  'UNIMPLEMENTED_ERROR',
+])
 
 /* Identify custom errors with an errorType property.  Subclassing builtins like Error is not widely supported,
  * and the Babel plugin for doing so relies on static detection, which could be flakey
@@ -29,3 +35,9 @@ _e.newProgrammingError = (message) =>
 
 _e.newArgumentsError = (message) =>
   newCustomError(commonErrorTypes.ARGUMENTS_EXCEPTION, message)
+
+_e.newExhaustedEnumError = (enumName, value) =>
+  newCustomError(commonErrorTypes.EXHAUSTED_ENUM, `Exhausted ${enumName}: ${value}`)
+
+_e.newUnimplementedError = (message) =>
+  newCustomError(commonErrorTypes.UNIMPLEMENTED_ERROR, message)

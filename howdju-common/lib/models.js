@@ -8,7 +8,7 @@ const {
   VotePolarity,
   JustificationBasisType,
   JustificationTargetType,
-  JustificationBasisAtomType,
+  JustificationBasisCompoundAtomType,
 } = require('./enums')
 
 
@@ -27,6 +27,7 @@ _e.isRootJustification = (j) =>
 _e.hasQuote = (j) => _e.isWritQuoteBased(j) && j.basis.entity.quoteText
 _e.isStatementCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
 _e.isWritQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRIT_QUOTE : false
+_e.isJustificationBasisCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND : false
 
 _e.negateVotePolarity = (polarity) => {
   switch (polarity) {
@@ -83,7 +84,7 @@ _e.makeNewJustificationBasisCompound = () => ({
 })
 
 _e.makeNewJustificationBasisAtom = () => ({
-  type: JustificationBasisAtomType.STATEMENT,
+  type: JustificationBasisCompoundAtomType.STATEMENT,
   entity: _e.makeNewStatement()
 })
 
@@ -119,7 +120,7 @@ _e.makeNewJustificationTargetingStatementIdWithPolarity = (statementId, polarity
 
 _e.makeNewStatementJustification = (statementProps, justificationProps) => ({
   statement: _e.makeNewStatement(statementProps),
-  justification: _e.makeNewJustification(justificationProps),
+  newJustification: _e.makeNewJustification(justificationProps),
   doCreateJustification: !!justificationProps,
 })
 

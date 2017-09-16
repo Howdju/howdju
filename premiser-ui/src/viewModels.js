@@ -30,11 +30,15 @@ export const consolidateBasis = newJustification => {
     case JustificationBasisType.WRIT_QUOTE:
       justification.basis.entity = justification.basis.writQuote
       break
+    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+      justification.basis.entity = justification.basis.justificationBasisCompound
+      break
     default:
       throw newImpossibleError(`${justification.basis.type} exhausted justification basis types`)
   }
   delete justification.basis.statementCompound
   delete justification.basis.writQuote
+  delete justification.basis.justificationBasisCompound
 
   return justification
 }

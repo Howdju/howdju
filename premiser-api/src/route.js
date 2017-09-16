@@ -143,7 +143,7 @@ const routes = [
         method,
         path
       }
-    }) => statementsService.createStatement(authToken, statement)
+    }) => statementsService.getOrCreateStatement(authToken, statement)
       .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
   },

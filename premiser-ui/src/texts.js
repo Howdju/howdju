@@ -1,6 +1,10 @@
-import {isWindowNarrow} from "./util"
-import {logger} from './logger'
 import isFunction from 'lodash/isFunction'
+
+import {arrayToObject} from 'howdju-common'
+
+import {logger} from './logger'
+import {isWindowNarrow} from "./util"
+
 
 export const CREATE_STATEMENT_SUBMIT_BUTTON_LABEL = 'CREATE_STATEMENT_SUBMIT_BUTTON_LABEL'
 export const CREATE_STATEMENT_SUBMIT_BUTTON_TITLE = 'CREATE_STATEMENT_BUTTON_TITLE'
@@ -75,7 +79,11 @@ export const MAIN_TABS_ABOUT_TAB_NAME = 'MAIN_TABS_ABOUT_TAB_NAME'
 
 export const YOU_ARE_LOGGED_IN_AS = 'YOU_ARE_LOGGED_IN_AS'
 
-const texts = {
+export const texts = arrayToObject([
+  'JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND',
+])
+
+const translations = {
   [CREATE_STATEMENT_SUBMIT_BUTTON_LABEL]: 'Create statement',
   [CREATE_STATEMENT_SUBMIT_BUTTON_TITLE]: 'Tell the world!',
 
@@ -97,7 +105,7 @@ const texts = {
   [CANCEL_BUTTON_LABEL]: 'Cancel',
   [JUSTIFICATION_POLARITY_POSITIVE]: 'Support',
   [JUSTIFICATION_POLARITY_NEGATIVE]: 'Oppose',
-  [JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND]: 'Statements',
+  [JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND]: 'Statement(s)',
   [JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE]: 'Quote',
 
   [CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL]: 'Create',
@@ -138,14 +146,16 @@ const texts = {
   [MAIN_TABS_WHATS_NEXT_TAB_NAME]: () => isWindowNarrow() ? 'Next' : "What's next",
   [MAIN_TABS_ABOUT_TAB_NAME]: 'About',
 
-  [YOU_ARE_LOGGED_IN_AS]: email => `You are logged in as ${email}`
+  [YOU_ARE_LOGGED_IN_AS]: email => `You are logged in as ${email}`,
+
+  [texts.JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND]: 'Statements/Paraphrases',
 }
 
 const keyRegEx = /^[A-Z_]+$/
 const loggedMissingTranslations = {}
 
 const text = (key, ...args) => {
-  const t = texts[key]
+  const t = translations[key]
   if (!t) {
     const looksLikeKey = keyRegEx.test(key)
     if (!looksLikeKey) {

@@ -53,12 +53,12 @@ exports.WritsService = class WritsService {
 
   readMoreWrits(continuationToken, count) {
     const {
-      s: sortContinuations,
-      f: filters,
+      sorts,
+      filters,
     } = decodeContinuationToken(continuationToken)
-    return this.writsDao.readMoreWrits(sortContinuations, count)
+    return this.writsDao.readMoreWrits(sorts, count)
       .then(writs => {
-        const nextContinuationToken = createNextContinuationToken(sortContinuations, writs, filters) || continuationToken
+        const nextContinuationToken = createNextContinuationToken(sorts, writs, filters) || continuationToken
         return {
           writs,
           continuationToken: nextContinuationToken

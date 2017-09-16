@@ -14,6 +14,7 @@ import {
   apiErrorCodes,
   arrayToObject,
   makeNewStatementAtom,
+  makeNewJustificationBasisAtom,
   makeNewUrl,
   newProgrammingError,
 } from "howdju-common"
@@ -68,6 +69,23 @@ const editorErrorReducer = errorKey => (state, action) => {
     }
   }
   return state
+}
+
+const makeAddAtomReducer = (atomsPath, atomMaker) => (state, action) => {
+  const editEntity = {...state.editEntity}
+  const atoms = clone(get(editEntity, atomsPath))
+  const index = action.payload.index || atoms.length
+  atoms.splice(index, 0, atomMaker())
+  set(editEntity, atomsPath, atoms)
+  return {...state, editEntity}
+}
+
+const makeRemoveAtomReducer = (atomsPath) => (state, action) => {
+  const editEntity = {...state.editEntity}
+  const atoms = clone(get(editEntity, atomsPath))
+  atoms.splice(action.payload.index, 1)
+  set(editEntity, atomsPath, atoms)
+  return {...state, editEntity}
 }
 
 /** Reducers that separate the behavior from the state so that it is possible to have independent states updating according
@@ -142,21 +160,8 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
-    [editors.addStatementAtom]: (state, action) => {
-      const editEntity = {...state.editEntity}
-      const atoms = clone(editEntity.basis.entity.atoms)
-      const index = action.payload.index || atoms.length
-      atoms.splice(index, 0, makeNewStatementAtom())
-      editEntity.basis.entity.atoms = atoms
-      return {...state, editEntity}
-    },
-    [editors.removeStatementAtom]: (state, action) => {
-      const editEntity = {...state.editEntity}
-      const atoms = clone(editEntity.basis.entity.atoms)
-      atoms.splice(action.payload.index, 1)
-      editEntity.basis.entity.atoms = atoms
-      return {...state, editEntity}
-    },
+    [editors.addStatementAtom]: makeAddAtomReducer('basis.entity.atoms', makeNewStatementAtom),
+    [editors.removeStatementAtom]: makeRemoveAtomReducer('basis.entity.atoms'),
     [api.fetchStatementJustifications]: (state, action) => {
       const rootStatementId = state.editEntity && state.editEntity.rootStatement.id
       if (rootStatementId && rootStatementId === action.payload.statementId) {
@@ -189,21 +194,10 @@ const editorReducerByType = {
       editEntity.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
-    [editors.addStatementAtom]: (state, action) => {
-      const editEntity = {...state.editEntity}
-      const atoms = clone(editEntity.basis.statementCompound.atoms)
-      const index = action.payload.index || atoms.length
-      atoms.splice(index, 0, makeNewStatementAtom())
-      editEntity.basis.statementCompound.atoms = atoms
-      return {...state, editEntity}
-    },
-    [editors.removeStatementAtom]: (state, action) => {
-      const editEntity = {...state.editEntity}
-      const atoms = clone(editEntity.basis.statementCompound.atoms)
-      atoms.splice(action.payload.index, 1)
-      editEntity.basis.statementCompound.atoms = atoms
-      return {...state, editEntity}
-    },
+    [editors.addStatementAtom]: makeAddAtomReducer('basis.statementCompound.atoms', makeNewStatementAtom),
+    [editors.removeStatementAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
+    [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
+    [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
     [editors.commitEdit.result]: {
       throw: (state, action) => {
         const sourceError = action.payload.sourceError
@@ -224,32 +218,23 @@ const editorReducerByType = {
 
   [EditorTypes.STATEMENT_JUSTIFICATION]: handleActions({
     [editors.addUrl]: (state, action) => {
-      const writQuote = {...state.editEntity.justification.basis.writQuote}
+      const writQuote = {...state.editEntity.newJustification.basis.writQuote}
       writQuote.urls = writQuote.urls.concat([makeNewUrl()])
-      return merge({...state}, {editEntity: {justification: {basis: {writQuote}}}})
+      return merge({...state}, {editEntity: {newJustification: {basis: {writQuote}}}})
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
-      const urls = clone(editEntity.justification.basis.writQuote.urls)
+      const urls = clone(editEntity.newJustification.basis.writQuote.urls)
       urls.splice(action.payload.index, 1)
-      editEntity.justification.basis.writQuote.urls = urls
+      editEntity.newJustification.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
-    [editors.addStatementAtom]: (state, action) => {
-      const editEntity = {...state.editEntity}
-      const atoms = clone(editEntity.justification.basis.statementCompound.atoms)
-      const index = action.payload.index || atoms.length
-      atoms.splice(index, 0, makeNewStatementAtom())
-      editEntity.justification.basis.statementCompound.atoms = atoms
-      return {...state, editEntity}
-    },
-    [editors.removeStatementAtom]: (state, action) => {
-      const editEntity = {...state.editEntity}
-      const atoms = clone(editEntity.justification.basis.statementCompound.atoms)
-      atoms.splice(action.payload.index, 1)
-      editEntity.justification.basis.statementCompound.atoms = atoms
-      return {...state, editEntity}
-    },
+    [editors.addStatementAtom]: makeAddAtomReducer('newJustification.basis.statementCompound.atoms', makeNewStatementAtom),
+    [editors.removeStatementAtom]: makeRemoveAtomReducer('newJustification.basis.statementCompound.atoms'),
+    [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer(
+        'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
+    [editors.removeJustificationBasisCompoundAtom]:
+        makeRemoveAtomReducer('newJustification.basis.justificationBasisCompound.atoms'),
   }, defaultEditorState),
 
   [EditorTypes.WRIT_QUOTE]: handleActions({

@@ -32,6 +32,7 @@ const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]
 const toStatement = row => row && ({
   id: toString(row.statement_id),
   text: row.text,
+  normalText: row.normal_text,
   slug: toSlug(row.text),
   creatorUserId: toString(row.creator_user_id),
   created: row.created,
@@ -235,6 +236,32 @@ const toJustificationScore = row => row && ({
   deleotrJobHistoryId: row.deletor_job_history_id,
 })
 
+const toSourceExcerptParaphrase = row => row & ({
+  id: row.source_excerpt_paraphrase_id,
+  paraphrasingStatement: {
+    id: row.paraphrasing_statement_id,
+  },
+  sourceExcerpt: {
+    type: row.entity_type,
+    id: row.entity_id,
+  },
+})
+
+const toJustificationBasisCompound = row => row && ({
+  id: row.justification_basis_compound_id,
+  creatorUserId: row.creator_user_id,
+  created: row.created,
+})
+
+const toJustificationBasisCompoundAtom = row => row && ({
+  id: row.justification_basis_compounds_atom_id,
+  compoundId: row.justification_basis_compounds_id,
+  type: row.entity_type,
+  entity: {
+    id: row.entity_id,
+  },
+})
+
 module.exports = {
   toUser,
   toStatement,
@@ -251,4 +278,7 @@ module.exports = {
   toUserExternalIds,
   toJobHistory,
   toJustificationScore,
+  toSourceExcerptParaphrase,
+  toJustificationBasisCompound,
+  toJustificationBasisCompoundAtom,
 }

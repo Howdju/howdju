@@ -1,0 +1,1 @@
+exports.VidSegmentsService = class VidSegmentsService {}

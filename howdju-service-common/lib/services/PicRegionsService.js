@@ -1,0 +1,1 @@
+exports.PicRegionsService = class PicRegionsService {}

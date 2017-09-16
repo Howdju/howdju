@@ -19,7 +19,7 @@ PicRegion
   - URLs
   - Some sort of hash?
   - Region (per-URL?  Or ensure that each URL is the same image?)
-VideoSegment
+VidSegment
   - URLs
   - Title
   - Creator

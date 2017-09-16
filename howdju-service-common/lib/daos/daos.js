@@ -7,10 +7,13 @@ module.exports = assign(
   require('./WritQuotesDao'),
   require('./WritsDao'),
   require('./JobHistoryDao'),
+  require('./JustificationBasisCompoundsDao'),
   require('./JustificationScoresDao'),
   require('./JustificationsDao'),
   require('./PermissionsDao'),
   require('./PerspectivesDao'),
+  require('./PicRegionsDao'),
+  require('./SourceExcerptParaphrasesDao'),
   require('./StatementCompoundsDao'),
   require('./StatementsDao'),
   require('./UrlsDao'),
@@ -18,6 +21,7 @@ module.exports = assign(
   require('./UserGroupsDao'),
   require('./UserPermissionsDao'),
   require('./UsersDao'),
+  require('./VidSegmentsDao'),
   require('./VotesDao'),
   require('./orm')
 )
