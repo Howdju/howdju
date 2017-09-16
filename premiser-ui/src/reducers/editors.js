@@ -232,9 +232,9 @@ const editorReducerByType = {
     [editors.addStatementAtom]: makeAddAtomReducer('newJustification.basis.statementCompound.atoms', makeNewStatementAtom),
     [editors.removeStatementAtom]: makeRemoveAtomReducer('newJustification.basis.statementCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer(
-        'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
+      'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
     [editors.removeJustificationBasisCompoundAtom]:
-        makeRemoveAtomReducer('newJustification.basis.justificationBasisCompound.atoms'),
+      makeRemoveAtomReducer('newJustification.basis.justificationBasisCompound.atoms'),
   }, defaultEditorState),
 
   [EditorTypes.WRIT_QUOTE]: handleActions({

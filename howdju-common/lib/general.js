@@ -1,7 +1,8 @@
+const forEach = require('lodash/forEach')
 const isFunction = require('lodash/isFunction')
 const isUndefined = require('lodash/isUndefined')
-const moment = require('moment')
 const reduce = require('lodash/reduce')
+const moment = require('moment')
 
 
 const _e = module.exports
@@ -55,3 +56,10 @@ _e.arrayToObject = (codes) => reduce(codes, (acc, code) => {
   acc[code] = code
   return acc
 }, {})
+
+_e.pushAll = (target, source) => {
+  forEach(source, item => {
+    target.push(item)
+  })
+  return target
+}

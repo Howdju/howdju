@@ -1,9 +1,7 @@
-const clone = require('lodash/clone')
 const concat = require('lodash/concat')
 const forEach = require('lodash/forEach')
 const has = require('lodash/has')
 const head = require('lodash/head')
-const join = require('lodash/join')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const Promise = require('bluebird')
@@ -19,6 +17,8 @@ const {
   negateRootPolarity,
   newImpossibleError,
   assert,
+  pushAll,
+  newExhaustedEnumError,
 } = require('howdju-common')
 
 const {
@@ -26,15 +26,28 @@ const {
   toStatementCompound,
   toStatementCompoundAtom,
   toWritQuote,
+  toStatement,
 } = require('./orm')
 const {EntityNotFoundError} = require('../serviceErrors')
-const {groupRootJustifications} = require('./util')
+const {
+  groupRootJustifications,
+  renumberSqlArgs,
+} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 
 /** Directly return an object of the justifications keyed by their ID */
 const mapJustificationRowsById = (rows, prefix = '') => {
   const [justificationsById] = mapJustificationRowsWithOrdering(rows, prefix)
   return justificationsById
+}
+
+const mapStatementRowsById = (rows) => {
+  const byId = {}
+  forEach(rows, row => {
+    const statement = toStatement(row)
+    byId[statement.id] = statement
+  })
+  return byId
 }
 
 /** Use the ordering to return the justifications as an array in query-order */
@@ -127,36 +140,174 @@ const mapJustificationRowsWithOrdering = (rows, prefix = '') => {
   return [justificationsById, orderedJustificationIds]
 }
 
-/** Creates a few things for making an ordered and limited query an number of justifications.  Good for pagination.
- * Because the query needs to join in bases to support filtering, it will include not only the justifications, but also
- * any basis columns that can be joined in while preserving a one-to-one (because otherwise we would have multiple rows
- * per justification, screwing up the LIMIT clause.)
- *
- * @param sorts {property, direction}  | {p, d} - an array of instructions for sorting the justifications
- * @param count integer - the maximum number of justifications to return
- * @param filters object - key values of values upon which to filter.
- * @param initialArgs Array<any> - args the caller wants to appear in the returned args. In hindsight, the caller could just add these, so we should refactor so that this is not a parameter
- * @param isContinuation boolean - whether the query is a continuation of a pagination query
- */
-const makeReadLimitedJustificationsQueryParts = (logger, sorts, count, filters, initialArgs, isContinuation = false) => {
-  const args = clone(initialArgs)
-  let countSql = ''
-  if (isFinite(count)) {
-    args.push(count)
-    countSql = `\nlimit $${args.length}`
+const toSelect = (columns, tableAlias) => {
+  const tablePrefix = tableAlias ? tableAlias + '.' : ''
+  return map(columns, c => tablePrefix + c).join(', ')
+}
+
+const makeDefaultJustificationSql = (justificationColumns) => {
+  const select = toSelect(justificationColumns, 'j')
+  const sql = `select ${select} from justifications j where j.deleted is null`
+  return {
+    sql,
+    args: [],
+  }
+}
+
+const makeWritQuoteJustificationClause = (writQuoteId, justificationColumns) => {
+  const select = toSelect(justificationColumns, 'j')
+  const sql = `
+    select 
+      ${select}
+    from 
+      justifications j
+        join write_quotes wq on j.basis_type = $1 and j.basis_id = wq.writ_quote_id
+      where
+            j.deleted is null 
+        and wq.deleted is null
+        and wq.writ_quote_id = $2 
+  `
+  const args = [
+    JustificationBasisType.WRIT_QUOTE,
+    writQuoteId,
+  ]
+  return {
+    sql,
+    args
+  }
+}
+
+const makeWritJustificationClause = (writId, justificationColumns) => {
+  const select = toSelect(justificationColumns, 'j')
+  const sql = `
+    select 
+      ${select}
+    from 
+      justifications j
+        join write_quotes wq on j.basis_type = $1 and j.basis_id = wq.writ_quote_id
+        join writs w using (writ_id)
+      where 
+            j.deleted is null
+        and wq.deleted is null
+        and w.deleted is null
+        and w.writ_id = $2 
+  `
+  const args = [
+    JustificationBasisType.WRIT_QUOTE,
+    writId,
+  ]
+  return {
+    sql,
+    args
+  }
+}
+
+const makeStatementCompoundJustificationClause = (statementCompoundId, justificationColumns) => {
+  const select = toSelect(justificationColumns, 'j')
+  const sql = `
+    select 
+      ${select}
+    from 
+      justifications j
+        join statement_compounds sc on j.basis_type = $1 and j.basis_id = sc.statement_compound_id
+      where 
+            j.deleted is null
+        and sc.deleted is null
+        and sc.statement_compound_id = $2 
+  `
+  const args = [
+    JustificationBasisType.STATEMENT_COMPOUND,
+    statementCompoundId,
+  ]
+  return {
+    sql,
+    args
+  }
+}
+
+const makeStatementJustificationClause = (statementId, justificationColumns) => {
+  const select = toSelect(justificationColumns, 'j')
+  const sql = `
+    select 
+      ${select}
+    from 
+      justifications j
+        join statement_compounds sc on 
+              j.basis_type = $1 
+          and j.basis_id = sc.statement_compound_id
+        join statement_compound_atoms sca using (statement_compound_id)
+      where 
+            j.deleted is null
+        and sc.deleted is null
+        and sca.statement_id = $2
+  `
+  const args = [
+    JustificationBasisType.STATEMENT_COMPOUND,
+    statementId,
+  ]
+  return {
+    sql,
+    args
+  }
+}
+
+const makeFilteredJustificationClauses = (logger, filters, sorts) => {
+
+  const clauses = []
+
+  const columnNames = [
+    'justification_id'
+  ]
+  forEach(sorts, sort => {
+    const sortProperty = sort.property
+    // We already include the ID, so ignore it
+    if (sortProperty !== 'id') {
+      const columnName = snakeCase(sortProperty)
+      columnNames.push(columnName)
+    }
+  })
+
+  forEach(filters, (filterValue, filterName) => {
+    if (!filterValue) {
+      logger.warn(`skipping filter ${filterName} because it has no value`)
+      return
+    }
+    switch (filterName) {
+      case 'statementId': {
+        clauses.push(makeStatementJustificationClause(filterValue, columnNames))
+        break
+      }
+      case 'statementCompoundId': {
+        clauses.push(makeStatementCompoundJustificationClause(filterValue, columnNames))
+        break
+      }
+      case 'writQuoteId': {
+        clauses.push(makeWritQuoteJustificationClause(filterValue, columnNames))
+        break
+      }
+      case 'writId': {
+        clauses.push(makeWritJustificationClause(filterValue, columnNames))
+        break
+      }
+      default:
+        throw newImpossibleError(`Unsupported justification filter: ${filterName}`)
+    }
+  })
+
+  if (clauses.length < 1) {
+    clauses.push(makeDefaultJustificationSql(columnNames))
   }
 
-  const whereSqls = [
-    'j.deleted is null',
-    'wq.deleted is null',
-    'w.deleted is null',
-    'sc.deleted is null',
-  ]
-  const continuationWhereSqls = []
-  const prevWhereSqls = []
-  const orderBySqls = []
-  const extraWithClauses = []
-  const extraJoinClauses = []
+  return clauses
+}
+
+const makeLimitedJustificationsOrderClauseParts = (sorts, isContinuation, tableAlias) => {
+  const args = []
+  const whereConditionSqls = []
+  const orderByExpressionSqls = []
+
+  const continuationWhereConditionSqls = []
+  const prevContinuationWhereConditionSqls = []
   forEach(sorts, sort => {
 
     // The default direction is ascending, so if it is missing that's ok
@@ -168,113 +319,97 @@ const makeReadLimitedJustificationsQueryParts = (logger, sorts, count, filters, 
     // 'id' is a special property name for entities. The column is prefixed by the entity type
     const columnName = sortProperty === 'id' ? 'justification_id' : snakeCase(sortProperty)
 
-    whereSqls.push(`j.${columnName} is not null`)
-    orderBySqls.push(`j.${columnName} ${direction}`)
+    whereConditionSqls.push(`${tableAlias}.${columnName} is not null`)
+    orderByExpressionSqls.push(`${tableAlias}.${columnName} ${direction}`)
 
     if (isContinuation) {
       let operator = direction === DatabaseSortDirection.ASCENDING ? '>' : '<'
       const value = sort.value
       args.push(value)
-      const currContinuationWhereSql = concat(prevWhereSqls, [`j.${columnName} ${operator} $${args.length}`])
-      continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
-      prevWhereSqls.push(`j.${columnName} = $${args.length}`)
+      const currContinuationWhereSql = concat(prevContinuationWhereConditionSqls, [`${tableAlias}.${columnName} ${operator} $${args.length}`])
+      continuationWhereConditionSqls.push(currContinuationWhereSql.join(' and '))
+      prevContinuationWhereConditionSqls.push(`${tableAlias}.${columnName} = $${args.length}`)
     }
   })
 
-  forEach(filters, (filterValue, filterName) => {
-    // Note, some filters are incompatible, such as statementId or statementCompoundId and writQuoteId.
-    // statementId and statementCompoundId may be incompatible if the statementId doesn't appear in any compound having
-    // the statementCompoundId
-    if (!filterValue) {
-      logger.warn(`skipping filter ${filterName} because it has no value`)
-      return
-    }
-    switch (filterName) {
-      case 'statementId': {
-        args.push(filters.statementId)
-        const statementLimitedJustificationIdsSql = `
-          statement_limited_justification_ids as (
-            select distinct justification_id
-            from justifications j
-                  join statement_compounds sc on 
-                        j.basis_id = sc.statement_compound_id 
-                    and j.basis_type = $2
-                  join statement_compound_atoms sca on
-                        sc.statement_compound_id = sca.statement_compound_id
-                    and sca.statement_id = $${args.length}
-          )
-        `
-        extraWithClauses.push(statementLimitedJustificationIdsSql)
-        extraJoinClauses.push(`join statement_limited_justification_ids using (justification_id)`)
-        break
-      }
-      case 'statementCompoundId': {
-        args.push(filterValue)
-        whereSqls.push(`sc.statement_compound_id = $${args.length}`)
-        break
-      }
-      case 'writQuoteId': {
-        args.push(filterValue)
-        whereSqls.push(`wq.writ_quote_id = $${args.length}`)
-        break
-      }
-      case 'writId': {
-        args.push(filterValue)
-        whereSqls.push(`w.writ_id = $${args.length}`)
-        break
-      }
-      default:
-        throw newImpossibleError(`Unsupported justification filter: ${filterName}`)
-    }
-  })
+  if (continuationWhereConditionSqls.length > 0) {
+    whereConditionSqls.push(`(
+      ${continuationWhereConditionSqls.join('\n or ')}
+    )`)
+  }
 
-  const continuationWhereSql = continuationWhereSqls.length > 0 ?
-    `and (
-          ${continuationWhereSqls.join('\n or ')}
-         )` :
-    ''
-  const whereSql = whereSqls.join('\nand ')
-  const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
-
-  const limitedJustificationsSql = `
-      select distinct
-          j.*
-        , s.text                   as root_statement_text
-        , s.created                as root_statement_created
-        , s.creator_user_id        as root_statement_creator_id
-        , wq.writ_quote_id         as basis_writ_quote_id
-        , wq.quote_text            as basis_writ_quote_quote_text
-        , wq.created               as basis_writ_quote_created
-        , wq.creator_user_id       as basis_writ_quote_creator_user_id
-        , w.writ_id                as basis_writ_quote_writ_id
-        , w.title                  as basis_writ_quote_writ_title
-        , w.created                as basis_writ_quote_writ_created
-        , w.creator_user_id        as basis_writ_quote_writ_creator_user_id
-        , sc.statement_compound_id as basis_statement_compound_id
-      from justifications j
-          ${join(extraJoinClauses, '\n')}
-          join statements s on j.root_statement_id = s.statement_id
-          left join writ_quotes wq on 
-                j.basis_id = wq.writ_quote_id 
-            and j.basis_type = $1
-          left join writs w on wq.writ_id = w.writ_id
-          left join statement_compounds sc on 
-                j.basis_id = sc.statement_compound_id 
-            and j.basis_type = $2
-        where 
-          ${whereSql}
-          ${continuationWhereSql}
-      ${orderBySql}
-      ${countSql}
-    `
+  const whereConditionsSql = whereConditionSqls.join('\n and ')
+  const orderByExpressionsSql = orderByExpressionSqls.join(', ')
 
   return {
-    /** The arguments to the  */
+    whereConditionsSql,
+    orderByExpressionsSql,
     args,
-    limitedJustificationsSql,
-    extraWithClauses,
-    orderBySql,
   }
+}
+
+/** Generates SQL and arguments for limit-querying filtered justifications.
+ *
+ * @param logger - a logger
+ * @param filters object - key values of values upon which to filter.
+ * @param sorts {property, direction} - an array of instructions for sorting the justifications
+ * @param count integer - the maximum number of justifications to return
+ * @param isContinuation boolean - whether the query is a continuation of a pagination query
+ */
+const makeLimitedJustificationsClause = (logger, filters, sorts, count, isContinuation) => {
+
+  const tableAlias = 'j'
+
+  const {
+    whereConditionsSql,
+    orderByExpressionsSql,
+    args,
+  } = makeLimitedJustificationsOrderClauseParts(sorts, isContinuation, tableAlias)
+
+  const filteredJustificationClauses = makeFilteredJustificationClauses(logger, filters, sorts)
+  const renumberedFilteredJustificationClauseSqls = []
+  forEach(filteredJustificationClauses, (filterClause) => {
+    renumberedFilteredJustificationClauseSqls.push(renumberSqlArgs(filterClause.sql, args.length))
+    pushAll(args, filterClause.args)
+  })
+
+  const whereSql = whereConditionsSql ? 'where ' + whereConditionsSql : ''
+  const orderBySql = orderByExpressionsSql ? 'order by ' + orderByExpressionsSql : ''
+
+  args.push(count)
+  const sql = `
+    select ${tableAlias}.* 
+    from (
+      ${renumberedFilteredJustificationClauseSqls.join('\n union \n')}
+    ) ${tableAlias}
+    ${whereSql}
+    ${orderBySql}
+    limit $${args.length}
+  `
+
+  return {
+    sql: sql,
+    args: args,
+  }
+}
+
+const makeJustificationsQueryOrderByExpressionsSql = (sorts, tableAlias) => {
+  const orderByExpressionSqls = []
+  const tablePrefix = tableAlias ? tableAlias + '.' : ''
+  forEach(sorts, sort => {
+    // The default direction is ascending, so if it is missing that's ok
+    const direction = sort.direction === SortDirection.DESCENDING ?
+      DatabaseSortDirection.DESCENDING :
+      DatabaseSortDirection.ASCENDING
+
+    const sortProperty = sort.property
+    // 'id' is a special property name for entities. The column is prefixed by the entity type
+    const columnName = sortProperty === 'id' ? 'justification_id' : snakeCase(sortProperty)
+
+    orderByExpressionSqls.push(`${tablePrefix}${columnName} ${direction}`)
+  })
+
+  return orderByExpressionSqls.join(', ')
 }
 
 const getNewJustificationRootPolarity = (justification, logger, database) => Promise.resolve()
@@ -316,57 +451,86 @@ exports.JustificationsDao = class JustificationsDao {
     this.writQuotesDao = writQuotesDao
   }
 
-  readJustifications(sorts, count, filters, isContinuation = false) {
+  readJustifications(filters, sorts, count, isContinuation = false) {
     const {
-      args: justificationsArgs,
-      limitedJustificationsSql: justificationsLimitedJustificationsSql,
-      extraWithClauses: justificationsExtraWithClauses,
-      orderBySql: justificationsOrderBySql,
-    } = makeReadLimitedJustificationsQueryParts(this.logger, sorts, count, filters, [
+      sql: limitedJustificationsSql,
+      args: limitedJustificationsArgs,
+    } = makeLimitedJustificationsClause(this.logger, filters, sorts, count, isContinuation)
+
+    const tableAlias = 'j'
+    const orderByExpressionsSql = makeJustificationsQueryOrderByExpressionsSql(sorts, tableAlias)
+    const orderBySql = orderByExpressionsSql ? 'order by ' + orderByExpressionsSql : ''
+
+    const justificationsSelectArgs = [
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
-    ], isContinuation)
-    const justificationsExtraWithClausesSql = justificationsExtraWithClauses.length > 0 ?
-      join(map(justificationsExtraWithClauses, c => c + ',\n')) :
-      ''
+    ]
+    const justificationsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, justificationsSelectArgs.length)
+    const justificationsArgs = concat(justificationsSelectArgs, limitedJustificationsArgs)
+
     const justificationsSql = `
       with
-        ${justificationsExtraWithClausesSql}
         limited_justifications as (
-          ${justificationsLimitedJustificationsSql}
+          ${justificationsRenumberedLimitedJustificationsSql}
         )
       select 
-          j.*
-        , sca.order_position    as basis_statement_compound_atom_order_position
-        , scas.statement_id     as basis_statement_compound_atom_statement_id
-        , scas.text             as basis_statement_compound_atom_statement_text
-        , scas.created          as basis_statement_compound_atom_statement_created
-        , scas.creator_user_id  as basis_statement_compound_atom_statement_creator_user_id
-      from limited_justifications j
-          left join statement_compound_atoms sca on j.basis_statement_compound_id = sca.statement_compound_id
-          left join statements scas on sca.statement_id = scas.statement_id
-        where scas.deleted is null
-      ${justificationsOrderBySql}
-      `
+          ${tableAlias}.justification_id
+        , ${tableAlias}.root_statement_id
+        , ${tableAlias}.root_polarity
+        , ${tableAlias}.target_type
+        , ${tableAlias}.target_id
+        , ${tableAlias}.basis_type
+        , ${tableAlias}.basis_id
+        , ${tableAlias}.polarity
+        , ${tableAlias}.creator_user_id
+        , ${tableAlias}.created
+        
+        , wq.writ_quote_id          as basis_writ_quote_id
+        , wq.quote_text             as basis_writ_quote_quote_text
+        , wq.created                as basis_writ_quote_created
+        , wq.creator_user_id        as basis_writ_quote_creator_user_id
+        , w.writ_id                 as basis_writ_quote_writ_id
+        , w.title                   as basis_writ_quote_writ_title
+        , w.created                 as basis_writ_quote_writ_created
+        , w.creator_user_id         as basis_writ_quote_writ_creator_user_id
+        
+        , sc.statement_compound_id  as basis_statement_compound_id
+        , sca.order_position        as basis_statement_compound_atom_order_position
+        , scas.statement_id         as basis_statement_compound_atom_statement_id
+        , scas.text                 as basis_statement_compound_atom_statement_text
+        , scas.created              as basis_statement_compound_atom_statement_created
+        , scas.creator_user_id      as basis_statement_compound_atom_statement_creator_user_id
+      from limited_justifications
+          join justifications ${tableAlias} using (justification_id)
+          left join writ_quotes wq on 
+                j.basis_type = $1
+            and j.basis_id = wq.writ_quote_id 
+          left join writs w using (writ_id)
+          left join statement_compounds sc on 
+                j.basis_type = $2
+            and j.basis_id = sc.statement_compound_id
+          left join statement_compound_atoms sca using (statement_compound_id)
+          left join statements scas using (statement_id)
+        where
+              ${tableAlias}.deleted is null
+          and wq.deleted is null
+          and w.deleted is null
+          and sc.deleted is null 
+          and scas.deleted is null
+      ${orderBySql}
+    `
 
-    const {
-      args: targetJustificationsArgs,
-      limitedJustificationsSql: targetJustificationsLimitedJustificationsSql,
-      extraWithClauses: targetJustificationsExtraWithClauses,
-      orderBySql: targetJustificationsOrderBySql,
-    } = makeReadLimitedJustificationsQueryParts(this.logger, sorts, count, filters, [
+    const targetJustificationsSelectArgs = [
+      JustificationTargetType.JUSTIFICATION,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.STATEMENT_COMPOUND,
-      JustificationTargetType.JUSTIFICATION,
-    ], isContinuation)
-    const targetJustificationsAdditionalWithClausesSql = targetJustificationsExtraWithClauses.length > 0 ?
-      join(map(targetJustificationsExtraWithClauses, c => c + ',\n')) :
-      ''
+    ]
+    const targetJustificationsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, targetJustificationsSelectArgs.length)
+    const targetJustificationsArgs = concat(targetJustificationsSelectArgs, limitedJustificationsArgs)
     const targetJustificationsSql = `
       with
-        ${targetJustificationsAdditionalWithClausesSql}
         limited_justifications as (
-          ${targetJustificationsLimitedJustificationsSql}
+          ${targetJustificationsRenumberedLimitedJustificationsSql}
         )
       select 
          -- We don't use this, but just for completeness
@@ -398,36 +562,86 @@ exports.JustificationsDao = class JustificationsDao {
         , scas.text                 as tj_basis_statement_compound_atom_statement_text
         , scas.created              as tj_basis_statement_compound_atom_statement_created
         , scas.creator_user_id      as tj_basis_statement_compound_atom_statement_creator_user_id
-      from limited_justifications j
+      from limited_justifications lj
+          join justifications j using (justification_id)
           join justifications tj on 
-                j.target_id = tj.justification_id 
-            and j.target_type = $3
+                j.target_type = $1
+            and j.target_id = tj.justification_id 
           left join writ_quotes wq on 
-                tj.basis_id = wq.writ_quote_id 
-            and tj.basis_type = $1
+                tj.basis_type = $2
+            and tj.basis_id = wq.writ_quote_id 
           left join writs w on wq.writ_id = w.writ_id
-          left join statement_compounds sc on tj.basis_id = sc.statement_compound_id and tj.basis_type = $2
-          left join statement_compound_atoms sca on sc.statement_compound_id = sca.statement_compound_id
-          left join statements scas on sca.statement_id = scas.statement_id
-        where scas.deleted is null
-      ${targetJustificationsOrderBySql}
+          left join statement_compounds sc on 
+                tj.basis_type = $3
+            and tj.basis_id = sc.statement_compound_id
+          left join statement_compound_atoms sca using (statement_compound_id)
+          left join statements scas using (statement_id)
+        where
+              j.deleted is null
+          and tj.deleted is null
+          and wq.deleted is null
+          and w.deleted is null
+          and sc.deleted is null 
+          and scas.deleted is null
+      -- no need to order because they are joined to the ordered targeting justifications
       `
+
+    const targetStatementsSelectArgs = [
+      JustificationTargetType.STATEMENT,
+    ]
+    const targetStatementsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, targetStatementsSelectArgs.length)
+    const targetStatementsArgs = concat(targetStatementsSelectArgs, limitedJustificationsArgs)
+    const targetStatementsSql = `
+      with
+        limited_justifications as (
+          ${targetStatementsRenumberedLimitedJustificationsSql}
+        )
+      select 
+          ts.statement_id
+        , ts.text
+        , ts.created
+        , ts.creator_user_id
+      from limited_justifications lj
+          join justifications j using (justification_id)
+          join statements ts on 
+                j.target_type = $1
+            and j.target_id = ts.statement_id
+        where
+              j.deleted is null
+          and ts.deleted is null
+      -- no need to order because they are joined to the ordered targeting justifications
+    `
     return Promise.all([
       this.database.query(justificationsSql, justificationsArgs),
       this.database.query(targetJustificationsSql, targetJustificationsArgs),
+      this.database.query(targetStatementsSql, targetStatementsArgs),
     ])
-      .then( ([{rows: justificationRows}, {rows: targetJustificationRows}]) => {
+      .then( ([
+        {rows: justificationRows},
+        {rows: targetJustificationRows},
+        {rows: targetStatementRows},
+      ]) => {
+        // TODO ensure that if a justification is in both justifications and targetJustifications that we use the same object in both places?
         const justifications = mapJustificationRows(justificationRows)
         const targetJustificationsById = mapJustificationRowsById(targetJustificationRows, 'tj_')
+        const targetStatementsById = mapStatementRowsById(targetStatementRows)
+
         forEach(justifications, justification => {
-          if (justification.target.type !== JustificationTargetType.JUSTIFICATION) {
-            return
+          let target
+          switch (justification.target.type) {
+            case JustificationTargetType.JUSTIFICATION:
+              target = targetJustificationsById[justification.target.entity.id]
+              break
+            case JustificationTargetType.STATEMENT:
+              target = targetStatementsById[justification.target.entity.id]
+              break
+            default:
+              throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
           }
-          const target = targetJustificationsById[justification.target.entity.id]
           if (!target) {
             this.logger.warning(`Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`)
           }
-          // TODO ensure that if a justification is in both justifications and targetJustifications that we use the same object in both places?
+
           justification.target.entity = target
         })
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-script_dir="$( dirname "${BASH_SOURCE[0]}" )"
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 base_dir=${script_dir}/../
 
 pushd .

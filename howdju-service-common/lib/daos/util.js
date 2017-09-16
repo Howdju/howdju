@@ -1,21 +1,26 @@
 const deburr = require('lodash/deburr')
 const head = require('lodash/head')
+const isNumber = require('lodash/isNumber')
 const join = require('lodash/join')
 const map = require('lodash/map')
 const replace = require('lodash/replace')
 const toLower = require('lodash/toLower')
+const toNumber = require('lodash/toNumber')
 const trim = require('lodash/trim')
 
 const {
   assert,
   JustificationTargetType,
+  newProgrammingError,
 } = require('howdju-common')
+
 
 exports.cleanWhitespace = text => {
   text = trim(text)
   text = replace(text, /\s+/g, ' ')
   return text
 }
+
 exports.normalizeText = text => {
 
   // Postgres SQL for the same
@@ -63,4 +68,23 @@ exports.groupRootJustifications = (rootStatementId, justification_rows) => {
     rootJustifications,
     counterJustificationsByJustificationId,
   }
+}
+
+/** Renumber the SQL arguments starting from {@link start} */
+exports.renumberSqlArgs = (sql, start) => {
+  if (!isNumber(start) || start < 0) {
+    throw newProgrammingError('start must be a non-negative number')
+  }
+  if (start === 0) {
+    // Nothing to do
+    return sql
+  }
+
+  const renumberedSql = sql.replace(/\$(\d+)/g, (match, paramNumber) => {
+    const paramNumberNumber = toNumber(paramNumber)
+    const paramRenumber = paramNumberNumber + start
+    return `$${paramRenumber}`
+  })
+
+  return renumberedSql
 }

@@ -145,14 +145,14 @@ class NewJustificationEditorFields extends Component {
       />
     )
     const justificationBasisCompoundEditorFields = (
-        <JustificationBasisCompoundEditorFields justificationBasisCompound={justificationBasisCompound}
-                                                id={idPrefix + justificationBasisCompoundName}
-                                                name={namePrefix + justificationBasisCompoundName}
-                                                suggestionsKey={suggestionsKeyPrefix + justificationBasisCompoundName}
-                                                onPropertyChange={onPropertyChange}
-                                                onAddAtom={onAddAtom}
-                                                onRemoveAtom={onRemoveAtom}
-        />
+      <JustificationBasisCompoundEditorFields justificationBasisCompound={justificationBasisCompound}
+                                              id={idPrefix + justificationBasisCompoundName}
+                                              name={namePrefix + justificationBasisCompoundName}
+                                              suggestionsKey={suggestionsKeyPrefix + justificationBasisCompoundName}
+                                              onPropertyChange={onPropertyChange}
+                                              onAddAtom={onAddAtom}
+                                              onRemoveAtom={onRemoveAtom}
+      />
     )
 
     const polarity = get(newJustification, 'polarity')

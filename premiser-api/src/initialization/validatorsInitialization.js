@@ -25,7 +25,7 @@ const writQuoteValidator = new WritQuoteValidator(writValidator, urlValidator)
 const sourceExcerptValidator = new SourceExcerptValidator(writQuoteValidator)
 const sourceExcerptParaphraseValidator = new SourceExcerptParaphraseValidator(statementValidator, sourceExcerptValidator)
 const justificationBasisCompoundAtomValidator = new JustificationBasisCompoundAtomValidator(statementValidator,
-    sourceExcerptParaphraseValidator)
+  sourceExcerptParaphraseValidator)
 const justificationBasisCompoundValidator = new JustificationBasisCompoundValidator(justificationBasisCompoundAtomValidator)
 const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, writQuoteValidator)
 const credentialValidator = new CredentialValidator()

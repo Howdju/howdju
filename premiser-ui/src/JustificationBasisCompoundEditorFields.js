@@ -126,8 +126,8 @@ export default class BasisCompoundEditorFields extends Component {
     const hasErrors = errors && errors.hasErrors
     const atomErrorProps = hasErrors ?
       map(errors.fieldErrors.atoms.itemErrors, atomError => atomError.fieldErrors.statement.fieldErrors.text.length > 0 ?
-          {error: true, errorText: toErrorText(atomError.fieldErrors.statement.fieldErrors.text)} :
-          {}
+        {error: true, errorText: toErrorText(atomError.fieldErrors.statement.fieldErrors.text)} :
+        {}
       ) :
       map(atoms, () => null)
     const atomComponents = map(atoms, (atom, index) =>

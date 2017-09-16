@@ -118,7 +118,7 @@ exports.JustificationsService = class JustificationsService {
   readInitialJustifications(requestedSorts, count, filters) {
     const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
-    return this.justificationsDao.readJustifications(unambiguousSorts, count, filters)
+    return this.justificationsDao.readJustifications(filters, unambiguousSorts, count)
       .then(justifications => {
         const continuationToken = createContinuationToken(unambiguousSorts, justifications, filters)
         return {
@@ -133,7 +133,7 @@ exports.JustificationsService = class JustificationsService {
       sorts,
       filters,
     } = decodeContinuationToken(continuationToken)
-    return this.justificationsDao.readJustifications(sorts, count, filters, true)
+    return this.justificationsDao.readJustifications(filters, sorts, count, true)
       .then(justifications => {
         const [goodJustifications, badJustifications] = partition(justifications, j =>
           j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||

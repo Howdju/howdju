@@ -122,9 +122,7 @@ exports.createContinuationToken = (sorts, entities, filters) => {
   let continuationToken = null
 
   if (lastEntity) {
-    console.log({sorts, filters})
     const continuationInfos = exports.createContinuationInfo(sorts, lastEntity, filters)
-    console.log('continuationInfos', continuationInfos)
     continuationToken = exports.encodeContinuationToken(continuationInfos)
   }
   return continuationToken
@@ -134,12 +132,10 @@ exports.decodeContinuationToken = continuationToken => {
   const decoded = URLSafeBase64.decode(new Buffer(continuationToken))
   const continuationInfo = JSON.parse(decoded)
 
-  console.log('continuationInfo', continuationInfo)
   const fullNameContinuationInfo = mapKeys(continuationInfo, (value, key) => ContinuationTokenFullPropertyNames[key])
   if (fullNameContinuationInfo.sorts) {
     fullNameContinuationInfo.sorts = map(fullNameContinuationInfo.sorts, lengthenContinuationInfoSort)
   }
-  console.log('fullNameContinuationInfo', fullNameContinuationInfo)
 
   return fullNameContinuationInfo
 }

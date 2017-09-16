@@ -26,6 +26,10 @@
 * Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
   and leave it in-memory
   * RESPECT DO NOT TRACK
+  
+* Safari OS X recent activity UI bugs
+  * The Progresses don't hide
+  * There is an annoying repetitive flash where a horizontal scroll bar appears and disappoears
 
 Cat meeting design notes:
   * Statement text larger

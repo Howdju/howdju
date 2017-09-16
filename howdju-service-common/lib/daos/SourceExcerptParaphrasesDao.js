@@ -40,7 +40,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       `select * from source_excerpt_paraphrases where source_excerpt_paraphrase_id = $1 and deleted is null`,
       [sourceExcerptParaphraseId]
     )
-        .then(mapSingle(this.logger, toSourceExcerptParaphrase, 'source_excerpt_paraphrases', {sourceExcerptParaphraseId}))
+      .then(mapSingle(this.logger, toSourceExcerptParaphrase, 'source_excerpt_paraphrases', {sourceExcerptParaphraseId}))
   }
 
   // readSourceExcerptHavingStatementAndSourceExcerpt(statement, sourceExcerpt) {
