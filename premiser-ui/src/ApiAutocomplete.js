@@ -116,6 +116,10 @@ class ApiAutocomplete extends Component {
   }
 
   onBlur = (event) => {
+    this.throttledRefreshAutocomplete.cancel()
+    if (this.props.cancelSuggestions) {
+      this.props.cancelSuggestions(this.props.suggestionsKey)
+    }
     if (this.props.suggestions && this.props.suggestions.length > 0) {
       this.clearSuggestions()
     }
@@ -137,6 +141,7 @@ class ApiAutocomplete extends Component {
       dispatch,
       escapeClears,
       fetchSuggestions,
+      cancelSuggestions,
       suggestions,
       suggestionsKey,
       suggestionTransform,
@@ -178,6 +183,8 @@ ApiAutocomplete.propTypes = {
   escapeClears: PropTypes.bool,
   /** A dispatch-wrapped actionCreator to update the suggestions. */
   fetchSuggestions: PropTypes.func,
+  /** A dispatch-wrapped actionCreator to cancel updating the suggestions */
+  cancelSuggestions: PropTypes.func,
   /** Where to store the component's suggestions in the react state (under state.autocompletes.suggestions) */
   suggestionsKey: PropTypes.string.isRequired,
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */

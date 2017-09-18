@@ -10,6 +10,8 @@ const {
   VoteTargetType,
   SortDirection,
   JustificationTargetType,
+  JustificationBasisCompoundAtomType,
+  SourceExcerptType,
 } = require('howdju-common')
 
 const {
@@ -162,21 +164,58 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   readWritQuotesByIdForRootStatementId(rootStatementId) {
     const sql = `
-      select 
-          wq.writ_quote_id
-        , wq.quote_text
-        , w.writ_id
-        , w.title as writ_title
-      from justifications j 
-          join writ_quotes wq on 
-                j.root_statement_id = $1
-            and j.basis_type = $2
+        select 
+            wq.writ_quote_id
+          , wq.quote_text
+          , w.writ_id
+          , w.title as writ_title
+        from justifications j 
+            join writ_quotes wq on 
+                  j.basis_type = $2
+              and j.basis_id = wq.writ_quote_id
+            join writs w using (writ_id)
+          where 
+                 j.root_statement_id = $1
             and j.deleted is null
-            and j.basis_id = wq.writ_quote_id
-          join writs w using (writ_id)
+            and wq.deleted is null
+            and w.deleted is null
+      
+      union
+      
+        select 
+            wq.writ_quote_id
+          , wq.quote_text
+          , w.writ_id
+          , w.title as writ_title
+        from justifications j 
+            join justification_basis_compounds jbc on
+                  j.basis_type = $3
+              and j.basis_id = jbc.justification_basis_compound_id
+            join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
+            join source_excerpt_paraphrases sep on
+                  jbca.entity_type = $4
+              and jbca.entity_id = sep.source_excerpt_paraphrase_id
+            join writ_quotes wq on
+                  sep.source_excerpt_type = $5
+              and sep.source_excerpt_id = wq.writ_quote_id
+            join writs w using (writ_id)
+          where 
+                j.root_statement_id = $1
+            and j.deleted is null
+            and jbc.deleted is null
+            and sep.deleted is null
+            and wq.deleted is null
+            and w.deleted is null
       `
+    const args = [
+      rootStatementId,
+      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+      SourceExcerptType.WRIT_QUOTE
+    ]
     return Promise.all([
-      this.database.query(sql, [rootStatementId, JustificationBasisType.WRIT_QUOTE]),
+      this.database.query(sql, args),
       this.urlsDao.readUrlsByWritQuoteIdForRootStatementId(rootStatementId)
     ])
       .then( ([

@@ -44,6 +44,8 @@ class StatementCompoundEditorFields extends Component {
       suggestionsKey,
       disabled,
       errors,
+      onAddStatementCompoundAtom,
+      onRemoveStatementCompoundAtom,
     } = this.props
 
     const namePrefix = name ? name + '.' : ''
@@ -54,8 +56,8 @@ class StatementCompoundEditorFields extends Component {
 
     const hasErrors = errors && errors.hasErrors
     const atomInputProps = hasErrors ?
-      map(errors.fieldErrors.atoms.itemErrors, atomError => atomError.fieldErrors.statement.fieldErrors.text.length > 0 ?
-        {error: true, errorText: toErrorText(atomError.fieldErrors.statement.fieldErrors.text)} :
+      map(errors.fieldErrors.atoms.itemErrors, atomError => atomError.fieldErrors.entity.fieldErrors.text.length > 0 ?
+        {error: true, errorText: toErrorText(atomError.fieldErrors.entity.fieldErrors.text)} :
         {}
       ) :
       map(atoms, () => null)
@@ -63,14 +65,14 @@ class StatementCompoundEditorFields extends Component {
     return (
       <div>
         {map(atoms, (atom, index) => {
-          const name = `atoms[${index}].statement.text`
+          const name = `atoms[${index}].entity.text`
           const value = get(statementCompound, name, '')
           const leftIcon = <FontIcon>short_text</FontIcon>
           const rightIcon = disabled ?
             <div/> :
             <div>
-              <Button icon onClick={e => this.props.onAddStatementAtom(index)}>add</Button>
-              <Button icon onClick={e => this.props.onRemoveStatementAtom(atom, index)}>delete</Button>
+              <Button icon onClick={e => onAddStatementCompoundAtom(index)}>add</Button>
+              <Button icon onClick={e => onRemoveStatementCompoundAtom(atom, index)}>delete</Button>
             </div>
 
           return suggestionsKey && !disabled ?
@@ -105,9 +107,9 @@ class StatementCompoundEditorFields extends Component {
                 className={cn('addButton', {
                   hidden: disabled,
                 })}
-                key="addStatementAtomButton"
+                key="addStatementCompoundAtomButton"
                 label="Add Statement"
-                onClick={e => this.props.onAddStatementAtom(atoms.length)}
+                onClick={e => onAddStatementCompoundAtom(atoms.length)}
         >add</Button>
         {hasErrors && errors.modelErrors && (
           <ErrorMessages errors={errors.modelErrors} />
@@ -125,8 +127,8 @@ StatementCompoundEditorFields.propTypes = {
   /** If present, called when the user presses enter in a text field */
   onSubmit: PropTypes.func,
   onPropertyChange: PropTypes.func.isRequired,
-  onAddStatementAtom: PropTypes.func.isRequired,
-  onRemoveStatementAtom: PropTypes.func.isRequired,
+  onAddStatementCompoundAtom: PropTypes.func.isRequired,
+  onRemoveStatementCompoundAtom: PropTypes.func.isRequired,
   errors: PropTypes.object,
   /** Whether to disable the inputs */
   disabled: PropTypes.bool,

@@ -4,9 +4,9 @@ import cn from 'classnames'
 
 import EditableStatement from './EditableStatement'
 
-import './StatementCompoundAtomViewer.scss'
+import './StatementAtomViewer.scss'
 
-class StatementCompoundAtomViewer extends Component {
+export default class StatementAtomViewer extends Component {
 
   constructor() {
     super()
@@ -24,7 +24,7 @@ class StatementCompoundAtomViewer extends Component {
 
   render() {
     const {
-      statementAtom,
+      atom,
       id,
       editorId,
     } = this.props
@@ -32,10 +32,10 @@ class StatementCompoundAtomViewer extends Component {
       isOver
     } = this.state
 
-    const statement = statementAtom.statement
+    const statement = atom.entity
 
     return (
-      <span className={cn("statement-compound-atom-viewer", {
+      <span className={cn("statement-atom-viewer", {
         active: isOver,
       })}
             onMouseOver={this.onMouseOver}
@@ -51,8 +51,8 @@ class StatementCompoundAtomViewer extends Component {
     )
   }
 }
-StatementCompoundAtomViewer.propTypes = {
-  statementAtom: PropTypes.object.isRequired,
+StatementAtomViewer.propTypes = {
+  atom: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
+  editorId: PropTypes.string.isRequired,
 }
-
-export default StatementCompoundAtomViewer

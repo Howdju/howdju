@@ -33,8 +33,9 @@ class WritTitleAutocomplete extends Component {
         onPropertyChange={onPropertyChange}
         onAutocomplete={this.onAutocomplete}
         fetchSuggestions={api.fetchWritTitleSuggestions}
+        cancelSuggestions={api.cancelWritTitleSuggestions}
         suggestionsKey={suggestionsKey}
-        dataLabel="text"
+        dataLabel="title"
         dataValue="id"
         suggestionSchema={writSchema}
         onKeyDown={this.props.onKeyDown}

@@ -91,10 +91,10 @@ class NewJustificationEditorFields extends Component {
       onPropertyChange,
       onAddUrl,
       onRemoveUrl,
-      onAddStatementAtom,
-      onRemoveStatementAtom,
-      onAddAtom,
-      onRemoveAtom,
+      onAddStatementCompoundAtom,
+      onRemoveStatementCompoundAtom,
+      onAddJustificationBasisCompoundAtom,
+      onRemoveJustificationBasisCompoundAtom,
       errors,
       onKeyDown,
     } = this.props
@@ -103,7 +103,8 @@ class NewJustificationEditorFields extends Component {
     const idPrefix = id ? id + '.' : ''
     const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
-    const statementErrors = errors && errors.fieldErrors.basis.fieldErrors.statement
+    const justificationBasisCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.justificationBasisCompound
+    const statementCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.statementCompound
     const writQuoteErrors = errors && errors.fieldErrors.basis.fieldErrors.writQuote
 
     const basisStatementCompound = get(newJustification, statementCompoundName)
@@ -121,11 +122,11 @@ class NewJustificationEditorFields extends Component {
                                      name={namePrefix + statementCompoundName}
                                      suggestionsKey={suggestionsKeyPrefix + statementCompoundName}
                                      onPropertyChange={onPropertyChange}
-                                     onAddStatementAtom={onAddStatementAtom}
-                                     onRemoveStatementAtom={onRemoveStatementAtom}
+                                     onAddStatementCompoundAtom={onAddStatementCompoundAtom}
+                                     onRemoveStatementCompoundAtom={onRemoveStatementCompoundAtom}
                                      disabled={readOnlyBasis || disabled}
                                      onSubmit={onSubmit}
-                                     errors={statementErrors}
+                                     errors={statementCompoundErrors}
                                      onKeyDown={onKeyDown}
       />
     )
@@ -150,8 +151,9 @@ class NewJustificationEditorFields extends Component {
                                               name={namePrefix + justificationBasisCompoundName}
                                               suggestionsKey={suggestionsKeyPrefix + justificationBasisCompoundName}
                                               onPropertyChange={onPropertyChange}
-                                              onAddAtom={onAddAtom}
-                                              onRemoveAtom={onRemoveAtom}
+                                              onAddJustificationBasisCompoundAtom={onAddJustificationBasisCompoundAtom}
+                                              onRemoveJustificationBasisCompoundAtom={onRemoveJustificationBasisCompoundAtom}
+                                              errors={justificationBasisCompoundErrors}
       />
     )
 
@@ -203,8 +205,10 @@ NewJustificationEditorFields.propTypes = {
   onPropertyChange: PropTypes.func.isRequired,
   onRemoveUrl: PropTypes.func.isRequired,
   onAddUrl: PropTypes.func.isRequired,
-  onAddStatementAtom: PropTypes.func.isRequired,
-  onRemoveStatementAtom: PropTypes.func.isRequired,
+  onAddStatementCompoundAtom: PropTypes.func.isRequired,
+  onRemoveStatementCompoundAtom: PropTypes.func.isRequired,
+  onAddJustificationBasisCompoundAtom: PropTypes.func.isRequired,
+  onRemoveJustificationBasisCompoundAtom: PropTypes.func.isRequired,
   /** Disables the basis inputs, but the polarity is still active */
   readOnlyBasis: PropTypes.bool,
   disabled: PropTypes.bool,

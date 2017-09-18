@@ -30,10 +30,10 @@ class StatementCompoundValidator {
     } else {
       errors.fieldErrors.atoms.itemErrors = map(statementCompound.atoms, atom => ({
         fieldErrors: {
-          statement: this.statementValidator.validate(atom.statement)
+          entity: this.statementValidator.validate(atom.entity)
         }
       }))
-      if (some(errors.fieldErrors.atoms.itemErrors, i => i.fieldErrors.statement.hasErrors)) {
+      if (some(errors.fieldErrors.atoms.itemErrors, i => i.fieldErrors.entity.hasErrors)) {
         errors.hasErrors = true
       }
     }

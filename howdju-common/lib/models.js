@@ -1,5 +1,6 @@
 const assign = require('lodash/assign')
 const merge = require('lodash/merge')
+const toString = require('lodash/toString')
 
 const {newImpossibleError} = require('./commonErrors')
 const {
@@ -100,7 +101,7 @@ _e.makeNewStatementCompound = (props) => assign(
 )
 
 _e.makeNewStatementAtom = (props) => assign(
-  {statement: _e.makeNewStatement()},
+  {entity: _e.makeNewStatement()},
   props
 )
 
@@ -138,3 +139,13 @@ _e.makeNewCounterJustification = (targetJustification) => ({
 })
 
 _e.makeNewUrl = () => ({url: ''})
+
+/**
+ * Compare two entity IDs for equality
+ *
+ * If the ID came from the database, it may be an integer.  So convert both to string before doing strict equality.
+ * The orm mappers and dao methods (in the case of a dao method returning a bare ID) are responsible for converting IDs
+ * to strings.  But because this comparison is so important, it is worthwile having a special method to ensure that
+ * there is no mistake.  One thing we don't do is convert an integer identifier from the client into a string, e.g..
+ */
+_e.idEqual = (id1, id2) => toString(id1) === toString(id2)

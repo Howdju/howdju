@@ -6,22 +6,22 @@ import truncate from 'lodash/truncate'
 
 import config from './config'
 import {
-  newImpossibleError,
   JustificationBasisType,
+  newExhaustedEnumError,
 } from 'howdju-common'
 import {ellipsis} from './characters'
 
 
-export const removeStatementCompoundId = statementCompound => {
+export const removeStatementCompoundId = (statementCompound) => {
   if (!statementCompound) return statementCompound
   delete statementCompound.id
   forEach(statementCompound.atoms, atom => {
-    delete atom.statementCompoundId
+    delete atom.compoundId
   })
   return statementCompound
 }
 
-export const consolidateBasis = newJustification => {
+export const consolidateNewJustificationBasis = (newJustification) => {
   const justification = cloneDeep(newJustification)
   switch (justification.basis.type) {
     case JustificationBasisType.STATEMENT_COMPOUND:
@@ -34,7 +34,7 @@ export const consolidateBasis = newJustification => {
       justification.basis.entity = justification.basis.justificationBasisCompound
       break
     default:
-      throw newImpossibleError(`${justification.basis.type} exhausted justification basis types`)
+      throw newExhaustedEnumError('JustificationBasisType', justification.basis.type)
   }
   delete justification.basis.statementCompound
   delete justification.basis.writQuote
@@ -43,14 +43,15 @@ export const consolidateBasis = newJustification => {
   return justification
 }
 
-export const justificationBasisTypeToNewJustificationBasisMemberName = justificationBasisType => {
+export const justificationBasisTypeToNewJustificationBasisMemberName = (justificationBasisType) => {
   const newJustificationBasisMemberNames = {
     [JustificationBasisType.STATEMENT_COMPOUND]: 'statementCompound',
-    [JustificationBasisType.WRIT_QUOTE]: 'writQuote'
+    [JustificationBasisType.WRIT_QUOTE]: 'writQuote',
+    [JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND]: 'justificationBasisCompound',
   }
   const newJustificationBasisMemberName = newJustificationBasisMemberNames[justificationBasisType]
   if (!newJustificationBasisMemberName) {
-    throw newImpossibleError(`${justificationBasisType} exhausted justification basis types`)
+    throw newExhaustedEnumError('JustificationBasisType', justificationBasisType)
   }
   return newJustificationBasisMemberName
 }

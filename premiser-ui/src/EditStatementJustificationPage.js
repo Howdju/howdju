@@ -1,6 +1,7 @@
 import React, {Component} from "react"
 import { connect } from 'react-redux'
 import {goBack} from "react-router-redux"
+import { Link } from 'react-router-dom'
 import Helmet from 'react-helmet'
 import Button from 'react-md/lib/Buttons/Button'
 import Card from 'react-md/lib/Cards'
@@ -39,6 +40,7 @@ import {
 import NewJustificationEditorFields from "./NewJustificationEditorFields"
 import StatementEditorFields from "./StatementEditorFields"
 import {EditorTypes} from "./reducers/editors"
+import paths from './paths'
 
 export const EditStatementJustificationPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
@@ -144,12 +146,12 @@ class EditStatementJustificationPage extends Component {
     this.props.editors.removeUrl(this.editorType, this.editorId, url, index)
   }
 
-  addJustificationStatementAtom = (index) => {
-    this.props.editors.addStatementAtom(this.editorType, this.editorId, index)
+  addJustificationStatementCompoundAtom = (index) => {
+    this.props.editors.addStatementCompoundAtom(this.editorType, this.editorId, index)
   }
 
-  removeJustificationStatementAtom = (statementAtom, index) => {
-    this.props.editors.removeStatementAtom(this.editorType, this.editorId, statementAtom, index)
+  removeJustificationStatementCompoundAtom = (atom, index) => {
+    this.props.editors.removeStatementCompoundAtom(this.editorType, this.editorId, atom, index)
   }
 
   addJustificationBasisCompoundAtom = (index) => {
@@ -210,6 +212,16 @@ class EditStatementJustificationPage extends Component {
         <Helmet>
           <title>{title} — Howdju</title>
         </Helmet>
+        {mode === EditStatementJustificationPageMode.CREATE_STATEMENT && (
+          <div className="md-grid">
+            <div className="md-cell md-cell--12">
+              <p>
+                Please note that the <Link to={paths.tools()}>bookmarklet</Link> is a convenient way to create new justifications
+                based upon web pages you visit
+              </p>
+            </div>
+          </div>
+        )}
         <form onSubmit={this.onSubmit}>
           <FocusContainer initialFocus="#statementEditorText" containFocus={false} focusOnMount={true}>
             <div className="md-grid">
@@ -252,10 +264,10 @@ class EditStatementJustificationPage extends Component {
                                                   onPropertyChange={this.onPropertyChange}
                                                   onAddUrl={this.addJustificationUrl}
                                                   onRemoveUrl={this.removeJustificationUrl}
-                                                  onAddStatementAtom={this.addJustificationStatementAtom}
-                                                  onRemoveStatementAtom={this.removeJustificationStatementAtom}
-                                                  onAddAtom={this.addJustificationBasisCompoundAtom}
-                                                  onRemoveAtom={this.removeJustificationBasisCompoundAtom}
+                                                  onAddStatementCompoundAtom={this.addJustificationStatementCompoundAtom}
+                                                  onRemoveStatementCompoundAtom={this.removeJustificationStatementCompoundAtom}
+                                                  onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
+                                                  onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
                                                   errors={newJustificationErrors}
                     />
                   </CardText>

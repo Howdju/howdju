@@ -92,7 +92,9 @@ class StatementJustificationTrees extends Component {
                   easing={flipMoveEasing}
         >
           {hasJustifications && (
-            <h2 className="md-cell md-cell--6" key="supporting-justifications-header">Supporting Justifications</h2>
+            <h2 className="md-cell md-cell--12" key="supporting-justifications-header">
+              Supporting Justifications
+            </h2>
           )}
           {hasJustifications && !hasPositiveJustifications && ([
             <div className="md-cell md-cell--12 cell--centered-contents"
@@ -117,7 +119,9 @@ class StatementJustificationTrees extends Component {
                   easing={flipMoveEasing}
         >
           {hasJustifications && (
-            <h2 className="md-cell md-cell--6" key="opposting-justifications-header">Opposing Justifications</h2>
+            <h2 className="md-cell md-cell--12" key="opposting-justifications-header">
+              Opposing Justifications
+            </h2>
           )}
           {hasJustifications && !hasNegativeJustifications && ([
             <div className="md-cell md-cell--12 cell--centered-contents"

@@ -5,6 +5,7 @@ import {connect} from 'react-redux'
 import { Link } from 'react-router-dom'
 import Divider from 'react-md/lib/Dividers/Divider'
 import FontIcon from 'react-md/lib/FontIcons/FontIcon'
+import Paper from 'react-md/lib/Papers/Paper'
 
 import Positions from "react-md/lib/Menus/Positions"
 import ListItem from 'react-md/lib/Lists/ListItem'
@@ -18,7 +19,7 @@ import {
 } from './actions'
 import paths from './paths'
 import {EditorTypes} from './reducers/editors'
-import StatementCompoundAtomViewer from "./StatementCompoundAtomViewer"
+import StatementAtomViewer from "./StatementAtomViewer"
 import StatementJustificationTrees from './StatementJustificationTrees'
 import TransientMenuButton from './TransientMenuButton'
 
@@ -28,10 +29,10 @@ import './StatementCompoundViewerAtomListItem.scss'
 const baseId = props => {
   const {
     id,
-    statementAtom
+    atom
   } = props
   const idPrefix = id ? id + '-' : ''
-  return `${idPrefix}statementCompoundAtom-${statementAtom.statementCompoundId}-${statementAtom.statement.id}`
+  return `${idPrefix}statementCompoundAtom-${atom.compoundId}-${atom.entity.id}`
 }
 const editorId = baseId => `${baseId}-statementEditor`
 
@@ -43,21 +44,29 @@ class StatementCompoundViewerAtomListItem extends Component {
     this.editorType = EditorTypes.STATEMENT
   }
 
+  onMouseOver = () => {
+    this.props.ui.beginInteractionWithTransient(this.props.id)
+  }
+
+  onMouseLeave = () => {
+    this.props.ui.endInteractionWithTransient(this.props.id)
+  }
+
   onEditStatement = () => {
     const _editorId = editorId(baseId(this.props))
-    const statement = this.props.statementAtom.statement
+    const statement = this.props.atom.entity
     this.props.editors.beginEdit(this.editorType, _editorId, statement)
   }
 
   seeUsagesPath = () => {
-    const {statementAtom: {statement}} = this.props
-    return paths.searchJustifications({statementId: statement.id})
+    const {atom: {entity}} = this.props
+    return paths.searchJustifications({statementId: entity.id})
   }
 
   render() {
     const {
       id,
-      statementAtom,
+      atom,
       isEditing,
       doShowControls,
       doShowJustifications,
@@ -83,7 +92,7 @@ class StatementCompoundViewerAtomListItem extends Component {
                     key="goTo"
                     leftIcon={<FontIcon>forward</FontIcon>}
                     component={Link}
-                    to={paths.statement(statementAtom.statement)}
+                    to={paths.statement(atom.entity)}
           />,
           <ListItem primaryText="See usages"
                     key="usages"
@@ -102,12 +111,15 @@ class StatementCompoundViewerAtomListItem extends Component {
       />
     )
 
-    const hasJustifications = statementAtom.statement.justifications && statementAtom.statement.justifications.length > 0
-    const justifications = statementAtom.statement.justifications
+    const hasJustifications = atom.entity.justifications && atom.entity.justifications.length > 0
+    const justifications = atom.entity.justifications
 
     return (
-      <li id={id}
-          className="statement-atom"
+      <Paper id={id}
+             className="statement-atom"
+             component='li'
+             // onMouseOver={this.onMouseOver}
+             // onMouseLeave={this.onMouseLeave}
       >
         <ReactCSSTransitionGroup
           transitionName="context-menu--statement-atom"
@@ -116,9 +128,9 @@ class StatementCompoundViewerAtomListItem extends Component {
         >
           {!isEditing && doShowControls && isMenuVisible && menu}
         </ReactCSSTransitionGroup>
-        <StatementCompoundAtomViewer id={_baseId}
-                                     editorId={_editorId}
-                                     statementAtom={statementAtom}
+        <StatementAtomViewer id={_baseId}
+                             editorId={_editorId}
+                             atom={atom}
         />
 
         {doShowJustifications && hasJustifications && (
@@ -130,14 +142,14 @@ class StatementCompoundViewerAtomListItem extends Component {
                                        isUnCondensed={isUnCondensed}
           />
         )}
-      </li>
+      </Paper>
     )
   }
 }
 StatementCompoundViewerAtomListItem.propTypes = {
   /** Used to identify the context menu */
   id: PropTypes.string.isRequired,
-  statementAtom: PropTypes.object.isRequired,
+  atom: PropTypes.object.isRequired,
   doShowJustifications: PropTypes.bool,
   doShowControls: PropTypes.bool,
 }

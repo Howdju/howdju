@@ -2,7 +2,9 @@ const forEach = require('lodash/forEach')
 const map = require('lodash/map')
 
 const {
-  JustificationBasisType
+  JustificationBasisType,
+  JustificationBasisCompoundAtomType,
+  SourceExcerptType,
 } = require('howdju-common')
 const {
   toUrl,
@@ -42,23 +44,59 @@ exports.UrlsDao = class UrlsDao {
 
   readUrlsByWritQuoteIdForRootStatementId(rootStatementId) {
     const sql = `
-      select 
-          cr.writ_quote_id
-        , u.url_id
-        , u.url
-      from justifications j 
-        join writ_quotes cr on
-              j.root_statement_id = $1
-          and j.deleted is null 
-          and j.basis_type = $2 
-          and j.basis_id = cr.writ_quote_id
-        join writ_quote_urls cru on
-              cr.writ_quote_id = cru.writ_quote_id
-          and cru.deleted is null
-        join urls u USING (url_id)
-        order by j.justification_id
+        select 
+            wq.writ_quote_id
+          , u.url_id
+          , u.url
+        from justifications j 
+            join writ_quotes wq on
+                  j.basis_type = $2 
+              and j.basis_id = wq.writ_quote_id
+            join writ_quote_urls wqu using (writ_quote_id)
+            join urls u USING (url_id)
+          where
+                j.root_statement_id = $1
+            and j.deleted is null
+            and wq.deleted is null
+            and wqu.deleted is null 
+            and u.deleted is null
+            
+      union
+        
+        select 
+            wq.writ_quote_id
+          , u.url_id
+          , u.url
+        from justifications j 
+            join justification_basis_compounds jbc on
+                  j.basis_type = $3
+              and j.basis_id = jbc.justification_basis_compound_id
+            join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
+            join source_excerpt_paraphrases sep on
+                  jbca.entity_type = $4
+              and jbca.entity_id = sep.source_excerpt_paraphrase_id
+            join writ_quotes wq on
+                  sep.source_excerpt_type = $5
+              and sep.source_excerpt_id = wq.writ_quote_id
+            join writ_quote_urls wqu using (writ_quote_id)
+              
+            join urls u USING (url_id)
+          where 
+                j.root_statement_id = $1
+            and j.deleted is null
+            and jbc.deleted is null
+            and sep.deleted is null
+            and wq.deleted is null
+            and wqu.deleted is null
+            and u.deleted is null
     `
-    return this.database.query(sql, [rootStatementId, JustificationBasisType.WRIT_QUOTE])
+    return this.database.query(sql, [
+      rootStatementId,
+      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+      SourceExcerptType.WRIT_QUOTE,
+    ])
       .then( ({rows}) => groupUrlsByWritQuoteId(rows))
   }
 

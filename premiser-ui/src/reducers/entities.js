@@ -149,6 +149,8 @@ export default handleActions({
         ['votes'],
         ['writQuotes', stubSkippingCustomizer('quoteText')],
         ['writs', stubSkippingCustomizer('title')],
+        ['sourceExcerptParaphrases'],
+        ['justificationBasisCompounds'],
       ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 

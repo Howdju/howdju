@@ -55,7 +55,7 @@ exports.StatementsService = class StatementsService {
   }
 
   readStatement(statementId) {
-    return this.statementsDao.readStatementById(statementId)
+    return this.statementsDao.readStatementForId(statementId)
       .then(statement => {
         if (!statement) {
           throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
@@ -185,7 +185,7 @@ exports.StatementsService = class StatementsService {
         userId,
         this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
         this.justificationsDao.readJustificationsDependentUponStatementId(statementId),
-        this.statementsDao.readStatementById(statementId),
+        this.statementsDao.readStatementForId(statementId),
       ]))
       .then(([userId, hasPermission, dependentJustifications, statement]) => {
         const now = new Date()

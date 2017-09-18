@@ -15,13 +15,5 @@ module.exports = assign(
   require('./VoteValidator'),
   require('./WritQuoteValidator'),
   require('./WritValidator'),
-  {genericModelBlankErrors}
+  require('./util')
 )
-
-function genericModelBlankErrors() {
-  return {
-    hasErrors: false,
-    modelErrors: [],
-    fieldErrors: {},
-  }
-}

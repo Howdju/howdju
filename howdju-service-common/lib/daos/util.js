@@ -1,4 +1,5 @@
 const deburr = require('lodash/deburr')
+const forEach = require('lodash/forEach')
 const head = require('lodash/head')
 const isNumber = require('lodash/isNumber')
 const join = require('lodash/join')
@@ -12,6 +13,7 @@ const {
   assert,
   JustificationTargetType,
   newProgrammingError,
+  idEqual,
 } = require('howdju-common')
 
 
@@ -49,12 +51,21 @@ exports.mapSingle = (logger, mapper, tableName, identifiers) => ({rows}) => {
 
 exports.mapMany = (mapper) => ({rows}) => map(rows, mapper)
 
+exports.mapManyById = (mapper) => ({rows}) => {
+  const byId = {}
+  forEach(rows, row => {
+    const entity = mapper(row)
+    byId[entity.id] = entity
+  })
+  return byId
+}
+
 exports.groupRootJustifications = (rootStatementId, justification_rows) => {
   const rootJustifications = [], counterJustificationsByJustificationId = {}
   for (let justification_row of justification_rows) {
     // There are two types of justifications: those on the (root) statement, and counters
     if (justification_row.target_type === JustificationTargetType.STATEMENT) {
-      assert(() => toString(justification_row.target_id) === rootStatementId)
+      assert(() => idEqual(justification_row.target_id, rootStatementId))
       rootJustifications.push(justification_row)
     } else {
       assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)

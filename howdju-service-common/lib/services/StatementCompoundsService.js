@@ -72,12 +72,12 @@ exports.StatementCompoundsService = class StatementCompoundsService {
   createStatementCompoundAtoms(statementCompound, statementCompoundAtoms, userId, now) {
     return Promise.resolve()
       .then(() => Promise.all(map(statementCompoundAtoms, atom =>
-        atom.statement.id ?
-          [atom, {isExtant: true, statement: atom.statement}] :
-          Promise.all([atom, this.statementsService.getOrCreateStatementAsUser(atom.statement, userId, now)])
+        atom.entity.id ?
+          [atom, {isExtant: true, statement: atom.entity}] :
+          Promise.all([atom, this.statementsService.getOrCreateStatementAsUser(atom.entity, userId, now)])
       )))
       .then(atomsWithStatements => map(atomsWithStatements, ([atom, {statement}]) => {
-        atom.statement = statement
+        atom.entity = statement
         return atom
       }))
       .then(atoms => Promise.all([

@@ -6,10 +6,6 @@ const {
   JustificationBasisCompoundAtomType,
 } = require('howdju-common')
 
-const {
-  JustificationBasisCompoundValidator
-} = require('./validators')
-
 class JustificationBasisCompoundAtomValidator {
 
   constructor(statementValidator, sourceExcerptParaphraseValidator) {
@@ -19,7 +15,7 @@ class JustificationBasisCompoundAtomValidator {
   }
 
   validate(atom) {
-    const errors = JustificationBasisCompoundValidator.blankErrors()
+    const errors = JustificationBasisCompoundAtomValidator.blankErrors()
 
     if (!atom) {
       errors.hasErrors = true

@@ -1,20 +1,36 @@
+const Promise = require('bluebird')
+const forEach = require('lodash/forEach')
 const head = require('lodash/head')
+const join = require('lodash/join')
 const map = require('lodash/map')
+
+const {
+  requireArgs,
+  JustificationBasisType,
+  JustificationBasisCompoundAtomType,
+  newExhaustedEnumError,
+  pushAll,
+  assert,
+} = require('howdju-common')
 
 const {
   toJustificationBasisCompound,
   toJustificationBasisCompoundAtom,
+  toStatement,
 } = require('./orm')
 const {
   mapSingle,
   mapMany,
+  mapManyById,
 } = require('./util')
 
 exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
-  constructor(logger, database) {
+  constructor(logger, database, sourceExcerptParaphrasesDao) {
+    requireArgs({logger, database, sourceExcerptParaphrasesDao})
     this.logger = logger
     this.database = database
+    this.sourceExcerptParaphrasesDao = sourceExcerptParaphrasesDao
   }
 
   readJustificationBasisCompoundForId(justificationBasisCompoundId) {
@@ -33,7 +49,20 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
       .then(mapMany(toJustificationBasisCompoundAtom))
   }
 
-  readJustificationBasisCompoundHavingAtoms(atoms) {
+  readJustificationBasisCompoundHavingAtoms(targetAtoms) {
+    const args = [
+      targetAtoms.length
+    ]
+    const atomConditions = []
+    forEach(targetAtoms, (atom, index) => {
+      atomConditions.push(`entity_type = $${args.length+1} and entity_id = $${args.length+2} and order_position = $${args.length+3}`)
+      pushAll(args, [
+        atom.type,
+        atom.entity.id,
+        index
+      ])
+    })
+    const atomConditionsSql = join(atomConditions, ' or ')
     const sql = `
       with 
         compounds_having_correct_atom_count as (
@@ -43,7 +72,9 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
           having count(justification_basis_compound_atom_id) = $1
         )
         , target_atoms as (
-          select * from justification_basis_compound_atoms where justification_basis_compound_atom_id = any ($2) 
+          select * 
+          from justification_basis_compound_atoms 
+          where ${atomConditionsSql} 
         )
         , compounds_having_only_all_target_atoms as (
           select 
@@ -54,47 +85,93 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
             join compounds_having_correct_atom_count using (justification_basis_compound_id)
             -- ensure they have the target atoms
             join target_atoms a using (justification_basis_compound_id)
-          having count(justification_basis_compound_atom_id) = $1
         )
       select * 
       from compounds_having_only_all_target_atoms 
       order by order_position 
     `
-    const args = [atoms.length, atoms]
     return this.database.query(sql, args)
       .then( ({rows}) => {
         if (rows.length < 1) {
           return null
         }
+        assert(rows.length === targetAtoms.length)
 
+        // Each of the rows has the compound information, so just use the first
         const justificationBasisCompound = toJustificationBasisCompound(head(rows))
         const atoms = map(rows, toJustificationBasisCompoundAtom)
         justificationBasisCompound.atoms = atoms
 
         return justificationBasisCompound
       })
+  }
 
+  readJustificationBasisCompoundsByIdForRootStatementId(rootStatementId) {
+    const sql = `
+      with 
+        -- it's possible that justifications rooted in the same statement may use the same basis (either counters or different polarity)
+        root_statement_justification_basis_compounds as (
+          select distinct
+            jbc.*
+          from justifications j 
+            join justification_basis_compounds jbc on
+                  j.basis_type = $1
+              and j.basis_id = jbc.justification_basis_compound_id
+          where
+                j.root_statement_id = $2
+            and j.deleted is null
+            and jbc.deleted is null
+        )
+      select
+          jbc.*
+        , jbca.*
+      from root_statement_justification_basis_compounds jbc 
+          join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
+        order by 
+            jbca.justification_basis_compound_id
+          , jbca.order_position
+    `
+    const args = [
+      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+      rootStatementId
+    ]
+    return Promise.all([
+      this.database.query(sql, args),
+      this.sourceExcerptParaphrasesDao.readSourceExcerptParaphrasesByIdForRootStatementId(rootStatementId),
+      readAtomStatementsForRootStatementId(this.logger, this.database, rootStatementId),
+    ])
+      .then( ([{rows}, sourceExcerptParaphrasesById, atomStatementsById]) => {
+        const justificationBasisCompoundsById = {}
+        if (rows.length < 1) {
+          return justificationBasisCompoundsById
+        }
 
-    // An alternative that doesn't multiplex the result along columns
-    // This doesn't get the equivalent order, though.  Could always check that in the code
-    // const sql2 = `
-    //   select
-    //       sc.statement_compound_id
-    //     , sca.order_position
-    //     , s.statement_id
-    //     , s.text
-    //   from
-    //     statement_compounds sc
-    //       join statement_compound_atoms sca on
-    //             sc.statement_compound_id = sca.statement_compound_id
-    //         and sc.deleted is null
-    //       join statements s on
-    //             sca.statement_id = s.statement_id
-    //         and s.normal_text = any ($1)
-    //         and s.deleted is null
-    //   having count(s.statement_id) over (partition by sc.statement_compound_id) = $2
-    //   order by sc.statement_compound_id, sca.order_position
-    // `
+        forEach(rows, (row) => {
+          const atom = toJustificationBasisCompoundAtom(row)
+
+          let justificationBasisCompound = justificationBasisCompoundsById[atom.compoundId]
+          // Each row has the compound information; so if we haven't seen one yet, grab it from the current row
+          if (!justificationBasisCompound) {
+            justificationBasisCompound = toJustificationBasisCompound(row)
+            justificationBasisCompoundsById[justificationBasisCompound.id] = justificationBasisCompound
+          }
+
+          justificationBasisCompound.atoms.push(atom)
+
+          switch (atom.type) {
+            case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+              atom.entity = sourceExcerptParaphrasesById[atom.entity.id]
+              break
+            case JustificationBasisCompoundAtomType.STATEMENT:
+              atom.entity = atomStatementsById[atom.entity.id]
+              break
+            default:
+              throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+          }
+
+        })
+        return justificationBasisCompoundsById
+      })
   }
 
   createJustificationBasisCompound(justificationBasisCompound, userId, now) {
@@ -119,4 +196,31 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     )
       .then(mapSingle(toJustificationBasisCompoundAtom))
   }
+}
+
+function readAtomStatementsForRootStatementId(logger, database, rootStatementId) {
+  const sql = `
+      select
+        s.*
+      from justifications j 
+          join justification_basis_compounds jbc on
+                j.basis_type = $1
+            and j.basis_id = jbc.justification_basis_compound_id
+          join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
+          join statements s on
+                jbca.entity_type = $2
+            and jbca.entity_id = s.statement_id
+        where 
+              j.root_statement_id = $3
+          and j.deleted is null
+          and jbc.deleted is null
+          and s.deleted is null
+    `
+  const args = [
+    JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+    JustificationBasisCompoundAtomType.STATEMENT,
+    rootStatementId
+  ]
+  return database.query(sql, args)
+    .then(mapManyById(toStatement))
 }

@@ -7,6 +7,7 @@ const values = require('lodash/values')
 const {
   JustificationBasisType,
   newImpossibleError,
+  StatementCompoundAtomType,
 } = require('howdju-common')
 
 const toUser = row => row && ({
@@ -43,7 +44,8 @@ const toJustification = (
   row,
   counterJustificationsByJustificationId,
   statementCompoundsById,
-  writQuotesById
+  writQuotesById,
+  justificationBasisCompoundsById
 ) => {
   if (!row) {
     return row
@@ -99,8 +101,8 @@ const toJustification = (
           })
         }
       }
-    }
       break
+    }
 
     case JustificationBasisType.STATEMENT_COMPOUND: {
       const basisId = row.basis_id || row.basis_statement_compound_id
@@ -116,8 +118,25 @@ const toJustification = (
           })
         }
       }
-    }
       break
+    }
+
+    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND: {
+      const basisId = row.basis_id || row.basis_justification_basis_compound_id
+      if (basisId) {
+        if (justificationBasisCompoundsById) {
+          justification.basis.entity = justificationBasisCompoundsById[basisId]
+        }
+        if (!justification.basis.entity && row.basis_justification_basis_compound_id) {
+          justification.basis.entity = toJustificationBasisCompound({
+            justification_basis_compound_id: row.basis_justification_basis_compound_id,
+            created: row.basis_justification_basis_compound_created,
+            creator_user_id: row.basis_justification_basis_compound_creator_user_id,
+          })
+        }
+      }
+      break
+    }
 
     default:
       throw newImpossibleError(`Unsupported JustificationBasisType: ${row.basis_type}`)
@@ -196,8 +215,9 @@ const toStatementCompound = (row, atoms) => {
 }
 
 const toStatementCompoundAtom = row => row && ({
-  statementCompoundId: row.statement_compound_id,
-  statement: toStatement({
+  compoundId: row.statement_compound_id,
+  type: StatementCompoundAtomType.STATEMENT,
+  entity: toStatement({
     statement_id: row.statement_id,
     text: row.statement_text,
     creator_user_id: row.statement_creator_user_id,
@@ -249,13 +269,14 @@ const toSourceExcerptParaphrase = row => row & ({
 
 const toJustificationBasisCompound = row => row && ({
   id: row.justification_basis_compound_id,
+  atoms: [],
   creatorUserId: row.creator_user_id,
   created: row.created,
 })
 
 const toJustificationBasisCompoundAtom = row => row && ({
-  id: row.justification_basis_compounds_atom_id,
-  compoundId: row.justification_basis_compounds_id,
+  id: row.justification_basis_compound_atom_id,
+  compoundId: row.justification_basis_compound_id,
   type: row.entity_type,
   entity: {
     id: row.entity_id,

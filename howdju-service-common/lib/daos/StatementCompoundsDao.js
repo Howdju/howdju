@@ -42,7 +42,7 @@ exports.StatementCompoundsDao = class StatementCompoundsDao {
       insert into statement_compound_atoms (statement_compound_id, statement_id, order_position) 
         values ($1, $2, $3) 
         returning *`,
-      [statementCompound.id, statementCompoundAtom.statement.id, orderPosition]
+      [statementCompound.id, statementCompoundAtom.entity.id, orderPosition]
     )
       .then( ({rows: [row]}) => toStatementCompoundAtom(row) )
   }
@@ -96,7 +96,7 @@ exports.StatementCompoundsDao = class StatementCompoundsDao {
     const joinsSql = joins.join("\n")
     const args = concat(
       statementCompound.atoms.length,
-      flatMap(statementCompound.atoms, (atom, index) => [index, normalizeText(atom.statement.text)])
+      flatMap(statementCompound.atoms, (atom, index) => [index, normalizeText(atom.entity.text)])
     )
     const sql = `
       with
@@ -168,14 +168,14 @@ exports.StatementCompoundsDao = class StatementCompoundsDao {
             if (!atom) {
               atomsByIndex[atomIndex] = atom = {statementCompoundId}
             }
-            atom.statement = assign({}, atom.statement, {text: value})
+            atom.entity = assign({}, atom.entity, {text: value})
           } else if (!isNull(match = atomStatementIdRegExp.exec(name))) {
             const atomIndex = match[1]
             let atom = atomsByIndex[atomIndex]
             if (!atom) {
               atomsByIndex[atomIndex] = atom = {statementCompoundId}
             }
-            atom.statement = assign({}, atom.statement, {id: value})
+            atom.entity = assign({}, atom.entity, {id: value})
           }
         })
 

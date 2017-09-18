@@ -9,8 +9,8 @@ create table justification_basis_compounds (
 
 -- For now, we can mix statements or paraphrasing statements.  A future type of justification basis might be Text, but
 -- I'm not sure that it will be mixed with other types, since it will be long and doing its own thing.
-create table justification_basis_compounds_atoms (
-  justification_basis_compounds_atom_id serial,
+create table justification_basis_compound_atoms (
+  justification_basis_compound_atom_id serial,
   justification_basis_compound_id integer,
   entity_type varchar(64), -- STATEMENT or SOURCE_EXCERPT_PARAPHRASE
   entity_id integer,
@@ -25,7 +25,10 @@ create table source_excerpt_paraphrases (
   source_excerpt_paraphrase_id serial,
   paraphrasing_statement_id integer,
   source_excerpt_type varchar(64), -- WRIT_QUOTE, IMAGE_REGION, VIDEO_SEGMENT, etc.
-  source_excerpt_id integer
+  source_excerpt_id integer,
+  creator_user_id integer,
+  created timestamp,
+  deleted timestamp
 );
 
 -- Rename citation references and citations to match the new naming

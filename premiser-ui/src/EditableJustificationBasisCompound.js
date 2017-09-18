@@ -6,15 +6,15 @@ import get from 'lodash/get'
 import {denormalize} from "normalizr"
 
 import {EditorTypes} from "./reducers/editors"
-import StatementCompoundViewer from "./StatementCompoundViewer"
-import {statementCompoundSchema} from "./schemas"
+import JustificationBasisCompoundViewer from "./JustificationBasisCompoundViewer"
+import {justificationBasisCompoundSchema} from "./schemas"
 
-class EditableStatementCompound extends Component {
+class EditableJustificationBasisCompound extends Component {
 
   render() {
     const {
       id,
-      statementCompound,
+      justificationBasisCompound,
       isFetching,
       // Currently statement compounds are not editable.  Only their statements are.  Instead create a new statement compound justification
       // isEditing,
@@ -28,21 +28,21 @@ class EditableStatementCompound extends Component {
     } = this.props
 
     const viewer =
-        <StatementCompoundViewer {...rest}
-                                 id={id}
-                                 statementCompound={statementCompound}
-                                 doShowControls={doShowControls}
-                                 doShowStatementAtomJustifications={doShowStatementAtomJustifications}
-                                 isCondensed={isCondensed}
-                                 isUnCondensed={isUnCondensed}
-        />
+      <JustificationBasisCompoundViewer {...rest}
+                                        id={id}
+                                        justificationBasisCompound={justificationBasisCompound}
+                                        doShowControls={doShowControls}
+                                        doShowStatementAtomJustifications={doShowStatementAtomJustifications}
+                                        isCondensed={isCondensed}
+                                        isUnCondensed={isUnCondensed}
+      />
     const progress =
-        <CircularProgress id={`${id}-Progress`} />
+      <CircularProgress id={`${id}-Progress`} />
 
     return isFetching ? progress : viewer
   }
 }
-EditableStatementCompound.propTypes = {
+EditableJustificationBasisCompound.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
   /** Let's the component fetch its statement from the API and retrieve it from the state */
@@ -61,15 +61,15 @@ EditableStatementCompound.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const normalStatementCompound = state.entities.statementCompounds[ownProps.entityId]
-  const statementCompound = denormalize(normalStatementCompound, statementCompoundSchema, state.entities)
-  const editEntity = get(state.editors, [EditorTypes.STATEMENT_COMPOUND, ownProps.editorId, 'editEntity'])
+  const normalJustificationBasisCompound = state.entities.justificationBasisCompounds[ownProps.entityId]
+  const justificationBasisCompound = denormalize(normalJustificationBasisCompound, justificationBasisCompoundSchema, state.entities)
+  const editEntity = get(state.editors, [EditorTypes.JUSTIFICATION_BASIS_COMPOUND, ownProps.editorId, 'editEntity'])
   const isEditing = !!editEntity
 
   return {
-    statementCompound,
+    justificationBasisCompound,
     isEditing,
   }
 }
 
-export default connect(mapStateToProps)(EditableStatementCompound)
+export default connect(mapStateToProps)(EditableJustificationBasisCompound)

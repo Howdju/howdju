@@ -22,7 +22,7 @@ import {
   isRootPositive,
   isRootNegative,
   JustificationBasisType,
-  newImpossibleError,
+  newExhaustedEnumError,
 } from 'howdju-common'
 
 import {
@@ -127,8 +127,11 @@ class JustificationTree extends Component {
       case JustificationBasisType.STATEMENT_COMPOUND:
         params.statementCompoundId = justificationBasis.entity.id
         break
+      case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+        params.justificationBasisCompoundId = justificationBasis.entity.id
+        break
       default:
-        throw newImpossibleError(`Exhausted JustificationBasisType: ${justificationBasis.type}`)
+        throw newExhaustedEnumError('JustificationBasisType', justificationBasis.type)
     }
 
     return paths.searchJustifications(params)

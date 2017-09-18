@@ -2,6 +2,7 @@ const Promise = require('bluebird')
 const every = require('lodash/every')
 const forEach = require('lodash/forEach')
 const map = require('lodash/map')
+const zip = require('lodash/zip')
 
 const {
   ActionTargetType,
@@ -74,27 +75,6 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
         }
       })
   }
-
-  // createJustificationBasisCompoundAtoms(justificationBasisCompound, atoms, userId, now) {
-  //   return Promise.resolve()
-  //       .then(() => Promise.all(map(atoms, atom =>
-  //           getOrCreateValidJustificationBasisCompoundAtomEntity(this.statementsService,
-  //               this.sourceExcerptParaphrasesService, atom, userId, now))))
-  //       .then(atomsWithEntities => map(atomsWithEntities, ([atom, {entity}]) => {
-  //         atom.entity = entity
-  //         return atom
-  //       }))
-  //       .then(atoms => Promise.all([
-  //         atoms,
-  //         Promise.all(map(atoms, (atom, index) =>
-  //             this.justificationBasisCompoundsDao.createJustificationBasisCompoundAtom(justificationBasisCompound, atom, index)))
-  //       ]))
-  //       .then(([atoms, dbAtoms]) => {
-  //         // Merging ensures that both the statement text and atom IDs will be present
-  //         const merged = map(zip(atoms, dbAtoms), ([atom, dbAtom]) => merge(atom, dbAtom))
-  //         return merged
-  //       })
-  // }
 }
 
 function getOrCreateJustificationBasisCompound(
@@ -169,10 +149,14 @@ function getOrCreateEquivalentJustificationBasisCompound(
   )))
     .then( (atomWrappers) => {
       if (every(atomWrappers, ({isExtant}) => isExtant)) {
-        return justificationBasisCompoundsDao.readJustificationBasisCompoundHavingAtoms(atomWrappers)
+        const atoms = map(atomWrappers, ({atom}) => atom)
+        return justificationBasisCompoundsDao.readJustificationBasisCompoundHavingAtoms(atoms)
           .then( (justificationBasisCompound) => {
             if (justificationBasisCompound) {
-              justificationBasisCompound.atoms = map(atomWrappers, ({atom}) => atom)
+              // The atoms on the justificationBasisCompound will have their atom ID, and the ones previously read will have the entities with IDs
+              forEach(zip(justificationBasisCompound.atoms, atoms), (compoundAtom, atom) => {
+                compoundAtom.entity = atom.entity
+              })
               return {
                 isExtant: true,
                 justificationBasisCompound,
@@ -182,7 +166,7 @@ function getOrCreateEquivalentJustificationBasisCompound(
             return createJustificationBasisCompoundHavingAtoms(
               justificationBasisCompoundsDao,
               justificationBasisCompound,
-              atomWrappers,
+              atoms,
               userId,
               now
             )
@@ -193,10 +177,11 @@ function getOrCreateEquivalentJustificationBasisCompound(
           })
       }
 
+      const atoms = map(atomWrappers, ({atom}) => atom)
       return createJustificationBasisCompoundHavingAtoms(
         justificationBasisCompoundsDao,
         justificationBasisCompound,
-        atomWrappers,
+        atoms,
         userId,
         now
       )
@@ -205,33 +190,6 @@ function getOrCreateEquivalentJustificationBasisCompound(
           justificationBasisCompound
         }))
     })
-
-  // Get or create atoms.  If all atoms are extant, then search for compound using them.  if not all are extant, then create one using them
-  // return Promise.resolve()
-  //     .then(equivalentJustificationBasisCompound => {
-  //       const isExtant = !!equivalentJustificationBasisCompound
-  //       return Promise.all([
-  //         isExtant,
-  //         isExtant ?
-  //             equivalentJustificationBasisCompound :
-  //             this.justificationBasisCompoundsDao.createJustificationBasisCompound(userId, justificationBasisCompound, now),
-  //         justificationBasisCompound.atoms,
-  //       ])
-  //     })
-  //     .then(([isExtant, justificationBasisCompound, atoms]) => Promise.all([
-  //       isExtant,
-  //       justificationBasisCompound,
-  //       isExtant ?
-  //           justificationBasisCompound.atoms :
-  //           this.createJustificationBasisCompoundAtoms(justificationBasisCompound, atoms, userId, now)
-  //     ]))
-  //     .then(([isExtant, justificationBasisCompound, atoms]) => {
-  //       justificationBasisCompound.atoms = atoms
-  //       return {
-  //         isExtant,
-  //         justificationBasisCompound
-  //       }
-  //     })
 }
 
 function addAtomsToCompound(
@@ -304,8 +262,6 @@ function createJustificationBasisCompoundAtom(
   atom,
   orderPosition
 ) {
-  // set the atom entity after created
-
   return justificationBasisCompoundsDao.createAtomForJustificationBasisCompoundId(
     justificationBasisCompound.id,
     atom.type,
@@ -357,26 +313,3 @@ function getJustificationBasisCompoundAtomEntity(
       throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
   }
 }
-
-// function getOrCreateValidJustificationBasisCompoundAtomEntity(statementsService, sourceExcerptParaphrasesService, atom, userId, now) {
-//   if (atom.entity.id) {
-//     return [atom, {isExtant: true, entity: atom.entity}]
-//   }
-//
-//   switch (atom.type) {
-//     case JustificationBasisCompoundAtomType.STATEMENT:
-//       return Promise.all([
-//         atom,
-//         statementsService.getOrCreateValidStatementAsUser(atom.entity, userId, now)
-//             .then( ({isExtant, statement: entity}) => ({isExtant, entity}) )
-//       ])
-//     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-//       return Promise.all([
-//         atom,
-//         sourceExcerptParaphrasesService.getOrCreateValidSourceExcerptParaphraseAsUser(atom.entity, userId, now)
-//             .then( ({isExtant, sourceExcerptParaphrase: entity}) => ({isExtant, entity}) )
-//       ])
-//     default:
-//       throw newImpossibleError(`Unsupported JustificationBasisCompoundAtomEntityType: ${atom.type}`)
-//   }
-// }

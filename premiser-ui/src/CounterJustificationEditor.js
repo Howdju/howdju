@@ -31,12 +31,12 @@ class CounterJustificationEditor extends Component {
     this.props.editors.propertyChange(this.editorType, this.props.editorId, properties)
   }
 
-  onAddStatementAtom = () => {
-    this.props.editors.addStatementAtom(this.editorType, this.props.editorId)
+  onAddStatementCompoundAtom = () => {
+    this.props.editors.addStatementCompoundAtom(this.editorType, this.props.editorId)
   }
 
-  onRemoveStatementAtom = (statementAtom, index) => {
-    this.props.editors.removeStatementAtom(this.editorType, this.props.editorId, statementAtom, index)
+  onRemoveStatementCompoundAtom = (atom, index) => {
+    this.props.editors.removeStatementCompoundAtom(this.editorType, this.props.editorId, atom, index)
   }
 
   onSubmit = (event) => {
@@ -78,8 +78,8 @@ class CounterJustificationEditor extends Component {
               onPropertyChange={this.onPropertyChange}
               disabled={isSaving}
               errors={statementCompoundErrors}
-              onAddStatementAtom={this.onAddStatementAtom}
-              onRemoveStatementAtom={this.onRemoveStatementAtom}
+              onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
+              onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
             />
           </FocusContainer>
         </CardText>

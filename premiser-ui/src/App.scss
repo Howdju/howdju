@@ -6,11 +6,14 @@
 
 @include apply-react-md-grid;
 
-html {
-  font-size: 12pt;
+html, html p {
+  font-size: 15px;
 }
 html, a {
   color: $primary-text-color;
+}
+p a {
+  color: $link-color;
 }
 
 .error-message,

@@ -32,6 +32,10 @@ class Paths {
     pathname: mainSearchPathName,
     search: '?' + window.encodeURIComponent(mainSearchText)
   })
+
+  tools = () => '/tools'
+
+  privacy = () => "/privacy"
 }
 
 export default new Paths()

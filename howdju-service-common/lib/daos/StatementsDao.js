@@ -109,7 +109,7 @@ exports.StatementsDao = class StatementsDao {
     return this.database.query(sql, args)
       .then( ({rows}) => map(rows, toStatement) )
   }
-  readStatementById(statementId) {
+  readStatementForId(statementId) {
     return this.database.query(
       'select * from statements where statement_id = $1 and deleted is null',
       [statementId]

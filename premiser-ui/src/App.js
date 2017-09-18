@@ -231,7 +231,7 @@ class App extends Component {
                 primaryText="Home"
                 leftIcon={<FontIcon>home</FontIcon>}
                 component={Link}
-                to="/"
+                to={paths.home()}
       />,
       <ListItem key="createStatement"
                 primaryText="Make a statement"
@@ -243,13 +243,13 @@ class App extends Component {
                 primaryText="Tools"
                 leftIcon={<FontIcon>build</FontIcon>}
                 component={Link}
-                to="/tools"
+                to={paths.tools()}
       />,
       <ListItem key="privacy"
                 primaryText="Privacy Policy"
                 leftIcon={<FontIcon>laptop_chromebook</FontIcon>}
                 component={Link}
-                to="/privacy"
+                to={paths.privacy()}
       />,
     ]
     if (isDevice()) {

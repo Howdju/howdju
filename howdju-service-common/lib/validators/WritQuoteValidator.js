@@ -8,9 +8,7 @@ const {
   modelErrorCodes,
 } = require('howdju-common')
 
-const {
-  WritValidator
-} = require('./validators')
+const {WritValidator} = require('./WritValidator')
 
 class WritQuoteValidator {
   constructor(writValidator, urlValidator) {
@@ -59,7 +57,7 @@ WritQuoteValidator.blankErrors = () => ({
   modelErrors: [],
   fieldErrors: {
     quoteText: [],
-    source: WritValidator.blankErrors(),
+    writ: WritValidator.blankErrors(),
     urls: {
       modelErrors: [],
       itemErrors: [],

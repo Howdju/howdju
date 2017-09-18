@@ -7,15 +7,18 @@ const {
   JustificationTargetType,
   isTruthy,
   modelErrorCodes,
-  newImpossibleError,
+  newExhaustedEnumError,
 } = require('howdju-common')
 
 class JustificationValidator {
-  constructor(statementValidator, statementCompoundValidator, writQuoteValidator) {
+
+  constructor(statementValidator, statementCompoundValidator, writQuoteValidator, justificationBasisCompoundValidator) {
     this.statementValidator = statementValidator
     this.statementCompoundValidator = statementCompoundValidator
     this.writQuoteValidator = writQuoteValidator
+    this.justificationBasisCompoundValidator = justificationBasisCompoundValidator
   }
+
   validate(justification, ignore={}) {
     const errors = JustificationValidator.blankErrors()
 
@@ -98,8 +101,11 @@ class JustificationValidator {
               case JustificationBasisType.STATEMENT_COMPOUND:
                 basisEntityErrors = this.statementCompoundValidator.validate(justification.basis.entity)
                 break
+              case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+                basisEntityErrors = this.justificationBasisCompoundValidator.validate(justification.basis.entity)
+                break
               default:
-                throw newImpossibleError(`Unsupported JustificationBasisType: ${justification.basis.type}`)
+                throw newExhaustedEnumError('JustificationBasisType', justification.basis.type)
             }
 
             if (basisEntityErrors.hasErrors) {

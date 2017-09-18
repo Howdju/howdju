@@ -94,7 +94,7 @@ import {
   newProgrammingError,
   assert,
 } from "howdju-common"
-import {consolidateBasis} from '../viewModels'
+import {consolidateNewJustificationBasis} from '../viewModels'
 import {logger} from '../logger'
 import {
   uiErrorTypes,
@@ -410,6 +410,32 @@ function* callApiForResource(action) {
   }
 }
 
+function* cancelResourceApiCalls() {
+  yield takeEvery(
+    [
+      str(api.cancelStatementTextSuggestions),
+      str(api.cancelWritTitleSuggestions),
+    ],
+    function* cancelCallApiForResourceWorker(action) {
+      const {
+        cancelTarget,
+      } = action.payload
+      let resourceApiConfig = resourceApiConfigs[cancelTarget]
+      if (isFunction(resourceApiConfig)) {
+        resourceApiConfig = resourceApiConfig(action.payload)
+      }
+      const {cancelKey} = resourceApiConfig
+      if (cancelKey) {
+        const prevTask = cancelableResourceCallTasks[cancelKey]
+        if (prevTask) {
+          delete cancelableResourceCallTasks[cancelKey]
+          yield cancel(prevTask)
+        }
+      }
+    }
+  )
+}
+
 function* goHomeIfDeleteStatementWhileViewing() {
   yield takeEvery(str(api.deleteStatement.response), function* goHomeIfDeleteStatementWhileViewingWorker(action) {
     if (!action.error) {
@@ -567,7 +593,7 @@ function* editorCommitEdit() {
       switch (crudType) {
         case CREATE: {
           if (model.doCreateJustification) {
-            const justification = consolidateBasis(model.justification)
+            const justification = consolidateNewJustificationBasis(model.newJustification)
             justification.target.entity = model.statement
             return api.createJustification(justification)
           } else {
@@ -582,7 +608,7 @@ function* editorCommitEdit() {
     [EditorTypes.NEW_JUSTIFICATION]: (model, crudType) => {
       switch (crudType) {
         case CREATE: {
-          const justification = consolidateBasis(model)
+          const justification = consolidateNewJustificationBasis(model)
           return api.createJustification(justification)
         }
       }
@@ -914,6 +940,7 @@ export default () => [
   logErrors(),
 
   resourceApiCalls(),
+  cancelResourceApiCalls(),
 
   goTo(),
   redirectToLoginWhenUnauthorized(),

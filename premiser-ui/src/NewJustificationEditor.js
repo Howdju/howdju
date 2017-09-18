@@ -21,36 +21,44 @@ import {makeNewJustification} from "howdju-common"
 class NewJustificationEditor extends Component {
 
   onPropertyChange = (properties) => {
-    this.props.editors.propertyChange(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, properties)
+    this.props.editors.propertyChange(NewJustificationEditor.editorType, this.props.editorId, properties)
   }
 
   onAddUrl = () => {
-    this.props.editors.addUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
+    this.props.editors.addUrl(NewJustificationEditor.editorType, this.props.editorId)
   }
 
   onRemoveUrl = (url, index) => {
-    this.props.editors.removeUrl(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, url, index)
+    this.props.editors.removeUrl(NewJustificationEditor.editorType, this.props.editorId, url, index)
   }
 
-  onAddStatementAtom = () => {
-    this.props.editors.addStatementAtom(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
+  onAddStatementCompoundAtom = () => {
+    this.props.editors.addStatementCompoundAtom(NewJustificationEditor.editorType, this.props.editorId)
   }
 
-  onRemoveStatementAtom = (statementAtom, index) => {
-    this.props.editors.removeStatementAtom(EditorTypes.NEW_JUSTIFICATION, this.props.editorId, statementAtom, index)
+  onRemoveStatementCompoundAtom = (atom, index) => {
+    this.props.editors.removeStatementCompoundAtom(NewJustificationEditor.editorType, this.props.editorId, atom, index)
+  }
+
+  addJustificationBasisCompoundAtom = (index) => {
+    this.props.editors.addJustificationBasisCompoundAtom(NewJustificationEditor.editorType, this.props.editorId, index)
+  }
+
+  removeJustificationBasisCompoundAtom = (atom, index) => {
+    this.props.editors.removeJustificationBasisCompoundAtom(NewJustificationEditor.editorType, this.props.editorId, atom, index)
   }
 
   onSubmit = (event) => {
     if (!this.props.onSubmit) {
       event.preventDefault()
-      this.props.editors.commitEdit(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
+      this.props.editors.commitEdit(NewJustificationEditor.editorType, this.props.editorId)
     } else {
       this.props.onSubmit(event)
     }
   }
 
   onCancelEdit = () => {
-    this.props.editors.cancelEdit(EditorTypes.NEW_JUSTIFICATION, this.props.editorId)
+    this.props.editors.cancelEdit(NewJustificationEditor.editorType, this.props.editorId)
   }
 
   render() {
@@ -94,8 +102,10 @@ class NewJustificationEditor extends Component {
                                       onPropertyChange={this.onPropertyChange}
                                       onAddUrl={this.onAddUrl}
                                       onRemoveUrl={this.onRemoveUrl}
-                                      onAddStatementAtom={this.onAddStatementAtom}
-                                      onRemoveStatementAtom={this.onRemoveStatementAtom}
+                                      onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
+                                      onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
+                                      onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
+                                      onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
                                       onSubmit={this.onSubmit}
                                       suggestionsKey={suggestionsKey}
                                       errors={errors}
@@ -123,6 +133,7 @@ NewJustificationEditor.propTypes = {
 NewJustificationEditor.defaultProps = {
   doShowButtons: true
 }
+NewJustificationEditor.editorType = EditorTypes.NEW_JUSTIFICATION
 
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, ownProps.editorId]) || {}

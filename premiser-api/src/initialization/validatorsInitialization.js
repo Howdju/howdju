@@ -27,7 +27,8 @@ const sourceExcerptParaphraseValidator = new SourceExcerptParaphraseValidator(st
 const justificationBasisCompoundAtomValidator = new JustificationBasisCompoundAtomValidator(statementValidator,
   sourceExcerptParaphraseValidator)
 const justificationBasisCompoundValidator = new JustificationBasisCompoundValidator(justificationBasisCompoundAtomValidator)
-const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, writQuoteValidator)
+const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, writQuoteValidator,
+  justificationBasisCompoundValidator)
 const credentialValidator = new CredentialValidator()
 const voteValidator = new VoteValidator()
 

@@ -101,3 +101,7 @@ _e.JobHistoryStatus = arrayToObject([
   'SUCCESS',
   'FAILURE',
 ])
+
+_e.StatementCompoundAtomType = arrayToObject([
+  'STATEMENT',
+])

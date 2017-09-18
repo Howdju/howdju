@@ -7,12 +7,8 @@ const {
   newUnimplementedError,
 } = require('howdju-common')
 
-const {
-  WritQuoteValidator,
-  PicRegionValidator,
-  VidSegmentValidator,
-  genericModelBlankErrors,
-} = require('./validators')
+const {WritQuoteValidator} = require('./WritQuoteValidator')
+const {genericModelBlankErrors} = require('./util')
 
 class SourceExcerptValidator {
 
@@ -61,12 +57,12 @@ SourceExcerptValidator.blankErrors = (type) => {
     case SourceExcerptType.WRIT_QUOTE:
       blankEntityErrors = WritQuoteValidator.blankErrors()
       break
-    case SourceExcerptType.PIC_REGION:
-      blankEntityErrors = PicRegionValidator.blankErrors()
-      break
-    case SourceExcerptType.VID_SEGMENT:
-      blankEntityErrors = VidSegmentValidator.blankErrors()
-      break
+    // case SourceExcerptType.PIC_REGION:
+    //   blankEntityErrors = PicRegionValidator.blankErrors()
+    //   break
+    // case SourceExcerptType.VID_SEGMENT:
+    //   blankEntityErrors = VidSegmentValidator.blankErrors()
+    //   break
     default:
       blankEntityErrors = genericModelBlankErrors()
       break

@@ -1,13 +1,14 @@
-import has from 'lodash/has'
-import forEach from 'lodash/forEach'
-import cloneDeep from 'lodash/cloneDeep'
-import set from 'lodash/set'
 import assign from 'lodash/assign'
-import get from 'lodash/get'
-import reduce from 'lodash/reduce'
-import merge from 'lodash/merge'
-import includes from 'lodash/includes'
 import clone from 'lodash/clone'
+import cloneDeep from 'lodash/cloneDeep'
+import forEach from 'lodash/forEach'
+import get from 'lodash/get'
+import has from 'lodash/has'
+import isNumber from 'lodash/isNumber'
+import includes from 'lodash/includes'
+import merge from 'lodash/merge'
+import reduce from 'lodash/reduce'
+import set from 'lodash/set'
 import { handleActions } from 'redux-actions'
 
 import {
@@ -40,6 +41,7 @@ export const EditorTypes = arrayToObject([
   'DEFAULT',
   'STATEMENT',
   'STATEMENT_COMPOUND',
+  'JUSTIFICATION_BASIS_COMPOUND',
   'WRIT_QUOTE',
   'COUNTER_JUSTIFICATION',
   /* e.g. new justification dialog */
@@ -74,7 +76,7 @@ const editorErrorReducer = errorKey => (state, action) => {
 const makeAddAtomReducer = (atomsPath, atomMaker) => (state, action) => {
   const editEntity = {...state.editEntity}
   const atoms = clone(get(editEntity, atomsPath))
-  const index = action.payload.index || atoms.length
+  const index = isNumber(action.payload.index) ? action.payload.index : atoms.length
   atoms.splice(index, 0, atomMaker())
   set(editEntity, atomsPath, atoms)
   return {...state, editEntity}
@@ -160,8 +162,8 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
-    [editors.addStatementAtom]: makeAddAtomReducer('basis.entity.atoms', makeNewStatementAtom),
-    [editors.removeStatementAtom]: makeRemoveAtomReducer('basis.entity.atoms'),
+    [editors.addStatementCompoundAtom]: makeAddAtomReducer('basis.entity.atoms', makeNewStatementAtom),
+    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.entity.atoms'),
     [api.fetchStatementJustifications]: (state, action) => {
       const rootStatementId = state.editEntity && state.editEntity.rootStatement.id
       if (rootStatementId && rootStatementId === action.payload.statementId) {
@@ -194,8 +196,8 @@ const editorReducerByType = {
       editEntity.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
-    [editors.addStatementAtom]: makeAddAtomReducer('basis.statementCompound.atoms', makeNewStatementAtom),
-    [editors.removeStatementAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
+    [editors.addStatementCompoundAtom]: makeAddAtomReducer('basis.statementCompound.atoms', makeNewStatementAtom),
+    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
     [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
     [editors.commitEdit.result]: {
@@ -229,8 +231,8 @@ const editorReducerByType = {
       editEntity.newJustification.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
-    [editors.addStatementAtom]: makeAddAtomReducer('newJustification.basis.statementCompound.atoms', makeNewStatementAtom),
-    [editors.removeStatementAtom]: makeRemoveAtomReducer('newJustification.basis.statementCompound.atoms'),
+    [editors.addStatementCompoundAtom]: makeAddAtomReducer('newJustification.basis.statementCompound.atoms', makeNewStatementAtom),
+    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('newJustification.basis.statementCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer(
       'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
     [editors.removeJustificationBasisCompoundAtom]:

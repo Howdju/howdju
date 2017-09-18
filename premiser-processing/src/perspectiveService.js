@@ -233,7 +233,7 @@ class PerspectivesDao {
             toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById))
           return Promise.props({
             perspectiveId,
-            statement: this.statementsDao.readStatementById(rootStatementId),
+            statement: this.statementsDao.readStatementForId(rootStatementId),
             justifications,
           })
         })

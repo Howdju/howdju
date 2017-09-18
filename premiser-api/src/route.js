@@ -3,9 +3,9 @@ const assign = require('lodash/assign')
 const isEmpty = require('lodash/isEmpty')
 const isEqual = require('lodash/isEqual')
 
-const httpMethods = require('./httpMethods')
-const httpStatusCodes = require('./httpStatusCodes')
-
+const {
+  apiErrorCodes
+} = require('howdju-common')
 const {
   AuthenticationError,
   AuthorizationError,
@@ -18,7 +18,9 @@ const {
   RequestValidationError,
   InvalidLoginError,
 } = require("howdju-service-common")
-const apiErrorCodes = require('howdju-common/lib/codes/apiErrorCodes')
+
+const httpMethods = require('./httpMethods')
+const httpStatusCodes = require('./httpStatusCodes')
 const {
   logger,
   authService,
@@ -37,6 +39,7 @@ const {
 const {
   rethrowTranslatedErrors
 } = require('howdju-service-common')
+
 
 const ok = ({callback, body={}, headers}) => callback({
   httpStatusCode: httpStatusCodes.OK,
@@ -248,7 +251,7 @@ const routes = [
         method,
         path,
       }
-    }) => justificationsService.createJustification(authToken, justification)
+    }) => justificationsService.getOrCreateJustification(authToken, justification)
       .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification'))
   },

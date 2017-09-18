@@ -1,27 +1,22 @@
 # Howdju UI TODO
 
-* Paraphrases
+* Paraphrases 
+  * Use new justification basis compound with counters
+  * migrate statement compounds to new compounds
+  * Review usage of id/idPrefix/baseId in the new UI stuff
+    * A suggestions key: 
+     createStatementPageJustification.basis.justificationBasisCompound.atoms[1].entity.newJustification.basis.justificationBasisCompound.atoms[1].entity
   
-  * JustificationsDao.readCompoundBasedJustification
-    * Get the justifications from whatever mean, distinctly union, order by sort
-      * Then from this list, add in all the required stuff
-    * statementId: paraphrasing statementID or atom statement ID
-    * WritQuote: paraphrased sourceExcerpt
-
-  * Do for JustificationBasisCompoundsService what I did for SourceExcerptParaphrasesService
-    * Finish WritQuoteService?
-    * Add atoms to readJustificationBasisCompoundForId
   * getWritQuoteForId vs. readWritQuoteForId
-  
-  * justificationBasisCompoundsDao
-    * .createJustificationBasisCompound 
-    * .createJustificationBasisCompoundAtom
-    * .readJustificationBasisCompoundEquivalentTo
-  
   * Use writQuote.normalQuoteText for equivalence
     
   * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
   * Create staging DB for testing schema changes?
+
+* Refactors
+  * rename create to getOrCreate
+  * read extant entity from DB when it has an ID (instead of just returning it)
+  * replace impossible error with exhausted enum error
 
 * Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
   and leave it in-memory

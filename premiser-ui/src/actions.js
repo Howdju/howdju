@@ -114,12 +114,20 @@ export const api = {
   createStatement: apiActionCreator('CREATE_STATEMENT', statement => ({statement})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),
   deleteStatement: apiActionCreator('DELETE_STATEMENT', statement => ({statement})),
-  fetchStatementTextSuggestions: apiActionCreator('API/FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({
+  fetchStatementTextSuggestions: apiActionCreator('FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({
     statementText,
     suggestionsKey,
   })),
-  fetchWritTitleSuggestions: apiActionCreator('API/FETCH_WRIT_TITLE_SUGGESTIONS', (writTitle, suggestionsKey) => ({
+  cancelStatementTextSuggestions: apiActionCreator('CANCEL_STATEMENT_TEXT_SUGGESTIONS', (suggestionsKey) => ({
+    cancelTarget: str(api.fetchStatementTextSuggestions),
+    suggestionsKey,
+  })),
+  fetchWritTitleSuggestions: apiActionCreator('FETCH_WRIT_TITLE_SUGGESTIONS', (writTitle, suggestionsKey) => ({
     writTitle,
+    suggestionsKey,
+  })),
+  cancelWritTitleSuggestions: apiActionCreator('CANCEL_WRIT_TITLE_SUGGESTIONS', (suggestionsKey) => ({
+    cancelTarget: str(api.fetchWritTitleSuggestions),
     suggestionsKey,
   })),
   createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeJustification(justification)})),
@@ -206,15 +214,15 @@ export const editors = {
     index
   })),
 
-  addStatementAtom: actionCreator('EDITORS/ADD_STATEMENT_ATOM', (editorType, editorId, index) => ({
+  addStatementCompoundAtom: actionCreator('EDITORS/ADD_STATEMENT_COMPOUND_ATOM', (editorType, editorId, index) => ({
     editorType,
     editorId,
     index,
   })),
-  removeStatementAtom: actionCreator('EDITORS/REMOVE_STATEMENT_ATOM', (editorType, editorId, statementAtom, index) => ({
+  removeStatementCompoundAtom: actionCreator('EDITORS/REMOVE_STATEMENT_COMPOUND_ATOM', (editorType, editorId, atom, index) => ({
     editorType,
     editorId,
-    statementAtom,
+    atom,
     index
   })),
 

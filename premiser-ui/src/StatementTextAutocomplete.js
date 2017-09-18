@@ -34,6 +34,7 @@ class StatementTextAutocomplete extends Component {
         onPropertyChange={onPropertyChange}
         onAutocomplete={this.onAutocomplete}
         fetchSuggestions={api.fetchStatementTextSuggestions}
+        cancelSuggestions={api.cancelStatementTextSuggestions}
         suggestionsKey={suggestionsKey}
         dataLabel="text"
         dataValue="id"

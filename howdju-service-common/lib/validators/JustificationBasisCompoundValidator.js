@@ -30,11 +30,8 @@ class JustificationBasisCompoundValidator {
       errors.hasErrors = true
       errors.fieldErrors.atoms.modelErrors.push(modelErrorCodes.MUST_BE_NONEMPTY)
     } else {
-      errors.fieldErrors.atoms.itemErrors = map(justificationBasisCompound.atoms, atom => ({
-        fieldErrors: {
-          entity: this.justificationBasisCompoundAtomValidator.validate(atom)
-        }
-      }))
+      errors.fieldErrors.atoms.itemErrors = map(justificationBasisCompound.atoms, atom =>
+        this.justificationBasisCompoundAtomValidator.validate(atom))
       if (some(errors.fieldErrors.atoms.itemErrors, i => i.fieldErrors.entity.hasErrors)) {
         errors.hasErrors = true
       }

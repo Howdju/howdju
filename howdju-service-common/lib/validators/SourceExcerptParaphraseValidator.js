@@ -5,10 +5,8 @@ const {
   modelErrorCodes,
 } = require('howdju-common')
 
-const {
-  StatementValidator,
-  SourceExcerptValidator,
-} = require('./validators')
+const {StatementValidator} = require('./StatementValidator')
+const {SourceExcerptValidator} = require('./SourceExcerptValidator')
 
 class SourceExcerptParaphraseValidator {
 

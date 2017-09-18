@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import {
-  isWritQuoteBased,
-  isStatementCompoundBased,
-  newImpossibleError,
+  JustificationBasisType,
+  newExhaustedEnumError,
 } from "howdju-common"
 import StatementCompoundViewer from "./StatementCompoundViewer"
 import WritQuoteViewer from "./WritQuoteViewer"
 import ExpandableChildContainer from './ExpandableChildContainer'
+import JustificationBasisCompoundViewer from "./JustificationBasisCompoundViewer"
 
 export default class JustificationBasisViewer extends Component {
 
@@ -20,26 +20,38 @@ export default class JustificationBasisViewer extends Component {
     } = this.props
     const basis = justification.basis.entity
 
-    if (isStatementCompoundBased(justification)) {
-      return <StatementCompoundViewer {...rest}
-                                      id={id}
-                                      statementCompound={basis}
-                                      doShowControls={doShowControls}
-                                      doShowStatementAtomJustifications={doShowBasisJustifications}
-      />
+    switch (basis.type) {
+      case JustificationBasisType.STATEMENT_COMPOUND:
+        return (
+          <StatementCompoundViewer {...rest}
+                                   id={id}
+                                   statementCompound={basis}
+                                   doShowControls={doShowControls}
+                                   doShowStatementAtomJustifications={doShowBasisJustifications}
+          />
+        )
+      case JustificationBasisType.WRIT_QUOTE:
+        return (
+          <ExpandableChildContainer {...rest}
+                                    ExpandableChildComponent={WritQuoteViewer}
+                                    widgetId={id}
+                                    id={id}
+                                    key={id}
+                                    writQuote={basis}
+                                    doShowControls={doShowControls}
+          />
+        )
+      case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+        return (
+          <JustificationBasisCompoundViewer {...rest}
+                                            id={id}
+                                            justificationBasisCompound={basis}
+                                            doShowControls={doShowControls}
+                                            doShowStatementAtomJustifications={doShowBasisJustifications}
+          />
+        )
+      default:
+        throw newExhaustedEnumError('JustificationBasisType', basis.type)
     }
-    if (isWritQuoteBased(justification)) {
-      return (
-        <ExpandableChildContainer {...rest}
-                                  ExpandableChildComponent={WritQuoteViewer}
-                                  widgetId={id}
-                                  id={id}
-                                  key={id}
-                                  writQuote={basis}
-                                  doShowControls={doShowControls}
-        />
-      )
-    }
-    throw newImpossibleError(`Exhausted JustificationBasisTypes: ${justification.basis.type}`)
   }
 }

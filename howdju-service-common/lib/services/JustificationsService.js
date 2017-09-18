@@ -5,11 +5,10 @@ const cloneDeep = require('lodash/cloneDeep')
 const concat = require('lodash/concat')
 const every = require('lodash/every')
 const filter = require('lodash/filter')
-const get = require('lodash/get')
 const isFinite = require('lodash/isFinite')
+const isUndefined = require('lodash/isUndefined')
 const join = require('lodash/join')
 const map = require('lodash/map')
-const set = require('lodash/set')
 const partition = require('lodash/partition')
 const toNumber = require('lodash/toNumber')
 
@@ -22,6 +21,7 @@ const {
   ActionType,
   ActionTargetType,
   newImpossibleError,
+  idEqual,
 } = require('howdju-common')
 
 const {
@@ -139,7 +139,7 @@ exports.JustificationsService = class JustificationsService {
           j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
           j.basis.entity.atoms &&
           j.basis.entity.atoms.length > 0 &&
-          every(j.basis.entity.atoms, a => isTruthy(a.statement.id))
+          every(j.basis.entity.atoms, a => isTruthy(a.entity.id))
         )
         if (badJustifications.length > 0) {
           this.logger.error(`these justifications have invalid statement compounds: ${join(map(badJustifications, j => j.id), ', ')}`)
@@ -156,12 +156,12 @@ exports.JustificationsService = class JustificationsService {
       })
   }
 
-  createJustification(authToken, justification) {
+  getOrCreateJustification(authToken, justification) {
     return this.authService.readUserIdForAuthToken(authToken)
-      .then(userId => this.createJustificationAsUser(justification, userId, new Date()))
+      .then(userId => this.getOrCreateJustificationAsUser(justification, userId, new Date()))
   }
 
-  createJustificationAsUser(justification, userId, now) {
+  getOrCreateJustificationAsUser(justification, userId, now) {
     return Promise.resolve()
       .then(() => {
         if (justification.id) {
@@ -175,16 +175,16 @@ exports.JustificationsService = class JustificationsService {
             }
             return [userId, now]
           })
-          .then( ([userId, now]) => this.createValidJustificationAsUser(justification, userId, now))
+          .then( ([userId, now]) => this.getOrCreateValidJustificationAsUser(justification, userId, now))
       })
   }
 
-  createValidJustificationAsUser(justification, userId, now) {
+  getOrCreateValidJustificationAsUser(justification, userId, now) {
     return Promise.all([
       now,
-      this.createJustificationTarget(justification.target, userId, now)
+      this.getOrCreateJustificationTarget(justification.target, userId, now)
         .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.target')),
-      this.createJustificationBasis(justification.basis, userId, now)
+      this.getOrCreateJustificationBasis(justification.basis, userId, now)
         .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.basis')),
     ])
       .then( ([
@@ -199,10 +199,13 @@ exports.JustificationsService = class JustificationsService {
           entity: targetEntity,
         }
         if (targetType === JustificationTargetType.STATEMENT) {
-          const rootStatementId = get(justification, 'rootStatement.id')
-          if (rootStatementId && rootStatementId !== targetEntity.id) {
-            this.logger.warning(`Statement-targeting justification's rootStatementId (${rootStatementId} is not equal to targetEntity.id (${targetEntity.id})`)
-            set(justification, 'rootStatement.id', targetEntity.id)
+          if (!justification.rootStatement) {
+            justification.rootStatement = targetEntity
+          } else if (isUndefined(justification.rootStatement.id)) {
+            justification.rootStatement = targetEntity
+          } else if (!idEqual(justification.rootStatement.id, targetEntity.id)) {
+            this.logger.warning(`Statement-targeting justification's rootStatement.id (${justification.rootStatement.id} is not equal to targetEntity.id (${targetEntity.id})`)
+            justification.rootStatement = targetEntity
           }
         }
 
@@ -239,11 +242,11 @@ exports.JustificationsService = class JustificationsService {
       })
   }
 
-  createJustificationTarget(justificationTarget, userId, now) {
+  getOrCreateJustificationTarget(justificationTarget, userId, now) {
     switch (justificationTarget.type) {
 
       case JustificationTargetType.JUSTIFICATION:
-        return this.createJustificationAsUser(justificationTarget.entity, userId, now)
+        return this.getOrCreateJustificationAsUser(justificationTarget.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, justification}) => ({
             isExtant,
@@ -252,7 +255,7 @@ exports.JustificationsService = class JustificationsService {
           }))
 
       case JustificationTargetType.STATEMENT:
-        return this.statementsService.createStatementAsUser(justificationTarget.entity, userId, now)
+        return this.statementsService.getOrCreateStatementAsUser(justificationTarget.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then(({isExtant, statement}) => ({
             isExtant,
@@ -265,7 +268,7 @@ exports.JustificationsService = class JustificationsService {
     }
   }
 
-  createJustificationBasis(justificationBasis, userId, now) {
+  getOrCreateJustificationBasis(justificationBasis, userId, now) {
     switch (justificationBasis.type) {
 
       case JustificationBasisType.WRIT_QUOTE:

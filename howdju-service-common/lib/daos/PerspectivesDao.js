@@ -203,10 +203,10 @@ exports.PerspectivesDao = class PerspectivesDao {
         })
         statementCompoundAtoms.push(statementCompoundAtom)
 
-        const statement = statementsById[statementCompoundAtom.statement.id]
+        const statement = statementsById[statementCompoundAtom.entity.id]
         if (!statement) {
-          statementsById[statementCompoundAtom.statement.id] = toStatement({
-            statement_id: statementCompoundAtom.statement.id,
+          statementsById[statementCompoundAtom.entity.id] = toStatement({
+            statement_id: statementCompoundAtom.entity.id,
             text: row.basis_statement_compound_atom_statement_text,
             creator_user_id: row.basis_statement_compound_atom_statement_creator_user_id,
             created: row.basis_statement_compound_atom_statement_created,
@@ -319,7 +319,7 @@ exports.PerspectivesDao = class PerspectivesDao {
 
     forEach(statementCompoundAtomsByStatementCompoundId, scas =>
       forEach(scas, sca => {
-        sca.statement = statementsById[sca.statement.id]
+        sca.statement = statementsById[sca.entity.id]
       })
     )
 
