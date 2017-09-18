@@ -18,6 +18,7 @@ import {
   makeNewJustificationBasisAtom,
   makeNewUrl,
   newProgrammingError,
+  idEqual,
 } from "howdju-common"
 
 import {
@@ -162,11 +163,11 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
-    [editors.addStatementCompoundAtom]: makeAddAtomReducer('basis.entity.atoms', makeNewStatementAtom),
-    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.entity.atoms'),
+    [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.entity.atoms', makeNewJustificationBasisAtom),
+    [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.entity.atoms'),
     [api.fetchStatementJustifications]: (state, action) => {
-      const rootStatementId = state.editEntity && state.editEntity.rootStatement.id
-      if (rootStatementId && rootStatementId === action.payload.statementId) {
+      const rootStatementId = get(state.editEntity, 'rootStatement.id')
+      if (idEqual(rootStatementId, action.payload.statementId)) {
         return {...state, isFetching: true}
       }
       return state

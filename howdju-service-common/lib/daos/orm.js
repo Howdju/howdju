@@ -150,7 +150,8 @@ const toJustification = (
     const counterJustifications = counterJustificationsByJustificationId[justification.id]
     if (counterJustifications) {
       justification.counterJustifications = map(counterJustifications, j =>
-        toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById))
+        toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById,
+          justificationBasisCompoundsById))
     }
   }
 

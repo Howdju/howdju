@@ -127,8 +127,7 @@ function makeAtomFields(atom, index, name, id, suggestionsKey, atomItemErrors,
         disabled, onChange, onPropertyChange, onTextInputKeyDown)
     }
     default:
-      logger.error(`Unsupported JustificationBasisCompoundAtomType: ${atom.type}`)
-      return
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
   }
 }
 

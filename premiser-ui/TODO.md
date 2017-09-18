@@ -1,8 +1,9 @@
 # Howdju UI TODO
 
 * Paraphrases 
-  * Use new justification basis compound with counters
-  * migrate statement compounds to new compounds
+  * Support paraphrases
+  * Add icons and context menus
+  * migrate statement compounds to new compounds?  Might want to manually recreate them so I can choose to substitute paraphrases
   * Review usage of id/idPrefix/baseId in the new UI stuff
     * A suggestions key: 
      createStatementPageJustification.basis.justificationBasisCompound.atoms[1].entity.newJustification.basis.justificationBasisCompound.atoms[1].entity
@@ -641,6 +642,11 @@ Cat meeting design notes:
   * https://greenkeeper.io/
   * https://www.codacy.com/app/ranisalt/node-argon2/dashboard)
 * [Transcribe audio](https://github.com/oTranscribe/oTranscribe)
+* [React charts](https://mux.com/blog/so-we-redid-our-charts-part-ii-graphing-react-ing-and-maybe-a-little-crying/)
+   * https://github.com/Radico/web/issues/673
+   * https://uber.github.io/react-vis/
+   * http://recharts.org/#/en-US/
+   * https://formidable.com/open-source/victory/
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

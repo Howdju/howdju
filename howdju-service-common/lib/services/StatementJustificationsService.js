@@ -1,7 +1,8 @@
 const Promise = require('bluebird')
 
 const {
-  EntityTypes
+  EntityTypes,
+  requireArgs,
 } = require('howdju-common')
 
 const {
@@ -10,19 +11,18 @@ const {
 
 exports.StatementJustificationsService = class StatementJustificationsService {
 
-  constructor(statementsDao, justificationsDao) {
+  constructor(authService, statementsDao, justificationsDao) {
+    requireArgs({authService, statementsDao, justificationsDao})
+    this.authService = authService
     this.statementsDao = statementsDao
     this.justificationsDao = justificationsDao
   }
 
   readStatementJustifications(statementId, authToken) {
-    return Promise.resolve([
-      statementId,
-      authToken,
-    ])
-      .then(([statementId, authToken]) => Promise.all([
+    return this.authService.readUserIdForAuthToken(authToken)
+      .then( (userId) => Promise.all([
         this.statementsDao.readStatementForId(statementId),
-        this.justificationsDao.readJustificationsWithBasesAndVotesByRootStatementId(authToken, statementId),
+        this.justificationsDao.readJustificationsWithBasesAndVotesByRootStatementId(statementId, {userId}),
       ]))
       .then(([statement, justifications]) => {
         if (!statement) {

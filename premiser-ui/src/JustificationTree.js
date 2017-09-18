@@ -274,7 +274,7 @@ class JustificationTree extends Component {
           <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justification-card">
 
             <CounterJustificationEditor editorId={counterJustificationEditorId(justification)}
-                                        textId={`justification=${justification.id}-newCounterJustification`}
+                                        id={`justification-${justification.id}-new-counter-justification-editor`}
                                         suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
             />
 

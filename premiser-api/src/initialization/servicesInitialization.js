@@ -100,7 +100,7 @@ const justificationsService = new JustificationsService(config, logger, justific
 
 const permissionsService = new PermissionsService(permissionsDao, userPermissionsDao)
 const perspectivesService = new PerspectivesService(authDao, perspectivesDao)
-const statementJustificationsService = new StatementJustificationsService(statementsDao, justificationsDao)
+const statementJustificationsService = new StatementJustificationsService(authService, statementsDao, justificationsDao)
 const usersService = new UsersService(userValidator, actionsService, authService, permissionsService,
   userExternalIdsDao, usersDao)
 const votesService = new VotesService(logger, voteValidator, authService, votesDao)

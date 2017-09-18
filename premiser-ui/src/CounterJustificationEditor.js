@@ -8,7 +8,7 @@ import CardText from 'react-md/lib/Cards/CardText'
 import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import get from 'lodash/get'
 
-import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
+import JustificationBasisCompoundEditorFields from "./JustificationBasisCompoundEditorFields"
 import {EditorTypes} from "./reducers/editors"
 import {
   editors,
@@ -31,12 +31,12 @@ class CounterJustificationEditor extends Component {
     this.props.editors.propertyChange(this.editorType, this.props.editorId, properties)
   }
 
-  onAddStatementCompoundAtom = () => {
-    this.props.editors.addStatementCompoundAtom(this.editorType, this.props.editorId)
+  onAddJustificationBasisCompoundAtom = () => {
+    this.props.editors.addJustificationBasisCompoundAtom(this.editorType, this.props.editorId)
   }
 
-  onRemoveStatementCompoundAtom = (atom, index) => {
-    this.props.editors.removeStatementCompoundAtom(this.editorType, this.props.editorId, atom, index)
+  onRemoveJustificationBasisCompoundAtom = (atom, index) => {
+    this.props.editors.removeJustificationBasisCompoundAtom(this.editorType, this.props.editorId, atom, index)
   }
 
   onSubmit = (event) => {
@@ -50,8 +50,8 @@ class CounterJustificationEditor extends Component {
 
   render() {
     const {
+      id,
       suggestionsKey,
-      textId,
       editorState: {
         errors,
         editEntity,
@@ -62,26 +62,21 @@ class CounterJustificationEditor extends Component {
     delete rest.editors
     delete rest.editorId
 
-    const statementCompoundErrors = get(errors, 'fieldErrors.basis.fieldErrors.entity')
-    const statementCompound = get(editEntity, 'basis.entity')
+    const justificationBasisCompoundErrors = get(errors, 'fieldErrors.basis.fieldErrors.entity')
+    const justificationBasisCompound = get(editEntity, 'basis.entity')
 
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <FocusContainer containFocus={false} focusOnMount={true}>
-            <StatementCompoundEditorFields
-              {...rest}
-              name="basis.entity"
-              statementCompound={statementCompound}
-              textId={textId}
-              suggestionsKey={suggestionsKey}
-              onPropertyChange={this.onPropertyChange}
-              disabled={isSaving}
-              errors={statementCompoundErrors}
-              onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
-              onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
-            />
-          </FocusContainer>
+          <JustificationBasisCompoundEditorFields justificationBasisCompound={justificationBasisCompound}
+                                                  id={id}
+                                                  name="basis.entity"
+                                                  suggestionsKey={suggestionsKey}
+                                                  onPropertyChange={this.onPropertyChange}
+                                                  onAddJustificationBasisCompoundAtom={this.onAddJustificationBasisCompoundAtom}
+                                                  onRemoveJustificationBasisCompoundAtom={this.onRemoveJustificationBasisCompoundAtom}
+                                                  errors={justificationBasisCompoundErrors}
+          />
         </CardText>
         <CardActions>
           {isSaving && <CircularProgress key="progress" id="progress" />}
@@ -106,7 +101,7 @@ class CounterJustificationEditor extends Component {
 CounterJustificationEditor.propTypes = {
   /** Identifies the editor's state */
   editorId: PropTypes.string.isRequired,
-  textId: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
 }

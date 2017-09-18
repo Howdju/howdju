@@ -248,7 +248,7 @@ exports.JustificationsDao = class JustificationsDao {
       })
   }
 
-  readJustificationsWithBasesAndVotesByRootStatementId(authToken, rootStatementId) {
+  readJustificationsWithBasesAndVotesByRootStatementId(rootStatementId, {userId}) {
     const sql = `
       select 
           j.*
@@ -263,18 +263,17 @@ exports.JustificationsDao = class JustificationsDao {
         left join writ_quotes wq on 
               j.basis_type = $4 
           and j.basis_id = wq.writ_quote_id
-        left join user_auth_tokens auth on auth.auth_token = $2
         left join votes v on 
               v.target_type = $3
           and j.justification_id = v.target_id
-          and v.user_id = auth.user_id
+          and v.user_id = $2
           and v.deleted IS NULL
         where 
               j.deleted is null
           and j.root_statement_id = $1
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, authToken, VoteTargetType.JUSTIFICATION, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
+      this.database.query(sql, [rootStatementId, userId, VoteTargetType.JUSTIFICATION, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
       this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
       this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
       this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootStatementId(rootStatementId),

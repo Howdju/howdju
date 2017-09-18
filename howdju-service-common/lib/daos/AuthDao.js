@@ -46,12 +46,15 @@ exports.AuthDao = class AuthDao {
 
   getUserIdForAuthToken(authToken) {
     const sql = `
-      select user_id
-      from user_auth_tokens
+      select u.user_id
+      from user_auth_tokens uat
+          join users u using (user_id)
         where 
-              auth_token = $1 
-          and expires > $2
-          and deleted is null 
+              uat.auth_token = $1 
+          and uat.expires > $2
+          and uat.deleted is null
+          and u.deleted is null
+          and u.is_active 
     `
     return this.database.query(sql, [authToken, new Date()]).then( ({rows}) => {
       if (rows.length < 1) {

@@ -11,6 +11,9 @@ const {
   JustificationTargetType,
   JustificationBasisCompoundAtomType,
 } = require('./enums')
+const {
+  isDefined
+} = require('./general')
 
 
 const _e = module.exports
@@ -132,8 +135,8 @@ _e.makeNewCounterJustification = (targetJustification) => ({
     entity: targetJustification,
   },
   basis: {
-    type: JustificationBasisType.STATEMENT_COMPOUND,
-    entity: _e.makeNewStatementCompound()
+    type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+    entity: _e.makeNewJustificationBasisCompound()
   },
   polarity: JustificationPolarity.NEGATIVE
 })
@@ -148,4 +151,4 @@ _e.makeNewUrl = () => ({url: ''})
  * to strings.  But because this comparison is so important, it is worthwile having a special method to ensure that
  * there is no mistake.  One thing we don't do is convert an integer identifier from the client into a string, e.g..
  */
-_e.idEqual = (id1, id2) => toString(id1) === toString(id2)
+_e.idEqual = (id1, id2) => isDefined(id1) && isDefined(id2) && toString(id1) === toString(id2)
