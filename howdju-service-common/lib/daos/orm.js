@@ -254,17 +254,17 @@ const toJustificationScore = row => row && ({
   created: row.created,
   deleted: row.deleted,
   creatorJobHistoryId: row.creator_job_history_id,
-  deleotrJobHistoryId: row.deletor_job_history_id,
+  deletorJobHistoryId: row.deletor_job_history_id,
 })
 
-const toSourceExcerptParaphrase = row => row & ({
+const toSourceExcerptParaphrase = row => row && ({
   id: row.source_excerpt_paraphrase_id,
   paraphrasingStatement: {
     id: row.paraphrasing_statement_id,
   },
   sourceExcerpt: {
-    type: row.entity_type,
-    id: row.entity_id,
+    type: row.source_excerpt_type,
+    id: row.source_excerpt_id,
   },
 })
 

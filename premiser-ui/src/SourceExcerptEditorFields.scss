@@ -1,0 +1,20 @@
+.source-excerpt-editor-fields {
+  display: flex;
+}
+
+@mixin center-children-vertically {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.source-excerpt-editor-fields--type-controls {
+  @include center-children-vertically;
+}
+
+.source-excerpt-editor-fields--entity-controls {
+  padding-left: 35px;
+  padding-right: 15px;
+  margin: auto;
+  width: 100%;
+}

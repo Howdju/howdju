@@ -29,8 +29,15 @@ _e.ActionTargetType = arrayToObject([
   'STATEMENT',
   'STATEMENT_COMPOUND',
   'JUSTIFICATION',
+  'JUSTIFICATION_BASIS_COMPOUND',
+  'JUSTIFICATION_BASIS_COMPOUND_ATOM',
+  'SOURCE_EXCERPT_PARAPHRASE',
   'WRIT_QUOTE',
   'WRIT',
+  'PIC_REGION',
+  'PIC',
+  'VID_SEGMENT',
+  'VID',
   'USER',
   'URL',
 ])
@@ -66,6 +73,7 @@ _e.JustificationBasisType = arrayToObject([
 // (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
 _e.JustificationBasisSourceType = assign({}, _e.JustificationBasisType, arrayToObject([
   'STATEMENT',
+  'SOURCE_EXCERPT_PARAPHRASE',
 ]))
 
 _e.JustificationBasisCompoundAtomType = arrayToObject([
@@ -75,6 +83,8 @@ _e.JustificationBasisCompoundAtomType = arrayToObject([
 
 _e.SourceExcerptType = arrayToObject([
   'WRIT_QUOTE',
+  'PIC_REGION',
+  'VID_SEGMENT',
 ])
 
 _e.VoteTargetType = arrayToObject([

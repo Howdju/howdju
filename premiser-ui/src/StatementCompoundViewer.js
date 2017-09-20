@@ -34,7 +34,7 @@ export default class StatementCompoundViewer extends Component {
     })
 
     return (
-      <ol className="statement-compound-viewer">
+      <ol className="compound-viewer statement-compound-viewer">
         {atomListItems}
       </ol>
     )

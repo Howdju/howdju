@@ -12,25 +12,26 @@ import SourceExcerptParaphraseAtomViewer from './SourceExcerptParaphraseAtomView
 export default class JustificationBasisCompoundAtomViewer extends Component {
   render() {
     const {
+      id,
       atom,
+      statementEditorId,
     } = this.props
 
-    const _baseId = baseId(this.props)
-    const _editorId = editorId(_baseId)
+    const entityViewerId = `${id}-entity`
 
     switch (atom.type) {
       case JustificationBasisCompoundAtomType.STATEMENT:
         return (
-          <StatementAtomViewer id={_baseId}
-                               editorId={_editorId}
+          <StatementAtomViewer id={entityViewerId}
+                               editorId={statementEditorId}
                                atom={atom}
           />
         )
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
         return (
-          <SourceExcerptParaphraseAtomViewer id={_baseId}
-                                             paraphrasingStatementEditorId={_editorId + '-paraphrasingStatement'}
-                                             sourceExcerptEditorId={_editorId + '-sourceExcerpt'}
+          <SourceExcerptParaphraseAtomViewer id={entityViewerId}
+                                             paraphrasingStatementEditorId={entityViewerId + '-paraphrasing-statement'}
+                                             sourceExcerptEditorId={entityViewerId + '-source-excerpt'}
                                              atom={atom}
           />
         )
@@ -42,17 +43,5 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
 JustificationBasisCompoundAtomViewer.propTypes = {
   id: PropTypes.string.isRequired,
   atom: PropTypes.object.isRequired,
-}
-
-function baseId(props) {
-  const {
-    id,
-    atom
-  } = props
-  const idPrefix = id ? id + '-' : ''
-  return `${idPrefix}justificationBasisCompoundAtom-${atom.compoundId}-${atom.entity.id}`
-}
-
-function editorId(baseId) {
-  return `${baseId}-justificationBasisEditor`
+  statementEditorId: PropTypes.string.isRequired,
 }

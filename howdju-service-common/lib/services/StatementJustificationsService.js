@@ -28,6 +28,7 @@ exports.StatementJustificationsService = class StatementJustificationsService {
         if (!statement) {
           throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
         }
+
         return {
           statement,
           justifications,

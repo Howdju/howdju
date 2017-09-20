@@ -29,12 +29,16 @@ export default class StatementAtomViewer extends Component {
       id,
       paraphrasingStatementEditorId,
       sourceExcerptEditorId,
+      suggestionsKey,
     } = this.props
     const {
       isOver
     } = this.state
 
-    const sourceExcerptParaphrase = atom.entity
+    const {
+      paraphrasingStatement,
+      sourceExcerpt
+    } = atom.entity
 
     return (
       <span className={cn("source-excerpt-paraphrase-atom-viewer", {
@@ -44,17 +48,14 @@ export default class StatementAtomViewer extends Component {
             onMouseLeave={this.onMouseLeave}
       >
         <EditableStatement id={`${id}-statement`}
-                           entityId={sourceExcerptParaphrase.paraphrasingStatement.id}
+                           entityId={paraphrasingStatement.id}
                            editorId={paraphrasingStatementEditorId}
-                           textId={`${id}-statementText`}
-                           suggestionsKey={`${id}-statementSuggestions`}
+                           suggestionsKey={suggestionsKey + '-paraphrasing-statement'}
         />
-        <EditableSourceExcerpt id={`${id}-sourceExcerpt`}
-                               type={atom.type}
-                               sourceExcerpt={sourceExcerptParaphrase.sourceExcerpt}
+        <EditableSourceExcerpt id={id + '-source-excerpt'}
+                               sourceExcerpt={sourceExcerpt}
                                editorId={sourceExcerptEditorId}
-                               textId={`${id}-sourceExcerpt`}
-                               suggestionsKey={`${id}-sourceExcerpt`}
+                               suggestionsKey={suggestionsKey + '-source-excerpt'}
         />
       </span>
     )
@@ -65,4 +66,5 @@ StatementAtomViewer.propTypes = {
   id: PropTypes.string.isRequired,
   sourceExcerptEditorId: PropTypes.string.isRequired,
   paraphrasingStatementEditorId: PropTypes.string.isRequired,
+  suggestionsKey: PropTypes.string,
 }

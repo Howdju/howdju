@@ -114,3 +114,14 @@ $small-chat-iframe-z-index: 999999999;
     text-decoration: underline;
   }
 }
+
+
+.compound-atom {
+  margin: 5px;
+  padding: 5px;
+  min-height: 60px;
+}
+.compound-viewer {
+  // quick and dirty way not to overlap chat bubble context menu
+  margin-right: 50px;
+}

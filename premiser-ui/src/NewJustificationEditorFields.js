@@ -2,20 +2,15 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Divider from 'react-md/lib/Dividers'
 import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
-import Subheader from 'react-md/lib/Subheaders'
 import get from 'lodash/get'
 
 import {
   isWritQuoteBased,
   isStatementCompoundBased,
   isJustificationBasisCompoundBased,
-  JustificationBasisType,
   JustificationPolarity
 } from "howdju-common"
 import t, {
-  texts,
-  JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
-  JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND,
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,
 } from "./texts"
@@ -45,32 +40,32 @@ const polarityControls = [{
     </div>
   ),
 }]
-const basisTypeControls = [
-  {
-    value: JustificationBasisType.STATEMENT_COMPOUND,
-    label: (
-      <div title="A list of statements that when taken together logically imply the target">
-        {t(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
-      </div>
-    ),
-  },
-  {
-    value: JustificationBasisType.WRIT_QUOTE,
-    label: (
-      <div title="An external reference">
-        {t(JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE)}
-      </div>
-    ),
-  },
-  {
-    value: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-    label: (
-      <div title="An external reference">
-        {t(texts.JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND)}
-      </div>
-    ),
-  },
-]
+// const basisTypeControls = [
+//   {
+//     value: JustificationBasisType.STATEMENT_COMPOUND,
+//     label: (
+//       <div title="A list of statements that when taken together logically imply the target">
+//         {t(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
+//       </div>
+//     ),
+//   },
+//   {
+//     value: JustificationBasisType.WRIT_QUOTE,
+//     label: (
+//       <div title="An external reference">
+//         {t(JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE)}
+//       </div>
+//     ),
+//   },
+//   {
+//     value: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+//     label: (
+//       <div title="An external reference">
+//         {t(texts.JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND)}
+//       </div>
+//     ),
+//   },
+// ]
 
 class NewJustificationEditorFields extends Component {
 
@@ -95,6 +90,8 @@ class NewJustificationEditorFields extends Component {
       onRemoveStatementCompoundAtom,
       onAddJustificationBasisCompoundAtom,
       onRemoveJustificationBasisCompoundAtom,
+      onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
+      onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
       errors,
       onKeyDown,
     } = this.props
@@ -110,7 +107,6 @@ class NewJustificationEditorFields extends Component {
     const basisStatementCompound = get(newJustification, statementCompoundName)
     const basisWritQuote = get(newJustification, writQuoteName)
     const justificationBasisCompound = get(newJustification, justificationBasisCompoundName)
-    const basisType = get(newJustification, 'basis.type')
     const _isStatementCompoundBased = isStatementCompoundBased(newJustification)
     const _isWritQuoteBased = isWritQuoteBased(newJustification)
     const _isJustificationBasisCompoundBased = isJustificationBasisCompoundBased(newJustification)
@@ -145,17 +141,25 @@ class NewJustificationEditorFields extends Component {
                              onKeyDown={onKeyDown}
       />
     )
-    const justificationBasisCompoundEditorFields = (
-      <JustificationBasisCompoundEditorFields justificationBasisCompound={justificationBasisCompound}
-                                              id={idPrefix + justificationBasisCompoundName}
-                                              name={namePrefix + justificationBasisCompoundName}
-                                              suggestionsKey={suggestionsKeyPrefix + justificationBasisCompoundName}
-                                              onPropertyChange={onPropertyChange}
-                                              onAddJustificationBasisCompoundAtom={onAddJustificationBasisCompoundAtom}
-                                              onRemoveJustificationBasisCompoundAtom={onRemoveJustificationBasisCompoundAtom}
-                                              errors={justificationBasisCompoundErrors}
+    const justificationBasisCompoundEditorFields = [
+      <h3 className="justification-basis-compound-editor-fields-header"
+          key="justification-basis-compound-editor-fields-header">
+        Clauses
+      </h3>,
+      <JustificationBasisCompoundEditorFields
+        justificationBasisCompound={justificationBasisCompound}
+        key="justification-basis-compound-editor-fields"
+        id={idPrefix + justificationBasisCompoundName}
+        name={namePrefix + justificationBasisCompoundName}
+        suggestionsKey={suggestionsKeyPrefix + justificationBasisCompoundName}
+        onPropertyChange={onPropertyChange}
+        onAddJustificationBasisCompoundAtom={onAddJustificationBasisCompoundAtom}
+        onRemoveJustificationBasisCompoundAtom={onRemoveJustificationBasisCompoundAtom}
+        onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+        onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+        errors={justificationBasisCompoundErrors}
       />
-    )
+    ]
 
     const polarity = get(newJustification, 'polarity')
 
@@ -172,7 +176,7 @@ class NewJustificationEditorFields extends Component {
           disabled={disabled}
         />
         <Divider />
-        <Subheader primary
+        {/*<Subheader primary
                    primaryText="Type"
                    component="div"
         />
@@ -186,7 +190,7 @@ class NewJustificationEditorFields extends Component {
           controls={basisTypeControls}
           disabled={readOnlyBasis || disabled}
         />
-        <Divider />
+        <Divider />*/}
         {_isStatementCompoundBased && statementCompoundEditorFields}
         {_isWritQuoteBased && writQuoteEditorFields}
         {_isJustificationBasisCompoundBased && justificationBasisCompoundEditorFields}

@@ -162,6 +162,16 @@ class EditStatementJustificationPage extends Component {
     this.props.editors.removeJustificationBasisCompoundAtom(this.editorType, this.editorId, atom, index)
   }
 
+  onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atomIndex, urlIndex) => {
+    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
+      this.editorId, atomIndex, urlIndex)
+  }
+
+  onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atom, atomIndex, url, urlIndex) => {
+    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
+      this.editorId, atom, atomIndex, url, urlIndex)
+  }
+
   onDoCreateJustificationSwitchChange = (checked) => {
     this.props.editors.propertyChange(this.editorType, this.editorId, {doCreateJustification: checked})
   }
@@ -207,6 +217,8 @@ class EditStatementJustificationPage extends Component {
     const justificationErrors = errors && doCreateJustification ? errors.justification : null
     const newJustificationErrors = justificationErrorsToNewJustificationErrors(newJustification, justificationErrors)
 
+    const statementEditorText = 'statementEditorText'
+
     return (
       <div id="edit-statement-justification-page">
         <Helmet>
@@ -223,7 +235,7 @@ class EditStatementJustificationPage extends Component {
           </div>
         )}
         <form onSubmit={this.onSubmit}>
-          <FocusContainer initialFocus="#statementEditorText" containFocus={false} focusOnMount={true}>
+          <FocusContainer initialFocus={'#' + statementEditorText} containFocus={false} focusOnMount={true}>
             <div className="md-grid">
               <div className="md-cell md-cell--12">
 
@@ -231,8 +243,9 @@ class EditStatementJustificationPage extends Component {
                   <CardTitle title={title} />
 
                   <CardText>
-                    <StatementEditorFields statement={statement}
-                                           textId="statementEditorText"
+                    <StatementEditorFields id={EditStatementJustificationPage.id + '-statement-editor-fields'}
+                                           textId={statementEditorText}
+                                           statement={statement}
                                            name="statement"
                                            suggestionsKey={suggestionKeys.createStatementPageStatement}
                                            onPropertyChange={this.onPropertyChange}
@@ -256,19 +269,22 @@ class EditStatementJustificationPage extends Component {
                   />
 
                   <CardText className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}>
-                    <NewJustificationEditorFields newJustification={newJustification}
-                                                  id="newJustificationEditor"
-                                                  name="newJustification"
-                                                  suggestionsKey={suggestionKeys.createStatementPageJustification}
-                                                  disabled={isSaving}
-                                                  onPropertyChange={this.onPropertyChange}
-                                                  onAddUrl={this.addJustificationUrl}
-                                                  onRemoveUrl={this.removeJustificationUrl}
-                                                  onAddStatementCompoundAtom={this.addJustificationStatementCompoundAtom}
-                                                  onRemoveStatementCompoundAtom={this.removeJustificationStatementCompoundAtom}
-                                                  onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
-                                                  onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
-                                                  errors={newJustificationErrors}
+                    <NewJustificationEditorFields
+                      newJustification={newJustification}
+                      id="newJustificationEditor"
+                      name="newJustification"
+                      suggestionsKey={suggestionKeys.createStatementPageJustification}
+                      disabled={isSaving}
+                      onPropertyChange={this.onPropertyChange}
+                      onAddUrl={this.addJustificationUrl}
+                      onRemoveUrl={this.removeJustificationUrl}
+                      onAddStatementCompoundAtom={this.addJustificationStatementCompoundAtom}
+                      onRemoveStatementCompoundAtom={this.removeJustificationStatementCompoundAtom}
+                      onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
+                      onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
+                      onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+                      onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+                      errors={newJustificationErrors}
                     />
                   </CardText>
 
@@ -298,6 +314,7 @@ class EditStatementJustificationPage extends Component {
     )
   }
 }
+EditStatementJustificationPage.id = 'EditStatementJustificationPage'
 
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state.editors, [EditorTypes.STATEMENT_JUSTIFICATION, editStatementJustificationPageEditorId], {})

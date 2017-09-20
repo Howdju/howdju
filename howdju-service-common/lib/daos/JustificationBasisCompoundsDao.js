@@ -11,6 +11,7 @@ const {
   newExhaustedEnumError,
   pushAll,
   assert,
+  isDefined,
 } = require('howdju-common')
 
 const {
@@ -168,6 +169,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
             default:
               throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
           }
+          assert(isDefined(atom.entity))
 
         })
         return justificationBasisCompoundsById
@@ -176,7 +178,9 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
   createJustificationBasisCompound(justificationBasisCompound, userId, now) {
     return this.database.query(
-      `insert into justification_basis_compounds (creator_user_id, created) values ($1, $2) returning *`,
+      `insert into justification_basis_compounds (creator_user_id, created)
+       values ($1, $2) 
+       returning *`,
       [userId, now]
     )
       .then(mapSingle(toJustificationBasisCompound))

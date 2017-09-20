@@ -116,7 +116,7 @@ class StatementCompoundViewerAtomListItem extends Component {
 
     return (
       <Paper id={id}
-             className="statement-atom"
+             className="compound-atom statement-atom"
              component='li'
              // onMouseOver={this.onMouseOver}
              // onMouseLeave={this.onMouseLeave}

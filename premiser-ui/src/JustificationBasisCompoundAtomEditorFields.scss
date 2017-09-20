@@ -1,0 +1,27 @@
+.justification-basis-compound-atom-editor-fields {
+  display: flex;
+}
+
+@mixin center-children-vertically {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.justification-basis-compound-atom-editor-fields--atom-type-controls {
+  @include center-children-vertically;
+}
+
+.justification-basis-compound-atom-editor-fields--entity-controls {
+  @include center-children-vertically;
+
+  padding-left: 35px;
+  padding-right: 15px;
+  margin: auto;
+  width: 100%;
+}
+
+.justification-basis-compound-atom-editor-fields--add-remove-atom-controls {
+  min-width: 100px;
+  @include center-children-vertically;
+}

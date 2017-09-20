@@ -45,7 +45,18 @@ class NewJustificationEditor extends Component {
   }
 
   removeJustificationBasisCompoundAtom = (atom, index) => {
-    this.props.editors.removeJustificationBasisCompoundAtom(NewJustificationEditor.editorType, this.props.editorId, atom, index)
+    this.props.editors.removeJustificationBasisCompoundAtom(NewJustificationEditor.editorType,
+      this.props.editorId, atom, index)
+  }
+
+  onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atomIndex, urlIndex) => {
+    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
+      this.editorId, atomIndex, urlIndex)
+  }
+
+  onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atom, atomIndex, url, urlIndex) => {
+    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
+      this.editorId, atom, atomIndex, url, urlIndex)
   }
 
   onSubmit = (event) => {
@@ -106,6 +117,8 @@ class NewJustificationEditor extends Component {
                                       onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
                                       onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
                                       onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
+                                      onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+                                      onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
                                       onSubmit={this.onSubmit}
                                       suggestionsKey={suggestionsKey}
                                       errors={errors}

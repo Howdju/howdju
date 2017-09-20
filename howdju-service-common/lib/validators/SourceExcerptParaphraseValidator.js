@@ -13,7 +13,7 @@ class SourceExcerptParaphraseValidator {
   constructor(statementValidator, sourceExcerptValidator) {
     requireArgs({statementValidator, sourceExcerptValidator})
     this.statementValidator = statementValidator
-    this.sourceExcerpt = sourceExcerptValidator
+    this.sourceExcerptValidator = sourceExcerptValidator
   }
 
   validate(sourceExcerptParaphrase) {

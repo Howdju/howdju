@@ -38,10 +38,16 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
     } = sourceExcerptParaphrase
     return this.database.query(
       `insert into source_excerpt_paraphrases (paraphrasing_statement_id, source_excerpt_type, source_excerpt_id, creator_user_id, created) 
-      values ($1, $2, $3, $4, $5)`,
+      values ($1, $2, $3, $4, $5)
+      returning *`,
       [paraphrasingStatement.id, sourceExcerpt.type, sourceExcerpt.entity.id, userId, now]
     )
       .then(mapSingle(toSourceExcerptParaphrase))
+      .then( (dbSourceExcerptParaphrase) => {
+        dbSourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatement
+        dbSourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerpt.entity
+        return dbSourceExcerptParaphrase
+      })
   }
 
   readSourceExcerptParaphraseForId(sourceExcerptParaphraseId) {
@@ -51,11 +57,6 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
     )
       .then(mapSingle(this.logger, toSourceExcerptParaphrase, 'source_excerpt_paraphrases', {sourceExcerptParaphraseId}))
   }
-
-  // readSourceExcerptHavingStatementAndSourceExcerpt(statement, sourceExcerpt) {
-  //   const paraphrasingStatementId = statement.id
-  //   const sourceExcerptId = sourceExcerpt.id
-  // }
 
   readSourceExcerptHavingStatementIdAndSourceExcerptTypeAndId(paraphrasingStatementId, sourceExcerptType, sourceExcerptId) {
     return this.database.query(
@@ -84,7 +85,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
           and sep.deleted is null
     `
     const args = [
-      JustificationBasisType.JUSTIFICATION_COMPOUND_BASIS,
+      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
       rootStatementId
     ]
@@ -95,22 +96,22 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       this.picRegionsDao.readPicRegionsByIdForRootStatementId(rootStatementId),
       this.vidSegmentsDao.readVidSegmentsByIdForRootStatementId(rootStatementId),
     ])
-      .then( ([{rows: sourceExcerptParphraseRows}, paraphrasingStatementsById, writQuotesById, picRegionsById, vidSegmentsById]) => {
+      .then( ([{rows: sourceExcerptParaphraseRows}, paraphrasingStatementsById, writQuotesById, picRegionsById, vidSegmentsById]) => {
         const sourceExcerptParaphrasesById = {}
-        forEach(sourceExcerptParphraseRows, (sourceExcerptParphraseRow) => {
-          const sourceExcerptParaphrase = toSourceExcerptParaphrase(sourceExcerptParphraseRow)
+        forEach(sourceExcerptParaphraseRows, (sourceExcerptParaphraseRow) => {
+          const sourceExcerptParaphrase = toSourceExcerptParaphrase(sourceExcerptParaphraseRow)
           sourceExcerptParaphrasesById[sourceExcerptParaphrase.id] = sourceExcerptParaphrase
           sourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatementsById[sourceExcerptParaphrase.paraphrasingStatement.id]
 
           switch (sourceExcerptParaphrase.sourceExcerpt.type) {
             case SourceExcerptType.WRIT_QUOTE:
-              sourceExcerptParaphrase.sourceExcerpt = writQuotesById[sourceExcerptParaphrase.sourceExcerpt.id]
+              sourceExcerptParaphrase.sourceExcerpt.entity = writQuotesById[sourceExcerptParaphrase.sourceExcerpt.id]
               break
             case SourceExcerptType.PIC_REGION:
-              sourceExcerptParaphrase.sourceExcerpt = picRegionsById[sourceExcerptParaphrase.sourceExcerpt.id]
+              sourceExcerptParaphrase.sourceExcerpt.entity = picRegionsById[sourceExcerptParaphrase.sourceExcerpt.id]
               break
             case SourceExcerptType.VID_SEGMENT:
-              sourceExcerptParaphrase.sourceExcerpt = vidSegmentsById[sourceExcerptParaphrase.sourceExcerpt.id]
+              sourceExcerptParaphrase.sourceExcerpt.entity = vidSegmentsById[sourceExcerptParaphrase.sourceExcerpt.id]
               break
             default:
               throw newExhaustedEnumError('SourceExcerptType', sourceExcerptParaphrase.sourceExcerpt.type)
@@ -143,7 +144,7 @@ function readParaphrasingStatementsByIdForRootStatementId(logger, database, root
         and ps.deleted is null
   `
   const args = [
-    JustificationBasisType.JUSTIFICATION_COMPOUND_BASIS,
+    JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
     rootStatementId
   ]

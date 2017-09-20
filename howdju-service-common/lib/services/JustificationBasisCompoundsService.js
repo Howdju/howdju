@@ -154,7 +154,7 @@ function getOrCreateEquivalentJustificationBasisCompound(
           .then( (justificationBasisCompound) => {
             if (justificationBasisCompound) {
               // The atoms on the justificationBasisCompound will have their atom ID, and the ones previously read will have the entities with IDs
-              forEach(zip(justificationBasisCompound.atoms, atoms), (compoundAtom, atom) => {
+              forEach(zip(justificationBasisCompound.atoms, atoms), ([compoundAtom, atom]) => {
                 compoundAtom.entity = atom.entity
               })
               return {
@@ -286,10 +286,22 @@ function getOrCreateJustificationBasisCompoundAtomEntity(
   switch (type) {
     case JustificationBasisCompoundAtomType.STATEMENT:
       return statementsService.getOrCreateValidStatementAsUser(atom.entity, userId, now)
-        .then( ({isExtant, statement: entity}) => ({isExtant, atom: {entity, type}}) )
+        .then( ({isExtant, statement}) => {
+          atom.entity = statement
+          return {
+            isExtant,
+            atom,
+          }
+        })
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
       return sourceExcerptsParaphrasesService.getOrCreateValidSourceExcerptParaphraseAsUser(atom.entity, userId, now)
-        .then( ({isExtant, sourceExcerptParaphrase: entity}) => ({isExtant, atom: {entity, type}}) )
+        .then( ({isExtant, sourceExcerptParaphrase}) => {
+          atom.entity = sourceExcerptParaphrase
+          return {
+            isExtant,
+            atom,
+          }
+        })
     default:
       throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
   }

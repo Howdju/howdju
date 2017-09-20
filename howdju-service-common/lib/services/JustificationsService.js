@@ -22,6 +22,7 @@ const {
   ActionTargetType,
   newImpossibleError,
   idEqual,
+  requireArgs,
 } = require('howdju-common')
 
 const {
@@ -80,6 +81,19 @@ exports.JustificationsService = class JustificationsService {
     justificationsDao,
     permissionsDao
   ) {
+    requireArgs({
+      config,
+      logger,
+      justificationValidator,
+      actionsService,
+      authService,
+      statementsService,
+      writQuotesService,
+      statementCompoundsService,
+      justificationBasisCompoundsService,
+      justificationsDao,
+      permissionsDao
+    })
     this.config = config
     this.logger = logger
     this.justificationValidator = justificationValidator
@@ -204,7 +218,7 @@ exports.JustificationsService = class JustificationsService {
           } else if (isUndefined(justification.rootStatement.id)) {
             justification.rootStatement = targetEntity
           } else if (!idEqual(justification.rootStatement.id, targetEntity.id)) {
-            this.logger.warning(`Statement-targeting justification's rootStatement.id (${justification.rootStatement.id} is not equal to targetEntity.id (${targetEntity.id})`)
+            this.logger.warn(`Statement-targeting justification's rootStatement.id (${justification.rootStatement.id} is not equal to targetEntity.id (${targetEntity.id})`)
             justification.rootStatement = targetEntity
           }
         }
@@ -272,7 +286,7 @@ exports.JustificationsService = class JustificationsService {
     switch (justificationBasis.type) {
 
       case JustificationBasisType.WRIT_QUOTE:
-        return this.writQuotesService.createWritQuoteAsUser(justificationBasis.entity, userId, now)
+        return this.writQuotesService.getOrCreateWritQuoteAsUser(justificationBasis.entity, userId, now)
           .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
           .then( ({isExtant, writQuote}) => ({
             isExtant,

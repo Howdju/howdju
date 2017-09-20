@@ -25,10 +25,12 @@ class StatementEditorFields extends Component {
 
   render() {
     const {
+      id,
+      textId,
       statement,
       suggestionsKey,
       name,
-      textId,
+      textLabel,
       disabled,
       onPropertyChange,
       errors,
@@ -37,7 +39,7 @@ class StatementEditorFields extends Component {
     delete rest.onKeyDown
 
     const modelErrors = errors && errors.modelErrors
-    const errorInputProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
+    const textErrorProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
       {error: true, errorText: toErrorText(errors.fieldErrors.text)} :
       null
 
@@ -46,10 +48,10 @@ class StatementEditorFields extends Component {
     const hasText = has(statement, textName)
     const text = get(statement, textName, '')
 
-    const statementTextInputProps = {
-      id: textId,
+    const textProps = {
+      id: textId || id + '-text',
       name: namePrefix + textName,
-      label: "Text",
+      label: textLabel,
       value: text,
       required: true,
       leftIcon: <FontIcon>short_text</FontIcon>,
@@ -57,14 +59,14 @@ class StatementEditorFields extends Component {
     }
     const input = (suggestionsKey && !disabled) ?
       <StatementTextAutocomplete {...rest}
-                                 {...errorInputProps}
-                                 {...statementTextInputProps}
+                                 {...textErrorProps}
+                                 {...textProps}
                                  onPropertyChange={onPropertyChange}
                                  suggestionsKey={suggestionsKeyPrefix + textName}
       /> :
       <TextField {...rest}
-                 {...errorInputProps}
-                 {...statementTextInputProps}
+                 {...textErrorProps}
+                 {...textProps}
                  rows={1}
                  maxRows={4}
                  disabled={disabled || !hasText}
@@ -80,8 +82,9 @@ class StatementEditorFields extends Component {
 }
 StatementEditorFields.propTypes = {
   statement: PropTypes.object,
-  /** The id of the input for the statement's text.  Required by react-md's Autocomplete/TextField for accessibility */
-  textId: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  /** An optional override of the ID of the input for editing the Statement text.  If absent, an ID will be auto generated based upon {@see id} */
+  textId: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
   /** If omitted, no autocomplete */
@@ -92,9 +95,12 @@ StatementEditorFields.propTypes = {
   onKeyDown: PropTypes.func,
   /** If present, will handle enter-key-presses in text fields */
   onSubmit: PropTypes.func,
+  /** If present, overrides the default label for the statement text input */
+  textLabel: PropTypes.string,
 }
 StatementEditorFields.defaultProps = {
   disabled: false,
+  textLabel: 'Text',
 }
 
 export default StatementEditorFields

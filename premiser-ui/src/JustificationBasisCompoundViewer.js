@@ -1,10 +1,8 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Paper from 'react-md/lib/Papers/Paper'
 import map from 'lodash/map'
 
-import JustificationBasisCompoundAtomViewer from './JustificationBasisCompoundAtomViewer'
-import StatementJustificationTrees from './StatementJustificationTrees'
+import JustificationBasisCompoundViewerAtomListItem from "./JustificationBasisCompoundViewerAtomListItem"
 
 import './JustificationBasisCompoundViewer.scss'
 
@@ -20,44 +18,24 @@ export default class JustificationBasisCompoundViewer extends Component {
       isUnCondensed,
     } = this.props
 
-    const atomListItems = map(justificationBasisCompound.atoms, atom => {
-      const atomId = `${id}-justification-basis-compound-${atom.compoundId}-atom-${atom.entity.id}`
-      const listItemId = `${atomId}-list-item`
-
-      const justifications = atom.entity.justifications
-      const hasJustifications = justifications && justifications.length > 0
-
-      return (
-        <Paper id={listItemId}
-               key={listItemId}
-               className="justification-basis-compound-atom"
-               component='li'
-        >
-          <JustificationBasisCompoundAtomViewer id={atomId}
-                                                key={atomId}
-                                                atom={atom}
-                                                doShowControls={doShowControls}
-                                                doShowJustifications={doShowStatementAtomJustifications}
-                                                isCondensed={isCondensed}
-                                                isUnCondensed={isUnCondensed}
-          />
-
-          {doShowStatementAtomJustifications && hasJustifications && (
-            <StatementJustificationTrees id={`${atomId}-justification-trees`}
-                                         justifications={justifications}
-                                         doShowControls={doShowControls}
-                                         doShowJustifications={doShowStatementAtomJustifications}
-                                         isCondensed={isCondensed}
-                                         isUnCondensed={isUnCondensed}
-            />
-          )}
-        </Paper>
-      )
-    })
+    const compoundId = `${id}-justification-basis-compound`
 
     return (
-      <ol className="justification-basis-compound-viewer">
-        {atomListItems}
+      <ol className="compound-viewer justification-basis-compound-viewer">
+        {map(justificationBasisCompound.atoms, atom => {
+          const atomId = `${compoundId}-atom-${atom.id}`
+          return (
+            <JustificationBasisCompoundViewerAtomListItem
+              atom={atom}
+              id={atomId}
+              key={atomId}
+              doShowControls={doShowControls}
+              doShowStatementAtomJustifications={doShowStatementAtomJustifications}
+              isCondensed={isCondensed}
+              isUnCondensed={isUnCondensed}
+            />
+          )
+        })}
       </ol>
     )
   }

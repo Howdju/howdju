@@ -1,38 +1,21 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import TextField from 'react-md/lib/TextFields/TextField'
-import FontIcon from 'react-md/lib/FontIcons'
 import Button from 'react-md/lib/Buttons/Button'
+import Divider from 'react-md/lib/Dividers/Divider'
 import cn from 'classnames'
-import map from 'lodash/map'
+import flatMap from 'lodash/flatMap'
 import get from 'lodash/get'
-
-import {
-  JustificationBasisCompoundAtomType,
-} from 'howdju-common'
+import map from 'lodash/map'
 
 import {RETURN_KEY_CODE} from "./keyCodes"
-import {toErrorText} from "./modelErrorMessages"
 import ErrorMessages from './ErrorMessages'
-import StatementTextAutocomplete from "./StatementTextAutocomplete"
-import {logger} from './logger'
 
 import './WritQuoteEditorFields.scss'
+import JustificationBasisCompoundAtomEditorFields from "./JustificationBasisCompoundAtomEditorFields"
 
 const atomsName = 'atoms'
-const statementTextName = 'text'
 
 export default class JustificationBasisCompoundEditorFields extends Component {
-
-  onChange = (value, event) => {
-    const target = event.target
-    const name = target.name
-    this.props.onPropertyChange({[name]: value})
-  }
-
-  onPropertyChange = (properties) => {
-    this.props.onPropertyChange(properties)
-  }
 
   onTextInputKeyDown = (event) => {
     if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
@@ -50,32 +33,59 @@ export default class JustificationBasisCompoundEditorFields extends Component {
       suggestionsKey,
       onAddJustificationBasisCompoundAtom,
       onRemoveJustificationBasisCompoundAtom,
+      onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
+      onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
+      readOnlyBasis,
       disabled,
       errors,
+      onPropertyChange,
     } = this.props
 
     const atoms = get(justificationBasisCompound, atomsName, [])
 
     const hasErrors = errors && errors.hasErrors
     const atomItemsErrors = get(errors, 'fieldErrors.atoms.itemErrors')
-    const atomComponents = map(atoms, (atom, index) => {
+    const atomsEditorFields = map(atoms, (atom, index) => {
       const atomItemErrors = get(atomItemsErrors, index)
-      return makeAtomFields(atom, index, name, id, suggestionsKey, atomItemErrors,
-        onAddJustificationBasisCompoundAtom, onRemoveJustificationBasisCompoundAtom, disabled, this.onChange, this.onPropertyChange,
-        this.onTextInputKeyDown)
+      const atomId = id + `.atoms[${index}]`
+      const atomName = name + `.atoms[${index}]`
+      return (
+        <JustificationBasisCompoundAtomEditorFields
+          atom={atom}
+          id={atomId}
+          key={atomId}
+          name={atomName}
+          suggestionsKey={suggestionsKey}
+          errors={atomItemErrors}
+          onAddJustificationBasisCompoundAtom={e => onAddJustificationBasisCompoundAtom(index)}
+          onRemoveJustificationBasisCompoundAtom={e => onRemoveJustificationBasisCompoundAtom(atom, index)}
+          onAddWritQuoteUrl={(urlIndex, e) => onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(index, urlIndex)}
+          onRemoveWritQuoteUrl={(url, urlIndex, e) => onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(atom, index, url, urlIndex)}
+          disabled={disabled}
+          onPropertyChange={onPropertyChange}
+          readOnlyBasis={readOnlyBasis}
+        />
+      )
+    })
+    const dividedAtomEditorFields = flatMap(atomsEditorFields, (atomEditorFields, index) => {
+      return index === atomsEditorFields.length - 1 ?
+        atomEditorFields :
+        [atomEditorFields, <Divider key={`atom-editor-fields-divider-${index}`} inset />]
     })
 
     return (
-      <div>
-        {atomComponents}
+      <div className="justification-basis-compound-editor-fields">
+        {dividedAtomEditorFields}
+
         <Button flat
                 className={cn('addButton', {
                   hidden: disabled,
                 })}
                 key="addBasisCompoundAtomButton"
-                label="Add"
+                label="Add clause"
                 onClick={e => onAddJustificationBasisCompoundAtom(atoms.length)}
         >add</Button>
+
         {hasErrors && errors.modelErrors && (
           <ErrorMessages errors={errors.modelErrors} />
         )}
@@ -101,75 +111,3 @@ JustificationBasisCompoundEditorFields.propTypes = {
 JustificationBasisCompoundEditorFields.defaultProps = {
   disabled: false,
 }
-
-function makeAtomFields(atom, index, name, id, suggestionsKey, atomItemErrors,
-                         onAddJustificationBasisCompoundAtom, onRemoveJustificationBasisCompoundAtom, disabled,
-                         onChange, onPropertyChange, onTextInputKeyDown) {
-
-  const atomEntityId = id + `.atoms[${index}].entity`
-  const atomEntityName = name + `.atoms[${index}].entity`
-  const atomEntitySuggestionsKey = suggestionsKey + `.atoms[${index}].entity`
-
-  const rightIcon = disabled ?
-    <div/> :
-    <div>
-      <Button icon onClick={e => onAddJustificationBasisCompoundAtom(index)}>add</Button>
-      <Button icon onClick={e => onRemoveJustificationBasisCompoundAtom(atom, index)}>delete</Button>
-    </div>
-
-  switch (atom.type) {
-    case JustificationBasisCompoundAtomType.STATEMENT: {
-      return makeStatementAtomFields(atom, atomEntityName, atomEntityId, atomEntitySuggestionsKey, atomItemErrors, rightIcon,
-        disabled, onChange, onPropertyChange, onTextInputKeyDown)
-    }
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
-      return makeParaphraseAtomFields(atom, atomEntityName, atomEntityId, atomEntitySuggestionsKey, atomItemErrors, rightIcon,
-        disabled, onChange, onPropertyChange, onTextInputKeyDown)
-    }
-    default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
-  }
-}
-
-function makeStatementAtomFields(atom, name, id, suggestionsKey, atomItemErrors, rightIcon, disabled,
-                                 onChange, onPropertyChange, onTextInputKeyDown) {
-  const value = get(atom, ['entity', statementTextName], '')
-  const leftIcon = <FontIcon>short_text</FontIcon>
-  const idPrefix = id + '.'
-  const namePrefix = name + '.'
-  const suggestionsKeyPrefix = suggestionsKey + '.'
-
-  const statementTextErrors = get(atomItemErrors, 'fieldErrors.entity.fieldErrors.text', [])
-  const atomErrorProps = statementTextErrors.length > 0 ?
-    {error: true, errorText: toErrorText(statementTextErrors)} :
-    {}
-  return suggestionsKey && !disabled ?
-    <StatementTextAutocomplete {...atomErrorProps}
-                               id={idPrefix + statementTextName}
-                               key={idPrefix + statementTextName}
-                               name={namePrefix + statementTextName}
-                               type="text"
-                               label="Text"
-                               value={value}
-                               suggestionsKey={suggestionsKeyPrefix + name}
-                               onPropertyChange={onPropertyChange}
-                               leftIcon={leftIcon}
-                               rightIcon={rightIcon}
-                               onKeyDown={onTextInputKeyDown}
-    /> :
-    <TextField {...atomErrorProps}
-               id={idPrefix + statementTextName}
-               key={idPrefix + statementTextName}
-               name={namePrefix + statementTextName}
-               type="text"
-               label="Text"
-               value={value}
-               onChange={onChange}
-               leftIcon={leftIcon}
-               rightIcon={rightIcon}
-               disabled={disabled}
-               onKeyDown={onTextInputKeyDown}
-    />
-}
-
-function makeParaphraseAtomFields () {}

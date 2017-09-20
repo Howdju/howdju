@@ -3,11 +3,11 @@ const URLSafeBase64 = require('urlsafe-base64')
 const cloneDeep = require('lodash/cloneDeep')
 const forEach = require('lodash/forEach')
 const get = require('lodash/get')
+const invert = require('lodash/invert')
 const isString = require('lodash/isString')
 const last = require('lodash/last')
 const map = require('lodash/map')
 const mapKeys = require('lodash/mapKeys')
-const reduce = require('lodash/reduce')
 
 const {
   SortDirection,
@@ -19,28 +19,19 @@ const ContinuationTokenShortPropertyNames = {
   sorts: 's',
   filters: 'f',
 }
-const ContinuationTokenFullPropertyNames = reduce(ContinuationTokenShortPropertyNames, (acc, short, long) => {
-  acc[short] = long
-  return acc
-}, {})
+const ContinuationTokenFullPropertyNames = invert(ContinuationTokenShortPropertyNames)
 const SortContinuationShortPropertyNames = {
   property: 'p',
   direction: 'd',
   value: 'v',
 }
-const SortContinuationFullPropertyNames = reduce(SortContinuationShortPropertyNames, (acc, short, long) => {
-  acc[short] = long
-  return acc
-}, {})
+const SortContinuationFullPropertyNames = invert(SortContinuationShortPropertyNames)
 /** Shorter than SortDirection so that the continuations tokens are smaller */
 const ShortSortDirection = {
   [SortDirection.ASCENDING]: 'a',
   [SortDirection.DESCENDING]: 'd',
 }
-const LongSortDirection = reduce(ShortSortDirection, (acc, short, long) => {
-  acc[short] = long
-  return acc
-}, {})
+const LongSortDirection = invert(ShortSortDirection)
 
 
 exports.createSorts = (sortProperty, sortDirection) => {

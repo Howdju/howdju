@@ -321,7 +321,7 @@ exports.WritQuotesService = class WritQuotesService {
       .then(updatedUrls => sortBy(updatedUrls, url => url.url))
   }
 
-  createWritQuoteAsUser(writQuote, userId, now) {
+  getOrCreateWritQuoteAsUser(writQuote, userId, now) {
     return Promise.all([
       this.writsService.createWritAsUser(writQuote.writ, userId, now),
       this.urlsService.createUrlsAsUser(writQuote.urls, userId, now),
@@ -331,7 +331,7 @@ exports.WritQuotesService = class WritQuotesService {
         return Promise.all([
           writ,
           urls,
-          this.createJustWritQuoteAsUser(writQuote, userId, now)
+          this.getOrCreateJustWritQuoteAsUser(writQuote, userId, now)
         ])
       })
       .then( ([writ, urls, {isExtant, writQuote}]) => {
@@ -346,7 +346,7 @@ exports.WritQuotesService = class WritQuotesService {
       .then( ([isExtant, writQuote]) => ({isExtant, writQuote}))
   }
 
-  createJustWritQuoteAsUser(writQuote, userId, now) {
+  getOrCreateJustWritQuoteAsUser(writQuote, userId, now) {
     return Promise.resolve()
       .then(() => writQuote.id ?
         this.writQuotesDao.readWritQuoteForId(writQuote.id) :

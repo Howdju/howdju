@@ -305,7 +305,6 @@ class StatementJustificationsPage extends Component {
               >
                 {statement && !isEditingStatement && menu}
                 <EditableStatement id={`editableStatement-${statementId}`}
-                                   textId={`editableStatement-${statementId}-statementEditorText`}
                                    entityId={statementId}
                                    editorId={this.statementEditorId}
                                    suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}

@@ -19,6 +19,8 @@ import {
   makeNewUrl,
   newProgrammingError,
   idEqual,
+  insertAt,
+  removeAt,
 } from "howdju-common"
 
 import {
@@ -78,7 +80,7 @@ const makeAddAtomReducer = (atomsPath, atomMaker) => (state, action) => {
   const editEntity = {...state.editEntity}
   const atoms = clone(get(editEntity, atomsPath))
   const index = isNumber(action.payload.index) ? action.payload.index : atoms.length
-  atoms.splice(index, 0, atomMaker())
+  insertAt(atoms, index, atomMaker())
   set(editEntity, atomsPath, atoms)
   return {...state, editEntity}
 }
@@ -86,8 +88,31 @@ const makeAddAtomReducer = (atomsPath, atomMaker) => (state, action) => {
 const makeRemoveAtomReducer = (atomsPath) => (state, action) => {
   const editEntity = {...state.editEntity}
   const atoms = clone(get(editEntity, atomsPath))
-  atoms.splice(action.payload.index, 1)
+  removeAt(atoms, action.payload.index)
   set(editEntity, atomsPath, atoms)
+  return {...state, editEntity}
+}
+
+const makeAddUrlReducer = (urlsPathMaker) => (state, action) => {
+  const {urlIndex} = action.payload
+  const editEntity = {...state.editEntity}
+
+  const urlsPath = urlsPathMaker(action.payload)
+  const urls = clone(get(editEntity, urlsPath))
+  const insertIndex = isNumber(urlIndex) ? urlIndex : urls.length
+  insertAt(urls, insertIndex, makeNewUrl())
+  set(editEntity, urlsPath, urls)
+  return {...state, editEntity}
+}
+
+const makeRemoveUrlReducer = (urlsPathMaker) => (state, action) => {
+  const {urlIndex} = action.payload
+  const editEntity = {...state.editEntity}
+
+  const urlsPath = urlsPathMaker(action.payload)
+  const urls = clone(get(editEntity, urlsPath))
+  removeAt(urls, urlIndex)
+  set(editEntity, urlsPath, urls)
   return {...state, editEntity}
 }
 
@@ -165,6 +190,28 @@ const editorReducerByType = {
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.entity.atoms', makeNewJustificationBasisAtom),
     [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.entity.atoms'),
+    [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
+      makeAddUrlReducer( ({atomIndex}) => [
+        'basis',
+        'entity',
+        'atoms',
+        atomIndex,
+        'sourceExcerptParaphrase',
+        'sourceExcerpt',
+        'writQuote',
+        'urls',
+      ]),
+    [editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
+      makeRemoveUrlReducer( ({atomIndex}) => [
+        'basis',
+        'entity',
+        'atoms',
+        atomIndex,
+        'sourceExcerptParaphrase',
+        'sourceExcerpt',
+        'writQuote',
+        'urls',
+      ]),
     [api.fetchStatementJustifications]: (state, action) => {
       const rootStatementId = get(state.editEntity, 'rootStatement.id')
       if (idEqual(rootStatementId, action.payload.statementId)) {
@@ -193,7 +240,7 @@ const editorReducerByType = {
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       const urls = clone(editEntity.basis.writQuote.urls)
-      urls.splice(action.payload.index, 1)
+      removeAt(urls, action.payload.index)
       editEntity.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
@@ -201,6 +248,28 @@ const editorReducerByType = {
     [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
     [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
+    [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
+      makeAddUrlReducer( ({atomIndex}) => [
+        'basis',
+        'justificationBasisCompound',
+        'atoms',
+        atomIndex,
+        'sourceExcerptParaphrase',
+        'sourceExcerpt',
+        'writQuote',
+        'urls',
+      ]),
+    [editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
+      makeRemoveUrlReducer( ({atomIndex}) => [
+        'basis',
+        'justificationBasisCompound',
+        'atoms',
+        atomIndex,
+        'sourceExcerptParaphrase',
+        'sourceExcerpt',
+        'writQuote',
+        'urls',
+      ]),
     [editors.commitEdit.result]: {
       throw: (state, action) => {
         const sourceError = action.payload.sourceError
@@ -228,7 +297,7 @@ const editorReducerByType = {
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
       const urls = clone(editEntity.newJustification.basis.writQuote.urls)
-      urls.splice(action.payload.index, 1)
+      removeAt(urls, action.payload.index)
       editEntity.newJustification.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
@@ -238,6 +307,30 @@ const editorReducerByType = {
       'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
     [editors.removeJustificationBasisCompoundAtom]:
       makeRemoveAtomReducer('newJustification.basis.justificationBasisCompound.atoms'),
+    [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
+      makeAddUrlReducer(({atomIndex}) => [
+        'newJustification',
+        'basis',
+        'justificationBasisCompound',
+        'atoms',
+        atomIndex,
+        'sourceExcerptParaphrase',
+        'sourceExcerpt',
+        'writQuote',
+        'urls',
+      ]),
+    [editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
+      makeRemoveUrlReducer(({atomIndex}) => [
+        'newJustification',
+        'basis',
+        'justificationBasisCompound',
+        'atoms',
+        atomIndex,
+        'sourceExcerptParaphrase',
+        'sourceExcerpt',
+        'writQuote',
+        'urls',
+      ]),
   }, defaultEditorState),
 
   [EditorTypes.WRIT_QUOTE]: handleActions({
@@ -248,7 +341,7 @@ const editorReducerByType = {
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
-      editEntity.urls.splice(action.payload.index, 1)
+      removeAt(editEntity.urls, action.payload.index)
       return {...state, editEntity}
     },
     [api.fetchWritQuote]: (state, action) => {

@@ -11,7 +11,6 @@ export default class EditableSourceExcerpt extends Component {
   render() {
     const {
       id,
-      type,
       sourceExcerpt,
       editorId,
       suggestionsKey,
@@ -19,7 +18,7 @@ export default class EditableSourceExcerpt extends Component {
       ...rest
     } = this.props
 
-    switch (type) {
+    switch (sourceExcerpt.type) {
       case SourceExcerptType.WRIT_QUOTE:
         return (
           <EditableWritQuote {...rest}
@@ -31,14 +30,12 @@ export default class EditableSourceExcerpt extends Component {
           />
         )
       default:
-        throw newExhaustedEnumError('SourceExcerptType', type)
+        throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
     }
   }
 }
 EditableSourceExcerpt.propTypes = {
   id: PropTypes.string.isRequired,
-  /** A SourceExcerptType */
-  type: PropTypes.string.isRequired,
   sourceExcerpt: PropTypes.object.isRequired,
   editorId: PropTypes.string.isRequired,
   suggestionsKey: PropTypes.string,

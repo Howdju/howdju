@@ -1,5 +1,7 @@
 const forEach = require('lodash/forEach')
+const isArray = require('lodash/isArray')
 const isFunction = require('lodash/isFunction')
+const isNumber = require('lodash/isNumber')
 const isUndefined = require('lodash/isUndefined')
 const reduce = require('lodash/reduce')
 const moment = require('moment')
@@ -62,4 +64,21 @@ _e.pushAll = (target, source) => {
     target.push(item)
   })
   return target
+}
+
+_e.insertAt = (array, index, item) => {
+  if (!isArray(array)) {
+    throw new Error('first argument must be an array; was: ' + typeof(array))
+  }
+  if (!isNumber(index)) {
+    throw new Error('second argument must be number; was: ' + typeof(index))
+  }
+  const i = isUndefined(index) ? array.length : index
+  array.splice(i, 0, item)
+  return array
+}
+
+_e.removeAt = (array, index) => {
+  array.splice(index, 1)
+  return array
 }

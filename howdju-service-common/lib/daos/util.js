@@ -14,6 +14,7 @@ const {
   JustificationTargetType,
   newProgrammingError,
   idEqual,
+  newImpossibleError,
 } = require('howdju-common')
 
 
@@ -37,16 +38,23 @@ exports.normalizeText = text => {
 
 exports.mapSingle = (logger, mapper, tableName, identifiers) => ({rows}) => {
   // Some queries, such as insert, have no chance for returning multiple rows.  So then the caller doesnt' pass the logger
+  let requireOne = false
   if (!mapper) {
     mapper = logger
     logger = null
+    requireOne = true
   }
 
   if (logger && rows.length > 1) {
     const identifiersString = join(map(identifiers, (val, key) => `${key} ${val}`), ', ')
     logger.warn(`Multiple ${tableName} for ${identifiersString}`)
   }
-  return mapper(head(rows))
+
+  const row = head(rows)
+  if (requireOne && !row) {
+    throw newImpossibleError('Missing required row')
+  }
+  return mapper(row)
 }
 
 exports.mapMany = (mapper) => ({rows}) => map(rows, mapper)

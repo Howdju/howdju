@@ -34,7 +34,9 @@ class StatementEditor extends Component {
   }
 
   render() {
+
     const {
+      id,
       textId,
       suggestionsKey,
       editorState: {
@@ -43,10 +45,10 @@ class StatementEditor extends Component {
         isFetching,
         isSaving,
       },
+      editors,
+      editorId,
       ...rest,
     } = this.props
-    delete rest.editors
-    delete rest.editorId
 
     const inProgress = isFetching || isSaving
 
@@ -54,6 +56,7 @@ class StatementEditor extends Component {
       <form onSubmit={this.onSubmit}>
         <CardText>
           <StatementEditorFields {...rest}
+                                 id={id}
                                  textId={textId}
                                  statement={editEntity}
                                  disabled={isSaving}
@@ -83,6 +86,7 @@ class StatementEditor extends Component {
   }
 }
 StatementEditor.propTypes = {
+  id: PropTypes.string.isRequired,
   /** Identifies the editor's state */
   editorId: PropTypes.string.isRequired,
   /** If omitted, no autocomplete */

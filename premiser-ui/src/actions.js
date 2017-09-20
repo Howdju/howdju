@@ -241,6 +241,14 @@ export const editors = {
       index
     })
   ),
+  addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl: actionCreator(
+    'EDITORS/ADD_JUSTIFICATION_BASIS_COMPOUND_ATOM_SOURCE_EXCERPT_PARAPHRASE_WRIT_QUOTE_URL',
+    (editorType, editorId, atomIndex, urlIndex) => ({editorType, editorId, atomIndex, urlIndex})
+  ),
+  removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl: actionCreator(
+    'EDITORS/REMOVE_JUSTIFICATION_BASIS_COMPOUND_ATOM_SOURCE_EXCERPT_PARAPHRASE_WRIT_QUOTE_URL',
+    (editorType, editorId, atom, atomIndex, url, urlIndex) => ({editorType, editorId, atom, atomIndex, url, urlIndex})
+  )
 }
 
 export const goto = {

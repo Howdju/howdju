@@ -5,7 +5,6 @@ import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import CardActions from 'react-md/lib/Cards/CardActions'
 import CardText from 'react-md/lib/Cards/CardText'
-import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import get from 'lodash/get'
 
 import JustificationBasisCompoundEditorFields from "./JustificationBasisCompoundEditorFields"
@@ -31,12 +30,20 @@ class CounterJustificationEditor extends Component {
     this.props.editors.propertyChange(this.editorType, this.props.editorId, properties)
   }
 
-  onAddJustificationBasisCompoundAtom = () => {
-    this.props.editors.addJustificationBasisCompoundAtom(this.editorType, this.props.editorId)
+  onAddJustificationBasisCompoundAtom = (index) => {
+    this.props.editors.addJustificationBasisCompoundAtom(this.editorType, this.props.editorId, index)
   }
 
   onRemoveJustificationBasisCompoundAtom = (atom, index) => {
     this.props.editors.removeJustificationBasisCompoundAtom(this.editorType, this.props.editorId, atom, index)
+  }
+
+  onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atomIndex, urlIndex) => {
+    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType, this.props.editorId, atomIndex, urlIndex)
+  }
+
+  onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atom, atomIndex, url, urlIndex) => {
+    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType, this.props.editorId, atom, atomIndex, url, urlIndex)
   }
 
   onSubmit = (event) => {
@@ -68,14 +75,17 @@ class CounterJustificationEditor extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <JustificationBasisCompoundEditorFields justificationBasisCompound={justificationBasisCompound}
-                                                  id={id}
-                                                  name="basis.entity"
-                                                  suggestionsKey={suggestionsKey}
-                                                  onPropertyChange={this.onPropertyChange}
-                                                  onAddJustificationBasisCompoundAtom={this.onAddJustificationBasisCompoundAtom}
-                                                  onRemoveJustificationBasisCompoundAtom={this.onRemoveJustificationBasisCompoundAtom}
-                                                  errors={justificationBasisCompoundErrors}
+          <JustificationBasisCompoundEditorFields
+            justificationBasisCompound={justificationBasisCompound}
+            id={id}
+            name="basis.entity"
+            suggestionsKey={suggestionsKey}
+            onPropertyChange={this.onPropertyChange}
+            onAddJustificationBasisCompoundAtom={this.onAddJustificationBasisCompoundAtom}
+            onRemoveJustificationBasisCompoundAtom={this.onRemoveJustificationBasisCompoundAtom}
+            onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+            onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+            errors={justificationBasisCompoundErrors}
           />
         </CardText>
         <CardActions>

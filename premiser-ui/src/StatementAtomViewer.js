@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import FontIcon from 'react-md/lib/FontIcons/FontIcon'
 import cn from 'classnames'
 
 import EditableStatement from './EditableStatement'
@@ -34,17 +35,18 @@ export default class StatementAtomViewer extends Component {
 
     const statement = atom.entity
 
+    const classes = cn("statement-atom-viewer", {
+      active: isOver,
+    })
     return (
-      <span className={cn("statement-atom-viewer", {
-        active: isOver,
-      })}
+      <span className={classes}
             onMouseOver={this.onMouseOver}
             onMouseLeave={this.onMouseLeave}
       >
+        <FontIcon>short_text</FontIcon>
         <EditableStatement id={`${id}-statement`}
                            entityId={statement.id}
                            editorId={editorId}
-                           textId={`${id}-statementText`}
                            suggestionsKey={`${id}-statementSuggestions`}
         />
       </span>

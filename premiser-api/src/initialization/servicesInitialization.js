@@ -79,6 +79,7 @@ const picRegionsService = new PicRegionsService()
 const vidSegmentsService = new VidSegmentsService()
 const sourceExcerptParaphrasesService = new SourceExcerptParaphrasesService(
   logger,
+  actionsService,
   sourceExcerptParaphrasesDao,
   statementsService,
   writQuotesService,

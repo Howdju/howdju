@@ -15,6 +15,7 @@ import ErrorMessages from './ErrorMessages'
 
 import './WritQuoteEditorFields.scss'
 
+
 const writQuoteTextName = 'quoteText'
 const writTitleName = 'writ.title'
 
@@ -72,7 +73,7 @@ class WritQuoteEditorFields extends Component {
     const hasWritTitle = has(writQuote, writTitleName)
 
     return (
-      <div>
+      <div className="writ-quote-editor-fields">
         <TextField {...quoteInputProps}
                    id={idPrefix + "quoteText"}
                    key="quoteText"

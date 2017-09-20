@@ -10,6 +10,7 @@ const {
   JustificationBasisType,
   JustificationTargetType,
   JustificationBasisCompoundAtomType,
+  SourceExcerptType,
 } = require('./enums')
 const {
   isDefined
@@ -69,7 +70,7 @@ _e.makeNewJustification = (props) => merge({
     }
   },
   basis: {
-    type: JustificationBasisType.STATEMENT_COMPOUND,
+    type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
     // Store both these types directly on the basis for the view-model
     // Before the justification is sent to the server, the one corresponding to the current type should be put on the
     // entity property
@@ -88,8 +89,19 @@ _e.makeNewJustificationBasisCompound = () => ({
 })
 
 _e.makeNewJustificationBasisAtom = () => ({
-  type: JustificationBasisCompoundAtomType.STATEMENT,
-  entity: _e.makeNewStatement()
+  type: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+  statement: _e.makeNewStatement(),
+  sourceExcerptParaphrase: _e.makeNewSourceExcerptParaphrase()
+})
+
+_e.makeNewSourceExcerptParaphrase = () => ({
+  paraphrasingStatement: _e.makeNewStatement(),
+  sourceExcerpt: _e.makeNewSourceExcerpt(),
+})
+
+_e.makeNewSourceExcerpt = () => ({
+  type: SourceExcerptType.WRIT_QUOTE,
+  writQuote: _e.makeNewWritQuote(),
 })
 
 _e.makeNewWritQuote = () => ({

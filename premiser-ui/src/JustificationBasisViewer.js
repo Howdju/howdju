@@ -18,14 +18,14 @@ export default class JustificationBasisViewer extends Component {
       doShowBasisJustifications,
       ...rest,
     } = this.props
-    const basis = justification.basis.entity
+    const basis = justification.basis
 
     switch (basis.type) {
       case JustificationBasisType.STATEMENT_COMPOUND:
         return (
           <StatementCompoundViewer {...rest}
                                    id={id}
-                                   statementCompound={basis}
+                                   statementCompound={basis.entity}
                                    doShowControls={doShowControls}
                                    doShowStatementAtomJustifications={doShowBasisJustifications}
           />
@@ -37,7 +37,7 @@ export default class JustificationBasisViewer extends Component {
                                     widgetId={id}
                                     id={id}
                                     key={id}
-                                    writQuote={basis}
+                                    writQuote={basis.entity}
                                     doShowControls={doShowControls}
           />
         )
@@ -45,7 +45,7 @@ export default class JustificationBasisViewer extends Component {
         return (
           <JustificationBasisCompoundViewer {...rest}
                                             id={id}
-                                            justificationBasisCompound={basis}
+                                            justificationBasisCompound={basis.entity}
                                             doShowControls={doShowControls}
                                             doShowStatementAtomJustifications={doShowBasisJustifications}
           />
