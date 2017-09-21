@@ -42,7 +42,7 @@ const sourceExcerptSchema = new schema.Union({
   [SourceExcerptType.VID_SEGMENT]: vidSegmentsSchema,
 }, (value, parent) => parent.type)
 
-const sourceExcerptParaphraseSchema = new schema.Entity('sourceExcerptParaphrases', {
+export const sourceExcerptParaphraseSchema = new schema.Entity('sourceExcerptParaphrases', {
   paraphrasingStatement: statementSchema,
   sourceExcerpt: {
     entity: sourceExcerptSchema

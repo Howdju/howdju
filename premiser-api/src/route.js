@@ -30,7 +30,9 @@ const {
   writQuotesService,
   writsService,
   justificationsService,
+  justificationBasisCompoundsService,
   perspectivesService,
+  sourceExcerptParaphrasesService,
   statementsService,
   statementsTextSearcher,
   statementCompoundsService,
@@ -101,10 +103,7 @@ const routes = [
     method: httpMethods.GET,
     handler: ({callback, request: { queryStringParameters: { searchText }}}) =>
       statementsTextSearcher.search(searchText)
-        .then(rankedStatements => {
-          logger.debug(`Returning ${rankedStatements.length} statements from search`)
-          return ok({callback, body: rankedStatements})
-        })
+        .then( (rankedStatements) => ok({callback, body: rankedStatements}))
   },
   {
     id: 'searchWrits',
@@ -112,10 +111,7 @@ const routes = [
     method: httpMethods.GET,
     handler: ({callback, request: { queryStringParameters: { searchText }}}) =>
       writsTitleSearcher.search(searchText)
-        .then(rankedStatements => {
-          logger.debug(`Returning ${rankedStatements.length} writs from search`)
-          return ok({callback, body: rankedStatements})
-        })
+        .then( (rankedWrits) => ok({callback, body: rankedWrits}))
   },
 
   /*
@@ -133,7 +129,7 @@ const routes = [
       } = request.queryStringParameters
       const sorts = decodeSorts(encodedSorts)
       return statementsService.readStatements({sorts, continuationToken, count})
-        .then(({statements, continuationToken}) => ok({callback, body: {statements, continuationToken}}))
+        .then( ({statements, continuationToken}) => ok({callback, body: {statements, continuationToken}}) )
     }
   },
   {
@@ -163,7 +159,7 @@ const routes = [
         pathParameters: [statementId],
         authToken,
       }
-    }) => statementsService.readStatement(statementId)
+    }) => statementsService.readStatementForId(statementId, {authToken})
       .then( statement => ok({callback, body: {statement}}))
   },
   {
@@ -177,7 +173,7 @@ const routes = [
         body: {statement},
       }
     }) => statementsService.updateStatement(authToken, statement)
-      .then( statement => ok({callback, body: {statement}}))
+      .then( (statement) => ok({callback, body: {statement}}))
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
   },
   {
@@ -233,7 +229,43 @@ const routes = [
         authToken,
       }
     }) => statementCompoundsService.readStatementCompound(authToken, statementCompoundId)
-      .then( statementCompound => ok({callback, body: {statementCompound}}))
+      .then( (statementCompound) => ok({callback, body: {statementCompound}}))
+  },
+
+  /*
+   * Justification basis compounds
+   */
+  {
+    id: 'readJustificationBasisCompound',
+    path: new RegExp('^justification-basis-compounds/([^/]+)$'),
+    method: httpMethods.GET,
+    queryStringParameters: {},
+    handler: ({
+      callback,
+      request: {
+        pathParameters: [justificationBasisCompoundId],
+        authToken,
+      }
+    }) => justificationBasisCompoundsService.readJustificationBasisCompoundForId(justificationBasisCompoundId, {authToken})
+      .then( (justificationBasisCompound) => ok({callback, body: {justificationBasisCompound}}) )
+  },
+
+  /*
+   * Source excerpt paraphrases
+   */
+  {
+    id: 'readSourceExcerptParaphrase',
+    path: new RegExp('^source-excerpt-paraphrases/([^/]+)$'),
+    method: httpMethods.GET,
+    queryStringParameters: {},
+    handler: ({
+      callback,
+      request: {
+        pathParameters: [sourceExcerptParaphraseId],
+        authToken,
+      }
+    }) => sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {authToken})
+      .then( (sourceExcerptParaphrase) => ok({callback, body: {sourceExcerptParaphrase}}) )
   },
 
   /*
@@ -271,7 +303,7 @@ const routes = [
       const filters = decodeQueryStringObject(encodedFilters)
       const sorts = decodeSorts(encodedSorts)
       return justificationsService.readJustifications({filters, sorts, continuationToken, count})
-        .then(({justifications, continuationToken}) => ok({callback, body: {justifications, continuationToken}}))
+        .then( ({justifications, continuationToken}) => ok({callback, body: {justifications, continuationToken}}))
     }
   },
   {
@@ -286,7 +318,8 @@ const routes = [
         path,
         pathParameters: [justificationId]
       }
-    }) => justificationsService.deleteJustification(authToken, justificationId).then( () => ok({callback}) )
+    }) => justificationsService.deleteJustification(authToken, justificationId)
+      .then( () => ok({callback}) )
       .catch(AuthorizationError, rethrowTranslatedErrors('justification'))
   },
 
@@ -305,7 +338,7 @@ const routes = [
       } = request.queryStringParameters
       const sorts = decodeSorts(encodedSorts)
       return writQuotesService.readWritQuotes({sorts, continuationToken, count})
-        .then(({writQuotes, continuationToken}) => ok({callback, body: {writQuotes, continuationToken}}))
+        .then( ({writQuotes, continuationToken}) => ok({callback, body: {writQuotes, continuationToken}}))
     }
   },
   {
@@ -316,11 +349,12 @@ const routes = [
       callback,
       request: {
         pathParameters,
+        authToken,
       }
     }) => {
       const writQuoteId = pathParameters[0]
-      return writQuotesService.readWritQuote(writQuoteId)
-        .then(writQuote => ok({callback, body: {writQuote}}))
+      return writQuotesService.readWritQuoteForId(writQuoteId, {authToken})
+        .then( (writQuote) => ok({callback, body: {writQuote}}))
     }
   },
   {
@@ -336,7 +370,7 @@ const routes = [
         }
       }
     }) => writQuotesService.updateWritQuote({authToken, writQuote})
-      .then( writQuote => ok({callback, body: {writQuote}}))
+      .then( (writQuote) => ok({callback, body: {writQuote}}))
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('writQuote'))
   },
 
@@ -355,7 +389,7 @@ const routes = [
       } = request.queryStringParameters
       const sorts = decodeSorts(encodedSorts)
       return writsService.readWrits({sorts, continuationToken, count})
-        .then(({writs, continuationToken}) => ok({callback, body: {writs, continuationToken}}))
+        .then( ({writs, continuationToken}) => ok({callback, body: {writs, continuationToken}}))
     }
   },
 
@@ -367,7 +401,7 @@ const routes = [
     method: httpMethods.POST,
     handler: ({callback, request: {body: {credentials}}}) =>
       authService.login(credentials)
-        .then(({user, authToken}) => ok({callback, body: {user, authToken}}))
+        .then( ({user, authToken}) => ok({callback, body: {user, authToken}}) )
         .catch(EntityNotFoundError, () => {
           // Hide EntityNotFoundError to prevent someone from learning that an email does or does not correspond to an account
           throw new InvalidLoginError()
@@ -390,7 +424,7 @@ const routes = [
     method: httpMethods.POST,
     handler: ({callback, request: {body: {vote}, authToken}}) =>
       votesService.createVote({authToken, vote})
-        .then(vote => ok({callback, body: {vote}}))
+        .then( (vote) => ok({callback, body: {vote}}))
   },
   {
     id: 'deleteVote',
@@ -416,7 +450,7 @@ const routes = [
     method: httpMethods.POST,
     handler: ({callback, request: {body: {authToken, user}}}) =>
       usersService.createUser(authToken, user)
-        .then( user => ok({callback, body: {user}}))
+        .then( (user) => ok({callback, body: {user}}))
   },
 
   /*
@@ -433,7 +467,7 @@ const routes = [
       callback,
       request: {authToken}
     }) => perspectivesService.readFeaturedPerspectives(authToken)
-      .then( perspectives => ok({callback, body: {perspectives}}) )
+      .then( (perspectives) => ok({callback, body: {perspectives}}) )
   },
 ]
 

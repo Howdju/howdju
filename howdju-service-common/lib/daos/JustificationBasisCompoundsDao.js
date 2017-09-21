@@ -44,7 +44,8 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
   readAtomsForJustificationBasisCompoundId(justificationBasisCompoundId) {
     return this.database.query(
-      `select * from justification_basis_compound_atoms where justification_basis_compound_id = $1 and deleted is null`,
+      `select * from justification_basis_compound_atoms 
+       where justification_basis_compound_id = $1`,
       [justificationBasisCompoundId]
     )
       .then(mapMany(toJustificationBasisCompoundAtom))

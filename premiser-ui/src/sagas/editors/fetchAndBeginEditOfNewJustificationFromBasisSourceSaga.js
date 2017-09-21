@@ -7,11 +7,14 @@ import {denormalize} from "normalizr"
 
 import {
   JustificationBasisType,
-  makeNewStatementCompoundForStatement,
+  makeNewStatementCompoundFromStatement,
+  makeNewJustificationBasisCompoundFromSourceExcerptParaphrase,
   makeNewStatementJustification,
   removeStatementCompoundId,
   JustificationBasisSourceType,
   newImpossibleError,
+  JustificationBasisCompoundAtomType,
+  SourceExcerptType,
 } from 'howdju-common'
 
 import {
@@ -30,15 +33,17 @@ const fetchActionCreatorForBasisType = basisType => {
     [JustificationBasisSourceType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
     [JustificationBasisSourceType.WRIT_QUOTE]: api.fetchWritQuote,
     [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
+    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: api.fetchJustificationBasisCompound,
+    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: api.fetchSourceExcerptParaphrase,
   }
   const actionCreator = actionCreatorByBasisType[basisType]
   if (!actionCreator) {
-    throw newImpossibleError(`${basisType} exhausted justification basis types`)
+    throw newExhaustedEnumError('JustificationBasisSourceType', basisType)
   }
   return actionCreator
 }
 
-const extractBasisFromFetchResponseAction = (basisType, fetchResponseAction) => {
+const extractBasisSourceFromFetchResponseAction = (basisType, fetchResponseAction) => {
   const {
     result,
     entities
@@ -47,20 +52,21 @@ const extractBasisFromFetchResponseAction = (basisType, fetchResponseAction) => 
     schema,
   } = fetchResponseAction.meta
 
-  const basisGetterByBasisType = {
-    [JustificationBasisSourceType.STATEMENT_COMPOUND]: result => result.statementCompound,
-    [JustificationBasisSourceType.WRIT_QUOTE]: result => result.writQuote,
-    [JustificationBasisSourceType.STATEMENT]: result => result.statement,
-    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: result => result.justificationBasisCompound,
+  const basisSourceGetterByBasisType = {
+    [JustificationBasisSourceType.STATEMENT_COMPOUND]: (result) => result.statementCompound,
+    [JustificationBasisSourceType.WRIT_QUOTE]: (result) => result.writQuote,
+    [JustificationBasisSourceType.STATEMENT]: (result) => result.statement,
+    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: (result) => result.justificationBasisCompound,
+    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: (result) => result.sourceExcerptParaphrase,
   }
 
-  const basisGetter = basisGetterByBasisType[basisType]
-  if (!basisGetter) {
-    throw newImpossibleError(`${basisType} exhausted justification basis types`)
+  const basisSourceGetter = basisSourceGetterByBasisType[basisType]
+  if (!basisSourceGetter) {
+    throw newExhaustedEnumError(JustificationBasisSourceType, basisType)
   }
-  const basis = basisGetter(denormalize(result, schema, entities))
+  const basisSource = basisSourceGetter(denormalize(result, schema, entities))
 
-  return basis
+  return basisSource
 }
 
 export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
@@ -75,37 +81,39 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
     const actionCreator = fetchActionCreatorForBasisType(basisSourceType)
     const fetchResponseAction = yield call(callApiForResource, actionCreator(basisId))
     if (!fetchResponseAction.error) {
-      const basis = extractBasisFromFetchResponseAction(basisSourceType, fetchResponseAction)
+      const basisSource = extractBasisSourceFromFetchResponseAction(basisSourceType, fetchResponseAction)
 
-      let basisType = basisSourceType
-
-      let statementCompound = undefined
-      if (basisSourceType === JustificationBasisType.STATEMENT_COMPOUND) {
-        statementCompound = basis
-        removeStatementCompoundId(statementCompound)
-      } else if (basisSourceType === JustificationBasisSourceType.STATEMENT) {
-        basisType = JustificationBasisType.STATEMENT_COMPOUND
-        statementCompound = makeNewStatementCompoundForStatement(basis)
+      const basis = {
+        type: basisSourceType,
+        statementCompound: undefined,
+        writQuote: undefined,
+        justificationBasisCompound: undefined,
       }
 
-      let writQuote = undefined
-      if (basisType === JustificationBasisType.WRIT_QUOTE) {
-        writQuote = basis
+      switch (basisSourceType) {
+        case JustificationBasisSourceType.STATEMENT_COMPOUND:
+          basis.statementCompound = basisSource
+          removeStatementCompoundId(basis.statementCompound)
+          break
+        case JustificationBasisSourceType.STATEMENT:
+          basis.type = JustificationBasisType.STATEMENT_COMPOUND
+          basis.statementCompound = makeNewStatementCompoundFromStatement(basisSource)
+          break
+        case JustificationBasisSourceType.WRIT_QUOTE:
+          basis.writQuote = basisSource
+          break
+        case JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND:
+          basis.justificationBasisCompound = basisSource
+          break
+        case JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE:
+          basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromSourceExcerptParaphrase(basisSource)
+          break
+        default:
+          throw newExhaustedEnumError('JustificationBasisSourceType', basisSourceType)
       }
 
-      let justificationBasisCompound = undefined
-      if (basisType === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND) {
-        justificationBasisCompound = basis
-      }
-
-      const editModel = makeNewStatementJustification({}, {
-        basis: {
-          type: basisType,
-          statementCompound,
-          writQuote,
-          justificationBasisCompound,
-        }
-      })
+      const editModel = makeNewStatementJustification({}, {basis})
       yield put(editors.beginEdit(editorType, editorId, editModel))
     }
   })

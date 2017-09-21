@@ -53,7 +53,7 @@ exports.StatementsService = class StatementsService {
     this.justificationsDao = justificationsDao
   }
 
-  readStatement(statementId) {
+  readStatementForId(statementId, {userId, authToken}) {
     return this.statementsDao.readStatementForId(statementId)
       .then(statement => {
         if (!statement) {

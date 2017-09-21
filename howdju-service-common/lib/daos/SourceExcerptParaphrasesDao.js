@@ -50,7 +50,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       })
   }
 
-  readSourceExcerptParaphraseForId(sourceExcerptParaphraseId) {
+  readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId}) {
     return this.database.query(
       `select * from source_excerpt_paraphrases where source_excerpt_paraphrase_id = $1 and deleted is null`,
       [sourceExcerptParaphraseId]

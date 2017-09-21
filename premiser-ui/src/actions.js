@@ -52,11 +52,15 @@ export const app = {
 
 export const api = {
   callApi: apiActionCreator('CALL_API'),
-  fetchStatement: apiActionCreator('FETCH_STATEMENT', statementId => ({statementId})),
-  fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', statementCompoundId => ({statementCompoundId})),
+  fetchStatement: apiActionCreator('FETCH_STATEMENT', (statementId) => ({statementId})),
+  fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', (statementCompoundId) => ({statementCompoundId})),
   fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
-  fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', statementId => ({statementId})),
-  fetchWritQuote: apiActionCreator('FETCH_WRIT_QUOTE', writQuoteId => ({writQuoteId})),
+  fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', (statementId) => ({statementId})),
+  fetchWritQuote: apiActionCreator('FETCH_WRIT_QUOTE', (writQuoteId) => ({writQuoteId})),
+  fetchJustificationBasisCompound: apiActionCreator('FETCH_JUSTIFICATION_BASIS_COMPOUND',
+    (justificationBasisCompoundId) => ({justificationBasisCompoundId})),
+  fetchSourceExcerptParaphrase: apiActionCreator('FETCH_SOURCE_EXCERPT_PARAPHRASE',
+    (sourceExcerptParaphraseId) => ({sourceExcerptParaphraseId})),
 
   fetchRecentStatements: apiActionCreator('FETCH_RECENT_STATEMENTS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentWrits: apiActionCreator('FETCH_RECENT_WRITS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
@@ -68,10 +72,10 @@ export const api = {
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
     ({filters, count, continuationToken}) => ({filters, count, continuationToken})
   ),
-  login: apiActionCreator('LOGIN', credentials => ({credentials})),
+  login: apiActionCreator('LOGIN', (credentials) => ({credentials})),
   logout: apiActionCreator('LOGOUT'),
 
-  verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', target => ({
+  verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', (target) => ({
     vote: {
       targetType: VoteTargetType.JUSTIFICATION,
       targetId: target.id,
@@ -79,7 +83,7 @@ export const api = {
     },
     previousVote: target.vote,
   })),
-  unVerifyJustification: apiActionCreator('UN_VERIFY_JUSTIFICATION', target => ({
+  unVerifyJustification: apiActionCreator('UN_VERIFY_JUSTIFICATION', (target) => ({
     vote: {
       targetType: VoteTargetType.JUSTIFICATION,
       targetId: target.id,
@@ -87,7 +91,7 @@ export const api = {
     },
     previousVote: target.vote,
   })),
-  disverifyJustification: apiActionCreator('DISVERIFY_JUSTIFICATION', target => ({
+  disverifyJustification: apiActionCreator('DISVERIFY_JUSTIFICATION', (target) => ({
     vote: {
       targetType: VoteTargetType.JUSTIFICATION,
       targetId: target.id,
@@ -95,7 +99,7 @@ export const api = {
     },
     previousVote: target.vote,
   })),
-  unDisverifyJustification: apiActionCreator('UN_DISVERIFY_JUSTIFICATION', target => ({
+  unDisverifyJustification: apiActionCreator('UN_DISVERIFY_JUSTIFICATION', (target) => ({
     vote: {
       targetType: VoteTargetType.JUSTIFICATION,
       targetId: target.id,
@@ -104,9 +108,9 @@ export const api = {
     previousVote: target.vote,
   })),
 
-  createStatement: apiActionCreator('CREATE_STATEMENT', statement => ({statement})),
-  updateStatement: apiActionCreator('UPDATE_STATEMENT', statement => ({statement}), (s, nonce) => ({nonce})),
-  deleteStatement: apiActionCreator('DELETE_STATEMENT', statement => ({statement})),
+  createStatement: apiActionCreator('CREATE_STATEMENT', (statement) => ({statement})),
+  updateStatement: apiActionCreator('UPDATE_STATEMENT', (statement) => ({statement}), (s, nonce) => ({nonce})),
+  deleteStatement: apiActionCreator('DELETE_STATEMENT', (statement) => ({statement})),
   fetchStatementTextSuggestions: apiActionCreator('FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({
     statementText,
     suggestionsKey,
@@ -123,10 +127,10 @@ export const api = {
     cancelTarget: str(api.fetchWritTitleSuggestions),
     suggestionsKey,
   })),
-  createJustification: apiActionCreator('CREATE_JUSTIFICATION', justification => ({justification: decircularizeJustification(justification)})),
-  updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', writQuote => ({writQuote})),
-  deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', justification => ({justification})),
-  fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', searchText => ({searchText})),
+  createJustification: apiActionCreator('CREATE_JUSTIFICATION', (justification) => ({justification: decircularizeJustification(justification)})),
+  updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
+  deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', (justification) => ({justification})),
+  fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', (searchText) => ({searchText})),
   fetchMainSearchSuggestions: apiActionCreator('FETCH_MAIN_SEARCH_SUGGESTIONS', (searchText, suggestionsKey) => ({searchText, suggestionsKey})),
 }
 export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator) => {
@@ -141,7 +145,7 @@ export const ui = {
   hideNavDrawer: actionCreator('HIDE_NAV_DRAWER'),
   toggleNavDrawerVisibility: actionCreator('TOGGLE_NAV_DRAWER_VISIBILITY'),
   setNavDrawerVisibility: actionCreator('SET_NAV_DRAWER_VISIBILITY'),
-  addToast: actionCreator('ADD_TOAST', text => ({text})),
+  addToast: actionCreator('ADD_TOAST', (text) => ({text})),
   dismissToast: actionCreator('DISMISS_TOAST'),
 
   showNewJustificationDialog: actionCreator('SHOW_NEW_JUSTIFICATION_DIALOG'),
@@ -151,30 +155,30 @@ export const ui = {
   loginCredentialChange: actionCreator('LOGIN_CREDENTIAL_CHANGE'),
   clearJustificationsSearch: actionCreator('UI/CLEAR_JUSTIFICATIONS_SEARCH'),
 
-  clearRecentStatements: actionCreator('UI/CLEAR_RECENT_STATEMENTS', widgetId => ({widgetId})),
-  clearRecentWrits: actionCreator('UI/CLEAR_RECENT_WRITS', widgetId => ({widgetId})),
-  clearRecentWritQuotes: actionCreator('UI/CLEAR_RECENT_WRIT_QUOTES', widgetId => ({widgetId})),
-  clearRecentJustifications: actionCreator('UI/CLEAR_RECENT_JUSTIFICATIONS', widgetId => ({widgetId})),
+  clearRecentStatements: actionCreator('UI/CLEAR_RECENT_STATEMENTS', (widgetId) => ({widgetId})),
+  clearRecentWrits: actionCreator('UI/CLEAR_RECENT_WRITS', (widgetId) => ({widgetId})),
+  clearRecentWritQuotes: actionCreator('UI/CLEAR_RECENT_WRIT_QUOTES', (widgetId) => ({widgetId})),
+  clearRecentJustifications: actionCreator('UI/CLEAR_RECENT_JUSTIFICATIONS', (widgetId) => ({widgetId})),
 
-  beginInteractionWithTransient: actionCreator('UI/BEGIN_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),
-  endInteractionWithTransient: actionCreator('UI/END_INTERACTION_WITH_TRANSIENT', transientId => ({transientId})),
-  showTransient: actionCreator('UI/SHOW_TRANSIENT', transientId => ({transientId})),
+  beginInteractionWithTransient: actionCreator('UI/BEGIN_INTERACTION_WITH_TRANSIENT', (transientId) => ({transientId})),
+  endInteractionWithTransient: actionCreator('UI/END_INTERACTION_WITH_TRANSIENT', (transientId) => ({transientId})),
+  showTransient: actionCreator('UI/SHOW_TRANSIENT', (transientId) => ({transientId})),
   scheduleDelayedHideTransient: actionCreator('UI/SCHEDULE_DELAYED_HIDE_TRANSIENT', (transientId, hideDelay) => ({transientId, hideDelay})),
   tryCancelDelayedHideTransient: actionCreator('UI/TRY_CANCEL_DELAYED_HIDE_TRANSIENT',
     (transientId, cause) => ({transientId}),
     (transientId, cause) => ({cause}),
   ),
-  cancelDelayedHideTransient: actionCreator('UI/CANCEL_DELAYED_HIDE_TRANSIENT', transientId => ({transientId})),
+  cancelDelayedHideTransient: actionCreator('UI/CANCEL_DELAYED_HIDE_TRANSIENT', (transientId) => ({transientId})),
   hideAllTransients: actionCreator('UI/HIDE_ALL_TRANSIENTS'),
-  hideOtherTransients: actionCreator('UI/HIDE_OTHER_TRANSIENTS', visibleTransientId => ({visibleTransientId})),
+  hideOtherTransients: actionCreator('UI/HIDE_OTHER_TRANSIENTS', (visibleTransientId) => ({visibleTransientId})),
   hideTransient: actionCreator('UI/HIDE_TRANSIENT',
     (transientId, cause) => ({transientId}),
     (transientId, cause) => ({cause}),
   ),
   windowResize: actionCreator('UI/WINDOW_RESIZE'),
 
-  expand: actionCreator('UI/EXPAND', widgetId => ({widgetId})),
-  collapse: actionCreator('UI/COLLAPSE', widgetId => ({widgetId})),
+  expand: actionCreator('UI/EXPAND', (widgetId) => ({widgetId})),
+  collapse: actionCreator('UI/COLLAPSE', (widgetId) => ({widgetId})),
 
   enableMobileSite: actionCreator('UI/ENABLE_MOBILE_SITE'),
   disableMobileSite: actionCreator('UI/DISABLE_MOBILE_SITE'),
@@ -245,9 +249,9 @@ export const editors = {
 }
 
 export const goto = {
-  login: actionCreator('GOTO/LOGIN', loginRedirectLocation => ({loginRedirectLocation})),
-  statement: actionCreator('GOTO/STATEMENT', statement => ({statement})),
-  mainSearch: actionCreator('GOTO/MAIN_SEARCH', mainSearchText => ({mainSearchText})),
+  login: actionCreator('GOTO/LOGIN', (loginRedirectLocation) => ({loginRedirectLocation})),
+  statement: actionCreator('GOTO/STATEMENT', (statement) => ({statement})),
+  mainSearch: actionCreator('GOTO/MAIN_SEARCH', (mainSearchText) => ({mainSearchText})),
 }
 
 export const flows = {
@@ -262,7 +266,7 @@ export const flows = {
 }
 
 export const autocompletes = {
-  clearSuggestions: actionCreator('AUTOCOMPLETES/CLEAR_SUGGESTIONS', suggestionsKey => ({suggestionsKey}))
+  clearSuggestions: actionCreator('AUTOCOMPLETES/CLEAR_SUGGESTIONS', (suggestionsKey) => ({suggestionsKey}))
 }
 
 export const errors = {

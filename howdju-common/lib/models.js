@@ -1,4 +1,5 @@
 const assign = require('lodash/assign')
+const forEach = require('lodash/forEach')
 const merge = require('lodash/merge')
 const toString = require('lodash/toString')
 
@@ -60,38 +61,74 @@ _e.makeNewCredentials = () => ({email: '', password: ''})
 
 _e.makeNewStatement = (props) => assign({text: ''}, props)
 
-_e.makeNewJustification = (props) => merge({
-  rootStatement: {id: null},
-  polarity: JustificationPolarity.POSITIVE,
-  target: {
-    type: JustificationTargetType.STATEMENT,
-    entity: {
-      id: null
+_e.makeNewJustification = (props) => {
+  let newJustification = {
+    rootStatement: {id: null},
+    polarity: JustificationPolarity.POSITIVE,
+    target: {
+      type: JustificationTargetType.STATEMENT,
+      entity: {
+        id: null
+      }
+    },
+    basis: {
+      type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+      // Store both these types directly on the basis for the view-model
+      // Before the justification is sent to the server, the one corresponding to the current type should be put on the
+      // entity property
+      writQuote: _e.makeNewWritQuote(),
+      statementCompound: _e.makeNewStatementCompound(),
+      justificationBasisCompound: _e.makeNewJustificationBasisCompound(),
     }
-  },
-  basis: {
-    type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-    // Store both these types directly on the basis for the view-model
-    // Before the justification is sent to the server, the one corresponding to the current type should be put on the
-    // entity property
-    writQuote: _e.makeNewWritQuote(),
-    statementCompound: _e.makeNewStatementCompound(),
-    justificationBasisCompound: _e.makeNewJustificationBasisCompound(),
   }
-}, props)
+
+  if (
+    props &&
+    props.basis.type === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND &&
+    props.basis.justificationBasisCompound
+  ) {
+    translateNewJustificationBasisCompoundAtomEntities(props.basis.justificationBasisCompound.atoms)
+  }
+  newJustification = merge(newJustification, props)
+  return newJustification
+}
+
+function translateNewJustificationBasisCompoundAtomEntities(atoms) {
+  forEach(atoms, (atom) => {
+    switch (atom.type) {
+      case JustificationBasisCompoundAtomType.STATEMENT:
+        atom.statement = atom.statement || atom.entity
+        break
+      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+        atom.sourceExcerptParaphrase = atom.sourceExcerptParaphrase || atom.entity
+        translateNewSourceExcerptEntity(atom.sourceExcerptParaphrase.sourceExcerpt)
+        break
+      default:
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+    }
+    delete atom.entity
+  })
+}
+
+function translateNewSourceExcerptEntity(sourceExcerpt) {
+  switch (sourceExcerpt.type) {
+    case SourceExcerptType.WRIT_QUOTE:
+      sourceExcerpt.writQuote = sourceExcerpt.entity
+      break
+    case SourceExcerptType.PIC_REGION:
+      sourceExcerpt.picRegion = sourceExcerpt.entity
+      break
+    case SourceExcerptType.VID_SEGMENT:
+      sourceExcerpt.vidSegment = sourceExcerpt.entity
+      break
+    default:
+      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+  }
+  delete sourceExcerpt.entity
+}
 
 _e.makeNewWrit = () => ({
   title: '',
-})
-
-_e.makeNewJustificationBasisCompound = () => ({
-  atoms: [_e.makeNewJustificationBasisAtom()]
-})
-
-_e.makeNewJustificationBasisAtom = () => ({
-  type: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-  statement: _e.makeNewStatement(),
-  sourceExcerptParaphrase: _e.makeNewSourceExcerptParaphrase()
 })
 
 _e.makeNewSourceExcerptParaphrase = () => ({
@@ -115,12 +152,42 @@ _e.makeNewStatementCompound = (props) => assign(
   props
 )
 
+_e.makeNewJustificationBasisCompound = (props) => assign(
+  {atoms: [_e.makeNewJustificationBasisCompoundAtom()]},
+  props
+)
+
+_e.makeNewJustificationBasisCompoundAtom = (props) => {
+  const atom = {
+    type: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+    statement: _e.makeNewStatement(),
+    sourceExcerptParaphrase: _e.makeNewSourceExcerptParaphrase(),
+  }
+
+  if (
+    props &&
+    props.type === JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE &&
+    props.sourceExcerptParaphrase.sourceExcerpt
+  ) {
+    translateNewSourceExcerptEntity(props.sourceExcerptParaphrase.sourceExcerpt)
+  }
+
+  return merge(atom, props)
+}
+
 _e.makeNewStatementAtom = (props) => assign(
   {entity: _e.makeNewStatement()},
   props
 )
 
-_e.makeNewStatementCompoundForStatement = (statement) =>
+_e.makeNewJustificationBasisCompoundFromSourceExcerptParaphrase = (sourceExcerptParaphrase) =>
+  _e.makeNewJustificationBasisCompound({
+    atoms: [
+      _e.makeNewJustificationBasisCompoundAtom({sourceExcerptParaphrase})
+    ]
+  })
+
+_e.makeNewStatementCompoundFromStatement = (statement) =>
   _e.makeNewStatementCompound({atoms: [_e.makeNewStatementAtom({statement})]})
 
 _e.makeNewJustificationTargetingStatementId = (statementId) => _e.makeNewJustification({

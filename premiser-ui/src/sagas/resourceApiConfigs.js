@@ -22,7 +22,7 @@ import {
   perspectivesSchema,
   writsSchema,
   justificationsSchema,
-  writQuotesSchema,
+  writQuotesSchema, justificationBasisCompoundSchema, sourceExcerptParaphraseSchema,
 } from '../schemas'
 import * as httpMethods from '../httpMethods'
 
@@ -121,6 +121,14 @@ export const resourceApiConfigs = {
   [api.fetchStatementCompound]: payload => ({
     endpoint: `statement-compounds/${payload.statementCompoundId}`,
     schema: {statementCompound: statementCompoundSchema},
+  }),
+  [api.fetchSourceExcerptParaphrase]: payload => ({
+    endpoint: `source-excerpt-paraphrases/${payload.sourceExcerptParaphraseId}`,
+    schema: {sourceExcerptParaphrase: sourceExcerptParaphraseSchema},
+  }),
+  [api.fetchJustificationBasisCompound]: payload => ({
+    endpoint: `justification-basis-compounds/${payload.justificationBasisCompoundId}`,
+    schema: {justificationBasisCompound: justificationBasisCompoundSchema},
   }),
   [api.fetchWritQuote]: payload => ({
     endpoint: `writ-quotes/${payload.writQuoteId}`,

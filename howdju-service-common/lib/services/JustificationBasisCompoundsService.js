@@ -37,11 +37,22 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
     })
 
     this.logger = logger
-    this.actionsService = actionsService
     this.justificationBasisCompoundValidator = justificationBasisCompoundValidator
+    this.actionsService = actionsService
     this.statementsService = statementsService
     this.sourceExcerptParaphrasesService = sourceExcerptParaphrasesService
     this.justificationBasisCompoundsDao = justificationBasisCompoundsDao
+  }
+
+  readJustificationBasisCompoundForId(justificationBasisCompoundId, {authToken, userId}) {
+    return readJustificationBasisCompoundForId(
+      this.logger,
+      this.statementsService,
+      this.sourceExcerptParaphrasesService,
+      this.justificationBasisCompoundsDao,
+      justificationBasisCompoundId,
+      userId
+    )
   }
 
   getOrCreateJustificationBasisCompoundAsUser(justificationBasisCompound, userId, now) {
@@ -77,40 +88,64 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
   }
 }
 
+function readJustificationBasisCompoundForId(
+  logger,
+  statementsService,
+  sourceExcerptParaphrasesService,
+  justificationBasisCompoundsDao,
+  justificationBasisCompoundId,
+  userId
+) {
+  return justificationBasisCompoundsDao.readJustificationBasisCompoundForId(justificationBasisCompoundId)
+    .then( (justificationBasisCompound) => {
+      if (justificationBasisCompound) {
+        if (!justificationBasisCompound) {
+          return justificationBasisCompound
+        }
+
+        return addAtomsToCompound(
+          logger,
+          statementsService,
+          sourceExcerptParaphrasesService,
+          justificationBasisCompoundsDao,
+          justificationBasisCompound,
+          userId
+        )
+      }
+    })
+}
+
 function getOrCreateJustificationBasisCompound(
   logger,
   statementsService,
-  sourceExcerptsParaphrasesService,
+  sourceExcerptParaphrasesService,
   justificationBasisCompoundsDao,
   justificationBasisCompound,
   userId,
   now
 ) {
   if (justificationBasisCompound.id) {
-    return justificationBasisCompoundsDao.readJustificationBasisCompoundForId(justificationBasisCompound.id)
+    return readJustificationBasisCompoundForId(
+      logger,
+      statementsService,
+      sourceExcerptParaphrasesService,
+      justificationBasisCompoundsDao,
+      justificationBasisCompound.id,
+      userId
+    )
       .then( (justificationBasisCompound) => {
         if (justificationBasisCompound) {
-
-          return addAtomsToCompound(
-            logger,
-            statementsService,
-            sourceExcerptsParaphrasesService,
-            justificationBasisCompoundsDao,
-            justificationBasisCompound,
-            userId,
-            now
-          )
-            .then( (justificationBasisCompound) => ({
-              isExtant: true,
-              justificationBasisCompound
-            }))
+          return {
+            isExtant: true,
+            justificationBasisCompound
+          }
         }
 
         logger.warning(`JustificationBasisCompound having ID ${justificationBasisCompound.id} missing.  Getting or creating equivalent`)
         return getOrCreateEquivalentJustificationBasisCompound(
           logger,
           statementsService,
-          sourceExcerptsParaphrasesService,
+          sourceExcerptParaphrasesService,
           justificationBasisCompoundsDao,
           justificationBasisCompound,
           userId,
@@ -122,7 +157,7 @@ function getOrCreateJustificationBasisCompound(
   return getOrCreateEquivalentJustificationBasisCompound(
     logger,
     statementsService,
-    sourceExcerptsParaphrasesService,
+    sourceExcerptParaphrasesService,
     justificationBasisCompoundsDao,
     justificationBasisCompound,
     userId,
@@ -133,7 +168,7 @@ function getOrCreateJustificationBasisCompound(
 function getOrCreateEquivalentJustificationBasisCompound(
   logger,
   statementsService,
-  sourceExcerptsParaphrasesService,
+  sourceExcerptParaphrasesService,
   justificationBasisCompoundsDao,
   justificationBasisCompound,
   userId,
@@ -142,7 +177,7 @@ function getOrCreateEquivalentJustificationBasisCompound(
   return Promise.all(map(justificationBasisCompound.atoms, atom => getOrCreateJustificationBasisCompoundAtomEntity(
     logger,
     statementsService,
-    sourceExcerptsParaphrasesService,
+    sourceExcerptParaphrasesService,
     atom,
     userId,
     now
@@ -195,34 +230,37 @@ function getOrCreateEquivalentJustificationBasisCompound(
 function addAtomsToCompound(
   logger,
   statementsService,
-  sourceExcerptsParaphrasesService,
+  sourceExcerptParaphrasesService,
   justificationBasisCompoundsDao,
   justificationBasisCompound,
-  userId,
-  now
+  userId
 ) {
   return justificationBasisCompoundsDao.readAtomsForJustificationBasisCompoundId(justificationBasisCompound.id)
-    .then( (atoms) => Promise.all(map(atoms, atom =>
-      getJustificationBasisCompoundAtomEntity(
-        logger,
-        statementsService,
-        sourceExcerptsParaphrasesService,
-        atom,
-        userId,
-        now
-      )
-    )))
-    .then( (entities) => {
-      forEach(entities, (entity, index) => {
+    .then( (atoms) => Promise.all([
+      atoms,
+      Promise.all(map(atoms, atom =>
+        getJustificationBasisCompoundAtomEntity(
+          logger,
+          statementsService,
+          sourceExcerptParaphrasesService,
+          atom.type,
+          atom.entity.id,
+          userId
+        )
+      ))
+    ]))
+    .then( ([atoms, entities]) => {
+      forEach(zip(atoms, entities), ([atom, entity], index) => {
         if (!entity) {
-          const atom = justificationBasisCompound.atoms[index]
-          const atomEntityType = atom.type
-          const atomEntityId = atom.id
-          logger.error(`justificationBasisCompound ID ${justificationBasisCompound.id} atom number ${index} (type ${atomEntityType}, ID ${atomEntityId}) was not found`)
+          logger.error(`justificationBasisCompound ID ${justificationBasisCompound.id} atom number ${index} (type ${atom.type}, ID ${atom.entity.id}) entity was not found`)
         }
-        justificationBasisCompound.atoms[index].entity = entity
+        atom.entity = entity
       })
 
+      return atoms
+    })
+    .then( (atoms) => {
+      justificationBasisCompound.atoms = atoms
       return justificationBasisCompound
     })
 }
@@ -277,7 +315,7 @@ function createJustificationBasisCompoundAtom(
 function getOrCreateJustificationBasisCompoundAtomEntity(
   logger,
   statementsService,
-  sourceExcerptsParaphrasesService,
+  sourceExcerptParaphrasesService,
   atom,
   userId,
   now
@@ -294,7 +332,7 @@ function getOrCreateJustificationBasisCompoundAtomEntity(
           }
         })
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-      return sourceExcerptsParaphrasesService.getOrCreateValidSourceExcerptParaphraseAsUser(atom.entity, userId, now)
+      return sourceExcerptParaphrasesService.getOrCreateValidSourceExcerptParaphraseAsUser(atom.entity, userId, now)
         .then( ({isExtant, sourceExcerptParaphrase}) => {
           atom.entity = sourceExcerptParaphrase
           return {
@@ -310,18 +348,17 @@ function getOrCreateJustificationBasisCompoundAtomEntity(
 function getJustificationBasisCompoundAtomEntity(
   logger,
   statementsService,
-  sourceExcerptsParaphrasesService,
-  atom,
-  userId,
-  now
+  sourceExcerptParaphrasesService,
+  entityType,
+  entityId,
+  userId
 ) {
-  const atomType = atom.type
-  switch (atomType) {
+  switch (entityType) {
     case JustificationBasisCompoundAtomType.STATEMENT:
-      return statementsService.readStatement(atom.entity, userId, now)
+      return statementsService.readStatementForId(entityId, {userId})
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-      return sourceExcerptsParaphrasesService.readSourceExcerptParaphrase(atom.entity, userId, now)
+      return sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(entityId, {userId})
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', entityType)
   }
 }

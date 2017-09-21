@@ -37,7 +37,7 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
     this.vidSegmentsService = vidSegmentsService
   }
 
-  readSourceExcerptParaphrase(sourceExcerptParaphrase) {
+  readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId}) {
     return getSourceExcerptParaphrase(
       this.logger,
       this.statementsService,
@@ -45,7 +45,8 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
       this.picRegionsService,
       this.vidSegmentsService,
       this.sourceExcerptParaphrasesDao,
-      sourceExcerptParaphrase
+      sourceExcerptParaphraseId,
+      userId
     )
   }
 
@@ -74,68 +75,6 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
   }
 }
 
-// function readSourceExcerptParaphraseOrEquivalent(statementsService, sourceExcerptParaphrasesDao, sourceExcerptParaphrase) {
-//   if (sourceExcerptParaphrase.id) {
-//     return sourceExcerptParaphrasesDao.readSourceExcerptParaphraseForId(sourceExcerptParaphrase.id)
-//         .then( (sourceExcerptParaphrase) => {
-//           if (sourceExcerptParaphrase) {
-//             return sourceExcerptParaphrase
-//           }
-//
-//           return readEquivalentSourceExcerptParaphrase(
-//               statementsService,
-//               writQuotesService,
-//               picRegionsService,
-//               vidSegmentsService,
-//               sourceExcerptParaphrasesDao,
-//               sourceExcerptParaphrase
-//           )
-//         })
-//   }
-//
-//   return readEquivalentSourceExcerptParaphrase(statementsService,
-//       writQuotesService,
-//       picRegionsService,
-//       vidSegmentsService,
-//       sourceExcerptParaphrasesDao,
-//       sourceExcerptParaphrase
-//   )
-// }
-
-// function readEquivalentSourceExcerptParaphrase (
-//   statementsService,
-//   writQuotesService,
-//   picRegionsService,
-//   vidSegmentsService,
-//   sourceExcerptParaphrasesDao,
-//   sourceExcerptParaphrase
-// ) {
-//   return Promise.all([
-//     statementsService.readStatementEquivalentTo(sourceExcerptParaphrase.paraphrasingStatement),
-//     readEquivalentSourceExcerpt(sourceExcerptParaphrase.sourceExcerpt, writQuotesService, picRegionsService, vidSegmentsService)
-//   ])
-//       .then( ([equivalentStatement, equivalentSourceExcerpt]) => {
-//         if (equivalentStatement && equivalentSourceExcerpt) {
-//           return sourceExcerptParaphrasesDao.readSourceExcerptHavingStatementAndSourceExcerpt(equivalentStatement, equivalentSourceExcerpt)
-//         }
-//
-//         return null
-//       })
-// }
-
-// function readEquivalentSourceExcerpt(sourceExcerpt, writQuotesService, picRegionsService, vidSegmentsService) {
-//   switch (sourceExcerpt.type) {
-//     case SourceExcerptType.WRIT_QUOTE:
-//       return writQuotesService.readWritQuoteEquivalentTo(sourceExcerpt.entity)
-//     case SourceExcerptType.PIC_REGION:
-//       return picRegionsService.readPicRegionEquivalentTo(sourceExcerpt.entity)
-//     case SourceExcerptType.VID_SEGMENT:
-//       return vidSegmentsService.readVidSegmentEquivalentTo(sourceExcerpt.entity)
-//     default:
-//       throw newImpossibleError(`Impossible SourceExcerptType: ${sourceExcerpt.type}`)
-//   }
-// }
-
 function getSourceExcerptParaphrase(
   logger,
   statementsService,
@@ -143,15 +82,26 @@ function getSourceExcerptParaphrase(
   picRegionsService,
   vidSegmentsService,
   sourceExcerptParaphrasesDao,
-  sourceExcerptParaphrase
+  sourceExcerptParaphraseId,
+  userId
 ) {
-  return sourceExcerptParaphrasesDao.readSourceExcerptParaphraseForId(sourceExcerptParaphrase.id)
-    .then( (dbSourceExcerptParaphrase) => {
-      return Promise.all([
-        statementsService.readStatementForId(dbSourceExcerptParaphrase.paraphrasingStatement.id),
-        getSourceExcerptEntity(writQuotesService, picRegionsService, vidSegmentsService,
-          dbSourceExcerptParaphrase.type, dbSourceExcerptParaphrase.entity.id)
-      ])
+  return sourceExcerptParaphrasesDao.readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId})
+    .then( (sourceExcerptParaphrase) => Promise.all([
+      sourceExcerptParaphrase,
+      statementsService.readStatementForId(sourceExcerptParaphrase.paraphrasingStatement.id, {userId}),
+      getSourceExcerptEntity(
+        writQuotesService,
+        picRegionsService,
+        vidSegmentsService,
+        sourceExcerptParaphrase.sourceExcerpt.type,
+        sourceExcerptParaphrase.sourceExcerpt.entity.id,
+        userId
+      )
+    ]))
+    .then( ([sourceExcerptParaphrase, paraphrasingStatement, sourceExcerptEntity]) => {
+      sourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatement
+      sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
+      return sourceExcerptParaphrase
     })
 }
 
@@ -160,20 +110,20 @@ function getSourceExcerptEntity(
   picRegionsService,
   vidSegmentsService,
   sourceExcerptType,
-  sourceExcerptEntityId
+  sourceExcerptEntityId,
+  userId
 ) {
   switch (sourceExcerptType) {
     case SourceExcerptType.WRIT_QUOTE:
-      return writQuotesService.getWritQuoteForId(sourceExcerptEntityId)
+      return writQuotesService.readWritQuoteForId(sourceExcerptEntityId, {userId})
     case SourceExcerptType.PIC_REGION:
-      return picRegionsService.getPicRegionForId(sourceExcerptEntityId)
+      return picRegionsService.readPicRegionForId(sourceExcerptEntityId, {userId})
     case SourceExcerptType.VID_SEGMENT:
-      return vidSegmentsService.getVidSegmentForId(sourceExcerptEntityId)
+      return vidSegmentsService.readVidSegmentForId(sourceExcerptEntityId, {userId})
     default:
       throw newImpossibleError(`Impossible SourceExcerptType: ${sourceExcerptType}`)
   }
 }
-
 
 function getOrCreateSourceExcerptParaphrase(
   logger,

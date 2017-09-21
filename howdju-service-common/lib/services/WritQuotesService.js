@@ -66,7 +66,7 @@ exports.WritQuotesService = class WritQuotesService {
     this.permissionsDao = permissionsDao
   }
 
-  readWritQuote(writQuoteId) {
+  readWritQuoteForId(writQuoteId, {authToken}) {
     return this.writQuotesDao.readWritQuoteForId(writQuoteId)
   }
 

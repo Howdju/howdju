@@ -1,9 +1,8 @@
 # Howdju UI TODO
 
-* Paraphrase-based justification's source excerpt entity missing
 * Is a Paraphrased citation equal to a citation-based justification?
   * Automatically create citation-based justification?
-* Use: Support making a justification from a source excerpt paraphrase basis
+* Use: Support making a justification from a compound basis and a source excerpt paraphrase
 * Test 
   * Usages
   * Creation
