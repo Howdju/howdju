@@ -8,9 +8,16 @@ const {
   JustificationBasisType,
   newImpossibleError,
   StatementCompoundAtomType,
+  JustificationBasisCompoundAtomType,
+  SourceExcerptType,
+  newExhaustedEnumError,
 } = require('howdju-common')
 
-const toUser = row => row && ({
+const {
+  normalizeText
+} = require('./util')
+
+const toUser = (row) => row && ({
   id: toString(row.user_id),
   email: row.email,
   shortName: row.short_name,
@@ -20,7 +27,7 @@ const toUser = row => row && ({
   externalIds: toUserExternalIds(row),
 })
 
-const toUserExternalIds = row => row && ({
+const toUserExternalIds = (row) => row && ({
   googleAnalyticsId: row.google_analytics_id,
   heapAnalyticsId: row.heap_analytics_id,
   mixpanelId: row.mixpanel_id,
@@ -30,11 +37,11 @@ const toUserExternalIds = row => row && ({
 
 const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
-const toStatement = row => row && ({
+const toStatement = (row) => row && ({
   id: toString(row.statement_id),
   text: row.text,
   normalText: row.normal_text,
-  slug: toSlug(row.text),
+  slug: toSlug(row.normal_text || normalizeText(row.text)),
   creatorUserId: toString(row.creator_user_id),
   created: row.created,
   justifications: null,
@@ -158,18 +165,21 @@ const toJustification = (
   return justification
 }
 
-const toWritQuote = row => row && {
+const toWritQuote = (row) => row && {
   id: toString(row.writ_quote_id),
   quoteText: row.quote_text,
   created: row.created,
+  creatorUserId: row.creator_user_id,
   writ: toWrit({
     writ_id: row.writ_id,
     title: row.writ_title,
     created: row.writ_created,
-  })
+    creatorUserId: row.creator_user_id,
+  }),
+  urls: [],
 }
 
-const toWrit = row => {
+const toWrit = (row) => {
   const writ = row && ({
     id: toString(row.writ_id),
     title: row.title,
@@ -177,12 +187,12 @@ const toWrit = row => {
   })
   return writ
 }
-const toUrl = row => row && ({
+const toUrl = (row) => row && ({
   id: toString(row.url_id),
   url: row.url
 })
 
-const toVote = row => row && ({
+const toVote = (row) => row && ({
   id: toString(row.vote_id),
   polarity: row.polarity,
   targetType: row.target_type,
@@ -191,12 +201,16 @@ const toVote = row => row && ({
   deleted: row.deleted,
 })
 
-const toWritQuoteUrl = row => row && ({
+const toWritQuoteUrl = (row) => row && ({
   writQuoteId: toString(row.writ_quote_id),
   urlId: toString(row.url_id),
 })
 
 const toStatementCompound = (row, atoms) => {
+  if (!row) {
+    return row
+  }
+
   const statementCompound = {
     id: row.statement_compound_id,
     created: row.created,
@@ -215,7 +229,7 @@ const toStatementCompound = (row, atoms) => {
   return statementCompound
 }
 
-const toStatementCompoundAtom = row => row && ({
+const toStatementCompoundAtom = (row) => row && ({
   compoundId: row.statement_compound_id,
   type: StatementCompoundAtomType.STATEMENT,
   entity: toStatement({
@@ -227,18 +241,18 @@ const toStatementCompoundAtom = row => row && ({
   orderPosition: row.order_position,
 })
 
-const toPerspective = row => row && ({
+const toPerspective = (row) => row && ({
   id: row.perspective_id,
   statement: {id: row.statement_id},
   creatorUserId: row.creator_user_id,
 })
 
-const toUserHash = row => row && ({
+const toUserHash = (row) => row && ({
   userId: row.user_id,
   hash: row.hash,
 })
 
-const toJobHistory = row => row && ({
+const toJobHistory = (row) => row && ({
   id: row.job_history_id,
   type: row.job_type,
   startedAt: row.started_at,
@@ -247,7 +261,7 @@ const toJobHistory = row => row && ({
   message: row.message,
 })
 
-const toJustificationScore = row => row && ({
+const toJustificationScore = (row) => row && ({
   justificationId: row.justification_id,
   scoreType: row.score_type,
   score: row.score,
@@ -257,32 +271,116 @@ const toJustificationScore = row => row && ({
   deletorJobHistoryId: row.deletor_job_history_id,
 })
 
-const toSourceExcerptParaphrase = row => row && ({
+const toJustificationBasisCompound = (row, atoms) => {
+  if (!row) {
+    return row
+  }
+
+  const compound = {
+    id: row.justification_basis_compound_id,
+    atoms: [],
+    creatorUserId: row.creator_user_id,
+    created: row.created,
+  }
+
+  if (atoms) {
+    if (!isArray(atoms)) {
+      // Assume a non-array is an object of atoms by statementId
+      atoms = values(atoms)
+      atoms = sortBy(atoms, a => a.orderPosition)
+    }
+    compound.atoms = atoms
+  }
+
+  return compound
+}
+
+const toJustificationBasisCompoundAtom = (row) => {
+  if (!row) {
+    return row
+  }
+
+  const atom = {
+    id: row.justification_basis_compound_atom_id,
+    compoundId: row.justification_basis_compound_id,
+    type: row.entity_type,
+    entity: {
+      id: row.entity_id,
+    },
+    orderPosition: row.order_position,
+  }
+
+  switch (atom.type) {
+    case JustificationBasisCompoundAtomType.STATEMENT:
+      if (row.statement_id) {
+        atom.entity = toStatement({
+          statement_id: row.statement_id,
+          text: row.statement_text,
+          created: row.statement_created,
+          creator_user_id: row.statement_creator_user_id,
+        })
+      }
+      break
+    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+      if (row.source_excerpt_paraphrase_id) {
+        atom.entity = toSourceExcerptParaphrase({
+          source_excerpt_paraphrase_id: row.source_excerpt_paraphrase_id,
+          paraphrasing_statement_id: row.source_excerpt_paraphrasing_statement_id,
+          paraphrasing_statement_text: row.source_excerpt_paraphrasing_statement_text,
+          paraphrasing_statement_created: row.source_excerpt_paraphrasing_statement_created,
+          paraphrasing_statement_creator_user_id: row.source_excerpt_paraphrasing_statement_creator_user_id,
+          source_excerpt_type: row.source_excerpt_type,
+          writ_quote_id: row.source_excerpt_writ_quote_id,
+          writ_quote_quote_text: row.source_excerpt_writ_quote_quote_text,
+          writ_quote_created: row.source_excerpt_writ_quote_created,
+          writ_quote_creator_user_id: row.source_excerpt_writ_quote_creator_user_id,
+          writ_quote_writ_id: row.source_excerpt_writ_quote_writ_id,
+          writ_quote_writ_title: row.source_excerpt_writ_quote_writ_title,
+          writ_quote_writ_created: row.source_excerpt_writ_quote_writ_created,
+          writ_quote_writ_creator_user_id: row.source_excerpt_writ_quote_writ_creator_user_id,
+        })
+      }
+      break
+  }
+
+  return atom
+}
+
+const toSourceExcerptParaphrase = (row) => row && ({
   id: row.source_excerpt_paraphrase_id,
-  paraphrasingStatement: {
-    id: row.paraphrasing_statement_id,
-  },
+  paraphrasingStatement: toStatement({
+    statement_id: row.paraphrasing_statement_id,
+    text: row.paraphrasing_statement_text,
+    created: row.paraphrasing_statement_created,
+    creator_user_id: row.paraphrasing_statement_creator_user_id
+  }),
   sourceExcerpt: {
     type: row.source_excerpt_type,
-    id: row.source_excerpt_id,
+    entity: toSourceExcerptEntity(row)
   },
 })
 
-const toJustificationBasisCompound = row => row && ({
-  id: row.justification_basis_compound_id,
-  atoms: [],
-  creatorUserId: row.creator_user_id,
-  created: row.created,
-})
+const toSourceExcerptEntity = (row) => {
+  if (!row) {
+    return row
+  }
 
-const toJustificationBasisCompoundAtom = row => row && ({
-  id: row.justification_basis_compound_atom_id,
-  compoundId: row.justification_basis_compound_id,
-  type: row.entity_type,
-  entity: {
-    id: row.entity_id,
-  },
-})
+  switch (row.source_excerpt_type) {
+    case SourceExcerptType.WRIT_QUOTE:
+      return toWritQuote({
+        writ_quote_id: row.writ_quote_id,
+        quote_text: row.writ_quote_quote_text,
+        created: row.writ_quote_created,
+        creator_user_id: row.writ_quote_creator_user_id,
+        writ_id: row.writ_quote_writ_id,
+        writ_title: row.writ_quote_writ_title,
+        writ_created: row.writ_quote_writ_created,
+        writ_creator_user_id: row.writ_quote_writ_creator_user_id,
+      })
+    default:
+      throw newExhaustedEnumError('SourceExcerptType', row.source_excerpt_type)
+  }
+}
 
 module.exports = {
   toUser,

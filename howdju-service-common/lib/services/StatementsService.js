@@ -27,7 +27,6 @@ const {
   permissions
 } = require('../permissions')
 const {
-  createSorts,
   createContinuationToken,
   decodeContinuationToken,
   createNextContinuationToken,
@@ -68,14 +67,13 @@ exports.StatementsService = class StatementsService {
     return this.statementsDao.readStatementByText(statement.text)
   }
 
-  readStatements({continuationToken = null, sortProperty = 'created', sortDirection = SortDirection.ASCENDING, count = 25 }) {
+  readStatements({sorts, continuationToken = null, count = 25}) {
     const countNumber = toNumber(count)
     if (!isFinite(countNumber)) {
       throw new RequestValidationError(`count must be a number. ${count} is not a number.`)
     }
 
     if (!continuationToken) {
-      const sorts = createSorts(sortProperty, sortDirection)
       return this.readInitialStatements(sorts, countNumber)
     }
     return this.readMoreStatements(continuationToken, countNumber)

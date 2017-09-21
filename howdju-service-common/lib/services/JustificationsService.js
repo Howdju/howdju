@@ -26,7 +26,6 @@ const {
 } = require('howdju-common')
 
 const {
-  createSorts,
   createContinuationToken,
   decodeContinuationToken,
   createNextContinuationToken,
@@ -108,11 +107,10 @@ exports.JustificationsService = class JustificationsService {
   }
 
   readJustifications({
-    continuationToken,
-    sortProperty = 'created',
-    sortDirection = SortDirection.ASCENDING,
-    count = 25,
     filters,
+    sorts,
+    continuationToken,
+    count = 25,
   }) {
     const countNumber = toNumber(count)
     if (!isFinite(countNumber)) {
@@ -123,13 +121,12 @@ exports.JustificationsService = class JustificationsService {
     }
 
     if (!continuationToken) {
-      const sorts = createSorts(sortProperty, sortDirection)
-      return this.readInitialJustifications(sorts, countNumber, filters)
+      return this.readInitialJustifications(filters, sorts, countNumber)
     }
     return this.readMoreJustifications(continuationToken, countNumber)
   }
 
-  readInitialJustifications(requestedSorts, count, filters) {
+  readInitialJustifications(filters, requestedSorts, count) {
     const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
     return this.justificationsDao.readJustifications(filters, unambiguousSorts, count)
@@ -148,19 +145,7 @@ exports.JustificationsService = class JustificationsService {
       filters,
     } = decodeContinuationToken(continuationToken)
     return this.justificationsDao.readJustifications(filters, sorts, count, true)
-      .then(justifications => {
-        const [goodJustifications, badJustifications] = partition(justifications, j =>
-          j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
-          j.basis.entity.atoms &&
-          j.basis.entity.atoms.length > 0 &&
-          every(j.basis.entity.atoms, a => isTruthy(a.entity.id))
-        )
-        if (badJustifications.length > 0) {
-          this.logger.error(`these justifications have invalid statement compounds: ${join(map(badJustifications, j => j.id), ', ')}`)
-          this.logger.error(badJustifications)
-        }
-        return goodJustifications
-      })
+      .then(justifications => validateJustifications(this.logger, justifications))
       .then(justifications => {
         const nextContinuationToken = createNextContinuationToken(sorts, justifications, filters) || continuationToken
         return {
@@ -365,4 +350,18 @@ exports.JustificationsService = class JustificationsService {
         deletedJustificationId,
       }))
   }
+}
+
+function validateJustifications(logger, justifications) {
+  const [goodJustifications, badJustifications] = partition(justifications, j =>
+    j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
+    j.basis.entity.atoms &&
+    j.basis.entity.atoms.length > 0 &&
+    every(j.basis.entity.atoms, a => isTruthy(a.entity.id))
+  )
+  if (badJustifications.length > 0) {
+    logger.error(`these justifications have invalid statement compounds: ${join(map(badJustifications, j => j.id), ', ')}`)
+    logger.error(badJustifications)
+  }
+  return goodJustifications
 }

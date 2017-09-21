@@ -4,7 +4,9 @@ const isEmpty = require('lodash/isEmpty')
 const isEqual = require('lodash/isEqual')
 
 const {
-  apiErrorCodes
+  apiErrorCodes,
+  decodeQueryStringObject,
+  decodeSorts,
 } = require('howdju-common')
 const {
   AuthenticationError,
@@ -125,12 +127,12 @@ const routes = [
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
+        sorts: encodedSorts,
         continuationToken,
         count,
-        sortProperty,
-        sortDirection,
       } = request.queryStringParameters
-      return statementsService.readStatements({continuationToken, count, sortProperty, sortDirection})
+      const sorts = decodeSorts(encodedSorts)
+      return statementsService.readStatements({sorts, continuationToken, count})
         .then(({statements, continuationToken}) => ok({callback, body: {statements, continuationToken}}))
     }
   },
@@ -261,22 +263,14 @@ const routes = [
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
+        filters: encodedFilters,
+        sorts: encodedSorts,
         continuationToken,
         count,
-        sortProperty,
-        sortDirection,
-        writQuoteId,
-        writId,
-        statementId,
-        statementCompoundId,
       } = request.queryStringParameters
-      const filters = {
-        writQuoteId,
-        writId,
-        statementId,
-        statementCompoundId,
-      }
-      return justificationsService.readJustifications({continuationToken, count, sortProperty, sortDirection, filters})
+      const filters = decodeQueryStringObject(encodedFilters)
+      const sorts = decodeSorts(encodedSorts)
+      return justificationsService.readJustifications({filters, sorts, continuationToken, count})
         .then(({justifications, continuationToken}) => ok({callback, body: {justifications, continuationToken}}))
     }
   },
@@ -305,12 +299,12 @@ const routes = [
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
+        sorts: encodedSorts,
         continuationToken,
         count,
-        sortProperty,
-        sortDirection,
       } = request.queryStringParameters
-      return writQuotesService.readWritQuotes({continuationToken, count, sortProperty, sortDirection})
+      const sorts = decodeSorts(encodedSorts)
+      return writQuotesService.readWritQuotes({sorts, continuationToken, count})
         .then(({writQuotes, continuationToken}) => ok({callback, body: {writQuotes, continuationToken}}))
     }
   },
@@ -355,12 +349,12 @@ const routes = [
     method: httpMethods.GET,
     handler: ({request, callback}) => {
       const {
+        sorts: encodedSorts,
         continuationToken,
         count,
-        sortProperty,
-        sortDirection,
       } = request.queryStringParameters
-      return writsService.readWrits({continuationToken, count, sortProperty, sortDirection})
+      const sorts = decodeSorts(encodedSorts)
+      return writsService.readWrits({sorts, continuationToken, count})
         .then(({writs, continuationToken}) => ok({callback, body: {writs, continuationToken}}))
     }
   },

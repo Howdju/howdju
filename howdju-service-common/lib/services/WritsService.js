@@ -9,7 +9,6 @@ const {
 } = require('howdju-common')
 
 const {
-  createSorts,
   createContinuationToken,
   decodeContinuationToken,
   createNextContinuationToken,
@@ -25,14 +24,13 @@ exports.WritsService = class WritsService {
     this.writsDao = writsDao
   }
 
-  readWrits({continuationToken, sortProperty = 'created', sortDirection = SortDirection.ASCENDING, count = 25 }) {
+  readWrits({sorts, continuationToken, count = 25 }) {
     const countNumber = toNumber(count)
     if (!isFinite(countNumber)) {
       throw new RequestValidationError(`count must be a number. ${count} is not a number.`)
     }
 
     if (!continuationToken) {
-      const sorts = createSorts(sortProperty, sortDirection)
       return this.readInitialWrits(sorts, countNumber)
     }
     return this.readMoreWrits(continuationToken, countNumber)

@@ -1,21 +1,21 @@
 # Howdju UI TODO
 
+* Is a Paraphrased citation equal to a citation-based justification?
+
 * Paraphrases 
   * Support paraphrases
+    * Usages
+      * Ensure I've tested all paths
+      
     * When the quote differed, the sourceExcerpt was missing entity
-    * Can't create statement/justification using existing stuff; entity is 0 for returned justification
     * Must try permutations of existing and non-existing things with sourceExcerptParaphrase
-    * No atom entity for SEP-based justification from API
     * Warning that root statement IDs weren't equal?
+      * Color warning/error output?
     
-    * Recent justifications dont' load compound justifications.  empty chat bubbles
     * readOnlyBasis being sent to SourceExcerptParaphrases and atoms etc.?
     * Review use of onTextInputKeyDown (if the purpose is to catch enter/escape, why limit it to text fields?)
     * Support making a justification from a source excerpt paraphrase basis
-    * translate sourceExcerpt and compoundAtom properties to entity before POSTing.  And on return
-      * These 'new' things are really view models
     * randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
-  
   
   * Add icons and context menus
   * migrate statement compounds to new compounds?  Might want to manually recreate them so I can choose to substitute paraphrases

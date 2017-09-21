@@ -115,3 +115,11 @@ _e.JobHistoryStatus = arrayToObject([
 _e.StatementCompoundAtomType = arrayToObject([
   'STATEMENT',
 ])
+
+_e.ValidJustificationSearchFilters = [
+  'writQuoteId',
+  'writId',
+  'statementCompoundId',
+  'sourceExcerptParaphraseId',
+  'statementId',
+]

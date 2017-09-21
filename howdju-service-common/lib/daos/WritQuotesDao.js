@@ -226,7 +226,7 @@ exports.WritQuotesDao = class WritQuotesDao {
         forEach(rows, row => {
           const writQuote = toWritQuote(row)
           const writQuoteId = row.writ_quote_id
-          writQuote.urls = urlsByWritQuoteId[writQuoteId]
+          writQuote.urls = urlsByWritQuoteId[writQuoteId] || []
           writQuotesById[writQuoteId] = writQuote
         })
         return writQuotesById

@@ -15,6 +15,8 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
       id,
       atom,
       statementEditorId,
+      paraphrasingStatementEditorId,
+      sourceExcerptEditorId,
     } = this.props
 
     const entityViewerId = `${id}-entity`
@@ -30,8 +32,8 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
         return (
           <SourceExcerptParaphraseAtomViewer id={entityViewerId}
-                                             paraphrasingStatementEditorId={entityViewerId + '-paraphrasing-statement'}
-                                             sourceExcerptEditorId={entityViewerId + '-source-excerpt'}
+                                             paraphrasingStatementEditorId={paraphrasingStatementEditorId}
+                                             sourceExcerptEditorId={sourceExcerptEditorId}
                                              atom={atom}
           />
         )
@@ -44,4 +46,6 @@ JustificationBasisCompoundAtomViewer.propTypes = {
   id: PropTypes.string.isRequired,
   atom: PropTypes.object.isRequired,
   statementEditorId: PropTypes.string.isRequired,
+  paraphrasingStatementEditorId: PropTypes.string.isRequired,
+  sourceExcerptEditorId: PropTypes.string.isRequired,
 }

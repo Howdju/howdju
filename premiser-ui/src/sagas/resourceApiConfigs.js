@@ -1,8 +1,10 @@
+import isEmpty from 'lodash/isEmpty'
 import pick from 'lodash/pick'
 import queryString from 'query-string'
 
 import {
-  SortDirection
+  SortDirection,
+  encodeQueryStringObject,
 } from 'howdju-common'
 
 import {
@@ -24,6 +26,8 @@ import {
 } from '../schemas'
 import * as httpMethods from '../httpMethods'
 
+const defaultSorts = `created=${SortDirection.DESCENDING}`
+
 export const resourceApiConfigs = {
   [api.fetchStatements]: {
     endpoint: 'statements',
@@ -31,8 +35,9 @@ export const resourceApiConfigs = {
   },
   [api.fetchRecentStatements]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = SortDirection.DESCENDING
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'statements?' + queryStringParamsString,
@@ -41,8 +46,9 @@ export const resourceApiConfigs = {
   },
   [api.fetchRecentWrits]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = SortDirection.DESCENDING
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'writs?' + queryStringParamsString,
@@ -51,8 +57,9 @@ export const resourceApiConfigs = {
   },
   [api.fetchRecentWritQuotes]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = SortDirection.DESCENDING
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'writ-quotes?' + queryStringParamsString,
@@ -61,8 +68,9 @@ export const resourceApiConfigs = {
   },
   [api.fetchRecentJustifications]: payload => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    queryStringParams.sortProperty = 'created'
-    queryStringParams.sortDirection = SortDirection.DESCENDING
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'justifications?' + queryStringParamsString,
@@ -70,8 +78,34 @@ export const resourceApiConfigs = {
     }
   },
   [api.fetchJustificationsSearch]: payload => {
+    const {
+      filters,
+      sorts,
+      count,
+      continuationToken
+    } = payload
+    const params = {}
+
+    if (!isEmpty(filters)) {
+      params.filters = encodeQueryStringObject(filters)
+    }
+
+    if (!isEmpty(sorts)) {
+      params.sorts = encodeQueryStringObject(sorts)
+    } else {
+      params.sorts = defaultSorts
+    }
+
+    if (count) {
+      params.count = count
+    }
+
+    if (continuationToken) {
+      params.continuationToken = continuationToken
+    }
+
     return {
-      endpoint: 'justifications?' + queryString.stringify(payload),
+      endpoint: 'justifications?' + queryString.stringify(params),
       schema: {justifications: justificationsSchema},
     }
   },

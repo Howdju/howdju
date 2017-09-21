@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import map from 'lodash/map'
 
-import JustificationBasisCompoundViewerAtomListItem from "./JustificationBasisCompoundViewerAtomListItem"
+import JustificationBasisCompoundViewerAtomItem from "./JustificationBasisCompoundViewerAtomItem"
 
 import './JustificationBasisCompoundViewer.scss'
 
@@ -25,7 +25,7 @@ export default class JustificationBasisCompoundViewer extends Component {
         {map(justificationBasisCompound.atoms, atom => {
           const atomId = `${compoundId}-atom-${atom.id}`
           return (
-            <JustificationBasisCompoundViewerAtomListItem
+            <JustificationBasisCompoundViewerAtomItem
               atom={atom}
               id={atomId}
               key={atomId}

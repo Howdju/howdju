@@ -23,7 +23,7 @@ export default class EditableSourceExcerpt extends Component {
         return (
           <EditableWritQuote {...rest}
                              id={id}
-                             entityId={sourceExcerpt.id}
+                             entityId={sourceExcerpt.entity.id}
                              editorId={editorId}
                              suggestionsKey={suggestionsKey}
                              doShowControls={doShowControls}

@@ -6,7 +6,13 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import get from 'lodash/get'
 import isEqual from 'lodash/isEqual'
 import map from 'lodash/map'
+import pick from 'lodash/pick'
 import queryString from 'query-string'
+import {denormalize} from "normalizr"
+
+import {
+  ValidJustificationSearchFilters
+} from 'howdju-common'
 
 import {
   api,
@@ -14,52 +20,37 @@ import {
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
 import JustificationCard from "./JustificationCard"
-import {denormalize} from "normalizr"
 import {justificationsSchema} from "./schemas"
 import config from './config'
 
-const justificationSearchParams = (locationSearch) => {
-  const {
-    writQuoteId,
-    writId,
-    statementCompoundId,
-    statementId,
-  } = queryString.parse(locationSearch)
-  return {
-    writQuoteId,
-    writId,
-    statementCompoundId,
-    statementId,
-  }
-}
 
 class JustificationsSearchPage extends Component {
 
   componentDidMount() {
-    const searchParams = justificationSearchParams(this.props.location.search)
-    this.refreshResults(searchParams)
+    const filters = justificationSearchFilters(this.props.location.search)
+    this.refreshResults(filters)
   }
 
   componentWillReceiveProps(nextProps) {
-    const searchParams = justificationSearchParams(this.props.location.search)
-    const nextSearchParams = justificationSearchParams(nextProps.location.search)
-    if (!isEqual(nextSearchParams, searchParams)) {
-      this.refreshResults(nextSearchParams)
+    const filters = justificationSearchFilters(this.props.location.search)
+    const nextFilters = justificationSearchFilters(nextProps.location.search)
+    if (!isEqual(nextFilters, filters)) {
+      this.refreshResults(nextFilters)
     }
   }
 
   fetchMore = event => {
     event.preventDefault()
-    const searchParams = justificationSearchParams(this.props.location.search)
+    const filters = justificationSearchFilters(this.props.location.search)
     const count = JustificationsSearchPage.fetchCount
     const {continuationToken} = this.props
-    this.props.api.fetchJustificationsSearch({...searchParams, count, continuationToken})
+    this.props.api.fetchJustificationsSearch({filters, count, continuationToken})
   }
 
-  refreshResults = (searchParams) => {
+  refreshResults = (filters) => {
     this.props.ui.clearJustificationsSearch()
     const count = JustificationsSearchPage.fetchCount
-    this.props.api.fetchJustificationsSearch({...searchParams, count})
+    this.props.api.fetchJustificationsSearch({filters, count})
   }
 
   render() {
@@ -133,3 +124,7 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   ui,
 }))(JustificationsSearchPage)
+
+function justificationSearchFilters(locationSearch) {
+  return pick(queryString.parse(locationSearch), ValidJustificationSearchFilters)
+}

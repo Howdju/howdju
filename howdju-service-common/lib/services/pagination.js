@@ -1,10 +1,8 @@
 const URLSafeBase64 = require('urlsafe-base64')
 
 const cloneDeep = require('lodash/cloneDeep')
-const forEach = require('lodash/forEach')
 const get = require('lodash/get')
 const invert = require('lodash/invert')
-const isString = require('lodash/isString')
 const last = require('lodash/last')
 const map = require('lodash/map')
 const mapKeys = require('lodash/mapKeys')
@@ -32,20 +30,6 @@ const ShortSortDirection = {
   [SortDirection.DESCENDING]: 'd',
 }
 const LongSortDirection = invert(ShortSortDirection)
-
-
-exports.createSorts = (sortProperty, sortDirection) => {
-  const sortProperties = isString(sortProperty) ? [sortProperty] : sortProperty
-  const sortDirections = isString(sortDirection) ? [sortDirection] : sortDirection
-  const sorts = []
-  forEach(sortProperties, (sortProperty, index) => {
-    sorts.push({
-      property: sortProperty,
-      direction: sortDirections[index] || SortDirection.ASCENDING
-    })
-  })
-  return sorts
-}
 
 const shortenContinuationInfoSort = (sort) => {
   if (sort.direction) {

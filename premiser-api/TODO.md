@@ -13,13 +13,16 @@
   * collapse old votes (delete intervening deletions)
   * re-calculate normal text
   * enforce constraints, 
+    * justification has root_statement_id
     * like unique IDs, 
     * unique statement text, 
     * writ quote text, 
     * writ title
     * writ quote must have writ_id
-    * statement_compound must have atoms
-    * statement_compound atoms must match something
+    * atoms must have an entity
+      * statement_compound must have atoms
+      * statement_compound atoms must match something
+    * source excerpt paraphrases must have paraphrasing statements and source excerpts
   * Delete URLS when nothing references them?
   * Delete statement compounds all of whose statements are deleted
   * Delete old scores

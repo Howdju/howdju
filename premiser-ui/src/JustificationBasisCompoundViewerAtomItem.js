@@ -15,6 +15,9 @@ import {
   insertAt,
   newExhaustedEnumError,
   JustificationBasisSourceType,
+  pushAll,
+  insertAllAt,
+  SourceExcerptType,
 } from 'howdju-common'
 
 import {
@@ -51,6 +54,13 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
     return `${id}--atom-entity-editor--statement`
   }
 
+  paraphrasingStatementEditorId() {
+    const {
+      id,
+    } = this.props
+    return `${id}--atom-entity-editor--paraphrasing-statement`
+  }
+
   sourceExcerptParaphraseEditorId() {
     const {
       id,
@@ -58,20 +68,34 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
     return `${id}--atom-entity-editor--source-excerpt-paraphrase`
   }
 
-  onEditAtomEntity = () => {
+  onEditStatement = () => {
     const {
       atom
     } = this.props
-    switch (atom.type) {
-      case JustificationBasisCompoundAtomType.STATEMENT:
-        this.props.editors.beginEdit(EditorTypes.STATEMENT, this.statementEditorId(), atom.entity)
-        break
-      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-        this.props.editors.beginEdit(EditorTypes.SOURCE_EXCERPT_PARAPHRASE, this.sourceExcerptParaphraseEditorId(), atom.entity)
-        break
-      default:
-        throw newExhaustedEnumError(JustificationBasisCompoundAtomType, atom.type)
+    this.props.editors.beginEdit(EditorTypes.STATEMENT, this.statementEditorId(), atom.entity)
+  }
+
+  onEditParaphrasingStatement = () => {
+    const {
+      atom
+    } = this.props
+    this.props.editors.beginEdit(EditorTypes.STATEMENT, this.paraphrasingStatementEditorId(), atom.entity.paraphrasingStatement)
+  }
+
+  onEditSourceExcerpt = () => {
+    const {
+      atom
+    } = this.props
+    const editorTypeBySourceExcerptType = {
+      [SourceExcerptType.WRIT_QUOTE]: EditorTypes.WRIT_QUOTE,
+      [SourceExcerptType.PIC_REGION]: EditorTypes.PIC_REGION,
+      [SourceExcerptType.VID_SEGMENT]: EditorTypes.VID_SEGMENT,
     }
+    const editorType = editorTypeBySourceExcerptType[atom.entity.sourceExcerpt.type]
+    if (!editorType) {
+      throw newExhaustedEnumError('SourceExcerptType', atom.entity.sourceExcerpt.type)
+    }
+    this.props.editors.beginEdit(editorType, this.sourceExcerptParaphraseEditorId(), atom.entity.sourceExcerpt.entity)
   }
 
   render() {
@@ -82,6 +106,7 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
       doShowStatementAtomJustifications,
       isCondensed,
       isUnCondensed,
+      itemComponent,
     } = this.props
     const {
       isOver
@@ -92,40 +117,6 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
     const justifications = atom.entity.justifications
     const hasJustifications = justifications && justifications.length > 0
 
-    const menuListItems = [
-      <ListItem primaryText="Use"
-                key="use"
-                title={`Create a new justification using this ${atomEntityDescription(atom)}`}
-                leftIcon={<FontIcon>call_made</FontIcon>}
-                component={Link}
-                to={createJustificationPath(atom)}
-      />,
-      <ListItem primaryText="See usages"
-                key="usages"
-                title="See justifications using this basis"
-                leftIcon={<FontIcon>call_merge</FontIcon>}
-                component={Link}
-                to={seeUsagesPath(atom)}
-      />,
-      <Divider key="divider" />,
-      <ListItem primaryText="Edit"
-                key="edit"
-                leftIcon={<FontIcon>create</FontIcon>}
-                onClick={this.onEditAtomEntity}
-      />,
-    ]
-    if (atom.type === JustificationBasisCompoundAtomType.STATEMENT) {
-      const gotoStatementListItem = (
-        <ListItem primaryText="Go to"
-                  key="link"
-                  title="View all of this statement's justifications"
-                  leftIcon={<FontIcon>forward</FontIcon>}
-                  component={Link}
-                  to={paths.statement(atom.entity)}
-        />
-      )
-      insertAt(menuListItems, 2, gotoStatementListItem)
-    }
     const menu = (
       <MenuButton
         icon
@@ -135,7 +126,7 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
         buttonChildren={'more_vert'}
         position={Positions.TOP_RIGHT}
         title={menuTitle(atom)}
-        children={menuListItems}
+        children={this.menuListItems()}
       />
     )
 
@@ -143,7 +134,7 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
       <Paper id={listItemId}
              key={listItemId}
              className="compound-atom justification-basis-compound-atom"
-             component='li'
+             component={itemComponent}
              onMouseOver={this.onMouseOver}
              onMouseLeave={this.onMouseLeave}
       >
@@ -152,6 +143,8 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
                                               key={id}
                                               atom={atom}
                                               statementEditorId={this.statementEditorId()}
+                                              paraphrasingStatementEditorId={this.paraphrasingStatementEditorId()}
+                                              sourceExcerptEditorId={this.sourceExcerptParaphraseEditorId()}
                                               doShowControls={doShowControls}
                                               doShowJustifications={doShowStatementAtomJustifications}
                                               isCondensed={isCondensed}
@@ -170,6 +163,92 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
       </Paper>
     )
   }
+
+  menuListItems = () => {
+    const {
+      atom
+    } = this.props
+
+    const menuListItems = [
+      <ListItem primaryText="Use"
+                key="use-basis"
+                title={`Create a new justification using this ${atomEntityDescription(atom)}`}
+                leftIcon={<FontIcon>call_made</FontIcon>}
+                component={Link}
+                to={createJustificationPath(atom)}
+      />,
+      <ListItem primaryText="See usages"
+                key="basis-usages"
+                title="See justifications using this basis"
+                leftIcon={<FontIcon>call_merge</FontIcon>}
+                component={Link}
+                to={seeBasisUsagesPath(atom)}
+      />,
+      <Divider key="divider" />,
+    ]
+
+    switch (atom.type) {
+      case JustificationBasisCompoundAtomType.STATEMENT: {
+        const gotoStatementListItem = (
+          <ListItem primaryText="Go to"
+                    key="go-to-statement"
+                    title="View all of this statement's justifications"
+                    leftIcon={<FontIcon>forward</FontIcon>}
+                    component={Link}
+                    to={paths.statement(atom.entity)}
+          />
+        )
+        insertAt(menuListItems, 2, gotoStatementListItem)
+
+        const editStatementListItem = (
+          <ListItem primaryText="Edit"
+                    key="edit-statement"
+                    leftIcon={<FontIcon>create</FontIcon>}
+                    onClick={this.onEditStatement}
+          />
+        )
+        menuListItems.push(editStatementListItem)
+        break
+      }
+      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
+        const seeUsagesListItems = [
+          <ListItem primaryText="See statement usages"
+                    key="paraphrasing-statement-usages"
+                    title="See justifications using this paraphrasing statement"
+                    leftIcon={<FontIcon>call_merge</FontIcon>}
+                    component={Link}
+                    to={paths.searchJustifications({statementId: atom.entity.paraphrasingStatement.id})}
+          />,
+          <ListItem primaryText="See excerpt usages"
+                    key="source-excerpt-usages"
+                    title="See justifications using this excerpt"
+                    leftIcon={<FontIcon>call_merge</FontIcon>}
+                    component={Link}
+                    to={seeSourceExcerptUsagesPath(atom.entity.sourceExcerpt)}
+          />,
+        ]
+        insertAllAt(menuListItems, 2, seeUsagesListItems)
+
+        pushAll(menuListItems, [
+          <ListItem primaryText="Edit statement"
+                    key="edit-paraphrasing-statement"
+                    leftIcon={<FontIcon>create</FontIcon>}
+                    onClick={this.onEditParaphrasingStatement}
+          />,
+          <ListItem primaryText="Edit excerpt"
+                    key="edit-source-excerpt"
+                    leftIcon={<FontIcon>create</FontIcon>}
+                    onClick={this.onEditSourceExcerpt}
+          />
+        ])
+        break
+      }
+      default:
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+    }
+
+    return menuListItems
+  }
 }
 JustificationBasisCompoundViewerAtomListItem.propTypes = {
   id: PropTypes.string.isRequired,
@@ -178,12 +257,18 @@ JustificationBasisCompoundViewerAtomListItem.propTypes = {
   doShowStatementAtomJustifications: PropTypes.bool,
   isCondensed: PropTypes.bool,
   isUnCondensed: PropTypes.bool,
+  /** The component as which the item will be rendered */
+  itemComponent: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+  ])
 }
 JustificationBasisCompoundViewerAtomListItem.defaultProps = {
   doShowControls: true,
   doShowStatementAtomJustifications: false,
   isCondensed: false,
   isUnCondensed: false,
+  itemComponent: 'li',
 }
 
 function menuTitle(atom) {
@@ -208,7 +293,7 @@ function atomEntityDescription(atom) {
   }
 }
 
-function seeUsagesPath(atom) {
+function seeBasisUsagesPath(atom) {
   const params = {}
 
   switch (atom.type) {
@@ -220,6 +305,25 @@ function seeUsagesPath(atom) {
       break
     default:
       throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+  }
+
+  return paths.searchJustifications(params)
+}
+
+function seeSourceExcerptUsagesPath(sourceExcerpt) {
+  const params = {}
+  switch (sourceExcerpt.type) {
+    case SourceExcerptType.WRIT_QUOTE:
+      params.writQuoteId = sourceExcerpt.entity.id
+      break
+    case SourceExcerptType.PIC_REGION:
+      params.picRegionId = sourceExcerpt.entity.id
+      break
+    case SourceExcerptType.VID_SEGMENT:
+      params.vidSegmentId = sourceExcerpt.entity.id
+      break
+    default:
+      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
   }
 
   return paths.searchJustifications(params)

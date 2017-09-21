@@ -3,6 +3,7 @@ const isArray = require('lodash/isArray')
 const isFunction = require('lodash/isFunction')
 const isNumber = require('lodash/isNumber')
 const isUndefined = require('lodash/isUndefined')
+const map = require('lodash/map')
 const reduce = require('lodash/reduce')
 const moment = require('moment')
 
@@ -73,12 +74,64 @@ _e.insertAt = (array, index, item) => {
   if (!isNumber(index)) {
     throw new Error('second argument must be number; was: ' + typeof(index))
   }
-  const i = isUndefined(index) ? array.length : index
-  array.splice(i, 0, item)
+
+  array.splice(index, 0, item)
+  return array
+}
+
+_e.insertAllAt = (array, index, items) => {
+  if (!isArray(array)) {
+    throw new Error('first argument must be an array; was: ' + typeof(array))
+  }
+  if (!isNumber(index)) {
+    throw new Error('second argument must be number; was: ' + typeof(index))
+  }
+  if (!isArray(items)) {
+    throw new Error('third argument must be an array; was: ' + typeof(items))
+  }
+
+  const args = [index, 0].concat(items)
+  Array.prototype.splice.apply(array, args)
   return array
 }
 
 _e.removeAt = (array, index) => {
   array.splice(index, 1)
   return array
+}
+
+_e.encodeQueryStringObject = (obj) => map(obj, (val, key) => `${key}=${val}`).join(',')
+
+_e.decodeQueryStringObject = (param) => {
+  if (!param) {
+    return param
+  }
+
+  const keyVals = param.split(',')
+
+  const obj = {}
+  forEach(keyVals, (keyVal) => {
+    const [key, val] = keyVal.split('=')
+    obj[key] = val
+  })
+
+  return obj
+}
+
+_e.encodeSorts = (sorts) => map(sorts, ({property, direction}) => `${property}=${direction}`).join(',')
+
+_e.decodeSorts = (param) => {
+  if (!param) {
+    return param
+  }
+
+  const propertyDirections = param.split(',')
+
+  const sorts = []
+  forEach(propertyDirections, (propertyDirection) => {
+    const [property, direction] = propertyDirection.split('=')
+    sorts.push({property, direction})
+  })
+
+  return sorts
 }

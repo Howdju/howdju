@@ -26,7 +26,6 @@ const {
   WritQuoteValidator
 } = require('../validators')
 const {
-  createSorts,
   createContinuationToken,
   decodeContinuationToken,
   createNextContinuationToken,
@@ -84,14 +83,13 @@ exports.WritQuotesService = class WritQuotesService {
       })
   }
 
-  readWritQuotes({continuationToken, sortProperty = 'created', sortDirection = SortDirection.ASCENDING, count = 25 }) {
+  readWritQuotes({sorts, continuationToken, count = 25 }) {
     const countNumber = toNumber(count)
     if (!isFinite(countNumber)) {
       throw new RequestValidationError(`count must be a number. ${count} is not a number.`)
     }
 
     if (!continuationToken) {
-      const sorts = createSorts(sortProperty, sortDirection)
       return this.readInitialWritQuotes(sorts, countNumber)
     }
     return this.readMoreWritQuotes(continuationToken, countNumber)
