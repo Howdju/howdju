@@ -346,19 +346,40 @@ const toJustificationBasisCompoundAtom = (row) => {
   return atom
 }
 
-const toSourceExcerptParaphrase = (row) => row && ({
-  id: row.source_excerpt_paraphrase_id,
-  paraphrasingStatement: toStatement({
+const toSourceExcerptParaphrase = (row) => {
+  if (!row) {
+    return row
+  }
+  const sourceExcerptParaphrase = ({
+    id: row.source_excerpt_paraphrase_id,
+    paraphrasingStatement: {
+      id: row.paraphrasing_statement_id,
+    },
+    sourceExcerpt: {
+      type: row.source_excerpt_type,
+      entity: {
+        id: row.source_excerpt_id
+      }
+    },
+  })
+
+  const paraphrasingStatement = toStatement({
     statement_id: row.paraphrasing_statement_id,
     text: row.paraphrasing_statement_text,
     created: row.paraphrasing_statement_created,
     creator_user_id: row.paraphrasing_statement_creator_user_id
-  }),
-  sourceExcerpt: {
-    type: row.source_excerpt_type,
-    entity: toSourceExcerptEntity(row)
-  },
-})
+  })
+  if (paraphrasingStatement.id) {
+    sourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatement
+  }
+
+  const sourceExcerptEntity = toSourceExcerptEntity(row)
+  if (sourceExcerptEntity.id) {
+    sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
+  }
+
+  return sourceExcerptParaphrase
+}
 
 const toSourceExcerptEntity = (row) => {
   if (!row) {

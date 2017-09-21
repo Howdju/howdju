@@ -1,20 +1,24 @@
 # Howdju UI TODO
 
+* Paraphrase-based justification's source excerpt entity missing
 * Is a Paraphrased citation equal to a citation-based justification?
+  * Automatically create citation-based justification?
+* Use: Support making a justification from a source excerpt paraphrase basis
+* Test 
+  * Usages
+  * Creation
+    * Extant: paraphrasing statement, writ, writ quote, paraphrase, justification
+      * With atoms (add a an existing and non-existing statement atom sibling)
 
 * Paraphrases 
   * Support paraphrases
-    * Usages
-      * Ensure I've tested all paths
       
     * When the quote differed, the sourceExcerpt was missing entity
-    * Must try permutations of existing and non-existing things with sourceExcerptParaphrase
     * Warning that root statement IDs weren't equal?
-      * Color warning/error output?
     
     * readOnlyBasis being sent to SourceExcerptParaphrases and atoms etc.?
     * Review use of onTextInputKeyDown (if the purpose is to catch enter/escape, why limit it to text fields?)
-    * Support making a justification from a source excerpt paraphrase basis
+    
     * randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
   
   * Add icons and context menus
@@ -27,7 +31,7 @@
   * Use writQuote.normalQuoteText for equivalence
     
   * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
-  * Create staging DB for testing schema changes?
+  * Create pre-prod DB for testing schema changes?
 
 * Refactors
   * rename create to getOrCreate
@@ -45,7 +49,7 @@
 Cat meeting design notes:
   * Statement text larger
   * Remove "Justification", since is implied? (supporting/opposing)
-  * Need a search icon
+  * Need a search magnifying icon
   * when click main search, change prompt to "type what you want to know about"
   * Paper clip tags to bookmark for later
   * Statement non-negated, negated
@@ -74,7 +78,7 @@ Cat meeting design notes:
 * Fade unhovered disapproved justifications
 * Add icons to indicate justification vs. counter
 * Hover to explain Supports, Opposes, counters
-* Recently viewed statements, tags (of statements viewed), recent searches
+* Recently viewed statements, recently viewed tags, recent searches
 * Somehow provide ability to roll back UI.  Either output current version of UI when updating or have a history somewhere
 
 * Return in statement/citation text should submit field
@@ -112,8 +116,10 @@ Cat meeting design notes:
     * Anyway, clicking on a paraphrase brings up...the justification usages or the supporting/opposing justifications?
   * Show: only mine, only people I follow, only verified users
 
+* For local logger, color warning/error output to make it harder to miss?
 
 * Minimize react-md (don't use react-md-everything): https://react-md.mlaursen.com/customization/minimizing-bundle
+
 ## Bugs
 
 * iOS content blocker blocking google fonts

@@ -96,7 +96,13 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       this.picRegionsDao.readPicRegionsByIdForRootStatementId(rootStatementId),
       this.vidSegmentsDao.readVidSegmentsByIdForRootStatementId(rootStatementId),
     ])
-      .then( ([{rows: sourceExcerptParaphraseRows}, paraphrasingStatementsById, writQuotesById, picRegionsById, vidSegmentsById]) => {
+      .then(([
+        {rows: sourceExcerptParaphraseRows},
+        paraphrasingStatementsById,
+        writQuotesById,
+        picRegionsById,
+        vidSegmentsById,
+      ]) => {
         const sourceExcerptParaphrasesById = {}
         forEach(sourceExcerptParaphraseRows, (sourceExcerptParaphraseRow) => {
           const sourceExcerptParaphrase = toSourceExcerptParaphrase(sourceExcerptParaphraseRow)
@@ -105,13 +111,13 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
 
           switch (sourceExcerptParaphrase.sourceExcerpt.type) {
             case SourceExcerptType.WRIT_QUOTE:
-              sourceExcerptParaphrase.sourceExcerpt.entity = writQuotesById[sourceExcerptParaphrase.sourceExcerpt.id]
+              sourceExcerptParaphrase.sourceExcerpt.entity = writQuotesById[sourceExcerptParaphrase.sourceExcerpt.entity.id]
               break
             case SourceExcerptType.PIC_REGION:
-              sourceExcerptParaphrase.sourceExcerpt.entity = picRegionsById[sourceExcerptParaphrase.sourceExcerpt.id]
+              sourceExcerptParaphrase.sourceExcerpt.entity = picRegionsById[sourceExcerptParaphrase.sourceExcerpt.entity.id]
               break
             case SourceExcerptType.VID_SEGMENT:
-              sourceExcerptParaphrase.sourceExcerpt.entity = vidSegmentsById[sourceExcerptParaphrase.sourceExcerpt.id]
+              sourceExcerptParaphrase.sourceExcerpt.entity = vidSegmentsById[sourceExcerptParaphrase.sourceExcerpt.entity.id]
               break
             default:
               throw newExhaustedEnumError('SourceExcerptType', sourceExcerptParaphrase.sourceExcerpt.type)
