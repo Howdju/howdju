@@ -69,8 +69,8 @@ class CounterJustificationEditor extends Component {
     delete rest.editors
     delete rest.editorId
 
-    const justificationBasisCompoundErrors = get(errors, 'fieldErrors.basis.fieldErrors.entity')
-    const justificationBasisCompound = get(editEntity, 'basis.entity')
+    const justificationBasisCompoundErrors = get(errors, 'fieldErrors.basis.fieldErrors.justificationBasisCompound')
+    const justificationBasisCompound = get(editEntity, 'basis.justificationBasisCompound')
 
     return (
       <form onSubmit={this.onSubmit}>
@@ -78,7 +78,7 @@ class CounterJustificationEditor extends Component {
           <JustificationBasisCompoundEditorFields
             justificationBasisCompound={justificationBasisCompound}
             id={id}
-            name="basis.entity"
+            name="basis.justificationBasisCompound"
             suggestionsKey={suggestionsKey}
             onPropertyChange={this.onPropertyChange}
             onAddJustificationBasisCompoundAtom={this.onAddJustificationBasisCompoundAtom}

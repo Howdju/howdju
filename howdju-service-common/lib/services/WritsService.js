@@ -24,6 +24,10 @@ exports.WritsService = class WritsService {
     this.writsDao = writsDao
   }
 
+  readWritForId(writId) {
+    this.writsDao.readWritForId(writId)
+  }
+
   readWrits({sorts, continuationToken, count = 25 }) {
     const countNumber = toNumber(count)
     if (!isFinite(countNumber)) {
@@ -64,36 +68,6 @@ exports.WritsService = class WritsService {
       })
   }
 
-  createWritAsUser(writ, userId, now) {
-    return Promise.resolve()
-      .then(() => {
-        if (writ.id) {
-          return {
-            isExtant: true,
-            writ,
-          }
-        }
-        return this.writsDao.readWritEquivalentTo(writ)
-          .then( equivalentWrit => {
-            if (equivalentWrit) {
-              return {
-                isExtant: true,
-                writ: equivalentWrit,
-              }
-            }
-            return this.writsDao.createWrit(writ, userId, now)
-              .then( (writ) => {
-                this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE, ActionTargetType.WRIT, writ.id)
-                return writ
-              })
-              .then(writ => ({
-                isExtant: false,
-                writ
-              }))
-          })
-      })
-  }
-
   updateWritAsUser(userId, writ, now) {
     return this.writsDao.update(writ)
       .then( (writ) => {
@@ -101,4 +75,35 @@ exports.WritsService = class WritsService {
         return writ
       })
   }
+
+  readOrCreateValidWritAsUser(writ, userId, now) {
+    return Promise.resolve()
+      .then(() => {
+        if (writ.id) {
+          return Promise.props({
+            isExtant: true,
+            writ: this.readWritForId(writ, {userId})
+          })
+        }
+
+        return readOrCreateEquivalentWritAsUser(this, writ, userId, now)
+      })
+  }
+}
+
+function readOrCreateEquivalentWritAsUser(service, writ, userId, now) {
+  return service.writsDao.readWritEquivalentTo(writ)
+    .then( (equivalentWrit) => Promise.all([
+      !!equivalentWrit,
+      equivalentWrit || service.writsDao.createWrit(writ, userId, now)
+    ]))
+    .then( ([isExtant, writ]) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE : ActionType.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.WRIT, writ.id)
+
+      return {
+        isExtant,
+        writ
+      }
+    })
 }

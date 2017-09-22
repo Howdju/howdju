@@ -1,6 +1,5 @@
 const concat = require('lodash/concat')
 const forEach = require('lodash/forEach')
-const head = require('lodash/head')
 const map = require('lodash/map')
 const Promise = require('bluebird')
 const snakeCase = require('lodash/snakeCase')
@@ -20,7 +19,8 @@ const {
   toUrl,
 } = require('./orm')
 const {
-  mapSingle
+  mapSingle,
+  normalizeText,
 } = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 
@@ -59,12 +59,12 @@ exports.WritQuotesDao = class WritQuotesDao {
       })
   }
 
-  readWritQuoteHavingWritIdAndNormalQuoteText(writId, normalQuoteText) {
+  readWritQuoteHavingWritIdAndQuoteText(writId, quoteText) {
     return this.database.query(
       `select * from writ_quotes where writ_id = $1 and normal_quote_text = $2 and deleted is null`,
-      [writId, normalQuoteText]
+      [writId, normalizeText(quoteText)]
     )
-      .then(mapSingle(this.logger, toWritQuote, 'writ_quotes', {writId, normalQuoteText}))
+      .then(mapSingle(this.logger, toWritQuote, 'writ_quotes', {writId, quoteText}))
   }
 
   readWritQuotes(sorts, count) {
@@ -233,44 +233,10 @@ exports.WritQuotesDao = class WritQuotesDao {
       })
   }
 
-  readWritQuotesEquivalentTo(writQuote) {
-    // Empty strings should be stored as null quotes
-    const quoteText = writQuote.quoteText || null
-    // Could also let the writ.title be missing and just look up by ID
-    return this.database.query(`
-      select * 
-      from writ_quotes wq join writs w on 
-            wq.writ_id = w.writ_id
-        and case when $1::varchar is null then w.writ_id = $2 else w.title = $1 end
-        and case when $3::varchar is null then wq.quote_text is null else wq.quote_text = $3 end
-        and w.deleted is null
-        and wq.deleted is null 
-      `,
-      [writQuote.writ.title, writQuote.writ.id, quoteText]
-    )
-      .then( ({rows}) => {
-        if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent writs`, writQuote)
-        }
-        return toWritQuote(head(rows))
-      })
-  }
-
   readWritQuoteUrlsForWritQuote(writQuote) {
     return this.database.query('select * from writ_quote_urls where writ_quote_id = $1 and deleted is null',
       [writQuote.id])
       .then( ({rows}) => map(rows, toWritQuoteUrl) )
-  }
-
-  readWritQuoteUrl(writQuote, url) {
-    return this.database.query('select * from writ_quote_urls where writ_quote_id = $1 and url_id = $2 and deleted is null',
-      [writQuote.id, url.id])
-      .then( ({rows}) => {
-        if (rows.length > 1) {
-          this.logger.error(`URL ${url.id} is associated with writ quote ${writQuote.id} multiple times`)
-        }
-        return toWritQuoteUrl(head(rows))
-      })
   }
 
   createWritQuoteUrls(writQuote, urls, userId, now) {

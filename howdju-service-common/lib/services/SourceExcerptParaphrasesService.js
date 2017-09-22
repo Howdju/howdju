@@ -38,61 +38,39 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
   }
 
   readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId}) {
-    return getSourceExcerptParaphrase(
-      this.logger,
-      this.statementsService,
-      this.writQuotesService,
-      this.picRegionsService,
-      this.vidSegmentsService,
-      this.sourceExcerptParaphrasesDao,
+    return readSourceExcerptParaphraseForId(
+      this,
       sourceExcerptParaphraseId,
       userId
     )
   }
 
-  getOrCreateValidSourceExcerptParaphraseAsUser(sourceExcerptParaphrase, userId, now) {
-    return getOrCreateSourceExcerptParaphrase(
-      this.logger,
-      this.statementsService,
-      this.writQuotesService,
-      this.picRegionsService,
-      this.vidSegmentsService,
-      this.sourceExcerptParaphrasesDao,
-      sourceExcerptParaphrase,
-      userId,
-      now
-    )
-      .then( ({isExtant, sourceExcerptParaphrase}) => {
-        const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.SOURCE_EXCERPT_PARAPHRASE,
-          sourceExcerptParaphrase.id)
-
-        return {
-          isExtant,
-          sourceExcerptParaphrase,
+  readOrCreateValidSourceExcerptParaphraseAsUser(sourceExcerptParaphrase, userId, now) {
+    return Promise.resolve()
+      .then(() => {
+        if (sourceExcerptParaphrase.id) {
+          return Promise.props({
+            isExtant: true,
+            sourceExcerptParaphrase: this.readSourceExcerptParaphraseForId(sourceExcerptParaphrase.id),
+          })
         }
+
+        return readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(this, sourceExcerptParaphrase, userId, now)
       })
   }
 }
 
-function getSourceExcerptParaphrase(
-  logger,
-  statementsService,
-  writQuotesService,
-  picRegionsService,
-  vidSegmentsService,
-  sourceExcerptParaphrasesDao,
+function readSourceExcerptParaphraseForId(
+  service,
   sourceExcerptParaphraseId,
   userId
 ) {
-  return sourceExcerptParaphrasesDao.readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId})
+  return service.sourceExcerptParaphrasesDao.readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId})
     .then( (sourceExcerptParaphrase) => Promise.all([
       sourceExcerptParaphrase,
-      statementsService.readStatementForId(sourceExcerptParaphrase.paraphrasingStatement.id, {userId}),
+      service.statementsService.readStatementForId(sourceExcerptParaphrase.paraphrasingStatement.id, {userId}),
       getSourceExcerptEntity(
-        writQuotesService,
-        picRegionsService,
-        vidSegmentsService,
+        service,
         sourceExcerptParaphrase.sourceExcerpt.type,
         sourceExcerptParaphrase.sourceExcerpt.entity.id,
         userId
@@ -106,78 +84,25 @@ function getSourceExcerptParaphrase(
 }
 
 function getSourceExcerptEntity(
-  writQuotesService,
-  picRegionsService,
-  vidSegmentsService,
+  service,
   sourceExcerptType,
   sourceExcerptEntityId,
   userId
 ) {
   switch (sourceExcerptType) {
     case SourceExcerptType.WRIT_QUOTE:
-      return writQuotesService.readWritQuoteForId(sourceExcerptEntityId, {userId})
+      return service.writQuotesService.readWritQuoteForId(sourceExcerptEntityId, {userId})
     case SourceExcerptType.PIC_REGION:
-      return picRegionsService.readPicRegionForId(sourceExcerptEntityId, {userId})
+      return service.picRegionsService.readPicRegionForId(sourceExcerptEntityId, {userId})
     case SourceExcerptType.VID_SEGMENT:
-      return vidSegmentsService.readVidSegmentForId(sourceExcerptEntityId, {userId})
+      return service.vidSegmentsService.readVidSegmentForId(sourceExcerptEntityId, {userId})
     default:
       throw newImpossibleError(`Impossible SourceExcerptType: ${sourceExcerptType}`)
   }
 }
 
-function getOrCreateSourceExcerptParaphrase(
-  logger,
-  statementsService,
-  writQuotesService,
-  picRegionsService,
-  vidSegmentsService,
-  sourceExcerptParaphrasesDao,
-  sourceExcerptParaphrase,
-  userId,
-  now
-) {
-  if (sourceExcerptParaphrase.id) {
-    return this.sourceExcerptParaphrasesDao.readSourceExcerptParaphraseForId(sourceExcerptParaphrase.id)
-      .then( (extantSourceExcerptParaphrase) => {
-        if (extantSourceExcerptParaphrase) {
-          return extantSourceExcerptParaphrase
-        }
-
-        logger.warning(`SourceExcerptParaphrase having ID ${sourceExcerptParaphrase.id} missing.  Getting or creating equivalent`)
-        return getOrCreateEquivalentSourceExcerptParaphrase(
-          logger,
-          statementsService,
-          writQuotesService,
-          picRegionsService,
-          vidSegmentsService,
-          sourceExcerptParaphrasesDao,
-          sourceExcerptParaphrase,
-          userId,
-          now
-        )
-      })
-  }
-
-  return getOrCreateEquivalentSourceExcerptParaphrase(
-    logger,
-    statementsService,
-    writQuotesService,
-    picRegionsService,
-    vidSegmentsService,
-    sourceExcerptParaphrasesDao,
-    sourceExcerptParaphrase,
-    userId,
-    now
-  )
-}
-
-function getOrCreateEquivalentSourceExcerptParaphrase(
-  logger,
-  statementsService,
-  writQuotesService,
-  picRegionsService,
-  vidSegmentsService,
-  sourceExcerptParaphrasesDao,
+function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
+  service,
   sourceExcerptParaphrase,
   userId,
   now
@@ -185,19 +110,21 @@ function getOrCreateEquivalentSourceExcerptParaphrase(
   const sourceExcerptType = sourceExcerptParaphrase.sourceExcerpt.type
   const sourceExcerptEntity = sourceExcerptParaphrase.sourceExcerpt.entity
   return Promise.all([
-    statementsService.getOrCreateValidStatementAsUser(sourceExcerptParaphrase.paraphrasingStatement, userId, now),
-    getOrCreateSourceExcerptEntity(sourceExcerptType, sourceExcerptEntity, userId, now, writQuotesService, picRegionsService, vidSegmentsService),
+    service.statementsService.readOrCreateValidStatementAsUser(sourceExcerptParaphrase.paraphrasingStatement, userId, now),
+    readOrCreateSourceExcerptEntity(service, sourceExcerptType, sourceExcerptEntity, userId, now),
   ])
     .then( ([
       {isExtant: isStatementExtant, statement},
       {isExtant: isSourceExcerptExtant, sourceExcerptEntity}
     ]) => {
       if (isStatementExtant && isSourceExcerptExtant) {
+        service.logger.debug(`Found extant statement (ID ${statement.id}) and sourceExcerpt (ID ${sourceExcerptEntity.id}  Attempting to find extant sourceExcerptParaphrase from them.`)
         const sourceExcerptType = sourceExcerptParaphrase.sourceExcerpt.type
-        return sourceExcerptParaphrasesDao.readSourceExcerptHavingStatementIdAndSourceExcerptTypeAndId(statement.id,
+        return service.sourceExcerptParaphrasesDao.readSourceExcerptHavingStatementIdAndSourceExcerptTypeAndId(statement.id,
           sourceExcerptType, sourceExcerptEntity.id)
           .then ( (extantSourceExcerptParaphrase) => {
             if (extantSourceExcerptParaphrase) {
+              service.logger.debug(`Found extant sourceExcerptParaphrase (ID: ${extantSourceExcerptParaphrase.id} based upon statement and sourceExcerpt`)
               extantSourceExcerptParaphrase.paraphrasingStatement = statement
               extantSourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
               return {
@@ -206,35 +133,58 @@ function getOrCreateEquivalentSourceExcerptParaphrase(
               }
             }
 
+            service.logger.debug(`Did not find extant sourceExcerptParaphrase based upon statement and sourceExcerpt`)
             sourceExcerptParaphrase.paraphrasingStatement = statement
             sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
-            return sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
-              .then( (sourceExcerptParaphrase) => ({
-                isExtant: false,
-                sourceExcerptParaphrase,
-              }))
+            return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
+              .then( (sourceExcerptParaphrase) => {
+                service.logger.debug(`Created sourceExcerptParaphrase (ID ${sourceExcerptParaphrase.id})`)
+                return {
+                  isExtant: false,
+                  sourceExcerptParaphrase,
+                }
+              })
           })
       }
       sourceExcerptParaphrase.paraphrasingStatement = statement
       sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
-      return sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
-        .then( (sourceExcerptParaphrase) => ({
-          isExtant: false,
-          sourceExcerptParaphrase,
-        }))
+      return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
+        .then( (sourceExcerptParaphrase) => {
+          service.logger.debug(`Created sourceExcerptParaphrase (ID ${sourceExcerptParaphrase.id})`)
+          return {
+            isExtant: false,
+            sourceExcerptParaphrase,
+          }
+        })
+    })
+    .then( ({isExtant, sourceExcerptParaphrase}) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.SOURCE_EXCERPT_PARAPHRASE,
+        sourceExcerptParaphrase.id)
+
+      return {
+        isExtant,
+        sourceExcerptParaphrase,
+      }
     })
 }
 
-function getOrCreateSourceExcerptEntity(sourceExcerptType, sourceExcerptEntity, userId, now, writQuotesService, picRegionsService, vidSegmentsService) {
+function readOrCreateSourceExcerptEntity(
+  service,
+  sourceExcerptType,
+  sourceExcerptEntity,
+  userId,
+  now
+) {
   switch (sourceExcerptType) {
     case SourceExcerptType.WRIT_QUOTE:
-      return writQuotesService.getOrCreateWritQuoteAsUser(sourceExcerptEntity, userId, now)
+      return service.writQuotesService.readOrCreateWritQuoteAsUser(sourceExcerptEntity, userId, now)
         .then( ({isExtant, writQuote: sourceExcerptEntity}) => ({isExtant, sourceExcerptEntity}) )
     case SourceExcerptType.PIC_REGION:
-      return picRegionsService.getOrCreatePicRegionAsUser(sourceExcerptEntity, userId, now)
+      return service.picRegionsService.readOrCreatePicRegionAsUser(sourceExcerptEntity, userId, now)
         .then( ({isExtant, picRegion: sourceExcerptEntity}) => ({isExtant, sourceExcerptEntity}) )
     case SourceExcerptType.VID_SEGMENT:
-      return vidSegmentsService.getOrCreateVidSegmentAsUser(sourceExcerptEntity, userId, now)
+      return service.vidSegmentsService.readOrCreateVidSegmentAsUser(sourceExcerptEntity, userId, now)
         .then( ({isExtant, vidSegment: sourceExcerptEntity}) => ({isExtant, sourceExcerptEntity}) )
     default:
       throw newImpossibleError(`Impossible SourceExcerptType: ${sourceExcerptType}`)

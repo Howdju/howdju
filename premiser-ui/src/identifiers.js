@@ -7,7 +7,7 @@ export const newId = () => uuid.v4()
 
 export const pageLoadId = newId()
 
-export const getOrCreateSessionStorageId = () => {
+export const readOrCreateSessionStorageId = () => {
   let sessionStorageId = getSessionStorageId()
   if (!sessionStorageId) {
     sessionStorageId = createSessionStorageId()
@@ -32,7 +32,7 @@ export const getSessionStorageId = () => {
   return get(window, ['sessionStorage', 'ssid'])
 }
 
-export const getOrCreateSessionCookieId = () => {
+export const readOrCreateSessionCookieId = () => {
   let sessionCookieId = getSessionCookieId()
   if (!sessionCookieId) {
     sessionCookieId = createSessionCookieId()

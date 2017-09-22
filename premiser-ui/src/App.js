@@ -57,7 +57,7 @@ import {
   isScrollPastTop,
   isDevice,
 } from "./util"
-import {getOrCreateSessionStorageId, getOrCreateSessionCookieId} from "./identifiers"
+import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
 
 const tabIndexByPathname = {
   '/featured-perspectives': 0,
@@ -80,8 +80,8 @@ class App extends Component {
 
     this.throttledOnWindowScroll = throttle(this.onWindowScroll, 100)
 
-    getOrCreateSessionStorageId()
-    getOrCreateSessionCookieId()
+    readOrCreateSessionStorageId()
+    readOrCreateSessionCookieId()
   }
 
   componentWillMount() {

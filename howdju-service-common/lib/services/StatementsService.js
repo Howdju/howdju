@@ -17,7 +17,6 @@ const {
   authorizationErrorCodes,
   ActionType,
   ActionTargetType,
-  isTruthy,
 } = require('howdju-common')
 
 const {
@@ -61,10 +60,6 @@ exports.StatementsService = class StatementsService {
         }
         return statement
       })
-  }
-
-  readStatementEquivalentTo(statement) {
-    return this.statementsDao.readStatementByText(statement.text)
   }
 
   readStatements({sorts, continuationToken = null, count = 25}) {
@@ -233,15 +228,15 @@ exports.StatementsService = class StatementsService {
       }))
   }
 
-  getOrCreateStatement(authToken, statement) {
+  readOrCreateStatement(authToken, statement) {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => {
         const now = new Date()
-        return this.getOrCreateStatementAsUser(statement, userId, now)
+        return this.readOrCreateStatementAsUser(statement, userId, now)
       })
   }
 
-  getOrCreateStatementAsUser(statement, userId, now) {
+  readOrCreateStatementAsUser(statement, userId, now) {
     return Promise.resolve()
       .then(() => {
         const validationErrors = this.statementValidator.validate(statement)
@@ -250,35 +245,47 @@ exports.StatementsService = class StatementsService {
         }
         return userId
       })
-      .then(userId => this.getOrCreateValidStatementAsUser(statement, userId, now))
+      .then(userId => this.readOrCreateValidStatementAsUser(statement, userId, now))
   }
 
-  getOrCreateValidStatementAsUser(statement, userId, now) {
+  readOrCreateValidStatementAsUser(statement, userId, now) {
     return Promise.resolve()
-      .then(() => Promise.all([
-        userId,
-        isTruthy(statement.id) ?
-          this.statementsDao.readStatementForId(statement.id) :
-          this.statementsDao.readStatementByText(statement.text),
-        now,
-      ]))
-      .then(([userId, extantStatement, now]) => {
-        const isExtant = !!extantStatement
-        return Promise.all([
-          userId,
-          now,
-          isExtant,
-          isExtant ? extantStatement : this.statementsDao.createStatement(userId, statement, now),
-        ])
-      })
-      .then(([userId, now, isExtant, statement]) => {
-        const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.STATEMENT, statement.id)
-
-        return {
-          isExtant,
-          statement,
+      .then(() => {
+        if (statement.id) {
+          return Promise.props({
+            isExtant: true,
+            statement: this.readStatementForId(statement.id, {userId})
+          })
         }
+
+        return readOrCreateEquivalentValidStatementAsUser(this, statement, userId, now)
       })
   }
+}
+
+function readOrCreateEquivalentValidStatementAsUser(service, statement, userId, now) {
+  return Promise.resolve()
+    .then(() => Promise.all([
+      userId,
+      service.statementsDao.readStatementByText(statement.text),
+      now,
+    ]))
+    .then(([userId, extantStatement, now]) => {
+      const isExtant = !!extantStatement
+      return Promise.all([
+        userId,
+        now,
+        isExtant,
+        isExtant ? extantStatement : service.statementsDao.createStatement(userId, statement, now),
+      ])
+    })
+    .then(([userId, now, isExtant, statement]) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.STATEMENT, statement.id)
+
+      return {
+        isExtant,
+        statement,
+      }
+    })
 }

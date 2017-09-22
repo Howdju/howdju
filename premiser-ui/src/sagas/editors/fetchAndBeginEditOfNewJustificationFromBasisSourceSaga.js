@@ -10,11 +10,8 @@ import {
   makeNewStatementCompoundFromStatement,
   makeNewJustificationBasisCompoundFromSourceExcerptParaphrase,
   makeNewStatementJustification,
-  removeStatementCompoundId,
   JustificationBasisSourceType,
-  newImpossibleError,
-  JustificationBasisCompoundAtomType,
-  SourceExcerptType,
+  newExhaustedEnumError,
 } from 'howdju-common'
 
 import {
@@ -23,7 +20,13 @@ import {
   flows,
   str,
 } from "../../actions"
-
+import {
+  removeStatementCompoundIds,
+  removeStatementIds,
+  removeSourceExcerptParaphraseIds,
+  removeJustificationBasisCompoundIds,
+  removeWritQuoteIds,
+} from '../../viewModels'
 import {
   callApiForResource,
 } from '../resourceApiSagas'
@@ -92,20 +95,24 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
 
       switch (basisSourceType) {
         case JustificationBasisSourceType.STATEMENT_COMPOUND:
+          removeStatementCompoundIds(basisSource)
           basis.statementCompound = basisSource
-          removeStatementCompoundId(basis.statementCompound)
           break
         case JustificationBasisSourceType.STATEMENT:
+          removeStatementIds(basisSource)
           basis.type = JustificationBasisType.STATEMENT_COMPOUND
           basis.statementCompound = makeNewStatementCompoundFromStatement(basisSource)
           break
         case JustificationBasisSourceType.WRIT_QUOTE:
+          removeWritQuoteIds(basisSource)
           basis.writQuote = basisSource
           break
         case JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND:
+          removeJustificationBasisCompoundIds(basisSource)
           basis.justificationBasisCompound = basisSource
           break
         case JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE:
+          removeSourceExcerptParaphraseIds(basisSource)
           basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromSourceExcerptParaphrase(basisSource)
           break

@@ -15,13 +15,61 @@ import {
 import {ellipsis} from './characters'
 
 
-export const removeStatementCompoundId = (statementCompound) => {
+export const removeStatementCompoundIds = (statementCompound) => {
   if (!statementCompound) return statementCompound
   delete statementCompound.id
   forEach(statementCompound.atoms, atom => {
     delete atom.compoundId
+    removeStatementIds(atom.statement)
   })
   return statementCompound
+}
+
+export const removeStatementIds = (statement) => {
+  delete statement.id
+  return statement
+}
+
+export const removeWritQuoteIds = (writQuote) => {
+  delete writQuote.id
+  delete writQuote.writ.id
+  return writQuote
+}
+
+export const removeJustificationBasisCompoundIds = (justificationBasisCompound) => {
+  delete justificationBasisCompound.id
+  forEach(justificationBasisCompound.atoms, (atom) => {
+    delete atom.id
+    delete atom.compoundId
+    switch (atom.type) {
+      case JustificationBasisCompoundAtomType.STATEMENT:
+        removeStatementIds(atom.entity)
+        break
+      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+        removeSourceExcerptParaphraseIds(atom.entity)
+        break
+      default:
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+    }
+  })
+}
+
+export const removeSourceExcerptParaphraseIds = (sourceExcerptParaphrase) => {
+  delete sourceExcerptParaphrase.id
+  delete sourceExcerptParaphrase.sourceExcerpt.entity.id
+  switch (sourceExcerptParaphrase.sourceExcerpt.type) {
+    case SourceExcerptType.WRIT_QUOTE:
+      delete sourceExcerptParaphrase.sourceExcerpt.entity.writ.id
+      break
+    case SourceExcerptType.PIC_REGION:
+      delete sourceExcerptParaphrase.sourceExcerpt.entity.pic.id
+      break
+    case SourceExcerptType.VID_SEGMENT:
+      delete sourceExcerptParaphrase.sourceExcerpt.entity.vid.id
+      break
+    default:
+      throw newExhaustedEnumError('SourceExcerptType', sourceExcerptParaphrase.sourceExcerpt.type)
+  }
 }
 
 export const consolidateNewJustificationEntities = (newJustification) => {

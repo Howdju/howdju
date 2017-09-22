@@ -403,7 +403,7 @@ exports.JustificationsDao = class JustificationsDao {
       `
     return Promise.all([
       this.database.query(sql, [rootStatementId, userId, VoteTargetType.JUSTIFICATION, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
-      this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
+      this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId, {userId}),
       this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
       this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootStatementId(rootStatementId),
     ])
@@ -439,7 +439,7 @@ exports.JustificationsDao = class JustificationsDao {
       .then( ({rows}) => map(rows, toJustification))
   }
 
-  readJustificationById(justificationId) {
+  readJustificationForId(justificationId) {
     return this.database.query('select * from justifications where justification_id = $1 and deleted is null', [justificationId])
       .then( ({rows}) => {
         if (rows.length > 1) {

@@ -32,8 +32,8 @@ exports.UrlsDao = class UrlsDao {
     this.database = database
   }
 
-  readUrlEquivalentTo(url) {
-    return this.database.query('select * from urls where url = $1 and deleted is null', [url.url])
+  readUrlForUrl(url) {
+    return this.database.query('select * from urls where url = $1 and deleted is null', [url])
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`${rows.length} equivalent URLs`, url)

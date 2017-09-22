@@ -3,7 +3,10 @@ const forEach = require('lodash/forEach')
 const merge = require('lodash/merge')
 const toString = require('lodash/toString')
 
-const {newImpossibleError} = require('./commonErrors')
+const {
+  newImpossibleError,
+  newExhaustedEnumError,
+} = require('./commonErrors')
 const {
   JustificationPolarity,
   JustificationRootPolarity,
@@ -84,6 +87,7 @@ _e.makeNewJustification = (props) => {
 
   if (
     props &&
+    props.basis &&
     props.basis.type === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND &&
     props.basis.justificationBasisCompound
   ) {
@@ -215,7 +219,7 @@ _e.makeNewCounterJustification = (targetJustification) => ({
   },
   basis: {
     type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-    entity: _e.makeNewJustificationBasisCompound()
+    justificationBasisCompound: _e.makeNewJustificationBasisCompound()
   },
   polarity: JustificationPolarity.NEGATIVE
 })

@@ -15,7 +15,7 @@ import {
   apiErrorCodes,
   arrayToObject,
   makeNewStatementAtom,
-  makeNewJustificationBasisAtom,
+  makeNewJustificationBasisCompoundAtom,
   makeNewUrl,
   newProgrammingError,
   idEqual,
@@ -188,12 +188,12 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
-    [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.entity.atoms', makeNewJustificationBasisAtom),
-    [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.entity.atoms'),
+    [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisCompoundAtom),
+    [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
     [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
       makeAddUrlReducer( ({atomIndex}) => [
         'basis',
-        'entity',
+        'justificationBasisCompound',
         'atoms',
         atomIndex,
         'sourceExcerptParaphrase',
@@ -204,7 +204,7 @@ const editorReducerByType = {
     [editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
       makeRemoveUrlReducer( ({atomIndex}) => [
         'basis',
-        'entity',
+        'justificationBasisCompound',
         'atoms',
         atomIndex,
         'sourceExcerptParaphrase',
@@ -246,7 +246,7 @@ const editorReducerByType = {
     },
     [editors.addStatementCompoundAtom]: makeAddAtomReducer('basis.statementCompound.atoms', makeNewStatementAtom),
     [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
-    [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
+    [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisCompoundAtom),
     [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
     [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
       makeAddUrlReducer( ({atomIndex}) => [
@@ -304,7 +304,7 @@ const editorReducerByType = {
     [editors.addStatementCompoundAtom]: makeAddAtomReducer('newJustification.basis.statementCompound.atoms', makeNewStatementAtom),
     [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('newJustification.basis.statementCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer(
-      'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisAtom),
+      'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisCompoundAtom),
     [editors.removeJustificationBasisCompoundAtom]:
       makeRemoveAtomReducer('newJustification.basis.justificationBasisCompound.atoms'),
     [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:

@@ -97,7 +97,8 @@ class JustificationTree extends Component {
 
   onEditNewCounterJustification = () => {
     const justification = this.props.justification
-    this.props.editors.beginEdit(EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), makeNewCounterJustification(justification))
+    this.props.editors.beginEdit(EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification),
+      makeNewCounterJustification(justification))
   }
 
   onEditBasis = () => {

@@ -1,0 +1,1 @@
+alter table writ_quotes add column normal_quote_text character varying(65536);

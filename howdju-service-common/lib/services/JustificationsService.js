@@ -6,7 +6,6 @@ const concat = require('lodash/concat')
 const every = require('lodash/every')
 const filter = require('lodash/filter')
 const isFinite = require('lodash/isFinite')
-const isUndefined = require('lodash/isUndefined')
 const join = require('lodash/join')
 const map = require('lodash/map')
 const partition = require('lodash/partition')
@@ -23,6 +22,7 @@ const {
   newImpossibleError,
   idEqual,
   requireArgs,
+  newExhaustedEnumError,
 } = require('howdju-common')
 
 const {
@@ -45,25 +45,6 @@ const {
   rethrowTranslatedErrors
 } = require('../util')
 
-
-const deleteCounterJustificationsToJustificationIds = (
-  justificationsDao,
-  justificationIds,
-  userId,
-  now,
-  deletedJustificationIds = []
-) =>
-  Promise.resolve()
-    .then(() => {
-      if (justificationIds.length === 0) {
-        return deletedJustificationIds
-      }
-      return justificationsDao.deleteCounterJustificationsToJustificationIds(justificationIds, now)
-        .then(currentlyDeletedJustificationIds =>
-          deleteCounterJustificationsToJustificationIds(justificationsDao, currentlyDeletedJustificationIds, userId, now,
-            deletedJustificationIds.concat(currentlyDeletedJustificationIds))
-        )
-    })
 
 exports.JustificationsService = class JustificationsService {
 
@@ -104,6 +85,38 @@ exports.JustificationsService = class JustificationsService {
     this.justificationBasisCompoundsService = justificationBasisCompoundsService
     this.justificationsDao = justificationsDao
     this.permissionsDao = permissionsDao
+  }
+
+  readJustificationForId(justificationId, {userId}) {
+    return this.justificationsDao.readJustificationForId(justificationId)
+      .then( (justification) => {
+        return Promise.all([
+          justification,
+          this.statementsService.readStatementForId(justification.rootStatement.id, {userId}),
+          readJustificationTarget(this, justification.target, {userId}),
+          readJustificationBasis(this, justification.basis, {userId}),
+        ])
+      })
+      .then( ([
+        justification,
+        rootStatement,
+        targetEntity,
+        basisEntity
+      ]) => {
+        justification.rootStatement = rootStatement
+
+        justification.target.entity = targetEntity
+        if (
+          justification.target.type === JustificationTargetType.STATEMENT &&
+          !idEqual(justification.rootStatement.id, justification.target.entity.id)
+        ) {
+          this.logger.error(`Justification ${justification.id} targets statement ${justification.target.entity.id} but has inconsistent root statement ${justification.rootStatement.id}`)
+        }
+
+        justification.basis.entity = basisEntity
+
+        return justification
+      })
   }
 
   readJustifications({
@@ -155,151 +168,37 @@ exports.JustificationsService = class JustificationsService {
       })
   }
 
-  getOrCreateJustification(authToken, justification) {
+  readOrCreateJustification(justification, authToken) {
     return this.authService.readUserIdForAuthToken(authToken)
-      .then(userId => this.getOrCreateJustificationAsUser(justification, userId, new Date()))
+      .then(userId => {
+        return this.readOrCreateJustificationAsUser(justification, userId, new Date())
+      })
   }
 
-  getOrCreateJustificationAsUser(justification, userId, now) {
+  readOrCreateJustificationAsUser(justification, userId, now) {
+    return Promise.resolve()
+      .then(() => {
+        const validationErrors = this.justificationValidator.validate(justification)
+        if (validationErrors.hasErrors) {
+          throw new EntityValidationError(validationErrors)
+        }
+        return [userId, now]
+      })
+      .then( ([userId, now]) => this.readOrCreateValidJustificationAsUser(justification, userId, now))
+  }
+
+  readOrCreateValidJustificationAsUser(justification, userId, now) {
     return Promise.resolve()
       .then(() => {
         if (justification.id) {
-          return {justification, isExtant: true}
-        }
-        return Promise.resolve()
-          .then(() => {
-            const validationErrors = this.justificationValidator.validate(justification)
-            if (validationErrors.hasErrors) {
-              throw new EntityValidationError(validationErrors)
-            }
-            return [userId, now]
+          return Promise.props({
+            isExtant: true,
+            justification: this.readJustificationForId(justification.id, {userId})
           })
-          .then( ([userId, now]) => this.getOrCreateValidJustificationAsUser(justification, userId, now))
-      })
-  }
-
-  getOrCreateValidJustificationAsUser(justification, userId, now) {
-    return Promise.all([
-      now,
-      this.getOrCreateJustificationTarget(justification.target, userId, now)
-        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.target')),
-      this.getOrCreateJustificationBasis(justification.basis, userId, now)
-        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.basis')),
-    ])
-      .then( ([
-        now,
-        {targetType, targetEntity},
-        {basisType, basisEntity}
-      ]) => {
-        justification = cloneDeep(justification)
-
-        justification.target = {
-          type: targetType,
-          entity: targetEntity,
-        }
-        if (targetType === JustificationTargetType.STATEMENT) {
-          if (!justification.rootStatement) {
-            justification.rootStatement = targetEntity
-          } else if (isUndefined(justification.rootStatement.id)) {
-            justification.rootStatement = targetEntity
-          } else if (!idEqual(justification.rootStatement.id, targetEntity.id)) {
-            this.logger.warn(`Statement-targeting justification's rootStatement.id (${justification.rootStatement.id} is not equal to targetEntity.id (${targetEntity.id})`)
-            justification.rootStatement = targetEntity
-          }
         }
 
-        justification.basis = {
-          type: basisType,
-          entity: basisEntity
-        }
-        return [now, justification]
+        return readOrCreateEquivalentValidJustificationAsUser(this, justification, userId, now)
       })
-      .then( ([now, justification]) => Promise.all([
-        now,
-        justification,
-        this.justificationsDao.readJustificationEquivalentTo(justification)
-      ]))
-      .then( ([now, justification, equivalentJustification]) => Promise.all([
-        now,
-        justification,
-        !!equivalentJustification,
-        equivalentJustification || this.justificationsDao.createJustification(justification, userId, now)
-      ]))
-      .then( ([now, justification, isExtant, dbJustification]) => {
-        const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.JUSTIFICATION, dbJustification.id)
-        return [justification, isExtant, dbJustification]
-      })
-      .then( ([inJustification, isExtant, dbJustification]) => {
-        const justification = cloneDeep(dbJustification)
-        justification.target.entity = inJustification.target.entity
-        justification.basis.entity = inJustification.basis.entity
-        return {
-          isExtant,
-          justification,
-        }
-      })
-  }
-
-  getOrCreateJustificationTarget(justificationTarget, userId, now) {
-    switch (justificationTarget.type) {
-
-      case JustificationTargetType.JUSTIFICATION:
-        return this.getOrCreateJustificationAsUser(justificationTarget.entity, userId, now)
-          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-          .then( ({isExtant, justification}) => ({
-            isExtant,
-            targetType: justificationTarget.type,
-            targetEntity: justification,
-          }))
-
-      case JustificationTargetType.STATEMENT:
-        return this.statementsService.getOrCreateStatementAsUser(justificationTarget.entity, userId, now)
-          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-          .then(({isExtant, statement}) => ({
-            isExtant,
-            targetType: justificationTarget.type,
-            targetEntity: statement,
-          }))
-
-      default:
-        throw newImpossibleError(`Unsupported JustificationTargetType: ${justificationTarget.type}`)
-    }
-  }
-
-  getOrCreateJustificationBasis(justificationBasis, userId, now) {
-    switch (justificationBasis.type) {
-
-      case JustificationBasisType.WRIT_QUOTE:
-        return this.writQuotesService.getOrCreateWritQuoteAsUser(justificationBasis.entity, userId, now)
-          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-          .then( ({isExtant, writQuote}) => ({
-            isExtant,
-            basisType: JustificationBasisType.WRIT_QUOTE,
-            basisEntity: writQuote,
-          }))
-
-      case JustificationBasisType.STATEMENT_COMPOUND:
-        return this.statementCompoundsService.createStatementCompoundAsUser(justificationBasis.entity, userId, now)
-          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-          .then( ({isExtant, statementCompound}) => ({
-            isExtant,
-            basisType: JustificationBasisType.STATEMENT_COMPOUND,
-            basisEntity: statementCompound,
-          }))
-
-      case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
-        return this.justificationBasisCompoundsService.getOrCreateJustificationBasisCompoundAsUser(justificationBasis.entity, userId, now)
-          .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-          .then( ({isExtant, justificationBasisCompound}) => ({
-            isExtant,
-            basisType: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-            basisEntity: justificationBasisCompound,
-          }))
-
-      default:
-        throw newImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
-    }
   }
 
   deleteJustification(authToken, justificationId) {
@@ -307,7 +206,7 @@ exports.JustificationsService = class JustificationsService {
       .then(userId => Promise.all([
         userId,
         this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
-        this.justificationsDao.readJustificationById(justificationId),
+        this.justificationsDao.readJustificationForId(justificationId),
       ]))
       .then(([userId, hasPermission, justification]) => {
         const now = new Date()
@@ -352,6 +251,155 @@ exports.JustificationsService = class JustificationsService {
   }
 }
 
+function readJustificationTarget(service, justificationTarget, {userId}) {
+  switch (justificationTarget.type) {
+
+    case JustificationTargetType.JUSTIFICATION:
+      return service.readJustificationForId(justificationTarget.entity.id, {userId})
+
+    case JustificationTargetType.STATEMENT:
+      return service.statementsService.readStatementForId(justificationTarget.entity.id, {userId})
+
+    default:
+      throw newExhaustedEnumError('JustificationTargetType', justificationTarget.type)
+  }
+}
+
+function readJustificationBasis(service, justificationBasis, {userId}) {
+  switch (justificationBasis.type) {
+
+    case JustificationBasisType.WRIT_QUOTE:
+      return service.writQuotesService.readWritQuoteForId(justificationBasis.entity.id, {userId})
+
+    case JustificationBasisType.STATEMENT_COMPOUND:
+      return service.statementCompoundsService.readStatementCompoundForId(justificationBasis.entity.id, {userId})
+
+    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+      return service.justificationBasisCompoundsService.readJustificationBasisCompoundForId(justificationBasis.entity.id, {userId})
+
+    default:
+      throw newExhaustedEnumError('JustificationBasisType', justificationBasis.type)
+  }
+}
+
+function readOrCreateEquivalentValidJustificationAsUser(server, justification, userId, now) {
+  return Promise.all([
+    readOrCreateJustificationTarget(server, justification.target, userId, now)
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.target')),
+    readOrCreateJustificationBasis(server, justification.basis, userId, now)
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.basis')),
+    now,
+  ])
+    .then( ([
+              {targetEntity},
+              {basisEntity},
+              now,
+            ]) => {
+      justification = cloneDeep(justification)
+
+      justification.target.entity = targetEntity
+      justification.basis.entity = basisEntity
+
+      switch (justification.target.type) {
+        case JustificationTargetType.STATEMENT:
+          justification.rootStatement = justification.target.entity
+          break
+        case JustificationTargetType.JUSTIFICATION:
+          justification.rootStatement = justification.target.entity.rootStatement
+          break
+        default:
+          throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+      }
+
+      return [now, justification]
+    })
+    .then( ([now, justification]) => Promise.all([
+      now,
+      justification,
+      server.justificationsDao.readJustificationEquivalentTo(justification)
+    ]))
+    .then( ([now, justification, equivalentJustification]) => Promise.all([
+      now,
+      justification,
+      !!equivalentJustification,
+      equivalentJustification || server.justificationsDao.createJustification(justification, userId, now)
+    ]))
+    .then( ([now, justification, isExtant, dbJustification]) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      server.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.JUSTIFICATION, dbJustification.id)
+      return [justification, isExtant, dbJustification]
+    })
+    .then( ([inJustification, isExtant, dbJustification]) => {
+      const justification = cloneDeep(dbJustification)
+      justification.target.entity = inJustification.target.entity
+      justification.basis.entity = inJustification.basis.entity
+      return {
+        isExtant,
+        justification,
+      }
+    })
+}
+
+function readOrCreateJustificationTarget(service, justificationTarget, userId, now) {
+  switch (justificationTarget.type) {
+
+    case JustificationTargetType.JUSTIFICATION:
+      return service.readOrCreateJustificationAsUser(justificationTarget.entity, userId, now)
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+        .then( ({isExtant, justification}) => ({
+          isExtant,
+          targetType: justificationTarget.type,
+          targetEntity: justification,
+        }))
+
+    case JustificationTargetType.STATEMENT:
+      return service.statementsService.readOrCreateStatementAsUser(justificationTarget.entity, userId, now)
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+        .then(({isExtant, statement}) => ({
+          isExtant,
+          targetType: justificationTarget.type,
+          targetEntity: statement,
+        }))
+
+    default:
+      throw newImpossibleError(`Unsupported JustificationTargetType: ${justificationTarget.type}`)
+  }
+}
+
+function readOrCreateJustificationBasis(service, justificationBasis, userId, now) {
+  switch (justificationBasis.type) {
+
+    case JustificationBasisType.WRIT_QUOTE:
+      return service.writQuotesService.readOrCreateWritQuoteAsUser(justificationBasis.entity, userId, now)
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+        .then( ({isExtant, writQuote}) => ({
+          isExtant,
+          basisEntity: writQuote,
+        }))
+
+    case JustificationBasisType.STATEMENT_COMPOUND:
+      // Statement compounds were per-justification, so we always created.  Not sure this actually makes sense now, but this is a legacy type anyways
+      return service.statementCompoundsService.createStatementCompoundAsUser(justificationBasis.entity, userId, now)
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+        .then( ({isExtant, statementCompound}) => ({
+          isExtant,
+          basisEntity: statementCompound,
+        }))
+
+    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+      return service.justificationBasisCompoundsService.readOrCreateJustificationBasisCompoundAsUser(justificationBasis.entity, userId, now)
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+        .then( ({isExtant, justificationBasisCompound}) => ({
+          isExtant,
+          basisType: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+          basisEntity: justificationBasisCompound,
+        }))
+
+    default:
+      throw newImpossibleError(`Unsupported JustificationBasisType: ${justificationBasis.type}`)
+  }
+}
+
 function validateJustifications(logger, justifications) {
   const [goodJustifications, badJustifications] = partition(justifications, j =>
     j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
@@ -364,4 +412,24 @@ function validateJustifications(logger, justifications) {
     logger.error(badJustifications)
   }
   return goodJustifications
+}
+
+function deleteCounterJustificationsToJustificationIds (
+  justificationsDao,
+  justificationIds,
+  userId,
+  now,
+  deletedJustificationIds = []
+) {
+  return Promise.resolve()
+    .then(() => {
+      if (justificationIds.length === 0) {
+        return deletedJustificationIds
+      }
+      return justificationsDao.deleteCounterJustificationsToJustificationIds(justificationIds, now)
+        .then(currentlyDeletedJustificationIds =>
+          deleteCounterJustificationsToJustificationIds(justificationsDao, currentlyDeletedJustificationIds, userId, now,
+            deletedJustificationIds.concat(currentlyDeletedJustificationIds))
+        )
+    })
 }

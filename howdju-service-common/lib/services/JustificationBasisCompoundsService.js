@@ -46,16 +46,14 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
 
   readJustificationBasisCompoundForId(justificationBasisCompoundId, {authToken, userId}) {
     return readJustificationBasisCompoundForId(
-      this.logger,
-      this.statementsService,
-      this.sourceExcerptParaphrasesService,
-      this.justificationBasisCompoundsDao,
+      this,
       justificationBasisCompoundId,
       userId
     )
   }
 
-  getOrCreateJustificationBasisCompoundAsUser(justificationBasisCompound, userId, now) {
+  readOrCreateJustificationBasisCompoundAsUser(justificationBasisCompound, userId, now) {
+
     return Promise.resolve()
       .then(() => {
         const validationErrors = this.justificationBasisCompoundValidator.validate(justificationBasisCompound)
@@ -64,120 +62,54 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
         }
         return userId
       })
-      .then(userId => this.getOrCreateValidJustificationBasisCompoundAsUser(justificationBasisCompound, userId, now))
+      .then(userId => this.readOrCreateValidJustificationBasisCompoundAsUser(justificationBasisCompound, userId, now))
   }
 
-  getOrCreateValidJustificationBasisCompoundAsUser(justificationBasisCompound, userId, now) {
-    return getOrCreateJustificationBasisCompound(
-      this.logger,
-      this.statementsService,
-      this.sourceExcerptParaphrasesService,
-      this.justificationBasisCompoundsDao,
-      justificationBasisCompound,
-      userId,
-      now
-    )
-      .then( ({isExtant, justificationBasisCompound}) => {
-        const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.JUSTIFICATION_BASIS_COMPOUND, justificationBasisCompound.id)
-        return {
-          isExtant,
-          justificationBasisCompound,
+  readOrCreateValidJustificationBasisCompoundAsUser(justificationBasisCompound, userId, now) {
+    return Promise.resolve()
+      .then(() => {
+        if (justificationBasisCompound.id) {
+          return Promise.props({
+            isExtant: true,
+            justificationBasisCompound: this.readJustificationBasisCompoundForId(justificationBasisCompound.id)
+          })
         }
+
+        return readOrCreateEquivalentValidJustificationBasisCompoundAsUser(this, justificationBasisCompound, userId, now)
       })
   }
 }
 
 function readJustificationBasisCompoundForId(
-  logger,
-  statementsService,
-  sourceExcerptParaphrasesService,
-  justificationBasisCompoundsDao,
+  service,
   justificationBasisCompoundId,
   userId
 ) {
-  return justificationBasisCompoundsDao.readJustificationBasisCompoundForId(justificationBasisCompoundId)
-    .then( (justificationBasisCompound) => {
-      if (justificationBasisCompound) {
-        if (!justificationBasisCompound) {
-          return justificationBasisCompound
-        }
-
-        return addAtomsToCompound(
-          logger,
-          statementsService,
-          sourceExcerptParaphrasesService,
-          justificationBasisCompoundsDao,
-          justificationBasisCompound,
-          userId
-        )
+  return service.justificationBasisCompoundsDao.readJustificationBasisCompoundForId(justificationBasisCompoundId)
+    .then( (justificationBasisCompound) => Promise.all([
+      justificationBasisCompound,
+      justificationBasisCompound && readAtomsForCompound(
+        service,
+        justificationBasisCompound,
+        userId
+      )
+    ]))
+    .then( ([justificationBasisCompound, atoms]) => {
+      if (atoms) {
+        justificationBasisCompound.atoms = atoms
       }
+      return justificationBasisCompound
     })
 }
 
-function getOrCreateJustificationBasisCompound(
-  logger,
-  statementsService,
-  sourceExcerptParaphrasesService,
-  justificationBasisCompoundsDao,
+function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
+  service,
   justificationBasisCompound,
   userId,
   now
 ) {
-  if (justificationBasisCompound.id) {
-    return readJustificationBasisCompoundForId(
-      logger,
-      statementsService,
-      sourceExcerptParaphrasesService,
-      justificationBasisCompoundsDao,
-      justificationBasisCompound.id,
-      userId
-    )
-      .then( (justificationBasisCompound) => {
-        if (justificationBasisCompound) {
-          return {
-            isExtant: true,
-            justificationBasisCompound
-          }
-        }
-
-        logger.warning(`JustificationBasisCompound having ID ${justificationBasisCompound.id} missing.  Getting or creating equivalent`)
-        return getOrCreateEquivalentJustificationBasisCompound(
-          logger,
-          statementsService,
-          sourceExcerptParaphrasesService,
-          justificationBasisCompoundsDao,
-          justificationBasisCompound,
-          userId,
-          now
-        )
-      })
-  }
-
-  return getOrCreateEquivalentJustificationBasisCompound(
-    logger,
-    statementsService,
-    sourceExcerptParaphrasesService,
-    justificationBasisCompoundsDao,
-    justificationBasisCompound,
-    userId,
-    now
-  )
-}
-
-function getOrCreateEquivalentJustificationBasisCompound(
-  logger,
-  statementsService,
-  sourceExcerptParaphrasesService,
-  justificationBasisCompoundsDao,
-  justificationBasisCompound,
-  userId,
-  now
-) {
-  return Promise.all(map(justificationBasisCompound.atoms, atom => getOrCreateJustificationBasisCompoundAtomEntity(
-    logger,
-    statementsService,
-    sourceExcerptParaphrasesService,
+  return Promise.all(map(justificationBasisCompound.atoms, atom => readOrCreateJustificationBasisCompoundAtomEntity(
+    service,
     atom,
     userId,
     now
@@ -185,7 +117,7 @@ function getOrCreateEquivalentJustificationBasisCompound(
     .then( (atomWrappers) => {
       if (every(atomWrappers, ({isExtant}) => isExtant)) {
         const atoms = map(atomWrappers, ({atom}) => atom)
-        return justificationBasisCompoundsDao.readJustificationBasisCompoundHavingAtoms(atoms)
+        return service.justificationBasisCompoundsDao.readJustificationBasisCompoundHavingAtoms(atoms)
           .then( (justificationBasisCompound) => {
             if (justificationBasisCompound) {
               // The atoms on the justificationBasisCompound will have their atom ID, and the ones previously read will have the entities with IDs
@@ -199,7 +131,7 @@ function getOrCreateEquivalentJustificationBasisCompound(
             }
 
             return createJustificationBasisCompoundHavingAtoms(
-              justificationBasisCompoundsDao,
+              service,
               justificationBasisCompound,
               atoms,
               userId,
@@ -214,7 +146,7 @@ function getOrCreateEquivalentJustificationBasisCompound(
 
       const atoms = map(atomWrappers, ({atom}) => atom)
       return createJustificationBasisCompoundHavingAtoms(
-        justificationBasisCompoundsDao,
+        service,
         justificationBasisCompound,
         atoms,
         userId,
@@ -225,24 +157,27 @@ function getOrCreateEquivalentJustificationBasisCompound(
           justificationBasisCompound
         }))
     })
+    .then( ({isExtant, justificationBasisCompound}) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.JUSTIFICATION_BASIS_COMPOUND, justificationBasisCompound.id)
+      return {
+        isExtant,
+        justificationBasisCompound,
+      }
+    })
 }
 
-function addAtomsToCompound(
-  logger,
-  statementsService,
-  sourceExcerptParaphrasesService,
-  justificationBasisCompoundsDao,
+function readAtomsForCompound(
+  service,
   justificationBasisCompound,
   userId
 ) {
-  return justificationBasisCompoundsDao.readAtomsForJustificationBasisCompoundId(justificationBasisCompound.id)
+  return service.justificationBasisCompoundsDao.readAtomsForJustificationBasisCompoundId(justificationBasisCompound.id)
     .then( (atoms) => Promise.all([
       atoms,
       Promise.all(map(atoms, atom =>
         getJustificationBasisCompoundAtomEntity(
-          logger,
-          statementsService,
-          sourceExcerptParaphrasesService,
+          service,
           atom.type,
           atom.entity.id,
           userId
@@ -252,27 +187,23 @@ function addAtomsToCompound(
     .then( ([atoms, entities]) => {
       forEach(zip(atoms, entities), ([atom, entity], index) => {
         if (!entity) {
-          logger.error(`justificationBasisCompound ID ${justificationBasisCompound.id} atom number ${index} (type ${atom.type}, ID ${atom.entity.id}) entity was not found`)
+          service.logger.error(`justificationBasisCompound ID ${justificationBasisCompound.id} atom number ${index} (type ${atom.type}, ID ${atom.entity.id}) entity was not found`)
         }
         atom.entity = entity
       })
 
       return atoms
     })
-    .then( (atoms) => {
-      justificationBasisCompound.atoms = atoms
-      return justificationBasisCompound
-    })
 }
 
 function createJustificationBasisCompoundHavingAtoms(
-  justificationBasisCompoundsDao,
+  service,
   justificationBasisCompound,
   atoms,
   userId,
   now
 ) {
-  return justificationBasisCompoundsDao.createJustificationBasisCompound(
+  return service.justificationBasisCompoundsDao.createJustificationBasisCompound(
     justificationBasisCompound,
     userId,
     now
@@ -281,7 +212,7 @@ function createJustificationBasisCompoundHavingAtoms(
       return Promise.all([
         justificationBasisCompound,
         Promise.all(map(atoms, (atom, index) => createJustificationBasisCompoundAtom(
-          justificationBasisCompoundsDao,
+          service,
           justificationBasisCompound,
           atom,
           index
@@ -295,12 +226,12 @@ function createJustificationBasisCompoundHavingAtoms(
 }
 
 function createJustificationBasisCompoundAtom(
-  justificationBasisCompoundsDao,
+  service,
   justificationBasisCompound,
   atom,
   orderPosition
 ) {
-  return justificationBasisCompoundsDao.createAtomForJustificationBasisCompoundId(
+  return service.justificationBasisCompoundsDao.createAtomForJustificationBasisCompoundId(
     justificationBasisCompound.id,
     atom.type,
     atom.entity.id,
@@ -312,10 +243,8 @@ function createJustificationBasisCompoundAtom(
     })
 }
 
-function getOrCreateJustificationBasisCompoundAtomEntity(
-  logger,
-  statementsService,
-  sourceExcerptParaphrasesService,
+function readOrCreateJustificationBasisCompoundAtomEntity(
+  service,
   atom,
   userId,
   now
@@ -323,7 +252,7 @@ function getOrCreateJustificationBasisCompoundAtomEntity(
   const type = atom.type
   switch (type) {
     case JustificationBasisCompoundAtomType.STATEMENT:
-      return statementsService.getOrCreateValidStatementAsUser(atom.entity, userId, now)
+      return service.statementsService.readOrCreateValidStatementAsUser(atom.entity, userId, now)
         .then( ({isExtant, statement}) => {
           atom.entity = statement
           return {
@@ -332,7 +261,7 @@ function getOrCreateJustificationBasisCompoundAtomEntity(
           }
         })
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-      return sourceExcerptParaphrasesService.getOrCreateValidSourceExcerptParaphraseAsUser(atom.entity, userId, now)
+      return service.sourceExcerptParaphrasesService.readOrCreateValidSourceExcerptParaphraseAsUser(atom.entity, userId, now)
         .then( ({isExtant, sourceExcerptParaphrase}) => {
           atom.entity = sourceExcerptParaphrase
           return {
@@ -346,18 +275,16 @@ function getOrCreateJustificationBasisCompoundAtomEntity(
 }
 
 function getJustificationBasisCompoundAtomEntity(
-  logger,
-  statementsService,
-  sourceExcerptParaphrasesService,
+  service,
   entityType,
   entityId,
   userId
 ) {
   switch (entityType) {
     case JustificationBasisCompoundAtomType.STATEMENT:
-      return statementsService.readStatementForId(entityId, {userId})
+      return service.statementsService.readStatementForId(entityId, {userId})
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-      return sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(entityId, {userId})
+      return service.sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(entityId, {userId})
     default:
       throw newExhaustedEnumError('JustificationBasisCompoundAtomType', entityType)
   }

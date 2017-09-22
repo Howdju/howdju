@@ -29,9 +29,25 @@ exports.WritsDao = class WritsDao {
     this.database = database
   }
 
-  readWritHavingNormalTitle(normalTitle) {
-    return this.database.query(`select * from writs where normal_title = $1 and deleted is null`, [normalTitle])
-      .then(mapSingle(this.logger, toWrit, 'writs', {normalTitle}))
+  createWrit(writ, userId, now) {
+    const sql = 'insert into writs (title, normal_title, creator_user_id, created) values ($1, $2, $3, $4) returning *'
+    return this.database.query(sql, [cleanWhitespace(writ.title), normalizeText(writ.title), userId, now])
+      .then( ({rows: [row]}) => toWrit(row) )
+  }
+
+  readWritForId(writId) {
+    return this.database.query(`select * from writs where writ_id = $1 and deleted is null`, [writId])
+      .then(mapSingle(this.logger, toWrit, 'writs', {writId}))
+  }
+
+  readWritEquivalentTo(writ) {
+    return this.database.query('select * from writs where normal_title = $1 and deleted is null', [normalizeText(writ.title)])
+      .then( ({rows}) => {
+        if (rows.length > 1) {
+          this.logger.error(`${rows.length} equivalent writs found`, writ)
+        }
+        return toWrit(head(rows))
+      })
   }
 
   readWrits(sorts, count) {
@@ -110,21 +126,6 @@ exports.WritsDao = class WritsDao {
       `
     return this.database.query(sql, args)
       .then( ({rows}) => map(rows, toWrit) )
-  }
-
-  readWritEquivalentTo(writ) {
-    return this.database.query('select * from writs where normal_title = $1 and deleted is null', [normalizeText(writ.title)])
-      .then( ({rows}) => {
-        if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent writs found`, writ)
-        }
-        return toWrit(head(rows))
-      })
-  }
-  createWrit(writ, userId, now) {
-    const sql = 'insert into writs (title, normal_title, creator_user_id, created) values ($1, $2, $3, $4) returning *'
-    return this.database.query(sql, [cleanWhitespace(writ.title), normalizeText(writ.title), userId, now])
-      .then( ({rows: [row]}) => toWrit(row) )
   }
 
   hasEquivalentWrits(writ) {

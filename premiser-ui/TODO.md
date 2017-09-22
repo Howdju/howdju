@@ -2,40 +2,29 @@
 
 * Is a Paraphrased citation equal to a citation-based justification?
   * Automatically create citation-based justification?
-* Use: Support making a justification from a compound basis and a source excerpt paraphrase
-* Test 
-  * Usages
-  * Creation
-    * Extant: paraphrasing statement, writ, writ quote, paraphrase, justification
-      * With atoms (add a an existing and non-existing statement atom sibling)
 
 * Paraphrases 
-  * Support paraphrases
-      
-    * When the quote differed, the sourceExcerpt was missing entity
-    * Warning that root statement IDs weren't equal?
-    
-    * readOnlyBasis being sent to SourceExcerptParaphrases and atoms etc.?
-    * Review use of onTextInputKeyDown (if the purpose is to catch enter/escape, why limit it to text fields?)
-    
-    * randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
-  
   * Add icons and context menus
-  * migrate statement compounds to new compounds?  Might want to manually recreate them so I can choose to substitute paraphrases
-  * Review usage of id/idPrefix/baseId in the new UI stuff
-    * A suggestions key: 
-     createStatementPageJustification.basis.justificationBasisCompound.atoms[1].entity.newJustification.basis.justificationBasisCompound.atoms[1].entity
+    * Combine statement justifications with recent cards
+  * Recent paraphrases
+  * See usages of writ from paraphrase
+  * Search paraphrases by url/url domain?
   
-  * getWritQuoteForId vs. readWritQuoteForId
-  * Use writQuote.normalQuoteText for equivalence
-    
-  * We probably want to allow people to vote on the paraphrase/connection between a statement and a source
+  * We probably want to allow people to vote on the paraphrase/connection between a statement and a source?
+    * This could be by voting on the justification
   * Create pre-prod DB for testing schema changes?
+  
+  
+* randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
+
+* Review usage of id/idPrefix/baseId in the new UI stuff
+  * A suggestions key: 
+   createStatementPageJustification.basis.justificationBasisCompound.atoms[1].entity.newJustification.basis.justificationBasisCompound.atoms[1].entity
 
 * Refactors
   * rename create to getOrCreate
-  * read extant entity from DB when it has an ID (instead of just returning it)
   * replace impossible error with exhausted enum error
+  * Review use of onTextInputKeyDown (if the purpose is to catch enter/escape, why limit it to text fields?)
 
 * Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
   and leave it in-memory

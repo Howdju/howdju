@@ -144,7 +144,7 @@ const routes = [
         method,
         path
       }
-    }) => statementsService.getOrCreateStatement(authToken, statement)
+    }) => statementsService.readOrCreateStatement(authToken, statement)
       .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
   },
@@ -228,7 +228,7 @@ const routes = [
         pathParameters: [statementCompoundId],
         authToken,
       }
-    }) => statementCompoundsService.readStatementCompound(authToken, statementCompoundId)
+    }) => statementCompoundsService.readStatementCompoundForId(statementCompoundId, {authToken})
       .then( (statementCompound) => ok({callback, body: {statementCompound}}))
   },
 
@@ -285,7 +285,7 @@ const routes = [
         method,
         path,
       }
-    }) => justificationsService.getOrCreateJustification(authToken, justification)
+    }) => justificationsService.readOrCreateJustification(justification, authToken)
       .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification'))
   },

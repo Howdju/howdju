@@ -43,7 +43,7 @@ export default class WritQuoteCard extends Component {
             className={cn(className, "writ-quote-card")}
       >
         <CardTitle
-          avatar={<FontIcon role="presentation">book</FontIcon>}
+          avatar={<FontIcon role="presentation">format_quote</FontIcon>}
           title={
             <Link to={paths.writQuoteUsages(writ)}>
               {writ.title}

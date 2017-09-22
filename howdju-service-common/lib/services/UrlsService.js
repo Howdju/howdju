@@ -15,14 +15,14 @@ exports.UrlsService = class UrlsService {
     this.urlsDao = urlsDao
   }
 
-  createUrlsAsUser(urls, userId, now) {
+  readOrCreateUrlsAsUser(urls, userId, now) {
     return Promise.resolve()
       .then(() => filter(urls, url => url.url))
-      .then(nonEmptyUrls => Promise.all(map(nonEmptyUrls, url => this.createUrlAsUser(url, userId, now))))
+      .then(nonEmptyUrls => Promise.all(map(nonEmptyUrls, url => this.readOrCreateUrlAsUser(url, userId, now))))
   }
 
-  createUrlAsUser(url, userId, now) {
-    return this.urlsDao.readUrlEquivalentTo(url)
+  readOrCreateUrlAsUser(url, userId, now) {
+    return this.urlsDao.readUrlForUrl(url.url)
       .then( equivalentUrl => {
         if (equivalentUrl) {
           return equivalentUrl

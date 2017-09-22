@@ -17,7 +17,6 @@ import some from 'lodash/some'
 import cn from 'classnames'
 import get from 'lodash/get'
 
-import {logger} from "./logger"
 import {
   isVerified,
   isDisverified,
@@ -28,7 +27,8 @@ import {
   JustificationPolarity,
   JustificationBasisSourceType,
 } from "howdju-common"
-import GridCard from './GridCard'
+
+import {logger} from "./logger"
 import {
   api,
   editors, mapActionCreatorGroupToDispatchToProps,
@@ -42,7 +42,6 @@ import t, {
   CANCEL_BUTTON_LABEL,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts"
-import NewJustificationEditor from './NewJustificationEditor'
 import {
   statementJustificationsPage_statementEditor_editorId,
   statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
@@ -51,10 +50,14 @@ import {EditorTypes} from "./reducers/editors"
 import EditableStatement from "./EditableStatement"
 import {suggestionKeys} from "./autocompleter"
 import {ESCAPE_KEY_CODE} from "./keyCodes"
+import {selectIsWindowNarrow} from "./selectors"
+
+import GridCard from './GridCard'
+import NewJustificationEditor from './NewJustificationEditor'
+import StatementJustificationTrees from './StatementJustificationTrees'
 
 import "./StatementJustificationsPage.scss"
-import StatementJustificationTrees from "./StatementJustificationTrees"
-import {selectIsWindowNarrow} from "./selectors"
+
 
 const statementIdFromProps = (props) => get(props, 'match.params.statementId')
 

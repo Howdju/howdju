@@ -1,3 +1,4 @@
+const get = require('lodash/get')
 const has = require('lodash/has')
 const includes = require('lodash/includes')
 
@@ -8,6 +9,7 @@ const {
   isTruthy,
   modelErrorCodes,
   newExhaustedEnumError,
+  idEqual,
 } = require('howdju-common')
 
 class JustificationValidator {
@@ -30,8 +32,27 @@ class JustificationValidator {
 
     const isExtant = isTruthy(justification.id)
 
-    if (!has(justification, 'rootStatement') && !isExtant && !ignore.rootStatement) {
-      const canReceiveRootStatementIdFromTarget = justification.target && justification.target.type === JustificationTargetType.STATEMENT
+    if (has(justification, 'rootStatement')) {
+      if (justification.rootStatement.id) {
+        const justificationTargetType = get(justification, 'target.type')
+        if (
+          justificationTargetType === JustificationTargetType.STATEMENT &&
+          justification.target.entity.id
+        ) {
+          if (!idEqual(justification.rootStatement.id, justification.target.entity.id)) {
+            errors.fieldErrors.rootStatement.push(modelErrorCodes.JUSTIFICATION_ROOT_STATEMENT_ID_AND_TARGET_STATEMENT_ID_MUST_BE_EQUAL)
+          }
+        }
+      } else {
+        const rootStatementErrors = this.statementValidator.validate(justification.target.entity)
+        if (rootStatementErrors.hasErrors) {
+          errors.hasErrors = true
+          errors.fieldErrors.rootStatement = rootStatementErrors
+        }
+      }
+    } else if (!isExtant && !ignore.rootStatement) {
+      const justificationTargetType = get(justification, 'target.type')
+      const canReceiveRootStatementIdFromTarget = justificationTargetType === JustificationTargetType.STATEMENT
       if (!canReceiveRootStatementIdFromTarget) {
         errors.hasErrors = true
         errors.fieldErrors.rootStatement.push(modelErrorCodes.IS_REQUIRED)

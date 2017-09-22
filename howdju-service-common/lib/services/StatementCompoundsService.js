@@ -22,7 +22,7 @@ exports.StatementCompoundsService = class StatementCompoundsService {
     this.statementCompoundsDao = statementCompoundsDao
   }
 
-  readStatementCompound(authToken, statementCompoundId) {
+  readStatementCompoundForId(statementCompoundId, {authToken}) {
     return this.statementCompoundsDao.read(statementCompoundId)
   }
 
@@ -74,7 +74,7 @@ exports.StatementCompoundsService = class StatementCompoundsService {
       .then(() => Promise.all(map(statementCompoundAtoms, atom =>
         atom.entity.id ?
           [atom, {isExtant: true, statement: atom.entity}] :
-          Promise.all([atom, this.statementsService.getOrCreateStatementAsUser(atom.entity, userId, now)])
+          Promise.all([atom, this.statementsService.readOrCreateStatementAsUser(atom.entity, userId, now)])
       )))
       .then(atomsWithStatements => map(atomsWithStatements, ([atom, {statement}]) => {
         atom.entity = statement

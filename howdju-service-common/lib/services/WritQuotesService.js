@@ -39,9 +39,6 @@ const {
   RequestValidationError,
   UserActionsConflictError,
 } = require('../serviceErrors')
-const {
-  normalizeText
-} = require('../daos/util')
 
 exports.WritQuotesService = class WritQuotesService {
   constructor(
@@ -68,19 +65,6 @@ exports.WritQuotesService = class WritQuotesService {
 
   readWritQuoteForId(writQuoteId, {authToken}) {
     return this.writQuotesDao.readWritQuoteForId(writQuoteId)
-  }
-
-  readWritQuoteEquivalentTo(writQuote) {
-    const normalTitle = normalizeText(writQuote.writ.title)
-    return this.writsDao.readWritHavingNormalTitle(normalTitle)
-      .then( (writ) => {
-        if (writ) {
-          const normalQuoteText = normalizeText(writQuote.quoteText)
-          return this.writQuotesDao.readWritQuoteHavingWritIdAndNormalQuoteText(writ.id, normalQuoteText)
-        }
-
-        return null
-      })
   }
 
   readWritQuotes({sorts, continuationToken, count = 25 }) {
@@ -289,7 +273,7 @@ exports.WritQuotesService = class WritQuotesService {
       .then(dedupedUrls => groupBy(dedupedUrls, u => u.id ? 'hasId' : 'noId'))
       .then( ({hasId: extantUrls, noId: newUrls}) => Promise.all([
         extantUrls || [],
-        newUrls ? this.urlsService.createUrlsAsUser(newUrls, userId, now) : [],
+        newUrls ? this.urlsService.readOrCreateUrlsAsUser(newUrls, userId, now) : [],
       ]))
       .then( ([extantUrls, createdUrls]) => extantUrls.concat(createdUrls) )
       .then( updatedUrls => Promise.all([
@@ -319,67 +303,90 @@ exports.WritQuotesService = class WritQuotesService {
       .then(updatedUrls => sortBy(updatedUrls, url => url.url))
   }
 
-  getOrCreateWritQuoteAsUser(writQuote, userId, now) {
-    return Promise.all([
-      this.writsService.createWritAsUser(writQuote.writ, userId, now),
-      this.urlsService.createUrlsAsUser(writQuote.urls, userId, now),
-    ])
-      .then( ([{writ}, urls]) => {
-        writQuote.writ.id = writ.id
-        return Promise.all([
-          writ,
-          urls,
-          this.getOrCreateJustWritQuoteAsUser(writQuote, userId, now)
-        ])
-      })
-      .then( ([writ, urls, {isExtant, writQuote}]) => {
-        writQuote.writ = writ
-        writQuote.urls = urls
-        return Promise.all([
-          isExtant,
-          writQuote,
-          this.createWritQuoteUrlsAsUser(writQuote, userId, now)
-        ])
-      })
-      .then( ([isExtant, writQuote]) => ({isExtant, writQuote}))
-  }
-
-  getOrCreateJustWritQuoteAsUser(writQuote, userId, now) {
+  readOrCreateWritQuoteAsUser(writQuote, userId, now) {
     return Promise.resolve()
-      .then(() => writQuote.id ?
-        this.writQuotesDao.readWritQuoteForId(writQuote.id) :
-        this.writQuotesDao.readWritQuotesEquivalentTo(writQuote)
-      )
-      .then(equivalentWritQuote => Promise.all([
-        !!equivalentWritQuote,
-        equivalentWritQuote || this.writQuotesDao.createWritQuote(writQuote, userId, now)
-      ]))
-      .then( ([isExtant, writQuote]) => {
-        const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-        this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.WRIT_QUOTE, writQuote.id)
-        return {
-          isExtant,
-          writQuote,
+      .then(() => {
+        const validationErrors = this.writQuoteValidator.validate(writQuote)
+        if (validationErrors.hasErrors) {
+          throw new EntityValidationError(validationErrors)
         }
+        return userId
       })
+      .then(userId => this.readOrCreateValidWritQuoteAsUser(writQuote, userId, now))
   }
 
-  createWritQuoteUrlsAsUser(writQuote, userId, now) {
-    return this.writQuotesDao.readWritQuoteUrlsForWritQuote(writQuote)
-      .then(extantWritQuoteUrls => {
-        const extantWritQuoteUrlsByUrlId = {}
-        forEach(extantWritQuoteUrls, extantWritQuoteUrl => {
-          extantWritQuoteUrlsByUrlId[extantWritQuoteUrl.urlId] = extantWritQuoteUrl
-        })
+  readOrCreateValidWritQuoteAsUser(writQuote, userId, now) {
+    return Promise.resolve()
+      .then(() => {
+        if (writQuote.id) {
+          return Promise.props({
+            isExtant: true,
+            writQuote: this.readWritQuoteForId(writQuote.id)
+          })
+        }
 
-        return map(writQuote.urls, url => extantWritQuoteUrlsByUrlId[url.id] ?
-          extantWritQuoteUrlsByUrlId[url.id] :
-          this.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now)
-        )
+        return readOrCreateEquivalentValidWritQuoteAsUser(this, writQuote, userId, now)
       })
   }
 }
 
+function readOrCreateEquivalentValidWritQuoteAsUser(service, writQuote, userId, now) {
+  return Promise.all([
+    service.writsService.readOrCreateValidWritAsUser(writQuote.writ, userId, now),
+    service.urlsService.readOrCreateUrlsAsUser(writQuote.urls, userId, now),
+  ])
+    .then( ([{writ}, urls]) => {
+      writQuote.writ.id = writ.id
+      return Promise.all([
+        writ,
+        urls,
+        readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now)
+      ])
+    })
+    .then( ([writ, urls, {isExtant, writQuote}]) => {
+      writQuote.writ = writ
+      writQuote.urls = urls
+      return Promise.all([
+        isExtant,
+        writQuote,
+        createWritQuoteUrlsAsUser(service, writQuote, userId, now)
+      ])
+    })
+    .then( ([isExtant, writQuote]) => ({isExtant, writQuote}))
+}
+
+function readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now) {
+  return service.writQuotesDao.readWritQuoteHavingWritIdAndQuoteText(writQuote.writ.id, writQuote.quoteText)
+    .then(equivalentWritQuote => Promise.all([
+      !!equivalentWritQuote,
+      equivalentWritQuote || service.writQuotesDao.createWritQuote(writQuote, userId, now)
+    ]))
+    .then( ([isExtant, writQuote]) => {
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.WRIT_QUOTE, writQuote.id)
+      return {
+        isExtant,
+        writQuote,
+      }
+    })
+}
+
+function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
+  return service.writQuotesDao.readWritQuoteUrlsForWritQuote(writQuote)
+    .then(extantWritQuoteUrls => {
+      const extantWritQuoteUrlsByUrlId = {}
+      forEach(extantWritQuoteUrls, extantWritQuoteUrl => {
+        extantWritQuoteUrlsByUrlId[extantWritQuoteUrl.urlId] = extantWritQuoteUrl
+      })
+
+      return map(writQuote.urls, url => extantWritQuoteUrlsByUrlId[url.id] ?
+        extantWritQuoteUrlsByUrlId[url.id] :
+        service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now)
+          .then( (writQuoteUrl) => service.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.WRIT_QUOTE,
+            writQuoteUrl.writQuoteId, ActionSubjectType.URL, writQuoteUrl.urlId))
+      )
+    })
+}
 
 function diffUrls(writQuotesDao, writQuote) {
   return Promise.resolve()
