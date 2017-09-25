@@ -26,7 +26,7 @@ b {
 }
 
 #webpack-hot-middleware-clientOverlay * {
-  color: $clouds;
+  color: $light-text-color;
 }
 
 #app-nav-drawer {
@@ -49,7 +49,7 @@ b {
 // Tabs that appear to be contiguous with the toolbar.  But to avoid handling the navigate ourselves, they are actually not in the toolbar
 .toolbarTabs {
   * {
-    color: $clouds;
+    color: $light-text-color;
   }
 }
 
@@ -113,15 +113,4 @@ $small-chat-iframe-z-index: 999999999;
   &:hover {
     text-decoration: underline;
   }
-}
-
-
-.compound-atom {
-  margin: 5px;
-  padding: 5px;
-  min-height: 60px;
-}
-.compound-viewer {
-  // quick and dirty way not to overlap chat bubble context menu
-  margin-right: 50px;
 }

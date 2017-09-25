@@ -4,9 +4,8 @@
   * Automatically create citation-based justification?
 
 * Paraphrases 
-  * Add icons and context menus
-    * Combine statement justifications with recent cards
-  * Recent paraphrases
+  * Combine entity viewer with recent cards
+  * Recent paraphrases / search paraphrases by source excerpt type/ID
   * See usages of writ from paraphrase
   * Search paraphrases by url/url domain?
   
@@ -656,6 +655,9 @@ Cat meeting design notes:
    * https://uber.github.io/react-vis/
    * http://recharts.org/#/en-US/
    * https://formidable.com/open-source/victory/
+* Material font: https://codepen.io/zavoloklom/pen/uqCsB
+* https://atlassian.design/guidelines/product/components/checkboxes
+  * https://atlaskit.atlassian.com/
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

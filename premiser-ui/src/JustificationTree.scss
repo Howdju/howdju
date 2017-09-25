@@ -4,9 +4,6 @@
 
 $slide-size: $md-btn-icon-size;
 
-.counter-justifications {
-  width: 100%;
-}
 .chat-bubble--negative {
   & > .counter-justifications {
     margin-right: $polarity-offset;
@@ -102,4 +99,12 @@ $slide-size: $md-btn-icon-size;
       }
     }
   }
+}
+
+.justification-tree-basis {
+  display: flex;
+  align-items: center;
+}
+.justification-context-menu {
+  align-self: flex-start;
 }

@@ -173,7 +173,7 @@ class JustificationTree extends Component {
         icon
         id={`justification-${justification.id}-context-menu`}
         className={cn({hidden: doHideControls})}
-        menuClassName="context-menu"
+        menuClassName="context-menu justification-context-menu"
         buttonChildren={'more_vert'}
         position={Positions.TOP_RIGHT}
         title="Justification actions"
@@ -309,14 +309,12 @@ class JustificationTree extends Component {
       <div className={treeClasses}
            id={justificationTreeId(this.props)}
       >
-        <ChatBubble className="md-grid"
-                    isPositive={_isRootPositive}
+        <ChatBubble isPositive={_isRootPositive}
                     isNegative={_isRootNegative}
                     onMouseOver={this.onBubbleMouseOver}
                     onMouseLeave={this.onBubbleMouseLeave}
         >
-          <div className="md-cell md-cell--12">
-            {justification && !isEditingBasis && doShowControls && menu}
+          <div className="justification-tree-basis">
             <EditableJustificationBasis id={`justification-${justification.id}-basisEditor`}
                                         justification={justification}
                                         editorId={justificationBasisEditorId(justification.basis)}
@@ -326,6 +324,7 @@ class JustificationTree extends Component {
                                         isCondensed={isCondensed}
                                         isUnCondensed={isUnCondensed}
             />
+            {justification && !isEditingBasis && doShowControls && menu}
           </div>
 
           {doShowControls && (

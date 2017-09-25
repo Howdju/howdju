@@ -1,13 +1,16 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import cn from 'classnames'
+import upperFirst from 'lodash/upperFirst'
 
+import EntityViewer from './EntityViewer'
 import EditableStatement from './EditableStatement'
 import EditableSourceExcerpt from './EditableSourceExcerpt'
+import {
+  sourceExcerptDescription,
+  sourceExcerptIconName,
+} from './viewModels'
 
-import './StatementAtomViewer.scss'
-
-export default class StatementAtomViewer extends Component {
+export default class SourceExcerptParaphraseAtomViewer extends Component {
 
   constructor() {
     super()
@@ -27,6 +30,7 @@ export default class StatementAtomViewer extends Component {
     const {
       atom,
       id,
+      component,
       paraphrasingStatementEditorId,
       sourceExcerptEditorId,
       suggestionsKey,
@@ -34,34 +38,52 @@ export default class StatementAtomViewer extends Component {
     const {
       isOver
     } = this.state
-
+    const {
+      entity: sourceExcerptParaphrase
+    } = atom
     const {
       paraphrasingStatement,
       sourceExcerpt
-    } = atom.entity
+    } = sourceExcerptParaphrase
 
     return (
-      <span className={cn("source-excerpt-paraphrase-atom-viewer", {
-        active: isOver,
-      })}
-            onMouseOver={this.onMouseOver}
-            onMouseLeave={this.onMouseLeave}
-      >
-        <EditableStatement id={`${id}-statement`}
-                           entityId={paraphrasingStatement.id}
-                           editorId={paraphrasingStatementEditorId}
-                           suggestionsKey={suggestionsKey + '-paraphrasing-statement'}
-        />
-        <EditableSourceExcerpt id={id + '-source-excerpt'}
-                               sourceExcerpt={sourceExcerpt}
-                               editorId={sourceExcerptEditorId}
-                               suggestionsKey={suggestionsKey + '-source-excerpt'}
-        />
-      </span>
+      <EntityViewer
+        className="atom-viewer source-excerpt-paraphrase-atom-viewer"
+        active={isOver}
+        component={component}
+        onMouseOver={this.onMouseOver}
+        onMouseLeave={this.onMouseLeave}
+        iconName="textsms"
+        iconTitle={`Paraphrase (${sourceExcerptDescription(sourceExcerpt)})`}
+        entity={
+          <div>
+            <EditableStatement
+              id={`${id}-statement`}
+              entityId={paraphrasingStatement.id}
+              editorId={paraphrasingStatementEditorId}
+              suggestionsKey={suggestionsKey + '-paraphrasing-statement'}
+            />
+            <EntityViewer
+              iconName={sourceExcerptIconName(sourceExcerpt)}
+              iconTitle={upperFirst(sourceExcerptDescription(sourceExcerpt))}
+              component={component}
+              entity={
+                <EditableSourceExcerpt
+                  id={id + '-source-excerpt'}
+                  className="entity-description"
+                  sourceExcerpt={sourceExcerpt}
+                  editorId={sourceExcerptEditorId}
+                  suggestionsKey={suggestionsKey + '-source-excerpt'}
+                />
+              }
+            />
+          </div>
+        }
+      />
     )
   }
 }
-StatementAtomViewer.propTypes = {
+SourceExcerptParaphraseAtomViewer.propTypes = {
   atom: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   sourceExcerptEditorId: PropTypes.string.isRequired,

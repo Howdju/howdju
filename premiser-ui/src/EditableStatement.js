@@ -22,9 +22,11 @@ class EditableStatement extends Component {
       suggestionsKey,
       isFetching,
       isEditing,
+      // ignore
+      entityId,
+      editors,
       ...rest,
     } = this.props
-    delete rest.entityId
 
     // statement is required, so make this lazy.  Is this a problem for react efficiency-wise?
     const editor =

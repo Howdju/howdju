@@ -33,7 +33,7 @@ exports.PerspectivesDao = class PerspectivesDao {
    * across root statement boundaries, but that has the added difficulties of multiple paths from perspective-justification
    * to perspective-statement.
    */
-  readFeaturedPerspectivesWithVotesForOptionalUserId(userId) {
+  readFeaturedPerspectivesWithVotes({userId}) {
     const args = [
       JustificationBasisType.STATEMENT_COMPOUND,
       JustificationBasisType.WRIT_QUOTE
@@ -319,7 +319,7 @@ exports.PerspectivesDao = class PerspectivesDao {
 
     forEach(statementCompoundAtomsByStatementCompoundId, scas =>
       forEach(scas, sca => {
-        sca.statement = statementsById[sca.entity.id]
+        sca.entity = statementsById[sca.entity.id]
       })
     )
 

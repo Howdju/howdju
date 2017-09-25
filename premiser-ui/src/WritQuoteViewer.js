@@ -18,6 +18,7 @@ import './WritQuoteViewer.scss'
 const WritQuoteViewer = props => {
   const {
     writQuote,
+    className,
     // doShowControls,
     isExpanded,
     onExpand,
@@ -46,7 +47,7 @@ const WritQuoteViewer = props => {
     truncateWritQuoteText(writQuote.quoteText, {omission: ''})
 
   return (
-    <div className="writ-quote-viewer">
+    <div className={cn(className, "writ-quote-viewer")}>
       <div className={cn("quote", {
         hidden: !hasQuote
       })}>

@@ -2,7 +2,8 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import PropTypes from 'prop-types'
-import Paper from 'react-md/lib/Papers/Paper'
+import Card from 'react-md/lib/Cards/Card'
+import CardText from 'react-md/lib/Cards/CardText'
 import MenuButton from 'react-md/lib/Menus/MenuButton'
 import Positions from 'react-md/lib/Menus/Positions'
 import ListItem from 'react-md/lib/Lists/ListItem'
@@ -28,8 +29,15 @@ import {EditorTypes} from './reducers/editors'
 import paths from './paths'
 import JustificationBasisCompoundAtomViewer from './JustificationBasisCompoundAtomViewer'
 import StatementJustificationTrees from './StatementJustificationTrees'
+import {
+  sourceExcerptDescription,
+  sourceExcerptSourceDescription,
+} from './viewModels'
 
-class JustificationBasisCompoundViewerAtomListItem extends Component {
+import './JustificationBasisCompoundViewerAtomItem.scss'
+
+
+class JustificationBasisCompoundViewerAtomItem extends Component {
 
   constructor() {
     super()
@@ -106,7 +114,7 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
       doShowStatementAtomJustifications,
       isCondensed,
       isUnCondensed,
-      itemComponent,
+      component,
     } = this.props
     const {
       isOver
@@ -131,36 +139,42 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
     )
 
     return (
-      <Paper id={listItemId}
-             key={listItemId}
-             className="compound-atom justification-basis-compound-atom"
-             component={itemComponent}
-             onMouseOver={this.onMouseOver}
-             onMouseLeave={this.onMouseLeave}
+      <Card
+        id={listItemId}
+        key={listItemId}
+        component={component}
+        className="compound-atom justification-basis-compound-atom"
+        onMouseOver={this.onMouseOver}
+        onMouseLeave={this.onMouseLeave}
       >
-        {menu}
-        <JustificationBasisCompoundAtomViewer id={id}
-                                              key={id}
-                                              atom={atom}
-                                              statementEditorId={this.statementEditorId()}
-                                              paraphrasingStatementEditorId={this.paraphrasingStatementEditorId()}
-                                              sourceExcerptEditorId={this.sourceExcerptParaphraseEditorId()}
-                                              doShowControls={doShowControls}
-                                              doShowJustifications={doShowStatementAtomJustifications}
-                                              isCondensed={isCondensed}
-                                              isUnCondensed={isUnCondensed}
-        />
+        <div className="justification-basis-compound-atom-viewer-and-menu">
+          <JustificationBasisCompoundAtomViewer
+            id={id}
+            key={id}
+            atom={atom}
+            component={CardText}
+            statementEditorId={this.statementEditorId()}
+            paraphrasingStatementEditorId={this.paraphrasingStatementEditorId()}
+            sourceExcerptEditorId={this.sourceExcerptParaphraseEditorId()}
+            doShowControls={doShowControls}
+            doShowJustifications={doShowStatementAtomJustifications}
+            isCondensed={isCondensed}
+            isUnCondensed={isUnCondensed}
+          />
+          {menu}
+        </div>
 
         {doShowStatementAtomJustifications && hasJustifications && (
-          <StatementJustificationTrees id={`${id}-justification-trees`}
-                                       justifications={justifications}
-                                       doShowControls={doShowControls}
-                                       doShowJustifications={doShowStatementAtomJustifications}
-                                       isCondensed={isCondensed}
-                                       isUnCondensed={isUnCondensed}
+          <StatementJustificationTrees
+            id={`${id}-justification-trees`}
+            justifications={justifications}
+            doShowControls={doShowControls}
+            doShowJustifications={doShowStatementAtomJustifications}
+            isCondensed={isCondensed}
+            isUnCondensed={isUnCondensed}
           />
         )}
-      </Paper>
+      </Card>
     )
   }
 
@@ -179,7 +193,7 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
       />,
       <ListItem primaryText="See usages"
                 key="basis-usages"
-                title="See justifications using this basis"
+                title="See justifications using this paraphrase "
                 leftIcon={<FontIcon>call_merge</FontIcon>}
                 component={Link}
                 to={seeBasisUsagesPath(atom)}
@@ -211,20 +225,32 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
         break
       }
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
+        const {
+          paraphrasingStatement,
+          sourceExcerpt,
+        } = atom.entity
+
         const seeUsagesListItems = [
           <ListItem primaryText="See statement usages"
                     key="paraphrasing-statement-usages"
                     title="See justifications using this paraphrasing statement"
                     leftIcon={<FontIcon>call_merge</FontIcon>}
                     component={Link}
-                    to={paths.searchJustifications({statementId: atom.entity.paraphrasingStatement.id})}
+                    to={paths.searchJustifications({statementId: paraphrasingStatement.id})}
           />,
-          <ListItem primaryText="See excerpt usages"
+          <ListItem primaryText={`See ${sourceExcerptDescription(sourceExcerpt)} usages`}
                     key="source-excerpt-usages"
-                    title="See justifications using this excerpt"
+                    title={`See justifications using this ${sourceExcerptDescription(sourceExcerpt)}`}
                     leftIcon={<FontIcon>call_merge</FontIcon>}
                     component={Link}
-                    to={seeSourceExcerptUsagesPath(atom.entity.sourceExcerpt)}
+                    to={seeSourceExcerptUsagesPath(sourceExcerpt)}
+          />,
+          <ListItem primaryText={`See ${sourceExcerptSourceDescription(sourceExcerpt)} usages`}
+                    key="source-excerpt-source-usages"
+                    title={`See justifications using this ${sourceExcerptDescription(sourceExcerpt)}'s ${sourceExcerptSourceDescription(sourceExcerpt)}`}
+                    leftIcon={<FontIcon>call_merge</FontIcon>}
+                    component={Link}
+                    to={seeSourceExcerptSourceUsagesPath(sourceExcerpt)}
           />,
         ]
         insertAllAt(menuListItems, 2, seeUsagesListItems)
@@ -235,7 +261,7 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
                     leftIcon={<FontIcon>create</FontIcon>}
                     onClick={this.onEditParaphrasingStatement}
           />,
-          <ListItem primaryText="Edit excerpt"
+          <ListItem primaryText={`Edit ${sourceExcerptDescription(sourceExcerpt)}`}
                     key="edit-source-excerpt"
                     leftIcon={<FontIcon>create</FontIcon>}
                     onClick={this.onEditSourceExcerpt}
@@ -250,7 +276,7 @@ class JustificationBasisCompoundViewerAtomListItem extends Component {
     return menuListItems
   }
 }
-JustificationBasisCompoundViewerAtomListItem.propTypes = {
+JustificationBasisCompoundViewerAtomItem.propTypes = {
   id: PropTypes.string.isRequired,
   atom: PropTypes.object.isRequired,
   doShowControls: PropTypes.bool,
@@ -258,17 +284,17 @@ JustificationBasisCompoundViewerAtomListItem.propTypes = {
   isCondensed: PropTypes.bool,
   isUnCondensed: PropTypes.bool,
   /** The component as which the item will be rendered */
-  itemComponent: PropTypes.oneOfType([
+  component: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
   ])
 }
-JustificationBasisCompoundViewerAtomListItem.defaultProps = {
+JustificationBasisCompoundViewerAtomItem.defaultProps = {
   doShowControls: true,
   doShowStatementAtomJustifications: false,
   isCondensed: false,
   isUnCondensed: false,
-  itemComponent: 'li',
+  component: 'li',
 }
 
 function menuTitle(atom) {
@@ -329,6 +355,25 @@ function seeSourceExcerptUsagesPath(sourceExcerpt) {
   return paths.searchJustifications(params)
 }
 
+function seeSourceExcerptSourceUsagesPath(sourceExcerpt) {
+  const params = {}
+  switch (sourceExcerpt.type) {
+    case SourceExcerptType.WRIT_QUOTE:
+      params.writId = sourceExcerpt.entity.writ.id
+      break
+    case SourceExcerptType.PIC_REGION:
+      params.picId = sourceExcerpt.entity.pic.id
+      break
+    case SourceExcerptType.VID_SEGMENT:
+      params.vidId = sourceExcerpt.entity.vid.id
+      break
+    default:
+      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+  }
+
+  return paths.searchJustifications(params)
+}
+
 function createJustificationPath(atom) {
   switch (atom.type) {
     case JustificationBasisCompoundAtomType.STATEMENT:
@@ -342,4 +387,4 @@ function createJustificationPath(atom) {
 
 export default connect(null, mapActionCreatorGroupToDispatchToProps({
   editors
-}))(JustificationBasisCompoundViewerAtomListItem)
+}))(JustificationBasisCompoundViewerAtomItem)

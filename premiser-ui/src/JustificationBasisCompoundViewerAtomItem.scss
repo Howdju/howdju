@@ -1,0 +1,9 @@
+.justification-basis-compound-atom-viewer-and-menu {
+  display: flex;
+  align-items: center;
+
+  .atom-viewer {
+    // take up all the space next to the context menu
+    flex: 1 1;
+  }
+}

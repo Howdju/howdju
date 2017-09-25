@@ -1,3 +1,5 @@
+@import "colors";
+
 @mixin react-md-fixes($grid-desktop-breakpoint, $grid-phone-gutter) {
 
   .md-dialog {
@@ -84,5 +86,10 @@
         white-space: normal;
       }
     }
+  }
+
+  .md-card-text.atom-viewer:last-child {
+    // For atoms, they are the only child and they don't look good with a large padding bottom
+    padding-bottom: 16px;
   }
 }

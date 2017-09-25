@@ -7,7 +7,7 @@
 
 #header {
   * {
-    color: $clouds;
+    color: $light-text-color;
   }
 
   .md-autocomplete-list {
@@ -25,16 +25,16 @@
       // Don't show the divider until the input is selected
       background-color: inherit;
       &:after {
-        // Make it a little smaller than the default 2px because $clouds is kind of bright
+        // Make it a little smaller than the default 2px because $light-text-color is kind of bright
         height: 1px;
-        background-color: $clouds;
+        background-color: $light-text-color;
       }
     }
   }
 }
 
 #mainSearch {
-  color: $clouds;
+  color: $light-text-color;
 
   /* Chrome doesn't render these styles if the rule includes non-chrome selectors.
      Just for safety, separate them all

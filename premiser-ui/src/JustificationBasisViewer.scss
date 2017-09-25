@@ -1,0 +1,11 @@
+.compound-atom {
+  margin: 5px;
+  padding: 5px;
+  min-height: 60px;
+}
+.compound-viewer {
+  // quick and dirty way not to overlap chat bubble context menu
+  //margin-right: 50px;
+
+  width: 100%;
+}

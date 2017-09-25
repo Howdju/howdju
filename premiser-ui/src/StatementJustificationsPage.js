@@ -11,6 +11,8 @@ import Dialog from 'react-md/lib/Dialogs'
 import Positions from "react-md/lib/Menus/Positions"
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import Card from 'react-md/lib/Cards/Card'
+import CardText from 'react-md/lib/Cards/CardText'
 import sortBy from "lodash/sortBy"
 import forEach from 'lodash/forEach'
 import some from 'lodash/some'
@@ -52,7 +54,7 @@ import {suggestionKeys} from "./autocompleter"
 import {ESCAPE_KEY_CODE} from "./keyCodes"
 import {selectIsWindowNarrow} from "./selectors"
 
-import GridCard from './GridCard'
+import EntityViewer from './EntityViewer'
 import NewJustificationEditor from './NewJustificationEditor'
 import StatementJustificationTrees from './StatementJustificationTrees'
 
@@ -298,21 +300,29 @@ class StatementJustificationsPage extends Component {
 
             <div className="statement">
 
-              <GridCard className={cn('statementCard', {
-                agreement: hasAgreement,
-                disagreement: hasDisagreement,
-              })}
-                        cellClass="statementText"
-                        onMouseOver={this.onStatementMouseOver}
-                        onMouseLeave={this.onStatementMouseLeave}
+              <Card
+                className={cn('statement-card', {
+                  agreement: hasAgreement,
+                  disagreement: hasDisagreement,
+                })}
+                onMouseOver={this.onStatementMouseOver}
+                onMouseLeave={this.onStatementMouseLeave}
               >
-                {statement && !isEditingStatement && menu}
-                <EditableStatement id={`editableStatement-${statementId}`}
-                                   entityId={statementId}
-                                   editorId={this.statementEditorId}
-                                   suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
+                <EntityViewer
+                  iconName="short_text"
+                  iconTitle="Statement"
+                  component={CardText}
+                  entity={
+                    <EditableStatement id={`editableStatement-${statementId}`}
+                                       className="entity-description statement-text"
+                                       entityId={statementId}
+                                       editorId={this.statementEditorId}
+                                       suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
+                    />
+                  }
+                  menu={statement && !isEditingStatement && menu}
                 />
-              </GridCard>
+              </Card>
 
             </div>
 

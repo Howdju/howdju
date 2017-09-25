@@ -14,6 +14,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
     const {
       id,
       atom,
+      component,
       statementEditorId,
       paraphrasingStatementEditorId,
       sourceExcerptEditorId,
@@ -24,17 +25,21 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
     switch (atom.type) {
       case JustificationBasisCompoundAtomType.STATEMENT:
         return (
-          <StatementAtomViewer id={entityViewerId}
-                               editorId={statementEditorId}
-                               atom={atom}
+          <StatementAtomViewer
+            id={entityViewerId}
+            component={component}
+            editorId={statementEditorId}
+            atom={atom}
           />
         )
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
         return (
-          <SourceExcerptParaphraseAtomViewer id={entityViewerId}
-                                             paraphrasingStatementEditorId={paraphrasingStatementEditorId}
-                                             sourceExcerptEditorId={sourceExcerptEditorId}
-                                             atom={atom}
+          <SourceExcerptParaphraseAtomViewer
+            id={entityViewerId}
+            component={component}
+            paraphrasingStatementEditorId={paraphrasingStatementEditorId}
+            sourceExcerptEditorId={sourceExcerptEditorId}
+            atom={atom}
           />
         )
       default:
@@ -45,6 +50,10 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
 JustificationBasisCompoundAtomViewer.propTypes = {
   id: PropTypes.string.isRequired,
   atom: PropTypes.object.isRequired,
+  component: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+  ]).isRequired,
   statementEditorId: PropTypes.string.isRequired,
   paraphrasingStatementEditorId: PropTypes.string.isRequired,
   sourceExcerptEditorId: PropTypes.string.isRequired,

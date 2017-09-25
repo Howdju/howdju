@@ -25,17 +25,19 @@ class EditableWritQuote extends Component {
     } = this.props
 
     const editor =
-      <WritQuoteEditor {...rest}
-                               id={id}
-                               editorId={editorId}
-                               suggestionsKey={suggestionsKey}
+      <WritQuoteEditor
+        {...rest}
+        id={id}
+        editorId={editorId}
+        suggestionsKey={suggestionsKey}
       />
     const viewer = (
-      <ExpandableChildContainer {...rest}
-                                ExpandableChildComponent={WritQuoteViewer}
-                                widgetId={id}
-                                key={id}
-                                writQuote={writQuote}
+      <ExpandableChildContainer
+        {...rest}
+        ExpandableChildComponent={WritQuoteViewer}
+        widgetId={id}
+        key={id}
+        writQuote={writQuote}
       />
     )
     const progress =

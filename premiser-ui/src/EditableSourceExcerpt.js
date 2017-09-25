@@ -21,12 +21,13 @@ export default class EditableSourceExcerpt extends Component {
     switch (sourceExcerpt.type) {
       case SourceExcerptType.WRIT_QUOTE:
         return (
-          <EditableWritQuote {...rest}
-                             id={id}
-                             entityId={sourceExcerpt.entity.id}
-                             editorId={editorId}
-                             suggestionsKey={suggestionsKey}
-                             doShowControls={doShowControls}
+          <EditableWritQuote
+            {...rest}
+            id={id}
+            entityId={sourceExcerpt.entity.id}
+            editorId={editorId}
+            suggestionsKey={suggestionsKey}
+            doShowControls={doShowControls}
           />
         )
       default:

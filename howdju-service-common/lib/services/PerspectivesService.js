@@ -13,7 +13,7 @@ exports.PerspectivesService = class PerspectivesService {
 
   readFeaturedPerspectives(authToken) {
     return this.authDao.getUserIdForAuthToken(authToken)
-      .then(userId => this.perspectivesDao.readFeaturedPerspectivesWithVotesForOptionalUserId(userId))
+      .then(userId => this.perspectivesDao.readFeaturedPerspectivesWithVotes({userId}))
       .then(perspectives => map(perspectives, decircularizePerspective))
   }
 }

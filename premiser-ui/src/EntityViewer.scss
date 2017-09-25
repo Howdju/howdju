@@ -1,0 +1,24 @@
+@import 'colors';
+
+.entity-viewer {
+  display: flex;
+  align-items: center;
+
+  .entity-viewer--entity {
+    flex: 1 1;
+    border-left: 1px solid darken($clouds, 5%);
+    padding-left: 16px;
+    // Don't be shorter than the font-icon
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+
+    > * {
+      width: 100%;
+    }
+  }
+
+  .entity-viewer--icon {
+    margin-right: 16px;
+  }
+}

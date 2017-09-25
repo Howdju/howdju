@@ -1,6 +1,7 @@
 import assign from 'lodash/assign'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
+import lowerCase from 'lodash/lowerCase'
 import map from 'lodash/map'
 
 import truncate from 'lodash/truncate'
@@ -11,6 +12,7 @@ import {
   newExhaustedEnumError,
   JustificationBasisCompoundAtomType,
   SourceExcerptType,
+  newExhausedEnumError,
 } from 'howdju-common'
 import {ellipsis} from './characters'
 
@@ -157,3 +159,34 @@ const truncateOptions = {
 export const isTextLong = (text) => text ? text.length > config.ui.shortTextLength : false
 export const truncateWritQuoteText = (quoteText, options) => truncate(quoteText, assign({}, truncateOptions, options))
 export const truncateStatementText = (text, options) => truncate(text, assign({}, truncateOptions, options))
+
+
+export function sourceExcerptDescription(sourceExcerpt) {
+  return lowerCase(sourceExcerpt.type)
+}
+
+export function sourceExcerptIconName(sourceExcerpt) {
+  switch (sourceExcerpt.type) {
+    case SourceExcerptType.WRIT_QUOTE:
+      return "format_quote"
+    case SourceExcerptType.PIC_REGION:
+      return "photo"
+    case SourceExcerptType.VID_SEGMENT:
+      return "videocam"
+    default:
+      throw newExhausedEnumError('SourceExcerptType', sourceExcerpt.type)
+  }
+}
+
+export function sourceExcerptSourceDescription(sourceExcerpt) {
+  switch (sourceExcerpt.type) {
+    case SourceExcerptType.WRIT_QUOTE:
+      return "writ"
+    case SourceExcerptType.PIC_REGION:
+      return "pic"
+    case SourceExcerptType.VID_SEGMENT:
+      return "vid"
+    default:
+      throw newExhausedEnumError('SourceExcerptType', sourceExcerpt.type)
+  }
+}

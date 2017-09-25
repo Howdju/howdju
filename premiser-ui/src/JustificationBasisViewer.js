@@ -8,6 +8,9 @@ import WritQuoteViewer from "./WritQuoteViewer"
 import ExpandableChildContainer from './ExpandableChildContainer'
 import JustificationBasisCompoundViewer from "./JustificationBasisCompoundViewer"
 
+import './JustificationBasisViewer.scss'
+
+
 export default class JustificationBasisViewer extends Component {
 
   render() {
