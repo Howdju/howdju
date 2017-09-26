@@ -12,6 +12,7 @@ _e.EntityTypes = arrayToObject([
   'WRIT_QUOTE',
   'JUSTIFICATION',
   'USER',
+  'PASSWORD_HASH',
 ])
 
 _e.ActionType = arrayToObject([

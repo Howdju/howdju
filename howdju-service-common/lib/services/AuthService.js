@@ -1,4 +1,4 @@
-const argon2 = require('argon2')
+const bcrypt = require('bcrypt')
 const cryptohat = require('cryptohat')
 const moment = require('moment')
 const Promise = require('bluebird')
@@ -15,6 +15,9 @@ const {
   InvalidLoginError,
   AuthenticationError,
 } = require("../serviceErrors")
+const {
+  HashTypes
+} = require('../hashTypes')
 
 
 const ensureActive = (user) => {
@@ -54,27 +57,30 @@ exports.AuthService = class AuthService {
     return this.authDao.insertAuthToken(user.id, authToken, now, expires)
   }
 
-  createAuthForUserIdWithPassword(userId, password) {
-    return argon2.hash(password)
-      .then(hash => this.authDao.createUserAuthForUserId(userId, hash))
-  }
-
-  updateAuthForUserIdWithPassword(userId, password) {
-    return argon2.hash(password)
-      .then(hash => this.authDao.updateUserAuthForUserId(userId, hash))
+  createOrUpdateAuthForUserIdWithPassword(userId, password) {
+    return Promise.all([
+      bcrypt.hash(password, this.config.auth.bcrypt.saltRounds),
+      this.authDao.readUserHashForId(userId, HashTypes.BCRYPT),
+    ])
+      .then(([hash, extantUserHash]) => {
+        if (extantUserHash) {
+          return this.authDao.updateUserAuthForUserId(userId, hash, HashTypes.BCRYPT)
+        }
+        return this.authDao.createUserAuthForUserId(userId, hash, HashTypes.BCRYPT)
+      })
   }
 
   verifyPassword(credentials) {
-    return this.authDao.readUserHashForEmail(credentials.email)
+    return this.authDao.readUserHashForEmail(credentials.email, HashTypes.BCRYPT)
       .then( (userHash) => {
         if (!userHash) {
-          throw new EntityNotFoundError(EntityTypes.USER, credentials.email)
+          throw new EntityNotFoundError(EntityTypes.PASSWORD_HASH)
         }
         this.logger.silly('userHash', userHash)
         const {userId, hash} = userHash
         let verifyPromise = null
         try {
-          verifyPromise = argon2.verify(hash, credentials.password)
+          verifyPromise = bcrypt.compare(credentials.password, hash)
           this.logger.silly('proceeding past verify call')
         } catch (err) {
           this.logger.error('failed verification', err)

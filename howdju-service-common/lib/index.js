@@ -1,3 +1,5 @@
+require('any-promise/register')('bluebird', {Promise: require('bluebird')})
+
 const assign = require('lodash/assign')
 module.exports = assign(
   {},

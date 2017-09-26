@@ -11,23 +11,49 @@ exports.AuthDao = class AuthDao {
     this.database = database
   }
 
-  readUserHashForEmail(email) {
+  createUserAuthForUserId(userId, hash, hashType) {
+    return this.database.query(
+      'insert into user_auth (user_id, hash, hash_type) values ($1, $2, $3) returning *',
+      [userId, hash, hashType]
+    )
+      .then( ({rows: [row]}) => toUserHash(row))
+  }
+
+  readUserHashForId(userId, hashType) {
     return this.database.query(`
-      select ua.user_id, ua.hash 
+      select 
+          ua.user_id
+        , ua.hash 
       from users u join user_auth ua using (user_id) 
         where
               u.deleted is null
-          and u.email = $1`, [email])
+          and ua.user_id = $1
+          and ua.hash_type = $2`,
+      [userId, hashType]
+    )
       .then( ({rows: [row]}) => toUserHash(row))
   }
 
-  createUserAuthForUserId(userId, hash) {
-    return this.database.query('insert into user_auth (user_id, hash) values ($1, $2) returning *', [userId, hash])
+  readUserHashForEmail(email, hashType) {
+    return this.database.query(`
+      select 
+          ua.user_id
+        , ua.hash 
+      from users u join user_auth ua using (user_id) 
+        where
+              u.deleted is null
+          and u.email = $1
+          and ua.hash_type = $2`,
+      [email, hashType]
+    )
       .then( ({rows: [row]}) => toUserHash(row))
   }
 
-  updateUserAuthForUserId(userId, hash) {
-    return this.database.query('update user_auth set hash = $2 where user_id = $1 returning *', [userId, hash])
+  updateUserAuthForUserId(userId, hash, hashType) {
+    return this.database.query(
+      'update user_auth set hash = $2 where user_id = $1 and hash_type = $3 returning *',
+      [userId, hash, hashType]
+    )
       .then(mapSingle(this.logger, toUserHash, 'user_auth', {userId}))
   }
 

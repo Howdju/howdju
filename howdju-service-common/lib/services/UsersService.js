@@ -39,7 +39,7 @@ exports.UsersService = class UsersService {
           throw new EntityNotFoundError(EntityTypes.USER, email)
         }
 
-        return this.authService.updateAuthForUserIdWithPassword(user.id, password)
+        return this.authService.createOrUpdateAuthForUserIdWithPassword(user.id, password)
       })
   }
 
@@ -60,7 +60,7 @@ exports.UsersService = class UsersService {
       })
       .then((dbUser) => Promise.all([
         dbUser,
-        this.authService.createAuthForUserIdWithPassword(dbUser.id, password),
+        this.authService.createOrUpdateAuthForUserIdWithPassword(dbUser.id, password),
         this.userExternalIdsDao.createExternalIdsForUserId(dbUser.id)
       ]))
       .then(([dbUser]) => {
