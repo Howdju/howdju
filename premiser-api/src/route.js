@@ -7,6 +7,8 @@ const {
   apiErrorCodes,
   decodeQueryStringObject,
   decodeSorts,
+  httpStatusCodes,
+  httpMethods,
 } = require('howdju-common')
 const {
   AuthenticationError,
@@ -19,13 +21,8 @@ const {
   EntityValidationError,
   RequestValidationError,
   InvalidLoginError,
+  rethrowTranslatedErrors,
 } = require("howdju-service-common")
-
-const httpMethods = require('./httpMethods')
-const httpStatusCodes = require('./httpStatusCodes')
-const {
-  rethrowTranslatedErrors
-} = require('howdju-service-common')
 
 
 const ok = ({callback, body={}, headers}) => callback({
@@ -454,8 +451,13 @@ const routes = [
   },
 ]
 
-const selectRoute = ({path, method, queryStringParameters}) => Promise.resolve()
+const selectRoute = (request) => Promise.resolve()
   .then(() => {
+    const {
+      path,
+      method,
+      queryStringParameters
+    } = request
 
     for (let route of routes) {
       let match

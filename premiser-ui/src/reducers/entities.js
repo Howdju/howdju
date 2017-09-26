@@ -20,6 +20,7 @@ import {combineActions, handleActions} from "redux-actions"
 import {
   assert,
   isTruthy,
+  httpStatusCodes,
 } from 'howdju-common'
 
 import {
@@ -28,7 +29,6 @@ import {
   JustificationTargetType,
 } from 'howdju-common'
 import {api} from '../actions'
-import * as httpStatusCodes from "../httpStatusCodes"
 
 export const unionArraysDistinctIdsCustomizer = (destVal, srcVal) => {
   if (isArray(destVal) && isArray(srcVal)) {

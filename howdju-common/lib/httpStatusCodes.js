@@ -1,7 +1,7 @@
 /** See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
  *  See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
  */
-module.exports = {
+exports.httpStatusCodes = {
   OK: 200,
 
   /** There was nothing to do and nothing new to return (does not allow a body) */
@@ -13,6 +13,7 @@ module.exports = {
   /** The user is not authenticated, or improperly authenticated */
   UNAUTHORIZED: 401,
 
+  /** The user is authenticated but not authorized; not allowed to perform the requested action */
   FORBIDDEN: 403,
 
   /** The user is authenticated, but lacks permission */

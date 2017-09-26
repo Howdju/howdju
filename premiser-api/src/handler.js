@@ -13,12 +13,14 @@ const toLower = require('lodash/toLower')
 const uuid = require('uuid')
 
 const {
+  httpStatusCodes
+} = require('howdju-common')
+const {
   configureGatewayContext
 } = require('howdju-service-common')
 
 const {routeEvent} = require('./route')
 const {apiHost} = require('./config/util')
-const httpStatusCodes = require('./httpStatusCodes')
 const customHeaderKeys = require('./customHeaderKeys')
 const headerKeys = require('./headerKeys')
 const {
@@ -108,6 +110,8 @@ const parseBody = (appProvider, event) => {
 const makeResponder = (appProvider, gatewayEvent, gatewayCallback) => ({httpStatusCode, headers, body}) => {
   const origin = getHeaderValue(gatewayEvent.headers, headerKeys.ORIGIN)
   const response = makeResponse(appProvider, {httpStatusCode, headers, body, origin})
+  appProvider.logger.debug('Responding with statusCode: ', response.statusCode)
+  appProvider.logger.silly('Responding with: ', response)
   return gatewayCallback(null, response)
 }
 
@@ -165,16 +169,17 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
 
     const request = makeRequest(appProvider, gatewayEvent, gatewayCallback, requestIdentifiers)
     const respond = makeResponder(appProvider, gatewayEvent, gatewayCallback)
-    routeEvent(request, appProvider, respond)
+    return routeEvent(request, appProvider, respond)
       .catch(error => {
         appProvider.logger.error('uncaught error after routeEvent')
+        appProvider.logger.error(error)
         gatewayCallback(error)
       })
   } catch(error) {
     console.error(error)
     console.error('gatewayEvent:', gatewayEvent)
     console.error('gatewayContext:', gatewayContext)
-    gatewayCallback(error)
+    return gatewayCallback(error)
   }
 }
 

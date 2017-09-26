@@ -4,6 +4,10 @@ import { CANCEL } from 'redux-saga'
 import get from 'lodash/get'
 import pick from 'lodash/pick'
 
+import {
+  httpMethods
+} from 'howdju-common'
+
 import {logger} from './logger'
 import {
   makeIdentifiersMessage,
@@ -11,7 +15,6 @@ import {
   newNetworkFailureError,
   newRequestConfigurationError,
 } from "./uiErrors"
-import * as httpMethods from "./httpMethods"
 import {newId} from "./identifiers"
 import * as customHeaderKeys from "./customHeaderKeys"
 import config from './config'

@@ -5,13 +5,16 @@ import {
 } from 'redux-saga/effects'
 import {push, replace} from 'react-router-redux'
 
+import {
+  httpStatusCodes,
+} from 'howdju-common'
+
 import t, {
   DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
   MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
 } from '../texts'
 import paths from "../paths"
 import mainSearcher from '../mainSearcher'
-import * as httpStatusCodes from '../httpStatusCodes'
 import {
   selectLoginRedirectLocation,
   selectRouterLocation,

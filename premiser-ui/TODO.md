@@ -1,5 +1,10 @@
 # Howdju UI TODO
 
+* Citation-based justifications are missing icon in perspectives and recent justifications
+* Confirm pre-prod hitting pre-prod DB.  Log DB connection info
+* Search httpMethods too
+* can't login to prod 502
+
 * Is a Paraphrased citation equal to a citation-based justification?
   * Automatically create citation-based justification?
 

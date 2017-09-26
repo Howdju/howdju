@@ -1,5 +1,5 @@
 const {selectRoute} = require('./route')
-const httpMethods = require('./httpMethods')
+const {httpMethods} = require('howdju-common')
 
 describe('routes', () => {
 

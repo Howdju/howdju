@@ -5,6 +5,7 @@ import queryString from 'query-string'
 import {
   SortDirection,
   encodeQueryStringObject,
+  httpMethods,
 } from 'howdju-common'
 
 import {
@@ -24,7 +25,7 @@ import {
   justificationsSchema,
   writQuotesSchema, justificationBasisCompoundSchema, sourceExcerptParaphraseSchema,
 } from '../schemas'
-import * as httpMethods from '../httpMethods'
+
 
 const defaultSorts = `created=${SortDirection.DESCENDING}`
 

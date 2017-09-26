@@ -65,11 +65,8 @@ exports.AuthService = class AuthService {
   }
 
   verifyPassword(credentials) {
-    return Promise.all([
-      credentials,
-      this.authDao.readUserHashForEmail(credentials.email),
-    ])
-      .then(([credentials, userHash]) => {
+    return this.authDao.readUserHashForEmail(credentials.email)
+      .then( (userHash) => {
         if (!userHash) {
           throw new EntityNotFoundError(EntityTypes.USER, credentials.email)
         }
@@ -78,8 +75,8 @@ exports.AuthService = class AuthService {
           userHash.userId,
         ])
       })
-      .then( ([isMatch, userId]) => {
-        if (!isMatch) {
+      .then( ([isVerified, userId]) => {
+        if (!isVerified) {
           throw new InvalidLoginError()
         }
 
@@ -96,9 +93,9 @@ exports.AuthService = class AuthService {
   }
 
   login(credentials) {
-    return Promise.resolve(credentials)
-      .then(credentials => this.validateCredentials(credentials))
-      .then(credentials => this.verifyPassword(credentials))
+    return Promise.resolve()
+      .then(() => this.validateCredentials(credentials))
+      .then(() => this.verifyPassword(credentials))
       .then(userId => this.usersDao.readUserForId(userId))
       .then(user => ensureActive(user))
       .then(user => {

@@ -6,6 +6,8 @@ module.exports = assign(
   require('./enums'),
   require('./commonErrors'),
   require('./general'),
+  require('./httpMethods'),
+  require('./httpStatusCodes'),
   require('./models'),
   require('./serialization')
 )
