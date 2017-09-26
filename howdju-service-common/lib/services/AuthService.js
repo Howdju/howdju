@@ -71,9 +71,10 @@ exports.AuthService = class AuthService {
           throw new EntityNotFoundError(EntityTypes.USER, credentials.email)
         }
         this.logger.silly('userHash', userHash)
+        const {userId, hash} = userHash
         let verifyPromise = null
         try {
-          verifyPromise = argon2.verify(userHash.hash, credentials.password)
+          verifyPromise = argon2.verify(hash, credentials.password)
           this.logger.silly('proceeding past verify call')
         } catch (err) {
           this.logger.error('failed verification', err)
@@ -81,10 +82,11 @@ exports.AuthService = class AuthService {
         }
         return Promise.all([
           verifyPromise,
-          userHash.userId,
+          userId,
         ])
       })
       .then( ([isVerified, userId]) => {
+        this.logger.silly('isVerified: ', isVerified)
         if (!isVerified) {
           throw new InvalidLoginError()
         }
