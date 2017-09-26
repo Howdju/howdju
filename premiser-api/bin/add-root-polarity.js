@@ -3,10 +3,12 @@ const {
   JustificationTargetType,
 } = require('howdju-common')
 const {
-  database
-} = require('../src/initialization/databaseInitialization')
+  AppProvider
+} = require('../src/init')
 
-const updateRootPolarity = () => database.query(`
+const appProvider = new AppProvider()
+
+const updateRootPolarity = () => appProvider.database.query(`
       update justifications j1
         set root_polarity = 
           case 
@@ -26,7 +28,10 @@ const updateRootPolarity = () => database.query(`
   })
 
 const updateRootJustificationsRootPolarity =
-  database.query(`update justifications set root_polarity = polarity where target_type = $1 and root_polarity is null`, [JustificationTargetType.STATEMENT])
+  appProvider.database.query(
+    `update justifications set root_polarity = polarity where target_type = $1 and root_polarity is null`,
+    [JustificationTargetType.STATEMENT]
+  )
     .then(updateRootPolarity)
 
 updateRootJustificationsRootPolarity()

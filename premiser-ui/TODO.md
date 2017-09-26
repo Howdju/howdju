@@ -14,6 +14,13 @@
   * Create pre-prod DB for testing schema changes?
   
   
+* API_ROOT vs. API_HOST env. vars, shared API config between prod and pre-prod (right now I think pre-prod returns Bearer Authorization header for prod)
+* Pre-prod doesn't redirect to HTTPS
+* Configuration issue: cannot use lambda env. vars because then two aliases can't point at the same version.  To use the stage variables, 
+  the db pool needs to be initialized in response to a request, and possibly cached by a hash of the config.  BUT stage vars
+  don't support encryption helpers.  So could put in stage vars. w/o encryption, or could put in lambda with env. name suffixes.
+  How to get the name?  From the stage?
+
 * randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
 
 * Review usage of id/idPrefix/baseId in the new UI stuff

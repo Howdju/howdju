@@ -1,42 +1,39 @@
+/* eslint "no-console": ["off"] */
+
 // was this just to support loading the env file?
 // process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT']
 
 const concat = require('lodash/concat')
 const get = require('lodash/get')
-const isArray = require('lodash/isArray')
+const isEmpty = require('lodash/isEmpty')
 const join = require('lodash/join')
+const keys = require('lodash/keys')
 const pick = require('lodash/pick')
-const reduce = require('lodash/reduce')
 const toLower = require('lodash/toLower')
 const uuid = require('uuid')
 
-const {configureGatewayContext} = require('howdju-service-common')
+const {
+  configureGatewayContext
+} = require('howdju-service-common')
 
 const {routeEvent} = require('./route')
-// config for settings that can be unencrypted at rest and that wait for a deploy to change
-const config = require('./config')
-const {logger} = require('./initialization')
 const {apiHost} = require('./config/util')
 const httpStatusCodes = require('./httpStatusCodes')
 const customHeaderKeys = require('./customHeaderKeys')
 const headerKeys = require('./headerKeys')
+const {
+  AppProvider
+} = require('./init')
 
-const makeObj = (iterable) => reduce(iterable, (acc, o) => {
-  acc[o] = o
-  return acc
-}, {})
 
-let previousLogLevel = null
-
-const allowedOrigins = isArray(config.corsAllowOrigin) ? makeObj(config.corsAllowOrigin) : makeObj([config.corsAllowOrigin])
 const allowedHeaders = concat([
   headerKeys.CONTENT_TYPE,
   headerKeys.AUTHORIZATION,
 ], customHeaderKeys.identifierKeys)
 
-const makeResponse = ({httpStatusCode, headers={}, body, origin}) => {
+const makeResponse = (appProvider, {httpStatusCode, headers={}, body, origin}) => {
   headers = Object.assign({}, headers, {
-    'Access-Control-Allow-Origin': allowedOrigins[origin] || 'none',
+    'Access-Control-Allow-Origin': appProvider.allowedOrigins[origin] || 'none',
     'Access-Control-Allow-Headers': join(allowedHeaders, ','),
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE',
@@ -59,7 +56,7 @@ const makeResponse = ({httpStatusCode, headers={}, body, origin}) => {
 
   if (body) {
     if (httpStatusCode === httpStatusCodes.NO_CONTENT) {
-      logger.warn('noContent response received body.  Ignoring')
+      appProvider.logger.warn('noContent response received body.  Ignoring')
     } else {
       response.headers['Content-Type'] = 'application/json'
       response['body'] = JSON.stringify(body)
@@ -81,19 +78,19 @@ const getHeaderValue = (headers, headerName) => {
 }
 
 const authorizationHeaderPrefix = 'Bearer '
-const extractAuthToken = event => {
+const extractAuthToken = (appProvider, event) => {
   const authorizationHeader = getHeaderValue(event.headers, headerKeys.AUTHORIZATION)
   if (!authorizationHeader) {
     return null
   }
   if (!authorizationHeader.startsWith(authorizationHeaderPrefix)) {
-    logger.warn(`Invalid authorization header: ${authorizationHeader}`)
+    appProvider.logger.warn(`Invalid authorization header: ${authorizationHeader}`)
     return null
   }
   return authorizationHeader.substring(authorizationHeaderPrefix.length)
 }
 
-const parseBody = event => {
+const parseBody = (appProvider, event) => {
   // TODO throw error if cant' support content-type.  handle application/form?
   // example: 'content-type':'application/json;charset=UTF-8',
   const body = event.body
@@ -103,25 +100,18 @@ const parseBody = event => {
   try {
     return JSON.parse(body)
   } catch (err) {
-    logger.error(`Error parsing JSON body (${body})`, err)
+    appProvider.logger.error(`Error parsing JSON body (${body})`, err)
     return null
   }
 }
 
-const makeResponder = (gatewayEvent, gatewayCallback) => ({httpStatusCode, headers, body}) => {
+const makeResponder = (appProvider, gatewayEvent, gatewayCallback) => ({httpStatusCode, headers, body}) => {
   const origin = getHeaderValue(gatewayEvent.headers, headerKeys.ORIGIN)
-  const response = makeResponse({httpStatusCode, headers, body, origin})
+  const response = makeResponse(appProvider, {httpStatusCode, headers, body, origin})
   return gatewayCallback(null, response)
 }
 
-const configureLogger = (gatewayEvent, gatewayContext, requestIdentifiers) => {
-  const logLevel = get(gatewayEvent, ['stageVariables', 'logLevel'])
-  if (logLevel) {
-    previousLogLevel = logger.logLevel
-    logger.logLevel = logLevel
-    logger.silly(`Setting logger to stage logLevel ${logLevel} (was ${previousLogLevel})`)
-  }
-
+const configureLogger = (logger, gatewayEvent, requestIdentifiers) => {
   const loggingContext = pick(requestIdentifiers, ['clientRequestId', 'serverRequestId'])
   const stage = get(gatewayEvent, ['requestContext', 'stage'])
   if (stage) {
@@ -130,69 +120,77 @@ const configureLogger = (gatewayEvent, gatewayContext, requestIdentifiers) => {
   logger.context = loggingContext
 }
 
-const makeRequestIdentifiers = (gatewayEvent, gatewayContext) => {
+const makeRequestIdentifiers = (gatewayEvent) => {
   const requestIdentifiers = {}
   const clientRequestId = getHeaderValue(gatewayEvent.headers, customHeaderKeys.REQUEST_ID)
   if (clientRequestId) {
     requestIdentifiers.clientRequestId = clientRequestId
   }
   // We only need one identifier generated server-side; if AWS provides one, use it
-  if (gatewayContext.awsRequestId) {
-    requestIdentifiers.awsRequestId = gatewayContext.awsRequestId
+  if (gatewayEvent.requestContext.requestId) {
+    requestIdentifiers.awsRequestId = gatewayEvent.requestContext.requestId
   } else {
     requestIdentifiers.serverRequestId = uuid.v4()
   }
   return requestIdentifiers
 }
 
-const makeRequest = (gatewayEvent, gatewayCallback, requestIdentifiers) => {
-  const respond = makeResponder(gatewayEvent, gatewayCallback)
+const makeRequest = (appProvider, gatewayEvent, gatewayCallback, requestIdentifiers) => {
   return {
-    callback: respond,
-    request: {
-      authToken: extractAuthToken(gatewayEvent),
-      requestIdentifiers,
-      clientIdentifiers: {
-        sessionStorageId: getHeaderValue(gatewayEvent.headers, customHeaderKeys.SESSION_STORAGE_ID),
-        pageLoadId: getHeaderValue(gatewayEvent.headers, customHeaderKeys.PAGE_LOAD_ID),
-      },
-      // TODO strip out leading /v1/ as {version: 'v1'}
-      path: gatewayEvent.pathParameters.proxy,
-      method: gatewayEvent.httpMethod,
-      queryStringParameters: gatewayEvent.queryStringParameters,
-      body: parseBody(gatewayEvent),
+    authToken: extractAuthToken(appProvider, gatewayEvent),
+    requestIdentifiers,
+    clientIdentifiers: {
+      sessionStorageId: getHeaderValue(gatewayEvent.headers, customHeaderKeys.SESSION_STORAGE_ID),
+      pageLoadId: getHeaderValue(gatewayEvent.headers, customHeaderKeys.PAGE_LOAD_ID),
     },
+    // TODO strip out leading /v1/ as {version: 'v1'}
+    path: gatewayEvent.pathParameters.proxy,
+    method: gatewayEvent.httpMethod,
+    queryStringParameters: gatewayEvent.queryStringParameters,
+    body: parseBody(appProvider, gatewayEvent),
   }
 }
 
 exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
   try {
     configureGatewayContext(gatewayContext)
-    const requestIdentifiers = makeRequestIdentifiers(gatewayEvent, gatewayContext)
-    configureLogger(gatewayEvent, gatewayContext, requestIdentifiers)
 
-    logger.silly('gatewayEvent:', gatewayEvent)
-    logger.silly('gatewayContext:', gatewayContext)
+    const appProvider = getOrCreateAppProvider(gatewayEvent)
 
-    const request = makeRequest(gatewayEvent, gatewayCallback, requestIdentifiers)
-    routeEvent(request)
+    const requestIdentifiers = makeRequestIdentifiers(gatewayEvent)
+    configureLogger(appProvider.logger, gatewayEvent, requestIdentifiers)
+
+    appProvider.logger.silly('gatewayEvent:', gatewayEvent)
+    appProvider.logger.silly('gatewayContext:', gatewayContext)
+
+    const request = makeRequest(appProvider, gatewayEvent, gatewayCallback, requestIdentifiers)
+    const respond = makeResponder(appProvider, gatewayEvent, gatewayCallback)
+    routeEvent(request, appProvider, respond)
       .catch(error => {
-        logger.error('uncaught error after routeEvent')
+        appProvider.logger.error('uncaught error after routeEvent')
         gatewayCallback(error)
       })
   } catch(error) {
-    logger.error(error)
-    logger.error('gatewayEvent:', gatewayEvent)
-    logger.error('gatewayContext:', gatewayContext)
+    console.error(error)
+    console.error('gatewayEvent:', gatewayEvent)
+    console.error('gatewayContext:', gatewayContext)
     gatewayCallback(error)
-  } finally {
-    // I'm not sure if stages can share lambda function instances, but if they can, then we can't overwrite the log level without returning it
-    // Possibly we can't even safely change the log level globally, if it is possible for stages to share instances mid-request
-    // In that case we'd need to keep a logger per stage, or per logLevel, or pool loggers and pass them along with the requests
-    if (previousLogLevel) {
-      logger.silly(`Returning logger to previous logLevel ${previousLogLevel} (is ${logger.logLevel})`)
-      logger.logLevel = previousLogLevel
-      previousLogLevel = null
+  }
+}
+
+const appProviderByStage = {}
+
+function getOrCreateAppProvider(gatewayContext) {
+  const stage = get(gatewayContext, 'requestContext.stage')
+  let appProvider = appProviderByStage[stage]
+  if (!appProvider) {
+    const doWarn = !isEmpty(appProviderByStage)
+
+    appProviderByStage[stage] = appProvider = new AppProvider(stage)
+
+    if (doWarn) {
+      appProvider.logger.warn(`Created a provider for ${stage} in a lambda that already has providers for: ${keys(appProviderByStage)}`)
     }
   }
+  return appProvider
 }

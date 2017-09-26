@@ -10,6 +10,10 @@
     "db:local:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
     "db:local:shell": "psql premiser",
     "db:local": "yarn run db:local:start && yarn run db:local:shell",
+    "db:prod:tunnel": "ssh -N -L 5433:premiser.cc4gfeuy5z8h.us-east-1.rds.amazonaws.com:5432 bastion.howdju.com",
+    "db:prod:tunnel:shell": "psql -h 127.0.0.1 -p 5433 -d premiser -U premiser_rds",
+    "db:pre-prod:tunnel:shell": "psql -h 127.0.0.1 -p 5433 -d howdju_pre_prod -U premiser_rds",
+    "db:prod": "coproc yarn run db:prod:tunnel && yarn run db:prod:tunnel:shell && coproc :",
     "create-user:prod": "NODE_ENV=production node bin/create-user.js",
     "create-user:local": "NODE_ENV=development node bin/create-user.js",
     "lint": "eslint bin lib src gulpfile.js server.js",
@@ -27,9 +31,6 @@
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
     "test-debug": "node --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
     "test-inspect": "yarn run test:debug &; node-inspector",
-    "db:prod:tunnel": "ssh -N -L 5433:premiser.cc4gfeuy5z8h.us-east-1.rds.amazonaws.com:5432 bastion.howdju.com",
-    "db:prod:tunnel:shell": "psql -h 127.0.0.1 -p 5433 -d premiser -U premiser_rds",
-    "db:prod": "yarn run db:prod:tunnel | cat >&1 | yarn run db:prod:tunnel:shell",
     "change-password:local": "source ../config/local.env && node bin/change-user-password.js"
   },
   "devDependencies": {

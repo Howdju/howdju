@@ -27,6 +27,7 @@
   * Delete statement compounds all of whose statements are deleted
   * Delete old scores
   * Sources having internal inconsistencies (writs ultimately both support and oppose the same statement)
+  * Delete old job histories
 * Short IDs
 * [Build using Vagrant?](https://stackoverflow.com/a/30440198/39396)
 

@@ -1,0 +1,1 @@
+pg_dump --data-only --file=howdju.sql --host=127.0.0.1 --port=5433 --dbname=premiser --username=premiser_admin

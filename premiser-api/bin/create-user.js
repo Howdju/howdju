@@ -8,14 +8,16 @@ const {
 } = require('howdju-ops')
 loadEnvironmentEnvVars('../../config/local-prod.env')
 
-const {
-  pool
-} = require('../src/initialization/databaseInitialization')
+const {AppProvider} = require('../src/init')
+
+const appProvider = new AppProvider()
+
 const {
   usersService,
   permissionsService,
   groupsService,
-} = require('../src/initialization')
+  pool,
+} = appProvider
 
 const parser = new ArgumentParser({
   description: 'Add a user'

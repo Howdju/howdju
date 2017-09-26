@@ -1,9 +1,10 @@
+/* eslint "no-console": ["off"] */
+
 const express = require('express')
 const morgan = require('morgan')
 const isString = require('lodash/isString')
 
 const {handler} = require('./src/index')
-const {logger} = require('./src/initialization/loggerInitialization')
 
 
 const app = express()
@@ -34,13 +35,14 @@ app.use('/api/*', function (req, res) {
     httpMethod: req.method,
     queryStringParameters: req.query,
     body: req.rawBody,
+    requestContext: {},
   }
 
-  const context = {isLocal: true}
+  const context = {}
 
   const callback = (error, response) => {
     if (error) {
-      logger.error(error)
+      console.error('Server error', error)
       res.status(500)
       res.send(error)
       return

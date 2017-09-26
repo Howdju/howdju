@@ -6,8 +6,12 @@ const {loadEnvironmentEnvVars} = require('howdju-ops')
 loadEnvironmentEnvVars()
 
 const {logger} = require('howdju-ops')
-const {database} = require('../src/initialization/databaseInitialization')
+
+const {AppProvider} = require('../src/init')
 const {normalizeText} = require("howdju-service-common/lib/daos/util")
+
+const appProvider = new AppProvider()
+const {database} = appProvider
 
 const updateStatementRowNormalText = row =>
   database.query('update statements set normal_text = $1 where statement_id = $2 returning *', [normalizeText(row.text), row.statement_id])

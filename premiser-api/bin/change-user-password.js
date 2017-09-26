@@ -5,9 +5,13 @@ const {loadEnvironmentEnvVars} = require('howdju-ops')
 loadEnvironmentEnvVars()
 
 const {logger} = require('howdju-ops')
+const {AppProvider} = require('../src/init')
 
-const {usersService} = require('../src/initialization')
-const {pool} = require('../src/initialization/databaseInitialization')
+const appProvider = new AppProvider()
+const {
+  usersService,
+  pool
+} = appProvider
 
 const parser = new ArgumentParser({
   description: 'Change a user password'

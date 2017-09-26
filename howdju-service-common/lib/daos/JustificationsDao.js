@@ -699,7 +699,7 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
   )
 
   const justificationsById = mapValues(justificationRowsById,
-      row => toJustification(row, null, statementCompoundsById, writQuotesRowsById, justificationBasisCompoundsById))
+    row => toJustification(row, null, statementCompoundsById, writQuotesRowsById, justificationBasisCompoundsById))
   return [justificationsById, orderedJustificationIds]
 }
 

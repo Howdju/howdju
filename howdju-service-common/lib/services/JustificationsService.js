@@ -291,10 +291,10 @@ function readOrCreateEquivalentValidJustificationAsUser(server, justification, u
     now,
   ])
     .then( ([
-              {targetEntity},
-              {basisEntity},
-              now,
-            ]) => {
+      {targetEntity},
+      {basisEntity},
+      now,
+    ]) => {
       justification = cloneDeep(justification)
 
       justification.target.entity = targetEntity

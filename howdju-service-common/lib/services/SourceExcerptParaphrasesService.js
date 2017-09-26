@@ -12,29 +12,29 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
   constructor(
     logger,
     actionsService,
-    sourceExcerptParaphrasesDao,
     statementsService,
     writQuotesService,
     picRegionsService,
-    vidSegmentsService
+    vidSegmentsService,
+    sourceExcerptParaphrasesDao
   ) {
     requireArgs({
       logger,
       actionsService,
-      sourceExcerptParaphrasesDao,
       statementsService,
       writQuotesService,
       picRegionsService,
-      vidSegmentsService
+      vidSegmentsService,
+      sourceExcerptParaphrasesDao,
     })
 
     this.logger = logger
     this.actionsService = actionsService
-    this.sourceExcerptParaphrasesDao = sourceExcerptParaphrasesDao
     this.statementsService = statementsService
     this.writQuotesService = writQuotesService
     this.picRegionsService = picRegionsService
     this.vidSegmentsService = vidSegmentsService
+    this.sourceExcerptParaphrasesDao = sourceExcerptParaphrasesDao
   }
 
   readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId}) {

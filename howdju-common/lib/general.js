@@ -55,8 +55,8 @@ _e.timestampFormatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
 
 _e.utcTimestamp = () => _e.utcNow().format(_e.timestampFormatString)
 
-_e.arrayToObject = (codes) => reduce(codes, (acc, code) => {
-  acc[code] = code
+_e.arrayToObject = (items) => reduce(items, (acc, item) => {
+  acc[item] = item
   return acc
 }, {})
 
