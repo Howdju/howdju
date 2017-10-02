@@ -71,10 +71,10 @@ class JustificationsTree extends Component {
      When there are only positive or only negative justifications, add a margin to the top-left justifications to show
      spatially whether they are positive or negative.
      */
-    let treeCells = null
+    let branchesCells = null
     if (isWindowNarrow || isCondensed || !hasBothSides && !isUnCondensed) {
       const treesClass = "statement-justifications-justification-trees--combined"
-      treeCells = (
+      branchesCells = (
         <FlipMove
           key={treesClass}
           className={`md-cell md-cell--12 ${treesClass}`}
@@ -87,7 +87,7 @@ class JustificationsTree extends Component {
     } else {
       const positiveTreeClass = "statement-justifications-justification-trees--positive"
       const negativeTreeClass = "statement-justifications-justification-trees--negative"
-      treeCells = [
+      branchesCells = [
         <FlipMove
           key={positiveTreeClass}
           className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${positiveTreeClass}`}
@@ -149,7 +149,7 @@ class JustificationsTree extends Component {
 
     return (
       <WrapperComponent className={cn(className, "md-grid")}>
-        {treeCells}
+        {branchesCells}
       </WrapperComponent>
     )
   }

@@ -6,6 +6,12 @@ li.statement-atom {
   align-items: center;
 }
 
+.statement-atom {
+  .entity-viewer {
+    width: 100%;
+  }
+}
+
 $context-menu-horizontal-offset: -80px;
 $context-menu-vertical-offset: 40px;
 
