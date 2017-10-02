@@ -42,7 +42,13 @@ class FeaturedPerspectivesPage extends Component {
           >
             {map(perspectives, p => {
               const id = `featured-perspective-${p.id}`
-              return <PerspectiveCard key={id} perspective={p} />
+              return (
+                <PerspectiveCard
+                  id={id}
+                  key={id}
+                  perspective={p}
+                />
+              )
             })}
           </FlipMove>
 

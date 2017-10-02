@@ -102,13 +102,13 @@ class EditStatementJustificationPage extends Component {
         break
       case EditStatementJustificationPageMode.CREATE_JUSTIFICATION: {
         const {
-          basisType,
-          basisId,
+          basisSourceType,
+          basisSourceId,
         } = this.props.queryParams
         // First clear out the editor
-        this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification())
+        this.props.editors.cancelEdit(this.editorType, this.editorId)
         // Then fetch the stuff for editing
-        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(this.editorType, this.editorId, basisType, basisId)
+        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(this.editorType, this.editorId, basisSourceType, basisSourceId)
         break
       }
       case EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION: {
@@ -243,24 +243,26 @@ class EditStatementJustificationPage extends Component {
                   <CardTitle title={title} />
 
                   <CardText>
-                    <StatementEditorFields id={EditStatementJustificationPage.id + '-statement-editor-fields'}
-                                           textId={statementEditorText}
-                                           statement={statement}
-                                           name="statement"
-                                           suggestionsKey={suggestionKeys.createStatementPageStatement}
-                                           onPropertyChange={this.onPropertyChange}
-                                           errors={statementErrors}
-                                           disabled={isSaving}
+                    <StatementEditorFields
+                      id={EditStatementJustificationPage.id + '-statement-editor-fields'}
+                      textId={statementEditorText}
+                      statement={statement}
+                      name="statement"
+                      suggestionsKey={suggestionKeys.createStatementPageStatement}
+                      onPropertyChange={this.onPropertyChange}
+                      errors={statementErrors}
+                      disabled={isSaving}
                     />
                   </CardText>
 
                   {!isCreateJustificationMode && (
-                    <Switch id="doCreateJustificationSwitch"
-                            name="doCreateJustification"
-                            label={t(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
-                            checked={doCreateJustification}
-                            onChange={this.onDoCreateJustificationSwitchChange}
-                            disabled={isSaving}
+                    <Switch
+                      id="doCreateJustificationSwitch"
+                      name="doCreateJustification"
+                      label={t(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
+                      checked={doCreateJustification}
+                      onChange={this.onDoCreateJustificationSwitchChange}
+                      disabled={isSaving}
                     />
                   )}
 

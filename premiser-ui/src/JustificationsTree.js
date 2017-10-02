@@ -12,17 +12,17 @@ import {
   JustificationPolarity,
 } from 'howdju-common'
 import config from './config'
-import JustificationTree from './JustificationTree'
+import JustificationBranch from './JustificationBranch'
 import {selectIsWindowNarrow} from "./selectors"
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION
 } from './texts'
 
-import './StatementJustificationTrees.scss'
+import './JustificationsTree.scss'
 
-class StatementJustificationTrees extends Component {
+class JustificationsTree extends Component {
 
-  toTree = j => {
+  toBranch = j => {
     const {
       id,
       doShowControls,
@@ -31,12 +31,13 @@ class StatementJustificationTrees extends Component {
       isUnCondensed,
     } = this.props
     const treeId = `${id}-justification-tree-${j.id}`
-    return <JustificationTree key={treeId}
-                              justification={j}
-                              doShowControls={doShowControls}
-                              doShowBasisJustifications={doShowJustifications}
-                              isCondensed={isCondensed}
-                              isUnCondensed={isUnCondensed}
+    return <JustificationBranch
+      key={treeId}
+      justification={j}
+      doShowControls={doShowControls}
+      doShowBasisJustifications={doShowJustifications}
+      isCondensed={isCondensed}
+      isUnCondensed={isUnCondensed}
     />
   }
 
@@ -45,7 +46,7 @@ class StatementJustificationTrees extends Component {
       justifications,
       isCondensed,
       isUnCondensed,
-      WrapperComponent,
+      wrapperComponent: WrapperComponent,
       className,
       isWindowNarrow,
       showNewPositiveJustificationDialog,
@@ -74,22 +75,24 @@ class StatementJustificationTrees extends Component {
     if (isWindowNarrow || isCondensed || !hasBothSides && !isUnCondensed) {
       const treesClass = "statement-justifications-justification-trees--combined"
       treeCells = (
-        <FlipMove key={treesClass}
-                  className={`md-cell md-cell--12 ${treesClass}`}
-                  duration={flipMoveDuration}
-                  easing={flipMoveEasing}
+        <FlipMove
+          key={treesClass}
+          className={`md-cell md-cell--12 ${treesClass}`}
+          duration={flipMoveDuration}
+          easing={flipMoveEasing}
         >
-          {map(justifications, this.toTree)}
+          {map(justifications, this.toBranch)}
         </FlipMove>
       )
     } else {
       const positiveTreeClass = "statement-justifications-justification-trees--positive"
       const negativeTreeClass = "statement-justifications-justification-trees--negative"
       treeCells = [
-        <FlipMove key={positiveTreeClass}
-                  className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${positiveTreeClass}`}
-                  duration={flipMoveDuration}
-                  easing={flipMoveEasing}
+        <FlipMove
+          key={positiveTreeClass}
+          className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${positiveTreeClass}`}
+          duration={flipMoveDuration}
+          easing={flipMoveEasing}
         >
           {hasJustifications && (
             <h2 className="md-cell md-cell--12" key="supporting-justifications-header">
@@ -111,12 +114,13 @@ class StatementJustificationTrees extends Component {
               />
             </div>
           ])}
-          {map(positiveJustifications, this.toTree)}
+          {map(positiveJustifications, this.toBranch)}
         </FlipMove>,
-        <FlipMove key={negativeTreeClass}
-                  className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${negativeTreeClass}`}
-                  duration={flipMoveDuration}
-                  easing={flipMoveEasing}
+        <FlipMove
+          key={negativeTreeClass}
+          className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${negativeTreeClass}`}
+          duration={flipMoveDuration}
+          easing={flipMoveEasing}
         >
           {hasJustifications && (
             <h2 className="md-cell md-cell--12" key="opposting-justifications-header">
@@ -138,7 +142,7 @@ class StatementJustificationTrees extends Component {
               />
             </div>
           ])}
-          {map(negativeJustifications, this.toTree)}
+          {map(negativeJustifications, this.toBranch)}
         </FlipMove>
       ]
     }
@@ -150,20 +154,24 @@ class StatementJustificationTrees extends Component {
     )
   }
 }
-StatementJustificationTrees.propTypes = {
+JustificationsTree.propTypes = {
   justifications: PropTypes.arrayOf(PropTypes.object),
   doShowControls: PropTypes.bool,
   doShowJustifications: PropTypes.bool,
   isUnCondensed: PropTypes.bool,
   showNewPositiveJustificationDialog: PropTypes.func,
   showNewNegativeJustificationDialog: PropTypes.func,
+  wrapperComponent: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]),
 }
-StatementJustificationTrees.defaultProps = {
+JustificationsTree.defaultProps = {
   doShowControls: false,
   doShowJustifications: false,
   isCondensed: false,
   isUnCondensed: false,
-  WrapperComponent: 'div',
+  wrapperComponent: 'div',
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -174,4 +182,4 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default connect(mapStateToProps)(StatementJustificationTrees)
+export default connect(mapStateToProps)(JustificationsTree)

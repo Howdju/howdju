@@ -68,6 +68,7 @@ _e.makeNewJustification = (props) => {
   let newJustification = {
     rootStatement: {id: null},
     polarity: JustificationPolarity.POSITIVE,
+    rootPolarity: JustificationRootPolarity.POSITIVE,
     target: {
       type: JustificationTargetType.STATEMENT,
       entity: {
@@ -93,6 +94,7 @@ _e.makeNewJustification = (props) => {
   ) {
     translateNewJustificationBasisCompoundAtomEntities(props.basis.justificationBasisCompound.atoms)
   }
+
   newJustification = merge(newJustification, props)
   return newJustification
 }
@@ -131,25 +133,25 @@ function translateNewSourceExcerptEntity(sourceExcerpt) {
   delete sourceExcerpt.entity
 }
 
-_e.makeNewWrit = () => ({
+_e.makeNewWrit = (props) => merge({
   title: '',
-})
+}, props)
 
-_e.makeNewSourceExcerptParaphrase = () => ({
+_e.makeNewSourceExcerptParaphrase = (props) => merge({
   paraphrasingStatement: _e.makeNewStatement(),
   sourceExcerpt: _e.makeNewSourceExcerpt(),
-})
+}, props)
 
 _e.makeNewSourceExcerpt = () => ({
   type: SourceExcerptType.WRIT_QUOTE,
   writQuote: _e.makeNewWritQuote(),
 })
 
-_e.makeNewWritQuote = () => ({
+_e.makeNewWritQuote = (props) => merge({
   writ: _e.makeNewWrit(),
   quoteText: '',
   urls: [_e.makeNewUrl()],
-})
+}, props)
 
 _e.makeNewStatementCompound = (props) => assign(
   {atoms: [_e.makeNewStatementAtom()]},

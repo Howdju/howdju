@@ -82,12 +82,17 @@ class JustificationsSearchPage extends Component {
                   duration={flipMoveDuration}
                   easing={flipMoveEasing}
         >
-          {map(justifications, j => (
-            <JustificationCard className="md-cell md-cell--12"
-                               key={`justification-card-${j.id}`}
-                               justification={j}
-            />
-          ))}
+          {map(justifications, j => {
+            const id = `justification-card-${j.id}`
+            return (
+              <JustificationCard
+                className="md-cell md-cell--12"
+                id={id}
+                key={id}
+                justification={j}
+              />
+            )
+          })}
         </FlipMove>
         {!isFetching && !hasJustifications && (
           <div className="md-cell md-cell--12 text-center">

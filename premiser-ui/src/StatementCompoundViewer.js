@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import map from 'lodash/map'
 
-import StatementCompoundViewerAtomListItem from './StatementCompoundViewerAtomListItem'
+import StatementCompoundViewerAtomItem from './StatementCompoundViewerAtomItem'
 
 import './StatementCompoundViewer.scss'
 
@@ -15,6 +16,7 @@ export default class StatementCompoundViewer extends Component {
       doShowStatementAtomJustifications,
       isCondensed,
       isUnCondensed,
+      ...rest
     } = this.props
 
     const idPrefix = id ? id + '-' : ''
@@ -22,21 +24,41 @@ export default class StatementCompoundViewer extends Component {
     const atomListItems = map(statementCompound.atoms, atom => {
       const listItemId = `${idPrefix}statement-compound-${atom.compoundId}-statement-atom-${atom.entity.id}-list-item`
       return (
-        <StatementCompoundViewerAtomListItem id={listItemId}
-                                             key={listItemId}
-                                             atom={atom}
-                                             doShowControls={doShowControls}
-                                             doShowJustifications={doShowStatementAtomJustifications}
-                                             isCondensed={isCondensed}
-                                             isUnCondensed={isUnCondensed}
+        <StatementCompoundViewerAtomItem
+          id={listItemId}
+          key={listItemId}
+          atom={atom}
+          component="li"
+          doShowControls={doShowControls}
+          doShowJustifications={doShowStatementAtomJustifications}
+          isCondensed={isCondensed}
+          isUnCondensed={isUnCondensed}
+
+          doShowStatementAtomJustifications={doShowStatementAtomJustifications}
         />
       )
     })
 
     return (
-      <ol className="compound-viewer statement-compound-viewer">
+      <ol
+        {...rest}
+        className="compound-viewer statement-compound-viewer"
+      >
         {atomListItems}
       </ol>
     )
   }
+}
+StatementCompoundViewer.propTypes = {
+  /** Required for the CircularProgress */
+  id: PropTypes.string.isRequired,
+  statementCompound: PropTypes.object.isRequired,
+  /** Identifies the editor's state */
+  editorId: PropTypes.string,
+  /** If omitted, no autocomplete */
+  suggestionsKey: PropTypes.string,
+  doShowControls: PropTypes.bool,
+  doShowAtomJustifications: PropTypes.bool,
+  isCondensed: PropTypes.bool,
+  isUnCondensed: PropTypes.bool,
 }

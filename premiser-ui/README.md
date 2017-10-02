@@ -23,6 +23,8 @@
 * ThingViewer
   * Display of Thing
   
+* ThingViewer: can contain OtherThingEditors if not a leaf component.
+  
   
 The further a society drifts from truth, the more it will hate those that speak it - George Orwell
 Sunlight is the best disinfectent - Justice Louis D. Brandeis

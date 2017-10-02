@@ -1,9 +1,15 @@
 const debug = require('debug')('premiser-ui:server')
 const express = require('express')
 const morgan = require('morgan')
-const projectConfig = require('./config/project.config')
 const webpack = require('webpack')
+
+const projectConfig = require('./config/project.config')
 const webpackConfig = require('./config/webpack.config')
+
+const {
+  hostAddress,
+  devWebServerPort,
+} = require('./config/util')
 
 const app = express()
 
@@ -33,7 +39,29 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist'))
 }
 
-app.use(express.static('public'))
+// const allowedCrossOrigins = [
+//   'http://localhost',
+//   'http://127.0.0.1',
+//   `http://${hostAddress()}:${devWebServerPort()}`,
+// ]
+// function publicCors(req, res, next) {
+//   if (req.path.startsWith('public') && allowedCrossOrigins.contains(req.get('Origin')) {
+//     res.header('Access-Control-Allow-Origin', config.allowedDomains)
+//     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+//     res.header('Access-Control-Allow-Headers', 'Content-Type')
+//   }
+//
+//   next()
+// }
+// app.use(publicCors)
+app.use(express.static('public', {
+  // http://expressjs.com/en/api.html#setHeaders
+  setHeaders: function setHeaders(res, path, stat) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+  }
+}))
 
 app.use('*', function (req, res) {
   res.sendFile(projectConfig.paths.dist(projectConfig.names.indexHtml))

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Route, Switch } from 'react-router'
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
 import Helmet from 'react-helmet'
 import Button from 'react-md/lib/Buttons/Button'
@@ -19,20 +19,36 @@ import isFinite from 'lodash/isFinite'
 import map from 'lodash/map'
 import throttle from 'lodash/throttle'
 
+import {
+  api,
+  ui,
+  mapActionCreatorGroupToDispatchToProps,
+} from './actions'
+import {history} from './configureStore'
+import paths, {createJustificationPath} from './paths'
+import mainSearcher from './mainSearcher'
+import {selectIsWindowNarrow} from "./selectors"
+import * as smallchat from './smallchat'
+import {
+  isScrollPastBottom,
+  isScrollPastTop,
+  isDevice,
+} from "./util"
+import t, {
+  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME,
+  MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
+  MAIN_TABS_WHATS_NEXT_TAB_NAME,
+  MAIN_TABS_ABOUT_TAB_NAME,
+} from "./texts"
+import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
+
 import Header from './Header'
 import MainSearchPage from './MainSearchPage'
 import ToolsPage from './ToolsPage'
 import PrivacyPage from './PrivacyPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
-import {
-  api,
-  ui,
-  mapActionCreatorGroupToDispatchToProps,
-} from "./actions"
-import {history} from './configureStore'
-import paths, {createJustificationPath} from "./paths"
-import mainSearcher from './mainSearcher'
+import LandingPage from './LandingPage'
 import IconPage from './IconPage'
 import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage"
 import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage"
@@ -41,23 +57,10 @@ import WhatsNextPage from "./WhatsNextPage"
 import AboutPage from "./AboutPage"
 import NotFoundPage from "./NotFoundPage"
 import JustificationsSearchPage from "./JustificationsSearchPage"
-import t, {
-  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME,
-  MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
-  MAIN_TABS_WHATS_NEXT_TAB_NAME,
-  MAIN_TABS_ABOUT_TAB_NAME,
-} from "./texts"
 
 import './fonts.js'
 import './App.scss'
-import {selectIsWindowNarrow} from "./selectors"
-import * as smallchat from './smallchat'
-import {
-  isScrollPastBottom,
-  isScrollPastTop,
-  isDevice,
-} from "./util"
-import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
+
 
 const tabIndexByPathname = {
   '/featured-perspectives': 0,
@@ -318,7 +321,7 @@ class App extends Component {
       const mainSearchText = mainSearcher.mainSearchText(props.location)
       return mainSearchText ?
         <MainSearchPage {...props} /> :
-        <Redirect to={{pathname: '/featured-perspectives'}}/>
+        <LandingPage/>
     }
 
     const tabInfos = [

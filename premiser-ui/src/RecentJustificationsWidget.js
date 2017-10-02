@@ -15,10 +15,12 @@ export default class RecentJustificationsWidget extends Component {
     const id = this.props.id
     const cardId = `${id}-justification-${justification.id}`
     return (
-      <JustificationCard key={cardId}
-                         justification={justification}
-                         doShowBasisJustifications={false}
-                         className={ListEntitiesWidget.largeCellClasses}
+      <JustificationCard
+        id={cardId}
+        key={cardId}
+        justification={justification}
+        doShowBasisJustifications={false}
+        className={ListEntitiesWidget.largeCellClasses}
       />
     )
   }
@@ -30,17 +32,18 @@ export default class RecentJustificationsWidget extends Component {
       ...rest
     } = this.props
     return (
-      <ListEntitiesWidget {...rest}
-                          id={id}
-                          widgetId={widgetId}
-                          cellClasses={ListEntitiesWidget.largeCellClasses}
-                          entitiesWidgetStateKey="recentJustifications"
-                          clearEntities={ui.clearRecentJustifications}
-                          fetchEntities={api.fetchRecentJustifications}
-                          entityToCard={this.justificationToCard}
-                          entitiesSchema={justificationsSchema}
-                          emptyEntitiesMessage={t("No recent justifications")}
-                          loadErrorMessage={t("There was an error fetching the recent justifications.")}
+      <ListEntitiesWidget
+        {...rest}
+        id={id}
+        widgetId={widgetId}
+        cellClasses={ListEntitiesWidget.largeCellClasses}
+        entitiesWidgetStateKey="recentJustifications"
+        clearEntities={ui.clearRecentJustifications}
+        fetchEntities={api.fetchRecentJustifications}
+        entityToCard={this.justificationToCard}
+        entitiesSchema={justificationsSchema}
+        emptyEntitiesMessage={t("No recent justifications")}
+        loadErrorMessage={t("There was an error fetching the recent justifications.")}
       />
     )
   }

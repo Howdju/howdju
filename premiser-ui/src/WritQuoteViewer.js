@@ -1,8 +1,11 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import {Link} from 'react-router-dom'
 import FontIcon from 'react-md/lib/FontIcons'
 import Button from 'react-md/lib/Buttons/Button'
 import map from 'lodash/map'
 import cn from 'classnames'
+import moment from 'moment'
 
 import {
   truncateWritQuoteText,
@@ -11,11 +14,13 @@ import {
 import {extractDomain} from "./util"
 import * as characters from './characters'
 import t from './texts'
+import config from './config'
+import paths from './paths'
 
 import './WritQuoteViewer.scss'
 
 
-const WritQuoteViewer = props => {
+export default function WritQuoteViewer (props) {
   const {
     writQuote,
     className,
@@ -23,6 +28,8 @@ const WritQuoteViewer = props => {
     isExpanded,
     onExpand,
     onCollapse,
+    showUrls,
+    showStatusText,
   } = props
 
   const urls = map(writQuote.urls, u => {
@@ -40,6 +47,9 @@ const WritQuoteViewer = props => {
     )
   })
 
+  const age = writQuote.created ? moment(writQuote.created).fromNow() : ''
+  const created = writQuote.created ? moment(writQuote.created).format(config.humanDateTimeFormat) : ''
+
   const _isQuoteTextLong = isTextLong(writQuote.quoteText)
   const hasQuote = !!writQuote.quoteText
   const quoteText = !_isQuoteTextLong || isExpanded ?
@@ -48,35 +58,59 @@ const WritQuoteViewer = props => {
 
   return (
     <div className={cn(className, "writ-quote-viewer")}>
-      <div className={cn("quote", {
-        hidden: !hasQuote
-      })}>
-        <div className="quote-text-wrapper">
-          <span className="quote-text">
-            {quoteText}
-            {_isQuoteTextLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
-          </span>
+      {writQuote && (
+        <div>
+          <div
+            className={cn("quote", {
+              hidden: !hasQuote
+            })}
+          >
+            <div className="quote-text-wrapper">
+              <span className="quote-text">
+                {quoteText}
+                {_isQuoteTextLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
+              </span>
+            </div>
+            {_isQuoteTextLong && !isExpanded && (
+              <Button flat
+                      label={t('More')}
+                      className="text-expand-toggle"
+                      onClick={onExpand}
+              />
+            )}
+            {_isQuoteTextLong && isExpanded && (
+              <Button flat
+                      label={t('Less')}
+                      className="text-expand-toggle"
+                      onClick={onCollapse}
+              />
+            )}
+          </div>
+          <div className="writ-title">
+            <Link to={paths.writQuoteUsages(writQuote)}>
+              {writQuote.writ.title}
+            </Link>
+          </div>
+
+          {showStatusText && (
+            <div className="entity-status-text">
+              created <span title={created}>{age}</span>
+            </div>
+          )}
+
+          {showUrls && (
+            <ul className="writ-quote-urls">
+              {urls}
+            </ul>
+          )}
         </div>
-        {_isQuoteTextLong && !isExpanded && (
-          <Button flat
-                  label={t('More')}
-                  className="text-expand-toggle"
-                  onClick={onExpand}
-          />
-        )}
-        {_isQuoteTextLong && isExpanded && (
-          <Button flat
-                  label={t('Less')}
-                  className="text-expand-toggle"
-                  onClick={onCollapse}
-          />
-        )}
-      </div>
-      <div className="writ-title">{writQuote.writ.title}</div>
-      <ul className="writ-quote-urls">
-        {urls}
-      </ul>
+      )}
     </div>
   )
 }
-export default WritQuoteViewer
+WritQuoteViewer.propTypes = {
+  showStatusText: PropTypes.bool,
+}
+WritQuoteViewer.defaultProps = {
+  showStatusText: true,
+}

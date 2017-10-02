@@ -2,7 +2,8 @@
   display: flex;
   align-items: center;
 
-  .atom-viewer {
+  // Is this necessary when the entity-viewer's --entity is flex: 1 1?
+  .entity-viewer {
     // take up all the space next to the context menu
     flex: 1 1;
   }

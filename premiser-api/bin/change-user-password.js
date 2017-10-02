@@ -1,9 +1,6 @@
 const {ArgumentParser} = require('argparse')
 const read = require('read')
 
-const {loadEnvironmentEnvVars} = require('howdju-ops')
-loadEnvironmentEnvVars()
-
 const {logger} = require('howdju-ops')
 const {AppProvider} = require('../src/init')
 

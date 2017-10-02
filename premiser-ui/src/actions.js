@@ -197,7 +197,6 @@ commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RES
   }
 )
 export const editors = {
-  init: actionCreator('EDITORS/INIT', (editorType, editorId, initialState) => ({editorType, editorId, initialState: initialState || {}})),
   beginEdit: actionCreator('EDITORS/BEGIN_EDIT', (editorType, editorId, entity) => ({editorType, editorId, entity})),
   propertyChange: actionCreator('EDITORS/PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
   commitEdit,
@@ -257,7 +256,7 @@ export const goto = {
 export const flows = {
   fetchAndBeginEditOfNewJustificationFromBasisSource: actionCreator(
     'FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS_SOURCE',
-    (editorType, editorId, basisSourceType, basisId) => ({editorType, editorId, basisSourceType, basisId})
+    (editorType, editorId, basisSourceType, basisSourceId) => ({editorType, editorId, basisSourceType, basisSourceId})
   ),
   commitEditThenView: actionCreator('FLOWS/COMMIT_STATEMENT_THEN_VIEW',
     (editorType, editorId) => ({editorType, editorId})),

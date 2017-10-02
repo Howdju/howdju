@@ -1,7 +1,13 @@
+@import "colors";
+
 .compound-atom {
-  margin: 5px;
   padding: 5px;
   min-height: 60px;
+
+  border-bottom: 1px solid $entity-border-color;
+  &:last-child {
+    border-bottom: none;
+  }
 }
 .compound-viewer {
   // quick and dirty way not to overlap chat bubble context menu

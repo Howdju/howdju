@@ -49,16 +49,15 @@ import {
   statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
 } from "./editorIds"
 import {EditorTypes} from "./reducers/editors"
-import EditableStatement from "./EditableStatement"
 import {suggestionKeys} from "./autocompleter"
 import {ESCAPE_KEY_CODE} from "./keyCodes"
 import {selectIsWindowNarrow} from "./selectors"
 
-import EntityViewer from './EntityViewer'
 import NewJustificationEditor from './NewJustificationEditor'
-import StatementJustificationTrees from './StatementJustificationTrees'
+import JustificationsTree from './JustificationsTree'
 
 import "./StatementJustificationsPage.scss"
+import StatementEntityViewer from './StatementEntityViewer'
 
 
 const statementIdFromProps = (props) => get(props, 'match.params.statementId')
@@ -87,7 +86,6 @@ class StatementJustificationsPage extends Component {
   }
 
   fetchAndEditForStatementId = (statementId) => {
-    this.props.editors.init(EditorTypes.STATEMENT, this.statementEditorId, {entityId: statementId})
     this.props.api.fetchStatementJustifications(statementId)
   }
 
@@ -165,7 +163,6 @@ class StatementJustificationsPage extends Component {
       justifications,
 
       isFetchingStatement,
-      isEditingStatement,
       didFetchingStatementFail,
 
       isNewJustificationDialogVisible,
@@ -308,19 +305,13 @@ class StatementJustificationsPage extends Component {
                 onMouseOver={this.onStatementMouseOver}
                 onMouseLeave={this.onStatementMouseLeave}
               >
-                <EntityViewer
-                  iconName="short_text"
-                  iconTitle="Statement"
+                <StatementEntityViewer
                   component={CardText}
-                  entity={
-                    <EditableStatement id={`editableStatement-${statementId}`}
-                                       className="entity-description statement-text"
-                                       entityId={statementId}
-                                       editorId={this.statementEditorId}
-                                       suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
-                    />
-                  }
-                  menu={statement && !isEditingStatement && menu}
+                  id={`editableStatement-${statementId}`}
+                  statement={statement}
+                  editorId={this.statementEditorId}
+                  suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
+                  menu={menu}
                 />
               </Card>
 
@@ -353,13 +344,14 @@ class StatementJustificationsPage extends Component {
           </div>
         )}
 
-        <StatementJustificationTrees justifications={justifications}
-                                     doShowControls={true}
-                                     doShowJustifications={false}
-                                     isUnCondensed={true}
-                                     showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
-                                     showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
-                                     className="md-grid--bottom"
+        <JustificationsTree
+          justifications={justifications}
+          doShowControls={true}
+          doShowJustifications={false}
+          isUnCondensed={true}
+          showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
+          showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
+          className="md-grid--bottom"
         />
 
         {addNewJustificationDialog}
@@ -391,7 +383,6 @@ const mapStateToProps = (state, ownProps) => {
 
   const isFetchingStatement = get(statementEditorState, 'isFetching')
   const didFetchingStatementFail = get(statementEditorState, ['errors', 'hasErrors'], false)
-  const isEditingStatement = !!get(statementEditorState, ['editEntity'])
 
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], justificationsSchema, state.entities)
   justifications = sortJustifications(justifications)
@@ -411,7 +402,6 @@ const mapStateToProps = (state, ownProps) => {
     justifications,
     isSavingNewJustification,
     isFetchingStatement,
-    isEditingStatement,
     didFetchingStatementFail,
     isWindowNarrow,
   }

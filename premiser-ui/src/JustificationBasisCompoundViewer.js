@@ -1,8 +1,11 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import get from 'lodash/get'
 import map from 'lodash/map'
 
 import JustificationBasisCompoundViewerAtomItem from "./JustificationBasisCompoundViewerAtomItem"
+import {logger} from './logger'
+import config from './config'
 
 import './JustificationBasisCompoundViewer.scss'
 
@@ -16,13 +19,18 @@ export default class JustificationBasisCompoundViewer extends Component {
       doShowStatementAtomJustifications,
       isCondensed,
       isUnCondensed,
+      showStatusText,
     } = this.props
 
+    const atoms = get(justificationBasisCompound, 'atoms', [])
+    if (atoms.length < 1 && config.isDev) {
+      logger.warn(`JustificationBasisCompound ${justificationBasisCompound.id}'s atoms are empty`)
+    }
     const compoundId = `${id}-justification-basis-compound`
 
     return (
       <ol className="compound-viewer justification-basis-compound-viewer">
-        {map(justificationBasisCompound.atoms, atom => {
+        {map(atoms, atom => {
           const atomId = `${compoundId}-atom-${atom.id}`
           return (
             <JustificationBasisCompoundViewerAtomItem
@@ -33,6 +41,7 @@ export default class JustificationBasisCompoundViewer extends Component {
               doShowStatementAtomJustifications={doShowStatementAtomJustifications}
               isCondensed={isCondensed}
               isUnCondensed={isUnCondensed}
+              showStatusText={showStatusText}
             />
           )
         })}

@@ -7,7 +7,7 @@ import {
   newExhaustedEnumError,
 } from 'howdju-common'
 
-export default class EditableSourceExcerpt extends Component {
+export default class SourceExcerptViewer extends Component {
   render() {
     const {
       id,
@@ -15,6 +15,7 @@ export default class EditableSourceExcerpt extends Component {
       editorId,
       suggestionsKey,
       doShowControls,
+      showStatusText,
       ...rest
     } = this.props
 
@@ -24,10 +25,11 @@ export default class EditableSourceExcerpt extends Component {
           <EditableWritQuote
             {...rest}
             id={id}
-            entityId={sourceExcerpt.entity.id}
+            writQuote={sourceExcerpt.entity}
             editorId={editorId}
             suggestionsKey={suggestionsKey}
             doShowControls={doShowControls}
+            showStatusText={showStatusText}
           />
         )
       default:
@@ -35,13 +37,13 @@ export default class EditableSourceExcerpt extends Component {
     }
   }
 }
-EditableSourceExcerpt.propTypes = {
+SourceExcerptViewer.propTypes = {
   id: PropTypes.string.isRequired,
   sourceExcerpt: PropTypes.object.isRequired,
-  editorId: PropTypes.string.isRequired,
+  editorId: PropTypes.string,
   suggestionsKey: PropTypes.string,
   doShowControls: PropTypes.bool,
 }
-EditableSourceExcerpt.defaultProps = {
+SourceExcerptViewer.defaultProps = {
   doShowControls: true,
 }

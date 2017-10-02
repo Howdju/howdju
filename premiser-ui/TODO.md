@@ -1,30 +1,37 @@
 # Howdju UI TODO
 
-* Citation-based justifications are missing icon in perspectives and recent justifications
-* Confirm pre-prod hitting pre-prod DB.  Log DB connection info
-* Search httpMethods too
-* can't login to prod 502
+* When use writ quote / statement compound, make them source excerpt paraphrase
+  * Using a statement atom from a justification basis compound results in an empty statement compound atom!
+* Can't edit writ quote justification
+* Command-clicking on tab navigates in current tab
+    
+* writ-quote-based justifications missing created
+  
+* Update bookmarklet to use paraphrase
+* When updating lambda alias, return previous version
+  * Configure S3 versions for UI?
+* Don't use prod values as fall-backs in lambda env. vars.  Throw an error if a fall-back is missing.
 
+
+* The migration didn't migrate citations properly; we have many with identical text
+  * Also one of these is blank text.
+  
 * Is a Paraphrased citation equal to a citation-based justification?
   * Automatically create citation-based justification?
+  
+* Send raw API requests to S3 so that we have a log of actions taken, in case we decide to aggregate the data differently later?
 
 * Paraphrases 
-  * Combine entity viewer with recent cards
   * Recent paraphrases / search paraphrases by source excerpt type/ID
   * See usages of writ from paraphrase
   * Search paraphrases by url/url domain?
+    * If I search justifications by writId/writQuoteId, do I get paraphrases using it?
   
   * We probably want to allow people to vote on the paraphrase/connection between a statement and a source?
     * This could be by voting on the justification
-  * Create pre-prod DB for testing schema changes?
   
   
 * API_ROOT vs. API_HOST env. vars, shared API config between prod and pre-prod (right now I think pre-prod returns Bearer Authorization header for prod)
-* Pre-prod doesn't redirect to HTTPS
-* Configuration issue: cannot use lambda env. vars because then two aliases can't point at the same version.  To use the stage variables, 
-  the db pool needs to be initialized in response to a request, and possibly cached by a hash of the config.  BUT stage vars
-  don't support encryption helpers.  So could put in stage vars. w/o encryption, or could put in lambda with env. name suffixes.
-  How to get the name?  From the stage?
 
 * randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
 
@@ -40,6 +47,8 @@
 * Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
   and leave it in-memory
   * RESPECT DO NOT TRACK
+  
+* Setup cdn.howdju.com DNS/Cloudflare
   
 * Safari OS X recent activity UI bugs
   * The Progresses don't hide
@@ -75,15 +84,13 @@ Cat meeting design notes:
 * App cold load can be >10s
 
 * Fade unhovered disapproved justifications
-* Add icons to indicate justification vs. counter
+* Add icons to indicate justification vs. counter?
 * Hover to explain Supports, Opposes, counters
 * Recently viewed statements, recently viewed tags, recent searches
 * Somehow provide ability to roll back UI.  Either output current version of UI when updating or have a history somewhere
 
 * Return in statement/citation text should submit field
 
-* The migration didn't migrate citations properly; we have many with identical text
-  * Also one of these is blank text.
 * What is my data backup strategy?  Should I switch to Aurora Postgres?
   
 * Can use async/await in node?
@@ -205,19 +212,6 @@ Cat meeting design notes:
 
 ## Stuff not necessary before switch
 
-* howdju.com -> www.howdju.com redirect
-  * Can this be faster with namecheap or Route 53?
-  
-  * https://serverfault.com/a/576469/148410
-  * http://building.vts.com/blog/2015/11/02/route53-ssl-naked-domain-redirect/
-  * https://stackoverflow.com/a/20230670/39396
-    * https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html
-    
-  * How to send howdju.com to cloudfront or S3 so that I can control redirect with S3 or howdju-ui.js?
-    * Dreamhost wouldn't let me enter a CNAME for howdju.com, so how to point bare domain to other domain?
-    * Maybe you must have an A record, and then must have some server that responds with logic
-
-* Add prompt for adding the other when only one of opposing/supporting justifications is present
 * Featured Perspectives are scrunched on mobile
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
 
@@ -229,7 +223,6 @@ Cat meeting design notes:
   * Scroll to anchor after justifications load
 
 ### Features
-* Jobs (justification score)
 * Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
 
 ### Bugs/stability
@@ -370,8 +363,6 @@ Cat meeting design notes:
     by created date and taking the earliest
 * Validation belongs in route.js, I think
   * Include type conversion in validation somehow?  toNumber(statementId), e.g.
-* Reuse code between client/server (Use same javascript syntax in client/server.)  
-  * https://webpack.github.io/docs/commonjs.html
 * Toasts are under dialog
 * Can't shift-tab out of FocusContainer
   * Try upgrading react-md first, then fix fork
@@ -381,10 +372,6 @@ Cat meeting design notes:
   * fork react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
 * If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
 * Do I check return values for delete dao methods and throw EntityNotFoundError when it was missing?
-
-### Editors
-* Separate JustificationWithCounters into JustificationCard and JustificationTree/CounteredJustification/Argument
-  * challenge of card having buttons to create counter
   
 ### Features
 * Add refinement/intervening statement justification (justification drop-down item creating new statement justifying same statement and justified by this justification)
@@ -400,9 +387,10 @@ Cat meeting design notes:
   * show statements justified by basis
   * Justifications countered by statement
 * JustificationTypes
-  * List (votes for inclusion/exclusion)
+  * Example/List (votes for inclusion/exclusion)
     * A list of purported examples of something with links to prove their existence
     * [{text, urls}, ...]
+  * Free text (with annotations))
   * Argument (statements connected with joiner words: "or", "because", "then", "therefore", "if")
   * Math/formula/calculation: 
     * basic math expression that result in a number
@@ -429,14 +417,14 @@ Cat meeting design notes:
     * How to tell when text on a page is a quotation rather than a direct statement
       * X said
       * quotation marks
-* Recent votes: see what statement justifications look like when limited to a time period, either pre-selected time periods or according to the 'most recent activity' however recent that most recent activity is
+* Recent votes: see what statement justifications look like when limited to a time period, either pre-selected time 
+  periods or according to the 'most recent activity' however recent that most recent activity is
 * Add facets to main search:
   * citation text
   * url
   * author
   * tags
 * Disable (with help text explaining why disabled) context menu items based upon permissions/ability to do the action
-* Allow collapsing counter justifications
 * User registration
   * Change email, password, password reset
 * Timeout authentication
@@ -446,7 +434,7 @@ Cat meeting design notes:
 
 * Add messages for when cannot edit and why
 * When statements or writs or writ quotes conflict, offer to merge them somehow?
-* Add time grade period checks to entity update methods
+* Add time grace period checks to entity update methods
 
 ### Improvements
 * replace regex with path-to-regexp
@@ -454,15 +442,10 @@ Cat meeting design notes:
   * http://redux-form.com/6.8.0/docs/GettingStarted.md/
 * Change submit button message to "create justification" when statement exists
   * Add link to statement when statement exists
-* Difficult to distinguish writQuote having only citation.text from statement justification
 * Show more error messages, such as OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT
 * Api
-  * cancel autocomplete upon submit (add autocomplete keys to submit?).
   * Move query params into axios parameters
   * Move schema denormalization to entities
-* simplify reducer by merging all payload.entities?
-  * Or (?): reducers.entities if we just know which entities are returned from which success actions, 
-    we can automatically respond
 * Search for payload.entities and find a way to factor out all these calls getting particular entities from the API results
   * Or should we not be normalizing from API?  Should we normalize in reducer?
   * Change this for autocomplete fetches in entities
@@ -569,13 +552,8 @@ Cat meeting design notes:
   * Cache index.html?
   * cdn.premiser.co?
   * [Invalidation vs. versioning](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html)
-* Rename justification to newJustification in STATEMENT_JUSTIFICATION editEntity
 * https://github.com/babel/babel-loader#babel-is-injecting-helpers-into-each-file-and-bloating-my-code
 * Change to [Preact](https://preactjs.com/) (smaller)? ([switch](https://preactjs.com/guide/switching-to-preact))
-
-### Tooling
-* Local fonts for development
-  * https://shellmonger.com/2016/01/22/working-with-fonts-with-webpack/
 
 ### Flair
 * Favicon versions

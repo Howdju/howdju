@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
-import ExpandableChildContainer from './ExpandableChildContainer'
 import StatementCard from './StatementCard'
 import t from './texts'
 import {
@@ -16,11 +15,11 @@ export default class RecentStatementsWidget extends Component {
     const id = this.props.id
     const cardId = `${id}-statement-${statement.id}`
     return (
-      <ExpandableChildContainer ExpandableChildComponent={StatementCard}
-                                widgetId={cardId}
-                                key={cardId}
-                                statement={statement}
-                                className={ListEntitiesWidget.smallCellClasses}
+      <StatementCard
+        id={cardId}
+        key={cardId}
+        statement={statement}
+        className={ListEntitiesWidget.smallCellClasses}
       />
     )
   }
@@ -32,16 +31,17 @@ export default class RecentStatementsWidget extends Component {
       ...rest
     } = this.props
     return (
-      <ListEntitiesWidget {...rest}
-                          id={id}
-                          widgetId={widgetId}
-                          entitiesWidgetStateKey="recentStatements"
-                          clearEntities={ui.clearRecentStatements}
-                          fetchEntities={api.fetchRecentStatements}
-                          entityToCard={this.statementToCard}
-                          entitiesSchema={statementsSchema}
-                          emptyEntitiesMessage={t("No recent statements")}
-                          loadErrorMessage={t("There was an error fetching the recent statements.")}
+      <ListEntitiesWidget
+        {...rest}
+        id={id}
+        widgetId={widgetId}
+        entitiesWidgetStateKey="recentStatements"
+        clearEntities={ui.clearRecentStatements}
+        fetchEntities={api.fetchRecentStatements}
+        entityToCard={this.statementToCard}
+        entitiesSchema={statementsSchema}
+        emptyEntitiesMessage={t("No recent statements")}
+        loadErrorMessage={t("There was an error fetching the recent statements.")}
       />
     )
   }

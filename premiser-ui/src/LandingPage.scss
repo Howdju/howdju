@@ -1,0 +1,139 @@
+@import "~react-md/src/scss/grids";
+@import './flatui-colors';
+
+$section-margin: 1em;
+$banner-padding: 3em;
+
+#landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: white;
+
+  .primary-slogan {
+    font-size: 28px;
+    margin-top: 3em;
+    margin-bottom: 2em;
+    font-weight: 300;
+  }
+
+  strong {
+    font-weight: 400;
+  }
+
+  > p {
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 32px;
+    text-align: center;
+  }
+
+  > * {
+    margin-top: $section-margin;
+    margin-bottom: $section-margin;
+  }
+
+  ul.blocks {
+    display: flex;
+    width: 66%;
+
+    &, .md-icon, a {
+      color: $clouds;
+    }
+
+    .icon {
+      text-align: center;
+      margin-bottom: 16px;
+
+      .md-icon {
+        font-size: 64px;
+        text-shadow: none;
+      }
+    }
+
+    li {
+      flex: 1 1;
+
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+
+      font-size: 18px;
+      text-shadow: 0 0 50px #666;
+    }
+  }
+
+  .block-item-spacer {
+    padding: 2.5em;
+  }
+
+  ul#ways-to-use {
+    li:nth-child(1) {
+      background-color: $peter-river;
+      border: 1px solid $belize-hole;
+    }
+    li:nth-child(2) {
+      background-color: darken($nephritis, 0%);
+      border: 1px solid darken($nephritis, 5%);
+    }
+    li:nth-child(3) {
+      background-color: $pumpkin;
+      border: 1px solid $pomegranate;
+    }
+  }
+
+  ul#get-started {
+    li:nth-child(1) {
+      background-color: $peter-river;
+      border: 1px solid $belize-hole;
+    }
+    li:nth-child(2) {
+      background-color: darken($nephritis, 0%);
+      border: 1px solid darken($nephritis, 5%);
+    }
+    li:nth-child(3) {
+      background-color: $pumpkin;
+      border: 1px solid $pomegranate;
+    }
+  }
+
+  .banner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: $banner-padding;
+    padding-bottom: $banner-padding;
+    background-color: lighten($peter-river, 43%);
+  }
+
+  @media (max-width: $md-grid-tablet-breakpoint - 1) {
+    > p, ul, .banner-content {
+      width: 100%;
+      padding-left: $md-grid-phone-gutter;
+      padding-right: $md-grid-phone-gutter;
+    }
+    ul.blocks {
+      width: 100%;
+      flex-direction: column;
+    }
+  }
+
+  @media (min-width: $md-grid-tablet-breakpoint) and (max-width: $md-grid-desktop-breakpoint - 1) {
+    > p, .banner-content {
+      width: 75%;
+    }
+    ul.blocks {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: $md-grid-desktop-breakpoint) {
+    > p, .banner-content {
+      width: 50%;
+    }
+    ul.blocks {
+      width: 66%;
+    }
+  }
+}

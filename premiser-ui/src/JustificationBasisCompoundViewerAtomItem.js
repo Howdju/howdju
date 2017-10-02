@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import PropTypes from 'prop-types'
-import Card from 'react-md/lib/Cards/Card'
 import CardText from 'react-md/lib/Cards/CardText'
 import MenuButton from 'react-md/lib/Menus/MenuButton'
 import Positions from 'react-md/lib/Menus/Positions'
@@ -28,7 +27,7 @@ import {
 import {EditorTypes} from './reducers/editors'
 import paths from './paths'
 import JustificationBasisCompoundAtomViewer from './JustificationBasisCompoundAtomViewer'
-import StatementJustificationTrees from './StatementJustificationTrees'
+import JustificationsTree from './JustificationsTree'
 import {
   sourceExcerptDescription,
   sourceExcerptSourceDescription,
@@ -114,7 +113,8 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
       doShowStatementAtomJustifications,
       isCondensed,
       isUnCondensed,
-      component,
+      component: Component,
+      showStatusText,
     } = this.props
     const {
       isOver
@@ -129,7 +129,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
       <MenuButton
         icon
         id={`${id}-context-menu`}
-        className={cn({hidden: !isOver || !doShowControls})}
+        className={cn({hidden: !isOver})}
         menuClassName="context-menu"
         buttonChildren={'more_vert'}
         position={Positions.TOP_RIGHT}
@@ -139,11 +139,10 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
     )
 
     return (
-      <Card
+      <Component
         id={listItemId}
         key={listItemId}
-        component={component}
-        className="compound-atom justification-basis-compound-atom"
+        className="compound-atom"
         onMouseOver={this.onMouseOver}
         onMouseLeave={this.onMouseLeave}
       >
@@ -156,16 +155,17 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
             statementEditorId={this.statementEditorId()}
             paraphrasingStatementEditorId={this.paraphrasingStatementEditorId()}
             sourceExcerptEditorId={this.sourceExcerptParaphraseEditorId()}
+            showStatusText={showStatusText}
             doShowControls={doShowControls}
             doShowJustifications={doShowStatementAtomJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
           />
-          {menu}
+          {doShowControls && menu}
         </div>
 
         {doShowStatementAtomJustifications && hasJustifications && (
-          <StatementJustificationTrees
+          <JustificationsTree
             id={`${id}-justification-trees`}
             justifications={justifications}
             doShowControls={doShowControls}
@@ -174,7 +174,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
             isUnCondensed={isUnCondensed}
           />
         )}
-      </Card>
+      </Component>
     )
   }
 

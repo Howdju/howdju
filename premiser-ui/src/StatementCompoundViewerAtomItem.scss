@@ -1,6 +1,9 @@
 li.statement-atom {
   // Position so that chat bubble offsets below position relative to this.
   position: relative;
+
+  display: flex;
+  align-items: center;
 }
 
 $context-menu-horizontal-offset: -80px;

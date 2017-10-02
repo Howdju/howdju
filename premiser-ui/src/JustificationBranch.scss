@@ -15,6 +15,10 @@ $slide-size: $md-btn-icon-size;
    }
  }
 
+.counter-justifications {
+  width: 100%;
+}
+
 .justification-tree {
 
   .actions {
@@ -99,12 +103,4 @@ $slide-size: $md-btn-icon-size;
       }
     }
   }
-}
-
-.justification-tree-basis {
-  display: flex;
-  align-items: center;
-}
-.justification-context-menu {
-  align-self: flex-start;
 }

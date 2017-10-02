@@ -59,16 +59,17 @@ class WritQuoteEditor extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <WritQuoteEditorFields {...rest}
-                                         id={id}
-                                         writQuote={editEntity}
-                                         disabled={isSaving}
-                                         suggestionsKey={suggestionsKey}
-                                         onPropertyChange={this.onPropertyChange}
-                                         onAddUrl={this.onAddUrl}
-                                         onRemoveUrl={this.onRemoveUrl}
-                                         errors={errors}
-                                         onSubmit={this.onSubmit}
+          <WritQuoteEditorFields
+            {...rest}
+            id={id}
+            writQuote={editEntity}
+            disabled={isSaving}
+            suggestionsKey={suggestionsKey}
+            onPropertyChange={this.onPropertyChange}
+            onAddUrl={this.onAddUrl}
+            onRemoveUrl={this.onRemoveUrl}
+            errors={errors}
+            onSubmit={this.onSubmit}
           />
         </CardText>
         <CardActions>

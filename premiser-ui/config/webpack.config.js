@@ -6,6 +6,8 @@ const assign = require('lodash/assign')
 const {
   gitShortSha,
   nodePackageVersion,
+  hostAddress,
+  devWebServerPort,
 } = require('./util')
 const projectConfig = require('./project.config')
 
@@ -39,6 +41,16 @@ const definePluginConfig = merge({
 }, envDefinePluginConfig)
 
 const sassLoaderFunctions = assign({}, envSassLoaderFunctions)
+
+const fontServerAuthority = process.env.NODE_ENV === 'development' ?
+  `http://${hostAddress()}:${devWebServerPort()}` :
+  'https://cdn.howdju.com'
+const sassLoaderData =
+  `$font-url-bebas-neue-thin: url(${fontServerAuthority}/fonts/BebasNeue-Thin.otf);` +
+  `$font-url-bebas-neue-light: url(${fontServerAuthority}/fonts/BebasNeue-Light.otf);` +
+  `$font-url-bebas-neue-book: url(${fontServerAuthority}/fonts/BebasNeue-Book.otf);` +
+  `$font-url-bebas-neue-regular: url(${fontServerAuthority}/fonts/BebasNeue-Regular.otf);` +
+  `$font-url-bebas-neue-bold: url(${fontServerAuthority}/fonts/BebasNeue-Bold.otf);`
 
 const baseWebpackConfig = {
   output: {
@@ -78,7 +90,7 @@ const baseWebpackConfig = {
               loader: "sass-loader",
               options: {
                 sourceMap: true,
-                data: envSassLoaderData,
+                data: sassLoaderData + envSassLoaderData,
                 functions: sassLoaderFunctions,
               }
             },
@@ -133,15 +145,6 @@ const baseWebpackConfig = {
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginConfig),
     new webpack.DefinePlugin(definePluginConfig),
-    // TODO how to CDN this in production?
-    // this isn't necessary for development as webpack dev middleware can serve this directly from source
-    // new CopyWebpackPlugin([
-    //   { from: projectConfig.paths.public('*.ico') },
-    //   { from: projectConfig.paths.public('*.png') },
-    //   { from: projectConfig.paths.public('browserconfig.xml'), to: projectConfig.paths.dist('public') },
-    //   { from: projectConfig.paths.public('manifest.json'), to: projectConfig.paths.dist('public') },
-    //   { from: projectConfig.paths.public('safari-pinned-tab.svg'), to: projectConfig.paths.dist('public') },
-    // ]),
   ],
   // https://webpack.github.io/docs/configuration.html#resolve-alias
   // resolve: {

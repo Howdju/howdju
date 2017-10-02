@@ -31,7 +31,9 @@
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
     "test-debug": "node --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
     "test-inspect": "yarn run test:debug &; node-inspector",
-    "change-password:local": "source ../config/local.env && node bin/change-user-password.js"
+    "change-password:local": "source ../config/local.env && node bin/change-user-password.js",
+    "change-password:pre-prod": "source ../config/local-pre-prod.env && node bin/change-user-password.js",
+    "change-password:prod": "source ../config/local-prod.env && node bin/change-user-password.js"
   },
   "devDependencies": {
     "argparse": "https://github.com/nodeca/argparse.git",

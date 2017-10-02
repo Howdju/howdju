@@ -31,46 +31,6 @@ import {
   callApiForResource,
 } from '../resourceApiSagas'
 
-const fetchActionCreatorForBasisType = basisType => {
-  const actionCreatorByBasisType = {
-    [JustificationBasisSourceType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
-    [JustificationBasisSourceType.WRIT_QUOTE]: api.fetchWritQuote,
-    [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
-    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: api.fetchJustificationBasisCompound,
-    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: api.fetchSourceExcerptParaphrase,
-  }
-  const actionCreator = actionCreatorByBasisType[basisType]
-  if (!actionCreator) {
-    throw newExhaustedEnumError('JustificationBasisSourceType', basisType)
-  }
-  return actionCreator
-}
-
-const extractBasisSourceFromFetchResponseAction = (basisType, fetchResponseAction) => {
-  const {
-    result,
-    entities
-  } = fetchResponseAction.payload
-  const {
-    schema,
-  } = fetchResponseAction.meta
-
-  const basisSourceGetterByBasisType = {
-    [JustificationBasisSourceType.STATEMENT_COMPOUND]: (result) => result.statementCompound,
-    [JustificationBasisSourceType.WRIT_QUOTE]: (result) => result.writQuote,
-    [JustificationBasisSourceType.STATEMENT]: (result) => result.statement,
-    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: (result) => result.justificationBasisCompound,
-    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: (result) => result.sourceExcerptParaphrase,
-  }
-
-  const basisSourceGetter = basisSourceGetterByBasisType[basisType]
-  if (!basisSourceGetter) {
-    throw newExhaustedEnumError(JustificationBasisSourceType, basisType)
-  }
-  const basisSource = basisSourceGetter(denormalize(result, schema, entities))
-
-  return basisSource
-}
 
 export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
 
@@ -79,10 +39,11 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
       editorId,
       editorType,
       basisSourceType,
-      basisId,
+      basisSourceId,
     } = action.payload
-    const actionCreator = fetchActionCreatorForBasisType(basisSourceType)
-    const fetchResponseAction = yield call(callApiForResource, actionCreator(basisId))
+
+    const actionCreator = fetchActionCreatorForBasisSourceType(basisSourceType)
+    const fetchResponseAction = yield call(callApiForResource, actionCreator(basisSourceId))
     if (!fetchResponseAction.error) {
       const basisSource = extractBasisSourceFromFetchResponseAction(basisSourceType, fetchResponseAction)
 
@@ -124,4 +85,46 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
       yield put(editors.beginEdit(editorType, editorId, editModel))
     }
   })
+}
+
+function fetchActionCreatorForBasisSourceType (basisType) {
+  const actionCreatorByBasisType = {
+    [JustificationBasisSourceType.STATEMENT_COMPOUND]: api.fetchStatementCompound,
+    [JustificationBasisSourceType.WRIT_QUOTE]: api.fetchWritQuote,
+    [JustificationBasisSourceType.STATEMENT]: api.fetchStatement,
+    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: api.fetchJustificationBasisCompound,
+    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: api.fetchSourceExcerptParaphrase,
+  }
+  const actionCreator = actionCreatorByBasisType[basisType]
+  if (!actionCreator) {
+    throw newExhaustedEnumError('JustificationBasisSourceType', basisType)
+  }
+  return actionCreator
+}
+
+function extractBasisSourceFromFetchResponseAction (basisSourceType, fetchResponseAction) {
+  const {
+    result,
+    entities
+  } = fetchResponseAction.payload
+  const {
+    schema,
+  } = fetchResponseAction.meta
+
+
+  const basisSourceGetterByBasisType = {
+    [JustificationBasisSourceType.STATEMENT_COMPOUND]: (result) => result.statementCompound,
+    [JustificationBasisSourceType.WRIT_QUOTE]: (result) => result.writQuote,
+    [JustificationBasisSourceType.STATEMENT]: (result) => result.statement,
+    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: (result) => result.justificationBasisCompound,
+    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: (result) => result.sourceExcerptParaphrase,
+  }
+  const basisSourceGetter = basisSourceGetterByBasisType[basisSourceType]
+  if (!basisSourceGetter) {
+    throw newExhaustedEnumError(JustificationBasisSourceType, basisSourceType)
+  }
+
+  const basisSource = basisSourceGetter(denormalize(result, schema, entities))
+
+  return basisSource
 }

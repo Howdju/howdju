@@ -45,6 +45,7 @@ class StatementEditor extends Component {
         isFetching,
         isSaving,
       },
+      // ignore
       editors,
       editorId,
       ...rest,

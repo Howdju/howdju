@@ -88,8 +88,10 @@
     }
   }
 
-  .md-card-text.atom-viewer:last-child {
+  .md-card-text.entity-viewer:last-child,
+  .entity-card > .md-card-text:last-child {
     // For atoms, they are the only child and they don't look good with a large padding bottom
     padding-bottom: 16px;
   }
+
 }

@@ -35,6 +35,8 @@ EntityViewer.propTypes = {
   component: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
-  ]).isRequired,
-
+  ]),
+}
+EntityViewer.defaultProps = {
+  component: 'div',
 }

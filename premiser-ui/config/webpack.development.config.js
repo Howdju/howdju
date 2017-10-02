@@ -36,7 +36,9 @@ module.exports.sassLoaderData =
   `$dev-font-url-lato-light-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Light_Latin.woff2);` +
   `$dev-font-url-lato-regular-latin-ext: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Regular_LatinExt.woff2);` +
   `$dev-font-url-lato-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Regular_Latin.woff2);` +
-  `$dev-font-url-orbitron-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Orbitron-Regular_Latin.woff2);`
+  `$dev-font-url-orbitron-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Orbitron-Regular_Latin.woff2);` +
+  `$dev-font-url-oswald-extra-light-latin-ext: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Oswald-ExtraLight_LatinExt.woff2);` +
+  `$dev-font-url-oswald-extra-light-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Oswald-ExtraLight_Latin.woff2);`
 
 module.exports.webpackConfig = {
   entry: [

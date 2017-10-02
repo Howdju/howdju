@@ -17,12 +17,13 @@ export default class RecentWritsWidget extends Component {
     const id = this.props.id
     const cardId = `${id}-writ-${writ.id}`
     return (
-      <WritCard key={cardId}
-                    writ={writ}
-                    className={ListEntitiesWidget.smallCellClasses}
+      <WritCard
+        id={cardId}
+        key={cardId}
+        writ={writ}
+        className={ListEntitiesWidget.smallCellClasses}
       />
     )
-
   }
 
   render() {
@@ -32,16 +33,17 @@ export default class RecentWritsWidget extends Component {
       ...rest
     } = this.props
     return (
-      <ListEntitiesWidget {...rest}
-                          id={id}
-                          widgetId={widgetId}
-                          entitiesWidgetStateKey="recentWrits"
-                          clearEntities={ui.clearRecentWrits}
-                          fetchEntities={api.fetchRecentWrits}
-                          entityToCard={this.writToCard}
-                          entitiesSchema={writsSchema}
-                          emptyEntitiesMessage={t("No recent writs")}
-                          loadErrorMessage={t("There was an error fetching the recent writs.")}
+      <ListEntitiesWidget
+        {...rest}
+        id={id}
+        widgetId={widgetId}
+        entitiesWidgetStateKey="recentWrits"
+        clearEntities={ui.clearRecentWrits}
+        fetchEntities={api.fetchRecentWrits}
+        entityToCard={this.writToCard}
+        entitiesSchema={writsSchema}
+        emptyEntitiesMessage={t("No recent writs")}
+        loadErrorMessage={t("There was an error fetching the recent writs.")}
       />
     )
   }

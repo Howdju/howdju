@@ -231,7 +231,7 @@ exports.WritsDao = class WritsDao {
 
   update(writ) {
     return this.database.query(
-      'update writs set text = $1, normal_title = $2 where writ_id = $3 returning *',
+      'update writs set title = $1, normal_title = $2 where writ_id = $3 returning *',
       [cleanWhitespace(writ.title), normalizeText(writ.title), writ.id]
     )
       .then( ({rows: [writRow]}) => toWrit(writRow) )

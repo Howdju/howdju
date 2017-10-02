@@ -6,8 +6,8 @@ import {
   newExhaustedEnumError,
 } from 'howdju-common'
 
-import StatementAtomViewer from './StatementAtomViewer'
-import SourceExcerptParaphraseAtomViewer from './SourceExcerptParaphraseAtomViewer'
+import StatementEntityViewer from './StatementEntityViewer'
+import SourceExcerptParaphraseEntityViewer from './SourceExcerptParaphraseEntityViewer'
 
 export default class JustificationBasisCompoundAtomViewer extends Component {
   render() {
@@ -18,6 +18,8 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
       statementEditorId,
       paraphrasingStatementEditorId,
       sourceExcerptEditorId,
+      doShowControls,
+      showStatusText,
     } = this.props
 
     const entityViewerId = `${id}-entity`
@@ -25,21 +27,27 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
     switch (atom.type) {
       case JustificationBasisCompoundAtomType.STATEMENT:
         return (
-          <StatementAtomViewer
-            id={entityViewerId}
+          <StatementEntityViewer
             component={component}
+            id={entityViewerId}
+            statement={atom.entity}
             editorId={statementEditorId}
-            atom={atom}
+            suggestionsKey={`${id}-statement-suggestions`}
+            doShowControls={doShowControls}
+            showStatusText={showStatusText}
           />
         )
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
         return (
-          <SourceExcerptParaphraseAtomViewer
-            id={entityViewerId}
+          <SourceExcerptParaphraseEntityViewer
             component={component}
+            id={entityViewerId}
+            sourceExcerptParaphrase={atom.entity}
             paraphrasingStatementEditorId={paraphrasingStatementEditorId}
             sourceExcerptEditorId={sourceExcerptEditorId}
-            atom={atom}
+            suggestionsKey={`${id}-source-excerpt-paraphrase-suggestions`}
+            doShowControls={doShowControls}
+            showStatusText={showStatusText}
           />
         )
       default:
@@ -55,6 +63,6 @@ JustificationBasisCompoundAtomViewer.propTypes = {
     PropTypes.func,
   ]).isRequired,
   statementEditorId: PropTypes.string.isRequired,
-  paraphrasingStatementEditorId: PropTypes.string.isRequired,
-  sourceExcerptEditorId: PropTypes.string.isRequired,
+  paraphrasingStatementEditorId: PropTypes.string,
+  sourceExcerptEditorId: PropTypes.string,
 }

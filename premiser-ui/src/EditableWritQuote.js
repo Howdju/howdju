@@ -7,8 +7,6 @@ import get from 'lodash/get'
 import {EditorTypes} from "./reducers/editors"
 import WritQuoteViewer from "./WritQuoteViewer"
 import WritQuoteEditor from "./WritQuoteEditor"
-import {denormalize} from "normalizr"
-import {writQuoteSchema} from "./schemas"
 import ExpandableChildContainer from './ExpandableChildContainer'
 
 class EditableWritQuote extends Component {
@@ -21,53 +19,55 @@ class EditableWritQuote extends Component {
       suggestionsKey,
       isFetching,
       isEditing,
+      showStatusText,
       ...rest
     } = this.props
 
-    const editor =
+    const editor = () => (
       <WritQuoteEditor
         {...rest}
         id={id}
         editorId={editorId}
         suggestionsKey={suggestionsKey}
       />
+    )
+
     const viewer = (
       <ExpandableChildContainer
         {...rest}
-        ExpandableChildComponent={WritQuoteViewer}
+        expandableChildComponent={WritQuoteViewer}
         widgetId={id}
         key={id}
         writQuote={writQuote}
+        showStatusText={showStatusText}
       />
     )
     const progress =
       <CircularProgress id={`${id}-Progress`} />
 
     return isEditing ?
-      editor :
+      editor() :
       isFetching ? progress : viewer
   }
 }
 EditableWritQuote.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
-  /** Let's the component fetch its statement from the API and retrieve it from the state */
-  entityId: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  writQuote: PropTypes.object.isRequired,
   /** Identifies the editor's state */
-  editorId: PropTypes.string.isRequired,
+  editorId: PropTypes.string,
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const writQuote = denormalize(state.entities.writQuotes[ownProps.entityId], writQuoteSchema, state.entities)
-  const editEntity = get(state.editors, [EditorTypes.WRIT_QUOTE, ownProps.editorId, 'editEntity'])
+  const editorId = ownProps.editorId
+  const {editEntity} = editorId ?
+    get(state.editors, [EditorTypes.WRIT_QUOTE, editorId], {}) :
+    {}
+
   const isEditing = !!editEntity
   return {
-    writQuote,
     isEditing,
   }
 }

@@ -39,14 +39,13 @@ import {
 import paths from './paths'
 import config from './config'
 import CounterJustificationEditor from "./CounterJustificationEditor"
-import EditableJustificationBasis from "./EditableJustificationBasis"
 import {EditorTypes} from "./reducers/editors"
 import {suggestionKeys} from "./autocompleter"
-import ChatBubble from './ChatBubble'
+import JustificationChatBubble from './JustificationChatBubble'
 import {selectIsWindowNarrow} from "./selectors"
 import t from './texts'
 
-import './JustificationTree.scss'
+import './JustificationBranch.scss'
 
 
 const justificationTreeId = props => {
@@ -56,7 +55,7 @@ const justificationTreeId = props => {
   return `justification-${justification.id}-tree`
 }
 
-class JustificationTree extends Component {
+class JustificationBranch extends Component {
   constructor() {
     super()
     this.state = {
@@ -148,7 +147,6 @@ class JustificationTree extends Component {
     const {
       justification,
       newCounterJustification,
-      isEditingBasis,
       doShowControls,
       doShowBasisJustifications,
       isCondensed,
@@ -178,91 +176,101 @@ class JustificationTree extends Component {
         position={Positions.TOP_RIGHT}
         title="Justification actions"
         children={[
-          <ListItem primaryText="Counter"
-                    key="counter"
-                    leftIcon={<FontIcon>reply</FontIcon>}
-                    onClick={this.onEditNewCounterJustification}
+          <ListItem
+            primaryText="Counter"
+            key="counter"
+            leftIcon={<FontIcon>reply</FontIcon>}
+            onClick={this.onEditNewCounterJustification}
           />,
-          <ListItem primaryText="Use"
-                    key="use"
-                    title="Justify another statement with this basis"
-                    leftIcon={<FontIcon>call_made</FontIcon>}
-                    component={Link}
-                    to={this.createJustificationPath()}
+          <ListItem
+            primaryText="Use"
+            key="use"
+            title="Justify another statement with this basis"
+            leftIcon={<FontIcon>call_made</FontIcon>}
+            component={Link}
+            to={this.createJustificationPath()}
           />,
-          <ListItem primaryText="See usages"
-                    key="usages"
-                    title="See justifications using this basis"
-                    leftIcon={<FontIcon>call_merge</FontIcon>}
-                    component={Link}
-                    to={this.seeUsagesPath()}
+          <ListItem
+            primaryText="See usages"
+            key="usages"
+            title="See justifications using this basis"
+            leftIcon={<FontIcon>call_merge</FontIcon>}
+            component={Link}
+            to={this.seeUsagesPath()}
           />,
-          <ListItem primaryText="Link"
-                    key="link"
-                    title="A link to this justification"
-                    leftIcon={<FontIcon>link</FontIcon>}
-                    component={Link}
-                    to={paths.justification(justification)}
+          <ListItem
+            primaryText="Link"
+            key="link"
+            title="A link to this justification"
+            leftIcon={<FontIcon>link</FontIcon>}
+            component={Link}
+            to={paths.justification(justification)}
           />,
           <Divider key="divider" />,
-          <ListItem primaryText="Edit"
-                    key="edit"
-                    leftIcon={<FontIcon>create</FontIcon>}
-                    className={cn({hidden: _isStatementCompoundBased})}
-                    onClick={this.onEditBasis}
+          <ListItem
+            primaryText="Edit"
+            key="edit"
+            leftIcon={<FontIcon>create</FontIcon>}
+            className={cn({hidden: _isStatementCompoundBased})}
+            onClick={this.onEditBasis}
           />,
-          <ListItem primaryText="Delete"
-                    key="delete"
-                    leftIcon={<FontIcon>delete</FontIcon>}
-                    onClick={this.deleteClick}
+          <ListItem
+            primaryText="Delete"
+            key="delete"
+            leftIcon={<FontIcon>delete</FontIcon>}
+            onClick={this.deleteClick}
           />,
         ]}
       />
     )
 
     const actions = [
-      <Button icon
-              key="verifyButton"
-              className={cn({
-                verified: _isVerified,
-                inactive: doHideControls,
-                hiding: !_isVerified && doHideControls,
-                otherSelected: _isDisverified,
-              })}
-              title="Verify this justification"
-              onClick={this.onVerify}
+      <Button
+        icon
+        key="verifyButton"
+        className={cn({
+          verified: _isVerified,
+          inactive: doHideControls,
+          hiding: !_isVerified && doHideControls,
+          otherSelected: _isDisverified,
+        })}
+        title="Verify this justification"
+        onClick={this.onVerify}
       >thumb_up</Button>,
-      <Button icon
-              key="disverifyButton"
-              className={cn({
-                disverified: _isDisverified,
-                inactive: doHideControls,
-                hiding: !_isDisverified && doHideControls,
-                otherSelected: _isVerified,
-              })}
-              title="Dis-verify this justification"
-              onClick={this.onDisverify}
+      <Button
+        icon
+        key="disverifyButton"
+        className={cn({
+          disverified: _isDisverified,
+          inactive: doHideControls,
+          hiding: !_isDisverified && doHideControls,
+          otherSelected: _isVerified,
+        })}
+        title="Dis-verify this justification"
+        onClick={this.onDisverify}
       >thumb_down</Button>,
-      <Button icon
-              key="counterButton"
-              className={cn({
-                hiding: doHideControls,
-              })}
-              title="Counter this justification"
-              onClick={this.onEditNewCounterJustification}
+      <Button
+        icon
+        key="counterButton"
+        className={cn({
+          hiding: doHideControls,
+        })}
+        title="Counter this justification"
+        onClick={this.onEditNewCounterJustification}
       >reply</Button>
     ]
     const hasCounterJustifications = justification.counterJustifications && justification.counterJustifications.length > 0
     if (hasCounterJustifications) {
       const toggleCounterJustificationsExpandedButtonIcon = areCounterJustificationsExpanded ? 'expand_more' : 'expand_less'
       actions.push(
-        <Button icon
-                key="toggleCounterJustificationsExpandedButton"
-                className={cn({
-                  hiding: doHideControls,
-                })}
-                title={areCounterJustificationsExpanded ? t("Collapse counter-justifications") : t("Expand counter justifications")}
-                onClick={this.toggleCounterJustificationsExpanded}
+        <Button
+          icon
+          key="toggleCounterJustificationsExpandedButton"
+          className={cn({
+            hiding: doHideControls,
+          })}
+          title={areCounterJustificationsExpanded ? t("Collapse counter-justifications") : t("Expand counter justifications")}
+          onClick={this.toggleCounterJustificationsExpanded}
         >{toggleCounterJustificationsExpandedButtonIcon}</Button>
       )
     }
@@ -274,9 +282,10 @@ class JustificationTree extends Component {
           {newCounterJustification &&
           <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justification-card">
 
-            <CounterJustificationEditor editorId={counterJustificationEditorId(justification)}
-                                        id={`justification-${justification.id}-new-counter-justification-editor`}
-                                        suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
+            <CounterJustificationEditor
+              editorId={counterJustificationEditorId(justification)}
+              id={`justification-${justification.id}-new-counter-justification-editor`}
+              suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
             />
 
           </Card>
@@ -288,11 +297,12 @@ class JustificationTree extends Component {
                    key={id}
                    className="counter-justification-branch"
               >
-                <ConnectedJustificationTree justification={j}
-                                            doShowControls={doShowControls}
-                                            doShowBasisJustifications={doShowBasisJustifications}
-                                            isCondensed={isCondensed}
-                                            isUnCondensed={isUnCondensed}
+                <ConnectedJustificationBranch
+                  justification={j}
+                  doShowControls={doShowControls}
+                  doShowBasisJustifications={doShowBasisJustifications}
+                  isCondensed={isCondensed}
+                  isUnCondensed={isUnCondensed}
                 />
               </div>
             )
@@ -301,73 +311,59 @@ class JustificationTree extends Component {
       </div>
     )
 
-    const treeClasses = cn('justification-tree', {
-      positivey: _isRootPositive,
-      negativey: _isRootNegative,
-    })
     return (
-      <div className={treeClasses}
-           id={justificationTreeId(this.props)}
+      <div
+        className={cn('justification-tree', {
+          positivey: _isRootPositive,
+          negativey: _isRootNegative,
+        })}
+        id={justificationTreeId(this.props)}
       >
-        <ChatBubble isPositive={_isRootPositive}
-                    isNegative={_isRootNegative}
-                    onMouseOver={this.onBubbleMouseOver}
-                    onMouseLeave={this.onBubbleMouseLeave}
-        >
-          <div className="justification-tree-basis">
-            <EditableJustificationBasis id={`justification-${justification.id}-basisEditor`}
-                                        justification={justification}
-                                        editorId={justificationBasisEditorId(justification.basis)}
-                                        suggestionsKey={suggestionKeys.justificationBasisEditor(justification)}
-                                        doShowControls={doShowControls}
-                                        doShowBasisJustifications={doShowBasisJustifications}
-                                        isCondensed={isCondensed}
-                                        isUnCondensed={isUnCondensed}
-            />
-            {justification && !isEditingBasis && doShowControls && menu}
-          </div>
-
-          {doShowControls && (
+        <JustificationChatBubble
+          id={`justification-${justification.id}-chat-bubble`}
+          className="md-grid"
+          justification={justification}
+          doShowBasisJustifications={doShowBasisJustifications}
+          doShowControls={doShowControls}
+          menu={menu}
+          actions={
             <div className="md-cell md-cell--12 actions">
-              {!isEditingBasis && actions}
+              {actions}
             </div>
-          )}
-
+          }
+          onMouseOver={this.onBubbleMouseOver}
+          onMouseLeave={this.onBubbleMouseLeave}
+        >
           {areCounterJustificationsExpanded && counterJustifications}
-        </ChatBubble>
+        </JustificationChatBubble>
       </div>
     )
   }
 }
-JustificationTree.propTypes = {
+JustificationBranch.propTypes = {
   doShowControls: PropTypes.bool
 }
-JustificationTree.defaultProps = {
+JustificationBranch.defaultProps = {
   doShowControls: true
 }
 
 const mapStateToProps = (state, ownProps) => {
   const justification = ownProps.justification
-  const justificationBasis = justification.basis
-  const basisEditorType = justificationBasis.type
-  const editEntity = get(state, ['editors', basisEditorType, justificationBasisEditorId(justificationBasis), 'editEntity'])
-  const isEditingBasis = !!editEntity
 
   const newCounterJustification = get(state, ['editors', EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
 
   const isWindowNarrow = selectIsWindowNarrow(state)
   return {
     newCounterJustification,
-    isEditingBasis,
     isWindowNarrow,
   }
 }
 
-const ConnectedJustificationTree = connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+const ConnectedJustificationBranch = connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   editors,
   goto,
   ui,
-}))(JustificationTree)
+}))(JustificationBranch)
 
-export default ConnectedJustificationTree
+export default ConnectedJustificationBranch

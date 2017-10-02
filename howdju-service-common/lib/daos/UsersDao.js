@@ -29,12 +29,18 @@ exports.UsersDao = class UsersDao {
   }
 
   readUserForId(userId) {
-    return this.database.query('select * from users join user_external_ids using (user_id) where user_id = $1', [userId])
+    return this.database.query(
+      'select * from users join user_external_ids using (user_id) where user_id = $1 and deleted is null',
+      [userId]
+    )
       .then( ({rows: [row]}) => toUser(row) )
   }
 
   readUserForEmail(email) {
-    return this.database.query('select * from users where email = $1', [email])
+    return this.database.query(
+      'select * from users join user_external_ids using (user_id) where email = $1 and deleted is null',
+      [email]
+    )
       .then(mapSingle(this.logger, toUser, 'users', {email}))
   }
 

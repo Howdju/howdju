@@ -9,7 +9,7 @@ import {isTruthy} from 'howdju-common'
 import {EditorTypes} from "./reducers/editors"
 import StatementViewer from "./StatementViewer"
 import StatementEditor from "./StatementEditor"
-import {editors, mapActionCreatorGroupToDispatchToProps} from './actions'
+
 
 class EditableStatement extends Component {
 
@@ -22,59 +22,62 @@ class EditableStatement extends Component {
       suggestionsKey,
       isFetching,
       isEditing,
+      showStatusText,
       // ignore
-      entityId,
-      editors,
+      dispatch,
       ...rest,
     } = this.props
 
-    // statement is required, so make this lazy.  Is this a problem for react efficiency-wise?
-    const editor =
-      <StatementEditor {...rest}
-                       editorId={editorId}
-                       id={id}
-                       textId={textId}
-                       suggestionsKey={suggestionsKey}
+    // lazy because editorId may not be available
+    const editor = () => (
+      <StatementEditor
+        {...rest}
+        editorId={editorId}
+        id={id}
+        textId={textId}
+        suggestionsKey={suggestionsKey}
+        disabled={isFetching}
       />
-    const viewer =
-      <StatementViewer {...rest}
-                       id={id}
-                       statement={statement}
+    )
+
+    const viewer = (
+      <StatementViewer
+        {...rest}
+        id={id}
+        statement={statement}
+        showStatusText={showStatusText}
       />
-    const progress =
-      <CircularProgress id={`${id}-Progress`} />
+    )
+
+    const progress = (
+      <CircularProgress id={`${id}--loading`} />
+    )
 
     return isEditing ?
-      editor :
-      isFetching ? progress : viewer
+      editor() :
+      !statement ? progress : viewer
   }
 }
 EditableStatement.propTypes = {
   /** Required for the CircularProgress */
   id: PropTypes.string.isRequired,
-  /** Let's the component fetch its statement from the API and retrieve it from the state */
-  entityId: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
   /** Identifies the editor's state */
-  editorId: PropTypes.string.isRequired,
+  editorId: PropTypes.string,
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
+  statement: PropTypes.object,
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const statement = state.entities.statements[ownProps.entityId]
-  // If it hasn't been edited, then there's no editor state...
-  const {editEntity, isFetching} = get(state.editors, [EditorTypes.STATEMENT, ownProps.editorId], {})
+  const editorId = ownProps.editorId
+  const {editEntity, isFetching} = editorId ?
+    get(state.editors, [EditorTypes.STATEMENT, editorId], {}) :
+    {}
   const isEditing = isTruthy(editEntity)
   return {
-    statement,
     isFetching,
     isEditing,
   }
 }
 
-export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-  editors,
-}))(EditableStatement)
+export default connect(mapStateToProps)(EditableStatement)

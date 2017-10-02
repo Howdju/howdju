@@ -12,7 +12,6 @@ import {
   newExhaustedEnumError,
   JustificationBasisCompoundAtomType,
   SourceExcerptType,
-  newExhausedEnumError,
 } from 'howdju-common'
 import {ellipsis} from './characters'
 
@@ -20,9 +19,10 @@ import {ellipsis} from './characters'
 export const removeStatementCompoundIds = (statementCompound) => {
   if (!statementCompound) return statementCompound
   delete statementCompound.id
+
   forEach(statementCompound.atoms, atom => {
     delete atom.compoundId
-    removeStatementIds(atom.statement)
+    removeStatementIds(atom.entity)
   })
   return statementCompound
 }
@@ -174,7 +174,7 @@ export function sourceExcerptIconName(sourceExcerpt) {
     case SourceExcerptType.VID_SEGMENT:
       return "videocam"
     default:
-      throw newExhausedEnumError('SourceExcerptType', sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
   }
 }
 
@@ -187,6 +187,6 @@ export function sourceExcerptSourceDescription(sourceExcerpt) {
     case SourceExcerptType.VID_SEGMENT:
       return "vid"
     default:
-      throw newExhausedEnumError('SourceExcerptType', sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
   }
 }

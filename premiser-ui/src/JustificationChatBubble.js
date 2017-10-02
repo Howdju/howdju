@@ -1,7 +1,9 @@
 import React from 'react'
-import cn from 'classnames'
 
-import {isRootNegative, isRootPositive} from 'howdju-common'
+import {
+  isRootNegative,
+  isRootPositive
+} from 'howdju-common'
 import JustificationBasisViewer from './JustificationBasisViewer'
 import ChatBubble from './ChatBubble'
 
@@ -14,26 +16,41 @@ const JustificationChatBubble = props => {
     justification,
     doShowControls,
     doShowBasisJustifications,
+    showStatusText,
+    isCondensed,
+    isUnCondensed,
+    menu,
+    actions,
+    children,
     ...rest,
   } = props
   const _isRootPositive = isRootPositive(justification)
   const _isRootNegative = isRootNegative(justification)
 
   const basisViewerIdPrefix = id ? id + '-' : ''
-  const basisViewerId = `${basisViewerIdPrefix}justification-chat-bubble-justification-basis-viewer-${justification.id}`
+  const basisViewerId = `${basisViewerIdPrefix}basis-viewer`
 
   return (
-    <ChatBubble {...rest}
-                className={cn(className, "md-grid")}
-                isPositive={_isRootPositive}
-                isNegative={_isRootNegative}
+    <ChatBubble
+      {...rest}
+      className={className}
+      isPositive={_isRootPositive}
+      isNegative={_isRootNegative}
     >
-      <JustificationBasisViewer id={basisViewerId}
-                                className="md-cell md-cell--12"
-                                justification={justification}
-                                doShowControls={doShowControls}
-                                doShowBasisJustifications={doShowBasisJustifications}
-      />
+      <div className="justification-basis-viewer-row">
+        <JustificationBasisViewer
+          id={basisViewerId}
+          justification={justification}
+          doShowControls={doShowControls}
+          doShowBasisJustifications={doShowBasisJustifications}
+          isCondensed={isCondensed}
+          isUnCondensed={isUnCondensed}
+          showStatusText={showStatusText}
+        />
+        {doShowControls && menu}
+      </div>
+      {doShowControls && actions}
+      {children}
     </ChatBubble>
   )
 }

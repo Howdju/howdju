@@ -123,9 +123,6 @@ const makeRemoveUrlReducer = (urlsPathMaker) => (state, action) => {
 const editorReducerByType = {
 
   [EditorTypes.DEFAULT]: handleActions({
-    [editors.init]: (state, action) => {
-      return state === defaultEditorState ? action.payload.initialState : state
-    },
     [editors.beginEdit]: (state, action) => {
       const {entity} = action.payload
       const editEntity = cloneDeep(entity)
@@ -159,25 +156,29 @@ const editorReducerByType = {
 
   [EditorTypes.STATEMENT]: handleActions({
     [api.fetchStatementJustifications]: (state, action) => {
-      if (state.entityId === action.payload.statementId) {
+      const statementId = get(state, 'editEntity.id')
+      if (statementId === action.payload.statementId) {
         return {...state, isFetching: true}
       }
       return state
     },
     [api.fetchStatement]: (state, action) => {
-      if (state.entityId === action.payload.statementId) {
+      const statementId = get(state, 'editEntity.id')
+      if (statementId === action.payload.statementId) {
         return {...state, isFetching: true}
       }
       return state
     },
     [api.fetchStatementJustifications.response]: (state, action) => {
-      if (state.entityId === action.meta.requestPayload.statementId) {
+      const statementId = get(state, 'editEntity.id')
+      if (statementId === action.meta.requestPayload.statementId) {
         return {...state, isFetching: false}
       }
       return state
     },
     [api.fetchStatement.response]: (state, action) => {
-      if (state.entityId === action.meta.requestPayload.statementId) {
+      const statementId = get(state, 'editEntity.id')
+      if (statementId === action.meta.requestPayload.statementId) {
         return {...state, isFetching: false}
       }
       return state
@@ -345,13 +346,15 @@ const editorReducerByType = {
       return {...state, editEntity}
     },
     [api.fetchWritQuote]: (state, action) => {
-      if (state.entityId === action.payload.writQuoteId) {
+      const writQuoteId = get(state, 'editEntity.id')
+      if (writQuoteId === action.payload.writQuoteId) {
         return {...state, isFetching: true}
       }
       return state
     },
     [api.fetchWritQuote.response]: (state, action) => {
-      if (state.entityId === action.meta.requestPayload.writQuoteId) {
+      const writQuoteId = get(state, 'editEntity.id')
+      if (writQuoteId === action.meta.requestPayload.writQuoteId) {
         return {...state, isFetching: false}
       }
       return state

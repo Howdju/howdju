@@ -5,6 +5,7 @@
   align-items: center;
 
   .entity-viewer--entity {
+    // take up all the space next to the context menu
     flex: 1 1;
     border-left: 1px solid darken($clouds, 5%);
     padding-left: 16px;
@@ -20,5 +21,9 @@
 
   .entity-viewer--icon {
     margin-right: 16px;
+  }
+
+  .entity-status-text {
+    color: $asbestos;
   }
 }

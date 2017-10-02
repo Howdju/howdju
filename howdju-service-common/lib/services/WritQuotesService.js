@@ -19,7 +19,7 @@ const {
   ActionType,
   SortDirection,
   entityConflictCodes,
-  userActionConflictCodes,
+  userActionsConflictCodes,
 } = require('howdju-common')
 
 const {
@@ -138,11 +138,11 @@ exports.WritQuotesService = class WritQuotesService {
           entityConflicts[entityConflictCodes.ANOTHER_WRIT_QUOTE_HAS_SAME_TEXT] =
             this.writQuotesDao.hasEquivalentWritQuotes(writQuote)
           assign(userActionConflicts, {
-            [userActionConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT_QUOTE]:
+            [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT_QUOTE]:
               this.writQuotesDao.isBasisToJustificationsHavingOtherUsersVotes(userId, writQuote),
-            [userActionConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_WRIT_QUOTE]:
+            [userActionsConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_WRIT_QUOTE]:
               this.writQuotesDao.isBasisToOtherUsersJustifications(userId, writQuote),
-            [userActionConflictCodes.OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_WRIT_QUOTE]:
+            [userActionsConflictCodes.OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_WRIT_QUOTE]:
               this.writQuotesDao.isBasisToJustificationsHavingOtherUsersCounters(userId, writQuote),
           })
         }
@@ -153,11 +153,11 @@ exports.WritQuotesService = class WritQuotesService {
             this.writsDao.hasEquivalentWrits(writ)
 
           assign(userActionConflicts, {
-            [userActionConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT]:
+            [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT]:
               this.writsDao.isWritOfBasisToOtherUsersJustifications(userId, writ),
-            [userActionConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_WRIT]:
+            [userActionsConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_WRIT]:
               this.writsDao.isWritOfBasisToJustificationsHavingOtherUsersVotes(userId, writ),
-            [userActionConflictCodes.OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_WRIT]:
+            [userActionsConflictCodes.OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_WRIT]:
               this.writsDao.isWritOfBasisToJustificationsHavingOtherUsersCounters(userId, writ),
           })
         }

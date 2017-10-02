@@ -1,5 +1,7 @@
 // Contents of https://fonts.googleapis.com/css?family=Lato:300,400|Orbitron with url replaced with local versions
 
+/** Lato */
+
 /* latin-ext */
 @font-face {
   font-family: 'Lato';
@@ -8,8 +10,7 @@
   src:
           local('Lato Light'),
           local('Lato-Light'),
-          $dev-font-url-lato-light-latin-ext
-          format('woff2');
+          $dev-font-url-lato-light-latin-ext format('woff2');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -20,8 +21,7 @@
   src:
           local('Lato Light'),
           local('Lato-Light'),
-          $dev-font-url-lato-light-latin
-          format('woff2');
+          $dev-font-url-lato-light-latin format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 /* latin-ext */
@@ -32,8 +32,7 @@
   src:
           local('Lato Regular'),
           local('Lato-Regular'),
-          $dev-font-url-lato-regular-latin-ext
-          format('woff2');
+          $dev-font-url-lato-regular-latin-ext format('woff2');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -44,10 +43,12 @@
   src:
           local('Lato Regular'),
           local('Lato-Regular'),
-          $dev-font-url-lato-regular-latin
-          format('woff2');
+          $dev-font-url-lato-regular-latin format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
+
+/** Orbitron */
+
 /* latin */
 @font-face {
   font-family: 'Orbitron';
@@ -56,7 +57,31 @@
   src:
           local('Orbitron Regular'),
           local('Orbitron-Regular'),
-          $dev-font-url-orbitron-regular-latin
-          format('woff2');
+          $dev-font-url-orbitron-regular-latin format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+/** Oswald */
+
+/* latin-ext */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 200;
+  src:
+          local('Oswald ExtraLight'),
+          local('Oswald-ExtraLight'),
+          $dev-font-url-oswald-extra-light-latin-ext format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 200;
+  src:
+          local('Oswald ExtraLight'),
+          local('Oswald-ExtraLight'),
+          $dev-font-url-oswald-extra-light-latin-ext format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }

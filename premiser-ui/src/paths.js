@@ -20,9 +20,9 @@ class Paths {
   writUsages = writ => this.searchJustifications({writId: writ.id})
   writQuoteUsages = writQuote => this.searchJustifications({writQuoteId: writQuote.id})
 
-  createJustification = (basisType, basisId) => createPath({
+  createJustification = (basisSourceType, basisSourceId) => createPath({
     pathname: createJustificationPath,
-    search: '?' + queryString.stringify({basisType, basisId})
+    search: '?' + queryString.stringify({basisSourceType, basisSourceId})
   })
   searchJustifications = params => createPath({
     pathname: '/search-justifications',

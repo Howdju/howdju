@@ -1,3 +1,5 @@
+@import "./colors";
+
 .chat-bubble {
   background-color: #fff;
 
@@ -11,10 +13,10 @@
 
   &.chat-bubble--positive {
     margin-right: 60px;
-    border: 1px solid #bbb;
+    border: 1px solid $entity-border-color;
   }
   &.chat-bubble--negative {
     margin-left: 60px;
-    border: 1px solid rgb(255, 176, 164);
+    border: 1px solid $entity-border-color--negative;
   }
 }

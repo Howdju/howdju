@@ -27,7 +27,7 @@ class ExpandableChildContainer extends Component {
   render() {
     const {
       isExpanded,
-      ExpandableChildComponent,
+      expandableChildComponent: ExpandableChildComponent,
       // ignore
       widgetId,
       ui,
@@ -45,7 +45,7 @@ class ExpandableChildContainer extends Component {
   }
 }
 ExpandableChildContainer.propTypes = {
-  ExpandableChildComponent: PropTypes.oneOfType([
+  expandableChildComponent: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
   ]).isRequired
