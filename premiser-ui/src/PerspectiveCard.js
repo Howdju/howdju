@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import Card from 'react-md/lib/Cards/Card'
 import CardText from 'react-md/lib/Cards/CardText'
-import CardTitle from 'react-md/lib/Cards/CardTitle'
 
-import paths from './paths'
 import JustificationsTree from "./JustificationsTree"
 import StatementEntityViewer from './StatementEntityViewer'
 
