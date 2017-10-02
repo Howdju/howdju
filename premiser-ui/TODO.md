@@ -1,7 +1,11 @@
 # Howdju UI TODO
 
-* http://pre-prod-www.howdju.com/featured-perspectives
-  * statement isn't 100% width
+* Potential big priorities
+  * Push to prod: update DB/Aurora
+  * version API
+  * User signup
+  * Business model: private content
+  
 
 * When use writ quote / statement compound, make them source excerpt paraphrase
   * Using a statement atom from a justification basis compound results in an empty statement compound atom!

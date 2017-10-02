@@ -15,6 +15,13 @@ html, a {
 p a {
   color: $link-color;
 }
+// Display link buttons with the correct color
+.md-btn.md-background--primary a {
+  color: $md-primary-background-text-color;
+}
+.md-btn.md-background--secondary a {
+  color: $md-secondary-background-text-color;
+}
 
 .error-message,
 .error-message li {
