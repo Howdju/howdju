@@ -36,8 +36,10 @@ _e.newProgrammingError = (message) =>
 _e.newArgumentsError = (message) =>
   newCustomError(commonErrorTypes.ARGUMENTS_EXCEPTION, message)
 
-_e.newExhaustedEnumError = (enumName, value) =>
-  newCustomError(commonErrorTypes.EXHAUSTED_ENUM, `Exhausted ${enumName}: ${value}`)
+_e.newExhaustedEnumError = (enumName, value, message) => {
+  message = message ? ' - ' + message : ''
+  newCustomError(commonErrorTypes.EXHAUSTED_ENUM, `Exhausted ${enumName} with ${value}${message}`)
+}
 
 _e.newUnimplementedError = (message) =>
   newCustomError(commonErrorTypes.UNIMPLEMENTED_ERROR, message)

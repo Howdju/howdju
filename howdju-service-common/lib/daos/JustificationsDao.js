@@ -656,11 +656,10 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
 
       const atomId = row[prefix + 'basis_jbc_atom_id']
       if (!atomsById[atomId]) {
-        const atomEntityType = row[prefix + 'basis_jbc_atom_entity_type']
         const atom = toJustificationBasisCompoundAtom({
           justification_basis_compound_atom_id: atomId,
           justification_basis_compound_id:      justificationBasisCompoundId,
-          entity_type:                          atomEntityType,
+          entity_type:                          row[prefix + 'basis_jbc_atom_entity_type'],
           order_position:                       row[prefix + 'basis_jbc_atom_order_position'],
 
           statement_id:                row[prefix + 'basis_jbc_atom_statement_id'],

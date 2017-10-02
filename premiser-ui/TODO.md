@@ -1,12 +1,16 @@
 # Howdju UI TODO
 
+* MainSearchPage id marked as required
+* Am I missing URLs from SEP? (and created)
+* SEP viewer: use ... icon for "paraphrasing statement" and indent quote somewhat to indicate primacy 
+
 * Potential big priorities
   * Push to prod: update DB/Aurora
+  * Use bookmarklet; test prod
   * version API
   * User signup
   * Business model: private content
   
-
 * When use writ quote / statement compound, make them source excerpt paraphrase
   * Using a statement atom from a justification basis compound results in an empty statement compound atom!
 * Can't edit writ quote justification
