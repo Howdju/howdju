@@ -17,7 +17,7 @@ import map from 'lodash/map'
 import {
   isVerified,
   isDisverified,
-  isStatementCompoundBased,
+  isWritQuoteBased,
   makeNewCounterJustification,
   isRootPositive,
   isRootNegative,
@@ -161,7 +161,7 @@ class JustificationBranch extends Component {
       areCounterJustificationsExpanded,
     } = this.state
 
-    const _isStatementCompoundBased = isStatementCompoundBased(justification)
+    const _isWritQuoteBased = isWritQuoteBased(justification)
     const _isRootPositive = isRootPositive(justification)
     const _isRootNegative = isRootNegative(justification)
 
@@ -212,7 +212,7 @@ class JustificationBranch extends Component {
             primaryText="Edit"
             key="edit"
             leftIcon={<FontIcon>create</FontIcon>}
-            className={cn({hidden: _isStatementCompoundBased})}
+            className={cn({hidden: !_isWritQuoteBased})}
             onClick={this.onEditBasis}
           />,
           <ListItem

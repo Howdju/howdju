@@ -2,13 +2,16 @@
 
 * SEP viewer: use ... icon for "paraphrasing statement" and indent quote somewhat to indicate primacy 
 * Creating DC Code Writ Quote created a new one.
+* Fix writ duplication
 
 * Potential big priorities
-  * Push to prod: update DB/Aurora
   * Use bookmarklet; test prod
   * version API
+  * Additional excerpt fields
+  * Addition excerpt types
   * User signup
   * Business model: private content
+  * Show creator
   
 * When use writ quote / statement compound, make them source excerpt paraphrase
   * Using a statement atom from a justification basis compound results in an empty statement compound atom!
