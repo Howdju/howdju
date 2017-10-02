@@ -28,6 +28,7 @@ export default class PerspectiveCard extends Component {
           doShowControls={false}
           doShowJustifications={true}
           WrapperComponent={CardText}
+          showBasisUrls={false}
         />
 
       </Card>

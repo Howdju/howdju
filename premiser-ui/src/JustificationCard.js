@@ -16,6 +16,7 @@ export default class JustificationCard extends Component {
       doShowControls,
       onExpandJustifications,
       className,
+      showBasisUrls,
       ...rest,
     } = this.props
 
@@ -32,9 +33,13 @@ export default class JustificationCard extends Component {
             doShowBasisJustifications={doShowBasisJustifications}
             doShowControls={doShowControls}
             onExpandJustifications={onExpandJustifications}
+            showBasisUrls={showBasisUrls}
           />
         </CardText>
       </Card>
     )
   }
+}
+JustificationCard.defaultProps = {
+  showBasisUrls: false,
 }

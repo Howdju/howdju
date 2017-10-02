@@ -20,6 +20,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
       sourceExcerptEditorId,
       doShowControls,
       showStatusText,
+      showUrls,
     } = this.props
 
     const entityViewerId = `${id}-entity`
@@ -48,6 +49,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
             suggestionsKey={`${id}-source-excerpt-paraphrase-suggestions`}
             doShowControls={doShowControls}
             showStatusText={showStatusText}
+            showUrls={showUrls}
           />
         )
       default:

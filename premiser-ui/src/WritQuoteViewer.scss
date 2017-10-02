@@ -1,4 +1,38 @@
 @import './components';
+@import './colors';
+
+$list-item-left-padding: 1.5em;
+
+@mixin material-icon($icon-name) {
+  content: $icon-name;
+  vertical-align: middle;
+  color: $icon-color;
+
+  margin-left: -1 * $list-item-left-padding;
+  width: $list-item-left-padding;
+
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
 
 .writ-quote-viewer {
   @include quote;
@@ -7,16 +41,23 @@
     font-weight: 400;
   }
 
-  .writ-quote-urls {
+  ul.writ-quote-urls {
+
     margin-top: 0.8em;
-  }
 
-  li.url {
-    margin: 0.2em 1em;
+    > li.url {
+      margin: 0.2em $list-item-left-padding;
 
-    .md-icon {
-      font-size: 12px;
-      margin-left: 8px;
+      &:before {
+        @include material-icon("link")
+      }
+      > a {
+        .md-icon {
+          vertical-align: middle;
+          font-size: 12px;
+          margin-left: 2px;
+        }
+      }
     }
   }
 }

@@ -20,6 +20,7 @@ export default class SourceExcerptEntityViewer extends Component {
       suggestionsKey,
       menu,
       showStatusText,
+      showUrls,
     } = this.props
     return (
       <EntityViewer
@@ -33,6 +34,7 @@ export default class SourceExcerptEntityViewer extends Component {
             editorId={editorId}
             suggestionsKey={suggestionsKey}
             showStatusText={showStatusText}
+            showUrls={showUrls}
           />
         }
         menu={menu}

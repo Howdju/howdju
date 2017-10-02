@@ -23,7 +23,8 @@ export default class JustificationEntityViewer extends Component {
       suggestionsKey,
       doShowBasisJustifications,
       doShowControls,
-      onExpandJustifications
+      onExpandJustifications,
+      showBasisUrls,
     } = this.props
 
     const _isCounter = isCounter(justification)
@@ -64,12 +65,14 @@ export default class JustificationEntityViewer extends Component {
                 justification={justification.target.entity}
                 doShowBasisJustifications={doShowBasisJustifications}
                 doShowControls={doShowControls}
+                showBasisUrls={showBasisUrls}
               />
             )}
             <JustificationChatBubble
               justification={justification}
               doShowBasisJustifications={doShowBasisJustifications}
               doShowControls={doShowControls}
+              showBasisUrls={showBasisUrls}
             />
           </div>
         }

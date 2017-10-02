@@ -12,6 +12,7 @@ export default class WritQuoteEntityViewer extends Component {
       editorId,
       suggestionsKey,
       doShowControls,
+      showUrls,
       ...rest
     } = this.props
     return (
@@ -26,6 +27,7 @@ export default class WritQuoteEntityViewer extends Component {
             editorId={editorId}
             suggestionsKey={suggestionsKey}
             doShowControls={doShowControls}
+            showUrls={showUrls}
           />
         }
       />

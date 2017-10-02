@@ -23,6 +23,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
       sourceExcerptEditorId,
       suggestionsKey,
       showStatusText,
+      showUrls,
     } = this.props
     const {
       paraphrasingStatement,
@@ -52,6 +53,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
               editorId={sourceExcerptEditorId}
               suggestionsKey={suggestionsKey + '-source-excerpt'}
               showStatusText={showStatusText}
+              showUrls={showUrls}
             />
           </div>
         }

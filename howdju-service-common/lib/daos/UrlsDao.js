@@ -13,18 +13,6 @@ const {
 const head = require('lodash/head')
 
 
-const groupUrlsByWritQuoteId = rows => {
-  const urlsByWritQuoteId = {}
-  forEach(rows, row => {
-    let urls = urlsByWritQuoteId[row.writ_quote_id]
-    if (!urls) {
-      urlsByWritQuoteId[row.writ_quote_id] = urls = []
-    }
-    urls.push(toUrl(row))
-  })
-  return urlsByWritQuoteId
-}
-
 exports.UrlsDao = class UrlsDao {
 
   constructor(logger, database) {
@@ -108,4 +96,16 @@ exports.UrlsDao = class UrlsDao {
     return this.database.query('insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *', [url.url, userId, now])
       .then( ({rows: [row]}) => toUrl(row) )
   }
+}
+
+function groupUrlsByWritQuoteId(rows) {
+  const urlsByWritQuoteId = {}
+  forEach(rows, row => {
+    let urls = urlsByWritQuoteId[row.writ_quote_id]
+    if (!urls) {
+      urlsByWritQuoteId[row.writ_quote_id] = urls = []
+    }
+    urls.push(toUrl(row))
+  })
+  return urlsByWritQuoteId
 }

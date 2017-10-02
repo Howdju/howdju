@@ -55,6 +55,7 @@ class StatementCompoundViewerAtomItem extends Component {
       isCondensed,
       isUnCondensed,
       component: Component,
+      showBasisUrls,
     } = this.props
 
     const _baseId = baseId(this.props)
@@ -83,6 +84,7 @@ class StatementCompoundViewerAtomItem extends Component {
             doShowJustifications={doShowJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
+            showBasisUrls={showBasisUrls}
           />
         )}
       </Component>

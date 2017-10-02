@@ -24,6 +24,7 @@ export default class JustificationBasisViewer extends Component {
       showStatusText,
       isCondensed,
       isUnCondensed,
+      showUrls,
       ...rest,
     } = this.props
     const basis = justification.basis
@@ -39,6 +40,7 @@ export default class JustificationBasisViewer extends Component {
             doShowStatementAtomJustifications={doShowBasisJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
+            showBasisUrls={showUrls}
           />
         )
       case JustificationBasisType.WRIT_QUOTE:
@@ -49,6 +51,7 @@ export default class JustificationBasisViewer extends Component {
             id={id}
             writQuote={basis.entity}
             doShowControls={doShowControls}
+            showUrls={showUrls}
           />
         )
       case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
@@ -62,6 +65,7 @@ export default class JustificationBasisViewer extends Component {
             showStatusText={showStatusText}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
+            showUrls={showUrls}
           />
         )
       default:

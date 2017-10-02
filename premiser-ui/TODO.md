@@ -1,8 +1,7 @@
 # Howdju UI TODO
 
-* MainSearchPage id marked as required
-* Am I missing URLs from SEP? (and created)
 * SEP viewer: use ... icon for "paraphrasing statement" and indent quote somewhat to indicate primacy 
+* Creating DC Code Writ Quote created a new one.
 
 * Potential big priorities
   * Push to prod: update DB/Aurora

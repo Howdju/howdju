@@ -16,6 +16,7 @@ export default class StatementCompoundViewer extends Component {
       doShowStatementAtomJustifications,
       isCondensed,
       isUnCondensed,
+      showBasisUrls,
       ...rest
     } = this.props
 
@@ -33,6 +34,7 @@ export default class StatementCompoundViewer extends Component {
           doShowJustifications={doShowStatementAtomJustifications}
           isCondensed={isCondensed}
           isUnCondensed={isUnCondensed}
+          showBasisUrls={showBasisUrls}
 
           doShowStatementAtomJustifications={doShowStatementAtomJustifications}
         />

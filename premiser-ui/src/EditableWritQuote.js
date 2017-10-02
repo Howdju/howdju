@@ -20,6 +20,7 @@ class EditableWritQuote extends Component {
       isFetching,
       isEditing,
       showStatusText,
+      showUrls,
       ...rest
     } = this.props
 
@@ -40,6 +41,7 @@ class EditableWritQuote extends Component {
         key={id}
         writQuote={writQuote}
         showStatusText={showStatusText}
+        showUrls={showUrls}
       />
     )
     const progress =

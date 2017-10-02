@@ -113,4 +113,5 @@ WritQuoteViewer.propTypes = {
 }
 WritQuoteViewer.defaultProps = {
   showStatusText: true,
+  showUrls: true,
 }

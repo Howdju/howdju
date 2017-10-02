@@ -16,6 +16,7 @@ export default class SourceExcerptViewer extends Component {
       suggestionsKey,
       doShowControls,
       showStatusText,
+      showUrls,
       ...rest
     } = this.props
 
@@ -30,6 +31,7 @@ export default class SourceExcerptViewer extends Component {
             suggestionsKey={suggestionsKey}
             doShowControls={doShowControls}
             showStatusText={showStatusText}
+            showUrls={showUrls}
           />
         )
       default:

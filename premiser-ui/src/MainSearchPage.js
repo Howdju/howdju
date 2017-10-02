@@ -28,12 +28,17 @@ class MainSearchPage extends Component {
     this.props.app.fetchMainSearchResults(searchText)
   }
 
-  toCard = (entity) => (
-    <StatementCard key={`statement-card-${entity.id}`}
-                   className="md-cell md-cell--12"
-                   statement={entity}
-    />
-  )
+  toCard = (entity) => {
+    const id = `statement-card-${entity.id}`
+    return (
+      <StatementCard
+        id={id}
+        key={id}
+        className="md-cell md-cell--12"
+        statement={entity}
+      />
+    )
+  }
 
   render () {
     const {

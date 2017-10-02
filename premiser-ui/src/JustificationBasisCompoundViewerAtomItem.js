@@ -115,6 +115,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
       isUnCondensed,
       component: Component,
       showStatusText,
+      showUrls,
     } = this.props
     const {
       isOver
@@ -160,6 +161,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
             doShowJustifications={doShowStatementAtomJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
+            showUrls={showUrls}
           />
           {doShowControls && menu}
         </div>
@@ -172,6 +174,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
             doShowJustifications={doShowStatementAtomJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
+            showBasisUrls={showUrls}
           />
         )}
       </Component>

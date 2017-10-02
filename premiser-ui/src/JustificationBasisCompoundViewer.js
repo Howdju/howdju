@@ -20,6 +20,7 @@ export default class JustificationBasisCompoundViewer extends Component {
       isCondensed,
       isUnCondensed,
       showStatusText,
+      showUrls,
     } = this.props
 
     const atoms = get(justificationBasisCompound, 'atoms', [])
@@ -42,6 +43,7 @@ export default class JustificationBasisCompoundViewer extends Component {
               isCondensed={isCondensed}
               isUnCondensed={isUnCondensed}
               showStatusText={showStatusText}
+              showUrls={showUrls}
             />
           )
         })}

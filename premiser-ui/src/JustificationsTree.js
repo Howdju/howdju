@@ -29,6 +29,7 @@ class JustificationsTree extends Component {
       doShowJustifications,
       isCondensed,
       isUnCondensed,
+      showBasisUrls,
     } = this.props
     const treeId = `${id}-justification-tree-${j.id}`
     return <JustificationBranch
@@ -38,6 +39,7 @@ class JustificationsTree extends Component {
       doShowBasisJustifications={doShowJustifications}
       isCondensed={isCondensed}
       isUnCondensed={isUnCondensed}
+      showBasisUrls={showBasisUrls}
     />
   }
 

@@ -9,7 +9,7 @@ import ChatBubble from './ChatBubble'
 
 import './JustificationChatBubble.scss'
 
-const JustificationChatBubble = props => {
+export default function JustificationChatBubble(props) {
   const {
     id,
     className,
@@ -19,6 +19,7 @@ const JustificationChatBubble = props => {
     showStatusText,
     isCondensed,
     isUnCondensed,
+    showBasisUrls,
     menu,
     actions,
     children,
@@ -46,6 +47,7 @@ const JustificationChatBubble = props => {
           isCondensed={isCondensed}
           isUnCondensed={isUnCondensed}
           showStatusText={showStatusText}
+          showUrls={showBasisUrls}
         />
         {doShowControls && menu}
       </div>
@@ -54,4 +56,3 @@ const JustificationChatBubble = props => {
     </ChatBubble>
   )
 }
-export default JustificationChatBubble
