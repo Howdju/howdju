@@ -3,17 +3,16 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const webpack = require('webpack')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
-
 const {
   utcTimestamp
 } = require('howdju-common')
 
 const {
   gitShortSha,
-  nodePackageVersion
+  nodePackageVersion,
 } = require("./util")
-
 const projectConfig = require('./project.config')
+const {sassLoaderConfig} = require('./sass-loader-config')
 
 
 module.exports.htmlWebpackPluginConfig = {
@@ -69,7 +68,7 @@ module.exports.webpackConfig = {
           use: [
             "css-loader?sourceMap",
             "resolve-url-loader",
-            "sass-loader?sourceMap",
+            sassLoaderConfig
           ],
           // use style-loader in development
           // fallback: "style-loader"

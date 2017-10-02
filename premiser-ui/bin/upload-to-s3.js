@@ -57,9 +57,32 @@ const upload = (filename) => {
   })
 }
 
+walkRelative(projectConfig.paths.dist(), upload)
 
-fs.readdir(projectConfig.paths.dist(), (err, files) => {
-  files.forEach(file => {
-    upload(file)
+function walk(dirPath, action) {
+  fs.readdir(dirPath, function(err, fileNames) {
+    if (err) return debug(err)
+
+    fileNames.forEach(function(fileName) {
+      if (fileName[0] === '.') {
+        return debug(`Skipping ${fileName}`)
+      }
+      const filePath = path.resolve(dirPath, fileName)
+      fs.stat(filePath, function(err, stat) {
+        if (stat && stat.isDirectory()) {
+          return walk(filePath, action)
+        }
+        return action(filePath)
+      })
+    })
   })
-})
+}
+
+function walkRelative(dirPath, action) {
+  const absPath = path.resolve(dirPath)
+  walk(dirPath, function truncatePath(filePath) {
+    // +1 to get the directory separator
+    const relativePath = filePath.substring(absPath.length + 1)
+    action(relativePath)
+  })
+}

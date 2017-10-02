@@ -1,22 +1,18 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
-const assign = require('lodash/assign')
 
 const {
   gitShortSha,
   nodePackageVersion,
-  hostAddress,
-  devWebServerPort,
 } = require('./util')
 const projectConfig = require('./project.config')
+const {sassLoaderConfig} = require('./sass-loader-config')
 
 const {
   htmlWebpackPluginConfig: envHtmlWebpackPluginConfig,
   definePluginConfig: envDefinePluginConfig,
   webpackConfig: envWebpackConfig,
-  sassLoaderData: envSassLoaderData,
-  sassLoaderFunctions: envSassLoaderFunctions,
 } = require(`./webpack.${process.env.NODE_ENV}.config.js`)
 
 const htmlWebpackPluginConfig = merge({
@@ -39,18 +35,6 @@ const htmlWebpackPluginConfig = merge({
 const definePluginConfig = merge({
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
 }, envDefinePluginConfig)
-
-const sassLoaderFunctions = assign({}, envSassLoaderFunctions)
-
-const fontServerAuthority = process.env.NODE_ENV === 'development' ?
-  `http://${hostAddress()}:${devWebServerPort()}` :
-  'https://cdn.howdju.com'
-const sassLoaderData =
-  `$font-url-bebas-neue-thin: url(${fontServerAuthority}/fonts/BebasNeue-Thin.otf);` +
-  `$font-url-bebas-neue-light: url(${fontServerAuthority}/fonts/BebasNeue-Light.otf);` +
-  `$font-url-bebas-neue-book: url(${fontServerAuthority}/fonts/BebasNeue-Book.otf);` +
-  `$font-url-bebas-neue-regular: url(${fontServerAuthority}/fonts/BebasNeue-Regular.otf);` +
-  `$font-url-bebas-neue-bold: url(${fontServerAuthority}/fonts/BebasNeue-Bold.otf);`
 
 const baseWebpackConfig = {
   output: {
@@ -84,16 +68,7 @@ const baseWebpackConfig = {
           "css-loader?sourceMap",
           "resolve-url-loader",
           // This causes error when deploying to production if it isn't like the first option
-          process.env.NODE_ENV !== 'development' ?
-            "sass-loader?sourceMap" :
-            {
-              loader: "sass-loader",
-              options: {
-                sourceMap: true,
-                data: sassLoaderData + envSassLoaderData,
-                functions: sassLoaderFunctions,
-              }
-            },
+          sassLoaderConfig
         ]
       },
       {

@@ -10,6 +10,7 @@
     "clean": "rm -rf dist",
     "lint:build": "eslint --config .eslintrc.build.js bin/ config/ server.js",
     "lint:app": "eslint --config .eslintrc.app.js src/ bookmarklet/",
+    "lint": "yarn run lint:app && yarn run lint:build",
     "build:local": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=development DEBUG=*,-babel webpack --config config/webpack.config.js",
     "build:pre-prod": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel API_ROOT=https://pre-prod-api.howdju.com/api/ webpack --config config/webpack.config.js",
     "build:prod": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel webpack --config config/webpack.config.js",

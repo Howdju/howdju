@@ -1,5 +1,8 @@
 # Howdju UI TODO
 
+* http://pre-prod-www.howdju.com/featured-perspectives
+  * statement isn't 100% width
+
 * When use writ quote / statement compound, make them source excerpt paraphrase
   * Using a statement atom from a justification basis compound results in an empty statement compound atom!
 * Can't edit writ quote justification
