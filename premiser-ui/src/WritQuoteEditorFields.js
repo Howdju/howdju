@@ -84,7 +84,6 @@ class WritQuoteEditorFields extends Component {
                    maxRows={4}
                    value={quoteText}
                    onChange={this.onChange}
-                   leftIcon={<FontIcon>format_quote</FontIcon>}
                    disabled={disabled || !has(writQuote, writQuoteTextName)}
                    onKeyDown={this.onTextInputKeyDown}
         />
@@ -98,7 +97,6 @@ class WritQuoteEditorFields extends Component {
                                     value={writTitle}
                                     required
                                     onPropertyChange={this.onPropertyChange}
-                                    leftIcon={<FontIcon>book</FontIcon>}
                                     disabled={disabled || !hasWritTitle}
                                     onKeyDown={this.onTextInputKeyDown}
           /> :
@@ -110,7 +108,6 @@ class WritQuoteEditorFields extends Component {
                      value={writTitle}
                      required
                      onChange={this.onChange}
-                     leftIcon={<FontIcon>book</FontIcon>}
                      disabled={disabled || !hasWritTitle}
                      onKeyDown={this.onTextInputKeyDown}
           />
@@ -125,7 +122,6 @@ class WritQuoteEditorFields extends Component {
                      label="URL"
                      value={get(writQuote, `urls[${index}].url`, '')}
                      onChange={this.onChange}
-                     leftIcon={<FontIcon>link</FontIcon>}
                      rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
                      disabled={!!url.id || disabled}
                      onKeyDown={this.onTextInputKeyDown}

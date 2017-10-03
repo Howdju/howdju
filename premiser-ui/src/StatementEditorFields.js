@@ -54,7 +54,6 @@ class StatementEditorFields extends Component {
       label: textLabel,
       value: text,
       required: true,
-      leftIcon: <FontIcon>short_text</FontIcon>,
       onKeyDown: this.onTextInputKeyDown,
     }
     const input = (suggestionsKey && !disabled) ?

@@ -8,7 +8,7 @@ import {
 
 import EntityViewer from './EntityViewer'
 import SourceExcerptEntityViewer from './SourceExcerptEntityViewer'
-import StatementEntityViewer from './StatementEntityViewer'
+import EditableStatement from './EditableStatement'
 
 import './SourceExcerptParaphraseEntityViewer.scss'
 
@@ -37,7 +37,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
         iconTitle={`Paraphrase (${sourceExcerptDescription(sourceExcerpt)})`}
         entity={
           <div>
-            <StatementEntityViewer
+            <EditableStatement
               id={`${id}-statement`}
               statement={paraphrasingStatement}
               editorId={paraphrasingStatementEditorId}
