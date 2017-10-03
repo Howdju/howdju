@@ -86,14 +86,6 @@ Cat meeting design notes:
     * Stackoverflow approach: no opinions
       * But the multiple stackexchange concept has broadened the vision
     * Reddit approach: subreddits
-  
-* Data science:
-  * Clustering users
-  * Recognizing statements phrased as questions
-  * Rewriting statements phrased as questions as statements 
-  * Identifying semantically equivalent statements
-  * Identifying negations of statements (semantically opposite statements)
-  * fact-checking pages
 
 * App cold load can be >10s
 

@@ -31,6 +31,24 @@
 * Short IDs
 * [Build using Vagrant?](https://stackoverflow.com/a/30440198/39396)
 
+* Data science tasks:
+  * Clustering users
+  * Recognizing statements phrased as questions
+  * Rewriting statements phrased as questions as statements 
+  * Identifying semantically equivalent statements
+  * Identifying negations of statements (semantically opposite statements)
+  * fact-checking pages
+
+## Datasets
+ * https://github.com/BuzzFeedNews/2016-10-facebook-fact-check
+ * https://www.kaggle.com/mrisdal/fake-news
+ * https://github.com/FakeNewsChallenge/fnc-1
+   * https://github.com/FakeNewsChallenge/fnc-1-baseline
+ * https://arxiv.org/pdf/1705.00648.pdf
+ * https://github.com/JasonKessler/fakeout
+ * https://github.com/BuzzFeedNews/everything
+ * https://github.com/genyunus/Detecting_Fake_News
+ 
 * Update prod DB, update queries to handle deleted, add action logging
 ##
 * Logging: https://www.reddit.com/r/node/comments/26mf7e/winston_logging_replacementalternative/
