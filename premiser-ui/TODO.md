@@ -6,6 +6,7 @@
 
 * Potential big priorities
   * Use bookmarklet; test prod
+    * Translate to Paraphrases
   * version API
   * Additional excerpt fields
   * Addition excerpt types
