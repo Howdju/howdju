@@ -11,12 +11,17 @@ const {AppProvider} = require('../src/init')
 const appProvider = new AppProvider()
 const {database, pool} = appProvider
 
-Promise.all([
-  updateNormalText('select * from statements', updateStatementRowNormalText, 'statements'),
-  updateNormalText('select * from writs', updateWritRowNormalTitle, 'writs'),
-  updateNormalText('select * from writ_quotes', updateWritQuoteRowNormalQuoteText, 'writ quotes'),
-])
-  .finally(() => pool.end())
+run()
+
+function run() {
+  return Promise.all([
+    updateNormalText('select * from statements', updateStatementRowNormalText, 'statements'),
+    updateNormalText('select * from writs', updateWritRowNormalTitle, 'writs'),
+    updateNormalText('select * from writ_quotes', updateWritQuoteRowNormalQuoteText, 'writ quotes'),
+  ])
+    .catch( (error) => logger.error(error))
+    .finally(() => pool.end())
+}
 
 function updateNormalText(rowsQuery, updateRowFn, rowDescription) {
   return database.query(rowsQuery)
@@ -26,7 +31,6 @@ function updateNormalText(rowsQuery, updateRowFn, rowDescription) {
       logger.info(`Updated ${count} ${rowDescription}`)
       return count
     })
-    .catch( (error) => logger.error(error))
 }
 
 function updateStatementRowNormalText (row) {
