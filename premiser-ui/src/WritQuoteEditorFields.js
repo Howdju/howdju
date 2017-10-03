@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import TextField from 'react-md/lib/TextFields/TextField'
-import FontIcon from 'react-md/lib/FontIcons'
 import Button from 'react-md/lib/Buttons/Button'
 import cn from 'classnames'
 import map from 'lodash/map'

@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import FontIcon from 'react-md/lib/FontIcons'
 import TextField from "react-md/lib/TextFields"
 import get from 'lodash/get'
 import has from 'lodash/has'

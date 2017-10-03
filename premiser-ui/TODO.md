@@ -2,6 +2,10 @@
  
 * Fix writ/writQuote/statement duplication
 
+* When use writ quote / statement compound, make them source excerpt paraphrase
+  * Using a statement atom from a justification basis compound results in an empty statement compound atom!
+* Can't edit writ quote justification
+
 * Potential big priorities
   * tagging
   * Use bookmarklet; test prod
@@ -10,19 +14,22 @@
   * Additional excerpt fields
   * Addition excerpt types
     * URL (pic/vid) voting to help deal with alternative versions of media?
-  * User signup
-    * Social login
-  * Business model: private content
-    * Anonymous posting
   * Show creator
     * Show justifications for statement
+  * User signup
+    * Social login
+    * Terms, privacy, contact form
+  * Business model: private content
+    * Anonymous posting
+    * Creation/deletion as existence of a creation action vs. row in table
+  * semantically equivalent statements (voting, display, automatic detection)
+    * Negations (voting, display, automatic detection)
   
-* When use writ quote / statement compound, make them source excerpt paraphrase
-  * Using a statement atom from a justification basis compound results in an empty statement compound atom!
-* Can't edit writ quote justification
 * Command-clicking on tab navigates in current tab
     
 * writ-quote-based justifications missing created
+
+* when scroll area is smaller than header smllchat doesnt reappear
   
 * Update bookmarklet to use paraphrase
 * When updating lambda alias, return previous version
