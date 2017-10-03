@@ -881,7 +881,7 @@ function makeSourceExcerptParaphraseJustificationClause(sourceExcerptParaphraseI
         and sep.source_excerpt_paraphrase_id = $3 
   `
   const args = [
-    JustificationBasisType.STATEMENT_COMPOUND,
+    JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
     sourceExcerptParaphraseId,
   ]
