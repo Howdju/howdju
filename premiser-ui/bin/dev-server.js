@@ -8,4 +8,5 @@ const projectConfig = require('../config/project.config')
 
 const port = devWebServerPort()
 server.listen(port)
+debug(`NODE_ENV=${process.env.NODE_ENV}`)
 debug(`Server is now running at http://${projectConfig.hostAddress}:${port}.`)

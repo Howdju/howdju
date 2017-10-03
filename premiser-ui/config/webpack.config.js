@@ -1,3 +1,4 @@
+const debug = require('debug')('howdju-ui:webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
@@ -9,11 +10,13 @@ const {
 const projectConfig = require('./project.config')
 const {sassLoaderConfig} = require('./sass-loader-config')
 
+const envWebpackPath = `./webpack.${process.env.NODE_ENV}.config.js`
+debug(`Loading env webpack from ${envWebpackPath}`)
 const {
   htmlWebpackPluginConfig: envHtmlWebpackPluginConfig,
   definePluginConfig: envDefinePluginConfig,
   webpackConfig: envWebpackConfig,
-} = require(`./webpack.${process.env.NODE_ENV}.config.js`)
+} = require(envWebpackPath)
 
 const htmlWebpackPluginConfig = merge({
   appMountId: 'root',

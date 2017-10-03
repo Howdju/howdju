@@ -1,12 +1,14 @@
 # Howdju UI TODO
  
 * Fix writ/writQuote/statement duplication
-
-* When use writ quote / statement compound, make them source excerpt paraphrase
-  * Using a statement atom from a justification basis compound results in an empty statement compound atom!
-* Can't edit writ quote justification
+* Requesting statement justifications requires auth?
+* after submitting main search, cancel autocomplete
+* navigating UI to deleted statement does not redirect with toast
+* Should be able to type <enter> in quote text
+* local env has production sentry env?
 
 * Potential big priorities
+  * Can use bookmarklet
   * tagging
   * Use bookmarklet; test prod
     * Translate to Paraphrases
@@ -33,7 +35,6 @@
 
 * when scroll area is smaller than header smllchat doesnt reappear
   
-* Update bookmarklet to use paraphrase
 * When updating lambda alias, return previous version
   * Configure S3 versions for UI?
 * Don't use prod values as fall-backs in lambda env. vars.  Throw an error if a fall-back is missing.

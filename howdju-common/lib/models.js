@@ -1,5 +1,6 @@
 const assign = require('lodash/assign')
 const forEach = require('lodash/forEach')
+const map = require('lodash/map')
 const merge = require('lodash/merge')
 const toString = require('lodash/toString')
 
@@ -119,13 +120,13 @@ function translateNewJustificationBasisCompoundAtomEntities(atoms) {
 function translateNewSourceExcerptEntity(sourceExcerpt) {
   switch (sourceExcerpt.type) {
     case SourceExcerptType.WRIT_QUOTE:
-      sourceExcerpt.writQuote = sourceExcerpt.entity
+      sourceExcerpt.writQuote = sourceExcerpt.writQuote || sourceExcerpt.entity
       break
     case SourceExcerptType.PIC_REGION:
-      sourceExcerpt.picRegion = sourceExcerpt.entity
+      sourceExcerpt.picRegion = sourceExcerpt.picRegion || sourceExcerpt.entity
       break
     case SourceExcerptType.VID_SEGMENT:
-      sourceExcerpt.vidSegment = sourceExcerpt.entity
+      sourceExcerpt.vidSegment = sourceExcerpt.vidSegment || sourceExcerpt.entity
       break
     default:
       throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
@@ -189,8 +190,42 @@ _e.makeNewStatementAtom = (props) => assign(
 _e.makeNewJustificationBasisCompoundFromSourceExcerptParaphrase = (sourceExcerptParaphrase) =>
   _e.makeNewJustificationBasisCompound({
     atoms: [
-      _e.makeNewJustificationBasisCompoundAtom({sourceExcerptParaphrase})
+      _e.makeNewJustificationBasisCompoundAtom({
+        type: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+        sourceExcerptParaphrase
+      })
     ]
+  })
+
+_e.makeNewJustificationBasisCompoundFromStatement = (statement) =>
+  _e.makeNewJustificationBasisCompound({
+    atoms: [
+      _e.makeNewJustificationBasisCompoundAtom({
+        type: JustificationBasisCompoundAtomType.STATEMENT,
+        statement
+      })
+    ]
+  })
+
+_e.makeNewJustificationBasisCompoundFromWritQuote = (writQuote) =>
+  _e.makeNewJustificationBasisCompound({
+    atoms: [
+      _e.makeNewJustificationBasisCompoundAtom({
+        sourceExcerptParaphrase: _e.makeNewSourceExcerptParaphrase({
+          sourceExcerpt: {writQuote}
+        })
+      })
+    ]
+  })
+
+_e.makeNewJustificationBasisCompoundFromStatementCompound = (statementCompound) =>
+  _e.makeNewJustificationBasisCompound({
+    atoms: map(statementCompound.atoms, statementAtom =>
+      _e.makeNewJustificationBasisCompoundAtom({
+        type: JustificationBasisCompoundAtomType.STATEMENT,
+        statement: statementAtom.entity
+      })
+    )
   })
 
 _e.makeNewStatementCompoundFromStatement = (statement) =>
