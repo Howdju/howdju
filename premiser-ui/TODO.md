@@ -1,18 +1,21 @@
 # Howdju UI TODO
-
-* SEP viewer: use ... icon for "paraphrasing statement" and indent quote somewhat to indicate primacy 
-* Creating DC Code Writ Quote created a new one.
-* Fix writ duplication
+ 
+* Fix writ/writQuote/statement duplication
 
 * Potential big priorities
+  * tagging
   * Use bookmarklet; test prod
     * Translate to Paraphrases
   * version API
   * Additional excerpt fields
   * Addition excerpt types
+    * URL (pic/vid) voting to help deal with alternative versions of media?
   * User signup
+    * Social login
   * Business model: private content
+    * Anonymous posting
   * Show creator
+    * Show justifications for statement
   
 * When use writ quote / statement compound, make them source excerpt paraphrase
   * Using a statement atom from a justification basis compound results in an empty statement compound atom!

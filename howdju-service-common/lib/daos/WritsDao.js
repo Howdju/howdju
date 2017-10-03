@@ -128,6 +128,14 @@ exports.WritsDao = class WritsDao {
       .then( ({rows}) => map(rows, toWrit) )
   }
 
+  update(writ) {
+    return this.database.query(
+      'update writs set title = $1, normal_title = $2 where writ_id = $3 returning *',
+      [cleanWhitespace(writ.title), normalizeText(writ.title), writ.id]
+    )
+      .then( ({rows: [writRow]}) => toWrit(writRow) )
+  }
+
   hasEquivalentWrits(writ) {
     const sql = `
       select count(*) > 0 as has_conflict
@@ -227,13 +235,5 @@ exports.WritsDao = class WritsDao {
       userId,
       JustificationTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_other_user_counters: isBasisToJustificationsHavingOtherUsersCounters}]}) => isBasisToJustificationsHavingOtherUsersCounters)
-  }
-
-  update(writ) {
-    return this.database.query(
-      'update writs set title = $1, normal_title = $2 where writ_id = $3 returning *',
-      [cleanWhitespace(writ.title), normalizeText(writ.title), writ.id]
-    )
-      .then( ({rows: [writRow]}) => toWrit(writRow) )
   }
 }

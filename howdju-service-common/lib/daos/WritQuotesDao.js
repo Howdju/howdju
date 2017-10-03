@@ -256,13 +256,13 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   createWritQuote(writQuote, userId, now) {
     const sql = `
-      insert into writ_quotes (quote_text, writ_id, creator_user_id, created) 
-      values ($1, $2, $3, $4) 
+      insert into writ_quotes (quote_text, normal_quote_text, writ_id, creator_user_id, created) 
+      values ($1, $2, $3, $4, $5) 
       returning *
     `
     // Don't insert an empty quote
     const quoteText = writQuote.quoteText || null
-    return this.database.query(sql, [quoteText, writQuote.writ.id, userId, now])
+    return this.database.query(sql, [quoteText, normalizeText(quoteText), writQuote.writ.id, userId, now])
       .then( ({rows: [row]}) => toWritQuote(row))
   }
 
@@ -373,8 +373,8 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   updateWritQuote(writQuote) {
     return this.database.query(
-      'update writ_quotes set quote_text = $1 where writ_quote_id = $2 and deleted is null returning *',
-      [writQuote.quoteText, writQuote.id]
+      'update writ_quotes set quote_text = $1, normal_quote_text = $2 where writ_quote_id = $3 and deleted is null returning *',
+      [writQuote.quoteText, normalizeText(writQuote.quoteText), writQuote.id]
     )
       .then( ({rows: [writQuoteRow]}) => {
         const updatedWritQuote = toWritQuote(writQuoteRow)
