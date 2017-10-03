@@ -19,6 +19,7 @@ export default class JustificationBasisViewer extends Component {
     const {
       id,
       justification,
+      writQuoteEditorId,
       doShowControls,
       doShowBasisJustifications,
       showStatusText,
@@ -50,6 +51,7 @@ export default class JustificationBasisViewer extends Component {
             component={Paper}
             id={id}
             writQuote={basis.entity}
+            editorId={writQuoteEditorId}
             doShowControls={doShowControls}
             showUrls={showUrls}
           />

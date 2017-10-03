@@ -67,6 +67,10 @@ class WritQuoteEditorFields extends Component {
       ) :
       map(urls, () => null)
 
+    const quoteText = get(writQuote, writQuoteTextName) || ''
+    const writTitle = get(writQuote, writTitleName) || ''
+    const hasWritTitle = has(writQuote, writTitleName)
+
     const writTitleInputProps = {
       id: idPrefix + writTitleName,
       name: namePrefix + writTitleName,
@@ -76,10 +80,6 @@ class WritQuoteEditorFields extends Component {
       disabled: disabled || !hasWritTitle,
       onKeyDown: this.onTextInputKeyDown,
     }
-
-    const quoteText = get(writQuote, writQuoteTextName) || ''
-    const writTitle = get(writQuote, writTitleName) || ''
-    const hasWritTitle = has(writQuote, writTitleName)
 
     return (
       <div className="writ-quote-editor-fields">

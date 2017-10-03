@@ -26,6 +26,8 @@
     * Negations (voting, display, automatic detection)
   
 * Command-clicking on tab navigates in current tab
+
+* Build UI into subfolder to prevent collisions while running locally and building for prod? 
     
 * writ-quote-based justifications missing created
 

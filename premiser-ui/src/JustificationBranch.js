@@ -324,6 +324,7 @@ class JustificationBranch extends Component {
           id={`justification-${justification.id}-chat-bubble`}
           className="md-grid"
           justification={justification}
+          writQuoteEditorId={justificationBasisEditorId(justification.basis)}
           doShowBasisJustifications={doShowBasisJustifications}
           doShowControls={doShowControls}
           showBasisUrls={showBasisUrls}

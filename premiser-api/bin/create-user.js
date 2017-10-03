@@ -2,11 +2,7 @@ const {ArgumentParser} = require('argparse')
 const read = require('read')
 const Promise = require('bluebird')
 
-const {
-  loadEnvironmentEnvVars,
-  logger,
-} = require('howdju-ops')
-loadEnvironmentEnvVars('../../config/local-prod.env')
+const {logger} = require('howdju-ops')
 
 const {AppProvider} = require('../src/init')
 

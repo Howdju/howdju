@@ -1,0 +1,6 @@
+.justification-basis-viewer-row {
+  .entity-viewer {
+    // I think as the only entity that can (temporarily) be the immediate child of a basis viewer, it needs this 100% width (otherwise it was all scrunched)
+    width: 100%;
+  }
+}

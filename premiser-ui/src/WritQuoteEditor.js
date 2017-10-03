@@ -18,6 +18,9 @@ import {
 import t from './texts'
 import WritQuoteEditorFields from "./WritQuoteEditorFields"
 
+import './WritQuoteEditor.scss'
+
+
 class WritQuoteEditor extends Component {
 
   onPropertyChange = (properties) => {

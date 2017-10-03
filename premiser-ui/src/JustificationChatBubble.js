@@ -14,6 +14,7 @@ export default function JustificationChatBubble(props) {
     id,
     className,
     justification,
+    writQuoteEditorId,
     doShowControls,
     doShowBasisJustifications,
     showStatusText,
@@ -42,6 +43,7 @@ export default function JustificationChatBubble(props) {
         <JustificationBasisViewer
           id={basisViewerId}
           justification={justification}
+          writQuoteEditorId={writQuoteEditorId}
           doShowControls={doShowControls}
           doShowBasisJustifications={doShowBasisJustifications}
           isCondensed={isCondensed}
