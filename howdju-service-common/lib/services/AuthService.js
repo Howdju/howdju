@@ -37,8 +37,12 @@ exports.AuthService = class AuthService {
     this.usersDao = usersDao
   }
 
+  readOptionalUserIdForAuthToken(authToken) {
+    return this.authDao.getUserIdForAuthToken(authToken)
+  }
+
   readUserIdForAuthToken(authToken) {
-    return this.authDao.getUserIdForAuthToken(authToken).then(userId => {
+    return this.readOptionalUserIdForAuthToken(authToken).then(userId => {
       if (!userId) {
         throw new AuthenticationError()
       }

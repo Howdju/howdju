@@ -19,7 +19,7 @@ exports.StatementJustificationsService = class StatementJustificationsService {
   }
 
   readStatementJustifications(statementId, authToken) {
-    return this.authService.readUserIdForAuthToken(authToken)
+    return this.authService.readOptionalUserIdForAuthToken(authToken)
       .then( (userId) => Promise.all([
         this.statementsDao.readStatementForId(statementId),
         this.justificationsDao.readJustificationsWithBasesAndVotesByRootStatementId(statementId, {userId}),
