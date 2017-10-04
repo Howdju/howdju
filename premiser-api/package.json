@@ -10,10 +10,11 @@
     "db:local:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
     "db:local:shell": "psql premiser",
     "db:local": "yarn run db:local:start && yarn run db:local:shell",
-    "db:prod:tunnel": "ssh -N -L 5433:premiser.cc4gfeuy5z8h.us-east-1.rds.amazonaws.com:5432 bastion.howdju.com",
-    "db:prod:tunnel:shell": "psql -h 127.0.0.1 -p 5433 -d premiser -U premiser_rds",
-    "db:pre-prod:tunnel:shell": "psql -h 127.0.0.1 -p 5433 -d howdju_pre_prod -U premiser_rds",
-    "db:prod": "coproc yarn run db:prod:tunnel && yarn run db:prod:tunnel:shell && coproc :",
+    "db:tunnel": "ssh -N -L 5433:premiser.cc4gfeuy5z8h.us-east-1.rds.amazonaws.com:5432 bastion.howdju.com",
+    "db:tunnel:shell:prod": "psql -h 127.0.0.1 -p 5433 -d premiser -U premiser_rds",
+    "db:tunnel:shell:pre-prod": "psql -h 127.0.0.1 -p 5433 -d howdju_pre_prod -U premiser_rds",
+    "db:prod": "bin/db-tunnel.sh prod",
+    "db:pre-prod": "bin/db-tunnel.sh pre-prod",
     "create-user:prod": "source ../config/prod-local-tunnel.env && node bin/create-user.js",
     "create-user:local": "source ../config/local.env && node bin/create-user.js",
     "lint": "eslint bin lib src gulpfile.js server.js",
@@ -34,7 +35,8 @@
     "test-inspect": "yarn run test:debug &; node-inspector",
     "change-password:local": "source ../config/local.env && node bin/change-user-password.js",
     "change-password:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/change-user-password.js",
-    "change-password:prod": "source ../config/prod-local-tunnel.env && node bin/change-user-password.js"
+    "change-password:prod": "source ../config/prod-local-tunnel.env && node bin/change-user-password.js",
+    "dedupe-writs:prod": "source ../config/prod-local-tunnel.env && node bin/dedupe-writs.js"
   },
   "devDependencies": {
     "argparse": "https://github.com/nodeca/argparse.git",

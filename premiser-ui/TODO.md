@@ -1,17 +1,28 @@
 # Howdju UI TODO
  
-* Fix writ/writQuote/statement duplication
-* Requesting statement justifications requires auth?
 * after submitting main search, cancel autocomplete
-* navigating UI to deleted statement does not redirect with toast
 * Should be able to type <enter> in quote text
+* Escape in new justification dialog is awful when I hit it accidentally and lose my form data
+* suggestions key is shared between paraphrased statements when creating a new justification
+* writ-quote-based justifications missing created
+
+* The "Use" in a justification basis compound having a single atom is duplicative of the "Use" for that atom.
+* Redirecting from deleted statement fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
+  * https://stackoverflow.com/a/39507279/39396
+
 * local env has production sentry env?
+
+* While researching these old statements, it's really annoying not to be able to know where the citations are hidden.
+  * A tree view showing the primary sources in relation to the overall would be great.
 
 * Potential big priorities
   * Can use bookmarklet
-  * tagging
   * Use bookmarklet; test prod
     * Translate to Paraphrases
+  * Add indices (root statement ID, joins)
+  * Discovery
+    * main search includes writs and quotes
+    * tagging
   * version API
   * Additional excerpt fields
   * Addition excerpt types
@@ -19,6 +30,7 @@
   * Show creator
     * Show justifications for statement
   * User signup
+    * Share auth between tabs
     * Social login
     * Terms, privacy, contact form
   * Business model: private content
@@ -30,18 +42,12 @@
 * Command-clicking on tab navigates in current tab
 
 * Build UI into subfolder to prevent collisions while running locally and building for prod? 
-    
-* writ-quote-based justifications missing created
 
 * when scroll area is smaller than header smllchat doesnt reappear
   
 * When updating lambda alias, return previous version
   * Configure S3 versions for UI?
 * Don't use prod values as fall-backs in lambda env. vars.  Throw an error if a fall-back is missing.
-
-
-* The migration didn't migrate citations properly; we have many with identical text
-  * Also one of these is blank text.
   
 * Is a Paraphrased citation equal to a citation-based justification?
   * Automatically create citation-based justification?
@@ -67,13 +73,13 @@
    createStatementPageJustification.basis.justificationBasisCompound.atoms[1].entity.newJustification.basis.justificationBasisCompound.atoms[1].entity
 
 * Refactors
-  * rename create to getOrCreate
+  * rename create to readOrCreate
   * replace impossible error with exhausted enum error
   * Review use of onTextInputKeyDown (if the purpose is to catch enter/escape, why limit it to text fields?)
 
 * Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
   and leave it in-memory
-  * RESPECT DO NOT TRACK
+  * Do not track: don't use analytics.  Don't even load libraries.
   
 * Setup cdn.howdju.com DNS/Cloudflare
   
