@@ -71,14 +71,19 @@ export function* goTo() {
   })
 
   yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
-    const mainSearchPath = paths.mainSearch(action.payload.mainSearchText)
+    const {
+      mainSearchText
+    } = action.payload
+
+    const mainSearchPath = paths.mainSearch(mainSearchText)
     const routerLocation = yield select(selectRouterLocation)
     const routerMainSearchText = mainSearcher.mainSearchText(routerLocation)
     const urlSearchText = paths.mainSearch(routerMainSearchText)
     if (urlSearchText !== mainSearchPath) {
       yield put(push(mainSearchPath))
     }
-    yield put(api.fetchStatementsSearch(action.payload.mainSearchText))
+
+    yield put(api.fetchStatementsSearch(mainSearchText))
   })
 
   yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {

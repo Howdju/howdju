@@ -38,10 +38,12 @@ class Header extends Component {
   onMainSearch = (event) => {
     event.preventDefault()
     this.setState({isAutocompleteForcedClosed: true})
+    this.props.api.cancelMainSearchSuggestions(mainSearchSuggestionsKey)
     this.props.goto.mainSearch(this.props.mainSearchText)
   }
 
   onMainSearchAutocomplete = (statement) => {
+    this.props.api.cancelMainSearchSuggestions(mainSearchSuggestionsKey)
     this.props.goto.statement(statement)
   }
 

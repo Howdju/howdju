@@ -102,7 +102,7 @@ export default class LandingPage extends Component {
               doShowBasisJustifications={false}
               doShowControls={false}
               showStatusText={false}
-              showUrls={false}
+              showBasisUrls={false}
             />
           </div>
         </div>
@@ -123,7 +123,7 @@ export default class LandingPage extends Component {
               doShowBasisJustifications={false}
               doShowControls={false}
               showStatusText={false}
-              showUrls={false}
+              showBasisUrls={false}
             />
           </div>
         </div>
@@ -145,14 +145,14 @@ export default class LandingPage extends Component {
               doShowBasisJustifications={false}
               doShowControls={false}
               showStatusText={false}
-              showUrls={false}
+              showBasisUrls={false}
             />
             <JustificationChatBubble
               justification={counterJustification}
               doShowBasisJustifications={false}
               doShowControls={false}
               showStatusText={false}
-              showUrls={false}
+              showBasisUrls={false}
             />
           </div>
         </div>

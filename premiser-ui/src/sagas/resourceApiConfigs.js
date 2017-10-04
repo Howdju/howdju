@@ -23,7 +23,9 @@ import {
   perspectivesSchema,
   writsSchema,
   justificationsSchema,
-  writQuotesSchema, justificationBasisCompoundSchema, sourceExcerptParaphraseSchema,
+  writQuotesSchema,
+  justificationBasisCompoundSchema,
+  sourceExcerptParaphraseSchema,
 } from '../schemas'
 
 

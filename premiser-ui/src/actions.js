@@ -111,6 +111,7 @@ export const api = {
   createStatement: apiActionCreator('CREATE_STATEMENT', (statement) => ({statement})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', (statement) => ({statement}), (s, nonce) => ({nonce})),
   deleteStatement: apiActionCreator('DELETE_STATEMENT', (statement) => ({statement})),
+
   fetchStatementTextSuggestions: apiActionCreator('FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({
     statementText,
     suggestionsKey,
@@ -119,6 +120,7 @@ export const api = {
     cancelTarget: str(api.fetchStatementTextSuggestions),
     suggestionsKey,
   })),
+
   fetchWritTitleSuggestions: apiActionCreator('FETCH_WRIT_TITLE_SUGGESTIONS', (writTitle, suggestionsKey) => ({
     writTitle,
     suggestionsKey,
@@ -127,11 +129,20 @@ export const api = {
     cancelTarget: str(api.fetchWritTitleSuggestions),
     suggestionsKey,
   })),
+
+  fetchMainSearchSuggestions: apiActionCreator('FETCH_MAIN_SEARCH_SUGGESTIONS', (searchText, suggestionsKey) => ({
+    searchText,
+    suggestionsKey
+  })),
+  cancelMainSearchSuggestions: apiActionCreator('CANCEL_MAIN_SEARCH_SUGGESTIONS', (suggestionsKey) => ({
+    cancelTarget: str(api.fetchMainSearchSuggestions),
+    suggestionsKey,
+  })),
+
   createJustification: apiActionCreator('CREATE_JUSTIFICATION', (justification) => ({justification: decircularizeJustification(justification)})),
   updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', (justification) => ({justification})),
   fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', (searchText) => ({searchText})),
-  fetchMainSearchSuggestions: apiActionCreator('FETCH_MAIN_SEARCH_SUGGESTIONS', (searchText, suggestionsKey) => ({searchText, suggestionsKey})),
 }
 export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator) => {
   result[actionCreator] = actionCreator

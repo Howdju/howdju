@@ -1,6 +1,5 @@
 # Howdju UI TODO
  
-* after submitting main search, cancel autocomplete
 * Should be able to type <enter> in quote text
 * Escape in new justification dialog is awful when I hit it accidentally and lose my form data
 * suggestions key is shared between paraphrased statements when creating a new justification

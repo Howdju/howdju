@@ -80,16 +80,19 @@ export function* cancelResourceApiCalls() {
     [
       str(api.cancelStatementTextSuggestions),
       str(api.cancelWritTitleSuggestions),
+      str(api.cancelMainSearchSuggestions),
     ],
     function* cancelCallApiForResourceWorker(action) {
       const {
         cancelTarget,
       } = action.payload
+
       let resourceApiConfig = resourceApiConfigs[cancelTarget]
       if (isFunction(resourceApiConfig)) {
         resourceApiConfig = resourceApiConfig(action.payload)
       }
       const {cancelKey} = resourceApiConfig
+
       if (cancelKey) {
         const prevTask = cancelableResourceCallTasks[cancelKey]
         if (prevTask) {
