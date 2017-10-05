@@ -1,17 +1,17 @@
 # Howdju UI TODO
 
-* When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see
-  the paraphrased citations here...
-* suggestions key is shared between paraphrased statements when creating a new justification
 * writ-quote-based justifications missing created
 
 * Potential big priorities
   * Can use bookmarklet
   * Use bookmarklet; test prod
     * Translate to Paraphrases
+      * When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see
+        the paraphrased citations here...
   * Add indices (root statement ID, joins)
   * Discovery
     * main search includes writs and quotes
+      * Elastic search?
     * tagging
   * version API
   * Additional excerpt fields
@@ -69,9 +69,6 @@
 
 * randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
 
-* Review usage of id/idPrefix/baseId in the new UI stuff
-  * A suggestions key: 
-   createStatementPageJustification.basis.justificationBasisCompound.atoms[1].entity.newJustification.basis.justificationBasisCompound.atoms[1].entity
 
 * Refactors
   * rename create to readOrCreate

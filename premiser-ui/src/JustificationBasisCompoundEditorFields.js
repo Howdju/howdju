@@ -7,9 +7,15 @@ import get from 'lodash/get'
 import map from 'lodash/map'
 
 import ErrorMessages from './ErrorMessages'
+import JustificationBasisCompoundAtomEditorFields from "./JustificationBasisCompoundAtomEditorFields"
+import {
+  combineSuggestionsKeys,
+  combineNames,
+  combineIds,
+} from './viewModels'
 
 import './WritQuoteEditorFields.scss'
-import JustificationBasisCompoundAtomEditorFields from "./JustificationBasisCompoundAtomEditorFields"
+
 
 const atomsName = 'atoms'
 
@@ -37,16 +43,18 @@ export default class JustificationBasisCompoundEditorFields extends Component {
     const hasErrors = errors && errors.hasErrors
     const atomItemsErrors = get(errors, 'fieldErrors.atoms.itemErrors')
     const atomsEditorFields = map(atoms, (atom, index) => {
+      const atomName = `atoms[${index}]`
+      const atomFieldsId = combineIds(id, atomName)
+      const atomFieldsName = combineNames(name, atomName)
+      const atomFieldsSuggestionsKey = combineSuggestionsKeys(suggestionsKey, atomName)
       const atomItemErrors = get(atomItemsErrors, index)
-      const atomId = id + `.atoms[${index}]`
-      const atomName = name + `.atoms[${index}]`
       return (
         <JustificationBasisCompoundAtomEditorFields
           atom={atom}
-          id={atomId}
-          key={atomId}
-          name={atomName}
-          suggestionsKey={suggestionsKey}
+          id={atomFieldsId}
+          key={atomFieldsId}
+          name={atomFieldsName}
+          suggestionsKey={atomFieldsSuggestionsKey}
           errors={atomItemErrors}
           onAddJustificationBasisCompoundAtom={e => onAddJustificationBasisCompoundAtom(index)}
           onRemoveJustificationBasisCompoundAtom={e => onRemoveJustificationBasisCompoundAtom(atom, index)}

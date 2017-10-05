@@ -12,8 +12,14 @@ import {
 
 import SourceExcerptParaphraseEditorFields from './SourceExcerptParaphraseEditorFields'
 import StatementEditorFields from "./StatementEditorFields"
+import {
+  combineSuggestionsKeys,
+  combineNames,
+  combineIds,
+} from './viewModels'
 
 import './JustificationBasisCompoundAtomEditorFields.scss'
+
 
 export default class JustificationBasisCompoundAtomEditorFields extends Component {
 
@@ -65,8 +71,10 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
     let entityControls
     switch (atom.type) {
       case JustificationBasisCompoundAtomType.STATEMENT: {
-        const entityEditorFieldsId = id + '-statement'
-        const entityEditorFieldsName = name + '.statement'
+        const entityName = 'statement'
+        const entityEditorFieldsId = combineIds(id, entityName)
+        const entityEditorFieldsName = combineNames(name, entityName)
+        const entitySuggestionsKey = combineSuggestionsKeys(suggestionsKey, entityName)
         const entity = atom.statement
         const entityEditorFieldsErrors = get(errors, 'fieldErrors.statement')
         entityControls = (
@@ -75,7 +83,7 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
             name={entityEditorFieldsName}
             statement={entity}
             disabled={disabled}
-            suggestionsKey={suggestionsKey}
+            suggestionsKey={entitySuggestionsKey}
             onPropertyChange={onPropertyChange}
             onKeyDown={onKeyDown}
             onSubmit={onSubmit}
@@ -85,8 +93,10 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
         break
       }
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
-        const entityEditorFieldsId = id + '-source-excerpt-paraphrase'
-        const entityEditorFieldsName = name + '.sourceExcerptParaphrase'
+        const entityName = 'sourceExcerptParaphrase'
+        const entityEditorFieldsId = combineIds(id, entityName)
+        const entityEditorFieldsName = combineNames(name, entityName)
+        const entitySuggestionsKey = combineSuggestionsKeys(suggestionsKey, entityName)
         const entity = atom.sourceExcerptParaphrase
         const entityEditorFieldsErrors = get(errors, 'fieldErrors.sourceExcerptParaphrase')
         entityControls = (
@@ -95,7 +105,7 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
             name={entityEditorFieldsName}
             sourceExcerptParaphrase={entity}
             disabled={disabled}
-            suggestionsKey={suggestionsKey}
+            suggestionsKey={entitySuggestionsKey}
             onPropertyChange={onPropertyChange}
             onKeyDown={onKeyDown}
             onSubmit={onSubmit}

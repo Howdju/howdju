@@ -50,7 +50,7 @@ import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
 import LandingPage from './LandingPage'
 import IconPage from './IconPage'
-import EditStatementJustificationPage, {EditStatementJustificationPageMode} from "./EditStatementJustificationPage"
+import CreateStatementPage, {CreateStatementPageMode} from "./CreateStatementPage"
 import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage"
 import RecentActivityPage from "./RecentActivityPage"
 import WhatsNextPage from "./WhatsNextPage"
@@ -409,13 +409,13 @@ class App extends Component {
               <Route exact path="/search-justifications" component={JustificationsSearchPage} />
 
               <Route exact path="/create-statement" render={props => (
-                <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_STATEMENT} />
+                <CreateStatementPage {...props} mode={CreateStatementPageMode.CREATE_STATEMENT} />
               )} />
               <Route exact path={createJustificationPath} render={props => (
-                <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.CREATE_JUSTIFICATION} />
+                <CreateStatementPage {...props} mode={CreateStatementPageMode.CREATE_JUSTIFICATION} />
               )} />
               <Route exact path="/submit" render={props => (
-                <EditStatementJustificationPage {...props} mode={EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION} />
+                <CreateStatementPage {...props} mode={CreateStatementPageMode.SUBMIT_JUSTIFICATION} />
               )} />
 
               <Route exact path="/tools" component={ToolsPage} />

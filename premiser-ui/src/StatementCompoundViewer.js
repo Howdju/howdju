@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import map from 'lodash/map'
 
 import StatementCompoundViewerAtomItem from './StatementCompoundViewerAtomItem'
+import {
+  combineIds,
+} from './viewModels'
 
 import './StatementCompoundViewer.scss'
 
@@ -20,10 +23,8 @@ export default class StatementCompoundViewer extends Component {
       ...rest
     } = this.props
 
-    const idPrefix = id ? id + '-' : ''
-
     const atomListItems = map(statementCompound.atoms, atom => {
-      const listItemId = `${idPrefix}statement-compound-${atom.compoundId}-statement-atom-${atom.entity.id}-list-item`
+      const listItemId = combineIds(id, `statement-atom-${atom.entity.id}`, 'list-item')
       return (
         <StatementCompoundViewerAtomItem
           id={listItemId}

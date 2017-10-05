@@ -10,6 +10,12 @@ import ErrorMessages from './ErrorMessages'
 
 import SingleLineTextField from './SingleLineTextField'
 import StatementTextAutocomplete from "./StatementTextAutocomplete"
+import {
+  combineNames,
+  combineIds,
+  combineSuggestionsKeys
+} from './viewModels'
+
 
 const atomsName = 'atoms'
 
@@ -29,10 +35,6 @@ class StatementCompoundEditorFields extends Component {
       onSubmit,
     } = this.props
 
-    const namePrefix = name ? name + '.' : ''
-    const idPrefix = id ? id + '.' : ''
-    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
-
     const atoms = get(statementCompound, atomsName, '')
 
     const hasErrors = errors && errors.hasErrors
@@ -46,7 +48,7 @@ class StatementCompoundEditorFields extends Component {
     return (
       <div>
         {map(atoms, (atom, index) => {
-          const name = `atoms[${index}].entity.text`
+          const atomStatementTextName = `atoms[${index}].entity.text` // TODO .entity or .statement?
           const value = get(statementCompound, name, '')
           const leftIcon = <FontIcon>short_text</FontIcon>
           const rightIcon = disabled ?
@@ -57,9 +59,9 @@ class StatementCompoundEditorFields extends Component {
             </div>
 
           const inputProps = {
-            id: idPrefix + name,
-            key: name,
-            name: namePrefix + name,
+            id: combineIds(id, atomStatementTextName),
+            key: atomStatementTextName,
+            name: combineNames(name, atomStatementTextName),
             value,
             label: "Text",
             leftIcon,
@@ -72,7 +74,7 @@ class StatementCompoundEditorFields extends Component {
             <StatementTextAutocomplete
               {...inputProps}
               {...atomsErrorsInputProps[index]}
-              suggestionsKey={suggestionsKeyPrefix + name}
+              suggestionsKey={combineSuggestionsKeys(suggestionsKey, name)}
             /> :
             <SingleLineTextField
               {...inputProps}

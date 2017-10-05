@@ -19,6 +19,7 @@ import t, {
   EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
 } from "./texts"
 import {
+  combineIds,
   translateNewJustificationErrors
 } from './viewModels'
 import NewJustificationEditorFields from "./NewJustificationEditorFields"
@@ -110,13 +111,12 @@ class NewJustificationEditor extends Component {
       />
     ]
 
-    const idPrefix = id ? id + '.' : ''
     return (
       <form onSubmit={this.onSubmit}>
         <NewJustificationEditorFields
           {...rest}
           newJustification={newJustification}
-          id={idPrefix + 'editor'}
+          id={combineIds(id, 'editor-fields')}
           onPropertyChange={this.onPropertyChange}
           onAddUrl={this.onAddUrl}
           onRemoveUrl={this.onRemoveUrl}

@@ -10,6 +10,7 @@ import {
   isJustificationBasisCompoundBased,
   JustificationPolarity
 } from "howdju-common"
+
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,
@@ -17,6 +18,11 @@ import t, {
 import WritQuoteEditorFields from "./WritQuoteEditorFields"
 import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
 import JustificationBasisCompoundEditorFields from './JustificationBasisCompoundEditorFields'
+import {
+  combineNames,
+  combineIds,
+  combineSuggestionsKeys
+} from './viewModels'
 
 import './NewJustificationEditorFields.scss'
 
@@ -95,10 +101,6 @@ class NewJustificationEditorFields extends Component {
       onSubmit,
     } = this.props
 
-    const namePrefix = name ? name + '.' : ''
-    const idPrefix = id ? id + '.' : ''
-    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
-
     const justificationBasisCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.justificationBasisCompound
     const statementCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.statementCompound
     const writQuoteErrors = errors && errors.fieldErrors.basis.fieldErrors.writQuote
@@ -120,10 +122,10 @@ class NewJustificationEditorFields extends Component {
       <StatementCompoundEditorFields
         {...commonFieldsProps}
         statementCompound={basisStatementCompound}
-        id={idPrefix + statementCompoundName}
+        id={combineIds(id, statementCompoundName)}
         key={statementCompoundName}
-        name={namePrefix + statementCompoundName}
-        suggestionsKey={suggestionsKeyPrefix + statementCompoundName}
+        name={combineNames(name, statementCompoundName)}
+        suggestionsKey={combineSuggestionsKeys(suggestionsKey, statementCompoundName)}
         errors={statementCompoundErrors}
         onAddStatementCompoundAtom={onAddStatementCompoundAtom}
         onRemoveStatementCompoundAtom={onRemoveStatementCompoundAtom}
@@ -133,10 +135,10 @@ class NewJustificationEditorFields extends Component {
       <WritQuoteEditorFields
         {...commonFieldsProps}
         writQuote={basisWritQuote}
-        id={idPrefix + writQuoteName}
+        id={combineIds(id, writQuoteName)}
         key={writQuoteName}
-        name={namePrefix + writQuoteName}
-        suggestionsKey={suggestionsKeyPrefix + writQuoteName}
+        name={combineNames(name, writQuoteName)}
+        suggestionsKey={combineSuggestionsKeys(suggestionsKey, writQuoteName)}
         errors={writQuoteErrors}
         onAddUrl={onAddUrl}
         onRemoveUrl={onRemoveUrl}
@@ -151,9 +153,9 @@ class NewJustificationEditorFields extends Component {
         {...commonFieldsProps}
         justificationBasisCompound={justificationBasisCompound}
         key="justification-basis-compound-editor-fields"
-        id={idPrefix + justificationBasisCompoundName}
-        name={namePrefix + justificationBasisCompoundName}
-        suggestionsKey={suggestionsKeyPrefix + justificationBasisCompoundName}
+        id={combineIds(id, justificationBasisCompoundName)}
+        name={combineNames(name, justificationBasisCompoundName)}
+        suggestionsKey={combineSuggestionsKeys(suggestionsKey, justificationBasisCompoundName)}
         errors={justificationBasisCompoundErrors}
         onAddJustificationBasisCompoundAtom={onAddJustificationBasisCompoundAtom}
         onRemoveJustificationBasisCompoundAtom={onRemoveJustificationBasisCompoundAtom}
@@ -168,8 +170,8 @@ class NewJustificationEditorFields extends Component {
       <div>
         <SelectionControlGroup
           inline
-          id={idPrefix + "polarity"}
-          name={namePrefix + "polarity"}
+          id={combineIds(id, "polarity")}
+          name={combineNames(name, "polarity")}
           type="radio"
           value={polarity}
           onChange={this.onChange}

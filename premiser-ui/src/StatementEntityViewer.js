@@ -14,6 +14,7 @@ export default class StatementEntityViewer extends Component {
       suggestionsKey,
       menu,
       showStatusText,
+      doShowControls,
     } = this.props
     return (
       <EntityViewer
@@ -29,7 +30,7 @@ export default class StatementEntityViewer extends Component {
             showStatusText={showStatusText}
           />
         }
-        menu={menu}
+        menu={doShowControls && menu}
       />
     )
   }

@@ -12,6 +12,11 @@ import ErrorMessages from './ErrorMessages'
 import SingleLineTextField from './SingleLineTextField'
 
 import './WritQuoteEditorFields.scss'
+import {
+  combineIds,
+  combineNames,
+  combineSuggestionsKeys
+} from './viewModels'
 
 
 const writQuoteTextName = 'quoteText'
@@ -41,9 +46,6 @@ class WritQuoteEditorFields extends Component {
     } = this.props
 
     const urls = get(writQuote, 'urls', [])
-    const namePrefix = name ? name + '.' : ''
-    const idPrefix = id ? id + '.' : ''
-    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
 
     const hasErrors = get(errors, 'hasErrors')
     const quoteInputErrorProps = hasErrors && errors.fieldErrors.quoteText.length > 0 ?
@@ -64,8 +66,8 @@ class WritQuoteEditorFields extends Component {
     const hasWritTitle = has(writQuote, writTitleName)
 
     const writTitleInputProps = {
-      id: idPrefix + writTitleName,
-      name: namePrefix + writTitleName,
+      id: combineIds(id, writTitleName),
+      name: combineNames(name, writTitleName),
       label: "Title",
       value: writTitle,
       maxLength: 2048,
@@ -80,9 +82,9 @@ class WritQuoteEditorFields extends Component {
       <div className="writ-quote-editor-fields">
         <TextField
           {...quoteInputErrorProps}
-          id={idPrefix + "quoteText"}
+          id={combineIds(id, writQuoteTextName)}
           key="quoteText"
-          name={namePrefix + writQuoteTextName}
+          name={combineNames(name, writQuoteTextName)}
           type="text"
           label="Quote"
           rows={2}
@@ -97,7 +99,7 @@ class WritQuoteEditorFields extends Component {
           <WritTitleAutocomplete
             {...writTitleInputProps}
             {...writTitleInputErrorProps}
-            suggestionsKey={suggestionsKeyPrefix + writTitleName}
+            suggestionsKey={combineSuggestionsKeys(suggestionsKey, writTitleName)}
           /> :
           <SingleLineTextField
             {...writTitleInputProps}
@@ -107,13 +109,13 @@ class WritQuoteEditorFields extends Component {
         {map(urls, (url, index) =>
           <SingleLineTextField
             {...urlInputErrorProps[index]}
-            id={`${idPrefix}urls[${index}].url`}
-            key={`urls[${index}].url`}
-            name={`${namePrefix}urls[${index}].url`}
+            id={combineIds(id, `urls[${index}]`, 'url')}
+            key={combineIds(id, `urls[${index}]`, 'url')}
+            name={combineNames(name, `urls[${index}]`, 'url')}
             className="urlInput"
             type="url"
             label="URL"
-            value={get(writQuote, `urls[${index}].url`, '')}
+            value={get(writQuote, ['urls', index, 'url'], '')}
             onChange={this.onChange}
             rightIcon={
               <Button

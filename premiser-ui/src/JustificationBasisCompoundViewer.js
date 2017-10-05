@@ -6,6 +6,9 @@ import map from 'lodash/map'
 import JustificationBasisCompoundViewerAtomItem from "./JustificationBasisCompoundViewerAtomItem"
 import {logger} from './logger'
 import config from './config'
+import {
+  combineIds
+} from './viewModels'
 
 import './JustificationBasisCompoundViewer.scss'
 
@@ -32,7 +35,7 @@ export default class JustificationBasisCompoundViewer extends Component {
     return (
       <ol className="compound-viewer justification-basis-compound-viewer">
         {map(atoms, atom => {
-          const atomId = `${compoundId}-atom-${atom.id}`
+          const atomId = combineIds(id, `atom-${atom.id}`)
           return (
             <JustificationBasisCompoundViewerAtomItem
               atom={atom}

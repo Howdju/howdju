@@ -20,6 +20,7 @@ export default class RecentJustificationsWidget extends Component {
         key={cardId}
         justification={justification}
         doShowBasisJustifications={false}
+        doShowControls={false}
         className={ListEntitiesWidget.largeCellClasses}
       />
     )

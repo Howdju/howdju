@@ -9,23 +9,16 @@ import {
   ui,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
-import paths from './paths'
+import {
+  combineIds,
+  combineSuggestionsKeys
+} from './viewModels'
 import {EditorTypes} from './reducers/editors'
 import StatementEntityViewer from "./StatementEntityViewer"
 import JustificationsTree from './JustificationsTree'
 
 import './StatementCompoundViewerAtomItem.scss'
 
-
-const baseId = props => {
-  const {
-    id,
-    atom
-  } = props
-  const idPrefix = id ? id + '-' : ''
-  return `${idPrefix}statementCompoundAtom-${atom.compoundId}-${atom.entity.id}`
-}
-const editorId = baseId => `${baseId}-statementEditor`
 
 class StatementCompoundViewerAtomItem extends Component {
 
@@ -35,16 +28,16 @@ class StatementCompoundViewerAtomItem extends Component {
     this.editorType = EditorTypes.STATEMENT
   }
 
-  onEditStatement = () => {
-    const _editorId = editorId(baseId(this.props))
-    const statement = this.props.atom.entity
-    this.props.editors.beginEdit(this.editorType, _editorId, statement)
-  }
-
-  seeUsagesPath = () => {
-    const {atom: {entity}} = this.props
-    return paths.searchJustifications({statementId: entity.id})
-  }
+  // onEditStatement = () => {
+  //   const _editorId = editorId(baseId(this.props))
+  //   const statement = this.props.atom.entity
+  //   this.props.editors.beginEdit(this.editorType, _editorId, statement)
+  // }
+  //
+  // seeUsagesPath = () => {
+  //   const {atom: {entity}} = this.props
+  //   return paths.searchJustifications({statementId: entity.id})
+  // }
 
   render() {
     const {
@@ -58,9 +51,6 @@ class StatementCompoundViewerAtomItem extends Component {
       showBasisUrls,
     } = this.props
 
-    const _baseId = baseId(this.props)
-    const _editorId = editorId(_baseId)
-
     const hasJustifications = atom.entity.justifications && atom.entity.justifications.length > 0
     const justifications = atom.entity.justifications
 
@@ -70,15 +60,15 @@ class StatementCompoundViewerAtomItem extends Component {
         className="compound-atom statement-atom"
       >
         <StatementEntityViewer
-          id={_baseId}
+          id={combineIds(id, 'statement')}
           statement={atom.entity}
-          editorId={_editorId}
-          suggestionsKey={`${id}-statementSuggestions`}
+          editorId={statementEditorId(this.props)}
+          suggestionsKey={combineSuggestionsKeys(id, 'statement')}
           doShowControls={doShowControls}
         />
         {doShowJustifications && hasJustifications && (
           <JustificationsTree
-            id={_baseId}
+            id={combineIds(id, 'justificationsTree')}
             justifications={justifications}
             doShowControls={doShowControls}
             doShowJustifications={doShowJustifications}
@@ -102,10 +92,12 @@ StatementCompoundViewerAtomItem.defaultProps = {
   doShowControls: true,
 }
 
+function statementEditorId(props) {
+  return combineIds(props.id, 'statement')
+}
+
 const mapStateToProps = (state, ownProps) => {
-  const _baseId = baseId(ownProps)
-  const _editorId = editorId(_baseId)
-  const {editEntity} = get(state, ['editors', EditorTypes.STATEMENT, _editorId], {})
+  const {editEntity} = get(state, ['editors', EditorTypes.STATEMENT, statementEditorId(ownProps)], {})
   const isEditing = !!editEntity
   return {
     isEditing,

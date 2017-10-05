@@ -1,9 +1,14 @@
 import assign from 'lodash/assign'
+import camelCase from 'lodash/camelCase'
 import cloneDeep from 'lodash/cloneDeep'
+import filter from 'lodash/filter'
 import forEach from 'lodash/forEach'
+import get from 'lodash/get'
+import head from 'lodash/head'
+import join from 'lodash/join'
+import kebabCase from 'lodash/kebabCase'
 import lowerCase from 'lodash/lowerCase'
 import map from 'lodash/map'
-
 import truncate from 'lodash/truncate'
 
 import config from './config'
@@ -12,6 +17,7 @@ import {
   newExhaustedEnumError,
   JustificationBasisCompoundAtomType,
   SourceExcerptType,
+  isTruthy,
 } from 'howdju-common'
 import {ellipsis} from './characters'
 
@@ -143,10 +149,12 @@ export function translateNewJustificationErrors(newJustification, errors) {
   }
 
   const newJustificationErrors = cloneDeep(errors)
+  const basisFieldErrors = newJustificationErrors.fieldErrors.basis.fieldErrors
   switch (newJustification.basis.type) {
     case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
-      newJustificationErrors.fieldErrors.basis.fieldErrors.justificationBasisCompound = errors.fieldErrors.basis.fieldErrors.entity
-      forEach(newJustificationErrors.fieldErrors.basis.fieldErrors.justificationBasisCompound.fieldErrors.atoms.itemErrors, (itemErrors, i) => {
+      basisFieldErrors.justificationBasisCompound = errors.fieldErrors.basis.fieldErrors.entity
+      const atomItemErrors = get(basisFieldErrors, 'justificationBasisCompound.fieldErrors.atoms.itemErrors')
+      forEach(atomItemErrors, (itemErrors, i) => {
         const atom = newJustification.basis.justificationBasisCompound.atoms[i]
         switch (atom.type) {
           case JustificationBasisCompoundAtomType.STATEMENT:
@@ -154,18 +162,16 @@ export function translateNewJustificationErrors(newJustification, errors) {
             break
           case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
             itemErrors.fieldErrors.sourceExcerptParaphrase = itemErrors.fieldErrors.entity
+            const sourceExcerptFieldErrors = itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors
             switch (atom.sourceExcerptParaphrase.sourceExcerpt.type) {
               case SourceExcerptType.WRIT_QUOTE:
-                itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.writQuote =
-                  itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.entity
+                sourceExcerptFieldErrors.writQuote = sourceExcerptFieldErrors.entity
                 break
               case SourceExcerptType.PIC_REGION:
-                itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.picRegion =
-                  itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.entity
+                sourceExcerptFieldErrors.picRegion = sourceExcerptFieldErrors.entity
                 break
               case SourceExcerptType.VID_SEGMENT:
-                itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.vidSegment =
-                  itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.entity
+                sourceExcerptFieldErrors.vidSegment = sourceExcerptFieldErrors.entity
                 break
               default:
                 throw newExhaustedEnumError('SourceExcerptType', atom.sourceExcerptParaphrase.sourceExcerpt.type)
@@ -177,10 +183,10 @@ export function translateNewJustificationErrors(newJustification, errors) {
       })
       break
     case JustificationBasisType.STATEMENT_COMPOUND:
-      newJustificationErrors.fieldErrors.basis.fieldErrors.statementCompound = errors.fieldErrors.basis.fieldErrors.entity
+      basisFieldErrors.statementCompound = errors.fieldErrors.basis.fieldErrors.entity
       break
     case JustificationBasisType.WRIT_QUOTE:
-      newJustificationErrors.fieldErrors.basis.fieldErrors.writQuote = errors.fieldErrors.basis.fieldErrors.entity
+      basisFieldErrors.writQuote = errors.fieldErrors.basis.fieldErrors.entity
       break
     default:
       throw newExhaustedEnumError('JustificationBasisType', newJustification.basis.type)
@@ -197,7 +203,6 @@ const truncateOptions = {
 }
 export const isTextLong = (text) => text ? text.length > config.ui.shortTextLength : false
 export const truncateWritQuoteText = (quoteText, options) => truncate(quoteText, assign({}, truncateOptions, options))
-export const truncateStatementText = (text, options) => truncate(text, assign({}, truncateOptions, options))
 
 
 export function sourceExcerptDescription(sourceExcerpt) {
@@ -228,4 +233,20 @@ export function sourceExcerptSourceDescription(sourceExcerpt) {
     default:
       throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
   }
+}
+
+export function combineIds(...ids) {
+  // Ids aren't always passed by the parent, so filter out falsey
+  return join(map(filter(ids, isTruthy), kebabCase), '--')
+}
+
+export function combineSuggestionsKeys(...keys) {
+  // If the initial suggestions key is falsy, return it to indicate no suggestions
+  return head(keys) ? join(map(keys, camelCase), '.') : head(keys)
+}
+
+export function combineNames(...names) {
+  // Don't convert case; the names must match the object model for use with get/set
+  // I think each and every name should be truthy.  How else could they be relied upon for get/set?
+  return join(names, '.')
 }

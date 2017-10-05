@@ -17,6 +17,8 @@ _e.zeroDate = () => new Date(0)
 
 _e.isTruthy = (val) => !!val
 
+_e.isFalsey = (val) => !val
+
 _e.assert = (test, message) => {
   const makeMessage = message =>
     // If there is a message thunk, use it

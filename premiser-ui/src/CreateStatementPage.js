@@ -27,13 +27,14 @@ import t, {
   CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
   CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE, JUSTIFICATION_TITLE,
 } from "./texts"
-import { suggestionKeys } from './autocompleter'
 import {
   makeNewStatementJustification,
   JustificationBasisType,
 } from "howdju-common"
 import {
-  translateNewJustificationErrors
+  translateNewJustificationErrors,
+  combineIds,
+  combineSuggestionsKeys,
 } from './viewModels'
 import {
   editStatementJustificationPageEditorId,
@@ -43,7 +44,7 @@ import StatementEditorFields from "./StatementEditorFields"
 import {EditorTypes} from "./reducers/editors"
 import paths from './paths'
 
-export const EditStatementJustificationPageMode = {
+export const CreateStatementPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
   CREATE_STATEMENT: 'CREATE_STATEMENT',
   /** Blank statement editor, pre-populated justification information (e.g. writ quote from bookmarklet)
@@ -56,22 +57,26 @@ export const EditStatementJustificationPageMode = {
 }
 
 const titleTextKeyByMode = {
-  [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_TITLE,
-  [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
-  [EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
+  [CreateStatementPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_TITLE,
+  [CreateStatementPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
+  [CreateStatementPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
 }
 const submitButtonLabelTextKeyByMode = {
-  [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
-  [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
-  [EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
+  [CreateStatementPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
+  [CreateStatementPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
+  [CreateStatementPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 }
 const submitButtonTitleTextKeyByMode = {
-  [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_TITLE,
-  [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
-  [EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
+  [CreateStatementPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_TITLE,
+  [CreateStatementPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
+  [CreateStatementPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
 }
 
-class EditStatementJustificationPage extends Component {
+const statementName = 'statement'
+const doCreateJustificationName = 'doCreateJustification'
+const newJustificationName = 'newJustification'
+
+class CreateStatementPage extends Component {
 
   constructor() {
     super()
@@ -86,10 +91,10 @@ class EditStatementJustificationPage extends Component {
 
   initializeEditor = () => {
     switch (this.props.mode) {
-      case EditStatementJustificationPageMode.CREATE_STATEMENT:
+      case CreateStatementPageMode.CREATE_STATEMENT:
         this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification())
         break
-      case EditStatementJustificationPageMode.CREATE_JUSTIFICATION: {
+      case CreateStatementPageMode.CREATE_JUSTIFICATION: {
         const {
           basisSourceType,
           basisSourceId,
@@ -100,7 +105,7 @@ class EditStatementJustificationPage extends Component {
         this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(this.editorType, this.editorId, basisSourceType, basisSourceId)
         break
       }
-      case EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION: {
+      case CreateStatementPageMode.SUBMIT_JUSTIFICATION: {
         const {
           url,
           title,
@@ -162,7 +167,8 @@ class EditStatementJustificationPage extends Component {
   }
 
   onDoCreateJustificationSwitchChange = (checked) => {
-    this.props.editors.propertyChange(this.editorType, this.editorId, {doCreateJustification: checked})
+    console.log(checked)
+    this.props.editors.propertyChange(this.editorType, this.editorId, {[doCreateJustificationName]: checked})
   }
 
   onSubmit = (event) => {
@@ -192,11 +198,13 @@ class EditStatementJustificationPage extends Component {
 
     // const isEditing = !!editEntity
 
+    const id = CreateStatementPage.id
+
     const title = t(titleTextKeyByMode[mode])
     const submitButtonLabel = t(submitButtonLabelTextKeyByMode[mode])
     const submitButtonTitle = t(submitButtonTitleTextKeyByMode[mode])
 
-    const isCreateJustificationMode = mode === EditStatementJustificationPageMode.CREATE_JUSTIFICATION
+    const isCreateJustificationMode = mode === CreateStatementPageMode.CREATE_JUSTIFICATION
 
     const statementErrors = errors && (
       doCreateJustification ?
@@ -213,7 +221,7 @@ class EditStatementJustificationPage extends Component {
         <Helmet>
           <title>{title} — Howdju</title>
         </Helmet>
-        {mode === EditStatementJustificationPageMode.CREATE_STATEMENT && (
+        {mode === CreateStatementPageMode.CREATE_STATEMENT && (
           <div className="md-grid">
             <div className="md-cell md-cell--12">
               <p>
@@ -233,11 +241,11 @@ class EditStatementJustificationPage extends Component {
 
                   <CardText>
                     <StatementEditorFields
-                      id={EditStatementJustificationPage.id + '-statement-editor-fields'}
+                      id={combineIds(id, statementName)}
                       textId={statementEditorText}
                       statement={statement}
-                      name="statement"
-                      suggestionsKey={suggestionKeys.createStatementPageStatement}
+                      name={statementName}
+                      suggestionsKey={combineSuggestionsKeys(id, statementName)}
                       onPropertyChange={this.onPropertyChange}
                       errors={statementErrors}
                       disabled={isSaving}
@@ -247,8 +255,8 @@ class EditStatementJustificationPage extends Component {
 
                   {!isCreateJustificationMode && (
                     <Switch
-                      id="doCreateJustificationSwitch"
-                      name="doCreateJustification"
+                      id={combineIds(id, doCreateJustificationName)}
+                      name={doCreateJustificationName}
                       label={t(ADD_JUSTIFICATION_TO_CREATE_STATEMENT)}
                       checked={doCreateJustification}
                       onChange={this.onDoCreateJustificationSwitchChange}
@@ -256,16 +264,17 @@ class EditStatementJustificationPage extends Component {
                     />
                   )}
 
-                  <CardTitle title={t(JUSTIFICATION_TITLE)}
-                             className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}
+                  <CardTitle
+                    title={t(JUSTIFICATION_TITLE)}
+                    className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}
                   />
 
                   <CardText className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}>
                     <NewJustificationEditorFields
                       newJustification={newJustification}
-                      id="newJustificationEditor"
-                      name="newJustification"
-                      suggestionsKey={suggestionKeys.createStatementPageJustification}
+                      id={combineIds(id, newJustificationName)}
+                      name={newJustificationName}
+                      suggestionsKey={combineSuggestionsKeys(id, newJustificationName)}
                       disabled={isSaving}
                       onPropertyChange={this.onPropertyChange}
                       onSubmit={this.onSubmit}
@@ -309,7 +318,7 @@ class EditStatementJustificationPage extends Component {
     )
   }
 }
-EditStatementJustificationPage.id = 'EditStatementJustificationPage'
+CreateStatementPage.id = 'CreateStatementPage'
 
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state.editors, [EditorTypes.STATEMENT_JUSTIFICATION, editStatementJustificationPageEditorId], {})
@@ -325,4 +334,4 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   flows,
 }, {
   goBack,
-}))(EditStatementJustificationPage)
+}))(CreateStatementPage)
