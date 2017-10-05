@@ -1,34 +1,36 @@
 @import './colors';
 
-@mixin quote-mark {
-  color: $asbestos;
-  font-size: 200%;
-  position: absolute;
-}
+$list-item-left-padding: 1.5em;
 
-@mixin quote {
-  .quote {
-    //border-left: 2px solid $primary-color;
-    margin: 0.3em 0 1em;
-    padding: 0.5em 0;
+@mixin material-icon-list-item($icon-name) {
+  &:before {
+    content: $icon-name;
+    vertical-align: middle;
+    color: $icon-color;
 
-    .quote-text-wrapper {
-      quotes: "\201C" "\201D" "\2018" "\2019";
+    margin-left: -1 * $list-item-left-padding;
+    width: $list-item-left-padding;
 
-      &:before {
-        @include quote-mark;
-        content: open-quote;
-      }
-      &:after {
-        @include quote-mark;
-        margin-left: 10px;
-        content: close-quote;
-      }
-    }
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
 
-    .quote-text {
-      // Push it out past the position:absolute quote
-      margin-left: 20px;
-    }
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
   }
 }

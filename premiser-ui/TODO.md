@@ -1,6 +1,7 @@
 # Howdju UI TODO
 
-* Preserve line breaks in quotes
+* When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see
+  the paraphrased citations here...
 * suggestions key is shared between paraphrased statements when creating a new justification
 * writ-quote-based justifications missing created
 

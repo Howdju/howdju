@@ -3,7 +3,9 @@ import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 import FontIcon from 'react-md/lib/FontIcons'
 import Button from 'react-md/lib/Buttons/Button'
+import filter from 'lodash/filter'
 import map from 'lodash/map'
+import split from 'lodash/split'
 import cn from 'classnames'
 import moment from 'moment'
 
@@ -55,6 +57,16 @@ export default function WritQuoteViewer (props) {
   const quoteText = !_isQuoteTextLong || isExpanded ?
     writQuote.quoteText :
     truncateWritQuoteText(writQuote.quoteText, {omission: ''})
+  const quoteTextParagraphs = makeQuoteParagraphs(quoteText)
+
+  const expandEllipsis = (
+    <span
+      className="quote-text-expand-ellipsis clickable"
+      onClick={onExpand}
+    >
+      {characters.ellipsis}
+    </span>
+  )
 
   return (
     <div className={cn(className, "writ-quote-viewer")}>
@@ -65,11 +77,19 @@ export default function WritQuoteViewer (props) {
               hidden: !hasQuote
             })}
           >
-            <div className="quote-text-wrapper">
-              <span className="quote-text">
-                {quoteText}
-                {_isQuoteTextLong && !isExpanded && <span className="clickable" onClick={onExpand}>{characters.ellipsis}</span>}
-              </span>
+            <div className="quote-text">
+              {map(quoteTextParagraphs, (para, i) => {
+                const key = `quote-text-para-${i}`
+                if (_isQuoteTextLong && !isExpanded && i === quoteTextParagraphs.length - 1) {
+                  return (
+                    <p key={key}>
+                      {para} {expandEllipsis}
+                    </p>
+                  )
+                }
+                return <p key={key}>{para}</p>
+              })}
+              {}
             </div>
             {_isQuoteTextLong && !isExpanded && (
               <Button flat
@@ -114,4 +134,12 @@ WritQuoteViewer.propTypes = {
 WritQuoteViewer.defaultProps = {
   showStatusText: true,
   showUrls: true,
+}
+
+function makeQuoteParagraphs(quoteText) {
+  // two or more line breaks will indicate a paragraph
+  const paragraphBreak = /(\r\n|\n|\r){2,}/g
+  const paragraphs = split(quoteText, paragraphBreak)
+  const nonEmptyParagraphs = filter(paragraphs, para => !(/^\s*$/.test(para)))
+  return nonEmptyParagraphs
 }
