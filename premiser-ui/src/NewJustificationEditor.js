@@ -81,11 +81,8 @@ class NewJustificationEditor extends Component {
   render() {
     const {
       id,
-      suggestionsKey,
       editorState,
       doShowButtons,
-      disabled,
-      onKeyDown,
       ...rest
     } = this.props
     delete rest.editors
@@ -97,16 +94,19 @@ class NewJustificationEditor extends Component {
     const newJustificationErrors = translateNewJustificationErrors(newJustification, errors)
 
     const buttons = [
-      <Button flat
-              key="cancelButton"
-              label={t(CANCEL_BUTTON_LABEL)}
-              onClick={this.onCancelEdit} />,
-      <Button flat
-              primary
-              key="submitButton"
-              type="submit"
-              label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
-              disabled={isSaving}
+      <Button
+        flat
+        key="cancelButton"
+        label={t(CANCEL_BUTTON_LABEL)}
+        onClick={this.onCancelEdit}
+      />,
+      <Button
+        flat
+        primary
+        key="submitButton"
+        type="submit"
+        label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+        disabled={isSaving}
       />
     ]
 
@@ -127,10 +127,7 @@ class NewJustificationEditor extends Component {
           onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
           onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
           onSubmit={this.onSubmit}
-          suggestionsKey={suggestionsKey}
           errors={newJustificationErrors}
-          disabled={disabled}
-          onKeyDown={onKeyDown}
         />
         {isSaving && <CircularProgress key="progress" id="progress" />}
         {doShowButtons && buttons}

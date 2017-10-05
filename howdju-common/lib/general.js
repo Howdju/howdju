@@ -135,3 +135,12 @@ _e.decodeSorts = (param) => {
 
   return sorts
 }
+
+/** Removes linebreaks from a string, ensuring whitespace between the joined characters */
+_e.toSingleLine = (val) => val.replace(/(\s*)[\r\n]+(\s*)/, (match, leadingWhitespace, trailingWhitespace) => {
+  return leadingWhitespace.length === 0 && trailingWhitespace.length === 0 ?
+    // If the linebreak(s) have no whitespace around them, then insert some
+    ' ' :
+    // Otherwise just use the existing whitespace
+    ''
+})

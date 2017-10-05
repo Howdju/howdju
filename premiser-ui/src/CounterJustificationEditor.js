@@ -86,27 +86,31 @@ class CounterJustificationEditor extends Component {
             name="basis.justificationBasisCompound"
             suggestionsKey={suggestionsKey}
             onPropertyChange={this.onPropertyChange}
+            onSubmit={this.onSubmit}
             onAddJustificationBasisCompoundAtom={this.onAddJustificationBasisCompoundAtom}
             onRemoveJustificationBasisCompoundAtom={this.onRemoveJustificationBasisCompoundAtom}
             onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
             onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
             errors={justificationBasisCompoundErrors}
+            disabled={isSaving}
           />
         </CardText>
         <CardActions>
           {isSaving && <CircularProgress key="progress" id="progress" />}
-          <Button flat
-                  key="cancelButton"
-                  label={t(CANCEL_BUTTON_LABEL)}
-                  onClick={this.onCancelEdit}
-                  disabled={isSaving}
+          <Button
+            flat
+            key="cancelButton"
+            label={t(CANCEL_BUTTON_LABEL)}
+            onClick={this.onCancelEdit}
+            disabled={isSaving}
           />
-          <Button raised
-                  primary
-                  key="submitButton"
-                  type="submit"
-                  label={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-                  disabled={isSaving}
+          <Button
+            raised
+            primary
+            key="submitButton"
+            type="submit"
+            label={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+            disabled={isSaving}
           />
         </CardActions>
       </form>

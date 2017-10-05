@@ -2,12 +2,10 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Button from 'react-md/lib/Buttons/Button'
 import Divider from 'react-md/lib/Dividers/Divider'
-import cn from 'classnames'
 import flatMap from 'lodash/flatMap'
 import get from 'lodash/get'
 import map from 'lodash/map'
 
-import {RETURN_KEY_CODE} from "./keyCodes"
 import ErrorMessages from './ErrorMessages'
 
 import './WritQuoteEditorFields.scss'
@@ -16,14 +14,6 @@ import JustificationBasisCompoundAtomEditorFields from "./JustificationBasisComp
 const atomsName = 'atoms'
 
 export default class JustificationBasisCompoundEditorFields extends Component {
-
-  onTextInputKeyDown = (event) => {
-    if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
-      this.props.onSubmit(event)
-    } else if (this.props.onKeyDown) {
-      this.props.onKeyDown(event)
-    }
-  }
 
   render() {
     const {
@@ -35,10 +25,11 @@ export default class JustificationBasisCompoundEditorFields extends Component {
       onRemoveJustificationBasisCompoundAtom,
       onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
       onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
-      readOnlyBasis,
       disabled,
       errors,
       onPropertyChange,
+      onKeyDown,
+      onSubmit,
     } = this.props
 
     const atoms = get(justificationBasisCompound, atomsName, [])
@@ -63,7 +54,8 @@ export default class JustificationBasisCompoundEditorFields extends Component {
           onRemoveWritQuoteUrl={(url, urlIndex, e) => onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(atom, index, url, urlIndex)}
           disabled={disabled}
           onPropertyChange={onPropertyChange}
-          readOnlyBasis={readOnlyBasis}
+          onKeyDown={onKeyDown}
+          onSubmit={onSubmit}
         />
       )
     })
@@ -77,13 +69,13 @@ export default class JustificationBasisCompoundEditorFields extends Component {
       <div className="justification-basis-compound-editor-fields">
         {dividedAtomEditorFields}
 
-        <Button flat
-                className={cn('addButton', {
-                  hidden: disabled,
-                })}
-                key="addBasisCompoundAtomButton"
-                label="Add clause"
-                onClick={e => onAddJustificationBasisCompoundAtom(atoms.length)}
+        <Button
+          flat
+          className="add-button"
+          key="addBasisCompoundAtomButton"
+          label="Add clause"
+          onClick={e => onAddJustificationBasisCompoundAtom(atoms.length)}
+          disabled={disabled}
         >add</Button>
 
         {hasErrors && errors.modelErrors && (
@@ -99,8 +91,6 @@ JustificationBasisCompoundEditorFields.propTypes = {
   id: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
-  /** If present, called when the user presses enter in a text field */
-  onSubmit: PropTypes.func,
   onPropertyChange: PropTypes.func.isRequired,
   onAddJustificationBasisCompoundAtom: PropTypes.func.isRequired,
   onRemoveJustificationBasisCompoundAtom: PropTypes.func.isRequired,

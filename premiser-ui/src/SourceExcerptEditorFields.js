@@ -26,13 +26,12 @@ export default class SourceExcerptEditorFields extends Component {
       id,
       name,
       errors,
-      readOnlyBasis,
       disabled,
       onPropertyChange,
       onAddWritQuoteUrl,
       onRemoveWritQuoteUrl,
-      onSubmit,
       onKeyDown,
+      onSubmit,
       suggestionsKey,
     } = this.props
 
@@ -60,7 +59,7 @@ export default class SourceExcerptEditorFields extends Component {
             title: 'Vid',
           },
         ]}
-        disabled={readOnlyBasis || disabled}
+        disabled={disabled}
       />
     )
 
@@ -81,10 +80,10 @@ export default class SourceExcerptEditorFields extends Component {
             onPropertyChange={onPropertyChange}
             onAddUrl={onAddWritQuoteUrl}
             onRemoveUrl={onRemoveWritQuoteUrl}
-            disabled={readOnlyBasis || disabled}
-            onSubmit={onSubmit}
+            disabled={disabled}
             errors={entityErrors}
             onKeyDown={onKeyDown}
+            onSubmit={onSubmit}
           />
         )
         break

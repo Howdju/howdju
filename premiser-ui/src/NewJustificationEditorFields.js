@@ -79,10 +79,8 @@ class NewJustificationEditorFields extends Component {
       newJustification,
       name,
       id,
-      readOnlyBasis,
       disabled,
       suggestionsKey,
-      onSubmit,
       onPropertyChange,
       onAddUrl,
       onRemoveUrl,
@@ -94,6 +92,7 @@ class NewJustificationEditorFields extends Component {
       onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
       errors,
       onKeyDown,
+      onSubmit,
     } = this.props
 
     const namePrefix = name ? name + '.' : ''
@@ -111,34 +110,36 @@ class NewJustificationEditorFields extends Component {
     const _isWritQuoteBased = isWritQuoteBased(newJustification)
     const _isJustificationBasisCompoundBased = isJustificationBasisCompoundBased(newJustification)
 
+    const commonFieldsProps = {
+      onPropertyChange,
+      onKeyDown,
+      onSubmit,
+      disabled,
+    }
     const statementCompoundEditorFields = (
-      <StatementCompoundEditorFields statementCompound={basisStatementCompound}
-                                     key="statementEditorFields"
-                                     id={idPrefix + statementCompoundName}
-                                     name={namePrefix + statementCompoundName}
-                                     suggestionsKey={suggestionsKeyPrefix + statementCompoundName}
-                                     onPropertyChange={onPropertyChange}
-                                     onAddStatementCompoundAtom={onAddStatementCompoundAtom}
-                                     onRemoveStatementCompoundAtom={onRemoveStatementCompoundAtom}
-                                     disabled={readOnlyBasis || disabled}
-                                     onSubmit={onSubmit}
-                                     errors={statementCompoundErrors}
-                                     onKeyDown={onKeyDown}
+      <StatementCompoundEditorFields
+        {...commonFieldsProps}
+        statementCompound={basisStatementCompound}
+        id={idPrefix + statementCompoundName}
+        key={statementCompoundName}
+        name={namePrefix + statementCompoundName}
+        suggestionsKey={suggestionsKeyPrefix + statementCompoundName}
+        errors={statementCompoundErrors}
+        onAddStatementCompoundAtom={onAddStatementCompoundAtom}
+        onRemoveStatementCompoundAtom={onRemoveStatementCompoundAtom}
       />
     )
     const writQuoteEditorFields =  (
-      <WritQuoteEditorFields writQuote={basisWritQuote}
-                             id={idPrefix + writQuoteName}
-                             key={writQuoteName}
-                             name={namePrefix + writQuoteName}
-                             suggestionsKey={suggestionsKeyPrefix + writQuoteName}
-                             onPropertyChange={onPropertyChange}
-                             onAddUrl={onAddUrl}
-                             onRemoveUrl={onRemoveUrl}
-                             disabled={readOnlyBasis || disabled}
-                             onSubmit={onSubmit}
-                             errors={writQuoteErrors}
-                             onKeyDown={onKeyDown}
+      <WritQuoteEditorFields
+        {...commonFieldsProps}
+        writQuote={basisWritQuote}
+        id={idPrefix + writQuoteName}
+        key={writQuoteName}
+        name={namePrefix + writQuoteName}
+        suggestionsKey={suggestionsKeyPrefix + writQuoteName}
+        errors={writQuoteErrors}
+        onAddUrl={onAddUrl}
+        onRemoveUrl={onRemoveUrl}
       />
     )
     const justificationBasisCompoundEditorFields = [
@@ -147,17 +148,17 @@ class NewJustificationEditorFields extends Component {
         Clauses
       </h3>,
       <JustificationBasisCompoundEditorFields
+        {...commonFieldsProps}
         justificationBasisCompound={justificationBasisCompound}
         key="justification-basis-compound-editor-fields"
         id={idPrefix + justificationBasisCompoundName}
         name={namePrefix + justificationBasisCompoundName}
         suggestionsKey={suggestionsKeyPrefix + justificationBasisCompoundName}
-        onPropertyChange={onPropertyChange}
+        errors={justificationBasisCompoundErrors}
         onAddJustificationBasisCompoundAtom={onAddJustificationBasisCompoundAtom}
         onRemoveJustificationBasisCompoundAtom={onRemoveJustificationBasisCompoundAtom}
         onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
         onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
-        errors={justificationBasisCompoundErrors}
       />
     ]
 
@@ -188,7 +189,7 @@ class NewJustificationEditorFields extends Component {
           value={basisType}
           onChange={this.onChange}
           controls={basisTypeControls}
-          disabled={readOnlyBasis || disabled}
+          disabled={disabled}
         />
         <Divider />*/}
         {_isStatementCompoundBased && statementCompoundEditorFields}
@@ -213,16 +214,10 @@ NewJustificationEditorFields.propTypes = {
   onRemoveStatementCompoundAtom: PropTypes.func.isRequired,
   onAddJustificationBasisCompoundAtom: PropTypes.func.isRequired,
   onRemoveJustificationBasisCompoundAtom: PropTypes.func.isRequired,
-  /** Disables the basis inputs, but the polarity is still active */
-  readOnlyBasis: PropTypes.bool,
   disabled: PropTypes.bool,
-  onSubmit: PropTypes.func,
   errors: PropTypes.object,
   /** Passed to subcontrols */
   onKeyDown: PropTypes.func,
-}
-NewJustificationEditorFields.defaultProps = {
-  readOnlyBasis: false,
 }
 
 export default NewJustificationEditorFields

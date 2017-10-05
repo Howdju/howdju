@@ -83,10 +83,19 @@ class JustificationValidator {
           errors.fieldErrors.target.fieldErrors.entity.modelErrors.push(modelErrorCodes.IS_REQUIRED)
         } else {
           if (!justification.target.entity.id) {
-            // Must have valid props
-            const targetEntityErrors = justification.target.type === JustificationTargetType.JUSTIFICATION ?
-              this.validate(justification.target.entity) :
-              this.statementValidator.validate(justification.target.entity)
+
+            let targetEntityErrors
+            switch (justification.target.type) {
+              case JustificationTargetType.JUSTIFICATION:
+                targetEntityErrors = this.validate(justification.target.entity)
+                break
+              case JustificationTargetType.STATEMENT:
+                targetEntityErrors = this.statementValidator.validate(justification.target.entity)
+                break
+              default:
+                throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+            }
+
             if (targetEntityErrors.hasErrors) {
               errors.hasErrors = true
               errors.fieldErrors.target.fieldErrors.entity = targetEntityErrors

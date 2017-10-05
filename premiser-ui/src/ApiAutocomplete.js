@@ -1,19 +1,24 @@
-import React, {Component} from "react"
-import PropTypes from 'prop-types'
 import throttle from 'lodash/throttle'
+import map from 'lodash/map'
+import {denormalize} from "normalizr"
+import PropTypes from 'prop-types'
+import React, {Component} from "react"
 import Autocomplete from 'react-md/lib/Autocompletes'
 import { connect } from 'react-redux'
-import map from 'lodash/map'
+
+import {
+  toSingleLine
+} from 'howdju-common'
 
 import autocompleter from './autocompleter'
 import {
-  ESCAPE_KEY_CODE, RETURN_KEY_CODE
+  ESCAPE_KEY_CODE,
+  Keys,
 } from './keyCodes'
 import {
   autocompletes,
   mapActionCreatorGroupToDispatchToProps
 } from "./actions"
-import {denormalize} from "normalizr"
 
 const dataLabel = 'data-label'
 const dataValue = 'data-value'
@@ -38,11 +43,16 @@ class ApiAutocomplete extends Component {
 
   onChange = (val, event) => {
     const name = event.target.name
+    if (this.props.singleLine) {
+      val = toSingleLine(val)
+    }
     this.onPropertyChange({[name]: val})
   }
 
   onPropertyChange = (properties) => {
-    this.props.onPropertyChange(properties)
+    if (this.props.onPropertyChange) {
+      this.props.onPropertyChange(properties)
+    }
     const val = properties[this.props.name]
     if (val) {
       this.throttledRefreshAutocomplete(val)
@@ -66,8 +76,15 @@ class ApiAutocomplete extends Component {
         this.onPropertyChange({[this.props.name]: ''})
         return
       }
-    } else if (event.keyCode === RETURN_KEY_CODE) {
+    } else if (event.key === Keys.ENTER) {
       this.closeAutocomplete()
+      if (this.props.singleLine) {
+        event.preventDefault()
+      }
+      if (this.props.onSubmit) {
+        event.preventDefault()
+        this.props.onSubmit(event)
+      }
     }
 
     if (this.props.onKeyDown) {
@@ -148,26 +165,29 @@ class ApiAutocomplete extends Component {
       onPropertyChange,
       forcedClosed,
       suggestionSchema,
+      onSubmit,
+      singleLine,
       ...rest
     } = this.props
 
     return (
-      <Autocomplete {...rest}
-                    type="text"
-                    value={value}
-                    dataLabel={dataLabel}
-                    dataValue={dataValue}
-                    onChange={this.onChange}
-                    onKeyDown={this.onKeyDown}
-                    onAutocomplete={this.onAutocomplete}
-                    onMenuOpen={this.onMenuOpen}
-                    onBlur={this.onBlur}
-                    onTouchEnd={this.onTouchEnd}
-                    onClick={this.onClick}
-                    data={transformedSuggestions}
-                    filter={null}
-                    ref={this.setAutocomplete}
-                    focusInputOnAutocomplete={false}
+      <Autocomplete
+        {...rest}
+        type="text"
+        value={value}
+        dataLabel={dataLabel}
+        dataValue={dataValue}
+        onChange={this.onChange}
+        onKeyDown={this.onKeyDown}
+        onAutocomplete={this.onAutocomplete}
+        onMenuOpen={this.onMenuOpen}
+        onBlur={this.onBlur}
+        onTouchEnd={this.onTouchEnd}
+        onClick={this.onClick}
+        data={transformedSuggestions}
+        filter={null}
+        ref={this.setAutocomplete}
+        focusInputOnAutocomplete={false}
       />
     )
   }
@@ -203,10 +223,15 @@ ApiAutocomplete.propTypes = {
   forcedClosed: PropTypes.bool,
   /** The schema which the component uses to denormalize suggestions */
   suggestionSchema: PropTypes.object.isRequired,
+  /** If present, enter will trigger this function */
+  onSubmit: PropTypes.func,
+  /** If true, enforces no line breaks */
+  singleLine: PropTypes.bool,
 }
 ApiAutocomplete.defaultProps = {
   autocompleteThrottle: 250,
   escapeClears: false,
+  singleLine: false,
 }
 
 /** Pluck the properties from the model and give them names appropriate to a DOM element; react-md will put all its members as attributes on the element */

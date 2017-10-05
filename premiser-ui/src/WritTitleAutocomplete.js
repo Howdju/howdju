@@ -17,9 +17,9 @@ class WritTitleAutocomplete extends Component {
   render() {
     const {
       value,
-      onPropertyChange,
       suggestionsKey,
       api,
+      onKeyDown,
       ...rest
     } = this.props
 
@@ -27,10 +27,10 @@ class WritTitleAutocomplete extends Component {
       <ApiAutocomplete
         {...rest}
         value={value}
-        // maxLength={2048}
+        maxLength={2048}
         rows={1}
         maxRows={4}
-        onPropertyChange={onPropertyChange}
+        singleLine={true}
         onAutocomplete={this.onAutocomplete}
         fetchSuggestions={api.fetchWritTitleSuggestions}
         cancelSuggestions={api.cancelWritTitleSuggestions}
@@ -38,7 +38,7 @@ class WritTitleAutocomplete extends Component {
         dataLabel="title"
         dataValue="id"
         suggestionSchema={writSchema}
-        onKeyDown={this.props.onKeyDown}
+        onKeyDown={onKeyDown}
       />
     )
   }
@@ -50,7 +50,7 @@ WritTitleAutocomplete.propTypes = {
   /** Where to store the component's suggestions in the react state (under state.autocompletes.suggestions) */
   suggestionsKey: PropTypes.string.isRequired,
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
-  onPropertyChange: PropTypes.func,
+  onPropertyChange: PropTypes.func.isRequired,
   /** Passed to ApiAutocomplete */
   onKeyDown: PropTypes.func,
 }

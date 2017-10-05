@@ -1,20 +1,8 @@
 # Howdju UI TODO
 
-* Should be able to type <enter> in quote text
-  * Not in paraphrasing statements, writ titles
 * Preserve line breaks in quotes
 * suggestions key is shared between paraphrased statements when creating a new justification
 * writ-quote-based justifications missing created
-* Escape in new justification dialog is awful when I hit it accidentally and lose my form data
-
-* The "Use" in a justification basis compound having a single atom is duplicative of the "Use" for that atom.
-* Redirecting from deleted statement fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
-  * https://stackoverflow.com/a/39507279/39396
-
-* local env has production sentry env?
-
-* While researching these old statements, it's really annoying not to be able to know where the citations are hidden.
-  * A tree view showing the primary sources in relation to the overall would be great.
 
 * Potential big priorities
   * Can use bookmarklet
@@ -39,6 +27,17 @@
     * Creation/deletion as existence of a creation action vs. row in table
   * semantically equivalent statements (voting, display, automatic detection)
     * Negations (voting, display, automatic detection)
+    
+* Escape in new justification dialog is awful when I hit it accidentally and lose my form data
+
+* The "Use" in a justification basis compound having a single atom is duplicative of the "Use" for that atom.
+* Redirecting from deleted statement fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
+  * https://stackoverflow.com/a/39507279/39396
+
+* local env has production sentry env?
+
+* While researching these old statements, it's really annoying not to be able to know where the citations are hidden.
+  * A tree view showing the primary sources in relation to the overall would be great.
   
 * Command-clicking on tab navigates in current tab
 

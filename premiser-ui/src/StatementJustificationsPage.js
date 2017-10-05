@@ -47,7 +47,6 @@ import {
 } from "./editorIds"
 import {EditorTypes} from "./reducers/editors"
 import {suggestionKeys} from "./autocompleter"
-import {ESCAPE_KEY_CODE} from "./keyCodes"
 import {selectIsWindowNarrow} from "./selectors"
 
 import NewJustificationDialog from './NewJustificationDialog'
@@ -133,24 +132,13 @@ class StatementJustificationsPage extends Component {
     this.props.ui.showNewJustificationDialog(this.statementId())
   }
 
-  onSubmitNewJustificationDialog = (event) => {
+  saveNewJustification = (event) => {
     event.preventDefault()
-    this.saveNewJustification()
-  }
-
-  saveNewJustification = () => {
     this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, ui.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog = () => {
     this.props.ui.hideNewJustificationDialog()
-  }
-
-  onDialogEditorKeyDown = (event) => {
-    if (event.keyCode === ESCAPE_KEY_CODE) {
-      // Stop the escape from closing the dialog
-      event.stopPropagation()
-    }
   }
 
   render () {

@@ -29,7 +29,6 @@ import {
 } from "../actions"
 import {uiErrorTypes} from "../uiErrors"
 import {INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts"
-import {translateNewJustificationErrors} from '../viewModels'
 
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {

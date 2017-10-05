@@ -13,11 +13,21 @@ import t, {
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts"
 import {selectIsWindowNarrow} from "./selectors"
+import {
+  ESCAPE_KEY_CODE,
+} from "./keyCodes"
 
 import NewJustificationEditor from './NewJustificationEditor'
 
 
 class NewJustificationDialog extends Component {
+
+  onKeyDown = (event) => {
+    if (event.keyCode === ESCAPE_KEY_CODE) {
+      // Stop the escape from closing the dialog
+      event.stopPropagation()
+    }
+  }
 
   render() {
     const {
@@ -36,19 +46,21 @@ class NewJustificationDialog extends Component {
     // "ButtonTooltipedInked: `key` is not a prop. Trying to access it will result in `undefined` being returned."
     // So just handle them separately so that we don't need to give them a key
     const addNewJustificationDialogCancelButton = (
-      <Button flat
-              label={t(CANCEL_BUTTON_LABEL)}
-              onClick={onCancel}
-              disabled={isSaving}
+      <Button
+        flat
+        label={t(CANCEL_BUTTON_LABEL)}
+        onClick={onCancel}
+        disabled={isSaving}
       />
     )
     const addNewJustificationDialogSubmitButton = (
-      <Button raised
-              primary
-              type="submit"
-              label={t(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-              onClick={onSubmit}
-              disabled={isSaving}
+      <Button
+        raised
+        primary
+        type="submit"
+        label={t(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+        onClick={onSubmit}
+        disabled={isSaving}
       />
     )
     // react-md bug: even though fullPage is documented as a boolean property, its presence appears to be interpreted as true
@@ -83,9 +95,9 @@ class NewJustificationDialog extends Component {
           editorId={editorId}
           id={id}
           suggestionsKey={suggestionsKey}
-          onSubmit={this.onSubmitNewJustificationDialog}
+          onSubmit={onSubmit}
           doShowButtons={false}
-          onKeyDown={this.onDialogEditorKeyDown}
+          disabled={isSaving}
         />
         {/* react-md bug: actions disappear when full page*/}
         {isWindowNarrow && (

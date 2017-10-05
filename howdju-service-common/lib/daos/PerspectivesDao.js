@@ -10,6 +10,7 @@ const {
   SourceExcerptType,
   assert,
   isTruthy,
+  newExhaustedEnumError,
 } = require('howdju-common')
 
 const {

@@ -2,15 +2,14 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import TextField from 'react-md/lib/TextFields/TextField'
 import Button from 'react-md/lib/Buttons/Button'
-import cn from 'classnames'
 import map from 'lodash/map'
 import get from 'lodash/get'
 import has from 'lodash/has'
 
-import {RETURN_KEY_CODE} from "./keyCodes"
 import WritTitleAutocomplete from "./WritTitleAutocomplete"
 import {toErrorText} from "./modelErrorMessages"
 import ErrorMessages from './ErrorMessages'
+import SingleLineTextField from './SingleLineTextField'
 
 import './WritQuoteEditorFields.scss'
 
@@ -21,20 +20,10 @@ const writTitleName = 'writ.title'
 class WritQuoteEditorFields extends Component {
 
   onChange = (value, event) => {
-    const target = event.target
-    const name = target.name
-    this.props.onPropertyChange({[name]: value})
-  }
-
-  onPropertyChange = (properties) => {
-    this.props.onPropertyChange(properties)
-  }
-
-  onTextInputKeyDown = (event) => {
-    if (event.keyCode === RETURN_KEY_CODE && this.props.onSubmit) {
-      this.props.onSubmit(event)
-    } else if (this.props.onKeyDown) {
-      this.props.onKeyDown(event)
+    if (this.props.onPropertyChange) {
+      const target = event.target
+      const name = target.name
+      this.props.onPropertyChange({[name]: value})
     }
   }
 
@@ -46,6 +35,9 @@ class WritQuoteEditorFields extends Component {
       suggestionsKey,
       disabled,
       errors,
+      onKeyDown,
+      onSubmit,
+      onPropertyChange,
     } = this.props
 
     const urls = get(writQuote, 'urls', [])
@@ -76,9 +68,12 @@ class WritQuoteEditorFields extends Component {
       name: namePrefix + writTitleName,
       label: "Title",
       value: writTitle,
+      maxLength: 2048,
       required: true,
       disabled: disabled || !hasWritTitle,
-      onKeyDown: this.onTextInputKeyDown,
+      onKeyDown,
+      onSubmit,
+      onPropertyChange,
     }
 
     return (
@@ -92,26 +87,25 @@ class WritQuoteEditorFields extends Component {
           label="Quote"
           rows={2}
           maxRows={4}
+          maxLength={65536}
           value={quoteText}
           onChange={this.onChange}
           disabled={disabled || !has(writQuote, writQuoteTextName)}
-          onKeyDown={this.onTextInputKeyDown}
+          onKeyDown={onKeyDown}
         />
         {suggestionsKey && !disabled && hasWritTitle ?
           <WritTitleAutocomplete
             {...writTitleInputProps}
             {...writTitleInputErrorProps}
             suggestionsKey={suggestionsKeyPrefix + writTitleName}
-            onPropertyChange={this.onPropertyChange}
           /> :
-          <TextField
+          <SingleLineTextField
             {...writTitleInputProps}
             {...writTitleInputErrorProps}
-            onChange={this.onChange}
           />
         }
         {map(urls, (url, index) =>
-          <TextField
+          <SingleLineTextField
             {...urlInputErrorProps[index]}
             id={`${idPrefix}urls[${index}].url`}
             key={`urls[${index}].url`}
@@ -121,19 +115,25 @@ class WritQuoteEditorFields extends Component {
             label="URL"
             value={get(writQuote, `urls[${index}].url`, '')}
             onChange={this.onChange}
-            rightIcon={disabled ? <div/> : <Button icon onClick={(e) => this.props.onRemoveUrl(url, index)}>delete</Button>}
+            rightIcon={
+              <Button
+                icon
+                onClick={(e) => this.props.onRemoveUrl(url, index)}
+                disabled={disabled}
+              >delete</Button>
+            }
             disabled={!!url.id || disabled}
-            onKeyDown={this.onTextInputKeyDown}
+            onKeyDown={onKeyDown}
+            onSubmit={onSubmit}
           />
         )}
         <Button
           flat
-          className={cn('addButton', {
-            hidden: disabled,
-          })}
+          className="add-button"
           key="addUrlButton"
           label="Add URL"
           onClick={this.props.onAddUrl}
+          disabled={disabled}
         >add</Button>
         {hasErrors && errors.modelErrors && (
           <ErrorMessages errors={errors.modelErrors} />
@@ -149,8 +149,6 @@ WritQuoteEditorFields.propTypes = {
   quoteTextId: PropTypes.string,
   /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
   name: PropTypes.string,
-  /** If present, called when the user presses enter in a text field */
-  onSubmit: PropTypes.func,
   onPropertyChange: PropTypes.func.isRequired,
   onAddUrl: PropTypes.func.isRequired,
   onRemoveUrl: PropTypes.func.isRequired,

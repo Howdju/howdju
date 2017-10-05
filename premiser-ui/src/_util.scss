@@ -3,7 +3,12 @@
 }
 
 .hidden {
-  &, &.md-card-title, &.context-menu--floating {
+
+  display: none;
+
+  &.md-card-title,
+  &.context-menu--floating,
+  & .md-icon {
     display: none;
   }
 }

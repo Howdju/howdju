@@ -13,7 +13,6 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
 import cn from 'classnames'
 import get from 'lodash/get'
-import merge from 'lodash/merge'
 import queryString from 'query-string'
 
 import {
@@ -242,6 +241,7 @@ class EditStatementJustificationPage extends Component {
                       onPropertyChange={this.onPropertyChange}
                       errors={statementErrors}
                       disabled={isSaving}
+                      onSubmit={this.onSubmit}
                     />
                   </CardText>
 
@@ -268,6 +268,7 @@ class EditStatementJustificationPage extends Component {
                       suggestionsKey={suggestionKeys.createStatementPageJustification}
                       disabled={isSaving}
                       onPropertyChange={this.onPropertyChange}
+                      onSubmit={this.onSubmit}
                       onAddUrl={this.addJustificationUrl}
                       onRemoveUrl={this.removeJustificationUrl}
                       onAddStatementCompoundAtom={this.addJustificationStatementCompoundAtom}
@@ -282,17 +283,19 @@ class EditStatementJustificationPage extends Component {
 
                   <CardActions>
                     {isSaving && <CircularProgress key="progress" id="progress" />}
-                    <Button flat
-                            label="Cancel"
-                            disabled={isSaving}
-                            onClick={this.onCancel}
+                    <Button
+                      flat
+                      label="Cancel"
+                      disabled={isSaving}
+                      onClick={this.onCancel}
                     />
-                    <Button raised
-                            primary
-                            type="submit"
-                            label={submitButtonLabel}
-                            title={submitButtonTitle}
-                            disabled={isSaving}
+                    <Button
+                      raised
+                      primary
+                      type="submit"
+                      label={submitButtonLabel}
+                      title={submitButtonTitle}
+                      disabled={isSaving}
                     />
                   </CardActions>
 

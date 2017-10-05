@@ -13,14 +13,10 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
       id,
       name,
       errors,
-      readOnlyBasis,
-      disabled,
-      onPropertyChange,
       onAddWritQuoteUrl,
       onRemoveWritQuoteUrl,
-      onSubmit,
-      suggestionsKey,
-      onKeyDown,
+      onPropertyChange,
+      ...rest,
     } = this.props
 
     return (
@@ -28,15 +24,13 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
 
         <div className="source-excerpt-paraphrase-editor-fields--paraphrasing-statement-editor-fields">
           <StatementEditorFields
+            {...rest}
             id={id + '--paraphrasing-statement'}
             name={name + '.paraphrasingStatement'}
             textLabel="Paraphrase"
             statement={sourceExcerptParaphrase.paraphrasingStatement}
-            disabled={disabled}
-            suggestionsKey={suggestionsKey}
-            onPropertyChange={onPropertyChange}
-            onKeyDown={onKeyDown}
             errors={get(errors, 'fieldErrors.paraphrasingStatement')}
+            onPropertyChange={onPropertyChange}
           />
         </div>
 
@@ -45,16 +39,14 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
         </h4>
 
         <SourceExcerptEditorFields
+          {...rest}
           sourceExcerpt={sourceExcerptParaphrase.sourceExcerpt}
           id={id + '--source-excerpt'}
           name={name + '.sourceExcerpt'}
           errors={get(errors, 'fieldErrors.sourceExcerpt')}
-          readOnlyBasis={readOnlyBasis}
-          disabled={disabled}
           onPropertyChange={onPropertyChange}
           onAddWritQuoteUrl={onAddWritQuoteUrl}
           onRemoveWritQuoteUrl={onRemoveWritQuoteUrl}
-          onSubmit={onSubmit}
         />
 
       </div>

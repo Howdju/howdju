@@ -16,22 +16,18 @@ class StatementTextAutocomplete extends Component {
 
   render() {
     const {
-      value,
-      onPropertyChange,
       suggestionsKey,
       api,
-      onKeyDown,
-      ...props
+      ...rest
     } = this.props
 
     return (
       <ApiAutocomplete
-        {...props}
-        value={value}
-        // maxLength={2048}
+        {...rest}
+        maxLength={2048}
         rows={1}
         maxRows={4}
-        onPropertyChange={onPropertyChange}
+        singleLine={true}
         onAutocomplete={this.onAutocomplete}
         fetchSuggestions={api.fetchStatementTextSuggestions}
         cancelSuggestions={api.cancelStatementTextSuggestions}
@@ -39,7 +35,6 @@ class StatementTextAutocomplete extends Component {
         dataLabel="text"
         dataValue="id"
         suggestionSchema={statementSchema}
-        onKeyDown={onKeyDown}
       />
     )
   }
@@ -51,7 +46,7 @@ StatementTextAutocomplete.propTypes = {
   /** Where to store the component's suggestions in the react state (under state.autocompletes.suggestions) */
   suggestionsKey: PropTypes.string.isRequired,
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
-  onPropertyChange: PropTypes.func,
+  onPropertyChange: PropTypes.func.isRequired,
   onKeyDown: PropTypes.func,
 }
 

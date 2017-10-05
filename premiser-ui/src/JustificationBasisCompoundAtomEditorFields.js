@@ -33,12 +33,10 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
       onRemoveJustificationBasisCompoundAtom,
       disabled,
       onPropertyChange,
-      onTextInputKeyDown,
-      readOnlyBasis,
-      // onPropertyChange,
-      // onTextInputKeyDown,
       onAddWritQuoteUrl,
       onRemoveWritQuoteUrl,
+      onKeyDown,
+      onSubmit,
     } = this.props
 
     const atomTypeControls = (
@@ -60,7 +58,7 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
             title: 'Source excerpt paraphrase',
           }
         ]}
-        disabled={readOnlyBasis || disabled}
+        disabled={disabled}
       />
     )
 
@@ -79,7 +77,8 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
             disabled={disabled}
             suggestionsKey={suggestionsKey}
             onPropertyChange={onPropertyChange}
-            onKeyDown={onTextInputKeyDown}
+            onKeyDown={onKeyDown}
+            onSubmit={onSubmit}
             errors={entityEditorFieldsErrors}
           />
         )
@@ -98,7 +97,8 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
             disabled={disabled}
             suggestionsKey={suggestionsKey}
             onPropertyChange={onPropertyChange}
-            onKeyDown={onTextInputKeyDown}
+            onKeyDown={onKeyDown}
+            onSubmit={onSubmit}
             errors={entityEditorFieldsErrors}
             onAddWritQuoteUrl={onAddWritQuoteUrl}
             onRemoveWritQuoteUrl={onRemoveWritQuoteUrl}
@@ -110,12 +110,20 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
         throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
     }
 
-    const addRemoveAtomControls = disabled ?
-      <div/> :
+    const addRemoveAtomControls = (
       <div>
-        <Button icon onClick={onAddJustificationBasisCompoundAtom}>add</Button>
-        <Button icon onClick={onRemoveJustificationBasisCompoundAtom}>delete</Button>
+        <Button
+          icon
+          onClick={onAddJustificationBasisCompoundAtom}
+          disabled={disabled}
+        >add</Button>
+        <Button
+          icon
+          onClick={onRemoveJustificationBasisCompoundAtom}
+          disabled={disabled}
+        >delete</Button>
       </div>
+    )
 
     return (
       <div className="justification-basis-compound-atom-editor-fields">
