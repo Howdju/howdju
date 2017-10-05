@@ -86,8 +86,12 @@ exports.PerspectivesDao = class PerspectivesDao {
         , scas.creator_user_id      as basis_statement_compound_atom_statement_creator_user_id
         , wq.writ_quote_id          as basis_writ_quote_id
         , wq.quote_text             as basis_writ_quote_quote_text
+        , wq.created                as basis_writ_quote_created
+        , wq.creator_user_id        as basis_writ_quote_creator_user_id
         , w.writ_id                 as basis_writ_quote_writ_id
         , w.title                   as basis_writ_quote_writ_title
+        , w.created                 as basis_writ_quote_writ_created
+        , w.creator_user_id         as basis_writ_quote_writ_creator_user_id
         , cru.url_id                as basis_writ_quote_url_id
         , u.url                     as basis_writ_quote_url_url
         
@@ -328,6 +332,8 @@ exports.PerspectivesDao = class PerspectivesDao {
             writ_quote_id: row.basis_writ_quote_id,
             writ_id: row.basis_writ_quote_writ_id,
             quote_text: row.basis_writ_quote_quote_text,
+            created: row.basis_writ_quote_created,
+            creator_user_id: row.basis_writ_quote_creator_user_id,
           })
         }
 
@@ -335,7 +341,9 @@ exports.PerspectivesDao = class PerspectivesDao {
         if (!writ) {
           writsById[row.basis_writ_quote_writ_id] = toWrit({
             writ_id: row.basis_writ_quote_writ_id,
-            title: row.basis_writ_quote_writ_title
+            title: row.basis_writ_quote_writ_title,
+            created: row.basis_writ_quote_writ_created,
+            creator_user_id: row.basis_writ_quote_writ_creator_user_id,
           })
         }
 

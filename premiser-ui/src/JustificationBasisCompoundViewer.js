@@ -30,7 +30,6 @@ export default class JustificationBasisCompoundViewer extends Component {
     if (atoms.length < 1 && config.isDev) {
       logger.warn(`JustificationBasisCompound ${justificationBasisCompound.id}'s atoms are empty`)
     }
-    const compoundId = `${id}-justification-basis-compound`
 
     return (
       <ol className="compound-viewer justification-basis-compound-viewer">

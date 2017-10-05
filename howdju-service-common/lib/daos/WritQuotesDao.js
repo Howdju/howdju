@@ -167,15 +167,19 @@ exports.WritQuotesDao = class WritQuotesDao {
         select 
             wq.writ_quote_id
           , wq.quote_text
+          , wq.created
+          , wq.creator_user_id
           , w.writ_id
           , w.title as writ_title
+          , w.created as writ_created
+          , w.creator_user_id as writ_creator_user_id
         from justifications j 
             join writ_quotes wq on 
                   j.basis_type = $2
               and j.basis_id = wq.writ_quote_id
             join writs w using (writ_id)
           where 
-                 j.root_statement_id = $1
+                j.root_statement_id = $1
             and j.deleted is null
             and wq.deleted is null
             and w.deleted is null
@@ -185,8 +189,12 @@ exports.WritQuotesDao = class WritQuotesDao {
         select 
             wq.writ_quote_id
           , wq.quote_text
+          , wq.created
+          , wq.creator_user_id
           , w.writ_id
           , w.title as writ_title
+          , w.created as writ_created
+          , w.creator_user_id as writ_creator_user_id
         from justifications j 
             join justification_basis_compounds jbc on
                   j.basis_type = $3

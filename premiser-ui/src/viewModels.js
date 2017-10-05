@@ -151,7 +151,7 @@ export function translateNewJustificationErrors(newJustification, errors) {
   const newJustificationErrors = cloneDeep(errors)
   const basisFieldErrors = newJustificationErrors.fieldErrors.basis.fieldErrors
   switch (newJustification.basis.type) {
-    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND: {
       basisFieldErrors.justificationBasisCompound = errors.fieldErrors.basis.fieldErrors.entity
       const atomItemErrors = get(basisFieldErrors, 'justificationBasisCompound.fieldErrors.atoms.itemErrors')
       forEach(atomItemErrors, (itemErrors, i) => {
@@ -160,7 +160,7 @@ export function translateNewJustificationErrors(newJustification, errors) {
           case JustificationBasisCompoundAtomType.STATEMENT:
             itemErrors.fieldErrors.statement = itemErrors.fieldErrors.entity
             break
-          case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+          case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
             itemErrors.fieldErrors.sourceExcerptParaphrase = itemErrors.fieldErrors.entity
             const sourceExcerptFieldErrors = itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors
             switch (atom.sourceExcerptParaphrase.sourceExcerpt.type) {
@@ -177,11 +177,13 @@ export function translateNewJustificationErrors(newJustification, errors) {
                 throw newExhaustedEnumError('SourceExcerptType', atom.sourceExcerptParaphrase.sourceExcerpt.type)
             }
             break
+          }
           default:
             throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
         }
       })
       break
+    }
     case JustificationBasisType.STATEMENT_COMPOUND:
       basisFieldErrors.statementCompound = errors.fieldErrors.basis.fieldErrors.entity
       break

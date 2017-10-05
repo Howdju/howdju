@@ -167,7 +167,6 @@ class CreateStatementPage extends Component {
   }
 
   onDoCreateJustificationSwitchChange = (checked) => {
-    console.log(checked)
     this.props.editors.propertyChange(this.editorType, this.editorId, {[doCreateJustificationName]: checked})
   }
 

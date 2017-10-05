@@ -1,7 +1,5 @@
 # Howdju UI TODO
 
-* writ-quote-based justifications missing created
-
 * Potential big priorities
   * Can use bookmarklet
   * Use bookmarklet; test prod
@@ -15,10 +13,10 @@
     * tagging
   * version API
   * Additional excerpt fields
-  * Addition excerpt types
+  * Additional excerpt types
     * URL (pic/vid) voting to help deal with alternative versions of media?
   * Show creator
-    * Show justifications for statement
+    * Show justification count by polarity for statement
   * User signup
     * Share auth between tabs
     * Social login
@@ -29,6 +27,8 @@
   * semantically equivalent statements (voting, display, automatic detection)
     * Negations (voting, display, automatic detection)
     
+* recent quotes: exclude those with empty quotes?
+
 * Escape in new justification dialog is awful when I hit it accidentally and lose my form data
 
 * The "Use" in a justification basis compound having a single atom is duplicative of the "Use" for that atom.
