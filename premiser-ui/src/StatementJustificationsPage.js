@@ -231,6 +231,7 @@ class StatementJustificationsPage extends Component {
                   statement={statement}
                   editorId={this.statementEditorId}
                   suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
+                  doShowControls={true}
                   menu={menu}
                 />
               </Card>

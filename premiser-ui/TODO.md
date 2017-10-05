@@ -15,7 +15,7 @@
   * Additional excerpt fields
   * Additional excerpt types
     * URL (pic/vid) voting to help deal with alternative versions of media?
-  * Show creator
+  * Show entity creator (created by X Y days ago)
     * Show justification count by polarity for statement
   * User signup
     * Share auth between tabs
