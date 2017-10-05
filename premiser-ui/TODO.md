@@ -1,9 +1,11 @@
 # Howdju UI TODO
- 
+
 * Should be able to type <enter> in quote text
-* Escape in new justification dialog is awful when I hit it accidentally and lose my form data
+  * Not in paraphrasing statements, writ titles
+* Preserve line breaks in quotes
 * suggestions key is shared between paraphrased statements when creating a new justification
 * writ-quote-based justifications missing created
+* Escape in new justification dialog is awful when I hit it accidentally and lose my form data
 
 * The "Use" in a justification basis compound having a single atom is duplicative of the "Use" for that atom.
 * Redirecting from deleted statement fails if the URL does not contain the same slug (i.e. when manually entering /s/123)

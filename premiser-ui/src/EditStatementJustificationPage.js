@@ -33,7 +33,9 @@ import {
   makeNewStatementJustification,
   JustificationBasisType,
 } from "howdju-common"
-import {justificationBasisTypeToNewJustificationBasisMemberName} from './viewModels'
+import {
+  translateNewJustificationErrors
+} from './viewModels'
 import {
   editStatementJustificationPageEditorId,
 } from "./editorIds"
@@ -68,18 +70,6 @@ const submitButtonTitleTextKeyByMode = {
   [EditStatementJustificationPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_TITLE,
   [EditStatementJustificationPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
   [EditStatementJustificationPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
-}
-
-const justificationErrorsToNewJustificationErrors = (justification, errors) => {
-  // TODO equivalent logic exists in editors.NEW_JUSTIFICATION reducer
-  if (!justification || !errors) {
-    return errors
-  }
-  const justificationBasisType = justification.basis.type
-  const newJustificationBasisMemberName = justificationBasisTypeToNewJustificationBasisMemberName(justificationBasisType)
-  const newJustificationBasisErrors = {fieldErrors: {basis: {fieldErrors: {[newJustificationBasisMemberName]: errors.fieldErrors.basis.fieldErrors.entity} } } }
-  const newJustificationErrors = merge({}, errors, newJustificationBasisErrors, {fieldErrors: {basis: {fieldErrors: {entity: undefined}}}})
-  return newJustificationErrors
 }
 
 class EditStatementJustificationPage extends Component {
@@ -215,7 +205,7 @@ class EditStatementJustificationPage extends Component {
         errors.statement
     )
     const justificationErrors = errors && doCreateJustification ? errors.justification : null
-    const newJustificationErrors = justificationErrorsToNewJustificationErrors(newJustification, justificationErrors)
+    const newJustificationErrors = translateNewJustificationErrors(newJustification, justificationErrors)
 
     const statementEditorText = 'statementEditorText'
 

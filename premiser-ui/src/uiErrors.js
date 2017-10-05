@@ -36,5 +36,8 @@ export const newRequestConfigurationError = (message, identifiers, sourceError) 
     config: sourceError.config
   })
 
-export const newEditorCommitResultError = (editorType, editorId, sourceError) =>
-  newCustomError(uiErrorTypes.COMMIT_EDIT_RESULT_ERROR, null, sourceError, {editorType, editorId})
+export const newEditorCommitResultError = (editorType, editorId, sourceError) => {
+  const message = `Error committing ${editorType} editor ${editorId} (source error message: ${sourceError.message})`
+  return newCustomError(uiErrorTypes.COMMIT_EDIT_RESULT_ERROR, message, sourceError, {editorType, editorId})
+}
+

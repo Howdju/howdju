@@ -28,7 +28,7 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
       name,
       id,
       suggestionsKey,
-      atomItemErrors,
+      errors,
       onAddJustificationBasisCompoundAtom,
       onRemoveJustificationBasisCompoundAtom,
       disabled,
@@ -70,16 +70,17 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
         const entityEditorFieldsId = id + '-statement'
         const entityEditorFieldsName = name + '.statement'
         const entity = atom.statement
-        const entityEditorFieldsErrors = get(atomItemErrors, 'fieldErrors.statement')
+        const entityEditorFieldsErrors = get(errors, 'fieldErrors.statement')
         entityControls = (
-          <StatementEditorFields id={entityEditorFieldsId}
-                                 name={entityEditorFieldsName}
-                                 statement={entity}
-                                 disabled={disabled}
-                                 suggestionsKey={suggestionsKey}
-                                 onPropertyChange={onPropertyChange}
-                                 onKeyDown={onTextInputKeyDown}
-                                 errors={entityEditorFieldsErrors}
+          <StatementEditorFields
+            id={entityEditorFieldsId}
+            name={entityEditorFieldsName}
+            statement={entity}
+            disabled={disabled}
+            suggestionsKey={suggestionsKey}
+            onPropertyChange={onPropertyChange}
+            onKeyDown={onTextInputKeyDown}
+            errors={entityEditorFieldsErrors}
           />
         )
         break
@@ -88,7 +89,7 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
         const entityEditorFieldsId = id + '-source-excerpt-paraphrase'
         const entityEditorFieldsName = name + '.sourceExcerptParaphrase'
         const entity = atom.sourceExcerptParaphrase
-        const entityEditorFieldsErrors = get(atomItemErrors, 'fieldErrors.sourceExcerptParaphrase')
+        const entityEditorFieldsErrors = get(errors, 'fieldErrors.sourceExcerptParaphrase')
         entityControls = (
           <SourceExcerptParaphraseEditorFields
             id={entityEditorFieldsId}

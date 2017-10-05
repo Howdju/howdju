@@ -6,16 +6,22 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import get from 'lodash/get'
 
 import {
+  makeNewJustification
+} from "howdju-common"
+
+import {
   editors,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import {EditorTypes} from "./reducers/editors"
-import {
-  CANCEL_BUTTON_LABEL, EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
+import t, {
+  CANCEL_BUTTON_LABEL,
+  EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
 } from "./texts"
-import t from './texts'
+import {
+  translateNewJustificationErrors
+} from './viewModels'
 import NewJustificationEditorFields from "./NewJustificationEditorFields"
-import {makeNewJustification} from "howdju-common"
 
 
 class NewJustificationEditor extends Component {
@@ -86,9 +92,9 @@ class NewJustificationEditor extends Component {
     delete rest.editorId
     delete rest.onSubmit
 
+    const newJustification = editorState.editEntity || makeNewJustification()
     const {errors, isSaving} = editorState
-    const editEntity = editorState.editEntity || makeNewJustification()
-
+    const newJustificationErrors = translateNewJustificationErrors(newJustification, errors)
 
     const buttons = [
       <Button flat
@@ -107,23 +113,24 @@ class NewJustificationEditor extends Component {
     const idPrefix = id ? id + '.' : ''
     return (
       <form onSubmit={this.onSubmit}>
-        <NewJustificationEditorFields {...rest}
-                                      newJustification={editEntity}
-                                      id={idPrefix + 'editor'}
-                                      onPropertyChange={this.onPropertyChange}
-                                      onAddUrl={this.onAddUrl}
-                                      onRemoveUrl={this.onRemoveUrl}
-                                      onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
-                                      onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
-                                      onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
-                                      onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
-                                      onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
-                                      onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
-                                      onSubmit={this.onSubmit}
-                                      suggestionsKey={suggestionsKey}
-                                      errors={errors}
-                                      disabled={disabled}
-                                      onKeyDown={onKeyDown}
+        <NewJustificationEditorFields
+          {...rest}
+          newJustification={newJustification}
+          id={idPrefix + 'editor'}
+          onPropertyChange={this.onPropertyChange}
+          onAddUrl={this.onAddUrl}
+          onRemoveUrl={this.onRemoveUrl}
+          onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
+          onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
+          onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
+          onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
+          onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+          onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
+          onSubmit={this.onSubmit}
+          suggestionsKey={suggestionsKey}
+          errors={newJustificationErrors}
+          disabled={disabled}
+          onKeyDown={onKeyDown}
         />
         {isSaving && <CircularProgress key="progress" id="progress" />}
         {doShowButtons && buttons}

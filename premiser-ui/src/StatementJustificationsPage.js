@@ -7,7 +7,6 @@ import Divider from "react-md/lib/Dividers"
 import FontIcon from "react-md/lib/FontIcons"
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"
-import Dialog from 'react-md/lib/Dialogs'
 import Positions from "react-md/lib/Menus/Positions"
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
@@ -41,8 +40,6 @@ import {justificationsSchema, statementSchema} from "./schemas"
 import paths from './paths'
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
-  CANCEL_BUTTON_LABEL,
-  CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts"
 import {
   statementJustificationsPage_statementEditor_editorId,
@@ -53,7 +50,7 @@ import {suggestionKeys} from "./autocompleter"
 import {ESCAPE_KEY_CODE} from "./keyCodes"
 import {selectIsWindowNarrow} from "./selectors"
 
-import NewJustificationEditor from './NewJustificationEditor'
+import NewJustificationDialog from './NewJustificationDialog'
 import JustificationsTree from './JustificationsTree'
 
 import "./StatementJustificationsPage.scss"
@@ -166,7 +163,6 @@ class StatementJustificationsPage extends Component {
       didFetchingStatementFail,
 
       isNewJustificationDialogVisible,
-      isSavingNewJustification,
       isWindowNarrow,
     } = this.props
     const {
@@ -220,70 +216,6 @@ class StatementJustificationsPage extends Component {
           />,
         ]}
       />
-    )
-
-    // Putting these buttons in an array to reuse in both places requires giving them a key, which led to the warning
-    // "ButtonTooltipedInked: `key` is not a prop. Trying to access it will result in `undefined` being returned."
-    // So just handle them separately so that we don't need to give them a key
-    const addNewJustificationDialogCancelButton = (
-      <Button flat
-              label={t(CANCEL_BUTTON_LABEL)}
-              onClick={this.cancelNewJustificationDialog}
-              disabled={isSavingNewJustification}
-      />
-    )
-    const addNewJustificationDialogSubmitButton = (
-      <Button raised
-              primary
-              type="submit"
-              label={t(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
-              onClick={this.saveNewJustification}
-              disabled={isSavingNewJustification}
-      />
-    )
-    // react-md bug: even though fullPage is documented as a boolean property, its presence appears to be interpreted as true
-    const addNewJustificationDialogTitle = "Add justification"
-    const narrowDialogAttributes = {
-      fullPage: true,
-      'aria-label': addNewJustificationDialogTitle
-    }
-    const notNarrowDialogAttributes = {
-      title: addNewJustificationDialogTitle,
-      actions: [
-        addNewJustificationDialogCancelButton,
-        addNewJustificationDialogSubmitButton,
-      ],
-    }
-    const widthDependentAttributes = isWindowNarrow ? narrowDialogAttributes : notNarrowDialogAttributes
-    const addNewJustificationDialog = (
-      <Dialog id="newJustificationDialog"
-              visible={isNewJustificationDialogVisible}
-              onHide={this.cancelNewJustificationDialog}
-              className="md-overlay--wide-dialog"
-              {...widthDependentAttributes}
-      >
-        {/* react-md bug: Title disappears when full page*/}
-        {isWindowNarrow && (
-          <h2 id="newJustificationDialogTitle" className="md-title md-title--dialog">
-            {addNewJustificationDialogTitle}
-          </h2>
-        )}
-        <NewJustificationEditor editorId={this.newJustificationEditorId}
-                                id="addNewJustificationDialogEditor"
-                                suggestionsKey={suggestionKeys.statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
-                                onSubmit={this.onSubmitNewJustificationDialog}
-                                doShowButtons={false}
-                                disabled={isSavingNewJustification}
-                                onKeyDown={this.onDialogEditorKeyDown}
-        />
-        {/* react-md bug: actions disappears when full page*/}
-        {isWindowNarrow && (
-          <footer className="md-dialog-footer md-dialog-footer--inline">
-            {addNewJustificationDialogCancelButton}
-            {addNewJustificationDialogSubmitButton}
-          </footer>
-        )}
-      </Dialog>
     )
 
     return (
@@ -354,7 +286,15 @@ class StatementJustificationsPage extends Component {
           className="md-grid--bottom"
         />
 
-        {addNewJustificationDialog}
+        <NewJustificationDialog
+          id="addNewJustificationDialogEditor"
+          editorId={this.newJustificationEditorId}
+          suggestionsKey={suggestionKeys.statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
+          visible={isNewJustificationDialogVisible}
+          onCancel={this.cancelNewJustificationDialog}
+          onSubmit={this.saveNewJustification}
+          onHide={this.cancelNewJustificationDialog}
+        />
 
       </div>
     )
@@ -387,12 +327,6 @@ const mapStateToProps = (state, ownProps) => {
   let justifications = denormalize(state.entities.justificationsByRootStatementId[statementId], justificationsSchema, state.entities)
   justifications = sortJustifications(justifications)
 
-  const newJustificationDialogEditorState = get(state.editors, [
-    EditorTypes.NEW_JUSTIFICATION,
-    statementJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
-  ], {})
-  const isSavingNewJustification = newJustificationDialogEditorState.isSaving
-
   const isWindowNarrow = selectIsWindowNarrow(state)
 
   return {
@@ -400,7 +334,6 @@ const mapStateToProps = (state, ownProps) => {
     statementId,
     statement: denormalize(statement, statementSchema, state.entities),
     justifications,
-    isSavingNewJustification,
     isFetchingStatement,
     didFetchingStatementFail,
     isWindowNarrow,

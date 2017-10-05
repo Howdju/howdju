@@ -137,17 +137,56 @@ export function consolidateNewSourcExcerptParaphraseEntities(newSourceExcerptPar
   return sourceExcerptParaphrase
 }
 
-export const justificationBasisTypeToNewJustificationBasisMemberName = (justificationBasisType) => {
-  const newJustificationBasisMemberNames = {
-    [JustificationBasisType.STATEMENT_COMPOUND]: 'statementCompound',
-    [JustificationBasisType.WRIT_QUOTE]: 'writQuote',
-    [JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND]: 'justificationBasisCompound',
+export function translateNewJustificationErrors(newJustification, errors) {
+  if (!newJustification || !errors) {
+    return errors
   }
-  const newJustificationBasisMemberName = newJustificationBasisMemberNames[justificationBasisType]
-  if (!newJustificationBasisMemberName) {
-    throw newExhaustedEnumError('JustificationBasisType', justificationBasisType)
+
+  const newJustificationErrors = cloneDeep(errors)
+  switch (newJustification.basis.type) {
+    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+      newJustificationErrors.fieldErrors.basis.fieldErrors.justificationBasisCompound = errors.fieldErrors.basis.fieldErrors.entity
+      forEach(newJustificationErrors.fieldErrors.basis.fieldErrors.justificationBasisCompound.fieldErrors.atoms.itemErrors, (itemErrors, i) => {
+        const atom = newJustification.basis.justificationBasisCompound.atoms[i]
+        switch (atom.type) {
+          case JustificationBasisCompoundAtomType.STATEMENT:
+            itemErrors.fieldErrors.statement = itemErrors.fieldErrors.entity
+            break
+          case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+            itemErrors.fieldErrors.sourceExcerptParaphrase = itemErrors.fieldErrors.entity
+            switch (atom.sourceExcerptParaphrase.sourceExcerpt.type) {
+              case SourceExcerptType.WRIT_QUOTE:
+                itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.writQuote =
+                  itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.entity
+                break
+              case SourceExcerptType.PIC_REGION:
+                itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.picRegion =
+                  itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.entity
+                break
+              case SourceExcerptType.VID_SEGMENT:
+                itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.vidSegment =
+                  itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors.entity
+                break
+              default:
+                throw newExhaustedEnumError('SourceExcerptType', atom.sourceExcerptParaphrase.sourceExcerpt.type)
+            }
+            break
+          default:
+            throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+        }
+      })
+      break
+    case JustificationBasisType.STATEMENT_COMPOUND:
+      newJustificationErrors.fieldErrors.basis.fieldErrors.statementCompound = errors.fieldErrors.basis.fieldErrors.entity
+      break
+    case JustificationBasisType.WRIT_QUOTE:
+      newJustificationErrors.fieldErrors.basis.fieldErrors.writQuote = errors.fieldErrors.basis.fieldErrors.entity
+      break
+    default:
+      throw newExhaustedEnumError('JustificationBasisType', newJustification.basis.type)
   }
-  return newJustificationBasisMemberName
+
+  return newJustificationErrors
 }
 
 

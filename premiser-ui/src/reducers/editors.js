@@ -27,9 +27,10 @@ import {
   api,
   editors
 } from "../actions"
-import {justificationBasisTypeToNewJustificationBasisMemberName} from '../viewModels'
 import {uiErrorTypes} from "../uiErrors"
 import {INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts"
+import {translateNewJustificationErrors} from '../viewModels'
+
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   editorActions[actionCreator] = true
@@ -59,7 +60,7 @@ const defaultEditorState = {
   isSaving: false,
 }
 
-const editorErrorReducer = errorKey => (state, action) => {
+const editorErrorReducer = (errorKey) => (state, action) => {
   const sourceError = action.payload.sourceError
   if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
     const responseBody = sourceError.body
@@ -272,20 +273,7 @@ const editorReducerByType = {
         'urls',
       ]),
     [editors.commitEdit.result]: {
-      throw: (state, action) => {
-        const sourceError = action.payload.sourceError
-        if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
-          const responseBody = sourceError.body
-          if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
-            const errors = cloneDeep(responseBody.errors.justification)
-            const name = justificationBasisTypeToNewJustificationBasisMemberName(action.meta.editEntity.basis.type)
-            errors.fieldErrors.basis.fieldErrors[name] = errors.fieldErrors.basis.fieldErrors.entity
-            delete errors.fieldErrors.basis.fieldErrors.entity
-            return {...state, errors}
-          }
-        }
-        return state
-      }
+      throw: editorErrorReducer('justification')
     },
   }, defaultEditorState),
 

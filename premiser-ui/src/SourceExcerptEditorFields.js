@@ -71,19 +71,20 @@ export default class SourceExcerptEditorFields extends Component {
         const entityId = id + '--writ-quote'
         const entityName = name + '.writQuote'
         const entitySuggestionsKey = suggestionsKey + '--writ-quote'
-        const entityErrors = get(errors, 'fieldErrors.entity.fieldErrors.writQuote')
+        const entityErrors = get(errors, 'fieldErrors.writQuote')
         sourceExcerptEntityEditorFields = (
-          <WritQuoteEditorFields writQuote={entity}
-                                 id={entityId}
-                                 name={entityName}
-                                 suggestionsKey={entitySuggestionsKey}
-                                 onPropertyChange={onPropertyChange}
-                                 onAddUrl={onAddWritQuoteUrl}
-                                 onRemoveUrl={onRemoveWritQuoteUrl}
-                                 disabled={readOnlyBasis || disabled}
-                                 onSubmit={onSubmit}
-                                 errors={entityErrors}
-                                 onKeyDown={onKeyDown}
+          <WritQuoteEditorFields
+            writQuote={entity}
+            id={entityId}
+            name={entityName}
+            suggestionsKey={entitySuggestionsKey}
+            onPropertyChange={onPropertyChange}
+            onAddUrl={onAddWritQuoteUrl}
+            onRemoveUrl={onRemoveWritQuoteUrl}
+            disabled={readOnlyBasis || disabled}
+            onSubmit={onSubmit}
+            errors={entityErrors}
+            onKeyDown={onKeyDown}
           />
         )
         break

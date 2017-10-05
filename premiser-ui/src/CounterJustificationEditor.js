@@ -17,6 +17,9 @@ import t, {
   CANCEL_BUTTON_LABEL,
   COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts"
+import {
+  translateNewJustificationErrors
+} from './viewModels'
 
 
 class CounterJustificationEditor extends Component {
@@ -69,7 +72,9 @@ class CounterJustificationEditor extends Component {
     delete rest.editors
     delete rest.editorId
 
-    const justificationBasisCompoundErrors = get(errors, 'fieldErrors.basis.fieldErrors.justificationBasisCompound')
+
+    const newJustificationErrors = translateNewJustificationErrors(editEntity, errors)
+    const justificationBasisCompoundErrors = get(newJustificationErrors, 'fieldErrors.basis.fieldErrors.justificationBasisCompound')
     const justificationBasisCompound = get(editEntity, 'basis.justificationBasisCompound')
 
     return (
