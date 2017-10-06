@@ -16,7 +16,7 @@
   const queryParamsString = queryParams.join('&')
   const schema = 'https'
   const host = 'www.howdju.com'
-  const port = 80
+  const port = 443
   let portString = ''
   if (schema === 'http' && port !== 80 || schema === 'https' && port !== 443) {
     portString = `:${port}`

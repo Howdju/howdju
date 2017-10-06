@@ -1,7 +1,6 @@
 # Howdju UI TODO
 
 * Potential big priorities
-  * Can use bookmarklet
   * Use bookmarklet; test prod
     * Translate to Paraphrases
       * When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see

@@ -30,6 +30,7 @@ import t, {
 import {
   makeNewStatementJustification,
   JustificationBasisType,
+  makeNewJustificationBasisCompoundFromWritQuote,
 } from "howdju-common"
 import {
   translateNewJustificationErrors,
@@ -108,19 +109,19 @@ class CreateStatementPage extends Component {
       case CreateStatementPageMode.SUBMIT_JUSTIFICATION: {
         const {
           url,
-          title,
+          description,
           quoteText,
         } = this.props.queryParams
         this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification({}, {
           basis: {
-            type: JustificationBasisType.WRIT_QUOTE,
-            writQuote: {
+            type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+            justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote({
               quoteText,
               writ: {
-                title
+                title: description
               },
               urls: [{url}]
-            }
+            }),
           }
         }))
         break

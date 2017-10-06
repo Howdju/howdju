@@ -34,6 +34,9 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist'))
 }
 
+// Handle the bookmarklet (See bookmarklet/README.md)
+app.use(express.static('dist/bookmarklet'))
+
 app.use(express.static('public', {
   // http://expressjs.com/en/api.html#setHeaders
   setHeaders: function setHeaders(res, path, stat) {
