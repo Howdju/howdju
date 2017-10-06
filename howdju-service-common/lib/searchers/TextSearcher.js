@@ -3,88 +3,7 @@ const Promise = require('bluebird')
 
 const emptyResults = Promise.resolve([])
 
-const removeDups = (idName, ...rowsArr) => {
-  const seenIds = {}
-  const deduped = []
-  for (const rows of rowsArr) {
-    for (const row of rows) {
-      if (!seenIds[row[idName]]) {
-        deduped.push(row)
-        seenIds[row[idName]] = true
-      }
-    }
-  }
-  return deduped
-}
-
-const normalizeSearchText = (searchText) => {
-  let normalSearchText = searchText
-  // remove non-word/non-space characters
-  normalSearchText = normalSearchText.replace(/[^\w\s]/g, '')
-  // normalize space
-  normalSearchText = normalSearchText.replace(/\s+/g, ' ')
-  return normalSearchText
-}
-
-const makeSearchFullTextPhraseQuery = (tableName, textColumnName) => `
-with
-  results as (
-    select 
-        t.*
-      , ts_rank_cd(vector, query) as rank
-    from 
-      ${tableName} t, 
-      phraseto_tsquery('english', $1) as query,
-      to_tsvector('english', ${textColumnName}) as vector
-    where 
-          query @@ vector
-      and deleted is null
-  )
-select * from results order by rank desc
-`
-
-const makeSearchFullTextPlainQuery = (tableName, textColumnName) => `
-with
-  results as (
-    select 
-        t.*
-      , ts_rank_cd(vector, query) as rank
-    from 
-      ${tableName} t, 
-      plainto_tsquery('english', $1) as query,
-      to_tsvector('english', ${textColumnName}) as vector
-    where 
-          query @@ vector
-      and deleted is null
-  )
-select * from results order by rank desc
-`
-
-const makeSearchFullTextRawQuery = (tableName, textColumnName, tsquery) => `
-with
-  results as (
-    select 
-        t.*
-      , ts_rank_cd(vector, ${tsquery}) as rank
-    from 
-      ${tableName} t, 
-      to_tsvector('english', ${textColumnName}) as vector
-    where 
-          (${tsquery}) @@ vector
-      and deleted is null
-  )
-select * from results order by rank desc
-`
-
-const makeSearchContainingTextQuery = (tableName, textColumnName) => `
-select * 
-from ${tableName} 
-where 
-      ${textColumnName} ilike '%' || $1 || '%'
-  and deleted is null
-`
-
-class TextSearcher {
+exports.TextSearcher = class TextSearcher {
   constructor(database, tableName, textColumnName, rowMapper, dedupColumnName) {
     this.database = database
     this.tableName = tableName
@@ -144,4 +63,92 @@ class TextSearcher {
   }
 }
 
-module.exports = TextSearcher
+function removeDups(idName, ...rowsArr) {
+  const seenIds = {}
+  const deduped = []
+  for (const rows of rowsArr) {
+    for (const row of rows) {
+      if (!seenIds[row[idName]]) {
+        deduped.push(row)
+        seenIds[row[idName]] = true
+      }
+    }
+  }
+  return deduped
+}
+
+function normalizeSearchText (searchText) {
+  let normalSearchText = searchText
+  // remove non-word/non-space characters
+  normalSearchText = normalSearchText.replace(/[^\w\s]/g, '')
+  // normalize space
+  normalSearchText = normalSearchText.replace(/\s+/g, ' ')
+  return normalSearchText
+}
+
+function makeSearchFullTextPhraseQuery (tableName, textColumnName) {
+  return `
+    with
+      results as (
+        select 
+            t.*
+          , ts_rank_cd(vector, query) as rank
+        from 
+          ${tableName} t, 
+          phraseto_tsquery('english', $1) as query,
+          to_tsvector('english', ${textColumnName}) as vector
+        where 
+              query @@ vector
+          and deleted is null
+      )
+    select * from results order by rank desc
+    `
+}
+
+
+function makeSearchFullTextPlainQuery (tableName, textColumnName) {
+  return `
+    with
+      results as (
+        select 
+            t.*
+          , ts_rank_cd(vector, query) as rank
+        from 
+          ${tableName} t, 
+          plainto_tsquery('english', $1) as query,
+          to_tsvector('english', ${textColumnName}) as vector
+        where 
+              query @@ vector
+          and deleted is null
+      )
+    select * from results order by rank desc
+    `
+}
+
+function makeSearchFullTextRawQuery(tableName, textColumnName, tsquery) {
+  return `
+    with
+      results as (
+        select 
+            t.*
+          , ts_rank_cd(vector, ${tsquery}) as rank
+        from 
+          ${tableName} t, 
+          to_tsvector('english', ${textColumnName}) as vector
+        where 
+              (${tsquery}) @@ vector
+          and deleted is null
+      )
+    select * from results order by rank desc
+    `
+}
+
+function makeSearchContainingTextQuery(tableName, textColumnName) {
+  return `
+    select * 
+    from ${tableName} 
+    where 
+          ${textColumnName} ilike '%' || $1 || '%'
+      and deleted is null
+  `
+}

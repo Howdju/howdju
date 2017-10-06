@@ -5,6 +5,7 @@ import {
   JustificationBasisType,
   JustificationTargetType,
   SourceExcerptType,
+  EntityType,
 } from 'howdju-common'
 
 export const statementSchema = new schema.Entity('statements')
@@ -100,3 +101,10 @@ export const perspectiveSchema = new schema.Entity('perspectives', {
   justifications: justificationsSchema,
 })
 export const perspectivesSchema = [perspectiveSchema]
+
+export const mainSearchResultsSchema = {
+  statementTexts: statementsSchema,
+  writQuoteQuoteTexts: writQuotesSchema,
+  writQuoteUrls: writQuotesSchema,
+  writTitles: writsSchema,
+}

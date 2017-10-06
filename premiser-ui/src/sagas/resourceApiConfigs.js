@@ -26,6 +26,7 @@ import {
   writQuotesSchema,
   justificationBasisCompoundSchema,
   sourceExcerptParaphraseSchema,
+  mainSearchResultsSchema,
 } from '../schemas'
 
 
@@ -204,10 +205,7 @@ export const resourceApiConfigs = {
     schema: statementJustificationsSchema,
     requiresRehydrate: true
   }),
-  [api.fetchStatementsSearch]: payload => ({
-    endpoint: `search-statements?searchText=${payload.searchText}`,
-    schema: statementsSchema,
-  }),
+
   [api.verifyJustification]: payload => ({
     endpoint: 'votes',
     fetchInit: {
@@ -258,9 +256,14 @@ export const resourceApiConfigs = {
     cancelKey: str(api.fetchWritTitleSuggestions) + '.' + payload.suggestionsKey,
     schema: writsSchema,
   }),
+
+  [api.fetchMainSearchResults]: payload => ({
+    endpoint: `search?searchText=${payload.searchText}`,
+    schema: mainSearchResultsSchema,
+  }),
   [api.fetchMainSearchSuggestions]: payload => ({
-    endpoint: `search-statements?searchText=${payload.searchText}`,
+    endpoint: `search?searchText=${payload.searchText}`,
     cancelKey: str(api.fetchMainSearchSuggestions) + '.' + payload.suggestionsKey,
-    schema: statementsSchema,
-  })
+    schema: mainSearchResultsSchema,
+  }),
 }

@@ -88,6 +88,11 @@ exports.UrlsDao = class UrlsDao {
       .then( ({rows}) => groupUrlsByWritQuoteId(rows))
   }
 
+  readDomains() {
+    return this.database.query(`select distinct substring( url from '.*://([^/]*)' ) as domain from urls order by domain`)
+      .then(({rows}) => map(rows, row => row.domain))
+  }
+
   createUrls(urls, userId, now) {
     return map(urls, url => this.createUrl(url, userId, now))
   }

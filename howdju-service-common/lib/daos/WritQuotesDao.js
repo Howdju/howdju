@@ -37,10 +37,10 @@ exports.WritQuotesDao = class WritQuotesDao {
     return Promise.all([
       this.database.query(`
         select 
-            wq.writ_quote_id
-          , wq.quote_text
-          , w.writ_id
+            wq.*
           , w.title as writ_title
+          , w.created as writ_created
+          , w.creator_user_id as writ_creator_user_id
         from writ_quotes wq join writs w on 
               wq.writ_quote_id = $1
           and wq.writ_id = w.writ_id
@@ -96,6 +96,7 @@ exports.WritQuotesDao = class WritQuotesDao {
           wq.*
         , w.title as writ_title
         , w.created as writ_created
+        , w.creator_user_id as writ_creator_user_id
       from writ_quotes wq
           join writs w USING (writ_id)
         where 
@@ -245,6 +246,27 @@ exports.WritQuotesDao = class WritQuotesDao {
     return this.database.query('select * from writ_quote_urls where writ_quote_id = $1 and deleted is null',
       [writQuote.id])
       .then( ({rows}) => map(rows, toWritQuoteUrl) )
+  }
+
+  readWritQuotesHavingUrlContainingText(text) {
+    const sql = `
+      with 
+        containing_urls as (
+          select url_id from urls where url ilike '%'|| $1 || '%'
+        )
+      select distinct wq.writ_quote_id
+      from 
+        writ_quotes wq 
+          join writs w using (writ_id)
+          join writ_quote_urls wqu using (writ_quote_id)
+          join containing_urls u using (url_id)
+        where 
+              wq.deleted is null
+          and w.deleted is null
+          and wqu.deleted is null
+    `
+    return this.database.query(sql, [text])
+      .then(({rows}) => Promise.all(map(rows, row => this.readWritQuoteForId(row.writ_quote_id))))
   }
 
   createWritQuoteUrls(writQuote, urls, userId, now) {

@@ -4,7 +4,7 @@ const moment = require('moment')
 const Promise = require('bluebird')
 
 const {
-  EntityTypes,
+  EntityType,
   utcNow,
 } = require('howdju-common')
 
@@ -78,7 +78,7 @@ exports.AuthService = class AuthService {
     return this.authDao.readUserHashForEmail(credentials.email, HashTypes.BCRYPT)
       .then( (userHash) => {
         if (!userHash) {
-          throw new EntityNotFoundError(EntityTypes.PASSWORD_HASH)
+          throw new EntityNotFoundError(EntityType.PASSWORD_HASH)
         }
         this.logger.silly('userHash', userHash)
         const {userId, hash} = userHash

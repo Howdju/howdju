@@ -90,6 +90,7 @@ class ListEntitiesWidget extends Component {
     const flipMoveProps = config.ui.flipMove
 
     return (
+      // Removing this div results in a horizontal scroll bar for some reason
       <div id={id}>
         <FlipMove
           {...flipMoveProps}

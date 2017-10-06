@@ -105,6 +105,7 @@ $small-chat-iframe-z-index: 999999999;
   //  z-index: $small-chat-iframe-z-index + 1;
   //}
 
+  // For cells that switch to single-column, we want no spacing
   .md-grid--card-list--tablet {
     .md-cell {
       margin: 0;

@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const {
   ActionType,
   ActionTargetType,
-  EntityTypes,
+  EntityType,
   requireArgs,
   utcNow,
 } = require('howdju-common')
@@ -36,7 +36,7 @@ exports.UsersService = class UsersService {
     return this.usersDao.readUserForEmail(email)
       .then((user) => {
         if (!user) {
-          throw new EntityNotFoundError(EntityTypes.USER, email)
+          throw new EntityNotFoundError(EntityType.USER, email)
         }
 
         return this.authService.createOrUpdateAuthForUserIdWithPassword(user.id, password)

@@ -46,8 +46,7 @@ const apiActionCreator = (...args) => {
 }
 
 export const app = {
-  /** If the query params indicate a main search, initialize the results */
-  fetchMainSearchResults: actionCreator('APP/FETCH_MAIN_SEARCH_RESULTS', searchText => ({searchText})),
+  searchMainSearch: actionCreator('APP/SEARCH_MAIN_SEARCH', searchText => ({searchText})),
 }
 
 export const api = {
@@ -142,6 +141,8 @@ export const api = {
   createJustification: apiActionCreator('CREATE_JUSTIFICATION', (justification) => ({justification: decircularizeJustification(justification)})),
   updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', (justification) => ({justification})),
+
+  fetchMainSearchResults: apiActionCreator('FETCH_MAIN_SEARCH_RESULTS', searchText => ({searchText})),
   fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', (searchText) => ({searchText})),
 }
 export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator) => {

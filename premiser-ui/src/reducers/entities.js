@@ -139,6 +139,7 @@ export default handleActions({
     api.fetchMainSearchSuggestions.response,
     api.fetchStatementTextSuggestions.response,
     api.fetchWritTitleSuggestions.response,
+    api.fetchMainSearchResults.response,
   )]: {
     next: (state, action) => {
       const updates = map([

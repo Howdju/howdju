@@ -10,6 +10,7 @@ module.exports = assign(
   require('./JustificationBasisCompoundsService'),
   require('./JustificationsService'),
   require('./JustificationScoresService'),
+  require('./MainSearchService'),
   require('./PermissionsService'),
   require('./PerspectivesService'),
   require('./PicRegionsService'),

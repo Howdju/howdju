@@ -93,6 +93,14 @@ const routes = [
       appProvider.writsTitleSearcher.search(searchText)
         .then( (rankedWrits) => ok({callback, body: rankedWrits}))
   },
+  {
+    id: 'mainSearch',
+    path: 'search',
+    method: httpMethods.GET,
+    handler: (appProvider, {callback, request: { queryStringParameters: { searchText }}}) =>
+      appProvider.mainSearchService.search(searchText)
+        .then( (results) => ok({callback, body: results}))
+  },
 
   /*
    * Statements

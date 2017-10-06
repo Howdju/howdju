@@ -16,6 +16,7 @@ export default class WritQuoteCard extends Component {
       id,
       writQuote,
       className,
+      showUrls,
       ...rest,
     } = this.props
 
@@ -29,7 +30,7 @@ export default class WritQuoteCard extends Component {
             id={id}
             expandableChildComponent={WritQuoteEntityViewer}
             writQuote={writQuote}
-            showUrls={false}
+            showUrls={showUrls}
           />
         </CardText>
       </Card>
@@ -38,4 +39,7 @@ export default class WritQuoteCard extends Component {
 }
 WritQuoteCard.propTypes = {
   writQuote: PropTypes.object.isRequired,
+}
+WritQuoteCard.defaultProps = {
+  showUrls: false,
 }

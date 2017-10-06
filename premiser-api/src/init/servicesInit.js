@@ -8,6 +8,7 @@ const {
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
+  MainSearchService,
   PermissionsService,
   PerspectivesService,
   PicRegionsService,
@@ -134,12 +135,21 @@ exports.init = function init(provider) {
     provider.votesDao
   )
 
+  const mainSearchService = new MainSearchService(
+    provider.logger,
+    provider.statementsTextSearcher,
+    provider.writsTitleSearcher,
+    provider.writQuotesQuoteTextSearcher,
+    writQuotesService
+  )
+
   assign(provider, {
     actionsService,
     authService,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,
+    mainSearchService,
     permissionsService,
     perspectivesService,
     sourceExcerptParaphrasesService,

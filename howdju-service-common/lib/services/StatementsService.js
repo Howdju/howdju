@@ -10,7 +10,7 @@ const pickBy = require('lodash/pickBy')
 const toNumber = require('lodash/toNumber')
 
 const {
-  EntityTypes,
+  EntityType,
   SortDirection,
   userActionsConflictCodes,
   entityConflictCodes,
@@ -56,7 +56,7 @@ exports.StatementsService = class StatementsService {
     return this.statementsDao.readStatementForId(statementId)
       .then(statement => {
         if (!statement) {
-          throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
+          throw new EntityNotFoundError(EntityType.STATEMENT, statementId)
         }
         return statement
       })
@@ -164,7 +164,7 @@ exports.StatementsService = class StatementsService {
       })
       .then(([userId, now, updatedStatement]) => {
         if (!updatedStatement) {
-          throw new EntityNotFoundError(EntityTypes.STATEMENT, statement.id)
+          throw new EntityNotFoundError(EntityType.STATEMENT, statement.id)
         }
 
         this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.STATEMENT, updatedStatement.id)
@@ -185,7 +185,7 @@ exports.StatementsService = class StatementsService {
         const result = [userId, now, statement, dependentJustifications]
 
         if (!statement) {
-          throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
+          throw new EntityNotFoundError(EntityType.STATEMENT, statementId)
         }
         if (hasPermission) {
           return result

@@ -21,7 +21,7 @@ import {
   redirectHomeFromMissingStatement,
   redirectToLoginWhenUnauthorized
 } from './flowSagas'
-import {fetchMainSearchResults} from './fetchMainSearchResultsSaga'
+import {searchMainSearch} from './searchMainSearchSaga'
 import {commitEditorThenView} from './editors/commitEditorThenViewSaga'
 import {commitEditThenPutActionOnSuccess} from './editors/commitEditThenPutActionOnSuccessSaga'
 import {fetchAndBeginEditOfNewJustificationFromBasisSource} from './editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga'
@@ -32,7 +32,7 @@ export default () => [
 
   resourceApiCalls(),
   cancelResourceApiCalls(),
-  fetchMainSearchResults(),
+  searchMainSearch(),
 
   flagRehydrate(),
   logErrors(),

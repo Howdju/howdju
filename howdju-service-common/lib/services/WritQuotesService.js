@@ -107,6 +107,10 @@ exports.WritQuotesService = class WritQuotesService {
       })
   }
 
+  readWritQuotesHavingUrlContainingText(text) {
+    return this.writQuotesDao.readWritQuotesHavingUrlContainingText(text)
+  }
+
   updateWritQuote({authToken, writQuote}) {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => {

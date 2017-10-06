@@ -5,11 +5,14 @@
     * Translate to Paraphrases
       * When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see
         the paraphrased citations here...
+    * Sometimes when submitting I don't want to paraphrase, just capture writ
+      * Sometimes okay paraphrasing, but don't want to justify
   * Add indices (root statement ID, joins)
   * Discovery
-    * main search includes writs and quotes
-      * Elastic search?
     * tagging
+    * Show main search domains as card with quote count, justification count, and statement count
+      * Link to writQuotes using that domain
+    * main search includes tags
   * version API
   * Additional excerpt fields
   * Additional excerpt types
@@ -25,7 +28,9 @@
     * Creation/deletion as existence of a creation action vs. row in table
   * semantically equivalent statements (voting, display, automatic detection)
     * Negations (voting, display, automatic detection)
-    
+
+* Should show when a justification was created
+
 * recent quotes: exclude those with empty quotes?
 
 * Escape in new justification dialog is awful when I hit it accidentally and lose my form data
@@ -34,14 +39,16 @@
 * Redirecting from deleted statement fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
   * https://stackoverflow.com/a/39507279/39396
 
+* Build UI into subfolder to prevent collisions while running locally and building for prod? 
 * local env has production sentry env?
+   * This occurs when we deploy to production while serving dev.  The deployment replaces index.html
 
 * While researching these old statements, it's really annoying not to be able to know where the citations are hidden.
   * A tree view showing the primary sources in relation to the overall would be great.
   
 * Command-clicking on tab navigates in current tab
 
-* Build UI into subfolder to prevent collisions while running locally and building for prod? 
+
 
 * when scroll area is smaller than header smllchat doesnt reappear
   

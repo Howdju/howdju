@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 
 const {
-  EntityTypes,
+  EntityType,
   requireArgs,
 } = require('howdju-common')
 
@@ -26,7 +26,7 @@ exports.StatementJustificationsService = class StatementJustificationsService {
       ]))
       .then(([statement, justifications]) => {
         if (!statement) {
-          throw new EntityNotFoundError(EntityTypes.STATEMENT, statementId)
+          throw new EntityNotFoundError(EntityType.STATEMENT, statementId)
         }
 
         return {

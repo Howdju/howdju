@@ -16,6 +16,7 @@
     "db:prod": "bin/db-tunnel.sh prod",
     "db:pre-prod": "bin/db-tunnel.sh pre-prod",
     "create-user:prod": "source ../config/prod-local-tunnel.env && node bin/create-user.js",
+    "create-user:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/create-user.js",
     "create-user:local": "source ../config/local.env && node bin/create-user.js",
     "lint": "eslint bin lib src gulpfile.js server.js",
     "serve:local": "npm run lint && bin/serve-local.sh",

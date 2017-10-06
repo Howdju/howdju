@@ -6,7 +6,7 @@ const {
 
 const _e = module.exports
 
-_e.EntityTypes = arrayToObject([
+_e.EntityType = arrayToObject([
   'STATEMENT',
   'WRIT',
   'WRIT_QUOTE',

@@ -1,5 +1,4 @@
 import {handleActions} from "redux-actions"
-import map from 'lodash/map'
 import union from 'lodash/union'
 
 import {
@@ -21,17 +20,21 @@ export const statementJustificationsPage = handleActions({
 })
 
 export const mainSearchPage = handleActions({
-  [api.fetchStatementsSearch]: (state, action) => ({...state, isFetching: true}),
-  [api.fetchStatementsSearch.response]: {
+  [api.fetchMainSearchResults]: (state, action) => ({...state, isFetching: true}),
+  [api.fetchMainSearchResults.response]: {
     next: (state, action) => {
-      const statements = map(action.payload.result, id => action.payload.entities.statements[id])
-      return {...state, isFetching: false, statements: statements || []}
+      return {...state, isFetching: false, results: action.payload.result}
     },
     throw: (state, action) => ({...state, isFetching: false})
   }
 }, {
   isFetching: false,
-  statements: []
+  results: {
+    statementTexts: [],
+    writQuoteQuoteTexts: [],
+    writQuoteUrls: [],
+    writTitles: [],
+  }
 })
 
 export const featuredPerspectivesPage = handleActions({
