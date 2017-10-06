@@ -18,9 +18,13 @@ const config = {
   ],
   ui: {
     narrowBreakpoint: 840,
-    flipMoveDuration: 750,
-    flipMoveEasing: "ease-out",
     shortTextLength: 256,
+    flipMove: {
+      duration: 600,
+      easing: "ease",
+      staggerDurationBy: 15,
+      staggerDelayBy: 50,
+    }
   },
 }
 

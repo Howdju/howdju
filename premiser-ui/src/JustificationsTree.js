@@ -54,10 +54,6 @@ class JustificationsTree extends Component {
       showNewPositiveJustificationDialog,
       showNewNegativeJustificationDialog,
     } = this.props
-    const {
-      flipMoveDuration,
-      flipMoveEasing
-    } = config.ui
 
     const justificationsByPolarity = groupBy(justifications, j => j.polarity)
     const positiveJustifications = get(justificationsByPolarity, JustificationPolarity.POSITIVE, [])
@@ -78,10 +74,9 @@ class JustificationsTree extends Component {
       const treesClass = "statement-justifications-justification-trees--combined"
       branchesCells = (
         <FlipMove
+          {...config.ui.flipMove}
           key={treesClass}
           className={`md-cell md-cell--12 ${treesClass}`}
-          duration={flipMoveDuration}
-          easing={flipMoveEasing}
         >
           {map(justifications, this.toBranch)}
         </FlipMove>
@@ -91,10 +86,9 @@ class JustificationsTree extends Component {
       const negativeTreeClass = "statement-justifications-justification-trees--negative"
       branchesCells = [
         <FlipMove
+          {...config.ui.flipMove}
           key={positiveTreeClass}
           className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${positiveTreeClass}`}
-          duration={flipMoveDuration}
-          easing={flipMoveEasing}
         >
           {hasJustifications && (
             <h2 className="md-cell md-cell--12" key="supporting-justifications-header">
@@ -119,10 +113,9 @@ class JustificationsTree extends Component {
           {map(positiveJustifications, this.toBranch)}
         </FlipMove>,
         <FlipMove
+          {...config.ui.flipMove}
           key={negativeTreeClass}
           className={`md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone ${negativeTreeClass}`}
-          duration={flipMoveDuration}
-          easing={flipMoveEasing}
         >
           {hasJustifications && (
             <h2 className="md-cell md-cell--12" key="opposting-justifications-header">

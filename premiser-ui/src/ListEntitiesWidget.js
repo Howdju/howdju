@@ -63,31 +63,37 @@ class ListEntitiesWidget extends Component {
     } = this.props
     const hasEntities = this.hasEntities()
     const cards = () => map(entities, this.props.entityToCard)
-    const fetchMoreButtonCell = <FetchButton flat
-                                             className={cellClasses}
-                                             key="fetch-more-button"
-                                             progressId={`${id}-fetch-more-button-progress`}
-                                             label="Fetch more"
-                                             onClick={this.fetchMore}
-                                             disabled={isFetching}
-                                             isFetching={isFetching}
-    />
-    const retryButtonCell = <FetchButton flat
-                                         className={cellClasses}
-                                         key="retry-button"
-                                         progressId={`${id}-retry-button-progress`}
-                                         label="Retry"
-                                         disabled={isFetching}
-                                         isFetching={isFetching}
-                                         onClick={this.fetchMore}
-    />
-    const {flipMoveDuration, flipMoveEasing} = config.ui
+    const fetchMoreButtonCell = (
+      <FetchButton
+        flat
+        className={cellClasses}
+        key="fetch-more-button"
+        progressId={`${id}-fetch-more-button-progress`}
+        label="Fetch more"
+        onClick={this.fetchMore}
+        disabled={isFetching}
+        isFetching={isFetching}
+      />
+    )
+    const retryButtonCell = (
+      <FetchButton
+        flat
+        className={cellClasses}
+        key="retry-button"
+        progressId={`${id}-retry-button-progress`}
+        label="Retry"
+        disabled={isFetching}
+        isFetching={isFetching}
+        onClick={this.fetchMore}
+      />
+    )
+    const flipMoveProps = config.ui.flipMove
 
     return (
       <div id={id}>
-        <FlipMove {...rest}
-                  duration={flipMoveDuration}
-                  easing={flipMoveEasing}
+        <FlipMove
+          {...flipMoveProps}
+          {...rest}
         >
           {hasEntities && concat(cards(), fetchMoreButtonCell)}
           {!hasEntities && !isFetching && (

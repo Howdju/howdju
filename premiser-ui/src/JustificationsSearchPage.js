@@ -58,10 +58,7 @@ class JustificationsSearchPage extends Component {
       isFetching,
       justifications,
     } = this.props
-    const {
-      flipMoveDuration,
-      flipMoveEasing
-    } = config.ui
+    const flipMoveProps = config.ui.flipMove
 
     const hasJustifications = justifications && justifications.length > 0
 
@@ -78,9 +75,10 @@ class JustificationsSearchPage extends Component {
       <div className="md-grid">
         <h1 className="md-cell md-cell--12">Justifications</h1>
 
-        <FlipMove className="md-cell md-cell--12 center-text"
-                  duration={flipMoveDuration}
-                  easing={flipMoveEasing}
+        <FlipMove
+          {...flipMoveProps}
+          className="md-cell md-cell--12 center-text"
+
         >
           {map(justifications, j => {
             const id = `justification-card-${j.id}`

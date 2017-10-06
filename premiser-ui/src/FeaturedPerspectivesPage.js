@@ -26,19 +26,16 @@ class FeaturedPerspectivesPage extends Component {
       perspectives,
       isFetching,
     } = this.props
-    const {
-      flipMoveDuration,
-      flipMoveEasing
-    } = config.ui
+    const flipMoveProps = config.ui.flipMove
 
     const hasPerspectives = perspectives && perspectives.length > 0
 
     return (
       <div id="featuredPerspectives">
         <div className="md-grid">
-          <FlipMove className="md-cell md-cell--12 center-text"
-                    duration={flipMoveDuration}
-                    easing={flipMoveEasing}
+          <FlipMove
+            {...flipMoveProps}
+            className="md-cell md-cell--12 center-text"
           >
             {map(perspectives, p => {
               const id = `featured-perspective-${p.id}`

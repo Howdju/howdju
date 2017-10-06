@@ -276,10 +276,10 @@ class JustificationBranch extends Component {
       )
     }
 
-    const {flipMoveDuration, flipMoveEasing} = config.ui
+    const flipMoveProps = config.ui.flipMove
     const counterJustifications = (
       <div className="counter-justifications">
-        <FlipMove duration={flipMoveDuration} easing={flipMoveEasing}>
+        <FlipMove {...flipMoveProps}>
           {newCounterJustification &&
           <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justification-card">
 
