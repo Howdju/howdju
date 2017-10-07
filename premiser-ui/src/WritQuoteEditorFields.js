@@ -132,11 +132,11 @@ class WritQuoteEditorFields extends Component {
         <Button
           flat
           className="add-button"
-          key="addUrlButton"
           label="Add URL"
+          children="add"
           onClick={this.props.onAddUrl}
           disabled={disabled}
-        >add</Button>
+        />
         {hasErrors && errors.modelErrors && (
           <ErrorMessages errors={errors.modelErrors} />
         )}

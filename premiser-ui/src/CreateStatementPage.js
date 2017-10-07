@@ -37,9 +37,6 @@ import {
   combineIds,
   combineSuggestionsKeys,
 } from './viewModels'
-import {
-  editStatementJustificationPageEditorId,
-} from "./editorIds"
 import NewJustificationEditorFields from "./NewJustificationEditorFields"
 import StatementEditorFields from "./StatementEditorFields"
 import {EditorTypes} from "./reducers/editors"
@@ -79,13 +76,6 @@ const newJustificationName = 'newJustification'
 
 class CreateStatementPage extends Component {
 
-  constructor() {
-    super()
-
-    this.editorId = editStatementJustificationPageEditorId
-    this.editorType = EditorTypes.STATEMENT_JUSTIFICATION
-  }
-
   componentWillMount() {
     this.initializeEditor()
   }
@@ -93,7 +83,7 @@ class CreateStatementPage extends Component {
   initializeEditor = () => {
     switch (this.props.mode) {
       case CreateStatementPageMode.CREATE_STATEMENT:
-        this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification())
+        this.props.editors.beginEdit(CreateStatementPage.editorType, CreateStatementPage.editorId, makeNewStatementJustification())
         break
       case CreateStatementPageMode.CREATE_JUSTIFICATION: {
         const {
@@ -101,9 +91,10 @@ class CreateStatementPage extends Component {
           basisSourceId,
         } = this.props.queryParams
         // First clear out the editor
-        this.props.editors.cancelEdit(this.editorType, this.editorId)
+        this.props.editors.cancelEdit(CreateStatementPage.editorType, CreateStatementPage.editorId)
         // Then fetch the stuff for editing
-        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(this.editorType, this.editorId, basisSourceType, basisSourceId)
+        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(CreateStatementPage.editorType,
+          CreateStatementPage.editorId, basisSourceType, basisSourceId)
         break
       }
       case CreateStatementPageMode.SUBMIT_JUSTIFICATION: {
@@ -112,7 +103,7 @@ class CreateStatementPage extends Component {
           description,
           quoteText,
         } = this.props.queryParams
-        this.props.editors.beginEdit(this.editorType, this.editorId, makeNewStatementJustification({}, {
+        this.props.editors.beginEdit(CreateStatementPage.editorType, CreateStatementPage.editorId, makeNewStatementJustification({}, {
           basis: {
             type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
             justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote({
@@ -130,50 +121,50 @@ class CreateStatementPage extends Component {
   }
 
   onPropertyChange = (properties) => {
-    this.props.editors.propertyChange(this.editorType, this.editorId, properties)
+    this.props.editors.propertyChange(CreateStatementPage.editorType, CreateStatementPage.editorId, properties)
   }
 
   addJustificationUrl = () => {
-    this.props.editors.addUrl(this.editorType, this.editorId)
+    this.props.editors.addUrl(CreateStatementPage.editorType, CreateStatementPage.editorId)
   }
 
   removeJustificationUrl = (url, index) => {
-    this.props.editors.removeUrl(this.editorType, this.editorId, url, index)
+    this.props.editors.removeUrl(CreateStatementPage.editorType, CreateStatementPage.editorId, url, index)
   }
 
   addJustificationStatementCompoundAtom = (index) => {
-    this.props.editors.addStatementCompoundAtom(this.editorType, this.editorId, index)
+    this.props.editors.addStatementCompoundAtom(CreateStatementPage.editorType, CreateStatementPage.editorId, index)
   }
 
   removeJustificationStatementCompoundAtom = (atom, index) => {
-    this.props.editors.removeStatementCompoundAtom(this.editorType, this.editorId, atom, index)
+    this.props.editors.removeStatementCompoundAtom(CreateStatementPage.editorType, CreateStatementPage.editorId, atom, index)
   }
 
   addJustificationBasisCompoundAtom = (index) => {
-    this.props.editors.addJustificationBasisCompoundAtom(this.editorType, this.editorId, index)
+    this.props.editors.addJustificationBasisCompoundAtom(CreateStatementPage.editorType, CreateStatementPage.editorId, index)
   }
 
   removeJustificationBasisCompoundAtom = (atom, index) => {
-    this.props.editors.removeJustificationBasisCompoundAtom(this.editorType, this.editorId, atom, index)
+    this.props.editors.removeJustificationBasisCompoundAtom(CreateStatementPage.editorType, CreateStatementPage.editorId, atom, index)
   }
 
   onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atomIndex, urlIndex) => {
-    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
-      this.editorId, atomIndex, urlIndex)
+    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(CreateStatementPage.editorType,
+      CreateStatementPage.editorId, atomIndex, urlIndex)
   }
 
   onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atom, atomIndex, url, urlIndex) => {
-    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
-      this.editorId, atom, atomIndex, url, urlIndex)
+    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(CreateStatementPage.editorType,
+      CreateStatementPage.editorId, atom, atomIndex, url, urlIndex)
   }
 
   onDoCreateJustificationSwitchChange = (checked) => {
-    this.props.editors.propertyChange(this.editorType, this.editorId, {[doCreateJustificationName]: checked})
+    this.props.editors.propertyChange(CreateStatementPage.editorType, CreateStatementPage.editorId, {[doCreateJustificationName]: checked})
   }
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.flows.commitEditThenView(this.editorType, this.editorId)
+    this.props.flows.commitEditThenView(CreateStatementPage.editorType, CreateStatementPage.editorId)
   }
 
   onCancel = () => {
@@ -318,10 +309,12 @@ class CreateStatementPage extends Component {
     )
   }
 }
-CreateStatementPage.id = 'CreateStatementPage'
+CreateStatementPage.id = 'create-statement-page'
+CreateStatementPage.editorType = EditorTypes.STATEMENT_JUSTIFICATION
+CreateStatementPage.editorId = CreateStatementPage.id
 
 const mapStateToProps = (state, ownProps) => {
-  const editorState = get(state.editors, [EditorTypes.STATEMENT_JUSTIFICATION, editStatementJustificationPageEditorId], {})
+  const editorState = get(state.editors, [CreateStatementPage.editorType, CreateStatementPage.editorId], {})
   const queryParams = queryString.parse(ownProps.location.search)
   return {
     editorState,

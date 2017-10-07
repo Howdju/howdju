@@ -5,7 +5,6 @@ import {
   JustificationBasisType,
   JustificationTargetType,
   SourceExcerptType,
-  EntityType,
 } from 'howdju-common'
 
 export const statementSchema = new schema.Entity('statements')

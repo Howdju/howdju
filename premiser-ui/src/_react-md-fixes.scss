@@ -35,10 +35,6 @@
     padding: 25px;
   }
 
-  .md-icon {
-    color: $icon-color;
-  }
-
   html, body {
     &.md-no-scroll {
       // This is to counteract something weird that React-MD does when showing a dialog:

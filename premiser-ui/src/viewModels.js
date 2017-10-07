@@ -1,7 +1,8 @@
 import assign from 'lodash/assign'
 import camelCase from 'lodash/camelCase'
 import cloneDeep from 'lodash/cloneDeep'
-import filter from 'lodash/filter'
+import dropWhile from 'lodash/dropWhile'
+import flatMap from 'lodash/flatMap'
 import forEach from 'lodash/forEach'
 import get from 'lodash/get'
 import head from 'lodash/head'
@@ -9,6 +10,7 @@ import join from 'lodash/join'
 import kebabCase from 'lodash/kebabCase'
 import lowerCase from 'lodash/lowerCase'
 import map from 'lodash/map'
+import split from 'lodash/split'
 import truncate from 'lodash/truncate'
 
 import config from './config'
@@ -17,7 +19,7 @@ import {
   newExhaustedEnumError,
   JustificationBasisCompoundAtomType,
   SourceExcerptType,
-  isTruthy,
+  isFalsey,
 } from 'howdju-common'
 import {ellipsis} from './characters'
 
@@ -238,8 +240,14 @@ export function sourceExcerptSourceDescription(sourceExcerpt) {
 }
 
 export function combineIds(...ids) {
-  // Ids aren't always passed by the parent, so filter out falsey
-  return join(map(filter(ids, isTruthy), kebabCase), '--')
+  const idDelimiter = '--'
+  // Ids aren't always passed by the parent, so filter out the initial falsey ones
+  ids = dropWhile(ids, isFalsey)
+  // if ids are internally using the delimiter, split them up by it
+  ids = flatMap(ids, id => split(id, idDelimiter))
+  // ensure the resulting tokens are kebab-cased
+  ids = map(ids, kebabCase)
+  return join(ids, idDelimiter)
 }
 
 export function combineSuggestionsKeys(...keys) {

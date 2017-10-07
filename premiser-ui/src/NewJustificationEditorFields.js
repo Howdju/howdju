@@ -33,18 +33,12 @@ const justificationBasisCompoundName = 'basis.justificationBasisCompound'
 
 const polarityControls = [{
   value: JustificationPolarity.POSITIVE,
-  label: (
-    <div title="Support the truth of the statement">
-      {t(JUSTIFICATION_POLARITY_POSITIVE)}
-    </div>
-  ),
+  label: t(JUSTIFICATION_POLARITY_POSITIVE),
+  title: "Support the truth of the statement",
 }, {
   value: JustificationPolarity.NEGATIVE,
-  label: (
-    <div title="Oppose the truth of the statement">
-      {t(JUSTIFICATION_POLARITY_NEGATIVE)}
-    </div>
-  ),
+  label: t(JUSTIFICATION_POLARITY_NEGATIVE),
+  title: "Oppose the truth of the statement",
 }]
 // const basisTypeControls = [
 //   {
@@ -73,7 +67,7 @@ const polarityControls = [{
 //   },
 // ]
 
-class NewJustificationEditorFields extends Component {
+export default class NewJustificationEditorFields extends Component {
 
   onChange = (value, event) => {
     const name = event.target.name
@@ -145,10 +139,10 @@ class NewJustificationEditorFields extends Component {
       />
     )
     const justificationBasisCompoundEditorFields = [
-      <h3 className="justification-basis-compound-editor-fields-header"
+      <h2 className="justification-basis-compound-editor-fields-header"
           key="justification-basis-compound-editor-fields-header">
         Clauses
-      </h3>,
+      </h2>,
       <JustificationBasisCompoundEditorFields
         {...commonFieldsProps}
         justificationBasisCompound={justificationBasisCompound}
@@ -221,5 +215,3 @@ NewJustificationEditorFields.propTypes = {
   /** Passed to subcontrols */
   onKeyDown: PropTypes.func,
 }
-
-export default NewJustificationEditorFields

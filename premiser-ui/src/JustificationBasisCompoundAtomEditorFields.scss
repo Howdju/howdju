@@ -1,5 +1,13 @@
+@import "~react-md/src/scss/grids";
+
 .justification-basis-compound-atom-editor-fields {
   display: flex;
+
+  @media (max-width: $md-grid-desktop-breakpoint) {
+    & {
+      flex-direction: column;
+    }
+  }
 }
 
 @mixin center-children-vertically {
@@ -10,6 +18,25 @@
 
 .justification-basis-compound-atom-editor-fields--atom-type-controls {
   @include center-children-vertically;
+
+  h3 {
+    // Match up with the baseline of the select's labels
+    margin-bottom: 5px;
+
+    @media (max-width: $md-grid-desktop-breakpoint) {
+      & {
+        margin-right: 25px;
+      }
+    }
+  }
+
+  @media (max-width: $md-grid-desktop-breakpoint) {
+    & {
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+    }
+  }
 }
 
 .justification-basis-compound-atom-editor-fields--entity-controls {
@@ -19,6 +46,12 @@
   padding-right: 15px;
   margin: auto;
   width: 100%;
+
+  @media (max-width: $md-grid-desktop-breakpoint) {
+    & {
+      padding-left: 0;
+    }
+  }
 }
 
 .justification-basis-compound-atom-editor-fields--add-remove-atom-controls {

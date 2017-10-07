@@ -24,10 +24,12 @@
     * Social login
     * Terms, privacy, contact form
   * Business model: private content
-    * Anonymous posting
+    * Anonymous posting (what do I do the first time someone anonymously uses a racial slur?)
     * Creation/deletion as existence of a creation action vs. row in table
   * semantically equivalent statements (voting, display, automatic detection)
     * Negations (voting, display, automatic detection)
+
+* Why does windowAware need to be pure=false?
 
 * Should show when a justification was created
 

@@ -17,11 +17,12 @@ import {
   combineNames,
   combineIds,
 } from './viewModels'
+import windowAware from './windowAware'
 
 import './JustificationBasisCompoundAtomEditorFields.scss'
 
 
-export default class JustificationBasisCompoundAtomEditorFields extends Component {
+class JustificationBasisCompoundAtomEditorFields extends Component {
 
   onChange = (value, event) => {
     const name = event.target.name
@@ -43,25 +44,39 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
       onRemoveWritQuoteUrl,
       onKeyDown,
       onSubmit,
+      isWindowNarrow,
+      header,
     } = this.props
 
     const atomTypeControls = (
       <SelectionControlGroup
-        id={id + "-type"}
-        name={name + ".type"}
+        id={combineIds(id, "type")}
+        name={combineNames(name, "type")}
         type="radio"
         value={atom.type}
         onChange={this.onChange}
+        inline={isWindowNarrow}
+        className="atom-type-controls"
         controls={[
           {
             value: JustificationBasisCompoundAtomType.STATEMENT,
-            label: <FontIcon>short_text</FontIcon>,
-            title: 'Statement',
+            label: (
+              <div className="selection-label">
+                <FontIcon>short_text</FontIcon>
+                {isWindowNarrow && <span className="selection-label--text">Statement</span>}
+              </div>
+            ),
+            title: 'Statement-based clause',
           },
           {
             value: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-            label: <FontIcon>book</FontIcon>,
-            title: 'Source excerpt paraphrase',
+            label: (
+              <div className="selection-label">
+                <FontIcon>book</FontIcon>
+                {isWindowNarrow && <span className="selection-label--text">Source excerpt paraphrase</span>}
+              </div>
+            ),
+            title: 'Source-excerpt-paraphrase-based clause',
           }
         ]}
         disabled={disabled}
@@ -120,24 +135,34 @@ export default class JustificationBasisCompoundAtomEditorFields extends Componen
         throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
     }
 
+    const addRemoveAtomControlProps = {
+      icon: !isWindowNarrow,
+      flat: isWindowNarrow,
+      disabled: disabled
+    }
     const addRemoveAtomControls = (
       <div>
         <Button
-          icon
+          {...addRemoveAtomControlProps}
           onClick={onAddJustificationBasisCompoundAtom}
-          disabled={disabled}
-        >add</Button>
+          title="Add clause"
+          children="add"
+          label={isWindowNarrow && "Add clause"}
+        />
         <Button
-          icon
+          {...addRemoveAtomControlProps}
           onClick={onRemoveJustificationBasisCompoundAtom}
-          disabled={disabled}
-        >delete</Button>
+          title="Remove clause"
+          children="delete"
+          label={isWindowNarrow && "Remove clause"}
+        />
       </div>
     )
 
     return (
       <div className="justification-basis-compound-atom-editor-fields">
         <div className="justification-basis-compound-atom-editor-fields--atom-type-controls">
+          {header}
           {atomTypeControls}
         </div>
         <div className="justification-basis-compound-atom-editor-fields--entity-controls">
@@ -162,3 +187,5 @@ JustificationBasisCompoundAtomEditorFields.propTypes = {
   onPropertyChange: PropTypes.func.isRequired,
   onTextInputKeyDown: PropTypes.func,
 }
+
+export default windowAware(JustificationBasisCompoundAtomEditorFields)

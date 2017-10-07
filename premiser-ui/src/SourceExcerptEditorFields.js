@@ -10,10 +10,12 @@ import {
 } from 'howdju-common'
 
 import WritQuoteEditorFields from './WritQuoteEditorFields'
+import windowAware from './windowAware'
 
 import './SourceExcerptEditorFields.scss'
 
-export default class SourceExcerptEditorFields extends Component {
+
+class SourceExcerptEditorFields extends Component {
 
   onChange = (value, event) => {
     const name = event.target.name
@@ -33,6 +35,7 @@ export default class SourceExcerptEditorFields extends Component {
       onKeyDown,
       onSubmit,
       suggestionsKey,
+      isWindowNarrow,
     } = this.props
 
     const sourceExcerptTypeControls = (
@@ -42,20 +45,36 @@ export default class SourceExcerptEditorFields extends Component {
         type="radio"
         value={sourceExcerpt.type}
         onChange={this.onChange}
+        inline={isWindowNarrow}
         controls={[
           {
             value: SourceExcerptType.WRIT_QUOTE,
-            label: <FontIcon>book</FontIcon>,
+            label: (
+              <div className="selection-label">
+                <FontIcon>book</FontIcon>
+                {isWindowNarrow && <span className="selection-label--text">Writ quote</span>}
+              </div>
+            ),
             title: 'Writ quote',
           },
           {
             value: SourceExcerptType.PIC_REGION,
-            label: <FontIcon>photo</FontIcon>,
+            label: (
+              <div className="selection-label">
+                <FontIcon>photo</FontIcon>
+                {isWindowNarrow && <span className="selection-label--text">Pic</span>}
+              </div>
+            ),
             title: 'Pic',
           },
           {
             value: SourceExcerptType.VID_SEGMENT,
-            label: <FontIcon>videocam</FontIcon>,
+            label: (
+              <div className="selection-label">
+                <FontIcon>videocam</FontIcon>
+                {isWindowNarrow && <span className="selection-label--text">Vid</span>}
+              </div>
+            ),
             title: 'Vid',
           },
         ]}
@@ -116,3 +135,5 @@ export default class SourceExcerptEditorFields extends Component {
     )
   }
 }
+
+export default windowAware(SourceExcerptEditorFields)

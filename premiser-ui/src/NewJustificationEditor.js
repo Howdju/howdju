@@ -112,7 +112,7 @@ class NewJustificationEditor extends Component {
     ]
 
     return (
-      <form onSubmit={this.onSubmit}>
+      <form className="new-justification-editor" onSubmit={this.onSubmit}>
         <NewJustificationEditorFields
           {...rest}
           newJustification={newJustification}

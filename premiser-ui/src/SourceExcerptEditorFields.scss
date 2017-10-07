@@ -1,5 +1,13 @@
+@import "~react-md/src/scss/grids";
+
 .source-excerpt-editor-fields {
   display: flex;
+
+  @media (max-width: $md-grid-desktop-breakpoint) {
+    & {
+      flex-direction: column;
+    }
+  }
 }
 
 @mixin center-children-vertically {
@@ -17,4 +25,10 @@
   padding-right: 15px;
   margin: auto;
   width: 100%;
+
+  @media (max-width: $md-grid-desktop-breakpoint) {
+    & {
+      padding-left: 0;
+    }
+  }
 }

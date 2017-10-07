@@ -136,3 +136,12 @@ $small-chat-iframe-z-index: 999999999;
   font-weight: 200;
   font-size: 20px;
 }
+
+.selection-label {
+  display: flex;
+  align-items: center;
+
+  .selection-label--text {
+    margin-left: 5px;
+  }
+}

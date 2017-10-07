@@ -19,6 +19,8 @@ import {
 
 import NewJustificationEditor from './NewJustificationEditor'
 
+import './NewJustificationDialog.scss'
+
 
 class NewJustificationDialog extends Component {
 

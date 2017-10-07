@@ -13,13 +13,14 @@ import {
   combineNames,
   combineIds,
 } from './viewModels'
+import windowAware from './windowAware'
 
-import './WritQuoteEditorFields.scss'
+import './JustificationBasisCompoundEditorFields.scss'
 
 
 const atomsName = 'atoms'
 
-export default class JustificationBasisCompoundEditorFields extends Component {
+class JustificationBasisCompoundEditorFields extends Component {
 
   render() {
     const {
@@ -36,9 +37,10 @@ export default class JustificationBasisCompoundEditorFields extends Component {
       onPropertyChange,
       onKeyDown,
       onSubmit,
+      isWindowNarrow,
     } = this.props
 
-    const atoms = get(justificationBasisCompound, atomsName, [])
+    const atoms = get(justificationBasisCompound, atomsName)
 
     const hasErrors = errors && errors.hasErrors
     const atomItemsErrors = get(errors, 'fieldErrors.atoms.itemErrors')
@@ -48,6 +50,7 @@ export default class JustificationBasisCompoundEditorFields extends Component {
       const atomFieldsName = combineNames(name, atomName)
       const atomFieldsSuggestionsKey = combineSuggestionsKeys(suggestionsKey, atomName)
       const atomItemErrors = get(atomItemsErrors, index)
+      const clauseHeader = <h3>Clause {index+1}</h3>
       return (
         <JustificationBasisCompoundAtomEditorFields
           atom={atom}
@@ -56,6 +59,7 @@ export default class JustificationBasisCompoundEditorFields extends Component {
           name={atomFieldsName}
           suggestionsKey={atomFieldsSuggestionsKey}
           errors={atomItemErrors}
+          header={clauseHeader}
           onAddJustificationBasisCompoundAtom={e => onAddJustificationBasisCompoundAtom(index)}
           onRemoveJustificationBasisCompoundAtom={e => onRemoveJustificationBasisCompoundAtom(atom, index)}
           onAddWritQuoteUrl={(urlIndex, e) => onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(index, urlIndex)}
@@ -68,23 +72,36 @@ export default class JustificationBasisCompoundEditorFields extends Component {
       )
     })
     const dividedAtomEditorFields = flatMap(atomsEditorFields, (atomEditorFields, index) => {
+
       return index === atomsEditorFields.length - 1 ?
         atomEditorFields :
-        [atomEditorFields, <Divider key={`atom-editor-fields-divider-${index}`} inset />]
+        [
+          atomEditorFields,
+          (
+            <Divider
+              className="clause-divider"
+              key={`atom-editor-fields-divider-${index}`}
+              inset
+            />
+          )
+        ]
     })
 
     return (
       <div className="justification-basis-compound-editor-fields">
         {dividedAtomEditorFields}
 
-        <Button
-          flat
-          className="add-button"
-          key="addBasisCompoundAtomButton"
-          label="Add clause"
-          onClick={e => onAddJustificationBasisCompoundAtom(atoms.length)}
-          disabled={disabled}
-        >add</Button>
+        {!isWindowNarrow && (
+          <Button
+            flat
+            className="control-button add-button"
+            key="addBasisCompoundAtomButton"
+            label="Add clause"
+            onClick={e => onAddJustificationBasisCompoundAtom(atoms.length)}
+            disabled={disabled}
+            children="add"
+          />
+        )}
 
         {hasErrors && errors.modelErrors && (
           <ErrorMessages errors={errors.modelErrors} />
@@ -109,3 +126,6 @@ JustificationBasisCompoundEditorFields.propTypes = {
 JustificationBasisCompoundEditorFields.defaultProps = {
   disabled: false,
 }
+
+export default windowAware(JustificationBasisCompoundEditorFields)
+// export default JustificationBasisCompoundEditorFields
