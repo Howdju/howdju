@@ -1,5 +1,12 @@
 @import "colors";
 
+@media screen and (max-width: 1024px) {
+  // For some odd reason react-md moves a --right drawer to the left on small screens.  Force it to the right by unsetting left: 0
+  .md-drawer--right.md-drawer--right {
+    left: auto;
+  }
+}
+
 @mixin react-md-fixes($grid-desktop-breakpoint, $grid-phone-gutter) {
 
   .md-dialog {

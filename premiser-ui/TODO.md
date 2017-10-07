@@ -1,5 +1,7 @@
 # Howdju UI TODO
 
+* Automatically create writ quote upon bookmark submit load
+
 * Potential big priorities
   * Use bookmarklet; test prod
     * Translate to Paraphrases
