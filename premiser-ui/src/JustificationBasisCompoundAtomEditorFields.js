@@ -72,7 +72,7 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
             value: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
             label: (
               <div className="selection-label">
-                <FontIcon>book</FontIcon>
+                <FontIcon>textsms</FontIcon>
                 {isWindowNarrow && <span className="selection-label--text">Source excerpt paraphrase</span>}
               </div>
             ),

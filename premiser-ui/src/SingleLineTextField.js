@@ -12,6 +12,12 @@ import {
 export default class SingleLineTextField extends Component {
 
   onKeyDown = (event) => {
+    if (this.props.onKeyDown) {
+      this.props.onKeyDown(event)
+      if (event.defaultPrevented) {
+        return
+      }
+    }
     if (event.key === Keys.ENTER) {
       // No line breaks in single-line text fields
       event.preventDefault()
@@ -40,6 +46,7 @@ export default class SingleLineTextField extends Component {
       maxRows,
       disabled,
       // ignore
+      onKeyDown,
       onSubmit,
       onPropertyChange,
       ...rest,

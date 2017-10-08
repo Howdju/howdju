@@ -116,7 +116,6 @@ class WritQuoteEditorFields extends Component {
             type="url"
             label="URL"
             value={get(writQuote, ['urls', index, 'url'], '')}
-            onChange={this.onChange}
             rightIcon={
               <Button
                 icon
@@ -125,7 +124,7 @@ class WritQuoteEditorFields extends Component {
               >delete</Button>
             }
             disabled={!!url.id || disabled}
-            onKeyDown={onKeyDown}
+            onPropertyChange={onPropertyChange}
             onSubmit={onSubmit}
           />
         )}
