@@ -1,6 +1,10 @@
 # Howdju UI TODO
 
 * Automatically create writ quote upon bookmark submit load
+* Should I add writ-quote atoms of JustificationBasisCompound?  Should I replace paraphrases?  And have the paraphrase
+  functionality come about from machine learning, perspectives, or conversations?
+  
+* Justification actions don't appear while on mobile but desktop version
 
 * Potential big priorities
   * Use bookmarklet; test prod

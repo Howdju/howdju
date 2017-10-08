@@ -276,7 +276,7 @@ class StatementJustificationsPage extends Component {
         />
 
         <NewJustificationDialog
-          id="addNewJustificationDialogEditor"
+          id="add-new-justification-dialog-editor"
           editorId={this.newJustificationEditorId}
           suggestionsKey={suggestionKeys.statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
           visible={isNewJustificationDialogVisible}

@@ -57,13 +57,13 @@ class NewJustificationEditor extends Component {
   }
 
   onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atomIndex, urlIndex) => {
-    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
-      this.editorId, atomIndex, urlIndex)
+    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(
+      NewJustificationEditor.editorType, this.props.editorId, atomIndex, urlIndex)
   }
 
   onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atom, atomIndex, url, urlIndex) => {
-    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType,
-      this.editorId, atom, atomIndex, url, urlIndex)
+    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(
+      NewJustificationEditor.editorType, this.props.editorId, atom, atomIndex, url, urlIndex)
   }
 
   onSubmit = (event) => {

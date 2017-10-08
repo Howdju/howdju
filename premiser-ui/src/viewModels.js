@@ -258,5 +258,6 @@ export function combineSuggestionsKeys(...keys) {
 export function combineNames(...names) {
   // Don't convert case; the names must match the object model for use with get/set
   // I think each and every name should be truthy.  How else could they be relied upon for get/set?
+  names = dropWhile(names, isFalsey)
   return join(names, '.')
 }
