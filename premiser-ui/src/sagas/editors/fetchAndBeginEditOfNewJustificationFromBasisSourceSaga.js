@@ -59,17 +59,26 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
       switch (basisSourceType) {
         case JustificationBasisSourceType.STATEMENT_COMPOUND:
           removeStatementCompoundIds(basisSource)
-          basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          basis.type = JustificationBasisType.STATEMENT_COMPOUND
+          basis.statementCompound = basisSource
+
+          // basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromStatementCompound(basisSource)
           break
         case JustificationBasisSourceType.STATEMENT:
           removeStatementIds(basisSource)
-          basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          basis.type = JustificationBasisType.STATEMENT_COMPOUND
+          basis.statementCompound = makeNewStatementCompoundFromStatement(basisSource)
+
+          // basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromStatement(basisSource)
           break
         case JustificationBasisSourceType.WRIT_QUOTE:
           removeWritQuoteIds(basisSource)
-          basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          basis.type = JustificationBasisType.WRIT_QUOTE
+          basis.writQuote = basisSource
+
+          // basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromWritQuote(basisSource)
           break
         case JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND:

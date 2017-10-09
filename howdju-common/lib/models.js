@@ -77,7 +77,7 @@ _e.makeNewJustification = (props) => {
       }
     },
     basis: {
-      type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+      type: JustificationBasisType.STATEMENT_COMPOUND,
       // Store both these types directly on the basis for the view-model
       // Before the justification is sent to the server, the one corresponding to the current type should be put on the
       // entity property
@@ -255,8 +255,8 @@ _e.makeNewCounterJustification = (targetJustification) => ({
     entity: targetJustification,
   },
   basis: {
-    type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-    justificationBasisCompound: _e.makeNewJustificationBasisCompound()
+    type: JustificationBasisType.STATEMENT_COMPOUND,
+    statementCompound: _e.makeNewStatementCompound()
   },
   polarity: JustificationPolarity.NEGATIVE
 })

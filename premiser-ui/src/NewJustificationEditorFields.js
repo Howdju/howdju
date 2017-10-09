@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Divider from 'react-md/lib/Dividers'
+import Subheader from 'react-md/lib/Subheaders/Subheader'
 import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
 import get from 'lodash/get'
 
@@ -8,12 +9,16 @@ import {
   isWritQuoteBased,
   isStatementCompoundBased,
   isJustificationBasisCompoundBased,
-  JustificationPolarity
+  JustificationPolarity,
+  JustificationBasisType,
 } from "howdju-common"
 
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,
+  JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND,
+  JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
+  JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND,
 } from "./texts"
 import WritQuoteEditorFields from "./WritQuoteEditorFields"
 import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
@@ -40,32 +45,32 @@ const polarityControls = [{
   label: t(JUSTIFICATION_POLARITY_NEGATIVE),
   title: "Oppose the truth of the statement",
 }]
-// const basisTypeControls = [
-//   {
-//     value: JustificationBasisType.STATEMENT_COMPOUND,
-//     label: (
-//       <div title="A list of statements that when taken together logically imply the target">
-//         {t(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
-//       </div>
-//     ),
-//   },
-//   {
-//     value: JustificationBasisType.WRIT_QUOTE,
-//     label: (
-//       <div title="An external reference">
-//         {t(JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE)}
-//       </div>
-//     ),
-//   },
-//   {
-//     value: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-//     label: (
-//       <div title="An external reference">
-//         {t(texts.JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND)}
-//       </div>
-//     ),
-//   },
-// ]
+const basisTypeControls = [
+  {
+    value: JustificationBasisType.STATEMENT_COMPOUND,
+    label: (
+      <div title="A list of statements that together imply the target">
+        {t(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
+      </div>
+    ),
+  },
+  {
+    value: JustificationBasisType.WRIT_QUOTE,
+    label: (
+      <div title="An external reference">
+        {t(JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE)}
+      </div>
+    ),
+  },
+  {
+    value: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+    label: (
+      <div title="A list of justifications that together imply the target">
+        {t('Compound (deprecated)')}
+      </div>
+    ),
+  },
+]
 
 export default class NewJustificationEditorFields extends Component {
 
@@ -159,6 +164,8 @@ export default class NewJustificationEditorFields extends Component {
     ]
 
     const polarity = get(newJustification, 'polarity')
+    const basisTypeName = 'basis.type'
+    const basisType = get(newJustification, basisTypeName)
 
     return (
       <div>
@@ -173,21 +180,21 @@ export default class NewJustificationEditorFields extends Component {
           disabled={disabled}
         />
         <Divider />
-        {/*<Subheader primary
+        <Subheader primary
                    primaryText="Type"
                    component="div"
         />
         <SelectionControlGroup
           inline
-          id={idPrefix + "basis.type"}
-          name={namePrefix + "basis.type"}
+          id={combineIds(id, basisTypeName)}
+          name={combineNames(name, basisTypeName)}
           type="radio"
           value={basisType}
           onChange={this.onChange}
           controls={basisTypeControls}
           disabled={disabled}
         />
-        <Divider />*/}
+        <Divider />
         {_isStatementCompoundBased && statementCompoundEditorFields}
         {_isWritQuoteBased && writQuoteEditorFields}
         {_isJustificationBasisCompoundBased && justificationBasisCompoundEditorFields}

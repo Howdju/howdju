@@ -103,18 +103,24 @@ class CreateStatementPage extends Component {
           description,
           quoteText,
         } = this.props.queryParams
-        this.props.editors.beginEdit(CreateStatementPage.editorType, CreateStatementPage.editorId, makeNewStatementJustification({}, {
+
+        const writQuote = {
+          quoteText,
+          writ: {
+            title: description
+          },
+          urls: [{url}]
+        }
+        const justificationProps = {
           basis: {
-            type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-            justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote({
-              quoteText,
-              writ: {
-                title: description
-              },
-              urls: [{url}]
-            }),
+            type: JustificationBasisType.WRIT_QUOTE,
+            writQuote,
+            justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote(writQuote),
           }
-        }))
+        }
+
+        this.props.editors.beginEdit(CreateStatementPage.editorType, CreateStatementPage.editorId,
+          makeNewStatementJustification({}, justificationProps))
         break
       }
     }

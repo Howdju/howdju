@@ -1,20 +1,17 @@
 # Howdju UI TODO
 
-* It's really annoying to add paraphrases!
-  * Should I add writ-quote atoms of JustificationBasisCompound?  Should I replace paraphrases?  And have the paraphrase
-    functionality come about from machine learning, perspectives, or conversations?
-  * re-add citation based justifications.  When submitting, prepopulate both paraphrase and writ quote
+* pagination for search results
 
-* Automatically create writ quote upon bookmark submit load  
 * Justification actions don't appear while on mobile but desktop version
 
 * Product
+  * Credibility of sources
   * Real identity vs. reputation
   * Gamification
   * Interesting value-added features?
     * Links on page cited
       * links in quoted text (suggesting support for quoted text)
-  
+
 * To share dev
   * move out configuration
   * add tests
@@ -37,12 +34,17 @@
   * Additional excerpt fields
   * Additional excerpt types
     * URL (pic/vid) voting to help deal with alternative versions of media?
-  * Show entity creator (created by X Y days ago)
+  * Rich context
+    * Show entity creator (created by X Y days ago)
     * Show justification count by polarity for statement
+    * Show when a user agrees/disagrees with a statement
+      * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
+    * Show percentage of justifications (or root justifications?) that are source-based
   * User signup
     * Share auth between tabs
     * Social login
     * Terms, privacy, contact form
+  * Can users add URLs to justifications that aren't their's? Voting on URLs to get rid of bad ones?
   * Business model: private content
     * Anonymous posting (what do I do the first time someone anonymously uses a racial slur?)
     * Creation/deletion as existence of a creation action vs. row in table
@@ -704,6 +706,7 @@ Cat meeting design notes:
 * https://atlassian.design/guidelines/product/components/checkboxes
   * https://atlaskit.atlassian.com/
 * Reader mode/scraping
+  * https://github.com/codelucas/newspaper
   * [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
   * https://github.com/chromium/dom-distiller
   * https://www.npmjs.com/package/distillery-js

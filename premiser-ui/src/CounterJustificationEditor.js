@@ -7,7 +7,7 @@ import CardActions from 'react-md/lib/Cards/CardActions'
 import CardText from 'react-md/lib/Cards/CardText'
 import get from 'lodash/get'
 
-import JustificationBasisCompoundEditorFields from "./JustificationBasisCompoundEditorFields"
+import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
 import {EditorTypes} from "./reducers/editors"
 import {
   editors,
@@ -33,20 +33,12 @@ class CounterJustificationEditor extends Component {
     this.props.editors.propertyChange(this.editorType, this.props.editorId, properties)
   }
 
-  onAddJustificationBasisCompoundAtom = (index) => {
-    this.props.editors.addJustificationBasisCompoundAtom(this.editorType, this.props.editorId, index)
+  onAddStatementCompoundAtom = (index) => {
+    this.props.editors.addStatementCompoundAtom(this.editorType, this.props.editorId, index)
   }
 
-  onRemoveJustificationBasisCompoundAtom = (atom, index) => {
-    this.props.editors.removeJustificationBasisCompoundAtom(this.editorType, this.props.editorId, atom, index)
-  }
-
-  onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atomIndex, urlIndex) => {
-    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType, this.props.editorId, atomIndex, urlIndex)
-  }
-
-  onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atom, atomIndex, url, urlIndex) => {
-    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(this.editorType, this.props.editorId, atom, atomIndex, url, urlIndex)
+  onRemoveStatementCompoundAtom = (atom, index) => {
+    this.props.editors.removeStatementCompoundAtom(this.editorType, this.props.editorId, atom, index)
   }
 
   onSubmit = (event) => {
@@ -74,24 +66,22 @@ class CounterJustificationEditor extends Component {
 
 
     const newJustificationErrors = translateNewJustificationErrors(editEntity, errors)
-    const justificationBasisCompoundErrors = get(newJustificationErrors, 'fieldErrors.basis.fieldErrors.justificationBasisCompound')
-    const justificationBasisCompound = get(editEntity, 'basis.justificationBasisCompound')
+    const statementCompoundErrors = get(newJustificationErrors, 'fieldErrors.basis.fieldErrors.statementCompound')
+    const statementCompound = get(editEntity, 'basis.statementCompound')
 
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <JustificationBasisCompoundEditorFields
-            justificationBasisCompound={justificationBasisCompound}
+          <StatementCompoundEditorFields
+            statementCompound={statementCompound}
             id={id}
-            name="basis.justificationBasisCompound"
+            name="basis.statementCompound"
             suggestionsKey={suggestionsKey}
             onPropertyChange={this.onPropertyChange}
             onSubmit={this.onSubmit}
-            onAddJustificationBasisCompoundAtom={this.onAddJustificationBasisCompoundAtom}
-            onRemoveJustificationBasisCompoundAtom={this.onRemoveJustificationBasisCompoundAtom}
-            onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
-            onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
-            errors={justificationBasisCompoundErrors}
+            onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
+            onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
+            errors={statementCompoundErrors}
             disabled={isSaving}
           />
         </CardText>

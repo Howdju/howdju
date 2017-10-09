@@ -88,7 +88,7 @@ class WritQuoteEditorFields extends Component {
           type="text"
           label="Quote"
           rows={2}
-          maxRows={4}
+          maxRows={8}
           maxLength={65536}
           value={quoteText}
           onChange={this.onChange}

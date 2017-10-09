@@ -189,6 +189,8 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
+    [editors.addStatementCompoundAtom]: makeAddAtomReducer('basis.statementCompound.atoms', makeNewStatementAtom),
+    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisCompoundAtom),
     [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
     [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:

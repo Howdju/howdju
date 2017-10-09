@@ -10,7 +10,8 @@
 3. Copy contents from `dist/submit.js` (where the script builds it because we don't create the intermediate
    folder) to `dist/bookmarklet/submit.js` where the dev server will statically serve it (because we don't
    want to statically serve the contents of the `dist` folder or it might interfere with HMR.)
-4. Copy load.js into a bookmarklet but use `http://localhost:3000/submit.js` as the URL
+4. Edit `submit.js` to point to `http`, `localhost` and `3000`
+4. Copy load.js into a bookmarklet.  Edit it to use `http://localhost:3000/submit.js` as the URL
 
 # Deploy bookmarklet
 1. If updating load.js, copy into ToolsPage.js
