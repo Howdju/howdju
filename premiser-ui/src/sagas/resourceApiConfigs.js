@@ -1,4 +1,5 @@
 import isEmpty from 'lodash/isEmpty'
+import join from 'lodash/join'
 import pick from 'lodash/pick'
 import queryString from 'query-string'
 
@@ -33,11 +34,16 @@ import {
 const defaultSorts = `created=${SortDirection.DESCENDING}`
 
 export const resourceApiConfigs = {
-  [api.fetchStatements]: {
-    endpoint: 'statements',
-    schema: {statements: statementsSchema},
+  [api.fetchStatements]: (payload) => {
+    const query = payload.statementIds ?
+      `?statementIds=${join(payload.statementIds, ',')}` :
+      ''
+    return {
+      endpoint: `statements${query}`,
+      schema: {statements: statementsSchema},
+    }
   },
-  [api.fetchRecentStatements]: payload => {
+  [api.fetchRecentStatements]: (payload) => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     if (!queryStringParams.continuationToken) {
       queryStringParams.sorts = defaultSorts
@@ -48,7 +54,7 @@ export const resourceApiConfigs = {
       schema: {statements: statementsSchema},
     }
   },
-  [api.fetchRecentWrits]: payload => {
+  [api.fetchRecentWrits]: (payload) => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     if (!queryStringParams.continuationToken) {
       queryStringParams.sorts = defaultSorts
@@ -59,7 +65,7 @@ export const resourceApiConfigs = {
       schema: {writs: writsSchema},
     }
   },
-  [api.fetchRecentWritQuotes]: payload => {
+  [api.fetchRecentWritQuotes]: (payload) => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     if (!queryStringParams.continuationToken) {
       queryStringParams.sorts = defaultSorts
@@ -70,7 +76,7 @@ export const resourceApiConfigs = {
       schema: {writQuotes: writQuotesSchema},
     }
   },
-  [api.fetchRecentJustifications]: payload => {
+  [api.fetchRecentJustifications]: (payload) => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     if (!queryStringParams.continuationToken) {
       queryStringParams.sorts = defaultSorts
@@ -81,7 +87,7 @@ export const resourceApiConfigs = {
       schema: {justifications: justificationsSchema},
     }
   },
-  [api.fetchJustificationsSearch]: payload => {
+  [api.fetchJustificationsSearch]: (payload) => {
     const {
       filters,
       sorts,
@@ -113,32 +119,32 @@ export const resourceApiConfigs = {
       schema: {justifications: justificationsSchema},
     }
   },
-  [api.fetchFeaturedPerspectives]: payload => ({
+  [api.fetchFeaturedPerspectives]: (payload) => ({
     endpoint: 'perspectives?featured',
     schema: {perspectives: perspectivesSchema},
     requiresRehydrate: true,
   }),
-  [api.fetchStatement]: payload => ({
+  [api.fetchStatement]: (payload) => ({
     endpoint: `statements/${payload.statementId}`,
     schema: {statement: statementSchema},
   }),
-  [api.fetchStatementCompound]: payload => ({
+  [api.fetchStatementCompound]: (payload) => ({
     endpoint: `statement-compounds/${payload.statementCompoundId}`,
     schema: {statementCompound: statementCompoundSchema},
   }),
-  [api.fetchSourceExcerptParaphrase]: payload => ({
+  [api.fetchSourceExcerptParaphrase]: (payload) => ({
     endpoint: `source-excerpt-paraphrases/${payload.sourceExcerptParaphraseId}`,
     schema: {sourceExcerptParaphrase: sourceExcerptParaphraseSchema},
   }),
-  [api.fetchJustificationBasisCompound]: payload => ({
+  [api.fetchJustificationBasisCompound]: (payload) => ({
     endpoint: `justification-basis-compounds/${payload.justificationBasisCompoundId}`,
     schema: {justificationBasisCompound: justificationBasisCompoundSchema},
   }),
-  [api.fetchWritQuote]: payload => ({
+  [api.fetchWritQuote]: (payload) => ({
     endpoint: `writ-quotes/${payload.writQuoteId}`,
     schema: {writQuote: writQuoteSchema},
   }),
-  [api.updateWritQuote]: payload => ({
+  [api.updateWritQuote]: (payload) => ({
     endpoint: `writ-quotes/${payload.writQuote.id}`,
     fetchInit: {
       method: httpMethods.PUT,
@@ -146,7 +152,7 @@ export const resourceApiConfigs = {
     },
     schema: {writQuote: writQuoteSchema},
   }),
-  [api.createStatement]: payload => ({
+  [api.createStatement]: (payload) => ({
     endpoint: 'statements',
     fetchInit: {
       method: httpMethods.POST,
@@ -154,7 +160,7 @@ export const resourceApiConfigs = {
     },
     schema: {statement: statementSchema}
   }),
-  [api.updateStatement]: payload => ({
+  [api.updateStatement]: (payload) => ({
     endpoint: `statements/${payload.statement.id}`,
     schema: {statement: statementSchema},
     fetchInit: {
@@ -164,7 +170,7 @@ export const resourceApiConfigs = {
       }
     },
   }),
-  [api.createJustification]: payload => ({
+  [api.createJustification]: (payload) => ({
     endpoint: 'justifications',
     fetchInit: {
       method: httpMethods.POST,
@@ -172,19 +178,19 @@ export const resourceApiConfigs = {
     },
     schema: {justification: justificationSchema}
   }),
-  [api.deleteStatement]: payload => ({
+  [api.deleteStatement]: (payload) => ({
     endpoint: `statements/${payload.statement.id}`,
     fetchInit: {
       method: httpMethods.DELETE,
     },
   }),
-  [api.deleteJustification]: payload => ({
+  [api.deleteJustification]: (payload) => ({
     endpoint: `justifications/${payload.justification.id}`,
     fetchInit: {
       method: httpMethods.DELETE,
     },
   }),
-  [api.login]: payload => ({
+  [api.login]: (payload) => ({
     endpoint: 'login',
     fetchInit: {
       method: httpMethods.POST,
@@ -197,7 +203,7 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
     }
   },
-  [api.fetchStatementJustifications]: payload => ({
+  [api.fetchStatementJustifications]: (payload) => ({
     endpoint: `statements/${payload.statementId}?include=justifications`,
     fetchInit: {
       method: httpMethods.GET,
@@ -206,7 +212,7 @@ export const resourceApiConfigs = {
     requiresRehydrate: true
   }),
 
-  [api.verifyJustification]: payload => ({
+  [api.verifyJustification]: (payload) => ({
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.POST,
@@ -216,7 +222,7 @@ export const resourceApiConfigs = {
     },
     schema: {vote: voteSchema},
   }),
-  [api.unVerifyJustification]: payload => ({
+  [api.unVerifyJustification]: (payload) => ({
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.DELETE,
@@ -226,7 +232,7 @@ export const resourceApiConfigs = {
     },
     schema: {vote: voteSchema},
   }),
-  [api.disverifyJustification]: payload => ({
+  [api.disverifyJustification]: (payload) => ({
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.POST,
@@ -236,7 +242,7 @@ export const resourceApiConfigs = {
     },
     schema: {vote: voteSchema},
   }),
-  [api.unDisverifyJustification]: payload => ({
+  [api.unDisverifyJustification]: (payload) => ({
     endpoint: 'votes',
     fetchInit: {
       method: httpMethods.DELETE,
@@ -246,22 +252,22 @@ export const resourceApiConfigs = {
     },
     schema: {vote: voteSchema},
   }),
-  [api.fetchStatementTextSuggestions]: payload => ({
+  [api.fetchStatementTextSuggestions]: (payload) => ({
     endpoint: `search-statements?searchText=${payload.statementText}`,
     cancelKey: str(api.fetchStatementTextSuggestions) + '.' + payload.suggestionsKey,
     schema: statementsSchema,
   }),
-  [api.fetchWritTitleSuggestions]: payload => ({
+  [api.fetchWritTitleSuggestions]: (payload) => ({
     endpoint: `search-writs?searchText=${payload.writTitle}`,
     cancelKey: str(api.fetchWritTitleSuggestions) + '.' + payload.suggestionsKey,
     schema: writsSchema,
   }),
 
-  [api.fetchMainSearchResults]: payload => ({
+  [api.fetchMainSearchResults]: (payload) => ({
     endpoint: `search?searchText=${payload.searchText}`,
     schema: mainSearchResultsSchema,
   }),
-  [api.fetchMainSearchSuggestions]: payload => ({
+  [api.fetchMainSearchSuggestions]: (payload) => ({
     endpoint: `search?searchText=${payload.searchText}`,
     cancelKey: str(api.fetchMainSearchSuggestions) + '.' + payload.suggestionsKey,
     schema: mainSearchResultsSchema,

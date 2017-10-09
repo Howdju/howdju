@@ -49,6 +49,7 @@ class StatementCompoundViewerAtomItem extends Component {
       isUnCondensed,
       component: Component,
       showBasisUrls,
+      trailStatements,
     } = this.props
 
     const hasJustifications = atom.entity.justifications && atom.entity.justifications.length > 0
@@ -65,6 +66,7 @@ class StatementCompoundViewerAtomItem extends Component {
           editorId={statementEditorId(this.props)}
           suggestionsKey={combineSuggestionsKeys(id, 'statement')}
           doShowControls={doShowControls}
+          trailStatements={trailStatements}
         />
         {doShowJustifications && hasJustifications && (
           <JustificationsTree
@@ -75,6 +77,7 @@ class StatementCompoundViewerAtomItem extends Component {
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showBasisUrls={showBasisUrls}
+            trailStatements={trailStatements}
           />
         )}
       </Component>

@@ -13,9 +13,6 @@ const {
   newExhaustedEnumError,
 } = require('howdju-common')
 
-const {
-  normalizeText
-} = require('./util')
 
 const toUser = (row) => row && ({
   id: toString(row.user_id),
@@ -41,8 +38,8 @@ const toStatement = (row) => row && ({
   id: toString(row.statement_id),
   text: row.text,
   normalText: row.normal_text,
-  slug: toSlug(row.normal_text || normalizeText(row.text)),
-  creatorUserId: toString(row.creator_user_id),
+  slug: toSlug(row.normal_text),
+  creatorUserId: row.creator_user_id && toString(row.creator_user_id),
   created: row.created,
   justifications: null,
 })

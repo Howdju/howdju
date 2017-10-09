@@ -23,6 +23,7 @@ class EditableStatement extends Component {
       isFetching,
       isEditing,
       showStatusText,
+      trailStatements,
       // ignore
       dispatch,
       ...rest,
@@ -46,6 +47,7 @@ class EditableStatement extends Component {
         id={id}
         statement={statement}
         showStatusText={showStatusText}
+        trailStatements={trailStatements}
       />
     )
 

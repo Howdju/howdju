@@ -30,17 +30,21 @@ class JustificationsTree extends Component {
       isCondensed,
       isUnCondensed,
       showBasisUrls,
+      trailStatements,
     } = this.props
     const treeId = `${id}-justification-tree-${j.id}`
-    return <JustificationBranch
-      key={treeId}
-      justification={j}
-      doShowControls={doShowControls}
-      doShowBasisJustifications={doShowJustifications}
-      isCondensed={isCondensed}
-      isUnCondensed={isUnCondensed}
-      showBasisUrls={showBasisUrls}
-    />
+    return (
+      <JustificationBranch
+        key={treeId}
+        justification={j}
+        doShowControls={doShowControls}
+        doShowBasisJustifications={doShowJustifications}
+        isCondensed={isCondensed}
+        isUnCondensed={isUnCondensed}
+        showBasisUrls={showBasisUrls}
+        trailStatements={trailStatements}
+      />
+    )
   }
 
   render() {

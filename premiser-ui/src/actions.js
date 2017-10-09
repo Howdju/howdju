@@ -52,8 +52,8 @@ export const app = {
 export const api = {
   callApi: apiActionCreator('CALL_API'),
   fetchStatement: apiActionCreator('FETCH_STATEMENT', (statementId) => ({statementId})),
+  fetchStatements: apiActionCreator('FETCH_STATEMENTS', (statementIds) => ({statementIds})),
   fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', (statementCompoundId) => ({statementCompoundId})),
-  fetchStatements: apiActionCreator('FETCH_STATEMENTS'),
   fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', (statementId) => ({statementId})),
   fetchWritQuote: apiActionCreator('FETCH_WRIT_QUOTE', (writQuoteId) => ({writQuoteId})),
   fetchJustificationBasisCompound: apiActionCreator('FETCH_JUSTIFICATION_BASIS_COMPOUND',

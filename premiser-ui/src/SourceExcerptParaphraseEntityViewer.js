@@ -24,6 +24,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
       suggestionsKey,
       showStatusText,
       showUrls,
+      trailStatements
     } = this.props
     const {
       paraphrasingStatement,
@@ -43,6 +44,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
               editorId={paraphrasingStatementEditorId}
               suggestionsKey={suggestionsKey + '-paraphrasing-statement'}
               showStatusText={showStatusText}
+              trailStatements={trailStatements}
             />
             <div className="divider-wrapper">
               <Divider className="divider" inset/>

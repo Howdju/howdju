@@ -2,6 +2,7 @@ const Promise = require('bluebird')
 const assign = require('lodash/assign')
 const isEmpty = require('lodash/isEmpty')
 const isEqual = require('lodash/isEqual')
+const split = require('lodash/split')
 
 const {
   apiErrorCodes,
@@ -109,15 +110,25 @@ const routes = [
     id: 'readStatements',
     path: 'statements',
     method: httpMethods.GET,
-    handler: (appProvider, {request, callback}) => {
+    handler: (appProvider, {
+      request,
+      callback
+    }) => {
       const {
         sorts: encodedSorts,
         continuationToken,
         count,
+        statementIds: statementIdsParam,
       } = request.queryStringParameters
       const sorts = decodeSorts(encodedSorts)
-      return appProvider.statementsService.readStatements({sorts, continuationToken, count})
-        .then( ({statements, continuationToken}) => ok({callback, body: {statements, continuationToken}}) )
+      if (statementIdsParam) {
+        const statementIds = split(statementIdsParam, ',')
+        return appProvider.statementsService.readStatementsForIds(statementIds)
+          .then( (statements) => ok({callback, body: {statements}}) )
+      } else {
+        return appProvider.statementsService.readStatements({sorts, continuationToken, count})
+          .then( ({statements, continuationToken}) => ok({callback, body: {statements, continuationToken}}) )
+      }
     }
   },
   {

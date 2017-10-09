@@ -10,12 +10,18 @@ const {
   JustificationBasisType,
   VoteTargetType,
   SortDirection,
+  requireArgs,
 } = require('howdju-common')
 
 const {toStatement} = require("./orm")
 
-const {cleanWhitespace, normalizeText} = require('./util')
+const {
+  cleanWhitespace,
+  normalizeText,
+  mapMany,
+} = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
+
 
 exports.StatementsDao = class StatementsDao {
 
@@ -33,7 +39,10 @@ exports.StatementsDao = class StatementsDao {
         return toStatement(head(rows))
       })
   }
+
   readStatements(sorts, count) {
+    requireArgs({sorts, count})
+
     const args = []
     let countSql = ''
     if (isFinite(count)) {
@@ -109,6 +118,15 @@ exports.StatementsDao = class StatementsDao {
     return this.database.query(sql, args)
       .then( ({rows}) => map(rows, toStatement) )
   }
+
+  readStatementsForIds(statementIds) {
+    return this.database.query(
+      `select * from statements where statement_id = any ($1) and deleted is null`,
+      [statementIds]
+    )
+      .then(mapMany(toStatement))
+  }
+
   readStatementForId(statementId) {
     return this.database.query(
       'select * from statements where statement_id = $1 and deleted is null',

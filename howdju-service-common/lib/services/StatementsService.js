@@ -74,6 +74,10 @@ exports.StatementsService = class StatementsService {
     return this.readMoreStatements(continuationToken, countNumber)
   }
 
+  readStatementsForIds(statementsIds) {
+    return this.statementsDao.readStatementsForIds(statementsIds)
+  }
+
   readInitialStatements(requestedSorts, count) {
     const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts)

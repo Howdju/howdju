@@ -1,10 +1,24 @@
 # Howdju UI TODO
 
-* Automatically create writ quote upon bookmark submit load
-* Should I add writ-quote atoms of JustificationBasisCompound?  Should I replace paraphrases?  And have the paraphrase
-  functionality come about from machine learning, perspectives, or conversations?
-  
+* It's really annoying to add paraphrases!
+  * Should I add writ-quote atoms of JustificationBasisCompound?  Should I replace paraphrases?  And have the paraphrase
+    functionality come about from machine learning, perspectives, or conversations?
+  * re-add citation based justifications.  When submitting, prepopulate both paraphrase and writ quote
+
+* Automatically create writ quote upon bookmark submit load  
 * Justification actions don't appear while on mobile but desktop version
+
+* Product
+  * Real identity vs. reputation
+  * Gamification
+  * Interesting value-added features?
+    * Links on page cited
+      * links in quoted text (suggesting support for quoted text)
+  
+* To share dev
+  * move out configuration
+  * add tests
+  * add CI
 
 * Potential big priorities
   * Use bookmarklet; test prod
@@ -35,6 +49,10 @@
   * semantically equivalent statements (voting, display, automatic detection)
     * Negations (voting, display, automatic detection)
 
+Improvements to statements trail:
+  * Confirm that trailStatements are in fact parents?
+    * Show some context like: supports..., opposes..., counters a justification of...
+    
 * Why does windowAware need to be pure=false?
 
 * Should show when a justification was created
@@ -645,7 +663,7 @@ Cat meeting design notes:
 
 
 ## Cool
-* [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
+
 * [Bundle Buddy helps optimize webpack bundles](https://github.com/samccone/bundle-buddy)
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
 * https://github.com/mariusandra/kea
@@ -685,6 +703,12 @@ Cat meeting design notes:
 * Material font: https://codepen.io/zavoloklom/pen/uqCsB
 * https://atlassian.design/guidelines/product/components/checkboxes
   * https://atlaskit.atlassian.com/
+* Reader mode/scraping
+  * [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
+  * https://github.com/chromium/dom-distiller
+  * https://www.npmjs.com/package/distillery-js
+  * https://www.crummy.com/software/BeautifulSoup/
+    * https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

@@ -1,4 +1,7 @@
 import { createPath } from 'history/PathUtils'
+import map from 'lodash/map'
+import isEmpty from 'lodash/isEmpty'
+import join from 'lodash/join'
 import queryString from 'query-string'
 
 export const mainSearchPathName = '/'
@@ -15,7 +18,13 @@ class Paths {
 
   login = () => '/login'
 
-  statement = ({id, slug}) => `/s/${id}/${slug || ''}`
+  statement = (statement, trailStatements) => {
+    const {id, slug} = statement
+    const qs = !isEmpty(trailStatements) ?
+      '?statement-trail=' + join(map(trailStatements, s => s.id), ',') :
+      ''
+    return `/s/${id}/${slug || ''}` + qs
+  }
   justification = j => this.statement(j.rootStatement) + '#justification-' + j.id
   writUsages = writ => this.searchJustifications({writId: writ.id})
   writQuoteUsages = writQuote => this.searchJustifications({writQuoteId: writQuote.id})

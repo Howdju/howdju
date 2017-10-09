@@ -153,6 +153,7 @@ class JustificationBranch extends Component {
       isUnCondensed,
       isWindowNarrow,
       showBasisUrls,
+      trailStatements,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -304,6 +305,7 @@ class JustificationBranch extends Component {
                   doShowBasisJustifications={doShowBasisJustifications}
                   isCondensed={isCondensed}
                   isUnCondensed={isUnCondensed}
+                  trailStatements={trailStatements}
                 />
               </div>
             )
@@ -329,6 +331,7 @@ class JustificationBranch extends Component {
           doShowControls={doShowControls}
           showBasisUrls={showBasisUrls}
           menu={menu}
+          trailStatements={trailStatements}
           actions={
             <div className="md-cell md-cell--12 actions">
               {actions}

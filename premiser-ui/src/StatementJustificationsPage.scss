@@ -2,6 +2,7 @@
 @import './flatui-colors';
 @import './colors';
 @import './grid';
+@import './components';
 
 $gradient-start-opacity: .6;
 $gradient-point: 25%;
@@ -16,6 +17,14 @@ $over-gradient-z-index: 10;
   z-index: $over-gradient-z-index;
   .md-list--menu {
     z-index: $over-gradient-z-index + 1;
+  }
+}
+
+ul.statement-trail {
+  padding-left: 35px;
+  li {
+    @include material-icon-list-item("replay");
+    margin: 5px;
   }
 }
 

@@ -12,11 +12,19 @@ import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import Card from 'react-md/lib/Cards/Card'
 import CardText from 'react-md/lib/Cards/CardText'
-import sortBy from "lodash/sortBy"
-import forEach from 'lodash/forEach'
-import some from 'lodash/some'
 import cn from 'classnames'
+import concat from 'lodash/concat'
+import every from 'lodash/every'
+import forEach from 'lodash/forEach'
 import get from 'lodash/get'
+import isEmpty from 'lodash/isEmpty'
+import isEqual from 'lodash/isEqual'
+import map from 'lodash/map'
+import some from 'lodash/some'
+import sortBy from "lodash/sortBy"
+import split from 'lodash/split'
+import take from 'lodash/take'
+import queryString from 'query-string'
 
 import {
   isVerified,
@@ -56,7 +64,14 @@ import "./StatementJustificationsPage.scss"
 import StatementEntityViewer from './StatementEntityViewer'
 
 
-const statementIdFromProps = (props) => get(props, 'match.params.statementId')
+const statementIdFromProps = (props) => props.match.params.statementId
+const trailStatementIdsFromProps = (props) => {
+  const queryParams = queryString.parse(props.location.search)
+  const trailStatementIdsParam = queryParams['statement-trail']
+  return trailStatementIdsParam ?
+    split(trailStatementIdsParam, ',') :
+    []
+}
 
 class StatementJustificationsPage extends Component {
   constructor() {
@@ -70,19 +85,28 @@ class StatementJustificationsPage extends Component {
   }
 
   componentWillMount() {
-    this.fetchAndEditForStatementId(statementIdFromProps(this.props))
+    const statementId = statementIdFromProps(this.props)
+    this.props.api.fetchStatementJustifications(statementId)
+
+    const trailStatementIds = trailStatementIdsFromProps(this.props)
+    if (!isEmpty(trailStatementIds)) {
+      this.props.api.fetchStatements(trailStatementIds)
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     const statementId = statementIdFromProps(this.props)
     const nextStatementId = statementIdFromProps(nextProps)
-    if (statementId !== nextStatementId) {
-      this.fetchAndEditForStatementId(nextStatementId)
-    }
-  }
 
-  fetchAndEditForStatementId = (statementId) => {
-    this.props.api.fetchStatementJustifications(statementId)
+    if (statementId !== nextStatementId) {
+      this.props.api.fetchStatementJustifications(nextStatementId)
+    }
+
+    const trailStatementIds = trailStatementIdsFromProps(this.props)
+    const nextTrailStatementIds = trailStatementIdsFromProps(nextProps)
+    if (!isEqual(trailStatementIds, nextTrailStatementIds) && !isEmpty(nextTrailStatementIds)) {
+      this.props.api.fetchStatements(nextTrailStatementIds)
+    }
   }
 
   statementId = () => statementIdFromProps(this.props)
@@ -145,6 +169,7 @@ class StatementJustificationsPage extends Component {
     const {
       statementId,
       statement,
+      trailStatements,
       justifications,
 
       isFetchingStatement,
@@ -159,9 +184,11 @@ class StatementJustificationsPage extends Component {
 
     const doHideControls = !isOverStatement && !isWindowNarrow
 
-    const hasJustifications = justifications && justifications.length > 0
+    const hasJustifications = !isEmpty(justifications)
     const hasAgreement = some(justifications, j => isVerified(j) && isPositive(j))
     const hasDisagreement = some(justifications, j => isVerified(j) && isNegative(j))
+
+    const newTrailStatements = concat(trailStatements, [statement])
 
     const menu = (
       <MenuButton
@@ -213,6 +240,18 @@ class StatementJustificationsPage extends Component {
         </Helmet>
 
         <div className="md-grid md-grid--top">
+          {trailStatements.length > 0 && every(trailStatements) && (
+            <ul className="md-cell md-cell--12 statement-trail">
+              {map(trailStatements, (trailStatement, index) => (
+                <li key={index}>
+                  <Link to={paths.statement(trailStatement, take(trailStatements, index))}>
+                    {trailStatement.text}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+
           <div className="md-cell md-cell--12">
 
             <div className="statement">
@@ -233,6 +272,7 @@ class StatementJustificationsPage extends Component {
                   suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
                   doShowControls={true}
                   menu={menu}
+                  trailStatements={trailStatements}
                 />
               </Card>
 
@@ -272,6 +312,7 @@ class StatementJustificationsPage extends Component {
           isUnCondensed={true}
           showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
           showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
+          trailStatements={newTrailStatements}
           className="md-grid--bottom"
         />
 
@@ -306,7 +347,8 @@ const mapStateToProps = (state, ownProps) => {
     logger.error('Missing required statementId')
     return {}
   }
-  const statement = state.entities.statements[statementId]
+  const statement = denormalize(statementId, statementSchema, state.entities)
+  const trailStatements = map(trailStatementIdsFromProps(ownProps), statementId => state.entities.statements[statementId])
 
   const statementEditorState = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPage_statementEditor_editorId])
 
@@ -321,7 +363,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     ...state.ui.statementJustificationsPage,
     statementId,
-    statement: denormalize(statement, statementSchema, state.entities),
+    statement,
+    trailStatements,
     justifications,
     isFetchingStatement,
     didFetchingStatementFail,

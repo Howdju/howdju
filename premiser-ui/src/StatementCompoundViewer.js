@@ -20,6 +20,7 @@ export default class StatementCompoundViewer extends Component {
       isCondensed,
       isUnCondensed,
       showBasisUrls,
+      trailStatements,
       ...rest
     } = this.props
 
@@ -36,8 +37,8 @@ export default class StatementCompoundViewer extends Component {
           isCondensed={isCondensed}
           isUnCondensed={isUnCondensed}
           showBasisUrls={showBasisUrls}
-
           doShowStatementAtomJustifications={doShowStatementAtomJustifications}
+          trailStatements={trailStatements}
         />
       )
     })

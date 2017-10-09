@@ -13,6 +13,7 @@ export default function StatementViewer(props) {
     statement,
     className,
     showStatusText,
+    trailStatements,
     ...rest,
   } = props
 
@@ -28,7 +29,7 @@ export default function StatementViewer(props) {
       {statement && (
         <div>
           <div className="statement-text">
-            <Link to={paths.statement(statement)}>
+            <Link to={paths.statement(statement, trailStatements)}>
               {statement.text}
             </Link>
           </div>
