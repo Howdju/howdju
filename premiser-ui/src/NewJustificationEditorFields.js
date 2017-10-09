@@ -18,7 +18,6 @@ import t, {
   JUSTIFICATION_POLARITY_POSITIVE,
   JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND,
   JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
-  JUSTIFICATION_BASIS_TYPE_JUSTIFICATION_BASIS_COMPOUND,
 } from "./texts"
 import WritQuoteEditorFields from "./WritQuoteEditorFields"
 import StatementCompoundEditorFields from "./StatementCompoundEditorFields"

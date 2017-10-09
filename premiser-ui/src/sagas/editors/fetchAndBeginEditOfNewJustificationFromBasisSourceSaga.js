@@ -14,6 +14,7 @@ import {
   makeNewStatementJustification,
   JustificationBasisSourceType,
   newExhaustedEnumError,
+  makeNewStatementCompoundFromStatement,
 } from 'howdju-common'
 
 import {
