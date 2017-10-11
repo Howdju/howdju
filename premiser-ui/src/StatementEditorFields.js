@@ -7,10 +7,18 @@ import SingleLineTextField from "./SingleLineTextField"
 import StatementTextAutocomplete from './StatementTextAutocomplete'
 import {toErrorText} from "./modelErrorMessages"
 import ErrorMessages from "./ErrorMessages"
+import {
+  combineIds,
+  combineNames,
+  combineSuggestionsKeys,
+} from './viewModels'
+
+import './StatementEditorFields.scss'
+
 
 const textName = 'text'
 
-class StatementEditorFields extends Component {
+export default class StatementEditorFields extends Component {
 
   render() {
     const {
@@ -33,14 +41,12 @@ class StatementEditorFields extends Component {
       {error: true, errorText: toErrorText(errors.fieldErrors.text)} :
       null
 
-    const namePrefix = name ? name + '.' : ''
-    const suggestionsKeyPrefix = suggestionsKey ? suggestionsKey + '.' : ''
     const hasText = has(statement, textName)
     const text = get(statement, textName, '')
 
     const textProps = {
-      id: textId || id + '-text',
-      name: namePrefix + textName,
+      id: textId || combineIds(id, 'text'),
+      name: combineNames(name, textName),
       label: textLabel,
       value: text,
       required: true,
@@ -50,12 +56,12 @@ class StatementEditorFields extends Component {
       disabled: disabled || !hasText
     }
 
-    const input = (suggestionsKey && !disabled) ?
+    const textInput = (suggestionsKey && !disabled) ?
       <StatementTextAutocomplete
         {...rest}
         {...textErrorProps}
         {...textProps}
-        suggestionsKey={suggestionsKeyPrefix + textName}
+        suggestionsKey={combineSuggestionsKeys(suggestionsKey, textName)}
       /> :
       <SingleLineTextField
         {...rest}
@@ -65,7 +71,7 @@ class StatementEditorFields extends Component {
     return (
       <div>
         <ErrorMessages errors={modelErrors}/>
-        {input}
+        {textInput}
       </div>
     )
   }
@@ -90,5 +96,3 @@ StatementEditorFields.defaultProps = {
   disabled: false,
   textLabel: 'Text',
 }
-
-export default StatementEditorFields

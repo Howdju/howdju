@@ -3,11 +3,17 @@ const moment = require('moment')
 
 const concat = require('lodash/concat')
 const filter = require('lodash/filter')
+const has = require('lodash/has')
 const keys = require('lodash/keys')
 const map = require('lodash/map')
 const merge = require('lodash/merge')
 const pickBy = require('lodash/pickBy')
+const reduce = require('lodash/reduce')
+const reject = require('lodash/reject')
+const some = require('lodash/some')
 const toNumber = require('lodash/toNumber')
+const unionBy = require('lodash/unionBy')
+const unzip = require('lodash/unzip')
 
 const {
   EntityType,
@@ -17,6 +23,10 @@ const {
   authorizationErrorCodes,
   ActionType,
   ActionTargetType,
+  requireArgs,
+  StatementTagVotePolarity,
+  makeStatementTagVote,
+  tagEqual,
 } = require('howdju-common')
 
 const {
@@ -42,21 +52,62 @@ const {
 
 exports.StatementsService = class StatementsService {
 
-  constructor(config, statementValidator, actionsService, authService, statementsDao, permissionsDao, justificationsDao) {
+  constructor(
+    config,
+    statementValidator,
+    actionsService,
+    authService,
+    statementTagsService,
+    statementTagVotesService,
+    tagsService,
+    statementsDao,
+    permissionsDao,
+    justificationsDao
+  ) {
+    requireArgs({
+      config,
+      statementValidator,
+      actionsService,
+      authService,
+      statementTagsService,
+      statementTagVotesService,
+      tagsService,
+      statementsDao,
+      permissionsDao,
+      justificationsDao,
+    })
+
     this.config = config
     this.statementValidator = statementValidator
     this.actionsService = actionsService
     this.authService = authService
+    this.statementTagsService = statementTagsService
+    this.statementTagVotesService = statementTagVotesService
+    this.tagsService = tagsService
     this.statementsDao = statementsDao
     this.permissionsDao = permissionsDao
     this.justificationsDao = justificationsDao
   }
 
   readStatementForId(statementId, {userId, authToken}) {
-    return this.statementsDao.readStatementForId(statementId)
-      .then(statement => {
+    return Promise.resolve()
+      .then(() => userId || this.authService.readOptionalUserIdForAuthToken(authToken))
+      .then((userId) => Promise.all([
+        this.statementsDao.readStatementForId(statementId),
+        this.statementTagsService.readTagsForStatementId(statementId),
+        this.statementTagsService.readRecommendedTagsForStatementId(statementId),
+        userId && this.statementTagVotesService.readVotesForStatementIdAsUser(userId, statementId),
+      ]))
+      .then(([statement, tags, recommendedTags, statementTagVotes]) => {
         if (!statement) {
           throw new EntityNotFoundError(EntityType.STATEMENT, statementId)
+        }
+        // Ensure recommended tags also appear in full tags
+        statement.tags = unionBy(tags, recommendedTags, tag => tag.id)
+        statement.recommendedTags = recommendedTags
+        if (statementTagVotes) {
+          // Include only votes for present tags
+          statement.statementTagVotes = filter(statementTagVotes, vote => some(statement.tags, tag => tagEqual(tag, vote.tag)))
         }
         return statement
       })
@@ -264,6 +315,44 @@ exports.StatementsService = class StatementsService {
 
         return readOrCreateEquivalentValidStatementAsUser(this, statement, userId, now)
       })
+      .then((wrapper) => {
+        if (statement.tags) {
+          // When creating a statement, assume all tags are also votes.
+          // (Anti-votes don't make any sense, because anti-votes are votes against tags recommended by the system
+          //  based upon other users' activity.  But new statements don't have other user activity, and so have no
+          //  recommended tags against which to vote)
+          return readOrCreateTagsAndVotes(this, userId, wrapper.statement.id, statement.tags, now)
+            .then(([tags, statementTagVotes]) => {
+              wrapper.statement.tags = tags
+              statement.statementTagVotes = statementTagVotes
+              return wrapper
+            })
+        }
+        return wrapper
+      })
+  }
+
+  readStatementsForTagId(tagId, {userId, authToken}) {
+    return Promise.resolve()
+      .then(() => userId || this.authService.readOptionalUserIdForAuthToken(authToken))
+      .then((userId) => Promise.all([
+        this.statementTagsService.readStatementsRecommendedForTagId(tagId),
+        userId && this.statementTagsService.readTaggedStatementsByVotePolarityAsUser(userId, tagId),
+      ]))
+      .then(([recommendedStatements, userTaggedStatementsByVotePolarity]) => {
+        const {
+          [StatementTagVotePolarity.POSITIVE]: taggedPositiveStatements,
+          [StatementTagVotePolarity.NEGATIVE]: taggedNegativeStatements,
+        } = userTaggedStatementsByVotePolarity
+
+        const taggedNegativeStatementIds = reduce(taggedNegativeStatements, (acc, s, id) => {
+          acc[id] = true
+        }, {})
+        const prunedStatements = reject(recommendedStatements, rs => has(taggedNegativeStatementIds, rs.id))
+        const statements = unionBy(taggedPositiveStatements, prunedStatements, s => s.id)
+
+        return statements
+      })
   }
 }
 
@@ -292,4 +381,23 @@ function readOrCreateEquivalentValidStatementAsUser(service, statement, userId, 
         statement,
       }
     })
+}
+
+function readOrCreateTagsAndVotes(service, userId, statementId, tags, now) {
+  return Promise.all(map(tags, tag =>
+    service.tagsService.readOrCreateValidTagAsUser(userId, tag, now)
+      .then((tag) => {
+        const statementTagVote = makeStatementTagVote({
+          statement: {id: statementId},
+          tag,
+          polarity: StatementTagVotePolarity.POSITIVE,
+        })
+        return Promise.all([
+          tag,
+          service.statementTagVotesService.readOrCreateStatementTagVoteAsUser(userId, statementTagVote, now),
+        ])
+      })
+  ))
+    // Split the tags and votes
+    .then((tagAndVotes) => unzip(tagAndVotes))
 }

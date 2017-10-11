@@ -16,6 +16,13 @@ import get from 'lodash/get'
 import queryString from 'query-string'
 
 import {
+  makeNewStatementJustification,
+  JustificationBasisType,
+  makeNewJustificationBasisCompoundFromWritQuote,
+  StatementTagVotePolarity
+} from "howdju-common"
+
+import {
   editors,
   flows,
   mapActionCreatorGroupToDispatchToProps,
@@ -28,19 +35,17 @@ import t, {
   CREATE_STATEMENT_SUBMIT_BUTTON_TITLE, CREATE_STATEMENT_TITLE, JUSTIFICATION_TITLE,
 } from "./texts"
 import {
-  makeNewStatementJustification,
-  JustificationBasisType,
-  makeNewJustificationBasisCompoundFromWritQuote,
-} from "howdju-common"
-import {
   translateNewJustificationErrors,
   combineIds,
+  combineNames,
   combineSuggestionsKeys,
 } from './viewModels'
 import NewJustificationEditorFields from "./NewJustificationEditorFields"
 import StatementEditorFields from "./StatementEditorFields"
 import {EditorTypes} from "./reducers/editors"
 import paths from './paths'
+import TagsControl from './TagsControl'
+
 
 export const CreateStatementPageMode = {
   /** Blank editors, optionally show and create a justification with the statement */
@@ -71,6 +76,7 @@ const submitButtonTitleTextKeyByMode = {
 }
 
 const statementName = 'statement'
+const tagsName = 'tags'
 const doCreateJustificationName = 'doCreateJustification'
 const newJustificationName = 'newJustification'
 
@@ -168,6 +174,14 @@ class CreateStatementPage extends Component {
     this.props.editors.propertyChange(CreateStatementPage.editorType, CreateStatementPage.editorId, {[doCreateJustificationName]: checked})
   }
 
+  onTagStatement = (tag) => {
+    this.props.editors.tagStatement(CreateStatementPage.editorType, CreateStatementPage.editorId, tag)
+  }
+
+  onUnTagStatement = (tag) => {
+    this.props.editors.unTagStatement(CreateStatementPage.editorType, CreateStatementPage.editorId, tag)
+  }
+
   onSubmit = (event) => {
     event.preventDefault()
     this.props.flows.commitEditThenView(CreateStatementPage.editorType, CreateStatementPage.editorId)
@@ -211,6 +225,8 @@ class CreateStatementPage extends Component {
     const justificationErrors = errors && doCreateJustification ? errors.justification : null
     const newJustificationErrors = translateNewJustificationErrors(newJustification, justificationErrors)
 
+    const statementTags = get(statement, 'tags')
+
     const statementEditorText = 'statementEditorText'
 
     return (
@@ -247,6 +263,18 @@ class CreateStatementPage extends Component {
                       errors={statementErrors}
                       disabled={isSaving}
                       onSubmit={this.onSubmit}
+                    />
+                    <TagsControl
+                      id={combineIds(id, tagsName)}
+                      tags={statementTags}
+                      name={combineNames(statementName, tagsName)}
+                      suggestionsKey={combineSuggestionsKeys(id, tagsName)}
+                      votePolarity={{
+                        POSITIVE: StatementTagVotePolarity.POSITIVE,
+                        NEGATIVE: StatementTagVotePolarity.NEGATIVE,
+                      }}
+                      onTag={this.onTagStatement}
+                      onUnTag={this.onUnTagStatement}
                     />
                   </CardText>
 

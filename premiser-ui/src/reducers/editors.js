@@ -1,6 +1,9 @@
 import assign from 'lodash/assign'
 import clone from 'lodash/clone'
 import cloneDeep from 'lodash/cloneDeep'
+import concat from 'lodash/concat'
+import difference from 'lodash/difference'
+import find from 'lodash/find'
 import forEach from 'lodash/forEach'
 import get from 'lodash/get'
 import has from 'lodash/has'
@@ -21,6 +24,9 @@ import {
   idEqual,
   insertAt,
   removeAt,
+  makeStatementTagVote,
+  StatementTagVotePolarity,
+  tagEqual,
 } from "howdju-common"
 
 import {
@@ -29,6 +35,7 @@ import {
 } from "../actions"
 import {uiErrorTypes} from "../uiErrors"
 import {INVALID_LOGIN_CREDENTIALS, UNABLE_TO_LOGIN, USER_IS_INACTIVE_ERROR} from "../texts"
+import {logger} from '../logger'
 
 
 const EditorActions = reduce(editors, (editorActions, actionCreator) => {
@@ -321,6 +328,9 @@ const editorReducerByType = {
         'writQuote',
         'urls',
       ]),
+
+    [editors.tagStatement]: makeStatementTagReducer(StatementTagVotePolarity.POSITIVE, concat),
+    [editors.unTagStatement]: makeStatementTagReducer(StatementTagVotePolarity.POSITIVE, difference),
   }, defaultEditorState),
 
   [EditorTypes.WRIT_QUOTE]: handleActions({
@@ -378,6 +388,49 @@ const editorReducerByType = {
       }
     }
   }, defaultEditorState),
+}
+
+function makeStatementTagReducer(polarity, combiner) {
+  return (state, action) => {
+    const statement = state.editEntity.statement
+    const {tag} = action.payload
+
+    const oldStatementTagVotes = get(statement, 'statementTagVotes', [])
+    const redundantStatementTagVotes = [],
+      contradictoryStatementTagVotes = []
+    forEach(oldStatementTagVotes, vote => {
+      if (vote.statement.id === statement.id && tagEqual(vote.tag, tag)) {
+        if (vote.polarity === polarity) {
+          redundantStatementTagVotes.push(vote)
+        } else {
+          contradictoryStatementTagVotes.push(vote)
+        }
+      }
+    })
+
+    const oldTags = get(statement, 'tags', [])
+    const existingTag = find(oldTags, oldTag => tagEqual(oldTag, tag))
+    const tags = existingTag ?
+      oldTags :
+      combiner(oldTags, [tag])
+
+    if (
+      tags === oldTags &&
+      redundantStatementTagVotes.length > 0 && contradictoryStatementTagVotes.length < 1
+    ) {
+      logger.debug(`Statement is already tagged with ${tag}`)
+      return state
+    }
+
+    const statementTagVotes = redundantStatementTagVotes.length > 0 ?
+      oldStatementTagVotes :
+      combiner(
+        oldStatementTagVotes,
+        [makeStatementTagVote({polarity, tag, statement})]
+      )
+
+    return {...state, editEntity: {...state.editEntity, statement: {...statement, tags, statementTagVotes}}}
+  }
 }
 
 const defaultEditorReducer = editorReducerByType[EditorTypes.DEFAULT]

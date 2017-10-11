@@ -261,3 +261,7 @@ export function combineNames(...names) {
   names = dropWhile(names, isFalsey)
   return join(names, '.')
 }
+
+export function makeChip(props) {
+  return cloneDeep(props)
+}

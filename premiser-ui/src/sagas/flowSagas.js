@@ -90,6 +90,13 @@ export function* goTo() {
     const {statement} = action.payload
     yield put(push(paths.statement(statement)))
   })
+
+  yield takeEvery(str(goto.tag), function* goToTagWorker(action) {
+    const {
+      tag
+    } = action.payload
+    yield put(push(paths.tag(tag)))
+  })
 }
 
 export function* redirectHomeFromMissingStatement() {

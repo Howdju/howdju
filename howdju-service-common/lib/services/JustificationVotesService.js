@@ -9,19 +9,19 @@ const {
   EntityNotFoundError,
 } = require('../serviceErrors')
 
-exports.VotesService = class VotesService {
+exports.JustificationVotesService = class JustificationVotesService {
 
-  constructor(logger, voteValidator, authService, votesDao) {
+  constructor(logger, justificationVoteValidator, authService, justificationVotesDao) {
     this.logger = logger
-    this.voteValidator = voteValidator
+    this.justificationVoteValidator = justificationVoteValidator
     this.authService = authService
-    this.votesDao = votesDao
+    this.justificationVotesDao = justificationVotesDao
   }
 
-  createVote({authToken, vote}) {
+  createVote(authToken, vote) {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => {
-        const validationErrors = this.voteValidator.validate(vote)
+        const validationErrors = this.justificationVoteValidator.validate(vote)
         if (validationErrors.hasErrors) {
           throw new EntityValidationError({vote: validationErrors})
         }
@@ -29,36 +29,36 @@ exports.VotesService = class VotesService {
       })
       .then(userId => Promise.all([
         userId,
-        this.votesDao.deleteOpposingVotes(userId, vote),
-        this.votesDao.readEquivalentVotes(userId, vote),
+        this.justificationVotesDao.deleteOpposingVotes(userId, vote),
+        this.justificationVotesDao.readEquivalentVotes(userId, vote),
       ]))
       .then(([userId, updatedOpposingVoteIds, equivalentVotes]) => {
         if (updatedOpposingVoteIds.length > 0) {
-          this.logger.debug(`Deleted ${updatedOpposingVoteIds.length} opposing votes`, vote)
+          this.logger.debug(`Deleted ${updatedOpposingVoteIds.length} opposing justification votes`, vote)
         }
         if (equivalentVotes.length > 0) {
           if (equivalentVotes.length > 1) {
-            this.logger.error(`${equivalentVotes.length} equivalent votes exist`, equivalentVotes, vote)
+            this.logger.error(`${equivalentVotes.length} equivalent justification votes exist`, equivalentVotes, vote)
           }
           const equivalentVote = equivalentVotes[0]
           this.logger.debug('Equivalent vote already exists', equivalentVote, vote)
           return equivalentVote
         } else {
-          return this.votesDao.createVote(userId, vote)
+          return this.justificationVotesDao.createVote(userId, vote)
         }
       })
   }
 
-  deleteVote({authToken, vote}) {
+  deleteVote(authToken, vote) {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => {
-        const validationErrors = this.voteValidator.validate(vote)
+        const validationErrors = this.justificationVoteValidator.validate(vote)
         if (validationErrors.hasErrors) {
           throw new EntityValidationError({vote: validationErrors})
         }
         return userId
       })
-      .then(userId => this.votesDao.deleteEquivalentVotes(userId, vote))
+      .then(userId => this.justificationVotesDao.deleteEquivalentVotes(userId, vote))
       .then(deletedVoteIds => {
         if (deletedVoteIds.length === 0) {
           this.logger.debug('No votes to unvote')

@@ -5,6 +5,7 @@ export default handleActions({
 
   [combineActions(
     api.fetchStatementTextSuggestions.response,
+    api.fetchTagNameSuggestions.response,
     api.fetchWritTitleSuggestions.response,
     api.fetchMainSearchSuggestions.response,
   )]: {

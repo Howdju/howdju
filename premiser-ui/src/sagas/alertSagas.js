@@ -42,6 +42,9 @@ export function* apiFailureAlerts() {
     [api.unVerifyJustification.response]: UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
     [api.disverifyJustification.response]: DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
     [api.unDisverifyJustification.response]: UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
+    [api.tagStatement.response]: 'Unable to create the tag',
+    [api.antiTagStatement.response]: 'Unable to remove the tag',
+    [api.unTagStatement.response]: 'Unable to remove the tag',
   }
 
   yield [map(messageKeysByActionType, function* apiFailureErrorMessagesWorker(messageKey, actionType) {

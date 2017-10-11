@@ -5,6 +5,8 @@ const isNumber = require('lodash/isNumber')
 const isUndefined = require('lodash/isUndefined')
 const map = require('lodash/map')
 const reduce = require('lodash/reduce')
+const replace = require('lodash/replace')
+const trim = require('lodash/trim')
 const moment = require('moment')
 
 
@@ -146,3 +148,11 @@ _e.toSingleLine = (val) => val.replace(/(\s*)[\r\n]+(\s*)/, (match, leadingWhite
     // Otherwise just use the existing whitespace
     ''
 })
+
+_e.cleanWhitespace = text => {
+  text = trim(text)
+  text = replace(text, /\s+/g, ' ')
+  return text
+}
+
+_e.toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()

@@ -57,6 +57,7 @@ import WhatsNextPage from "./WhatsNextPage"
 import AboutPage from "./AboutPage"
 import NotFoundPage from "./NotFoundPage"
 import JustificationsSearchPage from "./JustificationsSearchPage"
+import TagPage from './TagPage'
 
 import './fonts.js'
 import './App.scss'
@@ -406,6 +407,7 @@ class App extends Component {
               <Route exact path={paths.about()} component={AboutPage} />
 
               <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
+              <Route exact path="/tags/:tagId/:tagSlug?" component={TagPage} />
               <Route exact path="/search-justifications" component={JustificationsSearchPage} />
 
               <Route exact path="/create-statement" render={props => (

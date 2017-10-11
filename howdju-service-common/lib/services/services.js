@@ -10,16 +10,19 @@ module.exports = assign(
   require('./JustificationBasisCompoundsService'),
   require('./JustificationsService'),
   require('./JustificationScoresService'),
+  require('./JustificationVotesService'),
   require('./MainSearchService'),
   require('./PermissionsService'),
   require('./PerspectivesService'),
   require('./PicRegionsService'),
   require('./SourceExcerptParaphrasesService'),
   require('./StatementCompoundsService'),
+  require('./StatementTagVotesService'),
+  require('./StatementTagsService'),
   require('./StatementJustificationsService'),
   require('./StatementsService'),
+  require('./TagsService'),
   require('./UrlsService'),
   require('./UsersService'),
-  require('./VidSegmentsService'),
-  require('./VotesService')
+  require('./VidSegmentsService')
 )

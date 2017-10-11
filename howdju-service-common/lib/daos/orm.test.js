@@ -1,26 +1,23 @@
 const {
-  toVote,
+  toJustificationVote,
 } = require('./orm')
 
 describe('orm', () => {
 
-  test('toVote', () => {
+  test('toJustificationVote', () => {
     const voteId = '100',
       polarity = 'POSITIVE',
-      targetType = 'STATEMENT',
-      targetId = 200
+      justificationId = 200
     const row = {
-      vote_id: voteId,
+      justification_vote_id: voteId,
       polarity,
-      target_type: targetType,
-      target_id: targetId
+      justification_id: justificationId
     }
     const expectedEntity = {
       id: voteId,
       polarity,
-      targetType,
-      targetId,
+      justificationId,
     }
-    expect(toVote(row)).toEqual(expectedEntity)
+    expect(toJustificationVote(row)).toEqual(expectedEntity)
   })
 })

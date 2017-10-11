@@ -98,7 +98,7 @@ function readOrCreateEquivalentWritAsUser(service, writ, userId, now) {
       equivalentWrit || service.writsDao.createWrit(writ, userId, now)
     ]))
     .then( ([isExtant, writ]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE : ActionType.CREATE
+      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
       service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.WRIT, writ.id)
 
       return {

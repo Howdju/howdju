@@ -1,6 +1,72 @@
 # Howdju UI TODO
 
+* Include tags in main search
+* Show list of tags by statement count?
+* Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
+* Add "show all" to tagged statements page
+* Tag vote scorer
+
+* Should also add stage LOG_LEVEL to allow modifying on the fly without a publish
+
+* Potential big priorities
+  * Add indices (root statement ID, joins)
+  * Discovery
+    * tagging
+    * Show main search domains as card with quote count, justification count, and statement count
+      * Link to writQuotes using that domain
+    * main search includes tags
+  * version API
+  * Additional excerpt fields: author/speaker
+  * Additional excerpt types
+    * URL (pic/vid) voting to help deal with alternative versions of media?
+  * Rich context
+    * When viewing statement, show counter-justifications to any justifications using it
+    * Show entity creator (created by X Y days ago)
+    * Show justification count by polarity for statement
+    * Show when a user agrees/disagrees with a statement
+      * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
+    * Show percentage of justifications (or root justifications?) that are source-based
+    * When counter-justifications are collapsed, show: Counter justifications (8)
+  * User signup
+    * Share auth between tabs
+    * Social login
+    * Terms, privacy, contact form
+    * Rate limiting by account, IP
+    * Flag offensive functionality
+  * Can users add URLs to justifications that aren't their's? Voting on URLs to get rid of bad ones?
+  * Business model: private content
+    * Anonymous posting (what do I do the first time someone anonymously uses a racial slur?)
+      * Empower users with filters
+        1) hide content without verified account activity 
+        2) hide potentially offensive content 
+        3) hide potentially offensive content lacking verified account activity
+    * Creation/deletion as existence of a creation action vs. row in table
+  * semantically equivalent statements (voting, display, automatic detection)
+    * Negations (voting, display, automatic detection)
+  * Contextual tool
+    * Use FF sidebar somehow?  Is this standard with Chrome, too?
+    * Create quotes
+    * Show me
+      * Show me important claims on this page
+      * Show me contentious claims on this page
+      * Show me disputed/inaccurate claims on this page
+      * Show me other pages that make this claim
+  * Somehow incorporate infinite scroll like on slate.com stories.  Either as a way to discover content on the feed
+    or maybe as a way to go into statement justifications?
+
+* Store referrer when submitting justification?  Generally should match up with URL...
+* Are 401s to login in FF showing up as errors in sentry?
+
+* Prev priority: Use bookmarklet; test prod
+  * Translate to Paraphrases: correction?  Translate from paraphrases?
+    * When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see
+      the paraphrased citations here...
+  * Sometimes when submitting I don't want to paraphrase, just capture writ
+    * Sometimes okay paraphrasing, but don't want to justify
+      
 * pagination for search results
+
+* Paraphrases don't show up in writQuote usages
 
 * Justification actions don't appear while on mobile but desktop version
 
@@ -16,40 +82,6 @@
   * move out configuration
   * add tests
   * add CI
-
-* Potential big priorities
-  * Use bookmarklet; test prod
-    * Translate to Paraphrases
-      * When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see
-        the paraphrased citations here...
-    * Sometimes when submitting I don't want to paraphrase, just capture writ
-      * Sometimes okay paraphrasing, but don't want to justify
-  * Add indices (root statement ID, joins)
-  * Discovery
-    * tagging
-    * Show main search domains as card with quote count, justification count, and statement count
-      * Link to writQuotes using that domain
-    * main search includes tags
-  * version API
-  * Additional excerpt fields
-  * Additional excerpt types
-    * URL (pic/vid) voting to help deal with alternative versions of media?
-  * Rich context
-    * Show entity creator (created by X Y days ago)
-    * Show justification count by polarity for statement
-    * Show when a user agrees/disagrees with a statement
-      * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
-    * Show percentage of justifications (or root justifications?) that are source-based
-  * User signup
-    * Share auth between tabs
-    * Social login
-    * Terms, privacy, contact form
-  * Can users add URLs to justifications that aren't their's? Voting on URLs to get rid of bad ones?
-  * Business model: private content
-    * Anonymous posting (what do I do the first time someone anonymously uses a racial slur?)
-    * Creation/deletion as existence of a creation action vs. row in table
-  * semantically equivalent statements (voting, display, automatic detection)
-    * Negations (voting, display, automatic detection)
 
 Improvements to statements trail:
   * Confirm that trailStatements are in fact parents?
@@ -539,6 +571,8 @@ Cat meeting design notes:
   * Move logic from models.js into prototypes
 * Why store statement autocomplete suggestions in redux?  They are transient; just make them state
   * Or somehow reset them, like navigating away from page
+* Use JSON schema validation library
+  * https://github.com/epoberezkin/ajv/blob/master/KEYWORDS.md
 
 #### Sagas
 * Would like actions issued for all events, for traceability (sometimes now with `call`s, an action is skipped)
@@ -712,6 +746,8 @@ Cat meeting design notes:
   * https://www.npmjs.com/package/distillery-js
   * https://www.crummy.com/software/BeautifulSoup/
     * https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+* Code splitting
+  * http://thejameskyle.com/react-loadable.html
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs

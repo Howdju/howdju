@@ -11,7 +11,6 @@ const {
   JustificationTargetType,
   JustificationBasisType,
   JustificationPolarity,
-  VoteTargetType,
   SortDirection,
   negateRootPolarity,
   newImpossibleError,
@@ -381,20 +380,18 @@ exports.JustificationsDao = class JustificationsDao {
     const sql = `
       select 
           j.*
-        , v.vote_id
+        , v.justification_vote_id
         , v.polarity    as vote_polarity
-        , v.target_type as vote_target_type
-        , v.target_id   as vote_target_id
+        , v.justification_id   as vote_justification_id
       from justifications j 
         left join statement_compounds sc on 
-              j.basis_type = $5 
+              j.basis_type = $4 
           and j.basis_id = sc.statement_compound_id 
         left join writ_quotes wq on 
-              j.basis_type = $4 
+              j.basis_type = $3
           and j.basis_id = wq.writ_quote_id
-        left join votes v on 
-              v.target_type = $3
-          and j.justification_id = v.target_id
+        left join justification_votes v on 
+              j.justification_id = v.justification_id
           and v.user_id = $2
           and v.deleted IS NULL
         where 
@@ -402,7 +399,7 @@ exports.JustificationsDao = class JustificationsDao {
           and j.root_statement_id = $1
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, userId, VoteTargetType.JUSTIFICATION, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
+      this.database.query(sql, [rootStatementId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
       this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId, {userId}),
       this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
       this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootStatementId(rootStatementId),

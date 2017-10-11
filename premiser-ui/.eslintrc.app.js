@@ -43,6 +43,11 @@ module.exports = {
       "error",
       "unix"
     ],
+    "no-restricted-globals": [
+      "error",
+      // Don't accidentally use the browser's find.  Use lodash.
+      "find"
+    ],
     "no-unused-vars": [
       "error",
       {

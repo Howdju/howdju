@@ -81,6 +81,7 @@ export function* cancelResourceApiCalls() {
       str(api.cancelStatementTextSuggestions),
       str(api.cancelWritTitleSuggestions),
       str(api.cancelMainSearchSuggestions),
+      str(api.cancelTagNameSuggestions),
     ],
     function* cancelCallApiForResourceWorker(action) {
       const {

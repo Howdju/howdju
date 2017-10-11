@@ -11,18 +11,18 @@ const {
 
 exports.StatementJustificationsService = class StatementJustificationsService {
 
-  constructor(authService, statementsDao, justificationsDao) {
-    requireArgs({authService, statementsDao, justificationsDao})
+  constructor(authService, statementsService, justificationsService) {
+    requireArgs({authService, statementsService, justificationsService})
     this.authService = authService
-    this.statementsDao = statementsDao
-    this.justificationsDao = justificationsDao
+    this.statementsService = statementsService
+    this.justificationsService = justificationsService
   }
 
   readStatementJustifications(statementId, authToken) {
     return this.authService.readOptionalUserIdForAuthToken(authToken)
       .then( (userId) => Promise.all([
-        this.statementsDao.readStatementForId(statementId),
-        this.justificationsDao.readJustificationsWithBasesAndVotesByRootStatementId(statementId, {userId}),
+        this.statementsService.readStatementForId(statementId, {userId}),
+        this.justificationsService.readJustificationsWithBasesAndVotesByRootStatementId(statementId, {userId}),
       ]))
       .then(([statement, justifications]) => {
         if (!statement) {

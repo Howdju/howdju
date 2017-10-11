@@ -25,7 +25,8 @@ VidSegment
   - Creator
   - Quote/Caption
     - Speaker
-  - Start/End
+  - Start/End (both for video and per-URL?)  For real-world video, what is really being captured is an event from an angle.
+AudioSegment
 
 ## Source/SourceExcerpt Attributes:
 

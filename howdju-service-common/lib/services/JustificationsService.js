@@ -168,6 +168,10 @@ exports.JustificationsService = class JustificationsService {
       })
   }
 
+  readJustificationsWithBasesAndVotesByRootStatementId(rootStatementId, {userId}) {
+    return this.justificationsDao.readJustificationsWithBasesAndVotesByRootStatementId(rootStatementId, {userId})
+  }
+
   readOrCreateJustification(justification, authToken) {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => {

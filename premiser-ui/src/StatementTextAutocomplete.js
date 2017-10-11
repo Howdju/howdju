@@ -7,6 +7,8 @@ import {
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
 import {statementSchema} from "./schemas"
+import config from './config'
+
 
 class StatementTextAutocomplete extends Component {
 
@@ -24,7 +26,7 @@ class StatementTextAutocomplete extends Component {
     return (
       <ApiAutocomplete
         {...rest}
-        maxLength={2048}
+        maxLength={config.ui.statementTextMaxLength}
         rows={1}
         maxRows={4}
         singleLine={true}

@@ -17,6 +17,7 @@ import {
   combineNames,
   combineSuggestionsKeys
 } from './viewModels'
+import config from './config'
 
 
 const writQuoteTextName = 'quoteText'
@@ -70,7 +71,7 @@ class WritQuoteEditorFields extends Component {
       name: combineNames(name, writTitleName),
       label: "Title",
       value: writTitle,
-      maxLength: 2048,
+      maxLength: config.ui.writTitleMaxLength,
       required: true,
       disabled: disabled || !hasWritTitle,
       onKeyDown,
@@ -89,7 +90,7 @@ class WritQuoteEditorFields extends Component {
           label="Quote"
           rows={2}
           maxRows={8}
-          maxLength={65536}
+          maxLength={config.ui.quoteTextMaxLength}
           value={quoteText}
           onChange={this.onChange}
           disabled={disabled || !has(writQuote, writQuoteTextName)}

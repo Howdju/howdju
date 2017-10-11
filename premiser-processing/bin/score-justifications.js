@@ -1,9 +1,6 @@
 const {ArgumentParser} = require('argparse')
 const map = require('lodash/map')
 
-const {loadEnvironmentEnvVars} = require('howdju-ops')
-loadEnvironmentEnvVars()
-
 const {
   JobScopes
 } = require('howdju-service-common')

@@ -1,6 +1,7 @@
 @import '~react-md/src/scss/react-md';
 @import './colors';
 @import './grid';
+@import './util';
 
 $slide-size: $md-btn-icon-size;
 
@@ -71,7 +72,7 @@ $slide-size: $md-btn-icon-size;
 
       .md-icon {
         // When positivey, the icons make more sense flipped
-        transform: scaleX(-1);
+        @include flip-icon-horizontal;
       }
     }
   }

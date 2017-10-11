@@ -7,12 +7,24 @@ import {
   SourceExcerptType,
 } from 'howdju-common'
 
-export const statementSchema = new schema.Entity('statements')
+export const tagSchema = new schema.Entity('tags')
+export const tagsSchema = [tagSchema]
+
+export const statementTagVoteSchema = new schema.Entity('statementTagVotes', {
+  tag: tagSchema
+})
+const statementTagVoteSchemas = [statementTagVoteSchema]
+
+export const statementSchema = new schema.Entity('statements', {
+  tags: tagsSchema,
+  recommendedTags: tagsSchema,
+  statementTagVotes: statementTagVoteSchemas,
+})
 export const statementsSchema = [statementSchema]
 export const statementCompoundSchema = new schema.Entity('statementCompounds', {
   atoms: [{
-    entity: statementSchema
-  }]
+    entity: statementSchema,
+  }],
 })
 export const writSchema = new schema.Entity('writs')
 export const writsSchema = [writSchema]
@@ -34,7 +46,7 @@ export const vidSegmentsSchema = new schema.Entity('vidSegments', {
   vid: vidSchema
 })
 
-export const voteSchema = new schema.Entity('votes')
+export const justificationVoteSchema = new schema.Entity('justificationVotes')
 
 const sourceExcerptSchema = new schema.Union({
   [SourceExcerptType.WRIT_QUOTE]: writQuoteSchema,
@@ -77,7 +89,7 @@ justificationSchema.define({
     entity: justificationBasisSchema
   },
   counterJustifications: [justificationSchema],
-  vote: voteSchema
+  vote: justificationVoteSchema
 })
 export const justificationsSchema = [justificationSchema]
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there.

@@ -6,7 +6,6 @@ const map = require('lodash/map')
 const range = require('lodash/range')
 
 const {
-  VoteTargetType,
   JustificationBasisType,
   JustificationTargetType,
 } = require('howdju-common')
@@ -27,17 +26,15 @@ class PerspectivesDao {
 
   readFeaturedPerspectivesWithVotesForOptionalUserId(userId) {
     const votesSelectSql = userId ? `
-        , v.vote_id
+        , v.justification_vote_id
         , v.polarity AS vote_polarity
-        , v.target_type AS vote_target_type
-        , v.target_id AS vote_target_id
+        , v.justification_id AS vote_justification_id
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join votes v on 
-              v.target_type = $1
-          and j.justification_id = v.target_id
-          and v.user_id = $2
+        left join justification_votes v on 
+              j.justification_id = v.justification_id
+          and v.user_id = $1
           and v.deleted IS NULL
         ` :
       ''
@@ -57,7 +54,7 @@ class PerspectivesDao {
           and pj.justification_id = j.justification_id
         ${votesJoinSql}
     `
-    const args = userId ? [VoteTargetType.JUSTIFICATION, userId] : undefined
+    const args = userId ? [userId] : undefined
     return this.database.query(perspectiveJustificationsSql, args)
       .then( ({rows}) => {
         const transitiveRowsPromise =
@@ -85,30 +82,27 @@ class PerspectivesDao {
    */
   _readFeaturedPerspectiveJustificationTransitiveJustifications(userId, targetDepth, maxDepth, rows) {
     const args = [
-      VoteTargetType.JUSTIFICATION,
       userId,
       JustificationTargetType.STATEMENT,
       JustificationBasisType.STATEMENT_COMPOUND,
     ]
     const votesSelectSql = userId ? `
-        , v.vote_id
+        , v.justification_vote_id
         , v.polarity AS vote_polarity
-        , v.target_type AS vote_target_type
-        , v.target_id AS vote_target_id
+        , v.justification_id AS vote_justification_id
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join votes v on 
-              v.target_type = $1
-          and j${targetDepth}.justification_id = v.target_id
-          and v.user_id = $2
+        left join justification_votes v on 
+              j${targetDepth}.justification_id = v.justification_id
+          and v.user_id = $1
           and v.deleted IS NULL
         ` :
       ''
     const transitiveSql = map(range(1, targetDepth+1), currentDepth => `
       join statements s${currentDepth} on
             j${currentDepth-1}.target_id = s${currentDepth}.statement_id
-        and j${currentDepth-1}.target_type = $3
+        and j${currentDepth-1}.target_type = $2
         and s${currentDepth}.deleted is null
       join statement_compound_atoms sca${currentDepth} on
             s${currentDepth}.statement_id = sca${currentDepth}.statement_compound_id
@@ -117,7 +111,7 @@ class PerspectivesDao {
         and sc${currentDepth}.deleted is null
       join justifications j${currentDepth} on
             sc${currentDepth}.statement_compound_id = j${currentDepth}.target_id
-        and j${currentDepth}.basis_type = $4
+        and j${currentDepth}.basis_type = $3
         and j${currentDepth}.deleted is null
         and p.statement_id = j${currentDepth}.root_statement_id
         
@@ -159,22 +153,20 @@ class PerspectivesDao {
    * */
   _readFeaturedPerspectivesCounteredJustifications(userId, targetHeight, rows) {
     const votesSelectSql = userId ? `
-        , v.vote_id
+        , v.justification_vote_id
         , v.polarity AS vote_polarity
-        , v.target_type AS vote_target_type
-        , v.target_id AS vote_target_id
+        , v.justification_id AS vote_justification_id
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join votes v on 
-              v.target_type = $1
-          and j${targetHeight}.justification_id = v.target_id
-          and v.user_id = $2
+        left join justification_votes v on 
+              j${targetHeight}.justification_id = v.justification_id
+          and v.user_id = $1
           and v.deleted IS NULL
         ` :
       ''
     const justificationsJoinSqls = map(range(1, targetHeight+1), currentHeight => `join justifications j${currentHeight} on
-                    j${currentHeight-1}.target_type = $3
+                    j${currentHeight-1}.target_type = $2
                 and j${currentHeight-1}.target_id = j${currentHeight}.justification_id
                 and j${currentHeight}.deleted is null`)
     const justificationsJoinSql = join(justificationsJoinSqls, '\n')
@@ -194,7 +186,7 @@ class PerspectivesDao {
               ${justificationsJoinSql}
               ${votesJoinSql}
           `
-    return this.database.query(counteredJustificationsSql, [VoteTargetType.JUSTIFICATION, userId, JustificationTargetType.JUSTIFICATION])
+    return this.database.query(counteredJustificationsSql, [userId, JustificationTargetType.JUSTIFICATION])
       .then( ({rows: newRows}) => {
         if (newRows.length > 0) {
           return this._readFeaturedPerspectivesCounteredJustifications(userId, targetHeight + 1, rows.concat(newRows))

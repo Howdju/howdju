@@ -4,6 +4,11 @@ import isEmpty from 'lodash/isEmpty'
 import join from 'lodash/join'
 import queryString from 'query-string'
 
+import {
+  toSlug
+} from 'howdju-common'
+
+
 export const mainSearchPathName = '/'
 
 export const createJustificationPath = '/create-justification'
@@ -20,10 +25,13 @@ class Paths {
 
   statement = (statement, trailStatements) => {
     const {id, slug} = statement
-    const qs = !isEmpty(trailStatements) ?
+    const slugPath = slug ?
+      '/' + slug :
+      ''
+    const query = !isEmpty(trailStatements) ?
       '?statement-trail=' + join(map(trailStatements, s => s.id), ',') :
       ''
-    return `/s/${id}/${slug || ''}` + qs
+    return `/s/${id}${slugPath}${query}`
   }
   justification = j => this.statement(j.rootStatement) + '#justification-' + j.id
   writUsages = writ => this.searchJustifications({writId: writ.id})
@@ -45,6 +53,8 @@ class Paths {
   tools = () => '/tools'
 
   privacy = () => "/privacy"
+
+  tag = (tag) => `/tags/${tag.id}/${toSlug(tag.name)}`
 }
 
 export default new Paths()

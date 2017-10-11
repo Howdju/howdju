@@ -10,17 +10,22 @@ const {
   SourceExcerptValidator,
   SourceExcerptParaphraseValidator,
   StatementValidator,
+  StatementTagVoteValidator,
   StatementCompoundValidator,
+  TagValidator,
   UrlValidator,
   UserValidator,
-  VoteValidator,
+  JustificationVoteValidator,
 } = require('howdju-service-common')
 
 
 exports.init = function init(provider) {
   const urlValidator = new UrlValidator()
   const userValidator = new UserValidator()
-  const statementValidator = new StatementValidator()
+  const tagValidator = new TagValidator()
+  const justificationVoteValidator = new JustificationVoteValidator()
+  const statementTagVoteValidator = new StatementTagVoteValidator()
+  const statementValidator = new StatementValidator(tagValidator)
   const statementCompoundValidator = new StatementCompoundValidator(statementValidator)
   const writValidator = new WritValidator()
   const writQuoteValidator = new WritQuoteValidator(writValidator, urlValidator)
@@ -32,7 +37,6 @@ exports.init = function init(provider) {
   const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, writQuoteValidator,
     justificationBasisCompoundValidator)
   const credentialValidator = new CredentialValidator()
-  const voteValidator = new VoteValidator()
 
   assign(provider, {
     credentialValidator,
@@ -40,9 +44,10 @@ exports.init = function init(provider) {
     justificationBasisCompoundValidator,
     statementValidator,
     statementCompoundValidator,
+    statementTagVoteValidator,
     urlValidator,
     userValidator,
-    voteValidator,
+    justificationVoteValidator,
     writValidator,
     writQuoteValidator,
   })

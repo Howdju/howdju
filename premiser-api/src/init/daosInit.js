@@ -9,18 +9,21 @@ const {
   JustificationScoresDao,
   JustificationsDao,
   JustificationBasisCompoundsDao,
+  JustificationVotesDao,
   PermissionsDao,
   PerspectivesDao,
   PicRegionsDao,
   SourceExcerptParaphrasesDao,
-  StatementCompoundsDao,
   StatementsDao,
+  StatementCompoundsDao,
+  StatementTagsDao,
+  StatementTagVotesDao,
+  TagsDao,
   UserExternalIdsDao,
   UserGroupsDao,
   UserPermissionsDao,
   UsersDao,
   UrlsDao,
-  VotesDao,
   VidSegmentsDao,
 } = require('howdju-service-common')
 
@@ -48,29 +51,35 @@ exports.init = function init(provider) {
   const userGroupsDao = new UserGroupsDao(database)
   const userPermissionsDao = new UserPermissionsDao(database)
   const usersDao = new UsersDao(logger, database)
-  const votesDao = new VotesDao(database)
+  const justificationVotesDao = new JustificationVotesDao(database)
+  const statementTagVotesDao = new StatementTagVotesDao(logger, database)
+  const statementTagsDao = new StatementTagsDao(logger, database)
+  const tagsDao = new TagsDao(logger, database)
 
   assign(provider, {
     actionsDao,
     authDao,
-    urlsDao,
-    writQuotesDao,
-    writsDao,
     jobHistoryDao,
     justificationScoresDao,
-    statementCompoundsDao,
-    statementsDao,
-    picRegionsDao,
-    vidSegmentsDao,
-    sourceExcerptParaphrasesDao,
+    justificationVotesDao,
     justificationBasisCompoundsDao,
     justificationsDao,
     permissionsDao,
     perspectivesDao,
+    picRegionsDao,
+    sourceExcerptParaphrasesDao,
+    statementCompoundsDao,
+    statementsDao,
+    statementTagsDao,
+    statementTagVotesDao,
+    tagsDao,
+    urlsDao,
     userExternalIdsDao,
     userGroupsDao,
     userPermissionsDao,
     usersDao,
-    votesDao,
+    vidSegmentsDao,
+    writQuotesDao,
+    writsDao,
   })
 }

@@ -62,6 +62,11 @@ import JustificationsTree from './JustificationsTree'
 
 import "./StatementJustificationsPage.scss"
 import StatementEntityViewer from './StatementEntityViewer'
+import StatementTagger from './StatementTagger'
+import {
+  combineIds,
+  combineSuggestionsKeys,
+} from './viewModels'
 
 
 const statementIdFromProps = (props) => props.match.params.statementId
@@ -264,16 +269,28 @@ class StatementJustificationsPage extends Component {
                 onMouseOver={this.onStatementMouseOver}
                 onMouseLeave={this.onStatementMouseLeave}
               >
-                <StatementEntityViewer
-                  component={CardText}
-                  id={`editableStatement-${statementId}`}
-                  statement={statement}
-                  editorId={this.statementEditorId}
-                  suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
-                  doShowControls={true}
-                  menu={menu}
-                  trailStatements={trailStatements}
-                />
+                <CardText className="statement-card-contents">
+                  <StatementEntityViewer
+                    id={`editableStatement-${statementId}`}
+                    className="agreeable-statement-viewer"
+                    statement={statement}
+                    editorId={this.statementEditorId}
+                    suggestionsKey={suggestionKeys.statementJustificationsPage_statementEditor}
+                    doShowControls={true}
+                    menu={menu}
+                    trailStatements={trailStatements}
+                  />
+                  {statement && (
+                    <StatementTagger
+                      statementId={statement.id}
+                      tags={statement.tags}
+                      votes={statement.statementTagVotes}
+                      recommendedTags={statement.recommendedTags}
+                      id={combineIds(StatementJustificationsPage.id, 'statement-tagger')}
+                      suggestionsKey={combineSuggestionsKeys(StatementJustificationsPage.suggestionsKey, 'tagName')}
+                    />
+                  )}
+                </CardText>
               </Card>
 
             </div>
@@ -330,6 +347,8 @@ class StatementJustificationsPage extends Component {
     )
   }
 }
+StatementJustificationsPage.id = 'StatementJustificationsPage'
+StatementJustificationsPage.suggestionsKey = 'StatementJustificationsPage'
 StatementJustificationsPage.transientId = 'statement-justifications-page-statement'
 
 const sortJustifications = justifications => {

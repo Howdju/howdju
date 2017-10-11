@@ -1,0 +1,39 @@
+@import './util';
+@import './colors';
+
+.chips-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .md-chip-text {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  .chip-icon {
+    font-size: 18px;
+    @include flip-icon-horizontal;
+  }
+  .md-chip-icon.remove-chip-icon {
+    // react-md pushes this down 4px, which is too much for the decreased font-size
+    top: 0;
+    margin-right: 6px;
+  }
+
+  > * {
+    margin-right: 5px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .md-chip--hover.md-chip--hover {
+    background-color: $silver;
+  }
+
+  .md-chip-text--hover {
+    color: $primary-text-color;
+  }
+}

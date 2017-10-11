@@ -41,10 +41,11 @@ ul.statement-trail {
 
   .statement-card {
 
-    // The z-index must apply to the children to get them over the gradient.  I don't know why applying it to .entity-viewer directly doesn't work
-    .entity-viewer > * {
-       z-index: $over-gradient-z-index;
-     }
+    // The z-index must apply to the children to get them over the gradient.
+    // I don't know why applying it to .statement-card-contents directly doesn't work
+    .statement-card-contents > * > * {
+      z-index: $over-gradient-z-index;
+    }
 
     background: inherit;
     background-size: 100%;

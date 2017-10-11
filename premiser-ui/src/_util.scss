@@ -13,6 +13,10 @@
   }
 }
 
+@mixin flip-icon-horizontal {
+  transform: scaleX(-1);
+}
+
 // http://nicolasgallagher.com/micro-clearfix-hack/
 @mixin clear-fix {
   /**

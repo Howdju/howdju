@@ -47,7 +47,8 @@ export const featuredPerspectivesPage = handleActions({
         continuationToken: action.payload.result.continuationToken,
         isFetching: false
       }
-    }
+    },
+    throw: (state, action) => ({...state, isFetching: false})
   },
 }, {
   featuredPerspectives: [],
@@ -75,3 +76,12 @@ export const justificationsSearchPage = handleActions({
   },
   [ui.clearJustificationsSearch]: (state, action) => ({...state, ...defaultJustificationSearchPageState})
 }, defaultJustificationSearchPageState)
+
+export const tagPage = handleActions({
+  [ui.clearTaggedStatements]: (state, action) => ({...state, statements: []}),
+  [api.fetchTaggedStatements]: (state, action) => ({...state, isFetching: true}),
+  [api.fetchTaggedStatements.response]: {
+    next: (state, action) => ({...state, statements: action.payload.result.statements, isFetching: false}),
+    throw: (state, action) => ({...state, statements: [], isFetching: false}),
+  },
+}, {statements: [], isFetching: false})

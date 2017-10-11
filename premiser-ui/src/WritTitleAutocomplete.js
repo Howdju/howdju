@@ -7,6 +7,7 @@ import {
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
 import {writSchema} from "./schemas"
+import config from './config'
 
 class WritTitleAutocomplete extends Component {
 
@@ -25,12 +26,12 @@ class WritTitleAutocomplete extends Component {
 
     return (
       <ApiAutocomplete
-        {...rest}
-        value={value}
-        maxLength={2048}
+        maxLength={config.ui.writTitleMaxLength}
         rows={1}
         maxRows={4}
         singleLine={true}
+        {...rest}
+        value={value}
         onAutocomplete={this.onAutocomplete}
         fetchSuggestions={api.fetchWritTitleSuggestions}
         cancelSuggestions={api.cancelWritTitleSuggestions}

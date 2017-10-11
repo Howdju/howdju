@@ -63,6 +63,13 @@ class ApiAutocomplete extends Component {
   }
 
   onKeyDown = (event) => {
+    if (this.props.onKeyDown) {
+      this.props.onKeyDown(event)
+      if (event.defaultPrevented) {
+        return
+      }
+    }
+
     if (event.keyCode === ESCAPE_KEY_CODE) {
       this.throttledRefreshAutocomplete.cancel()
       if (this.isAutocompleteOpen()) {
@@ -85,10 +92,6 @@ class ApiAutocomplete extends Component {
         event.preventDefault()
         this.props.onSubmit(event)
       }
-    }
-
-    if (this.props.onKeyDown) {
-      this.props.onKeyDown(event)
     }
   }
 
@@ -152,6 +155,7 @@ class ApiAutocomplete extends Component {
     const {
       value,
       transformedSuggestions,
+      focusInputOnAutocomplete,
       // ignore
       autocompletes,
       autocompleteThrottle,
@@ -187,7 +191,7 @@ class ApiAutocomplete extends Component {
         data={transformedSuggestions}
         filter={null}
         ref={this.setAutocomplete}
-        focusInputOnAutocomplete={false}
+        focusInputOnAutocomplete={focusInputOnAutocomplete}
       />
     )
   }
@@ -232,6 +236,7 @@ ApiAutocomplete.defaultProps = {
   autocompleteThrottle: 250,
   escapeClears: false,
   singleLine: false,
+  focusInputOnAutocomplete: false,
 }
 
 /** Pluck the properties from the model and give them names appropriate to a DOM element; react-md will put all its members as attributes on the element */

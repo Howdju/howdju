@@ -11,7 +11,7 @@ const {
 const {
   JustificationPolarity,
   JustificationRootPolarity,
-  VotePolarity,
+  JustificationVotePolarity,
   JustificationBasisType,
   JustificationTargetType,
   JustificationBasisCompoundAtomType,
@@ -28,8 +28,8 @@ _e.isPositive = (j) => j.polarity === JustificationPolarity.POSITIVE
 _e.isNegative = (j) => j.polarity === JustificationPolarity.NEGATIVE
 _e.isRootPositive = (j) => j.rootPolarity === JustificationRootPolarity.POSITIVE
 _e.isRootNegative = (j) => j.rootPolarity === JustificationRootPolarity.NEGATIVE
-_e.isVerified = (j) => j.vote && j.vote.polarity === VotePolarity.POSITIVE
-_e.isDisverified = (j) => j.vote && j.vote.polarity === VotePolarity.NEGATIVE
+_e.isVerified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.POSITIVE
+_e.isDisverified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.NEGATIVE
 _e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION && _e.isNegative(j)
 _e.isRootJustification = (j) =>
   j.target.type === JustificationTargetType.STATEMENT &&
@@ -39,14 +39,14 @@ _e.isStatementCompoundBased = (j) => j ? j.basis.type === JustificationBasisType
 _e.isWritQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRIT_QUOTE : false
 _e.isJustificationBasisCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND : false
 
-_e.negateVotePolarity = (polarity) => {
+_e.negateJustificationVotePolarity = (polarity) => {
   switch (polarity) {
-    case VotePolarity.POSITIVE:
-      return VotePolarity.NEGATIVE
-    case VotePolarity.NEGATIVE:
-      return VotePolarity.POSITIVE
+    case JustificationVotePolarity.POSITIVE:
+      return JustificationVotePolarity.NEGATIVE
+    case JustificationVotePolarity.NEGATIVE:
+      return JustificationVotePolarity.POSITIVE
     default:
-      throw newImpossibleError(`Unsupported vote polarity for negation: ${polarity}`)
+      throw newExhaustedEnumError('JustificationVotePolarity', polarity)
   }
 }
 
@@ -272,3 +272,11 @@ _e.makeNewUrl = () => ({url: ''})
  * there is no mistake.  One thing we don't do is convert an integer identifier from the client into a string, e.g..
  */
 _e.idEqual = (id1, id2) => isDefined(id1) && isDefined(id2) && toString(id1) === toString(id2)
+
+_e.makeTag = (props) => merge({
+  name: ''
+}, props)
+
+_e.tagEqual = (tag1, tag2) => _e.idEqual(tag1.id, tag2.id) || isDefined(tag1.name) && tag1.name === tag2.name
+
+_e.makeStatementTagVote = (props) => merge({}, props)

@@ -1,8 +1,9 @@
 import { createAction as actionCreator } from 'redux-actions'
 import {
-  VotePolarity,
-  VoteTargetType,
+  JustificationVotePolarity,
   decircularizeJustification,
+  makeStatementTagVote,
+  StatementTagVotePolarity,
 } from "howdju-common"
 import reduce from 'lodash/reduce'
 import mapValues from 'lodash/mapValues'
@@ -74,38 +75,52 @@ export const api = {
   login: apiActionCreator('LOGIN', (credentials) => ({credentials})),
   logout: apiActionCreator('LOGOUT'),
 
-  verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', (target) => ({
-    vote: {
-      targetType: VoteTargetType.JUSTIFICATION,
-      targetId: target.id,
-      polarity: VotePolarity.POSITIVE,
+  verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', (justification) => ({
+    justificationVote: {
+      justificationId: justification.id,
+      polarity: JustificationVotePolarity.POSITIVE,
     },
-    previousVote: target.vote,
+    previousJustificationVote: justification.vote,
   })),
-  unVerifyJustification: apiActionCreator('UN_VERIFY_JUSTIFICATION', (target) => ({
-    vote: {
-      targetType: VoteTargetType.JUSTIFICATION,
-      targetId: target.id,
-      polarity: VotePolarity.POSITIVE,
+  unVerifyJustification: apiActionCreator('UN_VERIFY_JUSTIFICATION', (justification) => ({
+    justificationVote: {
+      justificationId: justification.id,
+      polarity: JustificationVotePolarity.POSITIVE,
     },
-    previousVote: target.vote,
+    previousJustificationVote: justification.vote,
   })),
-  disverifyJustification: apiActionCreator('DISVERIFY_JUSTIFICATION', (target) => ({
-    vote: {
-      targetType: VoteTargetType.JUSTIFICATION,
-      targetId: target.id,
-      polarity: VotePolarity.NEGATIVE,
+  disverifyJustification: apiActionCreator('DISVERIFY_JUSTIFICATION', (justification) => ({
+    justificationVote: {
+      justificationId: justification.id,
+      polarity: JustificationVotePolarity.NEGATIVE,
     },
-    previousVote: target.vote,
+    previousJustificationVote: justification.vote,
   })),
-  unDisverifyJustification: apiActionCreator('UN_DISVERIFY_JUSTIFICATION', (target) => ({
-    vote: {
-      targetType: VoteTargetType.JUSTIFICATION,
-      targetId: target.id,
-      polarity: VotePolarity.NEGATIVE,
+  unDisverifyJustification: apiActionCreator('UN_DISVERIFY_JUSTIFICATION', (justification) => ({
+    justificationVote: {
+      justificationId: justification.id,
+      polarity: JustificationVotePolarity.NEGATIVE,
     },
-    previousVote: target.vote,
+    previousJustificationVote: justification.vote,
   })),
+
+  tagStatement: apiActionCreator('TAG_STATEMENT', (statementId, tag, statementTagVote) => ({
+    statementTagVote: makeStatementTagVote({
+      polarity: StatementTagVotePolarity.POSITIVE,
+      statement: {id: statementId},
+      tag,
+    }),
+    prevStatementTagVote: statementTagVote,
+  })),
+  antiTagStatement: apiActionCreator('ANTI_TAG_STATEMENT', (statementId, tag, statementTagVote) => ({
+    statementTagVote: makeStatementTagVote({
+      polarity: StatementTagVotePolarity.NEGATIVE,
+      statement: {id: statementId},
+      tag,
+    }),
+    prevStatementTagVote: statementTagVote,
+  })),
+  unTagStatement: apiActionCreator('UN_TAG_STATEMENT', (statementTagVote) => ({prevStatementTagVote: statementTagVote})),
 
   createStatement: apiActionCreator('CREATE_STATEMENT', (statement) => ({statement})),
   updateStatement: apiActionCreator('UPDATE_STATEMENT', (statement) => ({statement}), (s, nonce) => ({nonce})),
@@ -129,6 +144,15 @@ export const api = {
     suggestionsKey,
   })),
 
+  fetchTagNameSuggestions: apiActionCreator('FETCH_TAG_NAME_SUGGESTIONS', (tagName, suggestionsKey) => ({
+    tagName,
+    suggestionsKey,
+  })),
+  cancelTagNameSuggestions: apiActionCreator('CANCEL_TAG_NAME_SUGGESTIONS', (suggestionsKey) => ({
+    cancelTarget: str(api.fetchTagNameSuggestions),
+    suggestionsKey,
+  })),
+
   fetchMainSearchSuggestions: apiActionCreator('FETCH_MAIN_SEARCH_SUGGESTIONS', (searchText, suggestionsKey) => ({
     searchText,
     suggestionsKey
@@ -142,8 +166,11 @@ export const api = {
   updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', (justification) => ({justification})),
 
-  fetchMainSearchResults: apiActionCreator('FETCH_MAIN_SEARCH_RESULTS', searchText => ({searchText})),
+  fetchMainSearchResults: apiActionCreator('FETCH_MAIN_SEARCH_RESULTS', (searchText) => ({searchText})),
   fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', (searchText) => ({searchText})),
+
+  fetchTag: apiActionCreator('FETCH_TAG', (tagId) => ({tagId})),
+  fetchTaggedStatements: apiActionCreator('FETCH_TAGGED_STATEMENTS', (tagId) => ({tagId})),
 }
 export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator) => {
   result[actionCreator] = actionCreator
@@ -194,6 +221,8 @@ export const ui = {
 
   enableMobileSite: actionCreator('UI/ENABLE_MOBILE_SITE'),
   disableMobileSite: actionCreator('UI/DISABLE_MOBILE_SITE'),
+
+  clearTaggedStatements: actionCreator('UI/CLEAR_TAGGED_STATEMENTS'),
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
@@ -256,13 +285,18 @@ export const editors = {
   removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl: actionCreator(
     'EDITORS/REMOVE_JUSTIFICATION_BASIS_COMPOUND_ATOM_SOURCE_EXCERPT_PARAPHRASE_WRIT_QUOTE_URL',
     (editorType, editorId, atom, atomIndex, url, urlIndex) => ({editorType, editorId, atom, atomIndex, url, urlIndex})
-  )
+  ),
+
+  tagStatement: actionCreator('EDITORS/TAG_STATEMENT', (editorType, editorId, tag) => ({editorType, editorId, tag})),
+  unTagStatement: actionCreator('EDITORS/UN_TAG_STATEMENT', (editorType, editorId, tag) => ({editorType, editorId, tag})),
+  antiTagStatement: actionCreator('EDITORS/ANTI_TAG_STATEMENT', (editorType, editorId, tag) => ({editorType, editorId, tag})),
 }
 
 export const goto = {
   login: actionCreator('GOTO/LOGIN', (loginRedirectLocation) => ({loginRedirectLocation})),
   statement: actionCreator('GOTO/STATEMENT', (statement) => ({statement})),
   mainSearch: actionCreator('GOTO/MAIN_SEARCH', (mainSearchText) => ({mainSearchText})),
+  tag: actionCreator('GOTO/TAG', (tag) => ({tag})),
 }
 
 export const flows = {

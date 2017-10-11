@@ -13,6 +13,8 @@ _e.EntityType = arrayToObject([
   'JUSTIFICATION',
   'USER',
   'PASSWORD_HASH',
+  'STATEMENT_TAG_VOTE',
+  'JUSTIFICATION_VOTE',
 ])
 
 _e.ActionType = arrayToObject([
@@ -88,16 +90,14 @@ _e.SourceExcerptType = arrayToObject([
   'VID_SEGMENT',
 ])
 
-_e.VoteTargetType = arrayToObject([
-  'JUSTIFICATION',
-  'TAGGING',
-])
-
-_e.VotePolarity = arrayToObject([
+_e.JustificationVotePolarity = arrayToObject([
   'POSITIVE',
   'NEGATIVE',
 ])
-_e.JustificationVotePolarity = _e.VotePolarity
+_e.StatementTagVotePolarity = arrayToObject([
+  'POSITIVE',
+  'NEGATIVE',
+])
 
 _e.SortDirection = {
   ASCENDING: 'ascending',

@@ -7,7 +7,6 @@ const {
   JustificationVotePolarity,
   JustificationScoreType,
   JobHistoryStatus,
-  VoteTargetType,
   utcNow,
 } = require('howdju-common')
 
@@ -19,7 +18,7 @@ const {
 const sumVotesByJustificationId = (votes, logger) => {
   const voteSumByJustificationId = {}
   forEach(votes, (vote) => {
-    let sum = voteSumByJustificationId[vote.targetId]
+    let sum = voteSumByJustificationId[vote.justificationId]
     if (isUndefined(sum)) {
       sum = 0
     }
@@ -36,7 +35,7 @@ const sumVotesByJustificationId = (votes, logger) => {
         break
     }
 
-    voteSumByJustificationId[vote.targetId] = sum
+    voteSumByJustificationId[vote.justificationId] = sum
   })
 
   return voteSumByJustificationId
@@ -44,11 +43,11 @@ const sumVotesByJustificationId = (votes, logger) => {
 
 exports.JustificationScoresService = class JustificationScoresService {
 
-  constructor(logger, justificationScoresDao, jobHistoryDao, votesDao) {
+  constructor(logger, justificationScoresDao, jobHistoryDao, justificationVotesDao) {
     this.logger = logger
     this.justificationScoresDao = justificationScoresDao
     this.jobHistoryDao = jobHistoryDao
-    this.votesDao = votesDao
+    this.justificationVotesDao = justificationVotesDao
   }
 
   setJustificationScoresUsingAllVotes() {
@@ -57,7 +56,7 @@ exports.JustificationScoresService = class JustificationScoresService {
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
       /* eslint-disable indent */
       .then( (job) => Promise.all([
-          this.votesDao.readVotesForType(VoteTargetType.JUSTIFICATION),
+          this.justificationVotesDao.readVotes(),
           this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
         ])
           .then( ([votes, deletions]) => {

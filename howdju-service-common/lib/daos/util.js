@@ -7,7 +7,6 @@ const map = require('lodash/map')
 const replace = require('lodash/replace')
 const toLower = require('lodash/toLower')
 const toNumber = require('lodash/toNumber')
-const trim = require('lodash/trim')
 
 const {
   assert,
@@ -15,14 +14,10 @@ const {
   newProgrammingError,
   idEqual,
   newImpossibleError,
+  cleanWhitespace,
 } = require('howdju-common')
 
 
-exports.cleanWhitespace = text => {
-  text = trim(text)
-  text = replace(text, /\s+/g, ' ')
-  return text
-}
 
 exports.normalizeText = text => {
 
@@ -31,7 +26,7 @@ exports.normalizeText = text => {
   text = toLower(text)
   text = deburr(text)
   text = replace(text, /[^\w\s]/g, '')
-  text = exports.cleanWhitespace(text)
+  text = cleanWhitespace(text)
 
   return text
 }

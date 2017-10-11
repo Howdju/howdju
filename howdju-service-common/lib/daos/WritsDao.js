@@ -5,21 +5,20 @@ const forEach = require('lodash/forEach')
 const concat = require('lodash/concat')
 
 const {
-  toWrit,
-} = require('./orm')
-
-const {
   JustificationBasisType,
-  VoteTargetType,
   SortDirection,
   JustificationTargetType,
-} = require('howdju-common')
-const {
   cleanWhitespace,
+} = require('howdju-common')
+
+const {
   normalizeText,
   mapSingle,
 } = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
+const {
+  toWrit,
+} = require('./orm')
 
 
 exports.WritsDao = class WritsDao {
@@ -169,11 +168,10 @@ exports.WritsDao = class WritsDao {
             and j.deleted is null
         )
         , basis_justification_votes as (
-          select * from votes v
+          select * from justification_votes v
             join basis_justifications j on
                   v.user_id != $3
-              and v.target_type = $4 
-              and v.target_id = j.justification_id
+              and v.justification_id = j.justification_id
               and v.deleted is null
         )
       select count(*) > 0 as has_votes from basis_justification_votes
@@ -182,7 +180,6 @@ exports.WritsDao = class WritsDao {
       writ.id,
       JustificationBasisType.WRIT_QUOTE,
       userId,
-      VoteTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
   }
 

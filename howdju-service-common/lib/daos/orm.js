@@ -11,6 +11,7 @@ const {
   JustificationBasisCompoundAtomType,
   SourceExcerptType,
   newExhaustedEnumError,
+  toSlug,
 } = require('howdju-common')
 
 
@@ -31,8 +32,6 @@ const toUserExternalIds = (row) => row && ({
   sentryId: row.sentry_id,
   smallchatId: row.smallchat_id,
 })
-
-const toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
 
 const toStatement = (row) => row && ({
   id: toString(row.statement_id),
@@ -80,11 +79,10 @@ const toJustification = (
     },
     polarity: row.polarity,
     score: row.score,
-    vote: row.vote_id && toVote({
-      vote_id: row.vote_id,
+    vote: row.justification_vote_id && toJustificationVote({
+      justification_vote_id: row.justification_vote_id,
       polarity: row.vote_polarity,
-      target_type: row.vote_target_type,
-      target_id: row.vote_target_id,
+      justification_id: row.vote_justification_id,
     }),
     counterJustifications: [],
   }
@@ -189,11 +187,10 @@ const toUrl = (row) => row && ({
   url: row.url
 })
 
-const toVote = (row) => row && ({
-  id: toString(row.vote_id),
+const toJustificationVote = (row) => row && ({
+  id: toString(row.justification_vote_id),
   polarity: row.polarity,
-  targetType: row.target_type,
-  targetId: row.target_id,
+  justificationId: row.justification_id,
   created: row.created,
   deleted: row.deleted,
 })
@@ -400,6 +397,34 @@ const toSourceExcerptEntity = (row) => {
   }
 }
 
+function toStatementTagVote(row) {
+  if (!row) {
+    return row
+  }
+
+  return {
+    id: toString(row.statement_tag_vote_id),
+    polarity: row.polarity,
+    statement: {
+      id: toString(row.statement_id),
+    },
+    tag: {
+      id: toString(row.tag_id),
+    },
+  }
+}
+
+function toTag(row) {
+  if (!row) {
+    return row
+  }
+
+  return {
+    id: toString(row.tag_id),
+    name: row.name,
+  }
+}
+
 module.exports = {
   toUser,
   toStatement,
@@ -407,10 +432,12 @@ module.exports = {
   toWritQuote,
   toWrit,
   toUrl,
-  toVote,
+  toJustificationVote,
   toWritQuoteUrl,
   toStatementCompound,
   toStatementCompoundAtom,
+  toStatementTagVote,
+  toTag,
   toPerspective,
   toUserHash,
   toUserExternalIds,

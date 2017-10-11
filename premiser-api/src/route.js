@@ -1,7 +1,8 @@
 const Promise = require('bluebird')
 const assign = require('lodash/assign')
+const forEach = require('lodash/forEach')
 const isEmpty = require('lodash/isEmpty')
-const isEqual = require('lodash/isEqual')
+const isUndefined = require('lodash/isUndefined')
 const split = require('lodash/split')
 
 const {
@@ -82,15 +83,38 @@ const routes = [
     id: 'searchStatements',
     path: 'search-statements',
     method: httpMethods.GET,
-    handler: (appProvider, {callback, request: { queryStringParameters: { searchText }}}) =>
+    handler: (appProvider, {
+      callback,
+      request: {
+        queryStringParameters: { searchText }
+      }
+    }) =>
       appProvider.statementsTextSearcher.search(searchText)
+        .then( (rankedStatements) => ok({callback, body: rankedStatements}))
+  },
+  {
+    id: 'searchTags',
+    path: 'search-tags',
+    method: httpMethods.GET,
+    handler: (appProvider, {
+      callback,
+      request: {
+        queryStringParameters: { searchText }
+      }
+    }) =>
+      appProvider.tagsService.readTagsLikeTagName(searchText)
         .then( (rankedStatements) => ok({callback, body: rankedStatements}))
   },
   {
     id: 'searchWrits',
     path: 'search-writs',
     method: httpMethods.GET,
-    handler: (appProvider, {callback, request: { queryStringParameters: { searchText }}}) =>
+    handler: (appProvider, {
+      callback,
+      request: {
+        queryStringParameters: { searchText }
+      },
+    }) =>
       appProvider.writsTitleSearcher.search(searchText)
         .then( (rankedWrits) => ok({callback, body: rankedWrits}))
   },
@@ -103,9 +127,37 @@ const routes = [
         .then( (results) => ok({callback, body: results}))
   },
 
+  {
+    id: 'readTag',
+    path: new RegExp('^tags/([^/]+)$'),
+    method: httpMethods.GET,
+    handler: (appProvider, {
+      callback,
+      request: {
+        pathParameters: [tagId],
+        authToken,
+      }
+    }) => appProvider.tagsService.readTagForId(tagId)
+      .then( tag => ok({callback, body: {tag}}))
+  },
+
   /*
    * Statements
    */
+  {
+    id: 'readTaggedStatements',
+    path: 'statements',
+    method: httpMethods.GET,
+    queryStringParameters: {tagId: /.+/},
+    handler: (appProvider, {
+      request: {
+        queryStringParameters: {tagId},
+        authToken,
+      },
+      callback,
+    }) => appProvider.statementsService.readStatementsForTagId(tagId, {authToken})
+      .then((statements) => ok({callback, body: {statements}}))
+  },
   {
     id: 'readStatements',
     path: 'statements',
@@ -418,26 +470,60 @@ const routes = [
    * Votes
    */
   {
-    id: 'createVote',
-    path: new RegExp('^votes$'),
+    id: 'createJustificationVote',
+    path: new RegExp('^justification-votes$'),
     method: httpMethods.POST,
-    handler: (appProvider, {callback, request: {body: {vote}, authToken}}) =>
-      appProvider.votesService.createVote({authToken, vote})
-        .then( (vote) => ok({callback, body: {vote}}))
+    handler: (appProvider, {
+      callback,
+      request: {
+        body: {
+          justificationVote
+        },
+        authToken
+      }
+    }) => appProvider.justificationVotesService.createVote(authToken, justificationVote)
+      .then( (justificationVote) => ok({callback, body: {justificationVote}}))
   },
   {
-    id: 'deleteVote',
-    path: new RegExp('^votes$'),
+    id: 'deleteJustificationVote',
+    path: new RegExp('^justification-votes$'),
     method: httpMethods.DELETE,
     handler: (appProvider, {
       callback,
       request: {
-        body: {vote},
+        body: {justificationVote},
         authToken,
       }
     }) =>
-      appProvider.votesService.deleteVote({authToken, vote})
+      appProvider.justificationVotesService.deleteVote(authToken, justificationVote)
         .then( () => ok({callback}) )
+  },
+
+  {
+    id: 'createStatementTagVote',
+    path: 'statement-tag-votes',
+    method: httpMethods.POST,
+    handler: (appProvider, {
+      callback,
+      request: {
+        body: {statementTagVote},
+        authToken,
+      }
+    }) => appProvider.statementTagVotesService.readOrCreateStatementTagVote(authToken, statementTagVote)
+      .then( (statementTagVote) => ok({callback, body: {statementTagVote}}))
+  },
+  {
+    id: 'deleteStatementTagVote',
+    path: new RegExp('^statement-tag-votes/([^/]+)$'),
+    method: httpMethods.DELETE,
+    handler: (appProvider, {
+      callback,
+      request: {
+        pathParameters: [statementTagVoteId],
+        authToken,
+      }
+    }) => appProvider.statementTagVotesService.deleteStatementTagVoteForId(authToken, statementTagVoteId)
+      .then(() => ok({callback}))
   },
 
   /*
@@ -479,22 +565,38 @@ const selectRoute = (request) => Promise.resolve()
     } = request
 
     for (let route of routes) {
-      let match
+      let pathMatch
 
       if (route.method && route.method !== method) continue
       if (typeof route.path === 'string' && route.path !== path) continue
-      if (route.path instanceof RegExp && !(match = route.path.exec(path))) continue
+      if (route.path instanceof RegExp && !(pathMatch = route.path.exec(path))) continue
       if (route.queryStringParameters) {
+        if (!queryStringParameters) {
+          continue
+        }
         if (isEmpty(route.queryStringParameters) && !isEmpty(queryStringParameters)) {
           continue
         }
-        if (!isEmpty(route.queryStringParameters) && !isEqual(route.queryStringParameters, queryStringParameters)) {
+
+        let isMisMatch = false
+        forEach(route.queryStringParameters, (value, name) => {
+          const requestValue = queryStringParameters[name] || ''
+          if (value instanceof RegExp) {
+            // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
+            if (isUndefined(requestValue) || !value.test(requestValue)) {
+              isMisMatch = true
+            }
+          } else if (value !== requestValue) {
+            isMisMatch = true
+          }
+        })
+        if (isMisMatch) {
           continue
         }
       }
 
       // First item is the whole match, rest are the group matches
-      const pathParameters = match ? match.slice(1) : undefined
+      const pathParameters = pathMatch ? pathMatch.slice(1) : undefined
       return {route, pathParameters}
     }
 

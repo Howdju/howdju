@@ -2,9 +2,9 @@ const {
   modelErrorCodes,
 } = require('howdju-common')
 
-class VoteValidator {
+class JustificationVoteValidator {
   validate(vote) {
-    const errors = VoteValidator.blankErrors()
+    const errors = JustificationVoteValidator.blankErrors()
 
     if (!vote) {
       errors.hasErrors = true
@@ -12,14 +12,9 @@ class VoteValidator {
       return errors
     }
 
-    if (!vote.targetType) {
+    if (!vote.justificationId) {
       errors.hasErrors = true
-      errors.fieldErrors.targetType.push(modelErrorCodes.IS_REQUIRED)
-    }
-
-    if (!vote.targetId) {
-      errors.hasErrors = true
-      errors.fieldErrors.targetId.push(modelErrorCodes.IS_REQUIRED)
+      errors.fieldErrors.justificationId.push(modelErrorCodes.IS_REQUIRED)
     }
 
     if (!vote.polarity) {
@@ -30,14 +25,13 @@ class VoteValidator {
     return errors
   }
 }
-VoteValidator.blankErrors = () => ({
+JustificationVoteValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    targetType: [],
-    targetId: [],
+    justificationId: [],
     polarity: [],
   }
 })
 
-exports.VoteValidator = VoteValidator
+exports.JustificationVoteValidator = JustificationVoteValidator

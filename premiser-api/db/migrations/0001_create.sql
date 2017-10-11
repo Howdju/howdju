@@ -142,7 +142,7 @@ create table if not exists urls (
 
 create table if not exists tags (
   tag_id serial,
-  type varchar(64), -- statements: SUBJECT, TIME, LOCATION; justifications: LOGICAL_FALLACY
+  type varchar(64), -- statements: THING, PERSON, CONCEPT, TIME, LOCATION; justifications: LOGICAL_FALLACY
   text varchar(1024),
   creator_user_id integer,
   created timestamp,

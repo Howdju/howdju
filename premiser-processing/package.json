@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "lint": "eslint bin/ src/ lambda-functions/",
-    "score-justifications:local": "NODE_ENV=development node bin/score-justifications.js",
+    "score-justifications:local": "source ../config/local.env && node bin/score-justifications.js",
     "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
     "update-lambda-function-code": "node bin/update-lambda-function-code.js",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",

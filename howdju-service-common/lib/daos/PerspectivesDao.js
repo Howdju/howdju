@@ -2,7 +2,6 @@ const forEach = require('lodash/forEach')
 const values = require('lodash/values')
 
 const {
-  VoteTargetType,
   JustificationBasisType,
   JustificationTargetType,
   newImpossibleError,
@@ -50,22 +49,19 @@ exports.PerspectivesDao = class PerspectivesDao {
       SourceExcerptType.WRIT_QUOTE,
     ]
     if (userId) {
-      args.push(VoteTargetType.JUSTIFICATION)
       args.push(userId)
     }
 
     const votesSelectSql = userId ? `
-        , v.vote_id
+        , v.justification_vote_id
         , v.polarity AS vote_polarity
-        , v.target_type AS vote_target_type
-        , v.target_id AS vote_target_id
+        , v.justification_id AS vote_justification_id
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join votes v on 
-              v.target_type = $7
-          and j.justification_id = v.target_id
-          and v.user_id = $8
+        left join justification_votes v on 
+              j.justification_id = v.justification_id
+          and v.user_id = $7
           and v.deleted IS NULL
         ` :
       ''

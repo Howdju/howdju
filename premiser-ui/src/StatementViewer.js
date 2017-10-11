@@ -7,41 +7,44 @@ import moment from 'moment'
 import paths from './paths'
 import config from './config'
 
-export default function StatementViewer(props) {
-  const {
-    id,
-    statement,
-    className,
-    showStatusText,
-    trailStatements,
-    ...rest,
-  } = props
+export default class StatementViewer extends React.Component {
 
-  const age = statement.created ? moment(statement.created).fromNow() : ''
-  const created = statement.created ? moment(statement.created).format(config.humanDateTimeFormat) : ''
+  render() {
+    const {
+      id,
+      statement,
+      className,
+      showStatusText,
+      trailStatements,
+      ...rest,
+    } = this.props
 
-  return (
-    <div
-      {...rest}
-      id={id}
-      className={cn(className, "statement-viewer")}
-    >
-      {statement && (
-        <div>
-          <div className="statement-text">
-            <Link to={paths.statement(statement, trailStatements)}>
-              {statement.text}
-            </Link>
-          </div>
-          {showStatusText && (
-            <div className="entity-status-text">
-              created <span title={created}>{age}</span>
+    const age = statement.created ? moment(statement.created).fromNow() : ''
+    const created = statement.created ? moment(statement.created).format(config.humanDateTimeFormat) : ''
+
+    return (
+      <div
+        {...rest}
+        id={id}
+        className={cn(className, "statement-viewer")}
+      >
+        {statement && (
+          <div className="statement-viewer">
+            <div className="statement-text">
+              <Link to={paths.statement(statement, trailStatements)}>
+                {statement.text}
+              </Link>
             </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
+            {showStatusText && (
+              <div className="entity-status-text">
+                created <span title={created}>{age}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
 }
 StatementViewer.propTypes = {
   statement: PropTypes.object,

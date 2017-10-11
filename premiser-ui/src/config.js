@@ -17,6 +17,11 @@ const config = {
     'ui.isMobileSiteDisabled',
   ],
   ui: {
+    statementTextMaxLength: 512,
+    tagNameMaxLength: 64,
+    quoteTextMaxLength: 4096,
+    writTitleMaxLength: 512,
+
     narrowBreakpoint: 840,
     shortTextLength: 256,
     flipMove: {

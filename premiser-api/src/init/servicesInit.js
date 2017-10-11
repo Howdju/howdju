@@ -8,18 +8,21 @@ const {
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
+  JustificationVotesService,
   MainSearchService,
   PermissionsService,
   PerspectivesService,
   PicRegionsService,
   SourceExcerptParaphrasesService,
+  StatementsService,
   StatementCompoundsService,
   StatementJustificationsService,
-  StatementsService,
+  StatementTagVotesService,
+  StatementTagsService,
+  TagsService,
   UrlsService,
   UsersService,
   VidSegmentsService,
-  VotesService,
 } = require('howdju-service-common')
 
 
@@ -53,11 +56,31 @@ exports.init = function init(provider) {
     provider.writsDao,
     provider.permissionsDao
   )
+  const tagsService = new TagsService(
+    provider.logger,
+    provider.tagsDao
+  )
+  const statementTagVotesService = new StatementTagVotesService(
+    provider.logger,
+    provider.statementTagVoteValidator,
+    authService,
+    tagsService,
+    provider.statementTagVotesDao
+  )
+
+  const statementTagsService = new StatementTagsService(
+    provider.logger,
+    provider.statementTagsDao
+  )
+
   const statementsService = new StatementsService(
     provider.appConfig,
     provider.statementValidator,
     actionsService,
     authService,
+    statementTagsService,
+    statementTagVotesService,
+    tagsService,
     provider.statementsDao,
     provider.permissionsDao,
     provider.justificationsDao
@@ -117,8 +140,8 @@ exports.init = function init(provider) {
   )
   const statementJustificationsService = new StatementJustificationsService(
     authService,
-    provider.statementsDao,
-    provider.justificationsDao
+    statementsService,
+    justificationsService
   )
   const usersService = new UsersService(
     provider.userValidator,
@@ -128,11 +151,11 @@ exports.init = function init(provider) {
     provider.userExternalIdsDao,
     provider.usersDao
   )
-  const votesService = new VotesService(
+  const justificationVotesService = new JustificationVotesService(
     provider.logger,
-    provider.voteValidator,
+    provider.justificationVoteValidator,
     authService,
-    provider.votesDao
+    provider.justificationVotesDao
   )
 
   const mainSearchService = new MainSearchService(
@@ -149,16 +172,19 @@ exports.init = function init(provider) {
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,
+    justificationVotesService,
     mainSearchService,
     permissionsService,
     perspectivesService,
     sourceExcerptParaphrasesService,
+    statementsService,
     statementCompoundsService,
     statementJustificationsService,
-    statementsService,
+    statementTagsService,
+    statementTagVotesService,
+    tagsService,
     urlsService,
     usersService,
-    votesService,
     writQuotesService,
     writsService,
   })

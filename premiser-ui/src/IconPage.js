@@ -23,6 +23,7 @@ const IconPage = props => (
     <i className="material-icons">subject</i>
     <i className="material-icons">speaker_notes</i>
     <i className="material-icons">toc</i>
+    <i className="material-icons">highlight_off</i>
     <i className="material-icons">list</i>
     <i className="material-icons">loyalty</i>
     <i className="material-icons">note_add</i>

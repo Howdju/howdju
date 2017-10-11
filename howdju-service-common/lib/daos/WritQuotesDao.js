@@ -6,7 +6,6 @@ const snakeCase = require('lodash/snakeCase')
 
 const {
   JustificationBasisType,
-  VoteTargetType,
   SortDirection,
   JustificationTargetType,
   JustificationBasisCompoundAtomType,
@@ -343,11 +342,10 @@ exports.WritQuotesDao = class WritQuotesDao {
             where basis_type = $1 and basis_id = $2 and deleted is null
         )
         , basis_justification_votes as (
-          select * from votes v
+          select * from justification_votes v
             join basis_justifications j on
                   v.user_id != $3
-              and v.target_type = $4 
-              and v.target_id = j.justification_id
+              and v.justification_id = j.justification_id
               and v.deleted is null
         )
       select count(*) > 0 as has_votes from basis_justification_votes
@@ -356,7 +354,6 @@ exports.WritQuotesDao = class WritQuotesDao {
       JustificationBasisType.WRIT_QUOTE,
       writQuote.id,
       userId,
-      VoteTargetType.JUSTIFICATION,
     ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
   }
 

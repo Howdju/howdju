@@ -21,6 +21,10 @@ $md-data-table-contextual-fallback-color: $md-blue-grey-900;
 $md-linear-progress-fallback-color: $md-deep-orange-a-700;
 $md-switch-ball-fallback-color: $md-deep-orange-a-700;
 
+$md-avatar-default-background: rgba(0,0,0,0);
+$md-avatar-default-color: $icon-color;
+$md-chip-icon-default-color: $icon-color;
+
 @include react-md-everything;
 
 @import './react-md-fixes';

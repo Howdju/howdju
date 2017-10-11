@@ -11,6 +11,7 @@ import {
   mainSearchPage,
   featuredPerspectivesPage,
   justificationsSearchPage,
+  tagPage,
 } from './pages'
 import transients from './transients'
 import {isWindowNarrow} from "../../util"
@@ -51,5 +52,6 @@ export default combineReducers({
   mainSearch,
   featuredPerspectivesPage,
   justificationsSearchPage,
+  tagPage,
   transients,
 })

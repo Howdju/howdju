@@ -14,26 +14,32 @@ import {
   str,
 } from "../actions"
 import {
-  statementJustificationsSchema,
-  voteSchema,
-  statementSchema,
   justificationSchema,
-  writQuoteSchema,
+  justificationsSchema,
+  justificationBasisCompoundSchema,
+  justificationVoteSchema,
+  mainSearchResultsSchema,
+  perspectivesSchema,
+  sourceExcerptParaphraseSchema,
+  statementSchema,
   statementsSchema,
   statementCompoundSchema,
-  perspectivesSchema,
+  statementJustificationsSchema,
+  statementTagVoteSchema,
+  tagsSchema,
+  writQuoteSchema,
   writsSchema,
-  justificationsSchema,
   writQuotesSchema,
-  justificationBasisCompoundSchema,
-  sourceExcerptParaphraseSchema,
-  mainSearchResultsSchema,
+  tagSchema,
 } from '../schemas'
 
 
 const defaultSorts = `created=${SortDirection.DESCENDING}`
 
 export const resourceApiConfigs = {
+
+  /* Entity CRUD */
+
   [api.fetchStatements]: (payload) => {
     const query = payload.statementIds ?
       `?statementIds=${join(payload.statementIds, ',')}` :
@@ -43,87 +49,6 @@ export const resourceApiConfigs = {
       schema: {statements: statementsSchema},
     }
   },
-  [api.fetchRecentStatements]: (payload) => {
-    const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    if (!queryStringParams.continuationToken) {
-      queryStringParams.sorts = defaultSorts
-    }
-    const queryStringParamsString = queryString.stringify(queryStringParams)
-    return {
-      endpoint: 'statements?' + queryStringParamsString,
-      schema: {statements: statementsSchema},
-    }
-  },
-  [api.fetchRecentWrits]: (payload) => {
-    const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    if (!queryStringParams.continuationToken) {
-      queryStringParams.sorts = defaultSorts
-    }
-    const queryStringParamsString = queryString.stringify(queryStringParams)
-    return {
-      endpoint: 'writs?' + queryStringParamsString,
-      schema: {writs: writsSchema},
-    }
-  },
-  [api.fetchRecentWritQuotes]: (payload) => {
-    const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    if (!queryStringParams.continuationToken) {
-      queryStringParams.sorts = defaultSorts
-    }
-    const queryStringParamsString = queryString.stringify(queryStringParams)
-    return {
-      endpoint: 'writ-quotes?' + queryStringParamsString,
-      schema: {writQuotes: writQuotesSchema},
-    }
-  },
-  [api.fetchRecentJustifications]: (payload) => {
-    const queryStringParams = pick(payload, ['continuationToken', 'count'])
-    if (!queryStringParams.continuationToken) {
-      queryStringParams.sorts = defaultSorts
-    }
-    const queryStringParamsString = queryString.stringify(queryStringParams)
-    return {
-      endpoint: 'justifications?' + queryStringParamsString,
-      schema: {justifications: justificationsSchema},
-    }
-  },
-  [api.fetchJustificationsSearch]: (payload) => {
-    const {
-      filters,
-      sorts,
-      count,
-      continuationToken
-    } = payload
-    const params = {}
-
-    if (!isEmpty(filters)) {
-      params.filters = encodeQueryStringObject(filters)
-    }
-
-    if (!isEmpty(sorts)) {
-      params.sorts = encodeQueryStringObject(sorts)
-    } else {
-      params.sorts = defaultSorts
-    }
-
-    if (count) {
-      params.count = count
-    }
-
-    if (continuationToken) {
-      params.continuationToken = continuationToken
-    }
-
-    return {
-      endpoint: 'justifications?' + queryString.stringify(params),
-      schema: {justifications: justificationsSchema},
-    }
-  },
-  [api.fetchFeaturedPerspectives]: (payload) => ({
-    endpoint: 'perspectives?featured',
-    schema: {perspectives: perspectivesSchema},
-    requiresRehydrate: true,
-  }),
   [api.fetchStatement]: (payload) => ({
     endpoint: `statements/${payload.statementId}`,
     schema: {statement: statementSchema},
@@ -190,6 +115,83 @@ export const resourceApiConfigs = {
       method: httpMethods.DELETE,
     },
   }),
+  [api.fetchTag]: (payload) => ({
+    endpoint: `tags/${payload.tagId}`,
+    schema: {tag: tagSchema}
+  }),
+
+  /* Recents */
+
+  [api.fetchRecentStatements]: (payload) => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'statements?' + queryStringParamsString,
+      schema: {statements: statementsSchema},
+    }
+  },
+  [api.fetchRecentWrits]: (payload) => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'writs?' + queryStringParamsString,
+      schema: {writs: writsSchema},
+    }
+  },
+  [api.fetchRecentWritQuotes]: (payload) => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'writ-quotes?' + queryStringParamsString,
+      schema: {writQuotes: writQuotesSchema},
+    }
+  },
+  [api.fetchRecentJustifications]: (payload) => {
+    const queryStringParams = pick(payload, ['continuationToken', 'count'])
+    if (!queryStringParams.continuationToken) {
+      queryStringParams.sorts = defaultSorts
+    }
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: 'justifications?' + queryStringParamsString,
+      schema: {justifications: justificationsSchema},
+    }
+  },
+
+  /* Pages */
+
+  [api.fetchFeaturedPerspectives]: (payload) => ({
+    endpoint: 'perspectives?featured',
+    schema: {perspectives: perspectivesSchema},
+    requiresRehydrate: true,
+  }),
+
+  [api.fetchStatementJustifications]: (payload) => ({
+    endpoint: `statements/${payload.statementId}?include=justifications`,
+    fetchInit: {
+      method: httpMethods.GET,
+    },
+    schema: statementJustificationsSchema,
+    requiresRehydrate: true
+  }),
+
+  [api.fetchTaggedStatements]: (payload) => ({
+    endpoint: `statements?tagId=${payload.tagId}`,
+    schema: {statements: statementsSchema},
+    requiresRehydrate: true,
+  }),
+
+  /* Auth */
+
   [api.login]: (payload) => ({
     endpoint: 'login',
     fetchInit: {
@@ -203,59 +205,86 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
     }
   },
-  [api.fetchStatementJustifications]: (payload) => ({
-    endpoint: `statements/${payload.statementId}?include=justifications`,
-    fetchInit: {
-      method: httpMethods.GET,
-    },
-    schema: statementJustificationsSchema,
-    requiresRehydrate: true
-  }),
+
+  /* Votes */
 
   [api.verifyJustification]: (payload) => ({
-    endpoint: 'votes',
+    endpoint: 'justification-votes',
     fetchInit: {
       method: httpMethods.POST,
       body: {
-        vote: payload.vote
+        justificationVote: payload.justificationVote
       }
     },
-    schema: {vote: voteSchema},
+    schema: {justificationVote: justificationVoteSchema},
   }),
   [api.unVerifyJustification]: (payload) => ({
-    endpoint: 'votes',
+    endpoint: 'justification-votes',
     fetchInit: {
       method: httpMethods.DELETE,
       body: {
-        vote: payload.vote
+        justificationVote: payload.justificationVote
       }
     },
-    schema: {vote: voteSchema},
   }),
   [api.disverifyJustification]: (payload) => ({
-    endpoint: 'votes',
+    endpoint: 'justification-votes',
     fetchInit: {
       method: httpMethods.POST,
       body: {
-        vote: payload.vote
+        justificationVote: payload.justificationVote
       }
     },
-    schema: {vote: voteSchema},
+    schema: {justificationVote: justificationVoteSchema},
   }),
   [api.unDisverifyJustification]: (payload) => ({
-    endpoint: 'votes',
+    endpoint: 'justification-votes',
     fetchInit: {
       method: httpMethods.DELETE,
       body: {
-        vote: payload.vote
+        justificationVote: payload.justificationVote
       }
     },
-    schema: {vote: voteSchema},
   }),
+
+  [api.tagStatement]: (payload) => ({
+    endpoint: 'statement-tag-votes',
+    fetchInit: {
+      method: httpMethods.POST,
+      body: {
+        statementTagVote: payload.statementTagVote
+      }
+    },
+    schema: {statementTagVote: statementTagVoteSchema},
+  }),
+  [api.antiTagStatement]: (payload) => ({
+    endpoint: 'statement-tag-votes',
+    fetchInit: {
+      method: httpMethods.POST,
+      body: {
+        statementTagVote: payload.statementTagVote
+      }
+    },
+    schema: {statementTagVote: statementTagVoteSchema},
+  }),
+  [api.unTagStatement]: (payload) => ({
+    endpoint: `statement-tag-votes/${payload.prevStatementTagVote.id}`,
+    fetchInit: {
+      method: httpMethods.DELETE,
+    }
+  }),
+
+  /* Suggestions / full-text search */
+
   [api.fetchStatementTextSuggestions]: (payload) => ({
     endpoint: `search-statements?searchText=${payload.statementText}`,
     cancelKey: str(api.fetchStatementTextSuggestions) + '.' + payload.suggestionsKey,
     schema: statementsSchema,
+  }),
+  [api.fetchTagNameSuggestions]: (payload) => ({
+    endpoint: `search-tags?searchText=${payload.tagName}`,
+    cancelKey: str(api.fetchTagNameSuggestions) + '.' + payload.suggestionsKey,
+    schema: tagsSchema,
   }),
   [api.fetchWritTitleSuggestions]: (payload) => ({
     endpoint: `search-writs?searchText=${payload.writTitle}`,
@@ -272,4 +301,39 @@ export const resourceApiConfigs = {
     cancelKey: str(api.fetchMainSearchSuggestions) + '.' + payload.suggestionsKey,
     schema: mainSearchResultsSchema,
   }),
+
+  /* Justification search */
+
+  [api.fetchJustificationsSearch]: (payload) => {
+    const {
+      filters,
+      sorts,
+      count,
+      continuationToken
+    } = payload
+    const params = {}
+
+    if (!isEmpty(filters)) {
+      params.filters = encodeQueryStringObject(filters)
+    }
+
+    if (!isEmpty(sorts)) {
+      params.sorts = encodeQueryStringObject(sorts)
+    } else {
+      params.sorts = defaultSorts
+    }
+
+    if (count) {
+      params.count = count
+    }
+
+    if (continuationToken) {
+      params.continuationToken = continuationToken
+    }
+
+    return {
+      endpoint: 'justifications?' + queryString.stringify(params),
+      schema: {justifications: justificationsSchema},
+    }
+  },
 }

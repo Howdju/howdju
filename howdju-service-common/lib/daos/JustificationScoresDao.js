@@ -1,14 +1,10 @@
 const {
-  VoteTargetType,
-} = require('howdju-common')
-
-const {
   mapSingle,
   mapMany,
 } = require('./util')
 const {
   toJustificationScore,
-  toVote,
+  toJustificationVote,
 } = require('./orm')
 
 exports.JustificationScoresDao = class JustificationScoresDao {
@@ -31,28 +27,28 @@ exports.JustificationScoresDao = class JustificationScoresDao {
   readUnscoredVotesForScoreType(scoreType) {
     return this.database.query(`
       select v.* 
-      from votes v
-        left join justification_scores js on
-              v.target_type = $1
-          and v.target_id = js.justification_id
-          and js.deleted is null
+      from justification_votes v
+        left join justification_scores js using (justification_id)
         where 
-          -- the vote's justification has no score (and isn't already deleted)
-          (
-                js.justification_id IS NULL
-            AND v.deleted IS NULL
-          )
-          -- or its justification has a score, but the vote was either created or deleted after the score was created
-          or (
-                js.score_type = $2
-            and js.created IS NOT NULL
-            and (
-                 v.created > js.created
-              or v.deleted > js.created
+          js.deleted is null 
+          and (
+            -- the vote's justification has no score (and isn't already deleted)
+            (
+                  js.justification_id IS NULL
+              AND v.deleted IS NULL
+            )
+            -- or its justification has a score, but the vote was either created or deleted after the score was created
+            or (
+                  js.score_type = $1
+              and js.created IS NOT NULL
+              and (
+                   v.created > js.created
+                or v.deleted > js.created
+              )
             )
           )
-    `, [VoteTargetType.JUSTIFICATION, scoreType])
-      .then(mapMany(toVote))
+    `, [scoreType])
+      .then(mapMany(toJustificationVote))
   }
 
   deleteScoresForType(scoreType, deleted, jobHistoryId) {

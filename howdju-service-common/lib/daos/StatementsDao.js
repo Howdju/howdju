@@ -8,15 +8,14 @@ const toNumber = require('lodash/toNumber')
 
 const {
   JustificationBasisType,
-  VoteTargetType,
   SortDirection,
   requireArgs,
+  cleanWhitespace,
 } = require('howdju-common')
 
 const {toStatement} = require("./orm")
 
 const {
-  cleanWhitespace,
   normalizeText,
   mapMany,
 } = require('./util')
@@ -72,6 +71,7 @@ exports.StatementsDao = class StatementsDao {
     return this.database.query(sql, args)
       .then(({rows}) => map(rows, toStatement))
   }
+
   readMoreStatements(sortContinuations, count) {
     const args = []
     let countSql = ''
@@ -139,12 +139,14 @@ exports.StatementsDao = class StatementsDao {
         return toStatement(head(rows))
       })
   }
+
   createStatement(userId, statement, now) {
     return this.database.query(
       'insert into statements (text, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *',
       [cleanWhitespace(statement.text), normalizeText(statement.text), userId, now]
     ).then( ({rows: [row]}) => toStatement(row))
   }
+
   updateStatement(statement) {
     return this.database.query('update statements set text = $1, normal_text = $2 where statement_id = $3 and deleted is null returning *',
       [cleanWhitespace(statement.text), normalizeText(statement.text), statement.id])
@@ -155,9 +157,11 @@ exports.StatementsDao = class StatementsDao {
         return toStatement(head(rows))
       })
   }
+
   deleteStatement(statement, now) {
     return this.deleteStatementById(statement.id, now)
   }
+
   deleteStatementById(statementId, now) {
     return this.database.query('update statements set deleted = $2 where statement_id = $1 returning statement_id', [statementId, now])
       .then( ({rows}) => {
@@ -167,6 +171,7 @@ exports.StatementsDao = class StatementsDao {
         return head(map(rows, r => r.statement_id))
       })
   }
+
   countEquivalentStatements(statement) {
     const sql = `
       select count(*) as count 
@@ -203,13 +208,12 @@ exports.StatementsDao = class StatementsDao {
         statement_justifications as ( select * from justifications where root_statement_id = $1 )
       select count(v.*) > 0 as result
       from statement_justifications sj 
-        join votes v on 
-              v.target_type = $2 
-          and v.target_id = sj.justification_id
+        join justification_votes v on 
+              v.justification_id = sj.justification_id
           and v.user_id != $3
           and v.deleted is null
     `
-    return this.database.query(sql, [statement.id, VoteTargetType.JUSTIFICATION, userId])
+    return this.database.query(sql, [statement.id, userId])
       .then( ({rows: [{result}]}) => result )
   }
 

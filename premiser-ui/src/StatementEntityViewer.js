@@ -9,6 +9,7 @@ export default class StatementEntityViewer extends Component {
     const {
       component,
       id,
+      className,
       statement,
       editorId,
       suggestionsKey,
@@ -20,6 +21,7 @@ export default class StatementEntityViewer extends Component {
     return (
       <EntityViewer
         iconName="short_text"
+        className={className}
         iconTitle="Statement"
         component={component}
         entity={
