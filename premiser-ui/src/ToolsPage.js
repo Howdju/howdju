@@ -15,11 +15,10 @@ const ToolsPage = (props) => {
         <Button
           raised
           secondary
-          label={
-            <a title="Submit to Howdju" href={'javascript:' + bookmarklet}>
-              +Howdju
-            </a>
-          }
+          component="a"
+          title="Submit to Howdju"
+          href={'javascript:' + bookmarklet}
+          label="+Howdju"
         />
 
       </div>
