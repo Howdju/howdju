@@ -1,10 +1,12 @@
 # Howdju UI TODO
 
+* Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
 * Include tags in main search
 * Show list of tags by statement count?
 * Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
 * Add "show all" to tagged statements page
 * Tag vote scorer
+
 
 * Should also add stage LOG_LEVEL to allow modifying on the fly without a publish
 

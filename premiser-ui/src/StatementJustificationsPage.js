@@ -35,6 +35,7 @@ import {
   makeNewJustificationTargetingStatementIdWithPolarity,
   JustificationPolarity,
   JustificationBasisSourceType,
+  makeNewStatement,
 } from "howdju-common"
 
 import {logger} from "./logger"
@@ -67,6 +68,7 @@ import {
   combineIds,
   combineSuggestionsKeys,
 } from './viewModels'
+import * as characters from './characters'
 
 
 const statementIdFromProps = (props) => props.match.params.statementId
@@ -367,7 +369,9 @@ const mapStateToProps = (state, ownProps) => {
     return {}
   }
   const statement = denormalize(statementId, statementSchema, state.entities)
-  const trailStatements = map(trailStatementIdsFromProps(ownProps), statementId => state.entities.statements[statementId])
+  const trailStatements = map(trailStatementIdsFromProps(ownProps), statementId =>
+    // If the statemnet has loaded, return that.  Otherwise return a loading statement with the correct ID.
+    state.entities.statements[statementId] || makeNewStatement({id: statementId, text: characters.ellipsis}))
 
   const statementEditorState = get(state, ['editors', EditorTypes.STATEMENT, statementJustificationsPage_statementEditor_editorId])
 
