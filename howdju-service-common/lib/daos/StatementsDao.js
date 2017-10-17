@@ -210,7 +210,7 @@ exports.StatementsDao = class StatementsDao {
       from statement_justifications sj 
         join justification_votes v on 
               v.justification_id = sj.justification_id
-          and v.user_id != $3
+          and v.user_id != $2
           and v.deleted is null
     `
     return this.database.query(sql, [statement.id, userId])

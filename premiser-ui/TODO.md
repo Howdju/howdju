@@ -1,27 +1,30 @@
 # Howdju UI TODO
 
-* Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
-* Include tags in main search
-* Show list of tags by statement count?
-* Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
-* Add "show all" to tagged statements page
-* Tag vote scorer
+## what to do next?
+* surface tags (tag cloud)
+* multi-user
+* example-based justifications
+* clinton emails example
 
+* Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
+* Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
 
 * Should also add stage LOG_LEVEL to allow modifying on the fly without a publish
 
 * Potential big priorities
   * Add indices (root statement ID, joins)
   * Discovery
-    * tagging
+    * Tagging
+      * Include tags in main search
+      * Discovery: widget showing top tags by statement count?
     * Show main search domains as card with quote count, justification count, and statement count
-      * Link to writQuotes using that domain
-    * main search includes tags
+      * Link to searches for each of those
   * version API
   * Additional excerpt fields: author/speaker
   * Additional excerpt types
     * URL (pic/vid) voting to help deal with alternative versions of media?
   * Rich context
+    * Should show when a justification was created
     * When viewing statement, show counter-justifications to any justifications using it
     * Show entity creator (created by X Y days ago)
     * Show justification count by polarity for statement
@@ -29,7 +32,7 @@
       * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
     * Show percentage of justifications (or root justifications?) that are source-based
     * When counter-justifications are collapsed, show: Counter justifications (8)
-  * User signup
+  * Multi-user
     * Share auth between tabs
     * Social login
     * Terms, privacy, contact form
@@ -58,13 +61,6 @@
 
 * Store referrer when submitting justification?  Generally should match up with URL...
 * Are 401s to login in FF showing up as errors in sentry?
-
-* Prev priority: Use bookmarklet; test prod
-  * Translate to Paraphrases: correction?  Translate from paraphrases?
-    * When clicking on paraphrasing statement, it can have no justifications...even though the user would want to see
-      the paraphrased citations here...
-  * Sometimes when submitting I don't want to paraphrase, just capture writ
-    * Sometimes okay paraphrasing, but don't want to justify
       
 * pagination for search results
 
@@ -84,14 +80,17 @@
   * move out configuration
   * add tests
   * add CI
+  
+* Security
+  * Add an HttpOnly, Secure cookie so that authentication can't be taken off site (no XSS can steal all the credentials
+    necessary to make a change.  Keep the local storage token as that prevents CSRF - the attacker needs a script on teh page
+    to read that.)
 
 Improvements to statements trail:
   * Confirm that trailStatements are in fact parents?
     * Show some context like: supports..., opposes..., counters a justification of...
     
 * Why does windowAware need to be pure=false?
-
-* Should show when a justification was created
 
 * recent quotes: exclude those with empty quotes?
 
@@ -102,8 +101,8 @@ Improvements to statements trail:
   * https://stackoverflow.com/a/39507279/39396
 
 * Build UI into subfolder to prevent collisions while running locally and building for prod? 
-* local env has production sentry env?
-   * This occurs when we deploy to production while serving dev.  The deployment replaces index.html
+  * local env has production sentry env?
+     * This occurs when we deploy to production while serving dev.  The deployment replaces index.html
 
 * While researching these old statements, it's really annoying not to be able to know where the citations are hidden.
   * A tree view showing the primary sources in relation to the overall would be great.
@@ -112,7 +111,7 @@ Improvements to statements trail:
 
 
 
-* when scroll area is smaller than header smllchat doesnt reappear
+* when scroll area is smaller than header smallchat doesnt reappear
   
 * When updating lambda alias, return previous version
   * Configure S3 versions for UI?
@@ -180,11 +179,8 @@ Cat meeting design notes:
 * Recently viewed statements, recently viewed tags, recent searches
 * Somehow provide ability to roll back UI.  Either output current version of UI when updating or have a history somewhere
 
-* Return in statement/citation text should submit field
-
 * What is my data backup strategy?  Should I switch to Aurora Postgres?
   
-* Can use async/await in node?
 * pg native?
   * https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
 

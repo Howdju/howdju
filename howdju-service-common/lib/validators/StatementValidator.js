@@ -58,10 +58,11 @@ StatementValidator.blankErrors = () => ({
   modelErrors: [],
   fieldErrors: {
     text: [],
-    tagVotes: {
+    tags: {
       modelErrors: [],
       itemErrors: [],
-    }
+    },
+
   },
 })
 
