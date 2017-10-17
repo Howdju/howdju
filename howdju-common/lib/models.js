@@ -229,7 +229,7 @@ _e.makeNewJustificationBasisCompoundFromStatementCompound = (statementCompound) 
   })
 
 _e.makeNewStatementCompoundFromStatement = (statement) =>
-  _e.makeNewStatementCompound({atoms: [_e.makeNewStatementAtom({statement})]})
+  _e.makeNewStatementCompound({atoms: [_e.makeNewStatementAtom({entity: statement})]})
 
 _e.makeNewJustificationTargetingStatementId = (statementId) => _e.makeNewJustification({
   rootStatement: {id: statementId},
