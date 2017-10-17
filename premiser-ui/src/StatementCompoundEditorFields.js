@@ -74,7 +74,7 @@ class StatementCompoundEditorFields extends Component {
             <StatementTextAutocomplete
               {...inputProps}
               {...atomsErrorsInputProps[index]}
-              suggestionsKey={combineSuggestionsKeys(suggestionsKey, name)}
+              suggestionsKey={combineSuggestionsKeys(suggestionsKey, atomStatementTextName)}
             /> :
             <SingleLineTextField
               {...inputProps}

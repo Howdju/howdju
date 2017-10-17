@@ -6,6 +6,10 @@
 * example-based justifications
 * clinton emails example
 
+
+* Statement autocomplete results overwrote tags
+  * Somehow strangely reappears when submitting counter-justification!?
+* When added counter-justification, got React non-unique Key error
 * Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
 * Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
 
