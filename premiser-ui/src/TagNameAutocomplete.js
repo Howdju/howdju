@@ -12,7 +12,7 @@ import config from './config'
 
 class TagNameAutocomplete extends Component {
 
-  onAutocomplete = (tag, label, index, transformedSuggestions) => {
+  onAutocomplete = (tag) => {
     this.props.onPropertyChange({[this.props.name]: tag.name})
     if (this.props.onAutocomplete) {
       this.props.onAutocomplete(tag)

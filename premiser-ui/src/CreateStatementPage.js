@@ -275,6 +275,7 @@ class CreateStatementPage extends Component {
                       }}
                       onTag={this.onTagStatement}
                       onUnTag={this.onUnTagStatement}
+                      onSubmit={this.onSubmit}
                     />
                   </CardText>
 

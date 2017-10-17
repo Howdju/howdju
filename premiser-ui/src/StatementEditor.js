@@ -63,6 +63,7 @@ class StatementEditor extends Component {
                                  disabled={isSaving}
                                  suggestionsKey={suggestionsKey}
                                  onPropertyChange={this.onPropertyChange}
+                                 onSubmit={this.onSubmit}
                                  errors={errors}
           />
         </CardText>

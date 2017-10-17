@@ -134,6 +134,7 @@ export default class TagsControl extends React.Component {
       suggestionsKey,
       votePolarity,
       inputCollapsable,
+      onSubmit,
       // ignore
       onTag,
       onUntag,
@@ -169,6 +170,7 @@ export default class TagsControl extends React.Component {
               >done</Button>
             ) : null
           }
+          onSubmit={onSubmit}
         />
       )
     }
