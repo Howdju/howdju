@@ -378,12 +378,16 @@ exports.JustificationsDao = class JustificationsDao {
 
   readJustificationsWithBasesAndVotesByRootStatementId(rootStatementId, {userId}) {
     const sql = `
+      with 
+        extant_users as (select * from users where deleted is null)
       select 
           j.*
         , v.justification_vote_id
         , v.polarity    as vote_polarity
         , v.justification_id   as vote_justification_id
+        , u.long_name as creator_user_long_name
       from justifications j 
+        left join extant_users u on j.creator_user_id = u.user_id
         left join statement_compounds sc on 
               j.basis_type = $4 
           and j.basis_id = sc.statement_compound_id 

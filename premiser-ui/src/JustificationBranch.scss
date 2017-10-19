@@ -23,8 +23,18 @@ $slide-size: $md-btn-icon-size;
 .justification-tree {
 
   .actions {
+    // Hide the actions as they slide off-screen; else they create horizontal scroll bars
+    // It would be nicer to do this as far out as possible, so as to avoid any clipping of the icons
+    // but this works for now.  Adding this to the .justification-card is a problem because then the dropdown
+    // menu is cipped.
+    overflow: hidden;
+
+    display: flex;
+
     // Create a local stacking context
     z-index: 0;
+
+    align-items: center;
 
     & > * {
       transition: opacity 0.2s, right 0.4s, left 0.4s;
@@ -56,12 +66,10 @@ $slide-size: $md-btn-icon-size;
     direction: ltr;
   }
 
-  .actions {
-    // Hide the actions as they slide off-screen; else they create horizontal scroll bars
-    // It would be nicer to do this as far out as possible, so as to avoid any clipping of the icons
-    // but this works for now.  Adding this to the .justification-card is a problem because then the dropdown
-    // menu is cipped.
-    overflow: hidden;
+  .justification-status-text {
+    text-align: right;
+    display: inline-block;
+    flex: 1 1;
   }
 
   &.positivey {
@@ -78,6 +86,10 @@ $slide-size: $md-btn-icon-size;
   }
 
   &.negativey {
+
+    .justification-status-text {
+      text-align: left;
+    }
 
     & > * > .actions {
       justify-content: flex-start;

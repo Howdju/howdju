@@ -128,8 +128,14 @@ exports.StatementsDao = class StatementsDao {
   }
 
   readStatementForId(statementId) {
-    return this.database.query(
-      'select * from statements where statement_id = $1 and deleted is null',
+    return this.database.query(`
+      with 
+        extant_users as (select * from users where deleted is null)
+      select 
+          s.*
+        , u.long_name as creator_user_long_name
+      from statements s left join extant_users u on s.creator_user_id = u.user_id
+        where s.statement_id = $1 and s.deleted is null`,
       [statementId]
     )
       .then( ({rows}) => {

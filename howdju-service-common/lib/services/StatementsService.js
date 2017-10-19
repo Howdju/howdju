@@ -245,7 +245,8 @@ exports.StatementsService = class StatementsService {
         if (hasPermission) {
           return result
         }
-        if (userId !== statement.creatorUserId) {
+        const creatorUserId = get(statement, 'creator.id')
+        if (!creatorUserId || userId !== creatorUserId) {
           throw new AuthorizationError({modelErrors: [authorizationErrorCodes.CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
         }
 
@@ -257,7 +258,7 @@ exports.StatementsService = class StatementsService {
           throw new EntityTooOldToModifyError(this.config.modifyEntityGracePeriod)
         }
 
-        const otherUsersJustificationsDependentUponStatement = filter(dependentJustifications, j => j.creatorUserId !== userId)
+        const otherUsersJustificationsDependentUponStatement = filter(dependentJustifications, j => get(j, 'creator.id') !== userId)
         if (otherUsersJustificationsDependentUponStatement.length > 0) {
           throw new UserActionsConflictError()
         }

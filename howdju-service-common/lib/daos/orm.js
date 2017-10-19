@@ -1,5 +1,6 @@
 const isArray = require('lodash/isArray')
 const map = require('lodash/map')
+const merge = require('lodash/merge')
 const sortBy = require('lodash/sortBy')
 const toString = require('lodash/toString')
 const values = require('lodash/values')
@@ -15,15 +16,23 @@ const {
 } = require('howdju-common')
 
 
-const toUser = (row) => row && ({
-  id: toString(row.user_id),
-  email: row.email,
-  shortName: row.short_name,
-  longName: row.long_name,
-  created: row.created,
-  isActive: row.is_active,
-  externalIds: toUserExternalIds(row),
-})
+const toUser = (row) => {
+  if (!row) {
+    return row
+  }
+  const user = merge({
+    id: toString(row.user_id),
+  }, {
+    email: row.email,
+    longName: row.long_name,
+    shortName: row.short_name,
+    created: row.created,
+    isActive: row.is_active,
+    externalIds: toUserExternalIds(row),
+  })
+
+  return user
+}
 
 const toUserExternalIds = (row) => row && ({
   googleAnalyticsId: row.google_analytics_id,
@@ -33,15 +42,28 @@ const toUserExternalIds = (row) => row && ({
   smallchatId: row.smallchat_id,
 })
 
-const toStatement = (row) => row && ({
-  id: toString(row.statement_id),
-  text: row.text,
-  normalText: row.normal_text,
-  slug: toSlug(row.normal_text),
-  creatorUserId: row.creator_user_id && toString(row.creator_user_id),
-  created: row.created,
-  justifications: null,
-})
+const toStatement = (row) => {
+  if (!row) {
+    return row
+  }
+  const statement = {
+    id: toString(row.statement_id),
+    text: row.text,
+    normalText: row.normal_text,
+    slug: toSlug(row.normal_text),
+    created: row.created,
+    justifications: null,
+  }
+
+  if (row.creator_user_id) {
+    statement.creator = toUser({
+      user_id: row.creator_user_id,
+      long_name: row.creator_user_long_name,
+    })
+  }
+
+  return statement
+}
 
 const toJustification = (
   row,
@@ -56,7 +78,6 @@ const toJustification = (
 
   const justification = {
     id: toString(row.justification_id),
-    creatorUserId: toString(row.creator_user_id),
     created: row.created,
     rootStatement: toStatement({
       statement_id: row.root_statement_id,
@@ -85,6 +106,13 @@ const toJustification = (
       justification_id: row.vote_justification_id,
     }),
     counterJustifications: [],
+  }
+
+  if (row.creator_user_id) {
+    justification.creator = toUser({
+      user_id: row.creator_user_id,
+      long_name: row.creator_user_long_name,
+    })
   }
 
   switch (row.basis_type) {

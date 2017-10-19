@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 import cn from 'classnames'
 import moment from 'moment'
+import get from 'lodash/get'
 
 import paths from './paths'
 import config from './config'
@@ -21,6 +22,8 @@ export default class StatementViewer extends React.Component {
 
     const age = statement.created ? moment(statement.created).fromNow() : ''
     const created = statement.created ? moment(statement.created).format(config.humanDateTimeFormat) : ''
+    const creatorName = get(statement, 'creator.longName')
+    const creatorNameDescription = creatorName && ` by ${creatorName}` || ''
 
     return (
       <div
@@ -36,8 +39,10 @@ export default class StatementViewer extends React.Component {
               </Link>
             </div>
             {showStatusText && (
-              <div className="entity-status-text">
-                created <span title={created}>{age}</span>
+              <div>
+                <span className="entity-status-text">
+                  created{creatorNameDescription} <span title={created}>{age}</span>
+                </span>
               </div>
             )}
           </div>

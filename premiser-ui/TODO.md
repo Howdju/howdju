@@ -14,6 +14,9 @@
 * View all statements in a table
 
 
+* No justifications:
+  http://localhost:3000/search-justifications?writQuoteId=1447
+
 * Statement autocomplete results overwrote tags
   * Somehow strangely reappears when submitting counter-justification!?
 * When added counter-justification, got React non-unique Key error

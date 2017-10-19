@@ -220,7 +220,8 @@ exports.JustificationsService = class JustificationsService {
           return result
         }
 
-        if (userId !== justification.creatorUserId) {
+        const creatorUserId = get(justification, 'creator.id')
+        if (!creatorUserId || userId !== creatorUserId) {
           throw new AuthorizationError({modelErrors: [CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
         }
 

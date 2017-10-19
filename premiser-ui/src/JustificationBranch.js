@@ -1,8 +1,12 @@
-import React, {Component} from "react"
+import cn from "classnames"
+import get from 'lodash/get'
+import map from 'lodash/map'
+import moment from 'moment'
 import PropTypes from 'prop-types'
+import React, {Component} from "react"
+import FlipMove from 'react-flip-move'
 import { Link } from 'react-router-dom'
 import {connect} from "react-redux"
-import cn from "classnames"
 import Divider from "react-md/lib/Dividers"
 import Card from "react-md/lib/Cards/Card"
 import Button from 'react-md/lib/Buttons/Button'
@@ -10,9 +14,6 @@ import FontIcon from "react-md/lib/FontIcons"
 import MenuButton from "react-md/lib/Menus/MenuButton"
 import ListItem from "react-md/lib/Lists/ListItem"
 import Positions from "react-md/lib/Menus/Positions"
-import FlipMove from 'react-flip-move'
-import get from 'lodash/get'
-import map from 'lodash/map'
 
 import {
   isVerified,
@@ -226,6 +227,11 @@ class JustificationBranch extends Component {
       />
     )
 
+    const age = justification.created ? moment(justification.created).fromNow() : ''
+    const created = justification.created ? moment(justification.created).format(config.humanDateTimeFormat) : ''
+    const creatorName = get(justification, 'creator.longName')
+    const creatorNameDescription = creatorName && ` by ${creatorName}` || ''
+
     const actions = [
       <Button
         icon
@@ -259,7 +265,7 @@ class JustificationBranch extends Component {
         })}
         title="Counter this justification"
         onClick={this.onEditNewCounterJustification}
-      >reply</Button>
+      >reply</Button>,
     ]
     const hasCounterJustifications = justification.counterJustifications && justification.counterJustifications.length > 0
     if (hasCounterJustifications) {
@@ -276,6 +282,13 @@ class JustificationBranch extends Component {
         >{toggleCounterJustificationsExpandedButtonIcon}</Button>
       )
     }
+    actions.push(
+      <div className="justification-status-text" key="justification-status-text">
+        <span className="entity-status-text">
+          created{creatorNameDescription} <span title={created}>{age}</span>
+        </span>
+      </div>
+      )
 
     const flipMoveProps = config.ui.flipMove
     const counterJustifications = (
@@ -350,7 +363,7 @@ JustificationBranch.propTypes = {
   doShowControls: PropTypes.bool
 }
 JustificationBranch.defaultProps = {
-  doShowControls: true
+  doShowControls: true,
 }
 
 const mapStateToProps = (state, ownProps) => {
