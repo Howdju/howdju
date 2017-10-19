@@ -754,7 +754,7 @@ function makeWritQuoteJustificationClause(writQuoteId, justificationColumns) {
             join justification_basis_compound_atoms bca using (justification_basis_compound_id)
             join source_excerpt_paraphrases sep on
                   bca.entity_type = $2
-              and bca.entity_id = sep.source_excerpt_id
+              and bca.entity_id = sep.source_excerpt_paraphrase_id
             join writ_quotes wq on 
                   sep.source_excerpt_type = $3 
               and sep.source_excerpt_id = wq.writ_quote_id

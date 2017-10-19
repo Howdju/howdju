@@ -6,16 +6,11 @@
   * statement tag vote scorer
   * include in search 
   * tag 'cloud': recent, most-used
-* multi-user
-  * Show statement/justification creator "Carl captured this quote on xxx", "Carl recorded this statement on xxx", "Carl added this justification on xxx"
 * example-based justifications
   * Would need a new vote type for scoring examples as in or out of 
 * clinton emails example
 * View all statements in a table
 
-
-* No justifications:
-  http://localhost:3000/search-justifications?writQuoteId=1447
 
 * Statement autocomplete results overwrote tags
   * Somehow strangely reappears when submitting counter-justification!?
