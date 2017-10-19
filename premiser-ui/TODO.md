@@ -1,15 +1,24 @@
 # Howdju UI TODO
 
 ## what to do next?
-* surface tags (tag cloud)
+* Revealing justification design
+* surface tags
+  * statement tag vote scorer
+  * include in search 
+  * tag 'cloud': recent, most-used
 * multi-user
+  * Show statement/justification creator "Carl captured this quote on xxx", "Carl recorded this statement on xxx", "Carl added this justification on xxx"
 * example-based justifications
+  * Would need a new vote type for scoring examples as in or out of 
 * clinton emails example
+* View all statements in a table
 
 
 * Statement autocomplete results overwrote tags
   * Somehow strangely reappears when submitting counter-justification!?
 * When added counter-justification, got React non-unique Key error
+
+
 * Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
 * Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
 

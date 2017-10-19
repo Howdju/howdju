@@ -3,6 +3,7 @@ import Button from 'react-md/lib/Buttons/Button'
 
 const ToolsPage = (props) => {
   const bookmarklet = `(function(h,o,w,d,j,u){d=h.createElement(o),j=h.getElementsByTagName(o)[0];d.async=1;d.src=w;j.parentNode.insertBefore(d,j)})(document,'script','https://cdn.howdju.com/submit.js')`
+  const bookmarkletHref = 'javascript:' + bookmarklet
   return (
     <div className="md-grid">
       <div className="md-cell md-cell--12">
@@ -17,9 +18,16 @@ const ToolsPage = (props) => {
           secondary
           component="a"
           title="Submit to Howdju"
-          href={'javascript:' + bookmarklet}
+          href={bookmarkletHref}
           label="+Howdju"
         />
+        <p>
+        </p>
+        <p>
+          Raw bookmarklet code for copy/paste:
+        </p>
+        <textarea value={bookmarkletHref}>
+        </textarea>
 
       </div>
     </div>
