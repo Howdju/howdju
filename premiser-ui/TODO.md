@@ -3,8 +3,9 @@
 ## what to do next?
 * Revealing justification design
 * surface tags
-  * statement tag vote scorer
   * include in search 
+    * New tags on create statemnet page are hidden
+  * statement tag vote scorer
   * tag 'cloud': recent, most-used
 * example-based justifications
   * Would need a new vote type for scoring examples as in or out of 

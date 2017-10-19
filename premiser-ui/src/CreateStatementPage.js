@@ -226,6 +226,7 @@ class CreateStatementPage extends Component {
     const newJustificationErrors = translateNewJustificationErrors(newJustification, justificationErrors)
 
     const statementTags = get(statement, 'tags')
+    const statementTagVotes = get(statement, 'statementTagVotes')
 
     const statementEditorText = 'statementEditorText'
 
@@ -267,6 +268,7 @@ class CreateStatementPage extends Component {
                     <TagsControl
                       id={combineIds(id, tagsName)}
                       tags={statementTags}
+                      votes={statementTagVotes}
                       name={combineNames(statementName, tagsName)}
                       suggestionsKey={combineSuggestionsKeys(id, tagsName)}
                       votePolarity={{

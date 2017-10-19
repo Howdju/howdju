@@ -64,7 +64,7 @@ export default class ChipsList extends React.Component {
   }
 
   onClickRemove = (chip, index, event) => {
-    // Has no effect because of the behavior of Chips as buttons, but it's what we are trying to do...
+    // Currently has no effect because of react-md treating Chips as buttons, but it's what we are trying to do...
     event.stopPropagation()
     // So instead use this hack
     // this.didClickRemove = true

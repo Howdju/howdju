@@ -30,6 +30,7 @@ export const mainSearchPage = handleActions({
 }, {
   isFetching: false,
   results: {
+    tags: [],
     statementTexts: [],
     writQuoteQuoteTexts: [],
     writQuoteUrls: [],

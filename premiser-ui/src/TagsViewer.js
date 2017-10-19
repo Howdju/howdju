@@ -8,6 +8,7 @@ import find from 'lodash/find'
 import get from 'lodash/get'
 import map from 'lodash/map'
 import sortBy from 'lodash/sortBy'
+import zipObject from 'lodash/zipObject'
 
 import {
   tagEqual,
@@ -43,21 +44,26 @@ export default class TagsViewer extends React.Component {
       onClickAvatar,
       onRemoveTag,
       removeIconName,
+      canHide,
     } = this.props
     const {
       doShowAllTags,
     } = this.state
 
-    const unHideableTags = filter(tags, tag => {
-      const isRecommended = find(recommendedTags, recommendedTag => tagEqual(recommendedTag, tag))
-      const vote = find(votes, vote => tagEqual(vote.tag, tag))
-      return get(vote, 'polarity') !== votePolarity.NEGATIVE || isRecommended
-    })
-    const visibleTags = doShowAllTags ? tags : unHideableTags
+    const voteByTagName = zipObject(map(votes, vote => vote.tag.name), votes)
 
-    const hasHideableTags = unHideableTags.length < tags.length
+    const alwaysVisibleTags = filter(tags, tag => {
+      const isRecommended = find(recommendedTags, recommendedTag => tagEqual(recommendedTag, tag))
+      const vote = voteByTagName[tag.name]
+      const isUnAntiVoted = vote && get(vote, 'polarity') !== votePolarity.NEGATIVE
+      return isUnAntiVoted || isRecommended
+    })
+    // console.log(tags.length, alwaysVisibleTags.length)
+    const visibleTags = !canHide || doShowAllTags ? tags : alwaysVisibleTags
+
+    const hasHideableTags = alwaysVisibleTags.length < tags.length
     const hideControls = []
-    if (hasHideableTags) {
+    if (canHide && hasHideableTags) {
       if (doShowAllTags) {
         hideControls.push(
           <Button
@@ -79,15 +85,17 @@ export default class TagsViewer extends React.Component {
       }
     }
 
-    const sortedVisibleTags = sortBy(visibleTags, tag => {
-      const vote = find(votes, vote => tagEqual(vote.tag, tag))
+    const sortedVisibleTags = sortBy(visibleTags, (tag) => {
+      const vote = voteByTagName[tag.name]
       const polarity = get(vote, 'polarity')
+      const isVoted = polarity && polarity === votePolarity.POSITIVE
+      const isAntiVoted = polarity && polarity === votePolarity.NEGATIVE
       const isRecommended = find(recommendedTags, recommendedTag => tagEqual(recommendedTag, tag))
 
-      if (polarity === votePolarity.POSITIVE) {
+      if (isVoted) {
         return -2
       }
-      if (polarity === votePolarity.NEGATIVE) {
+      if (isAntiVoted) {
         return 2
       }
       if (isRecommended) {
@@ -97,14 +105,16 @@ export default class TagsViewer extends React.Component {
     })
 
     const chips = map(sortedVisibleTags, (tag) => {
-      const vote = find(votes, vote => tagEqual(vote.tag, tag))
+      const vote = voteByTagName[tag.name]
       const polarity = get(vote, 'polarity')
+      const isVoted = polarity && polarity === votePolarity.POSITIVE
+      const isAntiVoted = polarity && polarity === votePolarity.NEGATIVE
       return makeChip({
         label: tag.name,
-        isAntiVoted: polarity === votePolarity.NEGATIVE,
+        isAntiVoted,
         className: cn({
-          'has-vote': polarity === votePolarity.POSITIVE,
-          'has-anti-vote': polarity === votePolarity.NEGATIVE,
+          'has-vote': isVoted,
+          'has-anti-vote': isAntiVoted,
         })
       })
     })
@@ -135,5 +145,8 @@ TagsViewer.propTypes = {
   }))
 }
 TagsViewer.defaultProps = {
-  tags: []
+  tags: [],
+  removable: false,
+  votePolarity: {},
+  canHide: true,
 }

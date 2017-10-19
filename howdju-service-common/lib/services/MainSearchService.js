@@ -7,6 +7,7 @@ const {
 exports.MainSearchService = class MainSearchService {
   constructor(
     logger,
+    tagsService,
     statementsTextSearcher,
     writsTitleSearcher,
     writQuotesQuoteTextSearcher,
@@ -14,12 +15,14 @@ exports.MainSearchService = class MainSearchService {
   ) {
     requireArgs({
       logger,
+      tagsService,
       writQuotesService,
       statementsTextSearcher,
       writsTitleSearcher,
       writQuotesQuoteTextSearcher
     })
     this.logger = logger
+    this.tagsService = tagsService
     this.statementsTextSearcher = statementsTextSearcher
     this.writsTitleSearcher = writsTitleSearcher
     this.writQuotesQuoteTextSearcher = writQuotesQuoteTextSearcher
@@ -28,6 +31,7 @@ exports.MainSearchService = class MainSearchService {
 
   search(searchText) {
     return Promise.props({
+      tags: this.tagsService.readTagsLikeTagName(searchText),
       statementTexts: this.statementsTextSearcher.search(searchText),
       writTitles: this.writsTitleSearcher.search(searchText),
       writQuoteQuoteTexts: this.writQuotesQuoteTextSearcher.search(searchText),

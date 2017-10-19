@@ -12,14 +12,16 @@ import WritQuoteCard from './WritQuoteCard'
 import ListEntitiesWidget from './ListEntitiesWidget'
 import {
   app,
+  goto,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import {
   writsSchema,
   writQuotesSchema,
-  statementsSchema,
+  statementsSchema, tagsSchema,
 } from './schemas'
 import config from './config'
+import TagsViewer from './TagsViewer'
 
 
 class MainSearchPage extends Component {
@@ -41,9 +43,14 @@ class MainSearchPage extends Component {
     this.props.app.searchMainSearch(searchText)
   }
 
+  goToTag = (tag) => {
+    this.props.goto.tag(tag)
+  }
+
   render () {
     const {
       isFetching,
+      tags,
       statementTexts,
       writQuoteQuoteTexts,
       writQuoteUrls,
@@ -62,6 +69,23 @@ class MainSearchPage extends Component {
         {isFetching && loading}
 
         <h2 className="md-cell md-cell--12">
+          Tags
+        </h2>
+        <FlipMove
+          className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
+          {...config.ui.flipMove}
+        >
+          {tags.length > 0 && (
+            <TagsViewer
+              tags={tags}
+              canHide={false}
+              onClickTag={this.goToTag}
+            />
+          )}
+        </FlipMove>
+        {!isFetching && tags.length < 1 && noResults}
+
+        <h2 className="md-cell md-cell--12">
           Statements
         </h2>
         <FlipMove
@@ -70,7 +94,7 @@ class MainSearchPage extends Component {
         >
           {map(statementTexts, toStatementCard)}
         </FlipMove>
-        {statementTexts.length < 1 && noResults}
+        {!isFetching && statementTexts.length < 1 && noResults}
 
         <h2 className="md-cell md-cell--12">
           Writs
@@ -81,7 +105,7 @@ class MainSearchPage extends Component {
         >
           {map(writTitles, toWritCard)}
         </FlipMove>
-        {writTitles.length < 1 && noResults}
+        {!isFetching && writTitles.length < 1 && noResults}
 
         <h2 className="md-cell md-cell--12">
           Writ quotes (text appears within quote)
@@ -92,7 +116,7 @@ class MainSearchPage extends Component {
         >
           {map(writQuoteQuoteTexts, toWritQuoteCard)}
         </FlipMove>
-        {writQuoteQuoteTexts.length < 1 && noResults}
+        {!isFetching && writQuoteQuoteTexts.length < 1 && noResults}
 
         <h2 className="md-cell md-cell--12">
           Writ quotes (text appears within URL)
@@ -103,7 +127,7 @@ class MainSearchPage extends Component {
         >
           {map(writQuoteUrls, toWritQuoteWithUrlsCard)}
         </FlipMove>
-        {writQuoteUrls.length < 1 && noResults}
+        {!isFetching && writQuoteUrls.length < 1 && noResults}
 
       </div>
     )
@@ -169,6 +193,7 @@ const mapStateToProps = (state) => {
     }
   } = state
   const {
+    tags,
     statementTexts,
     writQuoteQuoteTexts,
     writQuoteUrls,
@@ -177,6 +202,7 @@ const mapStateToProps = (state) => {
 
   return {
     isFetching,
+    tags: denormalize(tags, tagsSchema, state.entities),
     statementTexts: denormalize(statementTexts, statementsSchema, state.entities),
     writQuoteQuoteTexts: denormalize(writQuoteQuoteTexts, writQuotesSchema, state.entities),
     writQuoteUrls: denormalize(writQuoteUrls, writQuotesSchema, state.entities),
@@ -186,4 +212,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   app,
+  goto,
 }))(MainSearchPage)

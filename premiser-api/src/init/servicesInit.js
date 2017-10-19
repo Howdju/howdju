@@ -160,6 +160,7 @@ exports.init = function init(provider) {
 
   const mainSearchService = new MainSearchService(
     provider.logger,
+    tagsService,
     provider.statementsTextSearcher,
     provider.writsTitleSearcher,
     provider.writQuotesQuoteTextSearcher,
