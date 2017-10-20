@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import find from 'lodash/find'
 import map from 'lodash/map'
 import {denormalize} from "normalizr"
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
@@ -21,6 +22,7 @@ import {
   statementsSchema, tagsSchema,
 } from './schemas'
 import config from './config'
+import {logger} from './logger'
 import TagsViewer from './TagsViewer'
 
 
@@ -43,7 +45,12 @@ class MainSearchPage extends Component {
     this.props.app.searchMainSearch(searchText)
   }
 
-  goToTag = (tag) => {
+  goToTag = (tagName, index, event) => {
+    const tag = find(this.props.tags, t => t.name === tagName)
+    if (!tag) {
+      logger.warn(`Missing tag for ${tagName}`)
+      return
+    }
     this.props.goto.tag(tag)
   }
 

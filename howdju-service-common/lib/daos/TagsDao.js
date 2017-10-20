@@ -43,7 +43,10 @@ exports.TagsDao = class TagsDao {
 
   readTagsLikeName(tagName) {
     return this.database.query(
-      `select * from tags where normal_name ilike '%' || $1 || '%' and deleted is null order by length(name)`,
+      `select * 
+      from tags 
+        where normal_name ilike '%' || $1 || '%' and deleted is null 
+      order by length(name), name`,
       [normalizeText(tagName)]
     )
       .then(mapMany(toTag))
