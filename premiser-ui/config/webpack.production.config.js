@@ -21,12 +21,12 @@ module.exports.htmlWebpackPluginConfig = {
   googleAnalytics: {
     trackingId: 'UA-104314283-1',
   },
-  mixpanel: {
-    trackingId: 'cfedfc23579bf718b9e5704f6f6d85bd',
-  },
-  heap: {
-    trackingId: '522456069',
-  },
+  // heapAnalytics: {
+  //   trackingId: '522456069',
+  // },
+  // mixpanel: {
+  //   trackingId: 'cfedfc23579bf718b9e5704f6f6d85bd',
+  // },
 }
 
 const apiRoot = process.env.API_ROOT || 'https://api.howdju.com/api/'

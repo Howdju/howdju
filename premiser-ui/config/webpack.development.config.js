@@ -15,12 +15,12 @@ module.exports.htmlWebpackPluginConfig = {
   googleAnalytics: {
     trackingId: 'UA-104314283-2',
   },
-  heapAnalytics: {
-    trackingId: '4008854211',
-  },
-  mixpanel: {
-    trackingId: 'abd1abe616789b11f1ef46bd254ec937',
-  }
+  // heapAnalytics: {
+  //   trackingId: '4008854211',
+  // },
+  // mixpanel: {
+  //   trackingId: 'abd1abe616789b11f1ef46bd254ec937',
+  // }
 }
 
 const apiRoot = process.env.API_ROOT || `http://${hostAddress()}:${devApiServerPort()}/api/`
