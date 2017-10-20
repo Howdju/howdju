@@ -96,10 +96,10 @@ exports.StatementTagVotesService = class StatementTagVotesService {
         }
         statementTagVote.tag = tag
         return this.statementTagVotesDao.createStatementTagVote(userId, statementTagVote, now)
-            .then((statementTagVote) => {
-              statementTagVote.tag = tag
-              return statementTagVote
-            })
+          .then((statementTagVote) => {
+            statementTagVote.tag = tag
+            return statementTagVote
+          })
       })
   }
 
