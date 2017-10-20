@@ -37,7 +37,10 @@ class StatementTagger extends React.Component {
 
   onUnTag = (tag) => {
     const statementTagVote = find(this.props.votes, vote => tagEqual(vote.tag, tag))
-    this.props.api.unTagStatement(statementTagVote)
+    // We can only delete a vote whose ID we have.  We can get here if the user quickly tags and untags
+    if (statementTagVote.id) {
+      this.props.api.unTagStatement(statementTagVote)
+    }
   }
 
   render() {

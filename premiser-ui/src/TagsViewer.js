@@ -58,7 +58,6 @@ export default class TagsViewer extends React.Component {
       const isUnAntiVoted = vote && get(vote, 'polarity') !== votePolarity.NEGATIVE
       return isUnAntiVoted || isRecommended
     })
-    // console.log(tags.length, alwaysVisibleTags.length)
     const visibleTags = !canHide || doShowAllTags ? tags : alwaysVisibleTags
 
     const hasHideableTags = alwaysVisibleTags.length < tags.length

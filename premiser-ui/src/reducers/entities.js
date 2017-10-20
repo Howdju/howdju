@@ -468,7 +468,7 @@ function revertOptimisticStatementTagVote(state, action) {
 
   const optimisticStatement = state.statements[statementId]
   const revertedStatementTagVotes = without(optimisticStatement.statementTagVotes, optimisticStatementTagVote)
-  if (prevStatementTagVote) {
+  if (prevStatementTagVote && prevStatementTagVote.id) {
     revertedStatementTagVotes.push(prevStatementTagVote.id)
   }
   // Most of the normalized tags will be IDs.  But if it was added optimistically, it will be an object, and it will

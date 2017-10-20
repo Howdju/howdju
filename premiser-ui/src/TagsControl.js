@@ -85,6 +85,7 @@ export default class TagsControl extends React.Component {
   onClickAvatar = (tagName, index, event) => {
     const tag = find(this.props.tags, tag => tag.name === tagName)
     const vote = find(this.props.votes, vote => tagEqual(vote.tag, tag))
+
     const votePolarity = get(vote, 'polarity')
     if (votePolarity === this.props.votePolarity.POSITIVE) {
       this.props.onUnTag(tag)
@@ -96,12 +97,16 @@ export default class TagsControl extends React.Component {
   onRemoveTag = (tagName, index, event) => {
     const tag = find(this.props.tags, tag => tag.name === tagName)
 
-    // Only anti-tag existing tags on existing targets (the point of anti-tagging is to vote against tags recommended
-    //  by the system; the system can't recommend tags for targets/tags that don't exist.
-    if (this.props.onAntiTag && tag.id) {
-      this.props.onAntiTag(tag)
-    } else {
+    const vote = find(this.props.votes, vote => tagEqual(vote.tag, tag))
+    const votePolarity = get(vote, 'polarity')
+    if (votePolarity === this.props.votePolarity.NEGATIVE) {
       this.props.onUnTag(tag)
+    } else {
+      // Only anti-tag existing tags on existing targets (the point of anti-tagging is to vote against tags recommended
+      //  by the system; the system can't recommend tags for targets/tags that don't exist.
+      if (this.props.onAntiTag && tag.id) {
+        this.props.onAntiTag(tag)
+      }
     }
   }
 

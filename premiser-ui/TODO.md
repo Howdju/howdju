@@ -4,7 +4,6 @@
 * Revealing justification design
 * surface tags
   * include in search 
-    * New tags on create statemnet page are hidden
   * statement tag vote scorer
   * tag 'cloud': recent, most-used
 * example-based justifications
@@ -73,6 +72,8 @@
 
 * Store referrer when submitting justification?  Generally should match up with URL...
 * Are 401s to login in FF showing up as errors in sentry?
+      
+* Need to remove entities from redux store when they are successully deleted?
       
 * pagination for search results
 
