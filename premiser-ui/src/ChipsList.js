@@ -80,6 +80,7 @@ export default class ChipsList extends React.Component {
     const {
       chips,
       extraChildren,
+      showAvatars,
       removable,
       className,
       removeIconName,
@@ -97,29 +98,34 @@ export default class ChipsList extends React.Component {
         className={cn(className, "chips-list")}
       >
         {map(chips, (chip, index) => {
-          return (
-            <Chip
-              key={chip.label}
-              label={chip.label}
-              removable={removable}
-              className={chip.className}
-              iconClassName="remove-chip-icon"
-              children={removable && (
+          const chipProps = {
+              key: chip.label,
+              label: chip.label,
+              removable: removable,
+              className: chip.className,
+              iconClassName: "remove-chip-icon",
+              children: removable && (
                 <FontIcon
                   className="chip-icon"
                   onClick={(event) => this.onClickRemove(chip, index, event)}
                 >{removeIconName}</FontIcon>
-              )}
-              rotateIcon={false}
-              onClick={(event) => this.onClickChip(chip, index, event)}
-              onKeyDown={(event) => this.onKeyDownChip(chip, index, event)}
-              avatar={(
+              ),
+              rotateIcon: false,
+              onClick: (event) => this.onClickChip(chip, index, event),
+              onKeyDown: (event) => this.onKeyDownChip(chip, index, event),
+            }
+
+            // react-md limitation: can't pass along a falsy avatar
+            if (showAvatars) {
+              chipProps.avatar = (
                 <Avatar
                   icon={<FontIcon className="chip-icon">thumb_up</FontIcon>}
                   onClick={(event) => this.onClickAvatar(chip, index, event)}
                 />
-              )}
-            />
+              )
+            }
+          return (
+            <Chip {...chipProps} />
           )
         })}
 
@@ -146,4 +152,5 @@ ChipsList.propTypes = {
 ChipsList.defaultProps = {
   chips: [],
   removable: false,
+  showAvatars: true,
 }

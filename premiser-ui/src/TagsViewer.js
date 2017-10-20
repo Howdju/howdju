@@ -39,6 +39,7 @@ export default class TagsViewer extends React.Component {
       recommendedTags,
       votePolarity,
       extraChildren,
+      votable,
       removable,
       onClickTag,
       onClickAvatar,
@@ -129,6 +130,7 @@ export default class TagsViewer extends React.Component {
         onClickAvatar={onClickAvatar}
         onRemoveChip={onRemoveTag}
         removeIconName={removeIconName}
+        showAvatars={votable}
       />
     )
   }
@@ -148,4 +150,5 @@ TagsViewer.defaultProps = {
   removable: false,
   votePolarity: {},
   canHide: true,
+  votable: true,
 }

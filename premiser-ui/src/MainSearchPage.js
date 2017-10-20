@@ -86,6 +86,7 @@ class MainSearchPage extends Component {
             <TagsViewer
               tags={tags}
               canHide={false}
+              votable={false}
               onClickTag={this.goToTag}
             />
           )}

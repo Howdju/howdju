@@ -1,5 +1,7 @@
 # Howdju UI TODO
 
+* When auto-completing tag name (on statement justifications page), got an error and autocomplete doesn't empty
+
 ## what to do next?
 * Revealing justification design
 * surface tags
