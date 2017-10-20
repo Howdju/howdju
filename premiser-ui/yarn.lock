@@ -5016,9 +5016,9 @@ react-hot-loader@next:
     redbox-react "^1.2.5"
     source-map "^0.4.4"
 
-react-md@^1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/react-md/-/react-md-1.0.17.tgz#aa97f9243db039e69e51d099f141a95fab24b2ab"
+react-md@1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/react-md/-/react-md-1.0.19.tgz#45d46b240435a008218121b5db8b0af71cf63ae8"
   dependencies:
     classnames "^2.2.5"
     invariant "^2.2.1"

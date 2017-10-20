@@ -381,7 +381,7 @@ function optimisticStatementTagVote(state, action) {
   const optimisticTag = optimisticStatementTagVote.tag
   const isAlreadyTagged = some(statement.tags, tagId =>
     tagId === optimisticTag.id ||
-    state.tags[tagId].name === optimisticTag.name
+    get(state.tags[tagId], 'name') === optimisticTag.name
   )
   const optimisticTags = isAlreadyTagged ?
     statement.tags :

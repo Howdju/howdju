@@ -1,7 +1,5 @@
 # Howdju UI TODO
 
-* When auto-completing tag name (on statement justifications page), got an error and autocomplete doesn't empty
-
 ## what to do next?
 * Revealing justification design
 * surface tags
@@ -16,6 +14,8 @@
 
 * Statement autocomplete results overwrote tags
   * Somehow strangely reappears when submitting counter-justification!?
+  * Editing statement disappears tags
+  * Should not overwrite an entities properties if they aren't present on the returned entity
 * When added counter-justification, got React non-unique Key error
 
 

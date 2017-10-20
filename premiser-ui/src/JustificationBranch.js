@@ -288,7 +288,7 @@ class JustificationBranch extends Component {
           created{creatorNameDescription} <span title={created}>{age}</span>
         </span>
       </div>
-      )
+    )
 
     const flipMoveProps = config.ui.flipMove
     const counterJustifications = (

@@ -99,31 +99,31 @@ export default class ChipsList extends React.Component {
       >
         {map(chips, (chip, index) => {
           const chipProps = {
-              key: chip.label,
-              label: chip.label,
-              removable: removable,
-              className: chip.className,
-              iconClassName: "remove-chip-icon",
-              children: removable && (
-                <FontIcon
-                  className="chip-icon"
-                  onClick={(event) => this.onClickRemove(chip, index, event)}
-                >{removeIconName}</FontIcon>
-              ),
-              rotateIcon: false,
-              onClick: (event) => this.onClickChip(chip, index, event),
-              onKeyDown: (event) => this.onKeyDownChip(chip, index, event),
-            }
+            key: chip.label,
+            label: chip.label,
+            removable: removable,
+            className: chip.className,
+            iconClassName: "remove-chip-icon",
+            children: removable && (
+              <FontIcon
+                className="chip-icon"
+                onClick={(event) => this.onClickRemove(chip, index, event)}
+              >{removeIconName}</FontIcon>
+            ),
+            rotateIcon: false,
+            onClick: (event) => this.onClickChip(chip, index, event),
+            onKeyDown: (event) => this.onKeyDownChip(chip, index, event),
+          }
 
-            // react-md limitation: can't pass along a falsy avatar
-            if (showAvatars) {
-              chipProps.avatar = (
-                <Avatar
-                  icon={<FontIcon className="chip-icon">thumb_up</FontIcon>}
-                  onClick={(event) => this.onClickAvatar(chip, index, event)}
-                />
-              )
-            }
+          // react-md limitation: can't pass along a falsy avatar
+          if (showAvatars) {
+            chipProps.avatar = (
+              <Avatar
+                icon={<FontIcon className="chip-icon">thumb_up</FontIcon>}
+                onClick={(event) => this.onClickAvatar(chip, index, event)}
+              />
+            )
+          }
           return (
             <Chip {...chipProps} />
           )
