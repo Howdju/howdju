@@ -571,10 +571,7 @@ const selectRoute = (request) => Promise.resolve()
       if (typeof route.path === 'string' && route.path !== path) continue
       if (route.path instanceof RegExp && !(pathMatch = route.path.exec(path))) continue
       if (route.queryStringParameters) {
-        if (!queryStringParameters) {
-          continue
-        }
-        if (isEmpty(route.queryStringParameters) && !isEmpty(queryStringParameters)) {
+        if (isEmpty(route.queryStringParameters) !== isEmpty(queryStringParameters)) {
           continue
         }
 

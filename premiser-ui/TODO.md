@@ -1,16 +1,39 @@
 # Howdju UI TODO
 
+* Firefox shoots off an autocomplete request for every character typed
+  * FF: can't downvote tag
+* Using a statement in prod doesn't work
+  * /statements/xxx returns 404 (problem with routing against query string params)
+* Recent statements don't seem sorted by recency...
+  
 ## what to do next?
 * Revealing justification design
 * surface tags
-  * include in search 
   * statement tag vote scorer
   * tag 'cloud': recent, most-used
-* example-based justifications
-  * Would need a new vote type for scoring examples as in or out of 
+* Multi-user:
+  * TOS, Privacy Policy
+  * DMCA
+  * Report/Flag entity
+  * FB Login 
 * clinton emails example
 * View all statements in a table
+* Business model
+  * Private content
+* Usability/Features
+  * I am finding that as I am reading different articles about a particular topic, it would be helpful if they were 
+    all visible together
+    * Maybe a tag type: conversation.  About particualr topic
+    * And when viewing that tag, show the statements tagged with it as a forest of connected trees!
+  * example-based justifications
+    * Would need a new vote type for scoring examples as in or out of
+  * Hierarchical tags
+  * Basic grouping of users
 
+
+* bookmarklet fails on some pages with restrictive CSP (e.g., quora, archive.org)
+
+* Register howdju.org and howdju.co
 
 * Statement autocomplete results overwrote tags
   * Somehow strangely reappears when submitting counter-justification!?
@@ -28,7 +51,6 @@
   * Add indices (root statement ID, joins)
   * Discovery
     * Tagging
-      * Include tags in main search
       * Discovery: widget showing top tags by statement count?
     * Show main search domains as card with quote count, justification count, and statement count
       * Link to searches for each of those

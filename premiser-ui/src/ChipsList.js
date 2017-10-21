@@ -26,12 +26,10 @@ export default class ChipsList extends React.Component {
 
     // A hack to get around the fact that we can't cancel mouse events within a Chip (Chip is a Button, which doesn't
     //  allow for children handling clicks)
-    // Right now this seems to be working without this hack...
     // this.didClickRemove = false
   }
 
   onClickChip = (chip, index, event) => {
-    // console.log('onClickChip')
     // if (
     //   event.isPropagationStopped() ||
     //   event.isDefaultPrevented() ||
@@ -68,7 +66,7 @@ export default class ChipsList extends React.Component {
     event.stopPropagation()
     // So instead use this hack
     // this.didClickRemove = true
-    // console.log('onClickRemove')
+
     if (this.props.onRemoveChip) {
       this.props.onRemoveChip(chip.label, index, event)
     } else if (this.props.onClickChip) {
