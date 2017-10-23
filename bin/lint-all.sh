@@ -5,19 +5,34 @@ base_dir=${script_dir}/../
 
 pushd .
 
-cd ${base_dir}/howdju-common
+dir=${base_dir}howdju-common
+cd ${dir}
+echo linting ${dir}
 yarn run lint
 
-cd ${base_dir}/howdju-service-common
+dir=${base_dir}howdju-service-common
+cd ${dir}
+echo linting ${dir}
 yarn run lint
 
-cd ${base_dir}/howdju-ops
+dir=${base_dir}howdju-ops
+cd ${dir}
+echo linting ${dir}
 yarn run lint
 
-cd ${base_dir}/premiser-api
+dir=${base_dir}premiser-processing
+cd ${dir}
+echo linting ${dir}
 yarn run lint
 
-cd ${base_dir}/premiser-ui
+dir=${base_dir}premiser-api
+cd ${dir}
+echo linting ${dir}
+yarn run lint
+
+dir=${base_dir}premiser-ui
+cd ${dir}
+echo linting ${dir}
 yarn run lint:app
 yarn run lint:build
 
