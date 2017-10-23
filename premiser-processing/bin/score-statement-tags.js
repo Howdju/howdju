@@ -7,26 +7,26 @@ const {
 
 const {
   logger,
-  justificationScoresService,
-} = require('../lambda-functions/justification-scorer/src/initialization')
+  statementTagScoresService,
+} = require('../lambda-functions/statement-tag-scorer/src/initialization')
 const {
   pool,
-} = require('../lambda-functions/justification-scorer/src/initialization/databaseInitialization')
+} = require('../lambda-functions/statement-tag-scorer/src/initialization/databaseInitialization')
 
 const argParser = new ArgumentParser({
-  description: 'Update justification scores'
+  description: 'Update statement tag scores'
 })
 argParser.addArgument('--scope', {defaultValue: JobScopes.INCREMENTAL, choices: map(JobScopes)})
 const args = argParser.parseArgs()
 
-logger.info(`Scoring justifications with scope: ${args.scope}`)
+logger.info(`Scoring with scope: ${args.scope}`)
 
 const job = () => {
   switch (args.scope) {
     case JobScopes.INCREMENTAL:
-      return justificationScoresService.updateJustificationScoresUsingUnscoredVotes()
+      return statementTagScoresService.updateStatementTagScoresUsingUnscoredVotes()
     case JobScopes.FULL:
-      return justificationScoresService.setJustificationScoresUsingAllVotes()
+      return statementTagScoresService.setStatementTagScoresUsingAllVotes()
     default:
       throw new Error(`Unsupported JobScope: ${args.scope}`)
   }

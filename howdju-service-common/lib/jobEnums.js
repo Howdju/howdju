@@ -1,8 +1,11 @@
-exports.JobTypes = {
-  SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM: 'SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM',
-}
+const {arrayToObject} = require('howdju-common')
 
-exports.JobScopes = {
-  FULL: 'FULL',
-  INCREMENTAL: 'INCREMENTAL',
-}
+exports.JobTypes = arrayToObject([
+  'SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM',
+  'SCORE_STATEMENT_TAGS_BY_GLOBAL_VOTE_SUM',
+])
+
+exports.JobScopes = arrayToObject([
+  'FULL',
+  'INCREMENTAL',
+])

@@ -108,6 +108,10 @@ _e.JustificationScoreType = arrayToObject([
   'GLOBAL_VOTE_SUM',
 ])
 
+_e.StatementTagScoreType = arrayToObject([
+  'GLOBAL_VOTE_SUM',
+])
+
 _e.JobHistoryStatus = arrayToObject([
   'SUCCESS',
   'FAILURE',

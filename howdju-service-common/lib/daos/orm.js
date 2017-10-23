@@ -442,6 +442,23 @@ function toStatementTagVote(row) {
   }
 }
 
+function toStatementTagScore(row) {
+  if (!row) {
+    return row
+  }
+
+  return {
+    statementId: row.statement_id,
+    tagId: row.tag_id,
+    scoreType: row.score_type,
+    score: row.score,
+    created: row.created,
+    deleted: row.deleted,
+    creatorJobHistoryId: row.creator_job_history_id,
+    deletorJobHistoryId: row.deletor_job_history_id,
+  }
+}
+
 function toTag(row) {
   if (!row) {
     return row
@@ -460,17 +477,18 @@ module.exports = {
   toWritQuote,
   toWrit,
   toUrl,
+  toJustificationScore,
   toJustificationVote,
   toWritQuoteUrl,
   toStatementCompound,
   toStatementCompoundAtom,
   toStatementTagVote,
+  toStatementTagScore,
   toTag,
   toPerspective,
   toUserHash,
   toUserExternalIds,
   toJobHistory,
-  toJustificationScore,
   toSourceExcerptParaphrase,
   toJustificationBasisCompound,
   toJustificationBasisCompoundAtom,

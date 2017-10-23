@@ -1,4 +1,8 @@
 const {
+  requireArgs
+} = require('howdju-common')
+
+const {
   mapSingle,
   mapMany,
 } = require('./util')
@@ -9,6 +13,7 @@ const {
 exports.StatementTagVotesDao = class StatementTagVotesDao {
 
   constructor(logger, database) {
+    requireArgs({logger, database})
     this.logger = logger
     this.database = database
   }
@@ -57,6 +62,11 @@ exports.StatementTagVotesDao = class StatementTagVotesDao {
       `,
       [userId, statementId]
     )
+      .then(mapMany(toStatementTagVote))
+  }
+
+  readVotes() {
+    return this.database.query(`select * from statement_tag_votes where deleted is null`)
       .then(mapMany(toStatementTagVote))
   }
 

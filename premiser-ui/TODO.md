@@ -2,9 +2,9 @@
 
 * Firefox shoots off an autocomplete request for every character typed
   * FF: can't downvote tag
-* Using a statement in prod doesn't work
-  * /statements/xxx returns 404 (problem with routing against query string params)
-* Recent statements don't seem sorted by recency...
+  
+* Timestamps are being stored without milliseconds
+  * Race condition of multiple votes being sent (disable tagging/untagging after click)
   
 ## what to do next?
 * Revealing justification design
@@ -30,6 +30,7 @@
   * Hierarchical tags
   * Basic grouping of users
 
+* Support lambda function "environments" by snake-casing lambda alias and checking env. vars with that prefix first
 
 * bookmarklet fails on some pages with restrictive CSP (e.g., quora, archive.org)
 

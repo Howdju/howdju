@@ -1,6 +1,9 @@
 const map = require('lodash/map')
 
-const {negateJustificationVotePolarity} = require('howdju-common')
+const {
+  negateJustificationVotePolarity,
+  requireArgs,
+} = require('howdju-common')
 
 const {toJustificationVote} = require('./orm')
 const {
@@ -12,6 +15,7 @@ const {
 exports.JustificationVotesDao = class JustificationVotesDao {
 
   constructor(database) {
+    requireArgs({database})
     this.database = database
   }
 

@@ -16,6 +16,7 @@ module.exports = assign(
   require('./PicRegionsDao'),
   require('./SourceExcerptParaphrasesDao'),
   require('./StatementCompoundsDao'),
+  require('./StatementTagScoresDao'),
   require('./StatementTagVotesDao'),
   require('./StatementTagsDao'),
   require('./StatementsDao'),

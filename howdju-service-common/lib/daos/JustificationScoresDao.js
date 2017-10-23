@@ -43,7 +43,11 @@ exports.JustificationScoresDao = class JustificationScoresDao {
               and js.created IS NOT NULL
               and (
                    v.created > js.created
-                or v.deleted > js.created
+                or (
+                     v.deleted > js.created
+                     -- (ensure the vote wasn't both created and deleted after the score)
+                 and v.created <  js.created
+               )
               )
             )
           )
