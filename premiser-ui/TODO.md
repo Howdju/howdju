@@ -1,15 +1,16 @@
 # Howdju UI TODO
+  
+* If user ends up at an intermediate statement page, it would be good to direct them to interesting statements 
+  higher in the hierarchy.  How to detect which ones are interesting?  Start by showing "this statement justifies X other statements".
+  * This can be done manually with featured perspectives for now.  The graph analysis to detect these would be involved
+* Race condition of multiple votes being sent (disable tagging/untagging after click)
 
 * Firefox shoots off an autocomplete request for every character typed
   * FF: can't downvote tag
   
-* Timestamps are being stored without milliseconds
-  * Race condition of multiple votes being sent (disable tagging/untagging after click)
-  
 ## what to do next?
 * Revealing justification design
 * surface tags
-  * statement tag vote scorer
   * tag 'cloud': recent, most-used
 * Multi-user:
   * TOS, Privacy Policy
@@ -21,10 +22,12 @@
 * Business model
   * Private content
 * Usability/Features
-  * I am finding that as I am reading different articles about a particular topic, it would be helpful if they were 
-    all visible together
-    * Maybe a tag type: conversation.  About particualr topic
-    * And when viewing that tag, show the statements tagged with it as a forest of connected trees!
+  * Creating statements based upon a page
+    * Show recently created statements, when click on them, add as statement atom
+    * I am finding that as I am reading different articles about a particular topic, it would be helpful if they were 
+      all visible together
+      * Maybe a tag type: conversation.  About particualr topic
+      * And when viewing that tag, show the statements tagged with it as a forest of connected trees!
   * example-based justifications
     * Would need a new vote type for scoring examples as in or out of
   * Hierarchical tags

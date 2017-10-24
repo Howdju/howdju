@@ -4,16 +4,16 @@ const isDate = require('lodash/isDate')
 const map = require('lodash/map')
 
 const {
-  timstampFormatString
+  timestampFormatString
 } = require('howdju-common')
 
 
 const toUtc = val => {
   if (isDate(val)) {
-    return moment.utc(val).format(timstampFormatString)
+    return moment.utc(val).format(timestampFormatString)
   }
   if (moment.isMoment(val)) {
-    return val.utc().format(timstampFormatString)
+    return val.utc().format(timestampFormatString)
   }
 
   return val
