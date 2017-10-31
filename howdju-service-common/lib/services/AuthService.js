@@ -61,7 +61,7 @@ exports.AuthService = class AuthService {
     return this.authDao.insertAuthToken(user.id, authToken, now, expires)
   }
 
-  createOrUpdateAuthForUserIdWithPassword(userId, password) {
+  createOrUpdatePasswordAuthForUserId(userId, password) {
     return Promise.all([
       bcrypt.hash(password, this.config.auth.bcrypt.saltRounds),
       this.authDao.readUserHashForId(userId, HashTypes.BCRYPT),
