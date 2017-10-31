@@ -62,7 +62,7 @@ export default handleActions({
     next: (state, action) => {
       const updates = map([
         ['perspectives'],
-        ['statements', stubSkippingCustomizer('text')],
+        ['statements', entityAssignWithCustomizer],
         ['statementCompounds'],
         ['justifications', justificationsCustomizer()],
         ['justificationVotes'],
@@ -325,6 +325,7 @@ export function indexRootJustificationsByRootStatementId(justificationsById) {
   return rootJustificationsByRootStatementId
 }
 
+/** Returning undefined from a customizer to assignWith invokes its default behavior */
 function defaultCustomizer() {
   return undefined
 }
@@ -337,6 +338,27 @@ function stubSkippingCustomizer(testPropertyName) {
     }
     return objValue
   }
+}
+
+/** Responses from the API may not contain all entity properties.  Only update an entity in the store with
+ * values that are defined. (Don't overwrite properties that aren't present on the new value)
+ */
+function entityAssignWithCustomizer(oldEntity, newEntity, key, object, source) {
+  // If either the new or old entity is missing, then updates don't make sense
+  if (!oldEntity || !newEntity) {
+    return newEntity
+  }
+
+  let updatedEntity = oldEntity
+  forEach(newEntity, (prop, name) => {
+    if (prop !== oldEntity[name]) {
+      if (updatedEntity === oldEntity) {
+        updatedEntity = {...oldEntity}
+      }
+      updatedEntity[name] = prop
+    }
+  })
+  return updatedEntity
 }
 
 function justificationsCustomizer(objValue, srcValue, key, object, source) {
