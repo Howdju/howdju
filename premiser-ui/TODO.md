@@ -1,11 +1,8 @@
 # Howdju UI TODO
 
-* Anti-voted, unvoted not hidden
-* When click on statement justification and then use browser back, the tags don't load, and the justifying statement's justification count don't load
 * Add a small (250ms?) delay to autocomplete
 
 * Add indices (root statement ID, joins)
-* Add justification count to statements atoms
 * Show when a user agrees/disagrees with a statement
   * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
 * Add justified count to root statement
@@ -22,6 +19,9 @@
   
 ## what to do next?
 * Revealing justification design
+* Statement similarity: semantically equivalent, semantically similar
+  * Equivalent: Bob went to the store; the person who went to the store was Bob
+  * Similar: Directors of corporations must maximize profit; corporations must maximize profit (metonymy) 
 * surface tags
   * tag 'cloud': recent, most-used
 * Multi-user:

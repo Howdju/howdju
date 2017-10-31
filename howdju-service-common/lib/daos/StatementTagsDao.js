@@ -81,7 +81,7 @@ exports.StatementTagsDao = class StatementTagsDao {
       `,
       [tagId]
     )
-      .then(mapMany(toTag))
+      .then(mapMany(toStatement))
   }
 
   readTaggedStatementsByVotePolarityAsUser(userId, tagId) {

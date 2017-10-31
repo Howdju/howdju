@@ -350,8 +350,8 @@ exports.StatementsService = class StatementsService {
         const taggedNegativeStatementIds = reduce(taggedNegativeStatements, (acc, s, id) => {
           acc[id] = true
         }, {})
-        const prunedStatements = reject(recommendedStatements, rs => has(taggedNegativeStatementIds, rs.id))
-        const statements = unionBy(taggedPositiveStatements, prunedStatements, s => s.id)
+        const prunedRecommendedStatements = reject(recommendedStatements, rs => has(taggedNegativeStatementIds, rs.id))
+        const statements = unionBy(taggedPositiveStatements, prunedRecommendedStatements, s => s.id)
 
         return statements
       })
