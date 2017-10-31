@@ -56,8 +56,10 @@ export default class TagsViewer extends React.Component {
     const alwaysVisibleTags = filter(tags, tag => {
       const isRecommended = find(recommendedTags, recommendedTag => tagEqual(recommendedTag, tag))
       const vote = voteByTagName[tag.name]
-      const isUnAntiVoted = vote && get(vote, 'polarity') !== votePolarity.NEGATIVE
-      return isUnAntiVoted || isRecommended
+      const polarity = get(vote, 'polarity')
+      const isVoted = polarity === votePolarity.POSITIVE
+      const isAntiVoted = polarity === votePolarity.NEGATIVE
+      return isVoted || isRecommended && !isAntiVoted
     })
     const visibleTags = !canHide || doShowAllTags ? tags : alwaysVisibleTags
 
