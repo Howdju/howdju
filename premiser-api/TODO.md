@@ -14,7 +14,7 @@
   * re-calculate normal text
   * enforce constraints, 
     * justification has root_statement_id
-    * like unique IDs, 
+    * unique IDs, 
     * unique statement text, 
     * writ quote text, 
     * writ title

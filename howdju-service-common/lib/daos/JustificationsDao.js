@@ -1,5 +1,6 @@
 const concat = require('lodash/concat')
 const forEach = require('lodash/forEach')
+const flatMap = require('lodash/flatMap')
 const has = require('lodash/has')
 const head = require('lodash/head')
 const map = require('lodash/map')
@@ -37,6 +38,7 @@ const {EntityNotFoundError} = require('../serviceErrors')
 const {
   groupRootJustifications,
   renumberSqlArgs,
+  mapMany,
 } = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 
@@ -404,7 +406,7 @@ exports.JustificationsDao = class JustificationsDao {
       `
     return Promise.all([
       this.database.query(sql, [rootStatementId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
-      this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId, {userId}),
+      readStatementCompoundsByIdForRootStatementId(this, rootStatementId, {userId}),
       this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
       this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootStatementId(rootStatementId),
     ])
@@ -474,6 +476,25 @@ exports.JustificationsDao = class JustificationsDao {
           this.logger.error(`justification's rootStatement ID ${justification.rootStatement.id} !== equivalent justification ${equivalentJustification.id}'s rootStatement ID ${equivalentJustification.rootStatement.id}`)
         }
         return equivalentJustification
+      })
+  }
+
+  readRootJustificationCountByPolarityForRootStatementId(rootStatementId) {
+    return this.database.query(`
+      select polarity, count(*) as count
+      from justifications
+        where 
+              root_statement_id = $1 
+          and target_type = $2
+          and target_id = $1
+      group by polarity
+    `, [rootStatementId, JustificationTargetType.STATEMENT])
+      .then( ({rows}) => {
+        const rootJustificationCountByPolarity = {}
+        forEach(rows, row => {
+          rootJustificationCountByPolarity[row.polarity] = row.count
+        })
+        return rootJustificationCountByPolarity
       })
   }
 
@@ -1169,4 +1190,28 @@ function getTargetRootPolarity(logger, database, justification) {
       const {root_polarity} = head(rows)
       return root_polarity
     })
+}
+
+function readStatementCompoundsByIdForRootStatementId(provider, rootStatementId, {userId}) {
+  return provider.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId, {userId})
+    .then( (statementCompoundsById) =>
+      Promise.all([
+        statementCompoundsById,
+        addRootJustificationCountByPolarity(provider, statementCompoundsById),
+      ])
+    )
+    .then( ([statementCompoundsById]) => statementCompoundsById)
+}
+
+function addRootJustificationCountByPolarity(provider, statementCompoundsById) {
+  return Promise.all(flatMap(statementCompoundsById, (statementCompound) => statementCompound.atoms))
+    .then( (atoms) => Promise.all(map(atoms, (atom) =>
+      Promise.all([
+        atom.entity,
+        provider.readRootJustificationCountByPolarityForRootStatementId(atom.entity.id),
+      ])
+    )))
+    .then( (statementAndJustificationCounts) => Promise.all(map(statementAndJustificationCounts, ([statement, rootJustificationCountByPolarity]) => {
+      statement.rootJustificationCountByPolarity = rootJustificationCountByPolarity
+    })))
 }

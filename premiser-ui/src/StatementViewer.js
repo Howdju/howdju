@@ -7,6 +7,7 @@ import get from 'lodash/get'
 
 import paths from './paths'
 import config from './config'
+import StatementJustificationCountViewer from './StatementJustificationCountViewer'
 
 export default class StatementViewer extends React.Component {
 
@@ -17,6 +18,7 @@ export default class StatementViewer extends React.Component {
       className,
       showStatusText,
       trailStatements,
+      showJustificationCount,
       ...rest,
     } = this.props
 
@@ -36,6 +38,10 @@ export default class StatementViewer extends React.Component {
             <div className="statement-text">
               <Link to={paths.statement(statement, trailStatements)}>
                 {statement.text}
+                {' '}
+                {showJustificationCount && statement.rootJustificationCountByPolarity && (
+                  <StatementJustificationCountViewer statement={statement}/>
+                )}
               </Link>
             </div>
             {showStatusText && (
@@ -56,4 +62,5 @@ StatementViewer.propTypes = {
 }
 StatementViewer.defaultprops = {
   showStatusText: true,
+  showJustificationCount: true,
 }

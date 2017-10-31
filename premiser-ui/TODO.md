@@ -1,12 +1,24 @@
 # Howdju UI TODO
-  
-* If user ends up at an intermediate statement page, it would be good to direct them to interesting statements 
-  higher in the hierarchy.  How to detect which ones are interesting?  Start by showing "this statement justifies X other statements".
-  * This can be done manually with featured perspectives for now.  The graph analysis to detect these would be involved
-* Race condition of multiple votes being sent (disable tagging/untagging after click)
 
-* Firefox shoots off an autocomplete request for every character typed
-  * FF: can't downvote tag
+* Anti-voted, unvoted not hidden
+* When click on statement justification and then use browser back, the tags don't load, and the justifying statement's justification count don't load
+* Add a small (250ms?) delay to autocomplete
+
+* Add indices (root statement ID, joins)
+* Add justification count to statements atoms
+* Show when a user agrees/disagrees with a statement
+  * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
+* Add justified count to root statement
+* Add recent statement recommendations to create statement compound based justification
+* Add "create justification" prompt below justifications
+* Add "tag cloud" of just table of top 20 tags by tagged statement count (show count)
+* TOS/PP
+* User Signup
+* Basic grouping of users
+  * How to know whether a user agrees or disagrees with a statement to show them "your" ranking of justifications vs.
+    "their" ranking when they first view a statement?  Really need four things: justifications from your cluster in support,
+    justifications from your cluster opposing, representation of justifications from other clusters in support, justifications
+    from other clusters opposing 
   
 ## what to do next?
 * Revealing justification design
@@ -32,8 +44,13 @@
     * Would need a new vote type for scoring examples as in or out of
   * Hierarchical tags
   * Basic grouping of users
+  
+* Example justification members need positive and nevative justifications (positive "counters").  E.g.: the washington post uses biased language.  
+  Want the example to be just the quote, but might need to be able to add explanation of why language is in fact biased (a 14% drop in approval is not
+  a total collapse.)
 
-* Support lambda function "environments" by snake-casing lambda alias and checking env. vars with that prefix first
+* Should also add stage LOG_LEVEL to allow modifying on the fly without a publish
+  * Support lambda function "environments" by snake-casing lambda alias and checking env. vars with that prefix first
 
 * bookmarklet fails on some pages with restrictive CSP (e.g., quora, archive.org)
 
@@ -46,29 +63,30 @@
 * When added counter-justification, got React non-unique Key error
 
 
+* Firefox shoots off an autocomplete request for every character typed
+  * FF: can't downvote tag
+  
+* If user ends up at an intermediate statement page, it would be good to direct them to interesting statements 
+  higher in the hierarchy.  How to detect which ones are interesting?  Start by showing "this statement justifies X other statements".
+  * This can be done manually with featured perspectives for now.  The graph analysis to detect these would be involved
+* Race condition of multiple votes being sent (disable tagging/untagging after click)
+
 * Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
 * Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
 
-* Should also add stage LOG_LEVEL to allow modifying on the fly without a publish
-
 * Potential big priorities
-  * Add indices (root statement ID, joins)
+  * index database
   * Discovery
-    * Tagging
-      * Discovery: widget showing top tags by statement count?
     * Show main search domains as card with quote count, justification count, and statement count
       * Link to searches for each of those
   * version API
-  * Additional excerpt fields: author/speaker
+  * Additional excerpt fields: author/speaker, date
   * Additional excerpt types
     * URL (pic/vid) voting to help deal with alternative versions of media?
   * Rich context
-    * Should show when a justification was created
     * When viewing statement, show counter-justifications to any justifications using it
     * Show entity creator (created by X Y days ago)
     * Show justification count by polarity for statement
-    * Show when a user agrees/disagrees with a statement
-      * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
     * Show percentage of justifications (or root justifications?) that are source-based
     * When counter-justifications are collapsed, show: Counter justifications (8)
   * Multi-user
@@ -101,7 +119,7 @@
 * Store referrer when submitting justification?  Generally should match up with URL...
 * Are 401s to login in FF showing up as errors in sentry?
       
-* Need to remove entities from redux store when they are successully deleted?
+* Need to remove entities from redux store when they are successfully deleted?
       
 * pagination for search results
 

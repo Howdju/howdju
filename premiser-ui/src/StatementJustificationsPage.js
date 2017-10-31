@@ -281,6 +281,7 @@ class StatementJustificationsPage extends Component {
                     doShowControls={true}
                     menu={menu}
                     trailStatements={trailStatements}
+                    showJustificationCount={false}
                   />
                   {statement && (
                     <StatementTagger

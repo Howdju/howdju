@@ -24,6 +24,7 @@ class EditableStatement extends Component {
       isEditing,
       showStatusText,
       trailStatements,
+      showJustificationCount,
       // ignore
       dispatch,
       ...rest,
@@ -48,6 +49,7 @@ class EditableStatement extends Component {
         statement={statement}
         showStatusText={showStatusText}
         trailStatements={trailStatements}
+        showJustificationCount={showJustificationCount}
       />
     )
 
@@ -68,6 +70,9 @@ EditableStatement.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
   statement: PropTypes.object,
+}
+EditableStatement.defaultProps = {
+  showJustificationCount: true,
 }
 
 const mapStateToProps = (state, ownProps) => {
