@@ -51,6 +51,11 @@ const {
   EntityTooOldToModifyError,
 } = require('../serviceErrors')
 
+const emptyStatementsByVotePolarity = {
+  [StatementTagVotePolarity.POSITIVE]: [],
+  [StatementTagVotePolarity.NEGATIVE]: [],
+}
+
 exports.StatementsService = class StatementsService {
 
   constructor(
@@ -339,7 +344,7 @@ exports.StatementsService = class StatementsService {
       .then(() => userId || this.authService.readOptionalUserIdForAuthToken(authToken))
       .then((userId) => Promise.all([
         this.statementTagsService.readStatementsRecommendedForTagId(tagId),
-        userId && this.statementTagsService.readTaggedStatementsByVotePolarityAsUser(userId, tagId),
+        userId ? this.statementTagsService.readTaggedStatementsByVotePolarityAsUser(userId, tagId) : emptyStatementsByVotePolarity,
       ]))
       .then(([recommendedStatements, userTaggedStatementsByVotePolarity]) => {
         const {

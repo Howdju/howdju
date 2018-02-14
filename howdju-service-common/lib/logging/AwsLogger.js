@@ -65,7 +65,6 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
   const loggerLevelNumber = logLevelNumbers[this.logLevel]
   if (logLevelNumber > loggerLevelNumber) return
 
-  const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
   const loggerArgs = []
   if (this.doLogTimestamp) {
     loggerArgs.push(utcTimestamp())
@@ -75,6 +74,8 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
   if (contextString) {
     loggerArgs.push(`[${contextString}]`)
   }
+
+  const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
   const combinedArgs = concat(loggerArgs, cleanArgs)
   // Something about using console.log seems to work better for Lambda, allowing multi-line logs to work
   // (Apparently needs carriage-returns instead of newlines)
