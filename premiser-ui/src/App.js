@@ -45,7 +45,7 @@ import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./ident
 import Header from './Header'
 import MainSearchPage from './MainSearchPage'
 import ToolsPage from './ToolsPage'
-import PrivacyPage from './PrivacyPage'
+import PrivacyPolicyPage from './PrivacyPolicyPage'
 import StatementJustificationsPage from './StatementJustificationsPage'
 import LoginPage from './LoginPage'
 import LandingPage from './LandingPage'
@@ -421,7 +421,7 @@ class App extends Component {
               )} />
 
               <Route exact path="/tools" component={ToolsPage} />
-              <Route exact path="/privacy" component={PrivacyPage} />
+              <Route exact path={paths.privacyPolicy()} component={PrivacyPolicyPage} />
               <Route exact path="/icons" component={IconPage} />
 
               <Route component={NotFoundPage} />

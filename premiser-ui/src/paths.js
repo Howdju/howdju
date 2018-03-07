@@ -52,7 +52,7 @@ class Paths {
 
   tools = () => '/tools'
 
-  privacy = () => "/privacy"
+  privacyPolicy = () => "/terms/privacy-policy"
 
   tag = (tag) => `/tags/${tag.id}/${toSlug(tag.name)}`
 }

@@ -1,5 +1,9 @@
 # Howdju UI TODO
 
+* Add FB Login?
+  * Rate limiting? Record visit IPs and count?
+* White paper?
+
 * Add a small (250ms?) delay to autocomplete
 
 * Add indices (root statement ID, joins)
@@ -805,6 +809,10 @@ Cat meeting design notes:
     * https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 * Code splitting
   * http://thejameskyle.com/react-loadable.html
+* Image area selection
+  * [imgAreaSelect](http://odyniec.net/projects/imgareaselect/) jQuery plugin
+  * [JCrop](http://deepliquid.com/content/Jcrop.html) jQuery plugin
+  * [JSCropperUI](http://www.defusion.org.uk/code/javascript-image-cropper-ui-using-prototype-scriptaculous/)?
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs
