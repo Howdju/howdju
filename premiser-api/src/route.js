@@ -452,7 +452,7 @@ const routes = [
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {credentials}}}) =>
       appProvider.authService.login(credentials)
-        .then( ({user, authToken}) => ok({callback, body: {user, authToken}}) )
+        .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}}) )
         .catch(EntityNotFoundError, () => {
           // Hide EntityNotFoundError to prevent someone from learning that an email does or does not correspond to an account
           throw new InvalidLoginError()
@@ -604,6 +604,7 @@ const routeEvent = (request, appProvider, callback) =>
   selectRoute(request)
     .then( ({route, pathParameters}) => route.handler(appProvider, {callback, request: assign({}, request, {pathParameters})}) )
     .catch(e => {
+      appProvider.logger.silly('Error handling route:')
       appProvider.logger.silly(e)
       throw e
     })

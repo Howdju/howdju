@@ -61,7 +61,7 @@ _e.negateRootPolarity = (rootPolarity) => {
   }
 }
 
-_e.makeNewCredentials = () => ({email: '', password: ''})
+_e.makeNewCredentials = (props) => assign({email: '', password: ''}, props)
 
 _e.makeNewStatement = (props) => assign({text: ''}, props)
 

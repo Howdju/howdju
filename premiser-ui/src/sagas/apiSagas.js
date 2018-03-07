@@ -1,15 +1,8 @@
 import {
-  delay
-} from 'redux-saga'
-import {
-  take,
   put,
   call,
   select,
-  race,
-  takeEvery,
 } from 'redux-saga/effects'
-import {REHYDRATE} from 'redux-persist/constants'
 import cloneDeep from 'lodash/cloneDeep'
 import isEmpty from 'lodash/isEmpty'
 
@@ -20,15 +13,16 @@ import {
 import {
   api,
 } from "../actions"
-import {logger} from '../logger'
-import config from "../config"
+import {tryWaitOnRehydrate} from './appSagas'
 import {pageLoadId, getSessionStorageId} from "../identifiers"
 import * as customHeaderKeys from "../customHeaderKeys"
 
 
 export function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
   try {
-    yield* tryWaitOnRehydrate(requiresRehydrate)
+    if (requiresRehydrate) {
+      yield* tryWaitOnRehydrate()
+    }
 
     fetchInit = cloneDeep(fetchInit)
     fetchInit.headers = yield* constructHeaders(fetchInit)
@@ -37,32 +31,6 @@ export function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = f
     return yield put(api.callApi.response(result))
   } catch (error) {
     return yield put(api.callApi.response(error))
-  }
-}
-
-// API calls requiring authentication will want to wait for a rehydrate before firing
-let isRehydrated = false
-
-export function* flagRehydrate() {
-  yield takeEvery(REHYDRATE, function* flagRehydrateWorker() {
-    isRehydrated = true
-  })
-}
-
-function* tryWaitOnRehydrate(requiresRehydrate) {
-  if (requiresRehydrate && !isRehydrated) {
-    logger.debug('Waiting on rehydrate')
-    const {rehydrate, timeout} = yield race({
-      rehydrate: take(REHYDRATE),
-      timeout: delay(config.rehydrateTimeoutMs),
-    })
-    if (rehydrate) {
-      logger.debug('Proceeding after rehydrate')
-    } else if (timeout) {
-      logger.warn('Rehydrate timed out')
-    } else {
-      logger.error('Unknown rehydrate race condition')
-    }
   }
 }
 

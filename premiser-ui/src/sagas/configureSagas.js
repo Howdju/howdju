@@ -15,7 +15,7 @@ import {api, str} from '../actions'
 
 
 export function* configureAfterLogin() {
-  yield takeEvery(str(api.login.response), function* setSentryUserContextAfterLoginWorker(action) {
+  yield takeEvery(str(api.login.response), function* configureAfterLoginWorker(action) {
     if (!action.error) {
       const externalIds = yield select(selectUserExternalIds)
       const {
@@ -36,7 +36,7 @@ export function* configureAfterLogin() {
 }
 
 export function* configureAfterRehydrate() {
-  yield takeEvery(REHYDRATE, function* setSentryUserContextWorker() {
+  yield takeEvery(REHYDRATE, function* configureAfterRehydrateWorker() {
     const externalIds = yield select(selectUserExternalIds, {})
     const {sentryId} = externalIds
     if (sentryId) {

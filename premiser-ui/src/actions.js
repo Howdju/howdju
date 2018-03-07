@@ -48,6 +48,8 @@ const apiActionCreator = (...args) => {
 
 export const app = {
   searchMainSearch: actionCreator('APP/SEARCH_MAIN_SEARCH', searchText => ({searchText})),
+  clearAuthToken: actionCreator('APP/CLEAR_AUTH_TOKEN'),
+  checkAuthExpiration: actionCreator('APP/CHECK_AUTH_EXPIRATION'),
 }
 
 export const api = {

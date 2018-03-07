@@ -20,7 +20,6 @@ import {
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from './actions'
-import {loginPageEditorId} from './editorIds'
 import {EditorTypes} from "./reducers/editors"
 import {makeNewCredentials} from "howdju-common"
 import {toErrorText} from "./modelErrorMessages"
@@ -28,36 +27,32 @@ import t from './texts'
 import analytics from "./analytics"
 
 import './LoginPage.scss'
+import {selectAuthEmail} from './selectors'
 
 
 class LoginPage extends Component {
 
-  constructor() {
-    super()
-
-    this.editorId = loginPageEditorId
-  }
-
   componentWillMount() {
-    this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, this.editorId, makeNewCredentials())
+    const email = this.props.authEmail || ''
+    this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, makeNewCredentials({email}))
   }
 
   onChange = (value, event) => {
     const target = event.target
     const name = target.name
-    this.props.editors.propertyChange(EditorTypes.LOGIN_CREDENTIALS, this.editorId, {[name]: value})
+    this.props.editors.propertyChange(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, {[name]: value})
   }
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.editors.commitEdit(EditorTypes.LOGIN_CREDENTIALS, this.editorId)
+    this.props.editors.commitEdit(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId)
   }
 
   onCancel = () => {
     this.props.goBack()
   }
 
-  onSubscribeSubmit = event => {
+  onSubscribeSubmit = (event) => {
     analytics.sendEvent('Mailing List Signup Form', 'submit')
   }
 
@@ -190,10 +185,13 @@ class LoginPage extends Component {
     )
   }
 }
+LoginPage.editorId = 'loginPageEditorId'
 
 const mapStateToProps = state => {
-  const editorState = get(state, ['editors', EditorTypes.LOGIN_CREDENTIALS, loginPageEditorId])
+  const authEmail = selectAuthEmail(state)
+  const editorState = get(state, ['editors', EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId])
   return ({
+    authEmail,
     editorState,
     isLoginRedirect: !!state.app.loginRedirectLocation,
   })

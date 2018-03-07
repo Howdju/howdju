@@ -20,6 +20,10 @@ import map from 'lodash/map'
 import throttle from 'lodash/throttle'
 
 import {
+  isTruthy
+} from 'howdju-common'
+
+import {
   api,
   ui,
   mapActionCreatorGroupToDispatchToProps,
@@ -27,7 +31,11 @@ import {
 import {history} from './configureStore'
 import paths, {createJustificationPath} from './paths'
 import mainSearcher from './mainSearcher'
-import {selectIsWindowNarrow} from "./selectors"
+import {
+  selectIsWindowNarrow,
+  selectAuthToken,
+  selectAuthEmail,
+} from "./selectors"
 import * as smallchat from './smallchat'
 import {
   isScrollPastBottom,
@@ -220,8 +228,8 @@ class App extends Component {
 
   render () {
     const {
-      authToken,
-      email,
+      authEmail,
+      hasAuthToken,
       isNavDrawerVisible,
       toasts,
       isMobileSiteDisabled,
@@ -275,7 +283,7 @@ class App extends Component {
         )
       }
     }
-    if (authToken) {
+    if (hasAuthToken) {
       navItems.push(
         <ListItem key="logout"
                   primaryText="Logout"
@@ -283,8 +291,7 @@ class App extends Component {
                   onClick={this.logout}
         />
       )
-    }
-    if (!authToken) {
+    } else {
       navItems.push(
         <ListItem key="login"
                   primaryText="Login"
@@ -305,11 +312,16 @@ class App extends Component {
             nav={<Button icon onClick={this.hideNavDrawer}>close</Button>}
             className="md-divider-border md-divider-border--bottom"
           >
-            {authToken &&
             <div className="app-nav-drawer-header">
-              <b>{email}</b>
+              {authEmail ? (
+                  <div>
+                    <b>{authEmail}</b>
+                    {hasAuthToken || <div><em>login expired</em></div>}
+                  </div>
+                )
+                : <em>Not logged in</em>
+              }
             </div>
-            }
           </Toolbar>
         }
         navItems={navItems}
@@ -442,11 +454,10 @@ App.contextTypes = {
 
 const mapStateToProps = state => {
   const {
-    auth,
     ui,
   } = state
-  const email = get(auth, ['user', 'email'])
-  const authToken = auth.authToken
+  const authEmail = selectAuthEmail(state)
+  const hasAuthToken = isTruthy(selectAuthToken(state))
   const isNavDrawerVisible = get(ui, ['app', 'isNavDrawerVisible'])
   const toasts = get(ui, ['app', 'toasts'])
 
@@ -455,8 +466,8 @@ const mapStateToProps = state => {
   const isWindowNarrow = selectIsWindowNarrow(state)
 
   return {
-    email,
-    authToken,
+    authEmail,
+    hasAuthToken,
     isNavDrawerVisible,
     toasts,
     isWindowNarrow,

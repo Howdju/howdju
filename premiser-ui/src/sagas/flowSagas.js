@@ -21,6 +21,7 @@ import {
 } from "../selectors"
 import {
   api,
+  app,
   goto,
   ui,
   str,
@@ -46,6 +47,17 @@ export function* redirectToLoginWhenUnauthorized() {
       if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
         const routerLocation = yield select(selectRouterLocation)
         yield put(goto.login(routerLocation))
+      }
+    }
+  })
+}
+
+export function* clearAuthTokenWhenUnauthorized() {
+  yield takeEvery(str(api.callApi.response), function* clearAuthTokenWhenUnauthorizedWorker(action) {
+    if (action.error) {
+      const {httpStatusCode} = action.payload
+      if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
+        yield put(app.clearAuthToken())
       }
     }
   })

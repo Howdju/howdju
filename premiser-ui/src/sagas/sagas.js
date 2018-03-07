@@ -3,7 +3,6 @@ import {
   cancelResourceApiCalls,
   resourceApiCalls,
 } from './resourceApiSagas'
-import {flagRehydrate} from './apiSagas'
 import {configureAfterLogin, configureAfterRehydrate} from './configureSagas'
 import {
   apiFailureAlerts,
@@ -13,13 +12,20 @@ import {
   showAlertForUnexpectedApiError
 } from './alertSagas'
 import {sendPageView} from './analyticsSagas'
+import {
+  flagRehydrate,
+  checkAuthExpirationOnRehydrate,
+  checkAuthExpirationPeriodically,
+  checkAuthExpiration,
+} from './appSagas'
 import {logErrors} from './logErrorsSaga'
 import {
   goHomeIfDeleteStatementWhileViewing,
   goTo,
   redirectAfterLogin,
   redirectHomeFromMissingStatement,
-  redirectToLoginWhenUnauthorized
+  redirectToLoginWhenUnauthorized,
+  clearAuthTokenWhenUnauthorized,
 } from './flowSagas'
 import {searchMainSearch} from './searchMainSearchSaga'
 import {commitEditorThenView} from './editors/commitEditorThenViewSaga'
@@ -35,10 +41,15 @@ export default () => [
   searchMainSearch(),
 
   flagRehydrate(),
+  checkAuthExpirationOnRehydrate(),
+  checkAuthExpirationPeriodically(),
+  checkAuthExpiration(),
   logErrors(),
 
   configureAfterLogin(),
   configureAfterRehydrate(),
+
+  clearAuthTokenWhenUnauthorized(),
 
   goTo(),
   redirectToLoginWhenUnauthorized(),

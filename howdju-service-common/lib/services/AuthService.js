@@ -59,6 +59,7 @@ exports.AuthService = class AuthService {
     const expires = now.add(moment.duration.apply(moment.duration, this.config.authTokenDuration))
 
     return this.authDao.insertAuthToken(user.id, authToken, now, expires)
+      .then(() => ({authToken, expires}))
   }
 
   createOrUpdatePasswordAuthForUserId(userId, password) {
@@ -127,9 +128,10 @@ exports.AuthService = class AuthService {
           this.updateLastLogin(user, now)
         ])
       })
-      .then( ([user, authToken]) => ({
+      .then( ([user, {authToken, expires}]) => ({
         user,
         authToken,
+        expires,
       }))
   }
 
