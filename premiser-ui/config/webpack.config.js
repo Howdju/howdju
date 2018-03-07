@@ -55,7 +55,7 @@ const baseWebpackConfig = {
             cacheDirectory: true,
             // These are necessary for compiling npm-linked libraries
             presets: [
-              ["es2015", { "modules": false }],
+              ["env", { "modules": false }],
               "stage-0",
               "react",
             ]
