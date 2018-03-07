@@ -253,7 +253,7 @@ class App extends Component {
                 primaryText="Privacy Policy"
                 leftIcon={<FontIcon>laptop_chromebook</FontIcon>}
                 component={Link}
-                to={paths.privacy()}
+                to={paths.privacyPolicy()}
       />,
     ]
     if (isDevice()) {
