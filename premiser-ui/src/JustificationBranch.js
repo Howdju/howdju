@@ -14,7 +14,6 @@ import {
   FontIcon,
   MenuButton,
   ListItem,
-  Positions,
 } from "react-md"
 
 import {
@@ -178,7 +177,7 @@ class JustificationBranch extends Component {
         className={cn({hidden: doHideControls})}
         menuClassName="context-menu justification-context-menu"
         children={'more_vert'}
-        position={Positions.TOP_RIGHT}
+        position={MenuButton.Positions.TOP_RIGHT}
         title="Justification actions"
         menuItems={[
           <ListItem

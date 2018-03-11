@@ -5,7 +5,6 @@ import PropTypes from 'prop-types'
 import {
   CardText,
   MenuButton,
-  Positions,
   ListItem,
   FontIcon,
   Divider,
@@ -136,7 +135,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
         className={cn({hidden: !isOver})}
         menuClassName="context-menu"
         children={'more_vert'}
-        position={Positions.TOP_RIGHT}
+        position={MenuButton.Positions.TOP_RIGHT}
         title={menuTitle(atom)}
         menuItems={this.menuListItems()}
       />

@@ -8,7 +8,6 @@ import {
   FontIcon,
   MenuButton,
   ListItem,
-  Positions,
   Button,
   CircularProgress,
   Card,
@@ -206,7 +205,7 @@ class StatementJustificationsPage extends Component {
         className={cn({hidden: doHideControls})}
         menuClassName="context-menu context-menu--statement"
         children={'more_vert'}
-        position={Positions.TOP_RIGHT}
+        position={MenuButton.Positions.TOP_RIGHT}
         menuItems={[
           <ListItem primaryText="Add justification"
                     key="addJustification"
