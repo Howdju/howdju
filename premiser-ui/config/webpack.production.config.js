@@ -60,7 +60,13 @@ const extractTextPlugin = new ExtractTextPlugin({
 
 module.exports.webpackConfig = {
   entry: [projectConfig.paths.src('main.js')],
-  devtool: 'cheap-module-source-map',
+  /*
+  production values: https://webpack.js.org/configuration/devtool/#production
+  - source-map - A full SourceMap is emitted as a separate file. It adds a reference comment to the bundle so development tools know where to find it.
+  - hidden-source-map - Same as source-map, but doesn't add a reference comment to the bundle. Useful if you only want SourceMaps to map error stack traces from error reports, but don't want to expose your SourceMap for the browser development tools.
+  - nosources-source-map - A SourceMap is created without the sourcesContent in it. It can be used to map stack traces on the client without exposing all of the source code.
+   */
+  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -106,5 +112,6 @@ module.exports.webpackConfig = {
       canPrint: true
     }),
     new Visualizer(),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
 }

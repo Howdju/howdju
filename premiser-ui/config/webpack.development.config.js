@@ -36,6 +36,7 @@ module.exports.webpackConfig = {
     'webpack/hot/only-dev-server',
     projectConfig.paths.src('main.js')
   ],
+  // https://webpack.js.org/configuration/devtool/#development
   devtool: 'eval-source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

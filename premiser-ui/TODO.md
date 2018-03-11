@@ -3,7 +3,6 @@
 * Data model
   * How represent same quote appearing in multiple places?
   * How to handle webpage archives and quotes from books in articles/blogs
-* Why doesn't source map work? (the file is nearly empty)
 
 * Minimize react-md (don't use react-md-everything): 
   * https://react-md.mlaursen.com/customization/minimizing-bundle#minimizing-css-bundle-size
@@ -11,6 +10,9 @@
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
   * https://www.npmjs.com/package/babel-plugin-lodash
   * https://github.com/lodash/lodash-webpack-plugin
+* Use date-fns instead of moment?
+  * https://date-fns.org/
+  * Use Ignore plugin to remove locales?
 
 * UI Build
   * ensure that CSS goes to external sheet
@@ -130,6 +132,8 @@
   * Add an HttpOnly, Secure cookie so that authentication can't be taken off site (no XSS can steal all the credentials
     necessary to make a change.  Keep the local storage token as that prevents CSRF - the attacker needs a script on teh page
     to read that.)
+* Support hidden source maps?
+  * https://docs.sentry.io/learn/cli/releases/#upload-source-maps
 
 Improvements to statements trail:
   * Confirm that trailStatements are in fact parents?

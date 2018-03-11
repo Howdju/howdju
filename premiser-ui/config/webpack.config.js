@@ -61,7 +61,6 @@ const baseWebpackConfig = {
             ]
           },
         },
-        // TAG: NEW_LIB
         exclude: /node_modules\/(?!howdju-common)/,
       },
       {
@@ -124,7 +123,7 @@ const baseWebpackConfig = {
           {
             loader: "markdown-loader",
             options: {
-              /* your options here */
+              /* markdown options here */
             }
           }
         ]
