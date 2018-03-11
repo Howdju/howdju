@@ -21,6 +21,7 @@ const {
 const htmlWebpackPluginConfig = merge({
   appMountId: 'root',
   environment: process.env.NODE_ENV,
+  sentryEnvironment: process.env.SENTRY_ENV,
   filename: projectConfig.names.indexHtml,
   gitCommit: gitShortSha(),
   hash: false,

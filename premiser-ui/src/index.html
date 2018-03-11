@@ -28,7 +28,7 @@
       // https://docs.sentry.io/clients/javascript/config/
       if (window.Raven) {
         window.Raven.config('https://05b15a6447f3427db2f4977950149202@sentry.io/200909', {
-          environment: '<%= htmlWebpackPlugin.options.environment %>',
+          environment: '<%= htmlWebpackPlugin.options.sentryEnvironment %>',
           release: '<%= htmlWebpackPlugin.options.version %>',
           tags: {git_commit: '<%= htmlWebpackPlugin.options.gitCommit %>'}
         }).install();
