@@ -7,7 +7,8 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "clean": "rm -rf dist",
+    "analyze-size": "yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel webpack --config config/webpack.config.js --profile --json > dist/stats.json && webpack-bundle-size-analyzer dist/stats.json && open dist/stats.html",
+    "clean": "rm -rf dist/*",
     "lint:build": "eslint --config .eslintrc.build.js bin/ config/ server.js",
     "lint:app": "eslint --config .eslintrc.app.js src/ bookmarklet/",
     "lint": "yarn run lint:app && yarn run lint:build",
@@ -69,10 +70,12 @@
     "url-loader": "^0.5.8",
     "uuid": "^3.0.1",
     "webpack": "3.11.0",
+    "webpack-bundle-size-analyzer": "^2.7.0",
     "webpack-dev-middleware": "^1.10.1",
     "webpack-dev-server": "^2.4.2",
     "webpack-hot-middleware": "^2.17.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "webpack-visualizer-plugin": "^0.1.11"
   },
   "dependencies": {
     "axios": "^0.18.0",

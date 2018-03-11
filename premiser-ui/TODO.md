@@ -2,16 +2,37 @@
 
 * Data model
   * How represent same quote appearing in multiple places?
+  * How to handle webpage archives and quotes from books in articles/blogs
+* Why doesn't source map work? (the file is nearly empty)
 
+* Minimize react-md (don't use react-md-everything): 
+  * https://react-md.mlaursen.com/customization/minimizing-bundle#minimizing-css-bundle-size
+* Minimize lodash
+  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
+  * https://www.npmjs.com/package/babel-plugin-lodash
+  * https://github.com/lodash/lodash-webpack-plugin
+
+* UI Build
+  * ensure that CSS goes to external sheet
+  * ensure that google fonts go to external link?
+* Why do I have PostCSS in my project?
+  
+* Improve not found page (wizard crystal ball?)
+
+* Dynamo (pricing of triggered events?)
+
+* https://github.com/codelucas/newspaper
+
+* Update redux-persist
+  * https://github.com/rt2zz/redux-persist/
+
+# Fall 2017 TODO
 * Add indices (root statement ID, joins)
 * Show when a user agrees/disagrees with a statement
   * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
 * Add justified count to root statement
 * Add recent statement recommendations to create statement compound based justification
 * Add "create justification" prompt below justifications
-* Add "tag cloud" of just table of top 20 tags by tagged statement count (show count)
-* TOS/PP
-* User Signup
 * Basic grouping of users
   * How to know whether a user agrees or disagrees with a statement to show them "your" ranking of justifications vs.
     "their" ranking when they first view a statement?  Really need four things: justifications from your cluster in support,
@@ -19,36 +40,8 @@
     from other clusters opposing 
   
 ## what to do next?
-* Revealing justification design
-* Statement similarity: semantically equivalent, semantically similar
-  * Equivalent: Bob went to the store; the person who went to the store was Bob
-  * Similar: Directors of corporations must maximize profit; corporations must maximize profit (metonymy) 
-* surface tags
-  * tag 'cloud': recent, most-used
-* Multi-user:
-  * TOS, Privacy Policy
-  * DMCA
-  * Report/Flag entity
-  * FB Login 
-* clinton emails example
-* View all statements in a table
-* Business model
-  * Private content
-* Usability/Features
-  * Creating statements based upon a page
-    * Show recently created statements, when click on them, add as statement atom
-    * I am finding that as I am reading different articles about a particular topic, it would be helpful if they were 
-      all visible together
-      * Maybe a tag type: conversation.  About particualr topic
-      * And when viewing that tag, show the statements tagged with it as a forest of connected trees!
   * example-based justifications
     * Would need a new vote type for scoring examples as in or out of
-  * Hierarchical tags
-  * Basic grouping of users
-  
-* Example justification members need positive and nevative justifications (positive "counters").  E.g.: the washington post uses biased language.  
-  Want the example to be just the quote, but might need to be able to add explanation of why language is in fact biased (a 14% drop in approval is not
-  a total collapse.)
 
 * Should also add stage LOG_LEVEL to allow modifying on the fly without a publish
   * Support lambda function "environments" by snake-casing lambda alias and checking env. vars with that prefix first
@@ -63,13 +56,8 @@
   * Should not overwrite an entities properties if they aren't present on the returned entity
 * When added counter-justification, got React non-unique Key error
 
-
 * Firefox shoots off an autocomplete request for every character typed
   * FF: can't downvote tag
-  
-* If user ends up at an intermediate statement page, it would be good to direct them to interesting statements 
-  higher in the hierarchy.  How to detect which ones are interesting?  Start by showing "this statement justifies X other statements".
-  * This can be done manually with featured perspectives for now.  The graph analysis to detect these would be involved
 * Race condition of multiple votes being sent (disable tagging/untagging after click)
 
 * Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
@@ -81,12 +69,8 @@
     * Show main search domains as card with quote count, justification count, and statement count
       * Link to searches for each of those
   * version API
-  * Additional excerpt fields: author/speaker, date
-  * Additional excerpt types
-    * URL (pic/vid) voting to help deal with alternative versions of media?
   * Rich context
     * When viewing statement, show counter-justifications to any justifications using it
-    * Show entity creator (created by X Y days ago)
     * Show justification count by polarity for statement
     * Show percentage of justifications (or root justifications?) that are source-based
     * When counter-justifications are collapsed, show: Counter justifications (8)
@@ -101,9 +85,10 @@
     * Anonymous posting (what do I do the first time someone anonymously uses a racial slur?)
       * Empower users with filters
         1) hide content without verified account activity 
-        2) hide potentially offensive content 
-        3) hide potentially offensive content lacking verified account activity
+        2) hide potentially offensive content (allow them to hide by degrees of certainty of offensiveness?)
+        3) exception for activity from verified accounts
     * Creation/deletion as existence of a creation action vs. row in table
+      * So that two users can create the same thing with different visibility settings
   * semantically equivalent statements (voting, display, automatic detection)
     * Negations (voting, display, automatic detection)
   * Contextual tool
@@ -121,7 +106,7 @@
 * Are 401s to login in FF showing up as errors in sentry?
       
 * Need to remove entities from redux store when they are successfully deleted?
-      
+
 * pagination for search results
 
 * Paraphrases don't show up in writQuote usages
@@ -155,6 +140,7 @@ Improvements to statements trail:
 * recent quotes: exclude those with empty quotes?
 
 * Escape in new justification dialog is awful when I hit it accidentally and lose my form data
+  * Don't lose form data.  Add clear button
 
 * The "Use" in a justification basis compound having a single atom is duplicative of the "Use" for that atom.
 * Redirecting from deleted statement fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
@@ -202,7 +188,7 @@ Improvements to statements trail:
   * replace impossible error with exhausted enum error
   * Review use of onTextInputKeyDown (if the purpose is to catch enter/escape, why limit it to text fields?)
 
-* Don't store isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information
+* Don't persist isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information upon page load
   and leave it in-memory
   * Do not track: don't use analytics.  Don't even load libraries.
   
@@ -244,17 +230,9 @@ Cat meeting design notes:
 * pg native?
   * https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
 
-* Prod featured perspectives (Hillary email)
-  * Show whose perspective it is.
-  * Show when created
-  * Show votes
 * User signup
   * Redirect login to https, Terms, Share auth between tabs, Privileges, Points, Rate limiting
-* Tagging for me to keep track of what I am working on
 * Metrics: new users, daily active users (visit, vote, create)
-
-* Perspective editor is just the statement justifications page with another action per-justification: a star to include or remove.
-  (How to get to justifications of statements?)
 
 1) Whats next / About page
   * Other stuff: documentation, document bookmarklet
@@ -271,19 +249,41 @@ Cat meeting design notes:
 
 * For local logger, color warning/error output to make it harder to miss?
 
-* Minimize react-md (don't use react-md-everything): https://react-md.mlaursen.com/customization/minimizing-bundle
 
 ## Bugs
-
+* When create statement and redirected to login and return information is gone.
+* When two tabs are open and authentication changes in one, it doesn't propagate to other tabs
 * iOS content blocker blocking google fonts
 * Errors from safari iOS aren't going to sentry
 * sentry errors not showing up for howdju.com?
 * Start editing citation on statement justifications page; navigate away; use back button, is still editing.  Bug? Feature?
-
 * Creating an opposing statement-based justification after entering the statement manually didn't create it!
 * When logout, refresh page (votes should go away)?
-
 * No login toast in prod
+### More bugs
+* With slow connection, click create justification multiple times
+  * looks like multiple justifications are made
+  * It is possible for several requests submitted around the same time to pass validations
+    and then get to creation of things that violate constraints.  This is hard to fix without
+    transactions, I think.
+  * One fix could be to reconcile on a schedule well enough after the creation so that there won't be
+    the possibility of conflicting creation occurring.
+  * Would need to program as if constraint-violating models could occur, and have some method for
+    reconciling those results on the fly until the scheduled reconciliation occurs, such as ordering
+    by created date and taking the earliest
+* Validation belongs in route.js, I think
+  * Include type conversion in validation somehow?  toNumber(statementId), e.g.
+* Toasts are under dialog
+* Can't shift-tab out of FocusContainer
+  * Try upgrading react-md first, then fix fork
+* Autocomplete
+  * Does not appear above dialog
+    * [Fix in react-md 1.1](https://github.com/mlaursen/react-md/issues/232)
+  * fork react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
+* If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
+* Do I check return values for delete dao methods and throw EntityNotFoundError when it was missing?
+
+# Milestones
 
 * I can use the system
   * Quote capture mechanics (capture Xpath, surrounding text, make it source-specific: title instead of description; capture vs. request later for author, date)
@@ -292,12 +292,6 @@ Cat meeting design notes:
     - Capture quote justification (do I ask them to paraphrase the quote?)
     - target quote paraphrase
   * Collect source author, date, publication, article title
-* I can show off the system
-  * perspectives should include creator and (dis)approval
-  * Can explore topics
-    * tags
-  * Allows someone to quickly understand a complicated issue, such as Hillary's emails
-    * in-context highlighting of text/text-based justifications
 * I can share the system
   * Collapse counter justifications
     * Show all
@@ -315,9 +309,9 @@ Cat meeting design notes:
     * mine
     * people I follow
     * specific user
+    * verified users
     * all
     * contains text (input text)
-  
   * Tags
     * paraphrases and quotes are amenable to tagging because they have context.  
       statements might be amenable, depending on how specifically they are written.
@@ -327,9 +321,6 @@ Cat meeting design notes:
 * Others can use the system
   * Semantic equivalence
     * Vote on equivalence?
-    * Paraphrase as part of quote capture?
-  * On-page analysis, so that people use on-page analysis for on-site text justifications?
-    * (Don't want this to grow too quickly before we are collecting the correct data)
   * TODO version API (add path parameter and add version to routing)
 * On-page analysis
   * Start with Twitter?
@@ -362,7 +353,7 @@ Cat meeting design notes:
 * Featured Perspectives are scrunched on mobile
 * Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
 
-* Cards: who created, number of justifications or justifications based upon
+* Cards rich information: who created, number of justifications or justifications based upon
   * perspective: whose!?
   * perspective: see all justifications
 
@@ -383,24 +374,11 @@ Cat meeting design notes:
 * Fix tests
 * Setup CI?
 
-### Misc.
-* UI Build
-  * ensure that CSS goes to external sheet
-  * ensure that google fonts go to external link?
-
-* Why do I have PostCSS in my project?
-
 
 ## Tooling
 * Consider copying this
   * https://github.com/react-boilerplate/react-boilerplate
 * https://flow.org/
-* Update webpack 3
-  * scope hoisting and magic comments for chunks
-  * https://github.com/webpack/webpack/releases
-* Add linting 
-  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
-
 
 ## 0.2 (others can use it)
 
@@ -413,24 +391,17 @@ Cat meeting design notes:
   * IP rate limiting
   * account rate limiting (sharing account)
   
-* When two tabs are open and authentication changes in one, it doesn't propagate to other tabs
-
 ## Update release (I can use it and show it to people)
 * When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"
-* Improve not found page
 
 ### Info
 * Who created (really need a profile page first)
-  * Change schema to creator instead of creatorId?
+  * Change schema to creator.id (with related user object too) instead of creatorId?
 
-* WHen normalizing text, replace periods and quotations with nothing (now is space)
+* When normalizing text, replace periods and quotations with nothing (now is space)
 * Need to add a continuation token forwards too, so that when the recents page is reloaded, we can request anything new.
   * When there is a backwards continuation token, we don't request the initial entities, but can request new ones.
   * Then can remove sortBy from recent widgets reducer
-
-* Compound justifications must be snippet justifications.  Fee-form text entered by user (limit length or number of sentences?)
-  and then marked up just like it would be off-site
-* Tagging
   
 * Add statement.justifications generally, like I did with perspective.statement.justifications?
   * Rename page to CreateStatementPage?
@@ -438,10 +409,11 @@ Cat meeting design notes:
   * Recent statements
   * Tagging
   * in-context creation
-* Add "modal" votes?: I think it's true/false but I don't konw the reason and "I don't know"
-* Can users only vote on citations?  And not on statements?  Or at least: analytics about statements you support for which
-  you don't yet support any citations
-* Checkbox next to everything you might include in a perspective so that you can collect them and then create one.
+* Add "modal logic" votes?: I think it's true/false but I don't know the reason and "I don't know"
+  * Generally allow a person to vote how they think regardless of justifications?  Would help use get
+    information about beliefs and user interests
+  * Can users only vote on justifications?  And not on statements?  Or at least: analytics about statements you support for which
+    you don't yet support any justifications
 * More referential integrity before returning (like service.readMoreJustifications
 
 ### Social login
@@ -496,36 +468,10 @@ Cat meeting design notes:
 * Example statements
 * Topics of interest to user
   * Activity on statements relevant to the user 
-
-### Bugs
-* With slow connection, click create justification multiple times
-  * looks like multiple justifications are made
-  * It is possible for several requests submitted around the same time to pass validations
-    and then get to creation of things that violate constraints.  This is hard to fix without
-    transactions, I think.
-  * One fix could be to reconcile on a schedule well enough after the creation so that there won't be
-    the possibility of conflicting creation occurring.
-  * Would need to program as if constraint-violating models could occur, and have some method for
-    reconciling those results on the fly until the scheduled reconciliation occurs, such as ordering
-    by created date and taking the earliest
-* Validation belongs in route.js, I think
-  * Include type conversion in validation somehow?  toNumber(statementId), e.g.
-* Toasts are under dialog
-* Can't shift-tab out of FocusContainer
-  * Try upgrading react-md first, then fix fork
-* Autocomplete
-  * Does not appear above dialog
-    * [Fix in react-md 1.1](https://github.com/mlaursen/react-md/issues/232)
-  * fork react-md and add features like [react-autocomplete](https://github.com/reactjs/react-autocomplete)
-* If there's a parse error in route.js, then we get an error that headers cant be set after they are sent.
-* Do I check return values for delete dao methods and throw EntityNotFoundError when it was missing?
   
 ### Features
-* Add refinement/intervening statement justification (justification drop-down item creating new statement justifying same statement and justified by this justification)
-* Hyperlink statement text to drill-down to statement
-* Design statement compounds to be text-like instead of paper/card blocks.  This should mirror or relate to the 
-  appearance of how the browser extension marks up text on a page - for continuity and for education.
-* When create statement and redirected to login and return information is gone.
+* Add refinement/intervening statement justification (justification drop-down item creating new statement justifying
+  same statement and justified by this justification)
 * Schema.org
   * https://schema.org/ClaimReview
   * https://developers.google.com/search/docs/data-types/factcheck (multiple fact checks on a page)
@@ -545,14 +491,12 @@ Cat meeting design notes:
     * Cite scrapable/tabular data?
   * MEDIA (Image/Video) (how handle editing to add higher-resolution images?)
     * Button to show image/video URL in-context
-* tagging
-  * Home page tag cloud
 * Implement full model constraints in services
   * don't let a user edit their own entities when they are older than a certain age (really this is to prevent 
     anyone from having seen it; so should we track views instead?)
 * warn if they try and navigate away after entering text
 * Add delete statement/justification confirmation (or better, undo)
-* Author of quote
+* Speaker of quote
 * Make URLs (or CitationUrls) voteable.
   * Users can always add new URLs
   * Deleting URLs follow the normal rules (if other users have interacted, or grace period is up)
@@ -561,7 +505,7 @@ Cat meeting design notes:
   * See list of all domains cited; search cited domains.
   * See citations (quotes?) and/or citations supported by domain name
   * How to evaluate the truthiness of a quote from a URL
-    * How to tell when text on a page is a quotation rather than a direct statement
+    * How to tell when text on a page is quoting another source rather than a direct statement
       * X said
       * quotation marks
 * Recent votes: see what statement justifications look like when limited to a time period, either pre-selected time 
@@ -574,10 +518,7 @@ Cat meeting design notes:
 * Disable (with help text explaining why disabled) context menu items based upon permissions/ability to do the action
 * User registration
   * Change email, password, password reset
-* Timeout authentication
 * Location tags for statements
-* Relation between counter to statement-based justification and the statement.  Should it be shown (suggested?) as 
-  a disjustification on that statement?
 
 * Add messages for when cannot edit and why
 * When statements or writs or writ quotes conflict, offer to merge them somehow?
@@ -615,7 +556,7 @@ Cat meeting design notes:
   * Don't slide/hide the vote actions until the vote has successfully responded
 * EditStatementCitationPage: can I move focus to basis component when first showing them?
 * Escape key while focusing (i.e. arrow-keying onto it) autocomplete list should close it 
-* Need loading indicator when using basis to create a justification (especially on lambda prime, justification can be empty for awhile)
+* Need loading indicator when using basis to create a justification (especially on lambda cold start, justification can be empty for awhile)
 
 ### Refactoring/stability
 * When an error occurs in a saga that transitioned the page (e.g. remove the default value of statementCompounds in
@@ -653,9 +594,8 @@ Cat meeting design notes:
      page reload.
 
 ### Product/Modeling ideas
-* Should disjustifications be statement only (forces ML-learnable negation?)?
 * Periods at the end of statements?
-* I'm worried about statement text collision, particularly with counters, which are likely to depend on context a lot
+* I'm worried about statement text collision, particularly with counter justifications, which are likely to depend on context a lot
   * Justifications on the statement might lack the proper context...
 * Disjustifications of a statement are counters to a justification using that statement
 * What happens if we justify a statement with itself?
@@ -697,8 +637,6 @@ Cat meeting design notes:
 * Time travel to see what libraries made app large
   * Figure out how to minimize lodash import
 * Deploy to S3
-  * HTTPS (NGINX?)
-  * Cache index.html?
   * cdn.premiser.co?
   * [Invalidation vs. versioning](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html)
 * https://github.com/babel/babel-loader#babel-is-injecting-helpers-into-each-file-and-bloating-my-code
@@ -720,8 +658,9 @@ Cat meeting design notes:
   * https://github.com/brillout/awesome-react-components#performance
 * [selectors](https://github.com/reactjs/reselect) (memoization of deriving from state)
   * http://redux.js.org/docs/recipes/ComputingDerivedData.html
-* SSR
-  * [Redux SSR](http://redux.js.org/docs/recipes/ServerRendering.html)
+* Server side rendering
+  * [Redux server rendering](https://redux.js.org/recipes/server-rendering)
+  * https://hackernoon.com/next-js-react-server-side-rendering-done-right-f9700078a3b6
 * [react-router-redux](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux)?
 * Ensure Redux store preserved between hot reloads
   * http://stackoverflow.com/a/34697765/39396
@@ -775,12 +714,16 @@ Cat meeting design notes:
 * [Parallax](https://github.com/dixonandmoe/rellax) 
 * [Scroll animation](https://github.com/michalsnik/aos)
 * [Web designy repositories](https://github.com/ajlkn?tab=repositories)
-* [Obfuscate auth](https://github.com/rt2zz/redux-persist-transform-compress)
-* [redux-persist-migrate](https://github.com/wildlifela/redux-persist-migrate)
-* [Storage](https://github.com/localForage/localForage)
-* [Freebase data](https://developers.google.com/freebase/)
-* [Data containers](https://blog.okfn.org/2016/02/01/google-funds-frictionless-data-initiative-at-open-knowledge/)
-* [Public data sets?](https://www.google.com/publicdata/directory)
+* Improving redux persist
+  * [Obfuscate auth](https://github.com/rt2zz/redux-persist-transform-compress)
+  * [redux-persist-migrate](https://github.com/wildlifela/redux-persist-migrate)
+  * [Storage](https://github.com/localForage/localForage)
+* Open data sources
+  * [Freebase data](https://developers.google.com/freebase/)
+    * Migrated to Wikipedia?
+    * Became [Google Knowledge Graph](https://developers.google.com/knowledge-graph/)?
+  * [Public data sets?](https://www.google.com/publicdata/directory)
+  * [Data containers](https://blog.okfn.org/2016/02/01/google-funds-frictionless-data-initiative-at-open-knowledge/)
 * [SASS Variable to Javascript](https://github.com/nordnet/sass-variable-loader)
 * [Node Postgres Migrations](https://www.npmjs.com/package/node-pg-migrate)
 * [SFSafariViewController](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller)
