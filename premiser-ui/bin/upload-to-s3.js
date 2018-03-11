@@ -16,7 +16,9 @@ const argParser = new ArgumentParser({
   description: 'Upload the app to S3'
 })
 argParser.addArgument('bucket')
+argParser.addArgument('filter')
 const args = argParser.parseArgs()
+const filter = args.filter && new RegExp(args.filter)
 
 AWS.config.region = projectConfig.aws.region
 AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile})
@@ -83,6 +85,8 @@ function walkRelative(dirPath, action) {
   walk(dirPath, function truncatePath(filePath) {
     // +1 to get the directory separator
     const relativePath = filePath.substring(absPath.length + 1)
-    action(relativePath)
+    if (!filter || !filter.test(relativePath)) {
+      action(relativePath)
+    }
   })
 }

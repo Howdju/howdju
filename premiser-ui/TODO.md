@@ -10,9 +10,6 @@
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
   * https://www.npmjs.com/package/babel-plugin-lodash
   * https://github.com/lodash/lodash-webpack-plugin
-* Use date-fns instead of moment?
-  * https://date-fns.org/
-  * Use Ignore plugin to remove locales?
 
 * UI Build
   * ensure that CSS goes to external sheet
@@ -653,6 +650,10 @@ Cat meeting design notes:
 
 ## Maybe
 * https://prerender.io/
+
+## Bundle size
+* Use date-fns instead of moment?
+  * https://date-fns.org/
 
 ### Performance
 * https://developers.google.com/speed/pagespeed/insights/?url=howdju.com&tab=mobile
