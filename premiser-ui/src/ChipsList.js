@@ -3,9 +3,11 @@ import includes from 'lodash/includes'
 import map from 'lodash/map'
 import React from 'react'
 import FlipMove from 'react-flip-move'
-import Chip from 'react-md/lib/Chips/Chip'
-import Avatar from 'react-md/lib/Avatars/Avatar'
-import FontIcon from 'react-md/lib/FontIcons/FontIcon'
+import {
+  Chip,
+  Avatar,
+  FontIcon,
+} from 'react-md'
 import PropTypes from 'prop-types'
 
 import config from './config'
@@ -101,10 +103,9 @@ export default class ChipsList extends React.Component {
             label: chip.label,
             removable: removable,
             className: chip.className,
-            iconClassName: "remove-chip-icon",
             children: removable && (
               <FontIcon
-                className="chip-icon"
+                className="remove-chip-icon chip-icon"
                 onClick={(event) => this.onClickRemove(chip, index, event)}
               >{removeIconName}</FontIcon>
             ),

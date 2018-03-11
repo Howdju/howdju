@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Button from 'react-md/lib/Buttons/Button'
+import {Button} from 'react-md'
 import cn from 'classnames'
 import concat from 'lodash/concat'
 import filter from 'lodash/filter'
@@ -71,7 +71,7 @@ export default class TagsViewer extends React.Component {
           <Button
             flat
             key="dont-show-all-button"
-            label="Don't show all"
+            children="Don't show all"
             onClick={() => this.setState({doShowAllTags: false})}
           />
         )
@@ -80,7 +80,7 @@ export default class TagsViewer extends React.Component {
           <Button
             flat
             key="show-all-button"
-            label="Show all"
+            children="Show all"
             onClick={() => this.setState({doShowAllTags: true})}
           />
         )

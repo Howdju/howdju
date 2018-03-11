@@ -3,14 +3,16 @@ import { connect } from 'react-redux'
 import {goBack} from "react-router-redux"
 import { Link } from 'react-router-dom'
 import Helmet from 'react-helmet'
-import Button from 'react-md/lib/Buttons/Button'
-import Card from 'react-md/lib/Cards'
-import CardTitle from 'react-md/lib/Cards/CardTitle'
-import CardActions from 'react-md/lib/Cards/CardActions'
-import CardText from 'react-md/lib/Cards/CardText'
-import { Switch } from 'react-md/lib/SelectionControls'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
+import {
+  Button,
+  Card,
+  CardTitle,
+  CardActions,
+  CardText,
+  CircularProgress,
+  FocusContainer,
+  Switch,
+} from 'react-md'
 import cn from 'classnames'
 import get from 'lodash/get'
 import queryString from 'query-string'
@@ -322,7 +324,7 @@ class CreateStatementPage extends Component {
                     {isSaving && <CircularProgress key="progress" id="progress" />}
                     <Button
                       flat
-                      label="Cancel"
+                      children="Cancel"
                       disabled={isSaving}
                       onClick={this.onCancel}
                     />
@@ -330,7 +332,7 @@ class CreateStatementPage extends Component {
                       raised
                       primary
                       type="submit"
-                      label={submitButtonLabel}
+                      children={submitButtonLabel}
                       title={submitButtonTitle}
                       disabled={isSaving}
                     />

@@ -2,14 +2,16 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {goBack} from "react-router-redux"
 import Helmet from 'react-helmet'
-import TextField from 'react-md/lib/TextFields'
-import Button from 'react-md/lib/Buttons/Button'
-import Card from 'react-md/lib/Cards'
-import CardTitle from 'react-md/lib/Cards/CardTitle'
-import CardText from 'react-md/lib/Cards/CardText'
-import CardActions from 'react-md/lib/Cards/CardActions'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import FocusContainer from 'react-md/lib/Helpers/FocusContainer'
+import {
+  TextField,
+  Button,
+  Card,
+  CardTitle,
+  CardText,
+  CardActions,
+  CircularProgress,
+  FocusContainer,
+} from 'react-md'
 import cn from 'classnames'
 import get from 'lodash/get'
 import map from 'lodash/map'
@@ -134,14 +136,14 @@ class LoginPage extends Component {
                   <CardActions>
                     {isLoggingIn && <CircularProgress key="progress" id="progress" />}
                     <Button flat
-                            label="Cancel"
+                            children="Cancel"
                             disabled={isLoggingIn}
                             onClick={this.onCancel}
                     />
                     <Button raised
                             primary
                             type="submit"
-                            label="Login"
+                            children="Login"
                             disabled={isLoggingIn}
                     />
                   </CardActions>
@@ -173,7 +175,7 @@ class LoginPage extends Component {
                   <input type="hidden" name="b_ccf334287da1fbf7af0904629_f08c3a775d" tabIndex="-1" />
                 </CardText>
                 <CardActions>
-                  <Button raised primary type="submit" label="Subscribe" name="subscribe" />
+                  <Button raised primary type="submit" children="Subscribe" name="subscribe" />
                 </CardActions>
               </form>
             </Card>

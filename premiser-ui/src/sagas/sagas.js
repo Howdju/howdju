@@ -1,3 +1,5 @@
+import {all} from 'redux-saga/effects'
+
 import handleTransientInteractions from './transientSagas'
 import {
   cancelResourceApiCalls,
@@ -34,7 +36,7 @@ import {fetchAndBeginEditOfNewJustificationFromBasisSource} from './editors/fetc
 import {editorCommitEdit} from './editors/editorCommitEditSaga'
 
 
-export default () => [
+export default () => all([
 
   resourceApiCalls(),
   cancelResourceApiCalls(),
@@ -71,4 +73,4 @@ export default () => [
   handleTransientInteractions(),
 
   sendPageView(),
-]
+])

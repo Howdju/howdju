@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux"
-import Button from 'react-md/lib/Buttons/Button'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import {Button, CircularProgress} from 'react-md'
 import get from 'lodash/get'
 
 import {
@@ -98,7 +97,7 @@ class NewJustificationEditor extends Component {
       <Button
         flat
         key="cancelButton"
-        label={t(CANCEL_BUTTON_LABEL)}
+        children={t(CANCEL_BUTTON_LABEL)}
         onClick={this.onCancelEdit}
       />,
       <Button
@@ -106,7 +105,7 @@ class NewJustificationEditor extends Component {
         primary
         key="submitButton"
         type="submit"
-        label={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+        children={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
         disabled={isSaving}
       />
     ]

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Card from 'react-md/lib/Cards/Card'
-import CardText from 'react-md/lib/Cards/CardText'
+import {Card, CardText} from 'react-md'
 import cn from 'classnames'
 
 import WritEntityViewer from './WritEntityViewer'

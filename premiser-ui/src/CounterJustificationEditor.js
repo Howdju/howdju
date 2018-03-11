@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux"
-import Button from 'react-md/lib/Buttons/Button'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import CardActions from 'react-md/lib/Cards/CardActions'
-import CardText from 'react-md/lib/Cards/CardText'
+import {
+  Button,
+  CircularProgress,
+  CardActions,
+  CardText,
+} from 'react-md'
 import get from 'lodash/get'
 
 import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
@@ -90,7 +92,7 @@ class CounterJustificationEditor extends Component {
           <Button
             flat
             key="cancelButton"
-            label={t(CANCEL_BUTTON_LABEL)}
+            children={t(CANCEL_BUTTON_LABEL)}
             onClick={this.onCancelEdit}
             disabled={isSaving}
           />
@@ -99,7 +101,7 @@ class CounterJustificationEditor extends Component {
             primary
             key="submitButton"
             type="submit"
-            label={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+            children={t(COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
             disabled={isSaving}
           />
         </CardActions>

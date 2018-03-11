@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Divider from 'react-md/lib/Dividers'
-import Subheader from 'react-md/lib/Subheaders/Subheader'
-import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
+import {Divider, Subheader, SelectionControlGroup} from 'react-md'
 import get from 'lodash/get'
 
 import {

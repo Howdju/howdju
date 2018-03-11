@@ -4,9 +4,7 @@
   color: $clouds;
   background-color: $agree-color;
 }
-.md-chip.has-anti-vote .remove-chip-icon {
-  .md-icon {
-    color: $disagree-color;
-  }
+.md-chip.has-anti-vote .remove-chip-icon.md-icon {
+  color: $disagree-color;
   //background-color: $disagree-color;
 }

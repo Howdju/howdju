@@ -20,8 +20,6 @@ import {
   editors,
   str,
 } from "../../actions"
-import {
-} from "howdju-common"
 import {consolidateNewJustificationEntities} from '../../viewModels'
 import {
   newEditorCommitResultError,

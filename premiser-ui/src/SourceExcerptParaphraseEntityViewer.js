@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Divider from 'react-md/lib/Dividers/Divider'
+import {Divider} from 'react-md'
 
 import {
   sourceExcerptDescription,

@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import TextField from 'react-md/lib/TextFields/TextField'
-import Button from 'react-md/lib/Buttons/Button'
+import {Button, FontIcon, TextField} from 'react-md'
 import map from 'lodash/map'
 import get from 'lodash/get'
 import has from 'lodash/has'
@@ -124,6 +123,7 @@ class WritQuoteEditorFields extends Component {
                 disabled={disabled}
               >delete</Button>
             }
+            rightIconStateful={false}
             disabled={!!url.id || disabled}
             onPropertyChange={onPropertyChange}
             onSubmit={onSubmit}
@@ -132,8 +132,8 @@ class WritQuoteEditorFields extends Component {
         <Button
           flat
           className="add-button"
-          label="Add URL"
-          children="add"
+          children="Add URL"
+          iconEl={<FontIcon>add</FontIcon>}
           onClick={this.props.onAddUrl}
           disabled={disabled}
         />

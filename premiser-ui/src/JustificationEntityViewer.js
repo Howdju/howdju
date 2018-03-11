@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Button from 'react-md/lib/Buttons/Button'
+import {Button} from 'react-md'
 import moment from 'moment'
 
 import {

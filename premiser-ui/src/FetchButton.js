@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import Button from 'react-md/lib/Buttons/Button'
+import {CircularProgress, Button} from 'react-md'
 
 import './FetchButton.scss'
 
@@ -22,7 +21,7 @@ export default class FetchButton extends Component {
     const fetchLabel = isFetching ? fetchingLabel : label
     return (
       <Button {...rest}
-              label={fetchLabel}
+              children={fetchLabel}
       />
     )
   }

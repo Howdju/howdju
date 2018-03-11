@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import MenuButton from "react-md/lib/Menus/MenuButton"
+import {MenuButton} from "react-md"
 
 /** A MenuButton that stops click propagation so that clicks don't hide it. */
 class TransientMenuButton extends Component {

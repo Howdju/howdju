@@ -4,14 +4,16 @@ import { Route, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
 import Helmet from 'react-helmet'
-import Button from 'react-md/lib/Buttons/Button'
-import Drawer from 'react-md/lib/Drawers/Drawer'
-import ListItem from 'react-md/lib/Lists/ListItem'
-import FontIcon from 'react-md/lib/FontIcons'
-import Snackbar from 'react-md/lib/Snackbars'
-import Toolbar from 'react-md/lib/Toolbars'
-import Tabs from 'react-md/lib/Tabs/Tabs'
-import Tab from 'react-md/lib/Tabs/Tab'
+import {
+  Button,
+  Drawer,
+  ListItem,
+  FontIcon,
+  Snackbar,
+  Toolbar,
+  Tabs,
+  Tab,
+} from 'react-md'
 import { connect } from 'react-redux'
 import cn from 'classnames'
 import get from 'lodash/get'
@@ -326,7 +328,7 @@ class App extends Component {
         }
         navItems={navItems}
         visible={isNavDrawerVisible}
-        onVisibilityToggle={this.onNavDrawerVisibilityChange}
+        onVisibilityChange={this.onNavDrawerVisibilityChange}
         style={{ zIndex: 100 }}
       />)
 

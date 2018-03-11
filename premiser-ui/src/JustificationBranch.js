@@ -7,13 +7,15 @@ import React, {Component} from "react"
 import FlipMove from 'react-flip-move'
 import { Link } from 'react-router-dom'
 import {connect} from "react-redux"
-import Divider from "react-md/lib/Dividers"
-import Card from "react-md/lib/Cards/Card"
-import Button from 'react-md/lib/Buttons/Button'
-import FontIcon from "react-md/lib/FontIcons"
-import MenuButton from "react-md/lib/Menus/MenuButton"
-import ListItem from "react-md/lib/Lists/ListItem"
-import Positions from "react-md/lib/Menus/Positions"
+import {
+  Divider,
+  Card,
+  Button,
+  FontIcon,
+  MenuButton,
+  ListItem,
+  Positions,
+} from "react-md"
 
 import {
   isVerified,
@@ -175,10 +177,10 @@ class JustificationBranch extends Component {
         id={`justification-${justification.id}-context-menu`}
         className={cn({hidden: doHideControls})}
         menuClassName="context-menu justification-context-menu"
-        buttonChildren={'more_vert'}
+        children={'more_vert'}
         position={Positions.TOP_RIGHT}
         title="Justification actions"
-        children={[
+        menuItems={[
           <ListItem
             primaryText="Counter"
             key="counter"

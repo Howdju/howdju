@@ -12,7 +12,7 @@ export default {
     if (
       text &&
       autocompleteResults.length === 0 &&
-      autocomplete.state.isOpen
+      autocomplete.state.visible
     ) {
       // react-md autocomplete incorrectly shows empty autocomplete results
       autocomplete._close()
@@ -22,10 +22,10 @@ export default {
       // Another way we might check the focus, if we need to
       // window.document.activeElement === autocomplete._field
       autocompleteResults.length > 0 &&
-      !autocomplete.state.isOpen
+      !autocomplete.state.visible
     ) {
       // react-md autocomplete incorrectly has menu hidden
-      autocomplete.setState({isOpen: true})
+      autocomplete.setState({visible: true})
     }
   }
 }

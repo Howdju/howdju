@@ -2,12 +2,14 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import PropTypes from 'prop-types'
-import CardText from 'react-md/lib/Cards/CardText'
-import MenuButton from 'react-md/lib/Menus/MenuButton'
-import Positions from 'react-md/lib/Menus/Positions'
-import ListItem from 'react-md/lib/Lists/ListItem'
-import FontIcon from 'react-md/lib/FontIcons/FontIcon'
-import Divider from 'react-md/lib/Dividers/Divider'
+import {
+  CardText,
+  MenuButton,
+  Positions,
+  ListItem,
+  FontIcon,
+  Divider,
+} from 'react-md'
 import cn from 'classnames'
 
 import {
@@ -133,10 +135,10 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
         id={`${id}-context-menu`}
         className={cn({hidden: !isOver})}
         menuClassName="context-menu"
-        buttonChildren={'more_vert'}
+        children={'more_vert'}
         position={Positions.TOP_RIGHT}
         title={menuTitle(atom)}
-        children={this.menuListItems()}
+        menuItems={this.menuListItems()}
       />
     )
 

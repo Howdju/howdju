@@ -1,6 +1,6 @@
 import React, {Component}  from 'react'
 import {Link} from 'react-router-dom'
-import FontIcon from 'react-md/lib/FontIcons/FontIcon'
+import {FontIcon} from 'react-md'
 
 import {
   makeNewStatement,

@@ -2,6 +2,7 @@ import {
   delay
 } from 'redux-saga'
 import {
+  all,
   put,
   call,
   fork,
@@ -54,7 +55,9 @@ export default function* handleTransientInteractions() {
   })
 
   yield takeEvery(str(ui.hideAllTransients), function* hideAllTransientsWorker() {
-    yield map(delayedHideTransientTaskByTransientId, (task, transientId) => task && call(hideTransient, transientId))
+    yield all(map(delayedHideTransientTaskByTransientId,
+      (task, transientId) => task && call(hideTransient, transientId)
+    ))
   })
 
   yield takeEvery(str(ui.beginInteractionWithTransient), function* beginInteractionWithTransientWorker(action) {
@@ -75,9 +78,9 @@ export default function* handleTransientInteractions() {
   yield takeEvery(str(ui.hideOtherTransients), function* hideOtherTransientsWorker(action) {
     const visibleTransientId = action.payload.visibleTransientId
 
-    // TODO update to yield all([...]) in v0.15
-    yield map(delayedHideTransientTaskByTransientId, (task, transientId) =>
-      call(hideOtherTransient, visibleTransientId, transientId))
+    yield all(map(delayedHideTransientTaskByTransientId, (task, transientId) =>
+      call(hideOtherTransient, visibleTransientId, transientId)
+    ))
   })
 
   yield takeEvery(str(ui.scheduleDelayedHideTransient), function* scheduleDelayedHideTransientWorker(action) {

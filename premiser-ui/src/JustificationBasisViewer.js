@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import Paper from 'react-md/lib/Papers/Paper'
+import {Paper} from 'react-md'
 
 import {
   JustificationBasisType,

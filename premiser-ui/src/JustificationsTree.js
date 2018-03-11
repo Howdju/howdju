@@ -6,7 +6,7 @@ import get from 'lodash/get'
 import groupBy from 'lodash/groupBy'
 import map from 'lodash/map'
 import cn from 'classnames'
-import Button from 'react-md/lib/Buttons/Button'
+import {Button} from 'react-md'
 
 import {
   JustificationPolarity,
@@ -109,7 +109,7 @@ class JustificationsTree extends Component {
                  key="justification-statements-page-no-positive-justifications-add-justification-button"
             >
               <Button flat
-                      label={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                       onClick={showNewPositiveJustificationDialog}
               />
             </div>
@@ -136,7 +136,7 @@ class JustificationsTree extends Component {
                  key="justification-statements-page-no-negative-justifications-add-justification-button"
             >
               <Button flat
-                      label={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                       onClick={showNewNegativeJustificationDialog}
               />
             </div>

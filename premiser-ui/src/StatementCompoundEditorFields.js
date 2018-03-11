@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import FontIcon from 'react-md/lib/FontIcons'
-import Button from 'react-md/lib/Buttons/Button'
+import {Button, FontIcon} from 'react-md'
 import map from 'lodash/map'
 import get from 'lodash/get'
 
@@ -65,7 +64,9 @@ class StatementCompoundEditorFields extends Component {
             value,
             label: "Text",
             leftIcon,
+            leftIconStateful: true,
             rightIcon,
+            rightIconStateful: false,
             disabled,
             onPropertyChange,
             onSubmit,
@@ -85,7 +86,7 @@ class StatementCompoundEditorFields extends Component {
           flat
           className="add-button"
           key="addStatementCompoundAtomButton"
-          label="Add Statement"
+          children="Add Statement"
           onClick={e => onAddStatementCompoundAtom(atoms.length)}
         >add</Button>
         {hasErrors && errors.modelErrors && (

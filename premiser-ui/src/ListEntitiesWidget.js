@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import {CircularProgress} from 'react-md'
 import { connect } from 'react-redux'
 import concat from 'lodash/concat'
 import get from 'lodash/get'

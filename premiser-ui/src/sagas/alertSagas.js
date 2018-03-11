@@ -1,4 +1,5 @@
 import {
+  all,
   put,
   takeEvery,
 } from 'redux-saga/effects'
@@ -47,13 +48,13 @@ export function* apiFailureAlerts() {
     [api.unTagStatement.response]: 'Unable to remove the tag',
   }
 
-  yield [map(messageKeysByActionType, function* apiFailureErrorMessagesWorker(messageKey, actionType) {
+  yield all(map(messageKeysByActionType, function* apiFailureErrorMessagesWorker(messageKey, actionType) {
     yield takeEvery(actionType, function* (action) {
       if (action.error) {
         yield put(ui.addToast(t(messageKey)))
       }
     })
-  })]
+  }))
 }
 
 export function* showAlertForUnexpectedApiError() {

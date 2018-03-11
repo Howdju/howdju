@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import FlipMove from 'react-flip-move'
 import { connect } from 'react-redux'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import {CircularProgress} from 'react-md'
 import get from 'lodash/get'
 import {denormalize} from "normalizr"
 import map from 'lodash/map'

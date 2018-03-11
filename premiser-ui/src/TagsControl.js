@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import find from 'lodash/find'
 import get from 'lodash/get'
 import includes from 'lodash/includes'
-import Button from 'react-md/lib/Buttons/Button'
+import {Button} from 'react-md'
 
 import {
   makeTag,
@@ -175,6 +175,7 @@ export default class TagsControl extends React.Component {
               >done</Button>
             ) : null
           }
+          rightIconStateful={false}
           onSubmit={onSubmit}
         />
       )

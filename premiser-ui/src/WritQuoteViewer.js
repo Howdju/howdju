@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
-import FontIcon from 'react-md/lib/FontIcons'
-import Button from 'react-md/lib/Buttons/Button'
+import {Button, FontIcon} from 'react-md'
 import filter from 'lodash/filter'
 import map from 'lodash/map'
 import split from 'lodash/split'
@@ -93,14 +92,14 @@ export default function WritQuoteViewer (props) {
             </div>
             {_isQuoteTextLong && !isExpanded && (
               <Button flat
-                      label={t('More')}
+                      children={t('More')}
                       className="text-expand-toggle"
                       onClick={onExpand}
               />
             )}
             {_isQuoteTextLong && isExpanded && (
               <Button flat
-                      label={t('Less')}
+                      children={t('Less')}
                       className="text-expand-toggle"
                       onClick={onCollapse}
               />

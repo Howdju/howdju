@@ -1,6 +1,5 @@
 import React, {Component} from "react"
-import Card from 'react-md/lib/Cards/Card'
-import CardText from 'react-md/lib/Cards/CardText'
+import {Card, CardText} from 'react-md'
 import cn from 'classnames'
 
 import './JustificationCard.scss'

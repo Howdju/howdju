@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Button from 'react-md/lib/Buttons/Button'
-import Divider from 'react-md/lib/Dividers/Divider'
+import {FontIcon, Button, Divider} from "react-md"
 import flatMap from 'lodash/flatMap'
 import get from 'lodash/get'
 import map from 'lodash/map'
@@ -96,10 +95,10 @@ class JustificationBasisCompoundEditorFields extends Component {
             flat
             className="control-button add-button"
             key="addBasisCompoundAtomButton"
-            label="Add clause"
             onClick={e => onAddJustificationBasisCompoundAtom(atoms.length)}
             disabled={disabled}
-            children="add"
+            iconEl={<FontIcon>add</FontIcon>}
+            children="Add clause"
           />
         )}
 

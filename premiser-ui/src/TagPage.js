@@ -2,7 +2,7 @@ import get from 'lodash/get'
 import isEqual from 'lodash/isEqual'
 import map from 'lodash/map'
 import React from 'react'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import {CircularProgress} from 'react-md'
 import {connect} from 'react-redux'
 
 import {

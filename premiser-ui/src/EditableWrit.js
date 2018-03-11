@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux"
-import CircularProgress from "react-md/lib/Progress/CircularProgress"
+import {CircularProgress} from "react-md"
 import get from 'lodash/get'
 
 import {

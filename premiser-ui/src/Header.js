@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import Button from 'react-md/lib/Buttons/Button'
-import Toolbar from 'react-md/lib/Toolbars'
+import {Button, Toolbar} from 'react-md'
 
 import {
   api,
@@ -84,7 +83,12 @@ class Header extends Component {
           </Link>
         }
         prominent={hasTabs}
-        actions={<Button icon className="toggleNavDrawerVisibility" onClick={this.handleToggleNavDrawerVisibility}>menu</Button>}
+        actions={
+          <Button icon
+                  className="toggleNavDrawerVisibility"
+                  onClick={this.handleToggleNavDrawerVisibility}
+          >menu</Button>
+        }
       >
         <form className="md-cell--12 md-cell--top" onSubmit={this.onMainSearch}>
 

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import find from 'lodash/find'
 import map from 'lodash/map'
 import {denormalize} from "normalizr"
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import {CircularProgress} from 'react-md'
 import FlipMove from 'react-flip-move'
 
 import mainSearcher from './mainSearcher'

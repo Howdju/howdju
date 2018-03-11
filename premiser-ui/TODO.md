@@ -1,10 +1,7 @@
 # Howdju UI TODO
 
-* Add FB Login?
-  * Rate limiting? Record visit IPs and count?
-* White paper?
-
-* Add a small (250ms?) delay to autocomplete
+* Data model
+  * How represent same quote appearing in multiple places?
 
 * Add indices (root statement ID, joins)
 * Show when a user agrees/disagrees with a statement

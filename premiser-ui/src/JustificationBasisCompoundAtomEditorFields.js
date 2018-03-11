@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import FontIcon from 'react-md/lib/FontIcons'
-import Button from 'react-md/lib/Buttons/Button'
-import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
+import {
+  Button,
+  FontIcon,
+  SelectionControlGroup,
+} from 'react-md'
 import get from 'lodash/get'
 
 import {
@@ -146,15 +148,15 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
           {...addRemoveAtomControlProps}
           onClick={onAddJustificationBasisCompoundAtom}
           title="Add clause"
-          children="add"
-          label={isWindowNarrow && "Add clause"}
+          iconEl={<FontIcon>add</FontIcon>}
+          children={isWindowNarrow && "Add clause"}
         />
         <Button
           {...addRemoveAtomControlProps}
           onClick={onRemoveJustificationBasisCompoundAtom}
           title="Remove clause"
-          children="delete"
-          label={isWindowNarrow && "Remove clause"}
+          iconEl={<FontIcon>delete</FontIcon>}
+          children={isWindowNarrow && "Remove clause"}
         />
       </div>
     )

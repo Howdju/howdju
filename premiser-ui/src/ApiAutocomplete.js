@@ -3,7 +3,7 @@ import map from 'lodash/map'
 import {denormalize} from "normalizr"
 import PropTypes from 'prop-types'
 import React, {Component} from "react"
-import Autocomplete from 'react-md/lib/Autocompletes'
+import {Autocomplete} from 'react-md'
 import { connect } from 'react-redux'
 
 import {
@@ -107,7 +107,7 @@ class ApiAutocomplete extends Component {
   }
 
   isAutocompleteOpen = () => {
-    return this.autocomplete.state.isOpen
+    return this.autocomplete.state.visible
   }
 
   closeAutocomplete = () => {

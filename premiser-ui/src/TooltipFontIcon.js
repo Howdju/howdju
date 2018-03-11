@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import cn from 'classnames'
-import FontIcon from 'react-md/lib/FontIcons'
-import injectTooltip from 'react-md/lib/Tooltips'
+import {FontIcon, injectTooltip} from 'react-md'
 
 // Material icons shouldn't have any other children other than the child string and
 // it gets converted into a span if the tooltip is added, so we add a container

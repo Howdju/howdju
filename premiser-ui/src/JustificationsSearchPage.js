@@ -1,8 +1,7 @@
 import React, {Component} from "react"
 import FlipMove from 'react-flip-move'
 import {connect} from "react-redux"
-import Button from 'react-md/lib/Buttons/Button'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import {Button, CircularProgress} from 'react-md'
 import get from 'lodash/get'
 import isEqual from 'lodash/isEqual'
 import map from 'lodash/map'
@@ -65,7 +64,7 @@ class JustificationsSearchPage extends Component {
     const fetchMoreButton = (
       <Button flat
               key="fetch-more-button"
-              label="Fetch more"
+              children="Fetch more"
               disabled={isFetching}
               onClick={this.fetchMore}
       />

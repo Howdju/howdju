@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from "react-redux"
-import Button from 'react-md/lib/Buttons/Button'
-import Dialog from 'react-md/lib/Dialogs'
+import {Button, DialogContainer as Dialog} from 'react-md'
 import get from 'lodash/get'
 
 import {
@@ -50,7 +49,7 @@ class NewJustificationDialog extends Component {
     const addNewJustificationDialogCancelButton = (
       <Button
         flat
-        label={t(CANCEL_BUTTON_LABEL)}
+        children={t(CANCEL_BUTTON_LABEL)}
         onClick={onCancel}
         disabled={isSaving}
       />
@@ -60,7 +59,7 @@ class NewJustificationDialog extends Component {
         raised
         primary
         type="submit"
-        label={t(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
+        children={t(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
         onClick={onSubmit}
         disabled={isSaving}
       />

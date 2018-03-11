@@ -3,15 +3,17 @@ import {connect} from "react-redux"
 import {denormalize} from "normalizr"
 import { Link } from 'react-router-dom'
 import Helmet from "react-helmet"
-import Divider from "react-md/lib/Dividers"
-import FontIcon from "react-md/lib/FontIcons"
-import MenuButton from "react-md/lib/Menus/MenuButton"
-import ListItem from "react-md/lib/Lists/ListItem"
-import Positions from "react-md/lib/Menus/Positions"
-import Button from 'react-md/lib/Buttons/Button'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import Card from 'react-md/lib/Cards/Card'
-import CardText from 'react-md/lib/Cards/CardText'
+import {
+  Divider,
+  FontIcon,
+  MenuButton,
+  ListItem,
+  Positions,
+  Button,
+  CircularProgress,
+  Card,
+  CardText,
+} from "react-md"
 import cn from 'classnames'
 import concat from 'lodash/concat'
 import every from 'lodash/every'
@@ -203,9 +205,9 @@ class StatementJustificationsPage extends Component {
         id={`statement-${statementId}-context-menu`}
         className={cn({hidden: doHideControls})}
         menuClassName="context-menu context-menu--statement"
-        buttonChildren={'more_vert'}
+        children={'more_vert'}
         position={Positions.TOP_RIGHT}
-        children={[
+        menuItems={[
           <ListItem primaryText="Add justification"
                     key="addJustification"
                     leftIcon={<FontIcon>add</FontIcon>}
@@ -310,7 +312,7 @@ class StatementJustificationsPage extends Component {
                  key="justification-statements-page-no-justifications-add-justification-button"
             >
               <Button flat
-                      label={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
+                      children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                       onClick={this.showNewJustificationDialog}
               />
             </div>

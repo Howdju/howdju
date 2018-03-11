@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
-import FontIcon from 'react-md/lib/FontIcons/FontIcon'
-import SelectionControlGroup from 'react-md/lib/SelectionControls/SelectionControlGroup'
+import {FontIcon, SelectionControlGroup} from 'react-md'
 
 import get from 'lodash/get'
 

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import TextField from 'react-md/lib/TextFields/TextField'
+import {TextField} from 'react-md'
 
 import {
   toSingleLine

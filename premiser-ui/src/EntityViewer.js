@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import FontIcon from 'react-md/lib/FontIcons/FontIcon'
+import {FontIcon} from 'react-md'
 import cn from 'classnames'
 
 import './EntityViewer.scss'
