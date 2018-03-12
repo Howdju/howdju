@@ -4,13 +4,6 @@
   * How represent same quote appearing in multiple places?
   * How to handle webpage archives and quotes from books in articles/blogs
 
-* Minimize react-md (don't use react-md-everything): 
-  * https://react-md.mlaursen.com/customization/minimizing-bundle#minimizing-css-bundle-size
-* Minimize lodash
-  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
-  * https://www.npmjs.com/package/babel-plugin-lodash
-  * https://github.com/lodash/lodash-webpack-plugin
-
 * UI Build
   * ensure that CSS goes to external sheet
   * ensure that google fonts go to external link?
@@ -652,6 +645,12 @@ Cat meeting design notes:
 * https://prerender.io/
 
 ## Bundle size
+* Minimize react-md (don't use react-md-everything): 
+  * https://react-md.mlaursen.com/customization/minimizing-bundle#minimizing-css-bundle-size
+* Minimize lodash
+  * https://www.npmjs.com/package/eslint-plugin-lodash-fp
+  * https://www.npmjs.com/package/babel-plugin-lodash
+  * https://github.com/lodash/lodash-webpack-plugin
 * Use date-fns instead of moment?
   * https://date-fns.org/
 
