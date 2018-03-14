@@ -36,7 +36,6 @@ export default class RecentWritQuotesWidget extends Component {
         id={id}
         widgetId={widgetId}
         entitiesWidgetStateKey="recentWritQuotes"
-        clearEntities={ui.clearRecentWritQuotes}
         fetchEntities={api.fetchRecentWritQuotes}
         entityToCard={this.writQuoteToCard}
         entitiesSchema={writQuotesSchema}

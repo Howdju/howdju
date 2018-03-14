@@ -17,8 +17,8 @@ exports.hostAddress = () => {
   let address = process.env.HOST_ADDRESS
   if (!address) {
     let done = false
-    dns.lookup(os.hostname(), function (err, add, fam) {
-      address = add
+    dns.lookup(os.hostname(), function (err, lookupAddress, fam) {
+      address = lookupAddress
       done = true
     })
     deasync.loopWhile(() => !done)

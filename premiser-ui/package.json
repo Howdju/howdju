@@ -7,7 +7,7 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "analyze-size": "yarn run clean && mkdir stats && cross-env NODE_ENV=production DEBUG=*,-babel webpack --config config/webpack.config.js --profile --json > dist/stats.json && webpack-bundle-size-analyzer dist/stats.json && open dist/stats.html",
+    "analyze-size": "yarn run clean && cross-env NODE_ENV=production DEBUG=*,-babel webpack --config config/webpack.config.js --profile --json > dist/stats.json && webpack-bundle-size-analyzer dist/stats.json && open dist/stats.html",
     "analyze-js-size": "zip - dist/premiser-ui.js 2>/dev/null | dd 2>&1 >/dev/null",
     "calc-dist-size": "bin/calc-dist-zip-size.sh premiser-ui.js && bin/calc-dist-zip-size.sh main.css",
     "clean": "rm -rf dist/*",
@@ -17,6 +17,7 @@
     "build:local": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=development SENTRY_ENV=local DEBUG=*,-babel webpack --config config/webpack.config.js",
     "build:pre-prod": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=production SENTRY_ENV=pre-prod DEBUG=*,-babel API_ROOT=https://pre-prod-api.howdju.com/api/ webpack --config config/webpack.config.js",
     "build:prod": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=production SENTRY_ENV=prod DEBUG=*,-babel webpack --config config/webpack.config.js",
+    "build:prod-local": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=production SENTRY_ENV=prod DEBUG=*,-babel API_ROOT=http://localhost:8081/api/ webpack --config config/webpack.config.js",
     "serve:local": "cross-env NODE_ENV=development DEBUG=premiser-ui:* node bin/dev-server.js",
     "serve:prod-local": "cross-env NODE_ENV=production DEBUG=premiser-ui:* node bin/dev-server.js",
     "local": "yarn run build:local && yarn run serve:local",

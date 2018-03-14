@@ -14,7 +14,6 @@ import FetchButton from './FetchButton'
 class ListEntitiesWidget extends Component {
 
   componentWillMount() {
-    this.props.clearEntities(this.props.widgetId)
     const fetchCount = this.props.initialFetchCount || this.props.fetchCount
     this.props.fetchEntities(this.props.widgetId, fetchCount)
   }
@@ -51,7 +50,6 @@ class ListEntitiesWidget extends Component {
       // ignore
       widgetId,
       entitiesWidgetStateKey,
-      clearEntities,
       fetchEntities,
       entityToCard,
       entitiesSchema,
@@ -98,12 +96,12 @@ class ListEntitiesWidget extends Component {
         >
           {hasEntities && concat(cards(), fetchMoreButtonCell)}
           {!hasEntities && !isFetching && (
-            <div className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
+            <div key="empty-entities-placeholder" className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
           )}
           {!hasEntities && !didError && isFetching && (
-            <CircularProgress key="progress" id={`${id}-progress`} className="md-cell md-cell--12" />
+            <CircularProgress key="fetching-progress" id={`${id}-progress`} className="md-cell md-cell--12" />
           )}
-          {didError && <span className="error-message">{loadErrorMessage}</span>}
+          {didError && <span key="error-message" className="error-message">{loadErrorMessage}</span>}
           {didError && !hasEntities && retryButtonCell}
         </FlipMove>
       </div>
@@ -116,7 +114,6 @@ ListEntitiesWidget.propTypes = {
   /** The state.widgets key where the entities are stored */
   widgetId: PropTypes.string.isRequired,
   entitiesWidgetStateKey: PropTypes.string.isRequired,
-  clearEntities: PropTypes.func.isRequired,
   fetchEntities: PropTypes.func.isRequired,
   /** The number of entities to fetch after the first fetch */
   fetchCount: PropTypes.number.isRequired,
@@ -161,7 +158,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  clearEntities: (widgetId) => dispatch(ownProps.clearEntities(widgetId)),
   fetchEntities: (widgetId, fetchCount, continuationToken) => dispatch(ownProps.fetchEntities(widgetId, fetchCount, continuationToken)),
 })
 

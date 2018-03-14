@@ -196,11 +196,6 @@ export const ui = {
   loginCredentialChange: actionCreator('LOGIN_CREDENTIAL_CHANGE'),
   clearJustificationsSearch: actionCreator('UI/CLEAR_JUSTIFICATIONS_SEARCH'),
 
-  clearRecentStatements: actionCreator('UI/CLEAR_RECENT_STATEMENTS', (widgetId) => ({widgetId})),
-  clearRecentWrits: actionCreator('UI/CLEAR_RECENT_WRITS', (widgetId) => ({widgetId})),
-  clearRecentWritQuotes: actionCreator('UI/CLEAR_RECENT_WRIT_QUOTES', (widgetId) => ({widgetId})),
-  clearRecentJustifications: actionCreator('UI/CLEAR_RECENT_JUSTIFICATIONS', (widgetId) => ({widgetId})),
-
   beginInteractionWithTransient: actionCreator('UI/BEGIN_INTERACTION_WITH_TRANSIENT', (transientId) => ({transientId})),
   endInteractionWithTransient: actionCreator('UI/END_INTERACTION_WITH_TRANSIENT', (transientId) => ({transientId})),
   showTransient: actionCreator('UI/SHOW_TRANSIENT', (transientId) => ({transientId})),

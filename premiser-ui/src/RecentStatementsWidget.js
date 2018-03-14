@@ -36,7 +36,6 @@ export default class RecentStatementsWidget extends Component {
         id={id}
         widgetId={widgetId}
         entitiesWidgetStateKey="recentStatements"
-        clearEntities={ui.clearRecentStatements}
         fetchEntities={api.fetchRecentStatements}
         entityToCard={this.statementToCard}
         entitiesSchema={statementsSchema}

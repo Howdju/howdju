@@ -4,18 +4,27 @@
   * How represent same quote appearing in multiple places?
   * How to handle webpage archives and quotes from books in articles/blogs
 
-* UI Build
-  * ensure that CSS goes to external sheet
-  * ensure that google fonts go to external link?
+* the media on this page (this run of text, this part of this image, this part of this interval of video, etc.) 
+  * represents that X
+    - represents that "Trump will be never be President"
+  * represents that Y said that X (and when and where)
+    - represents that the NYT said that "Trump will never be President"
+    - represents that NYT Reporter ABC said that "Trump will never be President"
+  * represents that Z said that Y said that X
+    - represents that the NYT said that NYT report ABC said that "Trump will never be president"
+  * ...
+* Connection between a source containing a statement and that source having a stater
+
 * Why do I have PostCSS in my project?
   
 * Improve not found page (wizard crystal ball?)
 
 * Dynamo (pricing of triggered events?)
+  * https://aws.amazon.com/dynamodb/pricing/
 
 * https://github.com/codelucas/newspaper
 
-* Update redux-persist
+* Update redux-persist?
   * https://github.com/rt2zz/redux-persist/
 
 # Fall 2017 TODO

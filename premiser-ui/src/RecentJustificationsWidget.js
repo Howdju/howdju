@@ -39,7 +39,6 @@ export default class RecentJustificationsWidget extends Component {
         widgetId={widgetId}
         cellClasses={ListEntitiesWidget.largeCellClasses}
         entitiesWidgetStateKey="recentJustifications"
-        clearEntities={ui.clearRecentJustifications}
         fetchEntities={api.fetchRecentJustifications}
         entityToCard={this.justificationToCard}
         entitiesSchema={justificationsSchema}

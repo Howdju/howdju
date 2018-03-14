@@ -30,15 +30,6 @@ const widgetResponseErrorReducer = (defaultWidgetState) => (state, action) => {
   const newWidgetState = {...widgetState, isFetching: false, didError: true}
   return {...state, [widgetId]: newWidgetState}
 }
-const clearWidgetStateReducer = (defaultWidgetState) => (state, action) => {
-  const widgetId = action.payload.widgetId
-  const widgetState = get(state, widgetId)
-  if (widgetState) {
-    const newWidgetState = {...widgetState, ...defaultWidgetState}
-    return {...state, [widgetId]: newWidgetState}
-  }
-  return state
-}
 
 const defaultRecentStatementsWidgetState = {recentStatements: [], continuationToken: null}
 const defaultRecentWritsWidgetState = {recentWrits: [], continuationToken: null}
@@ -65,8 +56,4 @@ export default handleActions({
     next: widgetResponseReducer(defaultRecentJustificationsWidgetState, 'recentJustifications', 'justifications'),
     throw: widgetResponseErrorReducer(defaultRecentJustificationsWidgetState),
   },
-  [ui.clearRecentStatements]: clearWidgetStateReducer(defaultRecentStatementsWidgetState),
-  [ui.clearRecentWrits]: clearWidgetStateReducer(defaultRecentWritsWidgetState),
-  [ui.clearRecentWritQuotes]: clearWidgetStateReducer(defaultRecentWritQuotesWidgetState),
-  [ui.clearRecentJustifications]: clearWidgetStateReducer(defaultRecentJustificationsWidgetState),
 }, {})
