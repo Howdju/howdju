@@ -23,7 +23,7 @@
     <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
   <% } %>
   <% if (htmlWebpackPlugin.options.sentry) { %>
-    <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.ravenjs.com/3.23.1/raven.min.js" crossorigin="anonymous"></script>
     <script>
       // https://docs.sentry.io/clients/javascript/config/
       if (window.Raven) {
@@ -31,6 +31,7 @@
           environment: '<%= htmlWebpackPlugin.options.sentryEnvironment %>',
           release: '<%= htmlWebpackPlugin.options.version %>',
           tags: {git_commit: '<%= htmlWebpackPlugin.options.gitCommit %>'}
+          // , ignoreUrls: [/small\.chat$/]
         }).install();
       }
     </script>
