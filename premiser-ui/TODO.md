@@ -1,5 +1,10 @@
 # Howdju UI TODO
 
+
+* Was able to create a tag with a white-space-only name
+
+* Add compression to response (npm: oppressor)
+
 * Data model
   * How represent same quote appearing in multiple places?
   * How to handle webpage archives and quotes from books in articles/blogs

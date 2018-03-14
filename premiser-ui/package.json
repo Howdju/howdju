@@ -89,6 +89,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "normalizr": "^3.2.2",
+    "path-to-regexp": "1.7.0",
     "prop-types": "^15.5.10",
     "query-string": "^4.3.4",
     "react": "^16.2.0",

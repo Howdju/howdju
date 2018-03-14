@@ -1,7 +1,6 @@
 /* Hot module replace needs these dynamic import globals */
 /* globals module require */
 import { createStore, applyMiddleware, compose as reduxCompose } from 'redux'
-import createHistory from 'history/createBrowserHistory'
 import { routerMiddleware } from 'react-router-redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
 import createSagaMiddleware from 'redux-saga'
@@ -9,8 +8,7 @@ import rootReducer from './reducers/index'
 import getSagas from './sagas'
 import {logger} from './logger'
 import config from './config'
-
-export const history = createHistory()
+import {history} from './history'
 
 export default function configureStore(initialState) {
   const compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || reduxCompose

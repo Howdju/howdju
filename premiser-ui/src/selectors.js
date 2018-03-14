@@ -1,7 +1,8 @@
 import get from 'lodash/get'
 
 export const selectEditorState = (editorType, editorId) => state => get(state.editors, [editorType, editorId])
-export const selectRouterLocation = state => state.router.location
+export const selectJustificationSearchFilters = state => state.ui.justificationsSearchPage.filters
+export const selectTagPageTagId = state => state.ui.tagPage.tagId
 export const selectLoginRedirectLocation = state => state.app.loginRedirectLocation
 export const selectUserExternalIds = (state, defaultValue) => get(state, ['auth', 'user', 'externalIds'], defaultValue)
 export const selectLoggedErrors = state => state.errors.loggedErrors

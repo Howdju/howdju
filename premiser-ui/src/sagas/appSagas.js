@@ -6,16 +6,23 @@ import {
   put, race,
   select, take, takeEvery,
 } from 'redux-saga/effects'
+import isEqual from 'lodash/isEqual'
 import {REHYDRATE} from 'redux-persist/constants'
 
 import {
-  app,
+  app, ui,
 } from '../actions'
 import {
   selectAuthTokenExpiration,
+  selectJustificationSearchFilters,
+  selectTagPageTagId,
 } from "../selectors"
 import config from '../config'
 import {logger} from '../logger'
+import JustificationsSearchPage from '../JustificationsSearchPage'
+import {LOCATION_CHANGE} from 'react-router-redux'
+import {getPathParam, isActivePath, routeIds} from '../routes'
+import {history} from '../history'
 
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -53,7 +60,7 @@ export function* tryWaitOnRehydrate() {
 export function* checkAuthExpirationPeriodically() {
   while (true) {
     yield put(app.checkAuthExpiration())
-    yield delay(30*1000)
+    yield delay(config.authExpirationCheckFrequencyMs)
   }
 }
 
@@ -62,6 +69,34 @@ export function* checkAuthExpiration() {
     const authTokenExpiration = yield select(selectAuthTokenExpiration)
     if (authTokenExpiration && moment.utc().isAfter(moment.utc(authTokenExpiration))) {
       yield put(app.clearAuthToken())
+    }
+  })
+}
+
+/**
+ * When the user navigates to a different justification search, reset the page
+ */
+export function* resetJustificationSearchPage() {
+  yield takeEvery(LOCATION_CHANGE, function* resetJustificationSearchPageWorker() {
+    const locationFilters = JustificationsSearchPage.filters(history.location.search)
+    const stateFilters = yield select(selectJustificationSearchFilters)
+    if (isActivePath(routeIds.searchJustifications) && !isEqual(locationFilters, stateFilters)) {
+      yield put(ui.clearJustificationsSearch())
+    }
+  })
+}
+
+/**
+ * When the user navigates to a different tag, reset the page
+ */
+export function* resetTagPage() {
+  yield takeEvery(LOCATION_CHANGE, function* resetTagPage() {
+    const tagId = getPathParam(routeIds.tag, 'tagId')
+    if (tagId) {
+      const tagPageTagId = yield select(selectTagPageTagId)
+      if (tagId !== tagPageTagId) {
+        yield put(ui.clearTaggedStatements())
+      }
     }
   })
 }

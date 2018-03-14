@@ -18,7 +18,7 @@ import {
   flagRehydrate,
   checkAuthExpirationOnRehydrate,
   checkAuthExpirationPeriodically,
-  checkAuthExpiration,
+  checkAuthExpiration, resetJustificationSearchPage, resetTagPage,
 } from './appSagas'
 import {logErrors} from './logErrorsSaga'
 import {
@@ -47,6 +47,9 @@ export default () => all([
   checkAuthExpirationPeriodically(),
   checkAuthExpiration(),
   logErrors(),
+
+  resetJustificationSearchPage(),
+  resetTagPage(),
 
   configureAfterLogin(),
   configureAfterRehydrate(),

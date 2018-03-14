@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Route, Switch } from 'react-router'
+import { Switch } from 'react-router'
 import { Link } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
 import Helmet from 'react-helmet'
@@ -30,9 +30,8 @@ import {
   ui,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
-import {history} from './configureStore'
-import paths, {createJustificationPath} from './paths'
-import mainSearcher from './mainSearcher'
+import {history} from './history'
+import paths from './paths'
 import {
   selectIsWindowNarrow,
   selectAuthToken,
@@ -53,21 +52,7 @@ import t, {
 import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
 
 import Header from './Header'
-import MainSearchPage from './MainSearchPage'
-import ToolsPage from './ToolsPage'
-import PrivacyPolicyPage from './PrivacyPolicyPage'
-import StatementJustificationsPage from './StatementJustificationsPage'
-import LoginPage from './LoginPage'
-import LandingPage from './LandingPage'
-import IconPage from './IconPage'
-import CreateStatementPage, {CreateStatementPageMode} from "./CreateStatementPage"
-import FeaturedPerspectivesPage from "./FeaturedPerspectivesPage"
-import RecentActivityPage from "./RecentActivityPage"
-import WhatsNextPage from "./WhatsNextPage"
-import AboutPage from "./AboutPage"
-import NotFoundPage from "./NotFoundPage"
-import JustificationsSearchPage from "./JustificationsSearchPage"
-import TagPage from './TagPage'
+import routes from './routes'
 
 import './fonts.js'
 import './App.scss'
@@ -332,13 +317,6 @@ class App extends Component {
         style={{ zIndex: 100 }}
       />)
 
-    const renderHomePath = props => {
-      const mainSearchText = mainSearcher.mainSearchText(props.location)
-      return mainSearchText ?
-        <MainSearchPage {...props} /> :
-        <LandingPage/>
-    }
-
     const tabInfos = [
       {
         path: paths.featuredPerspectives(),
@@ -412,33 +390,7 @@ class App extends Component {
           })}>
 
             <Switch>
-              <Route exact path={paths.home()} render={renderHomePath}/>
-              <Route exact path={paths.login()} component={LoginPage} />
-
-              <Route exact path={paths.featuredPerspectives()} component={FeaturedPerspectivesPage} />
-              <Route exact path={paths.recentActivity()} component={RecentActivityPage} />
-              <Route exact path={paths.whatsNext()} component={WhatsNextPage} />
-              <Route exact path={paths.about()} component={AboutPage} />
-
-              <Route exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />
-              <Route exact path="/tags/:tagId/:tagSlug?" component={TagPage} />
-              <Route exact path="/search-justifications" component={JustificationsSearchPage} />
-
-              <Route exact path="/create-statement" render={props => (
-                <CreateStatementPage {...props} mode={CreateStatementPageMode.CREATE_STATEMENT} />
-              )} />
-              <Route exact path={createJustificationPath} render={props => (
-                <CreateStatementPage {...props} mode={CreateStatementPageMode.CREATE_JUSTIFICATION} />
-              )} />
-              <Route exact path="/submit" render={props => (
-                <CreateStatementPage {...props} mode={CreateStatementPageMode.SUBMIT_JUSTIFICATION} />
-              )} />
-
-              <Route exact path="/tools" component={ToolsPage} />
-              <Route exact path={paths.privacyPolicy()} component={PrivacyPolicyPage} />
-              <Route exact path="/icons" component={IconPage} />
-
-              <Route component={NotFoundPage} />
+              {routes}
             </Switch>
 
           </div>

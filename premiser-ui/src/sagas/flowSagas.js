@@ -17,7 +17,6 @@ import paths from "../paths"
 import mainSearcher from '../mainSearcher'
 import {
   selectLoginRedirectLocation,
-  selectRouterLocation,
 } from "../selectors"
 import {
   api,
@@ -26,12 +25,13 @@ import {
   ui,
   str,
 } from "../actions"
+import {history} from '../history'
 
 
 export function* goHomeIfDeleteStatementWhileViewing() {
   yield takeEvery(str(api.deleteStatement.response), function* goHomeIfDeleteStatementWhileViewingWorker(action) {
     if (!action.error) {
-      const routerLocation = yield select(selectRouterLocation)
+      const routerLocation = history.location
       if (routerLocation.pathname === paths.statement(action.meta.requestPayload.statement)) {
         yield put(ui.addToast(t(DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE)))
         yield put(push(paths.home()))
@@ -45,7 +45,7 @@ export function* redirectToLoginWhenUnauthorized() {
     if (action.error) {
       const {httpStatusCode} = action.payload
       if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
-        const routerLocation = yield select(selectRouterLocation)
+        const routerLocation = history.location
         yield put(goto.login(routerLocation))
       }
     }
@@ -88,7 +88,7 @@ export function* goTo() {
     } = action.payload
 
     const mainSearchPath = paths.mainSearch(mainSearchText)
-    const routerLocation = yield select(selectRouterLocation)
+    const routerLocation = history.location
     const routerMainSearchText = mainSearcher.mainSearchText(routerLocation)
     const urlSearchText = paths.mainSearch(routerMainSearchText)
     if (urlSearchText !== mainSearchPath) {
@@ -114,7 +114,7 @@ export function* goTo() {
 export function* redirectHomeFromMissingStatement() {
   yield takeEvery(str(api.fetchStatementJustifications.response), function* leaveMissingStatementWorker(action) {
     if (action.error) {
-      const routerLocation = yield select(selectRouterLocation)
+      const routerLocation = history.location
       // Try to determine whether we are on the page for a statement that was not found
       const path = paths.statement({id: action.meta.requestPayload.statementId})
       if (

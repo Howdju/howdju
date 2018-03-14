@@ -61,9 +61,14 @@ const defaultJustificationSearchPageState = {
   justifications: [],
   continuationToken: null,
   isFetching: false,
+  filters: null,
 }
 export const justificationsSearchPage = handleActions({
-  [api.fetchJustificationsSearch]: (state, action) => ({...state, isFetching: true}),
+  [api.fetchJustificationsSearch]: (state, action) => ({
+    ...state,
+    isFetching: true,
+    filters: action.payload.filters
+  }),
   [api.fetchJustificationsSearch.response]: {
     next: (state, action) => {
       return {
@@ -78,11 +83,31 @@ export const justificationsSearchPage = handleActions({
   [ui.clearJustificationsSearch]: (state, action) => ({...state, ...defaultJustificationSearchPageState})
 }, defaultJustificationSearchPageState)
 
+const defaultTagPageState = {
+  statements: [],
+  isFetching: false,
+  tagId: null,
+}
 export const tagPage = handleActions({
-  [ui.clearTaggedStatements]: (state, action) => ({...state, statements: []}),
-  [api.fetchTaggedStatements]: (state, action) => ({...state, isFetching: true}),
+  [api.fetchTaggedStatements]: (state, action) => ({
+    ...state,
+    isFetching: true,
+    tagId: action.payload.tagId,
+  }),
   [api.fetchTaggedStatements.response]: {
-    next: (state, action) => ({...state, statements: action.payload.result.statements, isFetching: false}),
-    throw: (state, action) => ({...state, statements: [], isFetching: false}),
+    next: (state, action) => ({
+      ...state,
+      statements: action.payload.result.statements,
+      isFetching: false
+    }),
+    throw: (state, action) => ({
+      ...state,
+      statements: [],
+      isFetching: false
+    }),
   },
-}, {statements: [], isFetching: false})
+  [ui.clearTaggedStatements]: (state, action) => ({
+    ...state,
+    ...defaultTagPageState
+  }),
+}, defaultTagPageState)

@@ -32,7 +32,6 @@ class TagPage extends React.Component {
   }
 
   refreshResults = (tagId) => {
-    this.props.ui.clearTaggedStatements()
     this.props.api.fetchTag(tagId)
     this.props.api.fetchTaggedStatements(tagId)
   }

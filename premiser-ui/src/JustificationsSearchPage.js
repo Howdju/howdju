@@ -26,13 +26,13 @@ import config from './config'
 class JustificationsSearchPage extends Component {
 
   componentDidMount() {
-    const filters = justificationSearchFilters(this.props.location.search)
+    const filters = JustificationsSearchPage.filters(this.props.location.search)
     this.refreshResults(filters)
   }
 
   componentWillReceiveProps(nextProps) {
-    const filters = justificationSearchFilters(this.props.location.search)
-    const nextFilters = justificationSearchFilters(nextProps.location.search)
+    const filters = JustificationsSearchPage.filters(this.props.location.search)
+    const nextFilters = JustificationsSearchPage.filters(nextProps.location.search)
     if (!isEqual(nextFilters, filters)) {
       this.refreshResults(nextFilters)
     }
@@ -40,14 +40,13 @@ class JustificationsSearchPage extends Component {
 
   fetchMore = event => {
     event.preventDefault()
-    const filters = justificationSearchFilters(this.props.location.search)
+    const filters = JustificationsSearchPage.filters(this.props.location.search)
     const count = JustificationsSearchPage.fetchCount
     const {continuationToken} = this.props
     this.props.api.fetchJustificationsSearch({filters, count, continuationToken})
   }
 
   refreshResults = (filters) => {
-    this.props.ui.clearJustificationsSearch()
     const count = JustificationsSearchPage.fetchCount
     this.props.api.fetchJustificationsSearch({filters, count})
   }
@@ -109,6 +108,8 @@ class JustificationsSearchPage extends Component {
   }
 }
 JustificationsSearchPage.fetchCount = 20
+JustificationsSearchPage.filters = (locationSearch) =>
+  pick(queryString.parse(locationSearch), ValidJustificationSearchFilters)
 
 const mapStateToProps = (state, ownProps) => {
   const pageState = get(state, ['ui', 'justificationsSearchPage'], {})
@@ -126,7 +127,3 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   ui,
 }))(JustificationsSearchPage)
-
-function justificationSearchFilters(locationSearch) {
-  return pick(queryString.parse(locationSearch), ValidJustificationSearchFilters)
-}

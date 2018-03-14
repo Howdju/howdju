@@ -12,6 +12,7 @@ const config = {
   humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
+  authExpirationCheckFrequencyMs: 30*1000,
   reduxPersistWhitelist: [
     'auth',
     'ui.isMobileSiteDisabled',
