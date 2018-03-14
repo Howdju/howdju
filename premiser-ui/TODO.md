@@ -21,6 +21,7 @@
 
 * Dynamo (pricing of triggered events?)
   * https://aws.amazon.com/dynamodb/pricing/
+  * table item size less than 1KiB?
 
 * https://github.com/codelucas/newspaper
 

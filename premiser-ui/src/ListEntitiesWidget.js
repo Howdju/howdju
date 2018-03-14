@@ -14,8 +14,10 @@ import FetchButton from './FetchButton'
 class ListEntitiesWidget extends Component {
 
   componentWillMount() {
-    const fetchCount = this.props.initialFetchCount || this.props.fetchCount
-    this.props.fetchEntities(this.props.widgetId, fetchCount)
+    if (!this.hasEntities()) {
+      const fetchCount = this.props.initialFetchCount || this.props.fetchCount
+      this.props.fetchEntities(this.props.widgetId, fetchCount)
+    }
   }
 
   hasEntities = () => {
