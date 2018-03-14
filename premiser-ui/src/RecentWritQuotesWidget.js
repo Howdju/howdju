@@ -5,7 +5,6 @@ import WritQuoteCard from './WritQuoteCard'
 import t from './texts'
 import {
   api,
-  ui,
 } from './actions'
 import {writQuotesSchema} from "./schemas"
 

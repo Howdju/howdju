@@ -4,7 +4,6 @@ import union from 'lodash/union'
 
 import {
   api,
-  ui
 } from '../../actions'
 
 const widgetRequestReducer = (defaultWidgetState) => (state, action) => {

@@ -5,7 +5,6 @@ import StatementCard from './StatementCard'
 import t from './texts'
 import {
   api,
-  ui,
 } from './actions'
 import {statementsSchema} from "./schemas"
 

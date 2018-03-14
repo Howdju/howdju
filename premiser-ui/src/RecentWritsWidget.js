@@ -5,7 +5,6 @@ import WritCard from './WritCard'
 import t from './texts'
 import {
   api,
-  ui,
 } from './actions'
 import {
   writsSchema
