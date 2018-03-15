@@ -30,6 +30,7 @@ const {
 
 const allowedHeaders = concat([
   headerKeys.CONTENT_TYPE,
+  headerKeys.CONTENT_ENCODING,
   headerKeys.AUTHORIZATION,
 ], customHeaderKeys.identifierKeys)
 

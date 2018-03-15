@@ -1,4 +1,5 @@
 exports.ORIGIN = 'Origin'
 exports.AUTHORIZATION = 'Authorization'
 exports.CONTENT_TYPE = 'Content-Type'
+exports.CONTENT_ENCODING = 'Content-Encoding'
 exports.WWW_AUTHENTICATE = 'WWW-Authenticate'

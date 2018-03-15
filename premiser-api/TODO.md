@@ -1,10 +1,9 @@
 # TODO
 
 * Version API
-* Add compression to response (npm: oppressor)
+
 
 * rename callback to respond
-* http://ramdajs.com/ ? 
 * Add route permissions
 
 * scheduled jobs
