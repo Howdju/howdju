@@ -10,9 +10,9 @@ else
   lambda_alias=$1
 fi
 
-echo args: "$@"
+echo deploying $git_branch to $lambda_alias
 
-if [[ -z $lamdba_alias ]]; then
+if [[ -z $lambda_alias ]]; then
   echo "Usage: deploy.sh [<git_branch=master>] <lambda_alias>"
   exit 1
 fi
