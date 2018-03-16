@@ -3,6 +3,7 @@ const childProcess = require('child_process')
 const fs = require('fs')
 const isNumber = require('lodash/isNumber')
 const toNumber = require('lodash/toNumber')
+const toString = require('lodash/toString')
 
 const {logger} = require('./logger')
 
@@ -40,6 +41,7 @@ const publishVersion = (functionName) => {
     FunctionName: functionName,
     Description: getGitDescription(),
   }
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#publishVersion-property
   lambda.publishVersion(params, function(err, data) {
     if (err) throw err
     const version = data.Version
@@ -48,18 +50,41 @@ const publishVersion = (functionName) => {
 }
 
 const updateAlias = (functionName, aliasName, newTarget) => {
-  if (!isNumber(toNumber(newTarget))) {
-    // TODO allow passing a target alias
-    throw new Error('newTarget must be a number')
+  if (isNumber(toNumber(newTarget))) {
+    updateAliasToVersion(functionName, aliasName, newTarget)
+  } else {
+    return getAliasVersion(functionName, newTarget, (err, targetVersion) => {
+      if (err) throw err
+      updateAliasToVersion(functionName, aliasName, targetVersion)
+    })
+  }
+}
+
+const getAliasVersion = (functionName, aliasName, cb) => {
+  const params = {
+    FunctionName: functionName,
+    Name: aliasName
+  };
+  lambda.getAlias(params, function(err, data) {
+    if (err) return cb(err)
+    cb(data['FunctionVersion'])
+  });
+}
+
+const updateAliasToVersion = (functionName, aliasName, targetVersion) => {
+  if (!isNumber(toNumber(targetVersion))) {
+    throw new Error('targetVersion must be a number')
   }
 
   const Name = aliasName
-  const FunctionVersion = newTarget
+  // FunctionVersion must be a string representation of a number
+  const FunctionVersion = toString(targetVersion)
   const params = {
     FunctionName: functionName,
     Name,
     FunctionVersion,
   }
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateAlias-property
   lambda.updateAlias(params, function(err, data) {
     if (err) throw err
     logger.info(`Updated alias "${Name}" to FunctionVersion ${data['FunctionVersion']}`)
