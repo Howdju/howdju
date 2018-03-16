@@ -7,11 +7,13 @@ if [[ -n $2 ]]; then
   lambda_alias=$2
 else
   git_branch=master
-  lambda_alias=${1}
+  lambda_alias=$1
 fi
 
+echo args: "$@"
+
 if [[ -z $lamdba_alias ]]; then
-  echo "Usage: deploy-lambda.sh [<git_branch=master>] <lambda_alias>"
+  echo "Usage: deploy.sh [<git_branch=master>] <lambda_alias>"
   exit 1
 fi
 
