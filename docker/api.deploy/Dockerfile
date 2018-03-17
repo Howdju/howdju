@@ -31,7 +31,13 @@ RUN \
   /root/bin/magic-ssh-add.sh $keyfile_password && \
   git clone git@bitbucket.org:howdju/howdju.git /howdju && \
   cd /howdju && \
-  git checkout master
+  git checkout master && \
+  . ~/.nvm/nvm.sh && \
+  cd /howdju/premiser-api/ && \
+  yarn add /howdju/howdju-ops && \
+  yarn add /howdju/howdju-common && \
+  yarn add /howdju/howdju-service-common && \
+  yarn install
 
 WORKDIR /howdju/premiser-api
 

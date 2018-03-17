@@ -50,12 +50,15 @@ const publishVersion = (functionName) => {
 }
 
 const updateAlias = (functionName, aliasName, newTarget) => {
-  if (isNumber(toNumber(newTarget))) {
+  logger.info(`Updating '${aliasName}' to '${newTarget}'...`)
+  if (/[0-9]+/.test(newTarget)) {
     updateAliasToVersion(functionName, aliasName, newTarget)
   } else {
-    return getAliasVersion(functionName, newTarget, (err, targetVersion) => {
+    return getAliasVersion(functionName, newTarget, (err, newVersion) => {
+      debugger
       if (err) throw err
-      updateAliasToVersion(functionName, aliasName, targetVersion)
+      logger.info(`Alias ${newTarget} is version ${newVersion}`)
+      updateAliasToVersion(functionName, aliasName, newVersion)
     })
   }
 }
@@ -67,7 +70,7 @@ const getAliasVersion = (functionName, aliasName, cb) => {
   };
   lambda.getAlias(params, function(err, data) {
     if (err) return cb(err)
-    cb(data['FunctionVersion'])
+    cb(null, data['FunctionVersion'])
   });
 }
 
