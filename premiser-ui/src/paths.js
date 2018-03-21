@@ -25,6 +25,9 @@ class Paths {
 
   statement = (statement, trailStatements) => {
     const {id, slug} = statement
+    if (!id) {
+      return '#'
+    }
     const slugPath = slug ?
       '/' + slug :
       ''
@@ -35,7 +38,12 @@ class Paths {
   }
   justification = j => this.statement(j.rootStatement) + '#justification-' + j.id
   writUsages = writ => this.searchJustifications({writId: writ.id})
-  writQuoteUsages = writQuote => this.searchJustifications({writQuoteId: writQuote.id})
+  writQuoteUsages = (writQuote) => {
+    if (!writQuote.id) {
+      return '#'
+    }
+    return this.searchJustifications({writQuoteId: writQuote.id})
+  }
 
   createJustification = (basisSourceType, basisSourceId) => createPath({
     pathname: createJustificationPath,
