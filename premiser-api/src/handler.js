@@ -61,7 +61,7 @@ const makeResponse = (appProvider, {httpStatusCode, headers={}, body, origin}) =
     if (httpStatusCode === httpStatusCodes.NO_CONTENT) {
       appProvider.logger.warn('noContent response received body.  Ignoring')
     } else {
-      response.headers['Content-Type'] = 'application/json'
+      response.headers[headerKeys.CONTENT_TYPE] = 'application/json'
       response['body'] = JSON.stringify(body)
     }
   }

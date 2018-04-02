@@ -68,12 +68,7 @@ const routes = [
    */
   {
     method: httpMethods.OPTIONS,
-    handler: (appProvider, {callback}) => {
-      const headers = {
-        'Access-Control-Allow-Headers': 'Content-Type'
-      }
-      return ok({headers, callback})
-    }
+    handler: (appProvider, {callback}) => ok({callback})
   },
 
   /*
@@ -135,7 +130,6 @@ const routes = [
       callback,
       request: {
         pathParameters: [tagId],
-        authToken,
       }
     }) => appProvider.tagsService.readTagForId(tagId)
       .then( tag => ok({callback, body: {tag}}))
@@ -259,7 +253,6 @@ const routes = [
       request: {
         pathParameters: [statementId],
         authToken,
-        queryStringParameters
       }
     }) => appProvider.statementJustificationsService.readStatementJustifications(statementId, authToken)
       .then( ({statement, justifications}) => ok({callback, body: {statement, justifications}}) )
@@ -333,8 +326,6 @@ const routes = [
         body: {
           justification
         },
-        method,
-        path,
       }
     }) => appProvider.justificationsService.readOrCreateJustification(justification, authToken)
       .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
@@ -399,11 +390,10 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {
-        pathParameters,
+        pathParameters: [writQuoteId],
         authToken,
       }
     }) => {
-      const writQuoteId = pathParameters[0]
       return appProvider.writQuotesService.readWritQuoteForId(writQuoteId, {authToken})
         .then( (writQuote) => ok({callback, body: {writQuote}}))
     }

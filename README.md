@@ -1,14 +1,29 @@
+# Prerequisites
+
+Install npm (via nvm) and yarn:
+
+```sh
+curl -sS -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+. ~/.nvm/nvm.sh
+nvm install 6.10.3
+npm install -g yarn
+```
+
 # Running
 
 ## Running the web app
 ```sh
 cd premiser-ui
+yarn install
 yarn run local
 ```
 
 ## Running the API
 ```sh
 cd premiser-api
+yarn install
+# TODO need to install a SQL database and run migrations.
+yarn run db:local > premiser-db.out &
 yarn run local
 ```
 

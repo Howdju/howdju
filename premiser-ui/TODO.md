@@ -1,13 +1,94 @@
 # Howdju UI TODO
 
+## What is Howdju?
 
-* Was able to create a tag with a white-space-only name
+Howdju is a tool to connect semantically similar statements.  But if it were only
+that, then it would just be a weapon for people to argue better all over the web.
+Howdju is also a platform for seeing the whole picture of evaluating the truth
+(or non-truth, or neither-true-nor-falseness) of statements.  But if it were only that
+then it would be a battleground for the loudest, most persistent, or best-resourced
+voices to trumpet their views.  Howdju is also a platform for seeing truth from
+different perspectives.  By design it incorporates different perspectives, and 
+this is how it is able to serve as a common ground for people whose perspectives
+differ.  But if it were only that, then it would just be a playground for the 
+elite truthigentsia.  Howdju is also a semantic bookmarking and fact-checking
+tool.  By reaching out to the parts of the internet where people do the rest of
+their information consumption and helping people understand truth in context
+there, Howdju is more than just an ivory tower.  Finally, if Howdju were just 
+those things, then Howdju might not be revolutionary.  At best, it might be 
+maximally incremental.  Howdju is also a publishing platform...
 
-* Add compression to response (npm: oppressor)
+But even if it were all those things, Howdju still wouldn't be any good, because
+it would control the best platform and tools for evaluating perspectives on truth.
+That's why Howdju is open source, open data, and a transparently funded non-profit.
+Because the truth is only the truth if it belongs equally to us all. 
+
+## Current plan
+
+### STS track
+- Export part of wikipedia
+- Create a system that lets you search for sentences semantically similar to
+  an input sentence 
+- Train on wikipedia edits?
+
+### Browser plugin track
+- Research Dynamo
+- Define API v2
+- Finalize data model
+  - What will people vote on?
+- Translate existing data
+- Write plugin
+- Rewrite web app
+
+## Credibility
+
+* Need to specially recognize verified account of speaker, author of article, etc.!
+
+* Restatements where any of the sub-statements lack verified anchors (somebody claims it was said, but there is no evidence)
+* Misrepresents source articles: this anchor represents that this other articles says X, but the article doesn't say X.
+* Anchors with missing targets
+* Webpage edits?
+* Website has bad statements
+* Website was recently registered
+* Website justifications are mostly from group(s) on one side of the argument
+* Source contains balanced analysis 
+  * (contradictory claims from different sources)
+  * Claims acceptable to groups opposing on the topic
+* Something to do with identifying authors.  
+  - Are authors identified, real, does the publication phone number work, have an address?
+  - Verified twitter account for author?
+  - Publication/organization/author has wikipedia entry?
+* Trust Project
+  - https://trello.com/b/YbHYmodO/trust-project-indicators
+  - Does the site publish best practices, correction process?
+  - Does the site distinguish opinion or sponsored content?
+* See other statements said by that person (purportedly; need voting on whether person actually said them)
+* Age of article; age of event vs. veracity (breaking news may need to be updated)
+
+## Model Issues
+
+* Restatements are Justifications
+  * In a sense restatements are always justifications.  If the DOD said that a missile
+    flew over Syria, that is implicitly a justification that a missle flew over Syra,
+    whether true or not.
+* Versioned writs/arguments/explanations/snippets
+ - Let's say that I write a writ; how can I edit it while not hiding from readers; 
+ - how to handle anchored justifications if I remove the anchor?
+   - Show with edits between <date> and <date>
+   - With with recent edits (between <date> and now, where <date> is relative to velocity of edits?)
+   - Show with edits (beetween creation and now)
+   - Show version as of...<date>
+* Would adding private statements/justifications mess up the model, and if so,
+  is it worth doing something now to address that? (Seems like it should be possible
+  enough to just migrate existing entities to public entities in any new system)
+
+* 'archive.org hosts a WebpageVersion' vs. 'archive.org restates statement from WebpageVersion'
 
 * Data model
   * How represent same quote appearing in multiple places?
+    * Restatement?
   * How to handle webpage archives and quotes from books in articles/blogs
+    * Restatement can contain the purported source...
 
 * the media on this page (this run of text, this part of this image, this part of this interval of video, etc.) 
   * represents that X
@@ -19,6 +100,21 @@
     - represents that the NYT said that NYT report ABC said that "Trump will never be president"
   * ...
 * Connection between a source containing a statement and that source having a stater
+
+
+## Other Issues
+
+* Justification scoring: dot product of user group membership weight vector
+  and the justification group vote sum vector
+
+* Do not erase justification when not logged in!
+
+* Was able to create a tag with a white-space-only name
+* Can search-justifications with no filters
+* Fetch more on search justifications doesn't seem to fetch more
+
+* Right now returning '#' for entity links that lack and ID.  Should we also
+  change the components so that they aren't clickable?
 
 * Why do I have PostCSS in my project?
   
@@ -33,7 +129,7 @@
 * Update redux-persist?
   * https://github.com/rt2zz/redux-persist/
 
-# Fall 2017 TODO
+## Fall 2017 TODO
 * Add indices (root statement ID, joins)
 * Show when a user agrees/disagrees with a statement
   * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
@@ -347,6 +443,7 @@ Cat meeting design notes:
         * https://aws.amazon.com/blogs/devops/set-up-a-build-pipeline-with-jenkins-and-amazon-ecs/
         * https://aws.amazon.com/getting-started/projects/setup-jenkins-build-server/
     * Automated testing (browserstack?)
+      * http://nightwatchjs.org/
   * Unit testing
 
 * logo and main search alignment is off
@@ -716,6 +813,7 @@ Cat meeting design notes:
 
 ## Cool
 
+* [Talk rich text editor](https://github.com/coralproject/talk/tree/master/plugins/talk-plugin-rich-text/client/components/rte)
 * [Bundle Buddy helps optimize webpack bundles](https://github.com/samccone/bundle-buddy)
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
 * https://github.com/mariusandra/kea

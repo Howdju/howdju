@@ -2,7 +2,6 @@
 
 * Version API
 
-
 * rename callback to respond
 * Add route permissions
 
