@@ -126,9 +126,9 @@ class CreateStatementPage extends Component {
             justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote(writQuote),
           }
         }
-
+        const statementJustification = makeNewStatementJustification({}, justificationProps)
         this.props.editors.beginEdit(CreateStatementPage.editorType, CreateStatementPage.editorId,
-          makeNewStatementJustification({}, justificationProps))
+          statementJustification)
         break
       }
     }

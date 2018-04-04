@@ -1,12 +1,14 @@
+import some from 'lodash/some'
 import {
   put,
   takeEvery,
   select,
 } from 'redux-saga/effects'
-import {push, replace} from 'react-router-redux'
+import {LOCATION_CHANGE, push, replace} from 'react-router-redux'
 
 import {
   httpStatusCodes,
+  isTruthy,
 } from 'howdju-common'
 
 import t, {
@@ -16,6 +18,7 @@ import t, {
 import paths from "../paths"
 import mainSearcher from '../mainSearcher'
 import {
+  selectAuthToken,
   selectLoginRedirectLocation,
 } from "../selectors"
 import {
@@ -26,6 +29,8 @@ import {
   str,
 } from "../actions"
 import {history} from '../history'
+import {isActivePath, routeIds} from '../routes'
+import {tryWaitOnRehydrate} from './appSagas'
 
 
 export function* goHomeIfDeleteStatementWhileViewing() {
@@ -40,8 +45,8 @@ export function* goHomeIfDeleteStatementWhileViewing() {
   })
 }
 
-export function* redirectToLoginWhenUnauthorized() {
-  yield takeEvery(str(api.callApi.response), function* redirectToLoginWhenUnauthorizedWorker(action) {
+export function* redirectToLoginWhenUnauthenticated() {
+  yield takeEvery(str(api.callApi.response), function* redirectToLoginWhenUnauthenticatedWorker(action) {
     if (action.error) {
       const {httpStatusCode} = action.payload
       if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
@@ -125,6 +130,21 @@ export function* redirectHomeFromMissingStatement() {
         yield put(ui.addToast(t(MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE)))
         yield put(push(paths.home()))
       }
+    }
+  })
+}
+
+export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication() {
+  yield takeEvery(LOCATION_CHANGE, function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthenticationWorker() {
+    yield* tryWaitOnRehydrate()
+    const isAuthenticated = isTruthy(yield select(selectAuthToken))
+    const doesPathRequireAuthentication = () => some([
+      routeIds.createStatement,
+      routeIds.submit,
+    ], isActivePath)
+    if (!isAuthenticated && doesPathRequireAuthentication()) {
+      const routerLocation = history.location
+      yield put(goto.login(routerLocation))
     }
   })
 }

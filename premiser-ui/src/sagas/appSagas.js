@@ -10,7 +10,8 @@ import isEqual from 'lodash/isEqual'
 import {REHYDRATE} from 'redux-persist/constants'
 
 import {
-  app, ui,
+  app,
+  ui,
 } from '../actions'
 import {
   selectAuthTokenExpiration,
@@ -78,10 +79,12 @@ export function* checkAuthExpiration() {
  */
 export function* resetJustificationSearchPage() {
   yield takeEvery(LOCATION_CHANGE, function* resetJustificationSearchPageWorker() {
-    const locationFilters = JustificationsSearchPage.filters(history.location.search)
-    const stateFilters = yield select(selectJustificationSearchFilters)
-    if (isActivePath(routeIds.searchJustifications) && !isEqual(locationFilters, stateFilters)) {
-      yield put(ui.clearJustificationsSearch())
+    if (isActivePath(routeIds.searchJustifications)) {
+      const locationFilters = JustificationsSearchPage.filters(history.location.search)
+      const stateFilters = yield select(selectJustificationSearchFilters)
+      if (!isEqual(locationFilters, stateFilters)) {
+        yield put(ui.clearJustificationsSearch())
+      }
     }
   })
 }

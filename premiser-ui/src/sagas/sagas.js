@@ -26,8 +26,9 @@ import {
   goTo,
   redirectAfterLogin,
   redirectHomeFromMissingStatement,
-  redirectToLoginWhenUnauthorized,
+  redirectToLoginWhenUnauthenticated,
   clearAuthTokenWhenUnauthorized,
+  redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
 } from './flowSagas'
 import {searchMainSearch} from './searchMainSearchSaga'
 import {commitEditorThenView} from './editors/commitEditorThenViewSaga'
@@ -57,13 +58,14 @@ export default () => all([
   clearAuthTokenWhenUnauthorized(),
 
   goTo(),
-  redirectToLoginWhenUnauthorized(),
+  redirectToLoginWhenUnauthenticated(),
   redirectAfterLogin(),
   goHomeIfDeleteStatementWhileViewing(),
   redirectHomeFromMissingStatement(),
   commitEditorThenView(),
   commitEditThenPutActionOnSuccess(),
   fetchAndBeginEditOfNewJustificationFromBasisSource(),
+  redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
 
   editorCommitEdit(),
 
