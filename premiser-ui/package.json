@@ -14,6 +14,8 @@
     "lint:build": "eslint --config .eslintrc.build.js bin/ config/ server.js",
     "lint:app": "eslint --config .eslintrc.app.js src/ bookmarklet/",
     "lint": "yarn run lint:app && yarn run lint:build",
+    "build:bookmarklet": "rm -f dist/bookmarklet/* && mkdir -p dist/bookmarklet && babel --no-babelrc bookmarklet/submit.js --out-file dist/bookmarklet/submit.js --presets=env && uglifyjs --compress negate_iife=false --mangle toplevel --output dist/bookmarklet/submit.min.js -- dist/bookmarklet/submit.js",
+    "build:bookmarklet:local": "bin/build-bookmarklet-local.sh",
     "build:local": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=development SENTRY_ENV=local DEBUG=*,-babel webpack --config config/webpack.config.js",
     "build:pre-prod": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=production SENTRY_ENV=pre-prod DEBUG=*,-babel API_ROOT=https://pre-prod-api.howdju.com/api/ webpack --config config/webpack.config.js",
     "build:prod": "yarn run lint:app && yarn run clean && cross-env NODE_ENV=production SENTRY_ENV=prod DEBUG=*,-babel webpack --config config/webpack.config.js",
@@ -31,8 +33,7 @@
     "test": "cross-env NODE_ENV=test jest --config .jestrc",
     "test:verbose": "cross-env NODE_ENV=test jest --config .jestrc --verbose",
     "test:debug": "cross-env NODE_ENV=test node debug --debug-brk ./node_modules/.bin/jest --runInBand --config .jestrc",
-    "test-dns": "dig +recurse +trace howdju.com any",
-    "bookmarklet": "babel --no-babelrc bookmarklet/submit.js --out-file dist/submit.js --presets=env && uglifyjs --compress negate_iife=false --mangle toplevel --output dist/submit.min.js -- dist/submit.js"
+    "test-dns": "dig +recurse +trace howdju.com any"
   },
   "devDependencies": {
     "argparse": "^1.0.9",
