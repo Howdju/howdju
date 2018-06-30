@@ -1,43 +1,40 @@
-# Ontology of Editors
-* EditableThing
-  * Toggles between ThingEditor and ThingViewer
-* ThingEditor
-  * Extracts thing from editor state for ThingEditorFields
-  * Extracts errors for ThingEditorFields
-  * Submits Thing to API
-  * Uses ThingEditorFields
-* ThingEditorFields
-  * Contains fields for editing
-* ThingViewer
-  * Display of Thing
-  
-* ThingViewer: can contain OtherThingEditors if not a leaf component.
-  
-  
-The further a society drifts from truth, the more it will hate those that speak it - George Orwell
-Sunlight is the best disinfectent - Justice Louis D. Brandeis
-Howdju: fighting disinformation, enabling democracy
+# Local run preparation
 
+```
+yarn run db:tunnel
+pg_dump -h 127.0.0.1  -p 5433 premiser -U premiser_rds > premiser_prod_dump-20180629.sql
 
-* Add visible score to person making comment, telling them it is not so good to not include citations of their comment.
-  * And fold comments without strong score
-* wikipedia, politifact, 
- * https://blog.okfn.org/2016/02/01/google-funds-frictionless-data-initiative-at-open-knowledge/
-* Private subscription, bounties, news subscription referral/bundling
+docker run -p 5432:5432 postgres:9.6
+psql -h localhost -U postgres < db/create-users.sql
+echo 'create database premiser;' | psql -h localhost -U postgres
+psql -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
+psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < premiser_prod_dump-20180629.sql
+```
 
+```
+./bin/link.sh
+```
 
-* Example where we would want to allow helper conjunctions, but to zone in on the statements:
-  "The tea party shouldn't be labeled racist because some members are racist"
-  * Except that [Most Beatles fans would condemn a rapist]
-    whereas [Few Tea Partiers have condemned racism]
-  * Same justification idea as (equivalent justifications? Tag with logical fallacy?):
-    * Muslim leaders decry extremism, whereas alt-right leaders tolerate or even instigate racism
-    * on statement 1070 (http://localhost:3000/s/1070/racist-members-of-the-alt-right-are-just-like-extremist-adherants-to-islam-you-cant-denounce-the-entire-group-because-of-actions-of-the-few)
-  * coordinating conjunctions: and, but, for, nor, or, so, and yet
-  * subordinating conjunctions: after, although, as, as if, because, before, even if, even though, if, if only, 
-    rather than, since, that, though, unless, until, when, where, whereas, wherever, whether, which, and while
-* Home page
-  * Featured perspectives
-    * height of the capitol building limit DC
-    * Hillary's emails
-  * About
+# Running locally
+
+In one terminal:
+
+```
+docker run -p 5432:5432 postgres:9.6
+```
+
+In a second terminal:
+
+```
+cd premiser-api
+yarn run local
+```
+
+In a third terminal:
+
+```
+cd premiser-ui
+yarn run local
+```
+
+Open browser to localhost:3000

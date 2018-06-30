@@ -9,25 +9,31 @@
 #  application libraries and then remove them afterwards.  This is required, e.g., for packaing an app using the
 #  npm-install Gulp task.
 
-# TAG: NEW_LIB
+current_dir=$(pwd)
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+base_dir="$( cd "${script_dir}/../" && pwd )"
 
-script_dir="$( dirname "${BASH_SOURCE[0]}" )"
-base_dir=${script_dir}/../
+cd ${base_dir}/howdju-common
+yarn link
+
+cd ${base_dir}/howdju-ops
+yarn link
 
 cd ${base_dir}/howdju-service-common
-npm link ../howdju-common
+yarn link
+yarn link howdju-common
 
 cd ${base_dir}/premiser-api
-npm link ../howdju-common
-npm link ../howdju-service-common
-npm link ../howdju-ops
+yarn link howdju-common
+yarn link howdju-service-common
+yarn link howdju-ops
 
 cd ${base_dir}/premiser-processing
-npm link ../howdju-common
-npm link ../howdju-service-common
-npm link ../howdju-ops
+yarn link howdju-common
+yarn link howdju-service-common
+yarn link howdju-ops
 
 cd ${base_dir}/premiser-ui
-npm link ../howdju-common
+yarn link howdju-common
 
-cd ${base_dir}
+cd ${current_dir}

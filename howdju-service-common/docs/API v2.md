@@ -144,7 +144,7 @@ not well-covered justifications/users.
 Need to capture cases where a user recently has disagreed with another user in
 case someone games the system by creating a similar user by duplicating votes
 but then inserting manipulative justification votes.  Detect when a user 
-does anomolous votes?  How will we know that they are anomolous?
+does anomalous votes?  How will we know that they are anomolous?
 
 Should we compare how a user's vector changes over time as we reach additional
 stages of inference?  What if it changes drastically?  What if we return to 

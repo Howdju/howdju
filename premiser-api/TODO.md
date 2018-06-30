@@ -29,6 +29,20 @@
 * Short IDs
 * [Build using Vagrant?](https://stackoverflow.com/a/30440198/39396)
 
+* Priority queues
+  * https://medium.com/netflix-techblog/distributed-delay-queues-based-on-dynomite-6b31eca37fbc
+  * https://www.rabbitmq.com/priority.html
+  * https://www.quora.com/Distributed-Systems-How-to-implement-a-high-availability-priority-Queue-that-can-easily-scale/answer/Ben-Darfler
+* Diffing
+  * https://stackoverflow.com/questions/4045017/what-is-git-diff-patience-for
+  * https://stackoverflow.com/questions/32365271/whats-the-difference-between-git-diff-patience-and-git-diff-histogram
+* Similarity Search
+  * Do any support triplet search?  If not, how to translate?  Combine triple into one?  Have three indices (one for each of the triple)?
+  * https://code.facebook.com/posts/1373769912645926/faiss-a-library-for-efficient-similarity-search/
+  * https://github.com/spotify/annoy
+  * https://github.com/nmslib/nmslib
+  * https://github.com/erikbern/ann-benchmarks
+
 * Data science tasks:
   * Clustering users
   * Recognizing statements phrased as questions

@@ -417,6 +417,8 @@ Cat meeting design notes:
     * verified users
     * all
     * contains text (input text)
+    * not flagged as offensive/harassment/spam/illegal
+      * except from verified users
   * Tags
     * paraphrases and quotes are amenable to tagging because they have context.  
       statements might be amenable, depending on how specifically they are written.
@@ -811,8 +813,7 @@ Cat meeting design notes:
   * [ecosystem](http://redux.js.org/docs/introduction/Ecosystem.html)
 
 
-## Cool
-
+## Cool 
 * [Talk rich text editor](https://github.com/coralproject/talk/tree/master/plugins/talk-plugin-rich-text/client/components/rte)
 * [Bundle Buddy helps optimize webpack bundles](https://github.com/samccone/bundle-buddy)
 * Collaborative editor: https://github.com/philholden/redux-swarmlog
@@ -857,13 +858,14 @@ Cat meeting design notes:
 * Material font: https://codepen.io/zavoloklom/pen/uqCsB
 * https://atlassian.design/guidelines/product/components/checkboxes
   * https://atlaskit.atlassian.com/
-* Reader mode/scraping
+* Reader mode/scraping, Boilerplate removal / readability mode:
   * https://github.com/codelucas/newspaper
   * [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
   * https://github.com/chromium/dom-distiller
   * https://www.npmjs.com/package/distillery-js
   * https://www.crummy.com/software/BeautifulSoup/
     * https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+  * https://github.com/miso-belica/jusText (readme contains list of other projects)
 * Code splitting
   * http://thejameskyle.com/react-loadable.html
 * Image area selection
