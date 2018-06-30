@@ -1,4 +1,4 @@
-// Contents of https://fonts.googleapis.com/css?family=Lato:300,400|Orbitron with url replaced with local versions
+// Contents of https://fonts.googleapis.com/css?family=Lato:300,400|Orbitron|Oswald:200 with url replaced with local versions
 
 /** Lato */
 
@@ -82,6 +82,6 @@
   src:
           local('Oswald ExtraLight'),
           local('Oswald-ExtraLight'),
-          $dev-font-url-oswald-extra-light-latin-ext format('woff2');
+          $dev-font-url-oswald-extra-light-latin format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }

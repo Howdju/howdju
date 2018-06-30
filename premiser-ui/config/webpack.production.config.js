@@ -32,7 +32,7 @@ module.exports.htmlWebpackPluginConfig = {
 
 const apiRoot = process.env.API_ROOT || 'https://api.howdju.com/api/'
 module.exports.definePluginConfig = {
-  'process.env.API_ROOT': JSON.stringify(apiRoot)
+  'process.env.API_ROOT': JSON.stringify(apiRoot),
 }
 
 /*
