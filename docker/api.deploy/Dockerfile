@@ -18,8 +18,8 @@ COPY bin/docker/magic-ssh-add.sh /root/bin/magic-ssh-add.sh
 # howdju base ^^
 
 RUN \
-  yum update && \
-  yum install -y git
+  yum -y update && \
+  yum -y install git
 
 # howdju deploy base ^^
 
