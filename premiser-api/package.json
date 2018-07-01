@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "argparse": "https://github.com/nodeca/argparse.git",
+    "artillery": "^1.6.0-21",
     "aws-sdk": "^2.34.0",
     "body-parser": "^1.17.1",
     "cross-env": "^4.0.0",
