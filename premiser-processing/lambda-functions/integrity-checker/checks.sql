@@ -12,6 +12,7 @@ select * from justification_basis_compound_atoms where entity_type is null or en
 
 -- Uniqueness
 
+-- statements
 with
     duplicates as (
       select normal_text
@@ -22,6 +23,7 @@ with
   )
 select * from statements join duplicates using (normal_text) order by text, statement_id;
 
+-- urls
 with
     duplicates as (
       select url
@@ -31,6 +33,7 @@ with
   )
 select * from urls join duplicates using (url) order by url, url_id;
 
+-- writs
 with
     duplicates as (
       select normal_title
@@ -39,6 +42,17 @@ with
       having count(normal_title) > 1
   )
 select * from writs join duplicates using (normal_title) order by normal_title, writ_id;
+
+-- writ_quotes
+with
+    dupe_counts as (
+      select
+        *
+        , count(*) over (partition by writ_id, normal_quote_text) as dupe_count
+      from writ_quotes
+  )
+select * from dupe_counts where dupe_count > 1
+order by normal_quote_text, writ_quote_id;
 
 
 -- Referential integrity

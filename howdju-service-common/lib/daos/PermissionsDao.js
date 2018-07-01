@@ -33,7 +33,7 @@ exports.PermissionsDao = class PermissionsDao {
           left join user_permissions up using (user_id, permission_id)
           -- or by group_permissions
           left join user_groups ug using (user_id)
-          left join group_permissions gp using(group_id, permission_id)
+          left join group_permissions gp using (group_id, permission_id)
         where
               (up.permission_id is not null or gp.permission_id is not null)
           and up.deleted is null
