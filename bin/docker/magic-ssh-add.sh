@@ -1,4 +1,5 @@
 #!/bin/bash
+# Passes a password to docker image, allowing it to use a password-protected keyfile
 # https://stackoverflow.com/a/42304508/39396
 
 password="$1"

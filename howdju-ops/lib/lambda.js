@@ -9,7 +9,7 @@ const {logger} = require('./logger')
 
 
 AWS.config.region = 'us-east-1'
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'})
+AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'howdju'})
 // See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
 const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
 
@@ -79,19 +79,23 @@ const updateAliasToVersion = (functionName, aliasName, targetVersion) => {
     throw new Error('targetVersion must be a number')
   }
 
-  const Name = aliasName
-  // FunctionVersion must be a string representation of a number
-  const FunctionVersion = toString(targetVersion)
-  const params = {
-    FunctionName: functionName,
-    Name,
-    FunctionVersion,
-  }
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateAlias-property
-  lambda.updateAlias(params, function(err, data) {
+  getAliasVersion(functionName, aliasName, (err, previousVersion) => {
     if (err) throw err
-    logger.info(`Updated alias "${Name}" to FunctionVersion ${data['FunctionVersion']}`)
+    const Name = aliasName
+    // FunctionVersion must be a string representation of a number
+    const FunctionVersion = toString(targetVersion)
+    const params = {
+      FunctionName: functionName,
+      Name,
+      FunctionVersion,
+    }
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateAlias-property
+    lambda.updateAlias(params, function(err, data) {
+      if (err) throw err
+      logger.info(`Updated alias "${Name}" to FunctionVersion ${data['FunctionVersion']} (was ${previousVersion})`)
+    })
   })
+
 }
 
 exports.lambda = {
