@@ -1,28 +1,5 @@
 # Howdju UI TODO
 
-## What is Howdju?
-
-Howdju is a tool to connect semantically similar statements.  But if it were only
-that, then it would just be a weapon for people to argue better all over the web.
-Howdju is also a platform for seeing the whole picture of evaluating the truth
-(or non-truth, or neither-true-nor-falseness) of statements.  But if it were only that
-then it would be a battleground for the loudest, most persistent, or best-resourced
-voices to trumpet their views.  Howdju is also a platform for seeing truth from
-different perspectives.  By design it incorporates different perspectives, and 
-this is how it is able to serve as a common ground for people whose perspectives
-differ.  But if it were only that, then it would just be a playground for the 
-elite truthigentsia.  Howdju is also a semantic bookmarking and fact-checking
-tool.  By reaching out to the parts of the internet where people do the rest of
-their information consumption and helping people understand truth in context
-there, Howdju is more than just an ivory tower.  Finally, if Howdju were just 
-those things, then Howdju might not be revolutionary.  At best, it might be 
-maximally incremental.  Howdju is also a publishing platform...
-
-But even if it were all those things, Howdju still wouldn't be any good, because
-it would control the best platform and tools for evaluating perspectives on truth.
-That's why Howdju is open source, open data, and a transparently funded non-profit.
-Because the truth is only the truth if it belongs equally to us all. 
-
 ## Current plan
 
 ### STS track
@@ -40,67 +17,11 @@ Because the truth is only the truth if it belongs equally to us all.
 - Write plugin
 - Rewrite web app
 
-## Credibility
-
-* Need to specially recognize verified account of speaker, author of article, etc.!
-
-* Restatements where any of the sub-statements lack verified anchors (somebody claims it was said, but there is no evidence)
-* Misrepresents source articles: this anchor represents that this other articles says X, but the article doesn't say X.
-* Anchors with missing targets
-* Webpage edits?
-* Website has bad statements
-* Website was recently registered
-* Website justifications are mostly from group(s) on one side of the argument
-* Source contains balanced analysis 
-  * (contradictory claims from different sources)
-  * Claims acceptable to groups opposing on the topic
-* Something to do with identifying authors.  
-  - Are authors identified, real, does the publication phone number work, have an address?
-  - Verified twitter account for author?
-  - Publication/organization/author has wikipedia entry?
-* Trust Project
-  - https://trello.com/b/YbHYmodO/trust-project-indicators
-  - Does the site publish best practices, correction process?
-  - Does the site distinguish opinion or sponsored content?
-* See other statements said by that person (purportedly; need voting on whether person actually said them)
-* Age of article; age of event vs. veracity (breaking news may need to be updated)
-
-## Model Issues
-
-* Restatements are Justifications
-  * In a sense restatements are always justifications.  If the DOD said that a missile
-    flew over Syria, that is implicitly a justification that a missle flew over Syra,
-    whether true or not.
-* Versioned writs/arguments/explanations/snippets
- - Let's say that I write a writ; how can I edit it while not hiding from readers; 
- - how to handle anchored justifications if I remove the anchor?
-   - Show with edits between <date> and <date>
-   - With with recent edits (between <date> and now, where <date> is relative to velocity of edits?)
-   - Show with edits (beetween creation and now)
-   - Show version as of...<date>
-* Would adding private statements/justifications mess up the model, and if so,
-  is it worth doing something now to address that? (Seems like it should be possible
-  enough to just migrate existing entities to public entities in any new system)
-
-* 'archive.org hosts a WebpageVersion' vs. 'archive.org restates statement from WebpageVersion'
-
-* Data model
-  * How represent same quote appearing in multiple places?
-    * Restatement?
-  * How to handle webpage archives and quotes from books in articles/blogs
-    * Restatement can contain the purported source...
-
-* the media on this page (this run of text, this part of this image, this part of this interval of video, etc.) 
-  * represents that X
-    - represents that "Trump will be never be President"
-  * represents that Y said that X (and when and where)
-    - represents that the NYT said that "Trump will never be President"
-    - represents that NYT Reporter ABC said that "Trump will never be President"
-  * represents that Z said that Y said that X
-    - represents that the NYT said that NYT report ABC said that "Trump will never be president"
-  * ...
-* Connection between a source containing a statement and that source having a stater
-
+* Anchoring algorithm
+  * If can find single target using selector (CSS or XPath), then done
+  * If can find single target using plain text, then done
+  * If can find single target using semantic search, then done (notify of rewording)
+  * Mark anchor as unvalidated and notify interested persons
 
 ## Other Issues
 
@@ -118,19 +39,16 @@ Because the truth is only the truth if it belongs equally to us all.
 
 * Why do I have PostCSS in my project?
   
-* Improve not found page (wizard crystal ball?)
+* Improve not found page
 
 * Dynamo (pricing of triggered events?)
   * https://aws.amazon.com/dynamodb/pricing/
   * table item size less than 1KiB?
 
-* https://github.com/codelucas/newspaper
-
 * Update redux-persist?
   * https://github.com/rt2zz/redux-persist/
 
 ## Fall 2017 TODO
-* Add indices (root statement ID, joins)
 * Show when a user agrees/disagrees with a statement
   * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
 * Add justified count to root statement
@@ -143,8 +61,8 @@ Because the truth is only the truth if it belongs equally to us all.
     from other clusters opposing 
   
 ## what to do next?
-  * example-based justifications
-    * Would need a new vote type for scoring examples as in or out of
+* example-based justifications
+  * Would need a new vote type for scoring examples as in or out of
 
 * Should also add stage LOG_LEVEL to allow modifying on the fly without a publish
   * Support lambda function "environments" by snake-casing lambda alias and checking env. vars with that prefix first
@@ -187,7 +105,7 @@ Because the truth is only the truth if it belongs equally to us all.
   * Business model: private content
     * Anonymous posting (what do I do the first time someone anonymously uses a racial slur?)
       * Empower users with filters
-        1) hide content without verified account activity 
+        1) hide content without verified account activity
         2) hide potentially offensive content (allow them to hide by degrees of certainty of offensiveness?)
         3) exception for activity from verified accounts
     * Creation/deletion as existence of a creation action vs. row in table
