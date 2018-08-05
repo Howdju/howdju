@@ -14,14 +14,18 @@ RUN \
   git checkout master && \
   source $HOME/.bashrc && \
   bin/link.sh && \
-#  bin/install-all.sh && \
   cd /howdju/premiser-api/ && \
   yarn install && \
   cd /howdju/howdju-ops/ && \
   yarn install && \
+  # install awscli
   curl https://bootstrap.pypa.io/get-pip.py -o- | python && \
   pip install awscli --upgrade --user && \
-  echo 'export PATH=$HOME/.local/bin/:$PATH' >> $HOME/.bashrc
+  echo 'export PATH=$HOME/.local/bin/:$PATH' >> $HOME/.bashrc && \
+  # install jq
+  curl -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && \
+  chmod +x ./jq && \
+  cp jq $HOME/.local/bin
 
 WORKDIR /howdju/premiser-api
 
