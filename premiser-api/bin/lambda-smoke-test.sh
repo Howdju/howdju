@@ -2,6 +2,8 @@ region=$1
 lambda_name=$2
 payload=$3
 
+respons_file_name=lambda-smoke-test-invoke-response.txt
+
 aws lambda invoke \
   --invocation-type RequestResponse \
   --function-name $lambda_name \
@@ -9,6 +11,7 @@ aws lambda invoke \
   --log-type Tail \
   --payload $payload \
   --profile premiser \
-  lambda-invoke-response.txt
-cat lambda-invoke-response.txt
-grep lambda-invoke-response.txt Error && exit 1
+  $respons_file_name
+cat $respons_file_name
+grep '"statusCode":500' $respons_file_name && exit 1
+exit 0

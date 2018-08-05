@@ -1,10 +1,10 @@
 const del = require('del')
 const gulp = require('gulp')
 const zip = require('gulp-zip')
+const install = require('gulp-install')
 const {LocalInstaller} = require('install-local')
 const path = require('path')
 const runSequence = require('run-sequence')
-const vfs = require('vinyl-fs')
 
 const lambdarcPath = path.resolve('lambdarc')
 const lambdarc = require(lambdarcPath)
@@ -24,14 +24,12 @@ gulp.task('src', () =>
   ])
     .pipe(gulp.dest('dist/premiser-api')))
 
-gulp.task('node_modules', () =>
-  // Need vfs to follow symlinks
-  vfs.src([
-    'node_modules/**/*',
-  ])
-    .pipe(gulp.dest('dist/premiser-api/node_modules')))
+gulp.task('install', () =>
+  gulp.src('./package.json')
+    .pipe(gulp.dest('./dist/premiser-api'))
+    .pipe(install({production: true})))
 
-gulp.task('local-deps', () =>
+gulp.task('install-local', () =>
   (new LocalInstaller({
     './dist/premiser-api': [
       '../howdju-common',
@@ -50,9 +48,9 @@ gulp.task('zip', () =>
 
 gulp.task('build', (next) => runSequence(
   ['clean'],
-  ['src', 'node_modules'],
-  // local-deps and node_modules will write to node_modules for local dep directories
-  ['local-deps'],
+  ['src'],
+  // install-local requires dist/premiser-api/package.json to exist already
+  ['install', 'install-local'],
   ['zip'],
   next
 ))
