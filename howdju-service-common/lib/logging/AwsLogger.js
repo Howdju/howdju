@@ -61,10 +61,7 @@ const writeToStd = (logLevelNumber, output) => {
 /* eslint-enable no-unused-vars */
 
 // Must return a function instead of a lambda so that it will bind `this` when called
-const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
-  const loggerLevelNumber = logLevelNumbers[this.logLevel]
-  if (logLevelNumber > loggerLevelNumber) return
-
+const makeTextLogArguments = function(logLevel, logLevelNumber, ...args) {
   const loggerArgs = []
   if (this.doLogTimestamp) {
     loggerArgs.push(utcTimestamp())
@@ -77,17 +74,56 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
 
   const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
   const combinedArgs = concat(loggerArgs, cleanArgs)
+  return combinedArgs
+}
+
+// Must return a function instead of a lambda so that it will bind `this` when called
+const makeJsonLogArguments = function(logLevel, logLevelNumber, ...args) {
+  const logRecord = {}
+  if (this.doLogTimestamp) {
+    logRecord['timestamp'] = utcTimestamp()
+  }
+  if (this.context) {
+    assign(logRecord, mapValues(this.context, (val) => cleanArg(val)))
+  }
+  const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
+  const message = cleanArgs.join(' ')
+  assign(logRecord, {
+    level: logLevel,
+    levelNumber: logLevelNumber,
+    message
+  })
+
+  const logRecordJson = JSON.stringify(logRecord)
+  return [logRecordJson]
+}
+
+// Must return a function instead of a lambda so that it will bind `this` when called
+const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
+  if (this.logLevel) {
+    const loggerLevelNumber = logLevelNumbers[this.logLevel]
+    if (logLevelNumber > loggerLevelNumber) return
+  }
+  const logArgs = this.makeLogArguments(logLevel, logLevelNumber, ...args)
   // Something about using console.log seems to work better for Lambda, allowing multi-line logs to work
   // (Apparently needs carriage-returns instead of newlines)
-  this.console.log.apply(console, combinedArgs)
+  this.console.log.apply(console, logArgs)
+}
+
+const makeLogArgumentsByLogFormat = {
+  'text': makeTextLogArguments,
+  'json': makeJsonLogArguments,
 }
 
 class AwsLogger {
-  constructor(console, {logLevel, doUseCarriageReturns=true, doLogTimestamp=true}) {
+  constructor(console, {logLevel, doUseCarriageReturns=true, doLogTimestamp=true, logFormat='text'}) {
     this.console = console
     this.logLevel = logLevel
     this.doUseCarriageReturns = doUseCarriageReturns
     this.doLogTimestamp = doLogTimestamp
+    const makeLogArguments = makeLogArgumentsByLogFormat[logFormat]
+    if (!makeLogArguments) throw new Error(`Unsupported logFormat: ${logFormat}`)
+    this.makeLogArguments = makeLogArguments
   }
 }
 const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) => makeLogMethod(logLevel, logLevelNumber))

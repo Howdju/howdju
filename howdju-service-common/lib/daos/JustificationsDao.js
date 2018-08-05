@@ -38,7 +38,6 @@ const {EntityNotFoundError} = require('../serviceErrors')
 const {
   groupRootJustifications,
   renumberSqlArgs,
-  mapMany,
 } = require('./util')
 const {DatabaseSortDirection} = require('./daoModels')
 

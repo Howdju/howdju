@@ -1,55 +1,101 @@
 # Prerequisites
 
-Install npm (via nvm) and yarn:
+## Install node
+
+Install node and yarn:
 
 ```sh
-curl -sS -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-. ~/.nvm/nvm.sh
-nvm install 6.10.3
+brew install nodenv
+nodenv init
+nodenv install 8.10.0
+# Activates this node version just for this shell via an env. var
+nodenv shell 8.10.0
 npm install -g yarn
+# I had to install this to succeesfully install bcrypt in howdju-service-common
+npm install -g node-gyp
 ```
 
-# Running
+The correct node version is automatically activated when you `cd` into a node.js directory containg a `.node-version` file.
 
-## Running the web app
-```sh
-cd premiser-ui
-yarn install
-yarn run local
+## Link development node modules and install 
+
+Linking the modules causes dependent modules to use the current code instead of a static installed dependency.
+
+```
+bin/link.sh
+bin/install-all.sh
+``` 
+
+# Prepare a local database server
+
+```
+cd premiser-api
+yarn run db:tunnel
+# in another terminal:
+pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
+pg_dump -h 127.0.0.1  -p 5433 premiser -U premiser_rds > $pg_dump_file_name
+# you can kill `yarn run db:tunnel`
+docker run -p 5432:5432 postgres:9.6
+# in another terminal:
+psql -h localhost -U postgres < db/create-users.sql
+echo 'create database premiser;' | psql -h localhost -U postgres
+psql -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
+psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_name
+rm $pg_dump_file_name
+```
+
+# Running the platform locally
+
+## Run and connect to the database 
+
+```
+docker run -p 5432:5432 postgres:9.6
+cd premiser-api
+yarn db:local:shell
 ```
 
 ## Running the API
 ```sh
 cd premiser-api
-yarn install
-# TODO need to install a SQL database and run migrations.
-yarn run db:local > premiser-db.out &
+yarn local
+```
+
+## Run the web app
+```sh
+cd premiser-ui
 yarn run local
 ```
 
+## Visit the app
+
+Open browser to localhost:3000
+
 # Publishing
+
+## Publishing the API
+
+```sh
+$ Build the base docker image (if necessary)
+bin/docker/api-base-build.sh
+
+# Build the docker image (if necessary)
+bin/docker/api-deploy-build.sh
+
+# Pulls and deploys the current master branch to pre-prod
+bin/docker/api-deploy-run.sh pre-prod
+
+# (Visit pre-prod-www.howdju.com and test the changes)
+
+# To deploy to prod, just update the `prod` alias to the same version as pre-prod
+cd premiser-api/
+yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
+```
 
 ## Publishing the web app
 ```sh
 yarn run deploy:pre-prod
 
-# (Test pre-prod-www.howdju.com)
+# (Visit pre-prod-www.howdju.com and test the changes)
 
 yarn run deploy:prod
-```
-
-## Publishing the API
-
-```sh
-# Build the docker image (if necessary)
-bin/docker/api.deploy-build.sh
-
-# Pulls and deploys the current master branch to pre-prod
-bin/docker/api.deploy-run.sh pre-prod
-
-# (Test pre-prod-www.howdju.com)
-
-# To deploy to prod, just update the `prod` alias to the same version as pre-prod
-cd premiser-api/
-yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
 ```

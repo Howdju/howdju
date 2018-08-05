@@ -9,7 +9,7 @@ const {logger} = require('./logger')
 
 
 AWS.config.region = 'us-east-1'
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'howdju'})
+AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'})
 // See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
 const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
 
@@ -55,7 +55,6 @@ const updateAlias = (functionName, aliasName, newTarget) => {
     updateAliasToVersion(functionName, aliasName, newTarget)
   } else {
     return getAliasVersion(functionName, newTarget, (err, newVersion) => {
-      debugger
       if (err) throw err
       logger.info(`Alias ${newTarget} is version ${newVersion}`)
       updateAliasToVersion(functionName, aliasName, newVersion)
@@ -67,11 +66,11 @@ const getAliasVersion = (functionName, aliasName, cb) => {
   const params = {
     FunctionName: functionName,
     Name: aliasName
-  };
+  }
   lambda.getAlias(params, function(err, data) {
     if (err) return cb(err)
     cb(null, data['FunctionVersion'])
-  });
+  })
 }
 
 const updateAliasToVersion = (functionName, aliasName, targetVersion) => {

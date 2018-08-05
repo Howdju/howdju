@@ -6,15 +6,16 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
+    "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
     "lint": "eslint bin/ src/ lambda-functions/",
+    "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "score-justifications:local": "source ../config/local.env && node bin/score-justifications.js",
     "score-statement-tags:local": "source ../config/local.env && node bin/score-statement-tags.js",
     "score-statement-tags:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/score-statement-tags.js",
     "score-statement-tags:prod": "source ../config/prod-local-tunnel.env && node bin/score-statement-tags.js",
-    "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
-    "update-lambda-function-code": "node bin/update-lambda-function-code.js",
-    "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
-    "update-lambda-function-alias": "node bin/update-lambda-function-alias.js"
+    "test": "echo TODO!",
+    "update-lambda-function-alias": "node bin/update-lambda-function-alias.js",
+    "update-lambda-function-code": "node bin/update-lambda-function-code.js"
   },
   "devDependencies": {
     "argparse": "^1.0.9",

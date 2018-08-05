@@ -10,19 +10,21 @@ else
   lambda_alias=$1
 fi
 
-echo deploying $git_branch to $lambda_alias
-
 if [[ -z $lambda_alias ]]; then
   echo "Usage: deploy.sh [<git_branch=master>] <lambda_alias>"
   exit 1
 fi
 
+echo deploying $git_branch to $lambda_alias
+
 git checkout $git_branch
-git pull --quiet --ff-only
+# git stash save
+# git pull --quiet --ff-only
+# git stash pop
 
-. ~/.nvm/nvm.sh
-
-npm run update-lambda-function-code
+source $HOME/.bashrc
+cd /howdju/premiser-api/
+npm run build-and-update-lambda-function-code
 publish_result=$(npm run publish-lambda-function-version)
 echo publish_result: $publish_result
 new_lambda_version=$(echo "$publish_result" | tail -1 | awk '{print $NF}')

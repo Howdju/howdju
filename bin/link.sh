@@ -6,7 +6,7 @@
 #  node to resolve the libraries.  Note, however, that the libraries are not generally listed in the package.json
 #  (if they were, `npm install` would fail because it would be unable to locate the library, as we have not published them
 #  to a node repository.)  If necessary, during build steps, we may temporarily install the local libraries to the
-#  application libraries and then remove them afterwards.  This is required, e.g., for packaing an app using the
+#  application libraries and then remove them afterwards.  This is required, e.g., for packaging an app using the
 #  npm-install Gulp task.
 
 current_dir=$(pwd)

@@ -6,10 +6,6 @@ const {
   NodePlatforms,
 } = require('howdju-ops')
 
-if (os.platform() !== 'linux') {
-  throw new Error("Must build on a Linux box because argon2 has native dependencies that are built during build")
-}
-
 const lambdarcPath = path.resolve('lambdarc')
 const lambdarc = require(lambdarcPath)
 const lambdaName = lambdarc.name

@@ -8,14 +8,17 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "npm run lint && gulp build",
+    "build-and-update-lambda-function-code": "npm run build && node bin/update-lambda-function-code.js",
     "change-password:local": "source ../config/local.env && node bin/change-user-password.js",
     "change-password:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/change-user-password.js",
     "change-password:prod": "source ../config/prod-local-tunnel.env && node bin/change-user-password.js",
+    "clean": "rm -rf dist",
     "create-user:prod": "source ../config/prod-local-tunnel.env && node bin/create-user.js",
     "create-user:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/create-user.js",
     "create-user:local": "source ../config/local.env && node bin/create-user.js",
-    "db:local:start": "pg_ctl -D /usr/local/var/postgres/9.6.2 start",
-    "db:local:shell": "psql premiser",
+    "db:local:new": "docker run -p 5432:5432 --name premiser_postgres postgres:9.6",
+    "db:local:restart": "docker restart premiser_postgres",
+    "db:local:shell": "psql -h localhost -U premiser_admin premiser",
     "db:local": "yarn run db:local:start && yarn run db:local:shell",
     "db:tunnel": "ssh -N -L 5433:premiser.cc4gfeuy5z8h.us-east-1.rds.amazonaws.com:5432 bastion.howdju.com",
     "db:tunnel:shell:prod": "psql -h 127.0.0.1 -p 5433 -d premiser -U premiser_rds",
@@ -37,7 +40,6 @@
     "test:inspect1": "yarn run test:debug && node-inspector",
     "test:inspect2": "node --debug-brk --inspect ./node_modules/.bin/jest --runInBand --config .jestrc.json",
     "update-lambda-function-alias": "node bin/update-lambda-function-alias.js",
-    "update-lambda-function-code": "npm run build && node bin/update-lambda-function-code.js",
     "update-normal-text:local": "source ../config/local.env && node bin/update-normal-text.js",
     "update-normal-text:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/update-normal-text.js",
     "update-normal-text:prod": "source ../config/prod-local-tunnel.env && node bin/update-normal-text.js"
@@ -51,24 +53,25 @@
     "debug": "^2.6.3",
     "del": "^2.2.2",
     "eslint": "^4.5.0",
+    "eslint-plugin-promise": "^3.5.0",
     "express": "^4.15.2",
     "gulp": "^3.9.1",
-    "gulp-install": "^1.1.0",
-    "gulp-rename": "^1.2.2",
+    "gulp-rename": "^1.4.0",
     "gulp-util": "^3.0.8",
-    "gulp-zip": "^4.0.0",
+    "gulp-zip": "^4.2.0",
     "inspect-process": "^0.4.2",
+    "install-local": "^0.6.0",
     "jest": "^21.2.1",
     "morgan": "^1.8.1",
     "nodemon": "^1.11.0",
     "read": "^1.0.7",
-    "run-sequence": "^1.2.2"
+    "run-sequence": "^1.2.2",
+    "vinyl-fs": "^3.0.3"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
     "deasync": "^0.1.10",
-    "eslint-plugin-promise": "^3.5.0",
     "moment": "^2.18.1",
-    "pg": "^6.1.5"
+    "pg": "^7.4.3"
   }
 }

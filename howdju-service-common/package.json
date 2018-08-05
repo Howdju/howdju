@@ -7,11 +7,12 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "lint": "eslint lib/"
+    "lint": "eslint lib/",
+    "test": "echo TODO!"
   },
   "dependencies": {
     "any-promise": "^1.3.0",
-    "bcrypt": "^1.0.3",
+    "bcrypt": "2",
     "bluebird": "^3.5.0",
     "cryptohat": "^1.0.1",
     "eslint-plugin-promise": "^3.5.0",

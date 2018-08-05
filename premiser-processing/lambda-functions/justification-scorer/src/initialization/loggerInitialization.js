@@ -7,10 +7,11 @@ const logLevel = process.env.LOG_LEVEL || 'warn'
 const isAws = !!process.env.IS_AWS
 const doLogTimestamp = !isAws
 const doUseCarriageReturns = isAws
+const logFormat = isAws ? 'json' : 'text'
 
 console.log('initializing logger')
 
-exports.logger = new AwsLogger(console, {logLevel, doLogTimestamp, doUseCarriageReturns})
+exports.logger = new AwsLogger(console, {logLevel, doLogTimestamp, doUseCarriageReturns, logFormat})
 
 exports.logger.debug('logLevel', logLevel)
 exports.logger.debug('isAws', isAws)

@@ -38,8 +38,10 @@ module.exports = {
         // Allow us to pluck out properties by naming them specifically and then using a rest property.  E.g.:
         // const { toIgnore, ...rest} = someProps
         "ignoreRestSiblings": true
-      }
+      },
     ],
+    // This incorrectly warns for Bluebird.catch with 2+ arguments (which is correct invocation.)
+    "promise/valid-params": "off",
     "semi": [
       "error",
       "never"

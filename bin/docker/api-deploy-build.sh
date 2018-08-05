@@ -11,9 +11,12 @@ if [[ -z $keyfile_password ]]; then
   echo
 fi
 
+bin/lint-all.sh
+bin/test-all.sh
+
 docker build \
-  --tag premiser-api.deploy \
+  --tag premiser-api-deploy \
   --build-arg keyfile_password=$keyfile_password \
   --build-arg current_date=$(date +%Y-%m-%d:%H:%M:%S.%s) \
-  --file docker/api.deploy/Dockerfile \
+  --file docker/api-deploy.dockerfile \
   .

@@ -33,7 +33,7 @@ const baseConfig = {
     dist: path.resolve.bind(path, basePath, 'dist')
   },
   aws: {
-    profile: 'howdju',
+    profile: 'premiser',
     region: 'us-east-1',
     cacheDuration: 'P10M',
   }

@@ -40,6 +40,8 @@ module.exports = {
         "ignoreRestSiblings": true
       }
     ],
+    // This incorrectly warns for Bluebird.catch with 2+ arguments (which is correct invocation.)
+    "promise/valid-params": "off",
     "semi": [
       "error",
       "never"
