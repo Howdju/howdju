@@ -11,7 +11,7 @@ if [[ -z $keyfile_password ]]; then
   echo
 fi
 
-bin/lint-all.sh
+bin/lint-all.sh || exit $?
 bin/test-all.sh
 
 docker build \

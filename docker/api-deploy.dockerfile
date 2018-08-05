@@ -18,7 +18,10 @@ RUN \
   cd /howdju/premiser-api/ && \
   yarn install && \
   cd /howdju/howdju-ops/ && \
-  yarn install
+  yarn install && \
+  curl https://bootstrap.pypa.io/get-pip.py -o- | python && \
+  pip install awscli --upgrade --user && \
+  echo 'export PATH=$HOME/.local/bin/:$PATH' >> $HOME/.bashrc
 
 WORKDIR /howdju/premiser-api
 
