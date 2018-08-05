@@ -1,9 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+
 region=$1
 lambda_name=$2
 payload=$3
 
-log_file_name=lambda-smoke-test.json
-response_file_name=lambda-smoke-test-invoke-response.json
+cli_response_file_name=lambda-smoke-test-out.json
+lambda_response_file_name=lambda-smoke-test-invoke-response.json
 
 aws lambda invoke \
   --invocation-type RequestResponse \
@@ -12,9 +16,11 @@ aws lambda invoke \
   --log-type Tail \
   --payload $payload \
   --profile premiser \
-  $response_file_name \
-  > $log_file_name
-cat $log_file_name | jq '.LogResult | @base64d'
-cat $response_file_name
-status_code=$(cat $response_file_name | jq '.statusCode')
+  $lambda_response_file_name
+  > $cli_response_file_name
+cat $cli_response_file_name | jq -r .LogResult | openssl base64 -d -A
+# cat $lambda_response_file_name
+status_code=$(cat $lambda_response_file_name | jq '.statusCode')
+rm $response_file_name
+rm $cli_response_file_name
 [[ $status_code -ne '500' ]]

@@ -23,7 +23,7 @@ RUN \
   pip install awscli --upgrade --user && \
   echo 'export PATH=$HOME/.local/bin/:$PATH' >> $HOME/.bashrc && \
   # install jq
-  curl -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && \
+  curl -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && \
   chmod +x ./jq && \
   cp jq $HOME/.local/bin
 

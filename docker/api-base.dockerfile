@@ -2,8 +2,11 @@ FROM library/amazonlinux:2018.03
 
 RUN \
   yum -y update && \
-  # build tools necessary for bcrypt
-  yum -y install git gcc-c++ make && \
+  yum -y install \
+    git \
+    # necessary to build bcrypt
+    gcc-c++ make \
+    && \
   # configuring git allows us to stash changes
   git config --global user.email "root@docker" && \
   git config --global user.name "root@docker" && \
