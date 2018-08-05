@@ -2,7 +2,8 @@ region=$1
 lambda_name=$2
 payload=$3
 
-response_file_name=lambda-smoke-test-invoke-response.txt
+log_file_name=lambda-smoke-test.json
+response_file_name=lambda-smoke-test-invoke-response.json
 
 aws lambda invoke \
   --invocation-type RequestResponse \
@@ -12,7 +13,8 @@ aws lambda invoke \
   --payload $payload \
   --profile premiser \
   $response_file_name \
-  | jq '.LogResult | @base64d'
+  > $log_file_name
+cat $log_file_name | jq '.LogResult | @base64d'
 cat $response_file_name
-grep '"statusCode":500' $response_file_name && exit 1
-exit 0
+status_code=$(cat $response_file_name | jq '.statusCode')
+[[ $status_code -ne '500' ]]
