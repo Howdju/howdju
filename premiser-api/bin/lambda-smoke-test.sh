@@ -16,11 +16,11 @@ aws lambda invoke \
   --log-type Tail \
   --payload $payload \
   --profile premiser \
-  $lambda_response_file_name
+  $lambda_response_file_name \
   > $cli_response_file_name
 cat $cli_response_file_name | jq -r .LogResult | openssl base64 -d -A
 # cat $lambda_response_file_name
 status_code=$(cat $lambda_response_file_name | jq '.statusCode')
-rm $response_file_name
+rm $lambda_response_file_name
 rm $cli_response_file_name
 [[ $status_code -ne '500' ]]
