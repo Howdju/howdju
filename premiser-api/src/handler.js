@@ -103,7 +103,7 @@ const parseBody = (appProvider, event) => {
   try {
     return JSON.parse(body)
   } catch (err) {
-    appProvider.logger.error(`Error parsing JSON body (${body})`, err)
+    appProvider.logger.error('Error parsing JSON body', {body, err})
     return null
   }
 }
@@ -111,8 +111,8 @@ const parseBody = (appProvider, event) => {
 const makeResponder = (appProvider, gatewayEvent, gatewayCallback) => ({httpStatusCode, headers, body}) => {
   const origin = getHeaderValue(gatewayEvent.headers, headerKeys.ORIGIN)
   const response = makeResponse(appProvider, {httpStatusCode, headers, body, origin})
-  appProvider.logger.debug('Responding with statusCode: ', response.statusCode)
-  appProvider.logger.silly('Responding with: ', response)
+  appProvider.logger.debug('Response status code', {statusCode: response.statusCode})
+  appProvider.logger.silly('Response', {response})
   return gatewayCallback(null, response)
 }
 
@@ -165,22 +165,18 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
     const requestIdentifiers = makeRequestIdentifiers(gatewayEvent)
     configureLogger(appProvider.logger, gatewayEvent, requestIdentifiers)
 
-    appProvider.logger.silly('gatewayEvent:', gatewayEvent)
-    appProvider.logger.silly('gatewayContext:', gatewayContext)
+    appProvider.logger.silly({gatewayContext, gatewayEvent})
 
     const request = makeRequest(appProvider, gatewayEvent, gatewayCallback, requestIdentifiers)
     const respond = makeResponder(appProvider, gatewayEvent, gatewayCallback)
     return routeEvent(request, appProvider, respond)
-      .catch(error => {
-        appProvider.logger.error('uncaught error after routeEvent')
-        appProvider.logger.error(error)
-        gatewayCallback(error)
+      .catch(err => {
+        appProvider.logger.error('uncaught error after routeEvent', {err})
+        gatewayCallback(ex)
       })
-  } catch(error) {
-    console.error(error)
-    console.error('gatewayEvent:', gatewayEvent)
-    console.error('gatewayContext:', gatewayContext)
-    return gatewayCallback(error)
+  } catch(err) {
+    console.error({err, gatewayEvent, gatewayContext})
+    return gatewayCallback(err)
   }
 }
 

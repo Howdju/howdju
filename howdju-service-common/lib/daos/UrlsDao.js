@@ -24,7 +24,7 @@ exports.UrlsDao = class UrlsDao {
     return this.database.query('select * from urls where url = $1 and deleted is null', [url])
       .then( ({rows}) => {
         if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent URLs`, url)
+          this.logger.error(`${rows.length} equivalent URLs`, {url})
         }
         return toUrl(head(rows))
       })

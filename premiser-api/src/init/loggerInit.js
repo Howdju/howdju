@@ -12,8 +12,7 @@ exports.init = function init(provider) {
 
   const logger = new AwsLogger(console, {logLevel, doLogTimestamp, doUseCarriageReturns, logFormat})
 
-  logger.debug('logLevel', logLevel)
-  logger.debug('isAws', isAws)
+  logger.debug('logger initialization', {logLevel, isAws})
 
   provider.logger = logger
 }

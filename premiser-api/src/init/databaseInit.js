@@ -29,7 +29,7 @@ exports.init = function init(provider) {
 
   const pool = new pg.Pool(config)
   pool.on('error', (err, client) =>
-    provider.logger.error('database pool error', err.message, err.stack)
+    provider.logger.error('database pool error', {err})
   )
 
   assign(provider, {

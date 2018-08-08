@@ -42,7 +42,7 @@ exports.mapSingle = (logger, mapper, tableName, identifiers) => ({rows}) => {
 
   if (logger && rows.length > 1) {
     const identifiersString = join(map(identifiers, (val, key) => `${key} ${val}`), ', ')
-    logger.warn(`Multiple ${tableName} for ${identifiersString}`)
+    logger.warn(`Multiple (${rows.length}) ${tableName} for ${identifiersString}`)
   }
 
   const row = head(rows)

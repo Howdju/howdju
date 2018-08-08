@@ -22,6 +22,6 @@ function setUserPassword(error, password) {
   if (error) throw error
 
   return usersService.updatePasswordForEmail(args.email, password)
-    .catch(err => logger.error(err))
+    .catch(err => logger.error({err}))
     .finally(() => pool.end())
 }

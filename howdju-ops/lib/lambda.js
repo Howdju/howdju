@@ -20,7 +20,7 @@ const getGitDescription = () => childProcess
   .trim()
 
 const updateFunctionCode = (functionName, functionCodeZipPath) => {
-  logger.info(`Updating ${functionName} from ${functionCodeZipPath}`)
+  logger.info('Updating Lambda Function', {functionName, functionCodeZipPath})
   fs.readFile(functionCodeZipPath, (err, data) => {
     if (err) throw err
 
@@ -31,7 +31,8 @@ const updateFunctionCode = (functionName, functionCodeZipPath) => {
     }
     lambda.updateFunctionCode(params, (err, data) => {
       if (err) throw err
-      logger.info(`Uploaded ${functionName} (CodeSha256: ${data['CodeSha256']})`)
+
+      logger.info('Uploaded Lambda Function', {functionName, codeSha256: data['CodeSha256']})
     })
   })
 }
@@ -45,18 +46,18 @@ const publishVersion = (functionName) => {
   lambda.publishVersion(params, function(err, data) {
     if (err) throw err
     const version = data.Version
-    logger.info(`Published lambda ${functionName} as version ${version}`)
+    logger.info('Published lambda', {functionName, version})
   })
 }
 
 const updateAlias = (functionName, aliasName, newTarget) => {
-  logger.info(`Updating '${aliasName}' to '${newTarget}'...`)
   if (/[0-9]+/.test(newTarget)) {
+    logger.info('Updating Lambda Function alias', {aliasName, newTarget, newVersion: newTarget})
     updateAliasToVersion(functionName, aliasName, newTarget)
   } else {
     return getAliasVersion(functionName, newTarget, (err, newVersion) => {
       if (err) throw err
-      logger.info(`Alias ${newTarget} is version ${newVersion}`)
+      logger.info('Updated Lambda Function alias', {aliasName, newTarget, newVersion})
       updateAliasToVersion(functionName, aliasName, newVersion)
     })
   }
@@ -91,7 +92,7 @@ const updateAliasToVersion = (functionName, aliasName, targetVersion) => {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateAlias-property
     lambda.updateAlias(params, function(err, data) {
       if (err) throw err
-      logger.info(`Updated alias "${Name}" to FunctionVersion ${data['FunctionVersion']} (was ${previousVersion})`)
+      logger.info(`Updated Lambda Function alias`, {aliasName, newVersion: targetVersion, previousVersion})
     })
   })
 

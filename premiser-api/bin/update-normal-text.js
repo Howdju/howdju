@@ -19,7 +19,7 @@ function run() {
     updateNormalText('select * from writs', updateWritRowNormalTitle, 'writs'),
     updateNormalText('select * from writ_quotes', updateWritQuoteRowNormalQuoteText, 'writ quotes'),
   ])
-    .catch( (error) => logger.error(error))
+    .catch( (err) => logger.error({err}))
     .finally(() => pool.end())
 }
 

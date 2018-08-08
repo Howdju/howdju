@@ -26,7 +26,7 @@ const config = {
 
 const pool = new pg.Pool(config)
 pool.on('error', (err, client) =>
-  logger.error('database pool error', err.message, err.stack)
+  logger.error('database pool error', {err})
 )
 
 exports.pool = pool

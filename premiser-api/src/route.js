@@ -593,10 +593,9 @@ const selectRoute = (request) => Promise.resolve()
 const routeEvent = (request, appProvider, callback) =>
   selectRoute(request)
     .then( ({route, pathParameters}) => route.handler(appProvider, {callback, request: assign({}, request, {pathParameters})}) )
-    .catch(e => {
-      appProvider.logger.silly('Error handling route:')
-      appProvider.logger.silly(e)
-      throw e
+    .catch(err => {
+      appProvider.logger.silly('Error handling route', {err})
+      throw err
     })
     .catch(EntityValidationError, e => badRequest({
       callback,
@@ -650,9 +649,8 @@ const routeEvent = (request, appProvider, callback) =>
         errors: e.errors
       }
     }))
-    .catch(e => {
-      appProvider.logger.error("Unexpected error")
-      appProvider.logger.error(e)
+    .catch(err => {
+      appProvider.logger.error('Unexpected error', {err})
       return error({callback, body: {errorCode: apiErrorCodes.UNEXPECTED_ERROR}})
     })
 

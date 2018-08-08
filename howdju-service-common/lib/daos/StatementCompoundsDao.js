@@ -143,7 +143,7 @@ exports.StatementCompoundsDao = class StatementCompoundsDao {
           return null
         }
         if (rows.length > 1) {
-          this.logger.error(`Multiple statement compounds are equivalent to `, statementCompound)
+          this.logger.error(`${rows.length} equivalent statement compounds`, {statementCompound})
         }
 
         const row = rows[0]

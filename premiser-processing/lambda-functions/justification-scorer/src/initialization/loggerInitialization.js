@@ -13,5 +13,4 @@ console.log('initializing logger')
 
 exports.logger = new AwsLogger(console, {logLevel, doLogTimestamp, doUseCarriageReturns, logFormat})
 
-exports.logger.debug('logLevel', logLevel)
-exports.logger.debug('isAws', isAws)
+exports.logger.debug('initializing logger', {logLevel, isAws})

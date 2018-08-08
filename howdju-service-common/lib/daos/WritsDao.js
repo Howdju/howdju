@@ -43,7 +43,7 @@ exports.WritsDao = class WritsDao {
     return this.database.query('select * from writs where normal_title = $1 and deleted is null', [normalizeText(writ.title)])
       .then( ({rows}) => {
         if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent writs found`, writ)
+          this.logger.error(`Multiple (${rows.length}) equivalent writs found`, {writ})
         }
         return toWrit(head(rows))
       })

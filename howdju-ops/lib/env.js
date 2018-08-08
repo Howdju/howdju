@@ -6,15 +6,15 @@ const {logger} = require('./logger')
 
 const envVarRegEx = /^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*)?\s*$/
 
-exports.loadEnvironmentEnvVars = (envFilename) => {
-  if (!envFilename) {
-    envFilename = process.env.NODE_ENV === 'production' ?
+exports.loadEnvironmentEnvVars = (envFileName) => {
+  if (!envFileName) {
+    envFileName = process.env.NODE_ENV === 'production' ?
       '../../config/production.env' :
       '../../config/local.env'
   }
 
-  logger.info(`Loading env vars from ${envFilename}`)
-  const envVars = exports.parseEnvVars(fs.readFileSync(path.join(__dirname, envFilename)))
+  logger.info('Loading env vars', {envFileName})
+  const envVars = exports.parseEnvVars(fs.readFileSync(path.join(__dirname, envFileName)))
   assign(process.env, envVars)
 }
 

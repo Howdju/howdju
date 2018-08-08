@@ -10,13 +10,13 @@ const {
 exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
   configureGatewayContext(gatewayContext)
 
-  logger.silly('gatewayEvent:', gatewayEvent)
-  logger.silly('gatewayContext:', gatewayContext)
+  logger.silly({gatewayEvent})
+  logger.silly({gatewayContext})
 
   justificationScoresService.updateJustificationScoresUsingUnscoredVotes()
     .then(() => gatewayCallback(null, 'Scoring justifications succeeded'))
     .catch( (err) => {
-      logger.error('Scoring justifications failed', err)
+      logger.error('Scoring justifications failed', {err})
       return gatewayCallback(err)
     })
 }

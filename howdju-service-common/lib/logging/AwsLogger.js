@@ -1,11 +1,12 @@
 const assign = require('lodash/assign')
 const concat = require('lodash/concat')
-const isObject = require('lodash/isObject')
 const isString = require('lodash/isString')
 const join = require('lodash/join')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const toString = require('lodash/toString')
+
+import {processArgs} from './processArgs'
 
 const {
   utcTimestamp
@@ -14,12 +15,6 @@ const {
 
 const cleanArg = (arg, doUseCarriageReturns) => {
   let cleaned = arg
-  if (cleaned instanceof Error) {
-    cleaned = cleaned.stack
-  }
-  if (isObject(cleaned)) {
-    cleaned = JSON.stringify(cleaned, null, 2)
-  }
   if (!isString(cleaned)) {
     cleaned = toString(cleaned)
   }
@@ -43,9 +38,9 @@ const logLevelNumbers = {
 const logLevelErrorMaxNumber = 1
 
 
-const makeContextString = (context) => {
+const makeContextString = (context, doUseCarriageReturns) => {
   if (!context) return ''
-  const contextParts = map(context, (val, key) => `${key}=${cleanArg(val)}`)
+  const contextParts = map(context, (val, key) => `${key}=${cleanArg(val, doUseCarriageReturns)}`)
   const contextString = join(contextParts, '; ')
   return contextString
 }
@@ -67,7 +62,7 @@ const makeTextLogArguments = function(logLevel, logLevelNumber, ...args) {
     loggerArgs.push(utcTimestamp())
   }
   loggerArgs.push(logLevel)
-  const contextString = makeContextString(this.context)
+  const contextString = makeContextString(this.context, this.doUseCarriageReturns)
   if (contextString) {
     loggerArgs.push(`[${contextString}]`)
   }
@@ -84,15 +79,19 @@ const makeJsonLogArguments = function(logLevel, logLevelNumber, ...args) {
     logRecord['timestamp'] = utcTimestamp()
   }
   if (this.context) {
-    assign(logRecord, mapValues(this.context, (val) => cleanArg(val)))
+    assign(logRecord, mapValues(this.context, (val) => cleanArg(val, this.doUseCarriageReturns)))
   }
-  const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
-  const message = cleanArgs.join(' ')
   assign(logRecord, {
     level: logLevel,
     levelNumber: logLevelNumber,
-    message
   })
+  const {message, data} = processArgs(args)
+  if (message) {
+    logRecord['message'] = message
+  }
+  if (data) {
+    logRecord['data'] = data
+  }
 
   const logRecordJson = JSON.stringify(logRecord)
   return [logRecordJson]

@@ -12,8 +12,8 @@ exports.makeTimestampToUtcMomentParser = (logger) => (val) => {
   try {
     // Interpret database timestamps as UTC
     return moment.utc(val)
-  } catch (ex) {
-    logger.error(`Error parsing timestamp type with moment`, ex)
+  } catch (err) {
+    logger.error(`Error parsing timestamp type with moment`, {err})
   }
 
   return val

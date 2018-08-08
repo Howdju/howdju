@@ -81,14 +81,14 @@ exports.AuthService = class AuthService {
         if (!userHash) {
           throw new EntityNotFoundError(EntityType.PASSWORD_HASH)
         }
-        this.logger.silly('userHash', userHash)
+        this.logger.silly({userHash})
         const {userId, hash} = userHash
         let verifyPromise = null
         try {
           verifyPromise = bcrypt.compare(credentials.password, hash)
           this.logger.silly('proceeding past verify call')
         } catch (err) {
-          this.logger.error('failed verification', err)
+          this.logger.error('failed verification', {err})
           verifyPromise = false
         }
         return Promise.all([
@@ -97,7 +97,6 @@ exports.AuthService = class AuthService {
         ])
       })
       .then( ([isVerified, userId]) => {
-        this.logger.silly('isVerified: ', isVerified)
         if (!isVerified) {
           throw new InvalidLoginError()
         }

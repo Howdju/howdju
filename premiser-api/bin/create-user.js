@@ -43,7 +43,7 @@ function createUserWithPassword(error, password) {
   }
   return usersService.createUserAsUser(creatorUserId, user, password)
     .then( user => {
-      logger.info(`Created user ${user.id} (${user.email})`)
+      logger.info('Created user', {id: user.id, email: user.email})
       return user
     })
     .then( (user) => {

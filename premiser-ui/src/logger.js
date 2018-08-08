@@ -19,12 +19,12 @@ export const logger = {
   info: console.info || console.log,
   debug: console.debug || console.log,
   trace: console.trace || console.log,
-  exception: (ex, options = {}) => {
+  exception: (err, options = {}) => {
     const {level = 'error', extra} = options
     if (config.isDev) {
       // Sentry wraps all console methods and so will send this to the system too
-      logger[level](ex)
+      logger[level](err)
     }
-    sentry.captureException(ex, extra)
+    sentry.captureException(err, extra)
   }
 }

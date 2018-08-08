@@ -32,8 +32,7 @@ exports.Database = class Database {
     }
 
     const utcArgs = map(args, toUtc)
-    this.logger.silly('Database.query sql:', sql)
-    this.logger.silly('Database.query utcArgs:', utcArgs)
+    this.logger.silly('Database.query', {sql, utcArgs})
     return this.pool.query(sql, utcArgs)
   }
 

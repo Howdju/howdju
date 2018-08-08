@@ -34,14 +34,14 @@ exports.JustificationVotesService = class JustificationVotesService {
       ]))
       .then(([userId, updatedOpposingVoteIds, equivalentVotes]) => {
         if (updatedOpposingVoteIds.length > 0) {
-          this.logger.debug(`Deleted ${updatedOpposingVoteIds.length} opposing justification votes`, vote)
+          this.logger.debug(`Deleted ${updatedOpposingVoteIds.length} opposing justification votes`, {vote})
         }
         if (equivalentVotes.length > 0) {
           if (equivalentVotes.length > 1) {
-            this.logger.error(`${equivalentVotes.length} equivalent justification votes exist`, equivalentVotes, vote)
+            this.logger.error(`${equivalentVotes.length} equivalent justification votes exist`, {equivalentVotes, vote})
           }
           const equivalentVote = equivalentVotes[0]
-          this.logger.debug('Equivalent vote already exists', equivalentVote, vote)
+          this.logger.debug('Equivalent vote already exists', {equivalentVote, vote})
           return equivalentVote
         } else {
           return this.justificationVotesDao.createVote(userId, vote)
