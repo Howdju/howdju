@@ -6,7 +6,7 @@ const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const toString = require('lodash/toString')
 
-import {processArgs} from './processArgs'
+const {processArgs} = require('./processArgs')
 
 const {
   utcTimestamp

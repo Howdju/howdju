@@ -1,64 +1,47 @@
 const {selectRoute} = require('./route')
 const {
   httpMethods,
-  NoMatchingRouteError,
 } = require('howdju-common')
 
 describe('routes', () => {
 
-  test('readStatement route path should match a statement path', done => {
+  test('readStatement route path should match a statement path', () => {
     const path = 'statements/2'
     const method = httpMethods.GET
     const queryStringParameters = {}
-    selectRoute({path, method, queryStringParameters})
-      .then( ({route, pathParameters}) => {
-        expect(route.id).toBe('readStatement')
-        expect(pathParameters).toEqual(["2"])
-        return done()
-      })
+
+    const {route, routedRequest} = selectRoute({path, method, queryStringParameters})
+
+    expect(route.id).toBe('readStatement')
+    expect(routedRequest.pathParameters).toEqual(["2"])
   })
 
-  test('readStatementJustifications route path should match a statement justifications path', done => {
+  test('readStatementJustifications route path should match a statement justifications path', () => {
     const path = 'statements/2'
     const method = httpMethods.GET
     const queryStringParameters = {include: 'justifications'}
 
-    expect.assertions(2)
-    return selectRoute({path, method, queryStringParameters})
-      .then( ({route, pathParameters}) => {
-        expect(route.id).toBe('readStatementJustifications')
-        expect(pathParameters).toEqual(["2"])
-        return done()
-      })
+    const {route, routedRequest} = selectRoute({path, method, queryStringParameters})
+    expect(route.id).toBe('readStatementJustifications')
+    expect(routedRequest.pathParameters).toEqual(["2"])
   })
 
-  test('readTaggedStatements route path should match a tagged statements path', done => {
+  test('readTaggedStatements route path should match a tagged statements path', () => {
     const path = 'statements'
     const method = httpMethods.GET
     const queryStringParameters = {tagId: '42'}
 
-    expect.assertions(1)
-    return selectRoute({path, method, queryStringParameters})
-      .then( ({route}) => {
-        expect(route.id).toBe('readTaggedStatements')
-        return done()
-      })
+    const {route} = selectRoute({path, method, queryStringParameters})
+
+    expect(route.id).toBe('readTaggedStatements')
   })
 
-  test('readTaggedStatements route path should NOT match a non-tagged statements path', done => {
+  test('readTaggedStatements route path should NOT match a non-tagged statements path', () => {
     const path = 'statements'
     const method = httpMethods.GET
     const queryStringParameters = {tag: '42'}
 
-    expect.assertions(1)
-    return selectRoute({path, method, queryStringParameters})
-      .then( ({route}) => {
-        expect(route.id).not.toBe('readTaggedStatements')
-        return done()
-      })
-      .catch(error => {
-        expect(error instanceof NoMatchingRouteError).toBe(true)
-        return done()
-      })
+    const {route} = selectRoute({path, method, queryStringParameters})
+    expect(route.id).not.toBe('readTaggedStatements')
   })
 })

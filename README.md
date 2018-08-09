@@ -35,7 +35,7 @@ yarn run db:tunnel
 pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
 pg_dump -h 127.0.0.1  -p 5433 premiser -U premiser_rds > $pg_dump_file_name
 # you can kill `yarn run db:tunnel`
-docker run -p 5432:5432 postgres:9.6
+docker run -p 5432:5432 postgres:9.6 --name premiser_postgres
 # in another terminal:
 psql -h localhost -U postgres < db/create-users.sql
 echo 'create database premiser;' | psql -h localhost -U postgres
@@ -46,10 +46,12 @@ rm $pg_dump_file_name
 
 # Running the platform locally
 
+Do each of the following in different terminal windows.
+
 ## Run and connect to the database 
 
 ```
-docker run -p 5432:5432 postgres:9.6
+docker restart premiser_postgres
 cd premiser-api
 yarn db:local:shell
 ```
@@ -86,7 +88,7 @@ bin/docker/api-deploy-run.sh pre-prod
 
 # (Visit pre-prod-www.howdju.com and test the changes)
 
-# To deploy to prod, just update the `prod` alias to the same version as pre-prod
+# To deploy to prod, just point the `prod` alias to the same version as the `pre-prod` alias
 cd premiser-api/
 yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
 ```

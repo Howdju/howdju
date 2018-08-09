@@ -19,7 +19,7 @@ const {
   configureGatewayContext
 } = require('howdju-service-common')
 
-const {routeEvent} = require('./route')
+const {routeRequest} = require('./route')
 const {apiHost} = require('./config/util')
 const customHeaderKeys = require('./customHeaderKeys')
 const headerKeys = require('./headerKeys')
@@ -169,16 +169,21 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
 
     const request = makeRequest(appProvider, gatewayEvent, gatewayCallback, requestIdentifiers)
     const respond = makeResponder(appProvider, gatewayEvent, gatewayCallback)
-    return routeEvent(request, appProvider, respond)
+    return routeRequest(request, appProvider, respond)
       .catch(err => {
         appProvider.logger.error('uncaught error after routeEvent', {err})
-        gatewayCallback(ex)
+        gatewayCallback(err)
       })
   } catch(err) {
     console.error({err, gatewayEvent, gatewayContext})
     return gatewayCallback(err)
   }
 }
+
+process.on('unhandledRejection', (err) => {
+  console.error(err)
+  process.exit(1)
+})
 
 const appProviderByStage = {}
 

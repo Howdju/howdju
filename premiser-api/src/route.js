@@ -26,6 +26,12 @@ const {
   rethrowTranslatedErrors,
 } = require("howdju-service-common")
 
+const {
+  Validator,
+  validateRequest,
+} = require('./validation')
+
+const idValidator = new Validator(/[0-9]/, 'identifiers must be natural numbers')
 
 const ok = ({callback, body={}, headers}) => callback({
   httpStatusCode: httpStatusCodes.OK,
@@ -126,6 +132,9 @@ const routes = [
     id: 'readTag',
     path: new RegExp('^tags/([^/]+)$'),
     method: httpMethods.GET,
+    validators: {
+      pathParameters: [idValidator]
+    },
     handler: (appProvider, {
       callback,
       request: {
@@ -143,6 +152,9 @@ const routes = [
     path: 'statements',
     method: httpMethods.GET,
     queryStringParameters: {tagId: /.+/},
+    validators: {
+      queryStringParameters: {tagId: idValidator}
+    },
     handler: (appProvider, {
       request: {
         queryStringParameters: {tagId},
@@ -197,6 +209,10 @@ const routes = [
     id: 'readStatement',
     path: new RegExp('^statements/([^/]+)$'),
     method: httpMethods.GET,
+    validators: {
+      pathParameters: [idValidator]
+    },
+    // explicitly no query string parameters
     queryStringParameters: {},
     handler: (appProvider, {
       callback,
@@ -546,53 +562,58 @@ const routes = [
   },
 ]
 
-const selectRoute = (request) => Promise.resolve()
-  .then(() => {
-    const {
-      path,
-      method,
-      queryStringParameters
-    } = request
+const selectRoute = (request) => {
+  const {
+    path,
+    method,
+    queryStringParameters
+  } = request
 
-    for (let route of routes) {
-      let pathMatch
+  for (let route of routes) {
+    let pathMatch
 
-      if (route.method && route.method !== method) continue
-      if (typeof route.path === 'string' && route.path !== path) continue
-      if (route.path instanceof RegExp && !(pathMatch = route.path.exec(path))) continue
-      if (route.queryStringParameters) {
-        if (isEmpty(route.queryStringParameters) !== isEmpty(queryStringParameters)) {
-          continue
-        }
-
-        let isMisMatch = false
-        forEach(route.queryStringParameters, (value, name) => {
-          const requestValue = queryStringParameters[name] || ''
-          if (value instanceof RegExp) {
-            // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
-            if (isUndefined(requestValue) || !value.test(requestValue)) {
-              isMisMatch = true
-            }
-          } else if (value !== requestValue) {
-            isMisMatch = true
-          }
-        })
-        if (isMisMatch) {
-          continue
-        }
+    if (route.method && route.method !== method) continue
+    if (typeof route.path === 'string' && route.path !== path) continue
+    if (route.path instanceof RegExp && !(pathMatch = route.path.exec(path))) continue
+    if (route.queryStringParameters) {
+      if (isEmpty(route.queryStringParameters) !== isEmpty(queryStringParameters)) {
+        continue
       }
 
-      // First item is the whole match, rest are the group matches
-      const pathParameters = pathMatch ? pathMatch.slice(1) : undefined
-      return {route, pathParameters}
+      let isMisMatch = false
+      forEach(route.queryStringParameters, (value, name) => {
+        const requestValue = queryStringParameters[name] || ''
+        if (value instanceof RegExp) {
+          // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
+          if (isUndefined(requestValue) || !value.test(requestValue)) {
+            isMisMatch = true
+          }
+        } else if (value !== requestValue) {
+          isMisMatch = true
+        }
+      })
+      if (isMisMatch) {
+        continue
+      }
     }
 
-    throw new NoMatchingRouteError()
-  })
+    // First item is the whole match, rest are the group matches
+    const pathParameters = pathMatch ? pathMatch.slice(1) : undefined
+    const routedRequest = assign({}, request, {pathParameters})
+    return {route, routedRequest}
+  }
 
-const routeEvent = (request, appProvider, callback) =>
-  selectRoute(request)
-    .then( ({route, pathParameters}) => route.handler(appProvider, {callback, request: assign({}, request, {pathParameters})}) )
+  throw new NoMatchingRouteError()
+}
+
+const handleRequest = (appProvider, callback) => ({route, routedRequest}) =>
+  route.handler(appProvider, {callback, request: routedRequest})
+
+const routeRequest = (request, appProvider, callback) =>
+  Promise.resolve(request)
+    .then(selectRoute)
+    .then(validateRequest(appProvider))
+    .then(handleRequest(appProvider, callback))
     .catch(err => {
       appProvider.logger.silly('Error handling route', {err})
       throw err
@@ -656,6 +677,7 @@ const routeEvent = (request, appProvider, callback) =>
 
 module.exports = {
   routes,
-  routeEvent,
+  routeRequest,
   selectRoute,
+  idValidator,
 }
