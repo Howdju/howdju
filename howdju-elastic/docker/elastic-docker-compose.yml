@@ -1,0 +1,22 @@
+version: '3'
+services:
+  elasticsearch:
+    build:
+      dockerfile: ./elasticsearch.dockerfile
+      context: .
+    ports:
+      - 9200:9200
+  logstash:
+    build:
+      dockerfile: ./logstash.dockerfile
+      context: .
+    volumes:
+    - ./logstash.conf:/usr/share/logstash/config/logstash.conf
+  kibana:
+    build:
+      dockerfile: ./kibana.dockerfile
+      context: .
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601

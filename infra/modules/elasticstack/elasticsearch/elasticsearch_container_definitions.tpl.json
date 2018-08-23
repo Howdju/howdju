@@ -1,0 +1,40 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/${repository_name}:${container_version}",
+    ${command_override}
+    "essential": true,
+    "environment": [
+      { "name" : "ES_JAVA_OPTS", "value" : "-Xms${memory_mib}m -Xmx${memory_mib}m" }
+    ],
+    "ulimits": [
+      {"name": "nofile", "softLimit": 65536, "hardLimit": 65536},
+      {"name": "memlock", "softLimit": ${memlock_limit}, "hardLimit": ${memlock_limit}},
+      {"name": "nproc", "softLimit": 4096, "hardLimit": 4096}
+    ],
+    "portMappings": [
+      {
+        "containerPort": ${port},
+        "hostPort": ${host_port}
+      },
+      {
+        "containerPort": ${transport_port},
+        "hostPort": ${host_transport_port}
+      }
+    ],
+    "healthCheck": {
+      "command": ["CMD-SHELL", "curl -f http://localhost:${port}/_cat/health || exit 1" ],
+      "interval": 30,
+      "timeout": 10,
+      "retries": 2
+    },
+    "logConfiguration": {
+       "logDriver": "awslogs",
+       "options": {
+         "awslogs-group": "${log_group}",
+         "awslogs-region": "${aws_region}",
+         "awslogs-stream-prefix": "${log_stream_prefix}"
+       }
+    }
+  }
+]
