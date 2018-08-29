@@ -28,9 +28,17 @@ const AboutPage = () => (
         <h2>Research supports this approach</h2>
         <p>
           <a href="http://dx.doi.org/10.1080/23808985.1999.11678963"
-             title="Daniel J. O’Keefe (1999) How to Handle Opposing Arguments in Persuasive Messages: A Meta-Analytic Review of the Effects of One-Sided and Two-Sided Messages, Annals of the International Communication Association, 22:1, 209-249, DOI: 10.1080/23808985.1999.11678963">
+             title="Daniel J. O’Keefe (1999) How to Handle Opposing Arguments in Persuasive Messages: A Meta-Analytic Review of the Effects of One-Sided and Two-Sided Messages, Annals of the International Communication Association, 22:1, 209-249, DOI: 10.1080/23808985.1999.11678963"
+          >
             Research
           </a> indicates that two-sided messaging that includes counter-arguments is much more persuasive than without.
+          <a href="https://www.poynter.org/news/fact-checking-doesnt-backfire-new-study-suggests"
+             title="Fact-checking doesn't 'backfire,' new study suggests, Alexios Mantzarlis, November 2, 2016 citing Wood, Thomas and Porter, Ethan, The Elusive Backfire Effect: Mass Attitudes’ Steadfast Factual Adherence (December 31, 2017)"
+          >
+            Research
+          </a> also indicates that the "backfire effect" may occur for isolated incidents based upon wording of the
+          correction.  "[B]y and large, citizens heed factual information, even when such information challenges
+          their partisan and ideological commitments."
         </p>
 
         <h2>Introduction</h2>
