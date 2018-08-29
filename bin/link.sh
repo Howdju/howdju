@@ -29,8 +29,6 @@ yarn link howdju-service-common
 yarn link howdju-ops
 
 cd ${base_dir}/premiser-processing
-yarn link howdju-common
-yarn link howdju-service-common
 yarn link howdju-ops
 
 cd ${base_dir}/premiser-ui

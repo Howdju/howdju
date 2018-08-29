@@ -37,10 +37,13 @@ const updateFunctionCode = (functionName, functionCodeZipPath) => {
   })
 }
 
-const publishVersion = (functionName) => {
+const publishVersion = (functionName, description = null) => {
+  if (!description) {
+    description = getGitDescription()
+  }
   const params = {
     FunctionName: functionName,
-    Description: getGitDescription(),
+    Description: description,
   }
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#publishVersion-property
   lambda.publishVersion(params, function(err, data) {

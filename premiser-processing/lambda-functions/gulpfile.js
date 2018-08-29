@@ -16,7 +16,8 @@ const argumentParser = new ArgumentParser({
 })
 // must be optional (starts with --) so that gulp doesn't think it's a task
 argumentParser.addArgument('--lambdaDir', {required: true})
-const [args] = argumentParser.parseKnownArgs()
+argumentParser.addArgument('--removeHowdjuDeps')
+const args = argumentParser.parseArgs()
 
 // To allow del to do its safety check, we set CWD to the project root.  So paths must be relative to that
 const lambdaDir = path.resolve('lambda-functions', args.lambdaDir)
@@ -49,25 +50,12 @@ gulp.task('copy-src', () => {
 })
 
 gulp.task('add-howdju-deps', (next) => {
-  exec(`npm install --save --prefix ${lambdaDir} ../howdju-service-common`, function (err, output, errOutput) {
+  exec(`yarn install --cwd ${lambdaDir} --production ../howdju-service-common`, function (err, output, errOutput) {
     if (output) process.stdout.write(output + '\n')
     if (errOutput) process.stderr.write(errOutput + '\n')
     if (err) return next(err)
     // howdju-service-common package.json lacks a dependency on howdju-common (should we add it in a post-install step?)
-    exec(`npm install --save --prefix ${lambdaDir} ../howdju-common`, function (err, output, errOutput) {
-      if (output) process.stdout.write(output + '\n')
-      if (errOutput) process.stderr.write(errOutput + '\n')
-      next(err)
-    })
-  })
-})
-
-gulp.task('remove-howdju-deps', (next) => {
-  exec(`npm uninstall --save --prefix ${lambdaDir} howdju-service-common`, function (err, output, errOutput) {
-    if (output) process.stdout.write(output + '\n')
-    if (errOutput) process.stderr.write(errOutput + '\n')
-    if (err) return next(err)
-    exec(`npm uninstall --save --prefix ${lambdaDir} howdju-common`, function (err, output, errOutput) {
+    exec(`yarn install --cwd ${lambdaDir} --production ../howdju-common`, function (err, output, errOutput) {
       if (output) process.stdout.write(output + '\n')
       if (errOutput) process.stderr.write(errOutput + '\n')
       next(err)
@@ -81,6 +69,19 @@ gulp.task('npm-install', () =>
     .pipe(install({production: true}))
 )
 
+gulp.task('remove-howdju-deps', (next) => {
+  exec(`yarn remove --cwd ${lambdaDir} howdju-service-common`, function (err, output, errOutput) {
+    if (output) process.stdout.write(output + '\n')
+    if (errOutput) process.stderr.write(errOutput + '\n')
+    if (err) return next(err)
+    exec(`yarn remove --cwd ${lambdaDir} howdju-common`, function (err, output, errOutput) {
+      if (output) process.stdout.write(output + '\n')
+      if (errOutput) process.stderr.write(errOutput + '\n')
+      next(err)
+    })
+  })
+})
+
 gulp.task('zip', () =>
   gulp.src([
     path.join(lambdaBuildDir, '**/*'),
@@ -88,6 +89,8 @@ gulp.task('zip', () =>
   ])
     .pipe(zip(`${lambdaName}.zip`))
     .pipe(gulp.dest(lambdaDistDir)))
+
+const removeHowdjuDeps = args.removeHowdjuDeps ? ['remove-howdju-deps'] : []
 
 gulp.task('build', (next) => runSequence(
   ['clean'],
@@ -97,6 +100,6 @@ gulp.task('build', (next) => runSequence(
     'npm-install'
   ],
   ['zip'],
-  ['remove-howdju-deps'],
+  removeHowdjuDeps,
   next
 ))

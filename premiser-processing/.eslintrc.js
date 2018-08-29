@@ -3,9 +3,12 @@ module.exports = {
     "es6": true,
     "node": true
   },
-  "extends": "eslint:recommended",
   "plugins": [
     "promise"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:promise/recommended",
   ],
   "rules": {
     "indent": [
@@ -23,7 +26,7 @@ module.exports = {
     ],
     "no-restricted-globals": [
       "error",
-      // Use bluebird instead
+      // Use bluebird
       "Promise"
     ],
     "no-unused-vars": [
@@ -37,6 +40,8 @@ module.exports = {
         "ignoreRestSiblings": true
       }
     ],
+    // promise/valid-params incorrectly warns for Bluebird.catch with 2+ arguments (which is correct invocation.)
+    "promise/valid-params": "off",
     "semi": [
       "error",
       "never"
@@ -50,6 +55,6 @@ module.exports = {
         "expect": false,
         "test": false,
       }
-    },
+    }
   ],
 };

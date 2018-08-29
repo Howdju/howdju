@@ -8,9 +8,10 @@ const argParser = new ArgumentParser({
   description: 'Publish a lambda function version'
 })
 argParser.addArgument('--lambdaDir', {required: true})
+argParser.addArgument('--versionDescription')
 const args = argParser.parseArgs()
 
 const lambdarcPath = path.resolve('lambda-functions', args.lambdaDir, 'lambdarc')
 const lambdarc = require(lambdarcPath)
 
-lambda.publishVersion(lambdarc.name)
+lambda.publishVersion(lambdarc.name, args.versionDescription)
