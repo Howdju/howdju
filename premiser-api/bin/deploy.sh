@@ -18,6 +18,7 @@ fi
 echo deploying $git_branch to $lambda_alias
 
 git checkout $git_branch
+# TODO unless we pull, we can't deploy updated code changes
 # git stash save
 # git pull --quiet --ff-only
 # git stash pop

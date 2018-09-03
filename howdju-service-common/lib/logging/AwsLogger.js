@@ -14,20 +14,6 @@ const {
   utcTimestamp
 } = require('howdju-common')
 
-
-const cleanArg = (arg, doUseCarriageReturns) => {
-  let cleaned = arg
-  if (!isString(cleaned)) {
-    cleaned = toString(cleaned)
-  }
-  // Cloudwatch will break newline characters into separate log entries
-  // https://github.com/visionmedia/debug/issues/296#issuecomment-289595923
-  if (doUseCarriageReturns) {
-    cleaned = cleaned.replace('\n', '\r')
-  }
-  return cleaned
-}
-
 const logLevelNumbers = {
   silly: 5,
   debug: 4,
@@ -40,9 +26,9 @@ const logLevelNumbers = {
 const logLevelErrorMaxNumber = 1
 
 
-const makeContextString = (context, doUseCarriageReturns) => {
+const makeContextString = (context) => {
   if (!context) return ''
-  const contextParts = map(context, (val, key) => `${key}=${cleanArg(val, doUseCarriageReturns)}`)
+  const contextParts = map(context, (val, key) => `${key}=${util.format(val)}`)
   const contextString = join(contextParts, '; ')
   return contextString
 }
@@ -63,14 +49,15 @@ const makeTextLogArguments = function(logLevel, logLevelNumber, ...args) {
   if (this.doLogTimestamp) {
     loggerArgs.push(utcTimestamp())
   }
+
   loggerArgs.push(logLevel)
+
   const contextString = makeContextString(this.context, this.doUseCarriageReturns)
   if (contextString) {
     loggerArgs.push(`[${contextString}]`)
   }
 
-  const cleanArgs = map(args, arg => cleanArg(arg, this.doUseCarriageReturns))
-  const combinedArgs = concat(loggerArgs, cleanArgs)
+  const combinedArgs = concat(loggerArgs, args)
   return combinedArgs
 }
 
@@ -81,7 +68,7 @@ const makeJsonLogArguments = function(logLevel, logLevelNumber, ...args) {
     logRecord['timestamp'] = utcTimestamp()
   }
   if (this.context) {
-    assign(logRecord, mapValues(this.context, (val) => cleanArg(val, this.doUseCarriageReturns)))
+    logRecord['context'] = this.context
   }
   assign(logRecord, {
     level: logLevel,
@@ -107,7 +94,11 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
   }
   const logArgs = this.makeLogArguments(logLevel, logLevelNumber, ...args)
   // AWS seems to overwrite console.log to add the timestamp and request ID.  Our logging handles those, so write directly to stdout
-  process.stdout.write(util.format(logArgs))
+  let formatted = util.format.apply(util, logArgs)
+  if (this.doUseCarriageReturns) {
+    formatted = formatted.replace('\n', '\r')
+  }
+  process.stdout.write(formatted + "\n")
 }
 
 const makeLogArgumentsByLogFormat = {
@@ -119,7 +110,9 @@ class AwsLogger {
   /**
    * @param console
    * @param logLevel
-   * @param doUseCarriageReturns AWS breaks logs across newlines, so we must break using carriage returns to get breaks in a single record
+   * @param doUseCarriageReturns - CloudWatch breaks logs across newlines, so we must break using carriage returns
+   *                               to get breaks in a single record
+   *                               https://github.com/visionmedia/debug/issues/296#issuecomment-289595923
    * @param doLogTimestamp
    * @param logFormat
    */
@@ -131,6 +124,7 @@ class AwsLogger {
     const makeLogArguments = makeLogArgumentsByLogFormat[logFormat]
     if (!makeLogArguments) throw new Error(`Unsupported logFormat: ${logFormat}`)
     this.makeLogArguments = makeLogArguments
+    this.eol = "\n"
   }
 }
 const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) => makeLogMethod(logLevel, logLevelNumber))

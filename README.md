@@ -59,13 +59,13 @@ yarn db:local:shell
 ## Running the API
 ```sh
 cd premiser-api
-yarn local
+yarn start:local
 ```
 
 ## Run the web app
 ```sh
 cd premiser-ui
-yarn run local
+yarn start:local
 ```
 
 ## Visit the app
@@ -101,3 +101,19 @@ yarn run deploy:pre-prod
 
 yarn run deploy:prod
 ```
+
+# Debugging
+
+## Debugging/inspecting the API
+
+```sh
+cd premiser-api
+yarn start:local:inspect
+```
+
+Open Chrome to `chrome://inspect`.  Click "Open dedicated DevTools for Node".  The Chrome debugger should automatically
+connect to the node process.  The Chrome debugger should automatically reconnect whenever the API restarts.
+
+## Debugging/inspecting the UI
+
+Use your web browser's Javascript debugging features as usual.
