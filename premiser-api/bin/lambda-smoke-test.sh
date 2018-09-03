@@ -15,7 +15,7 @@ aws lambda invoke \
   --region $region \
   --log-type Tail \
   --payload $payload \
-  --profile premiser \
+  --profile BuildTools \
   $lambda_response_file_name \
   > $cli_response_file_name
 cat $cli_response_file_name | jq -r .LogResult | openssl base64 -d -A
