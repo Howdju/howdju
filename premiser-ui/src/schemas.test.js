@@ -16,17 +16,13 @@ describe('schemas', () => {
       statementCompound1 = {
         id: 4,
         atoms: [
-          {
-            statement: statement2
-          }
+          {entity: statement2}
         ]
       },
       statementCompound2 = {
         id: 5,
         atoms: [
-          {
-            statement: statement3
-          }
+          {entity: statement3}
         ]
       },
       justification1 = {
@@ -57,6 +53,20 @@ describe('schemas', () => {
         justifications: {
           1: {...justification1, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT_COMPOUND', entity: { id: 4, schema: 'STATEMENT_COMPOUND' } } },
           2: {...justification2, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT_COMPOUND', entity: { id: 5, schema: 'STATEMENT_COMPOUND' } } },
+        },
+        statementCompounds: {
+          4: {
+            atoms: [
+              {entity: 2},
+            ],
+            id: 4,
+          },
+          5: {
+            atoms: [
+              {entity: 3},
+            ],
+            id: 5,
+          },
         },
       }
     }

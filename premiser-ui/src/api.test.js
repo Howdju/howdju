@@ -1,35 +1,31 @@
+import Promise from 'bluebird'
 import { normalize } from 'normalizr'
 import { statementsSchema } from './schemas'
 
-jest.mock('axios')
+const axiosInstance = {request: jest.fn()}
+import Axios from 'axios'
+Axios.create = () => axiosInstance
 
-beforeEach(done => {
-  import('axios').then(axios => {
-    axios.mockReset()
-    done()
-  })
+beforeEach(() => {
+  axiosInstance.request.mockReset()
 })
 
 describe('api', () => {
-  test('fetchStatements', done => {
+  test('request', done => {
     const statements = [
       { id: 1, text: 'a statement' },
       { id: 2, text: 'another statement' }
     ]
-    Promise.all([import('axios'), import('./api')]).then( ([axios, api]) => {
+    return Promise.all([import('./api')]).then(([api]) => {
 
-      fetch.mockImplementation( () => Promise.resolve({
-        ok: true,
-        headers: {
-          get: headerName => 'application/json'
-        },
-        json: () => Promise.resolve(statements),
-      }) )
+      axiosInstance.request.mockImplementation(() => Promise.resolve({
+        data: statements
+      }))
 
-      api.fetchJson('blah', {schema: statementsSchema}).then( (result) => {
+      return api.request({endpoint: 'blah', schema: statementsSchema}).then( (result) => {
         expect(result).toEqual(normalize(statements, statementsSchema))
-        done()
       })
     })
+      .catch().then(() => done())
   })
 })

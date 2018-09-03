@@ -5,7 +5,7 @@ import entities, {
   indexRootJustificationsByRootStatementId,
   unionArraysDistinctIdsCustomizer,
 } from './entities'
-import {CREATE_JUSTIFICATION_SUCCESS, DELETE_JUSTIFICATION_SUCCESS} from "../actions"
+import {api, str, DELETE_JUSTIFICATION_SUCCESS} from "../actions"
 import {JustificationPolarity, JustificationTargetType} from "howdju-common"
 
 
@@ -36,7 +36,7 @@ describe('reducers', () => {
             },
             justification = {
               id: 1,
-              rootStatementId: rootStatement.id,
+              rootStatement: rootStatement.id,
               target: {
                 type: JustificationTargetType.STATEMENT,
                 entity: {
@@ -47,8 +47,9 @@ describe('reducers', () => {
             justificationsById = {
               [justification.id]: justification
             }
+
           expect(indexRootJustificationsByRootStatementId(justificationsById)).toEqual({
-            [justification.rootStatement.id]: [justification.id],
+            [justification.rootStatement]: [justification.id],
           })
         })
       })
@@ -206,7 +207,7 @@ describe('reducers', () => {
 
     describe('actions', () => {
 
-      describe('CREATE_JUSTIFICATION_SUCCESS', () => {
+      describe(str(api.createJustification.response), () => {
 
         test('should merge justificationsByRootStatementId', () => {
           const
@@ -220,12 +221,12 @@ describe('reducers', () => {
             },
             existingJustification = {
               id: 1,
-              rootStatement: {id: 1},
+              rootStatement: 1,
             },
 
             newJustification = {
               id: 2,
-              rootStatement: {id: 1},
+              rootStatement: 1,
               target: {
                 type: JustificationTargetType.STATEMENT,
                 entity: targetStatement
@@ -244,12 +245,12 @@ describe('reducers', () => {
                 [existingJustification.id]: existingJustification
               },
               justificationsByRootStatementId: {
-                [existingJustification.rootStatement.id]: [existingJustification.id]
+                [existingJustification.rootStatement]: [existingJustification.id]
               }
             },
 
             action = {
-              type: CREATE_JUSTIFICATION_SUCCESS,
+              type: str(api.createJustification.response),
               payload: {
                 result: {
                   justification: newJustification.id
@@ -266,8 +267,7 @@ describe('reducers', () => {
             },
 
             mergedJustificationsByRootStatementId =
-              initialState.justificationsByRootStatementId[existingJustification.rootStatement.id].concat([newJustification.id]),
-
+              initialState.justificationsByRootStatementId[existingJustification.rootStatement].concat([newJustification.id]),
             expectedState = {
               statements: {
                 [targetStatement.id]: targetStatement,
@@ -277,11 +277,11 @@ describe('reducers', () => {
                 [newJustification.id]: newJustification,
               },
               justificationsByRootStatementId: {
-                [existingJustification.rootStatement.id]: mergedJustificationsByRootStatementId
+                [existingJustification.rootStatement]: mergedJustificationsByRootStatementId
               },
             }
-
-          expect(entities(initialState, action)).toEqual(expectedState)
+          const actual = entities(initialState, action)
+          expect(actual).toEqual(expectedState)
         })
 
         test('should add counter-justifications to a target with no counter-justifications', () => {
@@ -315,7 +315,7 @@ describe('reducers', () => {
             },
 
             action = {
-              type: CREATE_JUSTIFICATION_SUCCESS,
+              type: str(api.createJustification.response),
               payload: {
                 result: {
                   justification: counterJustification.id
@@ -378,7 +378,7 @@ describe('reducers', () => {
             },
 
             action = {
-              type: CREATE_JUSTIFICATION_SUCCESS,
+              type: str(api.createJustification.response),
               payload: {
                 result: {
                   justification: counterJustification.id

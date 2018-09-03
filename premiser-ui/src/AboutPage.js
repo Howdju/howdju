@@ -36,9 +36,9 @@ const AboutPage = () => (
              title="Fact-checking doesn't 'backfire,' new study suggests, Alexios Mantzarlis, November 2, 2016 citing Wood, Thomas and Porter, Ethan, The Elusive Backfire Effect: Mass Attitudes’ Steadfast Factual Adherence (December 31, 2017)"
           >
             Research
-          </a> also indicates that the "backfire effect" may occur for isolated incidents based upon wording of the
-          correction.  "[B]y and large, citizens heed factual information, even when such information challenges
-          their partisan and ideological commitments."
+          </a> also indicates that the &ldquo;backfire effect&rdquo; may occur for isolated incidents based upon wording of the
+          correction.  &ldquo;[B]y and large, citizens heed factual information, even when such information challenges
+          their partisan and ideological commitments.&rdquo;
         </p>
 
         <h2>Introduction</h2>

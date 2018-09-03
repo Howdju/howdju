@@ -4,7 +4,7 @@ import { parsePath } from 'history/PathUtils'
 import {
   app, mainSearch,
 } from './ui'
-import paths from '../paths'
+import paths from '../../paths'
 
 describe('reducers', () => {
 
@@ -33,9 +33,9 @@ describe('reducers', () => {
         expect(newState.mainSearchText).toEqual(mainSearchText)
       })
 
-      test('should load search results on page load')
+      // test('should load search results on page load')
 
-      test('should not load search results on navigation')
+      // test('should not load search results on navigation')
     })
 
   })
