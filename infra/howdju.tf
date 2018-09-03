@@ -13,6 +13,10 @@ module "ecr" {
   source = "modules/ecr"
 }
 
+module "lambdas" {
+  source = "modules/lambdas"
+}
+
 module "elasticstack" {
   // referencing this repo as a version should allow us to have different envs with different module versions
   // source = "git::git@bitbucket.org:howdju/premiser.git//infra/modules/elasticstack?ref=v0.0.1"
@@ -49,10 +53,14 @@ resource "aws_eip" "elasticstack_instance" {
   depends_on = ["aws_internet_gateway.default"]
 }
 
-//module "cloudwatch_to_elasticsearch" {
-//  source = "./modules/cloudwatch_to_elasticsearch"
-//  aws_region = "${var.aws_region}"
-//  aws_account_id = "${data.aws_caller_identity.current.account_id}"
-//  elasticsearch_host = "${module.elasticstack.elasticsearch_host}"
-//  elasticsearch_index = "logs"
-//}
+module "cloudwatch_to_elasticsearch" {
+  source = "./modules/cloudwatch_to_elasticsearch"
+  aws_region = "${var.aws_region}"
+  aws_account_id = "${data.aws_caller_identity.current.account_id}"
+  elasticsearch_host = "${aws_lb.default_private.dns_name}"
+  elasticsearch_index = "logs"
+  lambda_bucket = "${module.lambdas.lambda_bucket}"
+  cloudwatch_logs_to_elasticsearch_lambda_s3_key = "cloudwatchLogsToElasticsearch/cloudwatchLogsToElasticsearch.zip"
+  vpc_subnet_ids = ["${data.aws_subnet.default.id}"]
+  vpc_security_group_ids = ["${aws_default_security_group.default.id}"]
+}

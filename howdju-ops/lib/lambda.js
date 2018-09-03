@@ -9,7 +9,7 @@ const {logger} = require('./logger')
 
 
 AWS.config.region = 'us-east-1'
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'premiser'})
+AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'BuildTools'})
 // See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html
 const lambda = new AWS.Lambda({apiVersion: '2015-03-31'})
 

@@ -21,7 +21,7 @@ resource "aws_ecs_service" "kibana" {
 
   placement_constraints {
     type       = "memberOf"
-    expression = "attribute:ecs.instance-id = ${var.instance_id}}"
+    expression = "attribute:ecs.instance-id = ${var.instance_id}"
   }
 }
 

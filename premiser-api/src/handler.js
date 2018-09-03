@@ -133,7 +133,7 @@ const makeRequestIdentifiers = (gatewayEvent) => {
   }
   // We only need one identifier generated server-side; if AWS provides one, use it
   if (gatewayEvent.requestContext.requestId) {
-    requestIdentifiers.awsRequestId = gatewayEvent.requestContext.requestId
+    requestIdentifiers.awsRequestId = requestIdentifiers.serverRequestId = gatewayEvent.requestContext.requestId
   } else {
     requestIdentifiers.serverRequestId = uuid.v4()
   }

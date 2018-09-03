@@ -1,7 +1,9 @@
-'use strict';
+'use strict'
 
-const zlib = require('zlib');
-const elasticsearch = require('elasticsearch');
+const zlib = require('zlib')
+const elasticsearch = require('elasticsearch')
+
+const {logger} = require('howdju-ops')
 
 const elasticsearchHost = process.env.ELASTICSEARCH_HOST
 if (!elasticsearchHost) throw new Error('ELASTICSEARCH_HOST is required')
@@ -12,25 +14,15 @@ if (!elasticsearchIndex) throw new Error('ELASTICSEARCH_INDEX is required')
 const client = new elasticsearch.Client({
   host: elasticsearchHost,
   log: process.env.ELASTICSEARCH_LOG_LEVEL
-});
+})
 
 function logEventToDocument(logEvent, logGroupName, logStreamName) {
-  const rawMessage = logEvent.message
-  const timestampEndIndex = rawMessage.indexOf(' ')
-  const timestamp = rawMessage.sub(timestampEndIndex)
-  const requestIdEndIndex = rawMessage.indexOf(' ', timestampEndIndex)
-  const requestId = rawMessage.sub(timestampEndIndex, requestIdEndIndex)
-  const bodyJson = rawMessage.sub(requestIdEndIndex)
-  const body = JSON.parse(bodyJson)
   return {
-    // remove '\n' character at the end of the event
-    timestamp,
-    requestId,
-    message,
-    body,
     logGroupName,
     logStreamName,
-    ingestTimestamp: new Date(logEvent.timestamp).toISOString(),
+    timestamp: logEvent.timestamp,
+    message: logEvent.message,
+    ingestTimestamp: new Date().toISOString(),
   }
 }
 
@@ -66,10 +58,10 @@ function extractResponseFailures(responseItems) {
 
 function logResponse(response) {
   if (!response.errors) {
-    console.log(`Successfully indexed all ${response.items.length} log events`)
+    logger.info(`Successfully indexed all ${response.items.length} log events`)
   } else {
     const failures = extractResponseFailures(response.items)
-    console.log(`Successfully logged only ${response.items.length - failures.length}` +
+    logger.info(`Successfully logged only ${response.items.length - failures.length}` +
       ` out of ${response.items.length} log events.  Failures: ${JSON.stringify(failures)}`)
   }
 }
@@ -87,10 +79,10 @@ async function indexDocuments(parsedEvents) {
   logResponse(response)
 }
 
-module.exports.handler = async (event) => {
-  const data = new Buffer(event.awslogs.data, 'base64');
+module.exports.handler = async (event, context) => {
+  const data = new Buffer(event.awslogs.data, 'base64')
   const unzippedData = await zlib.gunzip(data)
-  const {logEvents, logGroup, logStream} = JSON.parse(unzippedData.toString('ascii'))
+  const {logEvents, logGroup, logStream} = JSON.parse(unzippedData.toString('utf-8'))
   const documents = logEvents.map((logEvent) => logEventToDocument(logEvent, logGroup, logStream))
-  await indexDocuments(documents);
+  await indexDocuments(documents)
 }

@@ -1,5 +1,5 @@
 output "elasticstack_private_ip" {
-  value = "${aws_instance.elasticstack.private_ip}}"
+  value = "${aws_instance.elasticstack.private_ip}"
 }
 
 //output "kibana_host" {

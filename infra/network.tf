@@ -133,3 +133,25 @@ resource "aws_security_group" "default_private_lb" {
     Terraform = "true"
   }
 }
+
+resource "aws_default_security_group" "default" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  ingress {
+    self = true
+    protocol = "${module.constants.protocol_all}"
+    from_port = "${module.constants.port_all}"
+    to_port = "${module.constants.port_all}"
+  }
+
+  egress {
+    cidr_blocks = ["${module.constants.cidr_block_all}"]
+    protocol = "${module.constants.protocol_all}"
+    from_port = "${module.constants.port_all}"
+    to_port = "${module.constants.port_all}"
+  }
+
+  tags {
+    Name = "default-vpc-default-sg"
+  }
+}

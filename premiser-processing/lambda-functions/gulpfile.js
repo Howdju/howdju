@@ -14,10 +14,11 @@ const runSequence = require('run-sequence')
 const argumentParser = new ArgumentParser({
   description: 'Build lambda functions'
 })
-// must be optional (starts with --) so that gulp doesn't think it's a task
+// must use optional syntax (start with --) so that gulp doesn't think it's a task
 argumentParser.addArgument('--lambdaDir', {required: true})
 argumentParser.addArgument('--removeHowdjuDeps')
-const args = argumentParser.parseArgs()
+// This file will also see the gulp arguments (such as --cwd and --gulpfile), so only parse the ones we care about
+const [args] = argumentParser.parseKnownArgs()
 
 // To allow del to do its safety check, we set CWD to the project root.  So paths must be relative to that
 const lambdaDir = path.resolve('lambda-functions', args.lambdaDir)
@@ -28,6 +29,8 @@ const lambdarc = require(lambdarcPath)
 const lambdaName = lambdarc.name
 const lambdaBuildDir = path.resolve('build', 'lambda-functions', lambdaName)
 const lambdaDistDir = path.resolve('dist', 'lambda-functions', lambdaName)
+
+const requireHowdjuDeps = lambdarc.requireHowdjuDeps
 
 gulp.task('clean', (next) =>
   del([
@@ -82,6 +85,9 @@ gulp.task('remove-howdju-deps', (next) => {
   })
 })
 
+// Gulp does not accept empty tasks, so we must pass a no-op
+gulp.task('no-op')
+
 gulp.task('zip', () =>
   gulp.src([
     path.join(lambdaBuildDir, '**/*'),
@@ -90,16 +96,17 @@ gulp.task('zip', () =>
     .pipe(zip(`${lambdaName}.zip`))
     .pipe(gulp.dest(lambdaDistDir)))
 
-const removeHowdjuDeps = args.removeHowdjuDeps ? ['remove-howdju-deps'] : []
+const addHowdjuDeps = requireHowdjuDeps ? 'add-howdju-deps' : 'no-op'
+const removeHowdjuDeps = requireHowdjuDeps && args.removeHowdjuDeps ? 'remove-howdju-deps' : 'no-op'
 
 gulp.task('build', (next) => runSequence(
-  ['clean'],
-  ['add-howdju-deps'],
+  'clean',
+  addHowdjuDeps,
   [
     'copy-src',
     'npm-install'
   ],
-  ['zip'],
+  'zip',
   removeHowdjuDeps,
   next
 ))

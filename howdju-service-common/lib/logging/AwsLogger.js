@@ -1,3 +1,5 @@
+const util = require('util')
+
 const assign = require('lodash/assign')
 const concat = require('lodash/concat')
 const isString = require('lodash/isString')
@@ -104,9 +106,8 @@ const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
     if (logLevelNumber > loggerLevelNumber) return
   }
   const logArgs = this.makeLogArguments(logLevel, logLevelNumber, ...args)
-  // Something about using console.log seems to work better for Lambda, allowing multi-line logs to work
-  // (Apparently needs carriage-returns instead of newlines)
-  this.console.log.apply(console, logArgs)
+  // AWS seems to overwrite console.log to add the timestamp and request ID.  Our logging handles those, so write directly to stdout
+  process.stdout.write(util.format(logArgs))
 }
 
 const makeLogArgumentsByLogFormat = {
@@ -115,6 +116,13 @@ const makeLogArgumentsByLogFormat = {
 }
 
 class AwsLogger {
+  /**
+   * @param console
+   * @param logLevel
+   * @param doUseCarriageReturns AWS breaks logs across newlines, so we must break using carriage returns to get breaks in a single record
+   * @param doLogTimestamp
+   * @param logFormat
+   */
   constructor(console, {logLevel, doUseCarriageReturns=true, doLogTimestamp=true, logFormat='text'}) {
     this.console = console
     this.logLevel = logLevel

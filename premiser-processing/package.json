@@ -15,7 +15,8 @@
     "score-statement-tags:prod": "source ../config/prod-local-tunnel.env && node bin/score-statement-tags.js",
     "test": "echo TODO!",
     "update-lambda-function-alias": "node bin/update-lambda-function-alias.js",
-    "update-lambda-function-code": "node bin/update-lambda-function-code.js"
+    "update-lambda-function-code": "node bin/update-lambda-function-code.js",
+    "upload-lambda-function-zip": "node bin/upload-lambda-function-zip.js"
   },
   "devDependencies": {
     "argparse": "^1.0.9",
@@ -27,5 +28,7 @@
     "inspect-process": "^0.5.0",
     "run-sequence": "^2.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "aws-sdk": "^2.307.0"
+  }
 }
