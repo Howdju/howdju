@@ -2,11 +2,9 @@ const util = require('util')
 
 const assign = require('lodash/assign')
 const concat = require('lodash/concat')
-const isString = require('lodash/isString')
 const join = require('lodash/join')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
-const toString = require('lodash/toString')
 
 const {processArgs} = require('./processArgs')
 
