@@ -26,7 +26,9 @@ git checkout $git_branch
 source $HOME/.bashrc
 npm run build-and-update-lambda-function-code
 bin/lambda-smoke-test.sh us-east-1 premiserApi file://test-events/login.json || exit $?
-publish_result=$(npm run publish-lambda-function-version)
-echo publish_result: $publish_result
-new_lambda_version=$(echo "$publish_result" | tail -1 | awk '{print $NF}')
+publish_output=$(npm run publish-lambda-function-version)
+echo publish_output = $publish_output
+#new_lambda_version=$(echo "$publish_output" | tail -1 | awk '{print $NF}')
+#new_lambda_version=$(echo "$publish_output" | tail -1 | pcregrep -o1 "version:\s+ ['\"](\d+)['\"]")
+new_lambda_version=$(echo "$publish_output" | tail -1 | sed "s/^.*version:[ ]*['\"]\([0-9][0-9]*\)['\"].*$/\1/")
 npm run update-lambda-function-alias -- --aliasName $lambda_alias --newTarget $new_lambda_version
