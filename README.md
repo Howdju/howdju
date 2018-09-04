@@ -77,7 +77,7 @@ Open browser to localhost:3000
 ## Publishing the API
 
 ```sh
-$ Build the base docker image (if necessary)
+# Build the base docker image (if necessary)
 bin/docker/api-base-build.sh
 
 # Build the docker image (if necessary)
@@ -91,6 +91,36 @@ bin/docker/api-deploy-run.sh pre-prod
 # To deploy to prod, just point the `prod` alias to the same version as the `pre-prod` alias
 cd premiser-api/
 yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
+```
+
+### Publishing a feature branch
+
+```sh
+feature_branch=feature/great-feature
+```
+
+If your feature branch has changes to `deploy.sh` (or possibly other build/deploy scripts), you'll need to build the 
+image with that branch so that it is already checked out before the scripts run (the switch to a feature branch occurs 
+as part of `deploy.sh`)
+
+```
+# Build the docker image using a feature branch 
+bin/docker/api-deploy-build.sh $feature_branch
+```
+
+Otherwise, you can build the image without specifying a branch:
+
+```
+bin/docker/api-deploy-build.sh
+```
+
+Either way, you must build the image to get the current code there; the image currently will not pull the latest code.
+
+Next run the deployment container with a feature branch:
+
+```
+# Pulls and deploys the current master branch to pre-prod
+bin/docker/api-deploy-run.sh $feature_branch pre-prod
 ```
 
 ## Publishing the web app

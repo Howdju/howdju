@@ -2,13 +2,13 @@ const fs = require('fs')
 const path = require('path')
 
 const {ArgumentParser} = require('argparse')
-const {exec} = require('child_process')
 const del = require('del')
 const gulp = require('gulp')
 const install = require('gulp-install')
 const zip = require('gulp-zip')
 const assign = require('lodash/assign')
 const runSequence = require('run-sequence')
+const {LocalInstaller, progress} = require('install-local')
 
 
 const argumentParser = new ArgumentParser({
@@ -40,7 +40,10 @@ gulp.task('clean', (next) =>
 )
 
 gulp.task('copy-src', () => {
-  const src = lambdarc.src || 'src/**/*.js'
+  const src = [
+    'src/**/*.js',
+    '!src/**/*.test.js',
+  ]
   const options = assign(
     {},
     // set cwd so that the lambdrc can define src paths relative to its own dir
@@ -52,37 +55,26 @@ gulp.task('copy-src', () => {
     .pipe(gulp.dest(lambdaBuildDir))
 })
 
-gulp.task('add-howdju-deps', (next) => {
-  exec(`yarn install --cwd ${lambdaDir} --production ../howdju-service-common`, function (err, output, errOutput) {
-    if (output) process.stdout.write(output + '\n')
-    if (errOutput) process.stderr.write(errOutput + '\n')
-    if (err) return next(err)
-    // howdju-service-common package.json lacks a dependency on howdju-common (should we add it in a post-install step?)
-    exec(`yarn install --cwd ${lambdaDir} --production ../howdju-common`, function (err, output, errOutput) {
-      if (output) process.stdout.write(output + '\n')
-      if (errOutput) process.stderr.write(errOutput + '\n')
-      next(err)
-    })
-  })
-})
+gulp.task('copy-package-json', () =>
+  gulp.src('package.json', {cwd: lambdaDir})
+    .pipe(gulp.dest(lambdaBuildDir)))
 
-gulp.task('npm-install', () =>
-  gulp.src(path.resolve(lambdaDir, 'package.json'))
+gulp.task('install', () =>
+  gulp.src('./package.json', {cwd: lambdaDir})
     .pipe(gulp.dest(lambdaBuildDir))
-    .pipe(install({production: true}))
-)
+    .pipe(install({production: true})))
 
-gulp.task('remove-howdju-deps', (next) => {
-  exec(`yarn remove --cwd ${lambdaDir} howdju-service-common`, function (err, output, errOutput) {
-    if (output) process.stdout.write(output + '\n')
-    if (errOutput) process.stderr.write(errOutput + '\n')
-    if (err) return next(err)
-    exec(`yarn remove --cwd ${lambdaDir} howdju-common`, function (err, output, errOutput) {
-      if (output) process.stdout.write(output + '\n')
-      if (errOutput) process.stderr.write(errOutput + '\n')
-      next(err)
-    })
-  })
+gulp.task('install-local', () => {
+  const localInstaller = new LocalInstaller({
+    [lambdaBuildDir]: [
+      '../howdju-common',
+      '../howdju-service-common',
+    ]
+  }
+  //, {npmEnv: Object.assign({}, process.env, {NODE_ENV: 'production'})}
+  )
+  progress(localInstaller)
+  return localInstaller.install()
 })
 
 // Gulp does not accept empty tasks, so we must pass a no-op
@@ -96,17 +88,13 @@ gulp.task('zip', () =>
     .pipe(zip(`${lambdaName}.zip`))
     .pipe(gulp.dest(lambdaDistDir)))
 
-const addHowdjuDeps = requireHowdjuDeps ? 'add-howdju-deps' : 'no-op'
-const removeHowdjuDeps = requireHowdjuDeps && args.removeHowdjuDeps ? 'remove-howdju-deps' : 'no-op'
+const installLocal = requireHowdjuDeps ? 'install-local' : 'no-op'
 
 gulp.task('build', (next) => runSequence(
   'clean',
-  addHowdjuDeps,
-  [
-    'copy-src',
-    'npm-install'
-  ],
+  ['copy-src', 'copy-package-json'],
+  // install-local depends on package.json existing in the build dir, which the `install` task does
+  ['install', installLocal],
   'zip',
-  removeHowdjuDeps,
   next
 ))

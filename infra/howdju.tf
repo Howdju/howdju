@@ -15,6 +15,7 @@ module "ecr" {
 
 module "lambdas" {
   source = "modules/lambdas"
+  expiration_days = 10
 }
 
 module "elasticstack" {
@@ -60,7 +61,7 @@ module "cloudwatch_to_elasticsearch" {
   elasticsearch_host = "${aws_lb.default_private.dns_name}"
   elasticsearch_index = "logs"
   lambda_bucket = "${module.lambdas.lambda_bucket}"
-  cloudwatch_logs_to_elasticsearch_lambda_s3_key = "cloudwatchLogsToElasticsearch/cloudwatchLogsToElasticsearch.zip"
+  cloudwatch_logs_to_elasticsearch_lambda_s3_key = "CloudwatchLogsToElasticsearch/CloudwatchLogsToElasticsearch.zip"
   vpc_subnet_ids = ["${data.aws_subnet.default.id}"]
   vpc_security_group_ids = ["${aws_default_security_group.default.id}"]
 }

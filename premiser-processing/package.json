@@ -13,7 +13,7 @@
     "score-statement-tags:local": "source ../config/local.env && node bin/score-statement-tags.js",
     "score-statement-tags:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/score-statement-tags.js",
     "score-statement-tags:prod": "source ../config/prod-local-tunnel.env && node bin/score-statement-tags.js",
-    "test": "echo TODO!",
+    "test": "bin/test-all.sh",
     "update-lambda-function-alias": "node bin/update-lambda-function-alias.js",
     "update-lambda-function-code": "node bin/update-lambda-function-code.js",
     "upload-lambda-function-zip": "node bin/upload-lambda-function-zip.js"
@@ -26,6 +26,8 @@
     "gulp-install": "^1.1.0",
     "gulp-zip": "^4.0.0",
     "inspect-process": "^0.5.0",
+    "install-local": "^0.6.0",
+    "jest": "^23.5.0",
     "run-sequence": "^2.1.0"
   },
   "dependencies": {

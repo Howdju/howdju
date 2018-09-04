@@ -1,10 +1,11 @@
 resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
-  function_name = "cloudwatch_logs_to_elasticsearch"
+  function_name = "CloudwatchLogsToElasticsearch"
   role = "${aws_iam_role.cloudwatch_logs_to_elasticsearch.arn}"
-  handler = "handler.handler"
+  handler = "index.handler"
   runtime = "nodejs8.10"
-  s3_bucket = "${var.lambda_bucket}"
-  s3_key = "${var.cloudwatch_logs_to_elasticsearch_lambda_s3_key}"
+  s3_bucket = "${data.aws_s3_bucket_object.lambda.bucket}"
+  s3_key = "${data.aws_s3_bucket_object.lambda.key}"
+  s3_object_version = "${data.aws_s3_bucket_object.lambda.version_id}"
   vpc_config {
     security_group_ids = ["${var.vpc_security_group_ids}"]
     subnet_ids = ["${var.vpc_subnet_ids}"]
@@ -15,6 +16,11 @@ resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
       ELASTICSEARCH_INDEX = "${var.elasticsearch_index}"
     }
   }
+}
+
+data "aws_s3_bucket_object" "lambda" {
+  bucket = "${var.lambda_bucket}"
+  key    = "${var.cloudwatch_logs_to_elasticsearch_lambda_s3_key}"
 }
 
 // The lambda zip file will be uploaded by node

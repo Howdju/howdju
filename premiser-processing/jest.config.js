@@ -1,4 +1,4 @@
 module.exports = {
-  "testRegex": "(/src/.*\\.test\\.js)$",
+  "testRegex": ".*\\.test\\.js$",
   "setupFiles": ["./jest.setup.js"]
 }
