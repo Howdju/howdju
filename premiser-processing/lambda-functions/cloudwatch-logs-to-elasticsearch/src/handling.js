@@ -24,10 +24,11 @@ const client = new elasticsearch.Client({
 })
 
 
-module.exports.handler = async (event, context) => {
+module.exports.handler = async (event, context, callback) => {
   const {logEvents, logGroup, logStream} = await module.exports.extract(event)
   const documents = logEvents.map((logEvent) => logEventToDocument(logEvent, logGroup, logStream))
-  await indexDocuments(documents)
+  const successCount = await indexDocuments(documents)
+  callback(null, {successes: successCount})
 }
 
 module.exports.extract = async function extract(event) {
@@ -58,17 +59,21 @@ async function indexDocuments(parsedEvents) {
     body: bulkRecords,
     timeout: elasticsearchBulkTimeout,
   })
-  logResponse(response)
+  return logResponse(response)
 }
 
 function logResponse(response) {
+  let successCount
   if (!response.errors) {
-    logger.debug(`Successfully indexed all ${response.items.length} log events`)
+    successCount = response.items.length
+    logger.debug(`Successfully indexed all ${successCount} log events`)
   } else {
     const failures = extractResponseFailures(response.items)
-    logger.error(`Successfully logged only ${response.items.length - failures.length}` +
-      ` out of ${response.items.length} log events.  Failures: ${JSON.stringify(failures)}`)
+    successCount = response.items.length - failures.length
+    logger.error(`Successfully logged only ${successCount} out of ${response.items.length} log events.` +
+      `  Failures: ${JSON.stringify(failures)}`)
   }
+  return successCount
 }
 
 const actionTypeNames = [

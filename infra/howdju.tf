@@ -58,9 +58,11 @@ module "cloudwatch_to_elasticsearch" {
   source = "./modules/cloudwatch_to_elasticsearch"
   aws_region = "${var.aws_region}"
   aws_account_id = "${data.aws_caller_identity.current.account_id}"
-  elasticsearch_authority = "${aws_lb.default_private.dns_name}:${module.constants.elasticsearch_port}}"
+  lambda_timeout = 5
+  elasticsearch_authority = "${aws_lb.default_private.dns_name}:${module.constants.elasticsearch_port}"
   elasticsearch_index = "logs"
   elasticsearch_type = "log_record"
+  elasticsearch_bulk_timeout = "3s"
   lambda_bucket = "${module.lambdas.lambda_bucket}"
   cloudwatch_logs_to_elasticsearch_lambda_s3_key = "CloudwatchLogsToElasticsearch/CloudwatchLogsToElasticsearch.zip"
   vpc_subnet_ids = ["${data.aws_subnet.default.id}"]

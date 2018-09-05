@@ -6,6 +6,7 @@ resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
   s3_bucket = "${data.aws_s3_bucket_object.lambda.bucket}"
   s3_key = "${data.aws_s3_bucket_object.lambda.key}"
   s3_object_version = "${data.aws_s3_bucket_object.lambda.version_id}"
+  timeout = "${var.lambda_timeout}"
   vpc_config {
     security_group_ids = ["${var.vpc_security_group_ids}"]
     subnet_ids = ["${var.vpc_subnet_ids}"]
@@ -15,6 +16,7 @@ resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
       ELASTICSEARCH_AUTHORITY = "${var.elasticsearch_authority}",
       ELASTICSEARCH_INDEX = "${var.elasticsearch_index}"
       ELASTICSEARCH_TYPE = "${var.elasticsearch_type}"
+      ELASTICSEARCH_BULK_TIMEOUT = "${var.elasticsearch_bulk_timeout}"
     }
   }
 }
