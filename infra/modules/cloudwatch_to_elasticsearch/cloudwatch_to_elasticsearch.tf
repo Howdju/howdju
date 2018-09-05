@@ -12,8 +12,9 @@ resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
   }
   environment {
     variables = {
-      ELASTICSEARCH_HOST = "${var.elasticsearch_host}",
+      ELASTICSEARCH_AUTHORITY = "${var.elasticsearch_authority}",
       ELASTICSEARCH_INDEX = "${var.elasticsearch_index}"
+      ELASTICSEARCH_TYPE = "${var.elasticsearch_type}"
     }
   }
 }
