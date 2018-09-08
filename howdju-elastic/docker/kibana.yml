@@ -1,4 +1,6 @@
-elasticsearch:
-  url: "http://elasticsearch:9200"
-server:
-  host: "0.0.0.0"
+# https://www.elastic.co/guide/en/kibana/current/settings.html
+
+server.name: kibana
+server.host: "0.0.0.0"
+elasticsearch.url: "${ELASTICSEARCH_URL}"
+xpack.monitoring.ui.container.elasticsearch.enabled: true

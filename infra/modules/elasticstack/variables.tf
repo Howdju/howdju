@@ -13,8 +13,13 @@ variable "elasticsearch_lb_port" {}
 variable "kibana_repository_name" {}
 variable "kibana_container_version" {}
 variable "kibana_lb_port" {}
+variable "kibana_task_cpu" {}
+variable "kibana_task_memory_mib" {}
+variable "kibana_log_group" {}
+variable "kibana_lb_ingress_cidr" {}
 variable "vpc_id" {}
 variable "bastion_security_group_id" {}
 variable "lb_arn" {}
 variable "lb_security_group_id" {}
-variable "elasticsearch_ingress_cidr" {}
+variable "lb_dns_name" {}
+variable "elasticsearch_lb_ingress_cidr" {}

@@ -1,0 +1,31 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/${repository_name}:${container_version}",
+    "essential": true,
+    "environment": [
+      { "name" : "ELASTICSEARCH_URL", "value" : "${elasticsearch_url}" }
+    ],
+    "portMappings": [
+      {
+        "containerPort": ${port},
+        "hostPort": ${host_port}
+      }
+    ],
+    "healthCheck": {
+      "command": ["CMD-SHELL", "curl -f http://localhost:${port}/ || exit 1"],
+      "startPeriod": ${health_check_grace_period_seconds},
+      "interval": 30,
+      "timeout": 10,
+      "retries": 2
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "${log_stream_prefix}"
+      }
+    }
+  }
+]

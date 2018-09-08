@@ -83,6 +83,15 @@ resource "aws_security_group" "bastion" {
     ipv6_cidr_blocks = ["${module.constants.cidr_block_v6_all}"]
   }
 
+  ingress {
+    description = "Allow web for kibana"
+    from_port = "${module.constants.http_port}"
+    to_port = "${module.constants.http_port}"
+    protocol = "tcp"
+    cidr_blocks = ["${module.constants.cidr_block_all}"]
+    ipv6_cidr_blocks = ["${module.constants.cidr_block_v6_all}"]
+  }
+
   egress {
     description = "Allow all outbound"
     cidr_blocks = ["${module.constants.cidr_block_all}"]

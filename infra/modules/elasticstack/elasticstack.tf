@@ -28,16 +28,30 @@ module "elasticsearch" {
   lb_arn = "${var.lb_arn}"
   lb_port = "${var.elasticsearch_lb_port}"
   lb_security_group_id = "${var.lb_security_group_id}"
-  elasticsearch_ingress_cidr = "${var.elasticsearch_ingress_cidr}"
+  lb_ingress_cidr = "${var.elasticsearch_lb_ingress_cidr}"
 }
 
-//module "kibana" {
-//  eip_subnet_id = "${aws_subnet.elasticstack.0.id}"
-//  task_security_group_ids = ["${aws_security_group.kibana_task.id}"]
-//}
+module "kibana" {
+  source = "./kibana"
+  aws_account_id = "${var.aws_account_id}"
+  aws_region = "${var.aws_region}"
+  ecs_cluster_id = "${aws_ecs_cluster.elasticstack.id}"
+  task_desired_count = "${var.elasticsearch_task_desired_count}"
+  repository_name = "${var.kibana_repository_name}"
+  container_version = "${var.kibana_container_version}"
+  task_cpu = "${var.kibana_task_cpu}"
+  task_memory_mib = "${var.kibana_task_memory_mib}"
+  log_group = "${var.kibana_log_group}"
+  vpc_id = "${var.vpc_id}"
+  lb_arn = "${var.lb_arn}"
+  lb_port = "${var.kibana_lb_port}"
+  lb_security_group_id = "${var.lb_security_group_id}"
+  lb_ingress_cidr = "${var.kibana_lb_ingress_cidr}"
+  elasticsearch_url = "http://${var.lb_dns_name}:${var.elasticsearch_lb_port}"
+}
 
 resource "aws_instance" "elasticstack" {
-  ami = "${data.aws_ami.elasticstack.id}"
+  ami = "ami-0254e5972ebcd132c"
   instance_type = "${var.instance_type}"
   subnet_id = "${var.instance_subnet_id}"
   vpc_security_group_ids = ["${aws_security_group.elasticstack_instance.id}"]
@@ -114,7 +128,8 @@ data "template_file" "elasticstack_user_data" {
 //  instance_id = "${aws_instance.elasticstack.id}"
 //}
 
-data "aws_ami" "elasticstack" {
+// NB when upgrading the instance, ensure that our ephemeral port definitions still correspond to those in /proc/sys/net/ipv4/ip_local_port_range
+data "aws_ami" "elasticstack_latest" {
   filter {
     name   = "owner-alias"
     values = ["amazon"]

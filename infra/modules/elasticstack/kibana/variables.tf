@@ -12,3 +12,4 @@ variable "lb_arn" {}
 variable "lb_security_group_id" {}
 variable "lb_ingress_cidr" {}
 variable "lb_port" {}
+variable "elasticsearch_url" {}

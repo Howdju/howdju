@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
-for lambda_dir in lambda-functions/*; do
-  (cd $lambda_dir; yarn test)
+set -e
+
+for lambda_dir in lambda-functions/*/; do
+    if [[ -f $lambda_dir/package.json ]]; then
+        (cd $lambda_dir && echo testing $(pwd) && yarn test)
+    fi
 done

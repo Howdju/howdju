@@ -13,7 +13,7 @@ resource "aws_ecs_service" "elasticsearch" {
   cluster = "${var.ecs_cluster_id}"
   task_definition = "${aws_ecs_task_definition.elasticsearch.arn}"
   desired_count = "${var.task_desired_count}"
-  health_check_grace_period_seconds = 0
+  health_check_grace_period_seconds = 300
 
   load_balancer {
     target_group_arn = "${aws_lb_target_group.elasticsearch.arn}"
@@ -51,7 +51,6 @@ data "aws_iam_policy" "AmazonEC2ContainerServiceRole" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
 
-// awsvpc services can't have an IAM role; they use service-defined roles
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerServiceRole" {
   role = "${aws_iam_role.elasticsearch_service.name}"
   policy_arn = "${data.aws_iam_policy.AmazonEC2ContainerServiceRole.arn}"
@@ -63,7 +62,6 @@ resource "aws_ecs_task_definition" "elasticsearch" {
   family = "elasticsearch"
   container_definitions = "${data.template_file.elasticsearch_container_definitions.rendered}"
   network_mode = "bridge"
-  // valid cpu/memory combinations: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
   cpu = "${var.task_cpu}"
   memory = "${var.task_memory_mib}"
   task_role_arn = "${aws_iam_role.elasticsearch_task.arn}"
@@ -120,7 +118,7 @@ EOF
 }
 
 // For debugging template rendering:
-// terraform get -target=module.elasticstack.module.elasticsearch..null_resource.test_template
+// terraform plan -target=module.elasticstack.module.elasticsearch.null_resource.test_template
 //resource "null_resource" "test_template" {
 //  triggers = {
 //    json = "${data.template_file.elasticsearch_container_definitions.rendered}"
@@ -139,10 +137,12 @@ data "template_file" "elasticsearch_container_definitions" {
     // Use this command_override instead to get debug logging
     // command_override = "\"command\": [\"elasticsearch\", \"-Elogger.level=debug\"]",
     command_override = "",
+    // Elasticsearch recommends using no more than half of the available memory for the task, so that the rest can be
+    // memory mapped to shards/indices.
     memory_mib = "${var.task_memory_mib / 2}"
     // data_volume_name = "${var.data_volume_name}"
     // must match path.data in elasticsearch.yml
-    data_volume_mount_point = "/data/elasticsearch"
+    // data_volume_mount_point = "/data/elasticsearch"
     memlock_limit = "${var.task_memory_mib * 1024}"
     port = "${var.container_port}"
     host_port = "${module.constants.ecs_ephemeral_host_port}"
@@ -162,7 +162,7 @@ resource "aws_security_group_rule" "lb" {
   security_group_id = "${var.lb_security_group_id}"
   description = "allow elasticsearch"
   type = "ingress"
-  cidr_blocks = ["${var.elasticsearch_ingress_cidr}"]
+  cidr_blocks = ["${var.lb_ingress_cidr}"]
   protocol = "tcp"
   from_port = "${var.lb_port}"
   to_port = "${var.lb_port}"
@@ -176,6 +176,16 @@ resource "aws_lb_target_group" "elasticsearch" {
   // I think that the service will override with an ephemeral port when it registers containers
   port = "${module.constants.elasticsearch_port}"
   target_type = "instance"
+  health_check {
+    interval = 30
+    path = "/"
+    port = "traffic-port"
+    protocol = "HTTP"
+    timeout = 5
+    healthy_threshold = 3
+    unhealthy_threshold = 3
+    matcher = "200"
+  }
 }
 
 resource "aws_lb_listener" "elasticsearch" {

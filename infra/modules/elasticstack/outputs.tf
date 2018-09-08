@@ -9,3 +9,7 @@ output "elasticstack_private_ip" {
 output "instance_id" {
   value = "${aws_instance.elasticstack.id}"
 }
+
+output "elasticsearch_lb_authority" {
+  value = "${var.lb_dns_name}:${var.elasticsearch_lb_port}"
+}
