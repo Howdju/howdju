@@ -3,6 +3,7 @@
 variable "container_name" {default = "elasticsearch"}
 variable "container_port" {default = 9200}
 variable "container_transport_port" {default = 9300}
+// variable "data_volume_name" {default = "elasticsearch-data"}
 
 module "constants" {
   source = "../../constants"
@@ -22,6 +23,12 @@ resource "aws_ecs_service" "elasticsearch" {
   }
 
   iam_role = "${aws_iam_role.elasticsearch_service.arn}"
+
+  placement_constraints {
+    // To use a named docker volume, each task must be on a different instance
+    type = "distinctInstance"
+  }
+
   // We use a managed policy, not a role policy, and it's built-in, so I don't know if we need this depends on relation.
   depends_on = ["data.aws_iam_policy.AmazonEC2ContainerServiceRole"]
 }
@@ -65,10 +72,16 @@ resource "aws_ecs_task_definition" "elasticsearch" {
   cpu = "${var.task_cpu}"
   memory = "${var.task_memory_mib}"
   task_role_arn = "${aws_iam_role.elasticsearch_task.arn}"
-//  volume {
-//    name = "${var.data_volume_name}"
-//    host_path = "/data/elasticsearch"
-//  }
+
+  // this feature is actively being developed
+  // https://github.com/terraform-providers/terraform-provider-aws/issues/5523
+  // volume {
+  //   name = "${var.data_volume_name}"
+  //   docker_volume_configuration {
+  //     scope = "shared"
+  //     autoprovision = true
+  //     driver = "local"
+  // }
 }
 
 resource "aws_iam_role" "elasticsearch_task" {
@@ -117,6 +130,48 @@ resource "aws_iam_policy" "elasticsearch_discovery_ec2_plugin" {
 EOF
 }
 
+// Elasticsearch must be configured with this user's setting using its keystore (currently in the dockerfile)
+resource "aws_iam_user" "elasticsearch_s3_snapshots" {
+  name = "elasticsearch_s3_snapshots_user"
+}
+
+resource "aws_iam_user_policy_attachment" "elasticsearch_s3_snapshots" {
+  user = "${aws_iam_user.elasticsearch_s3_snapshots.name}"
+  policy_arn = "${aws_iam_policy.elasticsearch_s3_snapshots.arn}"
+}
+
+resource "aws_iam_policy" "elasticsearch_s3_snapshots" {
+  name = "elasticsearch_s3_snapshots_policy"
+  description = "Enables writing to the Elasticsearch S3 snapshots bucket"
+  policy = "${data.aws_iam_policy_document.elasticsearch_s3_snapshots.json}"
+}
+
+data "aws_iam_policy_document" "elasticsearch_s3_snapshots" {
+  statement {
+    actions = [
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions"
+    ]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.snapshots.bucket}"]
+  }
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+      "s3:AbortMultipartUpload",
+      "s3:ListMultipartUploadParts"
+    ]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.snapshots.bucket}/*"]
+  }
+}
+
+resource "aws_s3_bucket" "snapshots" {
+  bucket = "howdju-elasticsearch-snapshots"
+}
+
 // For debugging template rendering:
 // terraform plan -target=module.elasticstack.module.elasticsearch.null_resource.test_template
 //resource "null_resource" "test_template" {
@@ -148,6 +203,17 @@ data "template_file" "elasticsearch_container_definitions" {
     host_port = "${module.constants.ecs_ephemeral_host_port}"
     transport_port = "${var.container_transport_port}"
     host_transport_port = "${module.constants.ecs_ephemeral_host_port}"
+
+    // data_volume_name = "${var.data_volume_name}"
+    // when ready, add this to the container definition:
+    /*
+      "mountPoints": [
+        {
+          "sourceVolume": "${data_volume_name}",
+          "containerPath": "/usr/share/elasticsearch/data"
+        }
+      ],
+    */
     log_group = "/ecs/elasticsearch"
     log_stream_prefix = "ecs"
   }

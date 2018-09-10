@@ -13,7 +13,7 @@ if (!elasticsearchIndex) throw new Error('ELASTICSEARCH_INDEX is required')
 const elasticsearchType = process.env.ELASTICSEARCH_TYPE
 if (!elasticsearchType) throw new Error('ELASTICSEARCH_TYPE is required')
 
-const elasticsearchBulkTimeout = process.env.ELASTICSEARCH_BULK_TIMEOUT || '10s'
+const elasticsearchTimeout = process.env.ELASTICSEARCH_TIMEOUT || '10s'
 
 const client = new elasticsearch.Client({
   host: elasticsearchAuthority,
@@ -24,6 +24,6 @@ const client = new elasticsearch.Client({
 module.exports.handler = async (event, context, callback) => {
   const {logEvents, logGroup, logStream} = await extract(event)
   const documents = logEvents.map((logEvent) => logEventToDocument(logEvent, logGroup, logStream))
-  const successCount = await indexDocuments(documents, client, elasticsearchIndex, elasticsearchType, elasticsearchBulkTimeout)
+  const successCount = await indexDocuments(documents, client, elasticsearchIndex, elasticsearchType, elasticsearchTimeout)
   callback(null, {successes: successCount})
 }

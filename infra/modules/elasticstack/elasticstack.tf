@@ -61,7 +61,7 @@ resource "aws_instance" "elasticstack" {
   iam_instance_profile = "${aws_iam_instance_profile.elasticstack.name}"
   tags {
     Name = "elasticstack"
-    ElasticSearchDiscovery = "elasticstack_esnode"
+    ElasticsearchDiscovery = "elasticstack_esnode"
     Terraform = "true"
   }
 }

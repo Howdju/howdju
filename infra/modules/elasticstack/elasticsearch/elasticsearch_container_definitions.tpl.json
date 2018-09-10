@@ -5,7 +5,8 @@
     ${command_override}
     "essential": true,
     "environment": [
-      { "name" : "ES_JAVA_OPTS", "value" : "-Xms${memory_mib}m -Xmx${memory_mib}m" }
+      { "name" : "ES_JAVA_OPTS", "value" : "-Xms${memory_mib}m -Xmx${memory_mib}m -XX:+UnlockDiagnosticVMOptions -XX:+PrintCompressedOopsMode" },
+      { "name" : "AWS_REGION", "value" : "${aws_region}" }
     ],
     "ulimits": [
       {"name": "nofile", "softLimit": 65536, "hardLimit": 65536},

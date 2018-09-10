@@ -15,7 +15,7 @@ module "ecr" {
 
 module "lambdas" {
   source = "modules/lambdas"
-  expiration_days = 10
+  expiration_days = "${var.lambdas_s3_noncurrent_version_expiration_days}"
 }
 
 module "elasticstack" {
@@ -63,13 +63,29 @@ module "cloudwatch_to_elasticsearch" {
   source = "./modules/cloudwatch_to_elasticsearch"
   aws_region = "${var.aws_region}"
   aws_account_id = "${data.aws_caller_identity.current.account_id}"
-  lambda_timeout = 5
+  lambda_timeout = "${var.cloudwatch_to_elasticsearch_lambda_timeout}"
   elasticsearch_authority = "${module.elasticstack.elasticsearch_lb_authority}"
-  elasticsearch_index = "logs"
-  elasticsearch_type = "log_record"
-  elasticsearch_bulk_timeout = "3s"
-  lambda_bucket = "${module.lambdas.lambda_bucket}"
-  cloudwatch_logs_to_elasticsearch_lambda_s3_key = "CloudwatchLogsToElasticsearch/CloudwatchLogsToElasticsearch.zip"
+  elasticsearch_index = "${var.cloudwatch_logs_elasticsearch_index}"
+  elasticsearch_type = "${var.cloudwatch_logs_elasticsearch_type}"
+  elasticsearch_timeout = "${var.cloudwatch_to_elasticsearch_elasticsearch_timeout}"
+  lambda_s3_bucket = "${module.lambdas.lambda_bucket}"
+  lambda_s3_key = "${var.cloudwatch_to_elasticsearch_lambda_s3_key}"
   vpc_subnet_ids = ["${data.aws_subnet.default.id}"]
   vpc_security_group_ids = ["${aws_default_security_group.default.id}"]
+  live_lambda_version = "${var.cloudwatch_to_elasticsearch_lambda_live_version}"
+}
+
+module "elasticsearch_snapshots" {
+  source = "./modules/elasticsearch_snapshots"
+  aws_region = "${var.aws_region}"
+  aws_account_id = "${data.aws_caller_identity.current.account_id}"
+  lambda_timeout = "${var.elasticsearch_snapshots_lambda_timeout}"
+  elasticsearch_authority = "${module.elasticstack.elasticsearch_lb_authority}"
+  elasticsearch_repository_s3_bucket = "${var.elasticsearch_repository_s3_bucket}"
+  log_level = "${var.elasticsearch_snapshots_lambda_log_level}"
+  lambda_s3_bucket = "${module.lambdas.lambda_bucket}"
+  lambda_s3_key = "${var.elasticsearch_snapshots_lambda_s3_key}"
+  vpc_subnet_ids = ["${data.aws_subnet.default.id}"]
+  vpc_security_group_ids = ["${aws_default_security_group.default.id}"]
+  live_lambda_version = "${var.elasticsearch_snapshots_lambda_live_version}"
 }

@@ -133,7 +133,8 @@ resource "aws_lb_target_group" "kibana" {
     protocol = "HTTP"
     timeout = 5
     healthy_threshold = 3
-    unhealthy_threshold = 3
+    // Kibana was going unresponsive while I was restarting Elasticsearch tasks, so give it margin
+    unhealthy_threshold = 6
     matcher = "200"
   }
 }

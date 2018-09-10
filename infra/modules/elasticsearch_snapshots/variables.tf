@@ -2,14 +2,10 @@ variable "aws_region" {}
 variable "aws_account_id" {}
 variable "lambda_timeout" {}
 variable "elasticsearch_authority" {}
-variable "elasticsearch_index" {}
-variable "elasticsearch_type" {}
-variable "elasticsearch_timeout" {}
-variable "lambda_s3_bucket" {}
+variable "log_level" {}
+variable "elasticsearch_repository_s3_bucket" {}
 variable "lambda_s3_key" {}
-//variable "cloudwatch_logs_to_elasticsearch_lambda_zip_file_path" {
-//  default = "cloudwatch_logs_to_elasticsearch.zip"
-//}
+variable "lambda_s3_bucket" {}
 variable "vpc_subnet_ids" {type = "list"}
 variable "vpc_security_group_ids" {type = "list"}
 variable "live_lambda_version" {}

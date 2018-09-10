@@ -1,5 +1,5 @@
 {
-  "name": "cloudwatch-logs-to-elasticsearch",
+  "name": "elasticsearch-snapshot",
   "version": "1.0.0",
   "description": "Subscribes to cloudwatch logs and transfers them to elasticsearch",
   "main": "handler.js",
@@ -8,7 +8,7 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "elasticsearch": "^15.1.1",
-    "zlib": "^1.0.5"
+    "ramda": "^0.25.0"
   },
   "scripts": {
     "test": "jest"

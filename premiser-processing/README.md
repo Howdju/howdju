@@ -39,6 +39,7 @@ If you want only to upload the built Lambda function to S3 (e.g., so that Terraf
 of the Lambda function):
 
 ```
+cd premiser-processing
 ld=statement-tag-scorer
   docker run --rm lambda-build bash -c \
     "source \$HOME/.bashrc && yarn build-lambda-function --lambdaDir $ld && yarn upload-lambda-function-zip --lambdaDir $ld"

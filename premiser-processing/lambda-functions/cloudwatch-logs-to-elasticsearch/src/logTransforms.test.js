@@ -13,7 +13,7 @@ const testLogEvent = {
 
 const timestampRegExp = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z/
 
-describe('handling', () => {
+describe('logTransforms', () => {
   describe('extract', () => {
     test('extracts test log event', async () => {
       expect(await extract(testLogEvent)).toEqual({

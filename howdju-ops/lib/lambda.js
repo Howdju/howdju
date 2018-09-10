@@ -60,7 +60,7 @@ const updateAlias = (functionName, aliasName, newTarget) => {
   } else {
     return getAliasVersion(functionName, newTarget, (err, newVersion) => {
       if (err) throw err
-      logger.info('Updated Lambda Function alias', {aliasName, newTarget, newVersion})
+      logger.info('Updating Lambda Function alias', {aliasName, newTarget, newVersion})
       updateAliasToVersion(functionName, aliasName, newVersion)
     })
   }

@@ -1,14 +1,19 @@
 cluster.name: "howdju_elasticsearch"
 bootstrap.memory_lock: false
 http.port: 9200-9200
+# indices.fielddata.cache.size: 400mb
+# indices.fielddata.cache.expire: 25m
+# indices.breaker.fielddata.limit
+# indices.breaker.request.limit
+# indices.breaker.total.limit
 network.host: 0.0.0.0
 network.publish_host: _ec2:privateIp_
 transport.publish_host: _ec2:privateIp_
 transport.tcp.port: 9300-9300
 discovery.zen.hosts_provider: ec2
-discovery.ec2.tag.ElasticSearchDiscovery: elasticstack_esnode
 discovery.ec2.endpoint: ec2.${AWS_REGION}.amazonaws.com
-#s3.client.default.endpoint: s3.${AWS_REGION}.amazonaws.com
+discovery.ec2.tag.ElasticsearchDiscovery: elasticstack_esnode
+s3.client.default.endpoint: s3.${AWS_REGION}.amazonaws.com
 cloud.node.auto_attributes: true
 cluster.routing.allocation.awareness.attributes: aws_availability_zone
 xpack.security.enabled: false
