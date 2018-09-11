@@ -37,9 +37,9 @@ data "aws_subnet" "default" {
   id = "subnet-79222154"
 }
 
-//data "aws_availability_zone" "default" {
-//  name = "us-east-1b"
-//}
+data "aws_availability_zone" "default" {
+  name = "us-east-1b"
+}
 
 resource "aws_default_network_acl" "default" {
   default_network_acl_id = "${aws_vpc.default.default_network_acl_id}"

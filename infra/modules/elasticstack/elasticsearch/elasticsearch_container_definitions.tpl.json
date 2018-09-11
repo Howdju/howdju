@@ -5,7 +5,7 @@
     ${command_override}
     "essential": true,
     "environment": [
-      { "name" : "ES_JAVA_OPTS", "value" : "-Xms${memory_mib}m -Xmx${memory_mib}m -XX:+UnlockDiagnosticVMOptions -XX:+PrintCompressedOopsMode" },
+      { "name" : "ES_JAVA_OPTS", "value" : "-Xms${memory_mib}m -Xmx${memory_mib}m -Xlog:gc+heap+coops=info" },
       { "name" : "AWS_REGION", "value" : "${aws_region}" }
     ],
     "ulimits": [
@@ -21,6 +21,12 @@
       {
         "containerPort": ${transport_port},
         "hostPort": ${host_transport_port}
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume" : "${data_volume_name}",
+        "containerPath" : "${data_volume_container_path}"
       }
     ],
     "healthCheck": {

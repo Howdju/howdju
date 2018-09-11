@@ -24,6 +24,7 @@ const s3RepositorySecretKey = credentials.premiser.elasticsearch_s3_snapshots_us
 const command = `bin/deploy_component_image.sh ${component} ${args.version}`
   + ` S3_REPOSITORY_KEY_ID=${s3ReposityKeyId}`
   + ` S3_REPOSITORY_SECRET_KEY=${s3RepositorySecretKey}`
+  + ` 2>&1`
 exec(command, (err, stdout, stderr) => {
-  console.log({ stdout, stderr })
+  console.log(stdout)
 })

@@ -23,7 +23,8 @@ docker tag howdju/$component:$version howdju/$component:latest
 docker tag howdju/$component:$version $account_id.dkr.ecr.$region.amazonaws.com/howdju/$component:$version
 docker tag howdju/$component:latest $account_id.dkr.ecr.$region.amazonaws.com/howdju/$component:latest
 
-git tag "docker/howdju/$component/$version"
+git_tag="docker/howdju/$component/$version"
+git tag -f -m $git_tag $git_tag
 
 $(aws ecr get-login --no-include-email --profile=premiser --region=us-east-1)
 

@@ -1,7 +1,6 @@
 variable "elasticstack_data_device_name" {default="/dev/sdf"}
-variable "elasticstack_data_mount_path" {default="/data/"}
-variable "elasticstack_data_directory" {default="/data/elasticsearch/"}
-variable "elasticsearch_data_owner" {default="1000:1000"}
+variable "elasticstack_data_mount_path" {default="/mnt/data/"}
+variable "elasticsearch_data_directory" {default="/mnt/data/elasticsearch/"}
 
 module "constants" {
   source = "../constants/"
@@ -21,6 +20,7 @@ module "elasticsearch" {
   container_version = "${var.elasticsearch_container_version}"
   task_cpu = "${var.elasticsearch_task_cpu}"
   task_memory_mib = "${var.elasticsearch_task_memory_mib}"
+  elasticsearch_data_path = "${var.elasticsearch_data_path}"
   log_group = "${var.elasticsearch_log_group}"
 //  subnet_id = "${var.subnet_id}"
 //  task_security_group_ids = ["${aws_security_group.elasticsearch_task.id}"]
@@ -29,6 +29,7 @@ module "elasticsearch" {
   lb_port = "${var.elasticsearch_lb_port}"
   lb_security_group_id = "${var.lb_security_group_id}"
   lb_ingress_cidr = "${var.elasticsearch_lb_ingress_cidr}"
+  host_data_directory = "${var.elasticsearch_data_directory}"
 }
 
 module "kibana" {
@@ -106,27 +107,27 @@ data "template_file" "elasticstack_user_data" {
     data_device_name = "${var.elasticstack_data_device_name}"
     data_mount_path = "${var.elasticstack_data_mount_path}"
     data_owner = "${var.elasticsearch_data_owner}"
-    data_directory = "${var.elasticstack_data_directory}"
+    data_directory = "${var.elasticsearch_data_directory}"
     cluster_name = "${aws_ecs_cluster.elasticstack.name}"
   }
 }
 
-//resource "aws_ebs_volume" "elasticstack" {
-//  availability_zone = "${var.volume_availability_zone_name}"
-//  size = 32
-//  type = "gp2"
-//  tags {
-//    Name = "elasticstack-ebs"
-//    Terraform = "true"
-//  }
-//}
+resource "aws_ebs_volume" "elasticstack" {
+  availability_zone = "${var.data_volume_availability_zone_name}"
+  size = 32
+  type = "gp2"
+  tags {
+    Name = "elasticstack-ebs"
+    Terraform = "true"
+  }
+}
 
-//resource "aws_volume_attachment" "elasticstack" {
-//  // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-ami-storage-config.html
-//  device_name = "${var.elasticstack_data_device_name}"
-//  volume_id = "${aws_ebs_volume.elasticstack.id}"
-//  instance_id = "${aws_instance.elasticstack.id}"
-//}
+resource "aws_volume_attachment" "elasticstack" {
+  // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-ami-storage-config.html
+  device_name = "${var.elasticstack_data_device_name}"
+  volume_id = "${aws_ebs_volume.elasticstack.id}"
+  instance_id = "${aws_instance.elasticstack.id}"
+}
 
 // NB when upgrading the instance, ensure that our ephemeral port definitions still correspond to those in /proc/sys/net/ipv4/ip_local_port_range
 data "aws_ami" "elasticstack_latest" {
@@ -188,63 +189,3 @@ resource "aws_security_group" "elasticstack_instance" {
     Terraform = "true"
   }
 }
-
-//resource "aws_security_group" "elasticsearch_task" {
-//  name        = "elasticsearch-task-sg"
-//  description = "elasticsearch task security group"
-//  vpc_id      = "${var.vpc_id}"
-//
-//  ingress {
-//    description = "allow elasticsearch traffic from instance, or self"
-//    security_groups = [
-//      "${aws_security_group.elasticstack_instance.id}"
-//    ]
-//    protocol    = "tcp"
-//    from_port   = "${var.elasticsearch_port}"
-//    to_port     = "${var.elasticsearch_port}"
-//    self = true
-//  }
-//
-//  egress {
-//    description = "allow all"
-//    cidr_blocks = ["0.0.0.0/0"]
-//    protocol = "-1"
-//    from_port = 0
-//    to_port = 0
-//  }
-//
-//  tags {
-//    Name = "elasticearch-task-sg"
-//    Terraform = "true"
-//  }
-//}
-
-//resource "aws_security_group" "kibana_task" {
-//  name        = "kibana-task-sg"
-//  description = "kibana task security group"
-//  vpc_id      = "${var.vpc_id}"
-//
-//  ingress {
-//    description = "allow kibana traffic from load balancer, instance, or self"
-//    security_groups = [
-//      "${aws_security_group.elasticstack_instance.id}"
-//    ]
-//    protocol = "tcp"
-//    from_port = "${var.kibana_port}"
-//    to_port = "${var.kibana_port}"
-//    self = true
-//  }
-//
-//  egress {
-//    description = "allow all"
-//    cidr_blocks = ["0.0.0.0/0"]
-//    protocol = "-1"
-//    from_port = 0
-//    to_port = 0
-//  }
-//
-//  tags {
-//    Name = "kibana-task-sg"
-//    Terraform = "true"
-//  }
-//}

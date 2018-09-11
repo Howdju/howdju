@@ -1,4 +1,6 @@
 cluster.name: "howdju_elasticsearch"
+path.data: /data/elasticsearch
+# https://www.elastic.co/guide/en/elasticsearch/reference/master/setup-configuration-memory.html
 bootstrap.memory_lock: false
 http.port: 9200-9200
 # indices.fielddata.cache.size: 400mb

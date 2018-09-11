@@ -23,6 +23,10 @@ case $action in
   latest )
     payload='{"action":"getLatestSnapshot","repositoryName":"howdju"}'
     ;;
+  restore )
+    snapshotName=$2
+    payload='{"action":"restoreSnapshot","repositoryName":"howdju","snapshotName":"'$snapshotName'"}'
+    ;;
   restore-latest )
     payload='{"action":"restoreLatestSnapshot","repositoryName":"howdju"}'
     ;;

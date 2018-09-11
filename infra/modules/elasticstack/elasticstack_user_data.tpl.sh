@@ -1,6 +1,12 @@
 #!/bin/bash
 
-mount_data_volume() {
+ensure_data_volume() {
+  if ! $(df | grep -q ${data_mount_path}); then
+    create_data_volume
+  fi
+}
+
+create_data_volume() {
   mkfs -t ext4 ${data_device_name}
   mkdir ${data_mount_path}
   mount ${data_device_name} ${data_mount_path}
@@ -32,8 +38,7 @@ ECS_LOGLEVEL=debug
 EOF
 }
 
-# We aren't using per-container persistent data for now.
-# mount_data_volume
-
+yum update -y
+ensure_data_volume
 configure_for_elasticsearch
 configure_ecs_container_agent
