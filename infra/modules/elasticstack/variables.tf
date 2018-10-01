@@ -2,6 +2,7 @@ variable "aws_account_id" {}
 variable "aws_region" {}
 variable "key_name" {}
 
+variable "instance_count" {default = 1}
 variable "instance_type" {}
 variable "instance_subnet_id" {}
 variable "data_volume_availability_zone_name" {}

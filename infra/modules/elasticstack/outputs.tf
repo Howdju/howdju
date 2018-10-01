@@ -1,13 +1,13 @@
-output "elasticstack_private_ip" {
-  value = "${aws_instance.elasticstack.private_ip}"
+output "elasticstack_private_ips" {
+  value = "${aws_instance.elasticstack.*.private_ip}"
 }
 
 //output "kibana_host" {
 //  value = "${aws_route53_record.kibana.name}"
 //}
 
-output "instance_id" {
-  value = "${aws_instance.elasticstack.id}"
+output "instance_ids" {
+  value = "${aws_instance.elasticstack.*.id}"
 }
 
 output "elasticsearch_lb_authority" {

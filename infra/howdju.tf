@@ -26,6 +26,7 @@ module "elasticstack" {
   aws_region = "${var.aws_region}"
   key_name = "${var.key_name}"
 
+  instance_count = 0
   instance_type = "${var.elasticstack_instance_type}"
   instance_subnet_id = "${data.aws_subnet.default.id}"
   data_volume_availability_zone_name = "${data.aws_availability_zone.default.name}"

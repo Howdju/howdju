@@ -52,6 +52,7 @@ module "kibana" {
 }
 
 resource "aws_instance" "elasticstack" {
+  count = "${var.instance_count}"
   ami = "ami-0254e5972ebcd132c"
   instance_type = "${var.instance_type}"
   subnet_id = "${var.instance_subnet_id}"
