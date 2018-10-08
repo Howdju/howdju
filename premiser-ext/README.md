@@ -1,12 +1,12 @@
-NPM smart underline
-"wired underline css"
-"css underline animation"
-"animate underline"
-"half underline css"
-text-underline-position
+# Howdju Chrome Extension
 
-* Calculate descender height.  This is how much space we have to play with inside the box. (With some padding from text bottom)
-  * Can add one or two underlines within box
-  * others go outside
-* When going to quote, scroll to text, start with box shadow having big spread and blur, then decrease until 
-  normal active size.  Then after a timeout, shrink to inactive size 
+```bash
+yarn
+yarn dev
+```
+
+For development, you need to load it as an unpacked extension:
+
+![How to load unpacked extension](http://i.imgur.com/CYAw5mf.gif)
+
+For production, [publish to the Chrome Web Store](https://developer.chrome.com/webstore/publish). You can keep the extension unlisted (no one can search for it) or [private](https://support.google.com/chrome/a/answer/2663860?hl=en) (people have to be added to a Google group to see it).
