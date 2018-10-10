@@ -1,12 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Frame } from 'chrome-sidebar'
+import { FramePanel } from './frame-panel'
 import { url } from './settings'
 
-if (Frame.isReady()) {
-  Frame.toggle()
-} else {
-  boot()
+export function toggleSidebar() {
+  if (FramePanel.isReady()) {
+    FramePanel.toggle()
+  } else {
+    boot()
+  }
 }
 
 function boot() {
@@ -14,7 +16,7 @@ function boot() {
   document.body.appendChild(root)
 
   const App = (
-    <Frame url={url} />
+    <FramePanel url={url} />
   )
 
   ReactDOM.render(App, root)

@@ -1,16 +1,19 @@
 {
-  "name": "chrome-github-trending-sidebar",
+  "name": "howdju-browser-extension",
   "private": true,
   "version": "0.1.0",
-  "main": "dist/sidebar.js",
+  "main": "dist/background.js",
   "license": "UNLICENSED",
   "scripts": {
     "build": "webpack --progress --profile --colors",
     "watch": "webpack --watch --progress --colors",
-    "dev": "npm run watch"
+    "dev": "npm run watch",
+    "test": "jest",
+    "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand"
   },
   "dependencies": {
-    "chrome-sidebar": "^0.1.2",
+    "classnames": "^2.2.6",
+    "glamor": "^2.20.40",
     "react": "^15.5.4",
     "react-dom": "^15.5.4"
   },
@@ -18,6 +21,7 @@
     "babel-core": "6.24.0",
     "babel-eslint": "^7.2.3",
     "babel-generator": "6.24.0",
+    "babel-jest": "^23.6.0",
     "babel-loader": "6.4.1",
     "babel-plugin-module-resolver": "2.6.2",
     "babel-plugin-react-require": "3.0.0",
@@ -34,6 +38,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "babel-runtime": "6.23.0",
     "copy-webpack-plugin": "^4.0.1",
+    "jest": "^23.6.0",
     "webpack": "^2.5.1"
   }
 }

@@ -2,22 +2,18 @@
   "name": "Howdju Extension",
   "version": "0.1.0",
   "description": "",
-  "web_accessible_resources": ["sidebar.js"],
   "background": {
     "scripts": [
       "background.js"
-    ],
-    "persistent": true
+    ]
   },
   "browser_action": {
     "default_title": "Howdju"
   },
   "manifest_version": 2,
   "permissions": [
-    "https://*/*",
-    "http://*/*",
-    "tabs",
-    "webRequest",
-    "webRequestBlocking"
-  ]
+    "activeTab",
+    "contextMenus"
+  ],
+  "web_accessible_resources": ["sidebar.js"]
 }

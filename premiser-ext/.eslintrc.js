@@ -85,15 +85,11 @@ module.exports = {
     {
       "files": "*.test.js",
       "globals": {
-        "__dirname": false,
-        "chrome": false,
         "describe": false,
         "beforeEach": false,
         "expect": false,
         "it": false,
         "jest": false,
-        "module": false,
-        "require": false,
         "test": false,
       }
     },

@@ -1,3 +1,5 @@
+/*global require module __dirname*/
+
 const path = require('path')
 const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -5,7 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = {
   entry: {
     background: path.join(__dirname, './src/background'),
-    sidebar: path.join(__dirname, './src/sidebar'),
+    content: path.join(__dirname, './src/content'),
   },
   output: {
     path: path.join(__dirname, './dist'),
@@ -14,7 +16,8 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       { from: 'src/manifest.json' },
-      { from: 'images/**/*' }
+      { from: 'images/**/*' },
+      { from: 'src/*.css', flatten: true }
     ]),
     new webpack.DefinePlugin({
       'process.env': {
