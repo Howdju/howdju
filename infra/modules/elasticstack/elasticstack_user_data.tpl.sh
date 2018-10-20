@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ensure_data_volume() {
-  if ! $(df | grep -q ${data_mount_path}); then
+  if ! mountpoint -q ${data_mount_path}; then
     create_data_volume
   fi
 }
