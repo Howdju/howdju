@@ -18,6 +18,7 @@ import get from 'lodash/get'
 import queryString from 'query-string'
 
 import {
+  arrayToObject,
   makeNewStatementJustification,
   JustificationBasisType,
   makeNewJustificationBasisCompoundFromWritQuote,
@@ -47,34 +48,40 @@ import StatementEditorFields from "./StatementEditorFields"
 import {EditorTypes} from "./reducers/editors"
 import paths from './paths'
 import TagsControl from './TagsControl'
+import {logger} from './logger'
 
 
-export const CreateStatementPageMode = {
+export const CreateStatementPageMode = arrayToObject([
   /** Blank editors, optionally show and create a justification with the statement */
-  CREATE_STATEMENT: 'CREATE_STATEMENT',
-  /** Blank statement editor, pre-populated justification information (e.g. writ quote from bookmarklet)
+  'CREATE_STATEMENT',
+
+  /** Blank statement editor, pre-populated justification information.  Supports receiving
+   * basisSourceType/basisSourceId as query parameters, or if both of these are missing, expects
+   * editor to have been pre-populated with statementJustification (e.g. the browser extension passes information
+   * via a window.postMessage.)
    *
-   * Hide the writ switch.
+   * Hides the create-justification switch.
    */
-  CREATE_JUSTIFICATION: 'CREATE_JUSTIFICATION',
+  'CREATE_JUSTIFICATION',
+
   /** Submit writ quote-based justification via query params */
-  SUBMIT_JUSTIFICATION: 'SUBMIT_JUSTIFICATION',
-}
+  'SUBMIT_JUSTIFICATION_VIA_QUERY_STRING',
+])
 
 const titleTextKeyByMode = {
   [CreateStatementPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_TITLE,
   [CreateStatementPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
-  [CreateStatementPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_TITLE,
+  [CreateStatementPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING]: CREATE_JUSTIFICATION_TITLE,
 }
 const submitButtonLabelTextKeyByMode = {
   [CreateStatementPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_LABEL,
   [CreateStatementPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
-  [CreateStatementPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
+  [CreateStatementPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 }
 const submitButtonTitleTextKeyByMode = {
   [CreateStatementPageMode.CREATE_STATEMENT]: CREATE_STATEMENT_SUBMIT_BUTTON_TITLE,
   [CreateStatementPageMode.CREATE_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
-  [CreateStatementPageMode.SUBMIT_JUSTIFICATION]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
+  [CreateStatementPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING]: CREATE_JUSTIFICATION_SUBMIT_BUTTON_TITLE,
 }
 
 const statementName = 'statement'
@@ -98,14 +105,24 @@ class CreateStatementPage extends Component {
           basisSourceType,
           basisSourceId,
         } = this.props.queryParams
-        // First clear out the editor
-        this.props.editors.cancelEdit(CreateStatementPage.editorType, CreateStatementPage.editorId)
-        // Then fetch the stuff for editing
-        this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(CreateStatementPage.editorType,
-          CreateStatementPage.editorId, basisSourceType, basisSourceId)
+        if (basisSourceType || basisSourceId) {
+          // First clear out the editor
+          this.props.editors.cancelEdit(CreateStatementPage.editorType, CreateStatementPage.editorId)
+
+          if (!(basisSourceType && basisSourceId)) {
+            logger.error(`If either of basisSourceType/basisSourceId are present, both must be: basisSourceType: ${basisSourceType} basisSourceId: ${basisSourceId}.`)
+            return
+          }
+
+          // Then fetch the stuff for editing
+          this.props.flows.fetchAndBeginEditOfNewJustificationFromBasisSource(CreateStatementPage.editorType,
+            CreateStatementPage.editorId, basisSourceType, basisSourceId)
+        }
+        // if neither basisSourceType or basisSourceId is present in the queryParams, then the editorModel should
+        // already be present.  We could check that here, I think.
         break
       }
-      case CreateStatementPageMode.SUBMIT_JUSTIFICATION: {
+      case CreateStatementPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING: {
         const {
           url,
           description,
@@ -130,6 +147,9 @@ class CreateStatementPage extends Component {
         this.props.editors.beginEdit(CreateStatementPage.editorType, CreateStatementPage.editorId,
           statementJustification)
         break
+      }
+      default: {
+        logger.warning(`unsupported CreateStatementPageMode: ${this.props.mode}`)
       }
     }
   }

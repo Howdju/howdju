@@ -1,34 +1,37 @@
 import React, { Component } from 'react'
-import cx from 'classnames'
+import cn from 'classnames'
 import { css } from 'glamor'
 import { node, object, string, number, func } from 'prop-types'
 
-const dragClass = css({
-  // position: 'fixed',
+const dragTargetClass = css({
   top: 0,
   left: 0,
   width: '2px',
-  backgroundColor: 'black',
+  backgroundColor: '#333',
   height: '100%',
   cursor: 'ew-resize',
 })
 
+// Can't be declared in the render method for some reason...it just goes eventually disappears and frame becomes invisible.
 const containerVisibleClass = css({
-  transform: 'translate3d(0,0,0)'
+  // must be declared !important to override containerClass which is declared after this and so can take priority
+  transform: 'translate3d(0,0,0) !important'
 })
 
+// Must come after containerVisibleClass to take precedence
 const containerMinimizedClass = css({
   cursor: 'pointer',
-  transform: 'translateX(94%)',
+  transform: 'translateX(94%) !important',
   ':hover': {
-    transform: 'translateX(92%)'
+    transform: 'translateX(92%) !important'
   },
   '& > iframe': {
     pointerEvents: 'none'
   }
 })
 
-const FRAME_TOGGLE_FUNCTION = 'chromeIframeSheetToggle'
+const FRAME_TOGGLE_FUNCTION = 'howdjuFramePanelToggle'
+const FRAME_SHOW_FUNCTION = 'howdjuFramePanelShow'
 
 export class FramePanel extends Component {
   render() {
@@ -80,7 +83,7 @@ export class FramePanel extends Component {
     return (
       <div>
         <div
-          className={cx({
+          className={cn({
             [containerClass]: true,
             [containerVisibleClass]: isVisible,
             [containerMinimizedClass]: isMinimized,
@@ -90,14 +93,14 @@ export class FramePanel extends Component {
           onClick={this.onFramePanelClick}
         >
           <div
-            className={cx({
-              [dragClass]: true,
+            className={cn({
+              [dragTargetClass]: true,
             })}
-            onMouseDown={this.onDragMouseDown}
-            ref={drag => this.drag = drag}
+            onMouseDown={this.onDragTargetMouseDown}
+            ref={drag => this.dragTarget = drag}
           />
           <iframe
-            className={cx({
+            className={cn({
               [iframeClass]: true,
               [iframeClassName]: true
             })}
@@ -157,7 +160,8 @@ export class FramePanel extends Component {
   componentDidMount() {
     const { delay, onMount, initialContainerWidth } = this.props
 
-    window[FRAME_TOGGLE_FUNCTION] = this.toggleFrame
+    window[FRAME_TOGGLE_FUNCTION] = this.toggle
+    window[FRAME_SHOW_FUNCTION] = this.show
 
     onMount({
       frame: this.frame
@@ -180,6 +184,7 @@ export class FramePanel extends Component {
     })
 
     delete window[FRAME_TOGGLE_FUNCTION]
+    delete window[FRAME_SHOW_FUNCTION]
     clearTimeout(this._visibleRenderTimeout)
   }
 
@@ -191,7 +196,7 @@ export class FramePanel extends Component {
     })
   }
 
-  onDragMouseDown = (e) => {
+  onDragTargetMouseDown = (e) => {
     e = e || window.event
     e.preventDefault()
     // get the mouse cursor position at startup:
@@ -210,7 +215,6 @@ export class FramePanel extends Component {
     const deltaX = this.state.dragX - e.clientX
     this.setState({
       dragX: e.clientX,
-      // Since the container comes from the right, it's width is inversely correlated with the x-axis. So subtract.
       containerWidth: this.state.containerWidth + deltaX
     })
   }
@@ -230,9 +234,18 @@ export class FramePanel extends Component {
     })
   }
 
-  toggleFrame = () => {
+  toggle = () => {
     this.setState({
-      isMinimized: !this.state.isMinimized
+      isMinimized: !this.state.isMinimized,
+    })
+  }
+
+  show = (onShow) => {
+    this.setState({
+      isMinimized: false,
+    })
+    onShow({
+      frame: this.frame
     })
   }
 
@@ -243,6 +256,12 @@ export class FramePanel extends Component {
   static toggle() {
     if (window[FRAME_TOGGLE_FUNCTION]) {
       window[FRAME_TOGGLE_FUNCTION]()
+    }
+  }
+
+  static show(onShow) {
+    if (window[FRAME_SHOW_FUNCTION]) {
+      window[FRAME_SHOW_FUNCTION](onShow)
     }
   }
 }

@@ -35,6 +35,7 @@ import {commitEditorThenView} from './editors/commitEditorThenViewSaga'
 import {commitEditThenPutActionOnSuccess} from './editors/commitEditThenPutActionOnSuccessSaga'
 import {fetchAndBeginEditOfNewJustificationFromBasisSource} from './editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga'
 import {editorCommitEdit} from './editors/editorCommitEditSaga'
+import {beginEditOfNewJustificationFromAnchor} from './editors/beginEditOfNewJustificationFromAnchorSaga'
 
 
 export default () => all([
@@ -66,6 +67,7 @@ export default () => all([
   commitEditThenPutActionOnSuccess(),
   fetchAndBeginEditOfNewJustificationFromBasisSource(),
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
+  beginEditOfNewJustificationFromAnchor(),
 
   editorCommitEdit(),
 

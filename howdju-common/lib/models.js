@@ -245,6 +245,7 @@ _e.makeNewJustificationTargetingStatementIdWithPolarity = (statementId, polarity
 _e.makeNewStatementJustification = (statementProps, justificationProps) => ({
   statement: _e.makeNewStatement(statementProps),
   newJustification: _e.makeNewJustification(justificationProps),
+  // whether to have the justification controls expanded and to create a justification along with the statement
   doCreateJustification: !!justificationProps,
 })
 

@@ -778,6 +778,7 @@ Cat meeting design notes:
   * https://atlaskit.atlassian.com/
 * Reader mode/scraping, Boilerplate removal / readability mode:
   * https://github.com/codelucas/newspaper
+  * https://github.com/keepcosmos/readability
   * [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
   * https://github.com/chromium/dom-distiller
   * https://www.npmjs.com/package/distillery-js

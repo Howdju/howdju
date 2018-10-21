@@ -28,9 +28,11 @@ import {
 import {
   api,
   ui,
+  flows,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import {history} from './history'
+import {logger} from './logger'
 import paths from './paths'
 import {
   selectIsWindowNarrow,
@@ -91,15 +93,47 @@ class App extends Component {
     this.initializeTabIndex()
     window.addEventListener('resize', this.onWindowResize)
     window.addEventListener('scroll', this.throttledOnWindowScroll)
+    window.addEventListener('message', this.receiveMessage, false)
   }
 
   componentWillUnmount() {
     if (this.unlistenToHistory) this.unlistenToHistory()
     window.removeEventListener('resize', this.onWindowResize)
     window.removeEventListener('scroll', this.throttledOnWindowScroll)
+    window.removeEventListener('scroll', this.receiveMessage)
+  }
+
+  receiveMessage = (event) => {
+    const action = event.data.action
+    if (!action) {
+      logger.debug('message data lacked action; ignoring')
+      return
+    }
+    switch (action) {
+      case 'createJustification': {
+        const {content, source, target} = event.data.payload
+        if (!target.url.startsWith(event.origin)) {
+          logger.error(`received message from ${event.origin} to createJustification of ${target.url}.` +
+            ' The browser extension should only create justifications matching the current origin.  Ignoring.')
+          return
+        }
+        if (!source.url === target.url) {
+          logger.error(`received createJustification message where source.url ${source.url} doesn't match` +
+            ` target.url ${target.url}.  Ignoring`)
+          return
+        }
+        this.props.flows.beginEditOfNewJustificationFromAnchor(content, source, target)
+        break
+      }
+      default: {
+        logger.error(`unsupported message action: ${event.data.action}`)
+        break
+      }
+    }
   }
 
   onWindowResize = () => {
+    // Why can't this be this.props.ui.windowResize() ?
     this.context.store.dispatch(ui.windowResize())
   }
 
@@ -289,6 +323,12 @@ class App extends Component {
       )
     }
 
+    const authEmailDiv = (
+      <div>
+        <b>{authEmail}</b>
+        {hasAuthToken || <div><em>login expired</em></div>}
+      </div>
+    )
     const navDrawer = (
       <Drawer
         id="app-nav-drawer"
@@ -300,14 +340,7 @@ class App extends Component {
             className="md-divider-border md-divider-border--bottom"
           >
             <div className="app-nav-drawer-header">
-              {authEmail ? (
-                  <div>
-                    <b>{authEmail}</b>
-                    {hasAuthToken || <div><em>login expired</em></div>}
-                  </div>
-                )
-                : <em>Not logged in</em>
-              }
+              {authEmail ? authEmailDiv : <em>Not logged in</em>}
             </div>
           </Toolbar>
         }
@@ -432,4 +465,5 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   ui,
+  flows,
 }))(App)

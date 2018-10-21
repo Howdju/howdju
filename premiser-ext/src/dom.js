@@ -21,6 +21,9 @@ export function normalizeNodes(nodes) {
 }
 
 export function getCommonAncestor(node1, node2) {
+  if (!node1 || !node2) {
+    throw new Error('cannot get common ancestor when one or both nodes are missing')
+  }
   if (node1 === node2) {
     return node1
   }

@@ -7,3 +7,11 @@ export function objectValues(object) {
   }
   return values
 }
+
+export function arrayInsertAfter(items, afterItem, item) {
+  items.splice(items.indexOf(afterItem)+1, 0, item)
+}
+
+export function arrayInsertBefore(items, afterItem, item) {
+  items.splice(items.indexOf(afterItem), 0, item)
+}

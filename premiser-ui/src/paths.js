@@ -7,6 +7,7 @@ import queryString from 'query-string'
 import {
   toSlug
 } from 'howdju-common'
+import {logger} from './logger'
 
 
 export const mainSearchPathName = '/'
@@ -45,10 +46,19 @@ class Paths {
     return this.searchJustifications({writQuoteId: writQuote.id})
   }
 
-  createJustification = (basisSourceType, basisSourceId) => createPath({
-    pathname: createJustificationPath,
-    search: '?' + queryString.stringify({basisSourceType, basisSourceId})
-  })
+  createJustification = (basisSourceType, basisSourceId) => {
+    const location = {
+      pathname: createJustificationPath,
+    }
+    if (basisSourceType || basisSourceId) {
+      if (!(basisSourceType && basisSourceId)) {
+        logger.error(`If either of basisSourceType/basisSourceId are present, both must be: basisSourceType: ${basisSourceType} basisSourceId: ${basisSourceId}.`)
+      } else {
+        location['search'] = '?' + queryString.stringify({basisSourceType, basisSourceId})
+      }
+    }
+    return createPath(location)
+  }
   searchJustifications = params => createPath({
     pathname: '/search-justifications',
     search: '?' + queryString.stringify(params)

@@ -87,6 +87,10 @@ export function* goTo() {
     yield put(push(paths.login()))
   })
 
+  yield takeEvery(str(goto.createJustification), function* goToCreateJustificationWorker() {
+    yield put(push(paths.createJustification()))
+  })
+
   yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
     const {
       mainSearchText

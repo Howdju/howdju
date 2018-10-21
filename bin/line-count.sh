@@ -1,3 +1,3 @@
 #! /bin/bash
 
-( find . -name '*.js' -and -not -path '*node_modules*' -and -not -path '*dist/*' -print0 | xargs -0 cat ) | wc -l
+( find . \( -name '*.js' -o -name '*.sh' -o -name '*.tf' \) -and -not \( -path '*node_modules*' -o -path '*dist/*' -o -path '*.terraform*' \) -print0 | xargs -0 cat ) | wc -l

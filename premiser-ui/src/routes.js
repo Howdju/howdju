@@ -50,7 +50,7 @@ const routes = [
     <CreateStatementPage {...props} mode={CreateStatementPageMode.CREATE_JUSTIFICATION} />
   )} />,
   <Route key="submit" exact path="/submit" render={props => (
-    <CreateStatementPage {...props} mode={CreateStatementPageMode.SUBMIT_JUSTIFICATION} />
+    <CreateStatementPage {...props} mode={CreateStatementPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING} />
   )} />,
 
   <Route key="tools" exact path="/tools" component={ToolsPage} />,

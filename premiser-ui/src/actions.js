@@ -26,6 +26,7 @@ export const str = ac => ac.toString()
  */
 export const mapActionCreatorGroupToDispatchToProps = (actionCreatorGroups, otherActions) => (dispatch) => {
   const dispatchProps = mapValues(actionCreatorGroups, (actionCreatorGroup) =>
+    // Why not mapValues(..., bindActionCreators)? https://redux.js.org/api/bindactioncreators
     mapValues(actionCreatorGroup, (actionCreator) =>
       (...args) => dispatch(actionCreator.apply(null, args))
     )
@@ -294,12 +295,17 @@ export const goto = {
   statement: actionCreator('GOTO/STATEMENT', (statement) => ({statement})),
   mainSearch: actionCreator('GOTO/MAIN_SEARCH', (mainSearchText) => ({mainSearchText})),
   tag: actionCreator('GOTO/TAG', (tag) => ({tag})),
+  createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION'),
 }
 
 export const flows = {
   fetchAndBeginEditOfNewJustificationFromBasisSource: actionCreator(
     'FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS_SOURCE',
     (editorType, editorId, basisSourceType, basisSourceId) => ({editorType, editorId, basisSourceType, basisSourceId})
+  ),
+  beginEditOfNewJustificationFromAnchor: actionCreator(
+    'FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_ANCHOR',
+    (content, source, target) => ({content, source, target})
   ),
   commitEditThenView: actionCreator('FLOWS/COMMIT_STATEMENT_THEN_VIEW',
     (editorType, editorId) => ({editorType, editorId})),

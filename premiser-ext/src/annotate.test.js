@@ -3,12 +3,14 @@ import {
   annotateNodes,
   annotationTagName,
   annotationClass,
-  annotationIndexClassPrefix,
   annotationLevelClassPrefix,
   annotations,
-  Annotation,
   annotationIndexDataKey,
   getEquivalentAnnotation,
+} from './annotate'
+import {
+  Annotation,
+  annotationIndexClassPrefix,
 } from './annotation'
 import {setNodeData} from './node-data'
 
@@ -281,6 +283,44 @@ describe('annotateNodes/getNodesFor', () => {
         ${close()}${close()}${close()}${open(0, 1)}${open(2, 2)}The new annotation will get this too 
         ${close()}${close()}${open(0, 1)}this is back to 1
       ${close()}</p>
+    `.trim())
+    expect(wrapper).toBeEqualNode(expected)
+  })
+
+  test('annotates when end encompasses no content of endNode (paragraph triple-click selection)', () => {
+    /*
+     * this test case captures the behavior of when a user selects a paragraph using triple-click.  The start
+     * node is the first text node of the paragraph, start offset 0.  The end node is the *next* paragraph, end offset
+     * of 0.
+     */
+    document.body.innerHTML = `
+      <div id="wrapper">
+        <p>
+          When selecting a paragraph by triple-clicking, the selection can encompass
+        </p>
+        <p id="wrapper">
+          Index 0 of the following paragraph.  But we don't want to annotate that.
+        </p>
+      </div>
+    `.trim()
+    const wrapper = document.getElementById('wrapper')
+    const startNode = wrapper.childNodes[1].childNodes[0]
+    const startOffset = 0
+    const endNode = wrapper.childNodes[3]
+    const endOffset = 0
+
+    const nodes = getNodesFor(startNode, startOffset, endNode, endOffset)
+    annotateNodes(nodes)
+
+    const expected = createElementFromHTML(`
+      <div id="wrapper">
+        <p>${open(0, 1)}
+          When selecting a paragraph by triple-clicking, the selection can encompass
+        ${close()}</p>${open(0, 1)}
+        ${close()}<p id="wrapper">
+          Index 0 of the following paragraph.  But we don't want to annotate that.
+        </p>
+      </div>
     `.trim())
     expect(wrapper).toBeEqualNode(expected)
   })
