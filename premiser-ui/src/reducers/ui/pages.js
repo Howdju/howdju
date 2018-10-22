@@ -6,7 +6,7 @@ import {
   ui
 } from '../../actions'
 
-export const statementJustificationsPage = handleActions({
+export const propositionJustificationsPage = handleActions({
   [ui.showNewJustificationDialog]: (state, action) => ({
     ...state,
     isNewJustificationDialogVisible: true,
@@ -31,7 +31,7 @@ export const mainSearchPage = handleActions({
   isFetching: false,
   results: {
     tags: [],
-    statementTexts: [],
+    propositionTexts: [],
     writQuoteQuoteTexts: [],
     writQuoteUrls: [],
     writTitles: [],
@@ -84,29 +84,29 @@ export const justificationsSearchPage = handleActions({
 }, defaultJustificationSearchPageState)
 
 const defaultTagPageState = {
-  statements: [],
+  propositions: [],
   isFetching: false,
   tagId: null,
 }
 export const tagPage = handleActions({
-  [api.fetchTaggedStatements]: (state, action) => ({
+  [api.fetchTaggedPropositions]: (state, action) => ({
     ...state,
     isFetching: true,
     tagId: action.payload.tagId,
   }),
-  [api.fetchTaggedStatements.response]: {
+  [api.fetchTaggedPropositions.response]: {
     next: (state, action) => ({
       ...state,
-      statements: action.payload.result.statements,
+      propositions: action.payload.result.propositions,
       isFetching: false
     }),
     throw: (state, action) => ({
       ...state,
-      statements: [],
+      propositions: [],
       isFetching: false
     }),
   },
-  [ui.clearTaggedStatements]: (state, action) => ({
+  [ui.clearTaggedPropositions]: (state, action) => ({
     ...state,
     ...defaultTagPageState
   }),

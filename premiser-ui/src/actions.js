@@ -2,8 +2,8 @@ import { createAction as actionCreator } from 'redux-actions'
 import {
   JustificationVotePolarity,
   decircularizeJustification,
-  makeStatementTagVote,
-  StatementTagVotePolarity,
+  makePropositionTagVote,
+  PropositionTagVotePolarity,
 } from "howdju-common"
 import reduce from 'lodash/reduce'
 import mapValues from 'lodash/mapValues'
@@ -55,17 +55,17 @@ export const app = {
 
 export const api = {
   callApi: apiActionCreator('CALL_API'),
-  fetchStatement: apiActionCreator('FETCH_STATEMENT', (statementId) => ({statementId})),
-  fetchStatements: apiActionCreator('FETCH_STATEMENTS', (statementIds) => ({statementIds})),
-  fetchStatementCompound: apiActionCreator('FETCH_STATEMENT_COMPOUND', (statementCompoundId) => ({statementCompoundId})),
-  fetchStatementJustifications: apiActionCreator('FETCH_STATEMENT_JUSTIFICATIONS', (statementId) => ({statementId})),
+  fetchProposition: apiActionCreator('FETCH_PROPOSITION', (propositionId) => ({propositionId})),
+  fetchPropositions: apiActionCreator('FETCH_PROPOSITIONS', (propositionIds) => ({propositionIds})),
+  fetchPropositionCompound: apiActionCreator('FETCH_PROPOSITION_COMPOUND', (propositionCompoundId) => ({propositionCompoundId})),
+  fetchPropositionJustifications: apiActionCreator('FETCH_PROPOSITION_JUSTIFICATIONS', (propositionId) => ({propositionId})),
   fetchWritQuote: apiActionCreator('FETCH_WRIT_QUOTE', (writQuoteId) => ({writQuoteId})),
   fetchJustificationBasisCompound: apiActionCreator('FETCH_JUSTIFICATION_BASIS_COMPOUND',
     (justificationBasisCompoundId) => ({justificationBasisCompoundId})),
   fetchSourceExcerptParaphrase: apiActionCreator('FETCH_SOURCE_EXCERPT_PARAPHRASE',
     (sourceExcerptParaphraseId) => ({sourceExcerptParaphraseId})),
 
-  fetchRecentStatements: apiActionCreator('FETCH_RECENT_STATEMENTS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
+  fetchRecentPropositions: apiActionCreator('FETCH_RECENT_PROPOSITIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentWrits: apiActionCreator('FETCH_RECENT_WRITS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
   fetchRecentWritQuotes: apiActionCreator('FETCH_RECENT_WRIT_QUOTES', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentJustifications: apiActionCreator('FETCH_RECENT_JUSTIFICATIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
@@ -107,34 +107,34 @@ export const api = {
     previousJustificationVote: justification.vote,
   })),
 
-  tagStatement: apiActionCreator('TAG_STATEMENT', (statementId, tag, statementTagVote) => ({
-    statementTagVote: makeStatementTagVote({
-      polarity: StatementTagVotePolarity.POSITIVE,
-      statement: {id: statementId},
+  tagProposition: apiActionCreator('TAG_PROPOSITION', (propositionId, tag, propositionTagVote) => ({
+    propositionTagVote: makePropositionTagVote({
+      polarity: PropositionTagVotePolarity.POSITIVE,
+      proposition: {id: propositionId},
       tag,
     }),
-    prevStatementTagVote: statementTagVote,
+    prevPropositionTagVote: propositionTagVote,
   })),
-  antiTagStatement: apiActionCreator('ANTI_TAG_STATEMENT', (statementId, tag, statementTagVote) => ({
-    statementTagVote: makeStatementTagVote({
-      polarity: StatementTagVotePolarity.NEGATIVE,
-      statement: {id: statementId},
+  antiTagProposition: apiActionCreator('ANTI_TAG_PROPOSITION', (propositionId, tag, propositionTagVote) => ({
+    propositionTagVote: makePropositionTagVote({
+      polarity: PropositionTagVotePolarity.NEGATIVE,
+      proposition: {id: propositionId},
       tag,
     }),
-    prevStatementTagVote: statementTagVote,
+    prevPropositionTagVote: propositionTagVote,
   })),
-  unTagStatement: apiActionCreator('UN_TAG_STATEMENT', (statementTagVote) => ({prevStatementTagVote: statementTagVote})),
+  unTagProposition: apiActionCreator('UN_TAG_PROPOSITION', (propositionTagVote) => ({prevPropositionTagVote: propositionTagVote})),
 
-  createStatement: apiActionCreator('CREATE_STATEMENT', (statement) => ({statement})),
-  updateStatement: apiActionCreator('UPDATE_STATEMENT', (statement) => ({statement}), (s, nonce) => ({nonce})),
-  deleteStatement: apiActionCreator('DELETE_STATEMENT', (statement) => ({statement})),
+  createProposition: apiActionCreator('CREATE_PROPOSITION', (proposition) => ({proposition})),
+  updateProposition: apiActionCreator('UPDATE_PROPOSITION', (proposition) => ({proposition}), (s, nonce) => ({nonce})),
+  deleteProposition: apiActionCreator('DELETE_PROPOSITION', (proposition) => ({proposition})),
 
-  fetchStatementTextSuggestions: apiActionCreator('FETCH_STATEMENT_TEXT_SUGGESTIONS', (statementText, suggestionsKey) => ({
-    statementText,
+  fetchPropositionTextSuggestions: apiActionCreator('FETCH_PROPOSITION_TEXT_SUGGESTIONS', (propositionText, suggestionsKey) => ({
+    propositionText,
     suggestionsKey,
   })),
-  cancelStatementTextSuggestions: apiActionCreator('CANCEL_STATEMENT_TEXT_SUGGESTIONS', (suggestionsKey) => ({
-    cancelTarget: str(api.fetchStatementTextSuggestions),
+  cancelPropositionTextSuggestions: apiActionCreator('CANCEL_PROPOSITION_TEXT_SUGGESTIONS', (suggestionsKey) => ({
+    cancelTarget: str(api.fetchPropositionTextSuggestions),
     suggestionsKey,
   })),
 
@@ -170,10 +170,10 @@ export const api = {
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', (justification) => ({justification})),
 
   fetchMainSearchResults: apiActionCreator('FETCH_MAIN_SEARCH_RESULTS', (searchText) => ({searchText})),
-  fetchStatementsSearch: apiActionCreator('FETCH_STATEMENTS_SEARCH', (searchText) => ({searchText})),
+  fetchPropositionsSearch: apiActionCreator('FETCH_PROPOSITIONS_SEARCH', (searchText) => ({searchText})),
 
   fetchTag: apiActionCreator('FETCH_TAG', (tagId) => ({tagId})),
-  fetchTaggedStatements: apiActionCreator('FETCH_TAGGED_STATEMENTS', (tagId) => ({tagId})),
+  fetchTaggedPropositions: apiActionCreator('FETCH_TAGGED_PROPOSITIONS', (tagId) => ({tagId})),
 }
 export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator) => {
   result[actionCreator] = actionCreator
@@ -220,7 +220,7 @@ export const ui = {
   enableMobileSite: actionCreator('UI/ENABLE_MOBILE_SITE'),
   disableMobileSite: actionCreator('UI/DISABLE_MOBILE_SITE'),
 
-  clearTaggedStatements: actionCreator('UI/CLEAR_TAGGED_STATEMENTS'),
+  clearTaggedPropositions: actionCreator('UI/CLEAR_TAGGED_PROPOSITIONS'),
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
@@ -249,12 +249,12 @@ export const editors = {
     index
   })),
 
-  addStatementCompoundAtom: actionCreator('EDITORS/ADD_STATEMENT_COMPOUND_ATOM', (editorType, editorId, index) => ({
+  addPropositionCompoundAtom: actionCreator('EDITORS/ADD_PROPOSITION_COMPOUND_ATOM', (editorType, editorId, index) => ({
     editorType,
     editorId,
     index,
   })),
-  removeStatementCompoundAtom: actionCreator('EDITORS/REMOVE_STATEMENT_COMPOUND_ATOM', (editorType, editorId, atom, index) => ({
+  removePropositionCompoundAtom: actionCreator('EDITORS/REMOVE_PROPOSITION_COMPOUND_ATOM', (editorType, editorId, atom, index) => ({
     editorType,
     editorId,
     atom,
@@ -285,14 +285,14 @@ export const editors = {
     (editorType, editorId, atom, atomIndex, url, urlIndex) => ({editorType, editorId, atom, atomIndex, url, urlIndex})
   ),
 
-  tagStatement: actionCreator('EDITORS/TAG_STATEMENT', (editorType, editorId, tag) => ({editorType, editorId, tag})),
-  unTagStatement: actionCreator('EDITORS/UN_TAG_STATEMENT', (editorType, editorId, tag) => ({editorType, editorId, tag})),
-  antiTagStatement: actionCreator('EDITORS/ANTI_TAG_STATEMENT', (editorType, editorId, tag) => ({editorType, editorId, tag})),
+  tagProposition: actionCreator('EDITORS/TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
+  unTagProposition: actionCreator('EDITORS/UN_TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
+  antiTagProposition: actionCreator('EDITORS/ANTI_TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
 }
 
 export const goto = {
   login: actionCreator('GOTO/LOGIN', (loginRedirectLocation) => ({loginRedirectLocation})),
-  statement: actionCreator('GOTO/STATEMENT', (statement) => ({statement})),
+  proposition: actionCreator('GOTO/PROPOSITION', (proposition) => ({proposition})),
   mainSearch: actionCreator('GOTO/MAIN_SEARCH', (mainSearchText) => ({mainSearchText})),
   tag: actionCreator('GOTO/TAG', (tag) => ({tag})),
   createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION'),
@@ -307,7 +307,7 @@ export const flows = {
     'FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_ANCHOR',
     (content, source, target) => ({content, source, target})
   ),
-  commitEditThenView: actionCreator('FLOWS/COMMIT_STATEMENT_THEN_VIEW',
+  commitEditThenView: actionCreator('FLOWS/COMMIT_PROPOSITION_THEN_VIEW',
     (editorType, editorId) => ({editorType, editorId})),
   commitEditThenPutActionOnSuccess: actionCreator('FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS',
     (editorType, editorId, onSuccessAction) => ({editorType, editorId, onSuccessAction})),

@@ -17,15 +17,15 @@ import { handleActions } from 'redux-actions'
 import {
   apiErrorCodes,
   arrayToObject,
-  makeNewStatementAtom,
+  makeNewPropositionAtom,
   makeNewJustificationBasisCompoundAtom,
   makeNewUrl,
   newProgrammingError,
   idEqual,
   insertAt,
   removeAt,
-  makeStatementTagVote,
-  StatementTagVotePolarity,
+  makePropositionTagVote,
+  PropositionTagVotePolarity,
   tagEqual,
 } from "howdju-common"
 
@@ -49,15 +49,15 @@ const EditorActions = reduce(editors, (editorActions, actionCreator) => {
 
 export const EditorTypes = arrayToObject([
   'DEFAULT',
-  'STATEMENT',
-  'STATEMENT_COMPOUND',
+  'PROPOSITION',
+  'PROPOSITION_COMPOUND',
   'JUSTIFICATION_BASIS_COMPOUND',
   'WRIT_QUOTE',
   'COUNTER_JUSTIFICATION',
   /* e.g. new justification dialog */
   'NEW_JUSTIFICATION',
-  /* e.g. Statement justification page */
-  'STATEMENT_JUSTIFICATION',
+  /* e.g. Proposition justification page */
+  'PROPOSITION_JUSTIFICATION',
   'LOGIN_CREDENTIALS',
 ])
 
@@ -161,43 +161,43 @@ const editorReducerByType = {
     [editors.cancelEdit]: (state, action) => ({...state, editEntity: null}),
   }, defaultEditorState),
 
-  [EditorTypes.STATEMENT]: handleActions({
-    [api.fetchStatementJustifications]: (state, action) => {
-      const statementId = get(state, 'editEntity.id')
-      if (statementId === action.payload.statementId) {
+  [EditorTypes.PROPOSITION]: handleActions({
+    [api.fetchPropositionJustifications]: (state, action) => {
+      const propositionId = get(state, 'editEntity.id')
+      if (propositionId === action.payload.propositionId) {
         return {...state, isFetching: true}
       }
       return state
     },
-    [api.fetchStatement]: (state, action) => {
-      const statementId = get(state, 'editEntity.id')
-      if (statementId === action.payload.statementId) {
+    [api.fetchProposition]: (state, action) => {
+      const propositionId = get(state, 'editEntity.id')
+      if (propositionId === action.payload.propositionId) {
         return {...state, isFetching: true}
       }
       return state
     },
-    [api.fetchStatementJustifications.response]: (state, action) => {
-      const statementId = get(state, 'editEntity.id')
-      if (statementId === action.meta.requestPayload.statementId) {
+    [api.fetchPropositionJustifications.response]: (state, action) => {
+      const propositionId = get(state, 'editEntity.id')
+      if (propositionId === action.meta.requestPayload.propositionId) {
         return {...state, isFetching: false}
       }
       return state
     },
-    [api.fetchStatement.response]: (state, action) => {
-      const statementId = get(state, 'editEntity.id')
-      if (statementId === action.meta.requestPayload.statementId) {
+    [api.fetchProposition.response]: (state, action) => {
+      const propositionId = get(state, 'editEntity.id')
+      if (propositionId === action.meta.requestPayload.propositionId) {
         return {...state, isFetching: false}
       }
       return state
     },
     [editors.commitEdit.result]: {
-      throw: editorErrorReducer('statement')
+      throw: editorErrorReducer('proposition')
     },
   }, defaultEditorState),
 
   [EditorTypes.COUNTER_JUSTIFICATION]: handleActions({
-    [editors.addStatementCompoundAtom]: makeAddAtomReducer('basis.statementCompound.atoms', makeNewStatementAtom),
-    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
+    [editors.addPropositionCompoundAtom]: makeAddAtomReducer('basis.propositionCompound.atoms', makeNewPropositionAtom),
+    [editors.removePropositionCompoundAtom]: makeRemoveAtomReducer('basis.propositionCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisCompoundAtom),
     [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
     [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
@@ -222,16 +222,16 @@ const editorReducerByType = {
         'writQuote',
         'urls',
       ]),
-    [api.fetchStatementJustifications]: (state, action) => {
-      const rootStatementId = get(state.editEntity, 'rootStatement.id')
-      if (idEqual(rootStatementId, action.payload.statementId)) {
+    [api.fetchPropositionJustifications]: (state, action) => {
+      const rootPropositionId = get(state.editEntity, 'rootProposition.id')
+      if (idEqual(rootPropositionId, action.payload.propositionId)) {
         return {...state, isFetching: true}
       }
       return state
     },
-    [api.fetchStatementJustifications.response]: (state, action) => {
-      const rootStatementId = state.editEntity && state.editEntity.rootStatement.id
-      if (rootStatementId && rootStatementId === action.payload.statementId) {
+    [api.fetchPropositionJustifications.response]: (state, action) => {
+      const rootPropositionId = state.editEntity && state.editEntity.rootProposition.id
+      if (rootPropositionId && rootPropositionId === action.payload.propositionId) {
         return {...state, isFetching: false}
       }
       return state
@@ -254,8 +254,8 @@ const editorReducerByType = {
       editEntity.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
-    [editors.addStatementCompoundAtom]: makeAddAtomReducer('basis.statementCompound.atoms', makeNewStatementAtom),
-    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('basis.statementCompound.atoms'),
+    [editors.addPropositionCompoundAtom]: makeAddAtomReducer('basis.propositionCompound.atoms', makeNewPropositionAtom),
+    [editors.removePropositionCompoundAtom]: makeRemoveAtomReducer('basis.propositionCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer('basis.justificationBasisCompound.atoms', makeNewJustificationBasisCompoundAtom),
     [editors.removeJustificationBasisCompoundAtom]: makeRemoveAtomReducer('basis.justificationBasisCompound.atoms'),
     [editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl]:
@@ -285,7 +285,7 @@ const editorReducerByType = {
     },
   }, defaultEditorState),
 
-  [EditorTypes.STATEMENT_JUSTIFICATION]: handleActions({
+  [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions({
     [editors.addUrl]: (state, action) => {
       const writQuote = {...state.editEntity.newJustification.basis.writQuote}
       writQuote.urls = writQuote.urls.concat([makeNewUrl()])
@@ -298,8 +298,8 @@ const editorReducerByType = {
       editEntity.newJustification.basis.writQuote.urls = urls
       return {...state, editEntity}
     },
-    [editors.addStatementCompoundAtom]: makeAddAtomReducer('newJustification.basis.statementCompound.atoms', makeNewStatementAtom),
-    [editors.removeStatementCompoundAtom]: makeRemoveAtomReducer('newJustification.basis.statementCompound.atoms'),
+    [editors.addPropositionCompoundAtom]: makeAddAtomReducer('newJustification.basis.propositionCompound.atoms', makeNewPropositionAtom),
+    [editors.removePropositionCompoundAtom]: makeRemoveAtomReducer('newJustification.basis.propositionCompound.atoms'),
     [editors.addJustificationBasisCompoundAtom]: makeAddAtomReducer(
       'newJustification.basis.justificationBasisCompound.atoms', makeNewJustificationBasisCompoundAtom),
     [editors.removeJustificationBasisCompoundAtom]:
@@ -329,8 +329,8 @@ const editorReducerByType = {
         'urls',
       ]),
 
-    [editors.tagStatement]: makeStatementTagReducer(StatementTagVotePolarity.POSITIVE, concat),
-    [editors.unTagStatement]: makeStatementTagReducer(StatementTagVotePolarity.POSITIVE, difference),
+    [editors.tagProposition]: makePropositionTagReducer(PropositionTagVotePolarity.POSITIVE, concat),
+    [editors.unTagProposition]: makePropositionTagReducer(PropositionTagVotePolarity.POSITIVE, difference),
   }, defaultEditorState),
 
   [EditorTypes.WRIT_QUOTE]: handleActions({
@@ -390,25 +390,25 @@ const editorReducerByType = {
   }, defaultEditorState),
 }
 
-function makeStatementTagReducer(polarity, combiner) {
+function makePropositionTagReducer(polarity, combiner) {
   return (state, action) => {
-    const statement = state.editEntity.statement
+    const proposition = state.editEntity.proposition
     const {tag} = action.payload
 
-    const oldStatementTagVotes = get(statement, 'statementTagVotes', [])
-    const redundantStatementTagVotes = [],
-      contradictoryStatementTagVotes = []
-    forEach(oldStatementTagVotes, vote => {
-      if (vote.statement.id === statement.id && tagEqual(vote.tag, tag)) {
+    const oldPropositionTagVotes = get(proposition, 'propositionTagVotes', [])
+    const redundantPropositionTagVotes = [],
+      contradictoryPropositionTagVotes = []
+    forEach(oldPropositionTagVotes, vote => {
+      if (vote.proposition.id === proposition.id && tagEqual(vote.tag, tag)) {
         if (vote.polarity === polarity) {
-          redundantStatementTagVotes.push(vote)
+          redundantPropositionTagVotes.push(vote)
         } else {
-          contradictoryStatementTagVotes.push(vote)
+          contradictoryPropositionTagVotes.push(vote)
         }
       }
     })
 
-    const oldTags = get(statement, 'tags', [])
+    const oldTags = get(proposition, 'tags', [])
     const existingTag = find(oldTags, oldTag => tagEqual(oldTag, tag))
     const tags = existingTag ?
       oldTags :
@@ -416,20 +416,20 @@ function makeStatementTagReducer(polarity, combiner) {
 
     if (
       tags === oldTags &&
-      redundantStatementTagVotes.length > 0 && contradictoryStatementTagVotes.length < 1
+      redundantPropositionTagVotes.length > 0 && contradictoryPropositionTagVotes.length < 1
     ) {
-      logger.debug(`Statement is already tagged with ${tag}`)
+      logger.debug(`Proposition is already tagged with ${tag}`)
       return state
     }
 
-    const statementTagVotes = redundantStatementTagVotes.length > 0 ?
-      oldStatementTagVotes :
+    const propositionTagVotes = redundantPropositionTagVotes.length > 0 ?
+      oldPropositionTagVotes :
       combiner(
-        oldStatementTagVotes,
-        [makeStatementTagVote({polarity, tag, statement})]
+        oldPropositionTagVotes,
+        [makePropositionTagVote({polarity, tag, proposition})]
       )
 
-    return {...state, editEntity: {...state.editEntity, statement: {...statement, tags, statementTagVotes}}}
+    return {...state, editEntity: {...state.editEntity, proposition: {...proposition, tags, propositionTagVotes}}}
   }
 }
 

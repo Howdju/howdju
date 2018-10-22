@@ -11,7 +11,7 @@ import {
 import './Header.scss'
 
 import ApiAutocomplete from "./ApiAutocomplete"
-import {statementSchema} from "./schemas"
+import {propositionSchema} from "./schemas"
 import {ellipsis} from "./characters"
 
 const mainSearchSuggestionsKey = "mainSearch"
@@ -41,9 +41,9 @@ class Header extends Component {
     this.props.goto.mainSearch(this.props.mainSearchText)
   }
 
-  onMainSearchAutocomplete = (statement) => {
+  onMainSearchAutocomplete = (proposition) => {
     this.props.api.cancelMainSearchSuggestions(mainSearchSuggestionsKey)
-    this.props.goto.statement(statement)
+    this.props.goto.proposition(proposition)
   }
 
   onMainSearchKeyDown = event => {
@@ -63,9 +63,9 @@ class Header extends Component {
     const dataValue = 'id'
     const dataLabel = 'text'
 
-    const suggestionTransform = statement => ({
-      [dataValue]: `mainSearchSuggestion-${statement.id}`,
-      [dataLabel]: statement.text,
+    const suggestionTransform = proposition => ({
+      [dataValue]: `mainSearchSuggestion-${proposition.id}`,
+      [dataLabel]: proposition.text,
     })
 
     const hasTabs = !!tabs
@@ -99,7 +99,7 @@ class Header extends Component {
             placeholder={"know that" + ellipsis}
             dataValue={dataValue}
             dataLabel={dataLabel}
-            suggestionSchema={statementSchema}
+            suggestionSchema={propositionSchema}
             value={mainSearchText}
             onAutocomplete={this.onMainSearchAutocomplete}
             suggestionTransform={suggestionTransform}

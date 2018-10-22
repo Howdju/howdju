@@ -10,9 +10,9 @@ import {
   ui,
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
-import StatementCard from './StatementCard'
+import PropositionCard from './PropositionCard'
 import {denormalize} from 'normalizr'
-import {statementsSchema, tagSchema} from './schemas'
+import {propositionsSchema, tagSchema} from './schemas'
 import * as characters from './characters'
 
 
@@ -33,13 +33,13 @@ class TagPage extends React.Component {
 
   refreshResults = (tagId) => {
     this.props.api.fetchTag(tagId)
-    this.props.api.fetchTaggedStatements(tagId)
+    this.props.api.fetchTaggedPropositions(tagId)
   }
 
   render() {
     const {
       tag,
-      statements,
+      propositions,
       isFetching
     } = this.props
 
@@ -48,25 +48,25 @@ class TagPage extends React.Component {
     return (
       <div className="md-grid">
         <div className="md-cell--12">
-          <h1>Statements tagged with &ldquo;{tagName}&rdquo;</h1>
+          <h1>Propositions tagged with &ldquo;{tagName}&rdquo;</h1>
         </div>
-        {map(statements, statement => {
-          const id = `statement-card-${statement.id}`
+        {map(propositions, proposition => {
+          const id = `proposition-card-${proposition.id}`
           return (
-            <StatementCard
-              statement={statement}
+            <PropositionCard
+              proposition={proposition}
               id={id}
               key={id}
               className="md-cell--12"
             />
           )
         })}
-        {!isFetching && statements.length < 1 && (
-          <div className="md-cell--12">No tagged statements</div>
+        {!isFetching && propositions.length < 1 && (
+          <div className="md-cell--12">No tagged propositions</div>
         )}
         {isFetching && (
           <div className="md-cell md-cell--12 cell--centered-contents">
-            <CircularProgress id="tagged-statements-page--progress" />
+            <CircularProgress id="tagged-propositions-page--progress" />
           </div>
         )}
       </div>
@@ -81,11 +81,11 @@ function getTagId(props) {
 function mapStateToProps(state, ownProps) {
   const tagId = getTagId(ownProps)
   const tag = denormalize(state.entities.tags[tagId], tagSchema, state.entities)
-  const {statements: statementIds, isFetching} = state.ui.tagPage
-  const statements = denormalize(statementIds, statementsSchema, state.entities)
+  const {propositions: propositionIds, isFetching} = state.ui.tagPage
+  const propositions = denormalize(propositionIds, propositionsSchema, state.entities)
   return {
     tag,
-    statements,
+    propositions,
     isFetching,
   }
 }

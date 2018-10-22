@@ -49,14 +49,14 @@
   * https://github.com/rt2zz/redux-persist/
 
 ## Fall 2017 TODO
-* Show when a user agrees/disagrees with a statement
-  * (readStatementJustificationVotesByStatementId: join justifications having rootStatementId with their statements and votes on that statement)
-* Add justified count to root statement
-* Add recent statement recommendations to create statement compound based justification
+* Show when a user agrees/disagrees with a proposition
+  * (readPropositionJustificationVotesByPropositionId: join justifications having rootPropositionId with their propositions and votes on that proposition)
+* Add justified count to root proposition
+* Add recent proposition recommendations to create proposition compound based justification
 * Add "create justification" prompt below justifications
 * Basic grouping of users
-  * How to know whether a user agrees or disagrees with a statement to show them "your" ranking of justifications vs.
-    "their" ranking when they first view a statement?  Really need four things: justifications from your cluster in support,
+  * How to know whether a user agrees or disagrees with a proposition to show them "your" ranking of justifications vs.
+    "their" ranking when they first view a proposition?  Really need four things: justifications from your cluster in support,
     justifications from your cluster opposing, representation of justifications from other clusters in support, justifications
     from other clusters opposing 
   
@@ -71,9 +71,9 @@
 
 * Register howdju.org and howdju.co
 
-* Statement autocomplete results overwrote tags
+* Proposition autocomplete results overwrote tags
   * Somehow strangely reappears when submitting counter-justification!?
-  * Editing statement disappears tags
+  * Editing proposition disappears tags
   * Should not overwrite an entities properties if they aren't present on the returned entity
 * When added counter-justification, got React non-unique Key error
 
@@ -81,18 +81,18 @@
   * FF: can't downvote tag
 * Race condition of multiple votes being sent (disable tagging/untagging after click)
 
-* Rename makeNewStatement etc. to makeStatement (except makeNewJustification)
-* Does hitting API /statements result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
+* Rename makeNewProposition etc. to makeProposition (except makeNewJustification)
+* Does hitting API /propositions result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
 
 * Potential big priorities
   * index database
   * Discovery
-    * Show main search domains as card with quote count, justification count, and statement count
+    * Show main search domains as card with quote count, justification count, and proposition count
       * Link to searches for each of those
   * version API
   * Rich context
-    * When viewing statement, show counter-justifications to any justifications using it
-    * Show justification count by polarity for statement
+    * When viewing proposition, show counter-justifications to any justifications using it
+    * Show justification count by polarity for proposition
     * Show percentage of justifications (or root justifications?) that are source-based
     * When counter-justifications are collapsed, show: Counter justifications (8)
   * Multi-user
@@ -110,7 +110,7 @@
         3) exception for activity from verified accounts
     * Creation/deletion as existence of a creation action vs. row in table
       * So that two users can create the same thing with different visibility settings
-  * semantically equivalent statements (voting, display, automatic detection)
+  * semantically equivalent propositions (voting, display, automatic detection)
     * Negations (voting, display, automatic detection)
   * Contextual tool
     * Use FF sidebar somehow?  Is this standard with Chrome, too?
@@ -121,7 +121,7 @@
       * Show me disputed/inaccurate claims on this page
       * Show me other pages that make this claim
   * Somehow incorporate infinite scroll like on slate.com stories.  Either as a way to discover content on the feed
-    or maybe as a way to go into statement justifications?
+    or maybe as a way to go into proposition justifications?
 
 * Store referrer when submitting justification?  Generally should match up with URL...
 * Are 401s to login in FF showing up as errors in sentry?
@@ -154,8 +154,8 @@
 * Support hidden source maps?
   * https://docs.sentry.io/learn/cli/releases/#upload-source-maps
 
-Improvements to statements trail:
-  * Confirm that trailStatements are in fact parents?
+Improvements to propositions trail:
+  * Confirm that trailPropositions are in fact parents?
     * Show some context like: supports..., opposes..., counters a justification of...
     
 * Why does windowAware need to be pure=false?
@@ -166,14 +166,14 @@ Improvements to statements trail:
   * Don't lose form data.  Add clear button
 
 * The "Use" in a justification basis compound having a single atom is duplicative of the "Use" for that atom.
-* Redirecting from deleted statement fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
+* Redirecting from deleted proposition fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
   * https://stackoverflow.com/a/39507279/39396
 
 * Build UI into subfolder to prevent collisions while running locally and building for prod? 
   * local env has production sentry env?
      * This occurs when we deploy to production while serving dev.  The deployment replaces index.html
 
-* While researching these old statements, it's really annoying not to be able to know where the citations are hidden.
+* While researching these old propositions, it's really annoying not to be able to know where the citations are hidden.
   * A tree view showing the primary sources in relation to the overall would be great.
   
 * Command-clicking on tab navigates in current tab
@@ -197,7 +197,7 @@ Improvements to statements trail:
   * Search paraphrases by url/url domain?
     * If I search justifications by writId/writQuoteId, do I get paraphrases using it?
   
-  * We probably want to allow people to vote on the paraphrase/connection between a statement and a source?
+  * We probably want to allow people to vote on the paraphrase/connection between a proposition and a source?
     * This could be by voting on the justification
   
   
@@ -222,12 +222,12 @@ Improvements to statements trail:
   * There is an annoying repetitive flash where a horizontal scroll bar appears and disappoears
 
 Cat meeting design notes:
-  * Statement text larger
+  * Proposition text larger
   * Remove "Justification", since is implied? (supporting/opposing)
   * Need a search magnifying icon
   * when click main search, change prompt to "type what you want to know about"
   * Paper clip tags to bookmark for later
-  * Statement non-negated, negated
+  * Proposition non-negated, negated
   * Instead of hamburger, profile icon
   * Main search should also be for creating a justification.  Add suggestion to create
     on main search results page
@@ -245,7 +245,7 @@ Cat meeting design notes:
 * Fade unhovered disapproved justifications
 * Add icons to indicate justification vs. counter?
 * Hover to explain Supports, Opposes, counters
-* Recently viewed statements, recently viewed tags, recent searches
+* Recently viewed propositions, recently viewed tags, recent searches
 * Somehow provide ability to roll back UI.  Either output current version of UI when updating or have a history somewhere
 
 * What is my data backup strategy?  Should I switch to Aurora Postgres?
@@ -274,13 +274,13 @@ Cat meeting design notes:
 
 
 ## Bugs
-* When create statement and redirected to login and return information is gone.
+* When create proposition and redirected to login and return information is gone.
 * When two tabs are open and authentication changes in one, it doesn't propagate to other tabs
 * iOS content blocker blocking google fonts
 * Errors from safari iOS aren't going to sentry
 * sentry errors not showing up for howdju.com?
-* Start editing citation on statement justifications page; navigate away; use back button, is still editing.  Bug? Feature?
-* Creating an opposing statement-based justification after entering the statement manually didn't create it!
+* Start editing citation on proposition justifications page; navigate away; use back button, is still editing.  Bug? Feature?
+* Creating an opposing proposition-based justification after entering the proposition manually didn't create it!
 * When logout, refresh page (votes should go away)?
 * No login toast in prod
 ### More bugs
@@ -295,7 +295,7 @@ Cat meeting design notes:
     reconciling those results on the fly until the scheduled reconciliation occurs, such as ordering
     by created date and taking the earliest
 * Validation belongs in route.js, I think
-  * Include type conversion in validation somehow?  toNumber(statementId), e.g.
+  * Include type conversion in validation somehow?  toNumber(propositionId), e.g.
 * Toasts are under dialog
 * Can't shift-tab out of FocusContainer
   * Try upgrading react-md first, then fix fork
@@ -339,10 +339,10 @@ Cat meeting design notes:
       * except from verified users
   * Tags
     * paraphrases and quotes are amenable to tagging because they have context.  
-      statements might be amenable, depending on how specifically they are written.
+      propositions might be amenable, depending on how specifically they are written.
       Justification text could be too, depending on how specifically written and 
       particularly if the tagging is adjusted for the context: i.e. more likely when
-      the statement justified implicates a similar context.
+      the proposition justified implicates a similar context.
 * Others can use the system
   * Semantic equivalence
     * Vote on equivalence?
@@ -377,17 +377,17 @@ Cat meeting design notes:
 ## Stuff not necessary before switch
 
 * Featured Perspectives are scrunched on mobile
-* Clicking on statement of Justification in JustificationCard should go to justification not basis statement?
+* Clicking on proposition of Justification in JustificationCard should go to justification not basis proposition?
 
 * Cards rich information: who created, number of justifications or justifications based upon
   * perspective: whose!?
   * perspective: see all justifications
 
-* Deep link to justification on statement page
+* Deep link to justification on proposition page
   * Scroll to anchor after justifications load
 
 ### Features
-* Stop API and load statement justifications page.  State shows didFail: true, but UI doesn't reflect it
+* Stop API and load proposition justifications page.  State shows didFail: true, but UI doesn't reflect it
 
 ### Bugs/stability
 * Testing
@@ -418,7 +418,7 @@ Cat meeting design notes:
   * account rate limiting (sharing account)
   
 ## Update release (I can use it and show it to people)
-* When opening many recent statements to delete them, the last one wouldn't load; chrome said "waiting for available socket"
+* When opening many recent propositions to delete them, the last one wouldn't load; chrome said "waiting for available socket"
 
 ### Info
 * Who created (really need a profile page first)
@@ -429,16 +429,16 @@ Cat meeting design notes:
   * When there is a backwards continuation token, we don't request the initial entities, but can request new ones.
   * Then can remove sortBy from recent widgets reducer
   
-* Add statement.justifications generally, like I did with perspective.statement.justifications?
-  * Rename page to CreateStatementPage?
+* Add proposition.justifications generally, like I did with perspective.proposition.justifications?
+  * Rename page to CreatePropositionPage?
 * Tools for editing faster
-  * Recent statements
+  * Recent propositions
   * Tagging
   * in-context creation
 * Add "modal logic" votes?: I think it's true/false but I don't know the reason and "I don't know"
   * Generally allow a person to vote how they think regardless of justifications?  Would help use get
     information about beliefs and user interests
-  * Can users only vote on justifications?  And not on statements?  Or at least: analytics about statements you support for which
+  * Can users only vote on justifications?  And not on propositions?  Or at least: analytics about propositions you support for which
     you don't yet support any justifications
 * More referential integrity before returning (like service.readMoreJustifications
 
@@ -454,25 +454,25 @@ Cat meeting design notes:
   * About
   * Contact
   
-* All statements page with URL pagination for web crawlers
+* All propositions page with URL pagination for web crawlers
   * Or just do site map for crawlers
 * All domains page
-  * When click on one, show justifications or show rootStatements?
+  * When click on one, show justifications or show rootPropositions?
   
 * Advanced search
-  * find statements supported/opposed by a domain
+  * find propositions supported/opposed by a domain
 * Source/author truthyness heat map
 * User profile
 * User account (preferences, notifications, email, password)
 
 ### Home page ideas
 * Priority
-  * Recently active statements
+  * Recently active propositions
   * Featured perspectives
   * Snapmunk has a nice three-column design
-  * all statement tags cloud
-  * Controversial statements
-  * Active pages (cited pages with some measure of activity based upon the justifications/statements)
+  * all proposition tags cloud
+  * Controversial propositions
+  * Active pages (cited pages with some measure of activity based upon the justifications/propositions)
     * Provides a way for a user to find interesting content with the extension (requires extension)
 
 * Home page: suggested consumption (what the system thinks the user might like to see, read, learn), 
@@ -481,36 +481,36 @@ Cat meeting design notes:
   configured)
 * What has changed since the user last came to the site that would be interesting to the user
   * counters to justifications the user has verified (transactional?)
-  * statements with topics of interest to the user
+  * propositions with topics of interest to the user
   * citations from sources or authors that interest the user
 * Where would a user's contributions be most useful?
-  * Controversial statements
+  * Controversial propositions
   * One-sided justifications
-  * Statements with no justifications
-* Recently analyzed pages (bringing in the page's statements in order to evaluate them)
+  * Propositions with no justifications
+* Recently analyzed pages (bringing in the page's propositions in order to evaluate them)
   * Do we need bare citations so that we can argue the truth of the quoted text?
 * Recently cited pages (using the page to make an argument)
-* Recent (statements, verifications)
-* Example statements
+* Recent (propositions, verifications)
+* Example propositions
 * Topics of interest to user
-  * Activity on statements relevant to the user 
+  * Activity on propositions relevant to the user 
   
 ### Features
-* Add refinement/intervening statement justification (justification drop-down item creating new statement justifying
-  same statement and justified by this justification)
+* Add refinement/intervening proposition justification (justification drop-down item creating new proposition justifying
+  same proposition and justified by this justification)
 * Schema.org
   * https://schema.org/ClaimReview
   * https://developers.google.com/search/docs/data-types/factcheck (multiple fact checks on a page)
 * Relations
-  * Show statements justified by statement
-  * show statements justified by basis
-  * Justifications countered by statement
+  * Show propositions justified by proposition
+  * show propositions justified by basis
+  * Justifications countered by proposition
 * JustificationTypes
   * Example/List (votes for inclusion/exclusion)
     * A list of purported examples of something with links to prove their existence
     * [{text, urls}, ...]
   * Free text (with annotations))
-  * Argument (statements connected with joiner words: "or", "because", "then", "therefore", "if")
+  * Argument (propositions connected with joiner words: "or", "because", "then", "therefore", "if")
   * Math/formula/calculation: 
     * basic math expression that result in a number
     * Spreadsheet style data
@@ -521,7 +521,7 @@ Cat meeting design notes:
   * don't let a user edit their own entities when they are older than a certain age (really this is to prevent 
     anyone from having seen it; so should we track views instead?)
 * warn if they try and navigate away after entering text
-* Add delete statement/justification confirmation (or better, undo)
+* Add delete proposition/justification confirmation (or better, undo)
 * Speaker of quote
 * Make URLs (or CitationUrls) voteable.
   * Users can always add new URLs
@@ -531,10 +531,10 @@ Cat meeting design notes:
   * See list of all domains cited; search cited domains.
   * See citations (quotes?) and/or citations supported by domain name
   * How to evaluate the truthiness of a quote from a URL
-    * How to tell when text on a page is quoting another source rather than a direct statement
+    * How to tell when text on a page is quoting another source rather than a direct proposition
       * X said
       * quotation marks
-* Recent votes: see what statement justifications look like when limited to a time period, either pre-selected time 
+* Recent votes: see what proposition justifications look like when limited to a time period, either pre-selected time 
   periods or according to the 'most recent activity' however recent that most recent activity is
 * Add facets to main search:
   * citation text
@@ -544,18 +544,18 @@ Cat meeting design notes:
 * Disable (with help text explaining why disabled) context menu items based upon permissions/ability to do the action
 * User registration
   * Change email, password, password reset
-* Location tags for statements
+* Location tags for propositions
 
 * Add messages for when cannot edit and why
-* When statements or writs or writ quotes conflict, offer to merge them somehow?
+* When propositions or writs or writ quotes conflict, offer to merge them somehow?
 * Add time grace period checks to entity update methods
 
 ### Improvements
 * replace regex with path-to-regexp
 * Client validation
   * http://redux-form.com/6.8.0/docs/GettingStarted.md/
-* Change submit button message to "create justification" when statement exists
-  * Add link to statement when statement exists
+* Change submit button message to "create justification" when proposition exists
+  * Add link to proposition when proposition exists
 * Show more error messages, such as OTHER_CITATION_REFERENCES_HAVE_SAME_CITATION_QUOTE_CONFLICT
 * Api
   * Move query params into axios parameters
@@ -575,12 +575,12 @@ Cat meeting design notes:
 * Move login status/logout to header
 * Add different color bottom bar to main search
 * Rotate placeholder of mainSearch to be popular statements: howdju know that "blah blah blah"
-* Update slug of path when updating statement on StatementJustificationsPage
-* Adding maxlength to StatementTextAutocompleter on create justification dialog creates horizontal scrollbar
+* Update slug of path when updating statement on PropositionJustificationsPage
+* Adding maxlength to PropositionTextAutocompleter on create justification dialog creates horizontal scrollbar
 * Disable context menu(s) when deleting something, like a statement or justification
 * Add progress and disabled to vote buttons
   * Don't slide/hide the vote actions until the vote has successfully responded
-* EditStatementCitationPage: can I move focus to basis component when first showing them?
+* EditPropositionCitationPage: can I move focus to basis component when first showing them?
 * Escape key while focusing (i.e. arrow-keying onto it) autocomplete list should close it 
 * Need loading indicator when using basis to create a justification (especially on lambda cold start, justification can be empty for awhile)
 
@@ -591,7 +591,7 @@ Cat meeting design notes:
 * Refactor tests to use helpers to cut down on setup noise
 * Immutable refactor
   * [React App best practices](https://tonyhb.gitbooks.io/redux-without-profanity/content/transforming_state_per_component.html)
-* rename justificationsByRootStatementId to rootJustificationsByRootStatementId?
+* rename justificationsByRootPropositionId to rootJustificationsByRootPropositionId?
 * Clone normalizr and add capability to set prototype of objects generated by a schema
   * Move logic from models.js into prototypes
 * Why store statement autocomplete suggestions in redux?  They are transient; just make them state
@@ -605,7 +605,7 @@ Cat meeting design notes:
   * [testing `fork` (createMockTask)](https://redux-saga.js.org/docs/advanced/TaskCancellation.html)
 
 ### UX
-* Statement justification drilling down
+* Proposition justification drilling down
   * When goto statement, show hierarchy of statements above
   * show sub-justifications in-context
 * Fix statement at top of viewport when scrolling through its justifications

@@ -81,8 +81,8 @@ const routes = [
    * Search
    */
   {
-    id: 'searchStatements',
-    path: 'search-statements',
+    id: 'searchPropositions',
+    path: 'search-propositions',
     method: httpMethods.GET,
     handler: (appProvider, {
       callback,
@@ -90,8 +90,8 @@ const routes = [
         queryStringParameters: { searchText }
       }
     }) =>
-      appProvider.statementsTextSearcher.search(searchText)
-        .then( (rankedStatements) => ok({callback, body: rankedStatements}))
+      appProvider.propositionsTextSearcher.search(searchText)
+        .then( (rankedPropositions) => ok({callback, body: rankedPropositions}))
   },
   {
     id: 'searchTags',
@@ -104,7 +104,7 @@ const routes = [
       }
     }) =>
       appProvider.tagsService.readTagsLikeTagName(searchText)
-        .then( (rankedStatements) => ok({callback, body: rankedStatements}))
+        .then( (rankedPropositions) => ok({callback, body: rankedPropositions}))
   },
   {
     id: 'searchWrits',
@@ -145,11 +145,11 @@ const routes = [
   },
 
   /*
-   * Statements
+   * Propositions
    */
   {
-    id: 'readTaggedStatements',
-    path: 'statements',
+    id: 'readTaggedPropositions',
+    path: 'propositions',
     method: httpMethods.GET,
     queryStringParameters: {tagId: /.+/},
     validators: {
@@ -161,12 +161,12 @@ const routes = [
         authToken,
       },
       callback,
-    }) => appProvider.statementsService.readStatementsForTagId(tagId, {authToken})
-      .then((statements) => ok({callback, body: {statements}}))
+    }) => appProvider.propositionsService.readPropositionsForTagId(tagId, {authToken})
+      .then((propositions) => ok({callback, body: {propositions}}))
   },
   {
-    id: 'readStatements',
-    path: 'statements',
+    id: 'readPropositions',
+    path: 'propositions',
     method: httpMethods.GET,
     handler: (appProvider, {
       request,
@@ -176,38 +176,38 @@ const routes = [
         sorts: encodedSorts,
         continuationToken,
         count,
-        statementIds: statementIdsParam,
+        propositionIds: propositionIdsParam,
       } = request.queryStringParameters
       const sorts = decodeSorts(encodedSorts)
-      if (statementIdsParam) {
-        const statementIds = split(statementIdsParam, ',')
-        return appProvider.statementsService.readStatementsForIds(statementIds)
-          .then( (statements) => ok({callback, body: {statements}}) )
+      if (propositionIdsParam) {
+        const propositionIds = split(propositionIdsParam, ',')
+        return appProvider.propositionsService.readPropositionsForIds(propositionIds)
+          .then( (propositions) => ok({callback, body: {propositions}}) )
       } else {
-        return appProvider.statementsService.readStatements({sorts, continuationToken, count})
-          .then( ({statements, continuationToken}) => ok({callback, body: {statements, continuationToken}}) )
+        return appProvider.propositionsService.readPropositions({sorts, continuationToken, count})
+          .then( ({propositions, continuationToken}) => ok({callback, body: {propositions, continuationToken}}) )
       }
     }
   },
   {
-    id: 'createStatement',
-    path: 'statements',
+    id: 'createProposition',
+    path: 'propositions',
     method: httpMethods.POST,
     handler: (appProvider, {
       callback,
       request: {
         authToken,
-        body: {statement},
+        body: {proposition},
         method,
         path
       }
-    }) => appProvider.statementsService.readOrCreateStatement(authToken, statement)
-      .then( ({statement, isExtant}) => ok({callback, body: {statement, isExtant}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
+    }) => appProvider.propositionsService.readOrCreateProposition(authToken, proposition)
+      .then( ({proposition, isExtant}) => ok({callback, body: {proposition, isExtant}}))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('proposition'))
   },
   {
-    id: 'readStatement',
-    path: new RegExp('^statements/([^/]+)$'),
+    id: 'readProposition',
+    path: new RegExp('^propositions/([^/]+)$'),
     method: httpMethods.GET,
     validators: {
       pathParameters: [idValidator]
@@ -217,29 +217,29 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {
-        pathParameters: [statementId],
+        pathParameters: [propositionId],
         authToken,
       }
-    }) => appProvider.statementsService.readStatementForId(statementId, {authToken})
-      .then( statement => ok({callback, body: {statement}}))
+    }) => appProvider.propositionsService.readPropositionForId(propositionId, {authToken})
+      .then( proposition => ok({callback, body: {proposition}}))
   },
   {
-    id: 'updateStatement',
-    path: new RegExp('^statements/([^/]+)$'),
+    id: 'updateProposition',
+    path: new RegExp('^propositions/([^/]+)$'),
     method: httpMethods.PUT,
     handler: (appProvider, {
       callback,
       request: {
         authToken,
-        body: {statement},
+        body: {proposition},
       }
-    }) => appProvider.statementsService.updateStatement(authToken, statement)
-      .then( (statement) => ok({callback, body: {statement}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('statement'))
+    }) => appProvider.propositionsService.updateProposition(authToken, proposition)
+      .then( (proposition) => ok({callback, body: {proposition}}))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('proposition'))
   },
   {
-    id: 'deleteStatement',
-    path: new RegExp('^statements/([^/]+)$'),
+    id: 'deleteProposition',
+    path: new RegExp('^propositions/([^/]+)$'),
     method: httpMethods.DELETE,
     handler: (appProvider, {
       callback,
@@ -247,19 +247,19 @@ const routes = [
         authToken,
         method,
         path,
-        pathParameters: [statementId],
+        pathParameters: [propositionId],
       }
-    }) => appProvider.statementsService.deleteStatement(authToken, statementId)
+    }) => appProvider.propositionsService.deleteProposition(authToken, propositionId)
       .then( () => ok({callback}) )
-      .catch(AuthorizationError, rethrowTranslatedErrors('statement'))
+      .catch(AuthorizationError, rethrowTranslatedErrors('proposition'))
   },
 
   /*
-   * Statement justifications
+   * Proposition justifications
    */
   {
-    id: 'readStatementJustifications',
-    path: new RegExp('^statements/([^/]+)$'),
+    id: 'readPropositionJustifications',
+    path: new RegExp('^propositions/([^/]+)$'),
     method: httpMethods.GET,
     queryStringParameters: {
       include: 'justifications'
@@ -267,29 +267,29 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {
-        pathParameters: [statementId],
+        pathParameters: [propositionId],
         authToken,
       }
-    }) => appProvider.statementJustificationsService.readStatementJustifications(statementId, authToken)
-      .then( ({statement, justifications}) => ok({callback, body: {statement, justifications}}) )
+    }) => appProvider.propositionJustificationsService.readPropositionJustifications(propositionId, authToken)
+      .then( ({proposition, justifications}) => ok({callback, body: {proposition, justifications}}) )
   },
 
   /*
-   * Statement compounds
+   * Proposition compounds
    */
   {
-    id: 'readStatementCompound',
-    path: new RegExp('^statement-compounds/([^/]+)$'),
+    id: 'readPropositionCompound',
+    path: new RegExp('^proposition-compounds/([^/]+)$'),
     method: httpMethods.GET,
     queryStringParameters: {},
     handler: (appProvider, {
       callback,
       request: {
-        pathParameters: [statementCompoundId],
+        pathParameters: [propositionCompoundId],
         authToken,
       }
-    }) => appProvider.statementCompoundsService.readStatementCompoundForId(statementCompoundId, {authToken})
-      .then( (statementCompound) => ok({callback, body: {statementCompound}}))
+    }) => appProvider.propositionCompoundsService.readPropositionCompoundForId(propositionCompoundId, {authToken})
+      .then( (propositionCompound) => ok({callback, body: {propositionCompound}}))
   },
 
   /*
@@ -506,29 +506,29 @@ const routes = [
   },
 
   {
-    id: 'createStatementTagVote',
-    path: 'statement-tag-votes',
+    id: 'createPropositionTagVote',
+    path: 'proposition-tag-votes',
     method: httpMethods.POST,
     handler: (appProvider, {
       callback,
       request: {
-        body: {statementTagVote},
+        body: {propositionTagVote},
         authToken,
       }
-    }) => appProvider.statementTagVotesService.readOrCreateStatementTagVote(authToken, statementTagVote)
-      .then( (statementTagVote) => ok({callback, body: {statementTagVote}}))
+    }) => appProvider.propositionTagVotesService.readOrCreatePropositionTagVote(authToken, propositionTagVote)
+      .then( (propositionTagVote) => ok({callback, body: {propositionTagVote}}))
   },
   {
-    id: 'deleteStatementTagVote',
-    path: new RegExp('^statement-tag-votes/([^/]+)$'),
+    id: 'deletePropositionTagVote',
+    path: new RegExp('^proposition-tag-votes/([^/]+)$'),
     method: httpMethods.DELETE,
     handler: (appProvider, {
       callback,
       request: {
-        pathParameters: [statementTagVoteId],
+        pathParameters: [propositionTagVoteId],
         authToken,
       }
-    }) => appProvider.statementTagVotesService.deleteStatementTagVoteForId(authToken, statementTagVoteId)
+    }) => appProvider.propositionTagVotesService.deletePropositionTagVoteForId(authToken, propositionTagVoteId)
       .then(() => ok({callback}))
   },
 

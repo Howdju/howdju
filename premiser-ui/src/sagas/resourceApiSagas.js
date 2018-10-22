@@ -78,7 +78,7 @@ export function* callApiForResource(action) {
 export function* cancelResourceApiCalls() {
   yield takeEvery(
     [
-      str(api.cancelStatementTextSuggestions),
+      str(api.cancelPropositionTextSuggestions),
       str(api.cancelWritTitleSuggestions),
       str(api.cancelMainSearchSuggestions),
       str(api.cancelTagNameSuggestions),

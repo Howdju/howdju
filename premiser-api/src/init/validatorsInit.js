@@ -9,9 +9,9 @@ const {
   JustificationBasisCompoundAtomValidator,
   SourceExcerptValidator,
   SourceExcerptParaphraseValidator,
-  StatementValidator,
-  StatementTagVoteValidator,
-  StatementCompoundValidator,
+  PropositionValidator,
+  PropositionTagVoteValidator,
+  PropositionCompoundValidator,
   TagValidator,
   UrlValidator,
   UserValidator,
@@ -24,17 +24,17 @@ exports.init = function init(provider) {
   const userValidator = new UserValidator()
   const tagValidator = new TagValidator()
   const justificationVoteValidator = new JustificationVoteValidator()
-  const statementTagVoteValidator = new StatementTagVoteValidator()
-  const statementValidator = new StatementValidator(tagValidator)
-  const statementCompoundValidator = new StatementCompoundValidator(statementValidator)
+  const propositionTagVoteValidator = new PropositionTagVoteValidator()
+  const propositionValidator = new PropositionValidator(tagValidator)
+  const propositionCompoundValidator = new PropositionCompoundValidator(propositionValidator)
   const writValidator = new WritValidator()
   const writQuoteValidator = new WritQuoteValidator(writValidator, urlValidator)
   const sourceExcerptValidator = new SourceExcerptValidator(writQuoteValidator)
-  const sourceExcerptParaphraseValidator = new SourceExcerptParaphraseValidator(statementValidator, sourceExcerptValidator)
-  const justificationBasisCompoundAtomValidator = new JustificationBasisCompoundAtomValidator(statementValidator,
+  const sourceExcerptParaphraseValidator = new SourceExcerptParaphraseValidator(propositionValidator, sourceExcerptValidator)
+  const justificationBasisCompoundAtomValidator = new JustificationBasisCompoundAtomValidator(propositionValidator,
     sourceExcerptParaphraseValidator)
   const justificationBasisCompoundValidator = new JustificationBasisCompoundValidator(justificationBasisCompoundAtomValidator)
-  const justificationValidator = new JustificationValidator(statementValidator, statementCompoundValidator, writQuoteValidator,
+  const justificationValidator = new JustificationValidator(propositionValidator, propositionCompoundValidator, writQuoteValidator,
     justificationBasisCompoundValidator)
   const credentialValidator = new CredentialValidator()
 
@@ -42,9 +42,9 @@ exports.init = function init(provider) {
     credentialValidator,
     justificationValidator,
     justificationBasisCompoundValidator,
-    statementValidator,
-    statementCompoundValidator,
-    statementTagVoteValidator,
+    propositionValidator,
+    propositionCompoundValidator,
+    propositionTagVoteValidator,
     urlValidator,
     userValidator,
     justificationVoteValidator,

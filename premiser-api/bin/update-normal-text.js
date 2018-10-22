@@ -15,7 +15,7 @@ run()
 
 function run() {
   return Promise.all([
-    updateNormalText('select * from statements', updateStatementRowNormalText, 'statements'),
+    updateNormalText('select * from propositions', updatePropositionRowNormalText, 'propositions'),
     updateNormalText('select * from writs', updateWritRowNormalTitle, 'writs'),
     updateNormalText('select * from writ_quotes', updateWritQuoteRowNormalQuoteText, 'writ quotes'),
   ])
@@ -33,10 +33,10 @@ function updateNormalText(rowsQuery, updateRowFn, rowDescription) {
     })
 }
 
-function updateStatementRowNormalText (row) {
+function updatePropositionRowNormalText (row) {
   return database.query(
-    'update statements set normal_text = $1 where statement_id = $2 returning *',
-    [normalizeText(row.text), row.statement_id]
+    'update propositions set normal_text = $1 where proposition_id = $2 returning *',
+    [normalizeText(row.text), row.proposition_id]
   )
 }
 

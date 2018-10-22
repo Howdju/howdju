@@ -2,7 +2,7 @@ import mergeWith from 'lodash/mergeWith'
 import isArray from 'lodash/isArray'
 
 import entities, {
-  indexRootJustificationsByRootStatementId,
+  indexRootJustificationsByRootPropositionId,
   unionArraysDistinctIdsCustomizer,
 } from './entities'
 import {api, str, DELETE_JUSTIFICATION_SUCCESS} from "../actions"
@@ -28,19 +28,19 @@ describe('reducers', () => {
 
     describe('helpers', () => {
 
-      describe('indexRootJustificationsByRootStatementId', () => {
+      describe('indexRootJustificationsByRootPropositionId', () => {
         test('should work', () => {
           const
-            rootStatement = {
+            rootProposition = {
               id: 42,
             },
             justification = {
               id: 1,
-              rootStatement: rootStatement.id,
+              rootProposition: rootProposition.id,
               target: {
-                type: JustificationTargetType.STATEMENT,
+                type: JustificationTargetType.PROPOSITION,
                 entity: {
-                  id: rootStatement.id,
+                  id: rootProposition.id,
                 },
               },
             },
@@ -48,8 +48,8 @@ describe('reducers', () => {
               [justification.id]: justification
             }
 
-          expect(indexRootJustificationsByRootStatementId(justificationsById)).toEqual({
-            [justification.rootStatement]: [justification.id],
+          expect(indexRootJustificationsByRootPropositionId(justificationsById)).toEqual({
+            [justification.rootProposition]: [justification.id],
           })
         })
       })
@@ -209,43 +209,43 @@ describe('reducers', () => {
 
       describe(str(api.createJustification.response), () => {
 
-        test('should merge justificationsByRootStatementId', () => {
+        test('should merge justificationsByRootPropositionId', () => {
           const
-            targetStatement = {
+            targetProposition = {
               id: 1,
-              text: 'target statement',
+              text: 'target proposition',
             },
-            basisStatement = {
+            basisProposition = {
               id: 2,
-              text: 'basis statement',
+              text: 'basis proposition',
             },
             existingJustification = {
               id: 1,
-              rootStatement: 1,
+              rootProposition: 1,
             },
 
             newJustification = {
               id: 2,
-              rootStatement: 1,
+              rootProposition: 1,
               target: {
-                type: JustificationTargetType.STATEMENT,
-                entity: targetStatement
+                type: JustificationTargetType.PROPOSITION,
+                entity: targetProposition
               },
               basis: {
-                type: JustificationTargetType.STATEMENT,
-                entity: basisStatement
+                type: JustificationTargetType.PROPOSITION,
+                entity: basisProposition
               },
             },
 
             initialState = {
-              statements: {
-                [targetStatement.id]: targetStatement,
+              propositions: {
+                [targetProposition.id]: targetProposition,
               },
               justifications: {
                 [existingJustification.id]: existingJustification
               },
-              justificationsByRootStatementId: {
-                [existingJustification.rootStatement]: [existingJustification.id]
+              justificationsByRootPropositionId: {
+                [existingJustification.rootProposition]: [existingJustification.id]
               }
             },
 
@@ -256,8 +256,8 @@ describe('reducers', () => {
                   justification: newJustification.id
                 },
                 entities: {
-                  statements: {
-                    [targetStatement.id]: targetStatement,
+                  propositions: {
+                    [targetProposition.id]: targetProposition,
                   },
                   justifications: {
                     [newJustification.id]: newJustification,
@@ -266,18 +266,18 @@ describe('reducers', () => {
               }
             },
 
-            mergedJustificationsByRootStatementId =
-              initialState.justificationsByRootStatementId[existingJustification.rootStatement].concat([newJustification.id]),
+            mergedJustificationsByRootPropositionId =
+              initialState.justificationsByRootPropositionId[existingJustification.rootProposition].concat([newJustification.id]),
             expectedState = {
-              statements: {
-                [targetStatement.id]: targetStatement,
+              propositions: {
+                [targetProposition.id]: targetProposition,
               },
               justifications: {
                 [existingJustification.id]: existingJustification,
                 [newJustification.id]: newJustification,
               },
-              justificationsByRootStatementId: {
-                [existingJustification.rootStatement]: mergedJustificationsByRootStatementId
+              justificationsByRootPropositionId: {
+                [existingJustification.rootProposition]: mergedJustificationsByRootPropositionId
               },
             }
           const actual = entities(initialState, action)
@@ -288,11 +288,11 @@ describe('reducers', () => {
           const
             targetJustification = {
               id: 1,
-              rootStatement: {id: 1},
+              rootProposition: {id: 1},
             },
             counterJustification = {
               id: 2,
-              rootStatement: {id: 1},
+              rootProposition: {id: 1},
               target: {
                 type: JustificationTargetType.JUSTIFICATION,
                 entity: targetJustification
@@ -307,8 +307,8 @@ describe('reducers', () => {
               justifications: {
                 [targetJustification.id]: targetJustification
               },
-              justificationsByRootStatementId: {
-                [targetJustification.rootStatement.id]: [
+              justificationsByRootPropositionId: {
+                [targetJustification.rootProposition.id]: [
                   targetJustification.id
                 ]
               }
@@ -333,8 +333,8 @@ describe('reducers', () => {
                 [expectedTargetJustification.id]: expectedTargetJustification,
                 [counterJustification.id]: counterJustification,
               },
-              justificationsByRootStatementId: {
-                [targetJustification.rootStatement.id]: [targetJustification.id]
+              justificationsByRootPropositionId: {
+                [targetJustification.rootProposition.id]: [targetJustification.id]
               },
             }
 
@@ -346,12 +346,12 @@ describe('reducers', () => {
             existingCounterJustificationId = 3,
             targetJustification = {
               id: 1,
-              rootStatement: {id: 1},
+              rootProposition: {id: 1},
               counterJustifications: [existingCounterJustificationId]
             },
             counterJustification = {
               id: 2,
-              rootStatement: {id: 1},
+              rootProposition: {id: 1},
               target: {
                 type: JustificationTargetType.JUSTIFICATION,
                 entity: targetJustification
@@ -370,8 +370,8 @@ describe('reducers', () => {
               justifications: {
                 [targetJustification.id]: targetJustification
               },
-              justificationsByRootStatementId: {
-                [targetJustification.rootStatement.id]: [
+              justificationsByRootPropositionId: {
+                [targetJustification.rootProposition.id]: [
                   targetJustification.id
                 ]
               }
@@ -396,8 +396,8 @@ describe('reducers', () => {
                 [expectedTargetJustification.id]: expectedTargetJustification,
                 [counterJustification.id]: counterJustification,
               },
-              justificationsByRootStatementId: {
-                [targetJustification.rootStatement.id]: [targetJustification.id]
+              justificationsByRootPropositionId: {
+                [targetJustification.rootProposition.id]: [targetJustification.id]
               },
             }
 
@@ -408,13 +408,13 @@ describe('reducers', () => {
           // const responseBody = {
           //   justification: {
           //     id: 81,
-          //     rootStatement: {id:19},
+          //     rootProposition: {id:19},
           //     target: {
           //       type: JustificationTargetType.JUSTIFICATION,
           //       // Justification
           //       entity: {
           //         id: 78,
-          //         rootStatement: {id:19},
+          //         rootProposition: {id:19},
           //         // Justification
           //         target: {
           //           type: JustificationTargetType.JUSTIFICATION,
@@ -423,11 +423,11 @@ describe('reducers', () => {
           //           }
           //         },
           //         basis: {
-          //           type: JustificationBasisType.STATEMENT_COMPOUND,
+          //           type: JustificationBasisType.PROPOSITION_COMPOUND,
           //           entity: {
           //             atoms: [
           //               {
-          //                 statement: {
+          //                 proposition: {
           //                   id: 75,
           //                   text: "Counter 5",
           //                   slug: "counter-5"
@@ -443,11 +443,11 @@ describe('reducers', () => {
           //       }
           //     },
           //     basis: {
-          //       type: JustificationBasisType.STATEMENT_COMPOUND,
+          //       type: JustificationBasisType.PROPOSITION_COMPOUND,
           //       entity: {
           //         atoms: [
           //           {
-          //             statement: {
+          //             proposition: {
           //               id: 77,
           //               text: "Counter counter to 5",
           //               slug: "counter-counter-to-5"
@@ -467,7 +467,7 @@ describe('reducers', () => {
         test('should remove deleted counter-justification from countered justification', () => {
           const
             targetJustification = {
-              rootStatement: {id: 2},
+              rootProposition: {id: 2},
               id: 100,
             },
             counterJustification = {
@@ -486,8 +486,8 @@ describe('reducers', () => {
                 [targetJustification.id]: targetJustification,
                 [counterJustification.id]: counterJustification,
               },
-              justificationsByRootStatementId: {
-                [targetJustification.rootStatement.id]: targetJustification
+              justificationsByRootPropositionId: {
+                [targetJustification.rootProposition.id]: targetJustification
               },
             },
 

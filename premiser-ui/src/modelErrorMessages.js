@@ -17,24 +17,24 @@ const modelErrorMessages = {
   [modelErrorCodes.IS_REQUIRED]: 'Is required',
   [modelErrorCodes.IF_PRESENT_MUST_BE_ARRAY]: 'Must be array',
   [modelErrorCodes.INVALID_URL]: 'Invalid URL',
-  [modelErrorCodes.STATEMENT_JUSTIFICATION_MUST_HAVE_STATEMENT_TARGET_TYPE]: "Statement's justification must have STATEMENT target type",
+  [modelErrorCodes.PROPOSITION_JUSTIFICATION_MUST_HAVE_PROPOSITION_TARGET_TYPE]: "Proposition's justification must have PROPOSITION target type",
 
-  [entityConflictCodes.ANOTHER_STATEMENT_HAS_EQUIVALENT_TEXT]: 'Another statement already has equivalent text',
+  [entityConflictCodes.ANOTHER_PROPOSITION_HAS_EQUIVALENT_TEXT]: 'Another proposition already has equivalent text',
   [entityConflictCodes.ANOTHER_WRIT_QUOTE_HAS_EQUIVALENT_QUOTE_TEXT]: 'That quote from that source already exists',
   [entityConflictCodes.ANOTHER_WRIT_HAS_EQUIVALENT_TITLE]: 'That source already exists',
 
   [authorizationErrorCodes.CANNOT_MODIFY_OTHER_USERS_ENTITIES]: "Cannot modify another user's entities",
 
-  [userActionsConflictCodes.OTHER_USERS_HAVE_ROOTED_JUSTIFICATIONS_IN_THIS_STATEMENT]:
-    'Other users have already created justifications rooted in this statement',
-  [userActionsConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_STATEMENT]:
-    'Other users have based justifications on this statement',
+  [userActionsConflictCodes.OTHER_USERS_HAVE_ROOTED_JUSTIFICATIONS_IN_THIS_PROPOSITION]:
+    'Other users have already created justifications rooted in this proposition',
+  [userActionsConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_PROPOSITION]:
+    'Other users have based justifications on this proposition',
   [userActionsConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_WRIT_QUOTE]:
     'Other users have already based justifications on this quote',
   [userActionsConflictCodes.OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_WRIT]:
     'Other users have already based justifications on this source',
-  [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_STATEMENT]:
-    'Other users have already voted on justifications rooted in this statement',
+  [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_ROOTED_IN_THIS_PROPOSITION]:
+    'Other users have already voted on justifications rooted in this proposition',
   [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT_QUOTE]:
     'Other users have already voted on justifications using this quote',
   [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT]:

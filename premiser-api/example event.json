@@ -1,6 +1,6 @@
 {
   "resource":"/api/{proxy+}",
-  "path":"/api/statements",
+  "path":"/api/propositions",
   "httpMethod":"GET",
   "headers":{
     "Accept":"*/*",
@@ -28,7 +28,7 @@
   },
   "queryStringParameters":null,
   "pathParameters":{
-    "proxy":"statements"
+    "proxy":"propositions"
   },
   "stageVariables":null,
   "requestContext":{

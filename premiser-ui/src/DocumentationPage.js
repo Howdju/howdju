@@ -42,12 +42,12 @@ const DocumentationPage = props => (
           a good reason to believe that the cited source is accurate.  See below for details on the nature of good sources.
         </p>
 
-        <h4>Statements basis</h4>
+        <h4>Propositions basis</h4>
 
-        <h4>Statement target</h4>
+        <h4>Proposition target</h4>
         <p>
-          When justifications target statements, they attempt to impute their basis to either prove that the statement is
-          true (if it is a supporting justification) or that the statement is false (if it is an oppositing justification.)
+          When justifications target propositions, they attempt to impute their basis to either prove that the proposition is
+          true (if it is a supporting justification) or that the proposition is false (if it is an oppositing justification.)
         </p>
 
         <h4>Counter-justifications</h4>

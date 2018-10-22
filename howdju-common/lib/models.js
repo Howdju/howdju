@@ -32,10 +32,10 @@ _e.isVerified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.P
 _e.isDisverified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.NEGATIVE
 _e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION && _e.isNegative(j)
 _e.isRootJustification = (j) =>
-  j.target.type === JustificationTargetType.STATEMENT &&
-  j.target.entity.id === j.rootStatement.id
+  j.target.type === JustificationTargetType.PROPOSITION &&
+  j.target.entity.id === j.rootProposition.id
 _e.hasQuote = (j) => _e.isWritQuoteBased(j) && j.basis.entity.quoteText
-_e.isStatementCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.STATEMENT_COMPOUND : false
+_e.isPropositionCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.PROPOSITION_COMPOUND : false
 _e.isWritQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRIT_QUOTE : false
 _e.isJustificationBasisCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND : false
 
@@ -63,26 +63,26 @@ _e.negateRootPolarity = (rootPolarity) => {
 
 _e.makeNewCredentials = (props) => assign({email: '', password: ''}, props)
 
-_e.makeNewStatement = (props) => assign({text: ''}, props)
+_e.makeNewProposition = (props) => assign({text: ''}, props)
 
 _e.makeNewJustification = (props) => {
   let newJustification = {
-    rootStatement: {id: null},
+    rootProposition: {id: null},
     polarity: JustificationPolarity.POSITIVE,
     rootPolarity: JustificationRootPolarity.POSITIVE,
     target: {
-      type: JustificationTargetType.STATEMENT,
+      type: JustificationTargetType.PROPOSITION,
       entity: {
         id: null
       }
     },
     basis: {
-      type: JustificationBasisType.STATEMENT_COMPOUND,
+      type: JustificationBasisType.PROPOSITION_COMPOUND,
       // Store both these types directly on the basis for the view-model
       // Before the justification is sent to the server, the one corresponding to the current type should be put on the
       // entity property
       writQuote: _e.makeNewWritQuote(),
-      statementCompound: _e.makeNewStatementCompound(),
+      propositionCompound: _e.makeNewPropositionCompound(),
       justificationBasisCompound: _e.makeNewJustificationBasisCompound(),
     }
   }
@@ -103,8 +103,8 @@ _e.makeNewJustification = (props) => {
 function translateNewJustificationBasisCompoundAtomEntities(atoms) {
   forEach(atoms, (atom) => {
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.STATEMENT:
-        atom.statement = atom.statement || atom.entity
+      case JustificationBasisCompoundAtomType.PROPOSITION:
+        atom.proposition = atom.proposition || atom.entity
         break
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
         atom.sourceExcerptParaphrase = atom.sourceExcerptParaphrase || atom.entity
@@ -139,7 +139,7 @@ _e.makeNewWrit = (props) => merge({
 }, props)
 
 _e.makeNewSourceExcerptParaphrase = (props) => merge({
-  paraphrasingStatement: _e.makeNewStatement(),
+  paraphrasingProposition: _e.makeNewProposition(),
   sourceExcerpt: _e.makeNewSourceExcerpt(),
 }, props)
 
@@ -154,8 +154,8 @@ _e.makeNewWritQuote = (props) => merge({
   urls: [_e.makeNewUrl()],
 }, props)
 
-_e.makeNewStatementCompound = (props) => assign(
-  {atoms: [_e.makeNewStatementAtom()]},
+_e.makeNewPropositionCompound = (props) => assign(
+  {atoms: [_e.makeNewPropositionAtom()]},
   props
 )
 
@@ -167,7 +167,7 @@ _e.makeNewJustificationBasisCompound = (props) => assign(
 _e.makeNewJustificationBasisCompoundAtom = (props) => {
   const atom = {
     type: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-    statement: _e.makeNewStatement(),
+    proposition: _e.makeNewProposition(),
     sourceExcerptParaphrase: _e.makeNewSourceExcerptParaphrase(),
   }
 
@@ -182,8 +182,8 @@ _e.makeNewJustificationBasisCompoundAtom = (props) => {
   return merge(atom, props)
 }
 
-_e.makeNewStatementAtom = (props) => assign(
-  {entity: _e.makeNewStatement()},
+_e.makeNewPropositionAtom = (props) => assign(
+  {entity: _e.makeNewProposition()},
   props
 )
 
@@ -197,12 +197,12 @@ _e.makeNewJustificationBasisCompoundFromSourceExcerptParaphrase = (sourceExcerpt
     ]
   })
 
-_e.makeNewJustificationBasisCompoundFromStatement = (statement) =>
+_e.makeNewJustificationBasisCompoundFromProposition = (proposition) =>
   _e.makeNewJustificationBasisCompound({
     atoms: [
       _e.makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomType.STATEMENT,
-        statement
+        type: JustificationBasisCompoundAtomType.PROPOSITION,
+        proposition
       })
     ]
   })
@@ -218,46 +218,46 @@ _e.makeNewJustificationBasisCompoundFromWritQuote = (writQuote) =>
     ]
   })
 
-_e.makeNewJustificationBasisCompoundFromStatementCompound = (statementCompound) =>
+_e.makeNewJustificationBasisCompoundFromPropositionCompound = (propositionCompound) =>
   _e.makeNewJustificationBasisCompound({
-    atoms: map(statementCompound.atoms, statementAtom =>
+    atoms: map(propositionCompound.atoms, propositionAtom =>
       _e.makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomType.STATEMENT,
-        statement: statementAtom.entity
+        type: JustificationBasisCompoundAtomType.PROPOSITION,
+        proposition: propositionAtom.entity
       })
     )
   })
 
-_e.makeNewStatementCompoundFromStatement = (statement) =>
-  _e.makeNewStatementCompound({atoms: [_e.makeNewStatementAtom({entity: statement})]})
+_e.makeNewPropositionCompoundFromProposition = (proposition) =>
+  _e.makeNewPropositionCompound({atoms: [_e.makeNewPropositionAtom({entity: proposition})]})
 
-_e.makeNewJustificationTargetingStatementId = (statementId) => _e.makeNewJustification({
-  rootStatement: {id: statementId},
-  target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
+_e.makeNewJustificationTargetingPropositionId = (propositionId) => _e.makeNewJustification({
+  rootProposition: {id: propositionId},
+  target: { type: JustificationTargetType.PROPOSITION, entity: { id: propositionId } }
 })
 
-_e.makeNewJustificationTargetingStatementIdWithPolarity = (statementId, polarity) => _e.makeNewJustification({
-  rootStatement: {id: statementId},
+_e.makeNewJustificationTargetingPropositionIdWithPolarity = (propositionId, polarity) => _e.makeNewJustification({
+  rootProposition: {id: propositionId},
   polarity,
-  target: { type: JustificationTargetType.STATEMENT, entity: { id: statementId } }
+  target: { type: JustificationTargetType.PROPOSITION, entity: { id: propositionId } }
 })
 
-_e.makeNewStatementJustification = (statementProps, justificationProps) => ({
-  statement: _e.makeNewStatement(statementProps),
+_e.makeNewPropositionJustification = (propositionProps, justificationProps) => ({
+  proposition: _e.makeNewProposition(propositionProps),
   newJustification: _e.makeNewJustification(justificationProps),
-  // whether to have the justification controls expanded and to create a justification along with the statement
+  // whether to have the justification controls expanded and to create a justification along with the proposition
   doCreateJustification: !!justificationProps,
 })
 
 _e.makeNewCounterJustification = (targetJustification) => ({
-  rootStatement: {id: targetJustification.rootStatement.id},
+  rootProposition: {id: targetJustification.rootProposition.id},
   target: {
     type: JustificationTargetType.JUSTIFICATION,
     entity: targetJustification,
   },
   basis: {
-    type: JustificationBasisType.STATEMENT_COMPOUND,
-    statementCompound: _e.makeNewStatementCompound()
+    type: JustificationBasisType.PROPOSITION_COMPOUND,
+    propositionCompound: _e.makeNewPropositionCompound()
   },
   polarity: JustificationPolarity.NEGATIVE
 })
@@ -280,4 +280,4 @@ _e.makeTag = (props) => merge({
 
 _e.tagEqual = (tag1, tag2) => _e.idEqual(tag1.id, tag2.id) || isDefined(tag1.name) && tag1.name === tag2.name
 
-_e.makeStatementTagVote = (props) => merge({}, props)
+_e.makePropositionTagVote = (props) => merge({}, props)

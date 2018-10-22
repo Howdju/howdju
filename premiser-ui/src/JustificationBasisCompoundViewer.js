@@ -19,12 +19,12 @@ export default class JustificationBasisCompoundViewer extends Component {
       id,
       justificationBasisCompound,
       doShowControls,
-      doShowStatementAtomJustifications,
+      doShowPropositionAtomJustifications,
       isCondensed,
       isUnCondensed,
       showStatusText,
       showUrls,
-      trailStatements,
+      trailPropositions,
     } = this.props
 
     const atoms = get(justificationBasisCompound, 'atoms', [])
@@ -42,12 +42,12 @@ export default class JustificationBasisCompoundViewer extends Component {
               id={atomId}
               key={atomId}
               doShowControls={doShowControls}
-              doShowStatementAtomJustifications={doShowStatementAtomJustifications}
+              doShowPropositionAtomJustifications={doShowPropositionAtomJustifications}
               isCondensed={isCondensed}
               isUnCondensed={isUnCondensed}
               showStatusText={showStatusText}
               showUrls={showUrls}
-              trailStatements={trailStatements}
+              trailPropositions={trailPropositions}
             />
           )
         })}
@@ -59,13 +59,13 @@ JustificationBasisCompoundViewer.propTypes = {
   id: PropTypes.string.isRequired,
   justificationBasisCompound: PropTypes.object.isRequired,
   doShowControls: PropTypes.bool,
-  doShowStatementAtomJustifications: PropTypes.bool,
+  doShowPropositionAtomJustifications: PropTypes.bool,
   isCondensed: PropTypes.bool,
   isUnCondensed: PropTypes.bool,
 }
 JustificationBasisCompoundViewer.defaultProps = {
   doShowControls: true,
-  doShowStatementAtomJustifications: false,
+  doShowPropositionAtomJustifications: false,
   isCondensed: false,
   isUnCondensed: false,
 }

@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import {FontIcon} from 'react-md'
 
 import {
-  makeNewStatement,
+  makeNewProposition,
   makeNewSourceExcerptParaphrase,
   makeNewJustification,
   SourceExcerptType,
@@ -17,7 +17,7 @@ import {
 } from 'howdju-common'
 
 import paths from './paths'
-import StatementCard from './StatementCard'
+import PropositionCard from './PropositionCard'
 import JustificationChatBubble from './JustificationChatBubble'
 
 import './LandingPage.scss'
@@ -26,9 +26,9 @@ import './LandingPage.scss'
 export default class LandingPage extends Component {
   render() {
     const id = 'landing-page'
-    const statement = makeNewStatement({text: 'A very important statement'})
+    const proposition = makeNewProposition({text: 'A very important proposition'})
     const sourceExcerptParaphrase = makeNewSourceExcerptParaphrase({
-      paraphrasingStatement: {text: 'A paraphrase'},
+      paraphrasingProposition: {text: 'A paraphrase'},
       sourceExcerpt: {
         type: SourceExcerptType.WRIT_QUOTE,
         entity: {
@@ -38,7 +38,7 @@ export default class LandingPage extends Component {
       }
     })
     const justification = makeNewJustification({
-      rootStatement: statement,
+      rootProposition: proposition,
       basis: {
         type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
         entity: makeNewJustificationBasisCompound({
@@ -49,8 +49,8 @@ export default class LandingPage extends Component {
         })
       },
       target: {
-        type: JustificationTargetType.STATEMENT,
-        entity: statement,
+        type: JustificationTargetType.PROPOSITION,
+        entity: proposition,
       }
     })
     const contraJustification = makeNewJustification({
@@ -73,28 +73,28 @@ export default class LandingPage extends Component {
           Discover and share truth on Howdju.
         </p>
         <p>
-          How do you capture truth?  First you make a statement:
+          How do you capture truth?  First you make a proposition:
         </p>
 
         <div className="banner">
           <div className="banner-content">
-            <StatementCard
-              id={`${id}--statement`}
-              statement={statement}
+            <PropositionCard
+              id={`${id}--proposition`}
+              proposition={proposition}
               showStatusText={false}
             />
           </div>
         </div>
 
         <p>
-          A statement on its own is just an opinion.  To become truth, a statement must have good justifications.
+          A proposition on its own is just an opinion.  To become truth, a proposition must have good justifications.
         </p>
 
         <div className="banner">
           <div className="banner-content">
-            <StatementCard
-              id={`${id}--justification--root-statement`}
-              statement={justification.rootStatement}
+            <PropositionCard
+              id={`${id}--justification--root-proposition`}
+              proposition={justification.rootProposition}
               showStatusText={false}
             />
             <JustificationChatBubble
@@ -108,14 +108,14 @@ export default class LandingPage extends Component {
         </div>
 
         <p>
-          Justifications can either support or oppose the truth of a statement.
+          Justifications can either support or oppose the truth of a proposition.
         </p>
 
         <div className="banner">
           <div className="banner-content">
-            <StatementCard
-              id={`${id}--justification--root-statement`}
-              statement={justification.rootStatement}
+            <PropositionCard
+              id={`${id}--justification--root-proposition`}
+              proposition={justification.rootProposition}
               showStatusText={false}
             />
             <JustificationChatBubble
@@ -134,9 +134,9 @@ export default class LandingPage extends Component {
 
         <div className="banner">
           <div className="banner-content">
-            <StatementCard
-              id={`${id}--justification--root-statement`}
-              statement={justification.rootStatement}
+            <PropositionCard
+              id={`${id}--justification--root-proposition`}
+              proposition={justification.rootProposition}
               showStatusText={false}
             />
             <JustificationChatBubble

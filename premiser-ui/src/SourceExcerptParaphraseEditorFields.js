@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import get from 'lodash/get'
 
-import StatementEditorFields from './StatementEditorFields'
+import PropositionEditorFields from './PropositionEditorFields'
 import SourceExcerptEditorFields from './SourceExcerptEditorFields'
 
 import './SourceExcerptParaphraseEditorFields.scss'
@@ -22,14 +22,14 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
     return (
       <div className="source-excerpt-paraphrase-editor-fields">
 
-        <div className="source-excerpt-paraphrase-editor-fields--paraphrasing-statement-editor-fields">
-          <StatementEditorFields
+        <div className="source-excerpt-paraphrase-editor-fields--paraphrasing-proposition-editor-fields">
+          <PropositionEditorFields
             {...rest}
-            id={id + '--paraphrasing-statement'}
-            name={name + '.paraphrasingStatement'}
+            id={id + '--paraphrasing-proposition'}
+            name={name + '.paraphrasingProposition'}
             textLabel="Paraphrase"
-            statement={sourceExcerptParaphrase.paraphrasingStatement}
-            errors={get(errors, 'fieldErrors.paraphrasingStatement')}
+            proposition={sourceExcerptParaphrase.paraphrasingProposition}
+            errors={get(errors, 'fieldErrors.paraphrasingProposition')}
             onPropertyChange={onPropertyChange}
           />
         </div>

@@ -55,18 +55,18 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
     this.setState({isOver: false})
   }
 
-  statementEditorId() {
+  propositionEditorId() {
     const {
       id,
     } = this.props
-    return `${id}--atom-entity-editor--statement`
+    return `${id}--atom-entity-editor--proposition`
   }
 
-  paraphrasingStatementEditorId() {
+  paraphrasingPropositionEditorId() {
     const {
       id,
     } = this.props
-    return `${id}--atom-entity-editor--paraphrasing-statement`
+    return `${id}--atom-entity-editor--paraphrasing-proposition`
   }
 
   sourceExcerptParaphraseEditorId() {
@@ -76,18 +76,18 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
     return `${id}--atom-entity-editor--source-excerpt-paraphrase`
   }
 
-  onEditStatement = () => {
+  onEditProposition = () => {
     const {
       atom
     } = this.props
-    this.props.editors.beginEdit(EditorTypes.STATEMENT, this.statementEditorId(), atom.entity)
+    this.props.editors.beginEdit(EditorTypes.PROPOSITION, this.propositionEditorId(), atom.entity)
   }
 
-  onEditParaphrasingStatement = () => {
+  onEditParaphrasingProposition = () => {
     const {
       atom
     } = this.props
-    this.props.editors.beginEdit(EditorTypes.STATEMENT, this.paraphrasingStatementEditorId(), atom.entity.paraphrasingStatement)
+    this.props.editors.beginEdit(EditorTypes.PROPOSITION, this.paraphrasingPropositionEditorId(), atom.entity.paraphrasingProposition)
   }
 
   onEditSourceExcerpt = () => {
@@ -111,13 +111,13 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
       id,
       atom,
       doShowControls,
-      doShowStatementAtomJustifications,
+      doShowPropositionAtomJustifications,
       isCondensed,
       isUnCondensed,
       component: Component,
       showStatusText,
       showUrls,
-      trailStatements,
+      trailPropositions,
     } = this.props
     const {
       isOver
@@ -155,30 +155,30 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
             key={id}
             atom={atom}
             component={CardText}
-            statementEditorId={this.statementEditorId()}
-            paraphrasingStatementEditorId={this.paraphrasingStatementEditorId()}
+            propositionEditorId={this.propositionEditorId()}
+            paraphrasingPropositionEditorId={this.paraphrasingPropositionEditorId()}
             sourceExcerptEditorId={this.sourceExcerptParaphraseEditorId()}
             showStatusText={showStatusText}
             doShowControls={doShowControls}
-            doShowJustifications={doShowStatementAtomJustifications}
+            doShowJustifications={doShowPropositionAtomJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showUrls={showUrls}
-            trailStatements={trailStatements}
+            trailPropositions={trailPropositions}
           />
           {doShowControls && menu}
         </div>
 
-        {doShowStatementAtomJustifications && hasJustifications && (
+        {doShowPropositionAtomJustifications && hasJustifications && (
           <JustificationsTree
             id={`${id}-justification-trees`}
             justifications={justifications}
             doShowControls={doShowControls}
-            doShowJustifications={doShowStatementAtomJustifications}
+            doShowJustifications={doShowPropositionAtomJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showBasisUrls={showUrls}
-            trailStatements={trailStatements}
+            trailPropositions={trailPropositions}
           />
         )}
       </Component>
@@ -209,41 +209,41 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
     ]
 
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.STATEMENT: {
-        const gotoStatementListItem = (
+      case JustificationBasisCompoundAtomType.PROPOSITION: {
+        const gotoPropositionListItem = (
           <ListItem primaryText="Go to"
-                    key="go-to-statement"
-                    title="View all of this statement's justifications"
+                    key="go-to-proposition"
+                    title="View all of this proposition's justifications"
                     leftIcon={<FontIcon>forward</FontIcon>}
                     component={Link}
-                    to={paths.statement(atom.entity)}
+                    to={paths.proposition(atom.entity)}
           />
         )
-        insertAt(menuListItems, 2, gotoStatementListItem)
+        insertAt(menuListItems, 2, gotoPropositionListItem)
 
-        const editStatementListItem = (
+        const editPropositionListItem = (
           <ListItem primaryText="Edit"
-                    key="edit-statement"
+                    key="edit-proposition"
                     leftIcon={<FontIcon>create</FontIcon>}
-                    onClick={this.onEditStatement}
+                    onClick={this.onEditProposition}
           />
         )
-        menuListItems.push(editStatementListItem)
+        menuListItems.push(editPropositionListItem)
         break
       }
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
         const {
-          paraphrasingStatement,
+          paraphrasingProposition,
           sourceExcerpt,
         } = atom.entity
 
         const seeUsagesListItems = [
-          <ListItem primaryText="See statement usages"
-                    key="paraphrasing-statement-usages"
-                    title="See justifications using this paraphrasing statement"
+          <ListItem primaryText="See proposition usages"
+                    key="paraphrasing-proposition-usages"
+                    title="See justifications using this paraphrasing proposition"
                     leftIcon={<FontIcon>call_merge</FontIcon>}
                     component={Link}
-                    to={paths.searchJustifications({statementId: paraphrasingStatement.id})}
+                    to={paths.searchJustifications({propositionId: paraphrasingProposition.id})}
           />,
           <ListItem primaryText={`See ${sourceExcerptDescription(sourceExcerpt)} usages`}
                     key="source-excerpt-usages"
@@ -263,10 +263,10 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
         insertAllAt(menuListItems, 2, seeUsagesListItems)
 
         pushAll(menuListItems, [
-          <ListItem primaryText="Edit statement"
-                    key="edit-paraphrasing-statement"
+          <ListItem primaryText="Edit proposition"
+                    key="edit-paraphrasing-proposition"
                     leftIcon={<FontIcon>create</FontIcon>}
-                    onClick={this.onEditParaphrasingStatement}
+                    onClick={this.onEditParaphrasingProposition}
           />,
           <ListItem primaryText={`Edit ${sourceExcerptDescription(sourceExcerpt)}`}
                     key="edit-source-excerpt"
@@ -287,7 +287,7 @@ JustificationBasisCompoundViewerAtomItem.propTypes = {
   id: PropTypes.string.isRequired,
   atom: PropTypes.object.isRequired,
   doShowControls: PropTypes.bool,
-  doShowStatementAtomJustifications: PropTypes.bool,
+  doShowPropositionAtomJustifications: PropTypes.bool,
   isCondensed: PropTypes.bool,
   isUnCondensed: PropTypes.bool,
   /** The component as which the item will be rendered */
@@ -298,7 +298,7 @@ JustificationBasisCompoundViewerAtomItem.propTypes = {
 }
 JustificationBasisCompoundViewerAtomItem.defaultProps = {
   doShowControls: true,
-  doShowStatementAtomJustifications: false,
+  doShowPropositionAtomJustifications: false,
   isCondensed: false,
   isUnCondensed: false,
   component: 'li',
@@ -306,8 +306,8 @@ JustificationBasisCompoundViewerAtomItem.defaultProps = {
 
 function menuTitle(atom) {
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      return 'Statement actions'
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      return 'Proposition actions'
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
       return 'Paraphrase actions'
     default:
@@ -317,8 +317,8 @@ function menuTitle(atom) {
 
 function atomEntityDescription(atom) {
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      return 'statement'
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      return 'proposition'
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
       return 'paraphrase'
     default:
@@ -330,8 +330,8 @@ function seeBasisUsagesPath(atom) {
   const params = {}
 
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      params.statementId = atom.entity.id
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      params.propositionId = atom.entity.id
       break
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
       params.sourceExcerptParaphraseId = atom.entity.id
@@ -383,8 +383,8 @@ function seeSourceExcerptSourceUsagesPath(sourceExcerpt) {
 
 function createJustificationPath(atom) {
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      return paths.createJustification(JustificationBasisSourceType.STATEMENT, atom.entity.id)
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      return paths.createJustification(JustificationBasisSourceType.PROPOSITION, atom.entity.id)
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
       return paths.createJustification(JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE, atom.entity.id)
     default:

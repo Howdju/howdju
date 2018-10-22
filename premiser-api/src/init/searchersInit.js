@@ -1,14 +1,14 @@
 const assign = require('lodash/assign')
 
 const {
-  makeStatementTextSearcher,
+  makePropositionTextSearcher,
   makeWritTitleSearcher,
   makeWritQuoteQuoteTextSearcher,
 } = require('howdju-service-common')
 
 exports.init = function init(provider) {
   assign(provider, {
-    statementsTextSearcher: makeStatementTextSearcher(provider.database),
+    propositionsTextSearcher: makePropositionTextSearcher(provider.database),
     writsTitleSearcher: makeWritTitleSearcher(provider.database),
     writQuotesQuoteTextSearcher: makeWritQuoteQuoteTextSearcher(provider.database),
   })

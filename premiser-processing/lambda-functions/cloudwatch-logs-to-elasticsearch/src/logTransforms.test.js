@@ -186,7 +186,7 @@ describe('logTransforms', () => {
           },
           // technically bodies are JSON for AWS, although for this test either JSON or not here should work
           body: JSON.stringify({
-            statements: [
+            propositions: [
               {
                 id: 1536,
                 text: "NASA awarded SpaceX a $1.6B contract to supply the International Space Station at the end of 2008",

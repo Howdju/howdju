@@ -3,7 +3,7 @@ import {api, autocompletes} from "../actions"
 
 export default handleActions({
   [combineActions(
-    api.fetchStatementTextSuggestions.response,
+    api.fetchPropositionTextSuggestions.response,
     api.fetchTagNameSuggestions.response,
     api.fetchWritTitleSuggestions.response,
   )]: {
@@ -20,7 +20,7 @@ export default handleActions({
       ...state,
       suggestions: {
         ...state.suggestions,
-        [action.meta.requestPayload.suggestionsKey]: action.payload.result.statementTexts,
+        [action.meta.requestPayload.suggestionsKey]: action.payload.result.propositionTexts,
       }
     })
   },

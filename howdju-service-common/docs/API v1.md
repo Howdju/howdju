@@ -2,21 +2,21 @@ API 1:
 
 ```
 GET     /search (mainSearch)
-GET     /search-statements
+GET     /search-propositions
 GET     /search-tags
 GET     /search-writs
 
 GET     /tags/:tagId
 
-POST    /statements
-GET     /statements(?sorts&continuationToken&count&statementIds)
-GET     /statements?tagId=:tagId
-GET     /statements/:statementId
-GET     /statements/:statementId?include=justifications
-PUT     /statements/:statementId
-DELETE  /statements/:statementId
+POST    /propositions
+GET     /propositions(?sorts&continuationToken&count&propositionIds)
+GET     /propositions?tagId=:tagId
+GET     /propositions/:propositionId
+GET     /propositions/:propositionId?include=justifications
+PUT     /propositions/:propositionId
+DELETE  /propositions/:propositionId
 
-GET     /statement-compounds/:statementCompoundId
+GET     /proposition-compounds/:propositionCompoundId
 GET     /justification-basis-compounds/:justificationBasisCompoundId
 GET     /source-excerpt-paraphrases/:sourceExcerptParaphraseId
 
@@ -34,8 +34,8 @@ POST    /logout
 
 POST    /justification-votes
 DELETE  /justification-votes (deletes votes equivalent to body)
-POST    /statement-tag-votes
-DELETE  /statement-tag-votes/:statementTagVoteId
+POST    /proposition-tag-votes
+DELETE  /proposition-tag-votes/:propositionTagVoteId
 
 POST    /users
 ```

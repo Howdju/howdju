@@ -1,22 +1,22 @@
 import React  from 'react'
 
-import RecentStatementsWidget from "./RecentStatementsWidget"
+import RecentPropositionsWidget from "./RecentPropositionsWidget"
 import RecentWritsWidget from "./RecentWritsWidget"
 import RecentWritQuotesWidget from './RecentWritQuotesWidget'
 import RecentJustificationsWidget from './RecentJustificationsWidget'
 
-const recentStatementsWidgetId = 'RecentActivityPage.recentStatementsWidgetId'
+const recentPropositionsWidgetId = 'RecentActivityPage.recentPropositionsWidgetId'
 const recentWritsWidgetId = 'RecentActivityPage.recentWritsWidgetId'
 const recentWritQuotesWidgetId = 'RecentActivityPage.recentWritQuotesWidgetId'
 const recentJustificationsWidgetId = 'RecentActivityPage.recentJustificationsWidgetId'
 
 const RecentActivityPage = (props) => (
   <div className="md-grid">
-    <h1 className="md-cell--12">Recent statements</h1>
-    <RecentStatementsWidget
-      id="recent-activity-page-statements"
+    <h1 className="md-cell--12">Recent propositions</h1>
+    <RecentPropositionsWidget
+      id="recent-activity-page-propositions"
       className="md-grid md-cell md-cell--12 md-grid--card-list--tablet"
-      widgetId={recentStatementsWidgetId}
+      widgetId={recentPropositionsWidgetId}
     />
 
     <h1 className="md-cell--12">Recent quotes</h1>

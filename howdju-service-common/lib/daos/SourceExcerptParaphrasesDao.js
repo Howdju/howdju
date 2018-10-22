@@ -15,17 +15,17 @@ const {
 } = require('./util')
 const {
   toSourceExcerptParaphrase,
-  toStatement,
+  toProposition,
 } = require('./orm')
 
 
 exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
-  constructor(logger, database, statementsDao, writQuotesDao, picRegionsDao, vidSegmentsDao) {
-    requireArgs({logger, database, statementsDao, writQuotesDao, picRegionsDao, vidSegmentsDao})
+  constructor(logger, database, propositionsDao, writQuotesDao, picRegionsDao, vidSegmentsDao) {
+    requireArgs({logger, database, propositionsDao, writQuotesDao, picRegionsDao, vidSegmentsDao})
 
     this.logger = logger
     this.database = database
-    this.statementsDao = statementsDao
+    this.propositionsDao = propositionsDao
     this.writQuotesDao = writQuotesDao
     this.picRegionsDao = picRegionsDao
     this.vidSegmentsDao = vidSegmentsDao
@@ -33,18 +33,18 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
 
   createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now) {
     const {
-      paraphrasingStatement,
+      paraphrasingProposition,
       sourceExcerpt
     } = sourceExcerptParaphrase
     return this.database.query(
-      `insert into source_excerpt_paraphrases (paraphrasing_statement_id, source_excerpt_type, source_excerpt_id, creator_user_id, created) 
+      `insert into source_excerpt_paraphrases (paraphrasing_proposition_id, source_excerpt_type, source_excerpt_id, creator_user_id, created) 
       values ($1, $2, $3, $4, $5)
       returning *`,
-      [paraphrasingStatement.id, sourceExcerpt.type, sourceExcerpt.entity.id, userId, now]
+      [paraphrasingProposition.id, sourceExcerpt.type, sourceExcerpt.entity.id, userId, now]
     )
       .then(mapSingle(toSourceExcerptParaphrase))
       .then( (dbSourceExcerptParaphrase) => {
-        dbSourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatement
+        dbSourceExcerptParaphrase.paraphrasingProposition = paraphrasingProposition
         dbSourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerpt.entity
         return dbSourceExcerptParaphrase
       })
@@ -58,15 +58,15 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       .then(mapSingle(this.logger, toSourceExcerptParaphrase, 'source_excerpt_paraphrases', {sourceExcerptParaphraseId}))
   }
 
-  readSourceExcerptHavingStatementIdAndSourceExcerptTypeAndId(paraphrasingStatementId, sourceExcerptType, sourceExcerptId) {
+  readSourceExcerptHavingPropositionIdAndSourceExcerptTypeAndId(paraphrasingPropositionId, sourceExcerptType, sourceExcerptId) {
     return this.database.query(
-      `select * from source_excerpt_paraphrases where paraphrasing_statement_id = $1 and source_excerpt_type = $2 and source_excerpt_id = $3`,
-      [paraphrasingStatementId, sourceExcerptType, sourceExcerptId]
+      `select * from source_excerpt_paraphrases where paraphrasing_proposition_id = $1 and source_excerpt_type = $2 and source_excerpt_id = $3`,
+      [paraphrasingPropositionId, sourceExcerptType, sourceExcerptId]
     )
-      .then(mapSingle(this.logger, toSourceExcerptParaphrase, 'source_excerpt_paraphrases', {paraphrasingStatementId, sourceExcerptId}))
+      .then(mapSingle(this.logger, toSourceExcerptParaphrase, 'source_excerpt_paraphrases', {paraphrasingPropositionId, sourceExcerptId}))
   }
 
-  readSourceExcerptParaphrasesByIdForRootStatementId(rootStatementId) {
+  readSourceExcerptParaphrasesByIdForRootPropositionId(rootPropositionId) {
     const sql = `
       select
         sep.*
@@ -79,7 +79,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
                 jbca.entity_type = $2
             and jbca.entity_id = sep.source_excerpt_paraphrase_id
         where 
-              j.root_statement_id = $3
+              j.root_proposition_id = $3
           and j.deleted is null
           and jbc.deleted is null
           and sep.deleted is null
@@ -87,18 +87,18 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
     const args = [
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-      rootStatementId
+      rootPropositionId
     ]
     return Promise.all([
       this.database.query(sql, args),
-      readParaphrasingStatementsByIdForRootStatementId(this.logger, this.database, rootStatementId),
-      this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
-      this.picRegionsDao.readPicRegionsByIdForRootStatementId(rootStatementId),
-      this.vidSegmentsDao.readVidSegmentsByIdForRootStatementId(rootStatementId),
+      readParaphrasingPropositionsByIdForRootPropositionId(this.logger, this.database, rootPropositionId),
+      this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootPropositionId),
+      this.picRegionsDao.readPicRegionsByIdForRootPropositionId(rootPropositionId),
+      this.vidSegmentsDao.readVidSegmentsByIdForRootPropositionId(rootPropositionId),
     ])
       .then(([
         {rows: sourceExcerptParaphraseRows},
-        paraphrasingStatementsById,
+        paraphrasingPropositionsById,
         writQuotesById,
         picRegionsById,
         vidSegmentsById,
@@ -107,7 +107,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
         forEach(sourceExcerptParaphraseRows, (sourceExcerptParaphraseRow) => {
           const sourceExcerptParaphrase = toSourceExcerptParaphrase(sourceExcerptParaphraseRow)
           sourceExcerptParaphrasesById[sourceExcerptParaphrase.id] = sourceExcerptParaphrase
-          sourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatementsById[sourceExcerptParaphrase.paraphrasingStatement.id]
+          sourceExcerptParaphrase.paraphrasingProposition = paraphrasingPropositionsById[sourceExcerptParaphrase.paraphrasingProposition.id]
 
           switch (sourceExcerptParaphrase.sourceExcerpt.type) {
             case SourceExcerptType.WRIT_QUOTE:
@@ -128,7 +128,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
   }
 }
 
-function readParaphrasingStatementsByIdForRootStatementId(logger, database, rootStatementId) {
+function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, rootPropositionId) {
   const sql = `
     select
       ps.*
@@ -140,10 +140,10 @@ function readParaphrasingStatementsByIdForRootStatementId(logger, database, root
         join source_excerpt_paraphrases sep on
               jbca.entity_type = $2
           and jbca.entity_id = sep.source_excerpt_paraphrase_id
-        join statements ps on 
-              sep.paraphrasing_statement_id = ps.statement_id
+        join propositions ps on 
+              sep.paraphrasing_proposition_id = ps.proposition_id
       where 
-            j.root_statement_id = $3
+            j.root_proposition_id = $3
         and j.deleted is null
         and jbc.deleted is null
         and sep.deleted is null
@@ -152,8 +152,8 @@ function readParaphrasingStatementsByIdForRootStatementId(logger, database, root
   const args = [
     JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-    rootStatementId
+    rootPropositionId
   ]
   return database.query(sql, args)
-    .then(mapManyById(toStatement))
+    .then(mapManyById(toProposition))
 }

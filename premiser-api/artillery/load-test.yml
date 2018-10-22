@@ -6,10 +6,10 @@ config:
   defaults:
     headers:
 scenarios:
-  - name: "Read statement justifications"
+  - name: "Read proposition justifications"
     flow:
     - get:
-        url: "/api/statements/1525?include=justifications"
+        url: "/api/propositions/1525?include=justifications"
   - name: "Search"
     flow:
       - get:

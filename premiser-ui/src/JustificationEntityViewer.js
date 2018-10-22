@@ -9,7 +9,7 @@ import {
 } from "howdju-common"
 
 import EntityViewer from './EntityViewer'
-import StatementEntityViewer from './StatementEntityViewer'
+import PropositionEntityViewer from './PropositionEntityViewer'
 import JustificationChatBubble from "./JustificationChatBubble"
 import config from './config'
 
@@ -46,10 +46,10 @@ export default class JustificationEntityViewer extends Component {
         iconTitle="Justification"
         entity={
           <div>
-            <StatementEntityViewer
-              id={`${id}--root-statement`}
-              statement={justification.rootStatement}
-              suggestionsKey={suggestionsKey + '-paraphrasing-statement'}
+            <PropositionEntityViewer
+              id={`${id}--root-proposition`}
+              proposition={justification.rootProposition}
+              suggestionsKey={suggestionsKey + '-paraphrasing-proposition'}
               showStatusText={false}
             />
 
@@ -82,6 +82,6 @@ export default class JustificationEntityViewer extends Component {
 }
 JustificationEntityViewer.propTypes = {
   id: PropTypes.string.isRequired,
-  paraphrasingStatementEditorId: PropTypes.string,
+  paraphrasingPropositionEditorId: PropTypes.string,
   sourceExcerptEditorId: PropTypes.string,
 }

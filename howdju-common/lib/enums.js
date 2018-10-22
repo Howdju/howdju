@@ -7,13 +7,13 @@ const {
 const _e = module.exports
 
 _e.EntityType = arrayToObject([
-  'STATEMENT',
+  'PROPOSITION',
   'WRIT',
   'WRIT_QUOTE',
   'JUSTIFICATION',
   'USER',
   'PASSWORD_HASH',
-  'STATEMENT_TAG_VOTE',
+  'PROPOSITION_TAG_VOTE',
   'JUSTIFICATION_VOTE',
 ])
 
@@ -29,8 +29,8 @@ _e.ActionType = arrayToObject([
 ])
 
 _e.ActionTargetType = arrayToObject([
-  'STATEMENT',
-  'STATEMENT_COMPOUND',
+  'PROPOSITION',
+  'PROPOSITION_COMPOUND',
   'JUSTIFICATION',
   'JUSTIFICATION_BASIS_COMPOUND',
   'JUSTIFICATION_BASIS_COMPOUND_ATOM',
@@ -50,7 +50,7 @@ _e.ActionSubjectType = arrayToObject([
 ])
 
 _e.JustificationTargetType = arrayToObject([
-  'STATEMENT',
+  'PROPOSITION',
   'JUSTIFICATION',
 ])
 
@@ -62,8 +62,8 @@ _e.JustificationPolarity = arrayToObject([
 _e.JustificationRootPolarity = _e.JustificationPolarity
 
 _e.JustificationBasisType = arrayToObject([
-  /* One or more statements */
-  'STATEMENT_COMPOUND',
+  /* One or more propositions */
+  'PROPOSITION_COMPOUND',
   /* A quote */
   'WRIT_QUOTE',
   /* One or more {@see JustificationBasisCompoundAtomType}s
@@ -75,12 +75,12 @@ _e.JustificationBasisType = arrayToObject([
 // Anything you can start with to create a justification based upon.
 // (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
 _e.JustificationBasisSourceType = assign({}, _e.JustificationBasisType, arrayToObject([
-  'STATEMENT',
+  'PROPOSITION',
   'SOURCE_EXCERPT_PARAPHRASE',
 ]))
 
 _e.JustificationBasisCompoundAtomType = arrayToObject([
-  'STATEMENT',
+  'PROPOSITION',
   'SOURCE_EXCERPT_PARAPHRASE',
 ])
 
@@ -94,7 +94,7 @@ _e.JustificationVotePolarity = arrayToObject([
   'POSITIVE',
   'NEGATIVE',
 ])
-_e.StatementTagVotePolarity = arrayToObject([
+_e.PropositionTagVotePolarity = arrayToObject([
   'POSITIVE',
   'NEGATIVE',
 ])
@@ -108,7 +108,7 @@ _e.JustificationScoreType = arrayToObject([
   'GLOBAL_VOTE_SUM',
 ])
 
-_e.StatementTagScoreType = arrayToObject([
+_e.PropositionTagScoreType = arrayToObject([
   'GLOBAL_VOTE_SUM',
 ])
 
@@ -117,14 +117,14 @@ _e.JobHistoryStatus = arrayToObject([
   'FAILURE',
 ])
 
-_e.StatementCompoundAtomType = arrayToObject([
-  'STATEMENT',
+_e.PropositionCompoundAtomType = arrayToObject([
+  'PROPOSITION',
 ])
 
 _e.ValidJustificationSearchFilters = [
   'writQuoteId',
   'writId',
-  'statementCompoundId',
+  'propositionCompoundId',
   'sourceExcerptParaphraseId',
-  'statementId',
+  'propositionId',
 ]

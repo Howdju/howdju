@@ -41,7 +41,7 @@ create unique index if not exists idx_writ_quotes_writ_quote_id
   on writ_quotes (writ_quote_id) where deleted is null;
 create unique index if not exists idx_writs_writ_id on writs (writ_id) where deleted is null;
 
--- select normal_text, count(*) from statements group by normal_text having count(*) > 1;
+-- select normal_text, count(*) from propositions group by normal_text having count(*) > 1;
 -- select normal_quote_text, count(*) from writ_quotes group by normal_quote_text having count(*) > 1;
 create unique index if not exists idx_tags_normal_name on tags (normal_name) where deleted is null;
 create unique index if not exists idx_statements_normal_text on statements (normal_text) where deleted is null;

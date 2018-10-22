@@ -15,7 +15,7 @@ import {
 import {EditorTypes} from "./reducers/editors"
 import t, {
   CANCEL_BUTTON_LABEL,
-  EDIT_STATEMENT_SUBMIT_BUTTON_LABEL
+  EDIT_PROPOSITION_SUBMIT_BUTTON_LABEL
 } from "./texts"
 import {
   combineIds,
@@ -38,12 +38,12 @@ class NewJustificationEditor extends Component {
     this.props.editors.removeUrl(NewJustificationEditor.editorType, this.props.editorId, url, index)
   }
 
-  onAddStatementCompoundAtom = () => {
-    this.props.editors.addStatementCompoundAtom(NewJustificationEditor.editorType, this.props.editorId)
+  onAddPropositionCompoundAtom = () => {
+    this.props.editors.addPropositionCompoundAtom(NewJustificationEditor.editorType, this.props.editorId)
   }
 
-  onRemoveStatementCompoundAtom = (atom, index) => {
-    this.props.editors.removeStatementCompoundAtom(NewJustificationEditor.editorType, this.props.editorId, atom, index)
+  onRemovePropositionCompoundAtom = (atom, index) => {
+    this.props.editors.removePropositionCompoundAtom(NewJustificationEditor.editorType, this.props.editorId, atom, index)
   }
 
   addJustificationBasisCompoundAtom = (index) => {
@@ -105,7 +105,7 @@ class NewJustificationEditor extends Component {
         primary
         key="submitButton"
         type="submit"
-        children={t(EDIT_STATEMENT_SUBMIT_BUTTON_LABEL)}
+        children={t(EDIT_PROPOSITION_SUBMIT_BUTTON_LABEL)}
         disabled={isSaving}
       />
     ]
@@ -119,8 +119,8 @@ class NewJustificationEditor extends Component {
           onPropertyChange={this.onPropertyChange}
           onAddUrl={this.onAddUrl}
           onRemoveUrl={this.onRemoveUrl}
-          onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
-          onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
+          onAddPropositionCompoundAtom={this.onAddPropositionCompoundAtom}
+          onRemovePropositionCompoundAtom={this.onRemovePropositionCompoundAtom}
           onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
           onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
           onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}

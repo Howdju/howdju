@@ -12,7 +12,7 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
   constructor(
     logger,
     actionsService,
-    statementsService,
+    propositionsService,
     writQuotesService,
     picRegionsService,
     vidSegmentsService,
@@ -21,7 +21,7 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
     requireArgs({
       logger,
       actionsService,
-      statementsService,
+      propositionsService,
       writQuotesService,
       picRegionsService,
       vidSegmentsService,
@@ -30,7 +30,7 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
 
     this.logger = logger
     this.actionsService = actionsService
-    this.statementsService = statementsService
+    this.propositionsService = propositionsService
     this.writQuotesService = writQuotesService
     this.picRegionsService = picRegionsService
     this.vidSegmentsService = vidSegmentsService
@@ -68,7 +68,7 @@ function readSourceExcerptParaphraseForId(
   return service.sourceExcerptParaphrasesDao.readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId})
     .then( (sourceExcerptParaphrase) => Promise.all([
       sourceExcerptParaphrase,
-      service.statementsService.readStatementForId(sourceExcerptParaphrase.paraphrasingStatement.id, {userId}),
+      service.propositionsService.readPropositionForId(sourceExcerptParaphrase.paraphrasingProposition.id, {userId}),
       getSourceExcerptEntity(
         service,
         sourceExcerptParaphrase.sourceExcerpt.type,
@@ -76,8 +76,8 @@ function readSourceExcerptParaphraseForId(
         userId
       )
     ]))
-    .then( ([sourceExcerptParaphrase, paraphrasingStatement, sourceExcerptEntity]) => {
-      sourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatement
+    .then( ([sourceExcerptParaphrase, paraphrasingProposition, sourceExcerptEntity]) => {
+      sourceExcerptParaphrase.paraphrasingProposition = paraphrasingProposition
       sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
       return sourceExcerptParaphrase
     })
@@ -110,22 +110,22 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
   const sourceExcerptType = sourceExcerptParaphrase.sourceExcerpt.type
   const sourceExcerptEntity = sourceExcerptParaphrase.sourceExcerpt.entity
   return Promise.all([
-    service.statementsService.readOrCreateValidStatementAsUser(sourceExcerptParaphrase.paraphrasingStatement, userId, now),
+    service.propositionsService.readOrCreateValidPropositionAsUser(sourceExcerptParaphrase.paraphrasingProposition, userId, now),
     readOrCreateSourceExcerptEntity(service, sourceExcerptType, sourceExcerptEntity, userId, now),
   ])
     .then( ([
-      {isExtant: isStatementExtant, statement},
+      {isExtant: isPropositionExtant, proposition},
       {isExtant: isSourceExcerptExtant, sourceExcerptEntity}
     ]) => {
-      if (isStatementExtant && isSourceExcerptExtant) {
-        service.logger.debug(`Found extant statement (ID ${statement.id}) and sourceExcerpt (ID ${sourceExcerptEntity.id}  Attempting to find extant sourceExcerptParaphrase from them.`)
+      if (isPropositionExtant && isSourceExcerptExtant) {
+        service.logger.debug(`Found extant proposition (ID ${proposition.id}) and sourceExcerpt (ID ${sourceExcerptEntity.id}  Attempting to find extant sourceExcerptParaphrase from them.`)
         const sourceExcerptType = sourceExcerptParaphrase.sourceExcerpt.type
-        return service.sourceExcerptParaphrasesDao.readSourceExcerptHavingStatementIdAndSourceExcerptTypeAndId(statement.id,
+        return service.sourceExcerptParaphrasesDao.readSourceExcerptHavingPropositionIdAndSourceExcerptTypeAndId(proposition.id,
           sourceExcerptType, sourceExcerptEntity.id)
           .then ( (extantSourceExcerptParaphrase) => {
             if (extantSourceExcerptParaphrase) {
-              service.logger.debug(`Found extant sourceExcerptParaphrase (ID: ${extantSourceExcerptParaphrase.id} based upon statement and sourceExcerpt`)
-              extantSourceExcerptParaphrase.paraphrasingStatement = statement
+              service.logger.debug(`Found extant sourceExcerptParaphrase (ID: ${extantSourceExcerptParaphrase.id} based upon proposition and sourceExcerpt`)
+              extantSourceExcerptParaphrase.paraphrasingProposition = proposition
               extantSourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
               return {
                 isExtant: true,
@@ -133,8 +133,8 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
               }
             }
 
-            service.logger.debug(`Did not find extant sourceExcerptParaphrase based upon statement and sourceExcerpt`)
-            sourceExcerptParaphrase.paraphrasingStatement = statement
+            service.logger.debug(`Did not find extant sourceExcerptParaphrase based upon proposition and sourceExcerpt`)
+            sourceExcerptParaphrase.paraphrasingProposition = proposition
             sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
             return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
               .then( (sourceExcerptParaphrase) => {
@@ -146,7 +146,7 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
               })
           })
       }
-      sourceExcerptParaphrase.paraphrasingStatement = statement
+      sourceExcerptParaphrase.paraphrasingProposition = proposition
       sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
       return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
         .then( (sourceExcerptParaphrase) => {

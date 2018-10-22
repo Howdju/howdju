@@ -32,21 +32,21 @@ const CrudActions = arrayToObject([
   'UPDATE',
 ])
 const editorTypeCommitApiResourceActions = {
-  [EditorTypes.STATEMENT]: {
-    [CrudActions.UPDATE]: api.updateStatement
+  [EditorTypes.PROPOSITION]: {
+    [CrudActions.UPDATE]: api.updateProposition
   },
-  [EditorTypes.STATEMENT_JUSTIFICATION]: (model, crudType) => {
+  [EditorTypes.PROPOSITION_JUSTIFICATION]: (model, crudType) => {
     switch (crudType) {
       case CrudActions.CREATE: {
         if (model.doCreateJustification) {
           const justification = consolidateNewJustificationEntities(model.newJustification)
-          // This is sort of an arbitrary decision.  We could support creating a statement and justification at the same
-          // time by either targeting the statement from the justification, or adding the justification to the statement's
+          // This is sort of an arbitrary decision.  We could support creating a proposition and justification at the same
+          // time by either targeting the proposition from the justification, or adding the justification to the proposition's
           // justifications (although technicall I don't think the API supports the later yet.)
-          justification.target.entity = model.statement
+          justification.target.entity = model.proposition
           return api.createJustification(justification)
         } else {
-          return api.createStatement(model.statement)
+          return api.createProposition(model.proposition)
         }
       }
     }

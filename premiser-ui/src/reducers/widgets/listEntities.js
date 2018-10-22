@@ -30,15 +30,15 @@ const widgetResponseErrorReducer = (defaultWidgetState) => (state, action) => {
   return {...state, [widgetId]: newWidgetState}
 }
 
-const defaultRecentStatementsWidgetState = {recentStatements: [], continuationToken: null}
+const defaultRecentPropositionsWidgetState = {recentPropositions: [], continuationToken: null}
 const defaultRecentWritsWidgetState = {recentWrits: [], continuationToken: null}
 const defaultRecentWritQuotesWidgetState = {recentWritQuotes: [], continuationToken: null}
 const defaultRecentJustificationsWidgetState = {recentJustifications: [], continuationToken: null}
 export default handleActions({
-  [api.fetchRecentStatements]: widgetRequestReducer(defaultRecentStatementsWidgetState),
-  [api.fetchRecentStatements.response]: {
-    next: widgetResponseReducer(defaultRecentStatementsWidgetState, 'recentStatements', 'statements'),
-    throw: widgetResponseErrorReducer(defaultRecentStatementsWidgetState),
+  [api.fetchRecentPropositions]: widgetRequestReducer(defaultRecentPropositionsWidgetState),
+  [api.fetchRecentPropositions.response]: {
+    next: widgetResponseReducer(defaultRecentPropositionsWidgetState, 'recentPropositions', 'propositions'),
+    throw: widgetResponseErrorReducer(defaultRecentPropositionsWidgetState),
   },
   [api.fetchRecentWrits]: widgetRequestReducer(defaultRecentWritsWidgetState),
   [api.fetchRecentWrits.response]: {

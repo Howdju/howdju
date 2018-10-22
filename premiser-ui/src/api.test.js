@@ -1,6 +1,6 @@
 import Promise from 'bluebird'
 import { normalize } from 'normalizr'
-import { statementsSchema } from './schemas'
+import { propositionsSchema } from './schemas'
 
 const axiosInstance = {request: jest.fn()}
 import Axios from 'axios'
@@ -12,18 +12,18 @@ beforeEach(() => {
 
 describe('api', () => {
   test('request', done => {
-    const statements = [
-      { id: 1, text: 'a statement' },
-      { id: 2, text: 'another statement' }
+    const propositions = [
+      { id: 1, text: 'a proposition' },
+      { id: 2, text: 'another proposition' }
     ]
     return Promise.all([import('./api')]).then(([api]) => {
 
       axiosInstance.request.mockImplementation(() => Promise.resolve({
-        data: statements
+        data: propositions
       }))
 
-      return api.request({endpoint: 'blah', schema: statementsSchema}).then( (result) => {
-        expect(result).toEqual(normalize(statements, statementsSchema))
+      return api.request({endpoint: 'blah', schema: propositionsSchema}).then( (result) => {
+        expect(result).toEqual(normalize(propositions, propositionsSchema))
       })
     })
       .catch().then(() => done())

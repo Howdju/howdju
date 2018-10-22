@@ -318,7 +318,7 @@ const getJustificationTargetId = row => Promise.resolve()
     })
     .then( ({rows: [targetRow]}) => {
       if (!targetRow) {
-        const targetType = row.statement_id ? JustificationTargetType.STATEMENT : JustificationTargetType.JUSTIFICATION
+        const targetType = row.statement_id ? JustificationTargetType.PROPOSITION : JustificationTargetType.JUSTIFICATION
         throw new Error(`justification ${row.id} is missing migrated target ID for ${targetType} ${row.statement_id || row.justification_id}`)
       }
       return targetRow.new_id
@@ -413,9 +413,9 @@ const migrateCompoundJustificationBasis = row => {
 
 const migrateJustifications = ({rows}) => Promise.all(map(rows, row => Promise.all([
       migrateJustificationBasis(row),
-      row.citation_id ? JustificationBasisType.CITATION_REFERENCE : JustificationBasisType.STATEMENT_COMPOUND,
+      row.citation_id ? JustificationBasisType.CITATION_REFERENCE : JustificationBasisType.PROPOSITION_COMPOUND,
       getJustificationTargetId(row),
-      row.statement_id ? JustificationTargetType.STATEMENT : JustificationTargetType.JUSTIFICATION,
+      row.statement_id ? JustificationTargetType.PROPOSITION : JustificationTargetType.JUSTIFICATION,
       getNewUserId(row.creator_id),
       getRootStatementId(row),
       getRootPositive(row),

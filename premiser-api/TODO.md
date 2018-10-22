@@ -11,20 +11,20 @@
   * collapse old votes (delete intervening deletions)
   * re-calculate normal text
   * enforce constraints, 
-    * justification has root_statement_id
+    * justification has root_proposition_id
     * unique IDs, 
-    * unique statement text, 
+    * unique proposition text, 
     * writ quote text, 
     * writ title
     * writ quote must have writ_id
     * atoms must have an entity
-      * statement_compound must have atoms
-      * statement_compound atoms must match something
-    * source excerpt paraphrases must have paraphrasing statements and source excerpts
+      * proposition_compound must have atoms
+      * proposition_compound atoms must match something
+    * source excerpt paraphrases must have paraphrasing propositions and source excerpts
   * Delete URLS when nothing references them?
-  * Delete statement compounds all of whose statements are deleted
+  * Delete proposition compounds all of whose propositions are deleted
   * Delete old scores
-  * Sources having internal inconsistencies (writs ultimately both support and oppose the same statement)
+  * Sources having internal inconsistencies (writs ultimately both support and oppose the same proposition)
   * Delete old job histories
 * Short IDs
 * [Build using Vagrant?](https://stackoverflow.com/a/30440198/39396)
@@ -45,10 +45,10 @@
 
 * Data science tasks:
   * Clustering users
-  * Recognizing statements phrased as questions
-  * Rewriting statements phrased as questions as statements 
-  * Identifying semantically equivalent statements
-  * Identifying negations of statements (semantically opposite statements)
+  * Recognizing propositions phrased as questions
+  * Rewriting propositions phrased as questions as propositions 
+  * Identifying semantically equivalent propositions
+  * Identifying negations of propositions (semantically opposite propositions)
   * fact-checking pages
 
 ## Datasets

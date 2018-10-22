@@ -28,7 +28,7 @@ export function* logErrors() {
     if (action.error) {
       const error = action.payload
       const loggedErrors = yield select(selectLoggedErrors)
-      // Sometimes we wrap the same exception in multiple actions, such as callApi.response and then fetchStatements.response
+      // Sometimes we wrap the same exception in multiple actions, such as callApi.response and then fetchPropositions.response
       // So don't log the same error multiple times
       if (!find(loggedErrors, e => e === error)) {
         loggedErrors.push(error)

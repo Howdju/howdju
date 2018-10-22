@@ -5,7 +5,7 @@ import get from 'lodash/get'
 
 import {
   isWritQuoteBased,
-  isStatementCompoundBased,
+  isPropositionCompoundBased,
   isJustificationBasisCompoundBased,
   JustificationPolarity,
   JustificationBasisType,
@@ -14,11 +14,11 @@ import {
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,
-  JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND,
+  JUSTIFICATION_BASIS_TYPE_PROPOSITION_COMPOUND,
   JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
 } from "./texts"
 import WritQuoteEditorFields from "./WritQuoteEditorFields"
-import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
+import PropositionCompoundEditorFields from "./PropositionCompoundEditorFields"
 import JustificationBasisCompoundEditorFields from './JustificationBasisCompoundEditorFields'
 import {
   combineNames,
@@ -29,25 +29,25 @@ import {
 import './NewJustificationEditorFields.scss'
 
 
-const statementCompoundName = 'basis.statementCompound'
+const propositionCompoundName = 'basis.propositionCompound'
 const writQuoteName = "basis.writQuote"
 const justificationBasisCompoundName = 'basis.justificationBasisCompound'
 
 const polarityControls = [{
   value: JustificationPolarity.POSITIVE,
   label: t(JUSTIFICATION_POLARITY_POSITIVE),
-  title: "Support the truth of the statement",
+  title: "Support the truth of the proposition",
 }, {
   value: JustificationPolarity.NEGATIVE,
   label: t(JUSTIFICATION_POLARITY_NEGATIVE),
-  title: "Oppose the truth of the statement",
+  title: "Oppose the truth of the proposition",
 }]
 const basisTypeControls = [
   {
-    value: JustificationBasisType.STATEMENT_COMPOUND,
+    value: JustificationBasisType.PROPOSITION_COMPOUND,
     label: (
-      <div title="A list of statements that together imply the target">
-        {t(JUSTIFICATION_BASIS_TYPE_STATEMENT_COMPOUND)}
+      <div title="A list of propositions that together imply the target">
+        {t(JUSTIFICATION_BASIS_TYPE_PROPOSITION_COMPOUND)}
       </div>
     ),
   },
@@ -86,8 +86,8 @@ export default class NewJustificationEditorFields extends Component {
       onPropertyChange,
       onAddUrl,
       onRemoveUrl,
-      onAddStatementCompoundAtom,
-      onRemoveStatementCompoundAtom,
+      onAddPropositionCompoundAtom,
+      onRemovePropositionCompoundAtom,
       onAddJustificationBasisCompoundAtom,
       onRemoveJustificationBasisCompoundAtom,
       onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl,
@@ -98,13 +98,13 @@ export default class NewJustificationEditorFields extends Component {
     } = this.props
 
     const justificationBasisCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.justificationBasisCompound
-    const statementCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.statementCompound
+    const propositionCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.propositionCompound
     const writQuoteErrors = errors && errors.fieldErrors.basis.fieldErrors.writQuote
 
-    const basisStatementCompound = get(newJustification, statementCompoundName)
+    const basisPropositionCompound = get(newJustification, propositionCompoundName)
     const basisWritQuote = get(newJustification, writQuoteName)
     const justificationBasisCompound = get(newJustification, justificationBasisCompoundName)
-    const _isStatementCompoundBased = isStatementCompoundBased(newJustification)
+    const _isPropositionCompoundBased = isPropositionCompoundBased(newJustification)
     const _isWritQuoteBased = isWritQuoteBased(newJustification)
     const _isJustificationBasisCompoundBased = isJustificationBasisCompoundBased(newJustification)
 
@@ -114,17 +114,17 @@ export default class NewJustificationEditorFields extends Component {
       onSubmit,
       disabled,
     }
-    const statementCompoundEditorFields = (
-      <StatementCompoundEditorFields
+    const propositionCompoundEditorFields = (
+      <PropositionCompoundEditorFields
         {...commonFieldsProps}
-        statementCompound={basisStatementCompound}
-        id={combineIds(id, statementCompoundName)}
-        key={statementCompoundName}
-        name={combineNames(name, statementCompoundName)}
-        suggestionsKey={combineSuggestionsKeys(suggestionsKey, statementCompoundName)}
-        errors={statementCompoundErrors}
-        onAddStatementCompoundAtom={onAddStatementCompoundAtom}
-        onRemoveStatementCompoundAtom={onRemoveStatementCompoundAtom}
+        propositionCompound={basisPropositionCompound}
+        id={combineIds(id, propositionCompoundName)}
+        key={propositionCompoundName}
+        name={combineNames(name, propositionCompoundName)}
+        suggestionsKey={combineSuggestionsKeys(suggestionsKey, propositionCompoundName)}
+        errors={propositionCompoundErrors}
+        onAddPropositionCompoundAtom={onAddPropositionCompoundAtom}
+        onRemovePropositionCompoundAtom={onRemovePropositionCompoundAtom}
       />
     )
     const writQuoteEditorFields =  (
@@ -192,7 +192,7 @@ export default class NewJustificationEditorFields extends Component {
           disabled={disabled}
         />
         <Divider />
-        {_isStatementCompoundBased && statementCompoundEditorFields}
+        {_isPropositionCompoundBased && propositionCompoundEditorFields}
         {_isWritQuoteBased && writQuoteEditorFields}
         {_isJustificationBasisCompoundBased && justificationBasisCompoundEditorFields}
       </div>
@@ -210,8 +210,8 @@ NewJustificationEditorFields.propTypes = {
   onPropertyChange: PropTypes.func.isRequired,
   onRemoveUrl: PropTypes.func.isRequired,
   onAddUrl: PropTypes.func.isRequired,
-  onAddStatementCompoundAtom: PropTypes.func.isRequired,
-  onRemoveStatementCompoundAtom: PropTypes.func.isRequired,
+  onAddPropositionCompoundAtom: PropTypes.func.isRequired,
+  onRemovePropositionCompoundAtom: PropTypes.func.isRequired,
   onAddJustificationBasisCompoundAtom: PropTypes.func.isRequired,
   onRemoveJustificationBasisCompoundAtom: PropTypes.func.isRequired,
   disabled: PropTypes.bool,

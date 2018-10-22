@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {Card, CardText} from 'react-md'
 
 import JustificationsTree from "./JustificationsTree"
-import StatementEntityViewer from './StatementEntityViewer'
+import PropositionEntityViewer from './PropositionEntityViewer'
 
 export default class PerspectiveCard extends Component {
 
@@ -13,13 +13,13 @@ export default class PerspectiveCard extends Component {
       perspective,
     } = this.props
 
-    const justifications = perspective.statement.justifications
+    const justifications = perspective.proposition.justifications
     return (
       <Card>
         <CardText>
-          <StatementEntityViewer
-            id={`${id}--statement`}
-            statement={perspective.statement}
+          <PropositionEntityViewer
+            id={`${id}--proposition`}
+            proposition={perspective.proposition}
           />
         </CardText>
         <JustificationsTree

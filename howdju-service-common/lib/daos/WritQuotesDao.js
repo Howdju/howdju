@@ -162,7 +162,7 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then( ({rows}) => map(rows, toWritQuote) )
   }
 
-  readWritQuotesByIdForRootStatementId(rootStatementId) {
+  readWritQuotesByIdForRootPropositionId(rootPropositionId) {
     const sql = `
         select 
             wq.writ_quote_id
@@ -179,7 +179,7 @@ exports.WritQuotesDao = class WritQuotesDao {
               and j.basis_id = wq.writ_quote_id
             join writs w using (writ_id)
           where 
-                j.root_statement_id = $1
+                j.root_proposition_id = $1
             and j.deleted is null
             and wq.deleted is null
             and w.deleted is null
@@ -208,7 +208,7 @@ exports.WritQuotesDao = class WritQuotesDao {
               and sep.source_excerpt_id = wq.writ_quote_id
             join writs w using (writ_id)
           where 
-                j.root_statement_id = $1
+                j.root_proposition_id = $1
             and j.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
@@ -216,7 +216,7 @@ exports.WritQuotesDao = class WritQuotesDao {
             and w.deleted is null
       `
     const args = [
-      rootStatementId,
+      rootPropositionId,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
@@ -224,7 +224,7 @@ exports.WritQuotesDao = class WritQuotesDao {
     ]
     return Promise.all([
       this.database.query(sql, args),
-      this.urlsDao.readUrlsByWritQuoteIdForRootStatementId(rootStatementId)
+      this.urlsDao.readUrlsByWritQuoteIdForRootPropositionId(rootPropositionId)
     ])
       .then( ([
         {rows},

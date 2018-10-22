@@ -1,20 +1,20 @@
 -- with
---   root_statement_id as (select 1394 as root_statement_id)
+--   root_proposition_id as (select 1394 as root_proposition_id)
 -- select *
 -- from
---   statements rs
---   join root_statement_id rsi on rs.statement_id = rsi.root_statement_id
---   join justifications j on j.root_statement_id = rs.statement_id
+--   propositions rs
+--   join root_proposition_id rsi on rs.proposition_id = rsi.root_proposition_id
+--   join justifications j on j.root_proposition_id = rs.proposition_id
 --   left join citation_references cr on
 --         j.basis_id = cr.citation_reference_id
 --     and j.basis_type = 'CITATION_REFERENCE'
 --   left join citations c on cr.citation_id = c.citation_id
---   left join statement_compounds sc on
---         j.basis_id = sc.statement_compound_id
---     and j.basis_type = 'STATEMENT_COMPOUND'
---   left join statement_compound_atoms sca on
---         sc.statement_compound_id = sca.statement_compound_id
---   left join statements scas on sca.statement_id = scas.statement_id
+--   left join proposition_compounds sc on
+--         j.basis_id = sc.proposition_compound_id
+--     and j.basis_type = 'PROPOSITION_COMPOUND'
+--   left join proposition_compound_atoms sca on
+--         sc.proposition_compound_id = sca.proposition_compound_id
+--   left join propositions scas on sca.proposition_id = scas.proposition_id
 
 insert into statements (statement_id, text, created) values
 (8, 'By law, no building in Washington, D.C. may be taller than the Capital Building', NOW()),

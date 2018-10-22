@@ -7,7 +7,7 @@ drop table if exists justifications;
 drop table if exists permissions;
 drop table if exists reference_urls;
 drop table if exists "references";
-drop table if exists statements;
+drop table if exists propositions;
 drop table if exists taggings;
 drop table if exists tags;
 drop table if exists tagging_scores;

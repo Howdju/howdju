@@ -7,7 +7,7 @@ import {CircularProgress} from 'react-md'
 import FlipMove from 'react-flip-move'
 
 import mainSearcher from './mainSearcher'
-import StatementCard from './StatementCard'
+import PropositionCard from './PropositionCard'
 import WritCard from './WritCard'
 import WritQuoteCard from './WritQuoteCard'
 import ListEntitiesWidget from './ListEntitiesWidget'
@@ -19,7 +19,7 @@ import {
 import {
   writsSchema,
   writQuotesSchema,
-  statementsSchema, tagsSchema,
+  propositionsSchema, tagsSchema,
 } from './schemas'
 import config from './config'
 import {logger} from './logger'
@@ -58,7 +58,7 @@ class MainSearchPage extends Component {
     const {
       isFetching,
       tags,
-      statementTexts,
+      propositionTexts,
       writQuoteQuoteTexts,
       writQuoteUrls,
       writTitles,
@@ -94,15 +94,15 @@ class MainSearchPage extends Component {
         {!isFetching && tags.length < 1 && noResults}
 
         <h2 className="md-cell md-cell--12">
-          Statements
+          Propositions
         </h2>
         <FlipMove
           className="md-cell md-cell--12 md-grid md-grid--card-list--tablet"
           {...config.ui.flipMove}
         >
-          {map(statementTexts, toStatementCard)}
+          {map(propositionTexts, toPropositionCard)}
         </FlipMove>
-        {!isFetching && statementTexts.length < 1 && noResults}
+        {!isFetching && propositionTexts.length < 1 && noResults}
 
         <h2 className="md-cell md-cell--12">
           Writs
@@ -142,11 +142,11 @@ class MainSearchPage extends Component {
   }
 }
 
-function toStatementCard(statement) {
-  const id = `statement-card-${statement.id}`
+function toPropositionCard(proposition) {
+  const id = `proposition-card-${proposition.id}`
   return (
-    <StatementCard
-      statement={statement}
+    <PropositionCard
+      proposition={proposition}
       id={id}
       key={id}
       className={ListEntitiesWidget.smallCellClasses}
@@ -202,7 +202,7 @@ const mapStateToProps = (state) => {
   } = state
   const {
     tags,
-    statementTexts,
+    propositionTexts,
     writQuoteQuoteTexts,
     writQuoteUrls,
     writTitles,
@@ -211,7 +211,7 @@ const mapStateToProps = (state) => {
   return {
     isFetching,
     tags: denormalize(tags, tagsSchema, state.entities),
-    statementTexts: denormalize(statementTexts, statementsSchema, state.entities),
+    propositionTexts: denormalize(propositionTexts, propositionsSchema, state.entities),
     writQuoteQuoteTexts: denormalize(writQuoteQuoteTexts, writQuotesSchema, state.entities),
     writQuoteUrls: denormalize(writQuoteUrls, writQuotesSchema, state.entities),
     writTitles: denormalize(writTitles, writsSchema, state.entities),

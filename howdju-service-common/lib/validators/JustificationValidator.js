@@ -14,9 +14,9 @@ const {
 
 class JustificationValidator {
 
-  constructor(statementValidator, statementCompoundValidator, writQuoteValidator, justificationBasisCompoundValidator) {
-    this.statementValidator = statementValidator
-    this.statementCompoundValidator = statementCompoundValidator
+  constructor(propositionValidator, propositionCompoundValidator, writQuoteValidator, justificationBasisCompoundValidator) {
+    this.propositionValidator = propositionValidator
+    this.propositionCompoundValidator = propositionCompoundValidator
     this.writQuoteValidator = writQuoteValidator
     this.justificationBasisCompoundValidator = justificationBasisCompoundValidator
   }
@@ -32,30 +32,30 @@ class JustificationValidator {
 
     const isExtant = isTruthy(justification.id)
 
-    if (has(justification, 'rootStatement')) {
-      if (justification.rootStatement.id) {
+    if (has(justification, 'rootProposition')) {
+      if (justification.rootProposition.id) {
         const justificationTargetType = get(justification, 'target.type')
         if (
-          justificationTargetType === JustificationTargetType.STATEMENT &&
+          justificationTargetType === JustificationTargetType.PROPOSITION &&
           justification.target.entity.id
         ) {
-          if (!idEqual(justification.rootStatement.id, justification.target.entity.id)) {
-            errors.fieldErrors.rootStatement.push(modelErrorCodes.JUSTIFICATION_ROOT_STATEMENT_ID_AND_TARGET_STATEMENT_ID_MUST_BE_EQUAL)
+          if (!idEqual(justification.rootProposition.id, justification.target.entity.id)) {
+            errors.fieldErrors.rootProposition.push(modelErrorCodes.JUSTIFICATION_ROOT_PROPOSITION_ID_AND_TARGET_PROPOSITION_ID_MUST_BE_EQUAL)
           }
         }
       } else {
-        const rootStatementErrors = this.statementValidator.validate(justification.target.entity)
-        if (rootStatementErrors.hasErrors) {
+        const rootPropositionErrors = this.propositionValidator.validate(justification.target.entity)
+        if (rootPropositionErrors.hasErrors) {
           errors.hasErrors = true
-          errors.fieldErrors.rootStatement = rootStatementErrors
+          errors.fieldErrors.rootProposition = rootPropositionErrors
         }
       }
-    } else if (!isExtant && !ignore.rootStatement) {
+    } else if (!isExtant && !ignore.rootProposition) {
       const justificationTargetType = get(justification, 'target.type')
-      const canReceiveRootStatementIdFromTarget = justificationTargetType === JustificationTargetType.STATEMENT
-      if (!canReceiveRootStatementIdFromTarget) {
+      const canReceiveRootPropositionIdFromTarget = justificationTargetType === JustificationTargetType.PROPOSITION
+      if (!canReceiveRootPropositionIdFromTarget) {
         errors.hasErrors = true
-        errors.fieldErrors.rootStatement.push(modelErrorCodes.IS_REQUIRED)
+        errors.fieldErrors.rootProposition.push(modelErrorCodes.IS_REQUIRED)
       }
     }
 
@@ -89,8 +89,8 @@ class JustificationValidator {
               case JustificationTargetType.JUSTIFICATION:
                 targetEntityErrors = this.validate(justification.target.entity)
                 break
-              case JustificationTargetType.STATEMENT:
-                targetEntityErrors = this.statementValidator.validate(justification.target.entity)
+              case JustificationTargetType.PROPOSITION:
+                targetEntityErrors = this.propositionValidator.validate(justification.target.entity)
                 break
               default:
                 throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
@@ -128,8 +128,8 @@ class JustificationValidator {
               case JustificationBasisType.WRIT_QUOTE:
                 basisEntityErrors = this.writQuoteValidator.validate(justification.basis.entity)
                 break
-              case JustificationBasisType.STATEMENT_COMPOUND:
-                basisEntityErrors = this.statementCompoundValidator.validate(justification.basis.entity)
+              case JustificationBasisType.PROPOSITION_COMPOUND:
+                basisEntityErrors = this.propositionCompoundValidator.validate(justification.basis.entity)
                 break
               case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
                 basisEntityErrors = this.justificationBasisCompoundValidator.validate(justification.basis.entity)
@@ -157,7 +157,7 @@ JustificationValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    rootStatement: [],
+    rootProposition: [],
     polarity: [],
     target: {
       modelErrors: [],

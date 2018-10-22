@@ -1,60 +1,60 @@
 import { normalize } from 'normalizr'
-import { statementSchema, statementJustificationsSchema} from './schemas'
+import { propositionSchema, propositionJustificationsSchema} from './schemas'
 
 describe('schemas', () => {
 
-  test('statementSchema', () => {
-    const json = { id: 1, text: 'a statement' }
-    const expected = { result: 1, entities: { statements: { 1: json }}}
-    expect(normalize(json, statementSchema)).toEqual(expected)
+  test('propositionSchema', () => {
+    const json = { id: 1, text: 'a proposition' }
+    const expected = { result: 1, entities: { propositions: { 1: json }}}
+    expect(normalize(json, propositionSchema)).toEqual(expected)
   })
 
-  test('statementJustificationsSchema', () => {
-    const statement1 = { id: 1, text: 'a statement' },
-      statement2 = { id: 2, text: 'another statement' },
-      statement3 = { id: 3, text: 'yet another statement' },
-      statementCompound1 = {
+  test('propositionJustificationsSchema', () => {
+    const proposition1 = { id: 1, text: 'a proposition' },
+      proposition2 = { id: 2, text: 'another proposition' },
+      proposition3 = { id: 3, text: 'yet another proposition' },
+      propositionCompound1 = {
         id: 4,
         atoms: [
-          {entity: statement2}
+          {entity: proposition2}
         ]
       },
-      statementCompound2 = {
+      propositionCompound2 = {
         id: 5,
         atoms: [
-          {entity: statement3}
+          {entity: proposition3}
         ]
       },
       justification1 = {
         id: 1,
-        target: { type: 'STATEMENT', entity: statement1 },
-        basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound1 }
+        target: { type: 'PROPOSITION', entity: proposition1 },
+        basis: { type: 'PROPOSITION_COMPOUND', entity: propositionCompound1 }
       },
       justification2 = {
         id: 2,
-        target: { type: 'STATEMENT', entity: statement1 },
-        basis: { type: 'STATEMENT_COMPOUND', entity: statementCompound2 }
+        target: { type: 'PROPOSITION', entity: proposition1 },
+        basis: { type: 'PROPOSITION_COMPOUND', entity: propositionCompound2 }
       }
     const json = {
-      statement: statement1,
+      proposition: proposition1,
       justifications: [justification1, justification2]
     }
     const expected = {
       result: {
-        statement: 1,
+        proposition: 1,
         justifications: [1, 2],
       },
       entities: {
-        statements: {
-          1: statement1,
-          2: statement2,
-          3: statement3,
+        propositions: {
+          1: proposition1,
+          2: proposition2,
+          3: proposition3,
         },
         justifications: {
-          1: {...justification1, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT_COMPOUND', entity: { id: 4, schema: 'STATEMENT_COMPOUND' } } },
-          2: {...justification2, target: { type: 'STATEMENT', entity: { id: 1, schema: 'STATEMENT' } }, basis: { type: 'STATEMENT_COMPOUND', entity: { id: 5, schema: 'STATEMENT_COMPOUND' } } },
+          1: {...justification1, target: { type: 'PROPOSITION', entity: { id: 1, schema: 'PROPOSITION' } }, basis: { type: 'PROPOSITION_COMPOUND', entity: { id: 4, schema: 'PROPOSITION_COMPOUND' } } },
+          2: {...justification2, target: { type: 'PROPOSITION', entity: { id: 1, schema: 'PROPOSITION' } }, basis: { type: 'PROPOSITION_COMPOUND', entity: { id: 5, schema: 'PROPOSITION_COMPOUND' } } },
         },
-        statementCompounds: {
+        propositionCompounds: {
           4: {
             atoms: [
               {entity: 2},
@@ -71,6 +71,6 @@ describe('schemas', () => {
       }
     }
 
-    expect(normalize(json, statementJustificationsSchema)).toEqual(expected)
+    expect(normalize(json, propositionJustificationsSchema)).toEqual(expected)
   })
 })

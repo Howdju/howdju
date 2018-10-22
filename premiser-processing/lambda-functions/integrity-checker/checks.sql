@@ -1,27 +1,27 @@
 -- Non-empty
-select * from statements where text is null or text ~ '^\s*$';
-select * from statements where normal_text is null or normal_text ~ '^\s*$';
+select * from propositions where text is null or text ~ '^\s*$';
+select * from propositions where normal_text is null or normal_text ~ '^\s*$';
 select * from writs where title is null or title ~ '^\s*$';
 select * from writs where normal_title is null or normal_title ~ '^\s*$';
-select * from justifications where root_statement_id is null;
+select * from justifications where root_proposition_id is null;
 select * from justifications where root_polarity is null;
 select * from justifications where polarity is null or polarity not in ('POSITIVE', 'NEGATIVE');
-select * from justifications where target_type is null or target_type not in ('STATEMENT', 'JUSTIFICATION');
-select * from justifications where basis_type is null or basis_type not in ('JUSTIFICATION_BASIS_COMPOUND', 'STATEMENT_COMPOUND', 'WRIT_QUOTE');
-select * from justification_basis_compound_atoms where entity_type is null or entity_type not in ('STATEMENT', 'SOURCE_EXCERPT_PARAPHRASE');
+select * from justifications where target_type is null or target_type not in ('PROPOSITION', 'JUSTIFICATION');
+select * from justifications where basis_type is null or basis_type not in ('JUSTIFICATION_BASIS_COMPOUND', 'PROPOSITION_COMPOUND', 'WRIT_QUOTE');
+select * from justification_basis_compound_atoms where entity_type is null or entity_type not in ('PROPOSITION', 'SOURCE_EXCERPT_PARAPHRASE');
 
 -- Uniqueness
 
--- statements
+-- propositions
 with
     duplicates as (
       select normal_text
-      from statements
+      from propositions
         where deleted is null
       group by normal_text
       having count(normal_text) > 1
   )
-select * from statements join duplicates using (normal_text) order by text, statement_id;
+select * from propositions join duplicates using (normal_text) order by text, proposition_id;
 
 -- urls
 with
@@ -56,19 +56,19 @@ order by normal_quote_text, writ_quote_id;
 
 
 -- Referential integrity
-select * from statements where creator_user_id is null;
+select * from propositions where creator_user_id is null;
 
 with
-  statement_justifications as (
+  proposition_justifications as (
     select
         j.*
-      , s.statement_id
+      , s.proposition_id
     from justifications j
-      left join statements s on j.target_id = s.statement_id
-    where j.target_type = 'STATEMENT'
+      left join propositions s on j.target_id = s.proposition_id
+    where j.target_type = 'PROPOSITION'
   )
-select * from statement_justifications where statement_id is null;
--- justification_basis_compound_atoms statements/paraphrases
+select * from proposition_justifications where proposition_id is null;
+-- justification_basis_compound_atoms propositions/paraphrases
 
 -- Atom counts
 select
@@ -81,4 +81,4 @@ having count(justification_basis_compound_atom_id) < 1;
 
 -- Ensure an atom isn't duplicated in a compound
 
--- Ensure the thing something relies upon isn't deleted.  E.g. if a statement was deleted, then we should delete it's atoms, compounds, and justifications
+-- Ensure the thing something relies upon isn't deleted.  E.g. if a proposition was deleted, then we should delete it's atoms, compounds, and justifications

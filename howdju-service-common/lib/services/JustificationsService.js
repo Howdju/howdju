@@ -55,9 +55,9 @@ exports.JustificationsService = class JustificationsService {
     justificationValidator,
     actionsService,
     authService,
-    statementsService,
+    propositionsService,
     writQuotesService,
-    statementCompoundsService,
+    propositionCompoundsService,
     justificationBasisCompoundsService,
     justificationsDao,
     permissionsDao
@@ -68,9 +68,9 @@ exports.JustificationsService = class JustificationsService {
       justificationValidator,
       actionsService,
       authService,
-      statementsService,
+      propositionsService,
       writQuotesService,
-      statementCompoundsService,
+      propositionCompoundsService,
       justificationBasisCompoundsService,
       justificationsDao,
       permissionsDao
@@ -80,9 +80,9 @@ exports.JustificationsService = class JustificationsService {
     this.justificationValidator = justificationValidator
     this.actionsService = actionsService
     this.authService = authService
-    this.statementsService = statementsService
+    this.propositionsService = propositionsService
     this.writQuotesService = writQuotesService
-    this.statementCompoundsService = statementCompoundsService
+    this.propositionCompoundsService = propositionCompoundsService
     this.justificationBasisCompoundsService = justificationBasisCompoundsService
     this.justificationsDao = justificationsDao
     this.permissionsDao = permissionsDao
@@ -93,25 +93,25 @@ exports.JustificationsService = class JustificationsService {
       .then( (justification) => {
         return Promise.all([
           justification,
-          this.statementsService.readStatementForId(justification.rootStatement.id, {userId}),
+          this.propositionsService.readPropositionForId(justification.rootProposition.id, {userId}),
           readJustificationTarget(this, justification.target, {userId}),
           readJustificationBasis(this, justification.basis, {userId}),
         ])
       })
       .then( ([
         justification,
-        rootStatement,
+        rootProposition,
         targetEntity,
         basisEntity
       ]) => {
-        justification.rootStatement = rootStatement
+        justification.rootProposition = rootProposition
 
         justification.target.entity = targetEntity
         if (
-          justification.target.type === JustificationTargetType.STATEMENT &&
-          !idEqual(justification.rootStatement.id, justification.target.entity.id)
+          justification.target.type === JustificationTargetType.PROPOSITION &&
+          !idEqual(justification.rootProposition.id, justification.target.entity.id)
         ) {
-          this.logger.error(`Justification ${justification.id} targets statement ${justification.target.entity.id} but has inconsistent root statement ${justification.rootStatement.id}`)
+          this.logger.error(`Justification ${justification.id} targets proposition ${justification.target.entity.id} but has inconsistent root proposition ${justification.rootProposition.id}`)
         }
 
         justification.basis.entity = basisEntity
@@ -169,8 +169,8 @@ exports.JustificationsService = class JustificationsService {
       })
   }
 
-  readJustificationsWithBasesAndVotesByRootStatementId(rootStatementId, {userId}) {
-    return this.justificationsDao.readJustificationsWithBasesAndVotesByRootStatementId(rootStatementId, {userId})
+  readJustificationsWithBasesAndVotesByRootPropositionId(rootPropositionId, {userId}) {
+    return this.justificationsDao.readJustificationsWithBasesAndVotesByRootPropositionId(rootPropositionId, {userId})
   }
 
   readOrCreateJustification(justification, authToken) {
@@ -263,8 +263,8 @@ function readJustificationTarget(service, justificationTarget, {userId}) {
     case JustificationTargetType.JUSTIFICATION:
       return service.readJustificationForId(justificationTarget.entity.id, {userId})
 
-    case JustificationTargetType.STATEMENT:
-      return service.statementsService.readStatementForId(justificationTarget.entity.id, {userId})
+    case JustificationTargetType.PROPOSITION:
+      return service.propositionsService.readPropositionForId(justificationTarget.entity.id, {userId})
 
     default:
       throw newExhaustedEnumError('JustificationTargetType', justificationTarget.type)
@@ -277,8 +277,8 @@ function readJustificationBasis(service, justificationBasis, {userId}) {
     case JustificationBasisType.WRIT_QUOTE:
       return service.writQuotesService.readWritQuoteForId(justificationBasis.entity.id, {userId})
 
-    case JustificationBasisType.STATEMENT_COMPOUND:
-      return service.statementCompoundsService.readStatementCompoundForId(justificationBasis.entity.id, {userId})
+    case JustificationBasisType.PROPOSITION_COMPOUND:
+      return service.propositionCompoundsService.readPropositionCompoundForId(justificationBasis.entity.id, {userId})
 
     case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
       return service.justificationBasisCompoundsService.readJustificationBasisCompoundForId(justificationBasis.entity.id, {userId})
@@ -307,11 +307,11 @@ function readOrCreateEquivalentValidJustificationAsUser(server, justification, u
       justification.basis.entity = basisEntity
 
       switch (justification.target.type) {
-        case JustificationTargetType.STATEMENT:
-          justification.rootStatement = justification.target.entity
+        case JustificationTargetType.PROPOSITION:
+          justification.rootProposition = justification.target.entity
           break
         case JustificationTargetType.JUSTIFICATION:
-          justification.rootStatement = justification.target.entity.rootStatement
+          justification.rootProposition = justification.target.entity.rootProposition
           break
         default:
           throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
@@ -358,13 +358,13 @@ function readOrCreateJustificationTarget(service, justificationTarget, userId, n
           targetEntity: justification,
         }))
 
-    case JustificationTargetType.STATEMENT:
-      return service.statementsService.readOrCreateStatementAsUser(justificationTarget.entity, userId, now)
+    case JustificationTargetType.PROPOSITION:
+      return service.propositionsService.readOrCreatePropositionAsUser(justificationTarget.entity, userId, now)
         .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-        .then(({isExtant, statement}) => ({
+        .then(({isExtant, proposition}) => ({
           isExtant,
           targetType: justificationTarget.type,
-          targetEntity: statement,
+          targetEntity: proposition,
         }))
 
     default:
@@ -383,13 +383,13 @@ function readOrCreateJustificationBasis(service, justificationBasis, userId, now
           basisEntity: writQuote,
         }))
 
-    case JustificationBasisType.STATEMENT_COMPOUND:
-      // Statement compounds were per-justification, so we always created.  Not sure this actually makes sense now, but this is a legacy type anyways
-      return service.statementCompoundsService.createStatementCompoundAsUser(justificationBasis.entity, userId, now)
+    case JustificationBasisType.PROPOSITION_COMPOUND:
+      // Proposition compounds were per-justification, so we always created.  Not sure this actually makes sense now, but this is a legacy type anyways
+      return service.propositionCompoundsService.createPropositionCompoundAsUser(justificationBasis.entity, userId, now)
         .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-        .then( ({isExtant, statementCompound}) => ({
+        .then( ({isExtant, propositionCompound}) => ({
           isExtant,
-          basisEntity: statementCompound,
+          basisEntity: propositionCompound,
         }))
 
     case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
@@ -408,13 +408,13 @@ function readOrCreateJustificationBasis(service, justificationBasis, userId, now
 
 function validateJustifications(logger, justifications) {
   const [goodJustifications, badJustifications] = partition(justifications, j =>
-    j.basis.type !== JustificationBasisType.STATEMENT_COMPOUND ||
+    j.basis.type !== JustificationBasisType.PROPOSITION_COMPOUND ||
     j.basis.entity.atoms &&
     j.basis.entity.atoms.length > 0 &&
     every(j.basis.entity.atoms, a => isTruthy(a.entity.id))
   )
   if (badJustifications.length > 0) {
-    logger.error(`these justifications have invalid statement compounds: ${join(map(badJustifications, j => j.id), ', ')}`)
+    logger.error(`these justifications have invalid proposition compounds: ${join(map(badJustifications, j => j.id), ', ')}`)
     logger.error(badJustifications)
   }
   return goodJustifications

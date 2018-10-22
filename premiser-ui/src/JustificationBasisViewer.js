@@ -6,7 +6,7 @@ import {
   newExhaustedEnumError,
 } from "howdju-common"
 
-import StatementCompoundViewer from "./StatementCompoundViewer"
+import PropositionCompoundViewer from "./PropositionCompoundViewer"
 import WritQuoteEntityViewer from "./WritQuoteEntityViewer"
 import JustificationBasisCompoundViewer from "./JustificationBasisCompoundViewer"
 
@@ -26,24 +26,24 @@ export default class JustificationBasisViewer extends Component {
       isCondensed,
       isUnCondensed,
       showUrls,
-      trailStatements,
+      trailPropositions,
       ...rest,
     } = this.props
     const basis = justification.basis
 
     switch (basis.type) {
-      case JustificationBasisType.STATEMENT_COMPOUND:
+      case JustificationBasisType.PROPOSITION_COMPOUND:
         return (
-          <StatementCompoundViewer
+          <PropositionCompoundViewer
             {...rest}
             id={id}
-            statementCompound={basis.entity}
+            propositionCompound={basis.entity}
             doShowControls={doShowControls}
-            doShowStatementAtomJustifications={doShowBasisJustifications}
+            doShowPropositionAtomJustifications={doShowBasisJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showBasisUrls={showUrls}
-            trailStatements={trailStatements}
+            trailPropositions={trailPropositions}
           />
         )
       case JustificationBasisType.WRIT_QUOTE:
@@ -65,12 +65,12 @@ export default class JustificationBasisViewer extends Component {
             id={id}
             justificationBasisCompound={basis.entity}
             doShowControls={doShowControls}
-            doShowStatementAtomJustifications={doShowBasisJustifications}
+            doShowPropositionAtomJustifications={doShowBasisJustifications}
             showStatusText={showStatusText}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showUrls={showUrls}
-            trailStatements={trailStatements}
+            trailPropositions={trailPropositions}
           />
         )
       default:

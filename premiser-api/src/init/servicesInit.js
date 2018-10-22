@@ -14,11 +14,11 @@ const {
   PerspectivesService,
   PicRegionsService,
   SourceExcerptParaphrasesService,
-  StatementsService,
-  StatementCompoundsService,
-  StatementJustificationsService,
-  StatementTagVotesService,
-  StatementTagsService,
+  PropositionsService,
+  PropositionCompoundsService,
+  PropositionJustificationsService,
+  PropositionTagVotesService,
+  PropositionTagsService,
   TagsService,
   UrlsService,
   UsersService,
@@ -60,36 +60,36 @@ exports.init = function init(provider) {
     provider.logger,
     provider.tagsDao
   )
-  const statementTagVotesService = new StatementTagVotesService(
+  const propositionTagVotesService = new PropositionTagVotesService(
     provider.logger,
-    provider.statementTagVoteValidator,
+    provider.propositionTagVoteValidator,
     authService,
     tagsService,
-    provider.statementTagVotesDao
+    provider.propositionTagVotesDao
   )
 
-  const statementTagsService = new StatementTagsService(
+  const propositionTagsService = new PropositionTagsService(
     provider.logger,
-    provider.statementTagsDao
+    provider.propositionTagsDao
   )
 
-  const statementsService = new StatementsService(
+  const propositionsService = new PropositionsService(
     provider.appConfig,
-    provider.statementValidator,
+    provider.propositionValidator,
     actionsService,
     authService,
-    statementTagsService,
-    statementTagVotesService,
+    propositionTagsService,
+    propositionTagVotesService,
     tagsService,
-    provider.statementsDao,
+    provider.propositionsDao,
     provider.permissionsDao,
     provider.justificationsDao
   )
-  const statementCompoundsService = new StatementCompoundsService(
-    provider.statementCompoundValidator,
+  const propositionCompoundsService = new PropositionCompoundsService(
+    provider.propositionCompoundValidator,
     actionsService,
-    statementsService,
-    provider.statementCompoundsDao
+    propositionsService,
+    provider.propositionCompoundsDao
   )
   const groupsService = new GroupsService(
     provider.logger,
@@ -101,7 +101,7 @@ exports.init = function init(provider) {
   const sourceExcerptParaphrasesService = new SourceExcerptParaphrasesService(
     provider.logger,
     actionsService,
-    statementsService,
+    propositionsService,
     writQuotesService,
     picRegionsService,
     vidSegmentsService,
@@ -111,7 +111,7 @@ exports.init = function init(provider) {
     provider.logger,
     provider.justificationBasisCompoundValidator,
     actionsService,
-    statementsService,
+    propositionsService,
     sourceExcerptParaphrasesService,
     provider.justificationBasisCompoundsDao
   )
@@ -122,9 +122,9 @@ exports.init = function init(provider) {
     provider.justificationValidator,
     actionsService,
     authService,
-    statementsService,
+    propositionsService,
     writQuotesService,
-    statementCompoundsService,
+    propositionCompoundsService,
     justificationBasisCompoundsService,
     provider.justificationsDao,
     provider.permissionsDao
@@ -138,9 +138,9 @@ exports.init = function init(provider) {
     provider.authDao,
     provider.perspectivesDao
   )
-  const statementJustificationsService = new StatementJustificationsService(
+  const propositionJustificationsService = new PropositionJustificationsService(
     authService,
-    statementsService,
+    propositionsService,
     justificationsService
   )
   const usersService = new UsersService(
@@ -161,7 +161,7 @@ exports.init = function init(provider) {
   const mainSearchService = new MainSearchService(
     provider.logger,
     tagsService,
-    provider.statementsTextSearcher,
+    provider.propositionsTextSearcher,
     provider.writsTitleSearcher,
     provider.writQuotesQuoteTextSearcher,
     writQuotesService
@@ -178,11 +178,11 @@ exports.init = function init(provider) {
     permissionsService,
     perspectivesService,
     sourceExcerptParaphrasesService,
-    statementsService,
-    statementCompoundsService,
-    statementJustificationsService,
-    statementTagsService,
-    statementTagVotesService,
+    propositionsService,
+    propositionCompoundsService,
+    propositionJustificationsService,
+    propositionTagsService,
+    propositionTagVotesService,
     tagsService,
     urlsService,
     usersService,

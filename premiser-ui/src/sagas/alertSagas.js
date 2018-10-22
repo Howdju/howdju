@@ -16,13 +16,13 @@ import t, {
   DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   THAT_JUSTIFICATION_ALREADY_EXISTS,
-  THAT_STATEMENT_ALREADY_EXISTS,
+  THAT_PROPOSITION_ALREADY_EXISTS,
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   YOU_ARE_LOGGED_IN_AS,
   YOU_HAVE_BEEN_LOGGED_OUT,
-  DELETE_STATEMENT_FAILURE_TOAST_MESSAGE,
+  DELETE_PROPOSITION_FAILURE_TOAST_MESSAGE,
 } from '../texts'
 import {
   api,
@@ -37,15 +37,15 @@ import {
 
 export function* apiFailureAlerts() {
   const messageKeysByActionType = {
-    [api.deleteStatement.response]: DELETE_STATEMENT_FAILURE_TOAST_MESSAGE,
+    [api.deleteProposition.response]: DELETE_PROPOSITION_FAILURE_TOAST_MESSAGE,
     [api.deleteJustification.response]: DELETE_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
     [api.verifyJustification.response]: VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
     [api.unVerifyJustification.response]: UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
     [api.disverifyJustification.response]: DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
     [api.unDisverifyJustification.response]: UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-    [api.tagStatement.response]: 'Unable to create the tag',
-    [api.antiTagStatement.response]: 'Unable to remove the tag',
-    [api.unTagStatement.response]: 'Unable to remove the tag',
+    [api.tagProposition.response]: 'Unable to create the tag',
+    [api.antiTagProposition.response]: 'Unable to remove the tag',
+    [api.unTagProposition.response]: 'Unable to remove the tag',
   }
 
   yield all(map(messageKeysByActionType, function* apiFailureErrorMessagesWorker(messageKey, actionType) {
@@ -96,12 +96,12 @@ export function* showAlertForUnexpectedApiError() {
 export function* showAlertForExtantEntities() {
 
   const toastMessageKeys = {
-    [api.createStatement.response]: THAT_STATEMENT_ALREADY_EXISTS,
+    [api.createProposition.response]: THAT_PROPOSITION_ALREADY_EXISTS,
     [api.createJustification.response]: THAT_JUSTIFICATION_ALREADY_EXISTS,
   }
 
   yield takeEvery([
-    str(api.createStatement.response),
+    str(api.createProposition.response),
     str(api.createJustification.response)
   ], function* showAlertForExtantEntitiesWorker(action) {
     if (!action.error) {

@@ -1,0 +1,15 @@
+{
+  "name": "proposition-tag-scorer",
+  "version": "1.0.0",
+  "description": "Scores tags for propositions",
+  "main": "index.js",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "pg": "^7.2.0"
+  },
+  "scripts": {
+    "test": "echo TODO"
+  }
+}

@@ -30,7 +30,7 @@ class JustificationsTree extends Component {
       isCondensed,
       isUnCondensed,
       showBasisUrls,
-      trailStatements,
+      trailPropositions,
     } = this.props
     const treeId = `${id}-justification-tree-${j.id}`
     return (
@@ -42,7 +42,7 @@ class JustificationsTree extends Component {
         isCondensed={isCondensed}
         isUnCondensed={isUnCondensed}
         showBasisUrls={showBasisUrls}
-        trailStatements={trailStatements}
+        trailPropositions={trailPropositions}
       />
     )
   }
@@ -75,7 +75,7 @@ class JustificationsTree extends Component {
      */
     let branchesCells = null
     if (isWindowNarrow || isCondensed || !hasBothSides && !isUnCondensed) {
-      const treesClass = "statement-justifications-justification-trees--combined"
+      const treesClass = "proposition-justifications-justification-trees--combined"
       branchesCells = (
         <FlipMove
           {...config.ui.flipMove}
@@ -86,8 +86,8 @@ class JustificationsTree extends Component {
         </FlipMove>
       )
     } else {
-      const positiveTreeClass = "statement-justifications-justification-trees--positive"
-      const negativeTreeClass = "statement-justifications-justification-trees--negative"
+      const positiveTreeClass = "proposition-justifications-justification-trees--positive"
+      const negativeTreeClass = "proposition-justifications-justification-trees--negative"
       branchesCells = [
         <FlipMove
           {...config.ui.flipMove}
@@ -101,12 +101,12 @@ class JustificationsTree extends Component {
           )}
           {hasJustifications && !hasPositiveJustifications && ([
             <div className="md-cell md-cell--12 cell--centered-contents"
-                 key="justification-statements-page-no-positive-justifications-message"
+                 key="justification-propositions-page-no-positive-justifications-message"
             >
               <div>None</div>
             </div>,
             <div className="md-cell md-cell--12 cell--centered-contents"
-                 key="justification-statements-page-no-positive-justifications-add-justification-button"
+                 key="justification-propositions-page-no-positive-justifications-add-justification-button"
             >
               <Button flat
                       children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
@@ -128,12 +128,12 @@ class JustificationsTree extends Component {
           )}
           {hasJustifications && !hasNegativeJustifications && ([
             <div className="md-cell md-cell--12 cell--centered-contents"
-                 key="justification-statements-page-no-negative-justifications-message"
+                 key="justification-propositions-page-no-negative-justifications-message"
             >
               None
             </div>,
             <div className="md-cell md-cell--12 cell--centered-contents"
-                 key="justification-statements-page-no-negative-justifications-add-justification-button"
+                 key="justification-propositions-page-no-negative-justifications-add-justification-button"
             >
               <Button flat
                       children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}

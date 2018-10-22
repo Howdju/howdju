@@ -8,7 +8,7 @@ const values = require('lodash/values')
 const {
   JustificationBasisType,
   newImpossibleError,
-  StatementCompoundAtomType,
+  PropositionCompoundAtomType,
   JustificationBasisCompoundAtomType,
   SourceExcerptType,
   newExhaustedEnumError,
@@ -42,12 +42,12 @@ const toUserExternalIds = (row) => row && ({
   smallchatId: row.smallchat_id,
 })
 
-const toStatement = (row) => {
+const toProposition = (row) => {
   if (!row) {
     return row
   }
-  const statement = {
-    id: toString(row.statement_id),
+  const proposition = {
+    id: toString(row.proposition_id),
     text: row.text,
     normalText: row.normal_text,
     slug: toSlug(row.normal_text),
@@ -56,19 +56,19 @@ const toStatement = (row) => {
   }
 
   if (row.creator_user_id) {
-    statement.creator = toUser({
+    proposition.creator = toUser({
       user_id: row.creator_user_id,
       long_name: row.creator_user_long_name,
     })
   }
 
-  return statement
+  return proposition
 }
 
 const toJustification = (
   row,
   counterJustificationsByJustificationId,
-  statementCompoundsById,
+  propositionCompoundsById,
   writQuotesById,
   justificationBasisCompoundsById
 ) => {
@@ -79,11 +79,11 @@ const toJustification = (
   const justification = {
     id: toString(row.justification_id),
     created: row.created,
-    rootStatement: toStatement({
-      statement_id: row.root_statement_id,
-      text: row.root_statement_text,
-      created: row.root_statement_created,
-      creator_user_id: row.root_statement_creator_user_id,
+    rootProposition: toProposition({
+      proposition_id: row.root_proposition_id,
+      text: row.root_proposition_text,
+      created: row.root_proposition_created,
+      creator_user_id: row.root_proposition_creator_user_id,
     }),
     rootPolarity: row.root_polarity,
     target: {
@@ -134,17 +134,17 @@ const toJustification = (
       break
     }
 
-    case JustificationBasisType.STATEMENT_COMPOUND: {
-      const basisId = row.basis_id || row.basis_statement_compound_id
+    case JustificationBasisType.PROPOSITION_COMPOUND: {
+      const basisId = row.basis_id || row.basis_proposition_compound_id
       if (basisId) {
-        if (statementCompoundsById) {
-          justification.basis.entity = statementCompoundsById[basisId]
+        if (propositionCompoundsById) {
+          justification.basis.entity = propositionCompoundsById[basisId]
         }
-        if (!justification.basis.entity && row.basis_statement_compound_id) {
-          justification.basis.entity = toStatementCompound({
-            statement_compound_id: row.basis_statement_compound_id,
-            created: row.basis_statement_compound_created,
-            creator_user_id: row.basis_statement_compound_creator_user_id,
+        if (!justification.basis.entity && row.basis_proposition_compound_id) {
+          justification.basis.entity = toPropositionCompound({
+            proposition_compound_id: row.basis_proposition_compound_id,
+            created: row.basis_proposition_compound_created,
+            creator_user_id: row.basis_proposition_compound_creator_user_id,
           })
         }
       }
@@ -180,7 +180,7 @@ const toJustification = (
     const counterJustifications = counterJustificationsByJustificationId[justification.id]
     if (counterJustifications) {
       justification.counterJustifications = map(counterJustifications, j =>
-        toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById,
+        toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById,
           justificationBasisCompoundsById))
     }
   }
@@ -228,44 +228,44 @@ const toWritQuoteUrl = (row) => row && ({
   urlId: toString(row.url_id),
 })
 
-const toStatementCompound = (row, atoms) => {
+const toPropositionCompound = (row, atoms) => {
   if (!row) {
     return row
   }
 
-  const statementCompound = {
-    id: row.statement_compound_id,
+  const propositionCompound = {
+    id: row.proposition_compound_id,
     created: row.created,
     creator_user_id: row.creator_user_id,
   }
 
   if (atoms) {
     if (!isArray(atoms)) {
-      // Assume a non-array is an object of atoms by statementId
+      // Assume a non-array is an object of atoms by propositionId
       atoms = values(atoms)
       atoms = sortBy(atoms, a => a.orderPosition)
     }
-    statementCompound.atoms = atoms
+    propositionCompound.atoms = atoms
   }
 
-  return statementCompound
+  return propositionCompound
 }
 
-const toStatementCompoundAtom = (row) => row && ({
-  compoundId: row.statement_compound_id,
-  type: StatementCompoundAtomType.STATEMENT,
-  entity: toStatement({
-    statement_id: row.statement_id,
-    text: row.statement_text,
-    creator_user_id: row.statement_creator_user_id,
-    created: row.statement_created,
+const toPropositionCompoundAtom = (row) => row && ({
+  compoundId: row.proposition_compound_id,
+  type: PropositionCompoundAtomType.PROPOSITION,
+  entity: toProposition({
+    proposition_id: row.proposition_id,
+    text: row.proposition_text,
+    creator_user_id: row.proposition_creator_user_id,
+    created: row.proposition_created,
   }),
   orderPosition: row.order_position,
 })
 
 const toPerspective = (row) => row && ({
   id: row.perspective_id,
-  statement: {id: row.statement_id},
+  proposition: {id: row.proposition_id},
   creatorUserId: row.creator_user_id,
 })
 
@@ -307,7 +307,7 @@ const toJustificationBasisCompound = (row, atoms) => {
 
   if (atoms) {
     if (!isArray(atoms)) {
-      // Assume a non-array is an object of atoms by statementId
+      // Assume a non-array is an object of atoms by propositionId
       atoms = values(atoms)
       atoms = sortBy(atoms, a => a.orderPosition)
     }
@@ -333,13 +333,13 @@ const toJustificationBasisCompoundAtom = (row) => {
   }
 
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      if (row.statement_id) {
-        atom.entity = toStatement({
-          statement_id: row.statement_id,
-          text: row.statement_text,
-          created: row.statement_created,
-          creator_user_id: row.statement_creator_user_id,
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      if (row.proposition_id) {
+        atom.entity = toProposition({
+          proposition_id: row.proposition_id,
+          text: row.proposition_text,
+          created: row.proposition_created,
+          creator_user_id: row.proposition_creator_user_id,
         })
       }
       break
@@ -347,10 +347,10 @@ const toJustificationBasisCompoundAtom = (row) => {
       if (row.source_excerpt_paraphrase_id) {
         atom.entity = toSourceExcerptParaphrase({
           source_excerpt_paraphrase_id: row.source_excerpt_paraphrase_id,
-          paraphrasing_statement_id: row.source_excerpt_paraphrasing_statement_id,
-          paraphrasing_statement_text: row.source_excerpt_paraphrasing_statement_text,
-          paraphrasing_statement_created: row.source_excerpt_paraphrasing_statement_created,
-          paraphrasing_statement_creator_user_id: row.source_excerpt_paraphrasing_statement_creator_user_id,
+          paraphrasing_proposition_id: row.source_excerpt_paraphrasing_proposition_id,
+          paraphrasing_proposition_text: row.source_excerpt_paraphrasing_proposition_text,
+          paraphrasing_proposition_created: row.source_excerpt_paraphrasing_proposition_created,
+          paraphrasing_proposition_creator_user_id: row.source_excerpt_paraphrasing_proposition_creator_user_id,
           source_excerpt_type: row.source_excerpt_type,
           writ_quote_id: row.source_excerpt_writ_quote_id,
           writ_quote_quote_text: row.source_excerpt_writ_quote_quote_text,
@@ -374,8 +374,8 @@ const toSourceExcerptParaphrase = (row) => {
   }
   const sourceExcerptParaphrase = ({
     id: row.source_excerpt_paraphrase_id,
-    paraphrasingStatement: {
-      id: row.paraphrasing_statement_id,
+    paraphrasingProposition: {
+      id: row.paraphrasing_proposition_id,
     },
     sourceExcerpt: {
       type: row.source_excerpt_type,
@@ -385,14 +385,14 @@ const toSourceExcerptParaphrase = (row) => {
     },
   })
 
-  const paraphrasingStatement = toStatement({
-    statement_id: row.paraphrasing_statement_id,
-    text: row.paraphrasing_statement_text,
-    created: row.paraphrasing_statement_created,
-    creator_user_id: row.paraphrasing_statement_creator_user_id
+  const paraphrasingProposition = toProposition({
+    proposition_id: row.paraphrasing_proposition_id,
+    text: row.paraphrasing_proposition_text,
+    created: row.paraphrasing_proposition_created,
+    creator_user_id: row.paraphrasing_proposition_creator_user_id
   })
-  if (paraphrasingStatement.id) {
-    sourceExcerptParaphrase.paraphrasingStatement = paraphrasingStatement
+  if (paraphrasingProposition.id) {
+    sourceExcerptParaphrase.paraphrasingProposition = paraphrasingProposition
   }
 
   const sourceExcerptEntity = toSourceExcerptEntity(row)
@@ -425,16 +425,16 @@ const toSourceExcerptEntity = (row) => {
   }
 }
 
-function toStatementTagVote(row) {
+function toPropositionTagVote(row) {
   if (!row) {
     return row
   }
 
   return {
-    id: toString(row.statement_tag_vote_id),
+    id: toString(row.proposition_tag_vote_id),
     polarity: row.polarity,
-    statement: {
-      id: toString(row.statement_id),
+    proposition: {
+      id: toString(row.proposition_id),
     },
     tag: {
       id: toString(row.tag_id),
@@ -442,13 +442,13 @@ function toStatementTagVote(row) {
   }
 }
 
-function toStatementTagScore(row) {
+function toPropositionTagScore(row) {
   if (!row) {
     return row
   }
 
   return {
-    statementId: row.statement_id,
+    propositionId: row.proposition_id,
     tagId: row.tag_id,
     scoreType: row.score_type,
     score: row.score,
@@ -472,7 +472,7 @@ function toTag(row) {
 
 module.exports = {
   toUser,
-  toStatement,
+  toProposition,
   toJustification,
   toWritQuote,
   toWrit,
@@ -480,10 +480,10 @@ module.exports = {
   toJustificationScore,
   toJustificationVote,
   toWritQuoteUrl,
-  toStatementCompound,
-  toStatementCompoundAtom,
-  toStatementTagVote,
-  toStatementTagScore,
+  toPropositionCompound,
+  toPropositionCompoundAtom,
+  toPropositionTagVote,
+  toPropositionTagScore,
   toTag,
   toPerspective,
   toUserHash,

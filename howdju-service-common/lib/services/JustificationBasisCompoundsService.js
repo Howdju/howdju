@@ -23,7 +23,7 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
     logger,
     justificationBasisCompoundValidator,
     actionsService,
-    statementsService,
+    propositionsService,
     sourceExcerptParaphrasesService,
     justificationBasisCompoundsDao
   ) {
@@ -31,7 +31,7 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
       logger,
       justificationBasisCompoundValidator,
       actionsService,
-      statementsService,
+      propositionsService,
       sourceExcerptParaphrasesService,
       justificationBasisCompoundsDao
     })
@@ -39,7 +39,7 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
     this.logger = logger
     this.justificationBasisCompoundValidator = justificationBasisCompoundValidator
     this.actionsService = actionsService
-    this.statementsService = statementsService
+    this.propositionsService = propositionsService
     this.sourceExcerptParaphrasesService = sourceExcerptParaphrasesService
     this.justificationBasisCompoundsDao = justificationBasisCompoundsDao
   }
@@ -251,10 +251,10 @@ function readOrCreateJustificationBasisCompoundAtomEntity(
 ) {
   const type = atom.type
   switch (type) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      return service.statementsService.readOrCreateValidStatementAsUser(atom.entity, userId, now)
-        .then( ({isExtant, statement}) => {
-          atom.entity = statement
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      return service.propositionsService.readOrCreateValidPropositionAsUser(atom.entity, userId, now)
+        .then( ({isExtant, proposition}) => {
+          atom.entity = proposition
           return {
             isExtant,
             atom,
@@ -281,8 +281,8 @@ function getJustificationBasisCompoundAtomEntity(
   userId
 ) {
   switch (entityType) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      return service.statementsService.readStatementForId(entityId, {userId})
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      return service.propositionsService.readPropositionForId(entityId, {userId})
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
       return service.sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(entityId, {userId})
     default:

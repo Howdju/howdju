@@ -10,20 +10,20 @@ import {
 export const tagSchema = new schema.Entity('tags')
 export const tagsSchema = [tagSchema]
 
-export const statementTagVoteSchema = new schema.Entity('statementTagVotes', {
+export const propositionTagVoteSchema = new schema.Entity('propositionTagVotes', {
   tag: tagSchema
 })
-const statementTagVoteSchemas = [statementTagVoteSchema]
+const propositionTagVoteSchemas = [propositionTagVoteSchema]
 
-export const statementSchema = new schema.Entity('statements', {
+export const propositionSchema = new schema.Entity('propositions', {
   tags: tagsSchema,
   recommendedTags: tagsSchema,
-  statementTagVotes: statementTagVoteSchemas,
+  propositionTagVotes: propositionTagVoteSchemas,
 })
-export const statementsSchema = [statementSchema]
-export const statementCompoundSchema = new schema.Entity('statementCompounds', {
+export const propositionsSchema = [propositionSchema]
+export const propositionCompoundSchema = new schema.Entity('propositionCompounds', {
   atoms: [{
-    entity: statementSchema,
+    entity: propositionSchema,
   }],
 })
 export const writSchema = new schema.Entity('writs')
@@ -55,14 +55,14 @@ const sourceExcerptSchema = new schema.Union({
 }, (value, parent) => parent.type)
 
 export const sourceExcerptParaphraseSchema = new schema.Entity('sourceExcerptParaphrases', {
-  paraphrasingStatement: statementSchema,
+  paraphrasingProposition: propositionSchema,
   sourceExcerpt: {
     entity: sourceExcerptSchema
   },
 })
 
 export const justificationBasisCompoundAtomEntitySchema = new schema.Union({
-  [JustificationBasisCompoundAtomType.STATEMENT]: statementSchema,
+  [JustificationBasisCompoundAtomType.PROPOSITION]: propositionSchema,
   [JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE]: sourceExcerptParaphraseSchema,
 }, (value, parent) => parent.type)
 
@@ -74,14 +74,14 @@ export const justificationBasisCompoundSchema = new schema.Entity('justification
 
 export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)
 export const justificationBasisSchema = new schema.Union({
-  [JustificationBasisType.STATEMENT_COMPOUND]: statementCompoundSchema,
+  [JustificationBasisType.PROPOSITION_COMPOUND]: propositionCompoundSchema,
   [JustificationBasisType.WRIT_QUOTE]: writQuoteSchema,
   [JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND]: justificationBasisCompoundSchema,
 }, (value, parent) => parent.type)
 
 export const justificationSchema = new schema.Entity('justifications')
 justificationSchema.define({
-  rootStatement: statementSchema,
+  rootProposition: propositionSchema,
   target: {
     entity: justificationTargetSchema
   },
@@ -94,27 +94,27 @@ justificationSchema.define({
 export const justificationsSchema = [justificationSchema]
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there.
 justificationTargetSchema.define({
-  [JustificationTargetType.STATEMENT]: statementSchema,
+  [JustificationTargetType.PROPOSITION]: propositionSchema,
   [JustificationTargetType.JUSTIFICATION]: justificationSchema,
 })
 
-statementSchema.define({
+propositionSchema.define({
   justifications: justificationsSchema,
 })
 
-export const statementJustificationsSchema = {
-  statement: statementSchema,
+export const propositionJustificationsSchema = {
+  proposition: propositionSchema,
   justifications: justificationsSchema
 }
 
 export const perspectiveSchema = new schema.Entity('perspectives', {
-  statement: statementSchema,
+  proposition: propositionSchema,
   justifications: justificationsSchema,
 })
 export const perspectivesSchema = [perspectiveSchema]
 
 export const mainSearchResultsSchema = {
-  statementTexts: statementsSchema,
+  propositionTexts: propositionsSchema,
   writQuoteQuoteTexts: writQuotesSchema,
   writQuoteUrls: writQuotesSchema,
   writTitles: writsSchema,

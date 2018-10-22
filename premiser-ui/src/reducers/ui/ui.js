@@ -7,7 +7,7 @@ import {
 } from '../../actions'
 import mainSearcher from '../../mainSearcher'
 import {
-  statementJustificationsPage,
+  propositionJustificationsPage,
   mainSearchPage,
   featuredPerspectivesPage,
   justificationsSearchPage,
@@ -46,7 +46,7 @@ export const mainSearch = handleActions({
 })
 
 export default combineReducers({
-  statementJustificationsPage,
+  propositionJustificationsPage,
   mainSearchPage,
   app,
   mainSearch,

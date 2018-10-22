@@ -27,12 +27,12 @@ const {
 
 const {
   toJustification,
-  toStatementCompound,
-  toStatementCompoundAtom,
+  toPropositionCompound,
+  toPropositionCompoundAtom,
   toJustificationBasisCompound,
   toJustificationBasisCompoundAtom,
   toWritQuote,
-  toStatement,
+  toProposition,
 } = require('./orm')
 const {EntityNotFoundError} = require('../serviceErrors')
 const {
@@ -44,11 +44,11 @@ const {DatabaseSortDirection} = require('./daoModels')
 
 exports.JustificationsDao = class JustificationsDao {
 
-  constructor(logger, database, statementCompoundsDao, writQuotesDao, justificationBasisCompoundsDao) {
-    requireArgs({logger, database, statementCompoundsDao, writQuotesDao, justificationBasisCompoundsDao})
+  constructor(logger, database, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao) {
+    requireArgs({logger, database, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao})
     this.logger = logger
     this.database = database
-    this.statementCompoundsDao = statementCompoundsDao
+    this.propositionCompoundsDao = propositionCompoundsDao
     this.writQuotesDao = writQuotesDao
     this.justificationBasisCompoundsDao = justificationBasisCompoundsDao
   }
@@ -65,9 +65,9 @@ exports.JustificationsDao = class JustificationsDao {
 
     const justificationsSelectArgs = [
       JustificationBasisType.WRIT_QUOTE,
-      JustificationBasisType.STATEMENT_COMPOUND,
+      JustificationBasisType.PROPOSITION_COMPOUND,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomType.STATEMENT,
+      JustificationBasisCompoundAtomType.PROPOSITION,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptType.WRIT_QUOTE,
     ]
@@ -80,7 +80,7 @@ exports.JustificationsDao = class JustificationsDao {
         )
       select 
           ${tableAlias}.justification_id
-        , ${tableAlias}.root_statement_id
+        , ${tableAlias}.root_proposition_id
         , ${tableAlias}.root_polarity
         , ${tableAlias}.target_type
         , ${tableAlias}.target_id
@@ -90,10 +90,10 @@ exports.JustificationsDao = class JustificationsDao {
         , ${tableAlias}.creator_user_id
         , ${tableAlias}.created
         
-        , rs.statement_id         as root_statement_id
-        , rs.text                 as root_statement_text
-        , rs.created              as root_statement_created
-        , rs.creator_user_id      as root_statement_creator_user_id
+        , rs.proposition_id         as root_proposition_id
+        , rs.text                 as root_proposition_text
+        , rs.created              as root_proposition_created
+        , rs.creator_user_id      as root_proposition_creator_user_id
         
         , wq.writ_quote_id          as basis_writ_quote_id
         , wq.quote_text             as basis_writ_quote_quote_text
@@ -104,28 +104,28 @@ exports.JustificationsDao = class JustificationsDao {
         , w.created                 as basis_writ_quote_writ_created
         , w.creator_user_id         as basis_writ_quote_writ_creator_user_id
         
-        , sc.statement_compound_id  as basis_statement_compound_id
-        , sca.order_position        as basis_statement_compound_atom_order_position
-        , scas.statement_id         as basis_statement_compound_atom_statement_id
-        , scas.text                 as basis_statement_compound_atom_statement_text
-        , scas.created              as basis_statement_compound_atom_statement_created
-        , scas.creator_user_id      as basis_statement_compound_atom_statement_creator_user_id
+        , sc.proposition_compound_id  as basis_proposition_compound_id
+        , sca.order_position        as basis_proposition_compound_atom_order_position
+        , scas.proposition_id         as basis_proposition_compound_atom_proposition_id
+        , scas.text                 as basis_proposition_compound_atom_proposition_text
+        , scas.created              as basis_proposition_compound_atom_proposition_created
+        , scas.creator_user_id      as basis_proposition_compound_atom_proposition_creator_user_id
         
         , jbc.justification_basis_compound_id          as basis_jbc_id
         , jbca.justification_basis_compound_atom_id    as basis_jbc_atom_id
         , jbca.entity_type                             as basis_jbc_atom_entity_type
         , jbca.order_position                          as basis_jbc_atom_order_position
         
-        , jbcas.statement_id                           as basis_jbc_atom_statement_id
-        , jbcas.text                                   as basis_jbc_atom_statement_text
-        , jbcas.created                                as basis_jbc_atom_statement_created
-        , jbcas.creator_user_id                        as basis_jbc_atom_statement_creator_user_id
+        , jbcas.proposition_id                           as basis_jbc_atom_proposition_id
+        , jbcas.text                                   as basis_jbc_atom_proposition_text
+        , jbcas.created                                as basis_jbc_atom_proposition_created
+        , jbcas.creator_user_id                        as basis_jbc_atom_proposition_creator_user_id
         
         , sep.source_excerpt_paraphrase_id             as basis_jbc_atom_sep_id
-        , sep_s.statement_id                           as basis_jbc_atom_sep_paraphrasing_statement_id
-        , sep_s.text                                   as basis_jbc_atom_sep_paraphrasing_statement_text
-        , sep_s.created                                as basis_jbc_atom_sep_paraphrasing_statement_created
-        , sep_s.creator_user_id                        as basis_jbc_atom_sep_paraphrasing_statement_creator_user_id
+        , sep_s.proposition_id                           as basis_jbc_atom_sep_paraphrasing_proposition_id
+        , sep_s.text                                   as basis_jbc_atom_sep_paraphrasing_proposition_text
+        , sep_s.created                                as basis_jbc_atom_sep_paraphrasing_proposition_created
+        , sep_s.creator_user_id                        as basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id
         , sep.source_excerpt_type                      as basis_jbc_atom_sep_source_excerpt_type
         , sep_wq.writ_quote_id                         as basis_jbc_atom_sep_writ_quote_id
         , sep_wq.quote_text                            as basis_jbc_atom_sep_writ_quote_quote_text
@@ -138,31 +138,31 @@ exports.JustificationsDao = class JustificationsDao {
       from limited_justifications
           join justifications ${tableAlias} using (justification_id)
           
-          join statements rs on ${tableAlias}.root_statement_id = rs.statement_id
+          join propositions rs on ${tableAlias}.root_proposition_id = rs.proposition_id
           
           left join writ_quotes wq on 
                 ${tableAlias}.basis_type = $1
             and ${tableAlias}.basis_id = wq.writ_quote_id 
           left join writs w using (writ_id)
           
-          left join statement_compounds sc on 
+          left join proposition_compounds sc on 
                 ${tableAlias}.basis_type = $2
-            and ${tableAlias}.basis_id = sc.statement_compound_id
-          left join statement_compound_atoms sca using (statement_compound_id)
-          left join statements scas on sca.statement_id = scas.statement_id
+            and ${tableAlias}.basis_id = sc.proposition_compound_id
+          left join proposition_compound_atoms sca using (proposition_compound_id)
+          left join propositions scas on sca.proposition_id = scas.proposition_id
           
           left join justification_basis_compounds jbc on
                 ${tableAlias}.basis_type = $3
             and ${tableAlias}.basis_id = jbc.justification_basis_compound_id
           left join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
-          left join statements jbcas on
+          left join propositions jbcas on
                 jbca.entity_type = $4
-            and jbca.entity_id = jbcas.statement_id
+            and jbca.entity_id = jbcas.proposition_id
           left join source_excerpt_paraphrases sep on
                 jbca.entity_type = $5
             and jbca.entity_id = sep.source_excerpt_paraphrase_id
-          left join statements sep_s on
-                sep.paraphrasing_statement_id = sep_s.statement_id
+          left join propositions sep_s on
+                sep.paraphrasing_proposition_id = sep_s.proposition_id
           left join writ_quotes sep_wq on
                 sep.source_excerpt_type = $6
             and sep.source_excerpt_id = sep_wq.writ_quote_id
@@ -187,9 +187,9 @@ exports.JustificationsDao = class JustificationsDao {
     const targetJustificationsSelectArgs = [
       JustificationTargetType.JUSTIFICATION,
       JustificationBasisType.WRIT_QUOTE,
-      JustificationBasisType.STATEMENT_COMPOUND,
+      JustificationBasisType.PROPOSITION_COMPOUND,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomType.STATEMENT,
+      JustificationBasisCompoundAtomType.PROPOSITION,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptType.WRIT_QUOTE,
     ]
@@ -206,7 +206,7 @@ exports.JustificationsDao = class JustificationsDao {
           ${tableAlias}.justification_id
                  
         , tj.justification_id       as ${targetJustificationPrefix}justification_id
-        , tj.root_statement_id      as ${targetJustificationPrefix}root_statement_id
+        , tj.root_proposition_id      as ${targetJustificationPrefix}root_proposition_id
         , tj.root_polarity          as ${targetJustificationPrefix}root_polarity
         , tj.target_type            as ${targetJustificationPrefix}target_type
         , tj.target_id              as ${targetJustificationPrefix}target_id
@@ -216,10 +216,10 @@ exports.JustificationsDao = class JustificationsDao {
         , tj.creator_user_id        as ${targetJustificationPrefix}creator_user_id
         , tj.created                as ${targetJustificationPrefix}created
         
-        , rs.statement_id         as ${targetJustificationPrefix}root_statement_id
-        , rs.text                 as ${targetJustificationPrefix}root_statement_text
-        , rs.created              as ${targetJustificationPrefix}root_statement_created
-        , rs.creator_user_id      as ${targetJustificationPrefix}root_statement_creator_user_id
+        , rs.proposition_id         as ${targetJustificationPrefix}root_proposition_id
+        , rs.text                 as ${targetJustificationPrefix}root_proposition_text
+        , rs.created              as ${targetJustificationPrefix}root_proposition_created
+        , rs.creator_user_id      as ${targetJustificationPrefix}root_proposition_creator_user_id
         
         , wq.writ_quote_id          as ${targetJustificationPrefix}basis_writ_quote_id
         , wq.quote_text             as ${targetJustificationPrefix}basis_writ_quote_quote_text
@@ -230,28 +230,28 @@ exports.JustificationsDao = class JustificationsDao {
         , w.created                 as ${targetJustificationPrefix}basis_writ_quote_writ_created
         , w.creator_user_id         as ${targetJustificationPrefix}basis_writ_quote_writ_creator_user_id
         
-        , sc.statement_compound_id  as ${targetJustificationPrefix}basis_statement_compound_id
-        , sca.order_position        as ${targetJustificationPrefix}basis_statement_compound_atom_order_position
-        , scas.statement_id         as ${targetJustificationPrefix}basis_statement_compound_atom_statement_id
-        , scas.text                 as ${targetJustificationPrefix}basis_statement_compound_atom_statement_text
-        , scas.created              as ${targetJustificationPrefix}basis_statement_compound_atom_statement_created
-        , scas.creator_user_id      as ${targetJustificationPrefix}basis_statement_compound_atom_statement_creator_user_id
+        , sc.proposition_compound_id  as ${targetJustificationPrefix}basis_proposition_compound_id
+        , sca.order_position        as ${targetJustificationPrefix}basis_proposition_compound_atom_order_position
+        , scas.proposition_id         as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_id
+        , scas.text                 as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_text
+        , scas.created              as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_created
+        , scas.creator_user_id      as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_creator_user_id
         
         , jbc.justification_basis_compound_id        as ${targetJustificationPrefix}basis_jbc_id
         , jbca.justification_basis_compound_atom_id  as ${targetJustificationPrefix}basis_jbc_atom_id
         , jbca.entity_type                           as ${targetJustificationPrefix}basis_jbc_atom_entity_type
         , jbca.order_position                        as ${targetJustificationPrefix}basis_jbc_atom_order_position
         
-        , jbcas.statement_id                         as ${targetJustificationPrefix}basis_jbc_atom_statement_id
-        , jbcas.text                                 as ${targetJustificationPrefix}basis_jbc_atom_statement_text
-        , jbcas.created                              as ${targetJustificationPrefix}basis_jbc_atom_statement_created
-        , jbcas.creator_user_id                      as ${targetJustificationPrefix}basis_jbc_atom_statement_creator_user_id
+        , jbcas.proposition_id                         as ${targetJustificationPrefix}basis_jbc_atom_proposition_id
+        , jbcas.text                                 as ${targetJustificationPrefix}basis_jbc_atom_proposition_text
+        , jbcas.created                              as ${targetJustificationPrefix}basis_jbc_atom_proposition_created
+        , jbcas.creator_user_id                      as ${targetJustificationPrefix}basis_jbc_atom_proposition_creator_user_id
         
         , sep.source_excerpt_paraphrase_id           as ${targetJustificationPrefix}basis_jbc_atom_sep_id
-        , sep_s.statement_id                         as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_statement_id
-        , sep_s.text                                 as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_statement_text
-        , sep_s.created                              as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_statement_created
-        , sep_s.creator_user_id                      as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_statement_creator_user_id
+        , sep_s.proposition_id                         as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_proposition_id
+        , sep_s.text                                 as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_proposition_text
+        , sep_s.created                              as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_proposition_created
+        , sep_s.creator_user_id                      as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id
         , sep.source_excerpt_type                    as ${targetJustificationPrefix}basis_jbc_atom_sep_source_excerpt_type
         , sep_wq.writ_quote_id                       as ${targetJustificationPrefix}basis_jbc_atom_sep_writ_quote_id
         , sep_wq.quote_text                          as ${targetJustificationPrefix}basis_jbc_atom_sep_writ_quote_quote_text
@@ -264,7 +264,7 @@ exports.JustificationsDao = class JustificationsDao {
       from limited_justifications lj
           join justifications ${tableAlias} using (justification_id)
          
-          join statements rs on ${tableAlias}.root_statement_id = rs.statement_id
+          join propositions rs on ${tableAlias}.root_proposition_id = rs.proposition_id
           
           join justifications tj on 
                 ${tableAlias}.target_type = $1
@@ -275,24 +275,24 @@ exports.JustificationsDao = class JustificationsDao {
             and tj.basis_id = wq.writ_quote_id 
           left join writs w on wq.writ_id = w.writ_id
           
-          left join statement_compounds sc on 
+          left join proposition_compounds sc on 
                 tj.basis_type = $3
-            and tj.basis_id = sc.statement_compound_id
-          left join statement_compound_atoms sca using (statement_compound_id)
-          left join statements scas on sca.statement_id = scas.statement_id
+            and tj.basis_id = sc.proposition_compound_id
+          left join proposition_compound_atoms sca using (proposition_compound_id)
+          left join propositions scas on sca.proposition_id = scas.proposition_id
           
           left join justification_basis_compounds jbc on
                 tj.basis_type = $4
             and tj.basis_id = jbc.justification_basis_compound_id
           left join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
-          left join statements jbcas on
+          left join propositions jbcas on
                 jbca.entity_type = $5
-            and jbca.entity_id = jbcas.statement_id
+            and jbca.entity_id = jbcas.proposition_id
           left join source_excerpt_paraphrases sep on
                 jbca.entity_type = $6
             and jbca.entity_id = sep.source_excerpt_paraphrase_id
-          left join statements sep_s on
-                sep.paraphrasing_statement_id = sep_s.statement_id
+          left join propositions sep_s on
+                sep.paraphrasing_proposition_id = sep_s.proposition_id
           left join writ_quotes sep_wq on
                 sep.source_excerpt_type = $7
             and sep.source_excerpt_id = sep_wq.writ_quote_id
@@ -315,56 +315,59 @@ exports.JustificationsDao = class JustificationsDao {
       -- no need to order because they are joined to the ordered targeting justifications
       `
 
-    const targetStatementsSelectArgs = [
-      JustificationTargetType.STATEMENT,
+    const targetPropositionsSelectArgs = [
+      JustificationTargetType.PROPOSITION,
     ]
-    const targetStatementsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, targetStatementsSelectArgs.length)
-    const targetStatementsArgs = concat(targetStatementsSelectArgs, limitedJustificationsArgs)
-    const targetStatementsSql = `
+    const targetPropositionsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, targetPropositionsSelectArgs.length)
+    const targetPropositionsArgs = concat(targetPropositionsSelectArgs, limitedJustificationsArgs)
+    const targetPropositionsSql = `
       with
         limited_justifications as (
-          ${targetStatementsRenumberedLimitedJustificationsSql}
+          ${targetPropositionsRenumberedLimitedJustificationsSql}
         )
       select 
-          ts.statement_id
-        , ts.text
-        , ts.created
-        , ts.creator_user_id
+          tp.proposition_id
+        , tp.text
+        , tp.created
+        , tp.creator_user_id
       from limited_justifications lj
           join justifications j using (justification_id)
-          join statements ts on 
+          join propositions tp on 
                 j.target_type = $1
-            and j.target_id = ts.statement_id
+            and j.target_id = tp.proposition_id
         where
               j.deleted is null
-          and ts.deleted is null
+          and tp.deleted is null
       -- no need to order because they are joined to the ordered targeting justifications
     `
     return Promise.all([
       this.database.query(justificationsSql, justificationsArgs),
       this.database.query(targetJustificationsSql, targetJustificationsArgs),
-      this.database.query(targetStatementsSql, targetStatementsArgs),
+      this.database.query(targetPropositionsSql, targetPropositionsArgs),
     ])
       .then( ([
         {rows: justificationRows},
         {rows: targetJustificationRows},
-        {rows: targetStatementRows},
+        {rows: targetPropositionRows},
       ]) => {
         const justifications = mapJustificationRows(justificationRows)
         const targetJustificationsById = mapJustificationRowsById(targetJustificationRows, targetJustificationPrefix)
-        const targetStatementsById = mapStatementRowsById(targetStatementRows)
+        const targetPropositionsById = mapPropositionRowsById(targetPropositionRows)
 
         forEach(justifications, justification => {
           let target
           switch (justification.target.type) {
-            case JustificationTargetType.JUSTIFICATION:
+            case JustificationTargetType.JUSTIFICATION: {
               target = targetJustificationsById[justification.target.entity.id]
               break
-            case JustificationTargetType.STATEMENT:
-              target = targetStatementsById[justification.target.entity.id]
+            }
+            case JustificationTargetType.PROPOSITION: {
+              target = targetPropositionsById[justification.target.entity.id]
               break
-            default:
+            }
+            default: {
               throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+            }
           }
           if (!target) {
             this.logger.error(`Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`)
@@ -377,7 +380,7 @@ exports.JustificationsDao = class JustificationsDao {
       })
   }
 
-  readJustificationsWithBasesAndVotesByRootStatementId(rootStatementId, {userId}) {
+  readJustificationsWithBasesAndVotesByRootPropositionId(rootPropositionId, {userId}) {
     const sql = `
       with 
         extant_users as (select * from users where deleted is null)
@@ -389,9 +392,9 @@ exports.JustificationsDao = class JustificationsDao {
         , u.long_name as creator_user_long_name
       from justifications j 
         left join extant_users u on j.creator_user_id = u.user_id
-        left join statement_compounds sc on 
+        left join proposition_compounds sc on 
               j.basis_type = $4 
-          and j.basis_id = sc.statement_compound_id 
+          and j.basis_id = sc.proposition_compound_id 
         left join writ_quotes wq on 
               j.basis_type = $3
           and j.basis_id = wq.writ_quote_id
@@ -401,43 +404,43 @@ exports.JustificationsDao = class JustificationsDao {
           and v.deleted IS NULL
         where 
               j.deleted is null
-          and j.root_statement_id = $1
+          and j.root_proposition_id = $1
       `
     return Promise.all([
-      this.database.query(sql, [rootStatementId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.STATEMENT_COMPOUND]),
-      readStatementCompoundsByIdForRootStatementId(this, rootStatementId, {userId}),
-      this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
-      this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootStatementId(rootStatementId),
+      this.database.query(sql, [rootPropositionId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.PROPOSITION_COMPOUND]),
+      readPropositionCompoundsByIdForRootPropositionId(this, rootPropositionId, {userId}),
+      this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootPropositionId),
+      this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(rootPropositionId),
     ])
       .then( ([
         {rows: justification_rows},
-        statementCompoundsById,
+        propositionCompoundsById,
         writQuotesById,
         justificationBasisCompoundsById
       ]) => {
         const {rootJustifications, counterJustificationsByJustificationId} =
-          groupRootJustifications(rootStatementId, justification_rows)
+          groupRootJustifications(rootPropositionId, justification_rows)
         return map(rootJustifications, j =>
-          toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById, justificationBasisCompoundsById))
+          toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById, justificationBasisCompoundsById))
       })
   }
 
-  readJustificationsDependentUponStatementId(statementId) {
+  readJustificationsDependentUponPropositionId(propositionId) {
     const sql = `
       select * from justifications where
-           root_statement_id = $1
+           root_proposition_id = $1
       union
         select j.* 
         from justifications j 
-          join statement_compounds sc on 
+          join proposition_compounds sc on 
                 j.basis_type = $2
-            and j.basis_id = sc.statement_compound_id
-          join statement_compound_atoms sca using (statement_compound_id)
-          join statements scas on
-                sca.statement_id = scas.statement_id
-            and scas.statement_id = $1
+            and j.basis_id = sc.proposition_compound_id
+          join proposition_compound_atoms pca using (proposition_compound_id)
+          join propositions pcap on
+                pca.proposition_id = pcap.proposition_id
+            and scas.proposition_id = $1
     `
-    return this.database.query(sql, [statementId, JustificationBasisType.STATEMENT_COMPOUND])
+    return this.database.query(sql, [propositionId, JustificationBasisType.PROPOSITION_COMPOUND])
       .then( ({rows}) => map(rows, toJustification))
   }
 
@@ -471,23 +474,23 @@ exports.JustificationsDao = class JustificationsDao {
     return this.database.query(sql, args)
       .then( ({rows}) => toJustification(head(rows)) )
       .then(equivalentJustification => {
-        if (equivalentJustification && !idEqual(equivalentJustification.rootStatement.id, justification.rootStatement.id)) {
-          this.logger.error(`justification's rootStatement ID ${justification.rootStatement.id} !== equivalent justification ${equivalentJustification.id}'s rootStatement ID ${equivalentJustification.rootStatement.id}`)
+        if (equivalentJustification && !idEqual(equivalentJustification.rootProposition.id, justification.rootProposition.id)) {
+          this.logger.error(`justification's rootProposition ID ${justification.rootProposition.id} !== equivalent justification ${equivalentJustification.id}'s rootProposition ID ${equivalentJustification.rootProposition.id}`)
         }
         return equivalentJustification
       })
   }
 
-  readRootJustificationCountByPolarityForRootStatementId(rootStatementId) {
+  readRootJustificationCountByPolarityForRootPropositionId(rootPropositionId) {
     return this.database.query(`
       select polarity, count(*) as count
       from justifications
         where 
-              root_statement_id = $1 
+              root_proposition_id = $1 
           and target_type = $2
           and target_id = $1
       group by polarity
-    `, [rootStatementId, JustificationTargetType.STATEMENT])
+    `, [rootPropositionId, JustificationTargetType.PROPOSITION])
       .then( ({rows}) => {
         const rootJustificationCountByPolarity = {}
         forEach(rows, row => {
@@ -504,12 +507,12 @@ exports.JustificationsDao = class JustificationsDao {
 
         const sql = `
           insert into justifications
-            (root_statement_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
+            (root_proposition_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
             values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
           returning *
           `
         const args = [
-          justification.rootStatement.id,
+          justification.rootProposition.id,
           rootPolarity,
           justification.target.type,
           justification.target.entity.id,
@@ -569,11 +572,11 @@ function mapJustificationRowsById(rows, prefix = '') {
   return justificationsById
 }
 
-function mapStatementRowsById(rows) {
+function mapPropositionRowsById(rows) {
   const byId = {}
   forEach(rows, row => {
-    const statement = toStatement(row)
-    byId[statement.id] = statement
+    const proposition = toProposition(row)
+    byId[proposition.id] = proposition
   })
   return byId
 }
@@ -593,8 +596,8 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
   const orderedJustificationIds = []
   const justificationRowsById = {}
   const writQuotesRowsById = {}
-  const statementCompoundRowsById = {}
-  const statementCompoundAtomsByCompoundId = {}
+  const propositionCompoundRowsById = {}
+  const propositionCompoundAtomsByCompoundId = {}
   const justificationBasisCompoundRowsById = {}
   const justificationBasisCompoundAtomsByCompoundId = {}
 
@@ -606,10 +609,10 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
       justificationRowsById[rowId] = {
         justification_id:          rowId,
         root_polarity:             row[prefix + 'root_polarity'],
-        root_statement_id:         row[prefix + 'root_statement_id'],
-        root_statement_text:       row[prefix + 'root_statement_text'],
-        root_statement_created:    row[prefix + 'root_statement_created'],
-        root_statement_creator_id: row[prefix + 'root_statement_creator_id'],
+        root_proposition_id:         row[prefix + 'root_proposition_id'],
+        root_proposition_text:       row[prefix + 'root_proposition_text'],
+        root_proposition_created:    row[prefix + 'root_proposition_created'],
+        root_proposition_creator_id: row[prefix + 'root_proposition_creator_id'],
         target_type:               row[prefix + 'target_type'],
         target_id:                 row[prefix + 'target_id'],
         basis_type:                row[prefix + 'basis_type'],
@@ -634,30 +637,30 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
       })
     }
 
-    const statementCompoundId = row[prefix + 'basis_statement_compound_id']
-    if (isDefined(statementCompoundId)) {
-      const statementCompoundRow = statementCompoundRowsById[statementCompoundId]
-      if (!statementCompoundRow) {
-        statementCompoundRowsById[statementCompoundId] = {
-          statement_compound_id: statementCompoundId
+    const propositionCompoundId = row[prefix + 'basis_proposition_compound_id']
+    if (isDefined(propositionCompoundId)) {
+      const propositionCompoundRow = propositionCompoundRowsById[propositionCompoundId]
+      if (!propositionCompoundRow) {
+        propositionCompoundRowsById[propositionCompoundId] = {
+          proposition_compound_id: propositionCompoundId
         }
       }
 
-      // Atoms are stored by statement ID because statement compound atoms don't have their own ID
-      let atomsByStatementId = statementCompoundAtomsByCompoundId[statementCompoundId]
-      if (!atomsByStatementId) {
-        statementCompoundAtomsByCompoundId[statementCompoundId] = atomsByStatementId = {}
+      // Atoms are stored by proposition ID because proposition compound atoms don't have their own ID
+      let atomsByPropositionId = propositionCompoundAtomsByCompoundId[propositionCompoundId]
+      if (!atomsByPropositionId) {
+        propositionCompoundAtomsByCompoundId[propositionCompoundId] = atomsByPropositionId = {}
       }
-      if (!has(atomsByStatementId, row[prefix + 'basis_statement_compound_atom_statement_id'])) {
-        const atom = toStatementCompoundAtom({
-          statement_compound_id:     statementCompoundId,
-          statement_id:              row[prefix + 'basis_statement_compound_atom_statement_id'],
-          statement_text:            row[prefix + 'basis_statement_compound_atom_statement_text'],
-          statement_created:         row[prefix + 'basis_statement_compound_atom_statement_created'],
-          statement_creator_user_id: row[prefix + 'basis_statement_compound_atom_statement_creator_user_id'],
-          order_position:            row[prefix + 'basis_statement_compound_atom_order_position'],
+      if (!has(atomsByPropositionId, row[prefix + 'basis_proposition_compound_atom_proposition_id'])) {
+        const atom = toPropositionCompoundAtom({
+          proposition_compound_id:     propositionCompoundId,
+          proposition_id:              row[prefix + 'basis_proposition_compound_atom_proposition_id'],
+          proposition_text:            row[prefix + 'basis_proposition_compound_atom_proposition_text'],
+          proposition_created:         row[prefix + 'basis_proposition_compound_atom_proposition_created'],
+          proposition_creator_user_id: row[prefix + 'basis_proposition_compound_atom_proposition_creator_user_id'],
+          order_position:            row[prefix + 'basis_proposition_compound_atom_order_position'],
         })
-        atomsByStatementId[atom.entity.id] = atom
+        atomsByPropositionId[atom.entity.id] = atom
       }
     }
 
@@ -683,15 +686,15 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
           entity_type:                          row[prefix + 'basis_jbc_atom_entity_type'],
           order_position:                       row[prefix + 'basis_jbc_atom_order_position'],
 
-          statement_id:                row[prefix + 'basis_jbc_atom_statement_id'],
-          statement_text:              row[prefix + 'basis_jbc_atom_statement_text'],
-          statement_created:           row[prefix + 'basis_jbc_atom_statement_created'],
-          statement_creator_user_id:   row[prefix + 'basis_jbc_atom_statement_creator_user_id'],
+          proposition_id:                row[prefix + 'basis_jbc_atom_proposition_id'],
+          proposition_text:              row[prefix + 'basis_jbc_atom_proposition_text'],
+          proposition_created:           row[prefix + 'basis_jbc_atom_proposition_created'],
+          proposition_creator_user_id:   row[prefix + 'basis_jbc_atom_proposition_creator_user_id'],
           source_excerpt_paraphrase_id:                          row[prefix + 'basis_jbc_atom_sep_id'],
-          source_excerpt_paraphrasing_statement_id:              row[prefix + 'basis_jbc_atom_sep_paraphrasing_statement_id'],
-          source_excerpt_paraphrasing_statement_text:            row[prefix + 'basis_jbc_atom_sep_paraphrasing_statement_text'],
-          source_excerpt_paraphrasing_statement_created:         row[prefix + 'basis_jbc_atom_sep_paraphrasing_statement_created'],
-          source_excerpt_paraphrasing_statement_creator_user_id: row[prefix + 'basis_jbc_atom_sep_paraphrasing_statement_creator_user_id'],
+          source_excerpt_paraphrasing_proposition_id:              row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_id'],
+          source_excerpt_paraphrasing_proposition_text:            row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_text'],
+          source_excerpt_paraphrasing_proposition_created:         row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_created'],
+          source_excerpt_paraphrasing_proposition_creator_user_id: row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id'],
           source_excerpt_type:                            row[prefix + 'basis_jbc_atom_sep_source_excerpt_type'],
           source_excerpt_writ_quote_id:                   row[prefix + 'basis_jbc_atom_sep_writ_quote_id'],
           source_excerpt_writ_quote_quote_text:           row[prefix + 'basis_jbc_atom_sep_writ_quote_quote_text'],
@@ -707,11 +710,11 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
       }
     }
 
-    assert(basisWritQuoteId || statementCompoundId || justificationBasisCompoundId, "justification must have a basis")
+    assert(basisWritQuoteId || propositionCompoundId || justificationBasisCompoundId, "justification must have a basis")
   })
 
-  const statementCompoundsById = mapValues(statementCompoundRowsById, (row, id) =>
-    toStatementCompound(row, statementCompoundAtomsByCompoundId[id])
+  const propositionCompoundsById = mapValues(propositionCompoundRowsById, (row, id) =>
+    toPropositionCompound(row, propositionCompoundAtomsByCompoundId[id])
   )
 
   const justificationBasisCompoundsById = mapValues(justificationBasisCompoundRowsById, (row, id) =>
@@ -719,7 +722,7 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
   )
 
   const justificationsById = mapValues(justificationRowsById,
-    row => toJustification(row, null, statementCompoundsById, writQuotesRowsById, justificationBasisCompoundsById))
+    row => toJustification(row, null, propositionCompoundsById, writQuotesRowsById, justificationBasisCompoundsById))
   return [justificationsById, orderedJustificationIds]
 }
 
@@ -857,24 +860,24 @@ function makeWritJustificationClause(writId, justificationColumns) {
   ]
 }
 
-function makeStatementCompoundJustificationClause(statementCompoundId, justificationColumns) {
+function makePropositionCompoundJustificationClause(propositionCompoundId, justificationColumns) {
   const select = toSelect(justificationColumns, 'j')
   const sql = `
     select 
       ${select}
     from 
       justifications j
-        join statement_compounds sc on 
+        join proposition_compounds sc on 
               j.basis_type = $1 
-          and j.basis_id = sc.statement_compound_id
+          and j.basis_id = sc.proposition_compound_id
       where 
             j.deleted is null
         and sc.deleted is null
-        and sc.statement_compound_id = $2 
+        and sc.proposition_compound_id = $2 
   `
   const args = [
-    JustificationBasisType.STATEMENT_COMPOUND,
-    statementCompoundId,
+    JustificationBasisType.PROPOSITION_COMPOUND,
+    propositionCompoundId,
   ]
   return {
     sql,
@@ -912,32 +915,32 @@ function makeSourceExcerptParaphraseJustificationClause(sourceExcerptParaphraseI
   }
 }
 
-function makeStatementJustificationClause(statementId, justificationColumns) {
+function makePropositionJustificationClause(propositionId, justificationColumns) {
   const justificationTableAlias = 'j'
   const select = toSelect(justificationColumns, justificationTableAlias)
   return [
-    // Statement compound statements
+    // Proposition compound propositions
     {
       sql: `
         select 
           ${select}
         from 
           justifications ${justificationTableAlias}
-            join statement_compounds sc on 
+            join proposition_compounds sc on 
                   ${justificationTableAlias}.basis_type = $1 
-              and ${justificationTableAlias}.basis_id = sc.statement_compound_id
-            join statement_compound_atoms sca using (statement_compound_id)
+              and ${justificationTableAlias}.basis_id = sc.proposition_compound_id
+            join proposition_compound_atoms sca using (proposition_compound_id)
           where 
                 ${justificationTableAlias}.deleted is null
             and sc.deleted is null
-            and sca.statement_id = $2
+            and sca.proposition_id = $2
       `,
       args: [
-        JustificationBasisType.STATEMENT_COMPOUND,
-        statementId,
+        JustificationBasisType.PROPOSITION_COMPOUND,
+        propositionId,
       ]
     },
-    // compound justification statements
+    // compound justification propositions
     {
       sql: `
         select 
@@ -948,21 +951,21 @@ function makeStatementJustificationClause(statementId, justificationColumns) {
                   ${justificationTableAlias}.basis_type = $1 
               and ${justificationTableAlias}.basis_id = jbc.justification_basis_compound_id
             join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
-            join statements s on 
+            join propositions s on 
                   jbca.entity_type = $2
-              and jbca.entity_id = s.statement_id
+              and jbca.entity_id = s.proposition_id
           where 
                 ${justificationTableAlias}.deleted is null
             and jbc.deleted is null
-            and s.statement_id = $3
+            and s.proposition_id = $3
       `,
       args: [
         JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-        JustificationBasisCompoundAtomType.STATEMENT,
-        statementId,
+        JustificationBasisCompoundAtomType.PROPOSITION,
+        propositionId,
       ]
     },
-    // paraphrasing statements
+    // paraphrasing propositions
     {
       sql: `
         select 
@@ -976,18 +979,18 @@ function makeStatementJustificationClause(statementId, justificationColumns) {
             join source_excerpt_paraphrases sep on
                   jbca.entity_type = $2
               and jbca.entity_id = sep.source_excerpt_paraphrase_id
-            join statements ps on 
-              sep.paraphrasing_statement_id = ps.statement_id
+            join propositions ps on 
+              sep.paraphrasing_proposition_id = ps.proposition_id
           where 
                 ${justificationTableAlias}.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
-            and ps.statement_id = $3
+            and ps.proposition_id = $3
       `,
       args: [
         JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
         JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-        statementId,
+        propositionId,
       ]
     }
   ]
@@ -1015,12 +1018,12 @@ function makeFilteredJustificationClauses(logger, filters, sorts) {
       return
     }
     switch (filterName) {
-      case 'statementId': {
-        pushAll(clauses, makeStatementJustificationClause(filterValue, columnNames))
+      case 'propositionId': {
+        pushAll(clauses, makePropositionJustificationClause(filterValue, columnNames))
         break
       }
-      case 'statementCompoundId': {
-        clauses.push(makeStatementCompoundJustificationClause(filterValue, columnNames))
+      case 'propositionCompoundId': {
+        clauses.push(makePropositionCompoundJustificationClause(filterValue, columnNames))
         break
       }
       case 'sourceExcerptParaphraseId': {
@@ -1162,7 +1165,7 @@ function getNewJustificationRootPolarity(justification, logger, database) {
   return Promise.resolve()
     .then(() => {
       switch (justification.target.type) {
-        case JustificationTargetType.STATEMENT:
+        case JustificationTargetType.PROPOSITION:
           // root justifications have root polarity equal to their polarity
           return justification.polarity
         case JustificationTargetType.JUSTIFICATION:
@@ -1191,26 +1194,26 @@ function getTargetRootPolarity(logger, database, justification) {
     })
 }
 
-function readStatementCompoundsByIdForRootStatementId(provider, rootStatementId, {userId}) {
-  return provider.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId, {userId})
-    .then( (statementCompoundsById) =>
+function readPropositionCompoundsByIdForRootPropositionId(provider, rootPropositionId, {userId}) {
+  return provider.propositionCompoundsDao.readPropositionCompoundsByIdForRootPropositionId(rootPropositionId, {userId})
+    .then( (propositionCompoundsById) =>
       Promise.all([
-        statementCompoundsById,
-        addRootJustificationCountByPolarity(provider, statementCompoundsById),
+        propositionCompoundsById,
+        addRootJustificationCountByPolarity(provider, propositionCompoundsById),
       ])
     )
-    .then( ([statementCompoundsById]) => statementCompoundsById)
+    .then( ([propositionCompoundsById]) => propositionCompoundsById)
 }
 
-function addRootJustificationCountByPolarity(provider, statementCompoundsById) {
-  return Promise.all(flatMap(statementCompoundsById, (statementCompound) => statementCompound.atoms))
+function addRootJustificationCountByPolarity(provider, propositionCompoundsById) {
+  return Promise.all(flatMap(propositionCompoundsById, (propositionCompound) => propositionCompound.atoms))
     .then( (atoms) => Promise.all(map(atoms, (atom) =>
       Promise.all([
         atom.entity,
-        provider.readRootJustificationCountByPolarityForRootStatementId(atom.entity.id),
+        provider.readRootJustificationCountByPolarityForRootPropositionId(atom.entity.id),
       ])
     )))
-    .then( (statementAndJustificationCounts) => Promise.all(map(statementAndJustificationCounts, ([statement, rootJustificationCountByPolarity]) => {
-      statement.rootJustificationCountByPolarity = rootJustificationCountByPolarity
+    .then( (propositionAndJustificationCounts) => Promise.all(map(propositionAndJustificationCounts, ([proposition, rootJustificationCountByPolarity]) => {
+      proposition.rootJustificationCountByPolarity = rootJustificationCountByPolarity
     })))
 }

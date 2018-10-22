@@ -20,82 +20,82 @@ from writ_quotes wq
   join urls using (url_id)
 order by wq.created desc;
 
--- Dependencies on duplicate statements
+-- Dependencies on duplicate propositions
 with
     duplicate_normal_texts as (
       select
         normal_text,
         row_number() over () as duplicate_number
-      from statements
+      from propositions
       where deleted is null
       group by normal_text
       having count(normal_text) > 1
   )
-  , duplicate_statements as (
-    select s.*, ds.duplicate_number from statements s join duplicate_normal_texts ds using (normal_text) order by s.text, s.statement_id
+  , duplicate_propositions as (
+    select s.*, ds.duplicate_number from propositions s join duplicate_normal_texts ds using (normal_text) order by s.text, s.proposition_id
 )
   , duplicate_justification_basis_compound_atoms as (
     select
       a.*
-      , ds.statement_id as duplicate_statement_id
+      , ds.proposition_id as duplicate_proposition_id
       , ds.duplicate_number
     from justification_basis_compound_atoms a
-      join duplicate_statements ds on a.entity_id = ds.statement_id
-    where a.entity_type = 'STATEMENT'
+      join duplicate_propositions ds on a.entity_id = ds.proposition_id
+    where a.entity_type = 'PROPOSITION'
 )
-  , duplicate_statement_compound_atoms as (
+  , duplicate_proposition_compound_atoms as (
     select
       a.*
-      , ds.statement_id as duplicate_statement_id
+      , ds.proposition_id as duplicate_proposition_id
       , ds.duplicate_number
-    from statement_compound_atoms a
-      join duplicate_statements ds using (statement_id)
+    from proposition_compound_atoms a
+      join duplicate_propositions ds using (proposition_id)
 )
   , duplicate_paraphrases as (
     select
       p.*
-      , ds.statement_id as duplicate_statement_id
+      , ds.proposition_id as duplicate_proposition_id
       , ds.duplicate_number
     from source_excerpt_paraphrases p
-      join duplicate_statements ds on p.paraphrasing_statement_id = ds.statement_id
+      join duplicate_propositions ds on p.paraphrasing_proposition_id = ds.proposition_id
 )
   , duplicate_justification_targets as (
     select
       j.*
-      , ds.statement_id as duplicate_statement_id
+      , ds.proposition_id as duplicate_proposition_id
       , ds.duplicate_number
     from justifications j
-      join duplicate_statements ds on j.target_id = ds.statement_id
-    where j.target_type = 'STATEMENT'
+      join duplicate_propositions ds on j.target_id = ds.proposition_id
+    where j.target_type = 'PROPOSITION'
 )
 select
-    'statement_compound_atom.statement_id' as type
-  , statement_id as id
-  , duplicate_statement_id
+    'proposition_compound_atom.proposition_id' as type
+  , proposition_id as id
+  , duplicate_proposition_id
   , duplicate_number
-from duplicate_statement_compound_atoms
+from duplicate_proposition_compound_atoms
 union
 select
   'justification_basis_compound_atom_id'
   , justification_basis_compound_atom_id
-  , duplicate_statement_id
+  , duplicate_proposition_id
   , duplicate_number
 from duplicate_justification_basis_compound_atoms
 union
 select
-  'paraphrasing_statement_id'
-  , paraphrasing_statement_id
-  , duplicate_statement_id
+  'paraphrasing_proposition_id'
+  , paraphrasing_proposition_id
+  , duplicate_proposition_id
   , duplicate_number
 from duplicate_paraphrases
 union
 select
   'justification_id'
   , justification_id
-  , duplicate_statement_id
+  , duplicate_proposition_id
   , duplicate_number
 from duplicate_justification_targets
-order by duplicate_number, duplicate_statement_id;
+order by duplicate_number, duplicate_proposition_id;
 
 -- Writ quotes using duplicate URLs
 with

@@ -24,20 +24,20 @@ import {
 import {ellipsis} from './characters'
 
 
-export const removeStatementCompoundIds = (statementCompound) => {
-  if (!statementCompound) return statementCompound
-  delete statementCompound.id
+export const removePropositionCompoundIds = (propositionCompound) => {
+  if (!propositionCompound) return propositionCompound
+  delete propositionCompound.id
 
-  forEach(statementCompound.atoms, atom => {
+  forEach(propositionCompound.atoms, atom => {
     delete atom.compoundId
-    removeStatementIds(atom.entity)
+    removePropositionIds(atom.entity)
   })
-  return statementCompound
+  return propositionCompound
 }
 
-export const removeStatementIds = (statement) => {
-  delete statement.id
-  return statement
+export const removePropositionIds = (proposition) => {
+  delete proposition.id
+  return proposition
 }
 
 export const removeWritQuoteIds = (writQuote) => {
@@ -52,8 +52,8 @@ export const removeJustificationBasisCompoundIds = (justificationBasisCompound) 
     delete atom.id
     delete atom.compoundId
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.STATEMENT:
-        removeStatementIds(atom.entity)
+      case JustificationBasisCompoundAtomType.PROPOSITION:
+        removePropositionIds(atom.entity)
         break
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
         removeSourceExcerptParaphraseIds(atom.entity)
@@ -85,8 +85,8 @@ export const removeSourceExcerptParaphraseIds = (sourceExcerptParaphrase) => {
 export const consolidateNewJustificationEntities = (newJustification) => {
   const justification = cloneDeep(newJustification)
   switch (justification.basis.type) {
-    case JustificationBasisType.STATEMENT_COMPOUND:
-      justification.basis.entity = justification.basis.statementCompound
+    case JustificationBasisType.PROPOSITION_COMPOUND:
+      justification.basis.entity = justification.basis.propositionCompound
       break
     case JustificationBasisType.WRIT_QUOTE:
       justification.basis.entity = justification.basis.writQuote
@@ -97,7 +97,7 @@ export const consolidateNewJustificationEntities = (newJustification) => {
     default:
       throw newExhaustedEnumError('JustificationBasisType', justification.basis.type)
   }
-  delete justification.basis.statementCompound
+  delete justification.basis.propositionCompound
   delete justification.basis.writQuote
   delete justification.basis.justificationBasisCompound
 
@@ -108,14 +108,14 @@ export function consolidateNewJustificationBasisCompoundEntities(newJustificatio
   const justificationBasisCompound = cloneDeep(newJustificationBasisCompound)
   justificationBasisCompound.atoms = map(justificationBasisCompound.atoms, atom => {
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.STATEMENT:
-        atom.entity = atom.statement
+      case JustificationBasisCompoundAtomType.PROPOSITION:
+        atom.entity = atom.proposition
         break
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
         atom.entity = consolidateNewSourcExcerptParaphraseEntities(atom.sourceExcerptParaphrase)
         break
     }
-    delete atom.statement
+    delete atom.proposition
     delete atom.sourceExcerptParaphrase
 
     return atom
@@ -159,8 +159,8 @@ export function translateNewJustificationErrors(newJustification, errors) {
       forEach(atomItemErrors, (itemErrors, i) => {
         const atom = newJustification.basis.justificationBasisCompound.atoms[i]
         switch (atom.type) {
-          case JustificationBasisCompoundAtomType.STATEMENT:
-            itemErrors.fieldErrors.statement = itemErrors.fieldErrors.entity
+          case JustificationBasisCompoundAtomType.PROPOSITION:
+            itemErrors.fieldErrors.proposition = itemErrors.fieldErrors.entity
             break
           case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
             itemErrors.fieldErrors.sourceExcerptParaphrase = itemErrors.fieldErrors.entity
@@ -186,8 +186,8 @@ export function translateNewJustificationErrors(newJustification, errors) {
       })
       break
     }
-    case JustificationBasisType.STATEMENT_COMPOUND:
-      basisFieldErrors.statementCompound = errors.fieldErrors.basis.fieldErrors.entity
+    case JustificationBasisType.PROPOSITION_COMPOUND:
+      basisFieldErrors.propositionCompound = errors.fieldErrors.basis.fieldErrors.entity
       break
     case JustificationBasisType.WRIT_QUOTE:
       basisFieldErrors.writQuote = errors.fieldErrors.basis.fieldErrors.entity

@@ -21,11 +21,11 @@ import {
   mainSearchResultsSchema,
   perspectivesSchema,
   sourceExcerptParaphraseSchema,
-  statementSchema,
-  statementsSchema,
-  statementCompoundSchema,
-  statementJustificationsSchema,
-  statementTagVoteSchema,
+  propositionSchema,
+  propositionsSchema,
+  propositionCompoundSchema,
+  propositionJustificationsSchema,
+  propositionTagVoteSchema,
   tagsSchema,
   writQuoteSchema,
   writsSchema,
@@ -40,22 +40,22 @@ export const resourceApiConfigs = {
 
   /* Entity CRUD */
 
-  [api.fetchStatements]: (payload) => {
-    const query = payload.statementIds ?
-      `?statementIds=${join(payload.statementIds, ',')}` :
+  [api.fetchPropositions]: (payload) => {
+    const query = payload.propositionIds ?
+      `?propositionIds=${join(payload.propositionIds, ',')}` :
       ''
     return {
-      endpoint: `statements${query}`,
-      schema: {statements: statementsSchema},
+      endpoint: `propositions${query}`,
+      schema: {propositions: propositionsSchema},
     }
   },
-  [api.fetchStatement]: (payload) => ({
-    endpoint: `statements/${payload.statementId}`,
-    schema: {statement: statementSchema},
+  [api.fetchProposition]: (payload) => ({
+    endpoint: `propositions/${payload.propositionId}`,
+    schema: {proposition: propositionSchema},
   }),
-  [api.fetchStatementCompound]: (payload) => ({
-    endpoint: `statement-compounds/${payload.statementCompoundId}`,
-    schema: {statementCompound: statementCompoundSchema},
+  [api.fetchPropositionCompound]: (payload) => ({
+    endpoint: `proposition-compounds/${payload.propositionCompoundId}`,
+    schema: {propositionCompound: propositionCompoundSchema},
   }),
   [api.fetchSourceExcerptParaphrase]: (payload) => ({
     endpoint: `source-excerpt-paraphrases/${payload.sourceExcerptParaphraseId}`,
@@ -77,21 +77,21 @@ export const resourceApiConfigs = {
     },
     schema: {writQuote: writQuoteSchema},
   }),
-  [api.createStatement]: (payload) => ({
-    endpoint: 'statements',
+  [api.createProposition]: (payload) => ({
+    endpoint: 'propositions',
     fetchInit: {
       method: httpMethods.POST,
       body: payload
     },
-    schema: {statement: statementSchema}
+    schema: {proposition: propositionSchema}
   }),
-  [api.updateStatement]: (payload) => ({
-    endpoint: `statements/${payload.statement.id}`,
-    schema: {statement: statementSchema},
+  [api.updateProposition]: (payload) => ({
+    endpoint: `propositions/${payload.proposition.id}`,
+    schema: {proposition: propositionSchema},
     fetchInit: {
       method: httpMethods.PUT,
       body: {
-        statement: payload.statement
+        proposition: payload.proposition
       }
     },
   }),
@@ -103,8 +103,8 @@ export const resourceApiConfigs = {
     },
     schema: {justification: justificationSchema}
   }),
-  [api.deleteStatement]: (payload) => ({
-    endpoint: `statements/${payload.statement.id}`,
+  [api.deleteProposition]: (payload) => ({
+    endpoint: `propositions/${payload.proposition.id}`,
     fetchInit: {
       method: httpMethods.DELETE,
     },
@@ -122,15 +122,15 @@ export const resourceApiConfigs = {
 
   /* Recents */
 
-  [api.fetchRecentStatements]: (payload) => {
+  [api.fetchRecentPropositions]: (payload) => {
     const queryStringParams = pick(payload, ['continuationToken', 'count'])
     if (!queryStringParams.continuationToken) {
       queryStringParams.sorts = defaultSorts
     }
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: 'statements?' + queryStringParamsString,
-      schema: {statements: statementsSchema},
+      endpoint: 'propositions?' + queryStringParamsString,
+      schema: {propositions: propositionsSchema},
     }
   },
   [api.fetchRecentWrits]: (payload) => {
@@ -175,18 +175,18 @@ export const resourceApiConfigs = {
     requiresRehydrate: true,
   }),
 
-  [api.fetchStatementJustifications]: (payload) => ({
-    endpoint: `statements/${payload.statementId}?include=justifications`,
+  [api.fetchPropositionJustifications]: (payload) => ({
+    endpoint: `propositions/${payload.propositionId}?include=justifications`,
     fetchInit: {
       method: httpMethods.GET,
     },
-    schema: statementJustificationsSchema,
+    schema: propositionJustificationsSchema,
     requiresRehydrate: true
   }),
 
-  [api.fetchTaggedStatements]: (payload) => ({
-    endpoint: `statements?tagId=${payload.tagId}`,
-    schema: {statements: statementsSchema},
+  [api.fetchTaggedPropositions]: (payload) => ({
+    endpoint: `propositions?tagId=${payload.tagId}`,
+    schema: {propositions: propositionsSchema},
     requiresRehydrate: true,
   }),
 
@@ -247,28 +247,28 @@ export const resourceApiConfigs = {
     },
   }),
 
-  [api.tagStatement]: (payload) => ({
-    endpoint: 'statement-tag-votes',
+  [api.tagProposition]: (payload) => ({
+    endpoint: 'proposition-tag-votes',
     fetchInit: {
       method: httpMethods.POST,
       body: {
-        statementTagVote: payload.statementTagVote
+        propositionTagVote: payload.propositionTagVote
       }
     },
-    schema: {statementTagVote: statementTagVoteSchema},
+    schema: {propositionTagVote: propositionTagVoteSchema},
   }),
-  [api.antiTagStatement]: (payload) => ({
-    endpoint: 'statement-tag-votes',
+  [api.antiTagProposition]: (payload) => ({
+    endpoint: 'proposition-tag-votes',
     fetchInit: {
       method: httpMethods.POST,
       body: {
-        statementTagVote: payload.statementTagVote
+        propositionTagVote: payload.propositionTagVote
       }
     },
-    schema: {statementTagVote: statementTagVoteSchema},
+    schema: {propositionTagVote: propositionTagVoteSchema},
   }),
-  [api.unTagStatement]: (payload) => ({
-    endpoint: `statement-tag-votes/${payload.prevStatementTagVote.id}`,
+  [api.unTagProposition]: (payload) => ({
+    endpoint: `proposition-tag-votes/${payload.prevPropositionTagVote.id}`,
     fetchInit: {
       method: httpMethods.DELETE,
     }
@@ -276,10 +276,10 @@ export const resourceApiConfigs = {
 
   /* Suggestions / full-text search */
 
-  [api.fetchStatementTextSuggestions]: (payload) => ({
-    endpoint: `search-statements?searchText=${payload.statementText}`,
-    cancelKey: str(api.fetchStatementTextSuggestions) + '.' + payload.suggestionsKey,
-    schema: statementsSchema,
+  [api.fetchPropositionTextSuggestions]: (payload) => ({
+    endpoint: `search-propositions?searchText=${payload.propositionText}`,
+    cancelKey: str(api.fetchPropositionTextSuggestions) + '.' + payload.suggestionsKey,
+    schema: propositionsSchema,
   }),
   [api.fetchTagNameSuggestions]: (payload) => ({
     endpoint: `search-tags?searchText=${payload.tagName}`,

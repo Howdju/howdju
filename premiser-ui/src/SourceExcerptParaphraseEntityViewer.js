@@ -8,7 +8,7 @@ import {
 
 import EntityViewer from './EntityViewer'
 import SourceExcerptEntityViewer from './SourceExcerptEntityViewer'
-import EditableStatement from './EditableStatement'
+import EditableProposition from './EditableProposition'
 
 import './SourceExcerptParaphraseEntityViewer.scss'
 
@@ -19,15 +19,15 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
       component,
       id,
       sourceExcerptParaphrase,
-      paraphrasingStatementEditorId,
+      paraphrasingPropositionEditorId,
       sourceExcerptEditorId,
       suggestionsKey,
       showStatusText,
       showUrls,
-      trailStatements
+      trailPropositions
     } = this.props
     const {
-      paraphrasingStatement,
+      paraphrasingProposition,
       sourceExcerpt
     } = sourceExcerptParaphrase
     return (
@@ -38,13 +38,13 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
         iconTitle={`Paraphrase (${sourceExcerptDescription(sourceExcerpt)})`}
         entity={
           <div>
-            <EditableStatement
-              id={`${id}-statement`}
-              statement={paraphrasingStatement}
-              editorId={paraphrasingStatementEditorId}
-              suggestionsKey={suggestionsKey + '-paraphrasing-statement'}
+            <EditableProposition
+              id={`${id}-proposition`}
+              proposition={paraphrasingProposition}
+              editorId={paraphrasingPropositionEditorId}
+              suggestionsKey={suggestionsKey + '-paraphrasing-proposition'}
               showStatusText={showStatusText}
-              trailStatements={trailStatements}
+              trailPropositions={trailPropositions}
             />
             <div className="divider-wrapper">
               <Divider className="divider" inset/>
@@ -65,6 +65,6 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
 }
 SourceExcerptParaphraseEntityViewer.propTypes = {
   id: PropTypes.string.isRequired,
-  paraphrasingStatementEditorId: PropTypes.string,
+  paraphrasingPropositionEditorId: PropTypes.string,
   sourceExcerptEditorId: PropTypes.string,
 }

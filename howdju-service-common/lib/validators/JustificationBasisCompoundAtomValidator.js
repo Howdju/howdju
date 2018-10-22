@@ -8,9 +8,9 @@ const {
 
 class JustificationBasisCompoundAtomValidator {
 
-  constructor(statementValidator, sourceExcerptParaphraseValidator) {
-    requireArgs({statementValidator, sourceExcerptParaphraseValidator})
-    this.statementValidator = statementValidator
+  constructor(propositionValidator, sourceExcerptParaphraseValidator) {
+    requireArgs({propositionValidator, sourceExcerptParaphraseValidator})
+    this.propositionValidator = propositionValidator
     this.sourceExcerptParaphraseValidator = sourceExcerptParaphraseValidator
   }
 
@@ -29,8 +29,8 @@ class JustificationBasisCompoundAtomValidator {
       errors.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED)
     } else {
       switch (type) {
-        case JustificationBasisCompoundAtomType.STATEMENT: {
-          errors.fieldErrors.entity = this.statementValidator.validate(atom.entity)
+        case JustificationBasisCompoundAtomType.PROPOSITION: {
+          errors.fieldErrors.entity = this.propositionValidator.validate(atom.entity)
           if (errors.fieldErrors.entity.hasErrors) {
             errors.hasErrors = true
           }

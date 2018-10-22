@@ -126,8 +126,8 @@ class JustificationBranch extends Component {
       case JustificationBasisType.WRIT_QUOTE:
         params.writQuoteId = justificationBasis.entity.id
         break
-      case JustificationBasisType.STATEMENT_COMPOUND:
-        params.statementCompoundId = justificationBasis.entity.id
+      case JustificationBasisType.PROPOSITION_COMPOUND:
+        params.propositionCompoundId = justificationBasis.entity.id
         break
       case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
         params.justificationBasisCompoundId = justificationBasis.entity.id
@@ -155,7 +155,7 @@ class JustificationBranch extends Component {
       isUnCondensed,
       isWindowNarrow,
       showBasisUrls,
-      trailStatements,
+      trailPropositions,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -189,7 +189,7 @@ class JustificationBranch extends Component {
           <ListItem
             primaryText="Use"
             key="use"
-            title="Justify another statement with this basis"
+            title="Justify another proposition with this basis"
             leftIcon={<FontIcon>call_made</FontIcon>}
             component={Link}
             to={this.createJustificationPath()}
@@ -319,7 +319,7 @@ class JustificationBranch extends Component {
                   doShowBasisJustifications={doShowBasisJustifications}
                   isCondensed={isCondensed}
                   isUnCondensed={isUnCondensed}
-                  trailStatements={trailStatements}
+                  trailPropositions={trailPropositions}
                 />
               </div>
             )
@@ -345,7 +345,7 @@ class JustificationBranch extends Component {
           doShowControls={doShowControls}
           showBasisUrls={showBasisUrls}
           menu={menu}
-          trailStatements={trailStatements}
+          trailPropositions={trailPropositions}
           actions={
             <div className="md-cell md-cell--12 actions">
               {actions}

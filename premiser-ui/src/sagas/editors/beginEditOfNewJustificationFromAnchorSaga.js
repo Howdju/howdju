@@ -4,24 +4,24 @@ import {
 } from 'redux-saga/effects'
 
 import {
-  makeNewStatementJustification,
+  makeNewPropositionJustification,
   JustificationBasisType,
   makeNewJustificationBasisCompoundFromWritQuote,
 } from 'howdju-common'
 
 import {editors, flows, str, goto} from '../../actions'
-import CreateStatementPage from '../../CreateStatementPage'
+import CreatePropositionPage from '../../CreatePropositionPage'
 
 export function* beginEditOfNewJustificationFromAnchor() {
   yield takeEvery(str(flows.beginEditOfNewJustificationFromAnchor), function* beginEditOfNewJustificationFromAnchorWorker(action) {
     const {content, source, target} = action.payload
-    const statementJustification = toStatementJustification(content, source, target)
-    yield put(editors.beginEdit(CreateStatementPage.editorType, CreateStatementPage.editorId, statementJustification))
+    const propositionJustification = toPropositionJustification(content, source, target)
+    yield put(editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId, propositionJustification))
     yield put(goto.createJustification())
   })
 }
 
-function toStatementJustification(content, source, target) {
+function toPropositionJustification(content, source, target) {
   const {
     url,
     title: description,
@@ -42,5 +42,5 @@ function toStatementJustification(content, source, target) {
       justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote(writQuote),
     }
   }
-  return makeNewStatementJustification(null, justificationProps)
+  return makeNewPropositionJustification(null, justificationProps)
 }

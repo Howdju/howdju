@@ -19,12 +19,12 @@ const apiErrorCodes = arrayToObject([
   'USER_IS_INACTIVE_ERROR',
 
   /** The request would conflict with one or more other entities
-   * (e.g. a user tries to update one statement's text to a value equal to another statement's text)
+   * (e.g. a user tries to update one proposition's text to a value equal to another proposition's text)
    */
   'ENTITY_CONFLICT',
 
   /** The request would conflict with one or more other users' actions
-   * (e.g. a user tries to edit a statement after other users have added justifications to it)
+   * (e.g. a user tries to edit a proposition after other users have added justifications to it)
    */
   'USER_ACTIONS_CONFLICT',
 

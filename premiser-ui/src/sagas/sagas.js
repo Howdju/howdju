@@ -22,10 +22,10 @@ import {
 } from './appSagas'
 import {logErrors} from './logErrorsSaga'
 import {
-  goHomeIfDeleteStatementWhileViewing,
+  goHomeIfDeletePropositionWhileViewing,
   goTo,
   redirectAfterLogin,
-  redirectHomeFromMissingStatement,
+  redirectHomeFromMissingProposition,
   redirectToLoginWhenUnauthenticated,
   clearAuthTokenWhenUnauthorized,
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
@@ -61,8 +61,8 @@ export default () => all([
   goTo(),
   redirectToLoginWhenUnauthenticated(),
   redirectAfterLogin(),
-  goHomeIfDeleteStatementWhileViewing(),
-  redirectHomeFromMissingStatement(),
+  goHomeIfDeletePropositionWhileViewing(),
+  redirectHomeFromMissingProposition(),
   commitEditorThenView(),
   commitEditThenPutActionOnSuccess(),
   fetchAndBeginEditOfNewJustificationFromBasisSource(),

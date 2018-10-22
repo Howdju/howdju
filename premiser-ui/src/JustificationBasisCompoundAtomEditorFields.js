@@ -13,7 +13,7 @@ import {
 } from 'howdju-common'
 
 import SourceExcerptParaphraseEditorFields from './SourceExcerptParaphraseEditorFields'
-import StatementEditorFields from "./StatementEditorFields"
+import PropositionEditorFields from "./PropositionEditorFields"
 import {
   combineSuggestionsKeys,
   combineNames,
@@ -61,14 +61,14 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
         className="atom-type-controls"
         controls={[
           {
-            value: JustificationBasisCompoundAtomType.STATEMENT,
+            value: JustificationBasisCompoundAtomType.PROPOSITION,
             label: (
               <div className="selection-label">
                 <FontIcon>short_text</FontIcon>
-                {isWindowNarrow && <span className="selection-label--text">Statement</span>}
+                {isWindowNarrow && <span className="selection-label--text">Proposition</span>}
               </div>
             ),
-            title: 'Statement-based clause',
+            title: 'Proposition-based clause',
           },
           {
             value: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
@@ -87,18 +87,18 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
 
     let entityControls
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.STATEMENT: {
-        const entityName = 'statement'
+      case JustificationBasisCompoundAtomType.PROPOSITION: {
+        const entityName = 'proposition'
         const entityEditorFieldsId = combineIds(id, entityName)
         const entityEditorFieldsName = combineNames(name, entityName)
         const entitySuggestionsKey = combineSuggestionsKeys(suggestionsKey, entityName)
-        const entity = atom.statement
-        const entityEditorFieldsErrors = get(errors, 'fieldErrors.statement')
+        const entity = atom.proposition
+        const entityEditorFieldsErrors = get(errors, 'fieldErrors.proposition')
         entityControls = (
-          <StatementEditorFields
+          <PropositionEditorFields
             id={entityEditorFieldsId}
             name={entityEditorFieldsName}
-            statement={entity}
+            proposition={entity}
             disabled={disabled}
             suggestionsKey={entitySuggestionsKey}
             onPropertyChange={onPropertyChange}

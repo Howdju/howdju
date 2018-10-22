@@ -22,7 +22,7 @@ For URLs, need info about:
   * page (claims, how recently changed, changed since stated publish date?, 
   * author/speaker (who is attributed), 
   * editor/domain (who controls the medium, how old is the entity)
-For things with evaluatable textual content, need anchored statements.
+For things with evaluatable textual content, need anchored propositions.
 
 Should I split into /evaluate-sources and /evaluate-urls | /annotate-sources?
 The returned values are so different...  It could also be /evaluate-sources?summary
@@ -63,8 +63,8 @@ POST     /evaluate-sources
 POST      /annotate-sources
 ```
 
-Returns either URL evaluations or anchored statements for that source. Shows
-statements whose anchors can't be attached.  informs API about anchor attachment
+Returns either URL evaluations or anchored propositions for that source. Shows
+propositions whose anchors can't be attached.  informs API about anchor attachment
 failures
 
 ```
@@ -86,7 +86,7 @@ failures
 
 ### Use case: actively fact-check text
 
-"Has anyone evaluated this statement or anything like it?"
+"Has anyone evaluated this proposition or anything like it?"
 
 ```
 POST    /evaluate-text
@@ -165,12 +165,12 @@ Sums the weight vectors of the users who have voted.  The vector is negated
 if the user voted against.
 
 #### Justification scoring
-#### Statement tag scoring
+#### Proposition tag scoring
 
-### Equivalent statements
-Allow us to show justifications from equivalent statements.
+### Equivalent propositions
+Allow us to show justifications from equivalent propositions.
 
-How related to returning equivalent statements to user search? 
+How related to returning equivalent propositions to user search? 
 
 ### Negation detection
 
@@ -178,21 +178,21 @@ How related to returning equivalent statements to user search?
 
 ```
 GET     /search (mainSearch)
-GET     /search-statements
+GET     /search-propositions
 GET     /search-tags
 GET     /search-writs
 
 GET     /tags/:tagId
 
-POST    /statements
-GET     /statements(?sorts&continuationToken&count&statementIds)
-GET     /statements?tagId=:tagId
-GET     /statements/:statementId
-GET     /statements/:statementId?include=justifications
-PUT     /statements/:statementId
-DELETE  /statements/:statementId
+POST    /propositions
+GET     /propositions(?sorts&continuationToken&count&propositionIds)
+GET     /propositions?tagId=:tagId
+GET     /propositions/:propositionId
+GET     /propositions/:propositionId?include=justifications
+PUT     /propositions/:propositionId
+DELETE  /propositions/:propositionId
 
-GET     /statement-compounds/:statementCompoundId
+GET     /proposition-compounds/:propositionCompoundId
 GET     /justification-basis-compounds/:justificationBasisCompoundId
 GET     /source-excerpt-paraphrases/:sourceExcerptParaphraseId
 
@@ -212,11 +212,11 @@ POST    /justification-votes
 DELETE  /justification-votes (deletes votes equivalent to body)
 
 # These votes should have the optional ability to add a justification?
-POST    /statement-tag-votes
-DELETE  /statement-tag-votes/:statementTagVoteId
-POST    /statement-equivalency-votes
-POST    /statement-negation-votes
-POST    /statement-flag-votes (opinion-based, inflammatory, advertising)
+POST    /proposition-tag-votes
+DELETE  /proposition-tag-votes/:propositionTagVoteId
+POST    /proposition-equivalency-votes
+POST    /proposition-negation-votes
+POST    /proposition-flag-votes (opinion-based, inflammatory, advertising)
 POST    /user-profile-flag-vote (inflammatory, impersonating, advertising)
 
 POST    /users

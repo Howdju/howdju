@@ -7,9 +7,9 @@ import FeaturedPerspectivesPage from './FeaturedPerspectivesPage'
 import WhatsNextPage from './WhatsNextPage'
 import RecentActivityPage from './RecentActivityPage'
 import AboutPage from './AboutPage'
-import CreateStatementPage, {CreateStatementPageMode} from './CreateStatementPage'
+import CreatePropositionPage, {CreatePropositionPageMode} from './CreatePropositionPage'
 import LoginPage from './LoginPage'
-import StatementJustificationsPage from './StatementJustificationsPage'
+import PropositionJustificationsPage from './PropositionJustificationsPage'
 import TagPage from './TagPage'
 import IconPage from './IconPage'
 import ToolsPage from './ToolsPage'
@@ -39,18 +39,18 @@ const routes = [
   <Route key="whatsNext" exact path={paths.whatsNext()} component={WhatsNextPage} />,
   <Route key="about" exact path={paths.about()} component={AboutPage} />,
 
-  <Route key="statement" exact path="/s/:statementId/:statementSlug?" component={StatementJustificationsPage} />,
+  <Route key="proposition" exact path="/s/:propositionId/:propositionSlug?" component={PropositionJustificationsPage} />,
   <Route key="tag" exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
   <Route key="searchJustifications" exact path="/search-justifications" component={JustificationsSearchPage} />,
 
-  <Route key="createStatement" exact path="/create-statement" render={props => (
-    <CreateStatementPage {...props} mode={CreateStatementPageMode.CREATE_STATEMENT} />
+  <Route key="createProposition" exact path="/create-proposition" render={props => (
+    <CreatePropositionPage {...props} mode={CreatePropositionPageMode.CREATE_PROPOSITION} />
   )} />,
   <Route key="createJustification" exact path={createJustificationPath} render={props => (
-    <CreateStatementPage {...props} mode={CreateStatementPageMode.CREATE_JUSTIFICATION} />
+    <CreatePropositionPage {...props} mode={CreatePropositionPageMode.CREATE_JUSTIFICATION} />
   )} />,
   <Route key="submit" exact path="/submit" render={props => (
-    <CreateStatementPage {...props} mode={CreateStatementPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING} />
+    <CreatePropositionPage {...props} mode={CreatePropositionPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING} />
   )} />,
 
   <Route key="tools" exact path="/tools" component={ToolsPage} />,

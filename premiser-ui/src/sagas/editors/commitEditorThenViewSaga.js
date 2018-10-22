@@ -18,32 +18,32 @@ import {
 } from "../../actions"
 
 const editorCommitResultGotoActionCreators = {
-  [EditorTypes.STATEMENT]: (entities, result) => {
-    const statement = entities.statements[result.statement]
-    return goto.statement(statement)
+  [EditorTypes.PROPOSITION]: (entities, result) => {
+    const proposition = entities.propositions[result.proposition]
+    return goto.proposition(proposition)
   },
-  [EditorTypes.STATEMENT_JUSTIFICATION]: (entities, result) => {
-    let statementId
-    if (result.statement) {
-      statementId = result.statement
+  [EditorTypes.PROPOSITION_JUSTIFICATION]: (entities, result) => {
+    let propositionId
+    if (result.proposition) {
+      propositionId = result.proposition
     } else {
       assert(() => !!result.justification)
       const justificationId = result.justification
       const justification = entities.justifications[justificationId]
       switch (justification.target.type) {
-        case JustificationTargetType.STATEMENT: {
-          statementId = justification.target.entity.id
+        case JustificationTargetType.PROPOSITION: {
+          propositionId = justification.target.entity.id
           break
         }
         default: {
-          statementId = justification.rootStatement.id
+          propositionId = justification.rootProposition.id
           break
         }
       }
     }
 
-    const statement = entities.statements[statementId]
-    return goto.statement(statement)
+    const proposition = entities.propositions[propositionId]
+    return goto.proposition(proposition)
   },
 }
 

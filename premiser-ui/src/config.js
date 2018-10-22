@@ -18,7 +18,7 @@ const config = {
     'ui.isMobileSiteDisabled',
   ],
   ui: {
-    statementTextMaxLength: 512,
+    propositionTextMaxLength: 512,
     tagNameMaxLength: 64,
     quoteTextMaxLength: 4096,
     writTitleMaxLength: 512,

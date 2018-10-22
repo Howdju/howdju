@@ -10,8 +10,8 @@ exports.PicRegionsDao = class PicRegionsDao {
     this.database = database
   }
 
-  readPicRegionsByIdForRootStatementId() {
-    this.logger.debug('readPicRegionsByIdForRootStatementId is unimplemented')
+  readPicRegionsByIdForRootPropositionId() {
+    this.logger.debug('readPicRegionsByIdForRootPropositionId is unimplemented')
     return {}
   }
 }

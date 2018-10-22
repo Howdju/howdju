@@ -24,20 +24,20 @@ class Paths {
 
   login = () => '/login'
 
-  statement = (statement, trailStatements) => {
-    const {id, slug} = statement
+  proposition = (proposition, trailPropositions) => {
+    const {id, slug} = proposition
     if (!id) {
       return '#'
     }
     const slugPath = slug ?
       '/' + slug :
       ''
-    const query = !isEmpty(trailStatements) ?
-      '?statement-trail=' + join(map(trailStatements, s => s.id), ',') :
+    const query = !isEmpty(trailPropositions) ?
+      '?proposition-trail=' + join(map(trailPropositions, s => s.id), ',') :
       ''
     return `/s/${id}${slugPath}${query}`
   }
-  justification = j => this.statement(j.rootStatement) + '#justification-' + j.id
+  justification = j => this.proposition(j.rootProposition) + '#justification-' + j.id
   writUsages = writ => this.searchJustifications({writId: writ.id})
   writQuoteUsages = (writQuote) => {
     if (!writQuote.id) {

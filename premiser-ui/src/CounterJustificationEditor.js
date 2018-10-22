@@ -9,7 +9,7 @@ import {
 } from 'react-md'
 import get from 'lodash/get'
 
-import StatementCompoundEditorFields from "./StatementCompoundEditorFields"
+import PropositionCompoundEditorFields from "./PropositionCompoundEditorFields"
 import {EditorTypes} from "./reducers/editors"
 import {
   editors,
@@ -35,12 +35,12 @@ class CounterJustificationEditor extends Component {
     this.props.editors.propertyChange(this.editorType, this.props.editorId, properties)
   }
 
-  onAddStatementCompoundAtom = (index) => {
-    this.props.editors.addStatementCompoundAtom(this.editorType, this.props.editorId, index)
+  onAddPropositionCompoundAtom = (index) => {
+    this.props.editors.addPropositionCompoundAtom(this.editorType, this.props.editorId, index)
   }
 
-  onRemoveStatementCompoundAtom = (atom, index) => {
-    this.props.editors.removeStatementCompoundAtom(this.editorType, this.props.editorId, atom, index)
+  onRemovePropositionCompoundAtom = (atom, index) => {
+    this.props.editors.removePropositionCompoundAtom(this.editorType, this.props.editorId, atom, index)
   }
 
   onSubmit = (event) => {
@@ -68,22 +68,22 @@ class CounterJustificationEditor extends Component {
 
 
     const newJustificationErrors = translateNewJustificationErrors(editEntity, errors)
-    const statementCompoundErrors = get(newJustificationErrors, 'fieldErrors.basis.fieldErrors.statementCompound')
-    const statementCompound = get(editEntity, 'basis.statementCompound')
+    const propositionCompoundErrors = get(newJustificationErrors, 'fieldErrors.basis.fieldErrors.propositionCompound')
+    const propositionCompound = get(editEntity, 'basis.propositionCompound')
 
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <StatementCompoundEditorFields
-            statementCompound={statementCompound}
+          <PropositionCompoundEditorFields
+            propositionCompound={propositionCompound}
             id={id}
-            name="basis.statementCompound"
+            name="basis.propositionCompound"
             suggestionsKey={suggestionsKey}
             onPropertyChange={this.onPropertyChange}
             onSubmit={this.onSubmit}
-            onAddStatementCompoundAtom={this.onAddStatementCompoundAtom}
-            onRemoveStatementCompoundAtom={this.onRemoveStatementCompoundAtom}
-            errors={statementCompoundErrors}
+            onAddPropositionCompoundAtom={this.onAddPropositionCompoundAtom}
+            onRemovePropositionCompoundAtom={this.onRemovePropositionCompoundAtom}
+            errors={propositionCompoundErrors}
             disabled={isSaving}
           />
         </CardText>

@@ -74,22 +74,22 @@ data "aws_iam_policy" "AWSLambdaVPCAccessExecutionRole" {
 
 // cf. AWSLambdaBasicExecutionRole or AWSLambdaVPCAccessExecutionRole
 //data "aws_iam_policy_document" "cloudwatch_logs_to_elasticsearch" {
-//  statement {
+//  proposition {
 //    actions = ["ec2:CreateNetworkInterface"]
 //    resources = ["*"]
 //  }
-//  statement {
+//  proposition {
 //    actions = [
 //      "ec2:DescribeNetworkInterfaces",
 //      "ec2:DeleteNetworkInterface"
 //    ]
 //    resources = ["arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:network-interface/*"]
 //  }
-//  statement {
+//  proposition {
 //    actions = ["logs:CreateLogGroup"]
 //    resources = ["arn:aws:logs:${var.aws_region}:${var.aws_account_id}:*"]
 //  }
-//  statement {
+//  proposition {
 //    actions = [
 //      "logs:CreateLogStream",
 //      "logs:PutLogEvents"

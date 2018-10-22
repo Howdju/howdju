@@ -10,8 +10,8 @@ describe('validation', () => {
     const routedRequest = {
       pathParameters: ['abc']
     }
-    const readStatementRoute = routesById['readStatement']
-    const validationErrors = getValidationErrors(routedRequest, readStatementRoute.validators)
+    const readPropositionRoute = routesById['readProposition']
+    const validationErrors = getValidationErrors(routedRequest, readPropositionRoute.validators)
     expect(validationErrors.length).toBe(1)
     expect(validationErrors[0]).toEqual({
       message: idValidator.message,

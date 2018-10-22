@@ -15,11 +15,11 @@ const {
 const {
   toPerspective,
   toJustification,
-  toStatementCompound,
+  toPropositionCompound,
   toJustificationBasisCompound,
   toJustificationBasisCompoundAtom,
-  toStatement,
-  toStatementCompoundAtom,
+  toProposition,
+  toPropositionCompoundAtom,
   toUrl,
   toWrit,
   toWritQuote,
@@ -36,15 +36,15 @@ exports.PerspectivesDao = class PerspectivesDao {
   /** All justifications must be included in the perspective.
    *
    * See <premiser-processing>/src/perspectiveService for a more complicated approach of inferring included justifications
-   * across root statement boundaries, but that has the added difficulties of multiple paths from perspective-justification
-   * to perspective-statement.
+   * across root proposition boundaries, but that has the added difficulties of multiple paths from perspective-justification
+   * to perspective-proposition.
    */
   readFeaturedPerspectivesWithVotes({userId}) {
     const args = [
-      JustificationBasisType.STATEMENT_COMPOUND,
+      JustificationBasisType.PROPOSITION_COMPOUND,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomType.STATEMENT,
+      JustificationBasisCompoundAtomType.PROPOSITION,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptType.WRIT_QUOTE,
     ]
@@ -69,17 +69,17 @@ exports.PerspectivesDao = class PerspectivesDao {
       select 
           p.perspective_id
         , p.creator_user_id         as perspective_creator_user_id
-        , p.statement_id            as perspective_statement_id
-        , ps.text                   as perspective_statement_text
-        , ps.creator_user_id        as perspective_statement_creator_user_id
-        , ps.created                as perspective_statement_created
+        , p.proposition_id            as perspective_proposition_id
+        , ps.text                   as perspective_proposition_text
+        , ps.creator_user_id        as perspective_proposition_creator_user_id
+        , ps.created                as perspective_proposition_created
         , j.*
-        , sc.statement_compound_id  as basis_statement_compound_id
-        , sca.statement_id          as basis_statement_compound_atom_statement_id
-        , sca.order_position        as basis_statement_compound_atom_order_position
-        , scas.text                 as basis_statement_compound_atom_statement_text
-        , scas.created              as basis_statement_compound_atom_statement_created
-        , scas.creator_user_id      as basis_statement_compound_atom_statement_creator_user_id
+        , sc.proposition_compound_id  as basis_proposition_compound_id
+        , sca.proposition_id          as basis_proposition_compound_atom_proposition_id
+        , sca.order_position        as basis_proposition_compound_atom_order_position
+        , scas.text                 as basis_proposition_compound_atom_proposition_text
+        , scas.created              as basis_proposition_compound_atom_proposition_created
+        , scas.creator_user_id      as basis_proposition_compound_atom_proposition_creator_user_id
         , wq.writ_quote_id          as basis_writ_quote_id
         , wq.quote_text             as basis_writ_quote_quote_text
         , wq.created                as basis_writ_quote_created
@@ -96,16 +96,16 @@ exports.PerspectivesDao = class PerspectivesDao {
         , jbca.entity_type                             as basis_jbc_atom_entity_type
         , jbca.order_position                          as basis_jbc_atom_order_position
         
-        , jbcas.statement_id                           as basis_jbc_atom_statement_id
-        , jbcas.text                                   as basis_jbc_atom_statement_text
-        , jbcas.created                                as basis_jbc_atom_statement_created
-        , jbcas.creator_user_id                        as basis_jbc_atom_statement_creator_user_id
+        , jbcas.proposition_id                           as basis_jbc_atom_proposition_id
+        , jbcas.text                                   as basis_jbc_atom_proposition_text
+        , jbcas.created                                as basis_jbc_atom_proposition_created
+        , jbcas.creator_user_id                        as basis_jbc_atom_proposition_creator_user_id
         
         , sep.source_excerpt_paraphrase_id             as basis_jbc_atom_sep_id
-        , sep_s.statement_id                           as basis_jbc_atom_sep_paraphrasing_statement_id
-        , sep_s.text                                   as basis_jbc_atom_sep_paraphrasing_statement_text
-        , sep_s.created                                as basis_jbc_atom_sep_paraphrasing_statement_created
-        , sep_s.creator_user_id                        as basis_jbc_atom_sep_paraphrasing_statement_creator_user_id
+        , sep_s.proposition_id                           as basis_jbc_atom_sep_paraphrasing_proposition_id
+        , sep_s.text                                   as basis_jbc_atom_sep_paraphrasing_proposition_text
+        , sep_s.created                                as basis_jbc_atom_sep_paraphrasing_proposition_created
+        , sep_s.creator_user_id                        as basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id
         , sep.source_excerpt_type                      as basis_jbc_atom_sep_source_excerpt_type
         , sep_wq.writ_quote_id                         as basis_jbc_atom_sep_writ_quote_id
         , sep_wq.quote_text                            as basis_jbc_atom_sep_writ_quote_quote_text
@@ -118,9 +118,9 @@ exports.PerspectivesDao = class PerspectivesDao {
         
         ${votesSelectSql}
       from perspectives p 
-        join statements ps on 
+        join propositions ps on 
               p.is_featured
-          and p.statement_id = ps.statement_id
+          and p.proposition_id = ps.proposition_id
           and p.deleted is null
           and ps.deleted is null
         join perspective_justifications pj on
@@ -129,28 +129,28 @@ exports.PerspectivesDao = class PerspectivesDao {
               j.deleted is null
           and pj.justification_id = j.justification_id
           
-        left join statement_compounds sc on
+        left join proposition_compounds sc on
               j.basis_type = $1
-          and j.basis_id = sc.statement_compound_id
+          and j.basis_id = sc.proposition_compound_id
           and sc.deleted is null
-        left join statement_compound_atoms sca on
-              sc.statement_compound_id = sca.statement_compound_id
-        left join statements scas on
-              sca.statement_id = scas.statement_id
+        left join proposition_compound_atoms sca on
+              sc.proposition_compound_id = sca.proposition_compound_id
+        left join propositions scas on
+              sca.proposition_id = scas.proposition_id
           and scas.deleted is null
           
         left join justification_basis_compounds jbc on
               j.basis_type = $3
           and j.basis_id = jbc.justification_basis_compound_id
         left join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
-        left join statements jbcas on
+        left join propositions jbcas on
               jbca.entity_type = $4
-          and jbca.entity_id = jbcas.statement_id
+          and jbca.entity_id = jbcas.proposition_id
         left join source_excerpt_paraphrases sep on
               jbca.entity_type = $5
           and jbca.entity_id = sep.source_excerpt_paraphrase_id
-        left join statements sep_s on
-              sep.paraphrasing_statement_id = sep_s.statement_id
+        left join propositions sep_s on
+              sep.paraphrasing_proposition_id = sep_s.proposition_id
         left join writ_quotes sep_wq on
               sep.source_excerpt_type = $6
           and sep.source_excerpt_id = sep_wq.writ_quote_id
@@ -181,11 +181,11 @@ exports.PerspectivesDao = class PerspectivesDao {
     const {
       perspectivesById,
       justificationsById,
-      statementCompoundsById,
-      statementCompoundAtomsByCompoundId,
+      propositionCompoundsById,
+      propositionCompoundAtomsByCompoundId,
       justificationBasisCompoundsById,
       justificationBasisCompoundAtomsByCompoundId,
-      statementsById,
+      propositionsById,
       writQuotesById,
       writsById,
       urlsByWritQuoteId,
@@ -194,11 +194,11 @@ exports.PerspectivesDao = class PerspectivesDao {
     this._connectEverything(
       perspectivesById,
       justificationsById,
-      statementCompoundsById,
-      statementCompoundAtomsByCompoundId,
+      propositionCompoundsById,
+      propositionCompoundAtomsByCompoundId,
       justificationBasisCompoundsById,
       justificationBasisCompoundAtomsByCompoundId,
-      statementsById,
+      propositionsById,
       writQuotesById,
       writsById,
       urlsByWritQuoteId
@@ -210,11 +210,11 @@ exports.PerspectivesDao = class PerspectivesDao {
   _indexRows(rows) {
     const perspectivesById = {}
     const justificationsById = {}
-    const statementCompoundsById = {}
-    const statementCompoundAtomsByCompoundId = {}
+    const propositionCompoundsById = {}
+    const propositionCompoundAtomsByCompoundId = {}
     const justificationBasisCompoundsById = {}
     const justificationBasisCompoundAtomsByCompoundId = {}
-    const statementsById = {}
+    const propositionsById = {}
     const writQuotesById = {}
     const writsById = {}
     const urlsById = {}
@@ -227,16 +227,16 @@ exports.PerspectivesDao = class PerspectivesDao {
         perspectivesById[row.perspective_id] = perspective = toPerspective({
           perspective_id: row.perspective_id,
           creator_user_id: row.perspective_creator_user_id,
-          statement_id: row.perspective_statement_id,
+          proposition_id: row.perspective_proposition_id,
         })
       }
-      let perspectiveStatement = statementsById[perspective.statement.id]
-      if (!perspectiveStatement) {
-        statementsById[perspective.statement.id] = toStatement({
-          statement_id: row.perspective_statement_id,
-          text: row.perspective_statement_text,
-          creator_user_id: row.perspective_statement_creator_user_id,
-          created: row.perspectivce_statement_created,
+      let perspectiveProposition = propositionsById[perspective.proposition.id]
+      if (!perspectiveProposition) {
+        propositionsById[perspective.proposition.id] = toProposition({
+          proposition_id: row.perspective_proposition_id,
+          text: row.perspective_proposition_text,
+          creator_user_id: row.perspective_proposition_creator_user_id,
+          created: row.perspectivce_proposition_created,
         })
       }
 
@@ -245,32 +245,32 @@ exports.PerspectivesDao = class PerspectivesDao {
         justificationsById[row.justification_id] = toJustification(row)
       }
 
-      if (row.basis_statement_compound_id) {
-        let statementCompound = statementCompoundsById[row.basis_statement_compound_id]
-        if (!statementCompound) {
-          statementCompoundsById[row.basis_statement_compound_id] = statementCompound = toStatementCompound({
-            statement_compound_id: row.basis_statement_compound_id
+      if (row.basis_proposition_compound_id) {
+        let propositionCompound = propositionCompoundsById[row.basis_proposition_compound_id]
+        if (!propositionCompound) {
+          propositionCompoundsById[row.basis_proposition_compound_id] = propositionCompound = toPropositionCompound({
+            proposition_compound_id: row.basis_proposition_compound_id
           })
         }
 
-        let statementCompoundAtoms = statementCompoundAtomsByCompoundId[statementCompound.id]
-        if (!statementCompoundAtoms) {
-          statementCompoundAtomsByCompoundId[statementCompound.id] = statementCompoundAtoms = []
+        let propositionCompoundAtoms = propositionCompoundAtomsByCompoundId[propositionCompound.id]
+        if (!propositionCompoundAtoms) {
+          propositionCompoundAtomsByCompoundId[propositionCompound.id] = propositionCompoundAtoms = []
         }
-        const statementCompoundAtom = toStatementCompoundAtom({
-          statement_compound_id: statementCompound.id,
-          statement_id: row.basis_statement_compound_atom_statement_id,
-          order_position: row.basis_statement_compound_atom_order_position,
+        const propositionCompoundAtom = toPropositionCompoundAtom({
+          proposition_compound_id: propositionCompound.id,
+          proposition_id: row.basis_proposition_compound_atom_proposition_id,
+          order_position: row.basis_proposition_compound_atom_order_position,
         })
-        statementCompoundAtoms.push(statementCompoundAtom)
+        propositionCompoundAtoms.push(propositionCompoundAtom)
 
-        const statement = statementsById[statementCompoundAtom.entity.id]
-        if (!statement) {
-          statementsById[statementCompoundAtom.entity.id] = toStatement({
-            statement_id: statementCompoundAtom.entity.id,
-            text: row.basis_statement_compound_atom_statement_text,
-            creator_user_id: row.basis_statement_compound_atom_statement_creator_user_id,
-            created: row.basis_statement_compound_atom_statement_created,
+        const proposition = propositionsById[propositionCompoundAtom.entity.id]
+        if (!proposition) {
+          propositionsById[propositionCompoundAtom.entity.id] = toProposition({
+            proposition_id: propositionCompoundAtom.entity.id,
+            text: row.basis_proposition_compound_atom_proposition_text,
+            creator_user_id: row.basis_proposition_compound_atom_proposition_creator_user_id,
+            created: row.basis_proposition_compound_atom_proposition_created,
           })
         }
       }
@@ -297,15 +297,15 @@ exports.PerspectivesDao = class PerspectivesDao {
             entity_type:                          row['basis_jbc_atom_entity_type'],
             order_position:                       row['basis_jbc_atom_order_position'],
 
-            statement_id:                row['basis_jbc_atom_statement_id'],
-            statement_text:              row['basis_jbc_atom_statement_text'],
-            statement_created:           row['basis_jbc_atom_statement_created'],
-            statement_creator_user_id:   row['basis_jbc_atom_statement_creator_user_id'],
+            proposition_id:                row['basis_jbc_atom_proposition_id'],
+            proposition_text:              row['basis_jbc_atom_proposition_text'],
+            proposition_created:           row['basis_jbc_atom_proposition_created'],
+            proposition_creator_user_id:   row['basis_jbc_atom_proposition_creator_user_id'],
             source_excerpt_paraphrase_id:                          row['basis_jbc_atom_sep_id'],
-            source_excerpt_paraphrasing_statement_id:              row['basis_jbc_atom_sep_paraphrasing_statement_id'],
-            source_excerpt_paraphrasing_statement_text:            row['basis_jbc_atom_sep_paraphrasing_statement_text'],
-            source_excerpt_paraphrasing_statement_created:         row['basis_jbc_atom_sep_paraphrasing_statement_created'],
-            source_excerpt_paraphrasing_statement_creator_user_id: row['basis_jbc_atom_sep_paraphrasing_statement_creator_user_id'],
+            source_excerpt_paraphrasing_proposition_id:              row['basis_jbc_atom_sep_paraphrasing_proposition_id'],
+            source_excerpt_paraphrasing_proposition_text:            row['basis_jbc_atom_sep_paraphrasing_proposition_text'],
+            source_excerpt_paraphrasing_proposition_created:         row['basis_jbc_atom_sep_paraphrasing_proposition_created'],
+            source_excerpt_paraphrasing_proposition_creator_user_id: row['basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id'],
             source_excerpt_type:                            row['basis_jbc_atom_sep_source_excerpt_type'],
             source_excerpt_writ_quote_id:                   row['basis_jbc_atom_sep_writ_quote_id'],
             source_excerpt_writ_quote_quote_text:           row['basis_jbc_atom_sep_writ_quote_quote_text'],
@@ -363,11 +363,11 @@ exports.PerspectivesDao = class PerspectivesDao {
     return {
       perspectivesById,
       justificationsById,
-      statementCompoundsById,
-      statementCompoundAtomsByCompoundId,
+      propositionCompoundsById,
+      propositionCompoundAtomsByCompoundId,
       justificationBasisCompoundsById,
       justificationBasisCompoundAtomsByCompoundId,
-      statementsById,
+      propositionsById,
       writQuotesById,
       writsById,
       urlsByWritQuoteId,
@@ -377,31 +377,31 @@ exports.PerspectivesDao = class PerspectivesDao {
   _connectEverything(
     perspectivesById,
     justificationsById,
-    statementCompoundsById,
-    statementCompoundAtomsByCompoundId,
+    propositionCompoundsById,
+    propositionCompoundAtomsByCompoundId,
     justificationBasisCompoundsById,
     justificationBasisCompoundAtomsByCompoundId,
-    statementsById,
+    propositionsById,
     writQuotesById,
     writsById,
     urlsByWritQuoteId
   ) {
     forEach(perspectivesById, p => {
-      p.statement = statementsById[p.statement.id]
+      p.proposition = propositionsById[p.proposition.id]
     })
 
     forEach(justificationsById, j => {
 
-      j.rootStatement = statementsById[j.rootStatement.id]
+      j.rootProposition = propositionsById[j.rootProposition.id]
 
       switch (j.target.type) {
-        case JustificationTargetType.STATEMENT: {
-          const targetStatement = statementsById[j.target.entity.id]
-          j.target.entity = targetStatement
-          if (!targetStatement.justifications) {
-            targetStatement.justifications = []
+        case JustificationTargetType.PROPOSITION: {
+          const targetProposition = propositionsById[j.target.entity.id]
+          j.target.entity = targetProposition
+          if (!targetProposition.justifications) {
+            targetProposition.justifications = []
           }
-          targetStatement.justifications.push(j)
+          targetProposition.justifications.push(j)
         }
           break
         case JustificationTargetType.JUSTIFICATION: {
@@ -415,8 +415,8 @@ exports.PerspectivesDao = class PerspectivesDao {
       }
 
       switch (j.basis.type) {
-        case JustificationBasisType.STATEMENT_COMPOUND: {
-          j.basis.entity = statementCompoundsById[j.basis.entity.id]
+        case JustificationBasisType.PROPOSITION_COMPOUND: {
+          j.basis.entity = propositionCompoundsById[j.basis.entity.id]
           break
         }
         case JustificationBasisType.WRIT_QUOTE: {
@@ -434,12 +434,12 @@ exports.PerspectivesDao = class PerspectivesDao {
       assert(isTruthy(j.basis.entity))
     })
 
-    forEach(statementCompoundsById, (sc) => {
-      sc.atoms = statementCompoundAtomsByCompoundId[sc.id]
+    forEach(propositionCompoundsById, (sc) => {
+      sc.atoms = propositionCompoundAtomsByCompoundId[sc.id]
     })
-    forEach(statementCompoundAtomsByCompoundId, scas =>
+    forEach(propositionCompoundAtomsByCompoundId, scas =>
       forEach(scas, (sca) => {
-        sca.entity = statementsById[sca.entity.id]
+        sca.entity = propositionsById[sca.entity.id]
       })
     )
 

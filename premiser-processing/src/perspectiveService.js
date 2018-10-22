@@ -10,17 +10,17 @@ const {
   JustificationTargetType,
 } = require('howdju-common')
 const {toJustification} = require('../orm')
-const statementsDao = require('./statementsDao')
+const propositionsDao = require('./propositionsDao')
 const {groupRootJustifications} = require('./util')
-const statementCompoundsDao = require('./statementCompoundsDao')
+const propositionCompoundsDao = require('./propositionCompoundsDao')
 const writQuotesDao = require('./writQuotesDao')
 
 
 class PerspectivesDao {
-  constructor(database, statementsDao, statementCompoundsDao, writQuotesDao) {
+  constructor(database, propositionsDao, propositionCompoundsDao, writQuotesDao) {
     this.database = database
-    this.statementsDao = statementsDao
-    this.statementCompoundsDao = statementCompoundsDao
+    this.propositionsDao = propositionsDao
+    this.propositionCompoundsDao = propositionCompoundsDao
     this.writQuotesDao = writQuotesDao
   }
 
@@ -68,23 +68,23 @@ class PerspectivesDao {
         }
         return transitiveRowsPromise
       })
-      .then(rows => this._addStatementAndMapPerspectives(rows))
+      .then(rows => this._addPropositionAndMapPerspectives(rows))
   }
 
-  /** Search up to maxDepth jumps, via statement compounds, from the perspective's justifications
-   * to find any justifications also targeting the perspective's statement
+  /** Search up to maxDepth jumps, via proposition compounds, from the perspective's justifications
+   * to find any justifications also targeting the perspective's proposition
    *
    * To allow us to include justifications in the perspective that are not directly rooted in the
-   * perspective's statement.
+   * perspective's proposition.
    *
-   * How to also go through counters?  If we ever get to a justification whose root statement is the perspective's
-   * statement, then it is deterministic to find a path
+   * How to also go through counters?  If we ever get to a justification whose root proposition is the perspective's
+   * proposition, then it is deterministic to find a path
    */
   _readFeaturedPerspectiveJustificationTransitiveJustifications(userId, targetDepth, maxDepth, rows) {
     const args = [
       userId,
-      JustificationTargetType.STATEMENT,
-      JustificationBasisType.STATEMENT_COMPOUND,
+      JustificationTargetType.PROPOSITION,
+      JustificationBasisType.PROPOSITION_COMPOUND,
     ]
     const votesSelectSql = userId ? `
         , v.justification_vote_id
@@ -100,20 +100,20 @@ class PerspectivesDao {
         ` :
       ''
     const transitiveSql = map(range(1, targetDepth+1), currentDepth => `
-      join statements s${currentDepth} on
-            j${currentDepth-1}.target_id = s${currentDepth}.statement_id
+      join propositions s${currentDepth} on
+            j${currentDepth-1}.target_id = s${currentDepth}.proposition_id
         and j${currentDepth-1}.target_type = $2
         and s${currentDepth}.deleted is null
-      join statement_compound_atoms sca${currentDepth} on
-            s${currentDepth}.statement_id = sca${currentDepth}.statement_compound_id
-      join statement_compounds sc${currentDepth} on
-            sca${currentDepth}.statement_compound_id = sc${currentDepth}.statement_compound_id
+      join proposition_compound_atoms sca${currentDepth} on
+            s${currentDepth}.proposition_id = sca${currentDepth}.proposition_compound_id
+      join proposition_compounds sc${currentDepth} on
+            sca${currentDepth}.proposition_compound_id = sc${currentDepth}.proposition_compound_id
         and sc${currentDepth}.deleted is null
       join justifications j${currentDepth} on
-            sc${currentDepth}.statement_compound_id = j${currentDepth}.target_id
+            sc${currentDepth}.proposition_compound_id = j${currentDepth}.target_id
         and j${currentDepth}.basis_type = $3
         and j${currentDepth}.deleted is null
-        and p.statement_id = j${currentDepth}.root_statement_id
+        and p.proposition_id = j${currentDepth}.root_proposition_id
         
     `)
     const sql = `
@@ -146,7 +146,7 @@ class PerspectivesDao {
 
   /** Starting from the perspective's justifications, read countered justifications until there are no more.
    *
-   * BUG: this only works if the justifications are guaranteed to be rooted in the perspective's statement.  Otherwise
+   * BUG: this only works if the justifications are guaranteed to be rooted in the perspective's proposition.  Otherwise
    * we could just be grabbing counters that have nothing to do with the perspective.
    *
    * We should only use the other query
@@ -191,13 +191,13 @@ class PerspectivesDao {
         if (newRows.length > 0) {
           return this._readFeaturedPerspectivesCounteredJustifications(userId, targetHeight + 1, rows.concat(newRows))
         }
-        return this._addStatementAndMapPerspectives(rows)
+        return this._addPropositionAndMapPerspectives(rows)
       })
   }
 
-  _addStatementAndMapPerspectives(rows) {
+  _addPropositionAndMapPerspectives(rows) {
     const perspectivesById = {}
-    const rootStatementIdByPerspectiveId = {}
+    const rootPropositionIdByPerspectiveId = {}
     forEach(rows, row => {
       let perspective = perspectivesById[row.perspective_id]
       if (!perspective) {
@@ -206,34 +206,34 @@ class PerspectivesDao {
       if (row.perspective_creator_user_id) {
         perspective.creatorUserId = row.perspective_creator_user_id
       }
-      if (!rootStatementIdByPerspectiveId[perspective.id]) {
-        rootStatementIdByPerspectiveId[perspective.id] = row.root_statement_id
+      if (!rootPropositionIdByPerspectiveId[perspective.id]) {
+        rootPropositionIdByPerspectiveId[perspective.id] = row.root_proposition_id
       }
     })
 
-    return Promise.all(map(rootStatementIdByPerspectiveId, (rootStatementId, perspectiveId) =>
+    return Promise.all(map(rootPropositionIdByPerspectiveId, (rootPropositionId, perspectiveId) =>
       Promise.all([
-        this.statementCompoundsDao.readStatementCompoundsByIdForRootStatementId(rootStatementId),
-        this.writQuotesDao.readWritQuotesByIdForRootStatementId(rootStatementId),
+        this.propositionCompoundsDao.readPropositionCompoundsByIdForRootPropositionId(rootPropositionId),
+        this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootPropositionId),
       ])
         .then( ([
-          statementCompoundsById,
+          propositionCompoundsById,
           writQuotesById
         ]) => {
-          const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(rootStatementId, rows)
+          const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(rootPropositionId, rows)
           const justifications = map(rootJustifications, j =>
-            toJustification(j, counterJustificationsByJustificationId, statementCompoundsById, writQuotesById))
+            toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById))
           return Promise.props({
             perspectiveId,
-            statement: this.statementsDao.readStatementForId(rootStatementId),
+            proposition: this.propositionsDao.readPropositionForId(rootPropositionId),
             justifications,
           })
         })
     ))
-      .then( rootStatementAndPerspectiveIds => {
-        return map(rootStatementAndPerspectiveIds, ({perspectiveId, statement, justifications}) => {
+      .then( rootPropositionAndPerspectiveIds => {
+        return map(rootPropositionAndPerspectiveIds, ({perspectiveId, proposition, justifications}) => {
           const perspective = perspectivesById[perspectiveId]
-          perspective.statement = statement
+          perspective.proposition = proposition
           perspective.justifications = justifications
           return perspective
         })
@@ -241,4 +241,4 @@ class PerspectivesDao {
   }
 }
 
-module.exports = new PerspectivesDao(statementsDao, statementCompoundsDao, writQuotesDao)
+module.exports = new PerspectivesDao(propositionsDao, propositionCompoundsDao, writQuotesDao)

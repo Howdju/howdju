@@ -12,8 +12,8 @@ import {
 } from 'howdju-common'
 
 import t, {
-  DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE,
-  MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
+  DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE,
+  MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE,
 } from '../texts'
 import paths from "../paths"
 import mainSearcher from '../mainSearcher'
@@ -33,12 +33,12 @@ import {isActivePath, routeIds} from '../routes'
 import {tryWaitOnRehydrate} from './appSagas'
 
 
-export function* goHomeIfDeleteStatementWhileViewing() {
-  yield takeEvery(str(api.deleteStatement.response), function* goHomeIfDeleteStatementWhileViewingWorker(action) {
+export function* goHomeIfDeletePropositionWhileViewing() {
+  yield takeEvery(str(api.deleteProposition.response), function* goHomeIfDeletePropositionWhileViewingWorker(action) {
     if (!action.error) {
       const routerLocation = history.location
-      if (routerLocation.pathname === paths.statement(action.meta.requestPayload.statement)) {
-        yield put(ui.addToast(t(DELETE_STATEMENT_SUCCESS_TOAST_MESSAGE)))
+      if (routerLocation.pathname === paths.proposition(action.meta.requestPayload.proposition)) {
+        yield put(ui.addToast(t(DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE)))
         yield put(push(paths.home()))
       }
     }
@@ -104,12 +104,12 @@ export function* goTo() {
       yield put(push(mainSearchPath))
     }
 
-    yield put(api.fetchStatementsSearch(mainSearchText))
+    yield put(api.fetchPropositionsSearch(mainSearchText))
   })
 
-  yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {
-    const {statement} = action.payload
-    yield put(push(paths.statement(statement)))
+  yield takeEvery(str(goto.proposition), function* goToPropositionWorker(action) {
+    const {proposition} = action.payload
+    yield put(push(paths.proposition(proposition)))
   })
 
   yield takeEvery(str(goto.tag), function* goToTagWorker(action) {
@@ -120,18 +120,18 @@ export function* goTo() {
   })
 }
 
-export function* redirectHomeFromMissingStatement() {
-  yield takeEvery(str(api.fetchStatementJustifications.response), function* leaveMissingStatementWorker(action) {
+export function* redirectHomeFromMissingProposition() {
+  yield takeEvery(str(api.fetchPropositionJustifications.response), function* leaveMissingPropositionWorker(action) {
     if (action.error) {
       const routerLocation = history.location
-      // Try to determine whether we are on the page for a statement that was not found
-      const path = paths.statement({id: action.meta.requestPayload.statementId})
+      // Try to determine whether we are on the page for a proposition that was not found
+      const path = paths.proposition({id: action.meta.requestPayload.propositionId})
       if (
         action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND &&
         // startsWith because we don't have a slug
         routerLocation.pathname.startsWith(path)
       ) {
-        yield put(ui.addToast(t(MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE)))
+        yield put(ui.addToast(t(MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE)))
         yield put(push(paths.home()))
       }
     }
@@ -143,7 +143,7 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
     yield* tryWaitOnRehydrate()
     const isAuthenticated = isTruthy(yield select(selectAuthToken))
     const doesPathRequireAuthentication = () => some([
-      routeIds.createStatement,
+      routeIds.createProposition,
       routeIds.submit,
     ], isActivePath)
     if (!isAuthenticated && doesPathRequireAuthentication()) {

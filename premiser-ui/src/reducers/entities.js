@@ -36,34 +36,34 @@ import {api} from '../actions'
 
 export default handleActions({
   [combineActions(
-    api.fetchStatement.response,
-    api.fetchStatements.response,
-    api.fetchRecentStatements.response,
+    api.fetchProposition.response,
+    api.fetchPropositions.response,
+    api.fetchRecentPropositions.response,
     api.fetchRecentWrits.response,
     api.fetchRecentWritQuotes.response,
-    api.fetchStatementJustifications.response,
+    api.fetchPropositionJustifications.response,
     api.fetchFeaturedPerspectives.response,
     api.fetchJustificationsSearch.response,
     api.fetchRecentJustifications.response,
     api.fetchWritQuote.response,
-    api.createStatement.response,
-    api.updateStatement.response,
+    api.createProposition.response,
+    api.updateProposition.response,
     api.updateWritQuote.response,
     api.fetchMainSearchSuggestions.response,
-    api.fetchStatementTextSuggestions.response,
+    api.fetchPropositionTextSuggestions.response,
     api.fetchWritTitleSuggestions.response,
     api.fetchMainSearchResults.response,
     api.fetchTagNameSuggestions.response,
-    api.tagStatement.response,
-    api.antiTagStatement.response,
+    api.tagProposition.response,
+    api.antiTagProposition.response,
     api.fetchTag.response,
-    api.fetchTaggedStatements.response,
+    api.fetchTaggedPropositions.response,
   )]: {
     next: (state, action) => {
       const updates = map([
         ['perspectives'],
-        ['statements', entityAssignWithCustomizer],
-        ['statementCompounds'],
+        ['propositions', entityAssignWithCustomizer],
+        ['propositionCompounds'],
         ['justifications', justificationsCustomizer()],
         ['justificationVotes'],
         ['writQuotes', stubSkippingCustomizer('quoteText')],
@@ -71,16 +71,16 @@ export default handleActions({
         ['sourceExcerptParaphrases'],
         ['justificationBasisCompounds'],
         ['tags'],
-        ['statementTagVotes'],
+        ['propositionTagVotes'],
       ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
       if (action.payload.entities.justifications) {
-        const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
-        nonEmptyUpdates.push({justificationsByRootStatementId: mergeWith(
+        const justificationsByRootPropositionId = indexRootJustificationsByRootPropositionId(action.payload.entities.justifications)
+        nonEmptyUpdates.push({justificationsByRootPropositionId: mergeWith(
           {},
-          state.justificationsByRootStatementId,
-          justificationsByRootStatementId,
+          state.justificationsByRootPropositionId,
+          justificationsByRootPropositionId,
           unionArraysDistinctIdsCustomizer
         )})
       }
@@ -95,27 +95,27 @@ export default handleActions({
       return state
     }
   },
-  [api.fetchStatementJustifications.response]: {
+  [api.fetchPropositionJustifications.response]: {
     throw: (state, action) => {
-      // If a statement is not found (e.g., another user deleted it), then remove it.
+      // If a proposition is not found (e.g., another user deleted it), then remove it.
       if (action.httpStatusCode === httpStatusCodes.NOT_FOUND) {
         return {
           ...state,
-          statements: pickBy(state.statements, (s, id) => id !== action.meta.statementId)
+          propositions: pickBy(state.propositions, (s, id) => id !== action.meta.propositionId)
         }
       }
       return state
     }
   },
-  [api.deleteStatement.response]: {
+  [api.deleteProposition.response]: {
     next: (state, action) => ({
       ...state,
-      statements: pickBy(state.statements, (s, id) => id !== action.meta.requestPayload.statement.id )
+      propositions: pickBy(state.propositions, (s, id) => id !== action.meta.requestPayload.proposition.id )
     })
   },
   [api.createJustification.response]: {
     next: (state, action) => {
-      const justificationsByRootStatementId = indexRootJustificationsByRootStatementId(action.payload.entities.justifications)
+      const justificationsByRootPropositionId = indexRootJustificationsByRootPropositionId(action.payload.entities.justifications)
 
       // if counter, add to counter justifications
       const justificationId = action.payload.result.justification
@@ -134,8 +134,8 @@ export default handleActions({
         state,
         action.payload.entities,
         counteredJustifications,
-        // TODO this doesn't seem right; should be {justifications: {1: ..., 2: ...}}, but this would be like {justificationByRootStatementId: {1: ..., 2: ...}}
-        {justificationsByRootStatementId},
+        // TODO this doesn't seem right; should be {justifications: {1: ..., 2: ...}}, but this would be like {justificationByRootPropositionId: {1: ..., 2: ...}}
+        {justificationsByRootPropositionId},
         unionArraysDistinctIdsCustomizer,
       )
     }
@@ -143,9 +143,9 @@ export default handleActions({
   [api.deleteJustification.response]: {
     next: (state, action) => {
       const deletedJustification = action.meta.requestPayload.justification
-      const justificationsByRootStatementId = cloneDeep(state.justificationsByRootStatementId)
-      justificationsByRootStatementId[deletedJustification.rootStatement.id] =
-        filter(justificationsByRootStatementId[deletedJustification.rootStatement.id], id => id !== deletedJustification.id)
+      const justificationsByRootPropositionId = cloneDeep(state.justificationsByRootPropositionId)
+      justificationsByRootPropositionId[deletedJustification.rootProposition.id] =
+        filter(justificationsByRootPropositionId[deletedJustification.rootProposition.id], id => id !== deletedJustification.id)
 
       // If the deleted justification was a counter-justification, remove it from the target justification's counterJustifications
       let justifications = state.justifications
@@ -161,7 +161,7 @@ export default handleActions({
       return {
         ...state,
         justifications: pickBy(justifications, (j, id) => +id !== deletedJustification.id ),
-        justificationsByRootStatementId
+        justificationsByRootPropositionId
       }
     }
   },
@@ -235,33 +235,33 @@ export default handleActions({
   },
 
   [combineActions(
-    api.tagStatement,
-    api.antiTagStatement,
-  )]: optimisticStatementTagVote,
+    api.tagProposition,
+    api.antiTagProposition,
+  )]: optimisticPropositionTagVote,
   [combineActions(
-    api.unTagStatement,
-  )]: optimisticStatementTagUnvote,
+    api.unTagProposition,
+  )]: optimisticPropositionTagUnvote,
   [combineActions(
-    api.tagStatement.response,
-    api.antiTagStatement.response,
+    api.tagProposition.response,
+    api.antiTagProposition.response,
   )]: {
-    next: replaceOptimisticStatementTagVote
+    next: replaceOptimisticPropositionTagVote
   },
   [combineActions(
-    api.tagStatement.response,
-    api.antiTagStatement.response,
-    api.unTagStatement.response,
+    api.tagProposition.response,
+    api.antiTagProposition.response,
+    api.unTagProposition.response,
   )]: {
-    throw: revertOptimisticStatementTagVote
+    throw: revertOptimisticPropositionTagVote
   },
 }, {
-  statements: {},
-  statementCompounds: {},
+  propositions: {},
+  propositionCompounds: {},
   writs: {},
   writQuotes: {},
   justificationVotes: {},
   justifications: {},
-  justificationsByRootStatementId: {},
+  justificationsByRootPropositionId: {},
   perspectives: {},
   tags: {},
 })
@@ -306,23 +306,23 @@ export function unionArraysDistinctIdsCustomizer(destVal, srcVal) {
   return undefined // tells lodash to use its default method
 }
 
-export function indexRootJustificationsByRootStatementId(justificationsById) {
+export function indexRootJustificationsByRootPropositionId(justificationsById) {
   const justifications = values(justificationsById)
   const rootJustifications = filter(justifications, j =>
     // TODO do we need a more thorough approach to ensuring that only fully entities are present?
     // I'd like to send/receive them as stubs, and denormalize them somewhere standard
     // Some justifications that come back are stubs and will lack relations like .target
     j.target &&
-    j.target.type === JustificationTargetType.STATEMENT &&
-    j.target.entity.id === j.rootStatement
+    j.target.type === JustificationTargetType.PROPOSITION &&
+    j.target.entity.id === j.rootProposition
   )
-  let rootJustificationsByRootStatementId = groupBy(rootJustifications, j => j.rootStatement)
-  rootJustificationsByRootStatementId = mapValues(rootJustificationsByRootStatementId, justifications => map(justifications, j => j.id))
-  // for (let statementId of Object.keys(justificationsByRootStatementId)) {
-  //   justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => j.id)
-  //   // justificationsByRootStatementId[statementId] = map(justificationsByRootStatementId[statementId], j => normalize(j, justificationSchema).result)
+  let rootJustificationsByRootPropositionId = groupBy(rootJustifications, j => j.rootProposition)
+  rootJustificationsByRootPropositionId = mapValues(rootJustificationsByRootPropositionId, justifications => map(justifications, j => j.id))
+  // for (let propositionId of Object.keys(justificationsByRootPropositionId)) {
+  //   justificationsByRootPropositionId[propositionId] = map(justificationsByRootPropositionId[propositionId], j => j.id)
+  //   // justificationsByRootPropositionId[propositionId] = map(justificationsByRootPropositionId[propositionId], j => normalize(j, justificationSchema).result)
   // }
-  return rootJustificationsByRootStatementId
+  return rootJustificationsByRootPropositionId
 }
 
 /** Returning undefined from a customizer to assignWith invokes its default behavior */
@@ -383,133 +383,133 @@ function createEntityUpdate(state, payloadEntities, key, customizer) {
   return null
 }
 
-function optimisticStatementTagVote(state, action) {
+function optimisticPropositionTagVote(state, action) {
   const {
-    statementTagVote: optimisticStatementTagVote,
-    prevStatementTagVote
+    propositionTagVote: optimisticPropositionTagVote,
+    prevPropositionTagVote
   } = action.payload
 
-  const statementId = optimisticStatementTagVote.statement.id
-  const statement = state.statements[statementId]
+  const propositionId = optimisticPropositionTagVote.proposition.id
+  const proposition = state.propositions[propositionId]
 
-  const optimisticStatementTagVotes = concat(
-    reject(statement.statementTagVotes, vote =>
-      vote === prevStatementTagVote ||
-      vote === get(prevStatementTagVote, 'id')
+  const optimisticPropositionTagVotes = concat(
+    reject(proposition.propositionTagVotes, vote =>
+      vote === prevPropositionTagVote ||
+      vote === get(prevPropositionTagVote, 'id')
     ),
-    [optimisticStatementTagVote]
+    [optimisticPropositionTagVote]
   )
 
-  const optimisticTag = optimisticStatementTagVote.tag
-  const isAlreadyTagged = some(statement.tags, tagId =>
+  const optimisticTag = optimisticPropositionTagVote.tag
+  const isAlreadyTagged = some(proposition.tags, tagId =>
     tagId === optimisticTag.id ||
     get(state.tags[tagId], 'name') === optimisticTag.name
   )
   const optimisticTags = isAlreadyTagged ?
-    statement.tags :
-    concat(statement.tags,  optimisticStatementTagVote.tag)
+    proposition.tags :
+    concat(proposition.tags,  optimisticPropositionTagVote.tag)
 
-  const optimisticStatement = {
-    ...statement,
-    statementTagVotes: optimisticStatementTagVotes,
+  const optimisticProposition = {
+    ...proposition,
+    propositionTagVotes: optimisticPropositionTagVotes,
     tags: optimisticTags,
   }
 
   return {
     ...state,
-    statements: {
-      ...state.statements,
-      [statementId]: optimisticStatement,
+    propositions: {
+      ...state.propositions,
+      [propositionId]: optimisticProposition,
     },
   }
 }
 
-function optimisticStatementTagUnvote(state, action) {
+function optimisticPropositionTagUnvote(state, action) {
   const {
-    prevStatementTagVote,
+    prevPropositionTagVote,
   } = action.payload
   const {
-    statement: {id: statementId}
-  } = prevStatementTagVote
-  const statement = state.statements[statementId]
+    proposition: {id: propositionId}
+  } = prevPropositionTagVote
+  const proposition = state.propositions[propositionId]
 
-  const optimisticStatementTagVotes = reject(statement.statementTagVotes, stv =>
-    stv === prevStatementTagVote ||
-    stv === prevStatementTagVote.id
+  const optimisticPropositionTagVotes = reject(proposition.propositionTagVotes, stv =>
+    stv === prevPropositionTagVote ||
+    stv === prevPropositionTagVote.id
   )
-  const optimisticStatement = {
-    ...statement,
-    statementTagVotes: optimisticStatementTagVotes
+  const optimisticProposition = {
+    ...proposition,
+    propositionTagVotes: optimisticPropositionTagVotes
   }
 
   return {
     ...state,
-    statements: {
-      ...state.statements,
-      [statementId]: optimisticStatement,
+    propositions: {
+      ...state.propositions,
+      [propositionId]: optimisticProposition,
     },
   }
 }
 
-function replaceOptimisticStatementTagVote(state, action) {
+function replaceOptimisticPropositionTagVote(state, action) {
   const {
-    statementTagVote: optimisticStatementTagVote,
+    propositionTagVote: optimisticPropositionTagVote,
   } = action.meta.requestPayload
-  const statementTagVote = action.payload.entities.statementTagVotes[action.payload.result.statementTagVote]
+  const propositionTagVote = action.payload.entities.propositionTagVotes[action.payload.result.propositionTagVote]
 
-  const optimisticStatement = state.statements[statementTagVote.statement.id]
-  const statementTagVotes = map(optimisticStatement.statementTagVotes, stv =>
-    stv === optimisticStatementTagVote ? statementTagVote.id : stv
+  const optimisticProposition = state.propositions[propositionTagVote.proposition.id]
+  const propositionTagVotes = map(optimisticProposition.propositionTagVotes, stv =>
+    stv === optimisticPropositionTagVote ? propositionTagVote.id : stv
   )
-  const tags = map(optimisticStatement.tags, tag =>
-    // statementTagVote.tag will actually be the ID
-    tag === optimisticStatementTagVote.tag ? statementTagVote.tag : tag
+  const tags = map(optimisticProposition.tags, tag =>
+    // propositionTagVote.tag will actually be the ID
+    tag === optimisticPropositionTagVote.tag ? propositionTagVote.tag : tag
   )
-  const statement = {...optimisticStatement, statementTagVotes, tags}
+  const proposition = {...optimisticProposition, propositionTagVotes, tags}
 
   return {
     ...state,
-    statements: {
-      ...state.statements,
-      [statement.id]: statement,
+    propositions: {
+      ...state.propositions,
+      [proposition.id]: proposition,
     },
   }
 }
 
-function revertOptimisticStatementTagVote(state, action) {
+function revertOptimisticPropositionTagVote(state, action) {
   const {
-    statementTagVote: optimisticStatementTagVote,
-    prevStatementTagVote,
+    propositionTagVote: optimisticPropositionTagVote,
+    prevPropositionTagVote,
   } = action.meta.requestPayload
   // untagging has no optimistic vote, only a previous vote
-  const statementId = get(optimisticStatementTagVote, 'statement.id', get(prevStatementTagVote, 'statement.id'))
-  if (!statementId) {
+  const propositionId = get(optimisticPropositionTagVote, 'proposition.id', get(prevPropositionTagVote, 'proposition.id'))
+  if (!propositionId) {
     // This shouldn't ever happen...
     return
   }
 
-  const optimisticStatement = state.statements[statementId]
-  const revertedStatementTagVotes = without(optimisticStatement.statementTagVotes, optimisticStatementTagVote)
-  if (prevStatementTagVote && prevStatementTagVote.id) {
-    revertedStatementTagVotes.push(prevStatementTagVote.id)
+  const optimisticProposition = state.propositions[propositionId]
+  const revertedPropositionTagVotes = without(optimisticProposition.propositionTagVotes, optimisticPropositionTagVote)
+  if (prevPropositionTagVote && prevPropositionTagVote.id) {
+    revertedPropositionTagVotes.push(prevPropositionTagVote.id)
   }
   // Most of the normalized tags will be IDs.  But if it was added optimistically, it will be an object, and it will
   //  be equal to the tag of the optimistic vote
-  const revertedTags = optimisticStatementTagVote ?
-    reject(optimisticStatement.tags, tagId => tagId === optimisticStatementTagVote.tag) :
-    optimisticStatement.tags
+  const revertedTags = optimisticPropositionTagVote ?
+    reject(optimisticProposition.tags, tagId => tagId === optimisticPropositionTagVote.tag) :
+    optimisticProposition.tags
 
-  const revertedStatement = {
-    ...optimisticStatement,
-    statementTagVotes: revertedStatementTagVotes,
+  const revertedProposition = {
+    ...optimisticProposition,
+    propositionTagVotes: revertedPropositionTagVotes,
     tags: revertedTags
   }
 
   return {
     ...state,
-    statements: {
-      ...state.statements,
-      [statementId]: revertedStatement,
+    propositions: {
+      ...state.propositions,
+      [propositionId]: revertedProposition,
     },
   }
 }

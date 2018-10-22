@@ -14,10 +14,10 @@ const {
   PerspectivesDao,
   PicRegionsDao,
   SourceExcerptParaphrasesDao,
-  StatementsDao,
-  StatementCompoundsDao,
-  StatementTagsDao,
-  StatementTagVotesDao,
+  PropositionsDao,
+  PropositionCompoundsDao,
+  PropositionTagsDao,
+  PropositionTagVotesDao,
   TagsDao,
   UserExternalIdsDao,
   UserGroupsDao,
@@ -38,13 +38,13 @@ exports.init = function init(provider) {
   const writsDao = new WritsDao(logger, database)
   const jobHistoryDao = new JobHistoryDao(database)
   const justificationScoresDao = new JustificationScoresDao(database)
-  const statementCompoundsDao = new StatementCompoundsDao(logger, database)
-  const statementsDao = new StatementsDao(logger, database)
+  const propositionCompoundsDao = new PropositionCompoundsDao(logger, database)
+  const propositionsDao = new PropositionsDao(logger, database)
   const picRegionsDao = new PicRegionsDao(logger, database)
   const vidSegmentsDao = new VidSegmentsDao(logger, database)
-  const sourceExcerptParaphrasesDao = new SourceExcerptParaphrasesDao(logger, database, statementsDao, writQuotesDao, picRegionsDao, vidSegmentsDao)
+  const sourceExcerptParaphrasesDao = new SourceExcerptParaphrasesDao(logger, database, propositionsDao, writQuotesDao, picRegionsDao, vidSegmentsDao)
   const justificationBasisCompoundsDao = new JustificationBasisCompoundsDao(logger, database, sourceExcerptParaphrasesDao)
-  const justificationsDao = new JustificationsDao(logger, database, statementCompoundsDao, writQuotesDao, justificationBasisCompoundsDao)
+  const justificationsDao = new JustificationsDao(logger, database, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao)
   const permissionsDao = new PermissionsDao(logger, database)
   const perspectivesDao = new PerspectivesDao(logger, database)
   const userExternalIdsDao = new UserExternalIdsDao(database)
@@ -52,8 +52,8 @@ exports.init = function init(provider) {
   const userPermissionsDao = new UserPermissionsDao(database)
   const usersDao = new UsersDao(logger, database)
   const justificationVotesDao = new JustificationVotesDao(database)
-  const statementTagVotesDao = new StatementTagVotesDao(logger, database)
-  const statementTagsDao = new StatementTagsDao(logger, database)
+  const propositionTagVotesDao = new PropositionTagVotesDao(logger, database)
+  const propositionTagsDao = new PropositionTagsDao(logger, database)
   const tagsDao = new TagsDao(logger, database)
 
   assign(provider, {
@@ -68,10 +68,10 @@ exports.init = function init(provider) {
     perspectivesDao,
     picRegionsDao,
     sourceExcerptParaphrasesDao,
-    statementCompoundsDao,
-    statementsDao,
-    statementTagsDao,
-    statementTagVotesDao,
+    propositionCompoundsDao,
+    propositionsDao,
+    propositionTagsDao,
+    propositionTagVotesDao,
     tagsDao,
     urlsDao,
     userExternalIdsDao,

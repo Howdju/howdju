@@ -30,7 +30,7 @@ exports.UrlsDao = class UrlsDao {
       })
   }
 
-  readUrlsByWritQuoteIdForRootStatementId(rootStatementId) {
+  readUrlsByWritQuoteIdForRootPropositionId(rootPropositionId) {
     const sql = `
         select 
             wq.writ_quote_id
@@ -43,7 +43,7 @@ exports.UrlsDao = class UrlsDao {
             join writ_quote_urls wqu using (writ_quote_id)
             join urls u USING (url_id)
           where
-                j.root_statement_id = $1
+                j.root_proposition_id = $1
             and j.deleted is null
             and wq.deleted is null
             and wqu.deleted is null 
@@ -70,7 +70,7 @@ exports.UrlsDao = class UrlsDao {
               
             join urls u USING (url_id)
           where 
-                j.root_statement_id = $1
+                j.root_proposition_id = $1
             and j.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
@@ -79,7 +79,7 @@ exports.UrlsDao = class UrlsDao {
             and u.deleted is null
     `
     return this.database.query(sql, [
-      rootStatementId,
+      rootPropositionId,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,

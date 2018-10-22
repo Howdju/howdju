@@ -10,24 +10,24 @@ const {
   newExhaustedEnumError,
 } = require('./commonErrors')
 
-exports.decircularizeStatementCompoundAtom = (statementCompoundAtom) => {
-  statementCompoundAtom.entity = exports.decircularizeStatement(statementCompoundAtom.entity)
-  return statementCompoundAtom
+exports.decircularizePropositionCompoundAtom = (propositionCompoundAtom) => {
+  propositionCompoundAtom.entity = exports.decircularizeProposition(propositionCompoundAtom.entity)
+  return propositionCompoundAtom
 }
 
-exports.decircularizeStatementCompound = (statementCompound) => {
-  statementCompound.atoms = map(statementCompound.atoms, exports.decircularizeStatementCompoundAtom)
-  return statementCompound
+exports.decircularizePropositionCompound = (propositionCompound) => {
+  propositionCompound.atoms = map(propositionCompound.atoms, exports.decircularizePropositionCompoundAtom)
+  return propositionCompound
 }
 
 exports.decircularizeJustification = (justification) => {
-  if (justification.rootStatement.id) {
-    justification.rootStatement = {id: justification.rootStatement.id}
+  if (justification.rootProposition.id) {
+    justification.rootProposition = {id: justification.rootProposition.id}
   }
   justification.counterJustifications = map(justification.counterJustifications, exports.decircularizeJustification)
 
   switch (justification.target.type) {
-    case JustificationTargetType.STATEMENT:
+    case JustificationTargetType.PROPOSITION:
       if (justification.target.entity.id) {
         justification.target.entity = {id: justification.target.entity.id}
       }
@@ -42,8 +42,8 @@ exports.decircularizeJustification = (justification) => {
   }
 
   switch (justification.basis.type) {
-    case JustificationBasisType.STATEMENT_COMPOUND: {
-      justification.basis.entity = exports.decircularizeStatementCompound(justification.basis.entity)
+    case JustificationBasisType.PROPOSITION_COMPOUND: {
+      justification.basis.entity = exports.decircularizePropositionCompound(justification.basis.entity)
     }
       break
     case JustificationBasisType.WRIT_QUOTE:
@@ -60,8 +60,8 @@ exports.decircularizeJustification = (justification) => {
 
 exports.decircularizeJustificationBasisCompoundAtom = (atom) => {
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.STATEMENT:
-      atom.entity = exports.decircularizeStatement(atom.entity)
+    case JustificationBasisCompoundAtomType.PROPOSITION:
+      atom.entity = exports.decircularizeProposition(atom.entity)
       break
     case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
       atom.entity = exports.decircularizeSourceExcerptParaphrase(atom.entity)
@@ -73,7 +73,7 @@ exports.decircularizeJustificationBasisCompoundAtom = (atom) => {
 }
 
 exports.decircularizeSourceExcerptParaphrase = (sourceExcerptParaphrase) => {
-  sourceExcerptParaphrase.paraphrasingStatement = exports.decircularizeStatement(sourceExcerptParaphrase.paraphrasingStatement)
+  sourceExcerptParaphrase.paraphrasingProposition = exports.decircularizeProposition(sourceExcerptParaphrase.paraphrasingProposition)
   sourceExcerptParaphrase.sourceExcerpt = exports.decircularizeSourceExcerpt(sourceExcerptParaphrase.sourceExcerpt)
   return sourceExcerptParaphrase
 }
@@ -83,14 +83,14 @@ exports.decircularizeSourceExcerpt = (sourceExcerpt) => {
   return sourceExcerpt
 }
 
-exports.decircularizeStatement = (statement) => {
-  if (statement.justifications) {
-    statement.justifications = map(statement.justifications, exports.decircularizeJustification)
+exports.decircularizeProposition = (proposition) => {
+  if (proposition.justifications) {
+    proposition.justifications = map(proposition.justifications, exports.decircularizeJustification)
   }
-  return statement
+  return proposition
 }
 
 exports.decircularizePerspective = (perspective) => {
-  perspective.statement = module.exports.decircularizeStatement(perspective.statement)
+  perspective.proposition = module.exports.decircularizeProposition(perspective.proposition)
   return perspective
 }

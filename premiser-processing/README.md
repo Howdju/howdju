@@ -15,18 +15,18 @@ Run the commands in the container:
 
 ```
 # build and update the lambda function
-ld=statement-tag-scorer
+ld=proposition-tag-scorer
   docker run --rm lambda-build bash -c \
     "source \$HOME/.bashrc && yarn build-lambda-function --lambdaDir $ld && yarn update-lambda-function-code --lambdaDir $ld"
 
 # publish a lambda function version
 desc=$(git log -1 --format='%aI %h %s')
-ld=statement-tag-scorer
+ld=proposition-tag-scorer
   docker run --rm lambda-build bash -c \
     "source \$HOME/.bashrc && yarn publish-lambda-function-version --lambdaDir $ld --versionDescription '$desc'"
 
 # update the lambda function alias
-ld=statement-tag-scorer
+ld=proposition-tag-scorer
 an=pre-prod
 nt=4
   docker run --rm lambda-build bash -c \
@@ -40,7 +40,7 @@ of the Lambda function):
 
 ```
 cd premiser-processing
-ld=statement-tag-scorer
+ld=proposition-tag-scorer
   docker run --rm lambda-build bash -c \
     "source \$HOME/.bashrc && yarn build-lambda-function --lambdaDir $ld && yarn upload-lambda-function-zip --lambdaDir $ld"
 ```
@@ -57,7 +57,7 @@ terraform apply
 (I haven't tested the commands below yet)
 
 ```
-ld=statement-tag-scorer
+ld=proposition-tag-scorer
   docker run --name lambda_build--rm lambda-build bash -c \
     "source \$HOME/.bashrc && yarn build-lambda-function --lambdaDir $ld && bash" && \
   docker cp lambda_build:/howdju/premiser-processing/dist/lambda-functions/$ld/$ld.zip $ld.zip

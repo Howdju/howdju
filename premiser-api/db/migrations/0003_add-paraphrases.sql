@@ -7,12 +7,12 @@ create table justification_basis_compounds (
   deleted timestamp
 );
 
--- For now, we can mix statements or paraphrasing statements.  A future type of justification basis might be Text, but
+-- For now, we can mix propositions or paraphrasing propositions.  A future type of justification basis might be Text, but
 -- I'm not sure that it will be mixed with other types, since it will be long and doing its own thing.
 create table justification_basis_compound_atoms (
   justification_basis_compound_atom_id serial,
   justification_basis_compound_id integer,
-  entity_type varchar(64), -- STATEMENT or SOURCE_EXCERPT_PARAPHRASE
+  entity_type varchar(64), -- PROPOSITION or SOURCE_EXCERPT_PARAPHRASE
   entity_id integer,
   order_position integer
 );

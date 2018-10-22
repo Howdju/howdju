@@ -1,10 +1,10 @@
 export const suggestionKeys = {
-  createStatementPageStatement: 'createStatementPageStatement',
-  createStatementPageJustification: 'createStatementPageJustification',
+  createPropositionPageProposition: 'createPropositionPageProposition',
+  createPropositionPageJustification: 'createPropositionPageJustification',
   counterJustificationEditor: targetJustificationId => `counterJustificationEditor_${targetJustificationId}`,
-  statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions: 'statementJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions',
+  propositionJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions: 'propositionJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions',
   justificationBasisEditor: justification => `justificationBasisEditor-${justification.id}-${justification.basis.type}-${justification.basis.entity.id}`,
-  statementJustificationsPage_statementEditor: 'statementJustificationsPage_statementEditor',
+  propositionJustificationsPage_propositionEditor: 'propositionJustificationsPage_propositionEditor',
 }
 
 export default {

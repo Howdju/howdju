@@ -5,14 +5,14 @@ const {
   modelErrorCodes,
 } = require('howdju-common')
 
-const {StatementValidator} = require('./StatementValidator')
+const {PropositionValidator} = require('./PropositionValidator')
 const {SourceExcerptValidator} = require('./SourceExcerptValidator')
 
 class SourceExcerptParaphraseValidator {
 
-  constructor(statementValidator, sourceExcerptValidator) {
-    requireArgs({statementValidator, sourceExcerptValidator})
-    this.statementValidator = statementValidator
+  constructor(propositionValidator, sourceExcerptValidator) {
+    requireArgs({propositionValidator, sourceExcerptValidator})
+    this.propositionValidator = propositionValidator
     this.sourceExcerptValidator = sourceExcerptValidator
   }
 
@@ -25,9 +25,9 @@ class SourceExcerptParaphraseValidator {
       return errors
     }
 
-    const paraphrasingStatement = get(sourceExcerptParaphrase, 'paraphrasingStatement')
-    errors.fieldErrors.paraphrasingStatement = this.statementValidator.validate(paraphrasingStatement)
-    if (errors.fieldErrors.paraphrasingStatement.hasErrors) {
+    const paraphrasingProposition = get(sourceExcerptParaphrase, 'paraphrasingProposition')
+    errors.fieldErrors.paraphrasingProposition = this.propositionValidator.validate(paraphrasingProposition)
+    if (errors.fieldErrors.paraphrasingProposition.hasErrors) {
       errors.hasErrors = true
     }
 
@@ -44,7 +44,7 @@ SourceExcerptParaphraseValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    paraphrasingStatement: StatementValidator.blankErrors(),
+    paraphrasingProposition: PropositionValidator.blankErrors(),
     sourceExcerpt: SourceExcerptValidator.blankErrors(),
   }
 })

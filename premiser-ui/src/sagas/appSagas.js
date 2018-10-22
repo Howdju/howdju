@@ -98,7 +98,7 @@ export function* resetTagPage() {
     if (tagId) {
       const tagPageTagId = yield select(selectTagPageTagId)
       if (tagId !== tagPageTagId) {
-        yield put(ui.clearTaggedStatements())
+        yield put(ui.clearTaggedPropositions())
       }
     }
   })

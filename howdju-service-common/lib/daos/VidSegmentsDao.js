@@ -10,8 +10,8 @@ exports.VidSegmentsDao = class VidSegmentsDao {
     this.database = database
   }
 
-  readVidSegmentsByIdForRootStatementId() {
-    this.logger.debug('readVidSegmentsByIdForRootStatementId is unimplemented')
+  readVidSegmentsByIdForRootPropositionId() {
+    this.logger.debug('readVidSegmentsByIdForRootPropositionId is unimplemented')
     return {}
   }
 }

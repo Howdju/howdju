@@ -6,7 +6,7 @@ import {
   newExhaustedEnumError,
 } from 'howdju-common'
 
-import StatementEntityViewer from './StatementEntityViewer'
+import PropositionEntityViewer from './PropositionEntityViewer'
 import SourceExcerptParaphraseEntityViewer from './SourceExcerptParaphraseEntityViewer'
 
 export default class JustificationBasisCompoundAtomViewer extends Component {
@@ -15,29 +15,29 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
       id,
       atom,
       component,
-      statementEditorId,
-      paraphrasingStatementEditorId,
+      propositionEditorId,
+      paraphrasingPropositionEditorId,
       sourceExcerptEditorId,
       doShowControls,
       showStatusText,
       showUrls,
-      trailStatements,
+      trailPropositions,
     } = this.props
 
     const entityViewerId = `${id}-entity`
 
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.STATEMENT:
+      case JustificationBasisCompoundAtomType.PROPOSITION:
         return (
-          <StatementEntityViewer
+          <PropositionEntityViewer
             component={component}
             id={entityViewerId}
-            statement={atom.entity}
-            editorId={statementEditorId}
-            suggestionsKey={`${id}-statement-suggestions`}
+            proposition={atom.entity}
+            editorId={propositionEditorId}
+            suggestionsKey={`${id}-proposition-suggestions`}
             doShowControls={doShowControls}
             showStatusText={showStatusText}
-            trailStatements={trailStatements}
+            trailPropositions={trailPropositions}
           />
         )
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
@@ -46,13 +46,13 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
             component={component}
             id={entityViewerId}
             sourceExcerptParaphrase={atom.entity}
-            paraphrasingStatementEditorId={paraphrasingStatementEditorId}
+            paraphrasingPropositionEditorId={paraphrasingPropositionEditorId}
             sourceExcerptEditorId={sourceExcerptEditorId}
             suggestionsKey={`${id}-source-excerpt-paraphrase-suggestions`}
             doShowControls={doShowControls}
             showStatusText={showStatusText}
             showUrls={showUrls}
-            trailStatements={trailStatements}
+            trailPropositions={trailPropositions}
           />
         )
       default:
@@ -67,7 +67,7 @@ JustificationBasisCompoundAtomViewer.propTypes = {
     PropTypes.string,
     PropTypes.func,
   ]).isRequired,
-  statementEditorId: PropTypes.string.isRequired,
-  paraphrasingStatementEditorId: PropTypes.string,
+  propositionEditorId: PropTypes.string.isRequired,
+  paraphrasingPropositionEditorId: PropTypes.string,
   sourceExcerptEditorId: PropTypes.string,
 }

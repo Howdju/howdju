@@ -266,11 +266,11 @@ class App extends Component {
                 component={Link}
                 to={paths.home()}
       />,
-      <ListItem key="createStatement"
-                primaryText="Make a statement"
+      <ListItem key="createProposition"
+                primaryText="Make a proposition"
                 leftIcon={<FontIcon>add</FontIcon>}
                 component={Link}
-                to="/create-statement"
+                to="/create-proposition"
       />,
       <ListItem key="tools"
                 primaryText="Tools"

@@ -17,7 +17,7 @@ const {
 const {
   toJustificationBasisCompound,
   toJustificationBasisCompoundAtom,
-  toStatement,
+  toProposition,
 } = require('./orm')
 const {
   mapSingle,
@@ -108,11 +108,11 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
       })
   }
 
-  readJustificationBasisCompoundsByIdForRootStatementId(rootStatementId) {
+  readJustificationBasisCompoundsByIdForRootPropositionId(rootPropositionId) {
     const sql = `
       with 
-        -- it's possible that justifications rooted in the same statement may use the same basis (either counters or different polarity)
-        root_statement_justification_basis_compounds as (
+        -- it's possible that justifications rooted in the same proposition may use the same basis (either counters or different polarity)
+        root_proposition_justification_basis_compounds as (
           select distinct
             jbc.*
           from justifications j 
@@ -120,14 +120,14 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
                   j.basis_type = $1
               and j.basis_id = jbc.justification_basis_compound_id
           where
-                j.root_statement_id = $2
+                j.root_proposition_id = $2
             and j.deleted is null
             and jbc.deleted is null
         )
       select
           jbc.*
         , jbca.*
-      from root_statement_justification_basis_compounds jbc 
+      from root_proposition_justification_basis_compounds jbc 
           join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
         order by 
             jbca.justification_basis_compound_id
@@ -135,14 +135,14 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     `
     const args = [
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      rootStatementId
+      rootPropositionId
     ]
     return Promise.all([
       this.database.query(sql, args),
-      this.sourceExcerptParaphrasesDao.readSourceExcerptParaphrasesByIdForRootStatementId(rootStatementId),
-      readAtomStatementsForRootStatementId(this.logger, this.database, rootStatementId),
+      this.sourceExcerptParaphrasesDao.readSourceExcerptParaphrasesByIdForRootPropositionId(rootPropositionId),
+      readAtomPropositionsForRootPropositionId(this.logger, this.database, rootPropositionId),
     ])
-      .then( ([{rows}, sourceExcerptParaphrasesById, atomStatementsById]) => {
+      .then( ([{rows}, sourceExcerptParaphrasesById, atomPropositionsById]) => {
         const justificationBasisCompoundsById = {}
         if (rows.length < 1) {
           return justificationBasisCompoundsById
@@ -164,8 +164,8 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
             case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
               atom.entity = sourceExcerptParaphrasesById[atom.entity.id]
               break
-            case JustificationBasisCompoundAtomType.STATEMENT:
-              atom.entity = atomStatementsById[atom.entity.id]
+            case JustificationBasisCompoundAtomType.PROPOSITION:
+              atom.entity = atomPropositionsById[atom.entity.id]
               break
             default:
               throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
@@ -203,7 +203,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
   }
 }
 
-function readAtomStatementsForRootStatementId(logger, database, rootStatementId) {
+function readAtomPropositionsForRootPropositionId(logger, database, rootPropositionId) {
   const sql = `
       select
         s.*
@@ -212,20 +212,20 @@ function readAtomStatementsForRootStatementId(logger, database, rootStatementId)
                 j.basis_type = $1
             and j.basis_id = jbc.justification_basis_compound_id
           join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
-          join statements s on
+          join propositions s on
                 jbca.entity_type = $2
-            and jbca.entity_id = s.statement_id
+            and jbca.entity_id = s.proposition_id
         where 
-              j.root_statement_id = $3
+              j.root_proposition_id = $3
           and j.deleted is null
           and jbc.deleted is null
           and s.deleted is null
     `
   const args = [
     JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-    JustificationBasisCompoundAtomType.STATEMENT,
-    rootStatementId
+    JustificationBasisCompoundAtomType.PROPOSITION,
+    rootPropositionId
   ]
   return database.query(sql, args)
-    .then(mapManyById(toStatement))
+    .then(mapManyById(toProposition))
 }
