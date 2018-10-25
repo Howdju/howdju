@@ -18,9 +18,9 @@ fi
 echo deploying $git_branch to $lambda_alias
 
 git checkout $git_branch
-# git stash save
-# git pull --quiet --ff-only
-# git stash pop
+git stash save
+git pull --ff-only
+git stash pop
 
 source $HOME/.bashrc
 npm run build-and-update-lambda-function-code
