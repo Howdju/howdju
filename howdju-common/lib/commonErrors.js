@@ -14,6 +14,23 @@ const commonErrorTypes = _e.commonErrorTypes = arrayToObject([
   'UNIMPLEMENTED_ERROR',
 ])
 
+// Customize JSON serialization of Error
+if (!('toJSON' in Error.prototype)) {
+  Object.defineProperty(Error.prototype, 'toJSON', {
+    value: function () {
+      const jsonObj = {}
+
+      Object.getOwnPropertyNames(this).forEach(function (key) {
+        jsonObj[key] = this[key];
+      }, this)
+
+      return jsonObj
+    },
+    configurable: true,
+    writable: true
+  })
+}
+
 /* Identify custom errors with an errorType property.  Subclassing builtins like Error is not widely supported,
  * and the Babel plugin for doing so relies on static detection, which could be flakey
  */
