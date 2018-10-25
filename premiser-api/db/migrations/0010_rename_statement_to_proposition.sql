@@ -28,3 +28,4 @@ alter table proposition_tag_scores rename column proposition_tag_score_id_2 to p
 
 update justification_basis_compound_atoms set entity_type = 'PROPOSITION' where entity_type = 'STATEMENT';
 update justifications set target_type = 'PROPOSITION' where target_type = 'STATEMENT';
+update justifications set basis_type = 'PROPOSITION_COMPOUND' where basis_type = 'STATEMENT_COMPOUND';
