@@ -59,6 +59,18 @@ const makeTextLogArguments = function(logLevel, logLevelNumber, ...args) {
   return combinedArgs
 }
 
+// JSON.stringify doesn't handle Errors well; it skips their stack and message
+function jsonStringifyReplacer(key, value) {
+  if (value instanceof Error) {
+    const errorProps = {}
+    Object.getOwnPropertyNames(value).forEach(function (key) {
+      errorProps[key] = value[key]
+    })
+    return errorProps
+  }
+  return value
+}
+
 // Must return a function instead of a lambda so that it will bind `this` when called
 const makeJsonLogArguments = function(logLevel, logLevelNumber, ...args) {
   const logRecord = {}
@@ -80,7 +92,7 @@ const makeJsonLogArguments = function(logLevel, logLevelNumber, ...args) {
     logRecord['data'] = data
   }
 
-  const logRecordJson = JSON.stringify(logRecord)
+  const logRecordJson = JSON.stringify(logRecord, jsonStringifyReplacer)
   return [logRecordJson]
 }
 
