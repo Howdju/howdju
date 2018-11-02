@@ -9,7 +9,7 @@ const {toJustificationVote} = require('./orm')
 const {
   mapSingle,
   mapMany,
-} = require('./util')
+} = require('./daosUtil')
 
 
 exports.JustificationVotesDao = class JustificationVotesDao {
@@ -31,7 +31,11 @@ exports.JustificationVotesDao = class JustificationVotesDao {
           and polarity = $4
           and deleted is null
         returning justification_vote_id`
-    return this.database.query(sql, [new Date(), userId, justificationId, negateJustificationVotePolarity(polarity)])
+    return this.database.query(
+      'deleteOpposingVotes',
+      sql,
+      [new Date(), userId, justificationId, negateJustificationVotePolarity(polarity)]
+    )
       .then( ({rows}) => map(rows, r => r.justification_vote_id))
   }
 
@@ -45,7 +49,7 @@ exports.JustificationVotesDao = class JustificationVotesDao {
           and justification_id = $2
           and polarity = $3
           and deleted is null`
-    return this.database.query(sql, [userId, justificationId, polarity])
+    return this.database.query('readEquivalentVotes', sql, [userId, justificationId, polarity])
       .then(mapMany(toJustificationVote))
   }
 
@@ -55,7 +59,7 @@ exports.JustificationVotesDao = class JustificationVotesDao {
       insert into justification_votes (user_id, justification_id, polarity, created) 
       values ($1, $2, $3, $4) 
       returning *`
-    return this.database.query(sql, [userId, justificationId, polarity, new Date()])
+    return this.database.query('createVote', sql, [userId, justificationId, polarity, new Date()])
       .then(mapSingle(toJustificationVote))
   }
 
@@ -70,12 +74,12 @@ exports.JustificationVotesDao = class JustificationVotesDao {
           and polarity = $4
           and deleted is null
         returning justification_vote_id`
-    return this.database.query(sql, [new Date(), userId, justificationId, polarity])
+    return this.database.query('deleteEquivalentVotes', sql, [new Date(), userId, justificationId, polarity])
       .then( ({rows}) => map(rows, r => r.justification_vote_id))
   }
 
   readVotes() {
-    return this.database.query('select * from justification_votes where deleted is null')
+    return this.database.query('readVotes', 'select * from justification_votes where deleted is null')
       .then(mapMany(toJustificationVote))
   }
 }

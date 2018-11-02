@@ -11,9 +11,9 @@
     "analyze-js-size": "zip - dist/premiser-ui.js 2>/dev/null | dd 2>&1 >/dev/null",
     "build:bookmarklet": "rm -f dist/bookmarklet/* && mkdir -p dist/bookmarklet && babel --no-babelrc bookmarklet/submit.js --out-file dist/bookmarklet/submit.js --presets=env && uglifyjs --compress negate_iife=false --mangle toplevel --output dist/bookmarklet/submit.min.js -- dist/bookmarklet/submit.js",
     "build:bookmarklet:local": "bin/build-bookmarklet-local.sh",
-    "build:local":      "yarn lint:app && yarn clean && cross-env NODE_ENV=development SENTRY_ENV=local    DEBUG=*,-babel                                               webpack --config config/webpack.config.js",
-    "build:pre-prod":   "yarn lint:app && yarn clean && cross-env NODE_ENV=production  SENTRY_ENV=pre-prod DEBUG=*,-babel API_ROOT=https://pre-prod-api.howdju.com/api/ webpack --config config/webpack.config.js",
-    "build:prod":       "yarn lint:app && yarn clean && cross-env NODE_ENV=production  SENTRY_ENV=prod     DEBUG=*,-babel                                               webpack --config config/webpack.config.js",
+    "build:local": "yarn lint:app && yarn clean && cross-env NODE_ENV=development SENTRY_ENV=local    DEBUG=*,-babel                                               webpack --config config/webpack.config.js",
+    "build:pre-prod": "yarn lint:app && yarn clean && cross-env NODE_ENV=production  SENTRY_ENV=pre-prod DEBUG=*,-babel API_ROOT=https://pre-prod-api.howdju.com/api/ webpack --config config/webpack.config.js",
+    "build:prod": "yarn lint:app && yarn clean && cross-env NODE_ENV=production  SENTRY_ENV=prod     DEBUG=*,-babel                                               webpack --config config/webpack.config.js",
     "build:prod-local": "yarn lint:app && yarn clean && cross-env NODE_ENV=production  SENTRY_ENV=prod     DEBUG=*,-babel API_ROOT=http://localhost:8081/api/           webpack --config config/webpack.config.js",
     "calc-dist-size": "bin/calc-dist-zip-size.sh premiser-ui.js && bin/calc-dist-zip-size.sh main.css",
     "clean": "rm -rf dist/*",
@@ -86,6 +86,7 @@
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "history": "^4.6.1",
+    "is-valid-domain": "^0.0.6",
     "js-cookie": "^2.1.4",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
@@ -106,6 +107,7 @@
     "redux": "^3.6.0",
     "redux-actions": "^2.0.1",
     "redux-persist": "^4.6.0",
-    "redux-saga": "^0.15.6"
+    "redux-saga": "^0.15.6",
+    "valid-url": "^1.0.9"
   }
 }

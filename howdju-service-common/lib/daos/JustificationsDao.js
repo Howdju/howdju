@@ -38,7 +38,7 @@ const {EntityNotFoundError} = require('../serviceErrors')
 const {
   groupRootJustifications,
   renumberSqlArgs,
-} = require('./util')
+} = require('./daosUtil')
 const {DatabaseSortDirection} = require('./daoModels')
 
 
@@ -341,9 +341,9 @@ exports.JustificationsDao = class JustificationsDao {
       -- no need to order because they are joined to the ordered targeting justifications
     `
     return Promise.all([
-      this.database.query(justificationsSql, justificationsArgs),
-      this.database.query(targetJustificationsSql, targetJustificationsArgs),
-      this.database.query(targetPropositionsSql, targetPropositionsArgs),
+      this.database.query('readJustifications', justificationsSql, justificationsArgs),
+      this.database.query('readJustifications.targetJustifications', targetJustificationsSql, targetJustificationsArgs),
+      this.database.query('readJustifications.targetPropositions', targetPropositionsSql, targetPropositionsArgs),
     ])
       .then( ([
         {rows: justificationRows},
@@ -407,7 +407,8 @@ exports.JustificationsDao = class JustificationsDao {
           and j.root_proposition_id = $1
       `
     return Promise.all([
-      this.database.query(sql, [rootPropositionId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.PROPOSITION_COMPOUND]),
+      this.database.query('readJustificationsWithBasesAndVotesByRootPropositionId', sql,
+        [rootPropositionId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.PROPOSITION_COMPOUND]),
       readPropositionCompoundsByIdForRootPropositionId(this, rootPropositionId, {userId}),
       this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootPropositionId),
       this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(rootPropositionId),
@@ -440,12 +441,18 @@ exports.JustificationsDao = class JustificationsDao {
                 pca.proposition_id = pcap.proposition_id
             and pcap.proposition_id = $1
     `
-    return this.database.query(sql, [propositionId, JustificationBasisType.PROPOSITION_COMPOUND])
+    return this.database.query('readJustificationsDependentUponPropositionId', sql,
+      [propositionId, JustificationBasisType.PROPOSITION_COMPOUND]
+    )
       .then( ({rows}) => map(rows, toJustification))
   }
 
   readJustificationForId(justificationId) {
-    return this.database.query('select * from justifications where justification_id = $1 and deleted is null', [justificationId])
+    return this.database.query(
+      'readJustificationForId',
+      'select * from justifications where justification_id = $1 and deleted is null',
+      [justificationId]
+    )
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`More than one justification has ID ${justificationId}`)
@@ -471,7 +478,7 @@ exports.JustificationsDao = class JustificationsDao {
       justification.basis.type,
       justification.basis.entity.id,
     ]
-    return this.database.query(sql, args)
+    return this.database.query('readJustificationEquivalentTo', sql, args)
       .then( ({rows}) => toJustification(head(rows)) )
       .then(equivalentJustification => {
         if (equivalentJustification && !idEqual(equivalentJustification.rootProposition.id, justification.rootProposition.id)) {
@@ -482,7 +489,7 @@ exports.JustificationsDao = class JustificationsDao {
   }
 
   readRootJustificationCountByPolarityForRootPropositionId(rootPropositionId) {
-    return this.database.query(`
+    return this.database.query('readRootJustificationCountByPolarityForRootPropositionId', `
       select polarity, count(*) as count
       from justifications
         where 
@@ -504,7 +511,6 @@ exports.JustificationsDao = class JustificationsDao {
 
     return getNewJustificationRootPolarity(justification, this.logger, this.database)
       .then((rootPolarity) => {
-
         const sql = `
           insert into justifications
             (root_proposition_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
@@ -522,9 +528,9 @@ exports.JustificationsDao = class JustificationsDao {
           userId,
           now,
         ]
-
-        return this.database.query(sql, args).then( ({rows: [row]}) => toJustification(row))
+        return this.database.query('createJustification', sql, args)
       })
+      .then( ({rows: [row]}) => toJustification(row))
   }
 
   deleteJustifications(justifications, now) {
@@ -541,7 +547,11 @@ exports.JustificationsDao = class JustificationsDao {
   }
 
   deleteJustificationById(justificationId, now) {
-    return this.database.query('update justifications set deleted = $2 where justification_id = $1 returning justification_id', [justificationId, now])
+    return this.database.query(
+      'deleteJustificationById',
+      'update justifications set deleted = $2 where justification_id = $1 returning justification_id',
+      [justificationId, now]
+    )
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`More than one (${rows.length}) justifications deleted for ID ${justificationId}`)
@@ -555,7 +565,9 @@ exports.JustificationsDao = class JustificationsDao {
   }
 
   deleteCounterJustificationsToJustificationIds(justificationIds, now) {
-    return this.database.query(`
+    return this.database.query(
+      'deleteCounterJustificationsToJustificationIds',
+      `
         update justifications set deleted = $1 
         where 
               target_type = $2
@@ -1181,7 +1193,11 @@ function getNewJustificationRootPolarity(justification, logger, database) {
 }
 
 function getTargetRootPolarity(logger, database, justification) {
-  return database.query('select root_polarity from justifications where justification_id = $1', [justification.target.entity.id])
+  return database.query(
+    'getTargetRootPolarity',
+    'select root_polarity from justifications where justification_id = $1',
+    [justification.target.entity.id]
+  )
     .then( ({rows}) => {
       if (rows.length < 1) {
         throw new EntityNotFoundError(`Could not create justification because target justification having ID ${justification.target.id} did not exist`)

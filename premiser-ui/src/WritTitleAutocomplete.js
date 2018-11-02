@@ -2,12 +2,13 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import {schemas} from 'howdju-common'
+
 import {
   api, mapActionCreatorGroupToDispatchToProps
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
 import {writSchema} from "./schemas"
-import config from './config'
 
 class WritTitleAutocomplete extends Component {
 
@@ -26,7 +27,7 @@ class WritTitleAutocomplete extends Component {
 
     return (
       <ApiAutocomplete
-        maxLength={config.ui.writTitleMaxLength}
+        maxLength={schemas.writTitleMaxLength}
         rows={1}
         maxRows={4}
         singleLine={true}

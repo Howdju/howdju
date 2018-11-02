@@ -1,5 +1,13 @@
 # TODO
 
+* Redirect to Statement
+* Support statement justifications
+* Suggest persorg name
+Refactors:
+* Use EntityAutocomplete
+* Use makeMapper
+* EditorField props.name -> controlName
+
 * Version API
 
 * rename callback to respond

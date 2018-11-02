@@ -11,10 +11,12 @@ import {
   CardText,
   CircularProgress,
   FocusContainer,
+  FontIcon,
   Switch,
 } from 'react-md'
 import cn from 'classnames'
 import get from 'lodash/get'
+import map from 'lodash/map'
 import queryString from 'query-string'
 
 import {
@@ -41,7 +43,7 @@ import {
   translateNewJustificationErrors,
   combineIds,
   combineNames,
-  combineSuggestionsKeys,
+  combineSuggestionsKeys, array,
 } from './viewModels'
 import NewJustificationEditorFields from "./NewJustificationEditorFields"
 import PropositionEditorFields from "./PropositionEditorFields"
@@ -49,6 +51,8 @@ import {EditorTypes} from "./reducers/editors"
 import paths from './paths'
 import TagsControl from './TagsControl'
 import {logger} from './logger'
+import PersorgEditorFields from './PersorgEditorFields'
+import EntityViewer from './EntityViewer'
 
 
 export const CreatePropositionPageMode = arrayToObject([
@@ -85,13 +89,14 @@ const submitButtonTitleTextKeyByMode = {
 }
 
 const propositionName = 'proposition'
+const speakersName = 'speakers'
 const tagsName = 'tags'
 const doCreateJustificationName = 'doCreateJustification'
 const newJustificationName = 'newJustification'
 
 class CreatePropositionPage extends Component {
 
-  componentWillMount() {
+  componentDidMount() {
     this.initializeEditor()
   }
 
@@ -119,7 +124,7 @@ class CreatePropositionPage extends Component {
             CreatePropositionPage.editorId, basisSourceType, basisSourceId)
         }
         // if neither basisSourceType or basisSourceId is present in the queryParams, then the editorModel should
-        // already be present.  We could check that here, I think.
+        // already be present, e.g. from the browser extension.  We could check that here, I think.
         break
       }
       case CreatePropositionPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING: {
@@ -152,6 +157,14 @@ class CreatePropositionPage extends Component {
         logger.warning(`unsupported CreatePropositionPageMode: ${this.props.mode}`)
       }
     }
+  }
+
+  onAddSpeakerClick = () => {
+    this.props.editors.addSpeaker(CreatePropositionPage.editorType, CreatePropositionPage.editorId)
+  }
+
+  onRemoveSpeakerClick = (speaker, index) => {
+    this.props.editors.removeSpeaker(CreatePropositionPage.editorType, CreatePropositionPage.editorId, speaker, index)
   }
 
   onPropertyChange = (properties) => {
@@ -225,6 +238,7 @@ class CreatePropositionPage extends Component {
     } = editorState
     const {
       proposition,
+      speakers,
       newJustification,
       doCreateJustification,
     } = editEntity || {}
@@ -274,6 +288,53 @@ class CreatePropositionPage extends Component {
 
                 <Card>
                   <CardTitle title={title} />
+
+                  <CardText>
+                    <Button
+                      flat
+                      iconEl={<FontIcon>person_add</FontIcon>}
+                      title={"Add Speaker"}
+                      onClick={this.onAddSpeakerClick}
+                      disabled={isSaving || doCreateJustification}
+                    >
+                      Add Speaker
+                    </Button>
+                    <div className="md-grid">
+                      <div className="md-cell md-cell--6">
+                        {map(speakers, (speaker, index) => (
+                          <div key={index}>
+                            <EntityViewer
+                              iconName="person"
+                              iconTitle="Person/Organization"
+                              menu={(
+                                <Button
+                                  icon
+                                  onClick={e => this.onRemoveSpeakerClick(speaker, index)}
+                                  title="Delete speaker"
+                                >delete</Button>
+                              )}
+                              entity={
+                                <PersorgEditorFields
+                                  id={combineIds(id, speakersName, index)}
+                                  key={combineIds(id, speakersName, index)}
+                                  persorg={speaker}
+                                  suggestionsKey={combineSuggestionsKeys(id, speakersName, index)}
+                                  controlName={combineNames(speakersName, array(index))}
+                                  disabled={isSaving}
+                                  onPropertyChange={this.onPropertyChange}
+                                  onSubmit={this.onSubmit}
+                                />
+                              }
+                            />
+                            <div>
+                              Said that:
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardText>
+
 
                   <CardText>
                     <PropositionEditorFields

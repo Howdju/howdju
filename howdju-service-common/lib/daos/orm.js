@@ -6,17 +6,67 @@ const toString = require('lodash/toString')
 const values = require('lodash/values')
 
 const {
+  JustificationBasisCompoundAtomType,
   JustificationBasisType,
+  newExhaustedEnumError,
   newImpossibleError,
   PropositionCompoundAtomType,
-  JustificationBasisCompoundAtomType,
+  requireArgs,
+  SentenceType,
   SourceExcerptType,
-  newExhaustedEnumError,
   toSlug,
 } = require('howdju-common')
 
 
-const toUser = (row) => {
+function removeUndefinedProperties(obj) {
+  let hasDefinedProperty = false
+  for (const key of Object.keys(obj)) {
+    if (obj[key] === undefined) {
+      delete obj[key]
+    } else {
+      hasDefinedProperty = true
+    }
+  }
+
+  return hasDefinedProperty ? obj : null
+}
+
+function makeMapper(mapper) {
+  return function(row) {
+    if (!row) {
+      return row
+    }
+
+    let mapped = mapper(row)
+    mapped = removeUndefinedProperties(mapped)
+    return mapped
+  }
+}
+
+function mapRelation (mapper, prefix, row) {
+  requireArgs({mapper, prefix, row})
+  const unprefixed = unprefix(row, prefix)
+  const mapped = mapper(unprefixed)
+  return mapped
+}
+
+/** Returns a new object containing the key/values of `obj`
+ * for keys whose names start with `prefix` but with that prefix removed
+ */
+function unprefix (obj, prefix) {
+  const unprefixed = {}
+  let hasPrefixedKey = false
+  for (const key of Object.keys(obj)) {
+    if (key.startsWith(prefix)) {
+      hasPrefixedKey = true
+      const unprefixedKey = key.substr(prefix.length)
+      unprefixed[unprefixedKey] = obj[key]
+    }
+  }
+  return hasPrefixedKey ? unprefixed : null
+}
+
+const toUser = makeMapper(function toUserMapper(row) {
   if (!row) {
     return row
   }
@@ -32,17 +82,19 @@ const toUser = (row) => {
   })
 
   return user
-}
-
-const toUserExternalIds = (row) => row && ({
-  googleAnalyticsId: row.google_analytics_id,
-  heapAnalyticsId: row.heap_analytics_id,
-  mixpanelId: row.mixpanel_id,
-  sentryId: row.sentry_id,
-  smallchatId: row.smallchat_id,
 })
 
-const toProposition = (row) => {
+const toUserExternalIds = makeMapper(function(row) {
+  return {
+    googleAnalyticsId: row.google_analytics_id,
+    heapAnalyticsId: row.heap_analytics_id,
+    mixpanelId: row.mixpanel_id,
+    sentryId: row.sentry_id,
+    smallchatId: row.smallchat_id,
+  }
+})
+
+function toProposition(row) {
   if (!row) {
     return row
   }
@@ -65,13 +117,39 @@ const toProposition = (row) => {
   return proposition
 }
 
-const toJustification = (
+const toStatement = makeMapper(function toStatementMapper(row) {
+
+  const statement = {
+    id: toString(row.statement_id),
+    creator: mapRelation(toUser, 'creator_', row),
+    speaker: mapRelation(toPersorg, 'speaker_', row),
+    sentenceType: row['sentence_type'],
+  }
+
+  let sentence = statement['sentence'] = {id: row['sentence_id']}
+  switch (statement.sentenceType) {
+    case SentenceType.STATEMENT:
+      sentence = mapRelation(toStatement, 'sentence_statement_', row)
+      break
+    case SentenceType.PROPOSITION:
+      sentence = mapRelation(toProposition, 'sentence_proposition_', row)
+      break
+    default:
+      throw newImpossibleError(`Unsupported SentenceType: ${statement.sentenceType}`)
+  }
+  if (sentence) {
+    statement['sentence'] = sentence
+  }
+  return statement
+})
+
+function toJustification (
   row,
   counterJustificationsByJustificationId,
   propositionCompoundsById,
   writQuotesById,
   justificationBasisCompoundsById
-) => {
+) {
   if (!row) {
     return row
   }
@@ -470,9 +548,35 @@ function toTag(row) {
   }
 }
 
+const toPersorg = makeMapper(function toPersorgMapper(row) {
+  if (!row) {
+    return row
+  }
+  const persorg = {
+    id: toString(row.persorg_id),
+    isOrganization: row.is_organization,
+    name: row.name,
+    knownFor: row.known_for,
+    websiteUrl: row.website_url,
+    twitterUrl: row.twitter_url,
+    wikipediaUrl: row.wikipedia_url,
+    normalName: row.normal_name,
+    created: row.created,
+  }
+
+  if (row.creator_user_id) {
+    persorg.creator = toUser({
+      user_id: row.creator_user_id,
+    })
+  }
+
+  return persorg
+})
+
 module.exports = {
   toUser,
   toProposition,
+  toStatement,
   toJustification,
   toWritQuote,
   toWrit,
@@ -492,4 +596,5 @@ module.exports = {
   toSourceExcerptParaphrase,
   toJustificationBasisCompound,
   toJustificationBasisCompoundAtom,
+  toPersorg,
 }

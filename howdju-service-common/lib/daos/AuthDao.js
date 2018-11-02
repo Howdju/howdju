@@ -2,7 +2,7 @@ const get = require('lodash/get')
 const toString = require('lodash/toString')
 
 const {toUserHash} = require('./orm')
-const {mapSingle} = require('./util')
+const {mapSingle} = require('./daosUtil')
 
 exports.AuthDao = class AuthDao {
 
@@ -13,6 +13,7 @@ exports.AuthDao = class AuthDao {
 
   createUserAuthForUserId(userId, hash, hashType) {
     return this.database.query(
+      'createUserAuthForUserId',
       'insert into user_auth (user_id, hash, hash_type) values ($1, $2, $3) returning *',
       [userId, hash, hashType]
     )
@@ -20,7 +21,9 @@ exports.AuthDao = class AuthDao {
   }
 
   readUserHashForId(userId, hashType) {
-    return this.database.query(`
+    return this.database.query(
+      'readUserHashForId',
+      `
       select 
           ua.user_id
         , ua.hash 
@@ -35,15 +38,18 @@ exports.AuthDao = class AuthDao {
   }
 
   readUserHashForEmail(email, hashType) {
-    return this.database.query(`
-      select 
-          ua.user_id
-        , ua.hash 
-      from users u join user_auth ua using (user_id) 
-        where
-              u.deleted is null
-          and u.email = $1
-          and ua.hash_type = $2`,
+    return this.database.query(
+      'readUserHashForEmail',
+      `
+        select 
+            ua.user_id
+          , ua.hash 
+        from users u join user_auth ua using (user_id) 
+          where
+                u.deleted is null
+            and u.email = $1
+            and ua.hash_type = $2
+      `,
       [email, hashType]
     )
       .then( ({rows: [row]}) => toUserHash(row))
@@ -51,6 +57,7 @@ exports.AuthDao = class AuthDao {
 
   updateUserAuthForUserId(userId, hash, hashType) {
     return this.database.query(
+      'updateUserAuthForUserId',
       'update user_auth set hash = $2 where user_id = $1 and hash_type = $3 returning *',
       [userId, hash, hashType]
     )
@@ -59,6 +66,7 @@ exports.AuthDao = class AuthDao {
 
   insertAuthToken(userId, authToken, created, expires) {
     return this.database.query(
+      'insertAuthToken',
       'insert into user_auth_tokens (user_id, auth_token, created, expires) values ($1, $2, $3, $4) returning auth_token',
       [userId, authToken, created, expires]
     )
@@ -66,7 +74,11 @@ exports.AuthDao = class AuthDao {
   }
 
   deleteAuthToken(authToken) {
-    return this.database.query('delete from user_auth_tokens where auth_token = $1 returning user_id', [authToken])
+    return this.database.query(
+      'deleteAuthToken',
+      'delete from user_auth_tokens where auth_token = $1 returning user_id',
+      [authToken]
+    )
       .then( ({rows: [row]}) => get(row, 'user_id'))
   }
 
@@ -82,7 +94,7 @@ exports.AuthDao = class AuthDao {
           and u.deleted is null
           and u.is_active 
     `
-    return this.database.query(sql, [authToken, new Date()]).then( ({rows}) => {
+    return this.database.query('getUserIdForAuthToken', sql, [authToken, new Date()]).then( ({rows}) => {
       if (rows.length < 1) {
         return null
       }

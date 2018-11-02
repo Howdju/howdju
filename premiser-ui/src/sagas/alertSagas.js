@@ -17,6 +17,7 @@ import t, {
   DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   THAT_JUSTIFICATION_ALREADY_EXISTS,
   THAT_PROPOSITION_ALREADY_EXISTS,
+  THAT_STATEMENT_ALREADY_EXISTS,
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
@@ -97,11 +98,13 @@ export function* showAlertForExtantEntities() {
 
   const toastMessageKeys = {
     [api.createProposition.response]: THAT_PROPOSITION_ALREADY_EXISTS,
+    [api.createStatement.response]: THAT_STATEMENT_ALREADY_EXISTS,
     [api.createJustification.response]: THAT_JUSTIFICATION_ALREADY_EXISTS,
   }
 
   yield takeEvery([
     str(api.createProposition.response),
+    str(api.createStatement.response),
     str(api.createJustification.response)
   ], function* showAlertForExtantEntitiesWorker(action) {
     if (!action.error) {

@@ -13,8 +13,6 @@ import {
   combineSuggestionsKeys,
 } from './viewModels'
 
-import './PropositionEditorFields.scss'
-
 
 const textName = 'text'
 

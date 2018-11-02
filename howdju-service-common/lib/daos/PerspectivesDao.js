@@ -173,7 +173,7 @@ exports.PerspectivesDao = class PerspectivesDao {
         ${votesJoinSql}
         order by sca.order_position
     `
-    return this.database.query(perspectiveJustificationsSql, args)
+    return this.database.query('readFeaturedPerspectivesWithVotes', perspectiveJustificationsSql, args)
       .then( ({rows}) => this._postProcessRows(rows))
   }
 

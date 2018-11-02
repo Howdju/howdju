@@ -65,6 +65,12 @@ _e.makeNewCredentials = (props) => assign({email: '', password: ''}, props)
 
 _e.makeNewProposition = (props) => assign({text: ''}, props)
 
+_e.makeNewStatement = (speaker, sentenceType, sentence) => ({
+  speaker,
+  sentenceType,
+  sentence,
+})
+
 _e.makeNewJustification = (props) => {
   let newJustification = {
     rootProposition: {id: null},
@@ -244,6 +250,7 @@ _e.makeNewJustificationTargetingPropositionIdWithPolarity = (propositionId, pola
 
 _e.makeNewPropositionJustification = (propositionProps, justificationProps) => ({
   proposition: _e.makeNewProposition(propositionProps),
+  speakers: [],
   newJustification: _e.makeNewJustification(justificationProps),
   // whether to have the justification controls expanded and to create a justification along with the proposition
   doCreateJustification: !!justificationProps,
@@ -263,6 +270,15 @@ _e.makeNewCounterJustification = (targetJustification) => ({
 })
 
 _e.makeNewUrl = () => ({url: ''})
+
+_e.makeNewPersorg = () => ({
+  isOrganization: false,
+  name: '',
+  knownFor: '',
+  websiteUrl: null,
+  twitterUrl: null,
+  wikipediaUrl: null,
+})
 
 /**
  * Compare two entity IDs for equality

@@ -40,7 +40,7 @@ exports.PermissionsDao = class PermissionsDao {
           and ug.deleted is null
           and gp.deleted is null
     `
-    return this.database.query(sql, [userId, permission])
+    return this.database.query('userHasPermission', sql, [userId, permission])
       .then( ({rows: [{has_perm: hasPerm}]}) => hasPerm )
   }
 
@@ -74,7 +74,7 @@ exports.PermissionsDao = class PermissionsDao {
           and ug.deleted is null
           and gp.deleted is null
     `
-    return this.database.query(sql, [authToken, permission, new Date()])
+    return this.database.query('getUserIdWithPermission', sql, [authToken, permission, new Date()])
       .then( ({rows}) => {
         if (rows.length < 1) {
           return {}

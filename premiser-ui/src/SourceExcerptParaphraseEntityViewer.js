@@ -4,6 +4,7 @@ import {Divider} from 'react-md'
 
 import {
   sourceExcerptDescription,
+  combineIds,
 } from './viewModels'
 
 import EntityViewer from './EntityViewer'
@@ -39,7 +40,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
         entity={
           <div>
             <EditableProposition
-              id={`${id}-proposition`}
+              id={combineIds(id, 'proposition')}
               proposition={paraphrasingProposition}
               editorId={paraphrasingPropositionEditorId}
               suggestionsKey={suggestionsKey + '-paraphrasing-proposition'}
@@ -50,7 +51,7 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
               <Divider className="divider" inset/>
             </div>
             <SourceExcerptEntityViewer
-              id={id + '-source-excerpt'}
+              id={combineIds(id, 'source-excerpt')}
               sourceExcerpt={sourceExcerpt}
               editorId={sourceExcerptEditorId}
               suggestionsKey={suggestionsKey + '-source-excerpt'}

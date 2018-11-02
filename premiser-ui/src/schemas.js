@@ -4,6 +4,7 @@ import {
   JustificationBasisCompoundAtomType,
   JustificationBasisType,
   JustificationTargetType,
+  SentenceType,
   SourceExcerptType,
 } from 'howdju-common'
 
@@ -21,6 +22,20 @@ export const propositionSchema = new schema.Entity('propositions', {
   propositionTagVotes: propositionTagVoteSchemas,
 })
 export const propositionsSchema = [propositionSchema]
+
+export const persorgSchema = new schema.Entity('persorgs')
+export const persorgsSchema = [persorgSchema]
+
+const sentenceSchema = new schema.Union({}, (value, parent) => parent.sentenceType)
+export const statementSchema = new schema.Entity('statements', {
+  speaker: persorgSchema,
+  sentence: sentenceSchema,
+})
+sentenceSchema.define({
+  [SentenceType.PROPOSITION]: propositionSchema,
+  [SentenceType.STATEMENT]: statementSchema,
+})
+
 export const propositionCompoundSchema = new schema.Entity('propositionCompounds', {
   atoms: [{
     entity: propositionSchema,
@@ -119,4 +134,5 @@ export const mainSearchResultsSchema = {
   writQuoteUrls: writQuotesSchema,
   writTitles: writsSchema,
   tags: tagsSchema,
+  persorgsFromName: persorgsSchema,
 }

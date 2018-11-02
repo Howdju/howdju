@@ -9,10 +9,13 @@ import cn from 'classnames'
 import moment from 'moment'
 
 import {
+  extractDomain
+} from 'howdju-common'
+
+import {
   truncateWritQuoteText,
   isTextLong,
 } from "./viewModels"
-import {extractDomain} from "./util"
 import * as characters from './characters'
 import t from './texts'
 import config from './config'

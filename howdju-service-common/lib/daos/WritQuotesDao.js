@@ -20,7 +20,7 @@ const {
 const {
   mapSingle,
   normalizeText,
-} = require('./util')
+} = require('./daosUtil')
 const {DatabaseSortDirection} = require('./daoModels')
 
 
@@ -34,18 +34,22 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   readWritQuoteForId(writQuoteId) {
     return Promise.all([
-      this.database.query(`
-        select 
-            wq.*
-          , w.title as writ_title
-          , w.created as writ_created
-          , w.creator_user_id as writ_creator_user_id
-        from writ_quotes wq join writs w on 
-              wq.writ_quote_id = $1
-          and wq.writ_id = w.writ_id
-          and wq.deleted is null
-          and w.deleted is null
-          `, [writQuoteId]),
+      this.database.query(
+        'readWritQuoteForId',
+        `
+          select 
+              wq.*
+            , w.title as writ_title
+            , w.created as writ_created
+            , w.creator_user_id as writ_creator_user_id
+          from writ_quotes wq join writs w on 
+                wq.writ_quote_id = $1
+            and wq.writ_id = w.writ_id
+            and wq.deleted is null
+            and w.deleted is null
+          `,
+        [writQuoteId]
+      ),
       this.readUrlsByWritQuoteId(writQuoteId)
     ])
       .then( ([
@@ -60,6 +64,7 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   readWritQuoteHavingWritIdAndQuoteText(writId, quoteText) {
     return this.database.query(
+      'readWritQuoteHavingWritIdAndQuoteText',
       `select * from writ_quotes where writ_id = $1 and normal_quote_text = $2 and deleted is null`,
       [writId, normalizeText(quoteText)]
     )
@@ -103,7 +108,7 @@ exports.WritQuotesDao = class WritQuotesDao {
       ${orderBySql}
       ${countSql}
       `
-    return this.database.query(sql, args)
+    return this.database.query('readWritQuotes', sql, args)
       .then(({rows}) => map(rows, toWritQuote))
   }
 
@@ -158,7 +163,7 @@ exports.WritQuotesDao = class WritQuotesDao {
       ${orderBySql}
       ${countSql}
       `
-    return this.database.query(sql, args)
+    return this.database.query('readMoreWritQuotes', sql, args)
       .then( ({rows}) => map(rows, toWritQuote) )
   }
 
@@ -223,7 +228,7 @@ exports.WritQuotesDao = class WritQuotesDao {
       SourceExcerptType.WRIT_QUOTE
     ]
     return Promise.all([
-      this.database.query(sql, args),
+      this.database.query('readWritQuotesByIdForRootPropositionId', sql, args),
       this.urlsDao.readUrlsByWritQuoteIdForRootPropositionId(rootPropositionId)
     ])
       .then( ([
@@ -242,7 +247,9 @@ exports.WritQuotesDao = class WritQuotesDao {
   }
 
   readWritQuoteUrlsForWritQuote(writQuote) {
-    return this.database.query('select * from writ_quote_urls where writ_quote_id = $1 and deleted is null',
+    return this.database.query(
+      'readWritQuoteUrlsForWritQuote',
+      'select * from writ_quote_urls where writ_quote_id = $1 and deleted is null',
       [writQuote.id])
       .then( ({rows}) => map(rows, toWritQuoteUrl) )
   }
@@ -264,7 +271,7 @@ exports.WritQuotesDao = class WritQuotesDao {
           and w.deleted is null
           and wqu.deleted is null
     `
-    return this.database.query(sql, [text])
+    return this.database.query('readWritQuotesHavingUrlContainingText', sql, [text])
       .then(({rows}) => Promise.all(map(rows, row => this.readWritQuoteForId(row.writ_quote_id))))
   }
 
@@ -273,10 +280,12 @@ exports.WritQuotesDao = class WritQuotesDao {
   }
 
   createWritQuoteUrl(writQuote, url, userId, now) {
-    return this.database.query(`
-      insert into writ_quote_urls (writ_quote_id, url_id, creator_user_id, created) 
-      values ($1, $2, $3, $4)
-      returning *
+    return this.database.query(
+      'createWritQuoteUrl',
+      `
+        insert into writ_quote_urls (writ_quote_id, url_id, creator_user_id, created) 
+        values ($1, $2, $3, $4)
+        returning *
       `,
       [writQuote.id, url.id, userId, now]
     )
@@ -291,7 +300,11 @@ exports.WritQuotesDao = class WritQuotesDao {
     `
     // Don't insert an empty quote
     const quoteText = writQuote.quoteText || null
-    return this.database.query(sql, [quoteText, normalizeText(quoteText), writQuote.writ.id, userId, now])
+    return this.database.query(
+      'createWritQuote',
+      sql,
+      [quoteText, normalizeText(quoteText), writQuote.writ.id, userId, now]
+    )
       .then( ({rows: [row]}) => toWritQuote(row))
   }
 
@@ -307,7 +320,7 @@ exports.WritQuotesDao = class WritQuotesDao {
           and w.deleted is null
       `
     const args = [writQuote.id, writQuote.quoteText, writQuote.writ.id, writQuote.writ.title]
-    return this.database.query(sql, args)
+    return this.database.query('hasEquivalentWritQuotes', sql, args)
       .then( ({rows: [{has_conflict}]}) => has_conflict)
   }
 
@@ -317,12 +330,14 @@ exports.WritQuotesDao = class WritQuotesDao {
       from writ_quotes 
         where writ_quote_id = $1 and quote_text = $2
       `
-    return this.database.query(sql, [writQuote.id, writQuote.quoteText])
+    return this.database.query('hasWritQuoteChanged', sql, [writQuote.id, writQuote.quoteText])
       .then( ({rows: [{has_changed}]}) => has_changed )
   }
 
   readUrlsByWritQuoteId(writQuoteId) {
-    return this.database.query(`
+    return this.database.query(
+      'readUrlsByWritQuoteId',
+      `
       select u.* 
       from urls u join writ_quote_urls wqu using (url_id) 
         where 
@@ -350,7 +365,7 @@ exports.WritQuotesDao = class WritQuotesDao {
         )
       select count(*) > 0 as has_votes from basis_justification_votes
     `
-    return this.database.query(sql, [
+    return this.database.query('isBasisToJustificationsHavingOtherUsersVotes', sql, [
       JustificationBasisType.WRIT_QUOTE,
       writQuote.id,
       userId,
@@ -366,7 +381,7 @@ exports.WritQuotesDao = class WritQuotesDao {
         and creator_user_id != $3
         and deleted is null
         `
-    return this.database.query(sql, [
+    return this.database.query('isBasisToOtherUsersJustifications', sql, [
       JustificationBasisType.WRIT_QUOTE,
       writQuote.id,
       userId,
@@ -390,7 +405,7 @@ exports.WritQuotesDao = class WritQuotesDao {
         )
       select count(*) > 0 as has_other_user_counters from counters
     `
-    return this.database.query(sql, [
+    return this.database.query('isBasisToJustificationsHavingOtherUsersCounters', sql, [
       JustificationBasisType.WRIT_QUOTE,
       writQuote.id,
       userId,
@@ -400,6 +415,7 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   updateWritQuote(writQuote) {
     return this.database.query(
+      'updateWritQuote',
       'update writ_quotes set quote_text = $1, normal_quote_text = $2 where writ_quote_id = $3 and deleted is null returning *',
       [writQuote.quoteText, normalizeText(writQuote.quoteText), writQuote.id]
     )
@@ -417,7 +433,7 @@ exports.WritQuotesDao = class WritQuotesDao {
         where writ_quote_id = $2 and url_id = any ($3) 
         returning *
     `
-    return this.database.query(sql, [now, writQuote.id, map(urls, url => url.id)])
+    return this.database.query('deleteWritQuoteUrls', sql, [now, writQuote.id, map(urls, url => url.id)])
       .then( ({rows}) => map(rows, toWritQuoteUrl) )
   }
 }

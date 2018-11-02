@@ -58,15 +58,16 @@ class PropositionEditor extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
-          <PropositionEditorFields {...rest}
-                                 id={id}
-                                 textId={textId}
-                                 proposition={editEntity}
-                                 disabled={isSaving}
-                                 suggestionsKey={suggestionsKey}
-                                 onPropertyChange={this.onPropertyChange}
-                                 onSubmit={this.onSubmit}
-                                 errors={errors}
+          <PropositionEditorFields
+            {...rest}
+            id={id}
+            textId={textId}
+            proposition={editEntity}
+            disabled={isSaving}
+            suggestionsKey={suggestionsKey}
+            onPropertyChange={this.onPropertyChange}
+            onSubmit={this.onSubmit}
+            errors={errors}
           />
         </CardText>
         <CardActions>

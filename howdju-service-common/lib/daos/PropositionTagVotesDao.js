@@ -5,7 +5,7 @@ const {
 const {
   mapSingle,
   mapMany,
-} = require('./util')
+} = require('./daosUtil')
 const {
   toPropositionTagVote,
 } = require('./orm')
@@ -20,6 +20,7 @@ exports.PropositionTagVotesDao = class PropositionTagVotesDao {
 
   createPropositionTagVote(userId, propositionTagVote, now) {
     return this.database.query(
+      'createPropositionTagVote',
       `insert into proposition_tag_votes (user_id, proposition_id, tag_id, polarity, created) 
       values ($1, $2, $3, $4, $5) 
       returning *`,
@@ -30,6 +31,7 @@ exports.PropositionTagVotesDao = class PropositionTagVotesDao {
 
   readPropositionTagVoteForId(propositionTagVoteId) {
     return this.database.query(
+      'readPropositionTagVoteForId',
       `select * from proposition_tag_votes where proposition_tag_vote_id = $1 and deleted is null`,
       [propositionTagVoteId]
     )
@@ -38,13 +40,14 @@ exports.PropositionTagVotesDao = class PropositionTagVotesDao {
 
   readPropositionTagVote(userId, propositionId, tagId) {
     return this.database.query(
+      'readPropositionTagVote',
       `select * 
-      from proposition_tag_votes 
-        where 
-              user_id = $1 
-          and proposition_id = $2 
-          and tag_id = $3 
-          and deleted is null
+        from proposition_tag_votes 
+          where 
+                user_id = $1 
+            and proposition_id = $2 
+            and tag_id = $3 
+            and deleted is null
       `,
       [userId, propositionId, tagId]
     )
@@ -53,6 +56,7 @@ exports.PropositionTagVotesDao = class PropositionTagVotesDao {
 
   readVotesForPropositionIdAsUser(userId, propositionId) {
     return this.database.query(
+      'readVotesForPropositionIdAsUser',
       `select * 
       from proposition_tag_votes 
         where 
@@ -66,12 +70,13 @@ exports.PropositionTagVotesDao = class PropositionTagVotesDao {
   }
 
   readVotes() {
-    return this.database.query(`select * from proposition_tag_votes where deleted is null`)
+    return this.database.query('readVotes', `select * from proposition_tag_votes where deleted is null`)
       .then(mapMany(toPropositionTagVote))
   }
 
   deletePropositionTagVote(userId, propositionTagVoteId, now) {
     return this.database.query(
+      'deletePropositionTagVote',
       `update proposition_tag_votes 
       set deleted = $1 
       where 

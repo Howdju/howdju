@@ -113,6 +113,20 @@ const routes = [
         .then( (rankedWrits) => ok({callback, body: rankedWrits}))
   },
   {
+    id: 'searchPersorgs',
+    path: 'search-persorgs',
+    method: httpMethods.GET,
+    async handler(appProvider, {
+      callback,
+      request: {
+        queryStringParameters: { searchText }
+      },
+    }) {
+      const rankedPersorgs = await appProvider.persorgsNameSearcher.search(searchText)
+      return ok({callback, body: rankedPersorgs})
+    }
+  },
+  {
     id: 'mainSearch',
     path: 'search',
     method: httpMethods.GET,
@@ -229,13 +243,61 @@ const routes = [
       callback,
       request: {
         authToken,
-        method,
-        path,
         pathParameters: [propositionId],
       }
     }) => appProvider.propositionsService.deleteProposition(authToken, propositionId)
       .then( () => ok({callback}) )
       .catch(AuthorizationError, rethrowTranslatedErrors('proposition'))
+  },
+
+  /*
+   * Statements
+   */
+  {
+    id: 'createStatement',
+    path: new RegExp('^statements$'),
+    method: httpMethods.POST,
+    async handler(appProvider, {
+      callback,
+      request: {
+        authToken,
+        body: {statement: inStatement}}
+    }) {
+      const {isExtant, statement} = await appProvider.statementsService.readOrCreate(authToken, inStatement)
+      return ok({callback, body: {isExtant, statement}})
+    }
+  },
+  {
+    id: 'readStatement',
+    path: new RegExp('^statements/([^/]+)$'),
+    method: httpMethods.GET,
+    async handler(appProvider, {
+      callback,
+      request: {
+        pathParameters: [statementId]
+      }
+    }) {
+      const statement = await appProvider.statementsService.readStatementForId(statementId)
+      return ok({callback, body: {statement}})
+    }
+  },
+
+  /*
+   * Persorgs
+   */
+  {
+    id: 'readPersorg',
+    path: new RegExp('^persorgs/([^/]+)$'),
+    method: httpMethods.GET,
+    async handler(appProvider, {
+      callback,
+      request: {
+        pathParameters: [persorgId]
+      }
+    }) {
+      const persorg = await appProvider.persorgsService.readPersorgForId(persorgId)
+      return ok({callback, body: {persorg}})
+    }
   },
 
   /*

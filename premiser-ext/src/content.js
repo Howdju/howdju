@@ -41,6 +41,7 @@ function annotateAndEdit() {
   const annotation = annotateSelection()
   showSidebar(({frame}) => {
     frame.contentWindow.postMessage({
+      source: 'extension',
       action: 'createJustification',
       payload: {
         content: annotation.getContent(),

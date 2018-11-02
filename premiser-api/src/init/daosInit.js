@@ -11,6 +11,7 @@ const {
   JustificationBasisCompoundsDao,
   JustificationVotesDao,
   PermissionsDao,
+  PersorgsDao,
   PerspectivesDao,
   PicRegionsDao,
   SourceExcerptParaphrasesDao,
@@ -18,6 +19,7 @@ const {
   PropositionCompoundsDao,
   PropositionTagsDao,
   PropositionTagVotesDao,
+  StatementsDao,
   TagsDao,
   UserExternalIdsDao,
   UserGroupsDao,
@@ -46,7 +48,9 @@ exports.init = function init(provider) {
   const justificationBasisCompoundsDao = new JustificationBasisCompoundsDao(logger, database, sourceExcerptParaphrasesDao)
   const justificationsDao = new JustificationsDao(logger, database, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao)
   const permissionsDao = new PermissionsDao(logger, database)
+  const persorgsDao = new PersorgsDao(logger, database)
   const perspectivesDao = new PerspectivesDao(logger, database)
+  const statementsDao = new StatementsDao(logger, database, propositionsDao)
   const userExternalIdsDao = new UserExternalIdsDao(database)
   const userGroupsDao = new UserGroupsDao(database)
   const userPermissionsDao = new UserPermissionsDao(database)
@@ -65,6 +69,7 @@ exports.init = function init(provider) {
     justificationBasisCompoundsDao,
     justificationsDao,
     permissionsDao,
+    persorgsDao,
     perspectivesDao,
     picRegionsDao,
     sourceExcerptParaphrasesDao,
@@ -72,6 +77,7 @@ exports.init = function init(provider) {
     propositionsDao,
     propositionTagsDao,
     propositionTagVotesDao,
+    statementsDao,
     tagsDao,
     urlsDao,
     userExternalIdsDao,

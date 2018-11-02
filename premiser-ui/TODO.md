@@ -732,6 +732,7 @@ Cat meeting design notes:
 
 
 ## Cool 
+* https://github.com/palmerhq/the-platform
 * [Talk rich text editor](https://github.com/coralproject/talk/tree/master/plugins/talk-plugin-rich-text/client/components/rte)
 * [Bundle Buddy helps optimize webpack bundles](https://github.com/samccone/bundle-buddy)
 * Collaborative editor: https://github.com/philholden/redux-swarmlog

@@ -11,7 +11,8 @@ exports.MainSearchService = class MainSearchService {
     propositionsTextSearcher,
     writsTitleSearcher,
     writQuotesQuoteTextSearcher,
-    writQuotesService
+    writQuotesService,
+    persorgsNameSearcher
   ) {
     requireArgs({
       logger,
@@ -19,7 +20,8 @@ exports.MainSearchService = class MainSearchService {
       writQuotesService,
       propositionsTextSearcher,
       writsTitleSearcher,
-      writQuotesQuoteTextSearcher
+      writQuotesQuoteTextSearcher,
+      persorgsNameSearcher,
     })
     this.logger = logger
     this.tagsService = tagsService
@@ -27,6 +29,7 @@ exports.MainSearchService = class MainSearchService {
     this.writsTitleSearcher = writsTitleSearcher
     this.writQuotesQuoteTextSearcher = writQuotesQuoteTextSearcher
     this.writQuotesService = writQuotesService
+    this.persorgsNameSearcher = persorgsNameSearcher
   }
 
   search(searchText) {
@@ -36,6 +39,7 @@ exports.MainSearchService = class MainSearchService {
       writTitles: this.writsTitleSearcher.search(searchText),
       writQuoteQuoteTexts: this.writQuotesQuoteTextSearcher.search(searchText),
       writQuoteUrls: this.writQuotesService.readWritQuotesHavingUrlContainingText(searchText),
+      persorgsFromName: this.persorgsNameSearcher.search(searchText),
     })
   }
 }

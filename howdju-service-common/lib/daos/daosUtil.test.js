@@ -1,6 +1,6 @@
 const {
   normalizeText
-} = require('./util')
+} = require('./daosUtil')
 
 describe('normalizeText', () => {
   test('Should normalize burred characters', () => {

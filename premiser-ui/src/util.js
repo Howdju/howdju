@@ -1,31 +1,13 @@
 import get from 'lodash/get'
+import validUrl from 'valid-url'
+import isValidDomain from 'is-valid-domain'
 
 import {
-  isDefined
+  isDefined,
+  extractDomain,
 } from 'howdju-common'
 
 import config from './config'
-
-export function extractDomain(url) {
-
-  let domain = null
-  if (!url) {
-    return domain
-  }
-
-  //find & remove protocol (http, ftp, etc.) and get domain
-  if (url.indexOf("://") > -1) {
-    domain = url.split('/')[2]
-  }
-  else {
-    domain = url.split('/')[0]
-  }
-
-  //find & remove port number
-  domain = domain.split(':')[0]
-
-  return domain
-}
 
 export const isWindowNarrow = () => {
   return window.innerWidth < config.ui.narrowBreakpoint
@@ -86,4 +68,24 @@ export const getDimensionInfo = () => {
     }
   }
   return dimensionInfo
+}
+
+export function isValidUrl(value) {
+  return !!validUrl.isUri(value)
+}
+
+export function hasValidDomain(url) {
+  const domain = extractDomain(url)
+  if (!domain) return false
+  return isValidDomain(domain)
+}
+
+export function isWikipediaUrl(url) {
+  const domain = extractDomain(url)
+  return domain.endsWith('wikipedia.org')
+}
+
+export function isTwitterUrl(url) {
+  const domain = extractDomain(url)
+  return domain.endsWith('twitter.com')
 }

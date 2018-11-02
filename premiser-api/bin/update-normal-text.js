@@ -24,7 +24,7 @@ function run() {
 }
 
 function updateNormalText(rowsQuery, updateRowFn, rowDescription) {
-  return database.query(rowsQuery)
+  return database.query('updateNormalText', rowsQuery)
     .then( ({rows}) => Promise.all(map(rows, updateRowFn)))
     .then( (updates) => {
       const count = sumBy(updates, update => update.rows.length)
@@ -35,6 +35,7 @@ function updateNormalText(rowsQuery, updateRowFn, rowDescription) {
 
 function updatePropositionRowNormalText (row) {
   return database.query(
+    'updatePropositionRowNormalText',
     'update propositions set normal_text = $1 where proposition_id = $2 returning *',
     [normalizeText(row.text), row.proposition_id]
   )
@@ -42,6 +43,7 @@ function updatePropositionRowNormalText (row) {
 
 function updateWritRowNormalTitle(row) {
   return database.query(
+    'updateWritRowNormalTitle',
     'update writs set normal_title = $1 where writ_id = $2 returning *',
     [normalizeText(row.title), row.writ_id]
   )
@@ -49,6 +51,7 @@ function updateWritRowNormalTitle(row) {
 
 function updateWritQuoteRowNormalQuoteText(row) {
   return database.query(
+    'updateWritQuoteRowNormalQuoteText',
     'update writ_quotes set normal_quote_text = $1 where writ_quote_id = $2 returning *',
     [normalizeText(row.quote_text), row.writ_quote_id]
   )

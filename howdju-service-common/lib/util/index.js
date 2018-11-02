@@ -1,1 +1,7 @@
-module.exports = require('./util')
+const {assign} = require('lodash')
+
+module.exports = assign(
+  {},
+  require('./apiUtil'),
+  require('./testUtil')
+)

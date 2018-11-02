@@ -1,6 +1,7 @@
 import assign from 'lodash/assign'
 import camelCase from 'lodash/camelCase'
 import cloneDeep from 'lodash/cloneDeep'
+import drop from 'lodash/drop'
 import dropWhile from 'lodash/dropWhile'
 import flatMap from 'lodash/flatMap'
 import forEach from 'lodash/forEach'
@@ -252,14 +253,38 @@ export function combineIds(...ids) {
 
 export function combineSuggestionsKeys(...keys) {
   // If the initial suggestions key is falsy, return it to indicate no suggestions
-  return head(keys) ? join(map(keys, camelCase), '.') : head(keys)
+  if (!head(keys)) {
+    return head(keys)
+  }
+  keys = map(keys, camelCase)
+  return join(keys, '.')
+}
+
+
+/**
+ * A data wrapper class that indicates that a value needs to be referenced as an array index
+ *
+ * e.g. combineNames('foo', ArrayIndex(2), 'bar') === 'foo[2].bar'
+ */
+class ArrayIndex {
+  constructor(index) {
+    this.index = index
+  }
+}
+/** convenience factory for ArrayIndex */
+export function array(index) {
+  return new ArrayIndex(index)
 }
 
 export function combineNames(...names) {
   // Don't convert case; the names must match the object model for use with get/set
   // I think each and every name should be truthy.  How else could they be relied upon for get/set?
   names = dropWhile(names, isFalsey)
-  return join(names, '.')
+  const firstName = head(names)
+  const remainingNames = drop(names, 1)
+  const remainingNamesWithConnector = map(remainingNames, (n) => n instanceof ArrayIndex ? `[${n.index}]` : `.${n}`)
+  names = [firstName].concat(remainingNamesWithConnector)
+  return join(names, '')
 }
 
 export function makeChip(props) {

@@ -36,18 +36,22 @@ exports.TextSearcher = class TextSearcher {
     const tsquery = tsqueryParts.join(' || ')
     return this.database.queries([
       {
+        queryName: 'searchFullTextPhraseQuery',
         sql: this.searchFullTextPhraseQuery,
         args: [normalSearchText]
       },
       {
+        queryName: 'searchFullTextPlainQuery',
         sql: this.searchFullTextPlainQuery,
         args: [normalSearchText]
       },
       {
+        queryName: 'searchFullTextRawQuery',
         sql: makeSearchFullTextRawQuery(this.tableName, this.textColumnName, tsquery),
         args: searchTextWords
       },
       {
+        queryName: 'searchContainingTextQuery',
         sql: this.searchContainingTextQuery,
         args: [normalSearchText]
       },

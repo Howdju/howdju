@@ -52,6 +52,7 @@ import t, {
   MAIN_TABS_ABOUT_TAB_NAME,
 } from "./texts"
 import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
+import ErrorBoundary from './ErrorBoundary'
 
 import Header from './Header'
 import routes from './routes'
@@ -409,34 +410,36 @@ class App extends Component {
       'width=device-width, initial-scale=1, user-scalable=no'
 
     return (
-      <ConnectedRouter history={history}>
-        <div id="app"
-             onClick={this.onClickApp}
-        >
-          <Helmet>
-            <title>{title}</title>
-            <meta name="viewport" content={viewportContent} />
-          </Helmet>
+      <ErrorBoundary>
+        <ConnectedRouter history={history}>
+          <div id="app"
+               onClick={this.onClickApp}
+          >
+            <Helmet>
+              <title>{title}</title>
+              <meta name="viewport" content={viewportContent} />
+            </Helmet>
 
-          <Header tabs={pageTabs} />
+            <Header tabs={pageTabs} />
 
-          {navDrawer}
+            {navDrawer}
 
-          <div id="page" className={cn({
-            "md-toolbar-relative": !pageTabs,
-            "md-toolbar-relative--prominent": !!pageTabs,
-          })}>
+            <div id="page" className={cn({
+              "md-toolbar-relative": !pageTabs,
+              "md-toolbar-relative--prominent": !!pageTabs,
+            })}>
 
-            <Switch>
-              {routes}
-            </Switch>
+              <Switch>
+                {routes}
+              </Switch>
+
+            </div>
+
+            <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
 
           </div>
-
-          <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
-
-        </div>
-      </ConnectedRouter>
+        </ConnectedRouter>
+      </ErrorBoundary>
     )
   }
 }

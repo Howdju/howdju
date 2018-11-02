@@ -1,6 +1,6 @@
 const {
   mapSingle,
-} = require('./util')
+} = require('./daosUtil')
 const {
   toJobHistory
 } = require('./orm')
@@ -14,6 +14,7 @@ exports.JobHistoryDao = class JobHistoryDao {
 
   createJobHistory(jobType, jobScope, startedAt) {
     return this.database.query(
+      'createJobHistory',
       `insert into job_history (job_type, job_scope, started_at) 
        values ($1, $2, $3)
        returning *`, [jobType, jobScope, startedAt])
@@ -22,6 +23,7 @@ exports.JobHistoryDao = class JobHistoryDao {
 
   updateJobCompleted(jobHistory, jobStatus, completedAt, message) {
     return this.database.query(
+      'updateJobCompleted',
       `update job_history set status = $1, completed_at = $2, message = $3 where job_history_id = $4`,
       [jobStatus, completedAt, message, jobHistory.id]
     )

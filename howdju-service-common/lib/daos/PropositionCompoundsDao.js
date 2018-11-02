@@ -8,7 +8,7 @@ const mapValues = require('lodash/mapValues')
 const map = require('lodash/map')
 const sortBy = require('lodash/sortBy')
 const values = require('lodash/values')
-const {normalizeText} = require("./util")
+const {normalizeText} = require("./daosUtil")
 
 const {
   JustificationBasisType
@@ -33,15 +33,17 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
     const sql = `
       insert into proposition_compounds (creator_user_id, created) values ($1, $2) returning *
     `
-    return this.database.query(sql, [userId, now])
+    return this.database.query('createPropositionCompound', sql, [userId, now])
       .then( ({rows: [row]}) => toPropositionCompound(row))
   }
 
   createPropositionCompoundAtom(propositionCompound, propositionCompoundAtom, orderPosition) {
-    return this.database.query(`
-      insert into proposition_compound_atoms (proposition_compound_id, proposition_id, order_position) 
-        values ($1, $2, $3) 
-        returning *`,
+    return this.database.query(
+      'createPropositionCompoundAtom',
+      `
+        insert into proposition_compound_atoms (proposition_compound_id, proposition_id, order_position) 
+          values ($1, $2, $3) 
+          returning *`,
       [propositionCompound.id, propositionCompoundAtom.entity.id, orderPosition]
     )
       .then( ({rows: [row]}) => toPropositionCompoundAtom(row) )
@@ -65,7 +67,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
             and s.deleted is null
         order by sc.proposition_compound_id, sca.order_position
           `
-    return this.database.query(sql, [propositionCompoundId])
+    return this.database.query('createPropositionCompoundAtom', sql, [propositionCompoundId])
       .then( ({rows}) => {
         const row = head(rows)
         if (!row) {
@@ -137,7 +139,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
     //   order by sc.proposition_compound_id, sca.order_position
     // `
 
-    return this.database.query(sql, args)
+    return this.database.query('readPropositionCompoundEquivalentTo', sql, args)
       .then( ({rows}) => {
         if (rows.length < 1) {
           return null
@@ -217,7 +219,11 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
         sca.proposition_compound_id,
         sca.order_position
     `
-    return this.database.query(sql, [rootPropositionId, JustificationBasisType.PROPOSITION_COMPOUND])
+    return this.database.query(
+      'readPropositionAtomsByPropositionCompoundIdForRootPropositionId',
+      sql,
+      [rootPropositionId, JustificationBasisType.PROPOSITION_COMPOUND]
+    )
       .then( ({rows}) => {
         const propositionAtomsByPropositionCompoundId = {}
         forEach(rows, row => {

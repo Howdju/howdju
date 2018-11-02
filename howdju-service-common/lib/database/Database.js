@@ -4,7 +4,8 @@ const isDate = require('lodash/isDate')
 const map = require('lodash/map')
 
 const {
-  timestampFormatString
+  timestampFormatString,
+  requireArgs,
 } = require('howdju-common')
 
 
@@ -26,17 +27,15 @@ exports.Database = class Database {
     this.pool = pool
   }
 
-  query(sql, args) {
-    if (!sql) {
-      throw new Error('sql is required')
-    }
+  query(queryName, sql, args) {
+    requireArgs({queryName, sql})
 
     const utcArgs = map(args, toUtc)
-    this.logger.silly('Database.query', {sql, utcArgs})
+    this.logger.silly('Database.query', {queryName, sql, utcArgs})
     return this.pool.query(sql, utcArgs)
   }
 
   queries(queryAndArgs) {
-    return Promise.all(map(queryAndArgs, ({sql, args}) => this.query(sql, args)))
+    return Promise.all(map(queryAndArgs, ({queryName, sql, args}) => this.query(queryName, sql, args)))
   }
 }

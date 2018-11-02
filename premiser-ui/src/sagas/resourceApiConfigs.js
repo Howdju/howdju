@@ -26,11 +26,14 @@ import {
   propositionCompoundSchema,
   propositionJustificationsSchema,
   propositionTagVoteSchema,
+  statementSchema,
   tagsSchema,
   writQuoteSchema,
   writsSchema,
   writQuotesSchema,
   tagSchema,
+  persorgSchema,
+  persorgsSchema,
 } from '../schemas'
 
 
@@ -95,6 +98,14 @@ export const resourceApiConfigs = {
       }
     },
   }),
+  [api.createStatement]: (payload) => ({
+    endpoint: 'statements',
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload
+    },
+    schema: {statement: statementSchema}
+  }),
   [api.createJustification]: (payload) => ({
     endpoint: 'justifications',
     fetchInit: {
@@ -118,6 +129,10 @@ export const resourceApiConfigs = {
   [api.fetchTag]: (payload) => ({
     endpoint: `tags/${payload.tagId}`,
     schema: {tag: tagSchema}
+  }),
+  [api.fetchPersorg]: (payload) => ({
+    endpoint: `persorgs/${payload.persorgId}`,
+    schema: {persorg: persorgSchema},
   }),
 
   /* Recents */
@@ -290,6 +305,11 @@ export const resourceApiConfigs = {
     endpoint: `search-writs?searchText=${payload.writTitle}`,
     cancelKey: str(api.fetchWritTitleSuggestions) + '.' + payload.suggestionsKey,
     schema: writsSchema,
+  }),
+  [api.fetchPersorgNameSuggestions]: (payload) => ({
+    endpoint: `search-persorgs?searchText=${payload.searchText}`,
+    cancelKey: `${api.fetchPersorgNameSuggestions}.${payload.suggestionsKey}`,
+    schema: persorgsSchema,
   }),
 
   [api.fetchMainSearchResults]: (payload) => ({

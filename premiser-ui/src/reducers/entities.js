@@ -48,6 +48,7 @@ export default handleActions({
     api.fetchWritQuote.response,
     api.createProposition.response,
     api.updateProposition.response,
+    api.createStatement.response,
     api.updateWritQuote.response,
     api.fetchMainSearchSuggestions.response,
     api.fetchPropositionTextSuggestions.response,
@@ -58,11 +59,13 @@ export default handleActions({
     api.antiTagProposition.response,
     api.fetchTag.response,
     api.fetchTaggedPropositions.response,
+    api.fetchPersorg.response,
   )]: {
     next: (state, action) => {
       const updates = map([
         ['perspectives'],
         ['propositions', entityAssignWithCustomizer],
+        ['statements', entityAssignWithCustomizer],
         ['propositionCompounds'],
         ['justifications', justificationsCustomizer()],
         ['justificationVotes'],
@@ -72,6 +75,7 @@ export default handleActions({
         ['justificationBasisCompounds'],
         ['tags'],
         ['propositionTagVotes'],
+        ['persorgs'],
       ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
@@ -352,6 +356,7 @@ function entityAssignWithCustomizer(oldEntity, newEntity, key, object, source) {
   let updatedEntity = oldEntity
   forEach(newEntity, (prop, name) => {
     if (prop !== oldEntity[name]) {
+      // Copy-on-write
       if (updatedEntity === oldEntity) {
         updatedEntity = {...oldEntity}
       }

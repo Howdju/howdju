@@ -55,7 +55,7 @@ class PerspectivesDao {
         ${votesJoinSql}
     `
     const args = userId ? [userId] : undefined
-    return this.database.query(perspectiveJustificationsSql, args)
+    return this.database.query('readFeaturedPerspectivesWithVotesForOptionalUserId', perspectiveJustificationsSql, args)
       .then( ({rows}) => {
         const transitiveRowsPromise =
           this._readFeaturedPerspectiveJustificationTransitiveJustifications(userId, 1, 4, rows)
@@ -132,7 +132,7 @@ class PerspectivesDao {
           ${transitiveSql}
           ${votesJoinSql}
     `
-    return this.database.query(sql, args)
+    return this.database.query('_readFeaturedPerspectiveJustificationTransitiveJustifications', sql, args)
       .then( ({rows: newRows}) => {
 
         const combinedRows = concat(rows, newRows)
@@ -186,7 +186,11 @@ class PerspectivesDao {
               ${justificationsJoinSql}
               ${votesJoinSql}
           `
-    return this.database.query(counteredJustificationsSql, [userId, JustificationTargetType.JUSTIFICATION])
+    return this.database.query(
+      '_readFeaturedPerspectivesCounteredJustifications',
+      counteredJustificationsSql,
+      [userId, JustificationTargetType.JUSTIFICATION]
+    )
       .then( ({rows: newRows}) => {
         if (newRows.length > 0) {
           return this._readFeaturedPerspectivesCounteredJustifications(userId, targetHeight + 1, rows.concat(newRows))

@@ -18,6 +18,7 @@ import JustificationsSearchPage from './JustificationsSearchPage'
 import NotFoundPage from './NotFoundPage'
 import MainSearchPage from './MainSearchPage'
 import LandingPage from './LandingPage'
+import PersorgPage from './PersorgPage'
 import paths, {createJustificationPath} from './paths'
 import mainSearcher from './mainSearcher'
 import {history} from './history'
@@ -40,6 +41,7 @@ const routes = [
   <Route key="about" exact path={paths.about()} component={AboutPage} />,
 
   <Route key="proposition" exact path="/s/:propositionId/:propositionSlug?" component={PropositionJustificationsPage} />,
+  <Route key="persorg" exact path="/persorgs/:persorgId" component={PersorgPage} />,
   <Route key="tag" exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
   <Route key="searchJustifications" exact path="/search-justifications" component={JustificationsSearchPage} />,
 

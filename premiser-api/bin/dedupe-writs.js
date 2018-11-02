@@ -14,22 +14,23 @@ const {database, pool} = appProvider
 dedupeWrits()
 
 function dedupeWrits() {
-  return database.query(`
-    with
-      duplicates as (
-        select 
-            normal_title
-          , min(writ_id) as min_writ_id
-        from writs
-        group by normal_title
-        having count(normal_title) > 1
-      )
-    select 
-        writ_id
-      , min_writ_id
-    from writs 
-      join duplicates using (normal_title)
-  `)
+  return database.query('dedupeWrits.select',
+    `
+      with
+        duplicates as (
+          select 
+              normal_title
+            , min(writ_id) as min_writ_id
+          from writs
+          group by normal_title
+          having count(normal_title) > 1
+        )
+      select 
+          writ_id
+        , min_writ_id
+      from writs 
+        join duplicates using (normal_title)
+    `)
     .then(({rows}) => {
       const duplicateWritIdsByMinDuplicateWritId = mapValues(groupBy(rows, row => row.min_writ_id), group => map(group, row => row.writ_id))
       return duplicateWritIdsByMinDuplicateWritId
@@ -38,7 +39,11 @@ function dedupeWrits() {
       return Promise.all([
         duplicateWritIdsByMinDuplicateWritId,
         Promise.all(map(duplicateWritIdsByMinDuplicateWritId, (duplicateWritIds, minDuplicateWritId) =>
-          database.query(`update writ_quotes set writ_id = $1 where writ_id = any ($2)`, [minDuplicateWritId, duplicateWritIds])
+          database.query(
+            'dedupeWrits.update',
+            `update writ_quotes set writ_id = $1 where writ_id = any ($2)`,
+            [minDuplicateWritId, duplicateWritIds]
+          )
         ))
       ])
     })

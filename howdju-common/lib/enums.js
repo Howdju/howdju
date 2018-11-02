@@ -128,3 +128,8 @@ _e.ValidJustificationSearchFilters = [
   'sourceExcerptParaphraseId',
   'propositionId',
 ]
+
+_e.SentenceType = arrayToObject([
+  'PROPOSITION',
+  'STATEMENT',
+])

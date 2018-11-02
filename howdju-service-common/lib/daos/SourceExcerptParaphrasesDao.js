@@ -12,7 +12,7 @@ const {
 const {
   mapSingle,
   mapManyById,
-} = require('./util')
+} = require('./daosUtil')
 const {
   toSourceExcerptParaphrase,
   toProposition,
@@ -37,6 +37,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       sourceExcerpt
     } = sourceExcerptParaphrase
     return this.database.query(
+      'createSourceExcerptParaphrase',
       `insert into source_excerpt_paraphrases (paraphrasing_proposition_id, source_excerpt_type, source_excerpt_id, creator_user_id, created) 
       values ($1, $2, $3, $4, $5)
       returning *`,
@@ -52,14 +53,20 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
 
   readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {userId}) {
     return this.database.query(
+      'readSourceExcerptParaphraseForId',
       `select * from source_excerpt_paraphrases where source_excerpt_paraphrase_id = $1 and deleted is null`,
       [sourceExcerptParaphraseId]
     )
       .then(mapSingle(this.logger, toSourceExcerptParaphrase, 'source_excerpt_paraphrases', {sourceExcerptParaphraseId}))
   }
 
-  readSourceExcerptHavingPropositionIdAndSourceExcerptTypeAndId(paraphrasingPropositionId, sourceExcerptType, sourceExcerptId) {
+  readSourceExcerptHavingPropositionIdAndSourceExcerptTypeAndId(
+    paraphrasingPropositionId,
+    sourceExcerptType,
+    sourceExcerptId
+  ) {
     return this.database.query(
+      'readSourceExcerptHavingPropositionIdAndSourceExcerptTypeAndId',
       `select * from source_excerpt_paraphrases where paraphrasing_proposition_id = $1 and source_excerpt_type = $2 and source_excerpt_id = $3`,
       [paraphrasingPropositionId, sourceExcerptType, sourceExcerptId]
     )
@@ -90,7 +97,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       rootPropositionId
     ]
     return Promise.all([
-      this.database.query(sql, args),
+      this.database.query('readSourceExcerptParaphrasesByIdForRootPropositionId', sql, args),
       readParaphrasingPropositionsByIdForRootPropositionId(this.logger, this.database, rootPropositionId),
       this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootPropositionId),
       this.picRegionsDao.readPicRegionsByIdForRootPropositionId(rootPropositionId),
@@ -154,6 +161,6 @@ function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, 
     JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
     rootPropositionId
   ]
-  return database.query(sql, args)
+  return database.query('readParaphrasingPropositionsByIdForRootPropositionId', sql, args)
     .then(mapManyById(toProposition))
 }

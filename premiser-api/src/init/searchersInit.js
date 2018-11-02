@@ -4,6 +4,7 @@ const {
   makePropositionTextSearcher,
   makeWritTitleSearcher,
   makeWritQuoteQuoteTextSearcher,
+  makePersorgsNameSearcher,
 } = require('howdju-service-common')
 
 exports.init = function init(provider) {
@@ -11,5 +12,6 @@ exports.init = function init(provider) {
     propositionsTextSearcher: makePropositionTextSearcher(provider.database),
     writsTitleSearcher: makeWritTitleSearcher(provider.database),
     writQuotesQuoteTextSearcher: makeWritQuoteQuoteTextSearcher(provider.database),
+    persorgsNameSearcher: makePersorgsNameSearcher(provider.database),
   })
 }

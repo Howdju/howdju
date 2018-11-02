@@ -2,12 +2,13 @@ import React, {Component} from "react"
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import {schemas} from 'howdju-common'
+
 import {
   api, mapActionCreatorGroupToDispatchToProps
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
 import {tagSchema} from "./schemas"
-import config from './config'
 
 
 class TagNameAutocomplete extends Component {
@@ -33,7 +34,7 @@ class TagNameAutocomplete extends Component {
 
     return (
       <ApiAutocomplete
-        maxLength={config.ui.tagNameMaxLength}
+        maxLength={schemas.tagNameMaxLength}
         rows={1}
         maxRows={1}
         singleLine={true}

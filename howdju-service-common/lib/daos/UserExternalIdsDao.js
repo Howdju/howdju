@@ -18,9 +18,15 @@ exports.UserExternalIdsDao = class UserExternalIdsDao {
       args.push(uuid.v4())
       params.push('$' + args.length)
     })
-    return this.database.query(`insert into user_external_ids (user_id, google_analytics_id, mixpanel_id, heap_analytics_id, sentry_id, smallchat_id) 
-      values (${params.join(',')})
-      returning *`, args)
+    return this.database.query(
+      'createExternalIdsForUserId',
+      `
+        insert into user_external_ids (user_id, google_analytics_id, mixpanel_id, heap_analytics_id, sentry_id, smallchat_id) 
+          values (${params.join(',')})
+          returning *
+      `,
+      args
+    )
       .then( ({rows: [row]}) => toUserExternalIds(row))
   }
 }

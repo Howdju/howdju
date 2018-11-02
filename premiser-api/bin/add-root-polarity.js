@@ -8,7 +8,7 @@ const {
 
 const appProvider = new AppProvider()
 
-const updateRootPolarity = () => appProvider.database.query(`
+const updateRootPolarity = () => appProvider.database.query('updateRootPolarity', `
       update justifications j1
         set root_polarity = 
           case 
@@ -28,7 +28,7 @@ const updateRootPolarity = () => appProvider.database.query(`
   })
 
 const updateRootJustificationsRootPolarity =
-  appProvider.database.query(
+  appProvider.database.query('updateRootJustificationsRootPolarity',
     `update justifications set root_polarity = polarity where target_type = $1 and root_polarity is null`,
     [JustificationTargetType.PROPOSITION]
   )

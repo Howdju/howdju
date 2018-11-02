@@ -21,7 +21,7 @@ exports.UrlsDao = class UrlsDao {
   }
 
   readUrlForUrl(url) {
-    return this.database.query('select * from urls where url = $1 and deleted is null', [url])
+    return this.database.query('readUrlForUrl', 'select * from urls where url = $1 and deleted is null', [url])
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`${rows.length} equivalent URLs`, {url})
@@ -78,7 +78,7 @@ exports.UrlsDao = class UrlsDao {
             and wqu.deleted is null
             and u.deleted is null
     `
-    return this.database.query(sql, [
+    return this.database.query('readUrlsByWritQuoteIdForRootPropositionId', sql, [
       rootPropositionId,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
@@ -89,7 +89,7 @@ exports.UrlsDao = class UrlsDao {
   }
 
   readDomains() {
-    return this.database.query(`select distinct substring( url from '.*://([^/]*)' ) as domain from urls order by domain`)
+    return this.database.query('readDomains', `select distinct substring( url from '.*://([^/]*)' ) as domain from urls order by domain`)
       .then(({rows}) => map(rows, row => row.domain))
   }
 
@@ -98,7 +98,7 @@ exports.UrlsDao = class UrlsDao {
   }
 
   createUrl(url, userId, now) {
-    return this.database.query('insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *', [url.url, userId, now])
+    return this.database.query('createUrl', 'insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *', [url.url, userId, now])
       .then( ({rows: [row]}) => toUrl(row) )
   }
 }

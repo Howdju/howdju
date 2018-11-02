@@ -6,6 +6,7 @@ import {
   newExhaustedEnumError,
 } from 'howdju-common'
 
+import {combineIds} from './viewModels'
 import PropositionEntityViewer from './PropositionEntityViewer'
 import SourceExcerptParaphraseEntityViewer from './SourceExcerptParaphraseEntityViewer'
 
@@ -24,7 +25,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
       trailPropositions,
     } = this.props
 
-    const entityViewerId = `${id}-entity`
+    const entityViewerId = combineIds(id, 'entity')
 
     switch (atom.type) {
       case JustificationBasisCompoundAtomType.PROPOSITION:

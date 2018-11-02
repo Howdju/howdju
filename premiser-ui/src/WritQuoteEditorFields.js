@@ -5,18 +5,19 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import has from 'lodash/has'
 
+import {schemas} from 'howdju-common'
+
 import WritTitleAutocomplete from "./WritTitleAutocomplete"
 import {toErrorText} from "./modelErrorMessages"
 import ErrorMessages from './ErrorMessages'
 import SingleLineTextField from './SingleLineTextField'
-
-import './WritQuoteEditorFields.scss'
 import {
   combineIds,
   combineNames,
   combineSuggestionsKeys
 } from './viewModels'
-import config from './config'
+
+import './WritQuoteEditorFields.scss'
 
 
 const writQuoteTextName = 'quoteText'
@@ -70,7 +71,7 @@ class WritQuoteEditorFields extends Component {
       name: combineNames(name, writTitleName),
       label: "Title",
       value: writTitle,
-      maxLength: config.ui.writTitleMaxLength,
+      maxLength: schemas.writTitleMaxLength,
       required: true,
       disabled: disabled || !hasWritTitle,
       onKeyDown,
@@ -89,7 +90,7 @@ class WritQuoteEditorFields extends Component {
           label="Quote"
           rows={2}
           maxRows={8}
-          maxLength={config.ui.quoteTextMaxLength}
+          maxLength={schemas.quoteTextMaxLength}
           value={quoteText}
           onChange={this.onChange}
           disabled={disabled || !has(writQuote, writQuoteTextName)}

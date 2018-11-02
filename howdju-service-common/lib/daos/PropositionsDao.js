@@ -18,7 +18,7 @@ const {toProposition} = require("./orm")
 const {
   normalizeText,
   mapMany,
-} = require('./util')
+} = require('./daosUtil')
 const {DatabaseSortDirection} = require('./daoModels')
 
 
@@ -30,7 +30,11 @@ exports.PropositionsDao = class PropositionsDao {
   }
 
   readPropositionByText(propositionText) {
-    return this.database.query('select * from propositions where normal_text = $1 and deleted is null', [normalizeText(propositionText)])
+    return this.database.query(
+      'readPropositionByText',
+      'select * from propositions where normal_text = $1 and deleted is null',
+      [normalizeText(propositionText)]
+    )
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`More than one (${rows.length}) propositions have text "${propositionText}"`)
@@ -68,7 +72,7 @@ exports.PropositionsDao = class PropositionsDao {
       ${orderBySql}
       ${countSql}
       `
-    return this.database.query(sql, args)
+    return this.database.query('readPropositions', sql, args)
       .then(({rows}) => map(rows, toProposition))
   }
 
@@ -115,12 +119,13 @@ exports.PropositionsDao = class PropositionsDao {
       ${orderBySql}
       ${countSql}
       `
-    return this.database.query(sql, args)
+    return this.database.query('readMorePropositions', sql, args)
       .then( ({rows}) => map(rows, toProposition) )
   }
 
   readPropositionsForIds(propositionIds) {
     return this.database.query(
+      'readPropositionsForIds',
       `select * from propositions where proposition_id = any ($1) and deleted is null`,
       [propositionIds]
     )
@@ -128,14 +133,16 @@ exports.PropositionsDao = class PropositionsDao {
   }
 
   readPropositionForId(propositionId) {
-    return this.database.query(`
-      with 
-        extant_users as (select * from users where deleted is null)
-      select 
-          s.*
-        , u.long_name as creator_user_long_name
-      from propositions s left join extant_users u on s.creator_user_id = u.user_id
-        where s.proposition_id = $1 and s.deleted is null`,
+    return this.database.query(
+      'readPropositionForId',
+      `
+        with 
+          extant_users as (select * from users where deleted is null)
+        select 
+            s.*
+          , u.long_name as creator_user_long_name
+        from propositions s left join extant_users u on s.creator_user_id = u.user_id
+          where s.proposition_id = $1 and s.deleted is null`,
       [propositionId]
     )
       .then( ({rows}) => {
@@ -148,14 +155,18 @@ exports.PropositionsDao = class PropositionsDao {
 
   createProposition(userId, proposition, now) {
     return this.database.query(
+      'createProposition',
       'insert into propositions (text, normal_text, creator_user_id, created) values ($1, $2, $3, $4) returning *',
       [cleanWhitespace(proposition.text), normalizeText(proposition.text), userId, now]
     ).then( ({rows: [row]}) => toProposition(row))
   }
 
   updateProposition(proposition) {
-    return this.database.query('update propositions set text = $1, normal_text = $2 where proposition_id = $3 and deleted is null returning *',
-      [cleanWhitespace(proposition.text), normalizeText(proposition.text), proposition.id])
+    return this.database.query(
+      'updateProposition',
+      'update propositions set text = $1, normal_text = $2 where proposition_id = $3 and deleted is null returning *',
+      [cleanWhitespace(proposition.text), normalizeText(proposition.text), proposition.id]
+    )
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`Updated more than one (${rows.length} propositions with ID ${proposition.id}`)
@@ -169,7 +180,11 @@ exports.PropositionsDao = class PropositionsDao {
   }
 
   deletePropositionById(propositionId, now) {
-    return this.database.query('update propositions set deleted = $2 where proposition_id = $1 returning proposition_id', [propositionId, now])
+    return this.database.query(
+      'deletePropositionById',
+      'update propositions set deleted = $2 where proposition_id = $1 returning proposition_id',
+      [propositionId, now]
+    )
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`More than one (${rows.length}) propositions have ID ${propositionId}`)
@@ -187,7 +202,11 @@ exports.PropositionsDao = class PropositionsDao {
           and proposition_id != $2 
           and deleted is null
       `
-    return this.database.query(sql, [normalizeText(proposition.text), proposition.id])
+    return this.database.query(
+      'countEquivalentPropositions',
+      sql,
+      [normalizeText(proposition.text), proposition.id]
+    )
       .then (result => {
         return result
       })
@@ -203,7 +222,7 @@ exports.PropositionsDao = class PropositionsDao {
           and creator_user_id != $2
           and deleted is null
     `
-    return this.database.query(sql, [proposition.id, userId])
+    return this.database.query('hasOtherUsersRootedJustifications', sql, [proposition.id, userId])
       .then( ({rows: [{result}]}) => result)
   }
 
@@ -219,7 +238,7 @@ exports.PropositionsDao = class PropositionsDao {
           and v.user_id != $2
           and v.deleted is null
     `
-    return this.database.query(sql, [proposition.id, userId])
+    return this.database.query('hasOtherUsersRootedJustificationsVotes', sql, [proposition.id, userId])
       .then( ({rows: [{result}]}) => result )
   }
 
@@ -236,7 +255,8 @@ exports.PropositionsDao = class PropositionsDao {
               sca.proposition_id = scas.proposition_id
           and scas.proposition_id = $1
     `
-    return this.database.query(sql, [proposition.id, JustificationBasisType.PROPOSITION_COMPOUND, userId])
+    return this.database.query('isBasisToOtherUsersJustifications', sql,
+      [proposition.id, JustificationBasisType.PROPOSITION_COMPOUND, userId])
       .then( ({rows: [{result}]}) => result)
   }
 }

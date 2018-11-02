@@ -14,11 +14,13 @@ const {
   PerspectivesService,
   PicRegionsService,
   SourceExcerptParaphrasesService,
+  PersorgsService,
   PropositionsService,
   PropositionCompoundsService,
   PropositionJustificationsService,
   PropositionTagVotesService,
   PropositionTagsService,
+  StatementsService,
   TagsService,
   UrlsService,
   UsersService,
@@ -85,6 +87,17 @@ exports.init = function init(provider) {
     provider.permissionsDao,
     provider.justificationsDao
   )
+
+  const persorgsService = new PersorgsService(provider.logger, provider.persorgsDao)
+
+  const statementsService = new StatementsService(
+    provider.logger,
+    authService,
+    provider.statementsDao,
+    persorgsService,
+    propositionsService,
+  )
+
   const propositionCompoundsService = new PropositionCompoundsService(
     provider.propositionCompoundValidator,
     actionsService,
@@ -164,7 +177,8 @@ exports.init = function init(provider) {
     provider.propositionsTextSearcher,
     provider.writsTitleSearcher,
     provider.writQuotesQuoteTextSearcher,
-    writQuotesService
+    writQuotesService,
+    provider.persorgsNameSearcher
   )
 
   assign(provider, {
@@ -178,11 +192,13 @@ exports.init = function init(provider) {
     permissionsService,
     perspectivesService,
     sourceExcerptParaphrasesService,
+    persorgsService,
     propositionsService,
     propositionCompoundsService,
     propositionJustificationsService,
     propositionTagsService,
     propositionTagVotesService,
+    statementsService,
     tagsService,
     urlsService,
     usersService,

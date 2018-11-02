@@ -17,12 +17,13 @@ import { handleActions } from 'redux-actions'
 import {
   apiErrorCodes,
   arrayToObject,
-  makeNewPropositionAtom,
-  makeNewJustificationBasisCompoundAtom,
-  makeNewUrl,
-  newProgrammingError,
   idEqual,
   insertAt,
+  makeNewPropositionAtom,
+  makeNewJustificationBasisCompoundAtom,
+  makeNewPersorg,
+  makeNewUrl,
+  newProgrammingError,
   removeAt,
   makePropositionTagVote,
   PropositionTagVotePolarity,
@@ -59,6 +60,7 @@ export const EditorTypes = arrayToObject([
   /* e.g. Proposition justification page */
   'PROPOSITION_JUSTIFICATION',
   'LOGIN_CREDENTIALS',
+  'PERSORG',
 ])
 
 const defaultEditorState = {
@@ -286,6 +288,27 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions({
+    [editors.addSpeaker]: (state, action) => {
+      const editEntity = state.editEntity
+      const speakers = editEntity.speakers
+      return assign({}, state, {
+        editEntity: {
+          ...editEntity,
+          speakers: [makeNewPersorg(), ...speakers  ]
+        }
+      })
+    },
+    [editors.removeSpeaker]: (state, action) => {
+      const editEntity = state.editEntity
+      const speakers = clone(editEntity.speakers)
+      removeAt(speakers, action.payload.index)
+      return assign({}, state, {
+        editEntity: {
+          ...editEntity,
+          speakers
+        }
+      })
+    },
     [editors.addUrl]: (state, action) => {
       const writQuote = {...state.editEntity.newJustification.basis.writQuote}
       writQuote.urls = writQuote.urls.concat([makeNewUrl()])

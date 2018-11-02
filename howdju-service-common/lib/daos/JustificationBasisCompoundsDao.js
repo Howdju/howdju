@@ -23,7 +23,7 @@ const {
   mapSingle,
   mapMany,
   mapManyById,
-} = require('./util')
+} = require('./daosUtil')
 
 exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
@@ -36,6 +36,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
   readJustificationBasisCompoundForId(justificationBasisCompoundId) {
     return this.database.query(
+      'readJustificationBasisCompoundForId',
       `select * from justification_basis_compounds where justification_basis_compound_id = $1 and deleted is null`,
       [justificationBasisCompoundId]
     )
@@ -44,6 +45,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
   readAtomsForJustificationBasisCompoundId(justificationBasisCompoundId) {
     return this.database.query(
+      'readAtomsForJustificationBasisCompoundId',
       `select * from justification_basis_compound_atoms 
        where justification_basis_compound_id = $1`,
       [justificationBasisCompoundId]
@@ -92,7 +94,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
       from compounds_having_only_all_target_atoms 
       order by order_position 
     `
-    return this.database.query(sql, args)
+    return this.database.query('readJustificationBasisCompoundHavingAtoms', sql, args)
       .then( ({rows}) => {
         if (rows.length < 1) {
           return null
@@ -138,7 +140,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
       rootPropositionId
     ]
     return Promise.all([
-      this.database.query(sql, args),
+      this.database.query('readJustificationBasisCompoundsByIdForRootPropositionId', sql, args),
       this.sourceExcerptParaphrasesDao.readSourceExcerptParaphrasesByIdForRootPropositionId(rootPropositionId),
       readAtomPropositionsForRootPropositionId(this.logger, this.database, rootPropositionId),
     ])
@@ -179,6 +181,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
   createJustificationBasisCompound(justificationBasisCompound, userId, now) {
     return this.database.query(
+      'createJustificationBasisCompound',
       `insert into justification_basis_compounds (creator_user_id, created)
        values ($1, $2) 
        returning *`,
@@ -193,10 +196,11 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     atomEntityId,
     orderPosition
   ) {
-    return this.database.query(`
-      insert into justification_basis_compound_atoms (justification_basis_compound_id, entity_type, entity_id, order_position) 
-        values ($1, $2, $3, $4) 
-        returning *`,
+    return this.database.query(
+      'createAtomForJustificationBasisCompoundId',
+      `insert into justification_basis_compound_atoms (justification_basis_compound_id, entity_type, entity_id, order_position) 
+          values ($1, $2, $3, $4) 
+          returning *`,
       [justificationBasisCompoundId, atomType, atomEntityId, orderPosition]
     )
       .then(mapSingle(toJustificationBasisCompoundAtom))
@@ -226,6 +230,6 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
     JustificationBasisCompoundAtomType.PROPOSITION,
     rootPropositionId
   ]
-  return database.query(sql, args)
+  return database.query('readAtomPropositionsForRootPropositionId', sql, args)
     .then(mapManyById(toProposition))
 }

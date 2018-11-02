@@ -14,7 +14,7 @@ const {
 const {
   normalizeText,
   mapSingle,
-} = require('./util')
+} = require('./daosUtil')
 const {DatabaseSortDirection} = require('./daoModels')
 const {
   toWrit,
@@ -30,17 +30,18 @@ exports.WritsDao = class WritsDao {
 
   createWrit(writ, userId, now) {
     const sql = 'insert into writs (title, normal_title, creator_user_id, created) values ($1, $2, $3, $4) returning *'
-    return this.database.query(sql, [cleanWhitespace(writ.title), normalizeText(writ.title), userId, now])
+    return this.database.query('createWrit', sql, [cleanWhitespace(writ.title), normalizeText(writ.title), userId, now])
       .then( ({rows: [row]}) => toWrit(row) )
   }
 
   readWritForId(writId) {
-    return this.database.query(`select * from writs where writ_id = $1 and deleted is null`, [writId])
+    return this.database.query('readWritForId', `select * from writs where writ_id = $1 and deleted is null`, [writId])
       .then(mapSingle(this.logger, toWrit, 'writs', {writId}))
   }
 
   readWritEquivalentTo(writ) {
-    return this.database.query('select * from writs where normal_title = $1 and deleted is null', [normalizeText(writ.title)])
+    return this.database.query('readWritEquivalentTo',
+      'select * from writs where normal_title = $1 and deleted is null', [normalizeText(writ.title)])
       .then( ({rows}) => {
         if (rows.length > 1) {
           this.logger.error(`Multiple (${rows.length}) equivalent writs found`, {writ})
@@ -76,7 +77,7 @@ exports.WritsDao = class WritsDao {
       ${orderBySql}
       ${countSql}
       `
-    return this.database.query(sql, args)
+    return this.database.query('readWrits', sql, args)
       .then(({rows}) => map(rows, toWrit))
   }
 
@@ -123,12 +124,13 @@ exports.WritsDao = class WritsDao {
       ${orderBySql}
       ${countSql}
       `
-    return this.database.query(sql, args)
+    return this.database.query('readMoreWrits', sql, args)
       .then( ({rows}) => map(rows, toWrit) )
   }
 
   update(writ) {
     return this.database.query(
+      'updateWrit',
       'update writs set title = $1, normal_title = $2 where writ_id = $3 returning *',
       [cleanWhitespace(writ.title), normalizeText(writ.title), writ.id]
     )
@@ -140,7 +142,7 @@ exports.WritsDao = class WritsDao {
       select count(*) > 0 as has_conflict
       from writs where writ_id != $1 and normal_title = $2 and deleted is null
       `
-    return this.database.query(sql, [writ.id, normalizeText(writ.title)])
+    return this.database.query('hasEquivalentWrits', sql, [writ.id, normalizeText(writ.title)])
       .then( ({rows: [{has_conflict}]}) => has_conflict )
   }
 
@@ -149,7 +151,7 @@ exports.WritsDao = class WritsDao {
       select count(*) < 1 as has_changed
       from writs where writ_id = $1 and title = $2
       `
-    return this.database.query(sql, [writ.id, cleanWhitespace(writ.title)])
+    return this.database.query('hasWritChanged', sql, [writ.id, cleanWhitespace(writ.title)])
       .then( ({rows: [{has_changed}]}) => has_changed )
   }
 
@@ -176,7 +178,7 @@ exports.WritsDao = class WritsDao {
         )
       select count(*) > 0 as has_votes from basis_justification_votes
     `
-    return this.database.query(sql, [
+    return this.database.query('isWritOfBasisToJustificationsHavingOtherUsersVotes', sql, [
       writ.id,
       JustificationBasisType.WRIT_QUOTE,
       userId,
@@ -197,7 +199,7 @@ exports.WritsDao = class WritsDao {
         and j.creator_user_id != $3
         and j.deleted is null
     `
-    return this.database.query(sql, [
+    return this.database.query('isWritOfBasisToOtherUsersJustifications', sql, [
       writ.id,
       JustificationBasisType.WRIT_QUOTE,
       userId,
@@ -226,7 +228,7 @@ exports.WritsDao = class WritsDao {
         )
       select count(*) > 0 as has_other_user_counters from counters
     `
-    return this.database.query(sql, [
+    return this.database.query('isWritOfBasisToJustificationsHavingOtherUsersCounters', sql, [
       writ.id,
       JustificationBasisType.WRIT_QUOTE,
       userId,

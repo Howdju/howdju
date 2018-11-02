@@ -1,7 +1,7 @@
 const {
   mapSingle,
   mapMany,
-} = require('./util')
+} = require('./daosUtil')
 const {
   toPropositionTagScore,
   toPropositionTagVote,
@@ -16,6 +16,7 @@ exports.PropositionTagScoresDao = class PropositionTagScoresDao {
 
   createPropositionTagScore(propositionId, tagId, PropositionTagScoreType, score, created, jobHistoryId) {
     return this.database.query(
+      'createPropositionTagScore',
       `insert into proposition_tag_scores (proposition_id, tag_id, score_type, score, created, creator_job_history_id) values
        ($1, $2, $3, $4, $5, $6) 
        returning *`,
@@ -25,38 +26,43 @@ exports.PropositionTagScoresDao = class PropositionTagScoresDao {
   }
 
   readUnscoredVotesForScoreType(scoreType) {
-    return this.database.query(`
-      select v.* 
-      from proposition_tag_votes v
-        left join proposition_tag_scores s using (proposition_id, tag_id)
-        where 
-          s.deleted is null 
-          and (
-            -- the vote's target has no score (and the vote isn't already deleted)
-            (
-                  s.score_type IS NULL
-              AND v.deleted IS NULL
-            )
-            -- or there is a score, but the vote was either created or deleted after the score was created
-            or (
-                  s.score_type = $1
-              and s.created IS NOT NULL
-              and (
-                   v.created > s.created
-                or (
-                      v.deleted > s.created
-                      -- (ensure the vote wasn't both created and deleted after the score)
-                  and v.created < s.created
+    return this.database.query(
+      'readUnscoredVotesForScoreType',
+      `
+        select v.* 
+        from proposition_tag_votes v
+          left join proposition_tag_scores s using (proposition_id, tag_id)
+          where 
+            s.deleted is null 
+            and (
+              -- the vote's target has no score (and the vote isn't already deleted)
+              (
+                    s.score_type IS NULL
+                AND v.deleted IS NULL
+              )
+              -- or there is a score, but the vote was either created or deleted after the score was created
+              or (
+                    s.score_type = $1
+                and s.created IS NOT NULL
+                and (
+                     v.created > s.created
+                  or (
+                        v.deleted > s.created
+                        -- (ensure the vote wasn't both created and deleted after the score)
+                    and v.created < s.created
+                  )
                 )
               )
             )
-          )
-    `, [scoreType])
+      `,
+      [scoreType]
+    )
       .then(mapMany(toPropositionTagVote))
   }
 
   deleteScoresForType(scoreType, now, jobHistoryId) {
     return this.database.query(
+      'deleteScoresForType',
       `update proposition_tag_scores 
        set deleted = $1, deletor_job_history_id = $2 
        where score_type = $3 and deleted is null`,
@@ -72,6 +78,7 @@ exports.PropositionTagScoresDao = class PropositionTagScoresDao {
     deletorJobHistoryId
   ) {
     return this.database.query(
+      'deletePropositionTagScoreFor',
       `update proposition_tag_scores 
        set deletor_job_history_id = $1, deleted = $2
        where 

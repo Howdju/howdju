@@ -5,10 +5,15 @@ import {
   select,
 } from 'redux-saga/effects'
 import isFunction from 'lodash/isFunction'
+import clone from 'lodash/clone'
+import drop from 'lodash/drop'
+import reverse from 'lodash/reverse'
 
 import {
   arrayToObject,
   newProgrammingError,
+  makeNewStatement,
+  SentenceType,
 } from 'howdju-common'
 
 import {
@@ -38,11 +43,22 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.PROPOSITION_JUSTIFICATION]: (model, crudType) => {
     switch (crudType) {
       case CrudActions.CREATE: {
-        if (model.doCreateJustification) {
+        if (model.speakers && model.speakers.length > 0) {
+          // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
+          // but we need to build the statements outward so that we have the target of the next statement.
+          // So take them in reverse order
+          const speakers = reverse(clone(model.speakers))
+          let statement = makeNewStatement(speakers[0], SentenceType.PROPOSITION, model.proposition)
+          for (const speaker of drop(speakers, 1)) {
+            statement = makeNewStatement(speaker, SentenceType.STATEMENT, statement)
+          }
+          return api.createStatement(statement)
+        } else if (model.doCreateJustification) {
           const justification = consolidateNewJustificationEntities(model.newJustification)
-          // This is sort of an arbitrary decision.  We could support creating a proposition and justification at the same
+          // It is sort of an arbitrary decision to create the justification instead of the proposition.
+          // We could support creating a proposition and justification at the same
           // time by either targeting the proposition from the justification, or adding the justification to the proposition's
-          // justifications (although technicall I don't think the API supports the later yet.)
+          // justifications (although the API does not support the latter yet.)
           justification.target.entity = model.proposition
           return api.createJustification(justification)
         } else {

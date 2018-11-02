@@ -64,6 +64,7 @@ export const api = {
     (justificationBasisCompoundId) => ({justificationBasisCompoundId})),
   fetchSourceExcerptParaphrase: apiActionCreator('FETCH_SOURCE_EXCERPT_PARAPHRASE',
     (sourceExcerptParaphraseId) => ({sourceExcerptParaphraseId})),
+  fetchPersorg: apiActionCreator('FETCH_PERSORG', (persorgId) => ({persorgId})),
 
   fetchRecentPropositions: apiActionCreator('FETCH_RECENT_PROPOSITIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentWrits: apiActionCreator('FETCH_RECENT_WRITS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
@@ -129,6 +130,8 @@ export const api = {
   updateProposition: apiActionCreator('UPDATE_PROPOSITION', (proposition) => ({proposition}), (s, nonce) => ({nonce})),
   deleteProposition: apiActionCreator('DELETE_PROPOSITION', (proposition) => ({proposition})),
 
+  createStatement: apiActionCreator('CREATE_STATMENT', (statement) => ({statement})),
+
   fetchPropositionTextSuggestions: apiActionCreator('FETCH_PROPOSITION_TEXT_SUGGESTIONS', (propositionText, suggestionsKey) => ({
     propositionText,
     suggestionsKey,
@@ -162,6 +165,15 @@ export const api = {
   })),
   cancelMainSearchSuggestions: apiActionCreator('CANCEL_MAIN_SEARCH_SUGGESTIONS', (suggestionsKey) => ({
     cancelTarget: str(api.fetchMainSearchSuggestions),
+    suggestionsKey,
+  })),
+
+  fetchPersorgNameSuggestions: apiActionCreator('FETCH_PERSORG_NAME_SUGGESTIONS', (nameText, suggestionsKey) => ({
+    nameText,
+    suggestionsKey,
+  })),
+  cancelPersorgNameSuggestions: apiActionCreator('CANCEL_PERSORG_NAME_SUGGESTIONS', (suggestionsKey) => ({
+    cancelTarget: str(api.fetchPersorgNameSuggestions),
     suggestionsKey,
   })),
 
@@ -240,6 +252,11 @@ export const editors = {
   propertyChange: actionCreator('EDITORS/PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
   commitEdit,
   cancelEdit: actionCreator('EDITORS/CANCEL_EDIT', (editorType, editorId) => ({editorType, editorId})),
+
+  addSpeaker: actionCreator('EDITORS/ADD_SPEAKER', (editorType, editorId) => ({editorType, editorId})),
+  removeSpeaker: actionCreator('EDITORS/REMOVE_SPEAKER', (editorType, editorId, speaker, index) => ({
+    editorType, editorId, speaker, index
+  })),
 
   addUrl: actionCreator('EDITORS/ADD_URL', (editorType, editorId) => ({editorType, editorId})),
   removeUrl: actionCreator('EDITORS/REMOVE_URL', (editorType, editorId, url, index) => ({
