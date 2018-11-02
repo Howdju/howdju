@@ -2,14 +2,16 @@ import React, {Component} from "react"
 import PropTypes from 'prop-types'
 
 import ApiAutocomplete from "./ApiAutocomplete"
-import {propositionSchema} from "./schemas"
-import config from './config'
+import {persorgSchema} from './schemas'
 
 
-export default class EntityAutocomplete extends Component {
+export default class PersorgNameAutocomplete extends Component {
 
-  onAutocomplete = (proposition) => {
-    this.props.onPropertyChange({[this.props.name]: proposition.text})
+  onAutocomplete = (persorg) => {
+    if (this.props.onAutocomplete) {
+      this.props.onAutocomplete(persorg)
+    }
+    this.props.onPropertyChange({[this.props.name]: persorg.name})
   }
 
   static propTypes = {
@@ -20,16 +22,15 @@ export default class EntityAutocomplete extends Component {
     suggestionsKey: PropTypes.string.isRequired,
     /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
     onPropertyChange: PropTypes.func.isRequired,
+    /** If present, called with the persorg when an autocomplete occurs */
+    onAutocomplete: PropTypes.func,
     onKeyDown: PropTypes.func,
-    suggestionFetcher: PropTypes.func.isRequired,
-    suggestionFetchCanceler: PropTypes.func.isRequired,
   }
 
   render() {
     const {
       suggestionsKey,
-      suggestionFetcher,
-      suggestionFetchCanceler,
+      api,
       ...rest
     } = this.props
 
@@ -40,12 +41,12 @@ export default class EntityAutocomplete extends Component {
         maxRows={4}
         singleLine={true}
         onAutocomplete={this.onAutocomplete}
-        fetchSuggestions={suggestionFetcher}
-        cancelSuggestions={suggestionFetchCanceler}
+        suggestionSchema={persorgSchema}
+        fetchSuggestions={api.fetchPersorgNameSuggestions}
+        cancelSuggestions={api.cancelPersorgNameSuggestions}
         suggestionsKey={suggestionsKey}
-        dataLabel="text"
+        dataLabel="name"
         dataValue="id"
-        suggestionSchema={propositionSchema}
       />
     )
   }

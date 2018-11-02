@@ -34,6 +34,20 @@ import {
 import {api} from '../actions'
 
 
+const defaultState = {
+  propositions: {},
+  propositionCompounds: {},
+  writs: {},
+  writQuotes: {},
+  justificationVotes: {},
+  justifications: {},
+  justificationsByRootPropositionId: {},
+  perspectives: {},
+  persorgs: {},
+  tags: {},
+  users: {},
+}
+
 export default handleActions({
   [combineActions(
     api.fetchProposition.response,
@@ -52,6 +66,7 @@ export default handleActions({
     api.updateWritQuote.response,
     api.fetchMainSearchSuggestions.response,
     api.fetchPropositionTextSuggestions.response,
+    api.fetchPersorgNameSuggestions.response,
     api.fetchWritTitleSuggestions.response,
     api.fetchMainSearchResults.response,
     api.fetchTagNameSuggestions.response,
@@ -63,19 +78,20 @@ export default handleActions({
   )]: {
     next: (state, action) => {
       const updates = map([
-        ['perspectives'],
-        ['propositions', entityAssignWithCustomizer],
-        ['statements', entityAssignWithCustomizer],
-        ['propositionCompounds'],
+        ['justificationBasisCompounds'],
         ['justifications', justificationsCustomizer()],
         ['justificationVotes'],
+        ['persorgs'],
+        ['perspectives'],
+        ['propositionCompounds'],
+        ['propositions', entityAssignWithCustomizer],
+        ['propositionTagVotes'],
+        ['sourceExcerptParaphrases'],
+        ['statements', entityAssignWithCustomizer],
+        ['tags'],
+        ['users'],
         ['writQuotes', stubSkippingCustomizer('quoteText')],
         ['writs', stubSkippingCustomizer('title')],
-        ['sourceExcerptParaphrases'],
-        ['justificationBasisCompounds'],
-        ['tags'],
-        ['propositionTagVotes'],
-        ['persorgs'],
       ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
@@ -258,17 +274,7 @@ export default handleActions({
   )]: {
     throw: revertOptimisticPropositionTagVote
   },
-}, {
-  propositions: {},
-  propositionCompounds: {},
-  writs: {},
-  writQuotes: {},
-  justificationVotes: {},
-  justifications: {},
-  justificationsByRootPropositionId: {},
-  perspectives: {},
-  tags: {},
-})
+}, defaultState)
 
 export function unionArraysDistinctIdsCustomizer(destVal, srcVal) {
   if (isArray(destVal) && isArray(srcVal)) {

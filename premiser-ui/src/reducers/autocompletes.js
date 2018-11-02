@@ -3,6 +3,7 @@ import {api, autocompletes} from "../actions"
 
 export default handleActions({
   [combineActions(
+    api.fetchPersorgNameSuggestions.response,
     api.fetchPropositionTextSuggestions.response,
     api.fetchTagNameSuggestions.response,
     api.fetchWritTitleSuggestions.response,

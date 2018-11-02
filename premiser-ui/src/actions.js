@@ -168,8 +168,8 @@ export const api = {
     suggestionsKey,
   })),
 
-  fetchPersorgNameSuggestions: apiActionCreator('FETCH_PERSORG_NAME_SUGGESTIONS', (nameText, suggestionsKey) => ({
-    nameText,
+  fetchPersorgNameSuggestions: apiActionCreator('FETCH_PERSORG_NAME_SUGGESTIONS', (searchText, suggestionsKey) => ({
+    searchText,
     suggestionsKey,
   })),
   cancelPersorgNameSuggestions: apiActionCreator('CANCEL_PERSORG_NAME_SUGGESTIONS', (suggestionsKey) => ({
@@ -255,6 +255,9 @@ export const editors = {
 
   addSpeaker: actionCreator('EDITORS/ADD_SPEAKER', (editorType, editorId) => ({editorType, editorId})),
   removeSpeaker: actionCreator('EDITORS/REMOVE_SPEAKER', (editorType, editorId, speaker, index) => ({
+    editorType, editorId, speaker, index
+  })),
+  replaceSpeaker: actionCreator('EDITORS/REPLACE_SPEAKER', (editorType, editorId, speaker, index) => ({
     editorType, editorId, speaker, index
   })),
 

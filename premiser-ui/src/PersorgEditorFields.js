@@ -10,16 +10,16 @@ import {
 
 import {schemas} from 'howdju-common'
 
-import SingleLineTextField from "./SingleLineTextField"
-import EntityAutocomplete from './EntityAutocomplete'
-import {toErrorText} from "./modelErrorMessages"
+import {api, mapActionCreatorGroupToDispatchToProps} from './actions'
+import PersorgNameAutocomplete from './PersorgNameAutocomplete'
 import ErrorMessages from "./ErrorMessages"
+import {toErrorText} from "./modelErrorMessages"
+import SingleLineTextField from "./SingleLineTextField"
 import {
   combineIds,
   combineNames,
   combineSuggestionsKeys,
 } from './viewModels'
-import {api, mapActionCreatorGroupToDispatchToProps} from './actions'
 import UrlTextField from './UrlTextField'
 import {
   isTwitterUrl,
@@ -27,7 +27,7 @@ import {
 } from './util'
 
 
-const nameControlName = 'name'
+const nameName = 'name'
 
 class PersorgEditorFields extends Component {
 
@@ -37,9 +37,11 @@ class PersorgEditorFields extends Component {
     /** An optional override of the ID of the input for editing the Persorg name.  If absent, an ID will be auto generated based upon {@see id} */
     nameId: PropTypes.string,
     /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
-    controlName: PropTypes.string,
+    name: PropTypes.string,
     /** If omitted, no autocomplete */
     suggestionsKey: PropTypes.string,
+    /** Will be called with the persorg upon an autocomplete */
+    onPersorgNameAutocomplete: PropTypes.func,
     onPropertyChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
     disabled: PropTypes.bool,
@@ -62,6 +64,12 @@ class PersorgEditorFields extends Component {
     this.props.onPropertyChange({[name]: value})
   }
 
+  onPersorgNameAutocomplete = (persorg) => {
+    if (this.props.onPersorgNameAutocomplete) {
+      this.props.onPersorgNameAutocomplete(persorg)
+    }
+  }
+
   onShowUrlsClick = () => {
     this.setState({
       showUrls: !this.state.showUrls
@@ -74,14 +82,16 @@ class PersorgEditorFields extends Component {
       nameId,
       persorg,
       suggestionsKey,
-      controlName,
+      name,
       nameLabel,
       disabled,
       onPropertyChange,
       errors,
       onKeyDown,
       onSubmit,
-      ...rest,
+      // ignore
+      onPersorgNameAutocomplete,
+      ...rest
     } = this.props
     const {
       showUrls
@@ -92,15 +102,15 @@ class PersorgEditorFields extends Component {
       {error: true, errorText: toErrorText(errors.fieldErrors.name)} :
       null
 
-    const hasName = has(persorg, nameControlName)
-    const name = get(persorg, nameControlName, '')
+    const hasName = has(persorg, nameName)
+    const persorgName = get(persorg, nameName, '')
 
     const nameInputProps = {
-      id: nameId || combineIds(id, 'name'),
-      name: combineNames(controlName, nameControlName),
+      id: nameId || combineIds(id, nameName),
+      name: combineNames(name, nameName),
       label: nameLabel,
       maxLength: schemas.persorgNameMaxLength,
-      value: name,
+      value: persorgName,
       required: true,
       onKeyDown,
       onSubmit,
@@ -109,13 +119,12 @@ class PersorgEditorFields extends Component {
     }
 
     const nameInput = (suggestionsKey && !disabled) ?
-      <EntityAutocomplete
+      <PersorgNameAutocomplete
         {...rest}
         {...nameErrorProps}
         {...nameInputProps}
-        suggestionFetcher={api.fetchPersorgNameSuggestions}
-        suggestionFetchCanceler={api.cancelPersorgNameSuggestions}
-        suggestionsKey={combineSuggestionsKeys(suggestionsKey, nameControlName)}
+        onAutocomplete={this.onPersorgNameAutocomplete}
+        suggestionsKey={combineSuggestionsKeys(suggestionsKey, nameName)}
       /> :
       <SingleLineTextField
         {...rest}
@@ -128,7 +137,7 @@ class PersorgEditorFields extends Component {
         {nameInput}
         <Switch
           id={combineIds(id, 'is-organization')}
-          name={combineNames(controlName, 'isOrganization')}
+          name={combineNames(name, 'isOrganization')}
           checked={persorg.isOrganization}
           label="Is Organization?"
           disabled={disabled}
@@ -137,7 +146,7 @@ class PersorgEditorFields extends Component {
         {!persorg.isOrganization && (
           <SingleLineTextField
             id={combineIds(id, 'known-for')}
-            name={combineNames(controlName, 'knownFor')}
+            name={combineNames(name, 'knownFor')}
             label="Known for"
             value={persorg.knownFor}
             helpText="What is this person known for?  (Helps disambiguate people with the same name.)"
@@ -156,7 +165,7 @@ class PersorgEditorFields extends Component {
           <UrlTextField
             key="website"
             id={combineIds(id, 'website-url')}
-            name={combineNames(controlName, 'websiteUrl')}
+            name={combineNames(name, 'websiteUrl')}
             label="Website"
             value={persorg.websiteUrl}
             disabled={disabled}
@@ -166,7 +175,7 @@ class PersorgEditorFields extends Component {
           <UrlTextField
             key="wikipedia"
             id={combineIds(id, 'wikipedia-url')}
-            name={combineNames(controlName, 'wikipediaUrl')}
+            name={combineNames(name, 'wikipediaUrl')}
             label="Wikipedia"
             value={persorg.wikipediaUrl}
             validator={isWikipediaUrl}
@@ -178,7 +187,7 @@ class PersorgEditorFields extends Component {
           <UrlTextField
             key="twitter"
             id={combineIds(id, 'twitter-url')}
-            name={combineNames(controlName, 'twitterUrl')}
+            name={combineNames(name, 'twitterUrl')}
             label="Twitter"
             value={persorg.twitterUrl}
             validator={isTwitterUrl}

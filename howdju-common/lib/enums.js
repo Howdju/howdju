@@ -51,6 +51,7 @@ _e.ActionSubjectType = arrayToObject([
 
 _e.JustificationTargetType = arrayToObject([
   'PROPOSITION',
+  'STATEMENT',
   'JUSTIFICATION',
 ])
 

@@ -167,6 +167,10 @@ class CreatePropositionPage extends Component {
     this.props.editors.removeSpeaker(CreatePropositionPage.editorType, CreatePropositionPage.editorId, speaker, index)
   }
 
+  onPersorgAutocomplete = (persorg, index) => {
+    this.props.editors.replaceSpeaker(CreatePropositionPage.editorType, CreatePropositionPage.editorId, persorg, index)
+  }
+
   onPropertyChange = (properties) => {
     this.props.editors.propertyChange(CreatePropositionPage.editorType, CreatePropositionPage.editorId, properties)
   }
@@ -319,8 +323,9 @@ class CreatePropositionPage extends Component {
                                   key={combineIds(id, speakersName, index)}
                                   persorg={speaker}
                                   suggestionsKey={combineSuggestionsKeys(id, speakersName, index)}
-                                  controlName={combineNames(speakersName, array(index))}
+                                  name={combineNames(speakersName, array(index))}
                                   disabled={isSaving}
+                                  onPersorgNameAutocomplete={(persorg) => this.onPersorgAutocomplete(persorg, index)}
                                   onPropertyChange={this.onPropertyChange}
                                   onSubmit={this.onSubmit}
                                 />

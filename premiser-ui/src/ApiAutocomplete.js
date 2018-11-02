@@ -213,7 +213,7 @@ ApiAutocomplete.propTypes = {
   suggestionsKey: PropTypes.string.isRequired,
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
   onPropertyChange: PropTypes.func,
-  /** The callback for when the user selects a suggestion.  Arguments: (label, index) */
+  /** The callback for when the user selects a suggestion.  Called with the suggested value. */
   onAutocomplete: PropTypes.func,
   /** An optional function for transforming the stored suggestions.  Called
    * with item to transform.  Provides flexibility when the results from
@@ -223,7 +223,7 @@ ApiAutocomplete.propTypes = {
   /** The value to display in the text input */
   value: PropTypes.string,
   onKeyDown: PropTypes.func,
-  /** If true, will try to kee[ autocomplete closed */
+  /** If true, will try to keep autocomplete closed */
   forcedClosed: PropTypes.bool,
   /** The schema which the component uses to denormalize suggestions */
   suggestionSchema: PropTypes.object.isRequired,

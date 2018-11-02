@@ -8,6 +8,8 @@ import {
   SourceExcerptType,
 } from 'howdju-common'
 
+export const userSchema = new schema.Entity('users')
+
 export const tagSchema = new schema.Entity('tags')
 export const tagsSchema = [tagSchema]
 
@@ -23,7 +25,9 @@ export const propositionSchema = new schema.Entity('propositions', {
 })
 export const propositionsSchema = [propositionSchema]
 
-export const persorgSchema = new schema.Entity('persorgs')
+export const persorgSchema = new schema.Entity('persorgs', {
+  creator: userSchema
+})
 export const persorgsSchema = [persorgSchema]
 
 const sentenceSchema = new schema.Union({}, (value, parent) => parent.sentenceType)

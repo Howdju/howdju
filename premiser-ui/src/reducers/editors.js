@@ -309,6 +309,17 @@ const editorReducerByType = {
         }
       })
     },
+    [editors.replaceSpeaker]: (state, action) => {
+      const editEntity = state.editEntity
+      const speakers = clone(editEntity.speakers)
+      speakers[action.payload.index] = action.payload.speaker
+      return assign({}, state, {
+        editEntity: {
+          ...editEntity,
+          speakers
+        }
+      })
+    },
     [editors.addUrl]: (state, action) => {
       const writQuote = {...state.editEntity.newJustification.basis.writQuote}
       writQuote.urls = writQuote.urls.concat([makeNewUrl()])

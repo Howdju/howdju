@@ -256,6 +256,7 @@ export function combineSuggestionsKeys(...keys) {
   if (!head(keys)) {
     return head(keys)
   }
+  keys = flatMap(keys, key => split(key, '.'))
   keys = map(keys, camelCase)
   return join(keys, '.')
 }

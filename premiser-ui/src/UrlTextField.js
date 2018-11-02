@@ -48,6 +48,8 @@ export default class UrlTextField extends React.Component {
     const {
       // ignore
       validator,
+      //ignopre
+      invalidErrorText,
       ...rest
     } = this.props
     const {
@@ -56,6 +58,7 @@ export default class UrlTextField extends React.Component {
 
     const props = {
       ...rest,
+      value: rest.value || '',
       onPropertyChange: this.onPropertyChange,
       leftIcon: <FontIcon>link</FontIcon>,
     }

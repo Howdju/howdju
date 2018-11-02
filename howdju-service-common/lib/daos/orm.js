@@ -94,10 +94,7 @@ const toUserExternalIds = makeMapper(function(row) {
   }
 })
 
-function toProposition(row) {
-  if (!row) {
-    return row
-  }
+const toProposition = makeMapper(function toPropositionMapper(row) {
   const proposition = {
     id: toString(row.proposition_id),
     text: row.text,
@@ -115,7 +112,7 @@ function toProposition(row) {
   }
 
   return proposition
-}
+})
 
 const toStatement = makeMapper(function toStatementMapper(row) {
 
@@ -143,17 +140,13 @@ const toStatement = makeMapper(function toStatementMapper(row) {
   return statement
 })
 
-function toJustification (
+const toJustification = makeMapper(function toJustificationMapper (
   row,
   counterJustificationsByJustificationId,
   propositionCompoundsById,
   writQuotesById,
   justificationBasisCompoundsById
 ) {
-  if (!row) {
-    return row
-  }
-
   const justification = {
     id: toString(row.justification_id),
     created: row.created,
@@ -264,46 +257,55 @@ function toJustification (
   }
 
   return justification
-}
+})
 
-const toWritQuote = (row) => row && {
-  id: toString(row.writ_quote_id),
-  quoteText: row.quote_text,
-  created: row.created,
-  creatorUserId: row.creator_user_id,
-  writ: toWrit({
-    writ_id: row.writ_id,
-    title: row.writ_title,
-    created: row.writ_created,
+const toWritQuote = makeMapper(function toWritQuoteMapper(row) {
+  return {
+    id: toString(row.writ_quote_id),
+    quoteText: row.quote_text,
+    created: row.created,
     creatorUserId: row.creator_user_id,
-  }),
-  urls: [],
-}
+    writ: toWrit({
+      writ_id: row.writ_id,
+      title: row.writ_title,
+      created: row.writ_created,
+      creatorUserId: row.creator_user_id,
+    }),
+    urls: [],
+  }
+})
 
-const toWrit = (row) => {
+const toWrit = makeMapper(function toWritMapper(row) {
   const writ = row && ({
     id: toString(row.writ_id),
     title: row.title,
     created: row.created,
   })
   return writ
-}
-const toUrl = (row) => row && ({
-  id: toString(row.url_id),
-  url: row.url
 })
 
-const toJustificationVote = (row) => row && ({
-  id: toString(row.justification_vote_id),
-  polarity: row.polarity,
-  justificationId: row.justification_id,
-  created: row.created,
-  deleted: row.deleted,
+const toUrl = makeMapper(function toUrlMapper(row) {
+  return {
+    id: toString(row.url_id),
+    url: row.url
+  }
 })
 
-const toWritQuoteUrl = (row) => row && ({
-  writQuoteId: toString(row.writ_quote_id),
-  urlId: toString(row.url_id),
+const toJustificationVote = makeMapper(function toJustificationVoteMapper(row) {
+  return {
+    id: toString(row.justification_vote_id),
+    polarity: row.polarity,
+    justificationId: row.justification_id,
+    created: row.created,
+    deleted: row.deleted,
+  }
+})
+
+const toWritQuoteUrl = makeMapper(function toWriteQuoteUrlMapper(row) {
+  return {
+    writQuoteId: toString(row.writ_quote_id),
+    urlId: toString(row.url_id),
+  }
 })
 
 const toPropositionCompound = (row, atoms) => {
@@ -537,16 +539,12 @@ function toPropositionTagScore(row) {
   }
 }
 
-function toTag(row) {
-  if (!row) {
-    return row
-  }
-
+const toTag = makeMapper(function toTagMapper(row) {
   return {
     id: toString(row.tag_id),
     name: row.name,
   }
-}
+})
 
 const toPersorg = makeMapper(function toPersorgMapper(row) {
   if (!row) {
