@@ -5,13 +5,14 @@ const join = require('lodash/join')
 const map = require('lodash/map')
 
 const {
-  requireArgs,
-  JustificationBasisType,
-  JustificationBasisCompoundAtomType,
-  newExhaustedEnumError,
-  pushAll,
   assert,
   isDefined,
+  JustificationBasisType,
+  JustificationBasisCompoundAtomType,
+  JustificationRootTargetType,
+  newExhaustedEnumError,
+  pushAll,
+  requireArgs,
 } = require('howdju-common')
 
 const {
@@ -122,7 +123,8 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
                   j.basis_type = $1
               and j.basis_id = jbc.justification_basis_compound_id
           where
-                j.root_proposition_id = $2
+                j.root_target_type = $2
+            and j.root_target_id = $3
             and j.deleted is null
             and jbc.deleted is null
         )
@@ -137,6 +139,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     `
     const args = [
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationRootTargetType.PROPOSITION,
       rootPropositionId
     ]
     return Promise.all([
@@ -220,7 +223,8 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
                 jbca.entity_type = $2
             and jbca.entity_id = s.proposition_id
         where 
-              j.root_proposition_id = $3
+              j.root_target_type = $3
+          and j.root_target_id = $4
           and j.deleted is null
           and jbc.deleted is null
           and s.deleted is null
@@ -228,6 +232,7 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
   const args = [
     JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomType.PROPOSITION,
+    JustificationRootTargetType.PROPOSITION,
     rootPropositionId
   ]
   return database.query('readAtomPropositionsForRootPropositionId', sql, args)

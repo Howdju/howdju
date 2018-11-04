@@ -18,7 +18,7 @@ import {pageLoadId, getSessionStorageId} from "../identifiers"
 import * as customHeaderKeys from "../customHeaderKeys"
 
 
-export function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = false) {
+export function* callApi(endpoint, fetchInit = {}, requiresRehydrate = false) {
   try {
     if (requiresRehydrate) {
       yield* tryWaitOnRehydrate()
@@ -27,7 +27,7 @@ export function* callApi(endpoint, schema, fetchInit = {}, requiresRehydrate = f
     fetchInit = cloneDeep(fetchInit)
     fetchInit.headers = yield* constructHeaders(fetchInit)
 
-    const result = yield call(request, {endpoint, method: fetchInit.method, body: fetchInit.body, headers: fetchInit.headers, schema})
+    const result = yield call(request, {endpoint, ...fetchInit})
     return yield put(api.callApi.response(result))
   } catch (error) {
     return yield put(api.callApi.response(error))

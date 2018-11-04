@@ -1,5 +1,7 @@
 import isFunction from 'lodash/isFunction'
 
+// https://docs.small.chat/javascriptapi
+
 export const hide = () => {
   if (window.Smallchat) {
     // The old API was window.Smallchat.hide().  Then it started giving a deprecation warning to use window.Smallchat('hide') instead.

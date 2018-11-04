@@ -112,6 +112,11 @@ export function* goTo() {
     yield put(push(paths.proposition(proposition)))
   })
 
+  yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {
+    const {statement} = action.payload
+    yield put(push(paths.statement(statement)))
+  })
+
   yield takeEvery(str(goto.tag), function* goToTagWorker(action) {
     const {
       tag

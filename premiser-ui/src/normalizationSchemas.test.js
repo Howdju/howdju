@@ -1,7 +1,7 @@
 import { normalize } from 'normalizr'
-import { propositionSchema, propositionJustificationsSchema} from './schemas'
+import { propositionSchema, propositionJustificationsSchema} from './normalizationSchemas'
 
-describe('schemas', () => {
+describe('normalizationSchemas', () => {
 
   test('propositionSchema', () => {
     const json = { id: 1, text: 'a proposition' }

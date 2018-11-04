@@ -132,10 +132,10 @@ exports.init = function init(provider) {
   const justificationsService = new JustificationsService(
     provider.appConfig,
     provider.logger,
-    provider.justificationValidator,
     actionsService,
     authService,
     propositionsService,
+    statementsService,
     writQuotesService,
     propositionCompoundsService,
     justificationBasisCompoundsService,

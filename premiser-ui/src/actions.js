@@ -313,6 +313,7 @@ export const editors = {
 export const goto = {
   login: actionCreator('GOTO/LOGIN', (loginRedirectLocation) => ({loginRedirectLocation})),
   proposition: actionCreator('GOTO/PROPOSITION', (proposition) => ({proposition})),
+  statement: actionCreator('GOTO/STATEMENT', (statement) => ({statement})),
   mainSearch: actionCreator('GOTO/MAIN_SEARCH', (mainSearchText) => ({mainSearchText})),
   tag: actionCreator('GOTO/TAG', (tag) => ({tag})),
   createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION'),

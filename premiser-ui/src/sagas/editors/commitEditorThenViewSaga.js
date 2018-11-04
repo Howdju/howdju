@@ -5,8 +5,11 @@ import {
 } from 'redux-saga/effects'
 
 import {
-  JustificationTargetType,
   assert,
+  isTruthy,
+  JustificationRootTargetType,
+  JustificationTargetType,
+  newImpossibleError,
 } from 'howdju-common'
 
 import {EditorTypes} from "../../reducers/editors"
@@ -18,39 +21,43 @@ import {
 } from "../../actions"
 
 const editorCommitResultGotoActionCreators = {
-  [EditorTypes.PROPOSITION]: (entities, result) => {
-    const proposition = entities.propositions[result.proposition]
-    return goto.proposition(proposition)
-  },
-  [EditorTypes.PROPOSITION_JUSTIFICATION]: (entities, result) => {
-    let propositionId
-    if (result.proposition) {
-      propositionId = result.proposition
-    } else {
-      assert(() => !!result.justification)
-      const justificationId = result.justification
-      const justification = entities.justifications[justificationId]
-      switch (justification.target.type) {
-        case JustificationTargetType.PROPOSITION: {
-          propositionId = justification.target.entity.id
-          break
-        }
-        default: {
-          propositionId = justification.rootProposition.id
-          break
-        }
+  [EditorTypes.PROPOSITION]: ({proposition}) => goto.proposition(proposition),
+  [EditorTypes.PROPOSITION_JUSTIFICATION]: ({proposition, statement, justification}) => {
+    if (proposition) {
+      return goto.proposition(proposition)
+    }
+
+    if (statement) {
+      return goto.statement(statement)
+    }
+
+    assert(() => isTruthy(justification))
+    switch (justification.target.type) {
+      case JustificationTargetType.PROPOSITION: {
+        return goto.proposition(justification.target.entity)
+      }
+      case JustificationTargetType.STATEMENT: {
+        return goto.statement(justification.target.entity)
       }
     }
 
-    const proposition = entities.propositions[propositionId]
-    return goto.proposition(proposition)
+    assert(() => justification.target.type === JustificationTargetType.JUSTIFICATION)
+    switch (justification.rootTargetType) {
+      case JustificationRootTargetType.PROPOSITION: {
+        return goto.proposition(justification.rootTarget)
+      }
+      case JustificationRootTargetType.STATEMENT: {
+        return goto.statement(justification.rootTarget)
+      }
+    }
+
+    throw newImpossibleError(`A justification must either target or be rooted in a JustificationRootTargetType`)
   },
 }
 
 const gotoEditorCommitResultAction = (editorType, resultAction) => {
-  const {entities, result} = resultAction.payload.result
   const gotoActionCreator = editorCommitResultGotoActionCreators[editorType]
-  const gotoAction = gotoActionCreator(entities, result)
+  const gotoAction = gotoActionCreator(resultAction.payload.result)
   return gotoAction
 }
 

@@ -1,5 +1,3 @@
-
-
 create table if not exists persorgs (
   persorg_id serial primary key,
   is_organization boolean not null,
@@ -41,3 +39,10 @@ create table if not exists statements (
 );
 
 create unique index idx_statements_speaker_sentence_unique on statements (speaker_persorg_id, sentence_type, sentence_id);
+
+-- Justifications
+
+alter table justifications add column root_target_type varchar(64) not null default 'PROPOSITION';
+alter table justifications alter column root_target_type drop default;
+
+alter table justifications rename column root_proposition_id to root_target_id;

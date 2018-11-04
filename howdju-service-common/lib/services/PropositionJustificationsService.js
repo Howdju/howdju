@@ -2,6 +2,7 @@ const Promise = require('bluebird')
 
 const {
   EntityType,
+  JustificationRootTargetType,
   requireArgs,
 } = require('howdju-common')
 
@@ -22,7 +23,8 @@ exports.PropositionJustificationsService = class PropositionJustificationsServic
     return this.authService.readOptionalUserIdForAuthToken(authToken)
       .then( (userId) => Promise.all([
         this.propositionsService.readPropositionForId(propositionId, {userId}),
-        this.justificationsService.readJustificationsWithBasesAndVotesByRootPropositionId(propositionId, {userId}),
+        this.justificationsService.readJustificationsWithBasesAndVotesByRootTarget(
+          JustificationRootTargetType.PROPOSITION, propositionId, {userId}),
       ]))
       .then(([proposition, justifications]) => {
         if (!proposition) {

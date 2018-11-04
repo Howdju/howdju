@@ -6,7 +6,7 @@ import t from './texts'
 import {
   api,
 } from './actions'
-import {propositionsSchema} from "./schemas"
+import {propositionsSchema} from "./normalizationSchemas"
 
 export default class RecentPropositionsWidget extends Component {
 

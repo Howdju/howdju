@@ -34,7 +34,7 @@ import {
   tagSchema,
   persorgSchema,
   persorgsSchema,
-} from '../schemas'
+} from '../normalizationSchemas'
 
 
 const defaultSorts = `created=${SortDirection.DESCENDING}`
@@ -49,28 +49,28 @@ export const resourceApiConfigs = {
       ''
     return {
       endpoint: `propositions${query}`,
-      schema: {propositions: propositionsSchema},
+      normalizationSchema: {propositions: propositionsSchema},
     }
   },
   [api.fetchProposition]: (payload) => ({
     endpoint: `propositions/${payload.propositionId}`,
-    schema: {proposition: propositionSchema},
+    normalizationSchema: {proposition: propositionSchema},
   }),
   [api.fetchPropositionCompound]: (payload) => ({
     endpoint: `proposition-compounds/${payload.propositionCompoundId}`,
-    schema: {propositionCompound: propositionCompoundSchema},
+    normalizationSchema: {propositionCompound: propositionCompoundSchema},
   }),
   [api.fetchSourceExcerptParaphrase]: (payload) => ({
     endpoint: `source-excerpt-paraphrases/${payload.sourceExcerptParaphraseId}`,
-    schema: {sourceExcerptParaphrase: sourceExcerptParaphraseSchema},
+    normalizationSchema: {sourceExcerptParaphrase: sourceExcerptParaphraseSchema},
   }),
   [api.fetchJustificationBasisCompound]: (payload) => ({
     endpoint: `justification-basis-compounds/${payload.justificationBasisCompoundId}`,
-    schema: {justificationBasisCompound: justificationBasisCompoundSchema},
+    normalizationSchema: {justificationBasisCompound: justificationBasisCompoundSchema},
   }),
   [api.fetchWritQuote]: (payload) => ({
     endpoint: `writ-quotes/${payload.writQuoteId}`,
-    schema: {writQuote: writQuoteSchema},
+    normalizationSchema: {writQuote: writQuoteSchema},
   }),
   [api.updateWritQuote]: (payload) => ({
     endpoint: `writ-quotes/${payload.writQuote.id}`,
@@ -78,7 +78,7 @@ export const resourceApiConfigs = {
       method: httpMethods.PUT,
       body: payload
     },
-    schema: {writQuote: writQuoteSchema},
+    normalizationSchema: {writQuote: writQuoteSchema},
   }),
   [api.createProposition]: (payload) => ({
     endpoint: 'propositions',
@@ -86,11 +86,11 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
       body: payload
     },
-    schema: {proposition: propositionSchema}
+    normalizationSchema: {proposition: propositionSchema}
   }),
   [api.updateProposition]: (payload) => ({
     endpoint: `propositions/${payload.proposition.id}`,
-    schema: {proposition: propositionSchema},
+    normalizationSchema: {proposition: propositionSchema},
     fetchInit: {
       method: httpMethods.PUT,
       body: {
@@ -104,7 +104,7 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
       body: payload
     },
-    schema: {statement: statementSchema}
+    normalizationSchema: {statement: statementSchema}
   }),
   [api.createJustification]: (payload) => ({
     endpoint: 'justifications',
@@ -112,7 +112,7 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
       body: payload
     },
-    schema: {justification: justificationSchema}
+    normalizationSchema: {justification: justificationSchema}
   }),
   [api.deleteProposition]: (payload) => ({
     endpoint: `propositions/${payload.proposition.id}`,
@@ -128,11 +128,11 @@ export const resourceApiConfigs = {
   }),
   [api.fetchTag]: (payload) => ({
     endpoint: `tags/${payload.tagId}`,
-    schema: {tag: tagSchema}
+    normalizationSchema: {tag: tagSchema}
   }),
   [api.fetchPersorg]: (payload) => ({
     endpoint: `persorgs/${payload.persorgId}`,
-    schema: {persorg: persorgSchema},
+    normalizationSchema: {persorg: persorgSchema},
   }),
 
   /* Recents */
@@ -145,7 +145,7 @@ export const resourceApiConfigs = {
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'propositions?' + queryStringParamsString,
-      schema: {propositions: propositionsSchema},
+      normalizationSchema: {propositions: propositionsSchema},
     }
   },
   [api.fetchRecentWrits]: (payload) => {
@@ -156,7 +156,7 @@ export const resourceApiConfigs = {
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'writs?' + queryStringParamsString,
-      schema: {writs: writsSchema},
+      normalizationSchema: {writs: writsSchema},
     }
   },
   [api.fetchRecentWritQuotes]: (payload) => {
@@ -167,7 +167,7 @@ export const resourceApiConfigs = {
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'writ-quotes?' + queryStringParamsString,
-      schema: {writQuotes: writQuotesSchema},
+      normalizationSchema: {writQuotes: writQuotesSchema},
     }
   },
   [api.fetchRecentJustifications]: (payload) => {
@@ -178,7 +178,7 @@ export const resourceApiConfigs = {
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
       endpoint: 'justifications?' + queryStringParamsString,
-      schema: {justifications: justificationsSchema},
+      normalizationSchema: {justifications: justificationsSchema},
     }
   },
 
@@ -186,7 +186,7 @@ export const resourceApiConfigs = {
 
   [api.fetchFeaturedPerspectives]: (payload) => ({
     endpoint: 'perspectives?featured',
-    schema: {perspectives: perspectivesSchema},
+    normalizationSchema: {perspectives: perspectivesSchema},
     requiresRehydrate: true,
   }),
 
@@ -195,13 +195,13 @@ export const resourceApiConfigs = {
     fetchInit: {
       method: httpMethods.GET,
     },
-    schema: propositionJustificationsSchema,
+    normalizationSchema: propositionJustificationsSchema,
     requiresRehydrate: true
   }),
 
   [api.fetchTaggedPropositions]: (payload) => ({
     endpoint: `propositions?tagId=${payload.tagId}`,
-    schema: {propositions: propositionsSchema},
+    normalizationSchema: {propositions: propositionsSchema},
     requiresRehydrate: true,
   }),
 
@@ -231,7 +231,7 @@ export const resourceApiConfigs = {
         justificationVote: payload.justificationVote
       }
     },
-    schema: {justificationVote: justificationVoteSchema},
+    normalizationSchema: {justificationVote: justificationVoteSchema},
   }),
   [api.unVerifyJustification]: (payload) => ({
     endpoint: 'justification-votes',
@@ -250,7 +250,7 @@ export const resourceApiConfigs = {
         justificationVote: payload.justificationVote
       }
     },
-    schema: {justificationVote: justificationVoteSchema},
+    normalizationSchema: {justificationVote: justificationVoteSchema},
   }),
   [api.unDisverifyJustification]: (payload) => ({
     endpoint: 'justification-votes',
@@ -270,7 +270,7 @@ export const resourceApiConfigs = {
         propositionTagVote: payload.propositionTagVote
       }
     },
-    schema: {propositionTagVote: propositionTagVoteSchema},
+    normalizationSchema: {propositionTagVote: propositionTagVoteSchema},
   }),
   [api.antiTagProposition]: (payload) => ({
     endpoint: 'proposition-tag-votes',
@@ -280,7 +280,7 @@ export const resourceApiConfigs = {
         propositionTagVote: payload.propositionTagVote
       }
     },
-    schema: {propositionTagVote: propositionTagVoteSchema},
+    normalizationSchema: {propositionTagVote: propositionTagVoteSchema},
   }),
   [api.unTagProposition]: (payload) => ({
     endpoint: `proposition-tag-votes/${payload.prevPropositionTagVote.id}`,
@@ -294,32 +294,32 @@ export const resourceApiConfigs = {
   [api.fetchPropositionTextSuggestions]: (payload) => ({
     endpoint: `search-propositions?searchText=${payload.propositionText}`,
     cancelKey: str(api.fetchPropositionTextSuggestions) + '.' + payload.suggestionsKey,
-    schema: propositionsSchema,
+    normalizationSchema: propositionsSchema,
   }),
   [api.fetchTagNameSuggestions]: (payload) => ({
     endpoint: `search-tags?searchText=${payload.tagName}`,
     cancelKey: str(api.fetchTagNameSuggestions) + '.' + payload.suggestionsKey,
-    schema: tagsSchema,
+    normalizationSchema: tagsSchema,
   }),
   [api.fetchWritTitleSuggestions]: (payload) => ({
     endpoint: `search-writs?searchText=${payload.writTitle}`,
     cancelKey: str(api.fetchWritTitleSuggestions) + '.' + payload.suggestionsKey,
-    schema: writsSchema,
+    normalizationSchema: writsSchema,
   }),
   [api.fetchPersorgNameSuggestions]: (payload) => ({
     endpoint: `search-persorgs?searchText=${payload.searchText}`,
     cancelKey: `${api.fetchPersorgNameSuggestions}.${payload.suggestionsKey}`,
-    schema: persorgsSchema,
+    normalizationSchema: persorgsSchema,
   }),
 
   [api.fetchMainSearchResults]: (payload) => ({
     endpoint: `search?searchText=${payload.searchText}`,
-    schema: mainSearchResultsSchema,
+    normalizationSchema: mainSearchResultsSchema,
   }),
   [api.fetchMainSearchSuggestions]: (payload) => ({
     endpoint: `search?searchText=${payload.searchText}`,
     cancelKey: str(api.fetchMainSearchSuggestions) + '.' + payload.suggestionsKey,
-    schema: mainSearchResultsSchema,
+    normalizationSchema: mainSearchResultsSchema,
   }),
 
   /* Justification search */
@@ -353,7 +353,7 @@ export const resourceApiConfigs = {
 
     return {
       endpoint: 'justifications?' + queryString.stringify(params),
-      schema: {justifications: justificationsSchema},
+      normalizationSchema: {justifications: justificationsSchema},
     }
   },
 }

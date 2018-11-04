@@ -6,15 +6,14 @@ import {
   JustificationPolarity
 } from 'howdju-common'
 
-export default function PropositionJustificationCountViewer(props) {
+export default function JustificationCountViewer(props) {
   const {
-    proposition
+    justificationCountByPolarity
   } = props
-  const rootJustificationCountByPolarity = proposition.rootJustificationCountByPolarity
 
-  const positiveJustificationCount = get(rootJustificationCountByPolarity, JustificationPolarity.POSITIVE, 0)
-  const negativeJustificationCount = get(rootJustificationCountByPolarity, JustificationPolarity.NEGATIVE, 0)
-  return isEmpty(rootJustificationCountByPolarity) ? (
+  const positiveJustificationCount = get(justificationCountByPolarity, JustificationPolarity.POSITIVE, 0)
+  const negativeJustificationCount = get(justificationCountByPolarity, JustificationPolarity.NEGATIVE, 0)
+  return isEmpty(justificationCountByPolarity) ? (
     <span title="no justifications">
       (0)
     </span>

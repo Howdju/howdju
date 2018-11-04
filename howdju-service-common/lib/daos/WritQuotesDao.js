@@ -6,9 +6,10 @@ const snakeCase = require('lodash/snakeCase')
 
 const {
   JustificationBasisType,
-  SortDirection,
   JustificationTargetType,
   JustificationBasisCompoundAtomType,
+  JustificationRootTargetType,
+  SortDirection,
   SourceExcerptType,
 } = require('howdju-common')
 
@@ -183,8 +184,9 @@ exports.WritQuotesDao = class WritQuotesDao {
                   j.basis_type = $2
               and j.basis_id = wq.writ_quote_id
             join writs w using (writ_id)
-          where 
-                j.root_proposition_id = $1
+          where
+                j.root_target_type = $6
+            and j.root_target_id = $1
             and j.deleted is null
             and wq.deleted is null
             and w.deleted is null
@@ -213,7 +215,8 @@ exports.WritQuotesDao = class WritQuotesDao {
               and sep.source_excerpt_id = wq.writ_quote_id
             join writs w using (writ_id)
           where 
-                j.root_proposition_id = $1
+                j.root_target_type = $6
+            and j.root_target_id = $1
             and j.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
@@ -225,7 +228,8 @@ exports.WritQuotesDao = class WritQuotesDao {
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-      SourceExcerptType.WRIT_QUOTE
+      SourceExcerptType.WRIT_QUOTE,
+      JustificationRootTargetType.PROPOSITION,
     ]
     return Promise.all([
       this.database.query('readWritQuotesByIdForRootPropositionId', sql, args),

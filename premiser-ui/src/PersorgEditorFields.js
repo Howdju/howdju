@@ -8,7 +8,7 @@ import {
   Switch,
 } from 'react-md'
 
-import {schemas} from 'howdju-common'
+import {schemaSettings} from 'howdju-common'
 
 import {api, mapActionCreatorGroupToDispatchToProps} from './actions'
 import PersorgNameAutocomplete from './PersorgNameAutocomplete'
@@ -109,7 +109,7 @@ class PersorgEditorFields extends Component {
       id: nameId || combineIds(id, nameName),
       name: combineNames(name, nameName),
       label: nameLabel,
-      maxLength: schemas.persorgNameMaxLength,
+      maxLength: schemaSettings.persorgNameMaxLength,
       value: persorgName,
       required: true,
       onKeyDown,
@@ -149,7 +149,7 @@ class PersorgEditorFields extends Component {
             name={combineNames(name, 'knownFor')}
             label="Known for"
             value={persorg.knownFor}
-            helpText="What is this person known for?  (Helps disambiguate people with the same name.)"
+            helpText="What is this person or organization known for?  (Helps disambiguate people with the same name or for obscure organizations with a better known purpose.)"
             disabled={disabled}
             onPropertyChange={onPropertyChange}
             onSubmit={onSubmit}

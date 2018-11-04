@@ -40,7 +40,8 @@ const routes = [
   <Route key="whatsNext" exact path={paths.whatsNext()} component={WhatsNextPage} />,
   <Route key="about" exact path={paths.about()} component={AboutPage} />,
 
-  <Route key="proposition" exact path="/s/:propositionId/:propositionSlug?" component={PropositionJustificationsPage} />,
+  <Route key="proposition" exact path="/p/:propositionId/:propositionSlug?" component={PropositionJustificationsPage} />,
+  <Route key="statement" exact path="/s/:statementId/" component={PropositionJustificationsPage} />,
   <Route key="persorg" exact path="/persorgs/:persorgId" component={PersorgPage} />,
   <Route key="tag" exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
   <Route key="searchJustifications" exact path="/search-justifications" component={JustificationsSearchPage} />,

@@ -3,6 +3,14 @@ const {
   httpMethods,
 } = require('howdju-common')
 
+const {
+  testUtil
+} = require('howdju-service-common')
+
+const mockAppProvider = {
+  logger: testUtil.mockLogger
+}
+
 describe('routes', () => {
 
   test('readProposition route path should match a proposition path', () => {
@@ -10,7 +18,7 @@ describe('routes', () => {
     const method = httpMethods.GET
     const queryStringParameters = {}
 
-    const {route, routedRequest} = selectRoute({path, method, queryStringParameters})
+    const {route, routedRequest} = selectRoute(mockAppProvider)({path, method, queryStringParameters})
 
     expect(route.id).toBe('readProposition')
     expect(routedRequest.pathParameters).toEqual(["2"])
@@ -21,7 +29,7 @@ describe('routes', () => {
     const method = httpMethods.GET
     const queryStringParameters = {include: 'justifications'}
 
-    const {route, routedRequest} = selectRoute({path, method, queryStringParameters})
+    const {route, routedRequest} = selectRoute(mockAppProvider)({path, method, queryStringParameters})
     expect(route.id).toBe('readPropositionJustifications')
     expect(routedRequest.pathParameters).toEqual(["2"])
   })
@@ -31,7 +39,7 @@ describe('routes', () => {
     const method = httpMethods.GET
     const queryStringParameters = {tagId: '42'}
 
-    const {route} = selectRoute({path, method, queryStringParameters})
+    const {route} = selectRoute(mockAppProvider)({path, method, queryStringParameters})
 
     expect(route.id).toBe('readTaggedPropositions')
   })
@@ -41,7 +49,7 @@ describe('routes', () => {
     const method = httpMethods.GET
     const queryStringParameters = {tag: '42'}
 
-    const {route} = selectRoute({path, method, queryStringParameters})
+    const {route} = selectRoute(mockAppProvider)({path, method, queryStringParameters})
     expect(route.id).not.toBe('readTaggedPropositions')
   })
 })

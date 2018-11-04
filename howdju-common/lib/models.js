@@ -11,6 +11,7 @@ const {
 const {
   JustificationPolarity,
   JustificationRootPolarity,
+  JustificationRootTargetType,
   JustificationVotePolarity,
   JustificationBasisType,
   JustificationTargetType,
@@ -30,10 +31,11 @@ _e.isRootPositive = (j) => j.rootPolarity === JustificationRootPolarity.POSITIVE
 _e.isRootNegative = (j) => j.rootPolarity === JustificationRootPolarity.NEGATIVE
 _e.isVerified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.POSITIVE
 _e.isDisverified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.NEGATIVE
+// If a justification targets another justification, its polarity should always be negative
 _e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION && _e.isNegative(j)
 _e.isRootJustification = (j) =>
-  j.target.type === JustificationTargetType.PROPOSITION &&
-  j.target.entity.id === j.rootProposition.id
+  j.target.type === j.rootTargetType &&
+  j.target.entity.id === j.rootTarget.id
 _e.hasQuote = (j) => _e.isWritQuoteBased(j) && j.basis.entity.quoteText
 _e.isPropositionCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.PROPOSITION_COMPOUND : false
 _e.isWritQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRIT_QUOTE : false
@@ -73,7 +75,8 @@ _e.makeNewStatement = (speaker, sentenceType, sentence) => ({
 
 _e.makeNewJustification = (props) => {
   let newJustification = {
-    rootProposition: {id: null},
+    rootTargetType: JustificationRootTargetType.PROPOSITION,
+    rootTarget: {id: null},
     polarity: JustificationPolarity.POSITIVE,
     rootPolarity: JustificationRootPolarity.POSITIVE,
     target: {
@@ -103,7 +106,21 @@ _e.makeNewJustification = (props) => {
   }
 
   newJustification = merge(newJustification, props)
+
+  correctJustificationRootPolarity(newJustification)
+
   return newJustification
+}
+
+function correctJustificationRootPolarity(justification) {
+  let targetEntity = justification.target.entity
+  let rootPolarity = justification.polarity
+  while (targetEntity.target) {
+    rootPolarity = targetEntity.polarity
+    targetEntity = targetEntity.target.entity
+  }
+  justification.rootTarget = targetEntity
+  justification.rootPolarity = rootPolarity
 }
 
 function translateNewJustificationBasisCompoundAtomEntities(atoms) {
@@ -237,15 +254,12 @@ _e.makeNewJustificationBasisCompoundFromPropositionCompound = (propositionCompou
 _e.makeNewPropositionCompoundFromProposition = (proposition) =>
   _e.makeNewPropositionCompound({atoms: [_e.makeNewPropositionAtom({entity: proposition})]})
 
-_e.makeNewJustificationTargetingPropositionId = (propositionId) => _e.makeNewJustification({
-  rootProposition: {id: propositionId},
-  target: { type: JustificationTargetType.PROPOSITION, entity: { id: propositionId } }
-})
-
-_e.makeNewJustificationTargetingPropositionIdWithPolarity = (propositionId, polarity) => _e.makeNewJustification({
-  rootProposition: {id: propositionId},
+/** Trunk justifications directly target the root */
+_e.makeNewTrunkJustification = (targetType, targetId, polarity = null) => _e.makeNewJustification({
+  rootTargetType: targetType,
+  rootTarget: {id: targetId},
   polarity,
-  target: { type: JustificationTargetType.PROPOSITION, entity: { id: propositionId } }
+  target: { type: targetType, entity: { id: targetId } }
 })
 
 _e.makeNewPropositionJustification = (propositionProps, justificationProps) => ({
@@ -257,7 +271,8 @@ _e.makeNewPropositionJustification = (propositionProps, justificationProps) => (
 })
 
 _e.makeNewCounterJustification = (targetJustification) => ({
-  rootProposition: {id: targetJustification.rootProposition.id},
+  rootTargetType: targetJustification.rootTargetType,
+  rootTarget: {id: targetJustification.rootTarget.id},
   target: {
     type: JustificationTargetType.JUSTIFICATION,
     entity: targetJustification,
@@ -297,3 +312,5 @@ _e.makeTag = (props) => merge({
 _e.tagEqual = (tag1, tag2) => _e.idEqual(tag1.id, tag2.id) || isDefined(tag1.name) && tag1.name === tag2.name
 
 _e.makePropositionTagVote = (props) => merge({}, props)
+
+_e.doTargetSameRoot = (j1, j2) => _e.idEqual(j1.rootTarget.id, j2.rootTarget.id) && j1.rootTargetType === j2.rootTargetType

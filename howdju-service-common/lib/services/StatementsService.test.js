@@ -12,7 +12,7 @@ const {
   StatementsService
 } = require('./StatementsService')
 const {
-  mockLogger
+  testUtil
 } = require('../util')
 
 describe('StatementsService', () => {
@@ -78,7 +78,7 @@ describe('StatementsService', () => {
           return {proposition: copy}
         })
       }
-      const statementsService = new StatementsService(mockLogger, {}, statementsDao, persorgsService, propositionsService)
+      const statementsService = new StatementsService(testUtil.mockLogger, {}, statementsDao, persorgsService, propositionsService)
       const expected = merge({
         id: statementId,
         rootPropositionId: propositionId,

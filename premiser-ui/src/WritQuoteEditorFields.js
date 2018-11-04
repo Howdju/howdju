@@ -5,7 +5,7 @@ import map from 'lodash/map'
 import get from 'lodash/get'
 import has from 'lodash/has'
 
-import {schemas} from 'howdju-common'
+import {schemaSettings} from 'howdju-common'
 
 import WritTitleAutocomplete from "./WritTitleAutocomplete"
 import {toErrorText} from "./modelErrorMessages"
@@ -71,7 +71,7 @@ class WritQuoteEditorFields extends Component {
       name: combineNames(name, writTitleName),
       label: "Title",
       value: writTitle,
-      maxLength: schemas.writTitleMaxLength,
+      maxLength: schemaSettings.writTitleMaxLength,
       required: true,
       disabled: disabled || !hasWritTitle,
       onKeyDown,
@@ -90,7 +90,7 @@ class WritQuoteEditorFields extends Component {
           label="Quote"
           rows={2}
           maxRows={8}
-          maxLength={schemas.quoteTextMaxLength}
+          maxLength={schemaSettings.writQuoteQuoteTextMaxLength}
           value={quoteText}
           onChange={this.onChange}
           disabled={disabled || !has(writQuote, writQuoteTextName)}

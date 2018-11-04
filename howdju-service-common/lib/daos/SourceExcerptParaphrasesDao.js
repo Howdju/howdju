@@ -2,11 +2,12 @@ const Promise = require('bluebird')
 const forEach = require('lodash/forEach')
 
 const {
-  requireArgs,
-  SourceExcerptType,
   JustificationBasisType,
   JustificationBasisCompoundAtomType,
+  JustificationRootTargetType,
   newExhaustedEnumError,
+  requireArgs,
+  SourceExcerptType,
 } = require('howdju-common')
 
 const {
@@ -85,8 +86,9 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
           join source_excerpt_paraphrases sep on
                 jbca.entity_type = $2
             and jbca.entity_id = sep.source_excerpt_paraphrase_id
-        where 
-              j.root_proposition_id = $3
+        where
+              j.root_target_type = $3
+          and j.root_target_id = $4
           and j.deleted is null
           and jbc.deleted is null
           and sep.deleted is null
@@ -94,6 +96,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
     const args = [
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+      JustificationRootTargetType.PROPOSITION,
       rootPropositionId
     ]
     return Promise.all([
@@ -149,8 +152,9 @@ function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, 
           and jbca.entity_id = sep.source_excerpt_paraphrase_id
         join propositions ps on 
               sep.paraphrasing_proposition_id = ps.proposition_id
-      where 
-            j.root_proposition_id = $3
+      where
+            j.root_target_type = $3
+        and j.root_target_id = $4
         and j.deleted is null
         and jbc.deleted is null
         and sep.deleted is null
@@ -159,6 +163,7 @@ function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, 
   const args = [
     JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+    JustificationRootTargetType.PROPOSITION,
     rootPropositionId
   ]
   return database.query('readParaphrasingPropositionsByIdForRootPropositionId', sql, args)

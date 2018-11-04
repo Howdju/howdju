@@ -7,6 +7,7 @@ const range = require('lodash/range')
 
 const {
   JustificationBasisType,
+  JustificationRootTargetType,
   JustificationTargetType,
 } = require('howdju-common')
 const {toJustification} = require('../orm')
@@ -85,6 +86,7 @@ class PerspectivesDao {
       userId,
       JustificationTargetType.PROPOSITION,
       JustificationBasisType.PROPOSITION_COMPOUND,
+      JustificationRootTargetType.PROPOSITION,
     ]
     const votesSelectSql = userId ? `
         , v.justification_vote_id
@@ -113,7 +115,8 @@ class PerspectivesDao {
             sc${currentDepth}.proposition_compound_id = j${currentDepth}.target_id
         and j${currentDepth}.basis_type = $3
         and j${currentDepth}.deleted is null
-        and p.proposition_id = j${currentDepth}.root_proposition_id
+        and j${currentDepth}.root_target_type = $4
+        and p.proposition_id = j${currentDepth}.root_target_id
         
     `)
     const sql = `
@@ -224,7 +227,7 @@ class PerspectivesDao {
           propositionCompoundsById,
           writQuotesById
         ]) => {
-          const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(rootPropositionId, rows)
+          const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(JustificationRootTargetType.PROPOSITION, rootPropositionId, rows)
           const justifications = map(rootJustifications, j =>
             toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById))
           return Promise.props({

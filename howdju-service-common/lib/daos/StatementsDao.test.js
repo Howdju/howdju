@@ -5,7 +5,7 @@ const {
 } = require('howdju-common')
 
 const {StatementsDao} = require('./StatementsDao')
-const {mockLogger} = require('../util')
+const {testUtil} = require('../util')
 
 describe('StatementsDao', () => {
   describe('readStatementForId', () => {
@@ -24,7 +24,7 @@ describe('StatementsDao', () => {
       const database = {
         query: sinon.fake((queryName, sql, args) => {
           switch (queryName) {
-            case 'readJustStatementForId': {
+            case 'readStatementWithoutSentenceForId': {
               switch (args[0]) {
                 case statementId:
                   return {
@@ -66,7 +66,7 @@ describe('StatementsDao', () => {
         }))
       }
 
-      const statementsDao = new StatementsDao(mockLogger, database, propositionsDao)
+      const statementsDao = new StatementsDao(testUtil.mockLogger, database, propositionsDao)
 
       expect(await statementsDao.readStatementForId(statementId)).toMatchObject({
         id: statementId,

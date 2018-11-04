@@ -4,7 +4,6 @@ const {
   WritValidator,
   WritQuoteValidator,
   CredentialValidator,
-  JustificationValidator,
   JustificationBasisCompoundValidator,
   JustificationBasisCompoundAtomValidator,
   SourceExcerptValidator,
@@ -34,13 +33,10 @@ exports.init = function init(provider) {
   const justificationBasisCompoundAtomValidator = new JustificationBasisCompoundAtomValidator(propositionValidator,
     sourceExcerptParaphraseValidator)
   const justificationBasisCompoundValidator = new JustificationBasisCompoundValidator(justificationBasisCompoundAtomValidator)
-  const justificationValidator = new JustificationValidator(propositionValidator, propositionCompoundValidator, writQuoteValidator,
-    justificationBasisCompoundValidator)
   const credentialValidator = new CredentialValidator()
 
   assign(provider, {
     credentialValidator,
-    justificationValidator,
     justificationBasisCompoundValidator,
     propositionValidator,
     propositionCompoundValidator,

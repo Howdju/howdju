@@ -1,8 +1,6 @@
 import get from 'lodash/get'
 import isEqual from 'lodash/isEqual'
-import map from 'lodash/map'
 import React from 'react'
-import {CircularProgress} from 'react-md'
 import {connect} from 'react-redux'
 
 import {
@@ -11,7 +9,7 @@ import {
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
 import {denormalize} from 'normalizr'
-import {propositionsSchema, tagSchema} from './schemas'
+import {propositionsSchema, tagSchema} from './normalizationSchemas'
 import * as characters from './characters'
 import Helmet from 'react-helmet'
 import EditablePersorg from './EditablePersorg'

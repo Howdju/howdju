@@ -7,10 +7,11 @@ const snakeCase = require('lodash/snakeCase')
 const toNumber = require('lodash/toNumber')
 
 const {
-  JustificationBasisType,
-  SortDirection,
-  requireArgs,
   cleanWhitespace,
+  JustificationBasisType,
+  JustificationRootTargetType,
+  requireArgs,
+  SortDirection,
 } = require('howdju-common')
 
 const {toProposition} = require("./orm")
@@ -218,11 +219,13 @@ exports.PropositionsDao = class PropositionsDao {
       select count(*) > 0 as result 
       from justifications 
         where 
-              root_proposition_id = $1 
-          and creator_user_id != $2
+              root_target_type = $1
+          and root_target_id = $2
+          and creator_user_id != $3
           and deleted is null
     `
-    return this.database.query('hasOtherUsersRootedJustifications', sql, [proposition.id, userId])
+    return this.database.query('hasOtherUsersRootedJustifications', sql, [JustificationRootTargetType.PROPOSITION,
+      proposition.id, userId])
       .then( ({rows: [{result}]}) => result)
   }
 
@@ -230,7 +233,9 @@ exports.PropositionsDao = class PropositionsDao {
   hasOtherUsersRootedJustificationsVotes(proposition, userId) {
     const sql = `
       with
-        proposition_justifications as ( select * from justifications where root_proposition_id = $1 )
+        proposition_justifications as ( 
+          select * from justifications where root_target_type = $1 and root_target_id = $2 
+        )
       select count(v.*) > 0 as result
       from proposition_justifications sj 
         join justification_votes v on 
@@ -238,7 +243,8 @@ exports.PropositionsDao = class PropositionsDao {
           and v.user_id != $2
           and v.deleted is null
     `
-    return this.database.query('hasOtherUsersRootedJustificationsVotes', sql, [proposition.id, userId])
+    return this.database.query('hasOtherUsersRootedJustificationsVotes', sql, [JustificationRootTargetType.PROPOSITION,
+      proposition.id, userId])
       .then( ({rows: [{result}]}) => result )
   }
 

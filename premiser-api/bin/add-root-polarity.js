@@ -29,8 +29,11 @@ const updateRootPolarity = () => appProvider.database.query('updateRootPolarity'
 
 const updateRootJustificationsRootPolarity =
   appProvider.database.query('updateRootJustificationsRootPolarity',
-    `update justifications set root_polarity = polarity where target_type = $1 and root_polarity is null`,
-    [JustificationTargetType.PROPOSITION]
+    `update justifications 
+       set root_polarity = polarity where 
+             target_type = root_target_type 
+         and target_id = root_target_id
+         and root_polarity is null`
   )
     .then(updateRootPolarity)
 

@@ -9,12 +9,21 @@ import paths from './paths'
 import config from './config'
 import JustificationCountViewer from './JustificationCountViewer'
 
-export default class PropositionViewer extends React.Component {
+export default class StatementViewer extends React.Component {
+
+  static propTypes = {
+    statement: PropTypes.object,
+  }
+
+  static defaultprops = {
+    showStatusText: true,
+    showJustificationCount: true,
+  }
 
   render() {
     const {
       id,
-      proposition,
+      statement,
       className,
       showStatusText,
       trailPropositions,
@@ -22,25 +31,26 @@ export default class PropositionViewer extends React.Component {
       ...rest,
     } = this.props
 
-    const age = proposition.created ? moment(proposition.created).fromNow() : ''
-    const created = proposition.created ? moment(proposition.created).format(config.humanDateTimeFormat) : ''
-    const creatorName = get(proposition, 'creator.longName')
+    const age = statement.created ? moment(statement.created).fromNow() : ''
+    const created = statement.created ? moment(statement.created).format(config.humanDateTimeFormat) : ''
+    const creatorName = get(statement, 'creator.longName')
     const creatorNameDescription = creatorName && ` by ${creatorName}` || ''
 
     return (
       <div
         {...rest}
         id={id}
-        className={cn(className, "proposition-viewer")}
+        className={cn(className, "statement-viewer")}
       >
-        {proposition && (
-          <div className="proposition-viewer">
-            <div className="proposition-text">
-              <Link to={paths.proposition(proposition, trailPropositions)}>
-                {proposition.text}
+        {statement && (
+          <div className="statement-viewer">
+            <div className="statement-text">
+              <Link to={paths.statement(statement, trailPropositions)}>
+                Statement
+                {statement.rootProposition.text}
                 {' '}
-                {showJustificationCount && proposition.rootJustificationCountByPolarity && (
-                  <JustificationCountViewer justificationCountByPolarity={proposition.rootJustificationCountByPolarity}/>
+                {showJustificationCount && statement.rootJustificationCountByPolarity && (
+                  <JustificationCountViewer justificationCountByPolarity={statement.rootJustificationCountByPolarity}/>
                 )}
               </Link>
             </div>
@@ -56,11 +66,4 @@ export default class PropositionViewer extends React.Component {
       </div>
     )
   }
-}
-PropositionViewer.propTypes = {
-  proposition: PropTypes.object,
-}
-PropositionViewer.defaultprops = {
-  showStatusText: true,
-  showJustificationCount: true,
 }

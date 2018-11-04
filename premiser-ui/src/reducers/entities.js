@@ -20,17 +20,17 @@ import some from 'lodash/some'
 import union from 'lodash/union'
 import values from 'lodash/values'
 import without from 'lodash/without'
+import {normalize} from 'normalizr'
 import {combineActions, handleActions} from "redux-actions"
 
 import {
-  isTruthy,
   httpStatusCodes,
-} from 'howdju-common'
-
-import {
   isCounter,
+  isTruthy,
+  JustificationRootTargetType,
   JustificationTargetType,
 } from 'howdju-common'
+
 import {api} from '../actions'
 
 
@@ -41,7 +41,7 @@ const defaultState = {
   writQuotes: {},
   justificationVotes: {},
   justifications: {},
-  justificationsByRootPropositionId: {},
+  trunkJustificationsByRootPropositionId: {},
   perspectives: {},
   persorgs: {},
   tags: {},
@@ -77,6 +77,8 @@ export default handleActions({
     api.fetchPersorg.response,
   )]: {
     next: (state, action) => {
+      const {entities} = normalize(action.payload, action.meta.normalizationSchema)
+
       const updates = map([
         ['justificationBasisCompounds'],
         ['justifications', justificationsCustomizer()],
@@ -92,17 +94,56 @@ export default handleActions({
         ['users'],
         ['writQuotes', stubSkippingCustomizer('quoteText')],
         ['writs', stubSkippingCustomizer('title')],
-      ], ([entitiesKey, customizer]) => createEntityUpdate(state, action.payload.entities, entitiesKey, customizer))
+      ], ([entitiesKey, customizer]) => createEntityUpdate(state, entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
-      if (action.payload.entities.justifications) {
-        const justificationsByRootPropositionId = indexRootJustificationsByRootPropositionId(action.payload.entities.justifications)
-        nonEmptyUpdates.push({justificationsByRootPropositionId: mergeWith(
-          {},
-          state.justificationsByRootPropositionId,
-          justificationsByRootPropositionId,
-          unionArraysDistinctIdsCustomizer
-        )})
+      if (entities.justifications) {
+        // for (const justification of entities.justifications) {
+        //   let target
+        //   switch (justification.target.type) {
+        //     case JustificationTargetType.STATEMENT:
+        //       target = state.statements[justification.target.id]
+        //       break
+        //     case JustificationTargetType.PROPOSITION:
+        //       target = state.statements[justification.target.id]
+        //       break
+        //     case JustificationTargetType.JUSTIFICATION:
+        //       target = state.statements[justification.target.id]
+        //       break
+        //     default:
+        //       throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+        //   }
+        //   // TODO need to do this to updated state, not in-place
+        //   if (target.justifications.indexOf(justification.id) < 0) {
+        //     target.justifications.push(justification.id)
+        //   }
+        //
+        //   let rootTarget
+        //   switch (justification.rootTargetType) {
+        //     case JustificationRootTargetType.STATEMENT:
+        //       rootTarget = state.statements[justification.rootTarget.id]
+        //       break
+        //     case JustificationRootTargetType.PROPOSITION:
+        //       target = state.statements[justification.rootTarget.id]
+        //       break
+        //     default:
+        //       throw newExhaustedEnumError('JustificationRootTargetType', justification.rootTarget.type)
+        //   }
+        //   // TODO need to do this to updated state, not in-place
+        //   if (rootTarget.leafJustifications.indexOf(justification.id) < 0) {
+        //     rootTarget.leafJustifications.push(justification.id)
+        //   }
+        // }
+
+        const trunkJustificationsByRootPropositionId = indexTrunkJustificationsByRootPropositionId(entities.justifications)
+        nonEmptyUpdates.push({
+          trunkJustificationsByRootPropositionId: mergeWith(
+            {},
+            state.trunkJustificationsByRootPropositionId,
+            trunkJustificationsByRootPropositionId,
+            unionArraysDistinctIdsCustomizer
+          )
+        })
       }
 
       if (nonEmptyUpdates.length > 0) {
@@ -135,11 +176,13 @@ export default handleActions({
   },
   [api.createJustification.response]: {
     next: (state, action) => {
-      const justificationsByRootPropositionId = indexRootJustificationsByRootPropositionId(action.payload.entities.justifications)
+      const {result, entities} = normalize(action.payload, action.meta.normalizationSchema)
+
+      const trunkJustificationsByRootPropositionId = indexTrunkJustificationsByRootPropositionId(entities.justifications)
 
       // if counter, add to counter justifications
-      const justificationId = action.payload.result.justification
-      const justification = action.payload.entities.justifications[justificationId]
+      const justificationId = result.justification
+      const justification = entities.justifications[justificationId]
       let counteredJustifications = {}
       if (isCounter(justification)) {
         const counteredJustification = state.justifications[justification.target.entity.id]
@@ -152,10 +195,9 @@ export default handleActions({
       return mergeWith(
         {},
         state,
-        action.payload.entities,
+        entities,
         counteredJustifications,
-        // TODO this doesn't seem right; should be {justifications: {1: ..., 2: ...}}, but this would be like {justificationByRootPropositionId: {1: ..., 2: ...}}
-        {justificationsByRootPropositionId},
+        {trunkJustificationsByRootPropositionId},
         unionArraysDistinctIdsCustomizer,
       )
     }
@@ -163,9 +205,9 @@ export default handleActions({
   [api.deleteJustification.response]: {
     next: (state, action) => {
       const deletedJustification = action.meta.requestPayload.justification
-      const justificationsByRootPropositionId = cloneDeep(state.justificationsByRootPropositionId)
-      justificationsByRootPropositionId[deletedJustification.rootProposition.id] =
-        filter(justificationsByRootPropositionId[deletedJustification.rootProposition.id], id => id !== deletedJustification.id)
+      const trunkJustificationsByRootPropositionId = cloneDeep(state.trunkJustificationsByRootPropositionId)
+      trunkJustificationsByRootPropositionId[deletedJustification.rootTarget.id] =
+        filter(trunkJustificationsByRootPropositionId[deletedJustification.rootTarget.id], id => id !== deletedJustification.id)
 
       // If the deleted justification was a counter-justification, remove it from the target justification's counterJustifications
       let justifications = state.justifications
@@ -181,7 +223,7 @@ export default handleActions({
       return {
         ...state,
         justifications: pickBy(justifications, (j, id) => +id !== deletedJustification.id ),
-        justificationsByRootPropositionId
+        trunkJustificationsByRootPropositionId
       }
     }
   },
@@ -220,14 +262,15 @@ export default handleActions({
     api.disverifyJustification.response
   )]: {
     next: (state, action) => {
+      const {result, entities} = normalize(action.payload, action.meta.normalizationSchema)
       // Apply the returned vote
-      const vote = action.payload.entities.justificationVotes[action.payload.result.justificationVote]
+      const vote = entities.justificationVotes[result.justificationVote]
       const currJustification = state.justifications[vote.justificationId]
       const justification = {...currJustification, vote}
       return {
         ...state,
         justifications: {...state.justifications, [justification.id]: justification},
-        justificationVotes: {...state.justificationVotes, ...action.payload.entities.justificationVotes},
+        justificationVotes: {...state.justificationVotes, ...entities.justificationVotes},
       }
     }
   },
@@ -276,20 +319,19 @@ export default handleActions({
   },
 }, defaultState)
 
-export function unionArraysDistinctIdsCustomizer(destVal, srcVal) {
+export function unionArraysDistinctIdsCustomizer(destVal, srcVal, key, object, source, stack) {
   if (isArray(destVal) && isArray(srcVal)) {
     // For values that have IDs, overwrite dest values
     const seenDestIdIndices = {}
-    const seenSrcIdIndices = {}
     const filteredDestVals = []
-    const filteredSrcVals = []
     forEach(destVal, val => {
-      if (val && val.id) {
-        if (!isNumber(seenDestIdIndices[val.id])) {
+      const id = val.id || val.entity
+      if (val && id) {
+        if (!isNumber(seenDestIdIndices[id])) {
           filteredDestVals.push(val)
-          seenDestIdIndices[val.id] = filteredDestVals.length - 1
+          seenDestIdIndices[id] = filteredDestVals.length - 1
         } else {
-          filteredDestVals[seenDestIdIndices[val.id]] = val
+          filteredDestVals[seenDestIdIndices[id]] = val
         }
       } else {
         // If the value lacks an ID, just merge it
@@ -297,15 +339,18 @@ export function unionArraysDistinctIdsCustomizer(destVal, srcVal) {
       }
     })
 
+    const seenSrcIdIndices = {}
+    const filteredSrcVals = []
     forEach(srcVal, val => {
-      if (val && val.id && isNumber(seenDestIdIndices[val.id])) {
+      const id = val.id || val.entity
+      if (val && id && isNumber(seenDestIdIndices[id])) {
         // Overwrite dest items having the same ID
-        filteredDestVals[seenDestIdIndices[val.id]] = val
-      } else if (val && val.id && isNumber(seenSrcIdIndices[val.id])) {
-        filteredSrcVals[seenSrcIdIndices[val.id]] = val
-      } else if (val && val.id) {
+        filteredDestVals[seenDestIdIndices[id]] = val
+      } else if (val && id && isNumber(seenSrcIdIndices[id])) {
+        filteredSrcVals[seenSrcIdIndices[id]] = val
+      } else if (val && id) {
         filteredSrcVals.push(val)
-        seenSrcIdIndices[val.id] = filteredSrcVals.length - 1
+        seenSrcIdIndices[id] = filteredSrcVals.length - 1
       } else {
         // If the value lacks an ID, just merge it
         filteredSrcVals.push(val)
@@ -316,7 +361,7 @@ export function unionArraysDistinctIdsCustomizer(destVal, srcVal) {
   return undefined // tells lodash to use its default method
 }
 
-export function indexRootJustificationsByRootPropositionId(justificationsById) {
+export function indexTrunkJustificationsByRootPropositionId(justificationsById) {
   const justifications = values(justificationsById)
   const rootJustifications = filter(justifications, j =>
     // TODO do we need a more thorough approach to ensuring that only fully entities are present?
@@ -324,15 +369,11 @@ export function indexRootJustificationsByRootPropositionId(justificationsById) {
     // Some justifications that come back are stubs and will lack relations like .target
     j.target &&
     j.target.type === JustificationTargetType.PROPOSITION &&
-    j.target.entity.id === j.rootProposition
+    j.rootTargetType === JustificationRootTargetType.PROPOSITION &&
+    j.target.entity.id === j.rootTarget.id
   )
-  let rootJustificationsByRootPropositionId = groupBy(rootJustifications, j => j.rootProposition)
-  rootJustificationsByRootPropositionId = mapValues(rootJustificationsByRootPropositionId, justifications => map(justifications, j => j.id))
-  // for (let propositionId of Object.keys(justificationsByRootPropositionId)) {
-  //   justificationsByRootPropositionId[propositionId] = map(justificationsByRootPropositionId[propositionId], j => j.id)
-  //   // justificationsByRootPropositionId[propositionId] = map(justificationsByRootPropositionId[propositionId], j => normalize(j, justificationSchema).result)
-  // }
-  return rootJustificationsByRootPropositionId
+  let trunkJustificationsByRootPropositionId = groupBy(rootJustifications, j => j.rootTarget.id)
+  return mapValues(trunkJustificationsByRootPropositionId, justifications => map(justifications, j => j.id))
 }
 
 /** Returning undefined from a customizer to assignWith invokes its default behavior */
@@ -463,10 +504,11 @@ function optimisticPropositionTagUnvote(state, action) {
 }
 
 function replaceOptimisticPropositionTagVote(state, action) {
+  const {result, entities} = normalize(action.payload, action.meta.normalizationSchema)
   const {
     propositionTagVote: optimisticPropositionTagVote,
   } = action.meta.requestPayload
-  const propositionTagVote = action.payload.entities.propositionTagVotes[action.payload.result.propositionTagVote]
+  const propositionTagVote = entities.propositionTagVotes[result.propositionTagVote]
 
   const optimisticProposition = state.propositions[propositionTagVote.proposition.id]
   const propositionTagVotes = map(optimisticProposition.propositionTagVotes, stv =>

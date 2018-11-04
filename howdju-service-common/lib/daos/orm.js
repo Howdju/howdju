@@ -8,6 +8,7 @@ const values = require('lodash/values')
 const {
   JustificationBasisCompoundAtomType,
   JustificationBasisType,
+  JustificationRootTargetType,
   newExhaustedEnumError,
   newImpossibleError,
   PropositionCompoundAtomType,
@@ -32,12 +33,15 @@ function removeUndefinedProperties(obj) {
 }
 
 function makeMapper(mapper) {
-  return function(row) {
+  return function(row, ...args) {
     if (!row) {
       return row
     }
 
-    let mapped = mapper(row)
+    let mapped = mapper(row, ...args)
+    if (!mapped.id && row.id) {
+      mapped.id = toString(row.id)
+    }
     mapped = removeUndefinedProperties(mapped)
     return mapped
   }
@@ -140,6 +144,11 @@ const toStatement = makeMapper(function toStatementMapper(row) {
   return statement
 })
 
+const justificationRootTargetMapperByType = {
+  [JustificationRootTargetType.PROPOSITION]: toProposition,
+  [JustificationRootTargetType.STATEMENT]: toStatement,
+}
+
 const toJustification = makeMapper(function toJustificationMapper (
   row,
   counterJustificationsByJustificationId,
@@ -150,12 +159,8 @@ const toJustification = makeMapper(function toJustificationMapper (
   const justification = {
     id: toString(row.justification_id),
     created: row.created,
-    rootProposition: toProposition({
-      proposition_id: row.root_proposition_id,
-      text: row.root_proposition_text,
-      created: row.root_proposition_created,
-      creator_user_id: row.root_proposition_creator_user_id,
-    }),
+    rootTargetType: row.root_target_type,
+    rootTarget: mapRelation(justificationRootTargetMapperByType[row.root_target_type], 'root_target_', row),
     rootPolarity: row.root_polarity,
     target: {
       type: row.target_type,

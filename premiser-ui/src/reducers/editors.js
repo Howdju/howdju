@@ -225,15 +225,15 @@ const editorReducerByType = {
         'urls',
       ]),
     [api.fetchPropositionJustifications]: (state, action) => {
-      const rootPropositionId = get(state.editEntity, 'rootProposition.id')
-      if (idEqual(rootPropositionId, action.payload.propositionId)) {
+      const rootPropositionId = get(state.editEntity, 'rootTarget.id')
+      if (idEqual(rootPropositionId, action.payload.rootPropositionId)) {
         return {...state, isFetching: true}
       }
       return state
     },
     [api.fetchPropositionJustifications.response]: (state, action) => {
-      const rootPropositionId = state.editEntity && state.editEntity.rootProposition.id
-      if (rootPropositionId && rootPropositionId === action.payload.propositionId) {
+      const rootPropositionId = state.editEntity && state.editEntity.rootTarget.id
+      if (rootPropositionId && rootPropositionId === action.payload.proposition.id) {
         return {...state, isFetching: false}
       }
       return state

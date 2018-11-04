@@ -63,19 +63,21 @@ exports.mapManyById = (mapper) => ({rows}) => {
   return byId
 }
 
-exports.groupRootJustifications = (rootPropositionId, justification_rows) => {
+exports.groupRootJustifications = (rootTargetType, rootTargetId, justification_rows) => {
   const rootJustifications = [], counterJustificationsByJustificationId = {}
   for (let justification_row of justification_rows) {
-    // There are two types of justifications: those on the (root) proposition, and counters
-    if (justification_row.target_type === JustificationTargetType.PROPOSITION) {
-      assert(() => idEqual(justification_row.target_id, rootPropositionId))
-      rootJustifications.push(justification_row)
-    } else {
+    // There are two types of justifications: those targeting other justifications or those targeting the current root
+    if (justification_row.target_type === JustificationTargetType.JUSTIFICATION) {
       assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)
       if (!counterJustificationsByJustificationId.hasOwnProperty(justification_row.target_id)) {
         counterJustificationsByJustificationId[justification_row.target_id] = []
       }
       counterJustificationsByJustificationId[justification_row.target_id].push(justification_row)
+    } else {
+      assert(() => justification_row.root_target_type === rootTargetType)
+      assert(() => justification_row.target_type === rootTargetType)
+      assert(() => idEqual(justification_row.target_id, rootTargetId))
+      rootJustifications.push(justification_row)
     }
   }
   return {

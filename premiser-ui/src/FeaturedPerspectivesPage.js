@@ -6,7 +6,7 @@ import get from 'lodash/get'
 import {denormalize} from "normalizr"
 import map from 'lodash/map'
 
-import {perspectivesSchema} from "./schemas"
+import {perspectivesSchema} from "./normalizationSchemas"
 
 import PerspectiveCard from './PerspectiveCard'
 import {

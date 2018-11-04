@@ -1,6 +1,7 @@
-import {handleActions} from "redux-actions"
 import get from 'lodash/get'
 import union from 'lodash/union'
+import {normalize} from 'normalizr'
+import {handleActions} from "redux-actions"
 
 import {
   api,
@@ -14,11 +15,12 @@ const widgetRequestReducer = (defaultWidgetState) => (state, action) => {
   return {...state, [widgetId]: newWidgetState}
 }
 const widgetResponseReducer = (defaultWidgetState, entitiesWidgetStateKey, entitiesResultKey) => (state, action) => {
+  const {result} = normalize(action.payload, action.meta.normalizationSchema)
   const widgetId = action.meta.requestPayload.widgetId
   const widgetState = get(state, widgetId, defaultWidgetState)
   const newWidgetState = {
-    [entitiesWidgetStateKey]: union(widgetState[entitiesWidgetStateKey], action.payload.result[entitiesResultKey]),
-    continuationToken: action.payload.result.continuationToken,
+    [entitiesWidgetStateKey]: union(widgetState[entitiesWidgetStateKey], result[entitiesResultKey]),
+    continuationToken: result.continuationToken,
     isFetching: false,
   }
 

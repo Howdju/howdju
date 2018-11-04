@@ -1,8 +1,7 @@
-import { normalize } from 'normalizr'
 import Axios, {CancelToken} from 'axios'
-import { CANCEL } from 'redux-saga'
 import get from 'lodash/get'
 import pick from 'lodash/pick'
+import { CANCEL } from 'redux-saga'
 
 import {
   httpMethods
@@ -24,7 +23,7 @@ const axios = Axios.create({
   withCredentials: true,
 })
 
-export function request({endpoint, method, body, headers, schema}) {
+export function request({endpoint, method, body, headers}) {
 
   const source = CancelToken.source()
 
@@ -41,11 +40,8 @@ export function request({endpoint, method, body, headers, schema}) {
     // onUploadProgress
     // onDownloadProgress
   })
-    .then(response => {
-      // https://github.com/mzabriskie/axios#response-schema
-      const result = schema && response.data ? normalize(response.data, schema) : response.data
-      return result
-    })
+    // https://github.com/mzabriskie/axios#response-schema
+    .then(response => response.data)
     .catch(handleError)
 
   // Allows canceling the request when sagas are canceled
@@ -65,7 +61,9 @@ const handleError = error => {
     throw newApiResponseError("Api error response", identifierHeaders, error)
   } else if (error.request) {
     throw newNetworkFailureError("Api request failed", identifierHeaders, error)
-  } else {
+  } else if (error.config) {
     throw newRequestConfigurationError("Request configuration error", identifierHeaders, error)
+  } else {
+    throw error
   }
 }

@@ -1,5 +1,6 @@
-import {handleActions} from "redux-actions"
 import union from 'lodash/union'
+import {normalize} from 'normalizr'
+import {handleActions} from "redux-actions"
 
 import {
   api,
@@ -23,7 +24,8 @@ export const mainSearchPage = handleActions({
   [api.fetchMainSearchResults]: (state, action) => ({...state, isFetching: true}),
   [api.fetchMainSearchResults.response]: {
     next: (state, action) => {
-      return {...state, isFetching: false, results: action.payload.result}
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
+      return {...state, isFetching: false, results: result}
     },
     throw: (state, action) => ({...state, isFetching: false})
   }
@@ -42,10 +44,11 @@ export const featuredPerspectivesPage = handleActions({
   [api.fetchFeaturedPerspectives]: state => ({...state, isFetching: true}),
   [api.fetchFeaturedPerspectives.response]: {
     next: (state, action) => {
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
       return {
         ...state,
-        featuredPerspectives: union(state.featuredPerspectives, action.payload.result.perspectives),
-        continuationToken: action.payload.result.continuationToken,
+        featuredPerspectives: union(state.featuredPerspectives, result.perspectives),
+        continuationToken: action.payload.continuationToken,
         isFetching: false
       }
     },
@@ -71,10 +74,11 @@ export const justificationsSearchPage = handleActions({
   }),
   [api.fetchJustificationsSearch.response]: {
     next: (state, action) => {
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
       return {
         ...state,
-        justifications: action.payload.result.justifications,
-        continuationToken: action.payload.result.continuationToken,
+        justifications: result.justifications,
+        continuationToken: action.payload.continuationToken,
         isFetching: false,
       }
     },
@@ -95,11 +99,14 @@ export const tagPage = handleActions({
     tagId: action.payload.tagId,
   }),
   [api.fetchTaggedPropositions.response]: {
-    next: (state, action) => ({
-      ...state,
-      propositions: action.payload.result.propositions,
-      isFetching: false
-    }),
+    next: (state, action) => {
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
+      return {
+        ...state,
+        propositions: result.propositions,
+        isFetching: false
+      }
+    },
     throw: (state, action) => ({
       ...state,
       propositions: [],

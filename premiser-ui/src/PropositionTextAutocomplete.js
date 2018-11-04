@@ -2,13 +2,13 @@ import React, {Component} from "react"
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import {schemas} from 'howdju-common'
+import {schemaSettings} from 'howdju-common'
 
 import {
   api, mapActionCreatorGroupToDispatchToProps
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
-import {propositionSchema} from "./schemas"
+import {propositionSchema} from "./normalizationSchemas"
 
 
 class PropositionTextAutocomplete extends Component {
@@ -27,7 +27,7 @@ class PropositionTextAutocomplete extends Component {
     return (
       <ApiAutocomplete
         {...rest}
-        maxLength={schemas.propositionTextMaxLength}
+        maxLength={schemaSettings.propositionTextMaxLength}
         rows={1}
         maxRows={4}
         singleLine={true}

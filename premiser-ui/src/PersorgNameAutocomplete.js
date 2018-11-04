@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import PropTypes from 'prop-types'
 
 import ApiAutocomplete from "./ApiAutocomplete"
-import {persorgSchema} from './schemas'
+import {persorgSchema} from './normalizationSchemas'
 
 
 export default class PersorgNameAutocomplete extends Component {

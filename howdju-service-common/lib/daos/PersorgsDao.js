@@ -53,6 +53,7 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
                 is_organization = $1
             and normal_name = $2
             and normal_known_for = $3
+            and deleted is null
       `,
       [persorg.isOrganization, normalizeText(persorg.name), normalizeText(persorg.knownFor)]
     )

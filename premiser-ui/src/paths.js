@@ -5,7 +5,9 @@ import join from 'lodash/join'
 import queryString from 'query-string'
 
 import {
-  toSlug
+  JustificationRootTargetType,
+  newExhaustedEnumError,
+  toSlug,
 } from 'howdju-common'
 import {logger} from './logger'
 
@@ -35,9 +37,21 @@ class Paths {
     const query = !isEmpty(trailPropositions) ?
       '?proposition-trail=' + join(map(trailPropositions, s => s.id), ',') :
       ''
-    return `/s/${id}${slugPath}${query}`
+    return `/p/${id}${slugPath}${query}`
   }
-  justification = j => this.proposition(j.rootProposition) + '#justification-' + j.id
+  statement = (statement) => {
+    return `/s/${statement.id}`
+  }
+  justification = j => {
+    switch (j.rootTargetType) {
+      case JustificationRootTargetType.PROPOSITION:
+        return this.proposition(j.rootTarget) + '#justification-' + j.id
+      case JustificationRootTargetType.STATEMENT:
+        return this.statement(j.rootTarget) + '#justification-' + j.id
+      default:
+        throw newExhaustedEnumError('JustificationRootTargetType', j.rootTargetType)
+    }
+  }
   writUsages = writ => this.searchJustifications({writId: writ.id})
   writQuoteUsages = (writQuote) => {
     if (!writQuote.id) {
@@ -53,9 +67,8 @@ class Paths {
     if (basisSourceType || basisSourceId) {
       if (!(basisSourceType && basisSourceId)) {
         logger.error(`If either of basisSourceType/basisSourceId are present, both must be: basisSourceType: ${basisSourceType} basisSourceId: ${basisSourceId}.`)
-      } else {
-        location['search'] = '?' + queryString.stringify({basisSourceType, basisSourceId})
       }
+      location['search'] = '?' + queryString.stringify({basisSourceType, basisSourceId})
     }
     return createPath(location)
   }

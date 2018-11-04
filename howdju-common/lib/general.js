@@ -1,10 +1,13 @@
+const cloneDeepWith = require('lodash/cloneDeepWith')
 const forEach = require('lodash/forEach')
 const isArray = require('lodash/isArray')
 const isFunction = require('lodash/isFunction')
 const isNumber = require('lodash/isNumber')
+const isObject = require('lodash/isObject')
 const isUndefined = require('lodash/isUndefined')
 const map = require('lodash/map')
 const reduce = require('lodash/reduce')
+const reject = require('lodash/reject')
 const replace = require('lodash/replace')
 const trim = require('lodash/trim')
 const moment = require('moment')
@@ -22,25 +25,24 @@ _e.isTruthy = (val) => !!val
 _e.isFalsey = (val) => !val
 
 _e.assert = (test, message) => {
-  const makeMessage = message =>
-    // If there is a message thunk, use it
-    isFunction(message) ?
-      message() :
-      // Otherwise if there is a message, us it
-      message ?
-        message :
-        // Otherwise, if the test was a thunk, use it as a description
-        isFunction(test) ?
-          test.toString().substring(0, 1024) :
-          // Otherwise, not much else we can do
-          message
-
-  // assert should only be used in development, so logging to the console should be ok.  Besides, how would we get a logger here?
-  /* eslint-disable no-console */
-  const logError = message => console.error("Failed assertion: " + makeMessage(message))
-  /* eslint-enable no-console */
-
   if (process.env.DO_ASSERT === 'true') {
+    const makeMessage = message =>
+      // If there is a message thunk, use it
+      isFunction(message) ?
+        message() :
+        // Otherwise if there is a message, use it
+        message ?
+          message :
+          // Otherwise, if the test was a thunk, use it as a description
+          isFunction(test) ?
+            test.toString().substring(0, 1024) :
+            // Otherwise, not much else we can do
+            message
+    // assert should only be used in development, so logging to the console should be ok.  Besides, how would we get a logger here?
+    /* eslint-disable no-console */
+    const logError = message => console.error("Failed assertion: " + makeMessage(message))
+    /* eslint-enable no-console */
+
     if (isFunction(test)) {
       if (!test()) {
         logError(message)
@@ -160,3 +162,29 @@ _e.cleanWhitespace = text => {
 }
 
 _e.toSlug = text => text && text.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
+
+_e.omitDeep = function omitDeep(value, predicate = (val) => !val) {
+  return cloneDeepWith(value, makeOmittingCloneDeepCustomizer(predicate))
+}
+
+function makeOmittingCloneDeepCustomizer(predicate) {
+  return function omittingCloneDeepCustomizer(value) {
+    if (isObject(value)) {
+      if (isArray(value)) {
+        let result = reject(value, predicate)
+        result = map(result, (item) => cloneDeepWith(item, omittingCloneDeepCustomizer))
+        return result
+      }
+
+      const clone = {}
+      for (const subKey of Object.keys(value)) {
+        if (!predicate(value[subKey])) {
+          clone[subKey] = cloneDeepWith(value[subKey], omittingCloneDeepCustomizer)
+        }
+      }
+      return clone
+    }
+
+    return undefined
+  }
+}

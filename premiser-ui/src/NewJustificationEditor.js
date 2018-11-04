@@ -91,7 +91,7 @@ class NewJustificationEditor extends Component {
 
     const newJustification = editorState.editEntity || makeNewJustification()
     const {errors, isSaving} = editorState
-    const newJustificationErrors = translateNewJustificationErrors(newJustification, errors)
+    const newJustificationErrors = translateNewJustificationErrors(newJustification, errors) || errors
 
     const buttons = [
       <Button

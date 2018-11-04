@@ -9,9 +9,13 @@ import {
 } from "howdju-common"
 
 import EntityViewer from './EntityViewer'
-import PropositionEntityViewer from './PropositionEntityViewer'
+import JustificationRootTargetViewer from './JustificationRootTargetViewer'
 import JustificationChatBubble from "./JustificationChatBubble"
 import config from './config'
+import {
+  combineIds,
+  combineSuggestionsKeys,
+} from './viewModels'
 
 
 export default class JustificationEntityViewer extends Component {
@@ -46,11 +50,10 @@ export default class JustificationEntityViewer extends Component {
         iconTitle="Justification"
         entity={
           <div>
-            <PropositionEntityViewer
-              id={`${id}--root-proposition`}
-              proposition={justification.rootProposition}
-              suggestionsKey={suggestionsKey + '-paraphrasing-proposition'}
-              showStatusText={false}
+            <JustificationRootTargetViewer
+              id={combineIds(id, 'root-target')}
+              justification={justification}
+              suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'rootTarget')}
             />
 
             <div className="entity-status-text">

@@ -1,3 +1,6 @@
+const get = require('lodash/get')
+const set = require('lodash/set')
+
 const {
   requireArgs
 } = require('howdju-common')
@@ -13,15 +16,34 @@ module.exports.EntityService = class EntityService {
     this.authService = authService
   }
 
-  async readOrCreate(authToken, entity) {
+  async readOrCreate(entity, authToken) {
     const now = new Date()
     const userId = await this.authService.readUserIdForAuthToken(authToken)
-    const {error: validationError, value: validatedEntity} = this.entitySchema.validate(entity, {
-      abortEarly: false
+    const {error, value} = this.entitySchema.validate(entity, {
+      // report all errors
+      abortEarly: false,
+      // for now allow clients to send extra properties, such as viewmodel properties, for convenience.
+      // in the future we might consolidate the validation for use between the client and API and have the client
+      //   strip the unknown properties itself
+      stripUnknown: true,
     })
-    if (validationError) {
-      throw new EntityValidationError(validationError)
+    if (error) {
+      const errors = translateJoiError(error)
+      throw new EntityValidationError(errors)
     }
-    return await this.doReadOrCreate(validatedEntity, userId, now)
+    return await this.doReadOrCreate(value, userId, now)
   }
+}
+
+function translateJoiError(joiError) {
+  const allErrors = {}
+  for (const {path, type, message} of joiError.details) {
+    let errors = get(allErrors, path)
+    if (!errors) {
+      errors = []
+      set(allErrors, path, errors)
+    }
+    errors.push({type, message})
+  }
+  return allErrors
 }

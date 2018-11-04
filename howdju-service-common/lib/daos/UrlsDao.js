@@ -4,6 +4,7 @@ const map = require('lodash/map')
 const {
   JustificationBasisType,
   JustificationBasisCompoundAtomType,
+  JustificationRootTargetType,
   SourceExcerptType,
 } = require('howdju-common')
 const {
@@ -43,7 +44,8 @@ exports.UrlsDao = class UrlsDao {
             join writ_quote_urls wqu using (writ_quote_id)
             join urls u USING (url_id)
           where
-                j.root_proposition_id = $1
+                j.root_target_type = $6
+            and j.root_target_id = $1
             and j.deleted is null
             and wq.deleted is null
             and wqu.deleted is null 
@@ -69,8 +71,9 @@ exports.UrlsDao = class UrlsDao {
             join writ_quote_urls wqu using (writ_quote_id)
               
             join urls u USING (url_id)
-          where 
-                j.root_proposition_id = $1
+          where
+                j.root_target_type = $6
+            and j.root_target_id = $1
             and j.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
@@ -84,6 +87,7 @@ exports.UrlsDao = class UrlsDao {
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptType.WRIT_QUOTE,
+      JustificationRootTargetType.PROPOSITION,
     ])
       .then( ({rows}) => groupUrlsByWritQuoteId(rows))
   }

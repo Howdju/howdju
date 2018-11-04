@@ -11,7 +11,7 @@ import {
 import './Header.scss'
 
 import ApiAutocomplete from "./ApiAutocomplete"
-import {propositionSchema} from "./schemas"
+import {propositionSchema} from "./normalizationSchemas"
 import {ellipsis} from "./characters"
 
 const mainSearchSuggestionsKey = "mainSearch"

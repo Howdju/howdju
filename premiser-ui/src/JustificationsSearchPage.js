@@ -19,7 +19,7 @@ import {
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
 import JustificationCard from "./JustificationCard"
-import {justificationsSchema} from "./schemas"
+import {justificationsSchema} from "./normalizationSchemas"
 import config from './config'
 
 

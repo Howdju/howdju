@@ -13,7 +13,7 @@ import {
 } from "./actions"
 import PropositionCard from './PropositionCard'
 import {denormalize} from 'normalizr'
-import {propositionsSchema, tagSchema} from './schemas'
+import {propositionsSchema, tagSchema} from './normalizationSchemas'
 import * as characters from './characters'
 
 

@@ -11,7 +11,8 @@ const values = require('lodash/values')
 const {normalizeText} = require("./daosUtil")
 
 const {
-  JustificationBasisType
+  JustificationBasisType,
+  JustificationRootTargetType,
 } = require('howdju-common')
 const {
   toPropositionCompound,
@@ -206,9 +207,10 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
       from
         justifications j  
           join proposition_compounds sc on 
-                j.basis_type = $2 
+                j.basis_type = $3
             and j.basis_id = sc.proposition_compound_id
-            and j.root_proposition_id = $1
+            and j.root_target_type = $1
+            and j.root_target_id = $2
             and j.deleted is null
             and sc.deleted is null
           join proposition_compound_atoms sca using (proposition_compound_id)
@@ -222,7 +224,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
     return this.database.query(
       'readPropositionAtomsByPropositionCompoundIdForRootPropositionId',
       sql,
-      [rootPropositionId, JustificationBasisType.PROPOSITION_COMPOUND]
+      [JustificationRootTargetType.PROPOSITION, rootPropositionId, JustificationBasisType.PROPOSITION_COMPOUND]
     )
       .then( ({rows}) => {
         const propositionAtomsByPropositionCompoundId = {}

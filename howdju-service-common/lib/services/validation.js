@@ -6,7 +6,7 @@ const {
 
 module.exports = Joi.extend((joi) => ({
   name: 'string',
-  base: joi.string().uri(),
+  base: joi.string(),
   language: {
     domainMatches: 'domain must match the RegExp {{p}}',
   },

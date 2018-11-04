@@ -8,7 +8,7 @@ import {
 } from './actions'
 import {
   writsSchema
-} from "./schemas"
+} from "./normalizationSchemas"
 
 export default class RecentWritsWidget extends Component {
 

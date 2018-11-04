@@ -15,14 +15,14 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
   }
 
   async readStatementForId(statementId) {
-    const statement = await this.readJustStatementForId(statementId)
+    const statement = await this.readStatementWithoutSentenceForId(statementId)
     let sentence = statement
     let nextSentenceId = sentence.sentence.id
     while (nextSentenceId) {
       let nextSentence
       switch (sentence.sentenceType) {
         case SentenceType.STATEMENT: {
-          nextSentence = await this.readJustStatementForId(nextSentenceId)
+          nextSentence = await this.readStatementWithoutSentenceForId(nextSentenceId)
           nextSentenceId = nextSentence.sentence.id
           break
         }
@@ -71,15 +71,16 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
         insert into statements 
           (sentence_type, sentence_id, speaker_persorg_id, root_proposition_id, creator_user_id, created) 
           values ($1, $2, $3, $4, $5, $6)
+          returning *
       `,
       [statement.sentenceType, statement.sentence.id, statement.speaker.id, statement.rootPropositionId,
         creatorUserId, now]
     )
   }
 
-  async readJustStatementForId(statementId) {
+  async readStatementWithoutSentenceForId(statementId) {
     return await this.queryOne(
-      'readJustStatementForId',
+      'readStatementWithoutSentenceForId',
       `
         with 
           extant_users as (select * from users where deleted is null)

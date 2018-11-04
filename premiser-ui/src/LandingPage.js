@@ -14,11 +14,13 @@ import {
   JustificationBasisCompoundAtomType,
   JustificationPolarity,
   JustificationRootPolarity,
+  JustificationRootTargetType,
 } from 'howdju-common'
 
 import paths from './paths'
 import PropositionCard from './PropositionCard'
 import JustificationChatBubble from './JustificationChatBubble'
+import {combineIds} from './viewModels'
 
 import './LandingPage.scss'
 
@@ -38,7 +40,8 @@ export default class LandingPage extends Component {
       }
     })
     const justification = makeNewJustification({
-      rootProposition: proposition,
+      rootTargetType: JustificationRootTargetType.PROPOSITION,
+      rootTarget: proposition,
       basis: {
         type: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
         entity: makeNewJustificationBasisCompound({
@@ -79,7 +82,7 @@ export default class LandingPage extends Component {
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={`${id}--proposition`}
+              id={combineIds(id, 'proposition-example', 'proposition')}
               proposition={proposition}
               showStatusText={false}
             />
@@ -93,8 +96,8 @@ export default class LandingPage extends Component {
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={`${id}--justification--root-proposition`}
-              proposition={justification.rootProposition}
+              id={combineIds(id, 'justified-proposition-example', 'proposition')}
+              proposition={justification.rootTarget}
               showStatusText={false}
             />
             <JustificationChatBubble
@@ -114,8 +117,8 @@ export default class LandingPage extends Component {
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={`${id}--justification--root-proposition`}
-              proposition={justification.rootProposition}
+              id={combineIds(id, 'opposing-justification-example', 'proposition')}
+              proposition={justification.rootTarget}
               showStatusText={false}
             />
             <JustificationChatBubble
@@ -135,8 +138,8 @@ export default class LandingPage extends Component {
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={`${id}--justification--root-proposition`}
-              proposition={justification.rootProposition}
+              id={combineIds(id, 'counter-justification-example', 'proposition')}
+              proposition={justification.rootTarget}
               showStatusText={false}
             />
             <JustificationChatBubble

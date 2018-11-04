@@ -113,7 +113,7 @@ export function consolidateNewJustificationBasisCompoundEntities(newJustificatio
         atom.entity = atom.proposition
         break
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-        atom.entity = consolidateNewSourcExcerptParaphraseEntities(atom.sourceExcerptParaphrase)
+        atom.entity = consolidateNewSourceExcerptParaphraseEntities(atom.sourceExcerptParaphrase)
         break
     }
     delete atom.proposition
@@ -125,7 +125,7 @@ export function consolidateNewJustificationBasisCompoundEntities(newJustificatio
   return justificationBasisCompound
 }
 
-export function consolidateNewSourcExcerptParaphraseEntities(newSourceExcerptParaphrase) {
+export function consolidateNewSourceExcerptParaphraseEntities(newSourceExcerptParaphrase) {
   const sourceExcerptParaphrase = cloneDeep(newSourceExcerptParaphrase)
   const sourceExcerpt = sourceExcerptParaphrase.sourceExcerpt
   switch (sourceExcerpt.type) {
@@ -149,6 +149,9 @@ export function consolidateNewSourcExcerptParaphraseEntities(newSourceExcerptPar
 export function translateNewJustificationErrors(newJustification, errors) {
   if (!newJustification || !errors) {
     return errors
+  }
+  if (errors.version !== 1) {
+    return null
   }
 
   const newJustificationErrors = cloneDeep(errors)

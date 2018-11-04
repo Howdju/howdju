@@ -3,7 +3,7 @@ select * from propositions where text is null or text ~ '^\s*$';
 select * from propositions where normal_text is null or normal_text ~ '^\s*$';
 select * from writs where title is null or title ~ '^\s*$';
 select * from writs where normal_title is null or normal_title ~ '^\s*$';
-select * from justifications where root_proposition_id is null;
+select * from justifications where root_target_id is null;
 select * from justifications where root_polarity is null;
 select * from justifications where polarity is null or polarity not in ('POSITIVE', 'NEGATIVE');
 select * from justifications where target_type is null or target_type not in ('PROPOSITION', 'JUSTIFICATION');

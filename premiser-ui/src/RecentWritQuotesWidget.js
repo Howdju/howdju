@@ -6,7 +6,7 @@ import t from './texts'
 import {
   api,
 } from './actions'
-import {writQuotesSchema} from "./schemas"
+import {writQuotesSchema} from "./normalizationSchemas"
 
 export default class RecentWritQuotesWidget extends Component {
 

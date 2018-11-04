@@ -6,7 +6,7 @@ const {
 
 const {
   statementSchema
-} = require('./entitySchemas')
+} = require('./validationSchemas')
 const {EntityService} = require('./EntityService')
 
 module.exports.StatementsService = class StatementsService extends EntityService {

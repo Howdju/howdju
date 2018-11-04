@@ -3,6 +3,7 @@ import { schema } from 'normalizr'
 import {
   JustificationBasisCompoundAtomType,
   JustificationBasisType,
+  JustificationRootTargetType,
   JustificationTargetType,
   SentenceType,
   SourceExcerptType,
@@ -98,9 +99,14 @@ export const justificationBasisSchema = new schema.Union({
   [JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND]: justificationBasisCompoundSchema,
 }, (value, parent) => parent.type)
 
+const justificationRootTargetSchema = new schema.Union({
+  [JustificationRootTargetType.STATEMENT]: statementSchema,
+  [JustificationRootTargetType.PROPOSITION]: propositionSchema,
+}, (value, parent) => parent.rootTargetType)
+
 export const justificationSchema = new schema.Entity('justifications')
 justificationSchema.define({
-  rootProposition: propositionSchema,
+  rootTarget: justificationRootTargetSchema,
   target: {
     entity: justificationTargetSchema
   },
@@ -114,6 +120,7 @@ export const justificationsSchema = [justificationSchema]
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there.
 justificationTargetSchema.define({
   [JustificationTargetType.PROPOSITION]: propositionSchema,
+  [JustificationTargetType.STATEMENT]: statementSchema,
   [JustificationTargetType.JUSTIFICATION]: justificationSchema,
 })
 

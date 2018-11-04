@@ -108,7 +108,7 @@ export function* showAlertForExtantEntities() {
     str(api.createJustification.response)
   ], function* showAlertForExtantEntitiesWorker(action) {
     if (!action.error) {
-      if (action.payload.result.isExtant) {
+      if (action.payload.isExtant) {
         const toastMessageKey = toastMessageKeys[action.type]
         yield put(ui.addToast(t(toastMessageKey)))
       }

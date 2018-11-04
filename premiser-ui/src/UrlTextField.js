@@ -5,6 +5,10 @@ import {
 } from 'react-md'
 
 import {
+  schemaSettings,
+} from 'howdju-common'
+
+import {
   isValidUrl,
   hasValidDomain,
 } from './util'
@@ -48,7 +52,7 @@ export default class UrlTextField extends React.Component {
     const {
       // ignore
       validator,
-      //ignopre
+      //ignore
       invalidErrorText,
       ...rest
     } = this.props
@@ -57,6 +61,7 @@ export default class UrlTextField extends React.Component {
     } = this.state
 
     const props = {
+      maxLength: schemaSettings.urlMaxLength,
       ...rest,
       value: rest.value || '',
       onPropertyChange: this.onPropertyChange,

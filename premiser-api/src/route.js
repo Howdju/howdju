@@ -263,7 +263,7 @@ const routes = [
         authToken,
         body: {statement: inStatement}}
     }) {
-      const {isExtant, statement} = await appProvider.statementsService.readOrCreate(authToken, inStatement)
+      const {isExtant, statement} = await appProvider.statementsService.readOrCreate(inStatement, authToken)
       return ok({callback, body: {isExtant, statement}})
     }
   },
@@ -389,7 +389,7 @@ const routes = [
           justification
         },
       }
-    }) => appProvider.justificationsService.readOrCreateJustification(justification, authToken)
+    }) => Promise.resolve(appProvider.justificationsService.readOrCreate(justification, authToken))
       .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification'))
   },
@@ -608,7 +608,7 @@ const routes = [
   },
 ]
 
-const selectRoute = (request) => {
+const selectRoute = (appProvider) => (request) => {
   const {
     path,
     method,
@@ -646,6 +646,7 @@ const selectRoute = (request) => {
     // First item is the whole match, rest are the group matches
     const pathParameters = pathMatch ? pathMatch.slice(1) : undefined
     const routedRequest = assign({}, request, {pathParameters})
+    appProvider.logger.debug(`selected route ${route.id}`)
     return {route, routedRequest}
   }
 

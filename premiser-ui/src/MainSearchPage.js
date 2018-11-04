@@ -20,7 +20,7 @@ import {
   writsSchema,
   writQuotesSchema,
   propositionsSchema, tagsSchema,
-} from './schemas'
+} from './normalizationSchemas'
 import config from './config'
 import {logger} from './logger'
 import TagsViewer from './TagsViewer'

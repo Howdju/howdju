@@ -40,6 +40,7 @@
     "start:localhost:inspect": "source ../config/localhost.env && DEBUG=premiser-api:* inspect bin/dev-server.js",
     "test": "cross-env NODE_ENV=test jest --config .jestrc.json",
     "test:debug": "node debug ./node_modules/.bin/jest --runInBand --config .jestrc.json",
+    "test:inspect": "node --inspect-brk node_modules/.bin/jest --runInBand --config .jestrc.json --watch",
     "test:inspect1": "yarn run test:debug && node-inspector",
     "test:inspect2": "node --debug-brk --inspect ./node_modules/.bin/jest --runInBand --config .jestrc.json",
     "update-lambda-function-alias": "node bin/update-lambda-function-alias.js",

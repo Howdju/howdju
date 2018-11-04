@@ -1,7 +1,10 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {Divider, Subheader, SelectionControlGroup} from 'react-md'
+import {Divider, Subheader} from 'react-md'
 import get from 'lodash/get'
+import has from 'lodash/has'
+import map from 'lodash/map'
+import join from 'lodash/join'
 
 import {
   isWritQuoteBased,
@@ -20,6 +23,7 @@ import t, {
 import WritQuoteEditorFields from "./WritQuoteEditorFields"
 import PropositionCompoundEditorFields from "./PropositionCompoundEditorFields"
 import JustificationBasisCompoundEditorFields from './JustificationBasisCompoundEditorFields'
+import SelectionControlGroup from './SelectionControlGroup'
 import {
   combineNames,
   combineIds,
@@ -28,7 +32,7 @@ import {
 
 import './NewJustificationEditorFields.scss'
 
-
+const polarityName = 'polarity'
 const propositionCompoundName = 'basis.propositionCompound'
 const writQuoteName = "basis.writQuote"
 const justificationBasisCompoundName = 'basis.justificationBasisCompound'
@@ -168,13 +172,15 @@ export default class NewJustificationEditorFields extends Component {
       <div>
         <SelectionControlGroup
           inline
-          id={combineIds(id, "polarity")}
-          name={combineNames(name, "polarity")}
+          id={combineIds(id, polarityName)}
+          name={combineNames(name, polarityName)}
           type="radio"
           value={polarity}
           onChange={this.onChange}
           controls={polarityControls}
           disabled={disabled}
+          error={has(errors, polarityName)}
+          errorText={join(map(get(errors, polarityName), e => e.message), ', ')}
         />
         <Divider />
         <Subheader primary

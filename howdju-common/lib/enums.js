@@ -49,11 +49,18 @@ _e.ActionSubjectType = arrayToObject([
   'URL',
 ])
 
-_e.JustificationTargetType = arrayToObject([
+_e.JustificationRootTargetType = arrayToObject([
   'PROPOSITION',
   'STATEMENT',
-  'JUSTIFICATION',
 ])
+// A justification can target anything that can be a root target.
+// Additionally, it can target other justifications to counter them.
+_e.JustificationTargetType = assign({},
+  _e.JustificationRootTargetType,
+  arrayToObject([
+    'JUSTIFICATION',
+  ])
+)
 
 _e.JustificationPolarity = arrayToObject([
   'POSITIVE',

@@ -3,7 +3,6 @@ const map = require('lodash/map')
 
 const {
   JustificationBasisType,
-  JustificationTargetType,
   JustificationBasisCompoundAtomType,
 } = require('./enums')
 const {
@@ -21,24 +20,15 @@ exports.decircularizePropositionCompound = (propositionCompound) => {
 }
 
 exports.decircularizeJustification = (justification) => {
-  if (justification.rootProposition.id) {
-    justification.rootProposition = {id: justification.rootProposition.id}
+  if (justification.rootTarget.id) {
+    justification.rootTarget = {id: justification.rootTarget.id}
   }
-  justification.counterJustifications = map(justification.counterJustifications, exports.decircularizeJustification)
+  if (justification.counterJustifications) {
+    justification.counterJustifications = map(justification.counterJustifications, exports.decircularizeJustification)
+  }
 
-  switch (justification.target.type) {
-    case JustificationTargetType.PROPOSITION:
-      if (justification.target.entity.id) {
-        justification.target.entity = {id: justification.target.entity.id}
-      }
-      break
-    case JustificationTargetType.JUSTIFICATION:
-      if (justification.target.entity.id) {
-        justification.target.entity = {id: justification.target.entity.id}
-      }
-      break
-    default:
-      throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+  if (justification.target.entity.id) {
+    justification.target.entity = {id: justification.target.entity.id}
   }
 
   switch (justification.basis.type) {

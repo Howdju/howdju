@@ -6,7 +6,7 @@ import t from './texts'
 import {
   api,
 } from './actions'
-import {justificationsSchema} from "./schemas"
+import {justificationsSchema} from "./normalizationSchemas"
 
 export default class RecentJustificationsWidget extends Component {
 

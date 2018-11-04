@@ -11,6 +11,7 @@ import reverse from 'lodash/reverse'
 
 import {
   arrayToObject,
+  JustificationTargetType,
   newProgrammingError,
   makeNewStatement,
   SentenceType,
@@ -44,15 +45,22 @@ const editorTypeCommitApiResourceActions = {
     switch (crudType) {
       case CrudActions.CREATE: {
         if (model.speakers && model.speakers.length > 0) {
-          // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
-          // but we need to build the statements outward so that we have the target of the next statement.
-          // So take them in reverse order
-          const speakers = reverse(clone(model.speakers))
-          let statement = makeNewStatement(speakers[0], SentenceType.PROPOSITION, model.proposition)
-          for (const speaker of drop(speakers, 1)) {
-            statement = makeNewStatement(speaker, SentenceType.STATEMENT, statement)
+          // If there are speakers, then we are creating a statement.  But is it justified or not?
+
+          const statement = constructStatement(model.speakers, model.proposition)
+
+          // If the statement is justified, then create a justification targeting the statement
+          if (model.doCreateJustification) {
+            const justification = consolidateNewJustificationEntities(model.newJustification)
+            justification.target = {
+              entity: statement,
+              type: JustificationTargetType.STATEMENT,
+            }
+            return api.createJustification(justification)
           }
+
           return api.createStatement(statement)
+
         } else if (model.doCreateJustification) {
           const justification = consolidateNewJustificationEntities(model.newJustification)
           // It is sort of an arbitrary decision to create the justification instead of the proposition.
@@ -89,6 +97,18 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.LOGIN_CREDENTIALS]: {
     [CrudActions.CREATE]: api.login,
   },
+}
+
+function constructStatement(speakers, proposition) {
+  // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
+  // but we need to build the statements outward so that we have the target of the next statement.
+  // So take them in reverse order
+  speakers = reverse(clone(speakers))
+  let statement = makeNewStatement(speakers[0], SentenceType.PROPOSITION, proposition)
+  for (const speaker of drop(speakers, 1)) {
+    statement = makeNewStatement(speaker, SentenceType.STATEMENT, statement)
+  }
+  return statement
 }
 
 export function* editorCommitEdit() {

@@ -3,7 +3,6 @@ import {
   call,
   takeEvery,
 } from 'redux-saga/effects'
-import {denormalize} from "normalizr"
 
 import {
   JustificationBasisType,
@@ -117,15 +116,6 @@ function fetchActionCreatorForBasisSourceType (basisType) {
 }
 
 function extractBasisSourceFromFetchResponseAction (basisSourceType, fetchResponseAction) {
-  const {
-    result,
-    entities
-  } = fetchResponseAction.payload
-  const {
-    schema,
-  } = fetchResponseAction.meta
-
-
   const basisSourceGetterByBasisType = {
     [JustificationBasisSourceType.PROPOSITION_COMPOUND]: (result) => result.propositionCompound,
     [JustificationBasisSourceType.WRIT_QUOTE]: (result) => result.writQuote,
@@ -138,7 +128,7 @@ function extractBasisSourceFromFetchResponseAction (basisSourceType, fetchRespon
     throw newExhaustedEnumError(JustificationBasisSourceType, basisSourceType)
   }
 
-  const basisSource = basisSourceGetter(denormalize(result, schema, entities))
+  const basisSource = basisSourceGetter(fetchResponseAction.payload)
 
   return basisSource
 }

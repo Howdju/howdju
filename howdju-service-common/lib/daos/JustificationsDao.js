@@ -9,20 +9,21 @@ const Promise = require('bluebird')
 const snakeCase = require('lodash/snakeCase')
 
 const {
-  JustificationTargetType,
+  assert,
+  isDefined,
+  doTargetSameRoot,
+  JustificationBasisCompoundAtomType,
   JustificationBasisType,
   JustificationPolarity,
-  SortDirection,
+  JustificationRootTargetType,
+  JustificationTargetType,
   negateRootPolarity,
-  newImpossibleError,
-  assert,
-  pushAll,
   newExhaustedEnumError,
-  JustificationBasisCompoundAtomType,
-  SourceExcerptType,
+  newImpossibleError,
+  pushAll,
   requireArgs,
-  idEqual,
-  isDefined,
+  SortDirection,
+  SourceExcerptType,
 } = require('howdju-common')
 
 const {
@@ -44,10 +45,18 @@ const {DatabaseSortDirection} = require('./daoModels')
 
 exports.JustificationsDao = class JustificationsDao {
 
-  constructor(logger, database, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao) {
-    requireArgs({logger, database, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao})
+  constructor(logger, database, statementsDao, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao) {
+    requireArgs({
+      logger,
+      database,
+      statementsDao,
+      propositionCompoundsDao,
+      writQuotesDao,
+      justificationBasisCompoundsDao
+    })
     this.logger = logger
     this.database = database
+    this.statementsDao = statementsDao
     this.propositionCompoundsDao = propositionCompoundsDao
     this.writQuotesDao = writQuotesDao
     this.justificationBasisCompoundsDao = justificationBasisCompoundsDao
@@ -64,6 +73,7 @@ exports.JustificationsDao = class JustificationsDao {
     const orderBySql = orderByExpressionsSql ? 'order by ' + orderByExpressionsSql : ''
 
     const justificationsSelectArgs = [
+      JustificationRootTargetType.PROPOSITION,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.PROPOSITION_COMPOUND,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
@@ -80,7 +90,8 @@ exports.JustificationsDao = class JustificationsDao {
         )
       select 
           ${tableAlias}.justification_id
-        , ${tableAlias}.root_proposition_id
+        , ${tableAlias}.root_target_type
+        , ${tableAlias}.root_target_id
         , ${tableAlias}.root_polarity
         , ${tableAlias}.target_type
         , ${tableAlias}.target_id
@@ -90,10 +101,10 @@ exports.JustificationsDao = class JustificationsDao {
         , ${tableAlias}.creator_user_id
         , ${tableAlias}.created
         
-        , rs.proposition_id         as root_proposition_id
-        , rs.text                 as root_proposition_text
-        , rs.created              as root_proposition_created
-        , rs.creator_user_id      as root_proposition_creator_user_id
+        , rp.proposition_id       as root_target_proposition_id
+        , rp.text                 as root_target_proposition_text
+        , rp.created              as root_target_proposition_created
+        , rp.creator_user_id      as root_target_proposition_creator_user_id
         
         , wq.writ_quote_id          as basis_writ_quote_id
         , wq.quote_text             as basis_writ_quote_quote_text
@@ -138,39 +149,41 @@ exports.JustificationsDao = class JustificationsDao {
       from limited_justifications
           join justifications ${tableAlias} using (justification_id)
           
-          join propositions rs on ${tableAlias}.root_proposition_id = rs.proposition_id
+          join propositions rp on
+                ${tableAlias}.root_target_type = $1 
+            and ${tableAlias}.root_target_id = rp.proposition_id
           
           left join writ_quotes wq on 
-                ${tableAlias}.basis_type = $1
+                ${tableAlias}.basis_type = $2
             and ${tableAlias}.basis_id = wq.writ_quote_id 
           left join writs w using (writ_id)
           
           left join proposition_compounds sc on 
-                ${tableAlias}.basis_type = $2
+                ${tableAlias}.basis_type = $3
             and ${tableAlias}.basis_id = sc.proposition_compound_id
           left join proposition_compound_atoms sca using (proposition_compound_id)
           left join propositions scas on sca.proposition_id = scas.proposition_id
           
           left join justification_basis_compounds jbc on
-                ${tableAlias}.basis_type = $3
+                ${tableAlias}.basis_type = $4
             and ${tableAlias}.basis_id = jbc.justification_basis_compound_id
           left join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
           left join propositions jbcas on
-                jbca.entity_type = $4
+                jbca.entity_type = $5
             and jbca.entity_id = jbcas.proposition_id
           left join source_excerpt_paraphrases sep on
-                jbca.entity_type = $5
+                jbca.entity_type = $6
             and jbca.entity_id = sep.source_excerpt_paraphrase_id
           left join propositions sep_s on
                 sep.paraphrasing_proposition_id = sep_s.proposition_id
           left join writ_quotes sep_wq on
-                sep.source_excerpt_type = $6
+                sep.source_excerpt_type = $7
             and sep.source_excerpt_id = sep_wq.writ_quote_id
           left join writs sep_wqw on
                 sep_wq.writ_id = sep_wqw.writ_id
         where
               ${tableAlias}.deleted is null
-          and rs.deleted is null
+          and rp.deleted is null
           and wq.deleted is null
           and w.deleted is null
           and sc.deleted is null 
@@ -185,6 +198,7 @@ exports.JustificationsDao = class JustificationsDao {
     `
 
     const targetJustificationsSelectArgs = [
+      JustificationRootTargetType.PROPOSITION,
       JustificationTargetType.JUSTIFICATION,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.PROPOSITION_COMPOUND,
@@ -206,7 +220,8 @@ exports.JustificationsDao = class JustificationsDao {
           ${tableAlias}.justification_id
                  
         , tj.justification_id       as ${targetJustificationPrefix}justification_id
-        , tj.root_proposition_id      as ${targetJustificationPrefix}root_proposition_id
+        , tj.root_target_type       as ${targetJustificationPrefix}root_target_type
+        , tj.root_target_id         as ${targetJustificationPrefix}root_target_id
         , tj.root_polarity          as ${targetJustificationPrefix}root_polarity
         , tj.target_type            as ${targetJustificationPrefix}target_type
         , tj.target_id              as ${targetJustificationPrefix}target_id
@@ -216,10 +231,10 @@ exports.JustificationsDao = class JustificationsDao {
         , tj.creator_user_id        as ${targetJustificationPrefix}creator_user_id
         , tj.created                as ${targetJustificationPrefix}created
         
-        , rs.proposition_id         as ${targetJustificationPrefix}root_proposition_id
-        , rs.text                 as ${targetJustificationPrefix}root_proposition_text
-        , rs.created              as ${targetJustificationPrefix}root_proposition_created
-        , rs.creator_user_id      as ${targetJustificationPrefix}root_proposition_creator_user_id
+        , rp.proposition_id         as ${targetJustificationPrefix}root_target_proposition_id
+        , rp.text                   as ${targetJustificationPrefix}root_target_proposition_text
+        , rp.created                as ${targetJustificationPrefix}root_target_proposition_created
+        , rp.creator_user_id        as ${targetJustificationPrefix}root_target_proposition_creator_user_id
         
         , wq.writ_quote_id          as ${targetJustificationPrefix}basis_writ_quote_id
         , wq.quote_text             as ${targetJustificationPrefix}basis_writ_quote_quote_text
@@ -264,43 +279,45 @@ exports.JustificationsDao = class JustificationsDao {
       from limited_justifications lj
           join justifications ${tableAlias} using (justification_id)
          
-          join propositions rs on ${tableAlias}.root_proposition_id = rs.proposition_id
+          join propositions rp on
+                ${tableAlias}.root_target_type = $1 
+            and ${tableAlias}.root_target_id = rp.proposition_id
           
           join justifications tj on 
-                ${tableAlias}.target_type = $1
+                ${tableAlias}.target_type = $2
             and ${tableAlias}.target_id = tj.justification_id 
           
           left join writ_quotes wq on 
-                tj.basis_type = $2
+                tj.basis_type = $3
             and tj.basis_id = wq.writ_quote_id 
           left join writs w on wq.writ_id = w.writ_id
           
           left join proposition_compounds sc on 
-                tj.basis_type = $3
+                tj.basis_type = $4
             and tj.basis_id = sc.proposition_compound_id
           left join proposition_compound_atoms sca using (proposition_compound_id)
           left join propositions scas on sca.proposition_id = scas.proposition_id
           
           left join justification_basis_compounds jbc on
-                tj.basis_type = $4
+                tj.basis_type = $5
             and tj.basis_id = jbc.justification_basis_compound_id
           left join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
           left join propositions jbcas on
-                jbca.entity_type = $5
+                jbca.entity_type = $6
             and jbca.entity_id = jbcas.proposition_id
           left join source_excerpt_paraphrases sep on
-                jbca.entity_type = $6
+                jbca.entity_type = $7
             and jbca.entity_id = sep.source_excerpt_paraphrase_id
           left join propositions sep_s on
                 sep.paraphrasing_proposition_id = sep_s.proposition_id
           left join writ_quotes sep_wq on
-                sep.source_excerpt_type = $7
+                sep.source_excerpt_type = $8
             and sep.source_excerpt_id = sep_wq.writ_quote_id
           left join writs sep_wqw on
                 sep_wq.writ_id = sep_wqw.writ_id
         where
               ${tableAlias}.deleted is null
-          and rs.deleted is null
+          and rp.deleted is null
           and tj.deleted is null
           and wq.deleted is null
           and w.deleted is null
@@ -378,9 +395,15 @@ exports.JustificationsDao = class JustificationsDao {
 
         return justifications
       })
+      .then((justifications) => {
+        // Add the statements here at the end; it is too much trouble to add them into the joins above;
+        // we can add them into the joins, if that makes sense, after we remove the deprecated justification basis types
+        addStatements(this, justifications)
+        return justifications
+      })
   }
 
-  readJustificationsWithBasesAndVotesByRootPropositionId(rootPropositionId, {userId}) {
+  readJustificationsWithBasesAndVotesByRootTarget(rootTargetType, rootTargetId, {userId}) {
     const sql = `
       with 
         extant_users as (select * from users where deleted is null)
@@ -393,25 +416,31 @@ exports.JustificationsDao = class JustificationsDao {
       from justifications j 
         left join extant_users u on j.creator_user_id = u.user_id
         left join proposition_compounds sc on 
-              j.basis_type = $4 
+              j.basis_type = $5
           and j.basis_id = sc.proposition_compound_id 
         left join writ_quotes wq on 
-              j.basis_type = $3
+              j.basis_type = $4
           and j.basis_id = wq.writ_quote_id
         left join justification_votes v on 
               j.justification_id = v.justification_id
-          and v.user_id = $2
+          and v.user_id = $3
           and v.deleted IS NULL
         where 
               j.deleted is null
-          and j.root_proposition_id = $1
+          and j.root_target_type = $1
+          and j.root_target_id = $2
       `
     return Promise.all([
-      this.database.query('readJustificationsWithBasesAndVotesByRootPropositionId', sql,
-        [rootPropositionId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.PROPOSITION_COMPOUND]),
-      readPropositionCompoundsByIdForRootPropositionId(this, rootPropositionId, {userId}),
-      this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootPropositionId),
-      this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(rootPropositionId),
+      this.database.query('readJustificationsWithBasesAndVotesByRootTarget', sql,
+        [rootTargetType, rootTargetId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.PROPOSITION_COMPOUND]),
+      // We won't support adding legacy justification basis types to statements
+      rootTargetType === JustificationRootTargetType.PROPOSITION ?
+        readPropositionCompoundsByIdForRootPropositionId(this, rootTargetId, {userId}) : [],
+      rootTargetType === JustificationRootTargetType.PROPOSITION ?
+        this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootTargetId) : [],
+      rootTargetType === JustificationRootTargetType.PROPOSITION ?
+        this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(rootTargetId)
+        : [],
     ])
       .then( ([
         {rows: justification_rows},
@@ -420,31 +449,40 @@ exports.JustificationsDao = class JustificationsDao {
         justificationBasisCompoundsById
       ]) => {
         const {rootJustifications, counterJustificationsByJustificationId} =
-          groupRootJustifications(rootPropositionId, justification_rows)
+          groupRootJustifications(rootTargetType, rootTargetId, justification_rows)
         return map(rootJustifications, j =>
           toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById, justificationBasisCompoundsById))
+      })
+      .then((justifications) => {
+        addStatements(this, justifications)
+        return justifications
       })
   }
 
   readJustificationsDependentUponPropositionId(propositionId) {
     const sql = `
       select * from justifications where
-           root_proposition_id = $1
+            root_target_type = $1
+        and root_target_id = $2
       union
         select j.* 
         from justifications j 
           join proposition_compounds sc on 
-                j.basis_type = $2
+                j.basis_type = $3
             and j.basis_id = sc.proposition_compound_id
           join proposition_compound_atoms pca using (proposition_compound_id)
           join propositions pcap on
                 pca.proposition_id = pcap.proposition_id
-            and pcap.proposition_id = $1
+            and pcap.proposition_id = $2
     `
     return this.database.query('readJustificationsDependentUponPropositionId', sql,
-      [propositionId, JustificationBasisType.PROPOSITION_COMPOUND]
+      [JustificationRootTargetType.PROPOSITION, propositionId, JustificationBasisType.PROPOSITION_COMPOUND]
     )
       .then( ({rows}) => map(rows, toJustification))
+      .then((justifications) => {
+        addStatements(this, justifications)
+        return justifications
+      })
   }
 
   readJustificationForId(justificationId) {
@@ -458,6 +496,10 @@ exports.JustificationsDao = class JustificationsDao {
           this.logger.error(`More than one justification has ID ${justificationId}`)
         }
         return toJustification(head(rows))
+      })
+      .then((justification) => {
+        addStatements(this, [justification])
+        return justification
       })
   }
 
@@ -481,23 +523,32 @@ exports.JustificationsDao = class JustificationsDao {
     return this.database.query('readJustificationEquivalentTo', sql, args)
       .then( ({rows}) => toJustification(head(rows)) )
       .then(equivalentJustification => {
-        if (equivalentJustification && !idEqual(equivalentJustification.rootProposition.id, justification.rootProposition.id)) {
-          this.logger.error(`justification's rootProposition ID ${justification.rootProposition.id} !== equivalent justification ${equivalentJustification.id}'s rootProposition ID ${equivalentJustification.rootProposition.id}`)
-        }
+        assert(
+          () => !equivalentJustification || doTargetSameRoot(equivalentJustification, justification),
+          () => `justification's (${justification.id}) rootTarget ${justification.rootTargetType} ${justification.rootTarget.id} does not` +
+            ` equal equivalent justification's (${equivalentJustification.id}) rootTarget ${justification.rootTargetType} ${equivalentJustification.rootTarget.id}`
+        )
         return equivalentJustification
+      })
+      .then((justification) => {
+        if (justification) {
+          addStatements(this, [justification])
+        }
+        return justification
       })
   }
 
-  readRootJustificationCountByPolarityForRootPropositionId(rootPropositionId) {
-    return this.database.query('readRootJustificationCountByPolarityForRootPropositionId', `
+  readRootJustificationCountByPolarityForRoot(rootTargetType, rootTargetId) {
+    return this.database.query('readRootJustificationCountByPolarityForRoot', `
       select polarity, count(*) as count
       from justifications
         where 
-              root_proposition_id = $1 
-          and target_type = $2
-          and target_id = $1
+              root_target_type = $1
+          and root_target_id = $2
+          and target_type = $1
+          and target_id = $2
       group by polarity
-    `, [rootPropositionId, JustificationTargetType.PROPOSITION])
+    `, [rootTargetType, rootTargetId])
       .then( ({rows}) => {
         const rootJustificationCountByPolarity = {}
         forEach(rows, row => {
@@ -513,12 +564,13 @@ exports.JustificationsDao = class JustificationsDao {
       .then((rootPolarity) => {
         const sql = `
           insert into justifications
-            (root_proposition_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
-            values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            (root_target_type, root_target_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
+            values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           returning *
           `
         const args = [
-          justification.rootProposition.id,
+          justification.rootTargetType,
+          justification.rootTarget.id,
           rootPolarity,
           justification.target.type,
           justification.target.entity.id,
@@ -578,6 +630,61 @@ exports.JustificationsDao = class JustificationsDao {
   }
 }
 
+function addStatements(service, justifications) {
+  // Collect all the statements we need to read, as well as the justifications that need them as rootTargets and targets
+  const statementIds = new Set()
+  const justificationsByRootTargetStatementId = new Map()
+  const justificationsByTargetStatementId = new Map()
+  for (const justification of justifications) {
+    if (justification.rootTargetType === JustificationRootTargetType.STATEMENT) {
+      statementIds.add(justification.rootTarget.id)
+
+      let justificationsRootedInStatementId = justificationsByRootTargetStatementId.get(justification.rootTarget.id)
+      if (!justificationsRootedInStatementId) {
+        justificationsByRootTargetStatementId.set(
+          justification.rootTarget.id,
+          justificationsRootedInStatementId = []
+        )
+      }
+
+      justificationsRootedInStatementId.push(justification)
+    }
+    if (justification.target.type === JustificationTargetType.STATEMENT) {
+      // It is not possible to target a statement that is not also the root statement, so we don't need to add
+      // to statementIds here since we did it above.
+
+      let justificationsTargetingStatementId = justificationsByTargetStatementId.get(justification.target.id)
+      if (!justificationsTargetingStatementId) {
+        justificationsByTargetStatementId.set(
+          justification.target.id,
+          justificationsTargetingStatementId = []
+        )
+      }
+
+      justificationsTargetingStatementId.push(justification)
+    }
+  }
+
+  // Query each statement, and insert it into the justifications that need it.
+  for (const statementId of statementIds.values()) {
+    const statement = service.statementsDao.readStatementForId(statementId)
+
+    const justificationsRootTargetingStatement = justificationsByRootTargetStatementId.get(statement.id)
+    if (justificationsRootTargetingStatement) {
+      for (const justification of justificationsRootTargetingStatement) {
+        justification.rootTarget = statement
+      }
+    }
+
+    const justificationsTargetingStatement = justificationsByTargetStatementId.get(statement.id)
+    if (justificationsTargetingStatement) {
+      for (const justification of justificationsTargetingStatement) {
+        justification.target.entity = statement
+      }
+    }
+  }
+}
+
 /** Directly return an object of the justifications keyed by their ID */
 function mapJustificationRowsById(rows, prefix = '') {
   const [justificationsById] = mapJustificationRowsWithOrdering(rows, prefix)
@@ -619,19 +726,17 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
     if (!has(justificationRowsById, rowId)) {
       orderedJustificationIds.push(rowId)
       justificationRowsById[rowId] = {
-        justification_id:          rowId,
-        root_polarity:             row[prefix + 'root_polarity'],
-        root_proposition_id:         row[prefix + 'root_proposition_id'],
-        root_proposition_text:       row[prefix + 'root_proposition_text'],
-        root_proposition_created:    row[prefix + 'root_proposition_created'],
-        root_proposition_creator_id: row[prefix + 'root_proposition_creator_id'],
-        target_type:               row[prefix + 'target_type'],
-        target_id:                 row[prefix + 'target_id'],
-        basis_type:                row[prefix + 'basis_type'],
-        basis_id:                  row[prefix + 'basis_id'],
-        polarity:                  row[prefix + 'polarity'],
-        creator_user_id:           row[prefix + 'creator_user_id'],
-        created:                   row[prefix + 'created'],
+        justification_id:            rowId,
+        root_polarity:               row[prefix + 'root_polarity'],
+        root_target_type:            row[prefix + 'root_target_type'],
+        root_target_id:              row[prefix + 'root_target_id'],
+        target_type:                 row[prefix + 'target_type'],
+        target_id:                   row[prefix + 'target_id'],
+        basis_type:                  row[prefix + 'basis_type'],
+        basis_id:                    row[prefix + 'basis_id'],
+        polarity:                    row[prefix + 'polarity'],
+        creator_user_id:             row[prefix + 'creator_user_id'],
+        created:                     row[prefix + 'created'],
       }
     }
 
@@ -1178,6 +1283,7 @@ function getNewJustificationRootPolarity(justification, logger, database) {
     .then(() => {
       switch (justification.target.type) {
         case JustificationTargetType.PROPOSITION:
+        case JustificationTargetType.STATEMENT:
           // root justifications have root polarity equal to their polarity
           return justification.polarity
         case JustificationTargetType.JUSTIFICATION:
@@ -1210,23 +1316,23 @@ function getTargetRootPolarity(logger, database, justification) {
     })
 }
 
-function readPropositionCompoundsByIdForRootPropositionId(provider, rootPropositionId, {userId}) {
-  return provider.propositionCompoundsDao.readPropositionCompoundsByIdForRootPropositionId(rootPropositionId, {userId})
+function readPropositionCompoundsByIdForRootPropositionId(dao, rootPropositionId, {userId}) {
+  return dao.propositionCompoundsDao.readPropositionCompoundsByIdForRootPropositionId(rootPropositionId, {userId})
     .then( (propositionCompoundsById) =>
       Promise.all([
         propositionCompoundsById,
-        addRootJustificationCountByPolarity(provider, propositionCompoundsById),
+        addRootJustificationCountByPolarity(dao, propositionCompoundsById),
       ])
     )
     .then( ([propositionCompoundsById]) => propositionCompoundsById)
 }
 
-function addRootJustificationCountByPolarity(provider, propositionCompoundsById) {
+function addRootJustificationCountByPolarity(dao, propositionCompoundsById) {
   return Promise.all(flatMap(propositionCompoundsById, (propositionCompound) => propositionCompound.atoms))
     .then( (atoms) => Promise.all(map(atoms, (atom) =>
       Promise.all([
         atom.entity,
-        provider.readRootJustificationCountByPolarityForRootPropositionId(atom.entity.id),
+        dao.readRootJustificationCountByPolarityForRoot(JustificationRootTargetType.PROPOSITION, atom.entity.id),
       ])
     )))
     .then( (propositionAndJustificationCounts) => Promise.all(map(propositionAndJustificationCounts, ([proposition, rootJustificationCountByPolarity]) => {

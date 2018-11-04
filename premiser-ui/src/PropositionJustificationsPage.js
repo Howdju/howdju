@@ -32,11 +32,11 @@ import {
   isDisverified,
   isPositive,
   isNegative,
-  makeNewJustificationTargetingPropositionId,
-  makeNewJustificationTargetingPropositionIdWithPolarity,
-  JustificationPolarity,
   JustificationBasisSourceType,
+  JustificationPolarity,
+  JustificationRootTargetType,
   makeNewProposition,
+  makeNewTrunkJustification,
 } from "howdju-common"
 
 import {logger} from "./logger"
@@ -46,7 +46,7 @@ import {
   ui,
   goto, flows,
 } from "./actions"
-import {justificationsSchema, propositionSchema} from "./schemas"
+import {justificationsSchema, propositionSchema} from "./normalizationSchemas"
 import paths from './paths'
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
@@ -73,6 +73,7 @@ import * as characters from './characters'
 
 
 const propositionIdFromProps = (props) => props.match.params.propositionId
+
 const trailPropositionIdsFromProps = (props) => {
   const queryParams = queryString.parse(props.location.search)
   const trailPropositionIdsParam = queryParams['proposition-trail']
@@ -93,7 +94,7 @@ class PropositionJustificationsPage extends Component {
   }
 
   componentWillMount() {
-    const propositionId = propositionIdFromProps(this.props)
+    const propositionId = this.propositionId()
     this.props.api.fetchPropositionJustifications(propositionId)
 
     const trailPropositionIds = trailPropositionIdsFromProps(this.props)
@@ -143,25 +144,20 @@ class PropositionJustificationsPage extends Component {
     this.props.api.deleteProposition(this.props.proposition)
   }
 
-  showNewJustificationDialog = () => {
-    const newJustification = makeNewJustificationTargetingPropositionId(this.propositionId())
+  showNewJustificationDialog = (event, polarity = null) => {
+    const newJustification = makeNewTrunkJustification(JustificationRootTargetType.PROPOSITION, this.propositionId(),
+      polarity)
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
 
     this.props.ui.showNewJustificationDialog(this.propositionId())
   }
 
-  showNewPositiveJustificationDialog = () => {
-    const newJustification = makeNewJustificationTargetingPropositionIdWithPolarity(this.propositionId(), JustificationPolarity.POSITIVE)
-    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
-
-    this.props.ui.showNewJustificationDialog(this.propositionId())
+  showNewPositiveJustificationDialog = (event) => {
+    this.showNewJustificationDialog(event, JustificationPolarity.POSITIVE)
   }
 
-  showNewNegativeJustificationDialog = () => {
-    const newJustification = makeNewJustificationTargetingPropositionIdWithPolarity(this.propositionId(), JustificationPolarity.NEGATIVE)
-    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
-
-    this.props.ui.showNewJustificationDialog(this.propositionId())
+  showNewNegativeJustificationDialog = (event) => {
+    this.showNewJustificationDialog(event, JustificationPolarity.NEGATIVE)
   }
 
   saveNewJustification = (event) => {
@@ -380,7 +376,7 @@ const mapStateToProps = (state, ownProps) => {
   const isFetchingProposition = get(propositionEditorState, 'isFetching')
   const didFetchingPropositionFail = get(propositionEditorState, ['errors', 'hasErrors'], false)
 
-  let justifications = denormalize(state.entities.justificationsByRootPropositionId[propositionId], justificationsSchema, state.entities)
+  let justifications = denormalize(state.entities.trunkJustificationsByRootPropositionId[propositionId], justificationsSchema, state.entities)
   justifications = sortJustifications(justifications)
 
   const isWindowNarrow = selectIsWindowNarrow(state)

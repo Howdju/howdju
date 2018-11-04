@@ -16,6 +16,7 @@ const {
   JustificationBasisType,
   SortDirection,
   isTruthy,
+  JustificationRootTargetType,
   JustificationTargetType,
   CANNOT_MODIFY_OTHER_USERS_ENTITIES,
   ActionType,
@@ -26,11 +27,18 @@ const {
   newExhaustedEnumError,
 } = require('howdju-common')
 
+const {justificationSchema} = require('./validationSchemas')
+const {
+  EntityService
+} = require('./EntityService')
 const {
   createContinuationToken,
   decodeContinuationToken,
   createNextContinuationToken,
 } = require('./pagination')
+const {
+  permissions,
+} = require('../permissions')
 const {
   RequestValidationError,
   EntityTooOldToModifyError,
@@ -40,47 +48,46 @@ const {
   AuthorizationError,
 } = require('../serviceErrors')
 const {
-  permissions,
-} = require('../permissions')
-const {
   rethrowTranslatedErrors
 } = require('../util')
 
 
-exports.JustificationsService = class JustificationsService {
+exports.JustificationsService = class JustificationsService extends EntityService {
 
   constructor(
     config,
     logger,
-    justificationValidator,
     actionsService,
     authService,
     propositionsService,
+    statementsService,
     writQuotesService,
     propositionCompoundsService,
     justificationBasisCompoundsService,
     justificationsDao,
     permissionsDao
   ) {
+    super(logger, authService)
     requireArgs({
       config,
       logger,
-      justificationValidator,
       actionsService,
       authService,
       propositionsService,
+      statementsService,
       writQuotesService,
       propositionCompoundsService,
       justificationBasisCompoundsService,
       justificationsDao,
       permissionsDao
     })
+    this.entitySchema = justificationSchema
     this.config = config
     this.logger = logger
-    this.justificationValidator = justificationValidator
     this.actionsService = actionsService
     this.authService = authService
     this.propositionsService = propositionsService
+    this.statementsService = statementsService
     this.writQuotesService = writQuotesService
     this.propositionCompoundsService = propositionCompoundsService
     this.justificationBasisCompoundsService = justificationBasisCompoundsService
@@ -93,26 +100,21 @@ exports.JustificationsService = class JustificationsService {
       .then( (justification) => {
         return Promise.all([
           justification,
-          this.propositionsService.readPropositionForId(justification.rootProposition.id, {userId}),
+          readRootTarget(this, justification, userId),
           readJustificationTarget(this, justification.target, {userId}),
           readJustificationBasis(this, justification.basis, {userId}),
         ])
       })
       .then( ([
         justification,
-        rootProposition,
+        rootTarget,
         targetEntity,
         basisEntity
       ]) => {
-        justification.rootProposition = rootProposition
+        justification.rootTarget = rootTarget
 
         justification.target.entity = targetEntity
-        if (
-          justification.target.type === JustificationTargetType.PROPOSITION &&
-          !idEqual(justification.rootProposition.id, justification.target.entity.id)
-        ) {
-          this.logger.error(`Justification ${justification.id} targets proposition ${justification.target.entity.id} but has inconsistent root proposition ${justification.rootProposition.id}`)
-        }
+        logTargetInconsistency(this, justification)
 
         justification.basis.entity = basisEntity
 
@@ -169,41 +171,19 @@ exports.JustificationsService = class JustificationsService {
       })
   }
 
-  readJustificationsWithBasesAndVotesByRootPropositionId(rootPropositionId, {userId}) {
-    return this.justificationsDao.readJustificationsWithBasesAndVotesByRootPropositionId(rootPropositionId, {userId})
+  readJustificationsWithBasesAndVotesByRootTarget(rootTargetType, rootTargetId, {userId}) {
+    return this.justificationsDao.readJustificationsWithBasesAndVotesByRootTarget(rootTargetType, rootTargetId, {userId})
   }
 
-  readOrCreateJustification(justification, authToken) {
-    return this.authService.readUserIdForAuthToken(authToken)
-      .then(userId => {
-        return this.readOrCreateJustificationAsUser(justification, userId, new Date())
-      })
-  }
+  async doReadOrCreate(justification, userId, now) {
+    if (justification.id) {
+      return {
+        isExtant: true,
+        justification: await this.readJustificationForId(justification.id, {userId})
+      }
+    }
 
-  readOrCreateJustificationAsUser(justification, userId, now) {
-    return Promise.resolve()
-      .then(() => {
-        const validationErrors = this.justificationValidator.validate(justification)
-        if (validationErrors.hasErrors) {
-          throw new EntityValidationError(validationErrors)
-        }
-        return [userId, now]
-      })
-      .then( ([userId, now]) => this.readOrCreateValidJustificationAsUser(justification, userId, now))
-  }
-
-  readOrCreateValidJustificationAsUser(justification, userId, now) {
-    return Promise.resolve()
-      .then(() => {
-        if (justification.id) {
-          return Promise.props({
-            isExtant: true,
-            justification: this.readJustificationForId(justification.id, {userId})
-          })
-        }
-
-        return readOrCreateEquivalentValidJustificationAsUser(this, justification, userId, now)
-      })
+    return await readOrCreateEquivalentValidJustificationAsUser(this, justification, userId, now)
   }
 
   deleteJustification(authToken, justificationId) {
@@ -257,14 +237,42 @@ exports.JustificationsService = class JustificationsService {
   }
 }
 
+function logTargetInconsistency(service, justification) {
+  if (
+    justification.target.type !== JustificationTargetType.JUSTIFICATION &&
+    !(
+      idEqual(justification.rootTarget.id, justification.target.entity.id)
+      || justification.rootTargetType !== justification.target.type
+    )
+  ) {
+    this.logger.error(`Justification ${justification.id} targets ${justification.target.type}` +
+      ` ${justification.target.entity.id} but has inconsistent root target ${justification.rootTargetType} ${justification.rootTarget.id}`)
+  }
+}
+
+function readRootTarget(service, justification, userId) {
+  switch (justification.rootTargetType) {
+    case JustificationRootTargetType.PROPOSITION:
+      return service.propositionsService.readPropositionForId(justification.rootTarget.id, {userId})
+    case JustificationRootTargetType.STATEMENT:
+      return service.statementsService.readStatementForId(justification.rootTarget.id, {userId})
+    default:
+      throw newImpossibleError(`Exhausted JustificationRootTargetTypes: ${justification.rootTargetType}`)
+  }
+}
+
+
 function readJustificationTarget(service, justificationTarget, {userId}) {
   switch (justificationTarget.type) {
 
-    case JustificationTargetType.JUSTIFICATION:
-      return service.readJustificationForId(justificationTarget.entity.id, {userId})
-
     case JustificationTargetType.PROPOSITION:
       return service.propositionsService.readPropositionForId(justificationTarget.entity.id, {userId})
+
+    case JustificationTargetType.STATEMENT:
+      return service.statementsService.readStatementForId(justificationTarget.entity.id, {userId})
+
+    case JustificationTargetType.JUSTIFICATION:
+      return service.readJustificationForId(justificationTarget.entity.id, {userId})
 
     default:
       throw newExhaustedEnumError('JustificationTargetType', justificationTarget.type)
@@ -288,11 +296,11 @@ function readJustificationBasis(service, justificationBasis, {userId}) {
   }
 }
 
-function readOrCreateEquivalentValidJustificationAsUser(server, justification, userId, now) {
+function readOrCreateEquivalentValidJustificationAsUser(service, justification, userId, now) {
   return Promise.all([
-    readOrCreateJustificationTarget(server, justification.target, userId, now)
+    readOrCreateJustificationTarget(service, justification.target, userId, now)
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.target')),
-    readOrCreateJustificationBasis(server, justification.basis, userId, now)
+    readOrCreateJustificationBasis(service, justification.basis, userId, now)
       .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.basis')),
     now,
   ])
@@ -308,10 +316,13 @@ function readOrCreateEquivalentValidJustificationAsUser(server, justification, u
 
       switch (justification.target.type) {
         case JustificationTargetType.PROPOSITION:
-          justification.rootProposition = justification.target.entity
+        case JustificationTargetType.STATEMENT:
+          justification.rootTarget = justification.target.entity
+          justification.rootTargetType = justification.target.type
           break
         case JustificationTargetType.JUSTIFICATION:
-          justification.rootProposition = justification.target.entity.rootProposition
+          justification.rootTarget = justification.target.entity.rootTarget
+          justification.rootTargetType = justification.target.entity.rootTargetType
           break
         default:
           throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
@@ -322,17 +333,17 @@ function readOrCreateEquivalentValidJustificationAsUser(server, justification, u
     .then( ([now, justification]) => Promise.all([
       now,
       justification,
-      server.justificationsDao.readJustificationEquivalentTo(justification)
+      service.justificationsDao.readJustificationEquivalentTo(justification)
     ]))
     .then( ([now, justification, equivalentJustification]) => Promise.all([
       now,
       justification,
       !!equivalentJustification,
-      equivalentJustification || server.justificationsDao.createJustification(justification, userId, now)
+      equivalentJustification || service.justificationsDao.createJustification(justification, userId, now)
     ]))
     .then( ([now, justification, isExtant, dbJustification]) => {
       const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-      server.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.JUSTIFICATION, dbJustification.id)
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.JUSTIFICATION, dbJustification.id)
       return [justification, isExtant, dbJustification]
     })
     .then( ([inJustification, isExtant, dbJustification]) => {
@@ -349,17 +360,8 @@ function readOrCreateEquivalentValidJustificationAsUser(server, justification, u
 function readOrCreateJustificationTarget(service, justificationTarget, userId, now) {
   switch (justificationTarget.type) {
 
-    case JustificationTargetType.JUSTIFICATION:
-      return service.readOrCreateJustificationAsUser(justificationTarget.entity, userId, now)
-        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
-        .then( ({isExtant, justification}) => ({
-          isExtant,
-          targetType: justificationTarget.type,
-          targetEntity: justification,
-        }))
-
     case JustificationTargetType.PROPOSITION:
-      return service.propositionsService.readOrCreatePropositionAsUser(justificationTarget.entity, userId, now)
+      return service.propositionsService.readOrCreateValidPropositionAsUser(justificationTarget.entity, userId, now)
         .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
         .then(({isExtant, proposition}) => ({
           isExtant,
@@ -367,8 +369,26 @@ function readOrCreateJustificationTarget(service, justificationTarget, userId, n
           targetEntity: proposition,
         }))
 
+    case JustificationTargetType.STATEMENT:
+      return Promise.resolve(service.statementsService.doReadOrCreate(justificationTarget.entity, userId, now))
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+        .then(({isExtant, statement}) => ({
+          isExtant,
+          targetType: justificationTarget.type,
+          targetEntity: statement,
+        }))
+
+    case JustificationTargetType.JUSTIFICATION:
+      return Promise.resolve(service.doReadOrCreate(justificationTarget.entity, userId, now))
+        .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('fieldErrors.entity'))
+        .then( ({isExtant, justification}) => ({
+          isExtant,
+          targetType: justificationTarget.type,
+          targetEntity: justification,
+        }))
+
     default:
-      throw newImpossibleError(`Unsupported JustificationTargetType: ${justificationTarget.type}`)
+      throw newExhaustedEnumError('JustificationTargetType', justificationTarget.type)
   }
 }
 
