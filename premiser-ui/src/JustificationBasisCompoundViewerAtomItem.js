@@ -128,7 +128,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
     const justifications = atom.entity.justifications
     const hasJustifications = justifications && justifications.length > 0
 
-    const menu = (
+    const menu = () => (
       <MenuButton
         icon
         id={`${id}-context-menu`}
@@ -166,7 +166,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
             showUrls={showUrls}
             trailPropositions={trailPropositions}
           />
-          {doShowControls && menu}
+          {doShowControls && menu()}
         </div>
 
         {doShowPropositionAtomJustifications && hasJustifications && (
