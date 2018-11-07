@@ -658,7 +658,7 @@ const handleRequest = (appProvider, callback) => ({route, routedRequest}) =>
 
 const routeRequest = (request, appProvider, callback) =>
   Promise.resolve(request)
-    .then(selectRoute)
+    .then(selectRoute(appProvider))
     .then(handleRequest(appProvider, callback))
     .catch(err => {
       appProvider.logger.silly('Error handling route', {err})
