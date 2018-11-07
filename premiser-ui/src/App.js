@@ -103,10 +103,15 @@ class App extends Component {
     window.removeEventListener('scroll', this.receiveMessage)
   }
 
+
   receiveMessage = (event) => {
+    const source = event.data.source
+    if (!source || source !== 'extension') {
+      return
+    }
     const action = event.data.action
     if (!action) {
-      logger.debug('message data lacked action; ignoring')
+      logger.error(`extension message lacked action`, event.data)
       return
     }
     switch (action) {
@@ -126,7 +131,7 @@ class App extends Component {
         break
       }
       default: {
-        logger.error(`unsupported message action: ${event.data.action}`)
+        logger.error(`unsupported message action: ${action}`)
         break
       }
     }
