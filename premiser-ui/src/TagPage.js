@@ -1,3 +1,4 @@
+import Helmet from 'react-helmet'
 import get from 'lodash/get'
 import isEqual from 'lodash/isEqual'
 import map from 'lodash/map'
@@ -44,11 +45,15 @@ class TagPage extends React.Component {
     } = this.props
 
     const tagName = get(tag, 'name', characters.ellipsis)
+    const title = `Propositions tagged with “${tagName}”`
 
     return (
-      <div className="md-grid">
+      <div id="tag-page" className="md-grid">
+        <Helmet>
+          <title>{title} — Howdju</title>
+        </Helmet>
         <div className="md-cell--12">
-          <h1>Propositions tagged with &ldquo;{tagName}&rdquo;</h1>
+          <h1>{title}</h1>
         </div>
         {map(propositions, proposition => {
           const id = `proposition-card-${proposition.id}`

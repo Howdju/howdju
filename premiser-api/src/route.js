@@ -26,13 +26,6 @@ const {
   rethrowTranslatedErrors,
 } = require("howdju-service-common")
 
-const {
-  Validator,
-  validateRequest,
-} = require('./validation')
-
-const idValidator = new Validator(/[0-9]/, 'identifiers must be natural numbers')
-
 const ok = ({callback, body={}, headers}) => callback({
   httpStatusCode: httpStatusCodes.OK,
   headers,
@@ -132,9 +125,6 @@ const routes = [
     id: 'readTag',
     path: new RegExp('^tags/([^/]+)$'),
     method: httpMethods.GET,
-    validators: {
-      pathParameters: [idValidator]
-    },
     handler: (appProvider, {
       callback,
       request: {
@@ -152,9 +142,6 @@ const routes = [
     path: 'propositions',
     method: httpMethods.GET,
     queryStringParameters: {tagId: /.+/},
-    validators: {
-      queryStringParameters: {tagId: idValidator}
-    },
     handler: (appProvider, {
       request: {
         queryStringParameters: {tagId},
@@ -209,9 +196,6 @@ const routes = [
     id: 'readProposition',
     path: new RegExp('^propositions/([^/]+)$'),
     method: httpMethods.GET,
-    validators: {
-      pathParameters: [idValidator]
-    },
     // explicitly no query string parameters
     queryStringParameters: {},
     handler: (appProvider, {
@@ -612,7 +596,6 @@ const handleRequest = (appProvider, callback) => ({route, routedRequest}) =>
 const routeRequest = (request, appProvider, callback) =>
   Promise.resolve(request)
     .then(selectRoute)
-    .then(validateRequest(appProvider))
     .then(handleRequest(appProvider, callback))
     .catch(err => {
       appProvider.logger.silly('Error handling route', {err})
@@ -679,5 +662,4 @@ module.exports = {
   routes,
   routeRequest,
   selectRoute,
-  idValidator,
 }

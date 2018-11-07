@@ -118,4 +118,5 @@ export const mainSearchResultsSchema = {
   writQuoteQuoteTexts: writQuotesSchema,
   writQuoteUrls: writQuotesSchema,
   writTitles: writsSchema,
+  tags: tagsSchema,
 }
