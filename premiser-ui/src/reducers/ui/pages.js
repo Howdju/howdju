@@ -7,7 +7,7 @@ import {
   ui
 } from '../../actions'
 
-export const propositionJustificationsPage = handleActions({
+export const justificationsPage = handleActions({
   [ui.showNewJustificationDialog]: (state, action) => ({
     ...state,
     isNewJustificationDialogVisible: true,

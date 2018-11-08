@@ -2,9 +2,7 @@ export const suggestionKeys = {
   createPropositionPageProposition: 'createPropositionPageProposition',
   createPropositionPageJustification: 'createPropositionPageJustification',
   counterJustificationEditor: targetJustificationId => `counterJustificationEditor_${targetJustificationId}`,
-  propositionJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions: 'propositionJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions',
   justificationBasisEditor: justification => `justificationBasisEditor-${justification.id}-${justification.basis.type}-${justification.basis.entity.id}`,
-  propositionJustificationsPage_propositionEditor: 'propositionJustificationsPage_propositionEditor',
 }
 
 export default {

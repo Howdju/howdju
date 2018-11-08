@@ -51,28 +51,23 @@ import paths from './paths'
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
 } from "./texts"
-import {
-  propositionJustificationsPage_propositionEditor_editorId,
-  propositionJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
-} from "./editorIds"
 import {EditorTypes} from "./reducers/editors"
-import {suggestionKeys} from "./autocompleter"
 import {selectIsWindowNarrow} from "./selectors"
 
-import NewJustificationDialog from './NewJustificationDialog'
+import * as characters from './characters'
 import JustificationsTree from './JustificationsTree'
-
-import "./PropositionJustificationsPage.scss"
+import NewJustificationDialog from './NewJustificationDialog'
 import PropositionEntityViewer from './PropositionEntityViewer'
 import PropositionTagger from './PropositionTagger'
 import {
   combineIds,
   combineSuggestionsKeys,
 } from './viewModels'
-import * as characters from './characters'
+
+import "./JustificationsPage.scss"
 
 
-const propositionIdFromProps = (props) => props.match.params.propositionId
+const propositionIdFromProps = (props) => props.match.params.rootTargetId
 
 const trailPropositionIdsFromProps = (props) => {
   const queryParams = queryString.parse(props.location.search)
@@ -82,15 +77,32 @@ const trailPropositionIdsFromProps = (props) => {
     []
 }
 
-class PropositionJustificationsPage extends Component {
+/*
+ * contextItems/rootTrail/trailRootItems
+ * types of context items: StatementProposition, Justification, Anchored Statement/Proposition, Justification, Counters
+ * StatementTagging
+ *
+ * counters moving to center when they are expanded
+ *
+ * get root type from router via prop
+ *
+ * isVerified => isApproved
+ */
+
+const justificationsPageId = 'justifications-page'
+
+class JustificationsPage extends Component {
+  static id = justificationsPageId
+  static suggestionsKey = justificationsPageId
+  static transientId = 'proposition-justifications-page-proposition'
+  static propositionEditorId = combineIds(justificationsPageId, 'proposition-editor')
+  static newJustificationEditorId = combineIds(justificationsPageId, 'new-justification-editor')
+
   constructor() {
     super()
     this.state = {
       isOverProposition: false,
     }
-
-    this.propositionEditorId = propositionJustificationsPage_propositionEditor_editorId
-    this.newJustificationEditorId = propositionJustificationsPage_newJustificationDialog_newJustificationEditor_editorId
   }
 
   componentWillMount() {
@@ -118,6 +130,10 @@ class PropositionJustificationsPage extends Component {
     }
   }
 
+  id = (...args) => combineIds(JustificationsPage.id, ...args)
+
+  suggestionsKey = (...args) => combineSuggestionsKeys(JustificationsPage.suggestionsKey, ...args)
+
   propositionId = () => propositionIdFromProps(this.props)
 
   onPropositionMouseOver = () => {
@@ -129,7 +145,7 @@ class PropositionJustificationsPage extends Component {
   }
 
   editProposition = () => {
-    this.props.editors.beginEdit(EditorTypes.PROPOSITION, this.propositionEditorId, this.props.proposition)
+    this.props.editors.beginEdit(EditorTypes.PROPOSITION, JustificationsPage.propositionEditorId, this.props.proposition)
   }
 
   createJustificationPath = () => {
@@ -147,7 +163,7 @@ class PropositionJustificationsPage extends Component {
   showNewJustificationDialog = (event, polarity = null) => {
     const newJustification = makeNewTrunkJustification(JustificationRootTargetType.PROPOSITION, this.propositionId(),
       polarity)
-    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, newJustification)
+    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.newJustificationEditorId, newJustification)
 
     this.props.ui.showNewJustificationDialog(this.propositionId())
   }
@@ -162,7 +178,7 @@ class PropositionJustificationsPage extends Component {
 
   saveNewJustification = (event) => {
     event.preventDefault()
-    this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION, this.newJustificationEditorId, ui.hideNewJustificationDialog())
+    this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.newJustificationEditorId, ui.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog = () => {
@@ -270,11 +286,11 @@ class PropositionJustificationsPage extends Component {
               >
                 <CardText className="proposition-card-contents">
                   <PropositionEntityViewer
-                    id={`editableProposition-${propositionId}`}
+                    id={this.id('proposition-viewer')}
                     className="agreeable-proposition-viewer"
                     proposition={proposition}
-                    editorId={this.propositionEditorId}
-                    suggestionsKey={suggestionKeys.propositionJustificationsPage_propositionEditor}
+                    editorId={JustificationsPage.propositionEditorId}
+                    suggestionsKey={this.suggestionsKey('proposition-viewer')}
                     doShowControls={true}
                     menu={menu}
                     trailPropositions={trailPropositions}
@@ -286,8 +302,8 @@ class PropositionJustificationsPage extends Component {
                       tags={proposition.tags}
                       votes={proposition.propositionTagVotes}
                       recommendedTags={proposition.recommendedTags}
-                      id={combineIds(PropositionJustificationsPage.id, 'proposition-tagger')}
-                      suggestionsKey={combineSuggestionsKeys(PropositionJustificationsPage.suggestionsKey, 'tagName')}
+                      id={this.id('proposition-tagger')}
+                      suggestionsKey={this.suggestionsKey('proposition-tagger')}
                     />
                   )}
                 </CardText>
@@ -334,9 +350,9 @@ class PropositionJustificationsPage extends Component {
         />
 
         <NewJustificationDialog
-          id="add-new-justification-dialog-editor"
-          editorId={this.newJustificationEditorId}
-          suggestionsKey={suggestionKeys.propositionJustificationsPage_newJustificationDialog_newJustificationEditor_suggestions}
+          id={this.id('new-justification-dialog')}
+          editorId={JustificationsPage.newJustificationEditorId}
+          suggestionsKey={this.suggestionsKey('new-justification-dialog')}
           visible={isNewJustificationDialogVisible}
           onCancel={this.cancelNewJustificationDialog}
           onSubmit={this.saveNewJustification}
@@ -347,9 +363,6 @@ class PropositionJustificationsPage extends Component {
     )
   }
 }
-PropositionJustificationsPage.id = 'PropositionJustificationsPage'
-PropositionJustificationsPage.suggestionsKey = 'PropositionJustificationsPage'
-PropositionJustificationsPage.transientId = 'proposition-justifications-page-proposition'
 
 const sortJustifications = justifications => {
   justifications = sortBy(justifications, j => j.score)
@@ -361,7 +374,7 @@ const sortJustifications = justifications => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const propositionId = ownProps.match.params.propositionId
+  const propositionId = ownProps.match.params.rootTargetId
   if (!propositionId) {
     logger.error('Missing required propositionId')
     return {}
@@ -371,7 +384,7 @@ const mapStateToProps = (state, ownProps) => {
     // If the proposition has loaded, return that.  Otherwise return a loading proposition with the correct ID.
     state.entities.propositions[propositionId] || makeNewProposition({id: propositionId, text: characters.ellipsis}))
 
-  const propositionEditorState = get(state, ['editors', EditorTypes.PROPOSITION, propositionJustificationsPage_propositionEditor_editorId])
+  const propositionEditorState = get(state, ['editors', EditorTypes.PROPOSITION, JustificationsPage.propositionEditorId])
 
   const isFetchingProposition = get(propositionEditorState, 'isFetching')
   const didFetchingPropositionFail = get(propositionEditorState, ['errors', 'hasErrors'], false)
@@ -382,7 +395,7 @@ const mapStateToProps = (state, ownProps) => {
   const isWindowNarrow = selectIsWindowNarrow(state)
 
   return {
-    ...state.ui.propositionJustificationsPage,
+    ...state.ui.justificationsPage,
     propositionId,
     proposition,
     trailPropositions,
@@ -399,4 +412,4 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   editors,
   goto,
   flows,
-}))(PropositionJustificationsPage)
+}))(JustificationsPage)

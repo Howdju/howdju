@@ -3,13 +3,15 @@ import reduce from 'lodash/reduce'
 import { Route } from 'react-router'
 import pathToRegexp from 'path-to-regexp'
 
+import {JustificationRootTargetType} from 'howdju-common'
+
 import FeaturedPerspectivesPage from './FeaturedPerspectivesPage'
 import WhatsNextPage from './WhatsNextPage'
 import RecentActivityPage from './RecentActivityPage'
 import AboutPage from './AboutPage'
 import CreatePropositionPage, {CreatePropositionPageMode} from './CreatePropositionPage'
 import LoginPage from './LoginPage'
-import PropositionJustificationsPage from './PropositionJustificationsPage'
+import JustificationsPage from './JustificationsPage'
 import TagPage from './TagPage'
 import IconPage from './IconPage'
 import ToolsPage from './ToolsPage'
@@ -40,8 +42,12 @@ const routes = [
   <Route key="whatsNext" exact path={paths.whatsNext()} component={WhatsNextPage} />,
   <Route key="about" exact path={paths.about()} component={AboutPage} />,
 
-  <Route key="proposition" exact path="/p/:propositionId/:propositionSlug?" component={PropositionJustificationsPage} />,
-  <Route key="statement" exact path="/s/:statementId/" component={PropositionJustificationsPage} />,
+  <Route key="proposition" exact path="/p/:rootTargetId/:slug?" render={props => (
+    <JustificationsPage {...props} rootTargetType={JustificationRootTargetType.PROPOSITION} />
+  )} />,
+  <Route key="statement" exact path="/s/:rootTargetId/:slug?" render={props => (
+    <JustificationsPage {...props} rootTargetType={JustificationRootTargetType.STATEMENT} />
+  )} />,
   <Route key="persorg" exact path="/persorgs/:persorgId" component={PersorgPage} />,
   <Route key="tag" exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
   <Route key="searchJustifications" exact path="/search-justifications" component={JustificationsSearchPage} />,

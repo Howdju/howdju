@@ -1,6 +1,5 @@
 # TODO
 
-* When searching for Trump, shows Donald Trump tag three times despite response containingg three different tags. 
 * Support statement justifications
   * Redirect to Statement
    - fix grouping in entities reducer for statements
