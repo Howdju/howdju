@@ -4,9 +4,10 @@ import pick from 'lodash/pick'
 import queryString from 'query-string'
 
 import {
-  SortDirection,
   encodeQueryStringObject,
   httpMethods,
+  JustificationRootTargetType,
+  SortDirection,
 } from 'howdju-common'
 
 import {
@@ -24,7 +25,6 @@ import {
   propositionSchema,
   propositionsSchema,
   propositionCompoundSchema,
-  propositionJustificationsSchema,
   propositionTagVoteSchema,
   statementSchema,
   tagsSchema,
@@ -38,6 +38,17 @@ import {
 
 
 const defaultSorts = `created=${SortDirection.DESCENDING}`
+
+const rootTargetEndpointsByType = {
+  [JustificationRootTargetType.PROPOSITION]: {
+    endpoint: 'propositions',
+    normalizationSchema: {proposition: propositionSchema},
+  },
+  [JustificationRootTargetType.STATEMENT]: {
+    endpoint: 'statements',
+    normalizationSchema: {statement: statementSchema},
+  },
+}
 
 export const resourceApiConfigs = {
 
@@ -190,14 +201,21 @@ export const resourceApiConfigs = {
     requiresRehydrate: true,
   }),
 
-  [api.fetchPropositionJustifications]: (payload) => ({
-    endpoint: `propositions/${payload.propositionId}?include=justifications`,
-    fetchInit: {
-      method: httpMethods.GET,
-    },
-    normalizationSchema: propositionJustificationsSchema,
-    requiresRehydrate: true
-  }),
+  [api.fetchRootJustificationTarget]: (payload) => {
+    const {
+      rootTargetType,
+      rootTargetId,
+    } = payload
+    const {endpoint, normalizationSchema} = rootTargetEndpointsByType[rootTargetType]
+    return {
+      endpoint: `${endpoint}/${rootTargetId}?include=justifications`,
+      fetchInit: {
+        method: httpMethods.GET,
+      },
+      normalizationSchema,
+      requiresRehydrate: true
+    }
+  },
 
   [api.fetchTaggedPropositions]: (payload) => ({
     endpoint: `propositions?tagId=${payload.tagId}`,

@@ -6393,9 +6393,9 @@ normalize-url@^1.4.0:
     sort-keys "^1.0.0"
 
 normalizr@^3.2.2:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/normalizr/-/normalizr-3.2.4.tgz#16aafc540ca99dc1060ceaa1933556322eac4429"
-  integrity sha1-Fqr8VAypncEGDOqhkzVWMi6sRCk=
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/normalizr/-/normalizr-3.3.0.tgz#6f44b95e8bf2201845a9e551920c4e5861166d27"
+  integrity sha512-u8Us8Ms5KpY0mmNwML4OBxNKvlmSKeXfPBIXU9XmcejrZUjhIvUOd8RYBq62UL4JHxrcO4wqo2sL4s8B74Hadw==
 
 npm-bundled@^1.0.1:
   version "1.0.3"

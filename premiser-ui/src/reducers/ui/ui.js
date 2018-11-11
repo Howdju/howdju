@@ -24,13 +24,15 @@ export const app = handleActions({
   [ui.addToast]: (state, action) => ({...state, toasts: state.toasts.concat(action.payload)}),
   [ui.dismissToast]: (state, action) => ({...state, toasts: state.toasts.slice(1)}),
   [ui.windowResize]: state => ({...state, isWindowNarrow: isWindowNarrow()}),
+  [ui.setCanHover]: (state, action) => ({...state, canHover: action.payload.canHover}),
   [ui.disableMobileSite]: (state) => ({...state, isMobileSiteDisabled: true}),
   [ui.enableMobileSite]: (state) => ({...state, isMobileSiteDisabled: false}),
 }, {
+  canHover: false,
   isNavDrawerVisible: false,
-  toasts: [],
-  isWindowNarrow: isWindowNarrow(),
   isMobileSiteDisabled: false,
+  isWindowNarrow: isWindowNarrow(),
+  toasts: [],
 })
 
 export const mainSearch = handleActions({

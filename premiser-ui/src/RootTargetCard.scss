@@ -1,0 +1,107 @@
+@import '~react-md/src/scss/react-md';
+@import './flatui-colors';
+@import './colors';
+@import './grid';
+@import './components';
+
+$gradient-start-opacity: .6;
+$gradient-point: 25%;
+$slide-size: $md-btn-icon-size;
+
+// All must be less than $md-toolbar-z-index (default 15) or else they will float above the toolbar upon scrolling
+// ($md-menu-z-index is 10)
+$gradient-z-index: 5;
+$over-gradient-z-index: 10;
+
+.context-menu--root-target {
+  z-index: $over-gradient-z-index;
+  .md-list--menu {
+    z-index: $over-gradient-z-index + 1;
+  }
+}
+
+ul.target-trail {
+  padding-left: 35px;
+  li {
+    @include material-icon-list-item("replay");
+    margin: 5px;
+  }
+}
+
+.context-menu {
+  float: right;
+}
+
+.root-target-background {
+  // Animate gradients with this trick:
+  // https://medium.com/@dave_lunny/animating-css-gradients-using-only-css-d2fd7671e759
+
+  // Provide a background color for the card, which we make transparent
+  background: get-color('card', $md-light-theme);
+
+  .root-target-card {
+
+    // The z-index must apply to the children to get them over the gradient.
+    // I don't know why applying it to .proposition-card-contents directly doesn't work
+    .root-target-card-contents > * > * {
+      z-index: $over-gradient-z-index;
+    }
+
+    background: inherit;
+    background-size: 100%;
+    position: relative;
+    // Don't use this part of the trick; messing with z-index can break material design
+    //z-index: 100;
+
+    &:before {
+      background: linear-gradient(to right,
+              rgba($agree-color, $gradient-start-opacity) 0%,
+              rgba($agree-color, 0) $gradient-point,
+              rgba($agree-color,0) 100%
+      );
+
+      content: '';
+      display: block;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      width: 100%;
+      // Place this above the .proposition in the local stacking context
+      z-index: $gradient-z-index;
+      transition: opacity 0.4s;
+    }
+    // Extend the trick to have both a before and after
+    &:after {
+      background: linear-gradient(to left,
+              rgba($disagree-color, $gradient-start-opacity) 0%,
+              rgba($disagree-color,0) $gradient-point,
+              rgba($disagree-color, 0) 100%
+      );
+
+      content: '';
+      display: block;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      width: 100%;
+      // Place this above the .proposition in the local stacking context
+      z-index: $gradient-z-index;
+      transition: opacity 0.4s;
+    }
+    &.agreement:before {
+      opacity: 1;
+    }
+    &.disagreement:after {
+      opacity: 1;
+    }
+
+    &.agreement {
+      .entity-viewer--entity {
+        // When the green appears behind the light-colored border, the contrast is too low
+        border-left-color: $icon-color;
+      }
+    }
+  }
+}

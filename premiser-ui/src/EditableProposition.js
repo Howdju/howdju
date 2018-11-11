@@ -23,7 +23,7 @@ class EditableProposition extends Component {
       isFetching,
       isEditing,
       showStatusText,
-      trailPropositions,
+      contextTrailItems,
       showJustificationCount,
       // ignore
       dispatch,
@@ -48,7 +48,7 @@ class EditableProposition extends Component {
         id={id}
         proposition={proposition}
         showStatusText={showStatusText}
-        trailPropositions={trailPropositions}
+        contextTrailItems={contextTrailItems}
         showJustificationCount={showJustificationCount}
       />
     )

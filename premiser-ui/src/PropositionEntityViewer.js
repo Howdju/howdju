@@ -15,8 +15,7 @@ export default class PropositionEntityViewer extends Component {
       suggestionsKey,
       menu,
       showStatusText,
-      doShowControls,
-      trailPropositions,
+      contextTrailItems,
       showJustificationCount,
     } = this.props
     return (
@@ -32,11 +31,11 @@ export default class PropositionEntityViewer extends Component {
             editorId={editorId}
             suggestionsKey={suggestionsKey}
             showStatusText={showStatusText}
-            trailPropositions={trailPropositions}
+            contextTrailItems={contextTrailItems}
             showJustificationCount={showJustificationCount}
           />
         }
-        menu={doShowControls && menu}
+        menu={menu}
       />
     )
   }

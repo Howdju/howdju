@@ -29,6 +29,8 @@ export default class JustificationEntityViewer extends Component {
       doShowControls,
       onExpandJustifications,
       showBasisUrls,
+      doShowRootTarget,
+      doShowCounterTarget,
     } = this.props
 
     const _isCounter = isCounter(justification)
@@ -50,11 +52,14 @@ export default class JustificationEntityViewer extends Component {
         iconTitle="Justification"
         entity={
           <div>
-            <JustificationRootTargetViewer
-              id={combineIds(id, 'root-target')}
-              justification={justification}
-              suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'rootTarget')}
-            />
+            {doShowRootTarget && (
+              <JustificationRootTargetViewer
+                id={combineIds(id, 'root-target')}
+                rootTargetType={justification.rootTargetType}
+                rootTarget={justification.rootTarget}
+                suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'rootTarget')}
+              />
+            )}
 
             <div className="entity-status-text">
               created <span title={created}>{age}</span>
@@ -62,7 +67,7 @@ export default class JustificationEntityViewer extends Component {
 
             {_isCounter && !_doesCounterRootJustification && expander}
 
-            {_isCounter && (
+            {_isCounter && doShowCounterTarget && (
               <JustificationChatBubble
                 id={`target-justification-${justification.target.entity.id}`}
                 justification={justification.target.entity}

@@ -17,7 +17,7 @@ export default class PropositionViewer extends React.Component {
       proposition,
       className,
       showStatusText,
-      trailPropositions,
+      contextTrailItems,
       showJustificationCount,
       ...rest,
     } = this.props
@@ -36,7 +36,7 @@ export default class PropositionViewer extends React.Component {
         {proposition && (
           <div className="proposition-viewer">
             <div className="proposition-text">
-              <Link to={paths.proposition(proposition, trailPropositions)}>
+              <Link to={paths.proposition(proposition, contextTrailItems)}>
                 {proposition.text}
                 {' '}
                 {showJustificationCount && proposition.rootJustificationCountByPolarity && (

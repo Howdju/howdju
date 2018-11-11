@@ -6,26 +6,35 @@ import PropositionEntityViewer from './PropositionEntityViewer'
 import StatementEntityViewer from './StatementEntityViewer'
 
 export default function JustificationRootTargetViewer(props) {
-  switch (props.justification.rootTargetType) {
+  const {
+    id,
+    rootTargetType,
+    rootTarget,
+    suggestionsKey,
+    menu,
+  } = props
+  switch (rootTargetType) {
     case JustificationRootTargetType.PROPOSITION:
       return (
         <PropositionEntityViewer
-          id={props.id}
-          proposition={props.justification.rootTarget}
-          suggestionsKey={props.suggestionsKey}
+          id={id}
+          proposition={rootTarget}
+          suggestionsKey={suggestionsKey}
           showStatusText={false}
+          menu={menu}
         />
       )
     case JustificationRootTargetType.STATEMENT:
       return (
         <StatementEntityViewer
-          id={props.id}
-          statement={props.justification.rootTarget}
-          suggestionsKey={props.suggestionsKey}
+          id={id}
+          statement={rootTarget}
+          suggestionsKey={suggestionsKey}
           showStatusText={false}
+          menu={menu}
         />
       )
     default:
-      throw newExhaustedEnumError('JustificationRootTargetType', props.justification.rootTargetType)
+      throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
   }
 }

@@ -89,3 +89,7 @@ export function isTwitterUrl(url) {
   const domain = extractDomain(url)
   return domain.endsWith('twitter.com')
 }
+
+export function getComponentDisplayName(component) {
+  return component.displayName || component.name || 'Component'
+}

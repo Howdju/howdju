@@ -24,7 +24,7 @@ export default function JustificationChatBubble(props) {
     menu,
     actions,
     children,
-    trailPropositions,
+    contextTrailItems,
     ...rest,
   } = props
   const _isRootPositive = isRootPositive(justification)
@@ -51,7 +51,7 @@ export default function JustificationChatBubble(props) {
           isUnCondensed={isUnCondensed}
           showStatusText={showStatusText}
           showUrls={showBasisUrls}
-          trailPropositions={trailPropositions}
+          contextTrailItems={contextTrailItems}
         />
         {doShowControls && menu}
       </div>

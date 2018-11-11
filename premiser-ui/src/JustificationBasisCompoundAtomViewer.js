@@ -22,7 +22,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
       doShowControls,
       showStatusText,
       showUrls,
-      trailPropositions,
+      contextTrailItems,
     } = this.props
 
     const entityViewerId = combineIds(id, 'entity')
@@ -38,7 +38,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
             suggestionsKey={`${id}-proposition-suggestions`}
             doShowControls={doShowControls}
             showStatusText={showStatusText}
-            trailPropositions={trailPropositions}
+            contextTrailItems={contextTrailItems}
           />
         )
       case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
@@ -53,7 +53,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
             doShowControls={doShowControls}
             showStatusText={showStatusText}
             showUrls={showUrls}
-            trailPropositions={trailPropositions}
+            contextTrailItems={contextTrailItems}
           />
         )
       default:

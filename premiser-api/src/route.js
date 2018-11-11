@@ -11,6 +11,7 @@ const {
   decodeSorts,
   httpStatusCodes,
   httpMethods,
+  JustificationRootTargetType,
 } = require('howdju-common')
 const {
   AuthenticationError,
@@ -310,14 +311,17 @@ const routes = [
     queryStringParameters: {
       include: 'justifications'
     },
-    handler: (appProvider, {
+    handler: async (appProvider, {
       callback,
       request: {
         pathParameters: [propositionId],
         authToken,
       }
-    }) => appProvider.propositionJustificationsService.readPropositionJustifications(propositionId, authToken)
-      .then( ({proposition, justifications}) => ok({callback, body: {proposition, justifications}}) )
+    }) => {
+      const proposition = await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
+        JustificationRootTargetType.PROPOSITION, propositionId, authToken)
+      return ok({callback, body: {proposition}})
+    }
   },
 
   /*

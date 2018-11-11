@@ -26,7 +26,7 @@ export default class JustificationBasisViewer extends Component {
       isCondensed,
       isUnCondensed,
       showUrls,
-      trailPropositions,
+      contextTrailItems,
       ...rest,
     } = this.props
     const basis = justification.basis
@@ -43,7 +43,7 @@ export default class JustificationBasisViewer extends Component {
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showBasisUrls={showUrls}
-            trailPropositions={trailPropositions}
+            contextTrailItems={contextTrailItems}
           />
         )
       case JustificationBasisType.WRIT_QUOTE:
@@ -70,7 +70,7 @@ export default class JustificationBasisViewer extends Component {
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showUrls={showUrls}
-            trailPropositions={trailPropositions}
+            contextTrailItems={contextTrailItems}
           />
         )
       default:

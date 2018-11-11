@@ -9,7 +9,9 @@ import {
   newExhaustedEnumError,
   toSlug,
 } from 'howdju-common'
+
 import {logger} from './logger'
+import {contextTrailShortcutByType} from './viewModels'
 
 
 export const mainSearchPathName = '/'
@@ -26,7 +28,7 @@ class Paths {
 
   login = () => '/login'
 
-  proposition = (proposition, trailPropositions) => {
+  proposition = (proposition, contextTrailItems) => {
     const {id, slug} = proposition
     if (!id) {
       return '#'
@@ -34,8 +36,8 @@ class Paths {
     const slugPath = slug ?
       '/' + slug :
       ''
-    const query = !isEmpty(trailPropositions) ?
-      '?proposition-trail=' + join(map(trailPropositions, s => s.id), ',') :
+    const query = !isEmpty(contextTrailItems) ?
+      '?context-trail=' + join(map(contextTrailItems, i => `${contextTrailShortcutByType[i.targetType]},${i.target.id}`), ';') :
       ''
     return `/p/${id}${slugPath}${query}`
   }

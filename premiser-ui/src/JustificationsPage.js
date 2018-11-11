@@ -1,92 +1,96 @@
 import React, {Component} from "react"
-import {connect} from "react-redux"
-import {denormalize} from "normalizr"
-import { Link } from 'react-router-dom'
 import Helmet from "react-helmet"
 import {
-  Divider,
-  FontIcon,
-  MenuButton,
-  ListItem,
   Button,
-  CircularProgress,
-  Card,
-  CardText,
+  CircularProgress, Divider, FontIcon, ListItem,
 } from "react-md"
-import cn from 'classnames'
+import {connect} from "react-redux"
 import concat from 'lodash/concat'
-import every from 'lodash/every'
 import forEach from 'lodash/forEach'
-import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
 import isEqual from 'lodash/isEqual'
+import join from 'lodash/join'
 import map from 'lodash/map'
-import some from 'lodash/some'
 import sortBy from "lodash/sortBy"
 import split from 'lodash/split'
-import take from 'lodash/take'
+import toLower from 'lodash/toLower'
+import {denormalize} from "normalizr"
 import queryString from 'query-string'
+import {Link} from 'react-router-dom'
 
 import {
   isVerified,
   isDisverified,
-  isPositive,
-  isNegative,
-  JustificationBasisSourceType,
   JustificationPolarity,
   JustificationRootTargetType,
-  makeNewProposition,
+  JustificationTargetType,
   makeNewTrunkJustification,
+  newExhaustedEnumError,
 } from "howdju-common"
 
-import {logger} from "./logger"
 import {
   api,
-  editors, mapActionCreatorGroupToDispatchToProps,
+  editors,
+  mapActionCreatorGroupToDispatchToProps,
   ui,
-  goto, flows,
+  goto,
+  flows,
 } from "./actions"
-import {justificationsSchema, propositionSchema} from "./normalizationSchemas"
+import * as characters from './characters'
+import ContextTrail from './ContextTrail'
+import JustificationsTree from './JustificationsTree'
+import {logger} from "./logger"
+import NewJustificationDialog from './NewJustificationDialog'
 import paths from './paths'
+import {EditorTypes} from "./reducers/editors"
+import RootTargetCard from './RootTargetCard'
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
 } from "./texts"
-import {EditorTypes} from "./reducers/editors"
-import {selectIsWindowNarrow} from "./selectors"
-
-import * as characters from './characters'
-import JustificationsTree from './JustificationsTree'
-import NewJustificationDialog from './NewJustificationDialog'
-import PropositionEntityViewer from './PropositionEntityViewer'
-import PropositionTagger from './PropositionTagger'
 import {
   combineIds,
   combineSuggestionsKeys,
+  contextTrailTypeByShortcut,
+  rootTargetNormalizationSchemasByType,
 } from './viewModels'
 
 import "./JustificationsPage.scss"
 
 
-const propositionIdFromProps = (props) => props.match.params.rootTargetId
+const rootTargetInfoFromProps = (props) => ({
+  rootTargetType: props.rootTargetType,
+  rootTargetId: props.match.params.rootTargetId,
+})
 
-const trailPropositionIdsFromProps = (props) => {
+function toContextTrailInfos(contextTrailParam) {
+  const contextTrailItemStrings = split(contextTrailParam, ';')
+  const contextTrailItems = map(contextTrailItemStrings, (s) => {
+    const [typeShortcut, targetId] = split(s, ',')
+    return {
+      targetType: contextTrailTypeByShortcut[typeShortcut],
+      targetId,
+    }
+  })
+  return contextTrailItems
+}
+
+const contextTrailInfosFromProps = (props) => {
   const queryParams = queryString.parse(props.location.search)
-  const trailPropositionIdsParam = queryParams['proposition-trail']
-  return trailPropositionIdsParam ?
-    split(trailPropositionIdsParam, ',') :
-    []
+  const contextTrailParam = queryParams['context-trail']
+  return contextTrailParam ? toContextTrailInfos(contextTrailParam) : []
 }
 
 /*
- * contextItems/rootTrail/trailRootItems
+ * contextItems/rootTrail/trailRootItems/contextTrail
+ * isVerified => isApproved
+ *
+ * Next steps:
+ *
+ * implement drill-down
  * types of context items: StatementProposition, Justification, Anchored Statement/Proposition, Justification, Counters
  * StatementTagging
  *
  * counters moving to center when they are expanded
- *
- * get root type from router via prop
- *
- * isVerified => isApproved
  */
 
 const justificationsPageId = 'justifications-page'
@@ -95,38 +99,31 @@ class JustificationsPage extends Component {
   static id = justificationsPageId
   static suggestionsKey = justificationsPageId
   static transientId = 'proposition-justifications-page-proposition'
-  static propositionEditorId = combineIds(justificationsPageId, 'proposition-editor')
+  static rootTargetEditorId = combineIds(justificationsPageId, 'root-target-editor')
   static newJustificationEditorId = combineIds(justificationsPageId, 'new-justification-editor')
 
-  constructor() {
-    super()
-    this.state = {
-      isOverProposition: false,
+  componentDidMount() {
+    const {rootTargetType, rootTargetId} = this.rootTargetInfo()
+    this.props.api.fetchRootJustificationTarget(rootTargetType, rootTargetId)
+
+    const contextTrailItems = contextTrailInfosFromProps(this.props)
+    if (!isEmpty(contextTrailItems)) {
+      this.props.api.fetchJustificationTargets(contextTrailItems)
     }
   }
 
-  componentWillMount() {
-    const propositionId = this.propositionId()
-    this.props.api.fetchPropositionJustifications(propositionId)
+  componentDidUpdate(prevProps,) {
+    const prevRootTargetInfo = rootTargetInfoFromProps(prevProps)
+    const rootTargetInfo = this.rootTargetInfo()
 
-    const trailPropositionIds = trailPropositionIdsFromProps(this.props)
-    if (!isEmpty(trailPropositionIds)) {
-      this.props.api.fetchPropositions(trailPropositionIds)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const propositionId = propositionIdFromProps(this.props)
-    const nextPropositionId = propositionIdFromProps(nextProps)
-
-    if (propositionId !== nextPropositionId) {
-      this.props.api.fetchPropositionJustifications(nextPropositionId)
+    if (!isEqual(rootTargetInfo, prevRootTargetInfo)) {
+      this.props.api.fetchRootJustificationTarget(rootTargetInfo.rootTargetType, rootTargetInfo.rootTargetId)
     }
 
-    const trailPropositionIds = trailPropositionIdsFromProps(this.props)
-    const nextTrailPropositionIds = trailPropositionIdsFromProps(nextProps)
-    if (!isEqual(trailPropositionIds, nextTrailPropositionIds) && !isEmpty(nextTrailPropositionIds)) {
-      this.props.api.fetchPropositions(nextTrailPropositionIds)
+    const prevContextTrailItems = contextTrailInfosFromProps(prevProps)
+    const contextTrailItems = contextTrailInfosFromProps(this.props)
+    if (!isEqual(contextTrailItems, prevContextTrailItems) && !isEmpty(contextTrailItems)) {
+      this.props.api.fetchJustificationTargets(contextTrailItems)
     }
   }
 
@@ -134,38 +131,17 @@ class JustificationsPage extends Component {
 
   suggestionsKey = (...args) => combineSuggestionsKeys(JustificationsPage.suggestionsKey, ...args)
 
-  propositionId = () => propositionIdFromProps(this.props)
-
-  onPropositionMouseOver = () => {
-    this.setState({isOverProposition: true})
-  }
-
-  onPropositionMouseLeave = () => {
-    this.setState({isOverProposition: false})
-  }
-
-  editProposition = () => {
-    this.props.editors.beginEdit(EditorTypes.PROPOSITION, JustificationsPage.propositionEditorId, this.props.proposition)
-  }
-
-  createJustificationPath = () => {
-    return paths.createJustification(JustificationBasisSourceType.PROPOSITION, this.propositionId())
-  }
-
-  seeUsagesPath = () => {
-    return paths.searchJustifications({propositionId: this.propositionId()})
-  }
-
-  deleteProposition = () => {
-    this.props.api.deleteProposition(this.props.proposition)
-  }
+  rootTargetInfo = () => rootTargetInfoFromProps(this.props)
 
   showNewJustificationDialog = (event, polarity = null) => {
-    const newJustification = makeNewTrunkJustification(JustificationRootTargetType.PROPOSITION, this.propositionId(),
-      polarity)
+    const {
+      rootTargetType,
+      rootTargetId,
+    } = this.rootTargetInfo()
+    const newJustification = makeNewTrunkJustification(rootTargetType, rootTargetId, polarity)
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.newJustificationEditorId, newJustification)
 
-    this.props.ui.showNewJustificationDialog(this.propositionId())
+    this.props.ui.showNewJustificationDialog()
   }
 
   showNewPositiveJustificationDialog = (event) => {
@@ -185,142 +161,79 @@ class JustificationsPage extends Component {
     this.props.ui.hideNewJustificationDialog()
   }
 
+  seeUsagesPath = () => {
+    return paths.searchJustifications(this.rootTargetInfo())
+  }
+
   render () {
     const {
-      propositionId,
-      proposition,
-      trailPropositions,
-      justifications,
-
-      isFetchingProposition,
-      didFetchingPropositionFail,
-
+      rootTargetType,
+      rootTarget,
+      contextTrailItems,
+      sortedJustifications,
       isNewJustificationDialogVisible,
-      isWindowNarrow,
     } = this.props
-    const {
-      isOverProposition,
-    } = this.state
 
-    const doHideControls = !isOverProposition && !isWindowNarrow
+    const hasJustifications = !isEmpty(sortedJustifications)
 
-    const hasJustifications = !isEmpty(justifications)
-    const hasAgreement = some(justifications, j => isVerified(j) && isPositive(j))
-    const hasDisagreement = some(justifications, j => isVerified(j) && isNegative(j))
+    const newContextTrailItems = concat(contextTrailItems, [{
+      targetType: rootTargetType,
+      target: rootTarget,
+    }])
 
-    const newTrailPropositions = concat(trailPropositions, [proposition])
-
-    const menu = (
-      <MenuButton
-        icon
-        id={`proposition-${propositionId}-context-menu`}
-        className={cn({hidden: doHideControls})}
-        menuClassName="context-menu context-menu--proposition"
-        children={'more_vert'}
-        position={MenuButton.Positions.TOP_RIGHT}
-        menuItems={[
-          <ListItem primaryText="Add justification"
-                    key="addJustification"
-                    leftIcon={<FontIcon>add</FontIcon>}
-                    onClick={this.showNewJustificationDialog}
-          />,
-          <ListItem primaryText="Use"
-                    key="use"
-                    title="Justify another proposition with this one"
-                    leftIcon={<FontIcon>call_made</FontIcon>}
-                    component={Link}
-                    to={this.createJustificationPath()}
-          />,
-          <ListItem primaryText="See usages"
-                    key="usages"
-                    title="See justifications using this proposition"
-                    leftIcon={<FontIcon>call_merge</FontIcon>}
-                    component={Link}
-                    to={this.seeUsagesPath()}
-          />,
-          <Divider key="divider" />,
-          <ListItem primaryText="Edit"
-                    key="edit"
-                    leftIcon={<FontIcon>create</FontIcon>}
-                    onClick={this.editProposition}
-          />,
-          <ListItem primaryText="Delete"
-                    key="delete"
-                    leftIcon={<FontIcon>delete</FontIcon>}
-                    onClick={this.deleteProposition}
-          />,
-        ]}
-      />
-    )
+    const rootTargetExtraMenuItems = [
+      <ListItem primaryText="Add justification"
+                key="addJustification"
+                leftIcon={<FontIcon>add</FontIcon>}
+                onClick={this.showNewJustificationDialog}
+      />,
+      <ListItem primaryText="See usages"
+                key="usages"
+                title="See justifications using this proposition"
+                leftIcon={<FontIcon>call_merge</FontIcon>}
+                component={Link}
+                to={this.seeUsagesPath()}
+      />,
+      <Divider key="divider" />,
+    ]
 
     return (
-      <div id="proposition-justifications">
+      <div id="justifications-page">
         <Helmet>
-          <title>{proposition ? proposition.text : 'Loading proposition'} — Howdju</title>
+          <title>
+            {rootTarget ?
+              describeRootTarget(rootTargetType, rootTarget) :
+              `Loading ${describeRootTargetType(rootTargetType)}${characters.ellipsis}`} — Howdju
+          </title>
         </Helmet>
 
         <div className="md-grid md-grid--top">
-          {trailPropositions.length > 0 && every(trailPropositions) && (
-            <ul className="md-cell md-cell--12 proposition-trail">
-              {map(trailPropositions, (trailProposition, index) => (
-                <li key={index}>
-                  <Link to={paths.proposition(trailProposition, take(trailPropositions, index))}>
-                    {trailProposition.text}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+          <ContextTrail trailItems={contextTrailItems} className="md-cell md-cell--12 " />
 
           <div className="md-cell md-cell--12">
 
-            <div className="proposition">
-
-              <Card
-                className={cn('proposition-card', {
-                  agreement: hasAgreement,
-                  disagreement: hasDisagreement,
-                })}
-                onMouseOver={this.onPropositionMouseOver}
-                onMouseLeave={this.onPropositionMouseLeave}
-              >
-                <CardText className="proposition-card-contents">
-                  <PropositionEntityViewer
-                    id={this.id('proposition-viewer')}
-                    className="agreeable-proposition-viewer"
-                    proposition={proposition}
-                    editorId={JustificationsPage.propositionEditorId}
-                    suggestionsKey={this.suggestionsKey('proposition-viewer')}
-                    doShowControls={true}
-                    menu={menu}
-                    trailPropositions={trailPropositions}
-                    showJustificationCount={false}
-                  />
-                  {proposition && (
-                    <PropositionTagger
-                      propositionId={proposition.id}
-                      tags={proposition.tags}
-                      votes={proposition.propositionTagVotes}
-                      recommendedTags={proposition.recommendedTags}
-                      id={this.id('proposition-tagger')}
-                      suggestionsKey={this.suggestionsKey('proposition-tagger')}
-                    />
-                  )}
-                </CardText>
-              </Card>
-
-            </div>
+            <RootTargetCard
+              id={this.id('root-target')}
+              rootTargetType={rootTargetType}
+              rootTarget={rootTarget}
+              editorId={JustificationsPage.rootTargetEditorId}
+              suggestionsKey={this.suggestionsKey('root-target')}
+              contextTrailItems={contextTrailItems}
+              showJustificationCount={false}
+              onShowNewJustificationDialog={this.showNewJustificationDialog}
+              extraMenuItems={rootTargetExtraMenuItems}
+            />
 
           </div>
 
-          {!hasJustifications && !isFetchingProposition && !didFetchingPropositionFail && [
+          {!hasJustifications && rootTarget && [
             <div className="md-cell md-cell--12 cell--centered-contents"
-                 key="justification-propositions-page-no-justifications-message"
+                 key="no-justifications-message"
             >
               <div>No justifications.</div>
             </div>,
             <div className="md-cell md-cell--12 cell--centered-contents"
-                 key="justification-propositions-page-no-justifications-add-justification-button"
+                 key="add-justification-button"
             >
               <Button flat
                       children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
@@ -330,22 +243,22 @@ class JustificationsPage extends Component {
           ]}
         </div>
 
-        {isFetchingProposition && (
+        {rootTarget ? null : (
           <div className="md-grid md-grid--bottom">
             <div className="md-cell md-cell--12 cell--centered-contents">
-              <CircularProgress key="progress" id="propositionJustificationsProgress" />
+              <CircularProgress key="progress" id="justifications-page-progress" />
             </div>
           </div>
         )}
 
         <JustificationsTree
-          justifications={justifications}
+          justifications={sortedJustifications}
           doShowControls={true}
           doShowJustifications={false}
           isUnCondensed={true}
           showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
           showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
-          trailPropositions={newTrailPropositions}
+          contextTrailItems={newContextTrailItems}
           className="md-grid--bottom"
         />
 
@@ -364,6 +277,29 @@ class JustificationsPage extends Component {
   }
 }
 
+function describeRootTarget(rootTargetType, rootTarget) {
+  switch(rootTargetType) {
+    case JustificationRootTargetType.PROPOSITION:
+      return rootTarget.text
+    case JustificationRootTargetType.STATEMENT: {
+      let currSentence = rootTarget
+      const descriptionParts = [`${rootTarget.speaker.name} said that`]
+      while (currSentence.target) {
+        descriptionParts.push(`${rootTarget.speaker.name} said that`)
+        currSentence = currSentence.target
+      }
+      descriptionParts.push(`${characters.leftDoubleQuote}${currSentence.text}${characters.rightDoubleQuote}`)
+      return join(descriptionParts, " ")
+    }
+    default:
+      throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
+  }
+}
+
+function describeRootTargetType(rootTargetType) {
+  return toLower(rootTargetType)
+}
+
 const sortJustifications = justifications => {
   justifications = sortBy(justifications, j => j.score)
   justifications = sortBy(justifications, j => isDisverified(j) ? 1 : isVerified(j) ? -1 : 0)
@@ -373,36 +309,48 @@ const sortJustifications = justifications => {
   return justifications
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const propositionId = ownProps.match.params.rootTargetId
-  if (!propositionId) {
-    logger.error('Missing required propositionId')
-    return {}
+const entitiesStoreKeyByJustificationTargetType = {
+  [JustificationTargetType.PROPOSITION]: 'propositions',
+  [JustificationTargetType.STATEMENT]: 'statements',
+  [JustificationTargetType.JUSTIFICATION]: 'justifications',
+}
+
+function toContextTrailItem(state, info) {
+  const {
+    targetType,
+    targetId,
+  } = info
+  const storeKey = entitiesStoreKeyByJustificationTargetType[targetType]
+  const target = state.entities[storeKey][targetId]
+  return {
+    targetType,
+    target,
   }
-  const proposition = denormalize(propositionId, propositionSchema, state.entities)
-  const trailPropositions = map(trailPropositionIdsFromProps(ownProps), propositionId =>
-    // If the proposition has loaded, return that.  Otherwise return a loading proposition with the correct ID.
-    state.entities.propositions[propositionId] || makeNewProposition({id: propositionId, text: characters.ellipsis}))
+}
 
-  const propositionEditorState = get(state, ['editors', EditorTypes.PROPOSITION, JustificationsPage.propositionEditorId])
+const mapStateToProps = (state, ownProps) => {
+  const {
+    rootTargetType,
+    rootTargetId,
+  } = rootTargetInfoFromProps(ownProps)
 
-  const isFetchingProposition = get(propositionEditorState, 'isFetching')
-  const didFetchingPropositionFail = get(propositionEditorState, ['errors', 'hasErrors'], false)
+  if (!rootTargetType || !rootTargetId) {
+    logger.error(`rootTargetType and rootTargetId are required`)
+  }
 
-  let justifications = denormalize(state.entities.trunkJustificationsByRootPropositionId[propositionId], justificationsSchema, state.entities)
-  justifications = sortJustifications(justifications)
+  const schema = rootTargetNormalizationSchemasByType[rootTargetType]
+  const rootTarget = denormalize(rootTargetId, schema, state.entities)
 
-  const isWindowNarrow = selectIsWindowNarrow(state)
+  const contextTrailItems = map(contextTrailInfosFromProps(ownProps), info => toContextTrailItem(state, info) || null)
+
+  const sortedJustifications = rootTarget ? sortJustifications(rootTarget.justifications) : []
 
   return {
     ...state.ui.justificationsPage,
-    propositionId,
-    proposition,
-    trailPropositions,
-    justifications,
-    isFetchingProposition,
-    didFetchingPropositionFail,
-    isWindowNarrow,
+    rootTargetType,
+    rootTarget,
+    contextTrailItems,
+    sortedJustifications,
   }
 }
 

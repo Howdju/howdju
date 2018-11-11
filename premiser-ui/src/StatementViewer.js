@@ -26,7 +26,7 @@ export default class StatementViewer extends React.Component {
       statement,
       className,
       showStatusText,
-      trailPropositions,
+      contextTrailItems,
       showJustificationCount,
       ...rest,
     } = this.props
@@ -45,7 +45,7 @@ export default class StatementViewer extends React.Component {
         {statement && (
           <div className="statement-viewer">
             <div className="statement-text">
-              <Link to={paths.statement(statement, trailPropositions)}>
+              <Link to={paths.statement(statement, contextTrailItems)}>
                 Statement
                 {statement.rootProposition.text}
                 {' '}

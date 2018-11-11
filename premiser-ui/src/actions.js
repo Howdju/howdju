@@ -58,7 +58,12 @@ export const api = {
   fetchProposition: apiActionCreator('FETCH_PROPOSITION', (propositionId) => ({propositionId})),
   fetchPropositions: apiActionCreator('FETCH_PROPOSITIONS', (propositionIds) => ({propositionIds})),
   fetchPropositionCompound: apiActionCreator('FETCH_PROPOSITION_COMPOUND', (propositionCompoundId) => ({propositionCompoundId})),
-  fetchPropositionJustifications: apiActionCreator('FETCH_PROPOSITION_JUSTIFICATIONS', (propositionId) => ({propositionId})),
+  fetchRootJustificationTarget: apiActionCreator('FETCH_ROOT_JUSTIFICATION_TARGET',
+    (rootTargetType, rootTargetId) => ({
+      rootTargetType,
+      rootTargetId,
+    })
+  ),
   fetchWritQuote: apiActionCreator('FETCH_WRIT_QUOTE', (writQuoteId) => ({writQuoteId})),
   fetchJustificationBasisCompound: apiActionCreator('FETCH_JUSTIFICATION_BASIS_COMPOUND',
     (justificationBasisCompoundId) => ({justificationBasisCompoundId})),
@@ -108,6 +113,14 @@ export const api = {
     previousJustificationVote: justification.vote,
   })),
 
+  createTag: apiActionCreator('CREATE_TAG', (tagTagetType, tagTargetId, tag, tagVote) => ({
+    tagTagetType, tagTargetId, tag, tagVote
+  })),
+  createAntiTag: apiActionCreator('CREATE_ANTI_TAG', (tagTagetType, tagTargetId, tag, tagVote) => ({
+    tagTagetType, tagTargetId, tag, tagVote
+  })),
+  unTag: apiActionCreator('UN_TAG', (tagVote) => ({tagVote})),
+
   tagProposition: apiActionCreator('TAG_PROPOSITION', (propositionId, tag, propositionTagVote) => ({
     propositionTagVote: makePropositionTagVote({
       polarity: PropositionTagVotePolarity.POSITIVE,
@@ -130,7 +143,9 @@ export const api = {
   updateProposition: apiActionCreator('UPDATE_PROPOSITION', (proposition) => ({proposition}), (s, nonce) => ({nonce})),
   deleteProposition: apiActionCreator('DELETE_PROPOSITION', (proposition) => ({proposition})),
 
-  createStatement: apiActionCreator('CREATE_STATMENT', (statement) => ({statement})),
+  createStatement: apiActionCreator('CREATE_STATEMENT', (statement) => ({statement})),
+
+  deleteRootTarget: apiActionCreator('DELETE_ROOT_TARGET', (rootTargetType, rootTarget) => ({rootTargetType, rootTarget})),
 
   fetchPropositionTextSuggestions: apiActionCreator('FETCH_PROPOSITION_TEXT_SUGGESTIONS', (propositionText, suggestionsKey) => ({
     propositionText,
@@ -225,6 +240,7 @@ export const ui = {
     (transientId, cause) => ({cause}),
   ),
   windowResize: actionCreator('UI/WINDOW_RESIZE'),
+  setCanHover: actionCreator('UI/SET_CAN_HOVER', (canHover) => ({canHover})),
 
   expand: actionCreator('UI/EXPAND', (widgetId) => ({widgetId})),
   collapse: actionCreator('UI/COLLAPSE', (widgetId) => ({widgetId})),

@@ -1,34 +1,31 @@
 import assign from 'lodash/assign'
 import assignWith from 'lodash/assignWith'
-import clone from 'lodash/clone'
-import cloneDeep from 'lodash/cloneDeep'
 import concat from 'lodash/concat'
 import filter from 'lodash/filter'
 import forEach from 'lodash/forEach'
-import groupBy from 'lodash/groupBy'
 import get from 'lodash/get'
 import has from 'lodash/has'
 import isArray from 'lodash/isArray'
 import isNumber from 'lodash/isNumber'
+import clone from 'lodash/clone'
 import map from 'lodash/map'
-import mapValues from 'lodash/mapValues'
 import merge from 'lodash/merge'
 import mergeWith from 'lodash/mergeWith'
 import pickBy from 'lodash/pickBy'
 import reject from 'lodash/reject'
 import some from 'lodash/some'
 import union from 'lodash/union'
-import values from 'lodash/values'
 import without from 'lodash/without'
 import {normalize} from 'normalizr'
 import {combineActions, handleActions} from "redux-actions"
 
 import {
   httpStatusCodes,
-  isCounter,
+  idEqual,
   isTruthy,
   JustificationRootTargetType,
   JustificationTargetType,
+  newExhaustedEnumError,
 } from 'howdju-common'
 
 import {api} from '../actions'
@@ -41,7 +38,6 @@ const defaultState = {
   writQuotes: {},
   justificationVotes: {},
   justifications: {},
-  trunkJustificationsByRootPropositionId: {},
   perspectives: {},
   persorgs: {},
   tags: {},
@@ -55,7 +51,7 @@ export default handleActions({
     api.fetchRecentPropositions.response,
     api.fetchRecentWrits.response,
     api.fetchRecentWritQuotes.response,
-    api.fetchPropositionJustifications.response,
+    api.fetchRootJustificationTarget.response,
     api.fetchFeaturedPerspectives.response,
     api.fetchJustificationsSearch.response,
     api.fetchRecentJustifications.response,
@@ -97,55 +93,6 @@ export default handleActions({
       ], ([entitiesKey, customizer]) => createEntityUpdate(state, entities, entitiesKey, customizer))
       const nonEmptyUpdates = filter(updates, u => isTruthy(u))
 
-      if (entities.justifications) {
-        // for (const justification of entities.justifications) {
-        //   let target
-        //   switch (justification.target.type) {
-        //     case JustificationTargetType.STATEMENT:
-        //       target = state.statements[justification.target.id]
-        //       break
-        //     case JustificationTargetType.PROPOSITION:
-        //       target = state.statements[justification.target.id]
-        //       break
-        //     case JustificationTargetType.JUSTIFICATION:
-        //       target = state.statements[justification.target.id]
-        //       break
-        //     default:
-        //       throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
-        //   }
-        //   // TODO need to do this to updated state, not in-place
-        //   if (target.justifications.indexOf(justification.id) < 0) {
-        //     target.justifications.push(justification.id)
-        //   }
-        //
-        //   let rootTarget
-        //   switch (justification.rootTargetType) {
-        //     case JustificationRootTargetType.STATEMENT:
-        //       rootTarget = state.statements[justification.rootTarget.id]
-        //       break
-        //     case JustificationRootTargetType.PROPOSITION:
-        //       target = state.statements[justification.rootTarget.id]
-        //       break
-        //     default:
-        //       throw newExhaustedEnumError('JustificationRootTargetType', justification.rootTarget.type)
-        //   }
-        //   // TODO need to do this to updated state, not in-place
-        //   if (rootTarget.leafJustifications.indexOf(justification.id) < 0) {
-        //     rootTarget.leafJustifications.push(justification.id)
-        //   }
-        // }
-
-        const trunkJustificationsByRootPropositionId = indexTrunkJustificationsByRootPropositionId(entities.justifications)
-        nonEmptyUpdates.push({
-          trunkJustificationsByRootPropositionId: mergeWith(
-            {},
-            state.trunkJustificationsByRootPropositionId,
-            trunkJustificationsByRootPropositionId,
-            unionArraysDistinctIdsCustomizer
-          )
-        })
-      }
-
       if (nonEmptyUpdates.length > 0) {
         const newState = {...state}
         forEach(nonEmptyUpdates, update => {
@@ -156,13 +103,29 @@ export default handleActions({
       return state
     }
   },
-  [api.fetchPropositionJustifications.response]: {
+  [api.fetchRootJustificationTarget.response]: {
     throw: (state, action) => {
       // If a proposition is not found (e.g., another user deleted it), then remove it.
       if (action.httpStatusCode === httpStatusCodes.NOT_FOUND) {
+        const {
+          rootTargetType,
+          rootTargetId,
+        } = action.meta.requestPayload
+        let entitiesKey
+        switch (rootTargetType) {
+          case JustificationRootTargetType.PROPOSITION:
+            entitiesKey = 'propositions'
+            break
+          case JustificationRootTargetType.STATEMENT:
+            entitiesKey = 'statements'
+            break
+          default:
+            throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
+        }
+        const update = {[entitiesKey]: pickBy(state[entitiesKey], (s, id) => id !== rootTargetId)}
         return {
           ...state,
-          propositions: pickBy(state.propositions, (s, id) => id !== action.meta.propositionId)
+          ...update
         }
       }
       return state
@@ -176,28 +139,13 @@ export default handleActions({
   },
   [api.createJustification.response]: {
     next: (state, action) => {
-      const {result, entities} = normalize(action.payload, action.meta.normalizationSchema)
-
-      const trunkJustificationsByRootPropositionId = indexTrunkJustificationsByRootPropositionId(entities.justifications)
-
-      // if counter, add to counter justifications
-      const justificationId = result.justification
-      const justification = entities.justifications[justificationId]
-      let counteredJustifications = {}
-      if (isCounter(justification)) {
-        const counteredJustification = state.justifications[justification.target.entity.id]
-        counteredJustification.counterJustifications = counteredJustification.counterJustifications ?
-          counteredJustification.counterJustifications.concat([justification.id]) :
-          [justification.id]
-        counteredJustifications = {justifications: { [counteredJustification.id]: counteredJustification }}
-      }
-
+      const {entities} = normalize(action.payload, action.meta.normalizationSchema)
+      const targetUpdates = makeUpdatesAddingJustificationsToTargets(entities, state)
       return mergeWith(
         {},
         state,
         entities,
-        counteredJustifications,
-        {trunkJustificationsByRootPropositionId},
+        targetUpdates,
         unionArraysDistinctIdsCustomizer,
       )
     }
@@ -205,25 +153,14 @@ export default handleActions({
   [api.deleteJustification.response]: {
     next: (state, action) => {
       const deletedJustification = action.meta.requestPayload.justification
-      const trunkJustificationsByRootPropositionId = cloneDeep(state.trunkJustificationsByRootPropositionId)
-      trunkJustificationsByRootPropositionId[deletedJustification.rootTarget.id] =
-        filter(trunkJustificationsByRootPropositionId[deletedJustification.rootTarget.id], id => id !== deletedJustification.id)
-
-      // If the deleted justification was a counter-justification, remove it from the target justification's counterJustifications
-      let justifications = state.justifications
-      if (isCounter(deletedJustification)) {
-        const counteredJustificationId = deletedJustification.target.entity.id
-        let counteredJustification = justifications[counteredJustificationId]
-        counteredJustification = cloneDeep(counteredJustification)
-        counteredJustification.counterJustifications = filter(counteredJustification.counterJustifications, cjId => cjId !== deletedJustification.id)
-        justifications = clone(justifications)
-        justifications[counteredJustificationId] = counteredJustification
+      const stateWithoutJustification = {
+        ...state,
+        justifications: pickBy(state.justifications, (j, id) => !idEqual(id, deletedJustification.id) )
       }
-
+      const targetUpdate = makeUpdateRemovingJustificationFromTarget(deletedJustification, stateWithoutJustification)
       return {
         ...state,
-        justifications: pickBy(justifications, (j, id) => +id !== deletedJustification.id ),
-        trunkJustificationsByRootPropositionId
+        ...targetUpdate,
       }
     }
   },
@@ -361,19 +298,71 @@ export function unionArraysDistinctIdsCustomizer(destVal, srcVal, key, object, s
   return undefined // tells lodash to use its default method
 }
 
-export function indexTrunkJustificationsByRootPropositionId(justificationsById) {
-  const justifications = values(justificationsById)
-  const rootJustifications = filter(justifications, j =>
-    // TODO do we need a more thorough approach to ensuring that only fully entities are present?
-    // I'd like to send/receive them as stubs, and denormalize them somewhere standard
-    // Some justifications that come back are stubs and will lack relations like .target
-    j.target &&
-    j.target.type === JustificationTargetType.PROPOSITION &&
-    j.rootTargetType === JustificationRootTargetType.PROPOSITION &&
-    j.target.entity.id === j.rootTarget.id
-  )
-  let trunkJustificationsByRootPropositionId = groupBy(rootJustifications, j => j.rootTarget.id)
-  return mapValues(trunkJustificationsByRootPropositionId, justifications => map(justifications, j => j.id))
+export function makeUpdatesAddingJustificationsToTargets(entities, state) {
+  const updates = {}
+  forEach(entities.justifications, (justification, id) => {
+    let entitiesKey, justificationsKey
+    const targetId = justification.target.entity.id
+    switch (justification.target.type) {
+      case JustificationTargetType.PROPOSITION:
+        entitiesKey = 'propositions'
+        justificationsKey = 'justifications'
+        break
+      case JustificationTargetType.STATEMENT:
+        entitiesKey = 'statements'
+        justificationsKey = 'justifications'
+        break
+      case JustificationTargetType.JUSTIFICATION:
+        entitiesKey = 'justifications'
+        justificationsKey = 'counterJustifications'
+        break
+      default:
+        throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+    }
+    const target = entities[entitiesKey][targetId]
+    const extantTarget = state[entitiesKey][targetId]
+    if (!updates[entitiesKey]) {
+      updates[entitiesKey] = {}
+    }
+    updates[entitiesKey][targetId] = {
+      ...target,
+      [justificationsKey]: union(target[justificationsKey], extantTarget[justificationsKey], [id]),
+    }
+  })
+  return updates
+}
+
+export function makeUpdateRemovingJustificationFromTarget(justification, state) {
+  const updates = {}
+  let entitiesKey, justificationsKey
+  const targetId = justification.target.entity.id
+  switch (justification.target.type) {
+    case JustificationTargetType.PROPOSITION:
+      entitiesKey = 'propositions'
+      justificationsKey = 'justifications'
+      break
+    case JustificationTargetType.STATEMENT:
+      entitiesKey = 'statements'
+      justificationsKey = 'justifications'
+      break
+    case JustificationTargetType.JUSTIFICATION:
+      entitiesKey = 'justifications'
+      justificationsKey = 'counterJustifications'
+      break
+    default:
+      throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+  }
+  const target = state[entitiesKey][targetId]
+  if (!updates[entitiesKey]) {
+    updates[entitiesKey] = clone(state[entitiesKey])
+  }
+  if (target[justificationsKey]) {
+    updates[entitiesKey][targetId] = {
+      ...target,
+      [justificationsKey]: filter(target[justificationsKey], (id) => !idEqual(id, justification.id))
+    }
+  }
+  return updates
 }
 
 /** Returning undefined from a customizer to assignWith invokes its default behavior */

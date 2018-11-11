@@ -8,6 +8,7 @@ const _e = module.exports
 
 _e.EntityType = arrayToObject([
   'PROPOSITION',
+  'STATEMENT',
   'WRIT',
   'WRIT_QUOTE',
   'JUSTIFICATION',

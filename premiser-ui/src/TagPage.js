@@ -45,7 +45,7 @@ class TagPage extends React.Component {
     } = this.props
 
     const tagName = get(tag, 'name', characters.ellipsis)
-    const title = `Propositions tagged with “${tagName}”`
+    const title = `Propositions tagged with ${characters.leftDoubleQuote}${tagName}${characters.rightDoubleQuote}`
 
     return (
       <div id="tag-page" className="md-grid">

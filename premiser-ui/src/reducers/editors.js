@@ -17,8 +17,8 @@ import { handleActions } from 'redux-actions'
 import {
   apiErrorCodes,
   arrayToObject,
-  idEqual,
   insertAt,
+  JustificationRootTargetType,
   makeNewPropositionAtom,
   makeNewJustificationBasisCompoundAtom,
   makeNewPersorg,
@@ -164,9 +164,13 @@ const editorReducerByType = {
   }, defaultEditorState),
 
   [EditorTypes.PROPOSITION]: handleActions({
-    [api.fetchPropositionJustifications]: (state, action) => {
+    [api.fetchRootJustificationTarget]: (state, action) => {
+      const {
+        rootTargetType,
+        rootTargetId,
+      } = action.payload
       const propositionId = get(state, 'editEntity.id')
-      if (propositionId === action.payload.propositionId) {
+      if (rootTargetType === JustificationRootTargetType.PROPOSITION && propositionId === rootTargetId) {
         return {...state, isFetching: true}
       }
       return state
@@ -178,9 +182,13 @@ const editorReducerByType = {
       }
       return state
     },
-    [api.fetchPropositionJustifications.response]: (state, action) => {
+    [api.fetchRootJustificationTarget.response]: (state, action) => {
+      const {
+        rootTargetType,
+        rootTargetId,
+      } = action.meta.requestPayload
       const propositionId = get(state, 'editEntity.id')
-      if (propositionId === action.meta.requestPayload.propositionId) {
+      if (rootTargetType === JustificationRootTargetType.PROPOSITION && propositionId === rootTargetId) {
         return {...state, isFetching: false}
       }
       return state
@@ -224,20 +232,6 @@ const editorReducerByType = {
         'writQuote',
         'urls',
       ]),
-    [api.fetchPropositionJustifications]: (state, action) => {
-      const rootPropositionId = get(state.editEntity, 'rootTarget.id')
-      if (idEqual(rootPropositionId, action.payload.rootPropositionId)) {
-        return {...state, isFetching: true}
-      }
-      return state
-    },
-    [api.fetchPropositionJustifications.response]: (state, action) => {
-      const rootPropositionId = state.editEntity && state.editEntity.rootTarget.id
-      if (rootPropositionId && rootPropositionId === action.payload.proposition.id) {
-        return {...state, isFetching: false}
-      }
-      return state
-    },
     [editors.commitEdit.result]: {
       throw: editorErrorReducer('justification')
     }

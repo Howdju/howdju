@@ -1,4 +1,5 @@
 import isArray from 'lodash/isArray'
+import clone from 'lodash/clone'
 import merge from 'lodash/merge'
 import mergeWith from 'lodash/mergeWith'
 
@@ -11,8 +12,9 @@ import {
 
 import {api, str} from "../actions"
 import entities, {
-  indexTrunkJustificationsByRootPropositionId,
   unionArraysDistinctIdsCustomizer,
+  makeUpdatesAddingJustificationsToTargets,
+  makeUpdateRemovingJustificationFromTarget,
 } from './entities'
 import {
   justificationSchema
@@ -42,7 +44,49 @@ describe('reducers', () => {
 
     describe('helpers', () => {
 
-      describe('indexTrunkJustificationsByRootPropositionId', () => {
+      describe('makeUpdatesAddingJustificationsToTargets', () => {
+        test('should work', () => {
+          const
+            rootProposition = {
+              id: "42",
+            },
+            justification = {
+              id: "1",
+              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTarget: {id: rootProposition.id},
+              target: {
+                type: JustificationTargetType.PROPOSITION,
+                entity: {
+                  id: rootProposition.id,
+                },
+              },
+            },
+            entities = {
+              propositions: {
+                [rootProposition.id]: rootProposition,
+              },
+              justifications: {
+                [justification.id]: justification
+              }
+            },
+            state = {
+              propositions: {
+                [rootProposition.id]: rootProposition
+              }
+            }
+
+          expect(makeUpdatesAddingJustificationsToTargets(entities, state)).toEqual({
+            propositions: {
+              [rootProposition.id]: {
+                ...rootProposition,
+                justifications: [justification.id]
+              }
+            },
+          })
+        })
+      })
+
+      describe('makeUpdateRemovingJustificationFromTarget', () => {
         test('should work', () => {
           const
             rootProposition = {
@@ -59,12 +103,20 @@ describe('reducers', () => {
                 },
               },
             },
-            justificationsById = {
-              [justification.id]: justification
+            state = {
+              propositions: {
+                [rootProposition.id]: rootProposition
+              }
             }
+          rootProposition.justifications = [justification.id]
 
-          expect(indexTrunkJustificationsByRootPropositionId(justificationsById)).toEqual({
-            [justification.rootTarget.id]: [justification.id],
+          expect(makeUpdateRemovingJustificationFromTarget(justification, state)).toEqual({
+            propositions: {
+              [rootProposition.id]: {
+                ...rootProposition,
+                justifications: []
+              }
+            },
           })
         })
       })
@@ -224,26 +276,27 @@ describe('reducers', () => {
 
       describe(str(api.createJustification.response), () => {
 
-        test('should merge trunkJustificationsByRootPropositionId', () => {
+        test('should add justifications to targets', () => {
           const
             targetProposition = {
-              id: 1,
+              id: "1",
               text: 'target proposition',
             },
             basisProposition = {
-              id: 2,
+              id: "2",
               text: 'basis proposition',
             },
             existingJustification = {
-              id: 1,
+              id: "1",
               rootTargetType: JustificationRootTargetType.PROPOSITION,
-              rootTarget: {id: 1},
+              rootTarget: clone(targetProposition),
+              target: {type: JustificationTargetType.PROPOSITION, entity: clone(targetProposition)}
             },
 
             newJustification = {
-              id: 2,
+              id: "2",
               rootTargetType: JustificationRootTargetType.PROPOSITION,
-              rootTarget: {id: 1},
+              rootTarget: {id: "1"},
               target: {
                 type: JustificationTargetType.PROPOSITION,
                 entity: targetProposition
@@ -261,38 +314,34 @@ describe('reducers', () => {
               justifications: {
                 [existingJustification.id]: existingJustification
               },
-              trunkJustificationsByRootPropositionId: {
-                [existingJustification.rootTarget.id]: [existingJustification.id]
-              }
             },
 
             action = api.createJustification.response(
               {justification: newJustification},
               {normalizationSchema: {justification: justificationSchema}}
-            ),
+            )
 
-            mergedJustificationsByRootPropositionId =
-              initialState.trunkJustificationsByRootPropositionId[existingJustification.rootTarget.id].concat([newJustification.id]),
+          targetProposition.justifications = [existingJustification.id]
 
-            expectedState = omitDeep({
-              propositions: {
-                [targetProposition.id]: targetProposition,
+          const expectedState = omitDeep({
+            propositions: {
+              [targetProposition.id]: {
+                ...targetProposition,
+                justifications: [...targetProposition.justifications, newJustification.id],
               },
-              justifications: {
-                [existingJustification.id]: existingJustification,
-                [newJustification.id]: merge(
-                  {},
-                  newJustification,
-                  {
-                    target: {entity: {text: toOmit, schema: JustificationTargetType.PROPOSITION}},
-                    rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
-                  }
-                ),
-              },
-              trunkJustificationsByRootPropositionId: {
-                [existingJustification.rootTarget.id]: mergedJustificationsByRootPropositionId
-              },
-            }, (val) => val === toOmit)
+            },
+            justifications: {
+              [existingJustification.id]: existingJustification,
+              [newJustification.id]: merge(
+                {},
+                newJustification,
+                {
+                  target: {entity: {text: toOmit, justifications: toOmit, schema: JustificationTargetType.PROPOSITION}},
+                  rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
+                }
+              ),
+            },
+          }, (val) => val === toOmit)
 
           const actual = entities(initialState, action)
 
@@ -301,14 +350,18 @@ describe('reducers', () => {
 
         test('should add counter-justifications to a target with no counter-justifications', () => {
           const
-            rootProposition = {id: 1},
+            rootProposition = {id: "1"},
             targetJustification = {
-              id: 1,
+              id: "2",
               rootTargetType: JustificationRootTargetType.PROPOSITION,
               rootTarget: rootProposition,
-            },
-            counterJustification = {
-              id: 2,
+              target: {
+                type: JustificationTargetType.PROPOSITION,
+                entity: rootProposition,
+              },
+            }
+          const counterJustification = {
+              id: "3",
               rootTargetType: JustificationRootTargetType.PROPOSITION,
               rootTarget: rootProposition,
               target: {
@@ -317,19 +370,13 @@ describe('reducers', () => {
               },
               polarity: JustificationPolarity.NEGATIVE,
             },
-            expectedTargetJustification = {
-              ...targetJustification,
-              counterJustifications: [counterJustification.id]
-            },
             initialState = {
+              propositions: {
+                [rootProposition.id]: rootProposition
+              },
               justifications: {
                 [targetJustification.id]: targetJustification
               },
-              trunkJustificationsByRootPropositionId: {
-                [targetJustification.rootTarget.id]: [
-                  targetJustification.id
-                ]
-              }
             },
 
             action = api.createJustification.response(
@@ -339,13 +386,24 @@ describe('reducers', () => {
 
             expectedState = {
               propositions: {
-                [rootProposition.id]: rootProposition
+                [rootProposition.id]: {
+                  ...rootProposition,
+                  justifications: [targetJustification.id]
+                }
               },
               justifications: {
-                [expectedTargetJustification.id]: merge(
+                [targetJustification.id]: merge(
                   {},
-                  expectedTargetJustification,
-                  {rootTarget: {schema: JustificationRootTargetType.PROPOSITION}},
+                  targetJustification,
+                  {
+                    counterJustifications: [counterJustification.id],
+                    rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
+                    target: {
+                      entity: {
+                        schema: JustificationTargetType.PROPOSITION,
+                      }
+                    },
+                  },
                 ),
                 [counterJustification.id]: omitDeep(merge(
                   {},
@@ -354,15 +412,12 @@ describe('reducers', () => {
                     target: {entity: {
                       schema: JustificationTargetType.JUSTIFICATION,
                       rootTarget: toOmit,
-                      rootTargetType: toOmit}},
+                      rootTargetType: toOmit,
+                      target: toOmit
+                    }},
                     rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
                   }
                 ), (val) => val === toOmit),
-              },
-              trunkJustificationsByRootPropositionId: {
-                [rootProposition.id]: [
-                  targetJustification.id,
-                ]
               },
             }
 
@@ -371,16 +426,20 @@ describe('reducers', () => {
 
         test('should add counter-justifications to a target with existing counter-justifications', () => {
           const
-            existingCounterJustificationId = 3,
-            rootProposition = {id: 1},
+            existingCounterJustificationId = "3",
+            rootProposition = {id: "1"},
             targetJustification = {
-              id: 1,
+              id: "2",
               rootTargetType: JustificationRootTargetType.PROPOSITION,
               rootTarget: rootProposition,
+              target: {
+                type: JustificationTargetType.PROPOSITION,
+                entity: rootProposition,
+              },
               counterJustifications: [existingCounterJustificationId]
             },
             counterJustification = {
-              id: 2,
+              id: "4",
               rootTargetType: JustificationRootTargetType.PROPOSITION,
               rootTarget: rootProposition,
               target: {
@@ -398,14 +457,12 @@ describe('reducers', () => {
             },
 
             initialState = {
+              propositions: {
+                [rootProposition.id]: rootProposition,
+              },
               justifications: {
                 [targetJustification.id]: targetJustification
               },
-              trunkJustificationsByRootPropositionId: {
-                [targetJustification.rootTarget.id]: [
-                  targetJustification.id,
-                ]
-              }
             },
 
             action = api.createJustification.response(
@@ -415,13 +472,14 @@ describe('reducers', () => {
 
             expectedState = {
               propositions: {
-                [rootProposition.id]: rootProposition
+                [rootProposition.id]: {...rootProposition, justifications: [targetJustification.id]}
               },
               justifications: {
                 [expectedTargetJustification.id]: merge(
                   {},
                   expectedTargetJustification,
                   {rootTarget: {schema: JustificationRootTargetType.PROPOSITION}},
+                  {target: {entity: {schema: JustificationRootTargetType.PROPOSITION}}},
                 ),
                 [counterJustification.id]: omitDeep(merge(
                   {},
@@ -432,16 +490,12 @@ describe('reducers', () => {
                       rootTarget: toOmit,
                       rootTargetType: toOmit,
                       counterJustifications: toOmit,
+                      target: toOmit,
                     }},
                     rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
                   },
                   {rootTarget: {schema: JustificationRootTargetType.PROPOSITION}},
                 ), (val) => val === toOmit),
-              },
-              trunkJustificationsByRootPropositionId: {
-                [targetJustification.rootTarget.id]: [
-                  targetJustification.id,
-                ]
               },
             }
 
@@ -510,14 +564,14 @@ describe('reducers', () => {
       describe(str(api.deleteJustification.response), () => {
         test('should remove deleted counter-justification from countered justification', () => {
           const
-            rootProposition = {id: 2},
+            rootProposition = {id: "1"},
             targetJustification = {
               rootTargetType: JustificationRootTargetType.PROPOSITION,
               rootTarget: rootProposition,
-              id: 100,
+              id: "2",
             },
             counterJustification = {
-              id: 42,
+              id: "3",
               polarity: JustificationPolarity.NEGATIVE,
               target: {
                 type: JustificationTargetType.JUSTIFICATION,
@@ -532,18 +586,14 @@ describe('reducers', () => {
                 [targetJustification.id]: targetJustification,
                 [counterJustification.id]: counterJustification,
               },
-              trunkJustificationsByRootPropositionId: {
-                [targetJustification.rootTarget.id]: targetJustification
-              },
             },
 
             action = api.deleteJustification.response(null, {requestPayload: {justification: counterJustification}})
-
           targetJustification.counterJustifications = [counterJustification.id]
 
           const actualState = entities(initialState, action)
-          const actualCounterJustifications = actualState.justifications[targetJustification.id].counterJustifications
 
+          const actualCounterJustifications = actualState.justifications[targetJustification.id].counterJustifications
           expect(actualCounterJustifications).not.toContainEqual(counterJustification.id)
         })
       })

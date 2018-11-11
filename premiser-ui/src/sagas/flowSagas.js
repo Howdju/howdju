@@ -9,11 +9,14 @@ import {LOCATION_CHANGE, push, replace} from 'react-router-redux'
 import {
   httpStatusCodes,
   isTruthy,
+  JustificationRootTargetType,
+  newExhaustedEnumError,
 } from 'howdju-common'
 
 import t, {
   DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE,
   MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE,
+  MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
 } from '../texts'
 import paths from "../paths"
 import mainSearcher from '../mainSearcher'
@@ -125,18 +128,33 @@ export function* goTo() {
   })
 }
 
-export function* redirectHomeFromMissingProposition() {
-  yield takeEvery(str(api.fetchPropositionJustifications.response), function* leaveMissingPropositionWorker(action) {
-    if (action.error) {
+export function* redirectHomeFromMissingRootTarget() {
+  yield takeEvery(str(api.fetchRootJustificationTarget.response), function* redirectHomeFromMissingRootTargetWorker(action) {
+    // Try to determine whether we are on the page for a proposition that was not found
+    if (action.error && action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND) {
+      const {
+        rootTargetType,
+        rootTargetId,
+      } = action.meta.requestPayload
+
       const routerLocation = history.location
-      // Try to determine whether we are on the page for a proposition that was not found
-      const path = paths.proposition({id: action.meta.requestPayload.propositionId})
-      if (
-        action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND &&
-        // startsWith because we don't have a slug
-        routerLocation.pathname.startsWith(path)
-      ) {
-        yield put(ui.addToast(t(MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE)))
+
+      let path, messageKey
+      switch (rootTargetType) {
+        case JustificationRootTargetType.PROPOSITION:
+          path = paths.proposition({id: rootTargetId})
+          messageKey = MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE
+          break
+        case JustificationRootTargetType.STATEMENT:
+          path = paths.statement({id: rootTargetId})
+          messageKey = MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE
+          break
+        default:
+          throw newExhaustedEnumError('JustificationRootTargetType', )
+      }
+      // startsWith because we don't have a slug
+      if (routerLocation.pathname.startsWith(path)) {
+        yield put(ui.addToast(t(messageKey)))
         yield put(push(paths.home()))
       }
     }

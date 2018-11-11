@@ -35,7 +35,6 @@ import {history} from './history'
 import {logger} from './logger'
 import paths from './paths'
 import {
-  selectIsWindowNarrow,
   selectAuthToken,
   selectAuthEmail,
 } from "./selectors"
@@ -86,15 +85,13 @@ class App extends Component {
     readOrCreateSessionCookieId()
   }
 
-  componentWillMount() {
-    this.unlistenToHistory = history.listen(this.onHistoryListen)
-  }
-
   componentDidMount() {
+    this.unlistenToHistory = history.listen(this.onHistoryListen)
     this.initializeTabIndex()
-    window.addEventListener('resize', this.onWindowResize)
-    window.addEventListener('scroll', this.throttledOnWindowScroll)
+    window.addEventListener('resize', this.onWindowResize, false)
+    window.addEventListener('scroll', this.throttledOnWindowScroll, false)
     window.addEventListener('message', this.receiveMessage, false)
+    window.addEventListener('mouseover', this.onFirstMouseOver, false)
   }
 
   componentWillUnmount() {
@@ -102,6 +99,7 @@ class App extends Component {
     window.removeEventListener('resize', this.onWindowResize)
     window.removeEventListener('scroll', this.throttledOnWindowScroll)
     window.removeEventListener('scroll', this.receiveMessage)
+    window.removeEventListener('mouseover', this.onFirstMouseOver)
   }
 
 
@@ -139,8 +137,12 @@ class App extends Component {
   }
 
   onWindowResize = () => {
-    // Why can't this be this.props.ui.windowResize() ?
-    this.context.store.dispatch(ui.windowResize())
+    this.props.ui.windowResize()
+  }
+
+  onFirstMouseOver = () => {
+    this.props.ui.setCanHover(true)
+    window.removeEventListener('mouseover', this.onFirstMouseOver)
   }
 
   updateOverscrollState = () => {
@@ -458,14 +460,11 @@ const mapStateToProps = state => {
 
   const isMobileSiteDisabled = get(ui, ['app', 'isMobileSiteDisabled'])
 
-  const isWindowNarrow = selectIsWindowNarrow(state)
-
   return {
     authEmail,
     hasAuthToken,
     isNavDrawerVisible,
     toasts,
-    isWindowNarrow,
     isMobileSiteDisabled,
   }
 }

@@ -36,7 +36,6 @@ class EditablePersorg extends Component {
       isFetching,
       isEditing,
       showStatusText,
-      trailPropositions,
       showJustificationCount,
       // ignore
       dispatch,
@@ -61,7 +60,6 @@ class EditablePersorg extends Component {
         id={id}
         persorg={persorg}
         showStatusText={showStatusText}
-        trailPropositions={trailPropositions}
         showJustificationCount={showJustificationCount}
       />
     )

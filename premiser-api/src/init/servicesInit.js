@@ -17,7 +17,7 @@ const {
   PersorgsService,
   PropositionsService,
   PropositionCompoundsService,
-  PropositionJustificationsService,
+  RootTargetJustificationsService,
   PropositionTagVotesService,
   PropositionTagsService,
   StatementsService,
@@ -151,9 +151,10 @@ exports.init = function init(provider) {
     provider.authDao,
     provider.perspectivesDao
   )
-  const propositionJustificationsService = new PropositionJustificationsService(
+  const rootTargetJustificationsService = new RootTargetJustificationsService(
     authService,
     propositionsService,
+    statementsService,
     justificationsService
   )
   const usersService = new UsersService(
@@ -195,9 +196,9 @@ exports.init = function init(provider) {
     persorgsService,
     propositionsService,
     propositionCompoundsService,
-    propositionJustificationsService,
     propositionTagsService,
     propositionTagVotesService,
+    rootTargetJustificationsService,
     statementsService,
     tagsService,
     urlsService,

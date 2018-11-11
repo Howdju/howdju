@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {connect} from "react-redux"
 import FlipMove from 'react-flip-move'
 import get from 'lodash/get'
 import groupBy from 'lodash/groupBy'
@@ -11,12 +10,13 @@ import {Button} from 'react-md'
 import {
   JustificationPolarity,
 } from 'howdju-common'
+
 import config from './config'
 import JustificationBranch from './JustificationBranch'
-import {selectIsWindowNarrow} from "./selectors"
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION
 } from './texts'
+import windowAware from "./windowAware"
 
 import './JustificationsTree.scss'
 
@@ -30,7 +30,7 @@ class JustificationsTree extends Component {
       isCondensed,
       isUnCondensed,
       showBasisUrls,
-      trailPropositions,
+      contextTrailItems,
     } = this.props
     const treeId = `${id}-justification-tree-${j.id}`
     return (
@@ -42,7 +42,7 @@ class JustificationsTree extends Component {
         isCondensed={isCondensed}
         isUnCondensed={isUnCondensed}
         showBasisUrls={showBasisUrls}
-        trailPropositions={trailPropositions}
+        contextTrailItems={contextTrailItems}
       />
     )
   }
@@ -173,12 +173,4 @@ JustificationsTree.defaultProps = {
   wrapperComponent: 'div',
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const isWindowNarrow = selectIsWindowNarrow(state)
-
-  return {
-    isWindowNarrow,
-  }
-}
-
-export default connect(mapStateToProps)(JustificationsTree)
+export default windowAware(JustificationsTree)

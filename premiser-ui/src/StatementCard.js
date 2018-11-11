@@ -3,15 +3,20 @@ import PropTypes from 'prop-types'
 import {Card, CardText} from 'react-md'
 import cn from 'classnames'
 
-import PropositionEntityViewer from './PropositionEntityViewer'
+import StatementEntityViewer from './StatementEntityViewer'
 
 
-export default class PropositionCard extends Component {
+export default class StatementCard extends Component {
+
+  static propTypes = {
+    id: PropTypes.string.isRequired,
+    statement: PropTypes.object.isRequired,
+  }
 
   render () {
     const {
       id,
-      proposition,
+      statement,
       showStatusText,
       className,
       contextTrailItems,
@@ -23,18 +28,14 @@ export default class PropositionCard extends Component {
         className={cn(className, 'entity-card')}
       >
         <CardText>
-          <PropositionEntityViewer
+          <StatementEntityViewer
             id={id}
-            proposition={proposition}
-            contextTrailItems={contextTrailItems}
+            statement={statement}
             showStatusText={showStatusText}
+            contextTrailItems={contextTrailItems}
           />
         </CardText>
       </Card>
     )
   }
-}
-PropositionCard.propTypes = {
-  id: PropTypes.string.isRequired,
-  proposition: PropTypes.object.isRequired,
 }

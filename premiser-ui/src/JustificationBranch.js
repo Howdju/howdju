@@ -34,17 +34,17 @@ import {
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from './actions'
+import {suggestionKeys} from "./autocompleter"
+import config from './config'
+import CounterJustificationEditor from "./CounterJustificationEditor"
 import {
   counterJustificationEditorId,
   justificationBasisEditorId
 } from './editorIds'
-import paths from './paths'
-import config from './config'
-import CounterJustificationEditor from "./CounterJustificationEditor"
-import {EditorTypes} from "./reducers/editors"
-import {suggestionKeys} from "./autocompleter"
+import hoverAware from "./hoverAware"
 import JustificationChatBubble from './JustificationChatBubble'
-import {selectIsWindowNarrow} from "./selectors"
+import paths from './paths'
+import {EditorTypes} from "./reducers/editors"
 import t from './texts'
 
 import './JustificationBranch.scss'
@@ -153,9 +153,9 @@ class JustificationBranch extends Component {
       doShowBasisJustifications,
       isCondensed,
       isUnCondensed,
-      isWindowNarrow,
+      canHover,
       showBasisUrls,
-      trailPropositions,
+      contextTrailItems,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -168,7 +168,7 @@ class JustificationBranch extends Component {
     const _isRootPositive = isRootPositive(justification)
     const _isRootNegative = isRootNegative(justification)
 
-    const doHideControls = !isOver && !isWindowNarrow
+    const doHideControls = !isOver && canHover
 
     const menu = (
       <MenuButton
@@ -319,7 +319,7 @@ class JustificationBranch extends Component {
                   doShowBasisJustifications={doShowBasisJustifications}
                   isCondensed={isCondensed}
                   isUnCondensed={isUnCondensed}
-                  trailPropositions={trailPropositions}
+                  contextTrailItems={contextTrailItems}
                 />
               </div>
             )
@@ -345,7 +345,7 @@ class JustificationBranch extends Component {
           doShowControls={doShowControls}
           showBasisUrls={showBasisUrls}
           menu={menu}
-          trailPropositions={trailPropositions}
+          contextTrailItems={contextTrailItems}
           actions={
             <div className="md-cell md-cell--12 actions">
               {actions}
@@ -372,10 +372,8 @@ const mapStateToProps = (state, ownProps) => {
 
   const newCounterJustification = get(state, ['editors', EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
 
-  const isWindowNarrow = selectIsWindowNarrow(state)
   return {
     newCounterJustification,
-    isWindowNarrow,
   }
 }
 
@@ -384,6 +382,6 @@ const ConnectedJustificationBranch = connect(mapStateToProps, mapActionCreatorGr
   editors,
   goto,
   ui,
-}))(JustificationBranch)
+}))(hoverAware(JustificationBranch))
 
 export default ConnectedJustificationBranch

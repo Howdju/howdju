@@ -23,6 +23,7 @@ export const propositionSchema = new schema.Entity('propositions', {
   tags: tagsSchema,
   recommendedTags: tagsSchema,
   propositionTagVotes: propositionTagVoteSchemas,
+  // justifications added below
 })
 export const propositionsSchema = [propositionSchema]
 
@@ -35,6 +36,7 @@ const sentenceSchema = new schema.Union({}, (value, parent) => parent.sentenceTy
 export const statementSchema = new schema.Entity('statements', {
   speaker: persorgSchema,
   sentence: sentenceSchema,
+  // justifications added below
 })
 sentenceSchema.define({
   [SentenceType.PROPOSITION]: propositionSchema,
@@ -117,7 +119,7 @@ justificationSchema.define({
   vote: justificationVoteSchema
 })
 export const justificationsSchema = [justificationSchema]
-// The docs say that this definition is merged, but for me it appeared to overwrite what was there.
+// The docs say that this definition is merged, but for me it appeared to overwrite what was there, at least for Unions
 justificationTargetSchema.define({
   [JustificationTargetType.PROPOSITION]: propositionSchema,
   [JustificationTargetType.STATEMENT]: statementSchema,
@@ -127,11 +129,9 @@ justificationTargetSchema.define({
 propositionSchema.define({
   justifications: justificationsSchema,
 })
-
-export const propositionJustificationsSchema = {
-  proposition: propositionSchema,
-  justifications: justificationsSchema
-}
+statementSchema.define({
+  justifications: justificationsSchema,
+})
 
 export const perspectiveSchema = new schema.Entity('perspectives', {
   proposition: propositionSchema,

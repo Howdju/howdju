@@ -7,6 +7,7 @@ import flatMap from 'lodash/flatMap'
 import forEach from 'lodash/forEach'
 import get from 'lodash/get'
 import head from 'lodash/head'
+import invert from 'lodash/invert'
 import join from 'lodash/join'
 import kebabCase from 'lodash/kebabCase'
 import lowerCase from 'lodash/lowerCase'
@@ -19,10 +20,17 @@ import {
   JustificationBasisType,
   newExhaustedEnumError,
   JustificationBasisCompoundAtomType,
+  JustificationRootTargetType,
+  JustificationTargetType,
   SourceExcerptType,
   isFalsey,
 } from 'howdju-common'
+
 import {ellipsis} from './characters'
+import {
+  propositionSchema,
+  statementSchema,
+} from './normalizationSchemas'
 
 
 export const removePropositionCompoundIds = (propositionCompound) => {
@@ -254,6 +262,10 @@ export function combineIds(...ids) {
   return join(ids, idDelimiter)
 }
 
+export function combineEditorIds(...editorIds) {
+  return join(editorIds, '_')
+}
+
 export function combineSuggestionsKeys(...keys) {
   // If the initial suggestions key is falsy, return it to indicate no suggestions
   if (!head(keys)) {
@@ -263,7 +275,6 @@ export function combineSuggestionsKeys(...keys) {
   keys = map(keys, camelCase)
   return join(keys, '.')
 }
-
 
 /**
  * A data wrapper class that indicates that a value needs to be referenced as an array index
@@ -293,4 +304,16 @@ export function combineNames(...names) {
 
 export function makeChip(props) {
   return cloneDeep(props)
+}
+
+export const contextTrailTypeByShortcut = {
+  p: JustificationTargetType.PROPOSITION,
+  s: JustificationTargetType.STATEMENT,
+}
+
+export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut)
+
+export const rootTargetNormalizationSchemasByType = {
+  [JustificationRootTargetType.PROPOSITION]: propositionSchema,
+  [JustificationRootTargetType.STATEMENT]: statementSchema,
 }

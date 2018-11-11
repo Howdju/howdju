@@ -2,9 +2,10 @@
 
 * Support statement justifications
   * Redirect to Statement
-   - fix grouping in entities reducer for statements
-     - instead of branchJustificationsByRootPropositionId, add each justification to the appropriate entities' branchJustifications
-       Do this in the API?
+    * contextTrailItems unhandled by JustificationCard.js
+    * hover stuff isn't working
+    * replace propositionTagVote and api.tagProposition (& friends) with root target versions
+    * Need to decircularize Statements?
 * If user autocompleted persorg, disable editor fields?
 
 * Version API
