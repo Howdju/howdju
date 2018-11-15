@@ -38,6 +38,7 @@ export const statementSchema = new schema.Entity('statements', {
   sentence: sentenceSchema,
   // justifications added below
 })
+export const statementsSchema = [statementSchema]
 sentenceSchema.define({
   [SentenceType.PROPOSITION]: propositionSchema,
   [SentenceType.STATEMENT]: statementSchema,

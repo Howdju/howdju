@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
 import WritCard from './WritCard'
+import CellList from './CellList'
 import t from './texts'
 import {
   api,
@@ -20,7 +21,7 @@ export default class RecentWritsWidget extends Component {
         id={cardId}
         key={cardId}
         writ={writ}
-        className={ListEntitiesWidget.smallCellClasses}
+        className={CellList.smallCellClasses}
       />
     )
   }

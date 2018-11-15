@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 
+import CellList from './CellList'
 import ListEntitiesWidget from './ListEntitiesWidget'
 import WritQuoteCard from './WritQuoteCard'
 import t from './texts'
@@ -18,7 +19,7 @@ export default class RecentWritQuotesWidget extends Component {
         id={cardId}
         key={cardId}
         writQuote={writQuote}
-        className={ListEntitiesWidget.smallCellClasses}
+        className={CellList.smallCellClasses}
       />
     )
   }

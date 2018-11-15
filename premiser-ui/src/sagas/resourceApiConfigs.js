@@ -21,19 +21,20 @@ import {
   justificationVoteSchema,
   mainSearchResultsSchema,
   perspectivesSchema,
-  sourceExcerptParaphraseSchema,
+  persorgSchema,
+  persorgsSchema,
   propositionSchema,
   propositionsSchema,
   propositionCompoundSchema,
   propositionTagVoteSchema,
+  sourceExcerptParaphraseSchema,
   statementSchema,
+  statementsSchema,
+  tagSchema,
   tagsSchema,
   writQuoteSchema,
   writsSchema,
   writQuotesSchema,
-  tagSchema,
-  persorgSchema,
-  persorgsSchema,
 } from '../normalizationSchemas'
 
 
@@ -145,6 +146,14 @@ export const resourceApiConfigs = {
     endpoint: `persorgs/${payload.persorgId}`,
     normalizationSchema: {persorg: persorgSchema},
   }),
+  [api.updatePersorg]: (payload) => ({
+    endpoint: `persorgs/${payload.persorg.id}`,
+    normalizationSchema: {persorg: persorgSchema},
+    fetchInit: {
+      method: httpMethods.PUT,
+      body: payload
+    },
+  }),
 
   /* Recents */
 
@@ -220,6 +229,12 @@ export const resourceApiConfigs = {
   [api.fetchTaggedPropositions]: (payload) => ({
     endpoint: `propositions?tagId=${payload.tagId}`,
     normalizationSchema: {propositions: propositionsSchema},
+    requiresRehydrate: true,
+  }),
+
+  [api.fetchSpeakerStatements]: (payload) => ({
+    endpoint: `statements?speakerPersorgId=${payload.speakerPersorgId}`,
+    normalizationSchema: {statements: statementsSchema},
     requiresRehydrate: true,
   }),
 

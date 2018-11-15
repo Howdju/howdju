@@ -32,6 +32,10 @@ ul.target-trail {
   float: right;
 }
 
+.entity-viewer .entity-viewer {
+  margin-left: 15px;
+}
+
 .root-target-background {
   // Animate gradients with this trick:
   // https://medium.com/@dave_lunny/animating-css-gradients-using-only-css-d2fd7671e759
@@ -44,6 +48,8 @@ ul.target-trail {
     // The z-index must apply to the children to get them over the gradient.
     // I don't know why applying it to .proposition-card-contents directly doesn't work
     .root-target-card-contents > * > * {
+      // position: relative invokes a new stacking context so that children are relative to this element's z-index
+      position: relative;
       z-index: $over-gradient-z-index;
     }
 

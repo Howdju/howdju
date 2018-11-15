@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import EntityViewer from './EntityViewer'
 import EditableProposition from './EditableProposition'
+import paths from './paths'
 
 export default class PropositionEntityViewer extends Component {
   render() {
@@ -21,6 +22,7 @@ export default class PropositionEntityViewer extends Component {
     return (
       <EntityViewer
         iconName="short_text"
+        iconLink={proposition && paths.proposition(proposition)}
         className={className}
         iconTitle="Proposition"
         component={component}

@@ -35,7 +35,8 @@ module.exports.StatementsService = class StatementsService extends EntityService
     const {statements, proposition} = collectSentences(statement)
 
     let {proposition: prevSentence} = await this.propositionsService.readOrCreateValidPropositionAsUser(proposition, userId, now)
-    let isExtant = false
+
+    let isOutmostStatementExtant = false
     const propositionId = prevSentence.id
     for (let i = statements.length - 1; i >= 0; i--) {
       const statementToCreate = statements[i]
@@ -47,14 +48,18 @@ module.exports.StatementsService = class StatementsService extends EntityService
 
       prevSentence = await this.statementsDao.readEquivalentStatement(statementToCreate)
       if (prevSentence) {
-        isExtant = true
+        isOutmostStatementExtant = true
       } else {
         prevSentence = await this.statementsDao.createStatement(statementToCreate, userId, now)
-        isExtant = false
+        isOutmostStatementExtant = false
       }
     }
 
-    return {isExtant, statement: prevSentence}
+    return {isExtant: isOutmostStatementExtant, statement: prevSentence}
+  }
+
+  async readStatementsForSpeakerPersorgId(speakerPersorgId) {
+    return await this.statementsDao.readStatementsForSpeakerPersorgId(speakerPersorgId)
   }
 }
 

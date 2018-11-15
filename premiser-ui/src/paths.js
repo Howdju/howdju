@@ -54,6 +54,9 @@ class Paths {
         throw newExhaustedEnumError('JustificationRootTargetType', j.rootTargetType)
     }
   }
+
+  persorg = (persorg) => `/persorgs/${persorg.id}/${toSlug(persorg.name)}`
+
   writUsages = writ => this.searchJustifications({writId: writ.id})
   writQuoteUsages = (writQuote) => {
     if (!writQuote.id) {

@@ -53,18 +53,35 @@ class RootTargetCard extends React.Component {
     const hasDisagreement = rootTarget && some(rootTarget.justifications, j => isVerified(j) && isNegative(j))
 
     const doHideControls = !isOver && canHover
-    const menuItems = concat(extraMenuItems, [
+
+    const thisMenuItems = []
+    const editMenuItem = (
       <ListItem primaryText="Edit"
                 key="edit"
                 leftIcon={<FontIcon>create</FontIcon>}
                 onClick={this.editRootTarget}
-      />,
+      />
+    )
+    const deleteMenuItem = (
       <ListItem primaryText="Delete"
                 key="delete"
                 leftIcon={<FontIcon>delete</FontIcon>}
                 onClick={this.deleteRootTarget}
-      />,
-    ])
+      />
+    )
+    switch (rootTargetType) {
+      case JustificationRootTargetType.PROPOSITION:
+        thisMenuItems.push(editMenuItem)
+        break
+      case JustificationRootTargetType.STATEMENT:
+        // Statements are not directly editable currently.  One must edit their persorgs/propositions
+        break
+      default:
+        // nothing
+        break
+    }
+    thisMenuItems.push(deleteMenuItem)
+    const menuItems = concat(extraMenuItems, thisMenuItems)
 
     const menu = (
       <MenuButton
@@ -131,16 +148,16 @@ class RootTargetCard extends React.Component {
     this.props.editors.beginEdit(editorType, this.props.editorId, this.props.rootTarget)
   }
 
+  deleteRootTarget = () => {
+    this.props.api.deleteRootTarget(this.props.rootTargetType, this.props.rootTarget)
+  }
+
   onMouseOver = () => {
     this.setState({isOver: true})
   }
 
   onMouseLeave = () => {
     this.setState({isOver: false})
-  }
-
-  deleteRootTarget = () => {
-    this.props.api.deleteRootTarget(this.props.rootTargetType, this.props.rootTarget)
   }
 }
 

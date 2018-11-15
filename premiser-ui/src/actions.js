@@ -70,6 +70,7 @@ export const api = {
   fetchSourceExcerptParaphrase: apiActionCreator('FETCH_SOURCE_EXCERPT_PARAPHRASE',
     (sourceExcerptParaphraseId) => ({sourceExcerptParaphraseId})),
   fetchPersorg: apiActionCreator('FETCH_PERSORG', (persorgId) => ({persorgId})),
+  fetchSpeakerStatements: apiActionCreator('FETCH_PERSORG_STATEMENTS', (speakerPersorgId) => ({speakerPersorgId})),
 
   fetchRecentPropositions: apiActionCreator('FETCH_RECENT_PROPOSITIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentWrits: apiActionCreator('FETCH_RECENT_WRITS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),
@@ -144,6 +145,8 @@ export const api = {
   deleteProposition: apiActionCreator('DELETE_PROPOSITION', (proposition) => ({proposition})),
 
   createStatement: apiActionCreator('CREATE_STATEMENT', (statement) => ({statement})),
+
+  updatePersorg: apiActionCreator('UPDATE_PERSORG', (persorg) => ({persorg})),
 
   deleteRootTarget: apiActionCreator('DELETE_ROOT_TARGET', (rootTargetType, rootTarget) => ({rootTargetType, rootTarget})),
 

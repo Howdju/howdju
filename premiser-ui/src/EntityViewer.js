@@ -4,6 +4,7 @@ import {FontIcon} from 'react-md'
 import cn from 'classnames'
 
 import './EntityViewer.scss'
+import {Link} from 'react-router-dom'
 
 
 export default class EntityViewer extends Component {
@@ -12,17 +13,26 @@ export default class EntityViewer extends Component {
       className,
       iconName,
       iconTitle,
+      iconLink,
       entity,
       menu,
       component: Component,
     } = this.props
+
+    let header =
+      <FontIcon
+        role="presentation"
+        title={iconTitle}
+      >{iconName}</FontIcon>
+    if (iconLink) {
+      header = <Link to={iconLink}>{header}</Link>
+    }
+
     return (
       <Component className={cn(className, "entity-viewer")}>
-        <FontIcon
-          role="presentation"
-          className="entity-viewer--icon"
-          title={iconTitle}
-        >{iconName}</FontIcon>
+        <div className="entity-viewer--header">
+          {header}
+        </div>
         <div className="entity-viewer--entity">
           {entity}
         </div>

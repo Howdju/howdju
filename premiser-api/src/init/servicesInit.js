@@ -39,6 +39,12 @@ exports.init = function init(provider) {
     provider.authDao,
     provider.usersDao
   )
+
+  const permissionsService = new PermissionsService(
+    provider.permissionsDao,
+    provider.userPermissionsDao
+  )
+
   const writsService = new WritsService(
     actionsService,
     provider.writsDao
@@ -88,7 +94,7 @@ exports.init = function init(provider) {
     provider.justificationsDao
   )
 
-  const persorgsService = new PersorgsService(provider.logger, provider.persorgsDao)
+  const persorgsService = new PersorgsService(provider.logger, authService, permissionsService, provider.persorgsDao)
 
   const statementsService = new StatementsService(
     provider.logger,
@@ -143,10 +149,6 @@ exports.init = function init(provider) {
     provider.permissionsDao
   )
 
-  const permissionsService = new PermissionsService(
-    provider.permissionsDao,
-    provider.userPermissionsDao
-  )
   const perspectivesService = new PerspectivesService(
     provider.authDao,
     provider.perspectivesDao

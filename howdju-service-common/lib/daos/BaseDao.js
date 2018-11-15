@@ -1,3 +1,4 @@
+const forEach = require('lodash/forEach')
 const head = require('lodash/head')
 const map = require('lodash/map')
 
@@ -20,7 +21,8 @@ class BaseDao {
   }
 
   async queryOne(queryName, sql, args, isRequired = false) {
-    const {fields, rows} = await this.database.query(queryName, sql, args)
+    const result = await this.database.query(queryName, sql, args, true)
+    const {fields, rows} = result
 
     if (rows.length > 1) {
       this.logger.warn(`Unexpected multiple (${rows.length}) for query ${queryName}`)
@@ -31,48 +33,49 @@ class BaseDao {
       throw newImpossibleError(`Missing required row for query ${queryName}`)
     }
 
-    if (row) {
-      addPrefixes(fields, row)
-    }
+    const rowObj = row && convertRowToObject(fields, row)
 
-    return this.mapper(row)
+    return this.mapper(rowObj)
   }
 
   async queryMany(queryName, sql, args) {
-    const {fields, rows} = await this.database.query(queryName, sql, args)
-    const prefixed = map(rows, (row) => addPrefixes(fields, row))
+    const {fields, rows} = await this.database.query(queryName, sql, args, true)
+    const prefixed = map(rows, (row) => convertRowToObject(fields, row))
     return map(prefixed, this.mapper)
   }
 }
 
-/** Adds a <prefix> to all fields that follow a (dummy) field with the name: START_PREFIX<prefix> */
-function addPrefixes(fields, row) {
+/**
+ * Converts a database array row to an objet with keys defined by `fields`.
+ * Adds a <prefix> to all fields that follow a (dummy) field with the name: START_PREFIX<prefix>
+ */
+function convertRowToObject(fields, row) {
+  const rowObj = {}
   let prefix = null
-  for (const field of fields) {
+  forEach(fields, (field, i) => {
     const key = field.name
     if (key.startsWith(START_PREFIX)) {
-      if (row[key] !== '') {
-        throw newImpossibleError(`START_PREFIX ${START_PREFIX} must not appear with a value, but had value: ${row[key]}`)
+      if (row[i] !== '') {
+        throw newImpossibleError(`START_PREFIX ${START_PREFIX} must not appear with a value, but had value: ${row[i]}`)
       }
       prefix = key.substr(START_PREFIX.length)
-      delete row[key]
     } else if (key === STOP_PREFIX) {
-      if (row[key] !== '') {
-        throw newImpossibleError(`STOP_PREFIX ${STOP_PREFIX} must not appear with a value, but had value: ${row[key]}`)
+      if (row[i] !== '') {
+        throw newImpossibleError(`STOP_PREFIX ${STOP_PREFIX} must not appear with a value, but had value: ${row[i]}`)
       }
       prefix = null
-      delete row[key]
     } else if (prefix) {
       const prefixedKey = prefix + key
-      row[prefixedKey] = row[key]
-      delete row[key]
+      rowObj[prefixedKey] = row[i]
+    } else {
+      rowObj[key] = row[i]
     }
-  }
-  return row
+  })
+  return rowObj
 }
 
 module.exports = {
-  addPrefixes,
+  convertRowToObject,
   BaseDao,
   START_PREFIX,
   STOP_PREFIX,

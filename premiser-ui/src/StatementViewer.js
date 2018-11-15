@@ -1,13 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {CircularProgress} from 'react-md'
 import {Link} from 'react-router-dom'
 import cn from 'classnames'
-import moment from 'moment'
 import get from 'lodash/get'
+import moment from 'moment'
 
-import paths from './paths'
+import {
+  JustificationRootTargetType
+} from 'howdju-common'
+
 import config from './config'
 import JustificationCountViewer from './JustificationCountViewer'
+import paths from './paths'
+import {
+  combineIds,
+  describeRootTarget,
+} from './viewModels'
 
 export default class StatementViewer extends React.Component {
 
@@ -15,7 +24,7 @@ export default class StatementViewer extends React.Component {
     statement: PropTypes.object,
   }
 
-  static defaultprops = {
+  static defaultProps = {
     showStatusText: true,
     showJustificationCount: true,
   }
@@ -28,8 +37,17 @@ export default class StatementViewer extends React.Component {
       showStatusText,
       contextTrailItems,
       showJustificationCount,
-      ...rest,
+      // ignore
+      editorId,
+      suggestionsKey,
+      ...rest
     } = this.props
+
+    if (!statement) {
+      return (
+        <CircularProgress id={combineIds(id, 'progress')} />
+      )
+    }
 
     const age = statement.created ? moment(statement.created).fromNow() : ''
     const created = statement.created ? moment(statement.created).format(config.humanDateTimeFormat) : ''
@@ -46,8 +64,7 @@ export default class StatementViewer extends React.Component {
           <div className="statement-viewer">
             <div className="statement-text">
               <Link to={paths.statement(statement, contextTrailItems)}>
-                Statement
-                {statement.rootProposition.text}
+                {describeRootTarget(JustificationRootTargetType.STATEMENT, statement)}
                 {' '}
                 {showJustificationCount && statement.rootJustificationCountByPolarity && (
                   <JustificationCountViewer justificationCountByPolarity={statement.rootJustificationCountByPolarity}/>
@@ -67,3 +84,4 @@ export default class StatementViewer extends React.Component {
     )
   }
 }
+

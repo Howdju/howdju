@@ -28,29 +28,45 @@ describe('StatementsDao', () => {
               switch (args[0]) {
                 case statementId:
                   return {
-                    fields: [],
-                    rows: [{
-                      statement_id: statementId,
-                      sentence_type: SentenceType.STATEMENT,
-                      sentence_id: statement2Id,
-                      speaker_persorg_id: speakerId,
-                      root_proposition_id: propositionId,
-                      creator_user_id: creatorUserId,
-                      created: new Date()
-                    }]
+                    fields: [
+                      {name: 'statement_id'},
+                      {name: 'sentence_type'},
+                      {name: 'sentence_id'},
+                      {name: 'speaker_persorg_id'},
+                      {name: 'root_proposition_id'},
+                      {name: 'creator_user_id'},
+                      {name: 'created'},
+                    ],
+                    rows: [[
+                      statementId,
+                      SentenceType.STATEMENT,
+                      statement2Id,
+                      speakerId,
+                      propositionId,
+                      creatorUserId,
+                      new Date()
+                    ]]
                   }
                 case statement2Id:
                   return {
-                    fields: [],
-                    rows: [{
-                      statement_id: statement2Id,
-                      sentence_type: SentenceType.PROPOSITION,
-                      sentence_id: propositionId,
-                      speaker_persorg_id: speaker2Id,
-                      root_proposition_id: propositionId,
-                      creator_user_id: creatorUserId,
-                      created: new Date()
-                    }]
+                    fields: [
+                      {name: 'statement_id'},
+                      {name: 'sentence_type'},
+                      {name: 'sentence_id'},
+                      {name: 'speaker_persorg_id'},
+                      {name: 'root_proposition_id'},
+                      {name: 'creator_user_id'},
+                      {name: 'created'},
+                    ],
+                    rows: [[
+                      statement2Id,
+                      SentenceType.PROPOSITION,
+                      propositionId,
+                      speaker2Id,
+                      propositionId,
+                      creatorUserId,
+                      new Date()
+                    ]]
                   }
               }
               break

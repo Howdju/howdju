@@ -269,6 +269,21 @@ const routes = [
     }
   },
   {
+    id: 'readSpeakerStatements',
+    path: 'statements',
+    method: httpMethods.GET,
+    queryStringParameters: {speakerPersorgId: /.+/},
+    async handler(appProvider, {
+      callback,
+      request: {
+        queryStringParameters: {speakerPersorgId},
+      }
+    }) {
+      const statements = await appProvider.statementsService.readStatementsForSpeakerPersorgId(speakerPersorgId)
+      return ok({callback, body: {statements}})
+    }
+  },
+  {
     id: 'readStatement',
     path: new RegExp('^statements/([^/]+)$'),
     method: httpMethods.GET,
@@ -299,6 +314,22 @@ const routes = [
       const persorg = await appProvider.persorgsService.readPersorgForId(persorgId)
       return ok({callback, body: {persorg}})
     }
+  },
+  {
+    id: 'updatePersorg',
+    path: new RegExp('^persorgs/([^/]+)$'),
+    method: httpMethods.PUT,
+    handler: (appProvider, {
+      callback,
+      request: {
+        authToken,
+        body: {
+          persorg
+        }
+      }
+    }) => Promise.resolve(appProvider.persorgsService.update(persorg, authToken))
+      .then( (persorg) => ok({callback, body: {persorg}}))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('persorg'))
   },
 
   /*

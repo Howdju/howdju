@@ -48,7 +48,7 @@ const routes = [
   <Route key="statement" exact path="/s/:rootTargetId/:slug?" render={props => (
     <JustificationsPage {...props} rootTargetType={JustificationRootTargetType.STATEMENT} />
   )} />,
-  <Route key="persorg" exact path="/persorgs/:persorgId" component={PersorgPage} />,
+  <Route key="persorg" exact path="/persorgs/:persorgId/:slug?" component={PersorgPage} />,
   <Route key="tag" exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
   <Route key="searchJustifications" exact path="/search-justifications" component={JustificationsSearchPage} />,
 

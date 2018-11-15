@@ -11,6 +11,7 @@ create table if not exists persorgs (
 
   creator_user_id integer not null references users(user_id),
   created timestamp not null,
+  modified timestamp,
   deleted timestamp
 );
 create index idx_persorgs_name_english on persorgs using gin (to_tsvector('english', name));

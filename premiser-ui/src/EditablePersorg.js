@@ -23,7 +23,7 @@ class EditablePersorg extends Component {
   }
 
   static defaultProps = {
-    showJustificationCount: true,
+    showStatusText: true,
   }
 
   render() {
@@ -36,10 +36,9 @@ class EditablePersorg extends Component {
       isFetching,
       isEditing,
       showStatusText,
-      showJustificationCount,
       // ignore
       dispatch,
-      ...rest,
+      ...rest
     } = this.props
 
     // lazy because editorId may not be available
@@ -48,7 +47,6 @@ class EditablePersorg extends Component {
         {...rest}
         editorId={editorId}
         id={id}
-        textId={textId}
         suggestionsKey={suggestionsKey}
         disabled={isFetching}
       />
@@ -60,7 +58,6 @@ class EditablePersorg extends Component {
         id={id}
         persorg={persorg}
         showStatusText={showStatusText}
-        showJustificationCount={showJustificationCount}
       />
     )
 

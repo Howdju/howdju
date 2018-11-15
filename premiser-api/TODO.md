@@ -3,7 +3,6 @@
 * Support statement justifications
   * Redirect to Statement
     * contextTrailItems unhandled by JustificationCard.js
-    * hover stuff isn't working
     * replace propositionTagVote and api.tagProposition (& friends) with root target versions
     * Need to decircularize Statements?
 * If user autocompleted persorg, disable editor fields?

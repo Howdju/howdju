@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 
+import CellList from './CellList'
 import ListEntitiesWidget from './ListEntitiesWidget'
 import PropositionCard from './PropositionCard'
 import t from './texts'
@@ -18,7 +19,7 @@ export default class RecentPropositionsWidget extends Component {
         id={cardId}
         key={cardId}
         proposition={proposition}
-        className={ListEntitiesWidget.smallCellClasses}
+        className={CellList.smallCellClasses}
       />
     )
   }

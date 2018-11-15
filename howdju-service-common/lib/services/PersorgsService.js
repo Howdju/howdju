@@ -1,6 +1,28 @@
-exports.PersorgsService = class PersorgsService {
-  constructor(logger, persorgsDao) {
+const Promise = require('bluebird')
+
+const {
+  EntityType,
+} = require('howdju-common')
+
+const {EntityService} = require('./EntityService')
+const {
+  permissions
+} = require('../permissions')
+const {
+  AuthorizationError,
+  EntityNotFoundError,
+  EntityConflictError,
+} = require("../serviceErrors")
+const {
+  persorgSchema
+} = require('./validationSchemas')
+
+exports.PersorgsService = class PersorgsService extends EntityService {
+  constructor(logger, authService, permissionsService, persorgsDao) {
+    super(logger, authService)
+    this.entitySchema = persorgSchema
     this.logger = logger
+    this.permissionsService = permissionsService
     this.persorgsDao = persorgsDao
   }
 
@@ -30,5 +52,26 @@ exports.PersorgsService = class PersorgsService {
       isExtant: false,
       persorg: dbPersorg,
     }
+  }
+
+  async doUpdate(persorg, userId, now) {
+    const permission = permissions.EDIT_ANY_ENTITY
+    const [doesConflict, hasPermission] = await Promise.all([
+      this.persorgsDao.hasEquivalentPersorgs(persorg),
+      this.permissionsService.userHasPermission(userId, permission),
+    ])
+
+    if (doesConflict) {
+      throw new EntityConflictError()
+    }
+    if (!hasPermission) {
+      throw new AuthorizationError(permission)
+    }
+
+    const updatedPersorg = await this.persorgsDao.updatePersorg(persorg, now)
+    if (!updatedPersorg) {
+      throw new EntityNotFoundError(EntityType.PERSORG, persorg.id)
+    }
+    return updatedPersorg
   }
 }

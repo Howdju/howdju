@@ -118,3 +118,34 @@ export const tagPage = handleActions({
     ...defaultTagPageState
   }),
 }, defaultTagPageState)
+
+const defaultPersorgPageState = {
+  propositions: [],
+  isFetching: false,
+  tagId: null,
+}
+export const persorgPage = handleActions({
+  [api.fetchSpeakerStatements]: (state, action) => ({
+    ...state,
+    isFetching: true,
+  }),
+  [api.fetchSpeakerStatements.response]: {
+    next: (state, action) => {
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
+      return {
+        ...state,
+        statements: result.statements,
+        isFetching: false
+      }
+    },
+    throw: (state, action) => ({
+      ...state,
+      statements: [],
+      isFetching: false
+    }),
+  },
+  [ui.clearPersorgStatements]: (state, action) => ({
+    ...state,
+    ...defaultTagPageState
+  }),
+}, defaultPersorgPageState)

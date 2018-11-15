@@ -32,8 +32,14 @@ export default class UrlTextField extends React.Component {
   }
 
   onPropertyChange = (properties) => {
+    this.checkValid(properties)
+    if (this.props.onPropertyChange) {
+      this.props.onPropertyChange(properties)
+    }
+  }
+
+  checkValid = (properties) => {
     let isValid = true
-    let errorText = ''
     for (const property of Object.keys(properties)) {
       const value = properties[property]
       if (value && (
@@ -45,15 +51,14 @@ export default class UrlTextField extends React.Component {
         break
       }
     }
-    this.setState({isValid, errorText})
+    this.setState({isValid})
   }
 
   render() {
     const {
+      invalidErrorText,
       // ignore
       validator,
-      //ignore
-      invalidErrorText,
       ...rest
     } = this.props
     const {
@@ -70,7 +75,7 @@ export default class UrlTextField extends React.Component {
 
     if (!isValid) {
       props['error'] = true
-      props['errorText'] = this.props.invalidErrorText || "Must be a valid web address"
+      props['errorText'] = invalidErrorText || "Must be a valid web address"
     }
 
     return (

@@ -17,16 +17,16 @@ import truncate from 'lodash/truncate'
 
 import config from './config'
 import {
-  JustificationBasisType,
-  newExhaustedEnumError,
+  isFalsey,
   JustificationBasisCompoundAtomType,
+  JustificationBasisType,
   JustificationRootTargetType,
   JustificationTargetType,
+  newExhaustedEnumError,
   SourceExcerptType,
-  isFalsey,
 } from 'howdju-common'
 
-import {ellipsis} from './characters'
+import * as characters from './characters'
 import {
   propositionSchema,
   statementSchema,
@@ -214,7 +214,7 @@ export function translateNewJustificationErrors(newJustification, errors) {
 
 const truncateOptions = {
   length: config.ui.shortTextLength,
-  omission: ellipsis,
+  omission: characters.ellipsis,
   separator: /[,.]*\s+/,
 }
 export const isTextLong = (text) => text ? text.length > config.ui.shortTextLength : false
@@ -316,4 +316,23 @@ export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut)
 export const rootTargetNormalizationSchemasByType = {
   [JustificationRootTargetType.PROPOSITION]: propositionSchema,
   [JustificationRootTargetType.STATEMENT]: statementSchema,
+}
+
+export function describeRootTarget(rootTargetType, rootTarget) {
+  switch(rootTargetType) {
+    case JustificationRootTargetType.PROPOSITION:
+      return rootTarget.text
+    case JustificationRootTargetType.STATEMENT: {
+      const descriptionParts = []
+      let currSentence = rootTarget
+      while (currSentence.sentenceType) {
+        descriptionParts.push(`${currSentence.speaker.name} said that`)
+        currSentence = currSentence.sentence
+      }
+      descriptionParts.push(`${characters.leftDoubleQuote}${currSentence.text}${characters.rightDoubleQuote}`)
+      return join(descriptionParts, " ")
+    }
+    default:
+      throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
+  }
 }

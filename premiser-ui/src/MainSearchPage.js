@@ -10,7 +10,7 @@ import mainSearcher from './mainSearcher'
 import PropositionCard from './PropositionCard'
 import WritCard from './WritCard'
 import WritQuoteCard from './WritQuoteCard'
-import ListEntitiesWidget from './ListEntitiesWidget'
+import CellList from './CellList'
 import {
   app,
   goto,
@@ -149,7 +149,7 @@ function toPropositionCard(proposition) {
       proposition={proposition}
       id={id}
       key={id}
-      className={ListEntitiesWidget.smallCellClasses}
+      className={CellList.smallCellClasses}
     />
   )
 }
@@ -161,7 +161,7 @@ function toWritQuoteCard(writQuote) {
       writQuote={writQuote}
       id={id}
       key={id}
-      className={ListEntitiesWidget.smallCellClasses}
+      className={CellList.smallCellClasses}
     />
   )
 }
@@ -173,7 +173,7 @@ function toWritQuoteWithUrlsCard(writQuote) {
       writQuote={writQuote}
       id={id}
       key={id}
-      className={ListEntitiesWidget.smallCellClasses}
+      className={CellList.smallCellClasses}
       showUrls={true}
     />
   )
@@ -186,7 +186,7 @@ function toWritCard(writ) {
       writ={writ}
       id={id}
       key={id}
-      className={ListEntitiesWidget.smallCellClasses}
+      className={CellList.smallCellClasses}
     />
   )
 }

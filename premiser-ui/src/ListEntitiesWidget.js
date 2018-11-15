@@ -6,9 +6,8 @@ import concat from 'lodash/concat'
 import get from 'lodash/get'
 import map from 'lodash/map'
 import {denormalize} from "normalizr"
-import FlipMove from 'react-flip-move'
 
-import config from './config'
+import CellList from './CellList'
 import FetchButton from './FetchButton'
 
 class ListEntitiesWidget extends Component {
@@ -87,26 +86,22 @@ class ListEntitiesWidget extends Component {
         onClick={this.fetchMore}
       />
     )
-    const flipMoveProps = config.ui.flipMove
 
     return (
-      // Removing this div results in a horizontal scroll bar for some reason
-      <div id={id}>
-        <FlipMove
-          {...flipMoveProps}
-          {...rest}
-        >
-          {hasEntities && concat(cards(), fetchMoreButtonCell)}
-          {!hasEntities && !isFetching && (
-            <div key="empty-entities-placeholder" className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
-          )}
-          {!hasEntities && !didError && isFetching && (
-            <CircularProgress key="fetching-progress" id={`${id}-progress`} className="md-cell md-cell--12" />
-          )}
-          {didError && <span key="error-message" className="error-message">{loadErrorMessage}</span>}
-          {didError && !hasEntities && retryButtonCell}
-        </FlipMove>
-      </div>
+      <CellList
+        id={id}
+        {...rest}
+      >
+        {hasEntities && concat(cards(), fetchMoreButtonCell)}
+        {!hasEntities && !isFetching && (
+          <div key="empty-entities-placeholder" className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
+        )}
+        {!hasEntities && !didError && isFetching && (
+          <CircularProgress key="fetching-progress" id={`${id}-progress`} className="md-cell md-cell--12" />
+        )}
+        {didError && <span key="error-message" className="error-message">{loadErrorMessage}</span>}
+        {didError && !hasEntities && retryButtonCell}
+      </CellList>
     )
   }
 }
@@ -134,13 +129,11 @@ ListEntitiesWidget.propTypes = {
   /** The classes to use for the fetch buttons that take up the space of a cell */
   cellClasses: PropTypes.string,
 }
-ListEntitiesWidget.smallCellClasses = "md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
-ListEntitiesWidget.largeCellClasses = "md-cell md-cell--6 md-cell--8-tablet md-cell--4-phone"
 ListEntitiesWidget.defaultProps = {
   // This way the fetchMoreButton takes up the last column
   initialFetchCount: 7,
   fetchCount: 8,
-  cellClasses: ListEntitiesWidget.smallCellClasses,
+  cellClasses: CellList.smallCellClasses,
 }
 const mapStateToProps = (state, ownProps) => {
   const widgetState = get(state, ['widgets', 'listEntities', ownProps.widgetId], {})

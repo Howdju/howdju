@@ -1,6 +1,10 @@
+const Promise = require('bluebird')
+const map = require('lodash/map')
+
 const {
-  SentenceType,
+  newExhaustedEnumError,
   requireArgs,
+  SentenceType,
 } = require('howdju-common')
 
 const {BaseDao, START_PREFIX} = require('./BaseDao')
@@ -29,7 +33,10 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
         case SentenceType.PROPOSITION: {
           nextSentence = await this.propositionsDao.readPropositionForId(nextSentenceId)
           nextSentenceId = null
+          break
         }
+        default:
+          throw newExhaustedEnumError('SentenceType', sentence.sentenceType)
       }
       sentence.sentence = nextSentence
       sentence = nextSentence
@@ -83,8 +90,8 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
       'readStatementWithoutSentenceForId',
       `
         with 
-          extant_users as (select * from users where deleted is null)
-          extant_persorgs as (select * from persorgs where deleted is null)
+            extant_users as (select * from users where deleted is null)
+          , extant_persorgs as (select * from persorgs where deleted is null)
         select 
             s.*
           , '' as _prefix__creator_
@@ -98,5 +105,14 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
       `,
       [statementId]
     )
+  }
+
+  async readStatementsForSpeakerPersorgId(speakerPersorgId) {
+    const {rows} = await this.database.query(
+      'readStatementsForSpeakerPersorgId.statementIds',
+      'select * from statements s where s.speaker_persorg_id = $1 and s.deleted is null',
+      [speakerPersorgId]
+    )
+    return await Promise.all(map(rows, (row) => this.readStatementForId(row.statement_id)))
   }
 }

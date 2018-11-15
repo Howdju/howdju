@@ -11,7 +11,7 @@ export default class JustificationCard extends Component {
 
   static propTypes = {
     // Whether to show the justification's root target and counter-justification's target
-    doShowTargets: PropTypes.boolean,
+    doShowTargets: PropTypes.bool,
   }
 
   static defaultProps = {

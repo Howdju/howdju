@@ -9,7 +9,6 @@ import concat from 'lodash/concat'
 import forEach from 'lodash/forEach'
 import isEmpty from 'lodash/isEmpty'
 import isEqual from 'lodash/isEqual'
-import join from 'lodash/join'
 import map from 'lodash/map'
 import sortBy from "lodash/sortBy"
 import split from 'lodash/split'
@@ -22,10 +21,8 @@ import {
   isVerified,
   isDisverified,
   JustificationPolarity,
-  JustificationRootTargetType,
   JustificationTargetType,
   makeNewTrunkJustification,
-  newExhaustedEnumError,
 } from "howdju-common"
 
 import {
@@ -51,6 +48,7 @@ import {
   combineIds,
   combineSuggestionsKeys,
   contextTrailTypeByShortcut,
+  describeRootTarget,
   rootTargetNormalizationSchemasByType,
 } from './viewModels'
 
@@ -274,25 +272,6 @@ class JustificationsPage extends Component {
 
       </div>
     )
-  }
-}
-
-function describeRootTarget(rootTargetType, rootTarget) {
-  switch(rootTargetType) {
-    case JustificationRootTargetType.PROPOSITION:
-      return rootTarget.text
-    case JustificationRootTargetType.STATEMENT: {
-      let currSentence = rootTarget
-      const descriptionParts = [`${rootTarget.speaker.name} said that`]
-      while (currSentence.target) {
-        descriptionParts.push(`${rootTarget.speaker.name} said that`)
-        currSentence = currSentence.target
-      }
-      descriptionParts.push(`${characters.leftDoubleQuote}${currSentence.text}${characters.rightDoubleQuote}`)
-      return join(descriptionParts, " ")
-    }
-    default:
-      throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
   }
 }
 

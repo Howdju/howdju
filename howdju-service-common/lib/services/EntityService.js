@@ -33,6 +33,28 @@ module.exports.EntityService = class EntityService {
     }
     return await this.doReadOrCreate(value, userId, now)
   }
+
+  async update(entity, authToken) {
+    if (!entity.id) {
+      throw new EntityValidationError({id: ['id is required to update an entity']})
+    }
+
+    const now = new Date()
+    const userId = await this.authService.readUserIdForAuthToken(authToken)
+    const {error, value} = this.entitySchema.validate(entity, {
+      // report all errors
+      abortEarly: false,
+      // for now allow clients to send extra properties, such as viewmodel properties, for convenience.
+      // in the future we might consolidate the validation for use between the client and API and have the client
+      //   strip the unknown properties itself
+      stripUnknown: true,
+    })
+    if (error) {
+      const errors = translateJoiError(error)
+      throw new EntityValidationError(errors)
+    }
+    return await this.doUpdate(value, userId, now)
+  }
 }
 
 function translateJoiError(joiError) {

@@ -97,6 +97,9 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.LOGIN_CREDENTIALS]: {
     [CrudActions.CREATE]: api.login,
   },
+  [EditorTypes.PERSORG]: {
+    [CrudActions.UPDATE]: api.updatePersorg
+  },
 }
 
 function constructStatement(speakers, proposition) {

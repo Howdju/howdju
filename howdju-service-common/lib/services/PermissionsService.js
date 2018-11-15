@@ -26,4 +26,8 @@ exports.PermissionsService = class PermissionsService {
   addPermissionsToUser(user, permissionNames) {
     return this.userPermissionsDao.addPermissionsToUser(user, permissionNames)
   }
+
+  userHasPermission(userId, permission) {
+    return this.permissionsDao.userHasPermission(userId, permission)
+  }
 }

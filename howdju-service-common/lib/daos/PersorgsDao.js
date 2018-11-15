@@ -100,4 +100,40 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
       [normalizeText(persorgName)]
     )
   }
+
+  async hasEquivalentPersorgs(persorg) {
+    const equivalentPersorgs = await this.queryMany(
+      'hasEquivalentPersorgs',
+      `
+        select * from persorgs 
+        where 
+              normal_name = $1 
+          and normal_known_for = $2
+          and persorg_id <> $3
+          and deleted is null`,
+      [normalizeText(persorg.name), normalizeText(persorg.knownFor), persorg.id]
+    )
+    return equivalentPersorgs.length > 0
+  }
+
+  async updatePersorg(persorg, now) {
+    return this.queryOne('updatePersorg',
+      `
+        update persorgs set 
+          is_organization = $2,
+          name = $3,
+          normal_name = $4,
+          known_for = $5,
+          normal_known_for = $6,
+          website_url = $7,
+          twitter_url = $8,
+          wikipedia_url = $9,
+          modified = $10
+          where persorg_id = $1 and deleted is null
+        returning *
+      `,
+      [persorg.id, persorg.isOrganization, persorg.name, normalizeText(persorg.name), persorg.knownFor,
+        normalizeText(persorg.knownFor), persorg.websiteUrl, persorg.twitterUrl, persorg.wikipediaUrl, now]
+    )
+  }
 }

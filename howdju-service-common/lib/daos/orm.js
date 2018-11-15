@@ -125,6 +125,7 @@ const toStatement = makeMapper(function toStatementMapper(row) {
     creator: mapRelation(toUser, 'creator_', row),
     speaker: mapRelation(toPersorg, 'speaker_', row),
     sentenceType: row['sentence_type'],
+    created: row.created,
   }
 
   let sentence = statement['sentence'] = {id: row['sentence_id']}
@@ -565,6 +566,7 @@ const toPersorg = makeMapper(function toPersorgMapper(row) {
     wikipediaUrl: row.wikipedia_url,
     normalName: row.normal_name,
     created: row.created,
+    modified: row.modified,
   }
 
   if (row.creator_user_id) {

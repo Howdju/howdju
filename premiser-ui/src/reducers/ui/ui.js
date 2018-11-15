@@ -7,10 +7,11 @@ import {
 } from '../../actions'
 import mainSearcher from '../../mainSearcher'
 import {
-  justificationsPage,
-  mainSearchPage,
   featuredPerspectivesPage,
+  justificationsPage,
   justificationsSearchPage,
+  mainSearchPage,
+  persorgPage,
   tagPage,
 } from './pages'
 import transients from './transients'
@@ -48,12 +49,13 @@ export const mainSearch = handleActions({
 })
 
 export default combineReducers({
-  justificationsPage,
-  mainSearchPage,
   app,
-  mainSearch,
   featuredPerspectivesPage,
+  justificationsPage,
   justificationsSearchPage,
+  mainSearch,
+  mainSearchPage,
+  persorgPage,
   tagPage,
   transients,
 })

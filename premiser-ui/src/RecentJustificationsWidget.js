@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 
 import ListEntitiesWidget from './ListEntitiesWidget'
+import CellList from './CellList'
 import JustificationCard from './JustificationCard'
 import t from './texts'
 import {
@@ -20,7 +21,7 @@ export default class RecentJustificationsWidget extends Component {
         justification={justification}
         doShowBasisJustifications={false}
         doShowControls={false}
-        className={ListEntitiesWidget.largeCellClasses}
+        className={CellList.largeCellClasses}
       />
     )
   }
@@ -36,7 +37,7 @@ export default class RecentJustificationsWidget extends Component {
         {...rest}
         id={id}
         widgetId={widgetId}
-        cellClasses={ListEntitiesWidget.largeCellClasses}
+        cellClasses={CellList.largeCellClasses}
         entitiesWidgetStateKey="recentJustifications"
         fetchEntities={api.fetchRecentJustifications}
         entityToCard={this.justificationToCard}

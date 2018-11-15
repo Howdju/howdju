@@ -27,12 +27,14 @@ exports.Database = class Database {
     this.pool = pool
   }
 
-  query(queryName, sql, args) {
+  query(queryName, sql, args, doArrayMode=false) {
     requireArgs({queryName, sql})
 
     const utcArgs = map(args, toUtc)
     this.logger.silly('Database.query', {queryName, sql, utcArgs})
-    return this.pool.query(sql, utcArgs)
+    return doArrayMode ?
+      this.pool.query({text: sql, values: utcArgs, rowMode: 'array'}) :
+      this.pool.query(sql, utcArgs)
   }
 
   queries(queryAndArgs) {
