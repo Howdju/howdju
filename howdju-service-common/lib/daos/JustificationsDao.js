@@ -438,7 +438,7 @@ exports.JustificationsDao = class JustificationsDao {
           join proposition_compound_atoms pca using (proposition_compound_id)
           join propositions pcap on
                 pca.proposition_id = pcap.proposition_id
-            and scas.proposition_id = $1
+            and pcap.proposition_id = $1
     `
     return this.database.query(sql, [propositionId, JustificationBasisType.PROPOSITION_COMPOUND])
       .then( ({rows}) => map(rows, toJustification))
