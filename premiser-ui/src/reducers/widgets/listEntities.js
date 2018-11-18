@@ -5,6 +5,7 @@ import union from 'lodash/union'
 import {
   api,
 } from '../../actions'
+import pickBy from 'lodash/pickBy'
 
 const widgetRequestReducer = (defaultWidgetState) => (state, action) => {
   const widgetId = action.payload.widgetId
@@ -29,6 +30,15 @@ const widgetResponseErrorReducer = (defaultWidgetState) => (state, action) => {
   const newWidgetState = {...widgetState, isFetching: false, didError: true}
   return {...state, [widgetId]: newWidgetState}
 }
+const widgetDeleteResponseReducer = (defaultWidgetState, entitiesWidgetStateKey, entitiesResultKey) => (state, action) => {
+  const widgetId = action.meta.requestPayload.widgetId
+  const widgetState = get(state, widgetId, defaultWidgetState)
+  const newWidgetState = {
+    [entitiesWidgetStateKey]: pickBy(widgetState[entitiesWidgetStateKey], (e, id) => id !== action.payload.result[entitiesResultKey].id),
+  }
+
+  return {...state, [widgetId]: newWidgetState}
+}
 
 const defaultRecentPropositionsWidgetState = {recentPropositions: [], continuationToken: null}
 const defaultRecentWritsWidgetState = {recentWrits: [], continuationToken: null}
@@ -39,6 +49,9 @@ export default handleActions({
   [api.fetchRecentPropositions.response]: {
     next: widgetResponseReducer(defaultRecentPropositionsWidgetState, 'recentPropositions', 'propositions'),
     throw: widgetResponseErrorReducer(defaultRecentPropositionsWidgetState),
+  },
+  [api.deleteProposition.response]: {
+    next: widgetDeleteResponseReducer(defaultRecentPropositionsWidgetState, 'recentPropositions', 'propositions'),
   },
   [api.fetchRecentWrits]: widgetRequestReducer(defaultRecentWritsWidgetState),
   [api.fetchRecentWrits.response]: {
@@ -55,4 +68,7 @@ export default handleActions({
     next: widgetResponseReducer(defaultRecentJustificationsWidgetState, 'recentJustifications', 'justifications'),
     throw: widgetResponseErrorReducer(defaultRecentJustificationsWidgetState),
   },
+  [api.deleteJustification.response]: {
+    next: widgetDeleteResponseReducer(defaultRecentJustificationsWidgetState, 'recentJustifications', 'justifications'),
+  }
 }, {})
