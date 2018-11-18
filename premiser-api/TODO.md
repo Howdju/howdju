@@ -1,12 +1,15 @@
 # TODO
 
 * Support statement justifications
-  * Redirect to Statement
+  * Missing
+    * StatementUsagesPage
+    * Search persorgs
+    * Recent statements (dedupe with inner statements/propositions?)
+  Ideas:
     * limit suggestions to 20, configurable
     * contextTrailItems unhandled by JustificationCard.js
     * replace propositionTagVote and api.tagProposition (& friends) with root target versions
-    * Need to decircularize Statements?
-* If user autocompleted persorg, disable editor fields?
+    * If user autocompleted persorg, disable editor fields?
 
 * Version API
 

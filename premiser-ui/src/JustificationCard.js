@@ -15,7 +15,8 @@ export default class JustificationCard extends Component {
   }
 
   static defaultProps = {
-    doShowTargets: true
+    doShowTargets: true,
+    showBasisUrls: false,
   }
 
   render() {
@@ -30,7 +31,6 @@ export default class JustificationCard extends Component {
       doShowTargets,
       ...rest,
     } = this.props
-
 
     return (
       <Card
@@ -52,7 +52,4 @@ export default class JustificationCard extends Component {
       </Card>
     )
   }
-}
-JustificationCard.defaultProps = {
-  showBasisUrls: false,
 }

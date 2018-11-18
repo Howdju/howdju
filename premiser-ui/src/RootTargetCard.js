@@ -97,21 +97,21 @@ class RootTargetCard extends React.Component {
         )
         break
       }
-      case JustificationRootTargetType.STATEMENT: {
-        // Statements are not directly editable currently.  One must edit their persorgs/propositions
-        const statementId = get(rootTarget, 'id')
-        insertAt(divider, 0,
-          <ListItem
-            primaryText="See usages"
-            key="usages"
-            title={`See usages of this statement`}
-            leftIcon={<FontIcon>call_merge</FontIcon>}
-            component={Link}
-            to={paths.statementUsages(statementId)}
-          />
-        )
-        break
-      }
+      // case JustificationRootTargetType.STATEMENT: {
+      //   // Statements are not directly editable currently.  One must edit their persorgs/propositions
+      //   const statementId = get(rootTarget, 'id')
+      //   insertAt(divider, 0,
+      //     <ListItem
+      //       primaryText="See usages"
+      //       key="usages"
+      //       title={`See usages of this statement`}
+      //       leftIcon={<FontIcon>call_merge</FontIcon>}
+      //       component={Link}
+      //       to={paths.statementUsages(statementId)}
+      //     />
+      //   )
+      //   break
+      // }
       default:
         // nothing
         break

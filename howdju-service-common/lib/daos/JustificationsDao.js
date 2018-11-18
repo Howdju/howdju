@@ -149,7 +149,7 @@ exports.JustificationsDao = class JustificationsDao {
       from limited_justifications
           join justifications ${tableAlias} using (justification_id)
           
-          join propositions rp on
+          left join propositions rp on
                 ${tableAlias}.root_target_type = $1 
             and ${tableAlias}.root_target_id = rp.proposition_id
           
@@ -279,7 +279,7 @@ exports.JustificationsDao = class JustificationsDao {
       from limited_justifications lj
           join justifications ${tableAlias} using (justification_id)
          
-          join propositions rp on
+          left join propositions rp on
                 ${tableAlias}.root_target_type = $1 
             and ${tableAlias}.root_target_id = rp.proposition_id
           
@@ -349,7 +349,7 @@ exports.JustificationsDao = class JustificationsDao {
         , tp.creator_user_id
       from limited_justifications lj
           join justifications j using (justification_id)
-          join propositions tp on 
+          left join propositions tp on 
                 j.target_type = $1
             and j.target_id = tp.proposition_id
         where
@@ -372,33 +372,38 @@ exports.JustificationsDao = class JustificationsDao {
         const targetPropositionsById = mapPropositionRowsById(targetPropositionRows)
 
         forEach(justifications, justification => {
-          let target
+          let targetEntity
           switch (justification.target.type) {
             case JustificationTargetType.JUSTIFICATION: {
-              target = targetJustificationsById[justification.target.entity.id]
+              targetEntity = targetJustificationsById[justification.target.entity.id]
               break
             }
             case JustificationTargetType.PROPOSITION: {
-              target = targetPropositionsById[justification.target.entity.id]
+              targetEntity = targetPropositionsById[justification.target.entity.id]
               break
             }
+            case JustificationTargetType.STATEMENT:
+              // For expediency, we add statements below rather than try to fold them in.
+              // As we add new justification targets, it's not scalable to keep writing new queries for each one
+              targetEntity = justification.target.entity
+              break
             default: {
               throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
             }
           }
-          if (!target) {
+          if (!targetEntity) {
             this.logger.error(`Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`)
           }
 
-          justification.target.entity = target
+          justification.target.entity = targetEntity
         })
 
         return justifications
       })
-      .then((justifications) => {
+      .then(async (justifications) => {
         // Add the statements here at the end; it is too much trouble to add them into the joins above;
         // we can add them into the joins, if that makes sense, after we remove the deprecated justification basis types
-        addStatements(this, justifications)
+        await addStatements(this, justifications)
         return justifications
       })
   }
@@ -453,8 +458,8 @@ exports.JustificationsDao = class JustificationsDao {
         return map(rootJustifications, j =>
           toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById, justificationBasisCompoundsById))
       })
-      .then((justifications) => {
-        addStatements(this, justifications)
+      .then(async (justifications) => {
+        await addStatements(this, justifications)
         return justifications
       })
   }
@@ -479,8 +484,8 @@ exports.JustificationsDao = class JustificationsDao {
       [JustificationRootTargetType.PROPOSITION, propositionId, JustificationBasisType.PROPOSITION_COMPOUND]
     )
       .then( ({rows}) => map(rows, toJustification))
-      .then((justifications) => {
-        addStatements(this, justifications)
+      .then(async (justifications) => {
+        await addStatements(this, justifications)
         return justifications
       })
   }
@@ -497,8 +502,8 @@ exports.JustificationsDao = class JustificationsDao {
         }
         return toJustification(head(rows))
       })
-      .then((justification) => {
-        addStatements(this, [justification])
+      .then(async (justification) => {
+        await addStatements(this, [justification])
         return justification
       })
   }
@@ -530,9 +535,9 @@ exports.JustificationsDao = class JustificationsDao {
         )
         return equivalentJustification
       })
-      .then((justification) => {
+      .then(async (justification) => {
         if (justification) {
-          addStatements(this, [justification])
+          await addStatements(this, [justification])
         }
         return justification
       })
@@ -630,7 +635,7 @@ exports.JustificationsDao = class JustificationsDao {
   }
 }
 
-function addStatements(service, justifications) {
+async function addStatements(service, justifications) {
   // Collect all the statements we need to read, as well as the justifications that need them as rootTargets and targets
   const statementIds = new Set()
   const justificationsByRootTargetStatementId = new Map()
@@ -667,7 +672,7 @@ function addStatements(service, justifications) {
 
   // Query each statement, and insert it into the justifications that need it.
   for (const statementId of statementIds.values()) {
-    const statement = service.statementsDao.readStatementForId(statementId)
+    const statement = await service.statementsDao.readStatementForId(statementId)
 
     const justificationsRootTargetingStatement = justificationsByRootTargetStatementId.get(statement.id)
     if (justificationsRootTargetingStatement) {
@@ -730,6 +735,10 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
         root_polarity:               row[prefix + 'root_polarity'],
         root_target_type:            row[prefix + 'root_target_type'],
         root_target_id:              row[prefix + 'root_target_id'],
+        root_target_proposition_id:  row[prefix + 'root_target_proposition_id'],
+        root_target_text:            row[prefix + 'root_target_proposition_text'],
+        root_target_created:         row[prefix + 'root_target_proposition_created'],
+        root_target_creator_user_id: row[prefix + 'root_target_proposition_creator_user_id'],
         target_type:                 row[prefix + 'target_type'],
         target_id:                   row[prefix + 'target_id'],
         basis_type:                  row[prefix + 'basis_type'],
@@ -838,8 +847,8 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
     toJustificationBasisCompound(row, justificationBasisCompoundAtomsByCompoundId[id])
   )
 
-  const justificationsById = mapValues(justificationRowsById,
-    row => toJustification(row, null, propositionCompoundsById, writQuotesRowsById, justificationBasisCompoundsById))
+  const justificationsById = mapValues(justificationRowsById, row =>
+    toJustification(row, null, propositionCompoundsById, writQuotesRowsById, justificationBasisCompoundsById))
   return [justificationsById, orderedJustificationIds]
 }
 

@@ -1,5 +1,4 @@
 import React from "react"
-import FlipMove from 'react-flip-move'
 import {connect} from "react-redux"
 import {CircularProgress} from 'react-md'
 import get from 'lodash/get'
@@ -17,7 +16,7 @@ import {
   ui,
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
-import config from './config'
+import CellList from './CellList'
 import {statementsSchema} from './normalizationSchemas'
 import StatementCard from "./StatementCard"
 import {combineIds} from './viewModels'
@@ -47,7 +46,7 @@ class PropositionUsagesPage extends React.Component {
   refreshResults = (propositionId) => {
     this.props.api.fetchSentenceStatements(SentenceType.PROPOSITION, propositionId)
     this.props.api.fetchIndirectPropositionStatements(propositionId)
-    // later: fetchPropositionAppearances
+    // later: fetchInternalPropositionAppearances/fetchExternalPropositionAppearances
   }
 
   render() {
@@ -57,7 +56,6 @@ class PropositionUsagesPage extends React.Component {
       directStatements,
       indirectStatements,
     } = this.props
-    const flipMoveProps = config.ui.flipMove
 
     const hasDirectStatements = directStatements && directStatements.length > 0
     const hasIndirectStatements = indirectStatements && indirectStatements.length > 0
@@ -65,8 +63,8 @@ class PropositionUsagesPage extends React.Component {
     return (
       <div className="md-grid">
         <h1 className="md-cell md-cell--12">Direct Statements</h1>
-        <FlipMove
-          {...flipMoveProps}
+
+        <CellList
           className="md-cell md-cell--12 center-text"
         >
           {map(directStatements, s => {
@@ -80,7 +78,7 @@ class PropositionUsagesPage extends React.Component {
               />
             )
           })}
-        </FlipMove>
+        </CellList>
         {!isFetchingDirect && !hasDirectStatements && (
           <div className="md-cell md-cell--12 text-center">
             No direct statements
@@ -93,8 +91,7 @@ class PropositionUsagesPage extends React.Component {
         )}
 
         <h1 className="md-cell md-cell--12">Indirect Statements</h1>
-        <FlipMove
-          {...flipMoveProps}
+        <CellList
           className="md-cell md-cell--12 center-text"
         >
           {map(indirectStatements, s => {
@@ -108,7 +105,7 @@ class PropositionUsagesPage extends React.Component {
               />
             )
           })}
-        </FlipMove>
+        </CellList>
         {!isFetchingIndirect && !hasIndirectStatements && (
           <div className="md-cell md-cell--12 text-center">
             No indirect statements

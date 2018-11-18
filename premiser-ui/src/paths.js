@@ -86,6 +86,7 @@ class Paths {
     search: '?' + window.encodeURIComponent(mainSearchText)
   })
   propositionUsages = (propositionId) => `/proposition-usages?propositionId=${propositionId}`
+  statementUsages = (statementId) => `/statement-usages?propositionId=${statementId}`
 
   tools = () => '/tools'
 
