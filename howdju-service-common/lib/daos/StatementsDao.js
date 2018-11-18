@@ -115,4 +115,35 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
     )
     return await Promise.all(map(rows, (row) => this.readStatementForId(row.statement_id)))
   }
+
+  async readStatementsForSentenceTypeAndId(sentenceType, sentenceId) {
+    const {rows} = await this.database.query(
+      'readStatementsForSentenceTypeAndId.statementIds',
+      'select * from statements s where s.sentence_type = $1 and s.sentence_id = $2 and s.deleted is null',
+      [sentenceType, sentenceId]
+    )
+    return await Promise.all(map(rows, (row) => this.readStatementForId(row.statement_id)))
+  }
+
+  async readStatementsForRootPropositionId(rootPropositionId) {
+    const {rows} = await this.database.query(
+      'readStatementsForRootPropositionId.statementIds',
+      'select * from statements s where s.root_proposition_id = $1 and s.deleted is null',
+      [rootPropositionId]
+    )
+    return await Promise.all(map(rows, (row) => this.readStatementForId(row.statement_id)))
+  }
+
+  async readIndirectStatementsForRootPropositionId(rootPropositionId) {
+    const {rows} = await this.database.query(
+      'readIndirectStatementsForRootPropositionId.statementIds',
+      `select * from statements s 
+         where 
+               s.root_proposition_id = $1 
+           and not (s.sentence_type = '${SentenceType.PROPOSITION}' and s.sentence_id = $1) 
+           and s.deleted is null`,
+      [rootPropositionId]
+    )
+    return await Promise.all(map(rows, (row) => this.readStatementForId(row.statement_id)))
+  }
 }

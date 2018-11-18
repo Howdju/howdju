@@ -97,8 +97,9 @@ class PersorgEditorFields extends Component {
       showUrls
     } = this.state
 
-    const modelErrors = errors && errors.modelErrors
-    const nameErrorProps = errors && errors.hasErrors && errors.fieldErrors.name.length > 0 ?
+    const modelErrors = get(errors, '_model')
+    const nameErrors = get(errors, 'name')
+    const nameErrorProps = nameErrors ?
       {error: true, errorText: toErrorText(errors.fieldErrors.name)} :
       null
 

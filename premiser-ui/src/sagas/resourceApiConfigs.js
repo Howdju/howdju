@@ -238,6 +238,19 @@ export const resourceApiConfigs = {
     requiresRehydrate: true,
   }),
 
+  [api.fetchSentenceStatements]: (payload) => ({
+    endpoint: `statements?sentenceType=${payload.sentenceType}&sentenceId=${payload.sentenceId}`,
+    normalizationSchema: {statements: statementsSchema}
+  }),
+  [api.fetchRootPropositionStatements]: (payload) => ({
+    endpoint: `statements?rootPropositionId=${payload.propositionId}`,
+    normalizationSchema: {statements: statementsSchema}
+  }),
+  [api.fetchIndirectPropositionStatements]: (payload) => ({
+    endpoint: `statements?rootPropositionId=${payload.propositionId}&indirect`,
+    normalizationSchema: {statements: statementsSchema}
+  }),
+
   /* Auth */
 
   [api.login]: (payload) => ({

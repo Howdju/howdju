@@ -149,3 +149,44 @@ export const persorgPage = handleActions({
     ...defaultTagPageState
   }),
 }, defaultPersorgPageState)
+
+export const propositionUsagesPage = handleActions({
+  [api.fetchSentenceStatements]: {
+    next: (state, action) => ({
+      ...state,
+      isFetchingDirect: true,
+      directStatements: [],
+    })
+  },
+  [api.fetchSentenceStatements.response]: {
+    next: (state, action) => {
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
+      return {
+        ...state,
+        isFetchingDirect: false,
+        directStatements: result.statements,
+      }
+    }
+  },
+  [api.fetchIndirectPropositionStatements]: {
+    next: (state, action) => ({
+      ...state,
+      isFetchingIndirect: true,
+      indirectStatements: []
+    })
+  },
+  [api.fetchIndirectPropositionStatements.response]: {
+    next: (state, action) => {
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
+      return {
+        ...state,
+        isFetchingIndirect: false,
+        indirectStatements: result.statements,
+      }
+    }
+  }
+}, {
+  isFetching: false,
+  directStatements: [],
+  indirectStatements: [],
+})

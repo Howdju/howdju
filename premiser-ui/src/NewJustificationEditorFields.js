@@ -101,9 +101,9 @@ export default class NewJustificationEditorFields extends Component {
       onSubmit,
     } = this.props
 
-    const justificationBasisCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.justificationBasisCompound
-    const propositionCompoundErrors = errors && errors.fieldErrors.basis.fieldErrors.propositionCompound
-    const writQuoteErrors = errors && errors.fieldErrors.basis.fieldErrors.writQuote
+    const justificationBasisCompoundErrors = get(errors, 'basis.justificationBasisCompound')
+    const propositionCompoundErrors = get(errors, 'basis.propositionCompound')
+    const writQuoteErrors = get(errors, 'basis.writQuote')
 
     const basisPropositionCompound = get(newJustification, propositionCompoundName)
     const basisWritQuote = get(newJustification, writQuoteName)

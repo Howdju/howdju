@@ -11,6 +11,7 @@ import reverse from 'lodash/reverse'
 
 import {
   arrayToObject,
+  JustificationRootTargetType,
   JustificationTargetType,
   newProgrammingError,
   makeNewStatement,
@@ -52,6 +53,7 @@ const editorTypeCommitApiResourceActions = {
           // If the statement is justified, then create a justification targeting the statement
           if (model.doCreateJustification) {
             const justification = consolidateNewJustificationEntities(model.newJustification)
+            justification.rootTargetType = JustificationRootTargetType.STATEMENT
             justification.target = {
               entity: statement,
               type: JustificationTargetType.STATEMENT,

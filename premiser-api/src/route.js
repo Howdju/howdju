@@ -284,6 +284,62 @@ const routes = [
     }
   },
   {
+    id: 'readSentenceStatements',
+    path: 'statements',
+    method: httpMethods.GET,
+    queryStringParameters: {
+      sentenceType: /.+/,
+      sentenceId: /.+/,
+    },
+    async handler(appProvider, {
+      callback,
+      request: {
+        queryStringParameters: {
+          sentenceType,
+          sentenceId,
+        },
+      }
+    }) {
+      const statements = await appProvider.statementsService.readStatementsForSentenceTypeAndId(sentenceType, sentenceId)
+      return ok({callback, body: {statements}})
+    }
+  },
+  {
+    id: 'readIndirectRootPropositionStatements',
+    path: 'statements',
+    method: httpMethods.GET,
+    queryStringParameters: {
+      rootPropositionId: /.+/,
+      indirect: '',
+    },
+    async handler(appProvider, {
+      callback,
+      request: {
+        queryStringParameters: {rootPropositionId},
+      }
+    }) {
+      const statements = await appProvider.statementsService.readIndirectStatementsForRootPropositionId(rootPropositionId)
+      return ok({callback, body: {statements}})
+    }
+  },
+  {
+    id: 'readRootPropositionStatements',
+    path: 'statements',
+    method: httpMethods.GET,
+    queryStringParameters: {
+      rootPropositionId: /.+/,
+    },
+    async handler(appProvider, {
+      callback,
+      request: {
+        queryStringParameters: {rootPropositionId},
+      }
+    }) {
+      const statements = await appProvider.statementsService.readStatementsForRootPropositionId(rootPropositionId)
+      return ok({callback, body: {statements}})
+    }
+  },
+  {
     id: 'readStatement',
     path: new RegExp('^statements/([^/]+)$'),
     method: httpMethods.GET,

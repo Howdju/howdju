@@ -85,6 +85,7 @@ class Paths {
     pathname: mainSearchPathName,
     search: '?' + window.encodeURIComponent(mainSearchText)
   })
+  propositionUsages = (propositionId) => `/proposition-usages?propositionId=${propositionId}`
 
   tools = () => '/tools'
 

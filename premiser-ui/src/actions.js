@@ -71,6 +71,9 @@ export const api = {
     (sourceExcerptParaphraseId) => ({sourceExcerptParaphraseId})),
   fetchPersorg: apiActionCreator('FETCH_PERSORG', (persorgId) => ({persorgId})),
   fetchSpeakerStatements: apiActionCreator('FETCH_PERSORG_STATEMENTS', (speakerPersorgId) => ({speakerPersorgId})),
+  fetchSentenceStatements: apiActionCreator('FETCH_SENTENCE_STATEMENTS', (sentenceType, sentenceId) => ({sentenceType, sentenceId})),
+  fetchRootPropositionStatements: apiActionCreator('FETCH_ROOT_PROPOSITION_STATEMENTS', (propositionId) => ({propositionId})),
+  fetchIndirectPropositionStatements: apiActionCreator('FETCH_INDIRECT_PROPOSITION_STATEMENTS', (propositionId) => ({propositionId})),
 
   fetchRecentPropositions: apiActionCreator('FETCH_RECENT_PROPOSITIONS', (widgetId, count, continuationToken) => ({widgetId, count, continuationToken})),
   fetchRecentWrits: apiActionCreator('FETCH_RECENT_WRITS', (widgetId, count, continuationToken) => ({widgetId, continuationToken, count})),

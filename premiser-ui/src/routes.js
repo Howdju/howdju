@@ -21,6 +21,7 @@ import NotFoundPage from './NotFoundPage'
 import MainSearchPage from './MainSearchPage'
 import LandingPage from './LandingPage'
 import PersorgPage from './PersorgPage'
+import PropositionUsagesPage from './PropositionUsagesPage'
 import paths, {createJustificationPath} from './paths'
 import mainSearcher from './mainSearcher'
 import {history} from './history'
@@ -51,6 +52,7 @@ const routes = [
   <Route key="persorg" exact path="/persorgs/:persorgId/:slug?" component={PersorgPage} />,
   <Route key="tag" exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
   <Route key="searchJustifications" exact path="/search-justifications" component={JustificationsSearchPage} />,
+  <Route key="proposition-usages" exact path="/proposition-usages" component={PropositionUsagesPage} />,
 
   <Route key="createProposition" exact path="/create-proposition" render={props => (
     <CreatePropositionPage {...props} mode={CreatePropositionPageMode.CREATE_PROPOSITION} />

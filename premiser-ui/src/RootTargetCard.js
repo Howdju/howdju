@@ -1,10 +1,19 @@
 import React from 'react'
 import cn from 'classnames'
 import concat from 'lodash/concat'
+import get from 'lodash/get'
 import some from 'lodash/some'
-import {Card, CardText, FontIcon, ListItem, MenuButton} from 'react-md'
+import {
+  Card,
+  CardText,
+  Divider,
+  FontIcon,
+  ListItem,
+  MenuButton,
+} from 'react-md'
 
 import {
+  insertAt,
   isNegative,
   isPositive,
   isVerified,
@@ -15,6 +24,7 @@ import hoverAware from './hoverAware'
 import JustificationRootTargetViewer from './JustificationRootTargetViewer'
 import PropositionTagger from './PropositionTagger'
 import {EditorTypes} from './reducers/editors'
+import paths from './paths'
 import './RootTargetCard.scss'
 import Tagger from './Tagger'
 import {
@@ -22,6 +32,7 @@ import {
   combineIds,
   combineSuggestionsKeys,
 } from './viewModels'
+import {Link} from 'react-router-dom'
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetType.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -54,34 +65,59 @@ class RootTargetCard extends React.Component {
 
     const doHideControls = !isOver && canHover
 
-    const thisMenuItems = []
-    const editMenuItem = (
-      <ListItem primaryText="Edit"
-                key="edit"
-                leftIcon={<FontIcon>create</FontIcon>}
-                onClick={this.editRootTarget}
+    const thisMenuItems = [
+      <ListItem
+        primaryText="Delete"
+        key="delete"
+        leftIcon={<FontIcon>delete</FontIcon>}
+        onClick={this.deleteRootTarget}
       />
-    )
-    const deleteMenuItem = (
-      <ListItem primaryText="Delete"
-                key="delete"
-                leftIcon={<FontIcon>delete</FontIcon>}
-                onClick={this.deleteRootTarget}
-      />
-    )
+    ]
+    const divider = extraMenuItems ? [<Divider key="divider" />] : []
     switch (rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION:
-        thisMenuItems.push(editMenuItem)
+      case JustificationRootTargetType.PROPOSITION: {
+        const propositionId = get(rootTarget, 'id')
+        insertAt(divider, 0,
+          <ListItem
+            primaryText="See usages"
+            key="usages"
+            title={`See usages of this proposition`}
+            leftIcon={<FontIcon>call_merge</FontIcon>}
+            component={Link}
+            to={paths.propositionUsages(propositionId)}
+          />
+        )
+        insertAt(thisMenuItems, 0,
+          <ListItem
+            primaryText="Edit"
+            key="edit"
+            leftIcon={<FontIcon>edit</FontIcon>}
+            onClick={this.editRootTarget}
+          />
+        )
         break
-      case JustificationRootTargetType.STATEMENT:
+      }
+      case JustificationRootTargetType.STATEMENT: {
         // Statements are not directly editable currently.  One must edit their persorgs/propositions
+        const statementId = get(rootTarget, 'id')
+        insertAt(divider, 0,
+          <ListItem
+            primaryText="See usages"
+            key="usages"
+            title={`See usages of this statement`}
+            leftIcon={<FontIcon>call_merge</FontIcon>}
+            component={Link}
+            to={paths.statementUsages(statementId)}
+          />
+        )
         break
+      }
       default:
         // nothing
         break
     }
-    thisMenuItems.push(deleteMenuItem)
-    const menuItems = concat(extraMenuItems, thisMenuItems)
+
+    const menuItems = concat(extraMenuItems, divider, thisMenuItems)
 
     const menu = (
       <MenuButton

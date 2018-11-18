@@ -2,7 +2,9 @@ import React, {Component} from "react"
 import Helmet from "react-helmet"
 import {
   Button,
-  CircularProgress, Divider, FontIcon, ListItem,
+  CircularProgress,
+  FontIcon,
+  ListItem,
 } from "react-md"
 import {connect} from "react-redux"
 import concat from 'lodash/concat'
@@ -15,7 +17,6 @@ import split from 'lodash/split'
 import toLower from 'lodash/toLower'
 import {denormalize} from "normalizr"
 import queryString from 'query-string'
-import {Link} from 'react-router-dom'
 
 import {
   isVerified,
@@ -38,7 +39,6 @@ import ContextTrail from './ContextTrail'
 import JustificationsTree from './JustificationsTree'
 import {logger} from "./logger"
 import NewJustificationDialog from './NewJustificationDialog'
-import paths from './paths'
 import {EditorTypes} from "./reducers/editors"
 import RootTargetCard from './RootTargetCard'
 import t, {
@@ -159,10 +159,6 @@ class JustificationsPage extends Component {
     this.props.ui.hideNewJustificationDialog()
   }
 
-  seeUsagesPath = () => {
-    return paths.searchJustifications(this.rootTargetInfo())
-  }
-
   render () {
     const {
       rootTargetType,
@@ -180,19 +176,12 @@ class JustificationsPage extends Component {
     }])
 
     const rootTargetExtraMenuItems = [
-      <ListItem primaryText="Add justification"
-                key="addJustification"
-                leftIcon={<FontIcon>add</FontIcon>}
-                onClick={this.showNewJustificationDialog}
+      <ListItem
+        primaryText="Add justification"
+        key="addJustification"
+        leftIcon={<FontIcon>add</FontIcon>}
+        onClick={this.showNewJustificationDialog}
       />,
-      <ListItem primaryText="See usages"
-                key="usages"
-                title="See justifications using this proposition"
-                leftIcon={<FontIcon>call_merge</FontIcon>}
-                component={Link}
-                to={this.seeUsagesPath()}
-      />,
-      <Divider key="divider" />,
     ]
 
     return (

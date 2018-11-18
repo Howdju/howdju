@@ -121,7 +121,7 @@ const toProposition = makeMapper(function toPropositionMapper(row) {
 const toStatement = makeMapper(function toStatementMapper(row) {
 
   const statement = {
-    id: toString(row.statement_id),
+    id: toString(row.statement_id || row.id),
     creator: mapRelation(toUser, 'creator_', row),
     speaker: mapRelation(toPersorg, 'speaker_', row),
     sentenceType: row['sentence_type'],
@@ -137,7 +137,8 @@ const toStatement = makeMapper(function toStatementMapper(row) {
       sentence = mapRelation(toProposition, 'sentence_proposition_', row)
       break
     default:
-      throw newImpossibleError(`Unsupported SentenceType: ${statement.sentenceType}`)
+      // statements don't need to include their sentence if they have an ID
+      break
   }
   if (sentence) {
     statement['sentence'] = sentence
@@ -158,7 +159,7 @@ const toJustification = makeMapper(function toJustificationMapper (
   justificationBasisCompoundsById
 ) {
   const justification = {
-    id: toString(row.justification_id),
+    id: toString(row.justification_id || row.id),
     created: row.created,
     rootTargetType: row.root_target_type,
     rootTarget: mapRelation(justificationRootTargetMapperByType[row.root_target_type], 'root_target_', row),

@@ -51,6 +51,7 @@ export default handleActions({
     api.createProposition.response,
     api.createStatement.response,
     api.fetchFeaturedPerspectives.response,
+    api.fetchIndirectPropositionStatements.response,
     api.fetchJustificationsSearch.response,
     api.fetchPersorg.response,
     api.fetchSpeakerStatements.response,
@@ -61,6 +62,8 @@ export default handleActions({
     api.fetchRecentWritQuotes.response,
     api.fetchRootJustificationTarget.response,
     api.fetchRecentJustifications.response,
+    api.fetchRootPropositionStatements.response,
+    api.fetchSentenceStatements.response,
     api.fetchTag.response,
     api.fetchTaggedPropositions.response,
     api.fetchWritQuote.response,
@@ -323,7 +326,7 @@ export function makeUpdatesAddingJustificationsToTargets(entities, state) {
         throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
     }
     const target = entities[entitiesKey][targetId]
-    const extantTarget = state[entitiesKey][targetId]
+    const extantTarget = state[entitiesKey][targetId] || {}
     if (!updates[entitiesKey]) {
       updates[entitiesKey] = {}
     }

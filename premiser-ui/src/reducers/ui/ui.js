@@ -13,6 +13,7 @@ import {
   mainSearchPage,
   persorgPage,
   tagPage,
+  propositionUsagesPage,
 } from './pages'
 import transients from './transients'
 import {isWindowNarrow} from "../../util"
@@ -56,6 +57,7 @@ export default combineReducers({
   mainSearch,
   mainSearchPage,
   persorgPage,
+  propositionUsagesPage,
   tagPage,
   transients,
 })

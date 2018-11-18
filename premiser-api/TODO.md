@@ -2,6 +2,7 @@
 
 * Support statement justifications
   * Redirect to Statement
+    * limit suggestions to 20, configurable
     * contextTrailItems unhandled by JustificationCard.js
     * replace propositionTagVote and api.tagProposition (& friends) with root target versions
     * Need to decircularize Statements?

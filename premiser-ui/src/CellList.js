@@ -16,15 +16,12 @@ export default class CellList extends Component {
     const flipMoveProps = config.ui.flipMove
 
     return (
-      // Removing this div results in a horizontal scroll bar for some reason
-      <div>
-        <FlipMove
-          {...flipMoveProps}
-          {...rest}
-        >
-          {children}
-        </FlipMove>
-      </div>
+      <FlipMove
+        {...flipMoveProps}
+        {...rest}
+      >
+        {children}
+      </FlipMove>
     )
   }
 }

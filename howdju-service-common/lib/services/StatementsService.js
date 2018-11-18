@@ -61,6 +61,18 @@ module.exports.StatementsService = class StatementsService extends EntityService
   async readStatementsForSpeakerPersorgId(speakerPersorgId) {
     return await this.statementsDao.readStatementsForSpeakerPersorgId(speakerPersorgId)
   }
+
+  async readStatementsForSentenceTypeAndId(sentenceType, sentenceId) {
+    return await this.statementsDao.readStatementsForSentenceTypeAndId(sentenceType, sentenceId)
+  }
+
+  async readStatementsForRootPropositionId(rootPropositionId) {
+    return await this.statementsDao.readStatementsForRootPropositionId(rootPropositionId)
+  }
+
+  async readIndirectStatementsForRootPropositionId(rootPropositionId) {
+    return await this.statementsDao.readIndirectStatementsForRootPropositionId(rootPropositionId)
+  }
 }
 
 function collectSentences(statement) {
