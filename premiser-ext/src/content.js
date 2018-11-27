@@ -42,12 +42,14 @@ function annotateAndEdit() {
   showSidebar(({frame}) => {
     frame.contentWindow.postMessage({
       source: 'extension',
-      action: 'createJustification',
-      payload: {
-        content: annotation.getContent(),
-        source: new Source(),
-        target: annotation.target,
-      }
+      action: {
+        type: 'createJustification',
+        payload: {
+          content: annotation.getContent(),
+          source: new Source(),
+          target: annotation.target,
+        }
+      },
     }, sidebarTargetOrigin)
   })
 }

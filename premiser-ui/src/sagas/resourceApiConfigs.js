@@ -57,7 +57,7 @@ export const resourceApiConfigs = {
 
   [api.fetchPropositions]: (payload) => {
     const query = payload.propositionIds ?
-      `?propositionIds=${join(payload.propositionIds, ',')}` :
+      `?${queryString.stringify({propositionIds: join(payload.propositionIds, ',')})}` :
       ''
     return {
       endpoint: `propositions${query}`,
@@ -338,32 +338,32 @@ export const resourceApiConfigs = {
   /* Suggestions / full-text search */
 
   [api.fetchPropositionTextSuggestions]: (payload) => ({
-    endpoint: `search-propositions?searchText=${payload.propositionText}`,
+    endpoint: `search-propositions?${queryString.stringify({searchText: payload.propositionText})}`,
     cancelKey: str(api.fetchPropositionTextSuggestions) + '.' + payload.suggestionsKey,
     normalizationSchema: propositionsSchema,
   }),
   [api.fetchTagNameSuggestions]: (payload) => ({
-    endpoint: `search-tags?searchText=${payload.tagName}`,
+    endpoint: `search-tags?${queryString.stringify({searchText: payload.tagName})}`,
     cancelKey: str(api.fetchTagNameSuggestions) + '.' + payload.suggestionsKey,
     normalizationSchema: tagsSchema,
   }),
   [api.fetchWritTitleSuggestions]: (payload) => ({
-    endpoint: `search-writs?searchText=${payload.writTitle}`,
+    endpoint: `search-writs?${queryString.stringify({searchText: payload.writTitle})}`,
     cancelKey: str(api.fetchWritTitleSuggestions) + '.' + payload.suggestionsKey,
     normalizationSchema: writsSchema,
   }),
   [api.fetchPersorgNameSuggestions]: (payload) => ({
-    endpoint: `search-persorgs?searchText=${payload.searchText}`,
+    endpoint: `search-persorgs?${queryString.stringify({searchText: payload.searchText})}`,
     cancelKey: `${api.fetchPersorgNameSuggestions}.${payload.suggestionsKey}`,
     normalizationSchema: persorgsSchema,
   }),
 
   [api.fetchMainSearchResults]: (payload) => ({
-    endpoint: `search?searchText=${payload.searchText}`,
+    endpoint: `search?${queryString.stringify({searchText: payload.searchText})}}`,
     normalizationSchema: mainSearchResultsSchema,
   }),
   [api.fetchMainSearchSuggestions]: (payload) => ({
-    endpoint: `search?searchText=${payload.searchText}`,
+    endpoint: `search?${queryString.stringify({searchText: payload.searchText})}`,
     cancelKey: str(api.fetchMainSearchSuggestions) + '.' + payload.suggestionsKey,
     normalizationSchema: mainSearchResultsSchema,
   }),

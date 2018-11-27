@@ -113,9 +113,10 @@ class App extends Component {
       logger.error(`extension message lacked action`, event.data)
       return
     }
-    switch (action) {
+    const type = action.type
+    switch (type) {
       case 'createJustification': {
-        const {content, source, target} = event.data.payload
+        const {content, source, target} = action.payload
         if (!target.url.startsWith(event.origin)) {
           logger.error(`received message from ${event.origin} to createJustification of ${target.url}.` +
             ' The browser extension should only create justifications matching the current origin.  Ignoring.')
@@ -130,7 +131,7 @@ class App extends Component {
         break
       }
       default: {
-        logger.error(`unsupported message action: ${action}`)
+        logger.error(`unsupported message action type: ${type}`)
         break
       }
     }
