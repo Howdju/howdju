@@ -15,7 +15,7 @@ aws lambda invoke \
   --region $region \
   --log-type Tail \
   --payload $payload \
-  --profile BuildTools \
+  --profile ${AWS_PROFILE:-BuildTools} \
   $lambda_response_file_name \
   > $cli_response_file_name
 cat $cli_response_file_name | jq -r .LogResult | openssl base64 -d -A
@@ -23,4 +23,6 @@ cat $cli_response_file_name | jq -r .LogResult | openssl base64 -d -A
 status_code=$(cat $lambda_response_file_name | jq '.statusCode')
 rm $lambda_response_file_name
 rm $cli_response_file_name
-[[ $status_code -ne '500' ]]
+echo "smoke test status code: $status_code"
+# It might be 400 for some invalid request, but we would just like to make sure the server doesn't 500 on us.
+[[ $status_code -lt '500' ]]

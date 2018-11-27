@@ -1,14 +1,14 @@
-const {selectRoute} = require('./route')
+const {
+  mockLogger
+} = require('howdju-test-common')
 const {
   httpMethods,
 } = require('howdju-common')
 
-const {
-  testUtil
-} = require('howdju-service-common')
+const {selectRoute} = require('./route')
 
 const mockAppProvider = {
-  logger: testUtil.mockLogger
+  logger: mockLogger
 }
 
 describe('routes', () => {

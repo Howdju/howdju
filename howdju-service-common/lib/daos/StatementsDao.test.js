@@ -1,11 +1,13 @@
 const sinon = require('sinon')
 
 const {
+  mockLogger
+} = require('howdju-test-common')
+const {
   SentenceType
 } = require('howdju-common')
 
 const {StatementsDao} = require('./StatementsDao')
-const {testUtil} = require('../util')
 
 describe('StatementsDao', () => {
   describe('readStatementForId', () => {
@@ -82,7 +84,7 @@ describe('StatementsDao', () => {
         }))
       }
 
-      const statementsDao = new StatementsDao(testUtil.mockLogger, database, propositionsDao)
+      const statementsDao = new StatementsDao(mockLogger, database, propositionsDao)
 
       expect(await statementsDao.readStatementForId(statementId)).toMatchObject({
         id: statementId,

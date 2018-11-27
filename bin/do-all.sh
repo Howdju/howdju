@@ -1,6 +1,7 @@
 #!/bin/sh
 
 module_sub_dirs=(
+howdju-test-common
 howdju-common
 howdju-service-common
 howdju-ops

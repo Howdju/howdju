@@ -11,8 +11,8 @@ const {
 
 const {JustificationsDao} = require('./JustificationsDao')
 const {
-  testUtil
-} = require('../util')
+  mockLogger
+} = require('howdju-test-common')
 
 describe('createJustification', () => {
   test('creates a statement justification', () => {
@@ -72,7 +72,7 @@ describe('createJustification', () => {
       }),
     }
     const emptyDependency = {}
-    const justificationsDao = new JustificationsDao(testUtil.mockLogger, database, emptyDependency, emptyDependency, emptyDependency, emptyDependency)
+    const justificationsDao = new JustificationsDao(mockLogger, database, emptyDependency, emptyDependency, emptyDependency, emptyDependency)
 
     return justificationsDao.createJustification(justification, userId, now).then((result) => {
       return expect(result).toEqual(expect.objectContaining(expectedJustification))

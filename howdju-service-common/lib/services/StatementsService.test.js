@@ -5,15 +5,15 @@ const {
 } = require('lodash')
 
 const {
+  mockLogger
+} = require('howdju-test-common')
+const {
   SentenceType
 } = require('howdju-common')
 
 const {
   StatementsService
 } = require('./StatementsService')
-const {
-  testUtil
-} = require('../util')
 
 describe('StatementsService', () => {
   describe('doReadOrCreate', () => {
@@ -78,7 +78,7 @@ describe('StatementsService', () => {
           return {proposition: copy}
         })
       }
-      const statementsService = new StatementsService(testUtil.mockLogger, {}, statementsDao, persorgsService, propositionsService)
+      const statementsService = new StatementsService(mockLogger, {}, statementsDao, persorgsService, propositionsService)
       const expected = merge({
         id: statementId,
         rootPropositionId: propositionId,

@@ -1,0 +1,21 @@
+{
+  "name": "howdju-test-common",
+  "version": "1.0.0",
+  "description": "Common test utilities",
+  "main": "lib/index.js",
+  "author": "carl.gieringer@gmail.com",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "lint": "eslint lib/",
+    "test": "jest"
+  },
+  "dependencies": {
+    "sinon": "^7.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "jest": "^23.6.0"
+  }
+}

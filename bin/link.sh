@@ -13,25 +13,34 @@ current_dir=$(pwd)
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 base_dir="$( cd "${script_dir}/../" && pwd )"
 
+cd ${base_dir}/howdju-test-common
+yarn link
+
 cd ${base_dir}/howdju-common
 yarn link
+yarn link howdju-test-common
 
 cd ${base_dir}/howdju-ops
 yarn link
+yarn link howdju-test-common
 
 cd ${base_dir}/howdju-service-common
 yarn link
+yarn link howdju-test-common
 yarn link howdju-common
 
 cd ${base_dir}/premiser-api
+yarn link howdju-test-common
 yarn link howdju-common
 yarn link howdju-service-common
 yarn link howdju-ops
 
 cd ${base_dir}/premiser-processing
+yarn link howdju-test-common
 yarn link howdju-ops
 
 cd ${base_dir}/premiser-ui
+yarn link howdju-test-common
 yarn link howdju-common
 
 cd ${current_dir}

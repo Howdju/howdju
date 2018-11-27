@@ -25,7 +25,10 @@ git stash pop || true
 
 source $HOME/.bashrc
 npm run build-and-update-lambda-function-code
-bin/lambda-smoke-test.sh us-east-1 premiserApi file://test-events/login.json || exit $?
+bin/lambda-smoke-test.sh us-east-1 premiserApi file://test-events/login.json || {
+  echo 'smoke test failed'
+  exit 1
+}
 publish_output=$(npm run publish-lambda-function-version)
 echo publish_output = $publish_output
 #new_lambda_version=$(echo "$publish_output" | tail -1 | awk '{print $NF}')
