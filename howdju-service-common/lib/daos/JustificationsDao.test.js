@@ -17,13 +17,13 @@ const {
 describe('createJustification', () => {
   test('creates a statement justification', () => {
     const rootTargetType = JustificationRootTargetType.STATEMENT
-    const rootTargetId = 1
+    const rootTargetId = "1"
     const polarity = JustificationPolarity.NEGATIVE
     const targetType = JustificationTargetType.STATEMENT
     const targetId = rootTargetId
     const basisType = JustificationBasisType.PROPOSITION_COMPOUND
-    const basisId = 2
-    const userId = 4
+    const basisId = "2"
+    const userId = "4"
     const now = moment()
     const justification = {
       rootTargetType,
@@ -39,11 +39,14 @@ describe('createJustification', () => {
       }
     }
     const rootPolarity = polarity
+    const justificationId = "3"
     const expectedJustification = assign({}, justification, {
-      id: 3,
-      rootPolarity,
-      creator: {id: userId},
+      id: justificationId,
+      counterJustifications: [],
+      creator: expect.objectContaining({id: userId}),
       created: now,
+      rootPolarity,
+      rootTarget: expect.objectContaining(justification.rootTarget),
     })
     const database = {
       query: sinon.fake((id, sql, args) => {
@@ -51,6 +54,7 @@ describe('createJustification', () => {
           case 'createJustification': {
             return {
               rows: [{
+                justification_id: justificationId,
                 root_target_type: rootTargetType,
                 root_target_id: rootTargetId,
                 root_polarity: rootPolarity,
@@ -71,7 +75,7 @@ describe('createJustification', () => {
     const justificationsDao = new JustificationsDao(testUtil.mockLogger, database, emptyDependency, emptyDependency, emptyDependency, emptyDependency)
 
     return justificationsDao.createJustification(justification, userId, now).then((result) => {
-      return expect(result).toEqual(expectedJustification)
+      return expect(result).toEqual(expect.objectContaining(expectedJustification))
     })
   })
 })
