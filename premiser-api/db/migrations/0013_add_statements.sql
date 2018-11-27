@@ -14,7 +14,7 @@ create table if not exists persorgs (
   modified timestamp,
   deleted timestamp
 );
-create index idx_persorgs_name_english on persorgs using gin (to_tsvector('english', name));
+create index if not exists idx_persorgs_name_english on persorgs using gin (to_tsvector('english', name));
 create index if not exists idx_persorgs_name_pattern on persorgs (name varchar_pattern_ops) where deleted is null;
 
 -- create table if not exists persorg_urls (

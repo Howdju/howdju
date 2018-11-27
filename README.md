@@ -132,6 +132,23 @@ yarn run deploy:pre-prod
 yarn run deploy:prod
 ```
 
+## Publishing database changes (migrations)
+
+```sh
+cd premiser-api
+yarn db:tunnel
+
+# In different tab
+yarn db:tunnel:shell:pre-prod
+howdju_pre_prod> \i db/migrations/xxxx_the_migration.sql
+howdju_pre_prod> exit
+
+# (Visit pre-prod-www.howdju.com and test the changes)
+yarn db:tunnel:shell:prod
+howdju_prod> \i db/migrations/xxxx_the_migration.sql
+howdju_prod> exit
+```
+
 # Debugging
 
 ## Debugging/inspecting the API
