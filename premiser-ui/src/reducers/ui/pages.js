@@ -82,7 +82,7 @@ export const justificationsSearchPage = handleActions({
         isFetching: false,
       }
     },
-    throw: (state, action) => ({...state, isFetching: true}),
+    throw: (state, action) => ({...state, isFetching: false}),
   },
   [ui.clearJustificationsSearch]: (state, action) => ({...state, ...defaultJustificationSearchPageState})
 }, defaultJustificationSearchPageState)
@@ -184,7 +184,23 @@ export const propositionUsagesPage = handleActions({
         indirectStatements: result.statements,
       }
     }
-  }
+  },
+  [api.fetchJustificationsSearch]: (state, action) => ({
+    ...state,
+    isFetchingJustifications: true,
+  }),
+  [api.fetchJustificationsSearch.response]: {
+    next: (state, action) => {
+      const {result} = normalize(action.payload, action.meta.normalizationSchema)
+      return {
+        ...state,
+        justifications: result.justifications,
+        continuationToken: action.payload.continuationToken,
+        isFetchingJustifications: false,
+      }
+    },
+    throw: (state, action) => ({...state, isFetchingJustifications: false}),
+  },
 }, {
   isFetching: false,
   directStatements: [],

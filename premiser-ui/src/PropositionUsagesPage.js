@@ -1,7 +1,8 @@
 import React from "react"
 import {connect} from "react-redux"
-import {CircularProgress} from 'react-md'
+import {Button, CircularProgress} from 'react-md'
 import get from 'lodash/get'
+import isEmpty from 'lodash/isEmpty'
 import isEqual from 'lodash/isEqual'
 import map from 'lodash/map'
 import queryString from 'query-string'
@@ -17,14 +18,21 @@ import {
   mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
 import CellList from './CellList'
-import {statementsSchema} from './normalizationSchemas'
+import {
+  justificationsSchema,
+  statementsSchema,
+} from './normalizationSchemas'
 import StatementCard from "./StatementCard"
 import {combineIds} from './viewModels'
+import FlipMove from 'react-flip-move'
+import JustificationCard from './JustificationCard'
+import config from './config'
 
 
 class PropositionUsagesPage extends React.Component {
 
   static id = 'proposition-usages-page'
+  static fetchCount = 20
   static propositionIdFromProps = (props) => get(queryString.parse(props.location.search), 'propositionId')
 
   propositionId = () => {
@@ -46,24 +54,46 @@ class PropositionUsagesPage extends React.Component {
   refreshResults = (propositionId) => {
     this.props.api.fetchSentenceStatements(SentenceType.PROPOSITION, propositionId)
     this.props.api.fetchIndirectPropositionStatements(propositionId)
+    const count = PropositionUsagesPage.fetchCount
+    this.props.api.fetchJustificationsSearch({filters: {propositionId}, count})
     // later: fetchInternalPropositionAppearances/fetchExternalPropositionAppearances
+  }
+
+  fetchMoreJustifications = (event) => {
+    event.preventDefault()
+    const count = PropositionUsagesPage.fetchCount
+    const propositionId = this.propositionId()
+    const {continuationToken} = this.props
+    this.props.api.fetchJustificationsSearch({filters: {propositionId}, count, continuationToken})
   }
 
   render() {
     const {
       isFetchingDirect,
       isFetchingIndirect,
+      isFetchingJustifications,
       directStatements,
       indirectStatements,
+      justifications,
     } = this.props
 
     const hasDirectStatements = directStatements && directStatements.length > 0
     const hasIndirectStatements = indirectStatements && indirectStatements.length > 0
+    const hasJustifications = !isEmpty(justifications)
+
+    const fetchMoreJustificationsButton = (
+      <Button flat
+              key="fetch-more-button"
+              children="Fetch more"
+              disabled={isFetchingJustifications}
+              onClick={this.fetchMoreJustifications}
+      />
+    )
 
     return (
       <div className="md-grid">
-        <h1 className="md-cell md-cell--12">Direct Statements</h1>
 
+        <h1 className="md-cell md-cell--12">Direct Statements</h1>
         <CellList
           className="md-cell md-cell--12 center-text"
         >
@@ -117,6 +147,38 @@ class PropositionUsagesPage extends React.Component {
           </div>
         )}
 
+        <h1 className="md-cell md-cell--12">Justifications</h1>
+        <FlipMove
+          {...config.ui.flipMove}
+          className="md-cell md-cell--12 center-text"
+
+        >
+          {map(justifications, j => {
+            const id = `justification-card-${j.id}`
+            return (
+              <JustificationCard
+                className="md-cell md-cell--12"
+                id={id}
+                key={id}
+                justification={j}
+              />
+            )
+          })}
+        </FlipMove>
+        {!isFetchingJustifications && !hasJustifications && (
+          <div className="md-cell md-cell--12 text-center">
+            No justifications
+          </div>
+        )}
+        {isFetchingJustifications && (
+          <div className="md-cell md-cell--12 cell--centered-contents">
+            <CircularProgress id={`$justificationsSearchPage-Progress`} />
+          </div>
+        )}
+        <div className="md-cell md-cell--12 cell--centered-contents">
+          {fetchMoreJustificationsButton}
+        </div>
+
       </div>
     )
   }
@@ -127,14 +189,18 @@ const mapStateToProps = (state, ownProps) => {
   const {
     isFetchingDirect,
     isFetchingIndirect,
+    isFetchingJustifications,
   } = pageState
   const directStatements = denormalize(pageState.directStatements, statementsSchema, state.entities)
   const indirectStatements = denormalize(pageState.indirectStatements, statementsSchema, state.entities)
+  const justifications = denormalize(pageState.justifications, justificationsSchema, state.entities)
   return {
     isFetchingDirect,
     isFetchingIndirect,
+    isFetchingJustifications,
     directStatements,
     indirectStatements,
+    justifications,
   }
 }
 

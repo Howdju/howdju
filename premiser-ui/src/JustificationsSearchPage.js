@@ -24,17 +24,21 @@ import config from './config'
 
 
 class JustificationsSearchPage extends Component {
+  static fetchCount = 20
+
+  static filters = (locationSearch) =>
+    pick(queryString.parse(locationSearch), ValidJustificationSearchFilters)
 
   componentDidMount() {
     const filters = JustificationsSearchPage.filters(this.props.location.search)
     this.refreshResults(filters)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
+    const prevFilters = JustificationsSearchPage.filters(prevProps.location.search)
     const filters = JustificationsSearchPage.filters(this.props.location.search)
-    const nextFilters = JustificationsSearchPage.filters(nextProps.location.search)
-    if (!isEqual(nextFilters, filters)) {
-      this.refreshResults(nextFilters)
+    if (!isEqual(prevFilters, filters)) {
+      this.refreshResults(filters)
     }
   }
 
@@ -56,7 +60,6 @@ class JustificationsSearchPage extends Component {
       isFetching,
       justifications,
     } = this.props
-    const flipMoveProps = config.ui.flipMove
 
     const hasJustifications = justifications && justifications.length > 0
 
@@ -74,7 +77,7 @@ class JustificationsSearchPage extends Component {
         <h1 className="md-cell md-cell--12">Justifications</h1>
 
         <FlipMove
-          {...flipMoveProps}
+          {...config.ui.flipMove}
           className="md-cell md-cell--12 center-text"
 
         >
@@ -107,9 +110,6 @@ class JustificationsSearchPage extends Component {
     )
   }
 }
-JustificationsSearchPage.fetchCount = 20
-JustificationsSearchPage.filters = (locationSearch) =>
-  pick(queryString.parse(locationSearch), ValidJustificationSearchFilters)
 
 const mapStateToProps = (state, ownProps) => {
   const pageState = get(state, ['ui', 'justificationsSearchPage'], {})
