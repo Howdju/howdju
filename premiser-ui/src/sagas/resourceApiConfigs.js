@@ -4,6 +4,8 @@ import pick from 'lodash/pick'
 import queryString from 'query-string'
 
 import {
+  decircularizeJustification,
+  decircularizeProposition,
   encodeQueryStringObject,
   httpMethods,
   JustificationRootTargetType,
@@ -106,7 +108,7 @@ export const resourceApiConfigs = {
     fetchInit: {
       method: httpMethods.PUT,
       body: {
-        proposition: payload.proposition
+        proposition: decircularizeProposition(payload.proposition)
       }
     },
   }),
@@ -122,7 +124,9 @@ export const resourceApiConfigs = {
     endpoint: 'justifications',
     fetchInit: {
       method: httpMethods.POST,
-      body: payload
+      body: {
+        justification: decircularizeJustification(payload.justification),
+      }
     },
     normalizationSchema: {justification: justificationSchema}
   }),

@@ -28,12 +28,12 @@ class Paths {
 
   login = () => '/login'
 
-  proposition = (proposition, contextTrailItems) => {
+  proposition = (proposition, contextTrailItems, noSlug=false) => {
     const {id, slug} = proposition
     if (!id) {
       return '#'
     }
-    const slugPath = slug ?
+    const slugPath = !noSlug && slug ?
       '/' + slug :
       ''
     const query = !isEmpty(contextTrailItems) ?

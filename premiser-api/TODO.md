@@ -1,5 +1,9 @@
 # TODO
 
+* Proposition usages must include searching justifications too
+
+* Use JSON Schema? https://www.npmjs.com/package/ajv
+
 * Support statement justifications
   * Missing
     * StatementUsagesPage

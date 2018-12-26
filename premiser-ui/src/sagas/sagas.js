@@ -18,7 +18,9 @@ import {
   flagRehydrate,
   checkAuthExpirationOnRehydrate,
   checkAuthExpirationPeriodically,
-  checkAuthExpiration, resetJustificationSearchPage, resetTagPage,
+  checkAuthExpiration,
+  resetJustificationSearchPage,
+  resetTagPage,
 } from './appSagas'
 import {logErrors} from './logErrorsSaga'
 import {
@@ -29,6 +31,7 @@ import {
   redirectToLoginWhenUnauthenticated,
   clearAuthTokenWhenUnauthorized,
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
+  deleteJustificationRootTargetTranslator,
 } from './flowSagas'
 import {searchMainSearch} from './searchMainSearchSaga'
 import {commitEditorThenView} from './editors/commitEditorThenViewSaga'
@@ -36,7 +39,6 @@ import {commitEditThenPutActionOnSuccess} from './editors/commitEditThenPutActio
 import {fetchAndBeginEditOfNewJustificationFromBasisSource} from './editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga'
 import {editorCommitEdit} from './editors/editorCommitEditSaga'
 import {beginEditOfNewJustificationFromAnchor} from './editors/beginEditOfNewJustificationFromAnchorSaga'
-import {deleteJustificationRootTargetTranslator} from './entitiesSagas'
 
 
 export default () => all([
@@ -69,6 +71,7 @@ export default () => all([
   fetchAndBeginEditOfNewJustificationFromBasisSource(),
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
   beginEditOfNewJustificationFromAnchor(),
+  deleteJustificationRootTargetTranslator(),
 
   editorCommitEdit(),
 
@@ -80,7 +83,6 @@ export default () => all([
 
   handleTransientInteractions(),
 
-  deleteJustificationRootTargetTranslator(),
 
   sendPageView(),
 ])

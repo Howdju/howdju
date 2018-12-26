@@ -1,7 +1,6 @@
 import { createAction as actionCreator } from 'redux-actions'
 import {
   JustificationVotePolarity,
-  decircularizeJustification,
   makePropositionTagVote,
   PropositionTagVotePolarity,
 } from "howdju-common"
@@ -196,7 +195,7 @@ export const api = {
     suggestionsKey,
   })),
 
-  createJustification: apiActionCreator('CREATE_JUSTIFICATION', (justification) => ({justification: decircularizeJustification(justification)})),
+  createJustification: apiActionCreator('CREATE_JUSTIFICATION', (justification) => ({justification})),
   updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', (justification) => ({justification})),
 

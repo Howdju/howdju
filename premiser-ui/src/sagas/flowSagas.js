@@ -27,6 +27,7 @@ import {
 import {
   api,
   app,
+  flows,
   goto,
   ui,
   str,
@@ -34,16 +35,39 @@ import {
 import {history} from '../history'
 import {isActivePath, routeIds} from '../routes'
 import {tryWaitOnRehydrate} from './appSagas'
+import {logger} from '../logger'
 
 
 export function* goHomeIfDeletePropositionWhileViewing() {
   yield takeEvery(str(api.deleteProposition.response), function* goHomeIfDeletePropositionWhileViewingWorker(action) {
     if (!action.error) {
       const routerLocation = history.location
-      if (routerLocation.pathname === paths.proposition(action.meta.requestPayload.proposition)) {
+      const noSlugPath = paths.proposition(action.meta.requestPayload.proposition, null, true)
+      if (routerLocation.pathname.startsWith(noSlugPath)) {
         yield put(ui.addToast(t(DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE)))
         yield put(push(paths.home()))
       }
+    }
+  })
+}
+
+export function* deleteJustificationRootTargetTranslator() {
+  yield takeEvery(str(flows.deleteJustificationRootTarget), function* deleteJustificationRootTargetWorker(action) {
+    const {
+      rootTargetType,
+      rootTarget,
+    } = action.payload
+    switch (rootTargetType) {
+      case JustificationRootTargetType.PROPOSITION: {
+        yield put(api.deleteProposition(rootTarget))
+        break
+      }
+      case JustificationRootTargetType.STATEMENT: {
+        logger.error('deleting statements is unimplemented')
+        break
+      }
+      default:
+        throw newExhaustedEnumError()
     }
   })
 }
