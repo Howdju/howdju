@@ -36,6 +36,7 @@ import {commitEditThenPutActionOnSuccess} from './editors/commitEditThenPutActio
 import {fetchAndBeginEditOfNewJustificationFromBasisSource} from './editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga'
 import {editorCommitEdit} from './editors/editorCommitEditSaga'
 import {beginEditOfNewJustificationFromAnchor} from './editors/beginEditOfNewJustificationFromAnchorSaga'
+import {deleteJustificationRootTargetTranslator} from './entitiesSagas'
 
 
 export default () => all([
@@ -78,6 +79,8 @@ export default () => all([
   showAlertForLogout(),
 
   handleTransientInteractions(),
+
+  deleteJustificationRootTargetTranslator(),
 
   sendPageView(),
 ])

@@ -140,7 +140,7 @@ export default handleActions({
   [api.deleteProposition.response]: {
     next: (state, action) => ({
       ...state,
-      propositions: pickBy(state.propositions, (s, id) => id !== action.meta.requestPayload.proposition.id )
+      propositions: pickBy(state.propositions, (p, id) => id !== action.meta.requestPayload.proposition.id )
     })
   },
   [api.createJustification.response]: {

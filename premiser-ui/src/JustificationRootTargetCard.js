@@ -25,21 +25,28 @@ import JustificationRootTargetViewer from './JustificationRootTargetViewer'
 import PropositionTagger from './PropositionTagger'
 import {EditorTypes} from './reducers/editors'
 import paths from './paths'
-import './RootTargetCard.scss'
 import Tagger from './Tagger'
 import {
-  combineEditorIds,
   combineIds,
   combineSuggestionsKeys,
 } from './viewModels'
 import {Link} from 'react-router-dom'
+import connect from 'react-redux/es/connect/connect'
+import {
+  api,
+  editors,
+  flows,
+  mapActionCreatorGroupToDispatchToProps
+} from './actions'
+
+import './JustificationRootTargetCard.scss'
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetType.PROPOSITION]: EditorTypes.PROPOSITION,
   [JustificationRootTargetType.STATEMENT]: EditorTypes.STATEMENT,
 }
 
-class RootTargetCard extends React.Component {
+class JustificationRootTargetCard extends React.Component {
   state = {
     isOver: false
   }
@@ -147,7 +154,7 @@ class RootTargetCard extends React.Component {
               id={combineIds(id, 'proposition-entity-viewer')}
               rootTargetType={rootTargetType}
               rootTarget={rootTarget}
-              editorId={combineEditorIds(editorId, rootTargetType)}
+              editorId={editorId}
               suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'proposition')}
               menu={menu}
               contextTrailItems={contextTrailItems}
@@ -185,7 +192,7 @@ class RootTargetCard extends React.Component {
   }
 
   deleteRootTarget = () => {
-    this.props.api.deleteRootTarget(this.props.rootTargetType, this.props.rootTarget)
+    this.props.flows.deleteJustificationRootTarget(this.props.rootTargetType, this.props.rootTarget)
   }
 
   onMouseOver = () => {
@@ -197,4 +204,8 @@ class RootTargetCard extends React.Component {
   }
 }
 
-export default hoverAware(RootTargetCard)
+export default connect(null, mapActionCreatorGroupToDispatchToProps({
+  api,
+  editors,
+  flows,
+}))(hoverAware(JustificationRootTargetCard))

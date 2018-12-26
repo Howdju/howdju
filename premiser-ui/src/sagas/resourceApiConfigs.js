@@ -359,7 +359,7 @@ export const resourceApiConfigs = {
   }),
 
   [api.fetchMainSearchResults]: (payload) => ({
-    endpoint: `search?${queryString.stringify({searchText: payload.searchText})}}`,
+    endpoint: `search?${queryString.stringify({searchText: payload.searchText})}`,
     normalizationSchema: mainSearchResultsSchema,
   }),
   [api.fetchMainSearchSuggestions]: (payload) => ({

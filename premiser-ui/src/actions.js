@@ -151,8 +151,6 @@ export const api = {
 
   updatePersorg: apiActionCreator('UPDATE_PERSORG', (persorg) => ({persorg})),
 
-  deleteRootTarget: apiActionCreator('DELETE_ROOT_TARGET', (rootTargetType, rootTarget) => ({rootTargetType, rootTarget})),
-
   fetchPropositionTextSuggestions: apiActionCreator('FETCH_PROPOSITION_TEXT_SUGGESTIONS', (propositionText, suggestionsKey) => ({
     propositionText,
     suggestionsKey,
@@ -354,6 +352,7 @@ export const flows = {
     (editorType, editorId) => ({editorType, editorId})),
   commitEditThenPutActionOnSuccess: actionCreator('FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS',
     (editorType, editorId, onSuccessAction) => ({editorType, editorId, onSuccessAction})),
+  deleteJustificationRootTarget: apiActionCreator('DELETE_JUSTIFICATION_ROOT_TARGET', (rootTargetType, rootTarget) => ({rootTargetType, rootTarget})),
 }
 
 export const autocompletes = {

@@ -40,7 +40,7 @@ import JustificationsTree from './JustificationsTree'
 import {logger} from "./logger"
 import NewJustificationDialog from './NewJustificationDialog'
 import {EditorTypes} from "./reducers/editors"
-import RootTargetCard from './RootTargetCard'
+import JustificationRootTargetCard from './JustificationRootTargetCard'
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
 } from "./texts"
@@ -199,7 +199,7 @@ class JustificationsPage extends Component {
 
           <div className="md-cell md-cell--12">
 
-            <RootTargetCard
+            <JustificationRootTargetCard
               id={this.id('root-target')}
               rootTargetType={rootTargetType}
               rootTarget={rootTarget}

@@ -14,6 +14,7 @@ export default class JustificationRootTargetViewer extends React.Component {
   render() {
     const {
       id,
+      editorId,
       rootTargetType,
       rootTarget,
       suggestionsKey,
@@ -25,6 +26,7 @@ export default class JustificationRootTargetViewer extends React.Component {
         return (
           <PropositionEntityViewer
             id={id}
+            editorId={editorId}
             proposition={rootTarget}
             suggestionsKey={suggestionsKey}
             showStatusText={showStatusText}
