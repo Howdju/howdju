@@ -23,7 +23,7 @@ export default class ContextTrail extends React.Component {
       <ul className="context-trail" {...rest}>
         {map(trailItems, (trailItem, index) => (
           <li key={index}>
-            {trailItem ?
+            {trailItem && trailItem.target ?
               this.toCard(trailItem, take(trailItems, index)) :
               characters.ellipsis
             }
@@ -34,15 +34,15 @@ export default class ContextTrail extends React.Component {
   }
 
   toCard = (trailItem, trailItems) => {
-    switch (trailItem.type) {
-      case (JustificationTargetType.PROPOSITION):
-        return this.propositionToCard(trailItem.entity, trailItems)
-      case (JustificationTargetType.STATEMENT):
-        return this.statementToCard(trailItem.entity, trailItems)
-      case (JustificationTargetType.JUSTIFICATION):
-        return this.justificationToCard(trailItem.entity, trailItems)
+    switch (trailItem.targetType) {
+      case JustificationTargetType.PROPOSITION:
+        return this.propositionToCard(trailItem.target, trailItems)
+      case JustificationTargetType.STATEMENT:
+        return this.statementToCard(trailItem.target, trailItems)
+      case JustificationTargetType.JUSTIFICATION:
+        return this.justificationToCard(trailItem.target, trailItems)
       default:
-        throw newExhaustedEnumError('JustificationTargetType', trailItem.type)
+        throw newExhaustedEnumError('JustificationTargetType', trailItem.targetType)
     }
   }
 

@@ -28,6 +28,7 @@ import {
 
 import {
   api,
+  apiLike,
   editors,
   mapActionCreatorGroupToDispatchToProps,
   ui,
@@ -106,7 +107,7 @@ class JustificationsPage extends Component {
 
     const contextTrailItems = contextTrailInfosFromProps(this.props)
     if (!isEmpty(contextTrailItems)) {
-      this.props.api.fetchJustificationTargets(contextTrailItems)
+      this.props.apiLike.fetchJustificationTargets(contextTrailItems)
     }
   }
 
@@ -118,10 +119,10 @@ class JustificationsPage extends Component {
       this.props.api.fetchRootJustificationTarget(rootTargetInfo.rootTargetType, rootTargetInfo.rootTargetId)
     }
 
-    const prevContextTrailItems = contextTrailInfosFromProps(prevProps)
-    const contextTrailItems = contextTrailInfosFromProps(this.props)
-    if (!isEqual(contextTrailItems, prevContextTrailItems) && !isEmpty(contextTrailItems)) {
-      this.props.api.fetchJustificationTargets(contextTrailItems)
+    const prevContextTrailInfos = contextTrailInfosFromProps(prevProps)
+    const contextTrailInfos = contextTrailInfosFromProps(this.props)
+    if (!isEqual(contextTrailInfos, prevContextTrailInfos) && !isEmpty(contextTrailInfos)) {
+      this.props.apiLike.fetchJustificationTargets(contextTrailInfos)
     }
   }
 
@@ -170,7 +171,7 @@ class JustificationsPage extends Component {
 
     const hasJustifications = !isEmpty(sortedJustifications)
 
-    const newContextTrailItems = concat(contextTrailItems, [{
+    const nextContextTrailItems = concat(contextTrailItems, [{
       targetType: rootTargetType,
       target: rootTarget,
     }])
@@ -245,7 +246,7 @@ class JustificationsPage extends Component {
           isUnCondensed={true}
           showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
           showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
-          contextTrailItems={newContextTrailItems}
+          contextTrailItems={nextContextTrailItems}
           className="md-grid--bottom"
         />
 
@@ -324,6 +325,7 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
+  apiLike,
   ui,
   editors,
   goto,

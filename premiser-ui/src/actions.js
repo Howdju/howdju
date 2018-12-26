@@ -52,6 +52,7 @@ export const app = {
   checkAuthExpiration: actionCreator('APP/CHECK_AUTH_EXPIRATION'),
 }
 
+/** Actions that directly result in API calls */
 export const api = {
   callApi: apiActionCreator('CALL_API'),
   fetchProposition: apiActionCreator('FETCH_PROPOSITION', (propositionId) => ({propositionId})),
@@ -210,6 +211,16 @@ export const apiActionCreatorsByActionType = reduce(api, (result, actionCreator)
   return result
 }, {})
 
+/** "API-like": actions that indirectly result in API calls, such as actions that are translated into one or another
+ * API call depending on some payload value or those that correspond to multiple API calls
+ */
+export const apiLike = {
+  deleteJustificationRootTarget: actionCreator('DELETE_JUSTIFICATION_ROOT_TARGET',
+    (rootTargetType, rootTarget) => ({rootTargetType, rootTarget})),
+  fetchJustificationTargets: actionCreator('FETCH_JUSTIFICATION_TARGETS', (targetInfos) => ({targetInfos})),
+}
+
+/** UI actions */
 export const ui = {
   unhandledAppClick: actionCreator('UI/UNHANDLED_APP_CLICK'),
   unhandledAppTouch: actionCreator('UI/UNHANDLED_APP_TOUCH'),
@@ -266,6 +277,7 @@ commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RES
     return undefined
   }
 )
+/** Editor actions */
 export const editors = {
   beginEdit: actionCreator('EDITORS/BEGIN_EDIT', (editorType, editorId, entity) => ({editorType, editorId, entity})),
   propertyChange: actionCreator('EDITORS/PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
@@ -329,6 +341,7 @@ export const editors = {
   antiTagProposition: actionCreator('EDITORS/ANTI_TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
 }
 
+/** Actions that change the current page */
 export const goto = {
   login: actionCreator('GOTO/LOGIN', (loginRedirectLocation) => ({loginRedirectLocation})),
   proposition: actionCreator('GOTO/PROPOSITION', (proposition) => ({proposition})),
@@ -338,6 +351,7 @@ export const goto = {
   createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION'),
 }
 
+/** Actions that represent multi-step flows */
 export const flows = {
   fetchAndBeginEditOfNewJustificationFromBasisSource: actionCreator(
     'FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS_SOURCE',
@@ -351,7 +365,6 @@ export const flows = {
     (editorType, editorId) => ({editorType, editorId})),
   commitEditThenPutActionOnSuccess: actionCreator('FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS',
     (editorType, editorId, onSuccessAction) => ({editorType, editorId, onSuccessAction})),
-  deleteJustificationRootTarget: apiActionCreator('DELETE_JUSTIFICATION_ROOT_TARGET', (rootTargetType, rootTarget) => ({rootTargetType, rootTarget})),
 }
 
 export const autocompletes = {

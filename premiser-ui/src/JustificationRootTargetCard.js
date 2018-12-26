@@ -35,7 +35,7 @@ import connect from 'react-redux/es/connect/connect'
 import {
   api,
   editors,
-  flows,
+  apiLike,
   mapActionCreatorGroupToDispatchToProps
 } from './actions'
 
@@ -192,7 +192,7 @@ class JustificationRootTargetCard extends React.Component {
   }
 
   deleteRootTarget = () => {
-    this.props.flows.deleteJustificationRootTarget(this.props.rootTargetType, this.props.rootTarget)
+    this.props.apiLike.deleteJustificationRootTarget(this.props.rootTargetType, this.props.rootTarget)
   }
 
   onMouseOver = () => {
@@ -207,5 +207,5 @@ class JustificationRootTargetCard extends React.Component {
 export default connect(null, mapActionCreatorGroupToDispatchToProps({
   api,
   editors,
-  flows,
+  apiLike,
 }))(hoverAware(JustificationRootTargetCard))

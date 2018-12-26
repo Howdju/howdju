@@ -31,7 +31,6 @@ import {
   redirectToLoginWhenUnauthenticated,
   clearAuthTokenWhenUnauthorized,
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
-  deleteJustificationRootTargetTranslator,
 } from './flowSagas'
 import {searchMainSearch} from './searchMainSearchSaga'
 import {commitEditorThenView} from './editors/commitEditorThenViewSaga'
@@ -39,6 +38,10 @@ import {commitEditThenPutActionOnSuccess} from './editors/commitEditThenPutActio
 import {fetchAndBeginEditOfNewJustificationFromBasisSource} from './editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga'
 import {editorCommitEdit} from './editors/editorCommitEditSaga'
 import {beginEditOfNewJustificationFromAnchor} from './editors/beginEditOfNewJustificationFromAnchorSaga'
+import {
+  deleteJustificationRootTargetTranslator,
+  fetchJustificationTargets,
+} from './apiLikeSagas'
 
 
 export default () => all([
@@ -71,7 +74,9 @@ export default () => all([
   fetchAndBeginEditOfNewJustificationFromBasisSource(),
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
   beginEditOfNewJustificationFromAnchor(),
+
   deleteJustificationRootTargetTranslator(),
+  fetchJustificationTargets(),
 
   editorCommitEdit(),
 
