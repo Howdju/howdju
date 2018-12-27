@@ -17,7 +17,7 @@ import config from './config'
 
 class FeaturedPerspectivesPage extends Component {
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.api.fetchFeaturedPerspectives(this.props.widgetId)
   }
 

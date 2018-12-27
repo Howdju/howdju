@@ -27,17 +27,17 @@ const hasFocus = el => window.document.activeElement === el
 
 class ApiAutocomplete extends Component {
 
-  componentWillMount() {
+  componentDidMount() {
     this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
   }
 
-  componentWillReceiveProps(nextProps) {
-    autocompleter.fixOpen(this.autocomplete, nextProps.value, nextProps.transformedSuggestions)
-    if (this.props.forcedClosed) {
+  componentDidUpdate(prevProps) {
+    autocompleter.fixOpen(this.autocomplete, this.props.value, this.props.transformedSuggestions)
+    if (prevProps.forcedClosed) {
       this.closeAutocomplete()
     }
-    if (this.props.autocompleteThrottle !== nextProps.autocompleteThrottle) {
-      this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), nextProps.autocompleteThrottle)
+    if (prevProps.autocompleteThrottle !== this.props.autocompleteThrottle) {
+      this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
     }
   }
 

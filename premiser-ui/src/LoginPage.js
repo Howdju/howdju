@@ -34,7 +34,7 @@ import {selectAuthEmail} from './selectors'
 
 class LoginPage extends Component {
 
-  componentWillMount() {
+  componentDidMount() {
     const email = this.props.authEmail || ''
     this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, makeNewCredentials({email}))
   }

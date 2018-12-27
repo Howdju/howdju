@@ -24,11 +24,11 @@ class TagPage extends React.Component {
     this.refreshResults(tagId)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
+    const prevTagId = getTagId(prevProps)
     const tagId = getTagId(this.props)
-    const nextTagId = getTagId(nextProps)
-    if (!isEqual(tagId, nextTagId)) {
-      this.refreshResults(nextTagId)
+    if (!isEqual(prevTagId, tagId)) {
+      this.refreshResults(tagId)
     }
   }
 

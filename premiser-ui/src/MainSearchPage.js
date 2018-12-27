@@ -33,11 +33,11 @@ class MainSearchPage extends Component {
     this.fetchResults(searchText)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
+    const prevSearchText = mainSearcher.mainSearchText(prevProps.location)
     const searchText = mainSearcher.mainSearchText(this.props.location)
-    const nextSearchText = mainSearcher.mainSearchText(nextProps.location)
-    if (nextSearchText !== searchText) {
-      this.fetchResults(nextSearchText)
+    if (prevSearchText !== searchText) {
+      this.fetchResults(searchText)
     }
   }
 
