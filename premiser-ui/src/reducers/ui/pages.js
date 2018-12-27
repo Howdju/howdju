@@ -8,6 +8,14 @@ import {
 } from '../../actions'
 
 export const justificationsPage = handleActions({
+  [api.fetchRootJustificationTarget]: (state, action) => ({
+    ...state,
+    isFetching: true,
+  }),
+  [api.fetchRootJustificationTarget.response]: (state, action) => ({
+    ...state,
+    isFetching: false,
+  }),
   [ui.showNewJustificationDialog]: (state, action) => ({
     ...state,
     isNewJustificationDialogVisible: true,
@@ -18,6 +26,7 @@ export const justificationsPage = handleActions({
   }),
 }, {
   isNewJustificationDialogVisible: false,
+  isFetching: false,
 })
 
 export const mainSearchPage = handleActions({

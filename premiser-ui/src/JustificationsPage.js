@@ -114,7 +114,6 @@ class JustificationsPage extends Component {
   componentDidUpdate(prevProps,) {
     const prevRootTargetInfo = rootTargetInfoFromProps(prevProps)
     const rootTargetInfo = this.rootTargetInfo()
-
     if (!isEqual(rootTargetInfo, prevRootTargetInfo)) {
       this.props.api.fetchRootJustificationTarget(rootTargetInfo.rootTargetType, rootTargetInfo.rootTargetId)
     }
@@ -167,6 +166,7 @@ class JustificationsPage extends Component {
       contextTrailItems,
       sortedJustifications,
       isNewJustificationDialogVisible,
+      isFetching,
     } = this.props
 
     const hasJustifications = !isEmpty(sortedJustifications)
@@ -214,12 +214,21 @@ class JustificationsPage extends Component {
 
           </div>
 
-          {!hasJustifications && rootTarget && [
+          {isFetching &&
+            <div className="md-grid md-grid--bottom">
+              <div className="md-cell md-cell--12 cell--centered-contents">
+                <CircularProgress key="progress" id="justifications-page-progress" />
+              </div>
+            </div>
+          }
+          {!isFetching && !hasJustifications &&
             <div className="md-cell md-cell--12 cell--centered-contents"
                  key="no-justifications-message"
             >
               <div>No justifications.</div>
-            </div>,
+            </div>
+          }
+          {hasJustifications ||
             <div className="md-cell md-cell--12 cell--centered-contents"
                  key="add-justification-button"
             >
@@ -228,16 +237,8 @@ class JustificationsPage extends Component {
                       onClick={this.showNewJustificationDialog}
               />
             </div>
-          ]}
+          }
         </div>
-
-        {rootTarget ? null : (
-          <div className="md-grid md-grid--bottom">
-            <div className="md-cell md-cell--12 cell--centered-contents">
-              <CircularProgress key="progress" id="justifications-page-progress" />
-            </div>
-          </div>
-        )}
 
         <JustificationsTree
           justifications={sortedJustifications}
