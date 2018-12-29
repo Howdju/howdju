@@ -36,7 +36,7 @@
     "start:local:inspect1": "source ../config/local.env && DEBUG=premiser-api:* inspect bin/dev-server.js",
     "start:local:inspect2": "source ../config/local.env && DEBUG=premiser-api:* node inspect bin/dev-server.js",
     "start:local:inspect3": "source ../config/local.env && DEBUG=premiser-api:* node --inspect --debug-brk bin/dev-server.js",
-    "start:localhost": "source ../config/localhost.env && yarn run serve",
+    "start:localhost": "source ../config/localhost.env && yarn start",
     "start:localhost:inspect": "source ../config/localhost.env && DEBUG=premiser-api:* inspect bin/dev-server.js",
     "test": "cross-env NODE_ENV=test jest --config .jestrc.json",
     "test:debug": "node debug ./node_modules/.bin/jest --runInBand --config .jestrc.json",

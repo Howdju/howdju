@@ -105,7 +105,6 @@ const toProposition = makeMapper(function toPropositionMapper(row) {
     normalText: row.normal_text,
     slug: toSlug(row.normal_text),
     created: row.created,
-    justifications: null,
   }
 
   if (row.creator_user_id) {
