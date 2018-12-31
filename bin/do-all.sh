@@ -3,6 +3,7 @@
 module_sub_dirs=(
 howdju-test-common
 howdju-common
+howdju-client-common
 howdju-service-common
 howdju-ops
 premiser-processing

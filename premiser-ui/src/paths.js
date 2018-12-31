@@ -71,7 +71,7 @@ class Paths {
     }
     if (basisSourceType || basisSourceId) {
       if (!(basisSourceType && basisSourceId)) {
-        logger.error(`If either of basisSourceType/basisSourceId are present, both must be: basisSourceType: ${basisSourceType} basisSourceId: ${basisSourceId}.`)
+        logger.warn(`If either of basisSourceType/basisSourceId are present, both must be: basisSourceType: ${basisSourceType} basisSourceId: ${basisSourceId}.`)
       }
       location['search'] = '?' + queryString.stringify({basisSourceType, basisSourceId})
     }

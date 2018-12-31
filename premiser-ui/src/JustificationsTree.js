@@ -82,6 +82,11 @@ class JustificationsTree extends Component {
           key={treesClass}
           className={`md-cell md-cell--12 ${treesClass}`}
         >
+          {hasJustifications && (
+            <h2 className="md-cell md-cell--12" key="justifications-header">
+              Justifications
+            </h2>
+          )}
           {map(justifications, this.toBranch)}
         </FlipMove>
       )

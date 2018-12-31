@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Howdju Extension Options</title>
+  <style>
+    label {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <form>
+    <fieldset>
+      <legend>Advanced</legend>
+      <label>
+        Howdju URL:
+        <input id="howdju-base-url" data-option-key="howdjuBaseUrl" type="text" placeholder="https://www.howdju.com" />
+        <!--<button id="remove-howdju-base-url" data-remove-option-key="howdjuBaseUrl">clear</button>-->
+      </label>
+      <label title="Overrides CSP to allow mixed content and insecure requests">
+        Development mode
+        <input id="is-development" data-option-key="isDevelopment" type="checkbox" />
+      </label>
+    </fieldset>
+    <div id="status"></div>
+    <button id="save">Save</button>
+  </form>
+  <script src="options-ui.js"></script>
+</body>
+</html>

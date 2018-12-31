@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+
+import { getOption } from './options'
 import { FramePanel } from './frame-panel'
-import { url } from './settings'
 
 let iframe
 
@@ -29,11 +30,11 @@ function boot(onLoad) {
   const root = document.createElement('div')
   document.body.appendChild(root)
 
-  const App = (
-    <FramePanel url={url} onMount={onFramePanelMount} onLoad={onLoad} />
-  )
-
-  ReactDOM.render(App, root)
+  getOption('howdjuBaseUrl', (baseUrl) => {
+    const url = baseUrl + '/recent-activity'
+    const App = <FramePanel url={url} onMount={onFramePanelMount} onLoad={onLoad} />
+    ReactDOM.render(App, root)
+  })
 }
 
 function onFramePanelMount({frame}) {

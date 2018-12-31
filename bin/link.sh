@@ -39,8 +39,16 @@ cd ${base_dir}/premiser-processing
 yarn link howdju-test-common
 yarn link howdju-ops
 
+cd ${base_dir}/howdju-client-common
+yarn link
+yarn link howdju-common
+
+cd ${base_dir}/premiser-ext
+yarn link howdju-client-common
+
 cd ${base_dir}/premiser-ui
 yarn link howdju-test-common
 yarn link howdju-common
+yarn link howdju-client-common
 
 cd ${current_dir}

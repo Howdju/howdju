@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     background: path.join(__dirname, './src/background'),
     content: path.join(__dirname, './src/content'),
+    'options-ui': path.join(__dirname, './src/options-ui'),
   },
   output: {
     path: path.join(__dirname, './dist'),
@@ -16,8 +17,9 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       { from: 'src/manifest.json' },
-      { from: 'images/**/*' },
-      { from: 'src/*.css', flatten: true }
+      { from: 'icons/**/*' },
+      { from: 'src/*.css', flatten: true },
+      { from: 'src/*.html', flatten: true }
     ]),
     new webpack.DefinePlugin({
       'process.env': {
@@ -33,7 +35,11 @@ module.exports = {
       test: /\.js$/,
       loader: 'babel-loader',
       query: {
-        presets: ['react', 'es2015', 'stage-0']
+        presets: [
+          ["env", { "modules": false }],
+          "stage-0",
+          "react",
+        ]
       },
       exclude: /node_modules/
     }]

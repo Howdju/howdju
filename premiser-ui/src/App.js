@@ -33,6 +33,7 @@ import {
 } from './actions'
 import {history} from './history'
 import {logger} from './logger'
+import MessageActionHandler from './MessageActionHandler'
 import paths from './paths'
 import {
   selectAuthToken,
@@ -45,14 +46,12 @@ import {
   isDevice,
 } from "./util"
 import t, {
-  MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME,
   MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
   MAIN_TABS_WHATS_NEXT_TAB_NAME,
   MAIN_TABS_ABOUT_TAB_NAME,
 } from "./texts"
 import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
 import ErrorBoundary from './ErrorBoundary'
-
 import Header from './Header'
 import routes from './routes'
 
@@ -92,6 +91,10 @@ class App extends Component {
     window.addEventListener('scroll', this.throttledOnWindowScroll, false)
     window.addEventListener('message', this.receiveMessage, false)
     window.addEventListener('mouseover', this.onFirstMouseOver, false)
+
+    this.messageActionHandler = new MessageActionHandler({
+      flows: this.props.flows
+    })
   }
 
   componentWillUnmount() {
@@ -102,8 +105,11 @@ class App extends Component {
     window.removeEventListener('mouseover', this.onFirstMouseOver)
   }
 
-
   receiveMessage = (event) => {
+    // Howdju would be loaded in an iframe of the content script's window when loaded by the extension
+    if (event.source !== window.parent) {
+      return
+    }
     const source = event.data.source
     if (!source || source !== 'extension') {
       return
@@ -113,28 +119,7 @@ class App extends Component {
       logger.error(`extension message lacked action`, event.data)
       return
     }
-    const type = action.type
-    switch (type) {
-      case 'createJustification': {
-        const {content, source, target} = action.payload
-        if (!target.url.startsWith(event.origin)) {
-          logger.error(`received message from ${event.origin} to createJustification of ${target.url}.` +
-            ' The browser extension should only create justifications matching the current origin.  Ignoring.')
-          return
-        }
-        if (!source.url === target.url) {
-          logger.error(`received createJustification message where source.url ${source.url} doesn't match` +
-            ` target.url ${target.url}.  Ignoring`)
-          return
-        }
-        this.props.flows.beginEditOfNewJustificationFromAnchor(content, source, target)
-        break
-      }
-      default: {
-        logger.error(`unsupported message action type: ${type}`)
-        break
-      }
-    }
+    this.messageActionHandler.handleAction(action)
   }
 
   onWindowResize = () => {
@@ -360,11 +345,11 @@ class App extends Component {
       />)
 
     const tabInfos = [
-      {
-        path: paths.featuredPerspectives(),
-        text: t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME),
-        id: "featured-perspectives-tab"
-      },
+      // {
+      //   path: paths.featuredPerspectives(),
+      //   text: t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME),
+      //   id: "featured-perspectives-tab"
+      // },
       {
         path: paths.recentActivity(),
         text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),

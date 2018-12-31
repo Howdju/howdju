@@ -17,6 +17,7 @@ import {
   isNegative,
   isPositive,
   isVerified,
+  JustificationBasisSourceType,
   JustificationRootTargetType,
 } from 'howdju-common'
 
@@ -92,6 +93,16 @@ class JustificationRootTargetCard extends React.Component {
             leftIcon={<FontIcon>call_merge</FontIcon>}
             component={Link}
             to={paths.propositionUsages(propositionId)}
+          />
+        )
+        insertAt(divider, 0,
+          <ListItem
+            primaryText="Use"
+            key="use"
+            title="Justify another proposition with this one"
+            leftIcon={<FontIcon>call_made</FontIcon>}
+            component={Link}
+            to={this.createJustificationPath(propositionId)}
           />
         )
         insertAt(thisMenuItems, 0,
@@ -184,6 +195,10 @@ class JustificationRootTargetCard extends React.Component {
 
       </div>
     )
+  }
+
+  createJustificationPath = (propositionId) => {
+    return paths.createJustification(JustificationBasisSourceType.PROPOSITION, propositionId)
   }
 
   editRootTarget = () => {

@@ -1,5 +1,8 @@
-import ext from './extension'
+import {extension as ext} from 'howdju-client-common'
+
+import {attachHeadersListener} from './attach'
 import {logger} from './logger'
+import {getOptions} from './options'
 
 ext.browserAction.onClicked.addListener(tab => {
   sendMessage(tab, {action: "toggleSidebar"})
@@ -39,3 +42,13 @@ function logLastError() {
     logger.error("Last error: " + ext.extension.lastError.message);
   }
 }
+
+getOptions(['howdjuBaseUrl', 'isDevelopment'], ({baseUrl, isDevelopment}) => {
+  attachHeadersListener({
+    webRequest: ext.webRequest,
+    hosts: baseUrl,
+    iframeHosts: baseUrl,
+    overrideFrameOptions: true,
+    isDevelopment,
+  })
+})

@@ -1,0 +1,23 @@
+{
+  "name": "howdju-client-common",
+  "version": "1.0.0",
+  "description": "Code common to extension and web app",
+  "main": "lib/index.js",
+  "author": "Carl Gieringer <carl.gieringer@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --config .eslintrc.js lib/",
+    "test": "jest",
+    "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1"
+  }
+}

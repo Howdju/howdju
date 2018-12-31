@@ -1,7 +1,6 @@
 import React, {Component} from "react"
 import { connect } from 'react-redux'
 import {goBack} from "react-router-redux"
-import { Link } from 'react-router-dom'
 import Helmet from 'react-helmet'
 import {
   Button,
@@ -48,7 +47,6 @@ import {
 import NewJustificationEditorFields from "./NewJustificationEditorFields"
 import PropositionEditorFields from "./PropositionEditorFields"
 import {EditorTypes} from "./reducers/editors"
-import paths from './paths'
 import TagsControl from './TagsControl'
 import {logger} from './logger'
 import PersorgEditorFields from './PersorgEditorFields'
@@ -270,21 +268,13 @@ class CreatePropositionPage extends Component {
 
     const propositionEditorText = 'propositionEditorText'
 
+    const hasSpeakers = speakers && speakers.length > 0
+
     return (
       <div id="edit-proposition-justification-page">
         <Helmet>
           <title>{title} — Howdju</title>
         </Helmet>
-        {mode === CreatePropositionPageMode.CREATE_PROPOSITION && (
-          <div className="md-grid">
-            <div className="md-cell md-cell--12">
-              <p>
-                Please note that the <Link to={paths.tools()}>bookmarklet</Link> is a convenient way to create new justifications
-                based upon web pages you visit
-              </p>
-            </div>
-          </div>
-        )}
         <form onSubmit={this.onSubmit}>
           <FocusContainer initialFocus={'#' + propositionEditorText} containFocus={false} focusOnMount={true}>
             <div className="md-grid">
@@ -299,45 +289,47 @@ class CreatePropositionPage extends Component {
                       iconEl={<FontIcon>person_add</FontIcon>}
                       title={"Add Speaker"}
                       onClick={this.onAddSpeakerClick}
-                      disabled={isSaving || doCreateJustification}
+                      disabled={isSaving}
                     >
                       Add Speaker
                     </Button>
-                    <div className="md-grid">
-                      <div className="md-cell md-cell--6">
-                        {map(speakers, (speaker, index) => (
-                          <div key={index}>
-                            <EntityViewer
-                              iconName="person"
-                              iconTitle="Person/Organization"
-                              menu={(
-                                <Button
-                                  icon
-                                  onClick={e => this.onRemoveSpeakerClick(speaker, index)}
-                                  title="Delete speaker"
-                                >delete</Button>
-                              )}
-                              entity={
-                                <PersorgEditorFields
-                                  id={combineIds(id, speakersName, index)}
-                                  key={combineIds(id, speakersName, index)}
-                                  persorg={speaker}
-                                  suggestionsKey={combineSuggestionsKeys(id, speakersName, index)}
-                                  name={combineNames(speakersName, array(index))}
-                                  disabled={isSaving}
-                                  onPersorgNameAutocomplete={(persorg) => this.onPersorgAutocomplete(persorg, index)}
-                                  onPropertyChange={this.onPropertyChange}
-                                  onSubmit={this.onSubmit}
-                                />
-                              }
-                            />
-                            <div>
-                              Said that:
+                    {hasSpeakers && (
+                      <div className="md-grid">
+                        <div className="md-cell md-cell--6">
+                          {map(speakers, (speaker, index) => (
+                            <div key={index}>
+                              <EntityViewer
+                                iconName="person"
+                                iconTitle="Person/Organization"
+                                menu={(
+                                  <Button
+                                    icon
+                                    onClick={e => this.onRemoveSpeakerClick(speaker, index)}
+                                    title="Delete speaker"
+                                  >delete</Button>
+                                )}
+                                entity={
+                                  <PersorgEditorFields
+                                    id={combineIds(id, speakersName, index)}
+                                    key={combineIds(id, speakersName, index)}
+                                    persorg={speaker}
+                                    suggestionsKey={combineSuggestionsKeys(id, speakersName, index)}
+                                    name={combineNames(speakersName, array(index))}
+                                    disabled={isSaving}
+                                    onPersorgNameAutocomplete={(persorg) => this.onPersorgAutocomplete(persorg, index)}
+                                    onPropertyChange={this.onPropertyChange}
+                                    onSubmit={this.onSubmit}
+                                  />
+                                }
+                              />
+                              <div>
+                                Said that:
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardText>
 
 
