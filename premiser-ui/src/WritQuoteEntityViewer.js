@@ -13,6 +13,7 @@ export default class WritQuoteEntityViewer extends Component {
       suggestionsKey,
       doShowControls,
       showUrls,
+      onClickUrl,
       ...rest
     } = this.props
     return (
@@ -28,6 +29,7 @@ export default class WritQuoteEntityViewer extends Component {
             suggestionsKey={suggestionsKey}
             doShowControls={doShowControls}
             showUrls={showUrls}
+            onClickUrl={onClickUrl}
           />
         }
       />

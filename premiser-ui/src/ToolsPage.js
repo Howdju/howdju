@@ -10,6 +10,15 @@ const ToolsPage = (props) => {
         <h1>Tools</h1>
       </div>
       <div className="md-cell md-cell--12">
+        <h2>Chrome Extension</h2>
+        <p>
+          <a href="https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/">
+            Howdju Chrome Extension
+          </a>
+        </p>
+      </div>
+      <div className="md-cell md-cell--12">
+        <h2>Bookmarklet</h2>
         <p>
           Use this bookmarklet to submit selected text on any page as a new quote justification.
         </p>
@@ -21,8 +30,7 @@ const ToolsPage = (props) => {
           href={bookmarkletHref}
           children="+Howdju"
         />
-        <p>
-        </p>
+        <p></p>
         <p>
           Raw bookmarklet code for copy/paste:
         </p>

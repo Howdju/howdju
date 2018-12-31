@@ -12,8 +12,8 @@ import {
 import {editors, flows, str, goto} from '../../actions'
 import CreatePropositionPage from '../../CreatePropositionPage'
 
-export function* beginEditOfNewJustificationFromAnchor() {
-  yield takeEvery(str(flows.beginEditOfNewJustificationFromAnchor), function* beginEditOfNewJustificationFromAnchorWorker(action) {
+export function* beginEditOfNewJustificationFromTarget() {
+  yield takeEvery(str(flows.beginEditOfNewJustificationFromTarget), function* beginEditOfNewJustificationFromTargetWorker(action) {
     const {content, source, target} = action.payload
     const propositionJustification = toPropositionJustification(content, source, target)
     yield put(editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId, propositionJustification))
@@ -33,6 +33,7 @@ function toPropositionJustification(content, source, target) {
     writ: {
       title: description
     },
+    targets: [target],
     urls: [{url}]
   }
   const justificationProps = {

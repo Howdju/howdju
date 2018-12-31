@@ -27,6 +27,7 @@ export default class JustificationBasisViewer extends Component {
       isUnCondensed,
       showUrls,
       contextTrailItems,
+      onClickWritQuoteUrl,
       ...rest,
     } = this.props
     const basis = justification.basis
@@ -56,6 +57,7 @@ export default class JustificationBasisViewer extends Component {
             editorId={writQuoteEditorId}
             doShowControls={doShowControls}
             showUrls={showUrls}
+            onClickUrl={onClickWritQuoteUrl}
           />
         )
       case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:

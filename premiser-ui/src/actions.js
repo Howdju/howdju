@@ -8,13 +8,15 @@ import reduce from 'lodash/reduce'
 import mapValues from 'lodash/mapValues'
 import assign from 'lodash/assign'
 
+import {actions} from 'howdju-client-common'
+
 const actionTypeDelim = '/'
 
 /** react-actions has a convention that its action creators .toString return the action type.
  * .toString appears to happen automatically when an action creator is the key of an object, but in some
  * cases we will need to call .toString manually.  This method will help us locate those places in the code
  */
-export const str = ac => ac.toString()
+export const str = actions.str
 
 /** Helper to easily allow us to pass an object with 'action groups' to redux-react's connect method.
  * Action groups are what we call the objects below with react-actions action creators.  They are just
@@ -357,8 +359,8 @@ export const flows = {
     'FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS_SOURCE',
     (editorType, editorId, basisSourceType, basisSourceId) => ({editorType, editorId, basisSourceType, basisSourceId})
   ),
-  beginEditOfNewJustificationFromAnchor: actionCreator(
-    'FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_ANCHOR',
+  beginEditOfNewJustificationFromTarget: actionCreator(
+    'FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_TARGET',
     (content, source, target) => ({content, source, target})
   ),
   commitEditThenView: actionCreator('FLOWS/COMMIT_PROPOSITION_THEN_VIEW',

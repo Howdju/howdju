@@ -1,6 +1,92 @@
 # TODO
 
-* Use JSON Schema? https://www.npmjs.com/package/ajv
+* Absolutely necessary to add users:
+  - user signup, notification
+  - Terms, Privacy Policy, GPDR/Cookie Policy
+  - password reset?
+  - Username display?
+  - User activity page?
+
+* Pincites
+* Links in extension frame should load in main page
+* Context trail (alignment and appearance of pro/con, counters, compounds)
+* Better source UI: more distinct UI element, verify quote, read page with some library like newspaper for Source info. 
+* User accounts, pages, notifications
+* Equivalent proposition voting, equivalent proposition justification combination
+* Highlighting justification creator's counter or excerpt under proposition.
+* Reordering compound proposition atoms
+* Can't delete tags on create proposition page
+* mobile two-column layout
+* examine link page
+
+
+* Justification model...
+  * anchoring justifications/justification appearances?
+* Tooling: access my recent stuff while researching online (default to user recent actions in extension)
+
+* React-Native WebView onMessage/postMessage bug: https://hackernoon.com/fixing-react-native-webviews-postmessage-for-ios-bf1961065b09
+
+* Difference between SourceExcerpts and Target/Anchors?
+  - Target/Anchors generalize SourceExcerpts to be from any one source with multiple anchors of any media
+  - SourceExcerpts force the thing into a single media type; whereas a source might appear in multiple media
+  - SourceExcerptParaphrase: Source, Excerpt (target), and Paraphrase
+    - So rather than saying it is a writ, we could just start out with a source of a website
+    - We could always backfill Sources later for SourceExcerpts
+  - possible migration:
+    - convert all writ_quote justifications to compounds having a single atom
+    - writs => sources
+    - move source_id from source_excerpt to source_excerpt_paraphrases
+    - remove source excerpt type; excerpts all come from sources; anchors determine media type.
+    - convert writ_quote urls to website targets and anchor each using the quote as exact_text 
+* Simplify SourceExcerpts by showing type based upon browser extension target
+* Simplify UI around clauses by allowing reordering of and addition of proposition/excerpt (two buttons or a popup button with two menu options) clause at end. 
+* Hide justification type select
+
+* When someone highlights something on the web, they might want to:
+  - Capture something that is being said (create a proposition and appearance)
+    - In order to:
+      - prove something else (justify a new proposition with this proposition)
+      - disprove it (create a counter-justification to this proposition) (Argument, Counter-Argument, Reply-Counter-Argument?)
+      - record the speaker
+      - support it (create an argument)
+  - Prove or disprove something else (create a justification based upon this source of a new proposition)
+    - Do they need to paraphrase the source excerpt? (create a proposition?)
+
+* Hemang meeting:
+ - Make language simpler: propositions, justifications
+ - Flesh out entire example using prototyping tool that allows showing entire example with all necessary actions
+ - Use an example that has more clear evidence and a right/wrong outcome
+
+* Instead of augmenting writquotes with targets, should I be creating SourceExcerpts?
+ - The target should be a Website(Appearance)Target?
+ - targets are a replacement for URLs
+ - TextQuote Anchor's .exact property replaces WritQuote.quoteText
+ - So should this be the beginning of a general SourceExcerpt?
+ - If I don't, how to handle the mix of urls and targets?
+
+* places where I need to read targets:
+ - urlsDao.readUrlsByWritQuoteIdForRootPropositionId
+ - readUrlsForWritQuoteId
+
+# RichTextEditors
+* If we want to build towards providing a tool for authors to put on their sites, then we don't want to rely on any RTE
+  entities or whatever for support/arguments.  We want a solution that we can add on top of existing platforms.
+
+* Rich Text Editors:
+  * http://prosemirror.net/
+  * https://quilljs.com/docs/quickstart/
+  * DraftJS
+    * https://github.com/sstur/react-rte
+    * https://github.com/jpuri/react-draft-wysiwyg
+    * https://www.draft-js-plugins.com/
+    * https://github.com/jpuri/draftjs-utils
+* Visit recent activity, click a proposition, delete it, renavigate to recent activity, errors I think because the item
+  is still in the widget state
+* Recent justifications are the most important activity.  Remove others, or at least move them to top.
+
+
+* Use JSON Schema instead of Joi? https://www.npmjs.com/package/ajv
+
 
 * Support statement justifications
   * Missing

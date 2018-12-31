@@ -1,4 +1,4 @@
-import {extension as ext} from 'howdju-client-common'
+import {extension as ext, actions} from 'howdju-client-common'
 
 import {attachHeadersListener} from './attach'
 import {logger} from './logger'
@@ -9,6 +9,14 @@ ext.browserAction.onClicked.addListener(tab => {
 })
 
 ext.runtime.onInstalled.addListener(onInstalled)
+
+ext.runtime.onMessageExternal.addListener(
+  function(request, sender, sendResponse) {
+    if (request.type === actions.str(actions.extension.focusJustificationOnUrl)) {
+      // watch for request.payload.url.  If it loads in the next 10s, toggle the sidebar pointed at request.payload.howdjuUrl
+    }
+  }
+)
 
 function onInstalled() {
   ext.contextMenus.create({
@@ -43,11 +51,11 @@ function logLastError() {
   }
 }
 
-getOptions(['howdjuBaseUrl', 'isDevelopment'], ({baseUrl, isDevelopment}) => {
+getOptions(['howdjuBaseUrl', 'isDevelopment'], ({howdjuBaseUrl, isDevelopment}) => {
   attachHeadersListener({
     webRequest: ext.webRequest,
-    hosts: baseUrl,
-    iframeHosts: baseUrl,
+    hosts: howdjuBaseUrl,
+    iframeHosts: howdjuBaseUrl,
     overrideFrameOptions: true,
     isDevelopment,
   })

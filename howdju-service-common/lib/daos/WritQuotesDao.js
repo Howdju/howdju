@@ -51,7 +51,7 @@ exports.WritQuotesDao = class WritQuotesDao {
           `,
         [writQuoteId]
       ),
-      this.readUrlsByWritQuoteId(writQuoteId)
+      this.readUrlsForWritQuoteId(writQuoteId)
     ])
       .then( ([
         {rows: [row]},
@@ -296,6 +296,22 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then( ({rows}) => map(rows, toWritQuoteUrl))
   }
 
+  createWritQuoteUrlTarget(writQuote, url, userId, now) {
+    return this.database.query(
+      'createWritQuoteUrlTarget.target',
+      `insert into writ_quote_url_targets (writ_quote_id, url_id) values ($1, $2) returning writ_quote_url_target_id`,
+      [writQuote.id, url.id]
+    )
+      .then(({rows: [row]}) => Promise.all(map(url.target.anchors, (anchor) => this.database.query(
+        'createWritQuoteUrlTarget.anchors',
+        `
+          insert into writ_quote_url_target_anchors (writ_quote_url_target_id, exact_text, prefix_text, suffix_text)
+          values ($1, $2, $3, $4)
+        `,
+        [row.writ_quote_url_target_id, anchor.exact, anchor.prefix, anchor.suffix]
+      ))))
+  }
+
   createWritQuote(writQuote, userId, now) {
     const sql = `
       insert into writ_quotes (quote_text, normal_quote_text, writ_id, creator_user_id, created) 
@@ -338,9 +354,9 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then( ({rows: [{has_changed}]}) => has_changed )
   }
 
-  readUrlsByWritQuoteId(writQuoteId) {
+  readUrlsForWritQuoteId(writQuoteId) {
     return this.database.query(
-      'readUrlsByWritQuoteId',
+      'readUrlsForWritQuoteId',
       `
       select u.* 
       from urls u join writ_quote_urls wqu using (url_id) 

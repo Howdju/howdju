@@ -25,6 +25,7 @@ import {
   JustificationTargetType,
   makeNewTrunkJustification,
 } from "howdju-common"
+import {actions} from 'howdju-client-common'
 
 import {
   api,
@@ -159,6 +160,10 @@ class JustificationsPage extends Component {
     this.props.ui.hideNewJustificationDialog()
   }
 
+  onClickWritQuoteUrl = (justificationId, visitUrl) => {
+    this.props.extension.focusJustificationOnUrl(visitUrl, justificationId, window.location.href)
+  }
+
   render () {
     const {
       rootTargetType,
@@ -248,6 +253,7 @@ class JustificationsPage extends Component {
           showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
           showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
           contextTrailItems={nextContextTrailItems}
+          onClickWritQuoteUrl={this.onClickWritQuoteUrl}
           className="md-grid--bottom"
         />
 
@@ -331,4 +337,5 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   editors,
   goto,
   flows,
+  extension: actions.extension,
 }))(JustificationsPage)

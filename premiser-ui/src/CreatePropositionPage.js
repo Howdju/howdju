@@ -1,5 +1,6 @@
 import React, {Component} from "react"
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import {goBack} from "react-router-redux"
 import Helmet from 'react-helmet'
 import {
@@ -31,6 +32,7 @@ import {
   flows,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
+import paths from './paths'
 import t, {
   ADD_JUSTIFICATION_TO_CREATE_PROPOSITION,
   CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
@@ -269,12 +271,24 @@ class CreatePropositionPage extends Component {
     const propositionEditorText = 'propositionEditorText'
 
     const hasSpeakers = speakers && speakers.length > 0
+    
+    const doShowTypeSelection = !isCreateJustificationMode
 
     return (
       <div id="edit-proposition-justification-page">
         <Helmet>
           <title>{title} — Howdju</title>
         </Helmet>
+        {mode === CreatePropositionPageMode.CREATE_PROPOSITION && (
+          <div className="md-grid">
+            <div className="md-cell md-cell--12">
+              <p>
+                The <Link to={paths.tools()}>Chrome extension & bookmarklet</Link> are convenient ways to create 
+                justifications based upon web pages you visit
+              </p>
+            </div>
+          </div>
+        )}
         <form onSubmit={this.onSubmit}>
           <FocusContainer initialFocus={'#' + propositionEditorText} containFocus={false} focusOnMount={true}>
             <div className="md-grid">
@@ -384,6 +398,7 @@ class CreatePropositionPage extends Component {
                       name={newJustificationName}
                       suggestionsKey={combineSuggestionsKeys(id, newJustificationName)}
                       disabled={isSaving}
+                      doShowTypeSelection={doShowTypeSelection}
                       onPropertyChange={this.onPropertyChange}
                       onSubmit={this.onSubmit}
                       onAddUrl={this.addJustificationUrl}

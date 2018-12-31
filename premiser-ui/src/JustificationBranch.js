@@ -156,6 +156,7 @@ class JustificationBranch extends Component {
       canHover,
       showBasisUrls,
       contextTrailItems,
+      onClickWritQuoteUrl,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -356,6 +357,7 @@ class JustificationBranch extends Component {
           }
           onMouseOver={this.onBubbleMouseOver}
           onMouseLeave={this.onBubbleMouseLeave}
+          onClickWritQuoteUrl={onClickWritQuoteUrl}
         >
           {areCounterJustificationsExpanded && counterJustifications}
         </JustificationChatBubble>

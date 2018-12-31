@@ -5,6 +5,7 @@ const concat = require('lodash/concat')
 const differenceBy = require('lodash/differenceBy')
 const forEach = require('lodash/forEach')
 const groupBy = require('lodash/groupBy')
+const keyBy = require('lodash/keyBy')
 const keys = require('lodash/keys')
 const map = require('lodash/map')
 const merge = require('lodash/merge')
@@ -281,7 +282,7 @@ exports.WritQuotesService = class WritQuotesService {
       ]))
       .then( ([extantUrls, createdUrls]) => extantUrls.concat(createdUrls) )
       .then( updatedUrls => Promise.all([
-        this.writQuotesDao.readUrlsByWritQuoteId(writQuote.id),
+        this.writQuotesDao.readUrlsForWritQuoteId(writQuote.id),
         updatedUrls,
       ]))
       .then( ([currentUrls, updatedUrls]) => ({
@@ -378,23 +379,25 @@ function readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now) {
 function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
   return service.writQuotesDao.readWritQuoteUrlsForWritQuote(writQuote)
     .then(extantWritQuoteUrls => {
-      const extantWritQuoteUrlsByUrlId = {}
-      forEach(extantWritQuoteUrls, extantWritQuoteUrl => {
-        extantWritQuoteUrlsByUrlId[extantWritQuoteUrl.urlId] = extantWritQuoteUrl
-      })
-
-      return map(writQuote.urls, url => extantWritQuoteUrlsByUrlId[url.id] ?
-        extantWritQuoteUrlsByUrlId[url.id] :
-        service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now)
-          .then( (writQuoteUrl) => service.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.WRIT_QUOTE,
+      const extantWritQuoteUrlsByUrlId = keyBy(extantWritQuoteUrls, 'urlId')
+      return map(writQuote.urls, url => {
+        const extantWritQuoteUrl = extantWritQuoteUrlsByUrlId[url.id]
+        if (extantWritQuoteUrl) {
+          return extantWritQuoteUrl
+        }
+        return Promise.all([
+          service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now),
+          url.target && service.writQuotesDao.createWritQuoteUrlTarget(writQuote, url, userId, now),
+        ])
+          .then( ([writQuoteUrl]) => service.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.WRIT_QUOTE,
             writQuoteUrl.writQuoteId, ActionSubjectType.URL, writQuoteUrl.urlId))
-      )
+      })
     })
 }
 
 function diffUrls(writQuotesDao, writQuote) {
   return Promise.resolve()
-    .then(() => writQuotesDao.readUrlsByWritQuoteId(writQuote.id))
+    .then(() => writQuotesDao.readUrlsForWritQuoteId(writQuote.id))
     .then(extantUrls => {
       const addedUrls = differenceBy(writQuote.urls, [extantUrls], url => url.url)
       const removedUrls = differenceBy(extantUrls, [writQuote.urls], url => url.url)

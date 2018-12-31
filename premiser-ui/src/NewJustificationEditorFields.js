@@ -74,6 +74,30 @@ const basisTypeControls = [
 ]
 
 export default class NewJustificationEditorFields extends Component {
+  propTypes = {
+    newJustification: PropTypes.object,
+    /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
+    id: PropTypes.string.isRequired,
+    /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
+    name: PropTypes.string,
+    /** If present, this string will be prepended to this editor's autocomplete's suggestionKeys, with an intervening "." */
+    suggestionsKey: PropTypes.string,
+    onPropertyChange: PropTypes.func.isRequired,
+    onRemoveUrl: PropTypes.func.isRequired,
+    onAddUrl: PropTypes.func.isRequired,
+    onAddPropositionCompoundAtom: PropTypes.func.isRequired,
+    onRemovePropositionCompoundAtom: PropTypes.func.isRequired,
+    onAddJustificationBasisCompoundAtom: PropTypes.func.isRequired,
+    onRemoveJustificationBasisCompoundAtom: PropTypes.func.isRequired,
+    disabled: PropTypes.bool,
+    errors: PropTypes.object,
+    /** Passed to subcontrols */
+    onKeyDown: PropTypes.func,
+  }
+  
+  defaultProps = {
+    doShowTypeSelection: true
+  }
 
   onChange = (value, event) => {
     const name = event.target.name
@@ -86,6 +110,7 @@ export default class NewJustificationEditorFields extends Component {
       name,
       id,
       disabled,
+      doShowTypeSelection,
       suggestionsKey,
       onPropertyChange,
       onAddUrl,
@@ -183,20 +208,26 @@ export default class NewJustificationEditorFields extends Component {
           errorText={join(map(get(errors, polarityName), e => e.message), ', ')}
         />
         <Divider />
-        <Subheader primary
-                   primaryText="Type"
-                   component="div"
-        />
-        <SelectionControlGroup
-          inline
-          id={combineIds(id, basisTypeName)}
-          name={combineNames(name, basisTypeName)}
-          type="radio"
-          value={basisType}
-          onChange={this.onChange}
-          controls={basisTypeControls}
-          disabled={disabled}
-        />
+        {doShowTypeSelection && [
+          <Subheader 
+            primary
+            primaryText="Type"
+            component="div"
+            key="type-divider"
+          />,
+          <SelectionControlGroup
+            inline
+            id={combineIds(id, basisTypeName)}
+            key={combineIds(id, basisTypeName)}
+            name={combineNames(name, basisTypeName)}
+            type="radio"
+            value={basisType}
+            onChange={this.onChange}
+            controls={basisTypeControls}
+            disabled={disabled}
+          />
+        ]}
+        
         <Divider />
         {_isPropositionCompoundBased && propositionCompoundEditorFields}
         {_isWritQuoteBased && writQuoteEditorFields}
@@ -204,24 +235,4 @@ export default class NewJustificationEditorFields extends Component {
       </div>
     )
   }
-}
-NewJustificationEditorFields.propTypes = {
-  newJustification: PropTypes.object,
-  /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
-  id: PropTypes.string.isRequired,
-  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
-  name: PropTypes.string,
-  /** If present, this string will be prepended to this editor's autocomplete's suggestionKeys, with an intervening "." */
-  suggestionsKey: PropTypes.string,
-  onPropertyChange: PropTypes.func.isRequired,
-  onRemoveUrl: PropTypes.func.isRequired,
-  onAddUrl: PropTypes.func.isRequired,
-  onAddPropositionCompoundAtom: PropTypes.func.isRequired,
-  onRemovePropositionCompoundAtom: PropTypes.func.isRequired,
-  onAddJustificationBasisCompoundAtom: PropTypes.func.isRequired,
-  onRemoveJustificationBasisCompoundAtom: PropTypes.func.isRequired,
-  disabled: PropTypes.bool,
-  errors: PropTypes.object,
-  /** Passed to subcontrols */
-  onKeyDown: PropTypes.func,
 }

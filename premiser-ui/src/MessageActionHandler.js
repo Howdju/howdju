@@ -20,7 +20,7 @@ export default class MessageActionHandler {
             ` target.url ${target.url}.  Ignoring`)
           return
         }
-        this.actionCreatorGroups.flows.beginEditOfNewJustificationFromAnchor(content, source, target)
+        this.actionCreatorGroups.flows.beginEditOfNewJustificationFromTarget(content, source, target)
         break
       }
       default: {

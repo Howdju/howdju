@@ -1,13 +1,12 @@
 {
   "name": "howdju-browser-extension",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/background.js",
   "license": "UNLICENSED",
   "scripts": {
     "build": "webpack --progress --profile --colors",
     "watch": "webpack --watch --progress --colors",
-    "dev": "npm run watch",
     "package": "bin/package.sh",
     "test": "jest",
     "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand"

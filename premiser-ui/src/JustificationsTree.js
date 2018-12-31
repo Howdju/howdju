@@ -31,6 +31,7 @@ class JustificationsTree extends Component {
       isUnCondensed,
       showBasisUrls,
       contextTrailItems,
+      onClickWritQuoteUrl,
     } = this.props
     const treeId = `${id}-justification-tree-${j.id}`
     return (
@@ -43,6 +44,7 @@ class JustificationsTree extends Component {
         isUnCondensed={isUnCondensed}
         showBasisUrls={showBasisUrls}
         contextTrailItems={contextTrailItems}
+        onClickWritQuoteUrl={onClickWritQuoteUrl}
       />
     )
   }
