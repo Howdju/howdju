@@ -8,6 +8,7 @@
     "build": "webpack --progress --profile --colors",
     "watch": "webpack --watch --progress --colors",
     "dev": "npm run watch",
+    "package": "bin/package.sh",
     "test": "jest",
     "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand"
   },
