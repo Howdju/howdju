@@ -295,16 +295,19 @@ class JustificationBranch extends Component {
     const counterJustifications = (
       <div className="counter-justifications">
         <FlipMove {...flipMoveProps}>
+          {hasCounterJustifications &&
+            <h3 key={`justification-${justification.id}-counter-justifications`}>Counter Justifications</h3>
+          }
           {newCounterJustification &&
-          <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justification-card">
+            <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justification-card">
 
-            <CounterJustificationEditor
-              editorId={counterJustificationEditorId(justification)}
-              id={`justification-${justification.id}-new-counter-justification-editor`}
-              suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
-            />
+              <CounterJustificationEditor
+                editorId={counterJustificationEditorId(justification)}
+                id={`justification-${justification.id}-new-counter-justification-editor`}
+                suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
+              />
 
-          </Card>
+            </Card>
           }
           {map(justification.counterJustifications, j => {
             const id = `counter-justification-${j.id}-branch`
