@@ -74,7 +74,7 @@ const basisTypeControls = [
 ]
 
 export default class NewJustificationEditorFields extends Component {
-  propTypes = {
+  static propTypes = {
     newJustification: PropTypes.object,
     /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
     id: PropTypes.string.isRequired,
@@ -95,7 +95,7 @@ export default class NewJustificationEditorFields extends Component {
     onKeyDown: PropTypes.func,
   }
   
-  defaultProps = {
+  static defaultProps = {
     doShowTypeSelection: true
   }
 

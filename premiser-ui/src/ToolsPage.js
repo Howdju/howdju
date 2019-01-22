@@ -34,7 +34,7 @@ const ToolsPage = (props) => {
         <p>
           Raw bookmarklet code for copy/paste:
         </p>
-        <textarea value={bookmarkletHref}>
+        <textarea value={bookmarkletHref} readOnly>
         </textarea>
 
       </div>
