@@ -7,23 +7,6 @@ const {
   statementSchema,
 } = require('./validationSchemas')
 
-function assertValid(input, schema, expected = null) {
-  const {value, error} = Joi.validate(input, schema, {
-    abortEarly: false,
-    stripUnknown: true,
-  })
-  expect(error).toBe(null)
-  expect(value).toEqual(expected || input)
-}
-
-function assertInvalid(input, schema) {
-  const {value, error} = Joi.validate(input, schema, {
-    abortEarly: false
-  })
-  expect(error).toBeTruthy()
-  expect(value).toEqual(input)
-}
-
 describe('propositionSchema', () => {
   test('validates a valid proposition', () => {
     const proposition = {
@@ -154,3 +137,20 @@ describe('justificationSchema', () => {
     assertValid(justification, justificationSchema)
   })
 })
+
+function assertValid(input, schema, expected = null) {
+  const {value, error} = Joi.validate(input, schema, {
+    abortEarly: false,
+    stripUnknown: true,
+  })
+  expect(error).toBe(null)
+  expect(value).toEqual(expected || input)
+}
+
+function assertInvalid(input, schema) {
+  const {value, error} = Joi.validate(input, schema, {
+    abortEarly: false
+  })
+  expect(error).toBeTruthy()
+  expect(value).toEqual(input)
+}

@@ -90,6 +90,10 @@ export const api = {
   login: apiActionCreator('LOGIN', (credentials) => ({credentials})),
   logout: apiActionCreator('LOGOUT'),
 
+  register: apiActionCreator('REGISTER', (registration) => ({registration})),
+  checkRegistration: apiActionCreator('CHECK_REGISTRATION', (registrationConfirmationCode) => ({registrationConfirmationCode})),
+  confirmRegistration: apiActionCreator('CONFIRM_REGISTRATION', (registrationConfirmation) => ({registrationConfirmation})),
+
   verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', (justification) => ({
     justificationVote: {
       justificationId: justification.id,
@@ -341,6 +345,9 @@ export const editors = {
   tagProposition: actionCreator('EDITORS/TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
   unTagProposition: actionCreator('EDITORS/UN_TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
   antiTagProposition: actionCreator('EDITORS/ANTI_TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
+
+  resetSubmission: actionCreator('EDITORS/RESET_SUBMISSION', 
+    (editorType, editorId) => ({editorType, editorId}))
 }
 
 /** Actions that change the current page */

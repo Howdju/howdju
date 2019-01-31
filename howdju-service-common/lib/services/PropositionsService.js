@@ -257,8 +257,8 @@ exports.PropositionsService = class PropositionsService {
         }
 
         const created = moment(proposition.created)
-        const graceCutoff = created.add.apply(created, this.config.modifyEntityGracePeriod)
-
+        const graceCutoff = created.clone()
+        graceCutoff.add(this.config.modifyEntityGracePeriod)
         const nowMoment = moment(now)
         if (nowMoment.isAfter(graceCutoff)) {
           throw new EntityTooOldToModifyError(this.config.modifyEntityGracePeriod)

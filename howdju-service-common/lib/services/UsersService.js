@@ -5,7 +5,9 @@ const {
   ActionTargetType,
   EntityType,
   requireArgs,
+  schemaIds,
   utcNow,
+  validate,
 } = require('howdju-common')
 
 const {
@@ -26,10 +28,22 @@ exports.UsersService = class UsersService {
     this.userExternalIdsDao = userExternalIdsDao
     this.usersDao = usersDao
   }
+  
+  async isEmailInUse(email) {
+    return await this.usersDao.isEmailInUse(email)
+  }
 
-  createUser(authToken, user) {
+  async isUsernameInUse(username) {
+    return await this.usersDao.isUsernameInUse(username)
+  }
+
+  createUserAsAuthToken(authToken, user) {
     return this.permissionsService.readUserIdHavingPermissionForAuthToken(authToken, permissions.CREATE_USERS)
       .then(creatorUserId => this.createUserAsUser(creatorUserId, user))
+  }
+
+  async readUserForId(userId) {
+    return await this.usersDao.readUserForId(userId)
   }
 
   updatePasswordForEmail(email, password) {
@@ -41,6 +55,19 @@ exports.UsersService = class UsersService {
 
         return this.authService.createOrUpdatePasswordAuthForUserId(user.id, password)
       })
+  }
+  
+  async createRegisteredUser(user, passwordHash, passwordHashType, now) {
+    const {isValid, errors} = validate(schemaIds.user, user)
+    if (!isValid) {
+      throw new EntityValidationError(errors)
+    }
+    
+    const createdUser = await this.usersDao.createUser(user, null, now)
+    await this.authService.createPasswordHashAuthForUserId(createdUser.id, passwordHash, passwordHashType)
+    await this.userExternalIdsDao.createExternalIdsForUserId(createdUser.id)
+    this.actionsService.asyncRecordAction(createdUser.id, createdUser.created, ActionType.CREATE, ActionTargetType.USER, createdUser.id)
+    return this.usersDao.readUserForId(createdUser.id)
   }
 
   createUserAsUser(creatorUserId, user, password) {

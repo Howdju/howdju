@@ -21,6 +21,7 @@ module.exports = assign(
   require('./PropositionTagVotesDao'),
   require('./PropositionTagsDao'),
   require('./PropositionsDao'),
+  require('./RegistrationsDao'),
   require('./StatementsDao'),
   require('./TagsDao'),
   require('./UrlsDao'),

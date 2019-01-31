@@ -298,7 +298,7 @@ class App extends Component {
         )
       }
     }
-    if (hasAuthToken) {
+    if (authEmail || hasAuthToken) {
       navItems.push(
         <ListItem key="logout"
                   primaryText="Logout"
@@ -308,11 +308,19 @@ class App extends Component {
       )
     } else {
       navItems.push(
+        <ListItem key="register"
+                  primaryText="Register"
+                  leftIcon={<FontIcon>person_add</FontIcon>}
+                  component={Link}
+                  to={paths.register()}
+        />
+      )
+      navItems.push(
         <ListItem key="login"
                   primaryText="Login"
                   leftIcon={<FontIcon>https</FontIcon>}
                   component={Link}
-                  to="/login"
+                  to={paths.login()}
         />
       )
     }

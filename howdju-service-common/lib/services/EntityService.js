@@ -1,6 +1,3 @@
-const get = require('lodash/get')
-const set = require('lodash/set')
-
 const {
   requireArgs
 } = require('howdju-common')
@@ -8,6 +5,9 @@ const {
 const {
   EntityValidationError
 } = require('../serviceErrors')
+const {
+  translateJoiError
+} = require('./validationSchemas')
 
 module.exports.EntityService = class EntityService {
   constructor(logger, authService) {
@@ -55,17 +55,4 @@ module.exports.EntityService = class EntityService {
     }
     return await this.doUpdate(value, userId, now)
   }
-}
-
-function translateJoiError(joiError) {
-  const allErrors = {}
-  for (const {path, type, message} of joiError.details) {
-    let errors = get(allErrors, path)
-    if (!errors) {
-      errors = []
-      set(allErrors, path, errors)
-    }
-    errors.push({type, message})
-  }
-  return allErrors
 }

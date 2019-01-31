@@ -71,9 +71,6 @@ function unprefix (obj, prefix) {
 }
 
 const toUser = makeMapper(function toUserMapper(row) {
-  if (!row) {
-    return row
-  }
   const user = merge({
     id: toString(row.user_id),
   }, {
@@ -553,9 +550,6 @@ const toTag = makeMapper(function toTagMapper(row) {
 })
 
 const toPersorg = makeMapper(function toPersorgMapper(row) {
-  if (!row) {
-    return row
-  }
   const persorg = {
     id: toString(row.persorg_id),
     isOrganization: row.is_organization,
@@ -578,28 +572,41 @@ const toPersorg = makeMapper(function toPersorgMapper(row) {
   return persorg
 })
 
+const toRegistration = makeMapper(function toRegistrationMapper(row) {
+  return {
+    id: row.registration_id,
+    email: row.email,
+    registrationConfirmationCode: row.registration_confirmation_code,
+    isConsumed: row.is_consumed,
+    expires: row.expires,
+    created: row.created,
+    deleted: row.deleted,
+  }
+})
+
 module.exports = {
-  toUser,
-  toProposition,
-  toStatement,
+  toJobHistory,
   toJustification,
-  toWritQuote,
-  toWrit,
-  toUrl,
+  toJustificationBasisCompound,
+  toJustificationBasisCompoundAtom,
   toJustificationScore,
   toJustificationVote,
-  toWritQuoteUrl,
+  toPersorg,
+  toPerspective,
+  toProposition,
   toPropositionCompound,
   toPropositionCompoundAtom,
   toPropositionTagVote,
   toPropositionTagScore,
-  toTag,
-  toPerspective,
-  toUserHash,
-  toUserExternalIds,
-  toJobHistory,
+  toRegistration,
   toSourceExcerptParaphrase,
-  toJustificationBasisCompound,
-  toJustificationBasisCompoundAtom,
-  toPersorg,
+  toStatement,
+  toTag,
+  toUrl,
+  toUserExternalIds,
+  toUserHash,
+  toUser,
+  toWrit,
+  toWritQuote,
+  toWritQuoteUrl,
 }

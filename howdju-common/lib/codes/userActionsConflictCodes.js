@@ -1,5 +1,6 @@
 const {arrayToObject} = require('../general')
 
+/** I'm not sure what benefit there is separating these from entityConflictCodes */
 const userActionsConflictCodes = arrayToObject([
   'OTHER_USERS_HAVE_ROOTED_JUSTIFICATIONS_IN_THIS_PROPOSITION',
   'OTHER_USERS_HAVE_BASED_JUSTIFICATIONS_ON_THIS_PROPOSITION',

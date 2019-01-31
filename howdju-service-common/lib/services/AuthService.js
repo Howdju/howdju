@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt')
 const cryptohat = require('cryptohat')
-const moment = require('moment')
 const Promise = require('bluebird')
 
 const {
@@ -19,13 +18,6 @@ const {
   HashTypes
 } = require('../hashTypes')
 
-
-const ensureActive = (user) => {
-  if (!user.isActive) {
-    throw new UserIsInactiveError(user.userId)
-  }
-  return user
-}
 
 exports.AuthService = class AuthService {
 
@@ -50,13 +42,10 @@ exports.AuthService = class AuthService {
     })
   }
 
-  updateLastLogin(user, now) {
-    return this.usersDao.updateLastLoginForUserId(user.id, now)
-  }
-
   createAuthToken(user, now) {
     const authToken = cryptohat(256, 36)
-    const expires = now.add(moment.duration.apply(moment.duration, this.config.authTokenDuration))
+    const expires = now.clone()
+    expires.add(this.config.authTokenDuration)
 
     return this.authDao.insertAuthToken(user.id, authToken, now, expires)
       .then(() => ({authToken, expires}))
@@ -73,6 +62,10 @@ exports.AuthService = class AuthService {
         }
         return this.authDao.createUserAuthForUserId(userId, hash, HashTypes.BCRYPT)
       })
+  }
+  
+  async createPasswordHashAuthForUserId(userId, passwordHash, passwordHashType) {
+    return await this.authDao.createUserAuthForUserId(userId, passwordHash, passwordHashType)
   }
 
   verifyPassword(credentials) {
@@ -124,7 +117,7 @@ exports.AuthService = class AuthService {
         return Promise.all([
           user,
           this.createAuthToken(user, now),
-          this.updateLastLogin(user, now)
+          updateLastLogin(this, user, now)
         ])
       })
       .then( ([user, {authToken, expires}]) => ({
@@ -137,4 +130,15 @@ exports.AuthService = class AuthService {
   logout(authToken) {
     return this.authDao.deleteAuthToken(authToken)
   }
+}
+
+function updateLastLogin(self, user, now) {
+  return self.usersDao.updateLastLoginForUserId(user.id, now)
+}
+
+function ensureActive(user) {
+  if (!user.isActive) {
+    throw new UserIsInactiveError(user.userId)
+  }
+  return user
 }

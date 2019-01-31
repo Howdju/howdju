@@ -8,9 +8,11 @@
   "license": "UNLICENSED",
   "scripts": {
     "lint": "eslint lib/",
-    "test": "jest"
+    "test": "jest",
+    "test:inspect": "node --inspect-brk node_modules/.bin/jest --runInBand --watch"
   },
   "dependencies": {
+    "ajv": "^6.7.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1"
   },

@@ -60,10 +60,13 @@ export const EditorTypes = arrayToObject([
   /* e.g. Proposition justification page */
   'PROPOSITION_JUSTIFICATION',
   'LOGIN_CREDENTIALS',
+  'REGISTRATION',
+  'REGISTRATION_CONFIRMATION',
   'PERSORG',
 ])
 
 const defaultEditorState = {
+  editEntity: null,
   errors: null,
   isSaving: false,
 }
@@ -129,39 +132,41 @@ const makeRemoveUrlReducer = (urlsPathMaker) => (state, action) => {
  * to the same rules.  The editor type determines the rules that update the state, the editor type and editor ID identify
  * the state.
  */
+const defaultEditorActions = {
+  [editors.beginEdit]: (state, action) => {
+    const {entity} = action.payload
+    const editEntity = cloneDeep(entity)
+    return {...state, editEntity, errors: null}
+  },
+  [editors.propertyChange]: (state, action) => {
+    const editEntity = cloneDeep(state.editEntity)
+    const properties = action.payload.properties
+    forEach(properties, (val, key) => {
+      set(editEntity, key, val)
+    })
+    return {...state, editEntity}
+  },
+  [editors.commitEdit]: (state, action) => ({...state, isSaving: true, errors: null}),
+  [editors.commitEdit.result]: {
+    next: (state, action) => ({...state, isSaving: false, editEntity: null}),
+    throw: (state, action) => {
+      const sourceError = action.payload.sourceError
+      if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
+        const responseBody = sourceError.body
+        if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
+          return {...state, isSaving: false, errors: responseBody.errors}
+        }
+      }
+
+      return {...state, isSaving: false}
+    }
+  },
+  [editors.cancelEdit]: (state, action) => ({...state, editEntity: null}),
+}
+const defaultEditorReducer = handleActions(defaultEditorActions, defaultEditorState)
 const editorReducerByType = {
 
-  [EditorTypes.DEFAULT]: handleActions({
-    [editors.beginEdit]: (state, action) => {
-      const {entity} = action.payload
-      const editEntity = cloneDeep(entity)
-      return {...state, editEntity, errors: null}
-    },
-    [editors.propertyChange]: (state, action) => {
-      const editEntity = cloneDeep(state.editEntity)
-      const properties = action.payload.properties
-      forEach(properties, (val, key) => {
-        set(editEntity, key, val)
-      })
-      return {...state, editEntity, errors: null}
-    },
-    [editors.commitEdit]: (state, action) => ({...state, isSaving: true, errors: null}),
-    [editors.commitEdit.result]: {
-      next: (state, action) => ({...state, isSaving: false, editEntity: null}),
-      throw: (state, action) => {
-        const sourceError = action.payload.sourceError
-        if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
-          const responseBody = sourceError.body
-          if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
-            return {...state, isSaving: false, errors: responseBody.errors}
-          }
-        }
-
-        return {...state, isSaving: false}
-      }
-    },
-    [editors.cancelEdit]: (state, action) => ({...state, editEntity: null}),
-  }, defaultEditorState),
+  [EditorTypes.DEFAULT]: defaultEditorReducer,
 
   [EditorTypes.PROPOSITION]: handleActions({
     [api.fetchRootJustificationTarget]: (state, action) => {
@@ -416,6 +421,30 @@ const editorReducerByType = {
       }
     }
   }, defaultEditorState),
+  
+  [EditorTypes.REGISTRATION]: handleActions({
+    [editors.commitEdit.result]: {
+      next: (state, action) => ({...state, isSaving: false, isSubmitted: true}),
+      throw: (state, action) => {
+        state = editorErrorReducer('registration')(state, action)
+        state.isSubmitted = false
+        return state
+      }
+    },
+    [editors.resetSubmission]: (state, action) => ({...state, isSubmitted: false}),
+  }, defaultEditorState),
+
+  [EditorTypes.REGISTRATION_CONFIRMATION]: handleActions({
+    [editors.commitEdit.result]: {
+      next: (state, action) => ({...state, isSaving: false, isConfirmed: true}),
+      throw: (state, action) => {
+        state = editorErrorReducer('registrationConfirmation')(state, action)
+        state.isConfirmed = false
+        return state
+      }
+    },
+    [editors.resetSubmission]: (state, action) => ({...state, isSubmitted: false}),
+  }, defaultEditorState),
 }
 
 function makePropositionTagReducer(polarity, combiner) {
@@ -460,8 +489,6 @@ function makePropositionTagReducer(polarity, combiner) {
     return {...state, editEntity: {...state.editEntity, proposition: {...proposition, tags, propositionTagVotes}}}
   }
 }
-
-const defaultEditorReducer = editorReducerByType[EditorTypes.DEFAULT]
 
 const handleEditorAction = (state, action) => {
   const {

@@ -9,7 +9,8 @@ module.exports = assign(
   require('./httpMethods'),
   require('./httpStatusCodes'),
   require('./models'),
-  require('./schema'),
+  require('./schemas'),
+  require('./schemaValidation'),
   require('./serialization'),
   require('./urls')
 )

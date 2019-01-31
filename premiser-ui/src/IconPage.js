@@ -6,6 +6,9 @@ const IconPage = props => (
     <Helmet>
       <title>Icons — Howdju</title>
     </Helmet>
+    <i className="material-icons">account_circle</i>
+    <i className="material-icons">exit_to_app</i>
+    <i className="material-icons">power_settings_new</i>
     <i className="material-icons">all_out</i>
     <i className="material-icons">open_in_new</i>
     <i className="material-icons">check_circle</i>

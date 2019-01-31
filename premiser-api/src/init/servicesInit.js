@@ -3,8 +3,8 @@ const assign = require('lodash/assign')
 const {
   ActionsService,
   AuthService,
-  WritQuotesService,
-  WritsService,
+  DevEmailService,
+  EmailService,
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
@@ -13,6 +13,7 @@ const {
   PermissionsService,
   PerspectivesService,
   PicRegionsService,
+  RegistrationsService,
   SourceExcerptParaphrasesService,
   PersorgsService,
   PropositionsService,
@@ -25,6 +26,8 @@ const {
   UrlsService,
   UsersService,
   VidSegmentsService,
+  WritsService,
+  WritQuotesService,
 } = require('howdju-service-common')
 
 
@@ -184,9 +187,23 @@ exports.init = function init(provider) {
     provider.persorgsNameSearcher
   )
 
+  const emailService = provider.isProduction ?
+    new EmailService(provider.logger, provider.ses) :
+    new DevEmailService(provider.logger)
+  
+  const registrationsService = new RegistrationsService(
+    provider.logger, 
+    provider.appConfig, 
+    emailService,
+    usersService,
+    authService,
+    provider.registrationsDao,
+  )
+
   assign(provider, {
     actionsService,
     authService,
+    emailService,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,
@@ -200,6 +217,7 @@ exports.init = function init(provider) {
     propositionCompoundsService,
     propositionTagsService,
     propositionTagVotesService,
+    registrationsService,
     rootTargetJustificationsService,
     statementsService,
     tagsService,

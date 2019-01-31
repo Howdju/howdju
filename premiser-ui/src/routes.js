@@ -7,6 +7,7 @@ import {JustificationRootTargetType} from 'howdju-common'
 
 import AboutPage from './AboutPage'
 import CreatePropositionPage, {CreatePropositionPageMode} from './CreatePropositionPage'
+import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import FeaturedPerspectivesPage from './FeaturedPerspectivesPage'
 import {history} from './history'
 import IconPage from './IconPage'
@@ -22,7 +23,9 @@ import PersorgPage from './PersorgPage'
 import PrivacyPolicyPage from './PrivacyPolicyPage'
 import PropositionUsagesPage from './PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
+import RegistrationPage from './RegistrationPage'
 import TagPage from './TagPage'
+import TermsPage from './TermsPage'
 import ToolsPage from './ToolsPage'
 import WhatsNextPage from './WhatsNextPage'
 
@@ -37,6 +40,8 @@ const renderHomePath = props => {
 const routes = [
   <Route key="home" exact path={paths.home()} render={renderHomePath}/>,
   <Route key="login" exact path={paths.login()} component={LoginPage} />,
+  <Route key="register" exact path={paths.register()} component={RegistrationPage} />,
+  <Route key="confirm-registration" exact path={paths.confirmRegistration()} component={RegistrationConfirmationPage} />,
 
   <Route key="featuredPerspectives" exact path={paths.featuredPerspectives()} component={FeaturedPerspectivesPage} />,
   <Route key="recentActivity" exact path={paths.recentActivity()} component={RecentActivityPage} />,
@@ -66,6 +71,7 @@ const routes = [
 
   <Route key="tools" exact path="/tools" component={ToolsPage} />,
   <Route key="privacyPolicy" exact path={paths.privacyPolicy()} component={PrivacyPolicyPage} />,
+  <Route key="terms" exact path={paths.terms()} component={TermsPage} />,
   <Route key="icons" exact path="/icons" component={IconPage} />,
 
   <Route key="notFound" component={NotFoundPage} />,

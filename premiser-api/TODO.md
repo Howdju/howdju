@@ -1,11 +1,20 @@
 # TODO
 
+* Finish terms pages
+
+
 * Absolutely necessary to add users:
-  - user signup, notification
+  - user signup
   - Terms, Privacy Policy, GPDR/Cookie Policy
+  * notification of signup, notification of activity
   - password reset?
   - Username display?
   - User activity page?
+  - Fix homepage?
+  - Fix context trail?
+  - Provide better documentation?  (comparison to other sites, use cases, motivation: 
+     "what would a system look like that helped people keep up with increasingly complex information given that 
+     there are reasonable disagreements about important facts?")
 
 * Pincites
 * Links in extension frame should load in main page

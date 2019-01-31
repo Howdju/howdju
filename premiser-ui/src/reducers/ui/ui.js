@@ -12,6 +12,7 @@ import {
   justificationsSearchPage,
   mainSearchPage,
   persorgPage,
+  registrationConfirmationPage,
   tagPage,
   propositionUsagesPage,
 } from './pages'
@@ -58,6 +59,7 @@ export default combineReducers({
   mainSearchPage,
   persorgPage,
   propositionUsagesPage,
+  registrationConfirmationPage,
   tagPage,
   transients,
 })

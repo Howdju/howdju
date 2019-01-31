@@ -24,7 +24,9 @@ p a {
 }
 
 .error-message,
-.error-message li {
+.error-message li,
+.error-message a,
+.md-text--error a {
   color: $md-text-field-error-color;
 }
 
@@ -152,4 +154,9 @@ $small-chat-iframe-z-index: 999999999;
 .entity-status-text {
   display: inline-block;
   color: $asbestos;
+}
+
+// A link within text that must be distinguished from it.
+.text-link {
+  text-decoration: underline;
 }

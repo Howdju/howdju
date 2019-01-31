@@ -270,6 +270,27 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
     }
   },
+  [api.register]: (payload) => ({
+    endpoint: 'registrations',
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload,
+    }
+  }),
+  [api.checkRegistration]: (payload) => {
+    const queryStringParams = pick(payload, ['registrationConfirmationCode'])
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: `registrations?${queryStringParamsString}`,
+    }
+  },
+  [api.confirmRegistration]: (payload) => ({
+    endpoint: 'registration-confirmations',
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload,
+    }
+  }),
 
   /* Votes */
 

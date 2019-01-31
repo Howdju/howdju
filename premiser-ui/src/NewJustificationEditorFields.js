@@ -208,25 +208,25 @@ export default class NewJustificationEditorFields extends Component {
           errorText={join(map(get(errors, polarityName), e => e.message), ', ')}
         />
         <Divider />
-        {doShowTypeSelection && [
-          <Subheader 
-            primary
-            primaryText="Type"
-            component="div"
-            key="type-divider"
-          />,
-          <SelectionControlGroup
-            inline
-            id={combineIds(id, basisTypeName)}
-            key={combineIds(id, basisTypeName)}
-            name={combineNames(name, basisTypeName)}
-            type="radio"
-            value={basisType}
-            onChange={this.onChange}
-            controls={basisTypeControls}
-            disabled={disabled}
-          />
-        ]}
+        {doShowTypeSelection &&
+          <React.Fragment>
+            <Subheader 
+              primary
+              primaryText="Type"
+              component="div"
+            />
+            <SelectionControlGroup
+              inline
+              id={combineIds(id, basisTypeName)}
+              name={combineNames(name, basisTypeName)}
+              type="radio"
+              value={basisType}
+              onChange={this.onChange}
+              controls={basisTypeControls}
+              disabled={disabled}
+            />
+          </React.Fragment>
+        }
         
         <Divider />
         {_isPropositionCompoundBased && propositionCompoundEditorFields}

@@ -4,11 +4,13 @@ const {
 const {
   mapSingle
 } = require('./daosUtil')
+const {BaseDao} = require('./BaseDao')
 
 
-exports.UsersDao = class UsersDao {
+exports.UsersDao = class UsersDao extends BaseDao {
 
   constructor(logger, database) {
+    super(logger, database, toUser)
     this.logger = logger
     this.database = database
   }
@@ -34,6 +36,22 @@ exports.UsersDao = class UsersDao {
       .then( ({rows: [userRow]}) => toUser(userRow))
   }
 
+  async isEmailInUse(email) {
+    return this.queryOneValue(
+      'isEmailInUse',
+      'select exists(select 1 from users where email = $1 and deleted is null)',
+      [email]
+    )
+  }
+
+  async isUsernameInUse(username) {
+    return this.queryOneValue(
+      'isUsernameInUse',
+      'select exists(select 1 from users where username = $1 and deleted is null)',
+      [username]
+    )
+  }
+
   readUserForId(userId) {
     return this.database.query(
       'readUserForId',
@@ -50,6 +68,15 @@ exports.UsersDao = class UsersDao {
       [email]
     )
       .then(mapSingle(this.logger, toUser, 'users', {email}))
+  }
+  
+  readUserForUsername(username) {
+    return this.database.query(
+      'readUserForUsername',
+      'select * from users join user_external_ids using (user_id) where username = $1 and deleted is null',
+      [username]
+    )
+      .then(mapSingle(this.logger, toUser, 'users', {username}))
   }
 
   updateLastLoginForUserId(userId, now) {

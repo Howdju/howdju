@@ -3,6 +3,7 @@ import {
   put,
   takeEvery,
 } from 'redux-saga/effects'
+import includes from 'lodash/includes'
 import get from 'lodash/get'
 import map from 'lodash/map'
 
@@ -72,7 +73,10 @@ export function* showAlertForUnexpectedApiError() {
             if (!errorCode) {
               logger.error('API response error missing error code')
               yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
-            } else if (errorCode === apiErrorCodes.UNEXPECTED_ERROR) {
+            } else if (includes([
+              apiErrorCodes.ROUTE_NOT_FOUND,
+              apiErrorCodes.UNEXPECTED_ERROR,
+            ], errorCode)) {
               yield put(ui.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
             }
             break

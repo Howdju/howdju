@@ -1,6 +1,6 @@
 import union from 'lodash/union'
 import {normalize} from 'normalizr'
-import {handleActions} from "redux-actions"
+import {handleActions, combineActions} from "redux-actions"
 
 import {
   api,
@@ -214,4 +214,18 @@ export const propositionUsagesPage = handleActions({
   isFetching: false,
   directStatements: [],
   indirectStatements: [],
+})
+
+export const registrationConfirmationPage = handleActions({
+  [combineActions(
+    api.checkRegistration.response, 
+    api.confirmRegistration.response,
+  )]: {
+    next: (state, action) => ({...state, didCheckRegistration: true, registrationErrorCode: null}),
+    throw: (state, action) =>
+      ({...state, didCheckRegistration: true, registrationErrorCode: action.payload.body.errorCode}),
+  },
+}, {
+  didCheckRegistration: false,
+  registrationErrorCode: null,
 })

@@ -1,3 +1,6 @@
+const get = require('lodash/get')
+const set = require('lodash/set')
+
 const Joi = require('./validation')
 
 const {
@@ -192,10 +195,38 @@ const extantEntity = Joi.object().keys({
   id: idSchema.required()
 })
 
+// const registrationSchema = Joi.object().keys({
+//   username: Joi.string().regex(/[A-Za-z0-9_]+/).min(2).max(schemaSettings.usernameMaxLength),
+//   email: Joi.string().email().max(schemaSettings.userEmailMaxLength),
+//   shortName: Joi.string().max(schemaSettings.shortNameMaxLength),
+//   longName: Joi.string().max(schemaSettings.longNameMaxLength),
+//   password: Joi.string().min(6).max(schemaSettings.passwordMaxLength),
+//   doesAcceptTerms: Joi.boolean().valid(true),
+// })
+
+/**
+ * Converts {details:[{path,type,message}, ...]} to {path:[{type,message}]}
+ * @param joiError
+ */
+function translateJoiError(joiError) {
+  const allErrors = {}
+  for (const {path, type, message} of joiError.details) {
+    let errors = get(allErrors, path)
+    if (!errors) {
+      errors = []
+      set(allErrors, path, errors)
+    }
+    errors.push({type, message})
+  }
+  return allErrors
+}
+
 module.exports = {
   extantEntity,
   justificationSchema,
   persorgSchema,
   propositionSchema,
+  // registrationSchema,
   statementSchema,
+  translateJoiError,
 }

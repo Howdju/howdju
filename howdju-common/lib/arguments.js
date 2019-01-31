@@ -1,7 +1,7 @@
 const forEach = require('lodash/forEach')
 
 const {
-  newArgumentsError
+  newProgrammingError
 } = require('./commonErrors')
 const {
   isDefined
@@ -18,7 +18,7 @@ _e.requireArgs = (requiredArgs) => {
   })
 
   if (missing.length > 0) {
-    throw newArgumentsError(`Required arguments are undefined: ${missing.join(', ')}`)
+    throw newProgrammingError(`Required arguments are undefined: ${missing.join(', ')}`)
   }
   return true
 }

@@ -4,8 +4,8 @@ module.exports = assign(
   {},
   require('./ActionsService'),
   require('./AuthService'),
-  require('./WritQuotesService'),
-  require('./WritsService'),
+  require('./DevEmailService'),
+  require('./EmailService'),
   require('./GroupsService'),
   require('./JustificationBasisCompoundsService'),
   require('./JustificationsService'),
@@ -22,10 +22,13 @@ module.exports = assign(
   require('./PropositionTagScoresService'),
   require('./PropositionTagVotesService'),
   require('./PropositionsService'),
+  require('./RegistrationsService'),
   require('./RootTargetJustificationsService'),
   require('./StatementsService'),
   require('./TagsService'),
   require('./UrlsService'),
   require('./UsersService'),
-  require('./VidSegmentsService')
+  require('./VidSegmentsService'),
+  require('./WritQuotesService'),
+  require('./WritsService')
 )

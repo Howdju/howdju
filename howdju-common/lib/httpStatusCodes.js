@@ -1,5 +1,6 @@
 /** See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
  *  See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+ *  See https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
  */
 exports.httpStatusCodes = {
   OK: 200,
@@ -13,10 +14,10 @@ exports.httpStatusCodes = {
   /** The user is not authenticated, or improperly authenticated */
   UNAUTHORIZED: 401,
 
-  /** The user is authenticated but not authorized; not allowed to perform the requested action */
+  /** The user is authenticated but not authorized; not allowed to perform the requested action, lacks permission */
   FORBIDDEN: 403,
 
-  /** The user is authenticated, but lacks permission */
+  /** The requested resource, or some required resource, was not found */
   NOT_FOUND: 404,
 
   ERROR: 500,

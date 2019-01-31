@@ -1,5 +1,6 @@
 const {arrayToObject} = require('../general')
 
+/** Explain why a particular HTTP Status occurred */
 const apiErrorCodes = arrayToObject([
   /** The request lacks authentication credentials */
   'UNAUTHENTICATED',
@@ -32,6 +33,12 @@ const apiErrorCodes = arrayToObject([
    * about the type and identifier of the missing entity, but may not for privacy or security reasons
    */
   'ENTITY_NOT_FOUND',
+  
+  /** The requested resource expired, or a dependent resource expired making fulfilling the request impossible */
+  'EXPIRED',
+
+  /** The requested resource was already used */
+  'CONSUMED',
 
   /** The requested route was not found */
   'ROUTE_NOT_FOUND',

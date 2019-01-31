@@ -7,10 +7,16 @@ const {
 const _e = module.exports
 
 const commonErrorTypes = _e.commonErrorTypes = arrayToObject([
+  /** Something happened that should have been avoidable (how does this differ from impossible?) */
   'PROGRAMMING_ERROR',
+  
+  /** Something happened that should not have been possible. */
   'IMPOSSIBLE_ERROR',
-  'ARGUMENTS_EXCEPTION',
+  
+  /** We exhausted an enums values, but shouldn't have been able to.  This is a type of programming error. */
   'EXHAUSTED_ENUM',
+  
+  /** The required code path is purposefully unimplemented currently. */
   'UNIMPLEMENTED_ERROR',
 ])
 
@@ -32,9 +38,6 @@ _e.newImpossibleError = (message) =>
 
 _e.newProgrammingError = (message) =>
   newCustomError(commonErrorTypes.PROGRAMMING_ERROR, message)
-
-_e.newArgumentsError = (message) =>
-  newCustomError(commonErrorTypes.ARGUMENTS_EXCEPTION, message)
 
 _e.newExhaustedEnumError = (enumName, value, message) => {
   message = message ? ' - ' + message : ''

@@ -16,21 +16,23 @@ import cn from 'classnames'
 import get from 'lodash/get'
 import map from 'lodash/map'
 
+import {makeNewCredentials} from "howdju-common"
+
+import analytics from "./analytics"
 import {
   api,
   editors,
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from './actions'
-import {EditorTypes} from "./reducers/editors"
-import {makeNewCredentials} from "howdju-common"
+import EmailTextField from './EmailTextField'
 import {toErrorText} from "./modelErrorMessages"
+import PasswordTextField from './PasswordTextField'
+import {EditorTypes} from "./reducers/editors"
+import {selectAuthEmail} from './selectors'
 import t from './texts'
-import analytics from "./analytics"
 
 import './LoginPage.scss'
-import {selectAuthEmail} from './selectors'
-
 
 class LoginPage extends Component {
 
@@ -39,10 +41,8 @@ class LoginPage extends Component {
     this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, makeNewCredentials({email}))
   }
 
-  onChange = (value, event) => {
-    const target = event.target
-    const name = target.name
-    this.props.editors.propertyChange(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, {[name]: value})
+  onPropertyChange = (properties) => {
+    this.props.editors.propertyChange(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, properties)
   }
 
   onSubmit = (event) => {
@@ -110,26 +110,24 @@ class LoginPage extends Component {
                 <FocusContainer focusOnMount containFocus={false}>
 
                   <CardText>
-                    <TextField
+                    <EmailTextField
                       {...emailInputProps}
                       id="email"
-                      type="email"
                       name="email"
-                      label="Email"
                       value={email}
                       required
-                      onChange={this.onChange}
+                      onPropertyChange={this.onPropertyChange}
+                      onSubmit={this.onSubmit}
                       disabled={isLoggingIn}
                     />
-                    <TextField
+                    <PasswordTextField
                       {...passwordInputProps}
                       id="password"
-                      type="password"
                       name="password"
-                      label="Password"
                       value={password}
                       required
-                      onChange={this.onChange}
+                      onPropertyChange={this.onPropertyChange}
+                      onSubmit={this.onSubmit}
                       disabled={isLoggingIn}
                     />
                   </CardText>

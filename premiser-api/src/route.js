@@ -16,15 +16,17 @@ const {
 const {
   AuthenticationError,
   AuthorizationError,
-  UserIsInactiveError,
-  EntityNotFoundError,
-  NoMatchingRouteError,
   EntityConflictError,
-  UserActionsConflictError,
+  EntityNotFoundError,
   EntityValidationError,
-  RequestValidationError,
   InvalidLoginError,
+  NoMatchingRouteError,
+  RegistrationAlreadyConsumedError,
+  RegistrationExpiredError,
   rethrowTranslatedErrors,
+  RequestValidationError,
+  UserActionsConflictError,
+  UserIsInactiveError,
 } = require("howdju-service-common")
 
 const ok = ({callback, body={}, headers}) => callback({
@@ -608,6 +610,29 @@ const routes = [
       appProvider.authService.logout(authToken)
         .then( () => ok({callback}) )
   },
+  {
+    path: 'registrations',
+    method: httpMethods.POST,
+    handler: (appProvider, {callback, request: {body: {registration}}}) =>
+      Promise.resolve(appProvider.registrationsService.createRegistration(registration))
+        .then( () => ok({callback}) )
+        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registration'))
+  },
+  {
+    path: 'registrations',
+    method: httpMethods.GET,
+    handler: (appProvider, {callback, request: {queryStringParameters: {registrationConfirmationCode}}}) =>
+      Promise.resolve(appProvider.registrationsService.readRegistration(registrationConfirmationCode))
+        .then( () => ok({callback}) )
+  },
+  {
+    path: 'registration-confirmations',
+    method: httpMethods.POST,
+    handler: (appProvider, {callback, request: {body: {registrationConfirmation}}}) =>
+      Promise.resolve(appProvider.registrationsService.confirmRegistration(registrationConfirmation))
+        .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}}) )
+        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationConfirmation'))
+  },
 
   /*
    * Votes
@@ -677,7 +702,7 @@ const routes = [
     path: 'users',
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {authToken, user}}}) =>
-      appProvider.usersService.createUser(authToken, user)
+      appProvider.usersService.createUserAsAuthToken(authToken, user)
         .then( (user) => ok({callback, body: {user}}))
   },
 
@@ -805,6 +830,18 @@ const routeRequest = (request, appProvider, callback) =>
       body: {
         errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT,
         errors: e.errors
+      }
+    }))
+    .catch(RegistrationExpiredError, e => notFound({
+      callback,
+      body: {
+        errorCode: apiErrorCodes.EXPIRED
+      }
+    }))
+    .catch(RegistrationAlreadyConsumedError, e => notFound({
+      callback,
+      body: {
+        errorCode: apiErrorCodes.CONSUMED
       }
     }))
     .catch(err => {

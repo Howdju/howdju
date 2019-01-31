@@ -96,6 +96,10 @@ const newJustificationName = 'newJustification'
 
 class CreatePropositionPage extends Component {
 
+  static id = 'create-proposition-page'
+  static editorType = EditorTypes.PROPOSITION_JUSTIFICATION
+  static editorId = CreatePropositionPage.id
+
   componentDidMount() {
     this.initializeEditor()
   }
@@ -441,9 +445,6 @@ class CreatePropositionPage extends Component {
     )
   }
 }
-CreatePropositionPage.id = 'create-proposition-page'
-CreatePropositionPage.editorType = EditorTypes.PROPOSITION_JUSTIFICATION
-CreatePropositionPage.editorId = CreatePropositionPage.id
 
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state.editors, [CreatePropositionPage.editorType, CreatePropositionPage.editorId], {})

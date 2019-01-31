@@ -1,6 +1,5 @@
 const {
   cleanWhitespace,
-  requireArgs,
 } = require('howdju-common')
 
 const {
@@ -17,9 +16,7 @@ const {
 
 exports.PersorgsDao = class PersorgsDao extends BaseDao {
   constructor(logger, database) {
-    requireArgs({logger, database})
-    super(logger, database)
-    this.mapper = toPersorg
+    super(logger, database, toPersorg)
   }
 
   async createPersorg(persorg, creatorUserId, now) {

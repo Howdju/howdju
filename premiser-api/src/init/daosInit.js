@@ -19,6 +19,7 @@ const {
   PropositionCompoundsDao,
   PropositionTagsDao,
   PropositionTagVotesDao,
+  RegistrationsDao,
   StatementsDao,
   TagsDao,
   UserExternalIdsDao,
@@ -55,6 +56,7 @@ exports.init = function init(provider) {
   const userGroupsDao = new UserGroupsDao(database)
   const userPermissionsDao = new UserPermissionsDao(database)
   const usersDao = new UsersDao(logger, database)
+  const registrationsDao = new RegistrationsDao(logger, database)
   const justificationVotesDao = new JustificationVotesDao(database)
   const propositionTagVotesDao = new PropositionTagVotesDao(logger, database)
   const propositionTagsDao = new PropositionTagsDao(logger, database)
@@ -77,6 +79,7 @@ exports.init = function init(provider) {
     propositionsDao,
     propositionTagsDao,
     propositionTagVotesDao,
+    registrationsDao,
     statementsDao,
     tagsDao,
     urlsDao,

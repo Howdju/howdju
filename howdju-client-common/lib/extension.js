@@ -1,3 +1,5 @@
+import isNode from 'detect-node'
+
 // const apis = [
 //   'alarms',
 //   'bookmarks',
@@ -29,7 +31,8 @@ if (window.chrome) {
   extension = window.browser
 }
 
-if (!extension) {
+// We run the tests in node, so there likely will not be an extension api then
+if (!extension && !isNode) {
   throw new Error("unable to detect extension API")
 }
 

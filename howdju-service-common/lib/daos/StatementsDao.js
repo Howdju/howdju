@@ -13,8 +13,7 @@ const {toStatement} = require('./orm')
 module.exports.StatementsDao = class StatementsDao extends BaseDao {
   constructor(logger, database, propositionsDao) {
     requireArgs({logger, database, propositionsDao})
-    super(logger, database)
-    this.mapper = toStatement
+    super(logger, database, toStatement)
     this.propositionsDao = propositionsDao
   }
 

@@ -7,15 +7,16 @@ const {
 const _e = module.exports
 
 _e.EntityType = arrayToObject([
+  'JUSTIFICATION',
+  'JUSTIFICATION_VOTE',
+  'PASSWORD_HASH',
   'PROPOSITION',
+  'PROPOSITION_TAG_VOTE',
+  'REGISTRATION',
   'STATEMENT',
+  'USER',
   'WRIT',
   'WRIT_QUOTE',
-  'JUSTIFICATION',
-  'USER',
-  'PASSWORD_HASH',
-  'PROPOSITION_TAG_VOTE',
-  'JUSTIFICATION_VOTE',
 ])
 
 _e.ActionType = arrayToObject([

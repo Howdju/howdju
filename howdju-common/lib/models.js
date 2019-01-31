@@ -65,6 +65,28 @@ _e.negateRootPolarity = (rootPolarity) => {
 
 _e.makeNewCredentials = (props) => assign({email: '', password: ''}, props)
 
+_e.makeNewRegistration = (props) => assign({
+  email: '',
+}, props)
+
+_e.makeNewRegistrationConfirmation = (props) => assign({
+  registrationConfirmationCode: '',
+  username: '',
+  shortName: '',
+  longName: '',
+  password: '',
+  doesAcceptTerms: false,
+}, props)
+
+_e.makeUser = (props) => assign({
+  email: '',
+  username: '',
+  shortName: '',
+  longName: '',
+  acceptedTerms: false,
+  isActive: false,
+}, props)
+
 _e.makeNewProposition = (props) => assign({text: ''}, props)
 
 _e.makeNewStatement = (speaker, sentenceType, sentence) => ({

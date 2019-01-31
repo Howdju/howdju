@@ -13,9 +13,10 @@ exports.init = function init(provider) {
 
   const baseConfig = {
     // https://en.wikipedia.org/wiki/ISO_8601#Time_intervals
-    authTokenDuration: [30, 'days'],
+    authTokenDuration: {days: 30},
+    registrationValidDuration: {hours: 24},
     /** The amount of time a user can still edit their own entities unless another user has interacted with them */
-    modifyEntityGracePeriod: [24, 'hours'],
+    modifyEntityGracePeriod: {hours: 24},
     auth: {
       bcrypt: {
         saltRounds: 10,

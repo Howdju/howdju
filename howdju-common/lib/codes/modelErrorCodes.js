@@ -1,5 +1,6 @@
 const {arrayToObject} = require('../general')
 
+/** Supports our old custom validation system.  Should go away after switching all validation to JSON schemas */
 const modelErrorCodes = arrayToObject([
   'MUST_BE_NONEMPTY',
   'INVALID_VALUE',

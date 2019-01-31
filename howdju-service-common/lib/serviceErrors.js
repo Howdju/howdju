@@ -72,16 +72,30 @@ class EntityTooOldToModifyError extends HowdjuApiError {
   }
 }
 
+class RegistrationExpiredError extends HowdjuApiError {
+  constructor() {
+    super('(RegistrationExpiredError)')
+  }
+}
+
+class RegistrationAlreadyConsumedError extends HowdjuApiError {
+  constructor() {
+    super('(RegistrationAlreadyConsumedError)')
+  }
+}
+
 module.exports = {
-  EntityValidationError,
-  RequestValidationError,
   AuthenticationError,
   AuthorizationError,
-  EntityNotFoundError,
-  UserIsInactiveError,
   EntityConflictError,
-  UserActionsConflictError,
+  EntityNotFoundError,
   EntityTooOldToModifyError,
+  EntityValidationError,
   InvalidLoginError,
   NoMatchingRouteError,
+  RegistrationAlreadyConsumedError,
+  RegistrationExpiredError,
+  RequestValidationError,
+  UserActionsConflictError,
+  UserIsInactiveError,
 }

@@ -76,7 +76,7 @@ export default class LandingPage extends Component {
           Discover and share truth on Howdju.
         </p>
         <p>
-          How do you capture truth?  First you make a proposition:
+          How does one represent truth?  With justified propositions.
         </p>
 
         <div className="banner">

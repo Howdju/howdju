@@ -27,6 +27,9 @@ class Paths {
   about = () => '/about'
 
   login = () => '/login'
+  register = () => '/register'
+  confirmRegistration = () => '/confirm-registration'
+  resetPassword = () => '/reset-password'
 
   proposition = (proposition, contextTrailItems, noSlug=false) => {
     const {id, slug} = proposition
@@ -91,6 +94,7 @@ class Paths {
   tools = () => '/tools'
 
   privacyPolicy = () => "/terms/privacy-policy"
+  terms = () => "/terms/terms-of-use"
 
   tag = (tag) => `/tags/${tag.id}/${toSlug(tag.name)}`
 }
