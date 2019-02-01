@@ -15,11 +15,12 @@ const {
   PerspectivesDao,
   PicRegionsDao,
   SourceExcerptParaphrasesDao,
+  PasswordResetRequestsDao,
   PropositionsDao,
   PropositionCompoundsDao,
   PropositionTagsDao,
   PropositionTagVotesDao,
-  RegistrationsDao,
+  RegistrationRequestsDao,
   StatementsDao,
   TagsDao,
   UserExternalIdsDao,
@@ -41,6 +42,7 @@ exports.init = function init(provider) {
   const writsDao = new WritsDao(logger, database)
   const jobHistoryDao = new JobHistoryDao(database)
   const justificationScoresDao = new JustificationScoresDao(database)
+  const passwordResetRequestsDao = new PasswordResetRequestsDao(logger, database)
   const propositionCompoundsDao = new PropositionCompoundsDao(logger, database)
   const propositionsDao = new PropositionsDao(logger, database)
   const picRegionsDao = new PicRegionsDao(logger, database)
@@ -56,7 +58,7 @@ exports.init = function init(provider) {
   const userGroupsDao = new UserGroupsDao(database)
   const userPermissionsDao = new UserPermissionsDao(database)
   const usersDao = new UsersDao(logger, database)
-  const registrationsDao = new RegistrationsDao(logger, database)
+  const registrationRequestsDao = new RegistrationRequestsDao(logger, database)
   const justificationVotesDao = new JustificationVotesDao(database)
   const propositionTagVotesDao = new PropositionTagVotesDao(logger, database)
   const propositionTagsDao = new PropositionTagsDao(logger, database)
@@ -75,11 +77,12 @@ exports.init = function init(provider) {
     perspectivesDao,
     picRegionsDao,
     sourceExcerptParaphrasesDao,
+    passwordResetRequestsDao,
     propositionCompoundsDao,
     propositionsDao,
     propositionTagsDao,
     propositionTagVotesDao,
-    registrationsDao,
+    registrationRequestsDao,
     statementsDao,
     tagsDao,
     urlsDao,

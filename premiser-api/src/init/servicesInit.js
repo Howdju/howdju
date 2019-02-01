@@ -13,8 +13,9 @@ const {
   PermissionsService,
   PerspectivesService,
   PicRegionsService,
-  RegistrationsService,
+  RegistrationService,
   SourceExcerptParaphrasesService,
+  PasswordResetService,
   PersorgsService,
   PropositionsService,
   PropositionCompoundsService,
@@ -191,13 +192,22 @@ exports.init = function init(provider) {
     new EmailService(provider.logger, provider.ses) :
     new DevEmailService(provider.logger)
   
-  const registrationsService = new RegistrationsService(
+  const registrationService = new RegistrationService(
     provider.logger, 
     provider.appConfig, 
     emailService,
     usersService,
     authService,
-    provider.registrationsDao,
+    provider.registrationRequestsDao,
+  )
+
+  const passwordResetService = new PasswordResetService(
+    provider.logger,
+    provider.appConfig,
+    emailService, 
+    usersService, 
+    authService,
+    provider.passwordResetRequestsDao,
   )
 
   assign(provider, {
@@ -212,12 +222,13 @@ exports.init = function init(provider) {
     permissionsService,
     perspectivesService,
     sourceExcerptParaphrasesService,
+    passwordResetService,
     persorgsService,
     propositionsService,
     propositionCompoundsService,
     propositionTagsService,
     propositionTagVotesService,
-    registrationsService,
+    registrationService,
     rootTargetJustificationsService,
     statementsService,
     tagsService,

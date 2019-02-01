@@ -3,11 +3,13 @@ import reduce from 'lodash/reduce'
 import { Route } from 'react-router'
 import pathToRegexp from 'path-to-regexp'
 
-import {JustificationRootTargetType} from 'howdju-common'
+import {
+  JustificationRootTargetType,
+  commonPaths,
+} from 'howdju-common'
 
 import AboutPage from './AboutPage'
 import CreatePropositionPage, {CreatePropositionPageMode} from './CreatePropositionPage'
-import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import FeaturedPerspectivesPage from './FeaturedPerspectivesPage'
 import {history} from './history'
 import IconPage from './IconPage'
@@ -18,12 +20,15 @@ import LoginPage from './LoginPage'
 import mainSearcher from './mainSearcher'
 import MainSearchPage from './MainSearchPage'
 import NotFoundPage from './NotFoundPage'
+import PasswordResetRequestPage from './PasswordResetRequestPage'
+import PasswordResetConfirmationPage from './PasswordResetConfirmationPage'
 import paths, {createJustificationPath} from './paths'
 import PersorgPage from './PersorgPage'
 import PrivacyPolicyPage from './PrivacyPolicyPage'
 import PropositionUsagesPage from './PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
-import RegistrationPage from './RegistrationPage'
+import RegistrationConfirmationPage from './RegistrationConfirmationPage'
+import RegistrationRequestPage from './RegistrationRequestPage'
 import TagPage from './TagPage'
 import TermsPage from './TermsPage'
 import ToolsPage from './ToolsPage'
@@ -40,8 +45,10 @@ const renderHomePath = props => {
 const routes = [
   <Route key="home" exact path={paths.home()} render={renderHomePath}/>,
   <Route key="login" exact path={paths.login()} component={LoginPage} />,
-  <Route key="register" exact path={paths.register()} component={RegistrationPage} />,
-  <Route key="confirm-registration" exact path={paths.confirmRegistration()} component={RegistrationConfirmationPage} />,
+  <Route key="request-registration" exact path={paths.requestRegistration()} component={RegistrationRequestPage} />,
+  <Route key="confirm-registration" exact path={commonPaths.confirmRegistration()} component={RegistrationConfirmationPage} />,
+  <Route key="request-password-reset" exact path={paths.requestPasswordReset()} component={PasswordResetRequestPage} />,
+  <Route key="confirm-password-reset" exact path={commonPaths.confirmPasswordReset()} component={PasswordResetConfirmationPage} />,
 
   <Route key="featuredPerspectives" exact path={paths.featuredPerspectives()} component={FeaturedPerspectivesPage} />,
   <Route key="recentActivity" exact path={paths.recentActivity()} component={RecentActivityPage} />,

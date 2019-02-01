@@ -90,8 +90,13 @@ export const api = {
   login: apiActionCreator('LOGIN', (credentials) => ({credentials})),
   logout: apiActionCreator('LOGOUT'),
 
-  register: apiActionCreator('REGISTER', (registration) => ({registration})),
-  checkRegistration: apiActionCreator('CHECK_REGISTRATION', (registrationConfirmationCode) => ({registrationConfirmationCode})),
+  requestPasswordReset: apiActionCreator('REQUEST_PASSWORD_RESET', (passwordResetRequest) => ({passwordResetRequest})),
+  checkPasswordResetRequest: apiActionCreator('CHECK_PASSWORD_RESET_REQUEST', (passwordResetCode) => ({passwordResetCode})),
+  confirmPasswordReset: apiActionCreator('CONFIRM_PASSWORD_RESET', 
+    (passwordResetCode, passwordResetConfirmation) => ({passwordResetCode, passwordResetConfirmation})),
+
+  requestRegistration: apiActionCreator('REQUEST_REGISTRATION', (registrationRequest) => ({registrationRequest})),
+  checkRegistration: apiActionCreator('CHECK_REGISTRATION', (registrationCode) => ({registrationCode})),
   confirmRegistration: apiActionCreator('CONFIRM_REGISTRATION', (registrationConfirmation) => ({registrationConfirmation})),
 
   verifyJustification: apiActionCreator('VERIFY_JUSTIFICATION', (justification) => ({
@@ -269,6 +274,15 @@ export const ui = {
   disableMobileSite: actionCreator('UI/DISABLE_MOBILE_SITE'),
 
   clearTaggedPropositions: actionCreator('UI/CLEAR_TAGGED_PROPOSITIONS'),
+}
+
+export const pages = {
+  beginPasswordResetRequest: actionCreator('PAGES/BEGIN_PASSWORD_RESET'),
+  passwordResetRequestPropertyChange: actionCreator('PAGES/PASSWORD_RESET_REQUEST_PROPERTY_CHANGE', 
+    (properties) => ({properties})),
+  beginPasswordResetConfirmation: actionCreator('PAGES/BEGIN_PASSWORD_RESET_CONFIRMATION'),
+  passwordResetConfirmationPropertyChange: actionCreator('PAGES/PASSWORD_RESET_CONFIRMATION_PROPERTY_CHANGE',
+    (properties) => ({properties})),
 }
 
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))

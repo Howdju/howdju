@@ -5,6 +5,7 @@ const isFunction = require('lodash/isFunction')
 const isNumber = require('lodash/isNumber')
 const isObject = require('lodash/isObject')
 const isUndefined = require('lodash/isUndefined')
+const keys = require('lodash/keys')
 const map = require('lodash/map')
 const reduce = require('lodash/reduce')
 const reject = require('lodash/reject')
@@ -56,6 +57,21 @@ _e.assert = (test, message) => {
 _e.isDefined = val => !isUndefined(val)
 
 _e.utcNow = () => moment.utc()
+
+// Reference for these interesting operand names
+// https://math.stackexchange.com/a/1736991/116432
+_e.momentAdd = (momentInstance, summand) => {
+  const result = momentInstance.clone()
+  // add mutates the instance, so we must clone first
+  result.add(summand)
+  return result
+}
+_e.momentSubtract = (momentInstance, subtrahend) => {
+  const result = momentInstance.clone()
+  // add mutates the instance, so we must clone first
+  result.subtract(subtrahend)
+  return result
+}
 
 _e.timestampFormatString = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'
 
@@ -188,3 +204,12 @@ function makeOmittingCloneDeepCustomizer(predicate) {
     return undefined
   }
 }
+
+_e.keysTo = (collection, val) => reduce(
+  keys(collection), 
+  (acc, name) => {
+    acc[name] = val
+    return acc
+  }, 
+  {}
+)

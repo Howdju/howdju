@@ -611,25 +611,53 @@ const routes = [
         .then( () => ok({callback}) )
   },
   {
-    path: 'registrations',
+    path: 'password-reset-requests',
     method: httpMethods.POST,
-    handler: (appProvider, {callback, request: {body: {registration}}}) =>
-      Promise.resolve(appProvider.registrationsService.createRegistration(registration))
-        .then( () => ok({callback}) )
-        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registration'))
+    handler: (appProvider, {callback, request: {body: {passwordResetRequest}}}) =>
+      Promise.resolve(appProvider.passwordResetService.createRequest(passwordResetRequest))
+        .then( (duration) => ok({callback, body: {duration}}))
+  },
+  {
+    path: 'password-reset-requests',
+    method: httpMethods.GET,
+    handler: (appProvider, {callback, request: {queryStringParameters: {passwordResetCode}}}) =>
+      Promise.resolve(appProvider.passwordResetService.checkRequestForCode(passwordResetCode))
+        .then( (email) => ok({callback, body: {email}}))
+  },
+  {
+    path: 'password-resets',
+    method: httpMethods.POST,
+    handler: (appProvider, {
+      callback, 
+      request: {
+        body: {
+          passwordResetCode,
+          passwordResetConfirmation,
+        }
+      }}) =>
+      Promise.resolve(appProvider.passwordResetService.resetPasswordAndLogin(passwordResetCode, passwordResetConfirmation))
+        .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}}))
+  },
+  {
+    path: 'registration-requests',
+    method: httpMethods.POST,
+    handler: (appProvider, {callback, request: {body: {registrationRequest}}}) =>
+      Promise.resolve(appProvider.registrationService.createRequest(registrationRequest))
+        .then( (duration) => ok({callback, body: {duration}}) )
+        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationRequest'))
+  },
+  {
+    path: 'registration-requests',
+    method: httpMethods.GET,
+    handler: (appProvider, {callback, request: {queryStringParameters: {registrationCode}}}) =>
+      Promise.resolve(appProvider.registrationService.checkRequestForCode(registrationCode))
+        .then( (email) => ok({callback, body: {email}}) )
   },
   {
     path: 'registrations',
-    method: httpMethods.GET,
-    handler: (appProvider, {callback, request: {queryStringParameters: {registrationConfirmationCode}}}) =>
-      Promise.resolve(appProvider.registrationsService.readRegistration(registrationConfirmationCode))
-        .then( () => ok({callback}) )
-  },
-  {
-    path: 'registration-confirmations',
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {registrationConfirmation}}}) =>
-      Promise.resolve(appProvider.registrationsService.confirmRegistration(registrationConfirmation))
+      Promise.resolve(appProvider.registrationService.confirmRegistrationAndLogin(registrationConfirmation))
         .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}}) )
         .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationConfirmation'))
   },

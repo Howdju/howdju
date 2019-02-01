@@ -72,6 +72,18 @@ class EntityTooOldToModifyError extends HowdjuApiError {
   }
 }
 
+class PasswordResetAlreadyConsumedError extends HowdjuApiError {
+  constructor() {
+    super('(PasswordResetAlreadyConsumedError)')
+  }
+}
+
+class PasswordResetExpiredError extends HowdjuApiError {
+  constructor() {
+    super('(PasswordResetExpiredError)')
+  }
+}
+
 class RegistrationExpiredError extends HowdjuApiError {
   constructor() {
     super('(RegistrationExpiredError)')
@@ -93,6 +105,8 @@ module.exports = {
   EntityValidationError,
   InvalidLoginError,
   NoMatchingRouteError,
+  PasswordResetAlreadyConsumedError,
+  PasswordResetExpiredError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
   RequestValidationError,

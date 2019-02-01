@@ -5,9 +5,13 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { AppContainer as ReactHotLoaderContainer } from 'react-hot-loader'
+import moment from "moment"
+import momentDurationFormatSetup from "moment-duration-format"
 
 import App from './App'
 import configureStore from './configureStore'
+
+momentDurationFormatSetup(moment)
 
 const root = document.getElementById('root')
 

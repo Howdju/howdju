@@ -28,6 +28,12 @@ const definitionsSchema = {
       minLength: schemaSettings.usernameMinLength,
       "maxLength": schemaSettings.usernameMaxLength
     },
+    password: {
+      "type": "string",
+      "description": "The user's selected password",
+      "minLength": schemaSettings.passwordMinLength,
+      "maxLength": schemaSettings.passwordMaxLength
+    },
     userEmail: {
       "type": "string",
       "format": "email",
@@ -57,6 +63,42 @@ const definitionsSchema = {
   }
 }
 
+const passwordResetRequest = {
+  "$id": "https://howdju.com/schemas/password-reset-request.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PasswordResetRequest",
+  "description": "A request to reset a password",
+  "type": "object",
+  "required": ["email"],
+  "properties": {
+    "email": { "$ref": 'definitions.json#/definitions/userEmail' },
+  }
+}
+
+const passwordResetConfirmation = {
+  "$id": "https://howdju.com/schemas/password-reset-confirmation.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PasswordResetConfirmation",
+  "description": "A confirmation to reset a password",
+  "type": "object",
+  "required": ["newPassword"],
+  "properties": {
+    "newPassword": { "$ref": 'definitions.json#/definitions/password' },
+  }
+}
+
+const registrationRequest = {
+  "$id": "https://howdju.com/schemas/registration-request.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RegistrationRequest",
+  "description": "A request to register a new user",
+  "type": "object",
+  "required": ["email"],
+  "properties": {
+    "email": { "$ref": 'definitions.json#/definitions/userEmail' },
+  }
+}
+
 const registrationConfirmation = {
   "$id": "https://howdju.com/schemas/registration-confirmation.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -65,31 +107,14 @@ const registrationConfirmation = {
   "type": "object",
   "required": ["username", "longName", "password", "doesAcceptTerms"],
   "properties": {
-    "username": { $ref: 'definitions.json#/definitions/username'},
-    "password": {
-      "type": "string",
-      "description": "The user's selected password",
-      "minLength": schemaSettings.passwordMinLength,
-      "maxLength": schemaSettings.passwordMaxLength
-    },
-    "shortName": { $ref: 'definitions.json#/definitions/shortName' },
-    "longName": { $ref: 'definitions.json#/definitions/longName' },
+    "username": {$ref: 'definitions.json#/definitions/username'},
+    "password": {$ref: 'definitions.json#/definitions/password'},
+    "shortName": {$ref: 'definitions.json#/definitions/shortName'},
+    "longName": {$ref: 'definitions.json#/definitions/longName'},
     "doesAcceptTerms": {
       "const": true,
       "description": "Whether the user agreed to the terms.  Must be true."
     }
-  }
-}
-
-const registration = {
-  "$id": "https://howdju.com/schemas/registration.schema.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Registration",
-  "description": "A record of an intent to create a user",
-  "type": "object",
-  "required": ["email"],
-  "properties": {
-    "email": { "$ref": 'definitions.json#/definitions/userEmail' },
   }
 }
 
@@ -121,7 +146,9 @@ const user = {
 module.exports = {
   schemaSettings,
   schemas: {
-    registration,
+    passwordResetRequest,
+    passwordResetConfirmation,
+    registrationRequest,
     registrationConfirmation,
     user,
   },

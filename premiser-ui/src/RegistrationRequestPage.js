@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import {connect} from 'react-redux'
+import {goBack} from "react-router-redux"
 import Helmet from 'react-helmet'
 import {
   Button, 
@@ -12,11 +13,12 @@ import {
   FocusContainer
 } from 'react-md'
 import get from 'lodash/get'
+import moment from 'moment'
 import cn from 'classnames'
 
 import {
   entityErrorCodes,
-  makeNewRegistration,
+  makeNewRegistrationRequest,
   schemaSettings,
   validate,
   schemaIds,
@@ -27,10 +29,10 @@ import EmailTextField from './EmailTextField'
 import paths from './paths'
 import {EditorTypes} from './reducers/editors'
 
-class RegistrationPage extends React.Component {
+class RegistrationRequestPage extends React.Component {
   
-  static editorId = 'email-registration-page'
-  static editorType = EditorTypes.REGISTRATION
+  static editorId = 'registration-request-page'
+  static editorType = EditorTypes.REGISTRATION_REQUEST
   
   constructor(props) {
     super(props)
@@ -42,12 +44,12 @@ class RegistrationPage extends React.Component {
   }
   
   componentDidMount() {
-    this.props.editors.beginEdit(RegistrationPage.editorType, RegistrationPage.editorId, makeNewRegistration())
+    this.props.editors.beginEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, makeNewRegistrationRequest())
   }
   
   render() {
     const {
-      editorState
+      editorState,
     } = this.props
     const {
       dirty,
@@ -57,17 +59,18 @@ class RegistrationPage extends React.Component {
     const isSubmitting = get(editorState, 'isSaving')
     const isSubmitted = get(editorState, 'isSubmitted')
     const apiErrors = get(editorState, 'errors') || {}
+    const duration = get(editorState, 'duration')
     
     const registration = get(editorState, 'editEntity')
     const email = get(registration, 'email', '')
 
     const {isValid, errors: validationErrors} = registration ?
-      validate(schemaIds.registration, registration) :
+      validate(schemaIds.registrationRequest, registration) :
       {isValid: false, errors: {}}
     
     const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
     
-    const submitButtonTitle = !isValid && wasSubmitAttempted ? 
+    const submitButtonTitle = isValid ? 'Register' : wasSubmitAttempted ? 
       'Please correct the errors to continue' : 
       'Please complete the form to continue'
     
@@ -122,12 +125,14 @@ class RegistrationPage extends React.Component {
           </CardActions>
         </FocusContainer>
       </form>
-    
+
+    const durationText = duration && 
+      moment.duration(duration.value).format(duration.formatTemplate, {trim: duration.formatTrim})
     const submissionMessage =
       <React.Fragment>  
         <CardText>
           Your registration has been submitted.  Please check your email to complete your registration.
-          You must complete your registration within 24 hours.  If your registration expires, please register again.
+          You must complete your registration within {durationText}.  If your registration expires, please register again.
         </CardText>
         <CardActions>
           <Button
@@ -164,7 +169,7 @@ class RegistrationPage extends React.Component {
   }
 
   onPropertyChange = (properties) => {
-    this.props.editors.propertyChange(RegistrationPage.editorType, RegistrationPage.editorId, properties)
+    this.props.editors.propertyChange(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, properties)
   }
   
   onBlur = (event) => {
@@ -178,8 +183,7 @@ class RegistrationPage extends React.Component {
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.setState({hasSubmitted: true})
-    this.props.editors.commitEdit(RegistrationPage.editorType, RegistrationPage.editorId)
+    this.props.editors.commitEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId)
   }
 
   onClickSubmit = (event, isValid) => {
@@ -200,13 +204,13 @@ class RegistrationPage extends React.Component {
       dirty: {},
       wasSubmitAttempted: false,
     })
-    this.props.editors.beginEdit(RegistrationPage.editorType, RegistrationPage.editorId, makeNewRegistration())
-    this.props.editors.resetSubmission(RegistrationPage.editorType, RegistrationPage.editorId)
+    this.props.editors.beginEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, makeNewRegistrationRequest())
+    this.props.editors.resetSubmission(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId)
   }
 }
 
 const mapStateToProps = state => {
-  const editorState = get(state, ['editors', RegistrationPage.editorType, RegistrationPage.editorId]) 
+  const editorState = get(state, ['editors', RegistrationRequestPage.editorType, RegistrationRequestPage.editorId]) 
   return {
     editorState
   }
@@ -214,4 +218,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   editors,
-}))(RegistrationPage)
+}, {
+  goBack,
+}))(RegistrationRequestPage)

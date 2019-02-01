@@ -1,7 +1,7 @@
 # TODO
 
+* cover concealing email
 * Finish terms pages
-
 
 * Absolutely necessary to add users:
   - user signup

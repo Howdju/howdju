@@ -62,6 +62,8 @@ exports.AuthService = class AuthService {
         }
         return this.authDao.createUserAuthForUserId(userId, hash, HashTypes.BCRYPT)
       })
+      // conceal the hash.  We never want to return it to any request
+      .then((userHash) => ({}))
   }
   
   async createPasswordHashAuthForUserId(userId, passwordHash, passwordHashType) {

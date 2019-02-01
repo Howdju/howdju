@@ -13,4 +13,7 @@ export const selectAuthTokenExpiration = (state) => get(state, ['auth', 'authTok
 export const selectUser = (state) => get(state, ['auth', 'user'])
 export const selectAuthEmail = (state) => get(state, ['auth', 'user', 'email'])
 export const selectDidCheckRegistration = (state) => get(state, 'ui.registrationConfirmationPage.didCheckRegistration')
+export const selectRegistrationEmail = (state) => get(state, 'ui.registrationConfirmationPage.email')
 export const selectRegistrationErrorCode = (state) => get(state, 'ui.registrationConfirmationPage.registrationErrorCode')
+export const selectPasswordResetRequestPage = (state) => get(state, 'ui.passwordResetRequestPage')
+export const selectPasswordResetConfirmationPage = (state) => get(state, 'ui.passwordResetConfirmationPage')

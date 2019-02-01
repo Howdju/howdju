@@ -10,11 +10,13 @@ import {
   featuredPerspectivesPage,
   justificationsPage,
   justificationsSearchPage,
-  mainSearchPage,
+  mainSearchPage, 
+  passwordResetConfirmationPage,
+  passwordResetRequestPage,
   persorgPage,
+  propositionUsagesPage,
   registrationConfirmationPage,
   tagPage,
-  propositionUsagesPage,
 } from './pages'
 import transients from './transients'
 import {isWindowNarrow} from "../../util"
@@ -57,6 +59,8 @@ export default combineReducers({
   justificationsSearchPage,
   mainSearch,
   mainSearchPage,
+  passwordResetConfirmationPage,
+  passwordResetRequestPage,
   persorgPage,
   propositionUsagesPage,
   registrationConfirmationPage,

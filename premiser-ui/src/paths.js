@@ -18,6 +18,8 @@ export const mainSearchPathName = '/'
 
 export const createJustificationPath = '/create-justification'
 
+// I was going to extend CommonPaths, but doing that results in `TypeError: Class constructor CommonPaths cannot be invoked without 'new'`
+// when running jest.  
 class Paths {
   home = () => '/'
 
@@ -27,9 +29,8 @@ class Paths {
   about = () => '/about'
 
   login = () => '/login'
-  register = () => '/register'
-  confirmRegistration = () => '/confirm-registration'
-  resetPassword = () => '/reset-password'
+  requestRegistration = () => '/request-registration'
+  requestPasswordReset = () => '/request-password-reset'
 
   proposition = (proposition, contextTrailItems, noSlug=false) => {
     const {id, slug} = proposition

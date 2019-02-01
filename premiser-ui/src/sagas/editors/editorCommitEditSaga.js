@@ -99,8 +99,8 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.LOGIN_CREDENTIALS]: {
     [CrudActions.CREATE]: api.login,
   },
-  [EditorTypes.REGISTRATION]: {
-    [CrudActions.CREATE]: api.register,
+  [EditorTypes.REGISTRATION_REQUEST]: {
+    [CrudActions.CREATE]: api.requestRegistration,
   },
   [EditorTypes.REGISTRATION_CONFIRMATION]: {
     [CrudActions.CREATE]: api.confirmRegistration,

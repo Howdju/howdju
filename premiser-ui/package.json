@@ -91,6 +91,7 @@
     "js-cookie": "^2.1.4",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
+    "moment-duration-format": "^2.2.2",
     "normalizr": "^3.2.2",
     "path-to-regexp": "1.7.0",
     "prop-types": "^15.5.10",

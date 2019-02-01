@@ -60,7 +60,7 @@ export const EditorTypes = arrayToObject([
   /* e.g. Proposition justification page */
   'PROPOSITION_JUSTIFICATION',
   'LOGIN_CREDENTIALS',
-  'REGISTRATION',
+  'REGISTRATION_REQUEST',
   'REGISTRATION_CONFIRMATION',
   'PERSORG',
 ])
@@ -75,7 +75,7 @@ const editorErrorReducer = (errorKey) => (state, action) => {
   const sourceError = action.payload.sourceError
   if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
     const responseBody = sourceError.body
-    if (includes([
+    if (responseBody && includes([
       apiErrorCodes.VALIDATION_ERROR,
       apiErrorCodes.ENTITY_CONFLICT,
       apiErrorCodes.USER_ACTIONS_CONFLICT,
@@ -153,7 +153,7 @@ const defaultEditorActions = {
       const sourceError = action.payload.sourceError
       if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
         const responseBody = sourceError.body
-        if (responseBody.errorCode === apiErrorCodes.VALIDATION_ERROR) {
+        if (get(responseBody, 'errorCode') === apiErrorCodes.VALIDATION_ERROR) {
           return {...state, isSaving: false, errors: responseBody.errors}
         }
       }
@@ -401,7 +401,7 @@ const editorReducerByType = {
       throw: (state, action) => {
         const sourceError = action.payload.sourceError
         if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
-          switch (sourceError.body.errorCode) {
+          switch (get(sourceError, 'body.errorCode')) {
             case (apiErrorCodes.INVALID_LOGIN_CREDENTIALS): {
               return {...state, errors: {credentials: {modelErrors: [INVALID_LOGIN_CREDENTIALS]}}, isSaving: false}
             }
@@ -422,9 +422,14 @@ const editorReducerByType = {
     }
   }, defaultEditorState),
   
-  [EditorTypes.REGISTRATION]: handleActions({
+  [EditorTypes.REGISTRATION_REQUEST]: handleActions({
     [editors.commitEdit.result]: {
-      next: (state, action) => ({...state, isSaving: false, isSubmitted: true}),
+      next: (state, action) => ({
+        ...state, 
+        duration: action.payload.duration, 
+        isSaving: false, 
+        isSubmitted: true
+      }),
       throw: (state, action) => {
         state = editorErrorReducer('registration')(state, action)
         state.isSubmitted = false

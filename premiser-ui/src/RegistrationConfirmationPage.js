@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import {goBack} from 'react-router-redux'
 import {
-  AccessibleFakeInkedButton,
   Button,
   Card, 
   CardActions, 
@@ -19,7 +19,8 @@ import queryString from 'query-string'
 
 import {
   apiErrorCodes,
-  entityErrorCodes, 
+  entityErrorCodes,
+  keysTo,
   makeNewRegistrationConfirmation, 
   schemaIds, 
   schemaSettings, 
@@ -37,14 +38,9 @@ import {EditorTypes} from './reducers/editors'
 import {
   selectDidCheckRegistration,
   selectRegistrationErrorCode,
+  selectRegistrationEmail,
 } from './selectors'
 import SingleLineTextField from './SingleLineTextField'
-
-const subtitleByRegistrationErrorCode = {
-  [apiErrorCodes.ENTITY_NOT_FOUND]: 'Registration not found',
-  [apiErrorCodes.EXPIRED]: 'Registration expired',
-  [apiErrorCodes.CONSUMED]: 'Registration already used',
-}
 
 class RegistrationConfirmationPage extends React.Component {
 
@@ -54,40 +50,44 @@ class RegistrationConfirmationPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      // Which components should show their errors
-      dirty: {},
+      // Which inputs have been modified
+      dirtyInputs: {},
+      // Which components have been blurred and so can show their errors
+      blurredInputs: {},
       // Whether the user has clicked on the submit button
       wasSubmitAttempted: false,
     }
   }
 
   componentDidMount() {
-    this.props.api.checkRegistration(this.props.registrationConfirmationCode)
+    this.props.api.checkRegistration(this.props.registrationCode)
     this.props.editors.beginEdit(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId, 
-      makeNewRegistrationConfirmation({registrationConfirmationCode: this.props.registrationConfirmationCode}))
+      makeNewRegistrationConfirmation({registrationCode: this.props.registrationCode}))
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.registrationConfirmationCode !== this.props.registrationConfirmationCode) {
-      const properties = {registrationConfirmationCode: this.props.registrationConfirmationCode}
+    if (prevProps.registrationCode !== this.props.registrationCode) {
+      // put the code on the editEntity so that it is passed with the editor commit
+      const properties = {registrationCode: this.props.registrationCode}
       this.editors.propertyChange(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId, properties)
     }
   }
   
   render() {
     const {
+      email,
       didCheckRegistration,
-      checkRegistrationErrorCode,
+      registrationErrorCode,
       editorState,
     } = this.props
     const {
-      dirty,
+      blurredInputs,
+      dirtyInputs,
       wasSubmitAttempted,
     } = this.state
 
     const isSubmitting = get(editorState, 'isSaving')
     const isConfirmed = get(editorState, 'isConfirmed')
-    const submitRegistrationErrorCode = get(editorState, 'registrationErrorCode') || {}
     const apiErrors = get(editorState, 'errors') || {}
 
     const registrationConfirmation = get(editorState, 'editEntity')
@@ -101,18 +101,24 @@ class RegistrationConfirmationPage extends React.Component {
       validate(schemaIds.registrationConfirmation, registrationConfirmation) :
       {isValid: false, errors: {}}
 
-    const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
+    const errorNotificeMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
 
-    const submitButtonTitle = !isValid && wasSubmitAttempted ?
+    const submitButtonTitle = isValid ? 'Complete registration' : wasSubmitAttempted ?
       'Please correct the errors to continue' :
       'Please complete the form to continue'
     
-    const subtitle = subtitleByRegistrationErrorCode[checkRegistrationErrorCode]
+    const subtitle = subtitleByRegistrationErrorCode[registrationErrorCode]
 
     const form =
       <form onSubmit={this.onSubmit}>
         <FocusContainer focusOnMount containFocus={false}>
           <CardText>
+            <SingleLineTextField
+              id="email"
+              value={email}
+              label="Email"
+              disabled
+            />
             <SingleLineTextField
               id="username"
               name="username"
@@ -124,7 +130,7 @@ class RegistrationConfirmationPage extends React.Component {
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
               required
-              error={(dirty.username || wasSubmitAttempted) && (!!validationErrors.username || !!apiErrors.username)}
+              error={(blurredInputs.username || wasSubmitAttempted) && (!!validationErrors.username || !!apiErrors.username)}
               errorText={
                 <React.Fragment>
                   {validationErrors.username &&
@@ -147,7 +153,7 @@ class RegistrationConfirmationPage extends React.Component {
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
               required
-              error={(dirty.password || wasSubmitAttempted) && !!validationErrors.password}
+              error={(blurredInputs.password || wasSubmitAttempted) && !!validationErrors.password}
               errorText={validationErrors.password && 'Please enter a valid password (6 characters or more)'}
             />
             <SingleLineTextField
@@ -161,7 +167,7 @@ class RegistrationConfirmationPage extends React.Component {
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
               required
-              error={(dirty.longName || wasSubmitAttempted) && !!validationErrors.longName}
+              error={(blurredInputs.longName || wasSubmitAttempted) && !!validationErrors.longName}
               errorText={validationErrors.longName && 'Please enter a full name name'}
             />
             <SingleLineTextField
@@ -174,7 +180,7 @@ class RegistrationConfirmationPage extends React.Component {
               onBlur={this.onBlur}
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
-              error={(dirty.shortName || wasSubmitAttempted) && !!validationErrors.shortName}
+              error={(blurredInputs.shortName || wasSubmitAttempted) && !!validationErrors.shortName}
               errorText={validationErrors.shortName && 'Please enter a first name'}
             />
             <Checkbox
@@ -182,11 +188,10 @@ class RegistrationConfirmationPage extends React.Component {
               name="doesAcceptTerms"
               value={doesAcceptTerms}
               onChange={this.onChange}
-              onBlur={this.onBlur}
               label={
                 <div
                   className={cn({
-                    'error-message': (dirty.doesAcceptTerms || wasSubmitAttempted) && validationErrors.doesAcceptTerms})
+                    'error-message': (dirtyInputs.doesAcceptTerms || wasSubmitAttempted) && validationErrors.doesAcceptTerms})
                   }
                 >
                   I have read and agree to the <Link className="text-link" to={paths.terms()}>Terms of Use</Link>
@@ -232,38 +237,16 @@ class RegistrationConfirmationPage extends React.Component {
         </CardActions>
       </React.Fragment>
     
-    const combinedRegistrationErrorCode = checkRegistrationErrorCode || submitRegistrationErrorCode
-    const registrationErrorMessage = combinedRegistrationErrorCode && (
-      <React.Fragment>
-        {combinedRegistrationErrorCode === apiErrorCodes.ENTITY_NOT_FOUND && (
-          <CardText>
-            That registration could not be found.  Please double check the link in the confirmation email.
-            If this problem persists, please <Link className="text-link" to={paths.register()}>register</Link> again.
-          </CardText>
-        )}
-        {combinedRegistrationErrorCode === apiErrorCodes.EXPIRED && (
-          <CardText>
-            This registration has expired.  Please <Link className="text-link" to={paths.register()}>register</Link> again.
-          </CardText>
-        )}
-        {combinedRegistrationErrorCode === apiErrorCodes.CONSUMED && (
-          <CardText>
-            That registration has already been used. Please <Link className="text-link" to={paths.login()}>login</Link>.
-            If you have forgotten your password, you 
-            can <Link className="text-link" to={paths.resetPassword()}>reset your password</Link>.  If you 
-            don&rsquo;t have access to your password reset email, you 
-            can <Link className="text-link" to={paths.register()}>register</Link> again.
-          </CardText>
-        )}
-      </React.Fragment>
-    )
+    const errorMessage = registrationErrorMessageByCode[registrationErrorCode]
 
-    const formWithErrors = (
+    const formWithNotice = (
       <React.Fragment>
-        Please enter the following to complete your registratione
-        {errorMessage &&
+        <CardText>
+          Please enter the following to complete your registration
+        </CardText>
+        {errorNotificeMessage &&
           <CardText className="error-message">
-            {errorMessage}
+            {errorNotificeMessage}
           </CardText>
         }
         {form}
@@ -288,8 +271,8 @@ class RegistrationConfirmationPage extends React.Component {
                   <CircularProgress id="checking-registration-code-progress"/>
                 </CardText>
               )}
-              {didCheckRegistration && !isConfirmed && checkRegistrationErrorCode && registrationErrorMessage}
-              {didCheckRegistration && !isConfirmed && !checkRegistrationErrorCode && formWithErrors}
+              {didCheckRegistration && !isConfirmed && registrationErrorCode && errorMessage}
+              {didCheckRegistration && !isConfirmed && !registrationErrorCode && formWithNotice}
               {isConfirmed && confirmedMessage}
             </Card>
           </div>
@@ -299,6 +282,10 @@ class RegistrationConfirmationPage extends React.Component {
   }
 
   onPropertyChange = (properties) => {
+    const newDirtyInputs = keysTo(properties, true)
+    this.setState({
+      dirtyInputs: {...this.state.dirtyInputs, ...newDirtyInputs}
+    })
     this.props.editors.propertyChange(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId, properties)
   }
 
@@ -306,7 +293,7 @@ class RegistrationConfirmationPage extends React.Component {
     const name = event.target.name
     if (name) {
       this.setState({
-        dirty: {...this.state.dirty, [name]: true}
+        blurredInputs: {...this.state.blurredInputs, [name]: true}
       })
     }
   }
@@ -314,14 +301,13 @@ class RegistrationConfirmationPage extends React.Component {
   onChange = (val, event) => {
     const name = event.target.name
     this.setState({
-      dirty: {...this.state.dirty, [name]: true}
+      dirtyInputs: {...this.state.dirtyInputs, [name]: true}
     })
     this.onPropertyChange({[name]: val})
   }
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.setState({hasSubmitted: true})
     this.props.editors.commitEdit(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId)
   }
 
@@ -339,23 +325,56 @@ class RegistrationConfirmationPage extends React.Component {
   }
 }
 
+const subtitleByRegistrationErrorCode = {
+  [apiErrorCodes.ENTITY_NOT_FOUND]: 'Registration not found',
+  [apiErrorCodes.EXPIRED]: 'Registration expired',
+  [apiErrorCodes.CONSUMED]: 'Registration already used',
+}
+
+const registrationErrorMessageByCode = {
+  [apiErrorCodes.ENTITY_NOT_FOUND]: (
+    <CardText>
+      That registration could not be found.  Please double check the link in the confirmation email.
+      If this problem persists, please <Link className="text-link" to={paths.requestRegistration()}>register</Link> again.
+    </CardText>
+  ),
+  [apiErrorCodes.EXPIRED]: (
+    <CardText>
+      This registration has expired.  Please <Link className="text-link" to={paths.requestRegistration()}>register</Link> again.
+    </CardText>
+  ),
+  [apiErrorCodes.CONSUMED]: (
+    <CardText>
+      That registration has already been used. Please <Link className="text-link" to={paths.login()}>login</Link>.
+      If you have forgotten your password, you
+      can <Link className="text-link" to={paths.requestPasswordReset()}>reset your password</Link>.  If you
+      don&rsquo;t have access to your password reset email, you
+      can <Link className="text-link" to={paths.requestRegistration()}>register</Link> again.
+    </CardText>
+  )
+}
+
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state, ['editors', RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId])
   
+  const email = selectRegistrationEmail(state)
   const didCheckRegistration = selectDidCheckRegistration(state)
-  const checkRegistrationErrorCode = selectRegistrationErrorCode(state)
+  const registrationErrorCode = selectRegistrationErrorCode(state)
   
   const queryParams = queryString.parse(ownProps.location.search)
-  const registrationConfirmationCode = queryParams.registrationConfirmationCode
+  const registrationCode = queryParams.registrationCode
   return {
     editorState,
+    email,
     didCheckRegistration,
-    checkRegistrationErrorCode,
-    registrationConfirmationCode,
+    registrationErrorCode,
+    registrationCode,
   }
 }
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   editors,
+}, {
+  goBack,
 }))(RegistrationConfirmationPage)

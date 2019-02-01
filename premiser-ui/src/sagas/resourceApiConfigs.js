@@ -270,22 +270,43 @@ export const resourceApiConfigs = {
       method: httpMethods.POST,
     }
   },
-  [api.register]: (payload) => ({
-    endpoint: 'registrations',
+  [api.requestPasswordReset]: (payload) => ({
+    endpoint: 'password-reset-requests',
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload,
+    }
+  }),
+  [api.checkPasswordResetRequest]: (payload) => {
+    const queryStringParams = pick(payload, ['passwordResetCode'])
+    const queryStringParamsString = queryString.stringify(queryStringParams)
+    return {
+      endpoint: `password-reset-requests?${queryStringParamsString}`,
+    }
+  },
+  [api.confirmPasswordReset]: (payload) => ({
+    endpoint: 'password-resets',
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload,
+    }
+  }),
+  [api.requestRegistration]: (payload) => ({
+    endpoint: 'registration-requests',
     fetchInit: {
       method: httpMethods.POST,
       body: payload,
     }
   }),
   [api.checkRegistration]: (payload) => {
-    const queryStringParams = pick(payload, ['registrationConfirmationCode'])
+    const queryStringParams = pick(payload, ['registrationCode'])
     const queryStringParamsString = queryString.stringify(queryStringParams)
     return {
-      endpoint: `registrations?${queryStringParamsString}`,
+      endpoint: `registration-requests?${queryStringParamsString}`,
     }
   },
   [api.confirmRegistration]: (payload) => ({
-    endpoint: 'registration-confirmations',
+    endpoint: 'registrations',
     fetchInit: {
       method: httpMethods.POST,
       body: payload,

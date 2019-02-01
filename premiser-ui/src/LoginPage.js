@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {goBack} from "react-router-redux"
+import {Link} from 'react-router-dom'
 import Helmet from 'react-helmet'
 import {
   TextField,
@@ -28,6 +29,7 @@ import {
 import EmailTextField from './EmailTextField'
 import {toErrorText} from "./modelErrorMessages"
 import PasswordTextField from './PasswordTextField'
+import paths from './paths'
 import {EditorTypes} from "./reducers/editors"
 import {selectAuthEmail} from './selectors'
 import t from './texts'
@@ -148,6 +150,12 @@ class LoginPage extends Component {
 
                 </FocusContainer>
               </form>
+              <CardText>
+                <Link className="text-link" to={paths.requestRegistration()}>register</Link>
+              </CardText>
+              <CardText>
+                <Link className="text-link" to={paths.requestPasswordReset()}>reset password</Link>
+              </CardText>
             </Card>
 
           </div>

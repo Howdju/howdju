@@ -45,6 +45,10 @@ exports.UsersService = class UsersService {
   async readUserForId(userId) {
     return await this.usersDao.readUserForId(userId)
   }
+  
+  async readUserForEmail(email) {
+    return await this.usersDao.readUserForEmail(email)
+  }
 
   updatePasswordForEmail(email, password) {
     return this.usersDao.readUserForEmail(email)
@@ -53,8 +57,12 @@ exports.UsersService = class UsersService {
           throw new EntityNotFoundError(EntityType.USER, email)
         }
 
-        return this.authService.createOrUpdatePasswordAuthForUserId(user.id, password)
+        return Promise.all([
+          user,
+          this.authService.createOrUpdatePasswordAuthForUserId(user.id, password),
+        ])
       })
+      .then(([user]) => user)
   }
   
   async createRegisteredUser(user, passwordHash, passwordHashType, now) {

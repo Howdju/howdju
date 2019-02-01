@@ -312,7 +312,7 @@ class App extends Component {
                   primaryText="Register"
                   leftIcon={<FontIcon>person_add</FontIcon>}
                   component={Link}
-                  to={paths.register()}
+                  to={paths.requestRegistration()}
         />
       )
       navItems.push(

@@ -1,5 +1,9 @@
 require('any-promise/register')('bluebird', {Promise: require('bluebird')})
 
+const moment = require('moment')
+const momentDurationFormatSetup = require("moment-duration-format")
+momentDurationFormatSetup(moment)
+
 const assign = require('lodash/assign')
 module.exports = assign(
   {},

@@ -65,12 +65,21 @@ _e.negateRootPolarity = (rootPolarity) => {
 
 _e.makeNewCredentials = (props) => assign({email: '', password: ''}, props)
 
-_e.makeNewRegistration = (props) => assign({
+_e.makeNewPasswordResetRequest = (props) => assign({
+  email: '',
+}, props)
+_e.makeNewPasswordResetConfirmation = (props) => assign({
+  userId: null,
+  email: null,
+  passwordResetCode: null,
+}, props)
+
+_e.makeNewRegistrationRequest = (props) => assign({
   email: '',
 }, props)
 
 _e.makeNewRegistrationConfirmation = (props) => assign({
-  registrationConfirmationCode: '',
+  registrationCode: '',
   username: '',
   shortName: '',
   longName: '',

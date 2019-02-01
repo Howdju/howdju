@@ -572,13 +572,26 @@ const toPersorg = makeMapper(function toPersorgMapper(row) {
   return persorg
 })
 
-const toRegistration = makeMapper(function toRegistrationMapper(row) {
+const toRegistrationRequest = makeMapper(function toRegistrationRequestMapper(row) {
   return {
-    id: row.registration_id,
+    id: row.registration_request_id,
     email: row.email,
-    registrationConfirmationCode: row.registration_confirmation_code,
+    registrationCode: row.registration_code,
     isConsumed: row.is_consumed,
     expires: row.expires,
+    created: row.created,
+    deleted: row.deleted,
+  }
+})
+
+const toPasswordResetRequest = makeMapper(function toPasswordResetRequestMapper(row) {
+  return {
+    id: row.password_reset_request_id,
+    userId: row.user_id,
+    email: row.email,
+    passwordResetCode: row.password_reset_code,
+    expires: row.expires,
+    isConsumed: row.isConsumed,
     created: row.created,
     deleted: row.deleted,
   }
@@ -591,6 +604,7 @@ module.exports = {
   toJustificationBasisCompoundAtom,
   toJustificationScore,
   toJustificationVote,
+  toPasswordResetRequest,
   toPersorg,
   toPerspective,
   toProposition,
@@ -598,7 +612,7 @@ module.exports = {
   toPropositionCompoundAtom,
   toPropositionTagVote,
   toPropositionTagScore,
-  toRegistration,
+  toRegistrationRequest,
   toSourceExcerptParaphrase,
   toStatement,
   toTag,

@@ -12,16 +12,22 @@ exports.init = function init(provider) {
   const envConfig = require(envConfigFilename)
 
   const baseConfig = {
-    // https://en.wikipedia.org/wiki/ISO_8601#Time_intervals
-    authTokenDuration: {days: 30},
-    registrationValidDuration: {hours: 24},
-    /** The amount of time a user can still edit their own entities unless another user has interacted with them */
-    modifyEntityGracePeriod: {hours: 24},
     auth: {
       bcrypt: {
         saltRounds: 10,
       },
     },
+    authTokenDuration: {days: 30},
+    /** Whether to prevent responses that indicate whether an email has been registered with the system */
+    doConcealEmailExistence: true,
+    // https://github.com/jsmreese/moment-duration-format#template-string
+    durationFormatTemplate: "d [days] h [hours] m [minutes] s [seconds]",
+    // https://github.com/jsmreese/moment-duration-format#trim
+    durationFormatTrim: "both mid",
+    /** The amount of time a user can still edit their own entities unless another user has interacted with them */
+    modifyEntityGracePeriod: {hours: 24},
+    passwordResetDuration: {hours: 4},
+    registrationDuration: {hours: 24},
   }
 
   const appConfig = merge({}, baseConfig, envConfig)
