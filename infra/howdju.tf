@@ -60,7 +60,9 @@ module "elasticstack" {
 // ECS instances require a public address to communicate with ECS
 resource "aws_eip" "elasticstack_instance" {
   vpc = true
-  instance = "${module.elasticstack.instance_id}"
+  # should match instance_count of module elasticstack above
+  count = 0
+  instance = "${module.elasticstack.instance_ids[count.index]}"
   depends_on = ["aws_internet_gateway.default"]
 }
 

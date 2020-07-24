@@ -124,10 +124,11 @@ resource "aws_ebs_volume" "elasticstack" {
 }
 
 resource "aws_volume_attachment" "elasticstack" {
+  count = "${var.instance_count}"
   // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-ami-storage-config.html
   device_name = "${var.elasticstack_data_device_name}"
-  volume_id = "${aws_ebs_volume.elasticstack.id}"
-  instance_id = "${aws_instance.elasticstack.id}"
+  volume_id = "${aws_ebs_volume.elasticstack.*.id[count.index]}"
+  instance_id = "${aws_instance.elasticstack.*.id[count.index]}"
 }
 
 // NB when upgrading the instance, ensure that our ephemeral port definitions still correspond to those in /proc/sys/net/ipv4/ip_local_port_range
