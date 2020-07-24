@@ -7,7 +7,8 @@ resource "aws_s3_bucket" "lambda" {
   lifecycle_rule {
     enabled = true
     noncurrent_version_expiration {
-      days = "${var.expiration_days}"
+      days = var.expiration_days
     }
   }
 }
+

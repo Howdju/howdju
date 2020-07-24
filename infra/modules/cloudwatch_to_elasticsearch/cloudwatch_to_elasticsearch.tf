@@ -1,24 +1,24 @@
 resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
-  function_name = "CloudwatchLogsToElasticsearch"
-  role = "${aws_iam_role.cloudwatch_logs_to_elasticsearch.arn}"
-  handler = "index.handler"
-  runtime = "nodejs8.10"
-  s3_bucket = "${data.aws_s3_bucket_object.lambda.bucket}"
-  s3_key = "${data.aws_s3_bucket_object.lambda.key}"
-  s3_object_version = "${data.aws_s3_bucket_object.lambda.version_id}"
-  timeout = "${var.lambda_timeout}"
-  publish = true
+  function_name     = "CloudwatchLogsToElasticsearch"
+  role              = aws_iam_role.cloudwatch_logs_to_elasticsearch.arn
+  handler           = "index.handler"
+  runtime           = "nodejs8.10"
+  s3_bucket         = data.aws_s3_bucket_object.lambda.bucket
+  s3_key            = data.aws_s3_bucket_object.lambda.key
+  s3_object_version = data.aws_s3_bucket_object.lambda.version_id
+  timeout           = var.lambda_timeout
+  publish           = true
   vpc_config {
-    security_group_ids = ["${var.vpc_security_group_ids}"]
-    subnet_ids = ["${var.vpc_subnet_ids}"]
+    security_group_ids = var.vpc_security_group_ids
+    subnet_ids         = var.vpc_subnet_ids
   }
   environment {
     variables = {
-      ELASTICSEARCH_AUTHORITY = "${var.elasticsearch_authority}",
-      ELASTICSEARCH_INDEX = "${var.elasticsearch_index}"
-      ELASTICSEARCH_TYPE = "${var.elasticsearch_type}"
-      ELASTICSEARCH_TIMEOUT = "${var.elasticsearch_timeout}"
-      ELASTICSEARCH_BULK_TIMEOUT = "${var.elasticsearch_timeout}"
+      ELASTICSEARCH_AUTHORITY    = var.elasticsearch_authority
+      ELASTICSEARCH_INDEX        = var.elasticsearch_index
+      ELASTICSEARCH_TYPE         = var.elasticsearch_type
+      ELASTICSEARCH_TIMEOUT      = var.elasticsearch_timeout
+      ELASTICSEARCH_BULK_TIMEOUT = var.elasticsearch_timeout
     }
   }
 }
@@ -26,13 +26,13 @@ resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
 resource "aws_lambda_alias" "cloudwatch_logs_to_elasticsearch_live" {
   name             = "live"
   description      = "the live version of the lambda"
-  function_name    = "${aws_lambda_function.cloudwatch_logs_to_elasticsearch.arn}"
-  function_version = "${var.live_lambda_version}"
+  function_name    = aws_lambda_function.cloudwatch_logs_to_elasticsearch.arn
+  function_version = var.live_lambda_version
 }
 
 data "aws_s3_bucket_object" "lambda" {
-  bucket = "${var.lambda_s3_bucket}"
-  key = "${var.lambda_s3_key}"
+  bucket = var.lambda_s3_bucket
+  key    = var.lambda_s3_key
 }
 
 // The lambda zip file will be uploaded by node
@@ -61,6 +61,7 @@ resource "aws_iam_role" "cloudwatch_logs_to_elasticsearch" {
   ]
 }
 EOF
+
 }
 
 //resource "aws_iam_policy" "cloudwatch_logs_to_elasticsearch" {
@@ -99,6 +100,7 @@ data "aws_iam_policy" "AWSLambdaVPCAccessExecutionRole" {
 //}
 
 resource "aws_iam_role_policy_attachment" "cloudwatch_logs_to_elasticsearch" {
-  role = "${aws_iam_role.cloudwatch_logs_to_elasticsearch.id}"
-  policy_arn = "${data.aws_iam_policy.AWSLambdaVPCAccessExecutionRole.arn}"
+  role       = aws_iam_role.cloudwatch_logs_to_elasticsearch.id
+  policy_arn = data.aws_iam_policy.AWSLambdaVPCAccessExecutionRole.arn
 }
+

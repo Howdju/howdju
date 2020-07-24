@@ -1,1 +1,3 @@
-variable "expiration_days" {}
+variable "expiration_days" {
+}
+

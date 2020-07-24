@@ -5,3 +5,4 @@ resource "aws_ecr_repository" "elasticsearch" {
 resource "aws_ecr_repository" "kibana" {
   name = "howdju/kibana"
 }
+
