@@ -1,27 +1,26 @@
 # TODO
 
-* cover concealing email
+* cover concealing email (what was this?)
 * Finish terms pages
 
 * Absolutely necessary to add users:
-  - user signup
   - Terms, Privacy Policy, GPDR/Cookie Policy
-  * notification of signup, notification of activity
-  - password reset?
+  - Contact, linked from abuse help note on propositions/justifications
+  * notifications of signup, notification of activity
+  - User activity page
   - Username display?
-  - User activity page?
   - Fix homepage?
   - Fix context trail?
   - Provide better documentation?  (comparison to other sites, use cases, motivation: 
      "what would a system look like that helped people keep up with increasingly complex information given that 
-     there are reasonable disagreements about important facts?")
+     there are reasonable disagreements about important facts?" "record fact-checking")
 
 * Pincites
 * Links in extension frame should load in main page
 * Context trail (alignment and appearance of pro/con, counters, compounds)
 * Better source UI: more distinct UI element, verify quote, read page with some library like newspaper for Source info. 
 * User accounts, pages, notifications
-* Equivalent proposition voting, equivalent proposition justification combination
+* Equivalent/similar proposition voting, equivalent proposition justification combination
 * Highlighting justification creator's counter or excerpt under proposition.
 * Reordering compound proposition atoms
 * Can't delete tags on create proposition page
