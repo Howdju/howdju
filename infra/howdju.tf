@@ -24,6 +24,18 @@ module "lambdas" {
   expiration_days = var.lambdas_s3_noncurrent_version_expiration_days
 }
 
+module bastion {
+  source              = "./modules/bastion"
+  instance_count      = 1
+  aws_region          = var.aws_region
+  vpc_id              = aws_vpc.default.id
+  key_pair_name       = aws_key_pair.bastion.key_name
+  hosted_zone_id      = data.aws_route53_zone.howdju.id
+  bastion_record_name = "bastion.howdju.com."
+  logs_bucket_name    = "howdju-bastion-logs"
+  subnet_ids          = data.aws_subnet_ids.default.ids
+}
+
 module "elasticstack" {
   // referencing this repo as a version should allow us to have different envs with different module versions
   // source = "git::git@bitbucket.org:howdju/premiser.git//infra/modules/elasticstack?ref=v0.0.1"
@@ -63,16 +75,6 @@ module "elasticstack" {
   lb_dns_name               = aws_lb.default_private.dns_name
 }
 
-// ECS instances require a public address to communicate with ECS
-resource "aws_eip" "elasticstack_instance" {
-  vpc = true
-
-  # should match instance_count of module elasticstack above
-  count      = 0
-  instance   = module.elasticstack.instance_ids[count.index]
-  depends_on = [aws_internet_gateway.default]
-}
-
 module "cloudwatch_to_elasticsearch" {
   source                  = "./modules/cloudwatch_to_elasticsearch"
   aws_region              = var.aws_region
@@ -104,3 +106,17 @@ module "elasticsearch_snapshots" {
   live_lambda_version                = var.elasticsearch_snapshots_lambda_live_version
 }
 
+// ECS instances require a public address to communicate with ECS
+resource "aws_eip" "elasticstack_instance" {
+  vpc = true
+
+  # should match instance_count of module elasticstack above
+  count      = 0
+  instance   = module.elasticstack.instance_ids[count.index]
+  depends_on = [aws_internet_gateway.default]
+}
+
+resource aws_key_pair bastion {
+  key_name   = "bastion"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHp8MaA6/gmknphvBIPMncZF4Wo+tfiOaJgwR2NFzA2NaBODvSx9435t8t83T786W5y+BBOgUkSklMCjj8Q+Cz222nDnpAovYbKcLbxr5LzjQMrYoJlHzMBNGhQbOGoXzxnIjFkMHPaRLrCRa5v2LQ4hIz+JDUZXVv1XKjd1ovHt+mwgQHDnnWeAkiNGl8MDOj+Yib5sq7xtYAlgN97tPdHy2n5n71JQhDURNEW4t7RZawkTu31UdQKT6/KT3COwLkbfLPLv2DG5hPXy36zJMril71Ch5LX+vTZ99ZsOk5wD1+LalxIVFwBDLjjO+sMDXe0SdnyydIiKs/n8IyE8Bf"
+}

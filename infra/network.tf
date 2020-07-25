@@ -167,3 +167,6 @@ resource "aws_default_security_group" "default" {
   }
 }
 
+data "aws_route53_zone" "howdju" {
+  name = "howdju.com."
+}
