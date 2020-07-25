@@ -72,6 +72,12 @@ yarn start:local
 
 Open browser to localhost:3000
 
+# Run tests
+
+```
+bin/test-all.sh
+```
+
 # Publishing
 
 ## Publishing the API

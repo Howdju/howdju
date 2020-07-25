@@ -778,8 +778,10 @@ Cat meeting design notes:
 * https://atlassian.design/guidelines/product/components/checkboxes
   * https://atlaskit.atlassian.com/
 * Reader mode/scraping, Boilerplate removal / readability mode:
+  * https://github.com/mozilla/readability
   * https://github.com/codelucas/newspaper
   * https://github.com/keepcosmos/readability
+  * https://github.com/luin/readability
   * [Scrapy web scraping](https://scrapy.readthedocs.io/en/latest/intro/overview.html)
   * https://github.com/chromium/dom-distiller
   * https://www.npmjs.com/package/distillery-js

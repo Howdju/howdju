@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 module_sub_dirs=(
 howdju-test-common
 howdju-common
