@@ -28,7 +28,7 @@ const {
 } = require('../serviceErrors')
 
 exports.RegistrationService = class RegistrationService {
-  
+
   constructor(logger, config, emailService, usersService, authService, registrationRequestsDao) {
     this.logger = logger
     this.config = config
@@ -37,28 +37,28 @@ exports.RegistrationService = class RegistrationService {
     this.authService = authService
     this.registrationRequestsDao = registrationRequestsDao
   }
-  
+
   async createRequest(registrationRequest) {
     const {isValid, errors} = validate(schemaIds.registrationRequest, registrationRequest)
     if (!isValid) {
       throw new EntityValidationError(errors)
     }
     // TODO this is a race condition right now with creating the registration based upon the username/email
-    const shouldContinue = await checkRegistrationConflicts(this, registrationRequest)
+    const shouldContinue = await processRegistrationConflicts(this, registrationRequest)
     if (!shouldContinue) {
       return
     }
-    
+
     const {registrationCode, duration} = await createRegistration(this, registrationRequest)
     await sendConfirmationEmail(this, registrationRequest, registrationCode, duration)
-    
+
     return {
-      value: this.config.registrationDuration, 
+      value: this.config.registrationDuration,
       formatTemplate: this.config.durationFormatTemplate,
       formatTrim: this.config.durationFormatTrim,
     }
   }
-  
+
   async checkRequestForCode(registrationCode) {
     const now = utcNow()
     const registration = await this.registrationRequestsDao.readForCode(registrationCode)
@@ -81,13 +81,13 @@ exports.RegistrationService = class RegistrationService {
 }
 
 /** Returns whether the registration should continue */
-async function checkRegistrationConflicts(self, registrationRequest) {
+async function processRegistrationConflicts(self, registrationRequest) {
   const {email} = registrationRequest
   const entityConflicts = {}
   if (await self.usersService.isEmailInUse(email)) {
     if (self.config.doConcealEmailExistence) {
-      self.logger.info(`silently ignoring attempt to register email for existing user: ${email}`)
-      return false  
+      await sendExistingAccountNotificationEmail(self, registrationRequest)
+      return false
     }
     entityConflicts.email = {
       code: entityErrorCodes.EMAIL_TAKEN,
@@ -103,7 +103,7 @@ async function checkRegistrationConflicts(self, registrationRequest) {
   if (keys(entityConflicts).length > 0) {
     throw new EntityConflictError(entityConflicts)
   }
-  
+
   return true
 }
 
@@ -117,7 +117,8 @@ async function createRegistration(self, registrationRequest) {
   return {registrationCode, duration}
 }
 
-async function sendConfirmationEmail(self, email, registrationCode, duration) {
+async function sendConfirmationEmail(self, registrationRequest, registrationCode, duration) {
+  const {email} = registrationRequest
   const confirmationUrl =
     `https://www.howdju.com${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`
   const durationText = duration.format(self.config.durationFormatTemplate, {trim: self.config.durationFormatTrim})
@@ -146,6 +147,38 @@ async function sendConfirmationEmail(self, email, registrationCode, duration) {
         You must complete your registration within 24 hours.  If your registration expires, please register again.
         
         If you did not register on howdju.com, you may ignore this email and the registration will expire.
+      `,
+  }
+  await self.emailService.sendEmail(emailParams)
+}
+
+async function sendExistingAccountNotificationEmail(self, registrationRequest) {
+  const {email} = registrationRequest
+  const loginUrl = `https://www.howdju.com${commonPaths.login()}`
+  const resetUrl = `https://www.howdju.com${commonPaths.requestPasswordReset()}`
+  const emailParams = {
+    to: email,
+    subject: 'Howdju Registration',
+    tags: [{purpose: 'registration-error'}],
+    bodyHtml: outdent`
+        Hello,
+        <br/><br/>
+        A request to register your email address was received, but your email address is already registered.  If you
+        tried to register on howdju.com, you can instead <a href="${loginUrl}">login here<a>.
+        <br/><br/>
+        If you have forgotten your password, please <a href="${resetUrl}">reset your password here</a>.
+        <br/><br/>
+        If you did not register on howdju.com, you may ignore this email.
+      `,
+    bodyText: outdent`
+        Hello,
+
+        A request to register your email address was received, but your email address is already registered.  If you
+        tried to register on howdju.com, you can instead <a href="${loginUrl}">login here<a>.
+
+        If you have forgotten your password, please <a href="${resetUrl}">reset your password here</a>.
+
+        If you did not register on howdju.com, you may ignore this email.
       `,
   }
   await self.emailService.sendEmail(emailParams)

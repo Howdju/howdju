@@ -1,6 +1,8 @@
 # TODO
 
-* cover concealing email (what was this?)
+* Upgrade postgres
+* Upgrade React/react-md
+
 * Finish terms pages
 
 * Absolutely necessary to add users:

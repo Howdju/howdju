@@ -11,8 +11,8 @@ exports.EmailService = class EmailService {
     this.logger = logger
     this.ses = ses
   }
-  
-  async sendEmail(emailParams) {    
+
+  async sendEmail(emailParams) {
     let {
       to,
       cc,
@@ -23,16 +23,16 @@ exports.EmailService = class EmailService {
       bodyText,
       tags,
     } = emailParams
-    requireArgs({to, from, subject, bodyHtml, bodyText})
-    
+    requireArgs({to, subject, bodyHtml, bodyText})
+
     if (!isArray(to)) {
       to = [to]
     }
-    
+
     if (!from) {
       from = 'notifications@howdju.com'
     }
-    
+
     const params = {
       Destination: {
         ToAddresses: to,
@@ -55,21 +55,21 @@ exports.EmailService = class EmailService {
       },
       Source: from,
     }
-    
+
     if (cc) {
       if (!isArray(cc)) {
         cc = [cc]
       }
       params['Destination']['CcAddresses'] = cc
     }
-    
+
     if (replyTo) {
       if (!isArray(replyTo)) {
         replyTo = [replyTo]
       }
       params['ReplyToAddresses'] = replyTo
     }
-    
+
     if (tags) {
       params['Tags'] = map(tags, (Value, Name) => ({Name, Value}))
     }
