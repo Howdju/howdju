@@ -189,12 +189,12 @@ exports.init = function init(provider) {
   )
 
   const emailService = provider.isProduction ?
-    new EmailService(provider.logger, provider.ses) :
+    new EmailService(provider.logger, provider.ses, provider.sesv2) :
     new DevEmailService(provider.logger)
-  
+
   const registrationService = new RegistrationService(
-    provider.logger, 
-    provider.appConfig, 
+    provider.logger,
+    provider.appConfig,
     emailService,
     usersService,
     authService,
@@ -204,8 +204,8 @@ exports.init = function init(provider) {
   const passwordResetService = new PasswordResetService(
     provider.logger,
     provider.appConfig,
-    emailService, 
-    usersService, 
+    emailService,
+    usersService,
     authService,
     provider.passwordResetRequestsDao,
   )

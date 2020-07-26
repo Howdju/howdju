@@ -24,5 +24,5 @@ status_code=$(cat $lambda_response_file_name | jq '.statusCode')
 rm $lambda_response_file_name
 rm $cli_response_file_name
 echo "smoke test status code: $status_code"
-# It might be 400 for some invalid request, but we would just like to make sure the server doesn't 500 on us.
+# It might be 400, e.g., for some fake login, but we would just like to make sure the server doesn't 500 on us.
 [[ $status_code -lt '500' ]]

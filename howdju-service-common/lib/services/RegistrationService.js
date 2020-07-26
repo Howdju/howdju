@@ -125,7 +125,7 @@ async function sendConfirmationEmail(self, registrationRequest, registrationCode
   const emailParams = {
     to: email,
     subject: 'Howdju Registration',
-    tags: [{purpose: 'confirm-registration'}],
+    tags: {purpose: 'confirm-registration'},
     bodyHtml: outdent`
         Hello,<br/>
         <br/>
@@ -159,7 +159,7 @@ async function sendExistingAccountNotificationEmail(self, registrationRequest) {
   const emailParams = {
     to: email,
     subject: 'Howdju Registration',
-    tags: [{purpose: 'registration-error'}],
+    tags: {purpose: 're-registration-error'},
     bodyHtml: outdent`
         Hello,
         <br/><br/>

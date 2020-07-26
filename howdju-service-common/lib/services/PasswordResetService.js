@@ -16,7 +16,7 @@ const {
 } = require("../serviceErrors")
 
 exports.PasswordResetService = class PasswordResetsService {
-  
+
   constructor(logger, config, emailService, usersService, authService, passwordResetRequestsDao) {
     this.logger = logger
     this.config = config
@@ -25,11 +25,11 @@ exports.PasswordResetService = class PasswordResetsService {
     this.authService = authService
     this.passwordResetRequestsDao = passwordResetRequestsDao
   }
-  
+
   async createRequest(passwordResetRequest) {
     const now = utcNow()
     const {email} = passwordResetRequest
-    
+
     const user = await this.usersService.readUserForEmail(email)
     if (!user) {
       if (this.config.doConcealEmailExistence) {
@@ -38,31 +38,31 @@ exports.PasswordResetService = class PasswordResetsService {
       }
       throw new EntityNotFoundError(EntityType.USER, {email})
     }
-    
+
     // TODO delete previous unconsumed password resets?
-    
+
     const passwordResetCode = cryptohat(256, 36)
     const duration = moment.duration(this.config.passwordResetDuration)
     const expires = momentAdd(now, duration)
     const isConsumed = false
     await this.passwordResetRequestsDao.create(passwordResetRequest, user.id, passwordResetCode, expires, isConsumed, now)
-    
+
     await sendConfirmationEmail(this, email, passwordResetCode, duration)
-    
+
     return {
       value: this.config.passwordResetDuration,
       formatTemplate: this.config.durationFormatTemplate,
       formatTrim: this.config.durationFormatTrim,
     }
   }
-  
+
   async checkRequestForCode(passwordResetCode) {
     const now = utcNow()
     const passwordResetRequest = await this.passwordResetRequestsDao.readForCode(passwordResetCode)
     await checkRequestValidity(passwordResetRequest, now)
     return passwordResetRequest.email
   }
-  
+
   async resetPasswordAndLogin(passwordResetCode, passwordResetConfirmation) {
     const now = utcNow()
     const passwordResetRequest = await this.passwordResetRequestsDao.readForCode(passwordResetCode)
@@ -101,7 +101,7 @@ async function sendConfirmationEmail(self, email, passwordResetCode, duration) {
   const emailParams = {
     to: email,
     subject: 'Howdju Password Reset',
-    tags: [{purpose: 'reset-password'}],
+    tags: {purpose: 'reset-password'},
     bodyHtml: outdent`
       Hello,<br/>
       <br/>

@@ -7,16 +7,17 @@ const {
 
 
 exports.EmailService = class EmailService {
-  constructor(logger, ses) {
+  constructor(logger, ses, sesv2) {
     this.logger = logger
     this.ses = ses
+    this.sesv2 = sesv2
   }
 
   async sendEmail(emailParams) {
     let {
+      from,
       to,
       cc,
-      from,
       replyTo,
       subject,
       bodyHtml,
@@ -25,62 +26,106 @@ exports.EmailService = class EmailService {
     } = emailParams
     requireArgs({to, subject, bodyHtml, bodyText})
 
-    if (!isArray(to)) {
-      to = [to]
-    }
-
     if (!from) {
       from = 'notifications@howdju.com'
     }
-
-    const params = {
-      Destination: {
-        ToAddresses: to,
-      },
-      Message: {
-        Body: {
-          Html: {
-            Charset: "UTF-8",
-            Data: bodyHtml
-          },
-          Text: {
-            Charset: "UTF-8",
-            Data: bodyText
-          }
-        },
-        Subject: {
-          Charset: 'UTF-8',
-          Data: subject
-        }
-      },
-      Source: from,
+    if (!isArray(to)) {
+      to = [to]
     }
-
-    if (cc) {
-      if (!isArray(cc)) {
-        cc = [cc]
-      }
-      params['Destination']['CcAddresses'] = cc
+    if (cc && !isArray(cc)) {
+      cc = [cc]
     }
-
-    if (replyTo) {
-      if (!isArray(replyTo)) {
-        replyTo = [replyTo]
-      }
-      params['ReplyToAddresses'] = replyTo
+    if (replyTo && !isArray(replyTo)) {
+      replyTo = [replyTo]
     }
-
     if (tags) {
-      params['Tags'] = map(tags, (Value, Name) => ({Name, Value}))
+      tags = map(tags, (Value, Name) => ({Name, Value}))
     }
 
+    const params = this.sesv2
+      ? makeSesv2Params({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags})
+      : makeSesParams({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags})
     try {
-      const result = await this.ses.sendEmail(params).promise()
+      this.logger.silly('Sending email', {params, isSesv2: !!this.sesv2})
+      const result = await (this.sesv2
+        ? this.sesv2.sendEmail(params)
+        : this.ses.sendEmail(params)
+      ).promise()
       this.logger.debug('Successfully sent email', {result})
       return result
     } catch(err) {
-      this.logger.exception('failed to send email', {err})
+      this.logger.error('failed to send email', {params, err})
       throw err
     }
   }
+}
+
+function makeSesParams({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags}) {
+  const params = {
+    Source: from,
+    Destination: {
+      ToAddresses: to,
+    },
+    Message: {
+      Body: {
+        Html: {
+          Data: bodyHtml
+        },
+        Text: {
+          Data: bodyText
+        }
+      },
+      Subject: {
+        Data: subject
+      },
+    },
+  }
+
+  if (cc) {
+    params['Destination']['CcAddresses'] = cc
+  }
+  if (replyTo) {
+    params['ReplyToAddresses'] = replyTo
+  }
+  if (tags) {
+    params['Tags'] = tags
+  }
+
+  return params
+}
+
+function makeSesv2Params({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags}) {
+  const params = {
+    FromEmailAddress: from,
+    Destination: {
+      ToAddresses: to,
+    },
+    Content: {
+      Simple: {
+        Subject: {
+          Data: subject,
+        },
+        Body: {
+          Html: {
+            Data: bodyHtml,
+          },
+          Text: {
+            Data: bodyText,
+          }
+        },
+      },
+    },
+  }
+
+  if (cc) {
+    params['Destination']['CcAddresses'] = cc
+  }
+  if (replyTo) {
+    params['ReplyToAddresses'] = [replyTo]
+  }
+  if (tags) {
+    params['EmailTags'] = tags
+  }
+
+  return params
 }
