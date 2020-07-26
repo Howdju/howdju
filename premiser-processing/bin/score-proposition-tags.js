@@ -32,4 +32,5 @@ const job = () => {
   }
 }
 
-job().finally(() => pool.end())
+/* eslint-disable no-console */
+job().finally(() => pool.end()).catch(err => console.log(err))

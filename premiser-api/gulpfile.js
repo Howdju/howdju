@@ -4,7 +4,7 @@ const zip = require('gulp-zip')
 const install = require('gulp-install')
 const {LocalInstaller} = require('install-local')
 const path = require('path')
-const runSequence = require('run-sequence')
+const runSequence = require('gulp4-run-sequence')
 
 const lambdarcPath = path.resolve('lambdarc')
 const lambdarc = require(lambdarcPath)

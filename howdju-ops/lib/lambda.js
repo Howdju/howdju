@@ -28,7 +28,7 @@ const updateFunctionCode = (functionName, functionCodeZipPath) => {
     const params = {
       FunctionName: functionName,
       Publish: false, // This boolean parameter can be used to request AWS Lambda to update the Lambda function and publish a version as an atomic operation.
-      ZipFile: data
+      ZipFile: data,
     }
     lambda.updateFunctionCode(params, (err, data) => {
       if (err) throw err

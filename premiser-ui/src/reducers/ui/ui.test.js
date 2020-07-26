@@ -1,5 +1,5 @@
 import {LOCATION_CHANGE} from 'react-router-redux'
-import { parsePath } from 'history/PathUtils'
+import { parsePath } from 'history'
 
 import {
   app, mainSearch,

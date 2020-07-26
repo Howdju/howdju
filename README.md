@@ -7,15 +7,15 @@ Install node and yarn:
 ```sh
 brew install nodenv
 nodenv init
-nodenv install 8.10.0
+nodenv install 12.18.2
 # Activates this node version just for this shell via an env. var
-nodenv shell 8.10.0
+nodenv shell 12.18.2
 npm install -g yarn
-# I had to install this to succeesfully install bcrypt in howdju-service-common
+# I had to install this to successfully install bcrypt in howdju-service-common
 npm install -g node-gyp
 ```
 
-The correct node version is automatically activated when you `cd` into a node.js directory containg a `.node-version` file.
+The correct node version automatically activates due to the `.node-version` file.
 
 ## Link development node modules and install 
 
@@ -72,9 +72,10 @@ yarn start:local
 
 Open browser to localhost:3000
 
-# Run tests
+# Linting and testing
 
 ```
+bin/lint-all.sh
 bin/test-all.sh
 ```
 
@@ -82,12 +83,18 @@ bin/test-all.sh
 
 ## Publishing the API
 
+We must build the code on a Linux instance so that it is binary compatible with the AWS Lambda containers.  We do this
+by building it on an Amazon Docker container.
+
 ```sh
 # Build the base docker image (if necessary)
 bin/docker/api-base-build.sh
 
 # Build the docker image (if necessary)
 bin/docker/api-deploy-build.sh
+
+# You will be prompted for the password to the private key config/docker/id_rsa_howdju_readonly, which allows
+# the image to fetch the code.
 
 # Pulls and deploys the current master branch to pre-prod
 bin/docker/api-deploy-run.sh pre-prod

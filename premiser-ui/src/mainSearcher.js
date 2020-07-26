@@ -1,5 +1,5 @@
 import paths from './paths'
-import { createPath } from 'history/PathUtils'
+import { createPath } from 'history'
 import head from 'lodash/head'
 
 class MainSearcher {

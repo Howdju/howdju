@@ -1,4 +1,4 @@
-import { createPath } from 'history/PathUtils'
+import { createPath } from 'history'
 import map from 'lodash/map'
 import isEmpty from 'lodash/isEmpty'
 import join from 'lodash/join'
