@@ -1,4 +1,4 @@
-FROM library/amazonlinux:2018.03
+FROM library/amazonlinux:2.0.20200602.0
 
 RUN \
   yum -y update && \
