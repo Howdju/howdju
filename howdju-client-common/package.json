@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "babel-plugin-dynamic-import-node": "^2.2.0",
-    "detect-node": "^2.0.4",
     "redux-actions": "^2.6.4"
   },
   "devDependencies": {

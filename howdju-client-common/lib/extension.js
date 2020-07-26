@@ -1,5 +1,3 @@
-import isNode from 'detect-node'
-
 // const apis = [
 //   'alarms',
 //   'bookmarks',
@@ -31,9 +29,20 @@ if (window.chrome) {
   extension = window.browser
 }
 
-// We run the tests in node, so there likely will not be an extension api then
-if (!extension && !isNode) {
-  throw new Error("unable to detect extension API")
+class Extension {
+  constructor(extension) {
+    this.extension = extension
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#Communicating_with_the_web_page
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions
+  sendMessage(extensionId, action) {
+    if (extension) {
+      this.extension.runtime.sendMessage(extensionId, action)
+    }
+  }
 }
 
-export default extension
+export default new Extension(extension)
