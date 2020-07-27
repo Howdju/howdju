@@ -26,6 +26,7 @@ import {
   mapActionCreatorGroupToDispatchToProps,
   ui,
 } from './actions'
+import config from './config'
 import EmailTextField from './EmailTextField'
 import {toErrorText} from "./modelErrorMessages"
 import PasswordTextField from './PasswordTextField'
@@ -150,12 +151,14 @@ class LoginPage extends Component {
 
                 </FocusContainer>
               </form>
-              <CardText>
-                <Link className="text-link" to={paths.requestRegistration()}>register</Link>
-              </CardText>
-              <CardText>
-                <Link className="text-link" to={paths.requestPasswordReset()}>reset password</Link>
-              </CardText>
+              {config.isRegistrationEnabled ? [
+                <CardText key="register">
+                  <Link className="text-link" to={paths.requestRegistration()}>register</Link>
+                </CardText>,
+                <CardText key="reset-password">
+                  <Link className="text-link" to={paths.requestPasswordReset()}>reset password</Link>
+                </CardText>
+              ] : null}
             </Card>
 
           </div>

@@ -31,29 +31,30 @@ import {
   flows,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
+import config from './config'
+import ErrorBoundary from './ErrorBoundary'
+import Header from './Header'
 import {history} from './history'
+import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
 import {logger} from './logger'
 import MessageActionHandler from './MessageActionHandler'
 import paths from './paths'
+import routes from './routes'
 import {
   selectAuthToken,
   selectAuthEmail,
 } from "./selectors"
 import * as smallchat from './smallchat'
-import {
-  isScrollPastBottom,
-  isScrollPastTop,
-  isDevice,
-} from "./util"
 import t, {
   MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
   MAIN_TABS_WHATS_NEXT_TAB_NAME,
   MAIN_TABS_ABOUT_TAB_NAME,
 } from "./texts"
-import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
-import ErrorBoundary from './ErrorBoundary'
-import Header from './Header'
-import routes from './routes'
+import {
+  isScrollPastBottom,
+  isScrollPastTop,
+  isDevice,
+} from "./util"
 
 import './fonts.js'
 import './App.scss'
@@ -307,14 +308,16 @@ class App extends Component {
         />
       )
     } else {
-      navItems.push(
-        <ListItem key="register"
-                  primaryText="Register"
-                  leftIcon={<FontIcon>person_add</FontIcon>}
-                  component={Link}
-                  to={paths.requestRegistration()}
-        />
-      )
+      if (config.isRegistrationEnabled) {
+        navItems.push(
+          <ListItem key="register"
+                    primaryText="Register"
+                    leftIcon={<FontIcon>person_add</FontIcon>}
+                    component={Link}
+                    to={paths.requestRegistration()}
+          />
+        )
+      }
       navItems.push(
         <ListItem key="login"
                   primaryText="Login"
