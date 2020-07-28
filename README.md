@@ -103,6 +103,9 @@ bin/docker/api-deploy-run.sh pre-prod
 
 # To deploy to prod, just point the `prod` alias to the same version as the `pre-prod` alias
 cd premiser-api/
+# Set the environment variable
+# AWS_PROFILE=<your AWS profile name>
+# if you would like to override the default of BuildTools
 yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
 ```
 
