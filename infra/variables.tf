@@ -10,6 +10,8 @@ variable "base_domain" {
   default = "howdju.com"
 }
 
+## Elasticstack
+
 variable "elasticstack_instance_type" {
   default = "m5.large"
 }

@@ -76,20 +76,20 @@ resource "aws_security_group" "bastion" {
   vpc_id      = aws_vpc.default.id
 
   ingress {
-    description = "Allow all SSH"
-    from_port   = module.constants.ssh_port
-    to_port     = module.constants.ssh_port
-    protocol    = "tcp"
-    cidr_blocks = [module.constants.cidr_block_all]
+    description      = "Allow all SSH"
+    from_port        = module.constants.ssh_port
+    to_port          = module.constants.ssh_port
+    protocol         = "tcp"
+    cidr_blocks      = [module.constants.cidr_block_all]
     ipv6_cidr_blocks = [module.constants.cidr_block_v6_all]
   }
 
   ingress {
-    description = "Allow web for kibana"
-    from_port   = module.constants.http_port
-    to_port     = module.constants.http_port
-    protocol    = "tcp"
-    cidr_blocks = [module.constants.cidr_block_all]
+    description      = "Allow web for kibana"
+    from_port        = module.constants.http_port
+    to_port          = module.constants.http_port
+    protocol         = "tcp"
+    cidr_blocks      = [module.constants.cidr_block_all]
     ipv6_cidr_blocks = [module.constants.cidr_block_v6_all]
   }
 

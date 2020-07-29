@@ -8,8 +8,7 @@ provider "template" {
   version = "~> 2.1.2"
 }
 
-data "aws_caller_identity" "current" {
-}
+data "aws_caller_identity" "current" {}
 
 module "constants" {
   source = "./modules/constants"
