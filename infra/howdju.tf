@@ -23,7 +23,7 @@ module "lambdas" {
   expiration_days = var.lambdas_s3_noncurrent_version_expiration_days
 }
 
-module bastion {
+module "bastion" {
   source              = "./modules/bastion"
   instance_count      = 1
   aws_region          = var.aws_region
@@ -33,6 +33,14 @@ module bastion {
   bastion_record_name = "bastion.howdju.com."
   logs_bucket_name    = "howdju-bastion-logs"
   subnet_ids          = data.aws_subnet_ids.default.ids
+}
+
+variable "ses_lambda_package_path" {
+  description = "The path to the Lambda package for the ses_lambda module"
+}
+module "ses_lambda" {
+  source = "./modules/ses_lambda"
+  lambda_package_path = var.ses_lambda_package_path
 }
 
 module "elasticstack" {
@@ -115,7 +123,7 @@ resource "aws_eip" "elasticstack_instance" {
   depends_on = [aws_internet_gateway.default]
 }
 
-resource aws_key_pair bastion {
+resource "aws_key_pair" bastion {
   key_name   = "bastion"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHp8MaA6/gmknphvBIPMncZF4Wo+tfiOaJgwR2NFzA2NaBODvSx9435t8t83T786W5y+BBOgUkSklMCjj8Q+Cz222nDnpAovYbKcLbxr5LzjQMrYoJlHzMBNGhQbOGoXzxnIjFkMHPaRLrCRa5v2LQ4hIz+JDUZXVv1XKjd1ovHt+mwgQHDnnWeAkiNGl8MDOj+Yib5sq7xtYAlgN97tPdHy2n5n71JQhDURNEW4t7RZawkTu31UdQKT6/KT3COwLkbfLPLv2DG5hPXy36zJMril71Ch5LX+vTZ99ZsOk5wD1+LalxIVFwBDLjjO+sMDXe0SdnyydIiKs/n8IyE8Bf"
 }
