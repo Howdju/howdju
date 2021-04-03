@@ -106,7 +106,7 @@
       // Don't load smallchat in iframes; it's too cluttered.  E.g. when loaded in browser extension.
       if (window === window.top) {
         var script = document.createElement('script');
-        script.async = 1;
+        script.async = true;
         script.src = "https://embed.small.chat/T6KEMK74MG6LJFL74M.js";
         var otherScript = document.getElementsByTagName('script')[0];
         otherScript.parentNode.insertBefore(script, otherScript);
