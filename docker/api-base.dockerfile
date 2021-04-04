@@ -1,11 +1,16 @@
-FROM library/amazonlinux:2.0.20200602.0
+FROM library/amazonlinux:2.0.20210326.0
 
 RUN \
   yum -y update && \
   yum -y install \
+    # used by nodenv install
+    tar \
     git \
     # necessary to build bcrypt
     gcc-c++ make \
+    # used by lambda-smoke-test.sh
+    openssl \
+    python3 \
     && \
   # configuring git allows us to stash changes
   git config --global user.email "root@docker" && \

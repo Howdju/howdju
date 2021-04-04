@@ -22,14 +22,12 @@ RUN \
   yarn install && \
   cd /howdju/howdju-ops/ && \
   yarn install && \
-  # install awscli
-  curl https://bootstrap.pypa.io/get-pip.py -o- | python && \
-  pip install awscli --upgrade --user && \
-  echo 'export PATH=$HOME/.local/bin/:$PATH' >> $HOME/.bashrc && \
+  pip3 install awscli --upgrade --user && \
   # install jq
   curl -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && \
   chmod +x ./jq && \
-  mv jq $HOME/.local/bin
+  mv jq $HOME/.local/bin && \
+  echo 'export PATH=$HOME/.local/bin/:$PATH' >> $HOME/.bashrc
 
 WORKDIR /howdju/premiser-api
 
