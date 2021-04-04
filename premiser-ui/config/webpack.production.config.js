@@ -9,8 +9,8 @@ const {
 } = require('howdju-common')
 
 const {
-  gitShortSha,
-  nodePackageVersion,
+  gitSha,
+  packageVersion,
 } = require("../util")
 const projectConfig = require('./project.config')
 const {sassLoaderConfig} = require('./sass-loader-config')
@@ -48,9 +48,9 @@ Supposed to support more stuff like this:
  but didn't work; maybe in a newer version
 */
 const banner = `name: ${projectConfig.names.js}
-version: ${nodePackageVersion()}
+version: ${packageVersion()}
 timstamp: ${utcTimestamp()}
-git_commit: ${gitShortSha()}`
+git_commit: ${gitSha()}`
 
 const extractTextPlugin = new ExtractTextPlugin({
   // filename: "[name].[contenthash].css",

@@ -18,6 +18,12 @@ const config = {
     'auth',
     'ui.isMobileSiteDisabled',
   ],
+  sentry: {
+    dsn: "https://05b15a6447f3427db2f4977950149202@o92193.ingest.sentry.io/200909",
+    release: `web-ui@${process.env.PACKAGE_VERSION} (${process.env.GIT_COMMIT_HASH_SHORT})`,
+    environment: process.env.SENTRY_ENV,
+    tracesSampleRate: 1.0,
+  },
   ui: {
     narrowBreakpoint: 840,
     shortTextLength: 256,

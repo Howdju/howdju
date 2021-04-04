@@ -44,3 +44,13 @@ export const setUserId = googleAnalyticsUserId => {
     window.ga('set', 'userId', googleAnalyticsUserId)
   }
 }
+
+
+export const unsetUserId = () => {
+  if (window.ga) {
+    // Does this work?
+    // window.ga('set', 'userId', undefined)
+    // Do we need this? Or does this stop events entirely?
+    window.ga('remove')
+  }
+}

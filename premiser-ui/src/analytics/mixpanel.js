@@ -18,3 +18,9 @@ export const identify = id => {
     window.mixpanel.identify(id)
   }
 }
+
+export const reset = () => {
+  if (window.mixpanel) {
+    window.mixpanel.reset()
+  }
+}

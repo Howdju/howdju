@@ -5,7 +5,11 @@ import {
   cancelResourceApiCalls,
   resourceApiCalls,
 } from './resourceApiSagas'
-import {configureAfterLogin, configureAfterRehydrate} from './configureSagas'
+import {
+  configureAfterLogin,
+  configureAfterRehydrate,
+  configureAfterLogout,
+} from './configureSagas'
 import {
   apiFailureAlerts,
   showAlertForExtantEntities,
@@ -62,6 +66,7 @@ export default () => all([
 
   configureAfterLogin(),
   configureAfterRehydrate(),
+  configureAfterLogout(),
 
   clearAuthTokenWhenUnauthorized(),
 

@@ -4,8 +4,8 @@ const webpack = require('webpack')
 const merge = require('webpack-merge')
 
 const {
-  gitShortSha,
-  nodePackageVersion,
+  gitShaShort,
+  packageVersion,
 } = require('../util')
 const projectConfig = require('./project.config')
 const {sassLoaderConfig} = require('./sass-loader-config')
@@ -21,9 +21,7 @@ const {
 const htmlWebpackPluginConfig = merge({
   appMountId: 'root',
   environment: process.env.NODE_ENV,
-  sentryEnvironment: process.env.SENTRY_ENV,
   filename: projectConfig.names.indexHtml,
-  gitCommit: gitShortSha(),
   hash: false,
   inject: false, // The template injects scripts
   minify: {
@@ -33,11 +31,13 @@ const htmlWebpackPluginConfig = merge({
   mobile: true,
   title: 'Howdju',
   template: projectConfig.paths.src(projectConfig.names.indexHtml),
-  version: nodePackageVersion(),
 }, envHtmlWebpackPluginConfig)
 
 const definePluginConfig = merge({
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  'process.env.SENTRY_ENV': JSON.stringify(process.env.SENTRY_ENV),
+  'process.env.PACKAGE_VERSION': JSON.stringify(packageVersion()),
+  'process.env.GIT_COMMIT_HASH_SHORT': JSON.stringify(gitShaShort()),
 }, envDefinePluginConfig)
 
 const baseWebpackConfig = {

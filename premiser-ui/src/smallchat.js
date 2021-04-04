@@ -34,3 +34,7 @@ export const identify = (smallchatId, shortName, longName) => {
   }
   window.smallchat = {sessionData}
 }
+
+export const unidentify = () => {
+  window.smallchat = {}
+}

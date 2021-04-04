@@ -18,3 +18,10 @@ export const identify = id => {
     window.heap.identify(id)
   }
 }
+
+
+export const resetIdentity = () => {
+  if (window.heap) {
+    window.heap.resetIdentity()
+  }
+}

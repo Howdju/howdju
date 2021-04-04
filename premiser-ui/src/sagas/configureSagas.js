@@ -16,22 +16,35 @@ import {api, str} from '../actions'
 
 export function* configureAfterLogin() {
   yield takeEvery(str(api.login.response), function* configureAfterLoginWorker(action) {
-    if (!action.error) {
-      const externalIds = yield select(selectUserExternalIds)
-      const {
-        sentryId,
-        smallchatId,
-      } = externalIds
-      if (sentryId) {
-        sentry.setUserContext(sentryId)
-      }
-
-      const {shortName, longName} = yield select(selectUser)
-      if (smallchatId) {
-        smallchat.identify(smallchatId, shortName, longName)
-      }
-      analytics.identify(externalIds)
+    if (action.error) {
+      return
     }
+
+    const externalIds = yield select(selectUserExternalIds)
+    const {
+      sentryId,
+      smallchatId,
+    } = externalIds
+    if (sentryId) {
+      sentry.setUserContext(sentryId)
+    }
+
+    const {shortName, longName} = yield select(selectUser)
+    if (smallchatId) {
+      smallchat.identify(smallchatId, shortName, longName)
+    }
+    analytics.identify(externalIds)
+  })
+}
+
+export function* configureAfterLogout() {
+  yield takeEvery(str(api.logout.response), function* configureAfterLogoutWorker(action) {
+    if (action.error) {
+      return
+    }
+    sentry.clearUserContext()
+    smallchat.unidentify()
+    analytics.unidentify()
   })
 }
 

@@ -34,3 +34,9 @@ export const identify = externalIds => {
     heapAnalytics.identify(heapAnalyticsId)
   }
 }
+
+export const unidentify = () => {
+  googleAnalytics.unsetUserId()
+  mixpanel.reset()
+  heapAnalytics.resetIdentity()
+}

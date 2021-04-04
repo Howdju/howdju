@@ -10,6 +10,9 @@ import momentDurationFormatSetup from "moment-duration-format"
 
 import App from './App'
 import configureStore from './configureStore'
+import sentryInit from './sentryInit'
+
+sentryInit()
 
 momentDurationFormatSetup(moment)
 

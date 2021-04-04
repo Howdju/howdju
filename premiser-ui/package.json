@@ -84,6 +84,8 @@
     "webpack-visualizer-plugin": "^0.1.11"
   },
   "dependencies": {
+    "@sentry/browser": "^6.2.5",
+    "@sentry/tracing": "^6.2.5",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",

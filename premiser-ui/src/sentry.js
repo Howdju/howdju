@@ -1,35 +1,19 @@
-// https://docs.sentry.io/clients/javascript/tips/
+import * as Sentry from "@sentry/browser"
 
-// https://docs.sentry.io/clients/javascript/usage/#raven-js-reporting-errors
 export const captureMessage = (message, options) => {
-  if (window.Raven) {
-    window.Raven.captureMessage(message, options)
-  }
+  const eventId = Sentry.captureMessage(message, options)
+  Sentry.showReportDialog({eventId})
 }
 
 export const setUserContext = sentryExternalId => {
-  if (window.Raven) {
-    window.Raven.setUserContext({
-      id: sentryExternalId,
-    })
-  }
+  Sentry.setUser({ id: sentryExternalId })
 }
 
 export const clearUserContext = () => {
-  if (window.Raven) {
-    window.Raven.setUserContext()
-  }
+  Sentry.configureScope(scope => scope.setUser(null))
 }
 
 export const captureException = (err, extra) => {
-  if (window.Raven) {
-    let data = extra ? {extra} : null
-    window.Raven.captureException(err, data)
-  }
-}
-
-export const showReportDialog = () => {
-  if (window.Raven) {
-    window.Raven.showReportDialog()
-  }
+  let data = extra ? {extra} : null
+  Sentry.captureException(err, data)
 }

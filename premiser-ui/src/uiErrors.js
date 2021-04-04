@@ -24,11 +24,13 @@ export const newNetworkFailureError = (message, identifiers, sourceError) =>
   })
 
 export const newApiResponseError = (message, identifiers, sourceError) =>
-  newCustomError(uiErrorTypes.API_RESPONSE_ERROR, makeIdentifiersMessage(message, identifiers), sourceError, {
-    ...identifiers,
-    httpStatusCode: sourceError.response.status,
-    body: sourceError.response.data,
-  })
+  newCustomError(uiErrorTypes.API_RESPONSE_ERROR,
+    makeIdentifiersMessage(`${message}: ${sourceError.response.data}`, identifiers),
+    sourceError, {
+      ...identifiers,
+      httpStatusCode: sourceError.response.status,
+      body: sourceError.response.data,
+    })
 
 export const newRequestConfigurationError = (message, identifiers, sourceError) =>
   newCustomError(uiErrorTypes.REQUEST_CONFIGURATION_ERROR, makeIdentifiersMessage(message, identifiers), sourceError, {

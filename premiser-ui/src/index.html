@@ -22,20 +22,6 @@
   <% for (var css in htmlWebpackPlugin.files.css) { %>
     <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
   <% } %>
-  <% if (htmlWebpackPlugin.options.sentry) { %>
-    <script src="https://cdn.ravenjs.com/3.23.1/raven.min.js" crossorigin="anonymous"></script>
-    <script>
-      // https://docs.sentry.io/clients/javascript/config/
-      if (window.Raven) {
-        window.Raven.config('https://05b15a6447f3427db2f4977950149202@sentry.io/200909', {
-          environment: '<%= htmlWebpackPlugin.options.sentryEnvironment %>',
-          release: '<%= htmlWebpackPlugin.options.version %>',
-          tags: {git_commit: '<%= htmlWebpackPlugin.options.gitCommit %>'}
-          // , ignoreUrls: [/small\.chat$/]
-        }).install();
-      }
-    </script>
-  <% } %>
 </head>
 <body>
   <% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>

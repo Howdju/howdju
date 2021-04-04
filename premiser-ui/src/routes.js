@@ -31,6 +31,7 @@ import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import RegistrationRequestPage from './RegistrationRequestPage'
 import TagPage from './TagPage'
 import TermsPage from './TermsPage'
+import TestErrorPage from './TestErrorPage'
 import ToolsPage from './ToolsPage'
 import WhatsNextPage from './WhatsNextPage'
 
@@ -81,6 +82,7 @@ const routes = [
   <Route key="terms" exact path={paths.terms()} component={TermsPage} />,
   <Route key="icons" exact path="/icons" component={IconPage} />,
 
+  <Route key="testError" exact="/test-error" component={TestErrorPage} />,
   <Route key="notFound" component={NotFoundPage} />,
 ]
 
