@@ -7,9 +7,9 @@ Install node and yarn:
 ```sh
 brew install nodenv
 nodenv init
-nodenv install 12.18.2
+nodenv install 14.16.0
 # Activates this node version just for this shell via an env. var
-nodenv shell 12.18.2
+nodenv shell 14.16.0
 npm install -g yarn
 # I had to install this to successfully install bcrypt in howdju-service-common
 npm install -g node-gyp
@@ -97,6 +97,7 @@ bin/docker/api-deploy-build.sh
 # the image to fetch the code.
 
 # Pulls and deploys the current master branch to pre-prod
+# (When prompted, enter the password used above.)
 bin/docker/api-deploy-run.sh pre-prod
 
 # (Visit pre-prod-www.howdju.com and test the changes)

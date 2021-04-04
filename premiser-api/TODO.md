@@ -1,14 +1,11 @@
 # TODO
 
-* Upgrade postgres
-* Upgrade React/react-md
-
 * Finish terms pages
 
 * Absolutely necessary to add users:
   - Terms, Privacy Policy, GPDR/Cookie Policy
   - Contact, linked from abuse help note on propositions/justifications
-  * notifications of signup, notification of activity
+  - notifications of signup, notification of activity
   - User activity page
   - Username display?
   - Fix homepage?

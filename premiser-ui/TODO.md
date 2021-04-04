@@ -3,10 +3,11 @@
 ## Reboot
 
 - Housekeeping
-  - Update node 12.18.2 -> 14.16.0
   - Update webpack 3.11.0 -> 5.30.0
+  - update sentry
 - Possible upgrades
-  - Update React? Update Material-UI?
+  - Upgrade React/react-md?
+  - Upgrade postgres
 - New directions
   - AppSync?
   - Semantic search?

@@ -20,8 +20,8 @@ RUN \
   echo 'eval "$(nodenv init -)"' >> $HOME/.bashrc && \
   source $HOME/.bashrc && \
   git clone https://github.com/nodenv/node-build.git $(nodenv root)/plugins/node-build && \
-  nodenv install 12.18.2 && \
-  nodenv global 12.18.2 && \
+  nodenv install 14.16.0 && \
+  nodenv global 14.16.0 && \
   npm install -g yarn
 
 COPY config/docker/.aws /root/.aws
