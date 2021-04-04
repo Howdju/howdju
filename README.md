@@ -35,9 +35,9 @@ yarn run db:tunnel
 pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
 pg_dump -h 127.0.0.1  -p 5433 premiser -U premiser_rds > $pg_dump_file_name
 # you can kill `yarn run db:tunnel` once this completes
-docker run -p 5432:5432 --name premiser_postgres postgres:9.6 
+docker run -d --rm -p 5432:5432 --name premiser_postgres postgres:9.6 
 # in another terminal:
-psql -h localhost -U postgres < db/create-users.sql
+psql --echo-all -h localhost -U postgres < db/create-users.sql
 echo 'create database premiser;' | psql -h localhost -U postgres
 psql -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
 psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_name

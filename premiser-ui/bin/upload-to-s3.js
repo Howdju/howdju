@@ -8,8 +8,13 @@ const path = require('path')
 const {
   utcNow
 } = require('howdju-common')
+const {
+  gitSha,
+  nodePackageVersion,
+} = require('../util')
 
-
+const gitCommitMetadataKey = 'x-amz-meta-howdju-git-commit'
+const versionMetadataKey = 'x-amz-meta-howdju-ui-version'
 const projectConfig = require('../config/project.config')
 
 const argParser = new ArgumentParser({
@@ -47,6 +52,10 @@ const upload = (filename) => {
       Bucket: args.bucket,
       Key: filename,
       Body: data,
+      Metadata: {
+        [gitCommitMetadataKey]: gitSha(),
+        [versionMetadataKey]: nodePackageVersion()
+      },
       ACL: 'public-read',
       CacheControl: `public, max-age=${duration.seconds()}`,
       Expires: utcNow().add(duration).toDate(),

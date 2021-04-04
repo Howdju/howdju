@@ -11,7 +11,7 @@ const {
 const {
   gitShortSha,
   nodePackageVersion,
-} = require("./util")
+} = require("../util")
 const projectConfig = require('./project.config')
 const {sassLoaderConfig} = require('./sass-loader-config')
 
