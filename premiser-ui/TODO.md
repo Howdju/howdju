@@ -4,7 +4,6 @@
 
 - Housekeeping
   - Update webpack 3.11.0 -> 5.30.0
-  - update sentry
   - Upgrade postgres
 - Possible upgrades
   - Upgrade React/react-md?

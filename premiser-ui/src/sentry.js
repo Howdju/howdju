@@ -1,8 +1,7 @@
 import * as Sentry from "@sentry/browser"
 
 export const captureMessage = (message, options) => {
-  const eventId = Sentry.captureMessage(message, options)
-  Sentry.showReportDialog({eventId})
+  Sentry.captureMessage(message, options)
 }
 
 export const setUserContext = sentryExternalId => {
