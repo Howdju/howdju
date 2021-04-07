@@ -31,15 +31,24 @@ bin/install-all.sh
 ```
 cd premiser-api
 yarn run db:tunnel
+
 # in another terminal:
 pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
 pg_dump -h 127.0.0.1  -p 5433 premiser -U premiser_rds > $pg_dump_file_name
 # you can kill `yarn run db:tunnel` once this completes
-docker run -d --rm -p 5432:5432 --name premiser_postgres postgres:9.6 
-# in another terminal:
+
+# In any available terminal (fill in a password for the postgres user):
+docker run -d -p 5432:5432 --name premiser_postgres -e POSTGRES_PASSWORD= postgres:12.5
+
+# If you want to see the output from the db, either omit -d from the run command or run:
+docker logs premiser_postgres --follow
+
+# In any available terminal, run the following:
+
+# Choose a premiser_api password and update the config/local*.env files
 psql --echo-all -h localhost -U postgres < db/create-users.sql
 echo 'create database premiser;' | psql -h localhost -U postgres
-psql -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
+psql --echo-all -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
 psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_name
 rm $pg_dump_file_name
 ```
