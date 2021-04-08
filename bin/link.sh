@@ -39,6 +39,9 @@ cd ${base_dir}/premiser-processing
 yarn link howdju-test-common
 yarn link howdju-ops
 
+cd ${base_dir}/premiser-processing/lambda-functions/cloudwatch-logs-to-elasticsearch
+yarn link howdju-service-common
+
 cd ${base_dir}/howdju-client-common
 yarn link
 yarn link howdju-common
