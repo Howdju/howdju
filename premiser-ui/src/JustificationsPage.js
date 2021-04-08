@@ -112,7 +112,7 @@ class JustificationsPage extends Component {
     }
   }
 
-  componentDidUpdate(prevProps,) {
+  componentDidUpdate(prevProps) {
     const prevRootTargetInfo = rootTargetInfoFromProps(prevProps)
     const rootTargetInfo = this.rootTargetInfo()
     if (!isEqual(rootTargetInfo, prevRootTargetInfo)) {

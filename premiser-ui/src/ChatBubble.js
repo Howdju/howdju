@@ -9,7 +9,7 @@ const ChatBubble = props => {
     isPositive,
     isNegative,
     children,
-    ...rest,
+    ...rest
   } = props
   return (
     <div {...rest}

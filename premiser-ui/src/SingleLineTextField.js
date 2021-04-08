@@ -11,7 +11,7 @@ import {
 } from './keyCodes'
 
 export default class SingleLineTextField extends Component {
-  
+
   static propTypes = {
     name: PropTypes.string,
     type: PropTypes.string,
@@ -24,7 +24,7 @@ export default class SingleLineTextField extends Component {
     onSubmit: PropTypes.func,
     onPropertyChange: PropTypes.func,
   }
-  
+
   static defaultProps = {
     rows: 1,
     maxRows: 4,
@@ -42,7 +42,7 @@ export default class SingleLineTextField extends Component {
       onKeyDown,
       onSubmit,
       onPropertyChange,
-      ...rest,
+      ...rest
     } = this.props
     // password inputs must be <input>, which don't support rows.  If you try it becomes a <textfield> and shows the password!
     const rowProps = type !== 'password' ? {rows, maxRows} : {}
@@ -58,7 +58,7 @@ export default class SingleLineTextField extends Component {
       />
     )
   }
-  
+
   onKeyDown = (event) => {
     if (this.props.onKeyDown) {
       this.props.onKeyDown(event)

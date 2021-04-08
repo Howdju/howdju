@@ -27,7 +27,7 @@ class EditableProposition extends Component {
       showJustificationCount,
       // ignore
       dispatch,
-      ...rest,
+      ...rest
     } = this.props
 
     // lazy because editorId may not be available

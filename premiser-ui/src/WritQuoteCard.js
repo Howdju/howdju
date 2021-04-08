@@ -16,7 +16,7 @@ export default class WritQuoteCard extends Component {
       writQuote,
       className,
       showUrls,
-      ...rest,
+      ...rest
     } = this.props
 
     return (

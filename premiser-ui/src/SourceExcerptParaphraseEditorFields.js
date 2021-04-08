@@ -16,7 +16,7 @@ export default class SourceExcerptParaphraseEditorFields extends Component {
       onAddWritQuoteUrl,
       onRemoveWritQuoteUrl,
       onPropertyChange,
-      ...rest,
+      ...rest
     } = this.props
 
     return (

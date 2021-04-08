@@ -26,7 +26,7 @@ export default function JustificationChatBubble(props) {
     children,
     contextTrailItems,
     onClickWritQuoteUrl,
-    ...rest,
+    ...rest
   } = props
   const _isRootPositive = isRootPositive(justification)
   const _isRootNegative = isRootNegative(justification)

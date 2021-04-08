@@ -1,9 +1,8 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const TerserPlugin = require("terser-webpack-plugin")
-const Visualizer = require('webpack-visualizer-plugin')
+const Visualizer = require('webpack-visualizer-plugin2')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
 const {
   utcTimestamp
@@ -69,26 +68,30 @@ module.exports.webpackConfig = {
       entryOnly: true,
       test: /\.js$/,
     }),
-    new CopyWebpackPlugin([
-      { from: projectConfig.paths.src('error.html') },
-      // Copy everything from public directly into dist, except for the fonts, which the client requests from CDN in prod
-      {
-        from: projectConfig.paths.public(),
-        to: projectConfig.paths.dist(),
-        ignore: '*.woff2',
-      },
-    ]),
-    new MiniCssExtractPlugin(),
-    new OptimizeCssAssetsPlugin({
-      cssProcessor: require('cssnano'),
-      // cssProcessorOptions: { discardComments: {removeAll: true } },
-      canPrint: true
+    new CopyPlugin({
+      patterns: [
+        {from: projectConfig.paths.src('error.html')},
+        // Copy everything from public directly into dist, except for the fonts, which the client requests from CDN in prod
+        {
+          from: projectConfig.paths.public(),
+          to: projectConfig.paths.dist(),
+          filter: (resourcePath) => !resourcePath.match(/.woff2$/),
+        },
+      ],
     }),
-    new Visualizer(),
+    new MiniCssExtractPlugin(),
+    new Visualizer({
+      filename: './stats.html'
+    }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
   optimization: {
     minimize: true,
-    minimizer: [new TerserPlugin()],
+    moduleIds: 'named',
+    minimizer: [
+      `...`,
+      new CssMinimizerPlugin(),
+    ],
+    emitOnErrors: true,
   },
 }

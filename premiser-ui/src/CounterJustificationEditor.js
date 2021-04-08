@@ -61,7 +61,7 @@ class CounterJustificationEditor extends Component {
         editEntity,
         isSaving,
       },
-      ...rest,
+      ...rest
     } = this.props
     delete rest.editors
     delete rest.editorId

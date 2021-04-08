@@ -31,7 +31,7 @@ export default class PropositionEditorFields extends Component {
       errors,
       onKeyDown,
       onSubmit,
-      ...rest,
+      ...rest
     } = this.props
 
     const modelErrors = errors && errors.modelErrors

@@ -58,7 +58,7 @@ class ListEntitiesWidget extends Component {
       initialFetchCount,
       fetchCount,
       // end-ignore
-      ...rest,
+      ...rest
     } = this.props
     const hasEntities = this.hasEntities()
     const cards = () => map(entities, this.props.entityToCard)

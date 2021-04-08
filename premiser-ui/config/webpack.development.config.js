@@ -1,4 +1,4 @@
-const CopyWebpackPlugin = require("copy-webpack-plugin")
+const CopyPlugin = require("copy-webpack-plugin")
 const {
   hostAddress,
   devApiServerPort,
@@ -32,6 +32,10 @@ module.exports.webpackConfig = {
   // 'cheap-module-source-map' is recommended for React development.  See: https://reactjs.org/docs/cross-origin-errors.html#source-maps
   devtool: 'cheap-module-source-map',
   plugins: [
-    new CopyWebpackPlugin([ { from: 'public', to: '' } ]),
+    new CopyPlugin({
+      patterns: [
+        { from: 'public', to: '' }
+      ],
+    }),
   ],
 }

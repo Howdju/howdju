@@ -31,13 +31,13 @@ exports.sassLoaderConfig = process.env.NODE_ENV !== 'development' ?
     loader: "sass-loader",
     options: {
       sourceMap: true,
-      data: sassLoaderData,
+      additionalData: sassLoaderData,
     }
   } :
   {
     loader: "sass-loader",
     options: {
       sourceMap: true,
-      data: sassLoaderData + devSassLoaderData,
+      additionalData: sassLoaderData + devSassLoaderData,
     }
   }

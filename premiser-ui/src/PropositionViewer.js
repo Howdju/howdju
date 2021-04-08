@@ -19,7 +19,7 @@ export default class PropositionViewer extends React.Component {
       showStatusText,
       contextTrailItems,
       showJustificationCount,
-      ...rest,
+      ...rest
     } = this.props
 
     const age = proposition.created ? moment(proposition.created).fromNow() : ''

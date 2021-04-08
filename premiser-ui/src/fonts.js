@@ -1,6 +1,6 @@
 /* globals require process */
 if (process.env.NODE_ENV === 'development') {
-  require("style-loader!./_fonts.development.scss")
+  require("./_fonts.development.scss")
 } else {
-  require("style-loader!./_fonts.production.scss")
+  require("./_fonts.production.scss")
 }

@@ -29,7 +29,7 @@ export default class JustificationCard extends Component {
       className,
       showBasisUrls,
       doShowTargets,
-      ...rest,
+      ...rest
     } = this.props
 
     return (

@@ -15,7 +15,7 @@ export default class PropositionCard extends Component {
       showStatusText,
       className,
       contextTrailItems,
-      ...rest,
+      ...rest
     } = this.props
     return (
       <Card

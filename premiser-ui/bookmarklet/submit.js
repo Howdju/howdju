@@ -9,6 +9,7 @@
   }
   const queryParams = []
   for (let param in params) {
+    /* eslint-disable no-prototype-builtins */
     if (params.hasOwnProperty(param)) {
       queryParams.push(`${param}=${encode(params[param])}`)
     }

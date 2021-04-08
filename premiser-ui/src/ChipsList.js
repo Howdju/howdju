@@ -88,7 +88,7 @@ export default class ChipsList extends React.Component {
       onClickAvatar,
       onRemoveChip,
       onClickChip,
-      ...rest,
+      ...rest
     } = this.props
 
     return (

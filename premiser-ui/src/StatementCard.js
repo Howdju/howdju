@@ -20,7 +20,7 @@ export default class StatementCard extends Component {
       showStatusText,
       className,
       contextTrailItems,
-      ...rest,
+      ...rest
     } = this.props
     return (
       <Card

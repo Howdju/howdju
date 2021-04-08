@@ -26,7 +26,7 @@ class EditableWrit extends Component {
       isEditing,
       // ignore
       dispatch,
-      ...rest,
+      ...rest
     } = this.props
 
     const editor = () => {

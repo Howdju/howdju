@@ -2,7 +2,7 @@ const debug = require('debug')('howdju-ui:webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
-const merge = require('webpack-merge')
+const {merge} = require('webpack-merge')
 
 const {
   devWebServerPort,
@@ -62,7 +62,11 @@ const baseWebpackConfig = {
     open: 'Google Chrome',
     port: devWebServerPort(),
     publicPath: OUTPUT_PUBLIC_PATH,
-    stats: projectConfig.compilerStats,
+    stats: {
+      // chunks: false,
+      // chunkModules: false,
+      colors: true
+    },
   },
   module: {
     rules: [
@@ -73,11 +77,7 @@ const baseWebpackConfig = {
           options: {
             cacheDirectory: true,
             // These are necessary for compiling npm-linked libraries
-            presets: [
-              ["env", { "modules": false }],
-              "stage-0",
-              "react",
-            ]
+            presets: ["./babelPreset"],
           },
         },
         exclude: /node_modules\/(?!howdju-common)/,
@@ -111,13 +111,10 @@ const baseWebpackConfig = {
     ]
   },
   plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.NamedModulesPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginConfig),
     new webpack.DefinePlugin(definePluginConfig),
     new MiniCssExtractPlugin(),
   ],
 }
 
-module.exports = merge.smart(baseWebpackConfig, envWebpackConfig)
+module.exports = merge(baseWebpackConfig, envWebpackConfig)

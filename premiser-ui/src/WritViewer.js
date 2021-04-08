@@ -12,7 +12,7 @@ export default function WritViewer(props) {
     id,
     writ,
     className,
-    ...rest,
+    ...rest
   } = props
 
   const age = writ.created ? moment(writ.created).fromNow() : ''

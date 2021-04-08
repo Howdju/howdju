@@ -12,7 +12,7 @@ export default class WritCard extends Component {
       id,
       writ,
       className,
-      ...rest,
+      ...rest
     } = this.props
     return (
       <Card {...rest}

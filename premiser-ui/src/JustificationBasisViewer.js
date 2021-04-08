@@ -28,7 +28,7 @@ export default class JustificationBasisViewer extends Component {
       showUrls,
       contextTrailItems,
       onClickWritQuoteUrl,
-      ...rest,
+      ...rest
     } = this.props
     const basis = justification.basis
 

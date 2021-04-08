@@ -14,7 +14,7 @@ export default class PersorgViewer extends React.Component {
       persorg,
       className,
       showStatusText,
-      ...rest,
+      ...rest
     } = this.props
 
     return (

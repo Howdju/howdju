@@ -151,7 +151,7 @@ export function* redirectHomeFromMissingRootTarget() {
           messageKey = MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE
           break
         default:
-          throw newExhaustedEnumError('JustificationRootTargetType', )
+          throw newExhaustedEnumError('JustificationRootTargetType')
       }
       // startsWith because we don't have a slug
       if (routerLocation.pathname.startsWith(path)) {

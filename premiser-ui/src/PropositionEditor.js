@@ -50,7 +50,7 @@ class PropositionEditor extends Component {
       // ignore
       editors,
       editorId,
-      ...rest,
+      ...rest
     } = this.props
 
     const inProgress = isFetching || isSaving

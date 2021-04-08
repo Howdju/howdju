@@ -11,7 +11,7 @@ export default class CellList extends Component {
   render () {
     const {
       children,
-      ...rest,
+      ...rest
     } = this.props
     const flipMoveProps = config.ui.flipMove
 
