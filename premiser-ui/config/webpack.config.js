@@ -1,8 +1,12 @@
 const debug = require('debug')('howdju-ui:webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
 
+const {
+  devWebServerPort,
+} = require('./util')
 const {
   gitShaShort,
   packageVersion,
@@ -40,11 +44,25 @@ const definePluginConfig = merge({
   'process.env.GIT_COMMIT_HASH_SHORT': JSON.stringify(gitShaShort()),
 }, envDefinePluginConfig)
 
+const OUTPUT_PUBLIC_PATH = '/'
+
 const baseWebpackConfig = {
+  entry: [projectConfig.paths.src('main.js')],
   output: {
     filename: projectConfig.names.js,
     path: projectConfig.paths.dist(),
-    publicPath: '/',
+    publicPath: OUTPUT_PUBLIC_PATH,
+  },
+  devServer: {
+    compress: true,
+    contentBase: projectConfig.paths.src(),
+    hot: true,
+    // Behave like an SPA, serving index.html for paths that don't match files
+    historyApiFallback: true,
+    open: 'Google Chrome',
+    port: devWebServerPort(),
+    publicPath: OUTPUT_PUBLIC_PATH,
+    stats: projectConfig.compilerStats,
   },
   module: {
     rules: [
@@ -65,46 +83,14 @@ const baseWebpackConfig = {
         exclude: /node_modules\/(?!howdju-common)/,
       },
       {
-        test: /\.scss$/,
+        test: /\.(scss|sass|css)$/,
         use: [
-          "style-loader",
-          "css-loader?sourceMap",
-          "resolve-url-loader",
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'resolve-url-loader',
+          'sass-loader',
           // This causes error when deploying to production if it isn't like the first option
-          sassLoaderConfig
-        ]
-      },
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-              // minimize: false,
-              sourceMap: true,
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              autoprefixer: {
-                add: true,
-                remove: true,
-                browsers: ['last 2 versions']
-              },
-              discardComments: {
-                removeAll: true
-              },
-              discardUnused: false,
-              mergeIdents: false,
-              reduceIdents: false,
-              safe: true,
-              sourceMap: 'inline',
-              sourceComments: true,
-            }
-          },
+          sassLoaderConfig,
         ],
       },
       {
@@ -118,15 +104,8 @@ const baseWebpackConfig = {
       {
         test: /\.md$/,
         use: [
-          {
-            loader: "html-loader"
-          },
-          {
-            loader: "markdown-loader",
-            options: {
-              /* markdown options here */
-            }
-          }
+          "html-loader",
+          "markdown-loader"
         ]
       }
     ]
@@ -137,13 +116,8 @@ const baseWebpackConfig = {
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginConfig),
     new webpack.DefinePlugin(definePluginConfig),
+    new MiniCssExtractPlugin(),
   ],
-  // https://webpack.github.io/docs/configuration.html#resolve-alias
-  // resolve: {
-  //   alias: {
-  //     'react': path.resolve('./node_modules/react'),
-  //   }
-  // }
 }
 
 module.exports = merge.smart(baseWebpackConfig, envWebpackConfig)

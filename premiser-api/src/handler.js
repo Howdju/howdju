@@ -29,9 +29,10 @@ const {
 
 
 const allowedHeaders = concat([
-  headerKeys.CONTENT_TYPE,
-  headerKeys.CONTENT_ENCODING,
   headerKeys.AUTHORIZATION,
+  headerKeys.CONTENT_ENCODING,
+  headerKeys.CONTENT_TYPE,
+  headerKeys.SENTRY_TRACE,
 ], customHeaderKeys.identifierKeys)
 
 const makeResponse = (appProvider, {httpStatusCode, headers={}, body, origin}) => {

@@ -1,3 +1,1 @@
-module.exports = {
-  buildFailOnWarning: true,
-}
+module.exports = {}

@@ -1,7 +1,8 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const TerserPlugin = require("terser-webpack-plugin")
 const Visualizer = require('webpack-visualizer-plugin')
 
 const {
@@ -13,8 +14,6 @@ const {
   packageVersion,
 } = require("../util")
 const projectConfig = require('./project.config')
-const {sassLoaderConfig} = require('./sass-loader-config')
-
 
 module.exports.htmlWebpackPluginConfig = {
   smallChat: true,
@@ -22,12 +21,12 @@ module.exports.htmlWebpackPluginConfig = {
   googleAnalytics: {
     trackingId: 'UA-104314283-1',
   },
-  // heapAnalytics: {
-  //   trackingId: '522456069',
-  // },
-  // mixpanel: {
-  //   trackingId: 'cfedfc23579bf718b9e5704f6f6d85bd',
-  // },
+  heapAnalytics: {
+    trackingId: '522456069',
+  },
+  mixpanel: {
+    trackingId: 'cfedfc23579bf718b9e5704f6f6d85bd',
+  },
 }
 
 const apiRoot = process.env.API_ROOT || 'https://api.howdju.com/api/'
@@ -52,14 +51,7 @@ version: ${packageVersion()}
 timstamp: ${utcTimestamp()}
 git_commit: ${gitSha()}`
 
-const extractTextPlugin = new ExtractTextPlugin({
-  // filename: "[name].[contenthash].css",
-  // Although the hash may be good for cache-busting, for now it is creating a lot of files in our S3 bucket
-  filename: "[name].css",
-})
-
 module.exports.webpackConfig = {
-  entry: [projectConfig.paths.src('main.js')],
   /*
   production values: https://webpack.js.org/configuration/devtool/#production
   - source-map - A full SourceMap is emitted as a separate file. It adds a
@@ -71,34 +63,11 @@ module.exports.webpackConfig = {
     It can be used to map stack traces on the client without exposing all of the source code.
    */
   devtool: 'source-map',
-  module: {
-    rules: [
-      {
-        test: /\.scss$/,
-        use: extractTextPlugin.extract({
-          use: [
-            "css-loader?sourceMap",
-            "resolve-url-loader",
-            sassLoaderConfig
-          ],
-          // use style-loader in development
-          // fallback: "style-loader"
-        })
-      },
-    ]
-  },
   plugins: [
     new webpack.BannerPlugin({
       banner: banner,
       entryOnly: true,
       test: /\.js$/,
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compressor: {
-        screw_ie8: true,
-        warnings: true,
-      }
     }),
     new CopyWebpackPlugin([
       { from: projectConfig.paths.src('error.html') },
@@ -109,7 +78,7 @@ module.exports.webpackConfig = {
         ignore: '*.woff2',
       },
     ]),
-    extractTextPlugin,
+    new MiniCssExtractPlugin(),
     new OptimizeCssAssetsPlugin({
       cssProcessor: require('cssnano'),
       // cssProcessorOptions: { discardComments: {removeAll: true } },
@@ -118,4 +87,8 @@ module.exports.webpackConfig = {
     new Visualizer(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  },
 }

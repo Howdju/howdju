@@ -19,9 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <% } %>
 
-  <% for (var css in htmlWebpackPlugin.files.css) { %>
-    <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
-  <% } %>
+  <%= htmlWebpackPlugin.tags.headTags %>
 </head>
 <body>
   <% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>
@@ -37,7 +35,6 @@
   <% if (htmlWebpackPlugin.options.appMountId) { %>
     <div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
   <% } %>
-
   <% if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { %>
     <% for (var index in htmlWebpackPlugin.options.appMountIds) { %>
       <div id="<%= htmlWebpackPlugin.options.appMountIds[index]%>"></div>
@@ -52,13 +49,7 @@
     </script>
   <% } %>
 
-  <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
-  <% } %>
-
-  <% if (htmlWebpackPlugin.options.devServer) { %>
-    <script src="<%= htmlWebpackPlugin.options.devServer%>/webpack-dev-server.js"></script>
-  <% } %>
+  <%= htmlWebpackPlugin.tags.bodyTags %>
 
   <% if (htmlWebpackPlugin.options.googleAnalytics) { %>
     <script>

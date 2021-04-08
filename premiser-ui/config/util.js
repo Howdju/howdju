@@ -8,6 +8,11 @@ exports.hostAddress = () => {
     let done = false
     dns.lookup(os.hostname(), function (err, lookupAddress, fam) {
       address = lookupAddress
+      // Standardize on localhost, since that is what I am more likely to type, and if the system thinks it
+      // should be 127.0.0.1, then there will be a CORS error.
+      if (address === "127.0.0.1") {
+        address = "localhost"
+      }
       done = true
     })
     deasync.loopWhile(() => !done)
