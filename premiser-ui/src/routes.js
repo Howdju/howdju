@@ -1,7 +1,7 @@
 import React from 'react'
 import reduce from 'lodash/reduce'
 import { Route } from 'react-router'
-import pathToRegexp from 'path-to-regexp'
+import { pathToRegexp } from 'path-to-regexp'
 
 import {
   JustificationRootTargetType,
@@ -82,7 +82,7 @@ const routes = [
   <Route key="terms" exact path={paths.terms()} component={TermsPage} />,
   <Route key="icons" exact path="/icons" component={IconPage} />,
 
-  <Route key="testError" exact="/test-error" component={TestErrorPage} />,
+  <Route key="testError" exact path="/test-error" component={TestErrorPage} />,
   <Route key="notFound" component={NotFoundPage} />,
 ]
 
