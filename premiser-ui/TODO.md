@@ -3,10 +3,14 @@
 ## Reboot
 
 - Housekeeping
-  - Update webpack 3.11.0 -> 5.30.0
-  - Upgrade postgres
-- Possible upgrades
+  - Upgrade connected-react-router to 5/6
+      https://github.com/supasate/connected-react-router/blob/master/FAQ.md#how-to-migrate-from-v4-to-v5v6
+  - react persist?
+  - Update react redux
+  - redux-saga
+  - Replace react-hot-loader with react-refresh-webpack-plugin
   - Upgrade React/react-md?
+  - Update webpack 4 -> 5
 - New directions
   - AppSync?
   - Semantic search?
@@ -708,7 +712,6 @@ Cat meeting design notes:
 * Server side rendering
   * [Redux server rendering](https://redux.js.org/recipes/server-rendering)
   * https://hackernoon.com/next-js-react-server-side-rendering-done-right-f9700078a3b6
-* [react-router-redux](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux)?
 * Ensure Redux store preserved between hot reloads
   * http://stackoverflow.com/a/34697765/39396
 * Drag-n-drop

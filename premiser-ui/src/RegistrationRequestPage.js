@@ -1,15 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import {connect} from 'react-redux'
-import {goBack} from "react-router-redux"
+import {goBack} from "connected-react-router"
 import Helmet from 'react-helmet'
 import {
-  Button, 
-  Card, 
-  CardActions, 
-  CardText, 
+  Button,
+  Card,
+  CardActions,
+  CardText,
   CardTitle,
-  CircularProgress, 
+  CircularProgress,
   FocusContainer
 } from 'react-md'
 import get from 'lodash/get'
@@ -30,10 +30,10 @@ import paths from './paths'
 import {EditorTypes} from './reducers/editors'
 
 class RegistrationRequestPage extends React.Component {
-  
+
   static editorId = 'registration-request-page'
   static editorType = EditorTypes.REGISTRATION_REQUEST
-  
+
   constructor(props) {
     super(props)
     this.state = {
@@ -42,11 +42,11 @@ class RegistrationRequestPage extends React.Component {
       wasSubmitAttempted: false,
     }
   }
-  
+
   componentDidMount() {
     this.props.editors.beginEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, makeNewRegistrationRequest())
   }
-  
+
   render() {
     const {
       editorState,
@@ -55,25 +55,25 @@ class RegistrationRequestPage extends React.Component {
       dirty,
       wasSubmitAttempted,
     } = this.state
-    
+
     const isSubmitting = get(editorState, 'isSaving')
     const isSubmitted = get(editorState, 'isSubmitted')
     const apiErrors = get(editorState, 'errors') || {}
     const duration = get(editorState, 'duration')
-    
+
     const registration = get(editorState, 'editEntity')
     const email = get(registration, 'email', '')
 
     const {isValid, errors: validationErrors} = registration ?
       validate(schemaIds.registrationRequest, registration) :
       {isValid: false, errors: {}}
-    
+
     const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
-    
-    const submitButtonTitle = isValid ? 'Register' : wasSubmitAttempted ? 
-      'Please correct the errors to continue' : 
+
+    const submitButtonTitle = isValid ? 'Register' : wasSubmitAttempted ?
+      'Please correct the errors to continue' :
       'Please complete the form to continue'
-    
+
     const form =
       <form onSubmit={this.onSubmit}>
         <FocusContainer focusOnMount containFocus={false}>
@@ -92,10 +92,10 @@ class RegistrationRequestPage extends React.Component {
               errorText={
                 <React.Fragment>
                   {validationErrors.email && 'Please enter a valid email.'}
-                  {get(apiErrors, 'email.code') === entityErrorCodes.EMAIL_TAKEN && 
+                  {get(apiErrors, 'email.code') === entityErrorCodes.EMAIL_TAKEN &&
                     apiErrors.email.value === email &&
                     <span>
-                      That email is already registered. 
+                      That email is already registered.
                       Please <Link className="text-link" to={paths.login()}>login</Link> to continue with this email.
                     </span>
                   }
@@ -105,13 +105,13 @@ class RegistrationRequestPage extends React.Component {
           </CardText>
           <CardActions>
             {isSubmitting && <CircularProgress key="progress" id="progress" />}
-            <Button 
+            <Button
               flat
               children="Cancel"
               disabled={isSubmitting}
               onClick={this.onCancel}
             />
-            <Button 
+            <Button
               raised={isValid}
               flat={!isValid}
               primary={isValid}
@@ -126,10 +126,10 @@ class RegistrationRequestPage extends React.Component {
         </FocusContainer>
       </form>
 
-    const durationText = duration && 
+    const durationText = duration &&
       moment.duration(duration.value).format(duration.formatTemplate, {trim: duration.formatTrim})
     const submissionMessage =
-      <React.Fragment>  
+      <React.Fragment>
         <CardText>
           Your registration has been submitted.  Please check your email to complete your registration.
           You must complete your registration within {durationText}.  If your registration expires, please register again.
@@ -143,7 +143,7 @@ class RegistrationRequestPage extends React.Component {
           />
         </CardActions>
       </React.Fragment>
-    
+
     return (
       <div id="register-page">
         <Helmet>
@@ -152,7 +152,7 @@ class RegistrationRequestPage extends React.Component {
         <div className="md-grid">
           <div className="md-cell md-cell--12">
             <Card>
-              <CardTitle 
+              <CardTitle
                 title="Register"
               />
               {errorMessage &&
@@ -171,7 +171,7 @@ class RegistrationRequestPage extends React.Component {
   onPropertyChange = (properties) => {
     this.props.editors.propertyChange(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, properties)
   }
-  
+
   onBlur = (event) => {
     const name = event.target.name
     if (name) {
@@ -210,7 +210,7 @@ class RegistrationRequestPage extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const editorState = get(state, ['editors', RegistrationRequestPage.editorType, RegistrationRequestPage.editorId]) 
+  const editorState = get(state, ['editors', RegistrationRequestPage.editorType, RegistrationRequestPage.editorId])
   return {
     editorState
   }

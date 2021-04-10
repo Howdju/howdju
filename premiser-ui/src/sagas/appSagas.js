@@ -21,7 +21,7 @@ import {
 import config from '../config'
 import {logger} from '../logger'
 import JustificationsSearchPage from '../JustificationsSearchPage'
-import {LOCATION_CHANGE} from 'react-router-redux'
+import {LOCATION_CHANGE} from 'connected-react-router'
 import {getPathParam, isActivePath, routeIds} from '../routes'
 import {history} from '../history'
 

@@ -1,23 +1,29 @@
 /* Hot module replace needs these dynamic import globals */
 /* globals module require */
-import { createStore, applyMiddleware, compose as reduxCompose } from 'redux'
-import { routerMiddleware } from 'react-router-redux'
+import { createStore, applyMiddleware, compose } from 'redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
+import { routerMiddleware, connectRouter } from 'connected-react-router'
 import createSagaMiddleware from 'redux-saga'
 import rootReducer from './reducers/index'
 import getSagas from './sagas'
 import {logger} from './logger'
 import config from './config'
 import {history} from './history'
+import * as actionCreators from './actions'
 
 export default function configureStore(initialState) {
-  const compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || reduxCompose
+  const composeEnhancers =
+    typeof window === 'object' &&
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+        actionCreators, trace: true, traceLimit: 25
+      }) : compose
   const sagaMiddleware = createSagaMiddleware()
 
   const store = createStore(
-    rootReducer,
+    connectRouter(history)(rootReducer),
     initialState,
-    compose(
+    composeEnhancers(
       autoRehydrate(),
       applyMiddleware(
         routerMiddleware(history),
@@ -38,6 +44,9 @@ export default function configureStore(initialState) {
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers/index', () => {
+      // For connected-react-router 5+
+      // https://github.com/supasate/connected-react-router/blob/master/FAQ.md#how-to-hot-reload-reducers
+      // store.replaceReducer(createRootReducer(history))
       const nextRootReducer = require('./reducers/index').default
       store.replaceReducer(nextRootReducer)
     })

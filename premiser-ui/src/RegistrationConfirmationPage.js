@@ -1,15 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import {goBack} from 'react-router-redux'
+import {goBack} from 'connected-react-router'
 import {
   Button,
-  Card, 
-  CardActions, 
-  CardText, 
-  CardTitle, 
-  Checkbox, 
-  CircularProgress, 
-  FocusContainer, 
+  Card,
+  CardActions,
+  CardText,
+  CardTitle,
+  Checkbox,
+  CircularProgress,
+  FocusContainer,
 } from 'react-md'
 import {connect} from 'react-redux'
 import Helmet from 'react-helmet'
@@ -21,9 +21,9 @@ import {
   apiErrorCodes,
   entityErrorCodes,
   keysTo,
-  makeNewRegistrationConfirmation, 
-  schemaIds, 
-  schemaSettings, 
+  makeNewRegistrationConfirmation,
+  schemaIds,
+  schemaSettings,
   validate,
 } from 'howdju-common'
 
@@ -61,7 +61,7 @@ class RegistrationConfirmationPage extends React.Component {
 
   componentDidMount() {
     this.props.api.checkRegistration(this.props.registrationCode)
-    this.props.editors.beginEdit(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId, 
+    this.props.editors.beginEdit(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId,
       makeNewRegistrationConfirmation({registrationCode: this.props.registrationCode}))
   }
 
@@ -72,7 +72,7 @@ class RegistrationConfirmationPage extends React.Component {
       this.editors.propertyChange(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId, properties)
     }
   }
-  
+
   render() {
     const {
       email,
@@ -106,7 +106,7 @@ class RegistrationConfirmationPage extends React.Component {
     const submitButtonTitle = isValid ? 'Complete registration' : wasSubmitAttempted ?
       'Please correct the errors to continue' :
       'Please complete the form to continue'
-    
+
     const subtitle = subtitleByRegistrationErrorCode[registrationErrorCode]
 
     const form =
@@ -236,7 +236,7 @@ class RegistrationConfirmationPage extends React.Component {
           />
         </CardActions>
       </React.Fragment>
-    
+
     const errorMessage = registrationErrorMessageByCode[registrationErrorCode]
 
     const formWithNotice = (
@@ -252,7 +252,7 @@ class RegistrationConfirmationPage extends React.Component {
         {form}
       </React.Fragment>
     )
-    
+
     return (
       <div id="register-page">
         <Helmet>
@@ -356,11 +356,11 @@ const registrationErrorMessageByCode = {
 
 const mapStateToProps = (state, ownProps) => {
   const editorState = get(state, ['editors', RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId])
-  
+
   const email = selectRegistrationEmail(state)
   const didCheckRegistration = selectDidCheckRegistration(state)
   const registrationErrorCode = selectRegistrationErrorCode(state)
-  
+
   const queryParams = queryString.parse(ownProps.location.search)
   const registrationCode = queryParams.registrationCode
   return {

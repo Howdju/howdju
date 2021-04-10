@@ -1,7 +1,7 @@
 import React, {Component} from "react"
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import {goBack} from "react-router-redux"
+import {goBack} from 'connected-react-router'
 import Helmet from 'react-helmet'
 import {
   Button,
@@ -275,7 +275,7 @@ class CreatePropositionPage extends Component {
     const propositionEditorText = 'propositionEditorText'
 
     const hasSpeakers = speakers && speakers.length > 0
-    
+
     const doShowTypeSelection = !isCreateJustificationMode
 
     return (
@@ -287,7 +287,7 @@ class CreatePropositionPage extends Component {
           <div className="md-grid">
             <div className="md-cell md-cell--12">
               <p>
-                The <Link to={paths.tools()}>Chrome extension & bookmarklet</Link> are convenient ways to create 
+                The <Link to={paths.tools()}>Chrome extension & bookmarklet</Link> are convenient ways to create
                 justifications based upon web pages you visit
               </p>
             </div>

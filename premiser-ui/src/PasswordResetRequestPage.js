@@ -1,5 +1,5 @@
 import React from 'react'
-import {goBack} from 'react-router-redux'
+import {goBack} from 'connected-react-router'
 import {Button, Card, CardActions, CardText, CardTitle, CircularProgress, FocusContainer} from 'react-md'
 import {connect} from 'react-redux'
 import Helmet from 'react-helmet'
@@ -8,8 +8,8 @@ import get from 'lodash/get'
 
 import {
   keysTo,
-  schemaIds, 
-  schemaSettings, 
+  schemaIds,
+  schemaSettings,
   validate
 } from 'howdju-common'
 
@@ -19,7 +19,7 @@ import EmailTextField from './EmailTextField'
 import moment from 'moment'
 
 class PasswordResetRequestPage extends React.Component {
-  
+
   constructor(props) {
     super(props)
     this.state = {
@@ -29,11 +29,11 @@ class PasswordResetRequestPage extends React.Component {
       wasSubmitAttempted: false,
     }
   }
-  
+
   componentDidMount() {
     this.props.pages.beginPasswordResetRequest()
   }
-  
+
   render() {
     const {
       authEmail,
@@ -50,15 +50,15 @@ class PasswordResetRequestPage extends React.Component {
     } = this.state
 
     const {isValid, errors: validationErrors} = validate(schemaIds.passwordResetRequest, passwordResetRequest)
-    
+
     const email = dirtyInputs.email ? passwordResetRequest.email : (authEmail || '')
-    
+
     const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
 
     const submitButtonTitle = isValid ? 'Request password reset' : wasSubmitAttempted ?
       'Please correct the errors to continue' :
       'Please complete the form to continue'
-    
+
     const form = (
       <form onSubmit={this.onSubmit}>
         <FocusContainer focusOnMount containFocus={false}>
@@ -74,7 +74,7 @@ class PasswordResetRequestPage extends React.Component {
               disabled={isSubmitting}
               required
               error={
-                (blurredInputs.email || wasSubmitAttempted) && 
+                (blurredInputs.email || wasSubmitAttempted) &&
                 (!!validationErrors.email || get(apiErrors, 'email.value') === email)
               }
               errorText={
@@ -109,7 +109,7 @@ class PasswordResetRequestPage extends React.Component {
       </form>
     )
 
-    const durationText = duration && 
+    const durationText = duration &&
       moment.duration(duration.value).format(duration.formatTemplate, {trim: duration.formatTrim})
     const submissionMessage =
       <React.Fragment>
@@ -127,7 +127,7 @@ class PasswordResetRequestPage extends React.Component {
           />
         </CardActions>
       </React.Fragment>
-    
+
     return (
       <div id="password-reset-page">
         <Helmet>

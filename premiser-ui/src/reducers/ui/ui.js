@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import {LOCATION_CHANGE} from 'react-router-redux'
+import {LOCATION_CHANGE} from 'connected-react-router'
 import {handleActions} from "redux-actions"
 
 import {
@@ -10,7 +10,7 @@ import {
   featuredPerspectivesPage,
   justificationsPage,
   justificationsSearchPage,
-  mainSearchPage, 
+  mainSearchPage,
   passwordResetConfirmationPage,
   passwordResetRequestPage,
   persorgPage,

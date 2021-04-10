@@ -1,5 +1,5 @@
 import React from 'react'
-import {goBack} from 'react-router-redux'
+import {goBack} from 'connected-react-router'
 import { Link } from 'react-router-dom'
 import {
   Button,
@@ -50,7 +50,7 @@ class PasswordResetConfirmationPage extends React.Component {
       wasSubmitAttempted: false,
     }
   }
-  
+
   componentDidMount() {
     this.props.pages.beginPasswordResetConfirmation()
     this.props.api.checkPasswordResetRequest(this.props.passwordResetCode)

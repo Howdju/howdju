@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Switch } from 'react-router'
 import { Link } from 'react-router-dom'
-import { ConnectedRouter } from 'react-router-redux'
+import { ConnectedRouter } from 'connected-react-router'
 import Helmet from 'react-helmet'
 import {
   Button,
@@ -61,10 +61,9 @@ import './App.scss'
 
 
 const tabIndexByPathname = {
-  '/featured-perspectives': 0,
-  '/recent-activity': 1,
-  '/whats-next': 2,
-  '/about-tab': 3,
+  '/recent-activity': 0,
+  '/whats-next': 1,
+  '/about-tab': 2,
 }
 
 class App extends Component {
@@ -210,14 +209,6 @@ class App extends Component {
   }
 
   onTabChange = (newActiveTabIndex, tabId, tabControlsId, tabChildren, event) => {
-    const lookup = {
-      'featured-perspectives-tab': paths.featuredPerspectives(),
-      'recent-activity-tab': paths.recentActivity(),
-      'whats-next-tab': paths.whatsNext(),
-      'about-tab': paths.about()
-    }
-    const path = lookup[tabId]
-    history.push(path)
     this.setState({activeTabIndex: newActiveTabIndex})
   }
 
@@ -356,11 +347,6 @@ class App extends Component {
       />)
 
     const tabInfos = [
-      // {
-      //   path: paths.featuredPerspectives(),
-      //   text: t(MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME),
-      //   id: "featured-perspectives-tab"
-      // },
       {
         path: paths.recentActivity(),
         text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),

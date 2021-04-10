@@ -4,7 +4,7 @@ import {
   takeEvery,
   select,
 } from 'redux-saga/effects'
-import {LOCATION_CHANGE, push, replace} from 'react-router-redux'
+import {LOCATION_CHANGE, push, replace} from 'connected-react-router'
 
 import {
   httpStatusCodes,
