@@ -16,7 +16,9 @@ export default function configureStore(initialState) {
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-        actionCreators, trace: true, traceLimit: 25
+        actionCreators,
+        trace: config.reduxDevtoolsExtension.doTrace,
+        traceLimit: config.reduxDevtoolsExtension.traceLimit,
       }) : compose
   const sagaMiddleware = createSagaMiddleware()
 
