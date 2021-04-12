@@ -28,6 +28,7 @@ module.exports.definePluginConfig = {
 }
 
 module.exports.webpackConfig = {
+  mode: 'development',
   // For an explanation of possible values, see: https://webpack.js.org/configuration/devtool/#development
   // 'cheap-module-source-map' is recommended for React development.  See: https://reactjs.org/docs/cross-origin-errors.html#source-maps
   devtool: 'cheap-module-source-map',

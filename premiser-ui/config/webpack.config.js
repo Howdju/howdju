@@ -38,7 +38,6 @@ const htmlWebpackPluginConfig = merge({
 }, envHtmlWebpackPluginConfig)
 
 const definePluginConfig = merge({
-  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   'process.env.SENTRY_ENV': JSON.stringify(process.env.SENTRY_ENV),
   'process.env.PACKAGE_VERSION': JSON.stringify(packageVersion()),
   'process.env.GIT_COMMIT_HASH_SHORT': JSON.stringify(gitShaShort()),
