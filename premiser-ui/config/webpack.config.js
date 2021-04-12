@@ -50,6 +50,7 @@ const baseWebpackConfig = {
   output: {
     filename: projectConfig.names.js,
     path: projectConfig.paths.dist(),
+    clean: true,
     publicPath: OUTPUT_PUBLIC_PATH,
   },
   devServer: {
