@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "analyze-size": "cross-env NODE_ENV=production DEBUG=*,-babel webpack --config config/webpack.config.js --profile --json > dist/stats.json && webpack-bundle-size-analyzer dist/stats.json && open dist/stats.html",
+    "analyze-size-2": "cross-env NODE_ENV=production BUNDLE_ANALYZER=yes webpack --config config/webpack.config.js",
     "analyze-js-size": "zip - dist/premiser-ui.js 2>/dev/null | dd 2>&1 >/dev/null",
     "build:bookmarklet": "rm -f dist/bookmarklet/* && mkdir -p dist/bookmarklet && babel --no-babelrc bookmarklet/submit.js --out-file dist/bookmarklet/submit.js --presets=env && uglifyjs --compress negate_iife=false --mangle toplevel --output dist/bookmarklet/submit.min.js -- dist/bookmarklet/submit.js",
     "build:bookmarklet:local": "bin/build-bookmarklet-local.sh",
@@ -71,6 +72,7 @@
     "url-loader": "^4.1.1",
     "uuid": "^3.0.1",
     "webpack": "5",
+    "webpack-bundle-analyzer": "^4.4.0",
     "webpack-bundle-size-analyzer": "^3.1.0",
     "webpack-cli": "^4.6.0",
     "webpack-dev-middleware": "^4.1.0",

@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
 const {merge} = require('webpack-merge')
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
 
 const {
   devWebServerPort,
@@ -44,6 +45,17 @@ const definePluginConfig = merge({
 }, envDefinePluginConfig)
 
 const OUTPUT_PUBLIC_PATH = '/'
+
+const plugins = [
+  new HtmlWebpackPlugin(htmlWebpackPluginConfig),
+  new webpack.DefinePlugin(definePluginConfig),
+  new MiniCssExtractPlugin(),
+]
+// Adding webpack-bundle-analyzer seems to take over the whole build, only showing
+// the analysis. So only add it when requested.
+if (process.env.BUNDLE_ANALYZER) {
+  plugins.push(new BundleAnalyzerPlugin())
+}
 
 const baseWebpackConfig = {
   entry: [projectConfig.paths.src('main.js')],
@@ -110,11 +122,7 @@ const baseWebpackConfig = {
       }
     ]
   },
-  plugins: [
-    new HtmlWebpackPlugin(htmlWebpackPluginConfig),
-    new webpack.DefinePlugin(definePluginConfig),
-    new MiniCssExtractPlugin(),
-  ],
+  plugins,
 }
 
 module.exports = merge(baseWebpackConfig, envWebpackConfig)
