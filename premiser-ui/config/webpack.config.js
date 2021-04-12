@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
 const {merge} = require('webpack-merge')
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
+const { DuplicatesPlugin } = require("inspectpack/plugin")
 
 const {
   devWebServerPort,
@@ -50,6 +51,7 @@ const plugins = [
   new HtmlWebpackPlugin(htmlWebpackPluginConfig),
   new webpack.DefinePlugin(definePluginConfig),
   new MiniCssExtractPlugin(),
+  new DuplicatesPlugin(),
 ]
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
 // the analysis. So only add it when requested.
