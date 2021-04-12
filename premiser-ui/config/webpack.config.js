@@ -6,6 +6,7 @@ const webpack = require('webpack')
 const {merge} = require('webpack-merge')
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
 const { DuplicatesPlugin } = require("inspectpack/plugin")
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
 
 const {
   devWebServerPort,
@@ -53,6 +54,7 @@ const plugins = [
   new webpack.DefinePlugin(definePluginConfig),
   new MiniCssExtractPlugin(),
   new DuplicatesPlugin(),
+  new MomentLocalesPlugin({localesToKeep: ['en']})
 ]
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
 // the analysis. So only add it when requested.

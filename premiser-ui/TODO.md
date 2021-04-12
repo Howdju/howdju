@@ -3,13 +3,11 @@
 ## Reboot
 
 - Housekeeping
-  - Upgrade to webpack 5
-    - Remove deps on babel-preset-stage-0 (to get to @babel/* versions)
-      - Upgrade react-flip-move (to react-flip-toolkit)
-      - Upgrade react-md
+  - Upgrade react-flip-move (to react-flip-toolkit)
+  - Upgrade react-md
   - Upgrade connected-react-router to 5/6
       https://github.com/supasate/connected-react-router/blob/master/FAQ.md#how-to-migrate-from-v4-to-v5v6
-  - react-router/react-router-dom
+  - Update react-router/react-router-dom
   - Update react-redux
   - redux-persist?
   - redux-*
