@@ -811,6 +811,8 @@ Cat meeting design notes:
   * [imgAreaSelect](http://odyniec.net/projects/imgareaselect/) jQuery plugin
   * [JCrop](http://deepliquid.com/content/Jcrop.html) jQuery plugin
   * [JSCropperUI](http://www.defusion.org.uk/code/javascript-image-cropper-ui-using-prototype-scriptaculous/)?
+* Try yarn workspaces: https://classic.yarnpkg.com/en/docs/workspaces/
+  * https://github.com/wclr/yalc
 
 ## react-md bugs
   * Autocomplete lists cover toggle inputs
