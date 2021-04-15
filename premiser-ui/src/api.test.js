@@ -1,4 +1,5 @@
-import Promise from 'bluebird'
+import "core-js/modules/es.promise"
+// import Promise from "core-js/es/promise"
 
 const axiosInstance = {request: jest.fn()}
 import Axios from 'axios'

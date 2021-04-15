@@ -20,8 +20,6 @@ module.exports = {
     ],
     "no-restricted-globals": [
       "error",
-      // Use bluebird
-      "Promise"
     ],
     "no-unused-vars": [
       "error",
