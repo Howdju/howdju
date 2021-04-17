@@ -8,18 +8,21 @@
   "private": true,
   "scripts": {
     "lint": "eslint --config .eslintrc.js lib/",
-    "test": "echo no tests"
+    "test": "jest"
   },
   "dependencies": {
-    "babel-plugin-dynamic-import-node": "^2.2.0",
     "redux-actions": "^2.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.13.14",
     "@babel/eslint-parser": "^7.13.14",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-proposal-export-default-from": "^7.12.13",
+    "@babel/plugin-proposal-export-namespace-from": "^7.12.13",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.13.8",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-react": "^7.13.13",
-    "@babel/preset-stage-0": "^7.8.3",
     "eslint": "^7.23.0",
     "eslint-plugin-react": "^7.23.1",
     "jest": "^26.6.3"

@@ -45,7 +45,6 @@
     "argparse": "^1.0.9",
     "aws-sdk": "^2.35.0",
     "babel-loader": "^8.2.2",
-    "babel-plugin-dynamic-import-node": "^1.0.1",
     "copy-webpack-plugin": "^8.1.1",
     "cross-env": "^3.2.4",
     "css-loader": "^5.2.0",

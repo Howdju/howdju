@@ -1,11 +1,12 @@
 {
   "presets": ["./babelPreset"],
-  "plugins": [],
   "env": {
     "test": {
+      "presets": [
+        ["@babel/preset-env", {"targets": {"node": "current"}}]
+      ],
       "plugins": [
-        "transform-es2015-modules-commonjs",
-        "dynamic-import-node"
+        "@babel/plugin-transform-modules-commonjs"
       ]
     }
   }

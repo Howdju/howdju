@@ -1,5 +1,9 @@
 module.exports = function() {
   return {
+    presets: [
+      ["@babel/preset-env", { "targets": "defaults" }],
+      "@babel/react",
+    ],
     plugins: [
       "react-hot-loader/babel",
 
@@ -27,10 +31,6 @@ module.exports = function() {
       // Must be loose for plugin-proposal-decorators
       ["@babel/plugin-proposal-class-properties", { "loose": true }],
       "@babel/plugin-proposal-json-strings",
-    ],
-    presets: [
-      ["@babel/preset-env", { "targets": "defaults" }],
-      "@babel/react",
     ],
   };
 };

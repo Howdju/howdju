@@ -3,6 +3,8 @@
 ## Reboot
 
 - Housekeeping
+  - Fix babel config (yarn run test should work...) https://babeljs.io/docs/en/config-files#monorepos
+  - Remove plugin-transform-modules-commonjs?
   - Upgrade react-flip-move (to react-flip-toolkit)
   - Upgrade react-md
   - Upgrade connected-react-router to 5/6
@@ -12,6 +14,7 @@
   - redux-persist?
   - redux-*
   - Replace react-hot-loader with react-refresh-webpack-plugin
+  - Look at prettier
 - New directions
   - AppSync?
   - Semantic search?

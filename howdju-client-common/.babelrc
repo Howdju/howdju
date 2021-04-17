@@ -1,17 +1,17 @@
 {
   "presets": [
-    ["env", { "modules": false }],
-    "stage-0",
-    "react"
+    ["@babel/preset-env", { "targets": "defaults" }]
   ],
   "plugins": [
-    "syntax-dynamic-import"
+    "@babel/plugin-proposal-export-default-from",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-proposal-export-namespace-from",
+    ["@babel/plugin-proposal-class-properties", { "loose": true }]
   ],
   "env": {
     "test": {
       "plugins": [
-        "transform-es2015-modules-commonjs",
-        "dynamic-import-node"
+        "@babel/plugin-transform-modules-commonjs"
       ]
     }
   }
