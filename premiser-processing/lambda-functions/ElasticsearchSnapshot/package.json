@@ -9,11 +9,5 @@
     "bluebird": "^3.5.2",
     "elasticsearch": "^15.1.1",
     "ramda": "^0.25.0"
-  },
-  "scripts": {
-    "test": "jest"
-  },
-  "devDependencies": {
-    "jest": "^23.5.0"
   }
 }

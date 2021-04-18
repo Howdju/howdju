@@ -8,8 +8,8 @@
     "build": "webpack --progress --profile --colors",
     "watch": "webpack --watch --progress --colors",
     "package": "bin/package.sh",
-    "test": "jest",
-    "test:debug": "node --inspect node_modules/.bin/jest --watch --runInBand"
+    "test": "jest --config=../jest.config.js /premiser-ext/src/",
+    "test:debug": "node --inspect node_modules/.bin/jest --config=../jest.config.js /premiser-ext/src/ --watch --runInBand"
   },
   "dependencies": {
     "classnames": "^2.2.6",

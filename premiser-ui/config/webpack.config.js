@@ -94,7 +94,6 @@ const baseWebpackConfig = {
           cacheDirectory: true,
           rootMode: "upward",
         },
-        exclude: /node_modules\/(?!howdju-common|howdju-client-common|)/,
       },
       {
         test: /\.(scss|sass|css)$/,

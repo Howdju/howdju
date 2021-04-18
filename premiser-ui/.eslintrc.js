@@ -1,17 +1,9 @@
 module.exports = {
   parser: "@babel/eslint-parser",
   parserOptions: {
-    // sourceType: "module",
-    // allowImportExportEverywhere: false,
-    // ecmaFeatures: {
-    //   globalReturn: false,
-    // },
-    // "ecmaVersion": 8,
     "ecmaFeatures": {
-      // "experimentalObjectRestSpread": true,
       "jsx": true
     },
-    // "sourceType": "module",
     babelOptions: {
       rootMode: "upward",
     },

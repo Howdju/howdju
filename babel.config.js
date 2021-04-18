@@ -45,6 +45,7 @@ module.exports = {
     "./howdju-common/",
     "./howdju-service-common/",
     "./howdju-test-common/",
+    "./premiser-ext/",
     "./premiser-ui/",
   ],
   // overrides: [

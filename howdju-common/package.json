@@ -8,8 +8,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "lint": "eslint lib/",
-    "test": "jest",
-    "test:inspect": "node --inspect-brk node_modules/.bin/jest --runInBand --watch"
+    "test": "jest --config=../jest.config.js /howdju-common/lib/",
+    "test:inspect": "node --inspect-brk node_modules/.bin/jest --config=../jest.config.js /howdju-common/lib/ --runInBand --watch"
   },
   "dependencies": {
     "ajv": "^6.7.0",

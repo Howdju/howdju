@@ -1,7 +1,0 @@
-{
-  "testRegex": "(/src/.*\\.test\\.js)$",
-  "testPathIgnorePatterns": [
-    "<rootDir>/src/config/config\\.test\\.js",
-    "<rootDir>/dist/"
-  ]
-}
