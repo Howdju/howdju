@@ -34,9 +34,6 @@ module.exports = {
       presets: [
         ["@babel/preset-env", {"targets": {"node": "current"}}]
       ],
-      plugins: [
-        "@babel/plugin-transform-modules-commonjs"
-      ]
     }
   },
   babelrcRoots: [
@@ -48,15 +45,4 @@ module.exports = {
     "./premiser-ext/",
     "./premiser-ui/",
   ],
-  // overrides: [
-  //   {
-  //     test: "./premiser-ui/",
-  //     presets: [
-  //       "@babel/react",
-  //     ],
-  //     plugins: [
-  //       "react-hot-loader/babel",
-  //     ],
-  //   },
-  // ],
 }

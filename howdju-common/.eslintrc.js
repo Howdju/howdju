@@ -1,4 +1,13 @@
 module.exports = {
+  parser: "@babel/eslint-parser",
+  parserOptions: {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    babelOptions: {
+      rootMode: "upward",
+    },
+  },
   "env": {
     "browser": true,
     "commonjs": true,

@@ -1,4 +1,13 @@
 module.exports = {
+  parser: "@babel/eslint-parser",
+  parserOptions: {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    babelOptions: {
+      rootMode: "upward",
+    },
+  },
   "env": {
     "browser": true,
     "es6": true
@@ -8,15 +17,6 @@ module.exports = {
     // https://github.com/yannickcr/eslint-plugin-react/tree/master/docs/rules
     "plugin:react/recommended"
   ],
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "ecmaVersion": 8,
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true,
-      "jsx": true
-    },
-    "sourceType": "module"
-  },
   "plugins": [
     "react",
   ],
