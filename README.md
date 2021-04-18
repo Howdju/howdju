@@ -96,16 +96,17 @@ We must build the code on a Linux instance so that it is binary compatible with 
 by building it on an Amazon Docker container.
 
 ```sh
-# Build the base docker image (if necessary)
+# Build the base docker image (do this once, and again if you have changed anything with the base image.)
 bin/docker/api-base-build.sh
 
-# Build the docker image (if necessary)
+# Build the docker image (do this once, and again if you have changed anything with API deployment.)
+# The code baked into this image is the code that is currently at origin.
 bin/docker/api-deploy-build.sh
 
 # You will be prompted for the password to the private key config/docker/id_rsa_howdju_readonly, which allows
 # the image to fetch the code.
 
-# * Pulls the latest master branch from origin,
+# * Pulls the latest code from origin (defaults to the master branch),
 # * deploys it from the docker image,
 # * and points the pre-prod lambda alias to it.
 # (When prompted, enter the password used above.)
