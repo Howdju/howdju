@@ -1,4 +1,21 @@
 module.exports = {
+  parser: "@babel/eslint-parser",
+  parserOptions: {
+    // sourceType: "module",
+    // allowImportExportEverywhere: false,
+    // ecmaFeatures: {
+    //   globalReturn: false,
+    // },
+    // "ecmaVersion": 8,
+    "ecmaFeatures": {
+      // "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    // "sourceType": "module",
+    babelOptions: {
+      rootMode: "upward",
+    },
+  },
   "env": {
     "browser": true,
     "es6": true
@@ -8,15 +25,6 @@ module.exports = {
     // https://github.com/yannickcr/eslint-plugin-react/tree/master/docs/rules
     "plugin:react/recommended"
   ],
-  "parser": "@babel/eslint-parser",
-  "parserOptions": {
-    "ecmaVersion": 8,
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true,
-      "jsx": true
-    },
-    "sourceType": "module"
-  },
   "plugins": [
     "react",
   ],

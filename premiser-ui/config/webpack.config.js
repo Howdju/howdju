@@ -88,16 +88,13 @@ const baseWebpackConfig = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            // These are necessary for compiling npm-linked libraries
-            presets: ["./babelPreset"],
-          },
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+          rootMode: "upward",
         },
-        exclude: /node_modules\/(?!howdju-common)/,
+        exclude: /node_modules\/(?!howdju-common|howdju-client-common|)/,
       },
       {
         test: /\.(scss|sass|css)$/,

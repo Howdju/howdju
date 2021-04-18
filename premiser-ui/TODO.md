@@ -4,6 +4,11 @@
 
 - Housekeeping
   - Fix babel config (yarn run test should work...) https://babeljs.io/docs/en/config-files#monorepos
+    Can't run lint:build
+    Warnings:
+      warning " > @babel/eslint-parser@7.13.14" has unmet peer dependency "eslint@>=7.5.0".
+      warning " > react-hot-loader@4.13.0" has unmet peer dependency "react@^15.0.0 || ^16.0.0 || ^17.0.0 ".
+      warning " > react-hot-loader@4.13.0" has unmet peer dependency "react-dom@^15.0.0 || ^16.0.0 || ^17.0.0 ".
   - Remove plugin-transform-modules-commonjs?
   - Upgrade react-flip-move (to react-flip-toolkit)
   - Upgrade react-md
