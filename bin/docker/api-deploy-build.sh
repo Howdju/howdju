@@ -3,6 +3,8 @@ set -e
 
 # docker image names be like: [[host:port/]registry/]name[:tag][@digest]
 
+premiser-api/bin/check-preconditions.sh || { echo "preconditions failed"; exit 1; }
+
 keyfile_password=$HOWDJU_DOCKER_KEYFILE_PASSWORD
 git_branch=${1:-master}
 

@@ -27,7 +27,7 @@
     "db:prod": "bin/db-tunnel.sh prod",
     "db:pre-prod": "bin/db-tunnel.sh pre-prod",
     "dedupe-writs:prod": "source ../config/prod-local-tunnel.env && node bin/dedupe-writs.js",
-    "deploy": "yarn run check-preconditions && yarn run build && yarn run test && bin/deploy.sh",
+    "deploy": "yarn run build && bin/deploy.sh",
     "lint": "eslint bin lib src gulpfile.js server.js",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "start": "yarn run lint && bin/serve.sh",

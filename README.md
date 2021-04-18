@@ -105,7 +105,9 @@ bin/docker/api-deploy-build.sh
 # You will be prompted for the password to the private key config/docker/id_rsa_howdju_readonly, which allows
 # the image to fetch the code.
 
-# Pulls and deploys the current master branch to pre-prod
+# * Pulls the latest master branch from origin,
+# * deploys it from the docker image,
+# * and points the pre-prod lambda alias to it.
 # (When prompted, enter the password used above.)
 bin/docker/api-deploy-run.sh pre-prod
 
