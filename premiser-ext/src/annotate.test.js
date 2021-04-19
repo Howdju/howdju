@@ -28,7 +28,7 @@ expect.extend({
           
           ${expected.outerHTML}`,
         pass: true,
-      };
+      }
     } else {
       return {
         message: () =>
@@ -40,7 +40,7 @@ expect.extend({
           
           ${expected.outerHTML}`,
         pass: false,
-      };
+      }
     }
   },
 })

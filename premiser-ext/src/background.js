@@ -47,7 +47,7 @@ function sendAnnotateMessage(info, tab) {
 
 function logLastError() {
   if (ext.extension.lastError) {
-    logger.error("Last error: " + ext.extension.lastError.message);
+    logger.error("Last error: " + ext.extension.lastError.message)
   }
 }
 

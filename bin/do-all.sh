@@ -13,6 +13,7 @@ howdju-ops
 premiser-processing
 premiser-api
 premiser-ui
+premiser-ext
 )
 
 command=$@

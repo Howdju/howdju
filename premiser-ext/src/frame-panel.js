@@ -81,7 +81,7 @@ export class FramePanel extends Component {
     })
 
     return (
-      <div>
+      <div className={className}>
         <div
           className={cn({
             [containerClass]: true,
@@ -221,8 +221,8 @@ export class FramePanel extends Component {
 
   onEndDrag = (e) => {
     /* stop moving when mouse button is released:*/
-    document.onmouseup = null;
-    document.onmousemove = null;
+    document.onmouseup = null
+    document.onmousemove = null
     this.setState({
       isDragging: false,
     })
