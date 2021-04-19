@@ -7,7 +7,7 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "yarn run lint && gulp build",
+    "build": "gulp build",
     "build-and-update-lambda-function-code": "yarn run build && node bin/update-lambda-function-code.js",
     "change-password:local": "source ../config/local.env && node bin/change-user-password.js",
     "change-password:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/change-user-password.js",
