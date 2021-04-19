@@ -1,7 +1,7 @@
 #!/bin/sh
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-"$script_dir/do-all.sh" yarn test
+"$script_dir/do-all.sh" npm run test
 
 ret_val=$?
 if [[ $ret_val = 0 ]]; then
