@@ -628,7 +628,7 @@ const routes = [
     path: 'password-resets',
     method: httpMethods.POST,
     handler: (appProvider, {
-      callback, 
+      callback,
       request: {
         body: {
           passwordResetCode,
@@ -824,7 +824,7 @@ const routeRequest = (request, appProvider, callback) =>
         identifier: e.identifier
       }
     }))
-    .catch(NoMatchingRouteError, e => notFound({ callback, body: {errorCode: apiErrorCodes.ROUTE_NOT_FOUND,} }))
+    .catch(NoMatchingRouteError, e => notFound({ callback, body: {errorCode: apiErrorCodes.ROUTE_NOT_FOUND} }))
     .catch(AuthenticationError, e => unauthenticated({callback}))
     .catch(InvalidLoginError, e => badRequest({
       callback,

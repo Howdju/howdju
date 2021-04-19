@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "lint": "eslint --config .eslintrc.js lib/",
+    "lint": "eslint lib/",
     "test": "jest --config=../jest.config.js /howdju-client-common/lib/"
   },
   "dependencies": {

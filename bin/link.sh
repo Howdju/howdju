@@ -13,43 +13,56 @@ current_dir=$(pwd)
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 base_dir="$( cd "${script_dir}/../" && pwd )"
 
+cd ${base_dir}/eslint-config-howdju
+yarn link
+
 cd ${base_dir}/howdju-test-common
 yarn link
+yarn link eslint-config-howdju
 
 cd ${base_dir}/howdju-common
 yarn link
+yarn link eslint-config-howdju
 yarn link howdju-test-common
 
 cd ${base_dir}/howdju-ops
 yarn link
+yarn link eslint-config-howdju
 yarn link howdju-test-common
 
 cd ${base_dir}/howdju-service-common
 yarn link
+yarn link eslint-config-howdju
 yarn link howdju-test-common
 yarn link howdju-common
 
 cd ${base_dir}/premiser-api
+yarn link eslint-config-howdju
 yarn link howdju-test-common
 yarn link howdju-common
 yarn link howdju-service-common
 yarn link howdju-ops
 
 cd ${base_dir}/premiser-processing
+yarn link eslint-config-howdju
 yarn link howdju-test-common
 yarn link howdju-ops
 
 cd ${base_dir}/premiser-processing/lambda-functions/cloudwatch-logs-to-elasticsearch
+yarn link eslint-config-howdju
 yarn link howdju-service-common
 
 cd ${base_dir}/howdju-client-common
 yarn link
+yarn link eslint-config-howdju
 yarn link howdju-common
 
 cd ${base_dir}/premiser-ext
+yarn link eslint-config-howdju
 yarn link howdju-client-common
 
 cd ${base_dir}/premiser-ui
+yarn link eslint-config-howdju
 yarn link howdju-test-common
 yarn link howdju-common
 yarn link howdju-client-common

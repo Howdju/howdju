@@ -1,0 +1,19 @@
+{
+  "name": "eslint-config-howdju",
+  "version": "1.0.0",
+  "description": "Shared ESLint config for howdju",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/howdju/howdju.git"
+  },
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "UNLICENSED",
+  "homepage": "https://bitbucket.org/howdju/howdju#readme",
+  "peerDependencies": {
+    "eslint": ">= 3"
+  }
+}

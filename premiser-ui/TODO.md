@@ -3,7 +3,6 @@
 ## Reboot
 
 - Housekeeping
-  - Centralize eslintrc
   - root Babel Warnings:
       warning " > @babel/eslint-parser@7.13.14" has unmet peer dependency "eslint@>=7.5.0".
       warning " > react-hot-loader@4.13.0" has unmet peer dependency "react@^15.0.0 || ^16.0.0 || ^17.0.0 ".
