@@ -23,12 +23,14 @@ git pull --ff-only
 # don't end the script on stash's non-zero result if there's nothing to pop
 git stash pop || true
 
+# Required for nodenv's node etc.
+source $HOME/.bashrc
+
 pushd ..
 bin/lint-api.sh $deps || { echo "linting failed"; exit 1; }
 bin/test-api.sh $deps || { echo "tests failed"; exit 1; }
 popd
 
-source $HOME/.bashrc
 npm run build-and-update-lambda-function-code
 bin/lambda-smoke-test.sh us-east-1 premiserApi file://test-events/login.json || {
   echo 'smoke test failed'
