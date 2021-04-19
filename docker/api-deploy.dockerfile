@@ -18,10 +18,7 @@ RUN \
   git checkout $git_branch &&\
   source $HOME/.bashrc &&\
   bin/link.sh &&\
-  cd /howdju/premiser-api/ &&\
-  yarn install &&\
-  cd /howdju/howdju-ops/ &&\
-  yarn install &&\
+  bin/install-api.sh &&\
   pip3 install awscli --upgrade --user &&\
   # install jq
   curl -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 &&\

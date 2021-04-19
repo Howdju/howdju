@@ -14,8 +14,8 @@ if [[ -z $keyfile_password ]]; then
   echo
 fi
 
-bin/lint-all.sh || { echo "linting failed"; exit 1; }
-bin/test-all.sh || { echo "tests failed"; exit 1; }
+bin/lint-api.sh || { echo "linting failed"; exit 1; }
+bin/test-api.sh || { echo "tests failed"; exit 1; }
 
 docker build \
   --tag premiser-api-deploy \

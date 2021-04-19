@@ -1,18 +1,16 @@
 #!/bin/sh
 
-# Do a command for all modules.
+# Do a command for the API module and its dependency modules. This was easier for me than
+# figuring out how to make do-all.sh generic to both the command and the modules.
 
 set -e
 
 module_sub_dirs=(
 howdju-test-common
 howdju-common
-howdju-client-common
 howdju-service-common
 howdju-ops
-premiser-processing
 premiser-api
-premiser-ui
 )
 
 command=$@

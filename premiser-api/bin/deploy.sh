@@ -24,8 +24,8 @@ git pull --ff-only
 git stash pop || true
 
 pushd ..
-bin/lint-all.sh || { echo "linting failed"; exit 1; }
-bin/test-all.sh || { echo "tests failed"; exit 1; }
+bin/lint-api.sh $deps || { echo "linting failed"; exit 1; }
+bin/test-api.sh $deps || { echo "tests failed"; exit 1; }
 popd
 
 source $HOME/.bashrc
