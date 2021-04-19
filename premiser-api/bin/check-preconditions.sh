@@ -11,6 +11,8 @@ check_dirs=(
 "$root_dir"/howdju-common
 "$root_dir"/howdju-service-common
 "$root_dir"/howdju-ops
+"$root_dir"/bin
+"$root_dir"/docker
 )
 
 for check_dir in "${check_dirs[@]}"; do

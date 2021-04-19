@@ -22,6 +22,7 @@ RUN \
   git clone https://github.com/nodenv/node-build.git $(nodenv root)/plugins/node-build && \
   nodenv install 14.16.0 && \
   nodenv global 14.16.0 && \
+  npm install -g npm && \
   npm install -g yarn
 
 COPY config/docker/.aws /root/.aws
