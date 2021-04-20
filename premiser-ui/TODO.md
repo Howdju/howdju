@@ -3,11 +3,8 @@
 ## Reboot
 
 - Housekeeping
-  - root Babel Warnings:
-      warning " > @babel/eslint-parser@7.13.14" has unmet peer dependency "eslint@>=7.5.0".
-      warning " > react-hot-loader@4.13.0" has unmet peer dependency "react@^15.0.0 || ^16.0.0 || ^17.0.0 ".
-      warning " > react-hot-loader@4.13.0" has unmet peer dependency "react-dom@^15.0.0 || ^16.0.0 || ^17.0.0 ".
-  - Use lerna?
+  - run npm outdated, switch to workspaces
+  - Upgrade: ajv, bcrypt, joi, pg, uuid, sinon, argparse, premiser-ext/react
   - Upgrade react-flip-move (to react-flip-toolkit)
   - Upgrade react-md
   - Upgrade connected-react-router to 5/6
