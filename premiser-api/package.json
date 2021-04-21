@@ -50,7 +50,7 @@
     "update-normal-text:prod": "source ../config/prod-local-tunnel.env && node bin/update-normal-text.js"
   },
   "devDependencies": {
-    "argparse": "https://github.com/nodeca/argparse.git",
+    "argparse": "^1.0.10",
     "artillery": "^1.6.0-21",
     "aws-sdk": "^2.34.0",
     "body-parser": "^1.17.1",
