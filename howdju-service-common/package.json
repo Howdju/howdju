@@ -23,7 +23,7 @@
     "outdent": "^0.7.0",
     "pg": "^8.6.0",
     "urlsafe-base64": "^1.0.0",
-    "uuid": "^3.1.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.24.0",

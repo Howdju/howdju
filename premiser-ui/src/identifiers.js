@@ -1,9 +1,9 @@
 // Levels of identifiers: LocalStorageID, Cookie ID, SessionCookieID, SessionStorageID, page load/app run ID ID, Request ID
-import uuid from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import get from 'lodash/get'
 import Cookies from 'js-cookie'
 
-export const newId = () => uuid.v4()
+export const newId = () => uuidv4()
 
 export const pageLoadId = newId()
 

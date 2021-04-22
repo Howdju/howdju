@@ -4,7 +4,7 @@
 
 - Housekeeping
   - run npm outdated, switch to workspaces
-  - Upgrade: ajv, bcrypt, joi, pg, uuid, sinon, argparse, premiser-ext/react
+  - Upgrade: ajv, bcrypt, joi, premiser-ext/react
   - Upgrade react-flip-move (to react-flip-toolkit)
   - Upgrade react-md
   - Upgrade connected-react-router to 5/6
