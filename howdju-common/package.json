@@ -12,7 +12,7 @@
     "test:inspect": "node --inspect-brk node_modules/.bin/jest --config=../jest.config.js /howdju-common/lib/ --runInBand --watch"
   },
   "dependencies": {
-    "ajv": "^6.7.0",
+    "ajv": "^6.12.6",
     "lodash": "^4.17.4",
     "moment": "^2.18.1"
   },
