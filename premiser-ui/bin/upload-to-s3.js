@@ -20,9 +20,9 @@ const projectConfig = require('../config/project.config')
 const argParser = new ArgumentParser({
   description: 'Upload the app to S3'
 })
-argParser.addArgument('bucket')
-argParser.addArgument('filter')
-const args = argParser.parseArgs()
+argParser.add_argument('bucket')
+argParser.add_argument('filter')
+const args = argParser.parse_args()
 const filter = args.filter && new RegExp(args.filter)
 
 AWS.config.region = projectConfig.aws.region

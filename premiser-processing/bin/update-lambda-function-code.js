@@ -10,8 +10,8 @@ const {
 const parser = new ArgumentParser({
   description: "Update an AWS Lambda function's code"
 })
-parser.addArgument('--lambdaDir', {required: true})
-const args = parser.parseArgs()
+parser.add_argument('--lambdaDir', {required: true})
+const args = parser.parse_args()
 const lambdaDir = path.resolve('lambda-functions', args.lambdaDir)
 
 const lambdarcPath = path.resolve(lambdaDir, 'lambdarc')

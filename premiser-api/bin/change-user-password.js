@@ -13,8 +13,8 @@ const {
 const parser = new ArgumentParser({
   description: 'Change a user password'
 })
-parser.addArgument('--email', {required: true})
-const args = parser.parseArgs()
+parser.add_argument('--email', {required: true})
+const args = parser.parse_args()
 
 read({ prompt: `Please enter the new password for ${args.email}:`, silent: true }, setUserPassword)
 

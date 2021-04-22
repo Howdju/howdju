@@ -18,15 +18,15 @@ const {
 const parser = new ArgumentParser({
   description: 'Add a user'
 })
-parser.addArgument('--email', {required: true})
-parser.addArgument('--shortName')
-parser.addArgument('--longName')
-parser.addArgument('--phoneNumber')
-parser.addArgument('--inactive', {action: 'storeTrue'})
-parser.addArgument('--creatorUserId', {required: true})
-parser.addArgument('--groups', {help: 'comma-delimited list'})
-parser.addArgument('--permissions', {help: 'comma-delimited list'})
-const args = parser.parseArgs()
+parser.add_argument('--email', {required: true})
+parser.add_argument('--shortName')
+parser.add_argument('--longName')
+parser.add_argument('--phoneNumber')
+parser.add_argument('--inactive', {action: 'storeTrue'})
+parser.add_argument('--creatorUserId', {required: true})
+parser.add_argument('--groups', {help: 'comma-delimited list'})
+parser.add_argument('--permissions', {help: 'comma-delimited list'})
+const args = parser.parse_args()
 
 read({ prompt: `Please enter the password for ${args.email}:`, silent: true }, createUserWithPassword)
 

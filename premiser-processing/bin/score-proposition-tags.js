@@ -16,8 +16,8 @@ const {
 const argParser = new ArgumentParser({
   description: 'Update proposition tag scores'
 })
-argParser.addArgument('--scope', {defaultValue: JobScopes.INCREMENTAL, choices: map(JobScopes)})
-const args = argParser.parseArgs()
+argParser.add_argument('--scope', {defaultValue: JobScopes.INCREMENTAL, choices: map(JobScopes)})
+const args = argParser.parse_args()
 
 logger.info(`Scoring with scope: ${args.scope}`)
 

@@ -7,8 +7,8 @@ const lambdarc = require('../lambdarc')
 const parser = new ArgumentParser({
   description: 'Update an AWS Lambda function alias'
 })
-parser.addArgument('--aliasName')
-parser.addArgument('--newTarget')
-const args = parser.parseArgs()
+parser.add_argument('--aliasName')
+parser.add_argument('--newTarget')
+const args = parser.parse_args()
 
 lambda.updateAlias(lambdarc.name, args.aliasName, args.newTarget)

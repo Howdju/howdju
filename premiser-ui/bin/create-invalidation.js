@@ -9,8 +9,8 @@ const projectConfig = require('../config/project.config')
 const argParser = new ArgumentParser({
   description: 'Create a Cloudfront invalidation'
 })
-argParser.addArgument('distributionId')
-const args = argParser.parseArgs()
+argParser.add_argument('distributionId')
+const args = argParser.parse_args()
 
 AWS.config.region = projectConfig.aws.region
 AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile})

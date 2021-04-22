@@ -10,8 +10,8 @@ const exec = Promise.promisify(require('child_process').exec)
 const parser = new ArgumentParser({
   description: 'Builds the Elasticsearch Docker image'
 })
-parser.addArgument('version')
-const args = parser.parseArgs()
+parser.add_argument('version')
+const args = parser.parse_args()
 
 const component = 'elasticsearch'
 

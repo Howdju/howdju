@@ -15,8 +15,8 @@ const argumentParser = new ArgumentParser({
   description: 'Build lambda functions'
 })
 // must use optional syntax (start with --) so that gulp doesn't think it's a task
-argumentParser.addArgument('--lambdaDir', {required: true})
-argumentParser.addArgument('--removeHowdjuDeps')
+argumentParser.add_argument('--lambdaDir', {required: true})
+argumentParser.add_argument('--removeHowdjuDeps')
 // This file will also see the gulp arguments (such as --cwd and --gulpfile), so only parse the ones we care about
 const [args] = argumentParser.parseKnownArgs()
 

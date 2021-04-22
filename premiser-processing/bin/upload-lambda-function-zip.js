@@ -10,8 +10,8 @@ const {
 const parser = new ArgumentParser({
   description: "Upload a Lambda function's code to S3"
 })
-parser.addArgument('--lambdaDir', {required: true})
-const args = parser.parseArgs()
+parser.add_argument('--lambdaDir', {required: true})
+const args = parser.parse_args()
 const lambdaDir = path.resolve('lambda-functions', args.lambdaDir)
 
 const lambdarcPath = path.resolve(lambdaDir, 'lambdarc')
