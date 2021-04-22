@@ -19,9 +19,9 @@
     "upload-lambda-function-zip": "node bin/upload-lambda-function-zip.js"
   },
   "devDependencies": {
-    "argparse": "^1.0.9",
-    "eslint": "^4.5.0",
-    "eslint-plugin-promise": "^3.5.0",
+    "argparse": "^2.0.1",
+    "eslint": "^7.24.0",
+    "eslint-plugin-promise": "^5.1.0",
     "gulp": "^3.9.1",
     "gulp-install": "^1.1.0",
     "gulp-zip": "^4.0.0",

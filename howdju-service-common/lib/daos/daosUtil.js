@@ -69,7 +69,7 @@ exports.groupRootJustifications = (rootTargetType, rootTargetId, justification_r
     // There are two types of justifications: those targeting other justifications or those targeting the current root
     if (justification_row.target_type === JustificationTargetType.JUSTIFICATION) {
       assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)
-      if (!counterJustificationsByJustificationId.hasOwnProperty(justification_row.target_id)) {
+      if (!Object.prototype.hasOwnProperty.call(counterJustificationsByJustificationId, justification_row.target_id)) {
         counterJustificationsByJustificationId[justification_row.target_id] = []
       }
       counterJustificationsByJustificationId[justification_row.target_id].push(justification_row)

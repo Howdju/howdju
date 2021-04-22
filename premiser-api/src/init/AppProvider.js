@@ -24,19 +24,19 @@ exports.AppProvider = class AppProvider {
   getConfigVal(configValName, defaultConfigVal) {
     let configVal = defaultConfigVal
     let foundConfigVal = false
-    
+
     if (this.stage) {
       const stageConfigValName = `${configValName}__${toUpper(this.stage)}`
-      if (process.env.hasOwnProperty(stageConfigValName)) {
+      if (Object.prototype.hasOwnProperty.call(process.env, stageConfigValName)) {
         configVal = process.env[stageConfigValName]
         foundConfigVal = true
       }
     }
-    
-    if (!foundConfigVal && process.env.hasOwnProperty(configValName)) {
+
+    if (!foundConfigVal && Object.prototype.hasOwnProperty.call(process.env, configValName)) {
       configVal = process.env[configValName]
     }
-    
+
     return configVal
   }
 }

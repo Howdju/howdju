@@ -106,6 +106,9 @@ bin/docker/api-deploy-build.sh
 # You will be prompted for the password to the private key config/docker/id_rsa_howdju_readonly, which allows
 # the image to fetch the code.
 
+# If there are app-only changes, you can start from here.
+# I.e. if there are no changes to the docker files, the build, or the deployment process
+
 # * Pulls the latest code from origin (defaults to the master branch),
 # * deploys it from the docker image,
 # * and points the pre-prod lambda alias to it.
