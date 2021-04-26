@@ -16,7 +16,7 @@
     "bcrypt": "^5.0.1",
     "bluebird": "^3.5.0",
     "cryptohat": "^1.0.1",
-    "joi": "^14.0.2",
+    "joi": "^17.4.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "moment-duration-format": "^2.2.2",

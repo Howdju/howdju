@@ -77,9 +77,9 @@ describe('statementSchema', () => {
         "isOrganization": false,
         "name": "Barack Obama",
         "knownFor": "44th President of the United States",
-        "websiteUrl": null,
-        "twitterUrl": null,
-        "wikipediaUrl": null,
+        "websiteUrl": "http://barackobama.com",
+        "twitterUrl": "http://twitter.com/barackobama",
+        "wikipediaUrl": "http://en.wikipedia.org/Barack_Obama",
       },
       "sentenceType": "PROPOSITION",
       "sentence": {
@@ -95,9 +95,6 @@ describe('statementSchema', () => {
             "tag": {
               "name": "with tag"
             },
-            "proposition": {
-              "text": "Test statement"
-            }
           }
         ]
       }
@@ -139,16 +136,16 @@ describe('justificationSchema', () => {
 })
 
 function assertValid(input, schema, expected = null) {
-  const {value, error} = Joi.validate(input, schema, {
+  const {value, error} = schema.validate(input, {
     abortEarly: false,
     stripUnknown: true,
   })
-  expect(error).toBe(null)
+  expect(error).toBeFalsy()
   expect(value).toEqual(expected || input)
 }
 
 function assertInvalid(input, schema) {
-  const {value, error} = Joi.validate(input, schema, {
+  const {value, error} = schema.validate(input, {
     abortEarly: false
   })
   expect(error).toBeTruthy()

@@ -5,28 +5,32 @@ const {
 } = require('howdju-common')
 
 module.exports = Joi.extend((joi) => ({
-  name: 'string',
+  type: 'string',
   base: joi.string(),
-  language: {
-    domainMatches: 'domain must match the RegExp {{p}}',
+  messages: {
+    'string.domainMatches': 'domain must match the pattern {{#pattern}}',
   },
-  rules: [
-    {
-      name: 'domainMatches',
-      description: (params) => `The domain should match the pattern ${params.p}`,
-      params: {
-        p: joi.object().type(RegExp).required()
+  rules: {
+    domainMatches: {
+      method(pattern) {
+        return this.$_addRule({ name: 'domainMatches', args: { pattern } });
       },
-      validate(params, value, state, options) {
-
-        const domain = extractDomain(value)
-        if (!params.p.test(domain)) {
-          // Generate an error, state and options need to be passed
-          return this.createError('string.uri.domainMatches', { v: value, p: params.p }, state, options)
+      args: [
+        {
+          name: 'pattern',
+          ref: true,
+          assert: (arg) => arg instanceof RegExp,
+          message: 'must be a RegExp'
         }
-
+      ],
+      validate(value, helpers, {pattern}) {
+        const domain = extractDomain(value)
+        if (!pattern.test(domain)) {
+          return helpers.error('string.domainMatches', { value, pattern })
+        }
         return value
       }
+
     }
-  ]
+  },
 }))
