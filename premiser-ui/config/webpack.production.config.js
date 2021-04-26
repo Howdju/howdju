@@ -20,9 +20,9 @@ module.exports.htmlWebpackPluginConfig = {
   googleAnalytics: {
     trackingId: 'UA-104314283-1',
   },
-  // heapAnalytics: {
-  //   trackingId: '522456069',
-  // },
+  heapAnalytics: {
+    trackingId: '2535348131',
+  },
   mixpanel: {
     trackingId: 'cfedfc23579bf718b9e5704f6f6d85bd',
   },
