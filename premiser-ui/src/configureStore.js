@@ -41,7 +41,10 @@ export default function configureStore(initialState) {
   let rootTask = sagaMiddleware.run(function* () {
     yield getSagas()
   })
-  rootTask.done.catch(err => logger.error('Uncaught error in sagas', err))
+  rootTask.done.catch(err => {
+    logger.error('Uncaught error in sagas')
+    logger.exception(err)
+  })
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers

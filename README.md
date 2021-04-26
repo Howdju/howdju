@@ -176,6 +176,8 @@ howdju_pre_prod> \i db/migrations/xxxx_the_migration.sql
 howdju_pre_prod> exit
 
 # (Visit pre-prod-www.howdju.com and test the changes)
+
+# apply the migration to prod:
 yarn db:tunnel:shell:prod
 howdju_prod> \i db/migrations/xxxx_the_migration.sql
 howdju_prod> exit

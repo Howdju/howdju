@@ -92,7 +92,7 @@ export const api = {
 
   requestPasswordReset: apiActionCreator('REQUEST_PASSWORD_RESET', (passwordResetRequest) => ({passwordResetRequest})),
   checkPasswordResetRequest: apiActionCreator('CHECK_PASSWORD_RESET_REQUEST', (passwordResetCode) => ({passwordResetCode})),
-  confirmPasswordReset: apiActionCreator('CONFIRM_PASSWORD_RESET', 
+  confirmPasswordReset: apiActionCreator('CONFIRM_PASSWORD_RESET',
     (passwordResetCode, passwordResetConfirmation) => ({passwordResetCode, passwordResetConfirmation})),
 
   requestRegistration: apiActionCreator('REQUEST_REGISTRATION', (registrationRequest) => ({registrationRequest})),
@@ -278,7 +278,7 @@ export const ui = {
 
 export const pages = {
   beginPasswordResetRequest: actionCreator('PAGES/BEGIN_PASSWORD_RESET'),
-  passwordResetRequestPropertyChange: actionCreator('PAGES/PASSWORD_RESET_REQUEST_PROPERTY_CHANGE', 
+  passwordResetRequestPropertyChange: actionCreator('PAGES/PASSWORD_RESET_REQUEST_PROPERTY_CHANGE',
     (properties) => ({properties})),
   beginPasswordResetConfirmation: actionCreator('PAGES/BEGIN_PASSWORD_RESET_CONFIRMATION'),
   passwordResetConfirmationPropertyChange: actionCreator('PAGES/PASSWORD_RESET_CONFIRMATION_PROPERTY_CHANGE',
@@ -360,7 +360,7 @@ export const editors = {
   unTagProposition: actionCreator('EDITORS/UN_TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
   antiTagProposition: actionCreator('EDITORS/ANTI_TAG_PROPOSITION', (editorType, editorId, tag) => ({editorType, editorId, tag})),
 
-  resetSubmission: actionCreator('EDITORS/RESET_SUBMISSION', 
+  resetSubmission: actionCreator('EDITORS/RESET_SUBMISSION',
     (editorType, editorId) => ({editorType, editorId}))
 }
 

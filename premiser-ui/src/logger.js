@@ -19,9 +19,9 @@ export const logger = {
     logFunctions.warn(message)
     sentry.captureMessage(message, Severity.Warning)
   },
-  info: console.info || console.log,
-  debug: console.debug || console.log,
-  trace: console.trace || console.log,
+  info: logFunctions.info,
+  debug: logFunctions.debug,
+  trace: logFunctions.trace,
   exception: (err, options = {}) => {
     const {level = 'error', extra} = options
     if (config.isDev) {

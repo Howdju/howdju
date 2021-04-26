@@ -58,7 +58,7 @@ const handleError = error => {
   if (Axios.isCancel(error)) {
     logger.debug(makeIdentifiersMessage('Request canceled', {[customHeaderKeys.REQUEST_ID]: identifierHeaders[customHeaderKeys.REQUEST_ID]}), error.message)
   } else if (error.response) {
-    throw newApiResponseError("Api error response", identifierHeaders, error)
+    throw newApiResponseError(`Api error response ${JSON.stringify(error.response.data)}`, identifierHeaders, error)
   } else if (error.request) {
     throw newNetworkFailureError("Api request failed", identifierHeaders, error)
   } else if (error.config) {
