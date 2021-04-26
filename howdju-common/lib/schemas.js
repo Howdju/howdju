@@ -133,7 +133,7 @@ const user = {
     acceptedTerms: {
       description: 'The time when the user accepted the terms.',
       oneOf: [
-        { 
+        {
           type: 'string',
           format: 'date-time',
         },

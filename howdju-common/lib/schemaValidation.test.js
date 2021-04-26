@@ -7,7 +7,7 @@ const {
 
 describe('schemaValidation', () => {
   describe('validate', () => {
-    
+
     test('validates valid data', () => {
       const validRegistrationConfirmation = {
         username: 'carl_gieringer',
@@ -18,7 +18,7 @@ describe('schemaValidation', () => {
       }
       expect(validate(schemaIds.registrationConfirmation, validRegistrationConfirmation)).toEqual({isValid: true, errors: {}})
     })
-    
+
     test('validates invalid data', () => {
       const invalidRegistrationConfirmation = {
         username: 'carl#gieringer',
@@ -27,7 +27,7 @@ describe('schemaValidation', () => {
         longName: '',
         doesAcceptTerms: false,
       }
-      
+
       const {isValid, errors} = validate(schemaIds.registrationConfirmation, invalidRegistrationConfirmation)
       expect(isValid).toBe(false)
       expect(errors).toEqual({
@@ -45,12 +45,14 @@ describe('schemaValidation', () => {
         })
       })
     })
-    
+
     test('validates moment', () => {
       const schema = {
+        type: "object",
         properties: {
           someDateTime: {
-            isMoment: {}
+            type: "object",
+            isMoment: {},
           }
         }
       }
@@ -62,5 +64,5 @@ describe('schemaValidation', () => {
       expect(isValid).toBe(true)
     })
   })
-  
+
 })
