@@ -6,8 +6,6 @@
   - WritQuoteTarget -> QuoteSourceLocator?
   
   - run npm outdated, switch to workspaces
-    - Migrate react-transition-group
-      https://github.com/reactjs/react-transition-group/blob/HEAD/Migration.md
     - Upgrade react-flip-move (to react-flip-toolkit)
     - Replace react-hot-loader with react-refresh-webpack-plugin
     - Upgrade react/react-dom
