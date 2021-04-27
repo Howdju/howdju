@@ -20,7 +20,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "moment-duration-format": "^2.2.2",
-    "outdent": "^0.7.0",
+    "outdent": "^0.8.0",
     "pg": "^8.6.0",
     "urlsafe-base64": "^1.0.0",
     "uuid": "^8.3.2"

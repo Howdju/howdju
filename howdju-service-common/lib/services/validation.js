@@ -13,7 +13,7 @@ module.exports = Joi.extend((joi) => ({
   rules: {
     domainMatches: {
       method(pattern) {
-        return this.$_addRule({ name: 'domainMatches', args: { pattern } });
+        return this.$_addRule({ name: 'domainMatches', args: { pattern } })
       },
       args: [
         {

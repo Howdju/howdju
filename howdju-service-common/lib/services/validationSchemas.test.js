@@ -1,5 +1,3 @@
-const Joi = require('./validation')
-
 const {
   justificationSchema,
   persorgSchema,
