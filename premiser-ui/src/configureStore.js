@@ -2,9 +2,9 @@
 /* globals module require */
 import { createStore, applyMiddleware, compose } from 'redux'
 import {autoRehydrate, persistStore} from 'redux-persist'
-import { routerMiddleware, connectRouter } from 'connected-react-router'
+import { routerMiddleware } from 'connected-react-router'
 import createSagaMiddleware from 'redux-saga'
-import rootReducer from './reducers/index'
+import createRootReducer from './reducers/index'
 import getSagas from './sagas'
 import {logger} from './logger'
 import config from './config'
@@ -23,7 +23,7 @@ export default function configureStore(initialState) {
   const sagaMiddleware = createSagaMiddleware()
 
   const store = createStore(
-    connectRouter(history)(rootReducer),
+    createRootReducer(history),
     initialState,
     composeEnhancers(
       autoRehydrate(),
@@ -49,11 +49,7 @@ export default function configureStore(initialState) {
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers/index', () => {
-      // For connected-react-router 5+
-      // https://github.com/supasate/connected-react-router/blob/master/FAQ.md#how-to-hot-reload-reducers
-      // store.replaceReducer(createRootReducer(history))
-      const nextRootReducer = require('./reducers/index').default
-      store.replaceReducer(nextRootReducer)
+      store.replaceReducer(createRootReducer(history))
     })
     module.hot.accept('./sagas', () => {
       const getNewSagas = require('./sagas').default
@@ -62,7 +58,10 @@ export default function configureStore(initialState) {
         rootTask = sagaMiddleware.run(function* replacedSaga() {
           yield getNewSagas()
         })
-        rootTask.done.catch(err => logger.error('Uncaught error in sagas', err))
+        rootTask.done.catch(err => {
+          logger.error('Uncaught error in sagas')
+          logger.exception(err)
+        })
       })
     })
   }

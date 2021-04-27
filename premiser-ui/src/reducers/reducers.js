@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import { connectRouter } from 'connected-react-router'
 
 import app from "./app"
 import auth from './auth'
@@ -9,13 +10,14 @@ import errors from './errors'
 import ui from "./ui"
 import widgets from './widgets'
 
-export default combineReducers({
+export default (history) => combineReducers({
   app,
   auth,
   autocompletes,
   editors,
   entities,
   errors,
+  router: connectRouter(history),
   ui,
   widgets,
 })

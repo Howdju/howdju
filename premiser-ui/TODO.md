@@ -4,18 +4,19 @@
 
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
-    
+  
   - run npm outdated, switch to workspaces
-  - Upgrade: bcrypt, joi, premiser-ext/react
-  - Upgrade react-flip-move (to react-flip-toolkit)
-  - Upgrade react-md
-  - Upgrade connected-react-router to 5/6
-      https://github.com/supasate/connected-react-router/blob/master/FAQ.md#how-to-migrate-from-v4-to-v5v6
-  - Update react-router/react-router-dom
-  - Update react-redux
-  - redux-persist?
-  - redux-*
-  - Replace react-hot-loader with react-refresh-webpack-plugin
+    - redux-persist?
+    - redux-saga
+    - Update react-router/react-router-dom
+    - Migrate react-transition-group
+      https://github.com/reactjs/react-transition-group/blob/HEAD/Migration.md
+    - Upgrade react-flip-move (to react-flip-toolkit)
+    - Replace react-hot-loader with react-refresh-webpack-plugin
+    - Upgrade react/react-dom
+      - address componentWillMount/componentWillReceiveProps/componentWillUpdate
+    - Upgrade react-md
+    - Upgrade: premiser-ext/react
   - Look at prettier
 - New directions
   - AppSync?
