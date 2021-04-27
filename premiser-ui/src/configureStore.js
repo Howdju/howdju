@@ -1,7 +1,8 @@
 /* Hot module replace needs these dynamic import globals */
 /* globals module require */
 import { createStore, applyMiddleware, compose } from 'redux'
-import {autoRehydrate, persistStore} from 'redux-persist'
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
 import createSagaMiddleware from 'redux-saga'
 import createRootReducer from './reducers/index'
@@ -22,11 +23,16 @@ export default function configureStore(initialState) {
       }) : compose
   const sagaMiddleware = createSagaMiddleware()
 
+  const persistedReducer = persistReducer({
+    key: 'root',
+    storage,
+    whitelist: config.reduxPersistWhitelist,
+  }, createRootReducer(history))
+
   const store = createStore(
-    createRootReducer(history),
+    persistedReducer,
     initialState,
     composeEnhancers(
-      autoRehydrate(),
       applyMiddleware(
         routerMiddleware(history),
         sagaMiddleware
@@ -34,9 +40,7 @@ export default function configureStore(initialState) {
     )
   )
 
-  persistStore(store, {
-    whitelist: config.reduxPersistWhitelist
-  })
+  const persistor = persistStore(store)
 
   let rootTask = sagaMiddleware.run(function* () {
     yield getSagas()
@@ -66,5 +70,5 @@ export default function configureStore(initialState) {
     })
   }
 
-  return store
+  return {persistor, store}
 }

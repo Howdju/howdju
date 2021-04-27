@@ -2,7 +2,7 @@ import {
   takeEvery,
   select,
 } from 'redux-saga/effects'
-import {REHYDRATE} from 'redux-persist/constants'
+import { REHYDRATE } from 'redux-persist/lib/constants'
 
 import * as sentry from '../sentry'
 import * as smallchat from "../smallchat"

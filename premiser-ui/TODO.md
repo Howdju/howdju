@@ -6,7 +6,6 @@
   - WritQuoteTarget -> QuoteSourceLocator?
   
   - run npm outdated, switch to workspaces
-    - redux-persist?
     - redux-saga
     - Update react-router/react-router-dom
     - Migrate react-transition-group

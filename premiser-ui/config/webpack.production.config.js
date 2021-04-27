@@ -16,7 +16,6 @@ const projectConfig = require('./project.config')
 
 module.exports.htmlWebpackPluginConfig = {
   smallChat: true,
-  sentry: true,
   googleAnalytics: {
     trackingId: 'UA-104314283-1',
   },

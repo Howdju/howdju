@@ -8,9 +8,10 @@
  */
 const config = {
   apiRoot: process.env.API_ROOT,
-  isDev: process.env.NODE_ENV === 'development',
   humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
+  isDev: process.env.NODE_ENV === 'development',
   isRegistrationEnabled: false,
+  isSentryEnabled: true,
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
   authExpirationCheckFrequencyMs: 30*1000,

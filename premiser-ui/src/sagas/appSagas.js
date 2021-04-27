@@ -7,7 +7,7 @@ import {
   select, take, takeEvery,
 } from 'redux-saga/effects'
 import isEqual from 'lodash/isEqual'
-import {REHYDRATE} from 'redux-persist/constants'
+import { REHYDRATE } from 'redux-persist/lib/constants'
 
 import {
   app,
