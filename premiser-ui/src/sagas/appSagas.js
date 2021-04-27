@@ -1,8 +1,6 @@
 import moment from 'moment'
 import {
-  delay
-} from 'redux-saga'
-import {
+  delay,
   put, race,
   select, take, takeEvery,
 } from 'redux-saga/effects'

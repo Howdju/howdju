@@ -6,11 +6,11 @@ import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
 import createSagaMiddleware from 'redux-saga'
 import createRootReducer from './reducers/index'
-import getSagas from './sagas'
 import {logger} from './logger'
 import config from './config'
 import {history} from './history'
 import * as actionCreators from './actions'
+import getSagas from './sagas'
 
 export default function configureStore(initialState) {
   const composeEnhancers =
@@ -21,7 +21,17 @@ export default function configureStore(initialState) {
         trace: config.reduxDevtoolsExtension.doTrace,
         traceLimit: config.reduxDevtoolsExtension.traceLimit,
       }) : compose
-  const sagaMiddleware = createSagaMiddleware()
+  const sagaMiddleware = createSagaMiddleware({
+    onError: (error, { sagaStack }) => {
+      logger.error(`Uncaught error in sagas: ${error}: ${sagaStack}`)
+      logger.exception(error, {
+        extra: {
+          source: 'howdju/redux-saga',
+          sagaStack,
+        }
+      })
+    }
+  })
 
   const persistedReducer = persistReducer({
     key: 'root',
@@ -45,10 +55,6 @@ export default function configureStore(initialState) {
   let rootTask = sagaMiddleware.run(function* () {
     yield getSagas()
   })
-  rootTask.done.catch(err => {
-    logger.error('Uncaught error in sagas')
-    logger.exception(err)
-  })
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
@@ -58,13 +64,9 @@ export default function configureStore(initialState) {
     module.hot.accept('./sagas', () => {
       const getNewSagas = require('./sagas').default
       rootTask.cancel()
-      rootTask.done.then(() => {
+      rootTask.toPromise().then(() => {
         rootTask = sagaMiddleware.run(function* replacedSaga() {
           yield getNewSagas()
-        })
-        rootTask.done.catch(err => {
-          logger.error('Uncaught error in sagas')
-          logger.exception(err)
         })
       })
     })

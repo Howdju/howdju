@@ -1,8 +1,6 @@
 import {
-  delay
-} from 'redux-saga'
-import {
   all,
+  delay,
   put,
   call,
   fork,
