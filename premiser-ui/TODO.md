@@ -6,8 +6,6 @@
   - WritQuoteTarget -> QuoteSourceLocator?
   
   - run npm outdated, switch to workspaces
-    - Upgrade react/react-dom
-      - address componentWillMount/componentWillReceiveProps/componentWillUpdate
     - Upgrade react-md
     - Upgrade: premiser-ext/react
   - Look at prettier
