@@ -6,8 +6,6 @@
   - WritQuoteTarget -> QuoteSourceLocator?
   
   - run npm outdated, switch to workspaces
-    - Upgrade react-flip-move (to react-flip-toolkit)
-    - Replace react-hot-loader with react-refresh-webpack-plugin
     - Upgrade react/react-dom
       - address componentWillMount/componentWillReceiveProps/componentWillUpdate
     - Upgrade react-md
