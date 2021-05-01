@@ -60,11 +60,23 @@ import './fonts.js'
 import './App.scss'
 
 
-const tabIndexByPathname = {
-  '/recent-activity': 0,
-  '/whats-next': 1,
-  '/about-tab': 2,
-}
+const tabInfos = [
+  {
+    path: paths.recentActivity(),
+    text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),
+    id: "recent-activity-tab"
+  },
+  {
+    path: paths.whatsNext(),
+    text: t(MAIN_TABS_WHATS_NEXT_TAB_NAME),
+    id: "whats-next-tab"
+  },
+  {
+    path: paths.about(),
+    text: t(MAIN_TABS_ABOUT_TAB_NAME),
+    id: "about-tab"
+  },
+]
 
 class App extends Component {
 
@@ -217,7 +229,7 @@ class App extends Component {
   }
 
   syncTabToPathname = (pathname) => {
-    const index = get(tabIndexByPathname, pathname, -1)
+    const index = tabInfos.findIndex(ti => ti.path === pathname)
     this.setState({activeTabIndex: index})
   }
 
@@ -345,24 +357,6 @@ class App extends Component {
         onVisibilityChange={this.onNavDrawerVisibilityChange}
         style={{ zIndex: 100 }}
       />)
-
-    const tabInfos = [
-      {
-        path: paths.recentActivity(),
-        text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),
-        id: "recent-activity-tab"
-      },
-      {
-        path: paths.whatsNext(),
-        text: t(MAIN_TABS_WHATS_NEXT_TAB_NAME),
-        id: "whats-next-tab"
-      },
-      {
-        path: paths.about(),
-        text: t(MAIN_TABS_ABOUT_TAB_NAME),
-        id: "about-tab"
-      },
-    ]
 
     const pageTabs = (
       <Tabs
