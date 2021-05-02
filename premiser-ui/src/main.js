@@ -15,7 +15,7 @@ import config  from './config'
 import configureStore from './configureStore'
 import sentryInit from './sentryInit'
 
-if (config.isSentryEnabled) {
+if (config.sentry.enabled) {
   sentryInit()
 }
 

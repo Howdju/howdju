@@ -28,6 +28,7 @@ const apiRoot = process.env.API_ROOT || 'https://api.howdju.com/api/'
 module.exports.definePluginConfig = {
   'process.env.API_ROOT': JSON.stringify(apiRoot),
   'process.env.DO_ASSERT': JSON.stringify('false'),
+  'process.env.SENTRY_ENABLED': JSON.stringify('true'),
 }
 
 /*

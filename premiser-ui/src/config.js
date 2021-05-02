@@ -11,7 +11,6 @@ const config = {
   humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
   isDev: process.env.NODE_ENV === 'development',
   isRegistrationEnabled: false,
-  isSentryEnabled: true,
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
   authExpirationCheckFrequencyMs: 30*1000,
@@ -24,6 +23,7 @@ const config = {
     traceLimit: 25,
   },
   sentry: {
+    enabled: process.env.SENTRY_ENABLED,
     dsn: "https://05b15a6447f3427db2f4977950149202@o92193.ingest.sentry.io/200909",
     release: `web-ui@${process.env.PACKAGE_VERSION} (${process.env.GIT_COMMIT_HASH_SHORT})`,
     environment: process.env.SENTRY_ENV,

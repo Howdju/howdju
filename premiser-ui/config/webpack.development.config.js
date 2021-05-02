@@ -9,18 +9,22 @@ module.exports.htmlWebpackPluginConfig = {
     preserveLineBreaks: true,
   },
   smallChat: true,
-  googleAnalytics: {
-    trackingId: 'UA-104314283-2',
-  },
-  mixpanel: {
-    trackingId: 'abd1abe616789b11f1ef46bd254ec937',
-  }
+  // We don't want these active in dev (Google Analytics will HTTP error if we try too use it from localhost)
+  // But we might want to use these later in preprod or another env.
+  // googleAnalytics: {
+  //   trackingId: 'UA-104314283-2',
+  // },
+  // mixpanel: {
+  //   trackingId: 'abd1abe616789b11f1ef46bd254ec937',
+  // },
 }
 
 const apiRoot = process.env.API_ROOT || `http://${hostAddress()}:${devApiServerPort()}/api/`
 module.exports.definePluginConfig = {
   'process.env.API_ROOT': JSON.stringify(apiRoot),
   'process.env.DO_ASSERT': JSON.stringify('true'),
+  // Sentry wraps errors so that all exceptions appear to come from it, obscuring the source. So just omit it from dev.
+  'process.env.SENTRY_ENABLED': JSON.stringify('false'),
 }
 
 module.exports.webpackConfig = {
