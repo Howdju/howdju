@@ -22,9 +22,9 @@ module.exports.htmlWebpackPluginConfig = {
 const apiRoot = process.env.API_ROOT || `http://${hostAddress()}:${devApiServerPort()}/api/`
 module.exports.definePluginConfig = {
   'process.env.API_ROOT': JSON.stringify(apiRoot),
-  'process.env.DO_ASSERT': JSON.stringify('true'),
+  'process.env.DO_ASSERT': JSON.stringify(true),
   // Sentry wraps errors so that all exceptions appear to come from it, obscuring the source. So just omit it from dev.
-  'process.env.SENTRY_ENABLED': JSON.stringify('false'),
+  'process.env.SENTRY_ENABLED': JSON.stringify(false),
 }
 
 module.exports.webpackConfig = {
