@@ -5,6 +5,7 @@
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
   
+  - Follow https://github.com/gaearon/react-hot-loader/issues/1227#issuecomment-482514844
   - run npm outdated, switch to workspaces
     - Upgrade react-md
     - Upgrade: premiser-ext/react

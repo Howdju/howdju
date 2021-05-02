@@ -16,11 +16,5 @@
     "ajv-formats": "^2.0.2",
     "lodash": "^4.17.4",
     "moment": "^2.18.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.13.14",
-    "@babel/preset-env": "^7.13.12",
-    "eslint": "^7.23.0",
-    "jest": "^26.6.3"
   }
 }
