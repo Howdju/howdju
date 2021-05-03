@@ -1,6 +1,7 @@
 module.exports = {
   presets: [
     ["@babel/preset-env", { "targets": "defaults" }],
+    "@babel/preset-flow",
   ],
   plugins: [
 
@@ -22,11 +23,14 @@ module.exports = {
     "@babel/plugin-proposal-numeric-separator",
     "@babel/plugin-proposal-throw-expressions",
 
+
     // Stage 3
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-syntax-import-meta",
     // Must be loose for plugin-proposal-decorators
     ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    // loose must be the same as for plugin-proposal-class-properties
+    ["@babel/plugin-proposal-private-methods", { "loose": true }],
     "@babel/plugin-proposal-json-strings",
   ],
   env: {

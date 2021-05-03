@@ -5,11 +5,15 @@ module.exports = {
       rootMode: "upward",
     },
   },
+  plugins: [
+    "flowtype"
+  ],
   env: {
     "es6": true
   },
   extends: [
     "eslint:recommended",
+    "plugin:flowtype/recommended"
   ],
   rules: {
     // https://eslint.org/docs/rules/comma-dangle
@@ -45,6 +49,8 @@ module.exports = {
       }
     ],
     semi: ["error", "never"],
+    // All files that contain type annotations will be check with flow
+    "flowtype/no-types-missing-file-annotation": "off",
   },
   overrides: [
     {
