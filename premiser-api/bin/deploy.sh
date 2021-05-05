@@ -27,8 +27,8 @@ git stash pop || true
 source $HOME/.bashrc
 
 pushd ..
-bin/lint-api.sh $deps || { echo "linting failed"; exit 1; }
-bin/test-api.sh $deps || { echo "tests failed"; exit 1; }
+bin/lint-api.sh || { echo "linting failed"; exit 1; }
+bin/test-api.sh || { echo "tests failed"; exit 1; }
 popd
 
 npm run build-and-update-lambda-function-code
