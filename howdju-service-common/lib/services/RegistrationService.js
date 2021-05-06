@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const cryptohat = require('cryptohat')
 const keys = require('lodash/keys')
 const moment = require('moment')

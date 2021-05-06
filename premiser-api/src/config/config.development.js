@@ -1,12 +1,12 @@
 const {
-  apiHost,
+  apiHostOrAddress,
   devWebServerPort
-} = require('./util')
+} = require('./devUtil')
 
 module.exports = {
   corsAllowOrigin: [
     `http://localhost:${devWebServerPort()}`,
     `http://127.0.0.1:${devWebServerPort()}`,
-    `http://${apiHost()}:${devWebServerPort()}`,
+    `http://${apiHostOrAddress()}:${devWebServerPort()}`,
   ],
 }
