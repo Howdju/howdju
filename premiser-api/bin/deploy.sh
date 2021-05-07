@@ -15,16 +15,11 @@ if [[ -z $lambda_alias ]]; then
   exit 1
 fi
 
+
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+bash "$script_dir/check-preconditions.sh"
+
 echo deploying $git_branch to $lambda_alias
-
-git checkout $git_branch
-git stash save
-git pull --ff-only
-# don't end the script on stash's non-zero result if there's nothing to pop
-git stash pop || true
-
-# Required for nodenv's node etc.
-source $HOME/.bashrc
 
 pushd ..
 bin/lint-api.sh || { echo "linting failed"; exit 1; }
