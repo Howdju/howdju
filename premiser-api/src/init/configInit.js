@@ -50,4 +50,6 @@ exports.init = function init(provider) {
   provider.allowedOrigins = isArray(appConfig.corsAllowOrigin) ?
     arrayToObject(appConfig.corsAllowOrigin) :
     arrayToObject([appConfig.corsAllowOrigin])
+
+  provider.logger.debug('configInit complete')
 }

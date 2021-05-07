@@ -20,7 +20,7 @@ exports.AppProvider = class AppProvider {
 
     forEach(inits, i => i.init(this))
 
-    this.logger.debug('initializations complete',)
+    this.logger.debug('AppProvider initialization complete',)
   }
 
   getConfigVal(configValName, defaultConfigVal) {

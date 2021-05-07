@@ -47,4 +47,6 @@ exports.init = function init(provider) {
     writValidator,
     writQuoteValidator,
   })
+
+  provider.logger.debug('validatorsInit complete')
 }

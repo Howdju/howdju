@@ -237,4 +237,6 @@ exports.init = function init(provider) {
     writQuotesService,
     writsService,
   })
+
+  provider.logger.debug('servicesInit complete')
 }

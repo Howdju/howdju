@@ -29,4 +29,6 @@ exports.init = function init(provider) {
     ses,
     sesv2,
   })
+
+  provider.logger.debug('awsInit complete')
 }

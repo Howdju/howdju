@@ -94,4 +94,6 @@ exports.init = function init(provider) {
     writQuotesDao,
     writsDao,
   })
+
+  provider.logger.debug('daosInit complete')
 }

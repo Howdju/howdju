@@ -14,4 +14,6 @@ exports.init = function init(provider) {
     writQuotesQuoteTextSearcher: makeWritQuoteQuoteTextSearcher(provider.database),
     persorgsNameSearcher: makePersorgsNameSearcher(provider.database),
   })
+
+  provider.logger.debug('searchersInit complete')
 }
