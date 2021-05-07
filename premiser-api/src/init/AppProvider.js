@@ -2,15 +2,15 @@ const forEach = require('lodash/forEach')
 const toUpper = require('lodash/toUpper')
 
 const inits = [
-  './loggerInit',
-  './utilInit',
-  './configInit',
-  './databaseInit',
-  './daosInit',
-  './searchersInit',
-  './validatorsInit',
-  './awsInit',
-  './servicesInit',
+  require('./loggerInit'),
+  require('./utilInit'),
+  require('./configInit'),
+  require('./databaseInit'),
+  require('./daosInit'),
+  require('./searchersInit'),
+  require('./validatorsInit'),
+  require('./awsInit'),
+  require('./servicesInit'),
 ]
 
 exports.AppProvider = class AppProvider {
@@ -18,7 +18,7 @@ exports.AppProvider = class AppProvider {
     this.stage = stage
     this.isProduction = this.getConfigVal('NODE_ENV') === 'production'
 
-    forEach(inits, init => require(init).init(this))
+    forEach(inits, i => i.init(this))
   }
 
   getConfigVal(configValName, defaultConfigVal) {

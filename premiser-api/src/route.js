@@ -182,6 +182,9 @@ const routes = [
         count,
         propositionIds: propositionIdsParam,
       } = request.queryStringParameters
+      if (!encodedSorts) {
+        throw new Error("sorts is required")
+      }
       const sorts = decodeSorts(encodedSorts)
       if (propositionIdsParam) {
         const propositionIds = split(propositionIdsParam, ',')
@@ -873,7 +876,7 @@ const routeRequest = (request, appProvider, callback) =>
       }
     }))
     .catch(err => {
-      appProvider.logger.error('Unexpected error', {err})
+      appProvider.logger.error('Unexpected error', {err, stack: err.stack})
       return error({callback, body: {errorCode: apiErrorCodes.UNEXPECTED_ERROR}})
     })
 

@@ -5,3 +5,11 @@ exports.apiHost = () => {
   }
   return apiHost
 }
+
+exports.devWebServerPort = () => {
+  return process.env['DEV_WEB_SERVER_PORT'] || 3000
+}
+
+exports.devApiServerPort = () => {
+  return process.env['DEV_API_SERVER_PORT'] || 8081
+}

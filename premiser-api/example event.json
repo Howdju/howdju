@@ -26,7 +26,7 @@
     "X-Forwarded-Port":"443",
     "X-Forwarded-Proto":"https"
   },
-  "queryStringParameters":null,
+  "queryStringParameters":{},
   "pathParameters":{
     "proxy":"propositions"
   },
