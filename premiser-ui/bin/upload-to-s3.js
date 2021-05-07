@@ -11,7 +11,7 @@ const {
 const {
   gitSha,
   packageVersion,
-} = require('../util')
+} = require('howdju-ops')
 
 const gitCommitMetadataKey = 'x-amz-meta-howdju-git-commit'
 const versionMetadataKey = 'x-amz-meta-howdju-ui-version'

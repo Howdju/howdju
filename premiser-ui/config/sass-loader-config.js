@@ -1,7 +1,9 @@
 const {
   hostAddress,
-  devWebServerPort,
 } = require('./util')
+const {
+  devWebServerPort,
+} = require('howdju-ops')
 
 
 /** Extract out the sass-loader config because webpack.production.config.js requires it for ExtractTextPlugin */

@@ -9,11 +9,9 @@ const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
 
 const {
   devWebServerPort,
-} = require('./util')
-const {
   gitShaShort,
-  packageVersion,
-} = require('../util')
+} = require('howdju-ops')
+const packageInfo = require('../package.json')
 const projectConfig = require('./project.config')
 const {sassLoaderConfig} = require('./sass-loader-config')
 
@@ -42,7 +40,7 @@ const htmlWebpackPluginConfig = merge({
 
 const definePluginConfig = merge({
   'process.env.SENTRY_ENV': JSON.stringify(process.env.SENTRY_ENV),
-  'process.env.PACKAGE_VERSION': JSON.stringify(packageVersion()),
+  'process.env.PACKAGE_VERSION': JSON.stringify(packageInfo.version),
   'process.env.GIT_COMMIT_HASH_SHORT': JSON.stringify(gitShaShort()),
 }, envDefinePluginConfig)
 

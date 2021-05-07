@@ -1,5 +1,5 @@
 const debug = require('debug')('premiser-api:dev-server')
-const {devApiServerPort} = require('../src/config/util')
+const {devApiServerPort} = require('howdju-ops')
 const {apiHostOrHostnameAddress} = require('../src/config/nativeUtil')
 
 const server = require('../server')

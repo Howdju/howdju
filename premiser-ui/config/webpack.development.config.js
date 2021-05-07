@@ -1,8 +1,10 @@
 const CopyPlugin = require("copy-webpack-plugin")
 const {
   hostAddress,
-  devApiServerPort,
 } = require('./util')
+const {
+  devApiServerPort,
+} = require('howdju-ops')
 
 module.exports.htmlWebpackPluginConfig = {
   minify: {

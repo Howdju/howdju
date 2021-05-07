@@ -11,7 +11,7 @@ const {
 const {
   gitSha,
   packageVersion,
-} = require("../util")
+} = require("howdju-ops")
 const projectConfig = require('./project.config')
 
 module.exports.htmlWebpackPluginConfig = {

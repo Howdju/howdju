@@ -5636,16 +5636,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deasync@npm:^0.1.10":
-  version: 0.1.21
-  resolution: "deasync@npm:0.1.21"
-  dependencies:
-    bindings: ^1.5.0
-    node-addon-api: ^1.7.1
-  checksum: 122dca8ed34459a2e0232cbbd4fcb273d00146b772517d2161afef0c08142df45b9793bafa48c02d946486125ca52c2b8f4fab9c15130528afc8273e1ef34c36
-  languageName: node
-  linkType: hard
-
 "debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.8, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -12155,15 +12145,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^1.7.1":
-  version: 1.7.2
-  resolution: "node-addon-api@npm:1.7.2"
-  dependencies:
-    node-gyp: latest
-  checksum: 6796f58946713c647bccdfdb6ceb42dccb980170e9ce3ca3a65cca659a417d79210999fd297963656371c616c7b75b74bbdefae36257ae84c28927fb7ae037d4
-  languageName: node
-  linkType: hard
-
 "node-fetch@npm:^1.0.1":
   version: 1.7.3
   resolution: "node-fetch@npm:1.7.3"
@@ -14034,8 +14015,8 @@ fsevents@^1.2.7:
     cross-env: ^7.0.3
     css-loader: ^5.2.0
     css-minimizer-webpack-plugin: ^2.0.0
-    deasync: ^0.1.10
     debug: ^4.3.1
+    dns-sync: ^0.2.1
     eslint: ^7.23.0
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
@@ -14044,6 +14025,7 @@ fsevents@^1.2.7:
     history: ^4.10.1
     howdju-client-common: ^1.0.0
     howdju-common: ^1.0.0
+    howdju-ops: ^1.0.0
     howdju-test-common: ^1.0.0
     html-loader: ^2.1.2
     html-webpack-plugin: ^5.3.1

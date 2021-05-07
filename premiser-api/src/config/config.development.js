@@ -1,7 +1,6 @@
 const {
   devWebServerPort
-} = require('./util')
-
+} = require('howdju-ops')
 
 const corsAllowOrigin = [
   `http://localhost:${devWebServerPort()}`,

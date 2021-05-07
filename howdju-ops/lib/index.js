@@ -4,5 +4,6 @@ module.exports = assign(
   require('./env'),
   require('./lambda'),
   require('./logger'),
-  require('./nodePlatforms')
+  require('./nodePlatforms'),
+  require('./util'),
 )

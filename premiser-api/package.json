@@ -2,7 +2,7 @@
   "name": "premiser-api",
   "version": "0.1.0",
   "description": "API for howdju.com.  Proprietary and confidential.  Copyright Carl Gieringer",
-  "main": "index.js",
+  "main": "./src/index.js",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",

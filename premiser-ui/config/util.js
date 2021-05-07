@@ -1,29 +1,16 @@
-const dns = require('dns')
 const os = require('os')
-const deasync = require('deasync')
+const dnsSync = require('dns-sync')
 
 exports.hostAddress = () => {
   let address = process.env.HOST_ADDRESS
-  if (!address) {
-    let done = false
-    dns.lookup(os.hostname(), function (err, lookupAddress, fam) {
-      address = lookupAddress
-      // Standardize on localhost, since that is what I am more likely to type, and if the system thinks it
-      // should be 127.0.0.1, then there will be a CORS error.
-      if (address === "127.0.0.1") {
-        address = "localhost"
-      }
-      done = true
-    })
-    deasync.loopWhile(() => !done)
+  if (address) {
+    return address
+  }
+  address = dnsSync.resolve(os.hostname())
+  // Standardize on localhost, since that is what I am more likely to type, and if the system thinks it
+  // should be 127.0.0.1, then there will be a CORS error.
+  if (address === "127.0.0.1") {
+    address = "localhost"
   }
   return address
-}
-
-exports.devWebServerPort = () => {
-  return 3000
-}
-
-exports.devApiServerPort = () => {
-  return 8081
 }
