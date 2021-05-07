@@ -10,6 +10,7 @@ const assign = require('lodash/assign')
 const runSequence = require('run-sequence')
 const {LocalInstaller, progress} = require('install-local')
 
+/** TODO replace with esbuild bundling like in premiser-api */
 
 const argumentParser = new ArgumentParser({
   description: 'Build lambda functions'

@@ -1,5 +1,7 @@
 FROM library/amazonlinux:2018.03
 
+# TODO: replace with esbuild bundling like in premiser-api
+
 RUN \
   yum -y update && \
   yum -y install \

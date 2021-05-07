@@ -1,4 +1,4 @@
-#!/bin/sh
-
-script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-"$script_dir/do-all.sh" npm run lint
+yarn workspaces foreach -p run lint || {
+  echo "lint failed"
+  exit 1
+}

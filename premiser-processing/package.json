@@ -9,7 +9,7 @@
   "workspaces": [
     "lambda-functions/cloudwatch-logs-to-elasticsearch",
     "lambda-functions/ElasticsearchSnapshot",
-    "lambda-functions/justification0-scorer",
+    "lambda-functions/justification-scorer",
     "lambda-functions/proposition-tag-scorer"
   ],
   "scripts": {

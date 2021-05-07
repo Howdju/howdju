@@ -5,7 +5,6 @@
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
   
-  - Remove docker 😱 and gulp
   - run npm outdated
     - Upgrade react-md
     - Upgrade: premiser-ext/react
