@@ -16,5 +16,8 @@
   "peerDependencies": {
     "eslint": ">= 3",
     "eslint-plugin-flowtype": ">= 5"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.150.1"
   }
 }

@@ -7,6 +7,10 @@
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
+  "scripts": {
+    "lint:all": "bin/lint-all.sh",
+    "test:all": "bin/test-all.sh"
+  },
   "workspaces": [
     "eslint-config-howdju",
     "howdju-client-common",
@@ -49,7 +53,7 @@
     "eslint-plugin-flowtype": "^5.7.2",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "^7.23.1",
-    "flow-bin": "^0.150.0",
+    "flow-bin": "^0.150.1",
     "jest": "^26.6.3"
   }
 }

@@ -12,7 +12,8 @@ nodenv install 14.16.0
 nodenv shell 14.16.0
 npm install -g yarn
 # I had to install this to successfully install bcrypt in howdju-service-common
-npm install -g node-gyp
+# (Since we replaced bcrypt with bcryptjs, we can probably remove this now.)
+#npm install -g node-gyp
 ```
 
 The correct node version automatically activates due to the `.node-version` file.
@@ -21,7 +22,6 @@ The correct node version automatically activates due to the `.node-version` file
 
 This project uses Yarn workspaces to allow packages to depend on each other during development and to share
 dependencies.
-
 
 ```
 yarn install
@@ -84,9 +84,15 @@ Open browser to localhost:3000
 
 # Linting and testing
 
-```
+```sh
 bin/lint-all.sh
 bin/test-all.sh
+```
+
+# Doing something in each workspace
+
+```sh
+yarn workspaces foreach -Av exec bash -c 'yarn add --dev flow-bin'
 ```
 
 # Publishing

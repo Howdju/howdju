@@ -1,5 +1,5 @@
-# TODO add flow typechecking
 yarn workspaces foreach -Apv run test || {
-  echo "tests failed"
+  echo tests failed
   exit 1
 }
+echo test succeeded

@@ -4680,6 +4680,7 @@ __metadata:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
+    flow-bin: ^0.150.1
     howdju-service-common: ^1.0.0
     zlib: ^1.0.5
   languageName: unknown
@@ -6089,6 +6090,7 @@ __metadata:
   dependencies:
     bluebird: ^3.5.2
     elasticsearch: ^15.1.1
+    flow-bin: ^0.150.1
     ramda: ^0.25.0
   languageName: unknown
   linkType: soft
@@ -6452,6 +6454,8 @@ __metadata:
 "eslint-config-howdju@^1.0.0, eslint-config-howdju@workspace:eslint-config-howdju":
   version: 0.0.0-use.local
   resolution: "eslint-config-howdju@workspace:eslint-config-howdju"
+  dependencies:
+    flow-bin: ^0.150.1
   peerDependencies:
     eslint: ">= 3"
     eslint-plugin-flowtype: ">= 5"
@@ -7249,12 +7253,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flow-bin@npm:^0.150.0":
-  version: 0.150.0
-  resolution: "flow-bin@npm:0.150.0"
+"flow-bin@npm:^0.150.1":
+  version: 0.150.1
+  resolution: "flow-bin@npm:0.150.1"
   bin:
     flow: cli.js
-  checksum: a99f907d15451c373a68c9aa9edf7f81868ea31823bdbdb2cd92303cd2c50b3f65e13dac3d5df5f7bac5ef06dadb4e777f2a8e466a798832986f5e7aced98357
+  checksum: b6bbc54904b3d0486e1b2695671ec7f6d7eb5890c9586faadaf0f27e1e973b2bbe14c0d8719f9d08620cb9cf3b3aad980777d3864d3c999efb97874e1f979fab
   languageName: node
   linkType: hard
 
@@ -8192,6 +8196,7 @@ fsevents@^1.2.7:
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-react: ^7.23.2
+    flow-bin: ^0.150.1
     glamor: ^2.20.40
     howdju-client-common: ^1.0.0
     jest: ^26.6.3
@@ -8208,6 +8213,7 @@ fsevents@^1.2.7:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
+    flow-bin: ^0.150.1
     howdju-common: ^1.0.0
     jest: ^26.6.3
     redux-actions: ^2.6.4
@@ -8223,6 +8229,7 @@ fsevents@^1.2.7:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
+    flow-bin: ^0.150.1
     howdju-test-common: ^1.0.0
     jest: ^26.6.3
     lodash: ^4.17.4
@@ -8237,6 +8244,7 @@ fsevents@^1.2.7:
     argparse: ^1.0.10
     bluebird: ^3.5.2
     eslint: ^7.25.0
+    flow-bin: ^0.150.1
     ini: ^1.3.5
   languageName: unknown
   linkType: soft
@@ -8273,7 +8281,7 @@ fsevents@^1.2.7:
     eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-promise: ^5.1.0
     eslint-plugin-react: ^7.23.1
-    flow-bin: ^0.150.0
+    flow-bin: ^0.150.1
     jest: ^26.6.3
   languageName: unknown
   linkType: soft
@@ -8287,6 +8295,7 @@ fsevents@^1.2.7:
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-promise: ^5.1.0
+    flow-bin: ^0.150.1
     howdju-test-common: ^1.0.0
     jest: ^26.6.3
     lodash: ^4.17.4
@@ -8304,6 +8313,7 @@ fsevents@^1.2.7:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
+    flow-bin: ^0.150.1
     howdju-common: ^1.0.0
     howdju-test-common: ^1.0.0
     jest: ^26.6.3
@@ -8326,6 +8336,7 @@ fsevents@^1.2.7:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
+    flow-bin: ^0.150.1
     jest: ^26.6.3
     sinon: ^10.0.0
   languageName: unknown
@@ -10426,6 +10437,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "justification-scorer@workspace:premiser-processing/lambda-functions/justification-scorer"
   dependencies:
+    flow-bin: ^0.150.1
     pg: ^7.2.0
   languageName: unknown
   linkType: soft
@@ -13455,6 +13467,7 @@ fsevents@^1.2.7:
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
     express: ^4.15.2
+    flow-bin: ^0.150.1
     howdju-common: ^1.0.0
     howdju-ops: ^1.0.0
     howdju-service-common: ^1.0.0
@@ -13482,6 +13495,7 @@ fsevents@^1.2.7:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
     eslint-plugin-flowtype: ^5.7.2
+    flow-bin: ^0.150.1
     gulp: ^3.9.1
     gulp-install: ^1.1.0
     gulp-zip: ^4.0.0
@@ -13520,6 +13534,7 @@ fsevents@^1.2.7:
     eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-react: ^7.3.0
     file-loader: ^6.2.0
+    flow-bin: ^0.150.1
     history: ^4.10.1
     howdju-client-common: ^1.0.0
     howdju-common: ^1.0.0
@@ -13702,6 +13717,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "proposition-tag-scorer@workspace:premiser-processing/lambda-functions/proposition-tag-scorer"
   dependencies:
+    flow-bin: ^0.150.1
     pg: ^7.2.0
   languageName: unknown
   linkType: soft
