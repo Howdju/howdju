@@ -1521,7 +1521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.6.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.14.0
   resolution: "@babel/runtime@npm:7.14.0"
   dependencies:
@@ -1841,6 +1841,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@juggle/resize-observer@npm:^3.3.0":
+  version: 3.3.1
+  resolution: "@juggle/resize-observer@npm:3.3.1"
+  checksum: 84962a171f66ba8a56e2bf69067860539e1fc59fcb55be0120a8f2796775d38809fe64e19b8bb757a5460c53a591dbb6ddcd913a20ed0d5f1b59280dd833aa85
+  languageName: node
+  linkType: hard
+
 "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents":
   version: 2.1.8-no-fsevents
   resolution: "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents"
@@ -1901,6 +1908,429 @@ __metadata:
   version: 1.0.0-next.12
   resolution: "@polka/url@npm:1.0.0-next.12"
   checksum: f45ecfef340d43d0f4f055d3571bb3ab8a51523b243ba36287ce62a75800fa172f1fad46bcda8b806727af1e188d36d5355b75fcfb300a6bdc543ef1c1fe7b9e
+  languageName: node
+  linkType: hard
+
+"@react-md/app-bar@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/app-bar@npm:2.8.2"
+  dependencies:
+    "@react-md/button": ^2.8.2
+    "@react-md/elevation": ^2.8.2
+    "@react-md/icon": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 149b4e21a80431a49ab3eeb8fe9bfca7b67ffb35fd74739adb0ae2e13fd8348c83e3a231c90192160b4e894935ad201fc46256a3f9d854a7e467744d707a77a4
+  languageName: node
+  linkType: hard
+
+"@react-md/avatar@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/avatar@npm:2.8.2"
+  dependencies:
+    "@react-md/icon": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 66ae3a87a41db118af0ef9ac6bf99ab3ad6328cf1302be7747d03d03f74a486c197bc2d4ef403f4555e464c35fe423cbedb0f038895bb129353e074f1a57de1e
+  languageName: node
+  linkType: hard
+
+"@react-md/button@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/button@npm:2.8.2"
+  dependencies:
+    "@react-md/elevation": ^2.8.2
+    "@react-md/icon": ^2.8.2
+    "@react-md/states": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: fb2840b26d53dfded67c14379b1b68e8c2765b32af4ae2a6416db22fe18e1dd5af0f48575a149652269778a8d4cfcdb9f617614d9a59221463f6af90986deacf
+  languageName: node
+  linkType: hard
+
+"@react-md/dialog@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/dialog@npm:2.8.2"
+  dependencies:
+    "@react-md/app-bar": ^2.8.2
+    "@react-md/elevation": ^2.8.2
+    "@react-md/overlay": ^2.8.2
+    "@react-md/portal": ^2.8.0
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+    react-transition-group: ^4.4.1
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 455be1674365c8522e2d8362a6cc9a84faf5ae096ab074375141eb202430f216854782cc0a05c017569e59909bf4ba69a16aed133210f387ac7e607803ab1e7f
+  languageName: node
+  linkType: hard
+
+"@react-md/divider@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/divider@npm:2.8.2"
+  dependencies:
+    "@react-md/theme": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 717fac85a45661164a6fbd020e01e661b821c8f8e6615684bcf5c44ac03ef60770baf472298af6444941b727d6c084427ea8b4fe7b2fd5995494b84d4ac595e1
+  languageName: node
+  linkType: hard
+
+"@react-md/elevation@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/elevation@npm:2.8.2"
+  dependencies:
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/utils": ^2.8.2
+  checksum: e5f6291777eee83075e8bdb996d2357bfda8f2d6fb2b61697f8b7a1c15366117b34ac6f7a37579c2a5cdc1a4bb29fb6227c9f2a7029045d87ae65099c6bf0266
+  languageName: node
+  linkType: hard
+
+"@react-md/form@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/form@npm:2.8.2"
+  dependencies:
+    "@react-md/button": ^2.8.2
+    "@react-md/icon": ^2.8.2
+    "@react-md/list": ^2.8.2
+    "@react-md/portal": ^2.8.0
+    "@react-md/progress": ^2.8.2
+    "@react-md/states": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/tooltip": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: f94d89c2fb9c950e222d306122a3227a772316be05b8490f41637f6c40b3622c0a55bb30718b5793d1052cdf3730367b057a39de362f6880886f955089e1bdb3
+  languageName: node
+  linkType: hard
+
+"@react-md/icon@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/icon@npm:2.8.2"
+  dependencies:
+    "@react-md/theme": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 5bd631836727e436eba9fac36bbcc3d4cda482eeef4113e371718e1a7041287c147d3c6fd5a3d0bac96b7081fa2b54a865514bfb8e43f8bf37fd3fd7049035da
+  languageName: node
+  linkType: hard
+
+"@react-md/layout@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/layout@npm:2.8.2"
+  dependencies:
+    "@react-md/app-bar": ^2.8.2
+    "@react-md/dialog": ^2.8.2
+    "@react-md/divider": ^2.8.2
+    "@react-md/form": ^2.8.2
+    "@react-md/icon": ^2.8.2
+    "@react-md/link": ^2.8.2
+    "@react-md/list": ^2.8.2
+    "@react-md/sheet": ^2.8.2
+    "@react-md/states": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/tooltip": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/tree": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 6dac655123a34479c2cc06de1f111d24fa87fdf867d3f6f91d2b855f3f6c013bd6bd0c2dca20674fc4e607054008549f64778e4c31d1eb8ab56044bc582b3f1a
+  languageName: node
+  linkType: hard
+
+"@react-md/link@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/link@npm:2.8.2"
+  dependencies:
+    "@react-md/states": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ^15.6.2
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: a312defda12a4040aafce8df1a869fc596807a41d3d9bdac0b79bcfefbf9d86f847ce91bf5023d7a2f49c77fb00fdbd67550bdf0defdb9ceb23718d2c3938834
+  languageName: node
+  linkType: hard
+
+"@react-md/list@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/list@npm:2.8.2"
+  dependencies:
+    "@react-md/avatar": ^2.8.2
+    "@react-md/divider": ^2.8.2
+    "@react-md/icon": ^2.8.2
+    "@react-md/states": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 7c68e05ab8225b0d13df16a4864e2bd9bc6c1f17f24af5ba918c0132dcc35535893351605462cb143db16e9caf520d177ce0d521c526958bfd47ab73e6dca9b4
+  languageName: node
+  linkType: hard
+
+"@react-md/overlay@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/overlay@npm:2.8.2"
+  dependencies:
+    "@react-md/portal": ^2.8.0
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+    react-transition-group: ^4.4.1
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: efdeb497c958359c14a295bb8f7ff03ce6b89c9752c3c8b45a94db2a82ddc033cacf04f67e4fe07fd6c5ff66d147cded61bb656be2f7e4aba35519b2de1fa1d1
+  languageName: node
+  linkType: hard
+
+"@react-md/portal@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "@react-md/portal@npm:2.8.0"
+  dependencies:
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+    react-dom: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 1bc154b3c1572aa7cca4f34e7648eb3ba0293ea457d960a5a7e8f417545ae19a65abc7d78e9c10df3ed9db028d49dc830461e370a1e8f0e003aec6e05c42c437
+  languageName: node
+  linkType: hard
+
+"@react-md/progress@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/progress@npm:2.8.2"
+  dependencies:
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 60aad3675807cc73c7d39c74a51d451859312300e2a0c667d1048d89b2b2389dba2e4226ee97e5e519b5448d973ed02d2d48b2b0482f96159e18a4c1251e0610
+  languageName: node
+  linkType: hard
+
+"@react-md/sheet@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/sheet@npm:2.8.2"
+  dependencies:
+    "@react-md/dialog": ^2.8.2
+    "@react-md/elevation": ^2.8.2
+    "@react-md/overlay": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: d10ceeb6f88349ae1d9e0ce8e29458e46a6670526f90c46fb577bdd46aa7e4799a4b3aefe951486ace3b0c2fcd623e1e12f238e64f5644fda52b25c44706c1ba
+  languageName: node
+  linkType: hard
+
+"@react-md/states@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/states@npm:2.8.2"
+  dependencies:
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    prop-types: ">= 15.6"
+    react-transition-group: ^4.4.1
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: ca9ca5e75eb9f490c1260a3042368fd38c6857973deaaff36d9e3d6fe4cd0815fb38b7ef6b030046e831fa4c9583a2e4a9f2f15a8a3e9dda8f7d7c5629460cd6
+  languageName: node
+  linkType: hard
+
+"@react-md/theme@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/theme@npm:2.8.2"
+  dependencies:
+    "@react-md/utils": ^2.8.2
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 12c455e8d675f8e5ece9db541a5ba88b3b3ecbca915ffb70dd2472c885f726ed4d5ee0e5c42cb272e3ba1300c1b9bf44b8194ff9f3b333433a3cfd067a866232
+  languageName: node
+  linkType: hard
+
+"@react-md/tooltip@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/tooltip@npm:2.8.2"
+  dependencies:
+    "@react-md/portal": ^2.8.0
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+    react-transition-group: ^4.4.1
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 62c9bdc0228103e11e09e4d662627c6511d02ffe0c49b0152dcbb8a0e006e7e3ba050e77b591f4a461935b5426ac30588ec240ac5a86610a5b41763ad58da516
+  languageName: node
+  linkType: hard
+
+"@react-md/transition@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/transition@npm:2.8.2"
+  dependencies:
+    "@react-md/portal": ^2.8.0
+    "@react-md/theme": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    "@types/react-transition-group": ^4.4.1
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+    react-transition-group: ^4.4.1
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 41a6c9dbfcea30ffec57db86187d1f4bb20a3016007ce50740d2b0413dcaae24dc8c9ba41aaf36d167ffcdb0e6fe51d323f8e1180408039d1c60ce2ff23ff3e4
+  languageName: node
+  linkType: hard
+
+"@react-md/tree@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/tree@npm:2.8.2"
+  dependencies:
+    "@react-md/icon": ^2.8.2
+    "@react-md/list": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/transition": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 5c7381d74c045eb0cc0667fad357e8384993281579864901e446e9a9ecc8033c4d89cfda8e0d0f9b8eb98790f8051aa9a26c23adfeb8582ede4b44fda888f5d3
+  languageName: node
+  linkType: hard
+
+"@react-md/typography@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/typography@npm:2.8.2"
+  dependencies:
+    "@react-md/theme": ^2.8.2
+    "@react-md/utils": ^2.8.2
+    classnames: ^2.3.1
+    prop-types: ">= 15.6"
+  peerDependencies:
+    react: ">= 16.8"
+  dependenciesMeta:
+    prop-types:
+      optional: true
+  checksum: 6b834f971dd863fbf83c8445a8552a555fd6ce96d63db4b118d9e92db333a95a6b39e97a1f81848d1ec0c1f62020c59bc4e1b398f5f8e63f6a330690968c594f
+  languageName: node
+  linkType: hard
+
+"@react-md/utils@npm:^2.8.2":
+  version: 2.8.2
+  resolution: "@react-md/utils@npm:2.8.2"
+  dependencies:
+    "@juggle/resize-observer": ^3.3.0
+    classnames: ^2.3.1
+  checksum: e0449f9f80a8707ad38a05515cfc8cf9100c059533afb5b3a980791db4358546386d32ea6c9b5aa2503623c5766d10a7d087d6fc9aca28a6cfde4ed406d0ae04
   languageName: node
   linkType: hard
 
@@ -2341,6 +2771,15 @@ __metadata:
     hoist-non-react-statics: ^3.3.0
     redux: ^4.0.0
   checksum: c19c8f94dbadae42e9622c0b1b38324bbc6f5997fdc3989e71b202bf750d5869f73bb349ca4102f624188c2212c7907d3c3594449f099818abc87d1478d20996
+  languageName: node
+  linkType: hard
+
+"@types/react-transition-group@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "@types/react-transition-group@npm:4.4.1"
+  dependencies:
+    "@types/react": "*"
+  checksum: 7d9d9ecf8187902c129c4bf99ee911658f5cf97ffe56f31703be06df70b5209d49515386e26be540508436c8383d2cb1cdc287777103c5eb5106a1027281e8ec
   languageName: node
   linkType: hard
 
@@ -5897,6 +6336,16 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.1.2
   checksum: 7625598dbfef65a50801e194b88f277ab398dd92c27398280fd8d69294326f05d9b0588922560ba50e10d9fe5ee8096f90995d679b7db2b776afd579d495b962
+  languageName: node
+  linkType: hard
+
+"dom-helpers@npm:^5.0.1":
+  version: 5.2.1
+  resolution: "dom-helpers@npm:5.2.1"
+  dependencies:
+    "@babel/runtime": ^7.8.7
+    csstype: ^3.0.2
+  checksum: 4bbdac8dfd37ad689921af2c4d0027870108c673d458a0fc65b4350900c6195df2f872dd75c357755d197208b228e90c55619f75f9a9d337910e5050e83832af
   languageName: node
   linkType: hard
 
@@ -13514,6 +13963,12 @@ fsevents@^1.2.7:
   dependencies:
     "@babel/core": ^7.14.0
     "@babel/preset-react": ^7.13.13
+    "@react-md/icon": ^2.8.2
+    "@react-md/layout": ^2.8.2
+    "@react-md/states": ^2.8.2
+    "@react-md/theme": ^2.8.2
+    "@react-md/typography": ^2.8.2
+    "@react-md/utils": ^2.8.2
     "@sentry/browser": ^6.2.5
     "@sentry/tracing": ^6.2.5
     argparse: ^2.0.1
@@ -13702,7 +14157,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.10, prop-types@npm:^15.5.4, prop-types@npm:^15.5.6, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
+"prop-types@npm:>= 15.6, prop-types@npm:^15.5.10, prop-types@npm:^15.5.4, prop-types@npm:^15.5.6, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
   dependencies:
@@ -14201,6 +14656,21 @@ fsevents@^1.2.7:
     react: ^15.0.0 || ^16.0.0
     react-dom: ^15.0.0 || ^16.0.0
   checksum: 9c1eeb2938010229b3a73c14392dbcceadd38eb0307dbecae0b6dcbdc1fc0a1aa8c66e07cc8d6a48348c521485e0e940bec78b2f8c6877fba80c1238b1ee7efa
+  languageName: node
+  linkType: hard
+
+"react-transition-group@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "react-transition-group@npm:4.4.1"
+  dependencies:
+    "@babel/runtime": ^7.5.5
+    dom-helpers: ^5.0.1
+    loose-envify: ^1.4.0
+    prop-types: ^15.6.2
+  peerDependencies:
+    react: ">=16.6.0"
+    react-dom: ">=16.6.0"
+  checksum: e14446123f820e804335c64be5270333c29e8cfaa43dfc33387e132c5d521cf4a0a7c2408058a147b254ae82a6569f373394d83e977ef340d6937bc2f4ff7d6c
   languageName: node
   linkType: hard
 

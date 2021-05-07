@@ -1,3 +1,4 @@
+// Babel runtime dependencies
 import "core-js/stable"
 import "regenerator-runtime/runtime"
 
@@ -5,8 +6,9 @@ import "regenerator-runtime/runtime"
 import 'react-hot-loader'
 
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { render } from 'react-dom'
 import { Provider } from 'react-redux'
+import { Configuration, ConfigurationProps } from "@react-md/layout"
 import { PersistGate } from 'redux-persist/integration/react'
 import moment from "moment"
 import momentDurationFormatSetup from "moment-duration-format"
@@ -26,10 +28,16 @@ const root = document.getElementById('root')
 
 const {store, persistor} = configureStore(window.__INITIAL_STATE__)
 
-ReactDOM.render(
+const overrides: ConfigurationProps = {
+  // your configuration overrides
+}
+
+render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <App />
+      <Configuration {...overrides}>
+        <App />
+      </Configuration>
     </PersistGate>
   </Provider>,
   root
