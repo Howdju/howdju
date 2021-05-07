@@ -14,13 +14,13 @@
   ],
   "scripts": {
     "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
-    "lint": "eslint bin/ src/ lambda-functions/ --ignore-pattern=**/node_modules/**",
+    "lint": "eslint bin/ src/ lambda-functions/",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "score-justifications:local": "source ../config/local.env && node bin/score-justifications.js",
     "score-proposition-tags:local": "source ../config/local.env && node bin/score-proposition-tags.js",
     "score-proposition-tags:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/score-proposition-tags.js",
     "score-proposition-tags:prod": "source ../config/prod-local-tunnel.env && node bin/score-proposition-tags.js",
-    "test": "jest --config=../jest.config.js /premiser-processing/lambda-functions/[^/]+/src/",
+    "test": "jest --config=../jest.config.js --testPathPattern='/premiser-processing/lambda-functions/[^/]+/src/'",
     "update-lambda-function-alias": "node bin/update-lambda-function-alias.js",
     "update-lambda-function-code": "node bin/update-lambda-function-code.js",
     "upload-lambda-function-zip": "node bin/upload-lambda-function-zip.js"

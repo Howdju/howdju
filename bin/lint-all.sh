@@ -1,4 +1,4 @@
-yarn workspaces foreach -p run lint || {
+yarn workspaces foreach -Apv run lint || {
   echo "lint failed"
   exit 1
 }

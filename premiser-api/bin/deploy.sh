@@ -15,15 +15,14 @@ if [[ -z $lambda_alias ]]; then
   exit 1
 fi
 
-
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 bash "$script_dir/check-preconditions.sh"
 
 echo deploying $git_branch to $lambda_alias
 
 pushd ..
-bin/lint-api.sh || { echo "linting failed"; exit 1; }
-bin/test-api.sh || { echo "tests failed"; exit 1; }
+bin/lint-all.sh || { exit 1; }
+bin/test-all.sh || { exit 1; }
 popd
 
 npm run build-and-update-lambda-function-code
