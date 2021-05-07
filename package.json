@@ -7,6 +7,18 @@
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
+  "workspaces": [
+    "eslint-config-howdju",
+    "howdju-client-common",
+    "howdju-common",
+    "howdju-ops",
+    "howdju-elastic",
+    "howdju-service-common",
+    "howdju-test-common",
+    "premiser-api",
+    "premiser-ext",
+    "premiser-ui"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.13.14",
     "@babel/core": "^7.13.15",

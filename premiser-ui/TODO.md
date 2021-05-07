@@ -5,8 +5,9 @@
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
   
-  - Replace bcrypt with bcryptjs and remove deasync or limit to dev sever
-  - rebase workspaces onto master, try https://github.com/flegall/monopack
+  - Remove docker 😱 and gulp
+  - rebase workspaces onto master
+     Also look at rollup changes
   - run npm outdated, switch to workspaces
     - Upgrade react-md
     - Upgrade: premiser-ext/react

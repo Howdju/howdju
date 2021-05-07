@@ -17,13 +17,14 @@ npm install -g node-gyp
 
 The correct node version automatically activates due to the `.node-version` file.
 
-## Link development node modules and install 
+## Install dependencies
 
-Linking the modules causes dependent modules to use the current code instead of a static installed dependency.
+This project uses Yarn workspaces to allow packages to depend on each other during development and to share
+dependencies.
+
 
 ```
-bin/link.sh
-bin/install-all.sh
+yarn install
 ``` 
 
 # Prepare a local database server

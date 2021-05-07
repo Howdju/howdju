@@ -5,6 +5,12 @@
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
+  "workspaces":[
+    "lambda-functions/cloudwatch-logs-to-elasticsearch",
+    "lambda-functions/ElasticsearchSnapshot",
+    "lambda-functions/justification0-scorer",
+    "lambda-functions/proposition-tag-scorer"
+  ],
   "scripts": {
     "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
     "lint": "eslint bin/ src/ lambda-functions/ --ignore-pattern=**/node_modules/**",
@@ -21,15 +27,18 @@
   "devDependencies": {
     "argparse": "^2.0.1",
     "eslint": "^7.25.0",
+    "eslint-config-howdju": "^1.0.0",
     "gulp": "^3.9.1",
     "gulp-install": "^1.1.0",
     "gulp-zip": "^4.0.0",
+    "howdju-test-common": "^1.0.0",
     "inspect-process": "^0.5.0",
     "install-local": "^0.6.0",
     "jest": "^26.6.3",
     "run-sequence": "^2.1.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.307.0"
+    "aws-sdk": "^2.307.0",
+    "howdju-ops": "^1.0.0"
   }
 }

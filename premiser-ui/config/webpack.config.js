@@ -1,7 +1,6 @@
 const debug = require('debug')('howdju-ui:webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const path = require('path')
 const webpack = require('webpack')
 const {merge} = require('webpack-merge')
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
@@ -123,18 +122,7 @@ const baseWebpackConfig = {
       }
     ]
   },
-  plugins,
-  resolve: {
-    alias: {
-      // Force duplicated howdju-common modules to resolve to ours.
-      // There is probably a better way to do this generally, but
-      // for now these are the biggest duplicates. These must be
-      // generic libraries that won't change much between versions
-      // (or we must ensure that we install the same versions.)
-      "moment": path.resolve('./node_modules/moment'),
-      "lodash": path.resolve('./node_modules/lodash'),
-    },
-  },
+  plugins
 }
 
 module.exports = merge(baseWebpackConfig, envWebpackConfig)

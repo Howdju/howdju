@@ -8,6 +8,10 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "elasticsearch": "^15.1.1",
+    "howdju-service-common": "^1.0.0"
     "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "eslint-config-howdju": "^1.0.0"
   }
 }
