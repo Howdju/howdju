@@ -7,22 +7,20 @@ const {
 
 exports.init = function init(provider) {
 
-  const nodeEnv = process.env.NODE_ENV
-  const envConfigs = {}
-  try {
-    envConfigs['development'] = require('../config/config.development.js')
-  } catch (err) {
-    provider.logger.info('development config was not found', {err})
-  }
-  try {
-    envConfigs['production'] = require('../config/config.production.js')
-  } catch (err) {
-    provider.logger.info('production config was not found', {err})
-  }
-  provider.logger.info(`Loading app config file for: ${nodeEnv}`)
-  const envConfig = envConfigs[nodeEnv]
-  if (!envConfig) {
-    throw new Error(`Configuration was not found for requested env ${nodeEnv}`)
+  let envConfig
+  switch (process.env.NODE_ENV) {
+    case 'development':
+      provider.logger.debug('loading development config')
+      envConfig = require('../config/config.development.js')
+      provider.logger.debug('loaded development config')
+      break
+    case 'production':
+      provider.logger.debug('loading production config')
+      envConfig = require('../config/config.production.js')
+      provider.logger.debug('loaded production config')
+      break
+    default:
+      throw new Error(`Configuration was not found for requested env ${process.env.NODE_ENV}`)
   }
 
   const baseConfig = {
