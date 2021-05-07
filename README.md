@@ -92,68 +92,19 @@ bin/test-all.sh
 
 ## Publishing the API
 
-We must build the code on a Linux instance so that it is binary compatible with the AWS Lambda containers.  We do this
-by building it on an Amazon Docker container.
-
 ```sh
-# Build the base docker image (do this once, and again if you have changed anything with the base image.)
-bin/docker/api-base-build.sh
-
-# Build the docker image (do this once, and again if you have changed anything with API deployment.)
-# The code baked into this image is the code that is currently at origin.
-bin/docker/api-deploy-build.sh
-
-# You will be prompted for the password to the private key config/docker/id_rsa_howdju_readonly, which allows
-# the image to fetch the code.
-
-# If there are app-only changes, you can start from here.
-# I.e. if there are no changes to the docker files, the build, or the deployment process
-
-# * Pulls the latest code from origin (defaults to the master branch),
-# * deploys it from the docker image,
-# * and points the pre-prod lambda alias to it.
-# (When prompted, enter the password used above.)
-bin/docker/api-deploy-run.sh pre-prod
+cd premiser-api/
+AWS_PROFILE=premiser bin/deploy.sh pre-prod
 
 # (Visit pre-prod-www.howdju.com and test the changes)
 
 # To deploy to prod, just point the `prod` alias to the same version as the `pre-prod` alias
-cd premiser-api/
-# Set the environment variable
-# AWS_PROFILE=<your AWS profile name>
-# if you would like to override the default of BuildTools
-yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
+AWS_PROFILE=premiser yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
 ```
 
 ### Publishing a feature branch
 
-```sh
-feature_branch=feature/great-feature
-```
-
-If your feature branch has changes to `deploy.sh` (or possibly other build/deploy scripts), you'll need to build the 
-image with that branch so that it is already checked out before the scripts run (the switch to a feature branch occurs 
-as part of `deploy.sh`)
-
-```
-# Build the docker image using a feature branch 
-bin/docker/api-deploy-build.sh $feature_branch
-```
-
-Otherwise, you can build the image without specifying a branch:
-
-```
-bin/docker/api-deploy-build.sh
-```
-
-Either way, you must build the image to get the current code there; the image currently will not pull the latest code.
-
-Next run the deployment container with a feature branch:
-
-```
-# Pulls and deploys the current master branch to pre-prod
-bin/docker/api-deploy-run.sh $feature_branch pre-prod
-```
+I think just check out that branch and follow instructions above.
 
 ## Publishing the web app
 ```sh

@@ -27,7 +27,7 @@ bin/test-api.sh || { echo "tests failed"; exit 1; }
 popd
 
 npm run build-and-update-lambda-function-code
-bin/lambda-smoke-test.sh us-east-1 premiserApi file://test-events/login.json || {
+bin/lambda-smoke-test.sh us-east-1 premiserApi test-events/login.json || {
   echo 'smoke test failed'
   exit 1
 }

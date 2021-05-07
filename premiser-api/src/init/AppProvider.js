@@ -19,6 +19,8 @@ exports.AppProvider = class AppProvider {
     this.isProduction = this.getConfigVal('NODE_ENV') === 'production'
 
     forEach(inits, i => i.init(this))
+
+    this.logger.debug('initializations complete',)
   }
 
   getConfigVal(configValName, defaultConfigVal) {
