@@ -50,7 +50,7 @@ const plugins = [
   new HtmlWebpackPlugin(htmlWebpackPluginConfig),
   new webpack.DefinePlugin(definePluginConfig),
   new MiniCssExtractPlugin(),
-  new DuplicatesPlugin(),
+  new DuplicatesPlugin({emitErrors: false}),
   new MomentLocalesPlugin({localesToKeep: ['en']})
 ]
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
