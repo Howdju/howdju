@@ -5,6 +5,7 @@
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
   
+  - `yarn dlx @yarnpkg/doctor`
   - run npm outdated
     - Upgrade react-md
     - Upgrade: premiser-ext/react
