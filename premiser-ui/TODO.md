@@ -6,9 +6,8 @@
   - WritQuoteTarget -> QuoteSourceLocator?
   
   - Remove docker 😱 and gulp
-  - rebase workspaces onto master
      Also look at rollup changes
-  - run npm outdated, switch to workspaces
+  - run npm outdated
     - Upgrade react-md
     - Upgrade: premiser-ext/react
   - Look at prettier
