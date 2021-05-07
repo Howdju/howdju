@@ -12,6 +12,8 @@
     "zlib": "^1.0.5"
   },
   "devDependencies": {
-    "eslint-config-howdju": "^1.0.0"
+    "eslint": "^7.25.0",
+    "eslint-config-howdju": "^1.0.0",
+    "eslint-plugin-flowtype": "^5.7.2"
   }
 }
