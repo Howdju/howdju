@@ -21,7 +21,7 @@ const argParser = new ArgumentParser({
   description: 'Upload the app to S3'
 })
 argParser.add_argument('bucket')
-argParser.add_argument('filter')
+argParser.add_argument('--filter')
 const args = argParser.parse_args()
 const filter = args.filter && new RegExp(args.filter)
 
