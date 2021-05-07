@@ -9,8 +9,11 @@ const isEmpty = require('lodash/isEmpty')
 const join = require('lodash/join')
 const keys = require('lodash/keys')
 const pick = require('lodash/pick')
+const sourceMapSupport = require('source-map-support')
 const toLower = require('lodash/toLower')
 const uuid = require('uuid')
+
+sourceMapSupport.install()
 
 const {
   httpStatusCodes
