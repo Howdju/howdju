@@ -10,8 +10,8 @@ const {
 } = require('howdju-common')
 const {
   gitSha,
-  packageVersion,
 } = require('howdju-ops')
+const packageInfo = require('../package.json')
 
 const gitCommitMetadataKey = 'x-amz-meta-howdju-git-commit'
 const versionMetadataKey = 'x-amz-meta-howdju-ui-version'
@@ -54,7 +54,7 @@ const upload = (filename) => {
       Body: data,
       Metadata: {
         [gitCommitMetadataKey]: gitSha(),
-        [versionMetadataKey]: packageVersion()
+        [versionMetadataKey]: packageInfo.version,
       },
       ACL: 'public-read',
       CacheControl: `public, max-age=${duration.seconds()}`,

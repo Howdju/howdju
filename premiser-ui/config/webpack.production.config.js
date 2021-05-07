@@ -10,8 +10,8 @@ const {
 
 const {
   gitSha,
-  packageVersion,
 } = require("howdju-ops")
+const packageInfo = require('../package.json')
 const projectConfig = require('./project.config')
 
 module.exports.htmlWebpackPluginConfig = {
@@ -44,7 +44,7 @@ Supposed to support more stuff like this:
  but didn't work; maybe in a newer version
 */
 const banner = `name: ${projectConfig.names.js}
-version: ${packageVersion()}
+version: ${packageInfo.version}
 timstamp: ${utcTimestamp()}
 git_commit: ${gitSha()}`
 
