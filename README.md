@@ -94,7 +94,7 @@ bin/test-all.sh
 
 ```sh
 cd premiser-api/
-AWS_PROFILE=premiser bin/deploy.sh pre-prod
+AWS_PROFILE=premiser yarn run deploy pre-prod
 
 # (Visit pre-prod-www.howdju.com and test the changes)
 
