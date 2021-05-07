@@ -17,6 +17,7 @@
     "howdju-test-common",
     "premiser-api",
     "premiser-ext",
+    "premiser-processing",
     "premiser-ui"
   ],
   "devDependencies": {

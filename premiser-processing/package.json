@@ -5,6 +5,7 @@
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
+  "private": true,
   "workspaces":[
     "lambda-functions/cloudwatch-logs-to-elasticsearch",
     "lambda-functions/ElasticsearchSnapshot",
