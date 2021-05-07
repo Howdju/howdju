@@ -596,6 +596,7 @@ const routes = [
    * Auth
    */
   {
+    id: 'login',
     path: 'login',
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {credentials}}}) =>
@@ -607,6 +608,7 @@ const routes = [
         })
   },
   {
+    id: 'logout',
     path: 'logout',
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {authToken}}) =>
@@ -614,6 +616,7 @@ const routes = [
         .then( () => ok({callback}) )
   },
   {
+    id: 'requestPasswordReset',
     path: 'password-reset-requests',
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {passwordResetRequest}}}) =>
@@ -621,6 +624,7 @@ const routes = [
         .then( (duration) => ok({callback, body: {duration}}))
   },
   {
+    id: 'readPasswordReset',
     path: 'password-reset-requests',
     method: httpMethods.GET,
     handler: (appProvider, {callback, request: {queryStringParameters: {passwordResetCode}}}) =>
@@ -628,6 +632,7 @@ const routes = [
         .then( (email) => ok({callback, body: {email}}))
   },
   {
+    id: 'completePasswordReset',
     path: 'password-resets',
     method: httpMethods.POST,
     handler: (appProvider, {
@@ -642,6 +647,7 @@ const routes = [
         .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}}))
   },
   {
+    id: 'requestRegistration',
     path: 'registration-requests',
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {registrationRequest}}}) =>
@@ -650,6 +656,7 @@ const routes = [
         .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationRequest'))
   },
   {
+    id: 'readRegistrationRequest',
     path: 'registration-requests',
     method: httpMethods.GET,
     handler: (appProvider, {callback, request: {queryStringParameters: {registrationCode}}}) =>
@@ -657,6 +664,7 @@ const routes = [
         .then( (email) => ok({callback, body: {email}}) )
   },
   {
+    id: 'register',
     path: 'registrations',
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {registrationConfirmation}}}) =>

@@ -76,9 +76,9 @@ exports.AuthService = class AuthService {
         if (!userHash) {
           throw new EntityNotFoundError(EntityType.PASSWORD_HASH)
         }
-        this.logger.silly({userHash})
+        this.logger.silly("Found user hash")
         const {userId, hash} = userHash
-        let verifyPromise = null
+        let verifyPromise
         try {
           verifyPromise = bcrypt.compare(credentials.password, hash)
           this.logger.silly('proceeding past verify call')
