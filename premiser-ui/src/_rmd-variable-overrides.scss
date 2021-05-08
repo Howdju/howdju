@@ -1,0 +1,18 @@
+/** Variables overrides for react-md@2 */
+
+@import './colors';
+
+$rmd-theme-light: true;
+$rmd-theme-primary: $primary-color;
+$rmd-theme-secondary: $secondary-color;
+$rmd-theme-warning: $warning-color;
+$rmd-theme-error: $error-color;
+$rmd-theme-success: $success-color;
+$rmd-theme-light-background: $light-background-color;
+$rmd-theme-light-surface: $light-surface-color;
+$rmd-theme-dark-background: $dark-background-color;
+$rmd-theme-dark-surface: $dark-surface-color;
+
+$rmd-typography-font-family: 'Lato', sans-serif;
+$rmd-typography-desktop-max-line-length: 60em;
+$rmd-typography-mobile-max-line-length: 40em;

@@ -1,13 +1,12 @@
-/*
-  Customize React-MD and apply fixes
- */
-@import '~react-md/src/scss/react-md';
+/** Variables overrides for react-md@1 */
+
 @import './colors';
 
 $md-primary-color: $primary-color;
 $md-secondary-color: $secondary-color;
 $md-text-field-error-color: $error-color;
 $md-font-family: 'Lato', sans-serif;
+$md-theme-light: false;
 
 $md-toolbar-prominent-height: 105px;
 // The docs say that $md-toolbar-prominent-height overrides these.  But in my experience it does not.
@@ -24,8 +23,3 @@ $md-switch-ball-fallback-color: $md-deep-orange-a-700;
 $md-avatar-default-background: rgba(0,0,0,0);
 $md-avatar-default-color: $icon-color;
 $md-chip-icon-default-color: $icon-color;
-
-@include react-md-everything;
-
-@import './react-md-fixes';
-@include react-md-fixes($md-grid-desktop-breakpoint, $md-grid-phone-gutter)

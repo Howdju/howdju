@@ -8,6 +8,8 @@
   - `yarn dlx @yarnpkg/doctor`
   - run npm outdated
     - Upgrade react-md https://react-md.dev/guides/working-with-v1
+      - headings
+      - grids
     - Upgrade: premiser-ext/react
   - Look at prettier
 - New directions

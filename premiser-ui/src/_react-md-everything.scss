@@ -1,0 +1,124 @@
+// Temporary replacement for react-md-everything
+// https://react-md.dev/guides/working-with-v1#the-pain-points
+
+@include react-md-accessibility;
+@include react-md-grid;
+@include react-md-transitions;
+
+@include react-md-autocompletes;
+@include react-md-avatars;
+@include react-md-badges;
+@include react-md-bottom-navigations;
+@include react-md-buttons;
+@include react-md-cards;
+@include react-md-chips;
+@include react-md-collapsers;
+@include react-md-data-tables;
+@include react-md-dialogs;
+@include react-md-dividers;
+@include react-md-drawers;
+@include react-md-expansion-panels;
+@include react-md-file-inputs;
+@include react-md-inks;
+@include react-md-icons;
+@include react-md-layovers;
+@include react-md-lists;
+@include react-md-media;
+@include react-md-menus;
+@include react-md-navigation-drawers;
+@include react-md-overlays;
+@include react-md-papers;
+@include react-md-pickers;
+@include react-md-progress;
+@include react-md-select-fields;
+@include react-md-selection-controls;
+@include react-md-sliders;
+@include react-md-subheaders;
+@include react-md-snackbars;
+@include react-md-tabs;
+@include react-md-text-fields;
+@include react-md-toolbars;
+@include react-md-tooltips;
+
+@include react-md-helpers-everything;
+@include react-md-colors;
+
+// Create a temporary mixin to create the old typography styles without
+// the global namespace updates
+@mixin migration-typography-react-md {
+  $md-text-color: get-color("text", $md-light-theme);
+  $md-secondary-text-color: get-color("secondary", $md-light-theme);
+  $md-hint-text-color: get-color("hint", $md-light-theme);
+  $md-disabled-text-color: get-color("disabled", $md-light-theme);
+
+  %md-headline,
+  %md-title,
+  %md-subheading-2,
+  %md-subheading-1,
+  %md-body-2,
+  %md-body-1 {
+    color: $md-text-color;
+  }
+
+  %md-display-4,
+  %md-display-3,
+  %md-display-2,
+  %md-display-1,
+  %md-caption {
+    color: $md-secondary-text-color;
+  }
+
+  .md-display-1 {
+    @extend %md-display-1;
+  }
+
+  .md-display-2 {
+    @extend %md-display-2;
+  }
+
+  .md-display-3 {
+    @extend %md-display-3;
+  }
+
+  .md-display-4 {
+    @extend %md-display-4;
+  }
+
+  .md-headline {
+    @extend %md-headline;
+  }
+
+  .md-title {
+    @extend %md-title;
+  }
+
+  .md-subheading-1 {
+    @extend %md-subheading-1;
+  }
+
+  .md-subheading-2 {
+    @extend %md-subheading-2;
+  }
+
+  .md-body-1 {
+    @extend %md-body-1;
+  }
+
+  .md-body-2 {
+    @extend %md-body-2;
+  }
+
+  .md-caption {
+    @extend %md-caption;
+  }
+
+  @if $md-typography-include-utilities {
+    @include react-md-typography-utilities;
+  }
+
+  @if $md-typography-include-text-container {
+    @include react-md-typography-text-container;
+  }
+}
+
+@include migration-typography-react-md;
