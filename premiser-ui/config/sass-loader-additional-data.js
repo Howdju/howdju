@@ -28,18 +28,5 @@ const sassLoaderData =
   `$font-url-bebas-neue-regular: url(${fontServerAuthority}/fonts/BebasNeue-Regular.otf);` +
   `$font-url-bebas-neue-bold: url(${fontServerAuthority}/fonts/BebasNeue-Bold.otf);`
 
-exports.sassLoaderConfig = process.env.NODE_ENV !== 'development' ?
-  {
-    loader: "sass-loader",
-    options: {
-      sourceMap: true,
-      additionalData: sassLoaderData,
-    }
-  } :
-  {
-    loader: "sass-loader",
-    options: {
-      sourceMap: true,
-      additionalData: sassLoaderData + devSassLoaderData,
-    }
-  }
+exports.sassLoaderAdditionalData = process.env.NODE_ENV === 'development' ?
+  sassLoaderData + devSassLoaderData : sassLoaderData

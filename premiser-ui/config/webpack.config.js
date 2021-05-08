@@ -13,7 +13,7 @@ const {
 } = require('howdju-ops')
 const packageInfo = require('../package.json')
 const projectConfig = require('./project.config')
-const {sassLoaderConfig} = require('./sass-loader-config')
+const {sassLoaderAdditionalData} = require('./sass-loader-additional-data')
 
 const envWebpackPath = `./webpack.${process.env.NODE_ENV}.config.js`
 debug(`Loading env webpack from ${envWebpackPath}`)
@@ -98,9 +98,13 @@ const baseWebpackConfig = {
           MiniCssExtractPlugin.loader,
           'css-loader',
           'resolve-url-loader',
-          'sass-loader',
-          // This causes error when deploying to production if it isn't like the first option
-          sassLoaderConfig,
+          {
+            loader: "sass-loader",
+            options: {
+              sourceMap: true,
+              additionalData: sassLoaderAdditionalData,
+            }
+          },
         ],
       },
       {
