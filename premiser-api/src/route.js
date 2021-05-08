@@ -182,9 +182,6 @@ const routes = [
         count,
         propositionIds: propositionIdsParam,
       } = request.queryStringParameters
-      if (!encodedSorts) {
-        throw new Error("sorts is required")
-      }
       const sorts = decodeSorts(encodedSorts)
       if (propositionIdsParam) {
         const propositionIds = split(propositionIdsParam, ',')
