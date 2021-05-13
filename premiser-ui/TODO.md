@@ -5,7 +5,9 @@
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
   
-  - Extension: load anchors/targets on page
+  - Extension: 
+    - load anchors/targets on page
+    - update to manifest v3? Does FF support it well?
   - run npm outdated
     - Upgrade react-md https://react-md.dev/guides/working-with-v1
       - headings

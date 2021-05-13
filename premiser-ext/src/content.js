@@ -2,8 +2,9 @@ import {extension as ext} from 'howdju-client-common'
 
 import {annotateSelection} from './annotate'
 import {showSidebar, toggleSidebar} from './sidebar'
-import {logger} from './logger'
+import {logger} from 'howdju-client-common'
 import {getOption} from './options'
+import {ANNOTATE, TOGGLE_SIDEBAR} from "./messages"
 
 const didLoadKey = 'HowdjuDidLoad'
 
@@ -24,14 +25,14 @@ function onMessage(request, sender, sendResponse) {
 function routeMessage(request, sender) {
   logger.debug('request:', request, sender)
   switch (request.action) {
-    case 'annotate':
+    case ANNOTATE:
       annotateAndEdit()
       break
-    case 'toggleSidebar':
+    case TOGGLE_SIDEBAR:
       toggleSidebar()
       break
     default:
-      logger.log('Unknown request:', request)
+      logger.log('Request for unrecognized action:', request)
       break
   }
 }

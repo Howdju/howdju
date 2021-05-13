@@ -2,15 +2,17 @@ import {extension as ext, actions, logger} from 'howdju-client-common'
 
 import {attachHeadersListener} from './attach'
 import {getOptions} from './options'
+import {annotate, toggleSidebar} from "./messages"
 
 ext.addBrowserActionOnClickedListener(tab => {
-  sendMessage(tab, {action: "toggleSidebar"})
+  sendMessage(tab, toggleSidebar())
 })
 
 ext.addRuntimeOnInstalledListener(onInstalled)
 
 ext.addRuntimeOnMessageExternalListener(
-  function(request, sender, sendResponse) {
+  (request, sender, sendResponse) =>{
+    logger.debug({request, sender, sendResponse})
     if (request.type === actions.str(actions.extension.focusJustificationOnUrl)) {
       // watch for request.payload.url.  If it loads in the next 10s, toggle the sidebar pointed at request.payload.howdjuUrl
     }
@@ -41,7 +43,7 @@ function sendMessage(tab, message) {
 }
 
 function sendAnnotateMessage(info, tab) {
-  sendMessage(tab, {action: "annotate"})
+  sendMessage(tab, annotate())
 }
 
 function logLastError() {
