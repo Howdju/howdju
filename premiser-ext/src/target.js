@@ -1,4 +1,5 @@
 import * as domAnchorTextQuote from 'dom-anchor-text-quote'
+import {UrlTargetAnchorType} from 'howdju-common'
 
 class Target {
   constructor(url, anchors, date) {
@@ -25,7 +26,7 @@ export function toTarget(selection) {
 
 class TextQuoteAnchor {
   constructor({exact, prefix, suffix}) {
-    this.type = 'TextQuote'
+    this.type = UrlTargetAnchorType.TEXT_QUOTE
     this.exact = exact
     this.prefix = prefix
     this.suffix = suffix

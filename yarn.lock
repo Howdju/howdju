@@ -1834,6 +1834,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@joi/date@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@joi/date@npm:2.1.0"
+  dependencies:
+    moment: 2.x.x
+  checksum: dcf581af56bb208197f660c2bea22655236720491d99a01c1f0114105f19a484284548e4cb2222eeb967333d07b77bf62304c02edb19598eaf257cbe4d2ef99c
+  languageName: node
+  linkType: hard
+
 "@juggle/resize-observer@npm:^3.3.0":
   version: 3.3.1
   resolution: "@juggle/resize-observer@npm:3.3.1"
@@ -8747,6 +8756,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "howdju-service-common@workspace:howdju-service-common"
   dependencies:
+    "@joi/date": ^2.1.0
     any-promise: ^1.3.0
     bcryptjs: ^2.4.3
     bluebird: ^3.5.0
@@ -11934,7 +11944,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.18.1, moment@npm:^2.22.1, moment@npm:^2.29.1":
+"moment@npm:2.x.x, moment@npm:^2.18.1, moment@npm:^2.22.1, moment@npm:^2.29.1":
   version: 2.29.1
   resolution: "moment@npm:2.29.1"
   checksum: 86729013febf7160de5b93da69273dd304d674b0224f9544b3abd09a87671ddd2cdd57598261ce57588910d63747ffd5590965e83c790d8bf327083c0e0a06e0

@@ -27,10 +27,11 @@ const {DatabaseSortDirection} = require('./daoModels')
 
 exports.WritQuotesDao = class WritQuotesDao {
 
-  constructor(logger, database, urlsDao) {
+  constructor(logger, database, urlsDao, writQuoteUrlTargetsDao) {
     this.logger = logger
     this.database = database
     this.urlsDao = urlsDao
+    this.writQuoteUrlTargetsDao = writQuoteUrlTargetsDao
   }
 
   readWritQuoteForId(writQuoteId) {
@@ -233,17 +234,28 @@ exports.WritQuotesDao = class WritQuotesDao {
     ]
     return Promise.all([
       this.database.query('readWritQuotesByIdForRootPropositionId', sql, args),
-      this.urlsDao.readUrlsByWritQuoteIdForRootPropositionId(rootPropositionId)
+      this.urlsDao.readUrlsByWritQuoteIdForRootPropositionId(rootPropositionId),
+      this.writQuoteUrlTargetsDao.readByUrlIdByWritQuoteIdForRootPropositionId(rootPropositionId),
     ])
       .then( ([
         {rows},
-        urlsByWritQuoteId
+        urlsByWritQuoteId,
+        urlTargetsByUrlIdByWritQuoteId,
       ]) => {
         const writQuotesById = {}
         forEach(rows, row => {
           const writQuote = toWritQuote(row)
           const writQuoteId = row.writ_quote_id
           writQuote.urls = urlsByWritQuoteId[writQuoteId] || []
+          const urlTargetsByUrlId = urlTargetsByUrlIdByWritQuoteId.get(writQuoteId)
+          if (urlTargetsByUrlId) {
+            for (const url of writQuote.urls) {
+              const target = urlTargetsByUrlId.get(url.id)
+              if (target) {
+                url.target = target
+              }
+            }
+          }
           writQuotesById[writQuoteId] = writQuote
         })
         return writQuotesById

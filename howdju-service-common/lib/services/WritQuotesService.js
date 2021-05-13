@@ -13,6 +13,7 @@ const pickBy = require('lodash/pickBy')
 const sortBy = require('lodash/sortBy')
 const toNumber = require('lodash/toNumber')
 const values = require('lodash/values')
+const zip = require('lodash/zip')
 
 const {
   ActionTargetType,
@@ -339,22 +340,26 @@ function readOrCreateEquivalentValidWritQuoteAsUser(service, writQuote, userId, 
   return Promise.all([
     service.writsService.readOrCreateValidWritAsUser(writQuote.writ, userId, now),
     service.urlsService.readOrCreateUrlsAsUser(writQuote.urls, userId, now),
+    writQuote.urls,
   ])
-    .then( ([{writ}, urls]) => {
+    .then( ([{writ}, urls, oldUrls]) => {
       writQuote.writ.id = writ.id
       return Promise.all([
         writ,
         urls,
-        readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now)
+        readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now),
+        oldUrls
       ])
     })
-    .then( ([writ, urls, {isExtant, writQuote}]) => {
+    .then( ([writ, urls, {isExtant, writQuote}, oldUrls]) => {
       writQuote.writ = writ
-      writQuote.urls = urls
+      // Assign new properties, like ID, but leave old things like .target.
+      map(zip(oldUrls, urls), ([oldUrl, url]) => {assign(oldUrl, url)})
+      writQuote.urls = oldUrls
       return Promise.all([
         isExtant,
         writQuote,
-        createWritQuoteUrlsAsUser(service, writQuote, userId, now)
+        createWritQuoteUrlsAsUser(service, writQuote, userId, now),
       ])
     })
     .then( ([isExtant, writQuote]) => ({isExtant, writQuote}))

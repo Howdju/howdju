@@ -122,11 +122,12 @@ exports.JustificationsService = class JustificationsService extends EntityServic
       })
   }
 
-  readJustifications({
+  async readJustifications({
     filters,
     sorts,
     continuationToken,
     count = 25,
+    includeUrls = false,
   }) {
     const countNumber = toNumber(count)
     if (!isFinite(countNumber)) {
@@ -137,30 +138,28 @@ exports.JustificationsService = class JustificationsService extends EntityServic
     }
 
     if (!continuationToken) {
-      return this.readInitialJustifications(filters, sorts, countNumber)
+      return this.readInitialJustifications(filters, sorts, countNumber, includeUrls)
     }
-    return this.readMoreJustifications(continuationToken, countNumber)
+    return this.readMoreJustifications(continuationToken, countNumber, includeUrls)
   }
 
-  readInitialJustifications(filters, requestedSorts, count) {
+  async readInitialJustifications(filters, requestedSorts, count, includeUrls) {
     const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
-    return this.justificationsDao.readJustifications(filters, unambiguousSorts, count)
-      .then(justifications => {
-        const continuationToken = createContinuationToken(unambiguousSorts, justifications, filters)
-        return {
-          justifications,
-          continuationToken,
-        }
-      })
+    const justifications = await this.justificationsDao.readJustifications(filters, unambiguousSorts, count, false, includeUrls)
+    const continuationToken = createContinuationToken(unambiguousSorts, justifications, filters)
+    return {
+      justifications,
+      continuationToken,
+    }
   }
 
-  readMoreJustifications(continuationToken, count) {
+  readMoreJustifications(continuationToken, count, includeUrls) {
     const {
       sorts,
       filters,
     } = decodeContinuationToken(continuationToken)
-    return this.justificationsDao.readJustifications(filters, sorts, count, true)
+    return this.justificationsDao.readJustifications(filters, sorts, count, true, includeUrls)
       .then(justifications => validateJustifications(this.logger, justifications))
       .then(justifications => {
         const nextContinuationToken = createNextContinuationToken(sorts, justifications, filters) || continuationToken

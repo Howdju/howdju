@@ -119,7 +119,7 @@ class CreatePropositionPage extends Component {
           this.props.editors.cancelEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId)
 
           if (!(basisSourceType && basisSourceId)) {
-            logger.error(`If either of basisSourceType/basisSourceId are present, both must be: basisSourceType: ${basisSourceType} basisSourceId: ${basisSourceId}.`)
+            logger.error(`If either of basisSourceType/basisSourceId are present, both must be: ${{basisSourceType, basisSourceId}}`)
             return
           }
 

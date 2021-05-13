@@ -10,3 +10,7 @@ export const extension = {
   focusJustificationOnUrl: actionCreator('EXTENSION/FOCUS_JUSTIFICATION_ON_URL',
     (url, justificationId, howdjuUrl) => ({url, justificationId, howdjuUrl}))
 }
+
+export const extensionFrame = {
+  createJustification: actionCreator('EXTENSION_FRAME/CREATE_JUSTIFICATION')
+}

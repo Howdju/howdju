@@ -14,6 +14,7 @@ const {
   schemaSettings,
   SentenceType,
   SourceExcerptType,
+  UrlTargetAnchorType,
 } = require('howdju-common')
 
 
@@ -93,7 +94,16 @@ const propositionCompoundSchema = Joi.object().keys({
 
 const urlSchema = Joi.object().keys({
   id: idSchema,
-  url: Joi.string().max(schemaSettings.urlMaxLength)
+  url: Joi.string().max(schemaSettings.urlMaxLength),
+  target: Joi.object({
+    date: Joi.date().utc(),
+    anchors: Joi.array().min(1).items(Joi.object()
+      .when('type', {is: UrlTargetAnchorType.TEXT_QUOTE, then: Joi.object({
+          exact: Joi.string(),
+          prefix: Joi.string(),
+          suffix: Joi.string(),
+        })}))
+  })
 })
   .when(idMissing, {
     then: Joi.object({
@@ -231,5 +241,6 @@ module.exports = {
   propositionSchema,
   // registrationSchema,
   statementSchema,
+  urlSchema,
   translateJoiError,
 }

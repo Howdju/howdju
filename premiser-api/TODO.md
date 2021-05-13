@@ -71,7 +71,7 @@
  - So should this be the beginning of a general SourceExcerpt?
  - If I don't, how to handle the mix of urls and targets?
 
-* places where I need to read targets:
+* **places where I need to read targets:**
  - urlsDao.readUrlsByWritQuoteIdForRootPropositionId
  - readUrlsForWritQuoteId
 

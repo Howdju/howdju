@@ -37,8 +37,7 @@ import ErrorBoundary from './ErrorBoundary'
 import Header from './Header'
 import {history} from './history'
 import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
-import {logger} from './logger'
-import MessageActionHandler from './MessageActionHandler'
+import WindowMessageHandler from './WindowMessageHandler'
 import paths from './paths'
 import routes from './routes'
 import {
@@ -105,7 +104,7 @@ class App extends Component {
     window.addEventListener('message', this.receiveMessage, false)
     window.addEventListener('mouseover', this.onFirstMouseOver, false)
 
-    this.messageActionHandler = new MessageActionHandler({
+    this.windowMessageHandler = new WindowMessageHandler({
       flows: this.props.flows
     })
   }
@@ -114,25 +113,12 @@ class App extends Component {
     if (this.unlistenToHistory) this.unlistenToHistory()
     window.removeEventListener('resize', this.onWindowResize)
     window.removeEventListener('scroll', this.throttledOnWindowScroll)
-    window.removeEventListener('scroll', this.receiveMessage)
+    window.removeEventListener('message', this.receiveMessage)
     window.removeEventListener('mouseover', this.onFirstMouseOver)
   }
 
   receiveMessage = (event) => {
-    // Howdju would be loaded in an iframe of the content script's window when loaded by the extension
-    if (event.source !== window.parent) {
-      return
-    }
-    const source = event.data.source
-    if (!source || source !== 'extension') {
-      return
-    }
-    const action = event.data.action
-    if (!action) {
-      logger.error(`extension message lacked action`, event.data)
-      return
-    }
-    this.messageActionHandler.handleAction(action)
+    this.windowMessageHandler.handleEvent(event)
   }
 
   onWindowResize = () => {

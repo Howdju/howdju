@@ -45,14 +45,23 @@ const {DatabaseSortDirection} = require('./daoModels')
 
 exports.JustificationsDao = class JustificationsDao {
 
-  constructor(logger, database, statementsDao, propositionCompoundsDao, writQuotesDao, justificationBasisCompoundsDao) {
+  constructor(
+    logger,
+    database,
+    statementsDao,
+    propositionCompoundsDao,
+    writQuotesDao,
+    justificationBasisCompoundsDao,
+    writQuoteUrlTargetsDao,
+  ) {
     requireArgs({
       logger,
       database,
       statementsDao,
       propositionCompoundsDao,
       writQuotesDao,
-      justificationBasisCompoundsDao
+      justificationBasisCompoundsDao,
+      writQuoteUrlTargetsDao,
     })
     this.logger = logger
     this.database = database
@@ -60,9 +69,10 @@ exports.JustificationsDao = class JustificationsDao {
     this.propositionCompoundsDao = propositionCompoundsDao
     this.writQuotesDao = writQuotesDao
     this.justificationBasisCompoundsDao = justificationBasisCompoundsDao
+    this.writQuoteUrlTargetsDao = writQuoteUrlTargetsDao
   }
 
-  readJustifications(filters, sorts, count, isContinuation = false) {
+  async readJustifications(filters, sorts, count, isContinuation, includeUrls) {
     const {
       sql: limitedJustificationsSql,
       args: limitedJustificationsArgs,
@@ -357,55 +367,57 @@ exports.JustificationsDao = class JustificationsDao {
           and tp.deleted is null
       -- no need to order because they are joined to the ordered targeting justifications
     `
-    return Promise.all([
+    const [
+      {rows: justificationRows},
+      {rows: targetJustificationRows},
+      {rows: targetPropositionRows},
+    ] = await Promise.all([
       this.database.query('readJustifications', justificationsSql, justificationsArgs),
       this.database.query('readJustifications.targetJustifications', targetJustificationsSql, targetJustificationsArgs),
       this.database.query('readJustifications.targetPropositions', targetPropositionsSql, targetPropositionsArgs),
     ])
-      .then( ([
-        {rows: justificationRows},
-        {rows: targetJustificationRows},
-        {rows: targetPropositionRows},
-      ]) => {
-        const justifications = mapJustificationRows(justificationRows)
-        const targetJustificationsById = mapJustificationRowsById(targetJustificationRows, targetJustificationPrefix)
-        const targetPropositionsById = mapPropositionRowsById(targetPropositionRows)
+    const justifications = mapJustificationRows(justificationRows)
+    const targetJustificationsById = mapJustificationRowsById(targetJustificationRows, targetJustificationPrefix)
+    const targetPropositionsById = mapPropositionRowsById(targetPropositionRows)
 
-        forEach(justifications, justification => {
-          let targetEntity
-          switch (justification.target.type) {
-            case JustificationTargetType.JUSTIFICATION: {
-              targetEntity = targetJustificationsById[justification.target.entity.id]
-              break
-            }
-            case JustificationTargetType.PROPOSITION: {
-              targetEntity = targetPropositionsById[justification.target.entity.id]
-              break
-            }
-            case JustificationTargetType.STATEMENT:
-              // For expediency, we add statements below rather than try to fold them in.
-              // As we add new justification targets, it's not scalable to keep writing new queries for each one
-              targetEntity = justification.target.entity
-              break
-            default: {
-              throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
-            }
-          }
-          if (!targetEntity) {
-            this.logger.error(`Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`)
-          }
+    forEach(justifications, justification => {
+      let targetEntity
+      switch (justification.target.type) {
+        case JustificationTargetType.JUSTIFICATION: {
+          targetEntity = targetJustificationsById[justification.target.entity.id]
+          break
+        }
+        case JustificationTargetType.PROPOSITION: {
+          targetEntity = targetPropositionsById[justification.target.entity.id]
+          break
+        }
+        case JustificationTargetType.STATEMENT:
+          // For expediency, we add statements below rather than try to fold them in.
+          // As we add new justification targets, it's not scalable to keep writing new queries for each one
+          targetEntity = justification.target.entity
+          break
+        default: {
+          throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+        }
+      }
+      if (!targetEntity) {
+        this.logger.error(`Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`)
+      }
 
-          justification.target.entity = targetEntity
-        })
+      justification.target.entity = targetEntity
+    })
 
-        return justifications
-      })
-      .then(async (justifications) => {
-        // Add the statements here at the end; it is too much trouble to add them into the joins above;
-        // we can add them into the joins, if that makes sense, after we remove the deprecated justification basis types
-        await addStatements(this, justifications)
-        return justifications
-      })
+    if (justifications.length) {
+      // Add the statements here at the end; it is too much trouble to add them into the joins above;
+      // we can add them into the joins, if that makes sense, after we remove the deprecated justification basis types
+      await addStatements(this, justifications)
+      if (includeUrls) {
+        await addUrls(this, justifications)
+        await addUrlTargets(this, justifications)
+      }
+    }
+
+    return justifications
   }
 
   readJustificationsWithBasesAndVotesByRootTarget(rootTargetType, rootTargetId, {userId}) {
@@ -439,6 +451,7 @@ exports.JustificationsDao = class JustificationsDao {
       this.database.query('readJustificationsWithBasesAndVotesByRootTarget', sql,
         [rootTargetType, rootTargetId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.PROPOSITION_COMPOUND]),
       // We won't support adding legacy justification basis types to statements
+      // TODO at the moment proposition componds and writ quotes are the two non-legacy justification basis types...
       rootTargetType === JustificationRootTargetType.PROPOSITION ?
         readPropositionCompoundsByIdForRootPropositionId(this, rootTargetId, {userId}) : [],
       rootTargetType === JustificationRootTargetType.PROPOSITION ?
@@ -456,7 +469,8 @@ exports.JustificationsDao = class JustificationsDao {
         const {rootJustifications, counterJustificationsByJustificationId} =
           groupRootJustifications(rootTargetType, rootTargetId, justification_rows)
         return map(rootJustifications, j =>
-          toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById, justificationBasisCompoundsById))
+          toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById,
+            justificationBasisCompoundsById))
       })
       .then(async (justifications) => {
         await addStatements(this, justifications)
@@ -685,6 +699,28 @@ async function addStatements(service, justifications) {
     if (justificationsTargetingStatement) {
       for (const justification of justificationsTargetingStatement) {
         justification.target.entity = statement
+      }
+    }
+  }
+}
+
+async function addUrls(service, justifications) {
+  for (const justification of justifications) {
+    if (justification.basis.type === JustificationBasisType.WRIT_QUOTE) {
+      const writQuoteId = justification.basis.entity.id
+      justification.basis.entity.urls = await service.writQuotesDao.readUrlsForWritQuoteId(writQuoteId)
+    }
+  }
+}
+
+async function addUrlTargets(service, justifications) {
+  const justificationIds = map(justifications, (j) => j.id)
+  const urlTargetByUrlIdByWritQuoteId = await service.writQuoteUrlTargetsDao.readByUrlIdByWritQuoteIdForJustificationIds(justificationIds)
+  for (const justification of justifications) {
+    if (justification.basis.type === JustificationBasisType.WRIT_QUOTE) {
+      const urlTargetByUrlId = urlTargetByUrlIdByWritQuoteId.get(justification.basis.entity.id)
+      for (const url of justification.basis.entity.urls) {
+        url.target = urlTargetByUrlId.get(url.id)
       }
     }
   }
@@ -1041,6 +1077,33 @@ function makeSourceExcerptParaphraseJustificationClause(sourceExcerptParaphraseI
   }
 }
 
+function makeWritQuoteUrlJustificationClause(url,  justificationColumns) {
+  const justificationTableAlias = 'j'
+  const select = toSelect(justificationColumns, justificationTableAlias)
+  return {
+    sql: `
+        select 
+          ${select}
+        from 
+          justifications ${justificationTableAlias}
+            join writ_quotes wq on 
+                  ${justificationTableAlias}.basis_type = $1 
+              and ${justificationTableAlias}.basis_id = wq.writ_quote_id
+            join writ_quote_url_targets wqut using (writ_quote_id)
+            join urls u using (url_id)
+          where
+                ${justificationTableAlias}.deleted is null 
+            and wq.deleted is null
+            and wqut.deleted is null
+            and u.url = $2
+      `,
+    args: [
+      JustificationBasisType.WRIT_QUOTE,
+      url,
+    ]
+  }
+}
+
 function makePropositionJustificationClause(propositionId, justificationColumns) {
   const justificationTableAlias = 'j'
   const select = toSelect(justificationColumns, justificationTableAlias)
@@ -1162,6 +1225,10 @@ function makeFilteredJustificationClauses(logger, filters, sorts) {
       }
       case 'writId': {
         pushAll(clauses, makeWritJustificationClause(filterValue, columnNames))
+        break
+      }
+      case 'url': {
+        clauses.push(makeWritQuoteUrlJustificationClause(filterValue,  columnNames))
         break
       }
       default:

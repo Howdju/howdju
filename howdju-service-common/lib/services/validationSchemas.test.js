@@ -3,6 +3,7 @@ const {
   persorgSchema,
   propositionSchema,
   statementSchema,
+  urlSchema,
 } = require('./validationSchemas')
 
 describe('propositionSchema', () => {
@@ -130,6 +131,26 @@ describe('justificationSchema', () => {
     }
 
     assertValid(justification, justificationSchema)
+  })
+})
+
+
+describe('urlSchema', () => {
+  test('validates a URL', () => {
+    const url = {
+      url: 'on.the.web',
+      target: {
+        anchors: [
+          {
+            type: 'TEXT_QUOTE',
+            exact: 'hi there',
+            prefix: 'before',
+            suffix: 'after',
+          }
+        ]
+      }
+    }
+    assertValid(url, urlSchema)
   })
 })
 

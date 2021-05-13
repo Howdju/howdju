@@ -144,3 +144,7 @@ _e.SentenceType = arrayToObject([
   'PROPOSITION',
   'STATEMENT',
 ])
+
+_e.UrlTargetAnchorType = arrayToObject([
+  'TEXT_QUOTE'
+])

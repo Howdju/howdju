@@ -490,17 +490,20 @@ const routes = [
     id: 'readJustifications',
     path: 'justifications',
     method: httpMethods.GET,
-    handler: (appProvider, {request, callback}) => {
+    handler: async (appProvider, {request, callback}) => {
       const {
         filters: encodedFilters,
         sorts: encodedSorts,
         continuationToken,
         count,
+        includeUrls,
       } = request.queryStringParameters
       const filters = decodeQueryStringObject(encodedFilters)
       const sorts = decodeSorts(encodedSorts)
-      return appProvider.justificationsService.readJustifications({filters, sorts, continuationToken, count})
-        .then( ({justifications, continuationToken}) => ok({callback, body: {justifications, continuationToken}}))
+      const {justifications, continuationToken: newContinuationToken} =
+        await appProvider.justificationsService.readJustifications(
+          {filters, sorts, continuationToken, count, includeUrls})
+      return ok({callback, body: {justifications, continuationToken: newContinuationToken}})
     }
   },
   {

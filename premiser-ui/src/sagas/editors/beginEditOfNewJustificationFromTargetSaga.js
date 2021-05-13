@@ -6,7 +6,6 @@ import {
 import {
   makeNewPropositionJustification,
   JustificationBasisType,
-  makeNewJustificationBasisCompoundFromWritQuote,
 } from 'howdju-common'
 
 import {editors, flows, str, goto} from '../../actions'
@@ -23,24 +22,22 @@ export function* beginEditOfNewJustificationFromTarget() {
 
 function toPropositionJustification(content, source, target) {
   const {
-    url,
-    title: description,
+    title,
   } = source
   const quoteText = content.text.trim()
+  const {url} = target
 
   const writQuote = {
     quoteText,
     writ: {
-      title: description
+      title
     },
-    targets: [target],
-    urls: [{url}]
+    urls: [{url, target}],
   }
   const justificationProps = {
     basis: {
       type: JustificationBasisType.WRIT_QUOTE,
       writQuote,
-      justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote(writQuote),
     }
   }
   return makeNewPropositionJustification(null, justificationProps)

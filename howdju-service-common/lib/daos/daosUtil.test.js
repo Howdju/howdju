@@ -1,5 +1,6 @@
 const {
-  normalizeText
+  normalizeText,
+  addArrayParams,
 } = require('./daosUtil')
 
 describe('normalizeText', () => {
@@ -11,5 +12,14 @@ describe('normalizeText', () => {
   })
   test('Should condense acronyms using periods', () => {
     expect(normalizeText('Washington, D.C. is the best state')).toBe('washington dc is the best state')
+  })
+})
+
+describe('addArrayParams', () => {
+  test('should work', () => {
+    expect(addArrayParams(['a', 'b'], ['c', 'd'])).toStrictEqual({
+      args: ['a', 'b', 'c', 'd'],
+      params: ['$3', '$4'],
+    })
   })
 })

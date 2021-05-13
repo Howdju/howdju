@@ -29,6 +29,7 @@ export default class WritQuoteViewer extends React.Component {
   onClickUrl = (event, url) => {
     if (this.props.onClickUrl) {
       this.props.onClickUrl(event, url)
+      // If we are in an extension sidebar iframe, we want to stop navigation...
     }
   }
 

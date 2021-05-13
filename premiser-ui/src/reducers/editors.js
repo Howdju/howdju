@@ -250,9 +250,11 @@ const editorReducerByType = {
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
+
       const urls = clone(editEntity.basis.writQuote.urls)
       removeAt(urls, action.payload.index)
       editEntity.basis.writQuote.urls = urls
+
       return {...state, editEntity}
     },
     [editors.addPropositionCompoundAtom]: makeAddAtomReducer('basis.propositionCompound.atoms', makeNewPropositionAtom),
@@ -326,9 +328,11 @@ const editorReducerByType = {
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
+
       const urls = clone(editEntity.newJustification.basis.writQuote.urls)
       removeAt(urls, action.payload.index)
       editEntity.newJustification.basis.writQuote.urls = urls
+
       return {...state, editEntity}
     },
     [editors.addPropositionCompoundAtom]: makeAddAtomReducer('newJustification.basis.propositionCompound.atoms', makeNewPropositionAtom),
@@ -374,7 +378,11 @@ const editorReducerByType = {
     },
     [editors.removeUrl]: (state, action) => {
       const editEntity = {...state.editEntity}
-      removeAt(editEntity.urls, action.payload.index)
+
+      const urls = clone(editEntity.urls)
+      removeAt(urls, action.payload.index)
+      editEntity.urls = urls
+
       return {...state, editEntity}
     },
     [api.fetchWritQuote]: (state, action) => {
@@ -421,13 +429,13 @@ const editorReducerByType = {
       }
     }
   }, defaultEditorState),
-  
+
   [EditorTypes.REGISTRATION_REQUEST]: handleActions({
     [editors.commitEdit.result]: {
       next: (state, action) => ({
-        ...state, 
-        duration: action.payload.duration, 
-        isSaving: false, 
+        ...state,
+        duration: action.payload.duration,
+        isSaving: false,
         isSubmitted: true
       }),
       throw: (state, action) => {

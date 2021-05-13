@@ -1,3 +1,4 @@
+const concat = require('lodash/concat')
 const deburr = require('lodash/deburr')
 const forEach = require('lodash/forEach')
 const head = require('lodash/head')
@@ -103,4 +104,16 @@ exports.renumberSqlArgs = (sql, start) => {
   })
 
   return renumberedSql
+}
+
+exports.addArrayParams = function addArrayParams(baseArgs, values) {
+  const params = []
+  const start = baseArgs.length + 1
+  for (let i = 0 ; i < values.length; i++) {
+    params.push('$' + (i + start))
+  }
+  return {
+    params,
+    args: concat(baseArgs, values),
+  }
 }
