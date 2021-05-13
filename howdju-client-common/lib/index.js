@@ -1,2 +1,3 @@
-export {default as extension} from './extension'
+export {extension} from './extension'
 export * as actions from './actions'
+export {logger} from './logger'

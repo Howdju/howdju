@@ -64,6 +64,10 @@ p {
   line-height: 20px;
   margin-bottom: 10px;
 }
+// When included in an iFrame (e.g. the extension) react-md's mixin doesn't seem to take precedence.
+p, textarea, input {
+  font-family: 'Lato', sans-serif;
+}
 
 #webpack-hot-middleware-clientOverlay * {
   color: $light-text-color;

@@ -3,9 +3,19 @@
 ## Building
 
 ```bash
+# Done in root project directory once
 yarn install
+# Will automatically rebuild the source
 yarn watch
 ```
+
+## Development
+
+* Run `yarn build` or `yarn watch`.
+* Load the `dist` directory as an unpackaged extension. 
+* Watch for any startup errors in the extension card on Chrome's Extensions page.
+* Reload the extension using the refresh icon on the card.
+* You can also inspect the background page here.
 
 ## Tests
 
@@ -29,14 +39,11 @@ Hitting enter in the console will allow the tests to re-run any changes since th
 
 ## Deploying
 
-For development, you can load the `dist` directory as an unpackaged extension after running `yarn build` (or while 
-running `yarn watch`).
-
-For production, update the version in `package.json` and `manifest.json`.  Then:
+Update the version in `package.json` and `manifest.json`.  Then:
 
 ```sh
 yarn build
 yarn package
 ```
 
-And then upload `dist/howdju.zip` to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard).
+Upload `dist/howdju.zip` to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard).

@@ -1505,13 +1505,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-stage-0@npm:^7.8.3":
-  version: 7.8.3
-  resolution: "@babel/preset-stage-0@npm:7.8.3"
-  checksum: f524c682dd67039840dd9715bd17929da91c0ccf126c6a178cbda039e01600bb393ae716919eba7796cacc8884380f8d8f6b1418bde9fea13148d67eaf7e62dc
-  languageName: node
-  linkType: hard
-
 "@babel/runtime@npm:7.0.0":
   version: 7.0.0
   resolution: "@babel/runtime@npm:7.0.0"
@@ -8627,7 +8620,6 @@ fsevents@^1.2.7:
     "@babel/generator": ^7.13.9
     "@babel/preset-env": ^7.13.12
     "@babel/preset-react": ^7.13.13
-    "@babel/preset-stage-0": ^7.8.3
     "@babel/runtime": ^7.13.10
     babel-loader: ^8.2.2
     babel-plugin-module-resolver: ^4.1.0

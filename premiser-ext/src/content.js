@@ -8,7 +8,7 @@ import {getOption} from './options'
 const didLoadKey = 'HowdjuDidLoad'
 
 if (!window[didLoadKey]) {
-  ext.runtime.onMessage.addListener(onMessage)
+  ext.addRuntimeOnMessageListener(onMessage)
   window[didLoadKey] = true
 }
 

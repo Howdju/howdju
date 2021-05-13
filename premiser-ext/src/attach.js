@@ -1,6 +1,6 @@
 
 export function attachHeadersListener({
-  webRequest,
+  ext,
   hosts,
   iframeHosts,
   overrideFrameOptions,
@@ -28,7 +28,7 @@ export function attachHeadersListener({
     types.push('sub_frame')
   }
 
-  webRequest.onHeadersReceived.addListener(details => {
+  ext.addWebRequestOnHeadersReceivedListener((details) => {
     const responseHeaders = details.responseHeaders.map(
       (header) => modifyHeader(header, hosts, iframeHosts, overrideFrameOptions, isDevelopment)
     )

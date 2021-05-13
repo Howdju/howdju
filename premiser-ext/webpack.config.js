@@ -1,10 +1,11 @@
 /*global require module __dirname*/
 
 const path = require('path')
-const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-module.exports = {
+module.exports = (env, argv) => ({
+  mode: env.production ? 'production' : 'development',
+  devtool: env.production ? 'source-map' : 'inline-source-map',
   entry: {
     background: path.join(__dirname, './src/background'),
     content: path.join(__dirname, './src/content'),
@@ -15,33 +16,30 @@ module.exports = {
     filename: '[name].js',
   },
   plugins: [
-    new CopyWebpackPlugin([
-      { from: 'src/manifest.json' },
-      { from: 'icons/**/*' },
-      { from: 'src/*.css', flatten: true },
-      { from: 'src/*.html', flatten: true }
-    ]),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
-      }
-    })
+    new CopyWebpackPlugin({
+      patterns: [
+        {from: 'src/manifest.json'},
+        {from: 'icons/**/*'},
+        // `to: "[name][ext]"` flattens the files
+        {from: 'src/*.css', to: "[name][ext]"},
+        {from: 'src/*.html', to: "[name][ext]"}
+      ]
+    }),
   ],
   resolve: {
     extensions: ['.js']
   },
   module: {
-    loaders: [{
-      test: /\.js$/,
-      loader: 'babel-loader',
-      query: {
-        presets: [
-          ["env", { "modules": false }],
-          "stage-0",
-          "react",
-        ]
+    rules: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+          rootMode: "upward",
+        },
+        exclude: /node_modules/
       },
-      exclude: /node_modules/
-    }]
+    ],
   }
-}
+})

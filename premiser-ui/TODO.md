@@ -5,7 +5,7 @@
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
   
-  - `yarn dlx @yarnpkg/doctor`
+  - Extension: load anchors/targets on page
   - run npm outdated
     - Upgrade react-md https://react-md.dev/guides/working-with-v1
       - headings

@@ -21,10 +21,10 @@ export function getOptions(keys, cb) {
   keys.forEach((key) => {
     getOption(key, (value) => {
       options[key] = value
-      
+
       // Only call the callback after all options have been retrieved.
       if (Object.keys(options).length === keys.length) {
-        cb(options)      
+        cb(options)
       }
     })
   })
@@ -36,7 +36,7 @@ export function getOption(key, cb) {
     logger.error(`No optionDefinition for key ${key}`)
     return cb(null)
   }
-  ext.storage[optionDefinition['storageArea']].get([key], function(items) {
+  ext.getStorage(optionDefinition['storageArea'], [key], (items) => {
     let value = items[key]
     if (value === undefined || optionDefinition['defaultOnEmpty'] && value === '') {
       value = optionDefinitions[key]['default']
