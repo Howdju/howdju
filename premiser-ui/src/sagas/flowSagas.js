@@ -116,6 +116,11 @@ export function* goTo() {
     yield put(push(paths.proposition(proposition)))
   })
 
+  yield takeEvery(str(goto.justification), function* goToJustificationWorker(action) {
+    const {justification} = action.payload
+    yield put(push(paths.justification(justification)))
+  })
+
   yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {
     const {statement} = action.payload
     yield put(push(paths.statement(statement)))

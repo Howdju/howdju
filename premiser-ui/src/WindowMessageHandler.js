@@ -1,10 +1,13 @@
 import {logger} from './logger'
-import {EXTENSION_MESSAGE_SOURCE, actions} from "howdju-client-common"
+import {EXTENSION_MESSAGE_SOURCE, actions, inIframe} from "howdju-client-common"
 
 
 export default class WindowMessageHandler {
   constructor(actionCreatorGroups) {
     this.actionCreatorGroups = actionCreatorGroups
+    if (inIframe()) {
+      this.actionCreatorGroups.extension.messageHandlerReady()
+    }
   }
 
   handleEvent(event) {
@@ -41,6 +44,16 @@ export default class WindowMessageHandler {
           return
         }
         this.actionCreatorGroups.flows.beginEditOfNewJustificationFromTarget(content, source, target)
+        break
+      }
+      case actions.str(actions.extensionFrame.gotoJustification): {
+        logger.trace(`extensionFrame.gotoJustification`, {action})
+        const {justification} = action.payload
+        this.actionCreatorGroups.goto.justification(justification)
+        break
+      }
+      case actions.str(actions.extensionFrame.ackMessage): {
+        this.actionCreatorGroups.extensionFrame.ackMessage()
         break
       }
       default: {

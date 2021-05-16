@@ -1,4 +1,5 @@
-export {extension} from './extension'
 export * as actions from './actions'
-export {logger} from './logger'
 export * from './consts'
+export {extension} from './extension'
+export {logger} from './logger'
+export * from './util'

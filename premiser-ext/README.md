@@ -47,3 +47,23 @@ yarn package
 ```
 
 Upload `dist/howdju.zip` to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard).
+
+## AJV and content security policy (CSP)
+
+1. Can add the following to the manifest, but it's a security risk:
+
+    ```
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    ```
+
+2. Use AJV standalone: https://github.com/ajv-validator/ajv/blob/master/docs/standalone.md
+3. Use sandboxing? https://stackoverflow.com/a/34792618/39396
+
+## Better loading
+
+Is extension iframe slower? Is it required because only one
+extension can do blocking webrequest?
+
+* Extension iframe: https://stackoverflow.com/a/24649134/39396
+* https://stackoverflow.com/a/45370418/39396
+* https://transitory.technology/browser-extensions-and-csp-headers/

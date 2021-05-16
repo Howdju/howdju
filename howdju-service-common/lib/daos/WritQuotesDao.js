@@ -321,7 +321,8 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then(({rows: [row]}) => Promise.all(map(url.target.anchors, (anchor) => this.database.query(
         'createWritQuoteUrlTarget.anchors',
         `
-          insert into writ_quote_url_target_anchors (writ_quote_url_target_id, exact_text, prefix_text, suffix_text)
+          insert into writ_quote_url_target_anchors 
+              (writ_quote_url_target_id, exact_text, prefix_text, suffix_text)
           values ($1, $2, $3, $4)
         `,
         [row.writ_quote_url_target_id, anchor.exact, anchor.prefix, anchor.suffix]

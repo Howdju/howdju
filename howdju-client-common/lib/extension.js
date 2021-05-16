@@ -33,9 +33,27 @@ class Extension {
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#Communicating_with_the_web_page
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/permissions
-  sendMessage = (extensionId, action) => {
+  sendRuntimeMessage = (message, callback) => {
     if (this.extension) {
-      this.extension.runtime.sendMessage(extensionId, action)
+      this.extension.runtime.sendMessage(message, callback)
+    }
+  }
+
+  createTab = (details) => {
+    if (this.extension) {
+      this.extension.tabs.create(details);
+    }
+  }
+
+  queryTabs = (details, callback) => {
+    if (this.extension) {
+      this.extension.tabs.query(details, callback)
+    }
+  }
+
+  sendTabMessage = (tabId, message, callback) => {
+    if (this.extension) {
+      this.extension.tabs.sendMessage(tabId, message, callback);
     }
   }
 
@@ -45,15 +63,15 @@ class Extension {
     }
   }
 
-  addRuntimeOnInstalledListener = (listener) => {
+  addWebNavigationOnDOMContentLoadedListener = (listener) => {
     if (this.extension) {
-      this.extension.runtime.onInstalled.addListener(listener)
+      this.extension.webNavigation.onDOMContentLoaded.addListener(listener)
     }
   }
 
-  addRuntimeOnMessageExternalListener = (listener) => {
+  addRuntimeOnInstalledListener = (listener) => {
     if (this.extension) {
-      this.extension.runtime.onMessageExternal.addListener
+      this.extension.runtime.onInstalled.addListener(listener)
     }
   }
 
@@ -63,27 +81,21 @@ class Extension {
     }
   }
 
-  contextMenusCreate = (options, logLastError) => {
+  createContextMenus = (options, logLastError) => {
     if (this.extension) {
       this.extension.contextMenus.create(options, logLastError)
     }
   }
 
-  tabsExecuteScript = (tabId, details, callback) => {
+  executeScript = (tabId, details, callback) => {
     if (this.extension) {
       this.extension.tabs.executeScript(tabId, details, callback)
     }
   }
 
-  tabsInsertCSS = (tabId, details) => {
+  insertCSS = (tabId, details) => {
     if (this.extension) {
       this.extension.tabs.insertCSS(tabId, details)
-    }
-  }
-
-  tabsSendMessage = (tabId, message) => {
-    if (this.extension) {
-      this.extension.tabs.sendMessage(tabId, message)
     }
   }
 
@@ -91,7 +103,7 @@ class Extension {
     return !!this.extension && this.extension.extension.lastError
   }
 
-  lastErrorMessage = () => {
+  getLastErrorMessage = () => {
     if (this.extension) {
       this.extension.extension.lastError.message
     }
@@ -103,13 +115,13 @@ class Extension {
     }
   }
 
-  storageLocalSet = (details, callback) => {
+  setStorageLocal = (details, callback) => {
     if (this.extension) {
       this.extension.storage.local.set(details, callback)
     }
   }
 
-  storageLocalGet = (keys, callback) => {
+  getStorageLocal = (keys, callback) => {
     if (this.extension) {
       this.extension.storage.local.get(keys, callback)
     }

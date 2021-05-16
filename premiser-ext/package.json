@@ -5,20 +5,26 @@
   "main": "dist/background.js",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "webpack --progress --profile --colors",
+    "build-prod": "webpack --progress --profile --color",
+    "build-dev": "webpack --progress --profile --color --mode development",
     "lint": "eslint src/",
     "package": "bin/package.sh",
     "test": "jest --config=../jest.config.js /premiser-ext/src/",
     "test:debug": "node --inspect node_modules/.bin/jest --config=../jest.config.js /premiser-ext/src/ --watch --runInBand",
-    "watch": "webpack --watch --progress --color"
+    "watch": "webpack --watch --progress --color --mode development"
   },
   "dependencies": {
     "classnames": "^2.2.6",
+    "core-js": "^3.12.1",
+    "dom-anchor-text-position": "^5.0.0",
     "dom-anchor-text-quote": "^4.0.2",
     "glamor": "^2.20.40",
     "howdju-client-common": "^1.0.0",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "howdju-common": "^1.0.0",
+    "lodash": "^4.17.21",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "regenerator-runtime": "^0.13.7"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",

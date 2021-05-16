@@ -40,6 +40,7 @@ export class FramePanel extends Component {
       isMinimized,
       containerWidth,
       isDragging,
+      loadUrl,
     } = this.state
     const {
       url,
@@ -105,9 +106,9 @@ export class FramePanel extends Component {
               [iframeClassName]: true
             })}
             style={iframeStyle}
-            src={url}
             ref={frame => this.frame = frame}
             onLoad={this.onLoad}
+            src={url}
           />
 
           {containerChildren}
@@ -163,8 +164,11 @@ export class FramePanel extends Component {
     window[FRAME_TOGGLE_FUNCTION] = this.toggle
     window[FRAME_SHOW_FUNCTION] = this.show
 
+    // Expose an API of methods
     onMount({
-      frame: this.frame
+      toggle: this.toggle,
+      show: this.show,
+      postMessage: this.postMessage,
     })
 
     this._visibleRenderTimeout = setTimeout(() => {
@@ -177,23 +181,17 @@ export class FramePanel extends Component {
   }
 
   componentWillUnmount() {
-    const { onUnmount } = this.props
-
-    onUnmount({
-      frame: this.frame
-    })
-
     delete window[FRAME_TOGGLE_FUNCTION]
     delete window[FRAME_SHOW_FUNCTION]
     clearTimeout(this._visibleRenderTimeout)
   }
 
   onLoad = () => {
-    const { onLoad } = this.props
-
-    onLoad({
-      frame: this.frame
-    })
+    if (this.props.onLoad) {
+      this.props.onLoad({
+        frame: this.frame
+      })
+    }
   }
 
   onDragTargetMouseDown = (e) => {
@@ -244,9 +242,10 @@ export class FramePanel extends Component {
     this.setState({
       isMinimized: false,
     })
-    onShow({
-      frame: this.frame
-    })
+  }
+
+  postMessage = (message, origin) => {
+    this.frame.contentWindow.postMessage(message, origin)
   }
 
   static isReady() {

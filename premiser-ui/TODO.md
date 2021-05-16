@@ -17,6 +17,14 @@
 - New directions
   - AppSync?
   - Semantic search?
+  
+## Missing things (thar be dragons)
+
+* Two validation libraries: AJV and Joi
+* Proposition page has indication of related statements
+* Incomplete transition to have generic justifiables
+* Legacy justification basis type: JustificationBasisCompound type
+* Mixture of async/await and promises in the API
 
 ## Current plan
 
@@ -356,7 +364,7 @@ Cat meeting design notes:
     * not flagged as offensive/harassment/spam/illegal
       * except from verified users
   * Tags
-    * paraphrases and quotes are amenable to tagging because they have context.  
+    * paraphrases and quotes are amenable to tagging because they have context.
       propositions might be amenable, depending on how specifically they are written.
       Justification text could be too, depending on how specifically written and 
       particularly if the tagging is adjusted for the context: i.e. more likely when

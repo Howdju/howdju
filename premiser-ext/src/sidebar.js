@@ -4,39 +4,39 @@ import ReactDOM from 'react-dom'
 import { getOption } from './options'
 import { FramePanel } from './frame-panel'
 
-let iframe
+let frameApi
 
-export function getIframe() {
-  return iframe
+export function getFrameApi() {
+  return frameApi
 }
 
 export function toggleSidebar() {
-  if (FramePanel.isReady()) {
-    FramePanel.toggle()
+  if (frameApi) {
+    frameApi.toggle()
   } else {
     boot()
   }
 }
 
-export function showSidebar(onShow) {
-  if (FramePanel.isReady()) {
-    FramePanel.show(onShow)
+export function showSidebar() {
+  if (frameApi) {
+    frameApi.show()
   } else {
-    boot(onShow)
+    boot()
   }
 }
 
-function boot(onLoad) {
+function boot() {
   const root = document.createElement('div')
   document.body.appendChild(root)
 
   getOption('howdjuBaseUrl', (baseUrl) => {
     const url = baseUrl + '/recent-activity'
-    const App = <FramePanel url={url} onMount={onFramePanelMount} onLoad={onLoad} />
+    const App = <FramePanel url={url} onMount={onFramePanelMount}  />
     ReactDOM.render(App, root)
   })
 }
 
-function onFramePanelMount({frame}) {
-  iframe = frame
+function onFramePanelMount(api) {
+  frameApi = api
 }

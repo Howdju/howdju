@@ -19,7 +19,7 @@ export const mainSearchPathName = '/'
 export const createJustificationPath = '/create-justification'
 
 // I was going to extend CommonPaths, but doing that results in `TypeError: Class constructor CommonPaths cannot be invoked without 'new'`
-// when running jest.  
+// when running jest.
 class Paths {
   home = () => '/'
 
@@ -32,7 +32,7 @@ class Paths {
   requestRegistration = () => '/request-registration'
   requestPasswordReset = () => '/request-password-reset'
 
-  proposition = (proposition, contextTrailItems, noSlug=false) => {
+  proposition = (proposition, contextTrailItems, noSlug=false, focusJustificationId=null) => {
     const {id, slug} = proposition
     if (!id) {
       return '#'
@@ -43,17 +43,23 @@ class Paths {
     const query = !isEmpty(contextTrailItems) ?
       '?context-trail=' + join(map(contextTrailItems, i => `${contextTrailShortcutByType[i.targetType]},${i.target.id}`), ';') :
       ''
-    return `/p/${id}${slugPath}${query}`
+    const anchor = focusJustificationId ?
+      `#justification-${focusJustificationId}` :
+      ''
+    return `/p/${id}${slugPath}${anchor}${query}`
   }
-  statement = (statement) => {
-    return `/s/${statement.id}`
+  statement = (statement, focusJustificationId=null) => {
+    const anchor = focusJustificationId ?
+      `#justification-${focusJustificationId}` :
+      ''
+    return `/s/${statement.id}${anchor}`
   }
   justification = j => {
     switch (j.rootTargetType) {
       case JustificationRootTargetType.PROPOSITION:
-        return this.proposition(j.rootTarget) + '#justification-' + j.id
+        return this.proposition(j.rootTarget, null, false, j.id)
       case JustificationRootTargetType.STATEMENT:
-        return this.statement(j.rootTarget) + '#justification-' + j.id
+        return this.statement(j.rootTarget, j.id)
       default:
         throw newExhaustedEnumError('JustificationRootTargetType', j.rootTargetType)
     }

@@ -8,14 +8,14 @@ function saveOptions(event) {
   event.preventDefault()
   const howdjuBaseUrl = document.getElementById('howdju-base-url').value
   const isDevelopment = document.getElementById('is-development').checked
-  ext.storageLocalSet({
+  ext.setStorageLocal({
     howdjuBaseUrl,
     isDevelopment,
   }, () => flashStatus('Options saved.'))
 }
 
 function restoreOptions() {
-  ext.storageLocalGet(['howdjuBaseUrl', 'isDevelopment'], (items) => {
+  ext.getStorageLocal(['howdjuBaseUrl', 'isDevelopment'], (items) => {
     if (items.howdjuBaseUrl) {
       document.getElementById('howdju-base-url').value = items.howdjuBaseUrl
     }

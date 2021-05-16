@@ -145,6 +145,12 @@ class JustificationBranch extends Component {
     })
   }
 
+  onClickWritQuoteUrl = (event, writQuote, url) => {
+    if (this.props.onClickWritQuoteUrl) {
+      this.props.onClickWritQuoteUrl(event, this.props.justification, writQuote, url)
+    }
+  }
+
   render() {
     const {
       justification,
@@ -156,7 +162,6 @@ class JustificationBranch extends Component {
       canHover,
       showBasisUrls,
       contextTrailItems,
-      onClickWritQuoteUrl,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -357,7 +362,7 @@ class JustificationBranch extends Component {
           }
           onMouseOver={this.onBubbleMouseOver}
           onMouseLeave={this.onBubbleMouseLeave}
-          onClickWritQuoteUrl={onClickWritQuoteUrl}
+          onClickWritQuoteUrl={this.onClickWritQuoteUrl}
         >
           {areCounterJustificationsExpanded && counterJustifications}
         </JustificationChatBubble>

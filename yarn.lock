@@ -5504,6 +5504,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"core-js@npm:^3.12.1":
+  version: 3.12.1
+  resolution: "core-js@npm:3.12.1"
+  checksum: 8b1d05579e7ddeafcd390001cc893540275fa3e658a00ae57f88954411a25bdfe583debb1929c6a50e40631cc07f2092490ea2284b35ffb922b23d7677060f28
+  languageName: node
+  linkType: hard
+
 "core-util-is@npm:1.0.2, core-util-is@npm:~1.0.0":
   version: 1.0.2
   resolution: "core-util-is@npm:1.0.2"
@@ -5530,16 +5537,6 @@ __metadata:
   dependencies:
     capture-stack-trace: ^1.0.0
   checksum: cbd6512694a5bf8cd3f8742cb58cd4b85c67812316878d9515cbbc8f531b22b4fb14e074de6b564fc4951be4e7ce223ed4bf245865ac0cb09e1209d8e6cae0ec
-  languageName: node
-  linkType: hard
-
-"create-react-class@npm:^15.6.0":
-  version: 15.7.0
-  resolution: "create-react-class@npm:15.7.0"
-  dependencies:
-    loose-envify: ^1.3.1
-    object-assign: ^4.1.1
-  checksum: b961a66896ff89ad5451e6cf6a686c03716ecb50f7c61b24864cda5aa18d52ce817b94bbeace3e126b19a1cc926c75f34c0777a6f4004fc947221836b13d4479
   languageName: node
   linkType: hard
 
@@ -6313,6 +6310,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dom-anchor-text-position@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "dom-anchor-text-position@npm:5.0.0"
+  dependencies:
+    dom-seek: ^5.1.0
+  checksum: 1c8e9ad55f053e0cf78776c2f349b094ab79086517cd3764945ac5651465d0890a63dac100db1e3e9b7ddbeac506f76083902de11177ee3c8e6125c4849aa415
+  languageName: node
+  linkType: hard
+
 "dom-anchor-text-quote@npm:^4.0.2":
   version: 4.0.2
   resolution: "dom-anchor-text-quote@npm:4.0.2"
@@ -6365,6 +6371,13 @@ __metadata:
     ancestors: 0.0.3
     index-of: ^0.2.0
   checksum: 013a838ec2c33cbbb57e581ebca14f5e6d2d9f55c055b8a221c12afa6d5a892732974f072e067df413ad1749ce51dabb84006ebeaaeb7e1127cae9656256476a
+  languageName: node
+  linkType: hard
+
+"dom-seek@npm:^5.1.0":
+  version: 5.1.1
+  resolution: "dom-seek@npm:5.1.1"
+  checksum: 26df1749fc832c1fc12f4cd55a47b8e283bdab97cdfab6caca1de7854c1f226baa7b56111587dc3608fde9909f2012c1088d3e87755596b5f63e806066ecc6d7
   languageName: node
   linkType: hard
 
@@ -7473,7 +7486,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fbjs@npm:^0.8.12, fbjs@npm:^0.8.16, fbjs@npm:^0.8.4, fbjs@npm:^0.8.9":
+"fbjs@npm:^0.8.12, fbjs@npm:^0.8.16, fbjs@npm:^0.8.4":
   version: 0.8.17
   resolution: "fbjs@npm:0.8.17"
   dependencies:
@@ -8641,6 +8654,8 @@ fsevents@^1.2.7:
     babel-preset-node6-es6: ^11.2.5
     classnames: ^2.2.6
     copy-webpack-plugin: ^8.1.1
+    core-js: ^3.12.1
+    dom-anchor-text-position: ^5.0.0
     dom-anchor-text-quote: ^4.0.2
     eslint: ^7.23.0
     eslint-config-howdju: ^1.0.0
@@ -8649,9 +8664,12 @@ fsevents@^1.2.7:
     flow-bin: ^0.150.1
     glamor: ^2.20.40
     howdju-client-common: ^1.0.0
+    howdju-common: ^1.0.0
     jest: ^26.6.3
-    react: ^15.5.4
-    react-dom: ^15.5.4
+    lodash: ^4.17.21
+    react: ^16.2.0
+    react-dom: ^16.2.0
+    regenerator-runtime: ^0.13.7
     webpack: ^5.31.0
   languageName: unknown
   linkType: soft
@@ -8774,6 +8792,7 @@ fsevents@^1.2.7:
     moment-duration-format: ^2.2.2
     outdent: ^0.8.0
     pg: ^8.6.0
+    react-dom: "npm:@hot-loader/react-dom@16.14.0"
     sinon: ^10.0.0
     urlsafe-base64: ^1.0.0
     uuid: ^8.3.2
@@ -14016,7 +14035,7 @@ fsevents@^1.2.7:
     prop-types: ^15.7.2
     query-string: ^7.0.0
     react: ^16.2.0
-    react-dom: "npm:@hot-loader/react-dom@16.14.0"
+    react-dom: ^16.2.0
     react-flip-move: ^3.0.1
     react-helmet: ^6.1.0
     react-hot-loader: ^4.13.0
@@ -14369,6 +14388,20 @@ fsevents@^1.2.7:
 
 "react-dom@npm:@hot-loader/react-dom@16.14.0":
   version: 16.14.0
+  resolution: "@hot-loader/react-dom@npm:16.14.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    prop-types: ^15.6.2
+    scheduler: ^0.19.1
+  peerDependencies:
+    react: ^16.14.0
+  checksum: 9daa45e45f89021c6be0e87b644e6764dcb4584513d3155fe1fcfed55558b260ee892c374c929d83bc6e1045bf17a45493508ca05c9e0439c3c07ef7e05f53d8
+  languageName: node
+  linkType: hard
+
+"react-dom@npm:^16.2.0":
+  version: 16.14.0
   resolution: "react-dom@npm:16.14.0"
   dependencies:
     loose-envify: ^1.1.0
@@ -14378,20 +14411,6 @@ fsevents@^1.2.7:
   peerDependencies:
     react: ^16.14.0
   checksum: a13558f0e7c6d1a98684214460bcd4b9005500015b5048fb1b0d2856786b8764dbc713e6b078a5b1a56e17866400e1d862183c7a0a513ae8351de11f6f6749d2
-  languageName: node
-  linkType: hard
-
-"react-dom@npm:^15.5.4":
-  version: 15.7.0
-  resolution: "react-dom@npm:15.7.0"
-  dependencies:
-    fbjs: ^0.8.9
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.0
-    prop-types: ^15.5.10
-  peerDependencies:
-    react: ^15.7.0
-  checksum: 89a283da5e0a6e8122774540e553b4a7f1c8296440c0b02a5a2eb428433cb4f4fc19251051525f8e6ba33bf2e309a837b520650bfc9536b276b9dc5883c63d5c
   languageName: node
   linkType: hard
 
@@ -14673,19 +14692,6 @@ fsevents@^1.2.7:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: e14446123f820e804335c64be5270333c29e8cfaa43dfc33387e132c5d521cf4a0a7c2408058a147b254ae82a6569f373394d83e977ef340d6937bc2f4ff7d6c
-  languageName: node
-  linkType: hard
-
-"react@npm:^15.5.4":
-  version: 15.7.0
-  resolution: "react@npm:15.7.0"
-  dependencies:
-    create-react-class: ^15.6.0
-    fbjs: ^0.8.9
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.0
-    prop-types: ^15.5.10
-  checksum: bc28d22edc2c9260f07381be9575eb653d52e7a7fdc2126457ba704d076be2d9d0d1d0872bef1fd97cc89f00ca341cf1a55ced021b2869e0ce0fdeea221fc681
   languageName: node
   linkType: hard
 

@@ -1,7 +1,8 @@
-import * as domAnchorTextQuote from 'dom-anchor-text-quote'
+import * as textPosition from 'dom-anchor-text-position'
+import * as textQuote from 'dom-anchor-text-quote'
 import {UrlTargetAnchorType} from 'howdju-common'
 
-class Target {
+export class Target {
   constructor(url, anchors, date) {
     this.url = url
     this.anchors = anchors
@@ -9,12 +10,12 @@ class Target {
   }
 }
 
-export function toTarget(selection) {
+export function selectionToTarget(selection) {
   const anchors = []
 
   for (let i = 0; i < selection.rangeCount; i++) {
     const range = selection.getRangeAt(i)
-    const anchor = toAnchor(range)
+    const anchor = rangeToAnchor(range)
     anchors.push(anchor)
   }
 
@@ -24,16 +25,30 @@ export function toTarget(selection) {
   return new Target(url, anchors, date)
 }
 
-class TextQuoteAnchor {
-  constructor({exact, prefix, suffix}) {
+export class TextQuoteAnchor {
+  constructor({exact, prefix, suffix}, {start, end}) {
     this.type = UrlTargetAnchorType.TEXT_QUOTE
     this.exact = exact
     this.prefix = prefix
     this.suffix = suffix
+    // TODO persist the position and use it as a hint
+    this.start = start
+    this.end = end
   }
 }
 
-function toAnchor(range) {
-  const anchor = domAnchorTextQuote.fromRange(document.body, range)
-  return new TextQuoteAnchor(anchor)
+function rangeToAnchor(range) {
+  const position = textPosition.fromRange(document.body, range)
+  const selector = textQuote.fromTextPosition(document.body, position)
+  return new TextQuoteAnchor(selector, position)
+}
+
+export function targetToRanges(target) {
+  const ranges = []
+  for (const anchor of target.anchors) {
+    // TODO figure out how to use target.start/.end as a hint.
+    const options = target.start ? {hint: target.start} : {}
+    ranges.push(textQuote.toRange(document.body, target, options))
+  }
+  return ranges
 }

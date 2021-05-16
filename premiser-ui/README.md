@@ -28,3 +28,6 @@ is to move on to Fast Refresh using
 I did:
 
 * `yarn add react-dom@npm:@hot-loader/react-dom@16.14.0` to stay at react-dom@16.
+
+But then I discovered that iframe.onLoad wasn't working in local development (used by extension), and I suspected the
+hot loaders interaction with react-dom, so I just switched to `yarn add 'react-dom@^16.2.0'`

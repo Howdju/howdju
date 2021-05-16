@@ -46,7 +46,7 @@ import {
   deleteJustificationRootTargetTranslator,
   fetchJustificationTargets,
 } from './apiLikeSagas'
-import {focusJustificationOnUrl} from './extensionSagas'
+import {contentScriptAck, postExtensionMessages} from './extensionSagas'
 
 
 export default () => all([
@@ -96,5 +96,6 @@ export default () => all([
 
   sendPageView(),
 
-  focusJustificationOnUrl(),
+  postExtensionMessages(),
+  contentScriptAck(),
 ])

@@ -70,7 +70,7 @@ const baseWebpackConfig = {
   devServer: {
     compress: true,
     contentBase: projectConfig.paths.src(),
-    hot: true,
+    // hot: true,
     // Behave like an SPA, serving index.html for paths that don't match files
     historyApiFallback: true,
     open: 'Google Chrome',

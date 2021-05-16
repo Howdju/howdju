@@ -11,7 +11,7 @@ import {
   insertNodeAfter,
   insertNodeBefore,
 } from './dom'
-import {toTarget} from './target'
+import {selectionToTarget, targetToRanges} from './target'
 import {Annotation} from './annotation'
 
 export const annotationClass = 'howdju-annotation'
@@ -29,7 +29,7 @@ export function annotateSelection() {
     logger.debug('selection was empty, returning')
   }
 
-  const target = toTarget(selection)
+  const target = selectionToTarget(selection)
 
   const nodes = getNodesForSelection(selection)
 
@@ -46,6 +46,17 @@ export function annotateSelection() {
   //  a reasonable UX choice, since the selection in a sense has been replaced with the annotation.
   clearSelection()
 
+  return annotation
+}
+
+export function annotateTarget(target) {
+  const ranges = targetToRanges(target)
+  const nodes = []
+  for (const range of ranges) {
+    nodes.push(getNodesForRange(range))
+  }
+  const annotation = annotateNodes(nodes)
+  annotation.target = target
   return annotation
 }
 

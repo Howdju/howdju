@@ -25,11 +25,15 @@ import throttle from 'lodash/throttle'
 import {
   isTruthy
 } from 'howdju-common'
+import {
+  actions
+} from 'howdju-client-common'
 
 import {
   api,
-  ui,
   flows,
+  goto,
+  ui,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import config from './config'
@@ -105,7 +109,10 @@ class App extends Component {
     window.addEventListener('mouseover', this.onFirstMouseOver, false)
 
     this.windowMessageHandler = new WindowMessageHandler({
-      flows: this.props.flows
+      extension: this.props.extension,
+      extensionFrame: this.props.extensionFrame,
+      flows: this.props.flows,
+      goto: this.props.goto,
     })
   }
 
@@ -435,6 +442,9 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
-  ui,
+  extension: actions.extension,
+  extensionFrame: actions.extensionFrame,
   flows,
+  goto,
+  ui,
 }))(hot(App))

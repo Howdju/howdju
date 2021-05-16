@@ -25,7 +25,7 @@ import {
   JustificationTargetType,
   makeNewTrunkJustification,
 } from "howdju-common"
-import {actions} from 'howdju-client-common'
+import {actions, inIframe} from 'howdju-client-common'
 
 import {
   api,
@@ -160,8 +160,14 @@ class JustificationsPage extends Component {
     this.props.ui.hideNewJustificationDialog()
   }
 
-  onClickWritQuoteUrl = (justificationId, visitUrl) => {
-    this.props.extension.focusJustificationOnUrl(visitUrl, justificationId, window.location.href)
+  onClickWritQuoteUrl = (event, justification, writQuote, url) => {
+    // If we aren't in the extension iframe, then allow the native behavior of the link click
+    if (!inIframe()) {
+      return
+    }
+    // Otherwise prevent click from navigating and instead update the page hosting the extension iframe
+    event.preventDefault()
+    this.props.extension.highlightTarget(justification, writQuote, url)
   }
 
   render () {
