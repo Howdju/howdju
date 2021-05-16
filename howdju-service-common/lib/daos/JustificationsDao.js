@@ -450,15 +450,11 @@ exports.JustificationsDao = class JustificationsDao {
     return Promise.all([
       this.database.query('readJustificationsWithBasesAndVotesByRootTarget', sql,
         [rootTargetType, rootTargetId, userId, JustificationBasisType.WRIT_QUOTE, JustificationBasisType.PROPOSITION_COMPOUND]),
+      readPropositionCompoundsByIdForRootTarget(this, rootTargetType, rootTargetId, {userId}),
+      this.writQuotesDao.readWritQuotesByIdForRootTarget(rootTargetType, rootTargetId),
       // We won't support adding legacy justification basis types to statements
-      // TODO at the moment proposition componds and writ quotes are the two non-legacy justification basis types...
       rootTargetType === JustificationRootTargetType.PROPOSITION ?
-        readPropositionCompoundsByIdForRootPropositionId(this, rootTargetId, {userId}) : [],
-      rootTargetType === JustificationRootTargetType.PROPOSITION ?
-        this.writQuotesDao.readWritQuotesByIdForRootPropositionId(rootTargetId) : [],
-      rootTargetType === JustificationRootTargetType.PROPOSITION ?
-        this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(rootTargetId)
-        : [],
+        this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(rootTargetId) : [],
     ])
       .then( ([
         {rows: justification_rows},
@@ -1392,8 +1388,8 @@ function getTargetRootPolarity(logger, database, justification) {
     })
 }
 
-function readPropositionCompoundsByIdForRootPropositionId(dao, rootPropositionId, {userId}) {
-  return dao.propositionCompoundsDao.readPropositionCompoundsByIdForRootPropositionId(rootPropositionId, {userId})
+function readPropositionCompoundsByIdForRootTarget(dao, rootTargetType, rootTargetId, {userId}) {
+  return dao.propositionCompoundsDao.readPropositionCompoundsByIdForRootTarget(rootTargetType, rootTargetId, {userId})
     .then( (propositionCompoundsById) =>
       Promise.all([
         propositionCompoundsById,

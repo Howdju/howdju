@@ -187,15 +187,19 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
       })
   }
 
-  readPropositionCompoundsByIdForRootPropositionId(rootPropositionId) {
-    return this.readPropositionAtomsByPropositionCompoundIdForRootPropositionId(rootPropositionId)
+  readPropositionCompoundsByIdForRootPropositionId(propositionId) {
+    return this.readPropositionCompoundsByIdForRootTarget(JustificationRootTargetType.PROPOSITION, propositionId)
+  }
+
+  readPropositionCompoundsByIdForRootTarget(rootTargetType, rootTargetId, {userId}) {
+    return this.readPropositionAtomsByPropositionCompoundIdForRootPropositionId(rootTargetType, rootTargetId)
       .then( atomsByCompoundPropositionId => {
         return mapValues(atomsByCompoundPropositionId, (propositionAtoms, propositionCompoundId) =>
           toPropositionCompound({proposition_compound_id: propositionCompoundId}, propositionAtoms))
       })
   }
 
-  readPropositionAtomsByPropositionCompoundIdForRootPropositionId(rootPropositionId) {
+  readPropositionAtomsByPropositionCompoundIdForRootPropositionId(rootTargetType, rootTargetId) {
     const sql = `
       select distinct
           sca.proposition_compound_id
@@ -224,7 +228,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
     return this.database.query(
       'readPropositionAtomsByPropositionCompoundIdForRootPropositionId',
       sql,
-      [JustificationRootTargetType.PROPOSITION, rootPropositionId, JustificationBasisType.PROPOSITION_COMPOUND]
+      [rootTargetType, rootTargetId, JustificationBasisType.PROPOSITION_COMPOUND]
     )
       .then( ({rows}) => {
         const propositionAtomsByPropositionCompoundId = {}

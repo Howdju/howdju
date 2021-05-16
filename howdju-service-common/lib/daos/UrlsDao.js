@@ -31,7 +31,7 @@ exports.UrlsDao = class UrlsDao {
       })
   }
 
-  readUrlsByWritQuoteIdForRootPropositionId(rootPropositionId) {
+  readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
     const sql = `
         select 
             wq.writ_quote_id
@@ -81,13 +81,13 @@ exports.UrlsDao = class UrlsDao {
             and wqu.deleted is null
             and u.deleted is null
     `
-    return this.database.query('readUrlsByWritQuoteIdForRootPropositionId', sql, [
-      rootPropositionId,
+    return this.database.query('readUrlsByWritQuoteIdForRootTarget', sql, [
+      rootTargetId,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptType.WRIT_QUOTE,
-      JustificationRootTargetType.PROPOSITION,
+      rootTargetType,
     ])
       .then( ({rows}) => groupUrlsByWritQuoteId(rows))
   }

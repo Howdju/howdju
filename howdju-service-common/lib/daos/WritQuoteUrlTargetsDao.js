@@ -12,7 +12,7 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
     this.database = database
   }
 
-  async readByUrlIdByWritQuoteIdForRootPropositionId(rootPropositionId) {
+  async readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
     const {rows} = await this.database.query(
       'readUrlTargetsForRootPropositionId',
       `
@@ -36,8 +36,8 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
           or j.root_target_type = $3 and j.root_target_id in (select * from statement_proposition_ids)
       `,
       [
-        rootPropositionId,
-        JustificationRootTargetType.PROPOSITION,
+        rootTargetId,
+        rootTargetType,
         JustificationRootTargetType.STATEMENT,
         JustificationBasisType.WRIT_QUOTE,
       ]

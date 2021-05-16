@@ -345,13 +345,15 @@ const routes = [
     id: 'readStatement',
     path: new RegExp('^statements/([^/]+)$'),
     method: httpMethods.GET,
+    // explicitly no query string parameters
+    queryStringParameters: {},
     async handler(appProvider, {
       callback,
       request: {
         pathParameters: [statementId]
       }
     }) {
-      const statement = await appProvider.statementsService.readStatementForId(statementId)
+      const {statement} = await appProvider.statementsService.readStatementForId(statementId)
       return ok({callback, body: {statement}})
     }
   },
@@ -391,7 +393,7 @@ const routes = [
   },
 
   /*
-   * Proposition justifications
+   * Root target justifications
    */
   {
     id: 'readPropositionJustifications',
@@ -410,6 +412,25 @@ const routes = [
       const proposition = await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
         JustificationRootTargetType.PROPOSITION, propositionId, authToken)
       return ok({callback, body: {proposition}})
+    }
+  },
+  {
+    id: 'readStatementJustifications',
+    path: new RegExp('^statements/([^/]+)$'),
+    method: httpMethods.GET,
+    queryStringParameters: {
+      include: 'justifications'
+    },
+    handler: async (appProvider, {
+      callback,
+      request: {
+        pathParameters: [statementId],
+        authToken,
+      }
+    }) => {
+      const statement = await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
+        JustificationRootTargetType.STATEMENT, statementId, authToken)
+      return ok({callback, body: {statement}})
     }
   },
 

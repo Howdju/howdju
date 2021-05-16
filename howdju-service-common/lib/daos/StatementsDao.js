@@ -139,9 +139,9 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
       `select * from statements s 
          where 
                s.root_proposition_id = $1 
-           and not (s.sentence_type = '${SentenceType.PROPOSITION}' and s.sentence_id = $1) 
+           and s.sentence_type <> $2
            and s.deleted is null`,
-      [rootPropositionId]
+      [rootPropositionId, SentenceType.PROPOSITION]
     )
     return await Promise.all(map(rows, (row) => this.readStatementForId(row.statement_id)))
   }

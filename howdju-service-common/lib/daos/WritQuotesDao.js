@@ -169,7 +169,11 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then( ({rows}) => map(rows, toWritQuote) )
   }
 
-  readWritQuotesByIdForRootPropositionId(rootPropositionId) {
+  readWritQuotesByIdForRootPropositionId(propositionId) {
+    return this.readWritQuotesByIdForRootTarget(JustificationRootTargetType.PROPOSITION, propositionId)
+  }
+
+  readWritQuotesByIdForRootTarget(rootTargetType, rootTargetId) {
     const sql = `
         select 
             wq.writ_quote_id
@@ -225,17 +229,17 @@ exports.WritQuotesDao = class WritQuotesDao {
             and w.deleted is null
       `
     const args = [
-      rootPropositionId,
+      rootTargetId,
       JustificationBasisType.WRIT_QUOTE,
       JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptType.WRIT_QUOTE,
-      JustificationRootTargetType.PROPOSITION,
+      rootTargetType,
     ]
     return Promise.all([
-      this.database.query('readWritQuotesByIdForRootPropositionId', sql, args),
-      this.urlsDao.readUrlsByWritQuoteIdForRootPropositionId(rootPropositionId),
-      this.writQuoteUrlTargetsDao.readByUrlIdByWritQuoteIdForRootPropositionId(rootPropositionId),
+      this.database.query('readWritQuotesByIdForRootTarget', sql, args),
+      this.urlsDao.readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId),
+      this.writQuoteUrlTargetsDao.readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId),
     ])
       .then( ([
         {rows},
