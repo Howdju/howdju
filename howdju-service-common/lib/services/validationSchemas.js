@@ -202,6 +202,7 @@ const justificationSchema = Joi.object().keys({
       rootTarget: Joi.required(),
     })
   })
+  .shared(statementSchema)
   .id(JUSTIFICATION_SCHEMA_ID)
 
 const extantEntity = Joi.object().keys({
