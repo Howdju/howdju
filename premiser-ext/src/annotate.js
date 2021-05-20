@@ -1,5 +1,5 @@
 import {getNodeData} from './node-data'
-import {logger} from 'howdju-client-common'
+import {logger} from 'howdju-common'
 import {objectValues} from './util'
 import {
   getSelection,

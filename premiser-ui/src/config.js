@@ -11,7 +11,7 @@ const config = {
   humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
   isDev: process.env.NODE_ENV === 'development',
   contentScriptAckDelayMs: 1000,
-  isRegistrationEnabled: false,
+  isRegistrationEnabled: true,
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
   authExpirationCheckFrequencyMs: 30*1000,

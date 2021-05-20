@@ -5,8 +5,8 @@ import "regenerator-runtime/runtime"
 import find from "lodash/find"
 import forOwn from "lodash/forOwn"
 
-import {extension as ext, logger, EXTENSION_MESSAGE_SOURCE, actions} from 'howdju-client-common'
-import {decircularizeJustification} from "howdju-common"
+import {decircularizeJustification, logger} from "howdju-common"
+import {extension as ext, EXTENSION_MESSAGE_SOURCE, actions} from 'howdju-client-common'
 
 import {annotateSelection, annotateTarget} from './annotate'
 import {getFrameApi, showSidebar, toggleSidebar} from './sidebar'
@@ -91,9 +91,8 @@ function highlightTarget({justification, writQuote, url}) {
     commands.push({annotateTarget: [target]})
   }
   ext.sendRuntimeMessage(runCommandsWhenTabReloaded(commands), () => {
-      window.location.href = url.url
-    }
-  )
+    window.location.href = url.url
+  })
 }
 
 function runCommands(commands) {

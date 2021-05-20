@@ -1,6 +1,6 @@
 import {extension as ext} from 'howdju-client-common'
 
-import {logger} from 'howdju-client-common'
+import {logger} from 'howdju-common'
 
 const optionDefinitions = {
   howdjuBaseUrl: {

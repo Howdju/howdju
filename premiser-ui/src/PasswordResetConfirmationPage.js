@@ -19,8 +19,9 @@ import {
   apiErrorCodes,
   schemaIds,
   schemaSettings,
-  validate,
+  toJson,
 } from 'howdju-common'
+import {validate} from 'howdju-ajv-sourced'
 
 import {
   api,
@@ -70,7 +71,8 @@ class PasswordResetConfirmationPage extends React.Component {
       wasSubmitAttempted,
     } = this.state
 
-    const {isValid, errors: validationErrors} = validate(schemaIds.passwordResetConfirmation, passwordResetConfirmation)
+    const {isValid, errors: validationErrors} =
+      validate(schemaIds.passwordResetConfirmation, toJson(passwordResetConfirmation))
 
     const errorNoticeMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
 

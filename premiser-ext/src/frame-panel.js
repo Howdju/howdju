@@ -40,7 +40,6 @@ export class FramePanel extends Component {
       isMinimized,
       containerWidth,
       isDragging,
-      loadUrl,
     } = this.state
     const {
       url,

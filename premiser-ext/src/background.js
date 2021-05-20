@@ -2,7 +2,8 @@
 import "core-js/stable"
 import "regenerator-runtime/runtime"
 
-import {extension as ext, logger} from 'howdju-client-common'
+import {logger} from 'howdju-common'
+import {extension as ext} from 'howdju-client-common'
 
 import {attachHeadersListener} from './attach'
 import {getOptions} from './options'

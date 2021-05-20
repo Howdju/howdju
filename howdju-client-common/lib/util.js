@@ -1,7 +1,7 @@
-exports.inIframe = () => {
+export const inIframe = () => {
   try {
-    return window.self !== window.top;
+    return window.self !== window.top
   } catch (e) {
-    return true;
+    return true
   }
 }

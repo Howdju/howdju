@@ -132,13 +132,8 @@ const user = {
     longName: { $ref: 'definitions.json#/definitions/longName'},
     acceptedTerms: {
       description: 'The time when the user accepted the terms.',
-      oneOf: [
-        {
-          type: 'string',
-          format: 'date-time',
-        },
-        { isMoment: {} }
-      ]
+      type: 'string',
+      format: 'date-time',
     },
   }
 }

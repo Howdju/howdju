@@ -8,11 +8,13 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
+    "check-preconditions:all": "yarn workspaces foreach -Apv run check-preconditions ",
     "lint:all": "bin/lint-all.sh",
     "test:all": "bin/test-all.sh"
   },
   "workspaces": [
     "eslint-config-howdju",
+    "howdju-ajv-sourced",
     "howdju-client-common",
     "howdju-common",
     "howdju-ops",

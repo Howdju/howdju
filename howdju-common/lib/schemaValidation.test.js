@@ -1,14 +1,19 @@
 const moment = require('moment')
+const {toJson} = require("./schemaValidation")
 
 const {
   schemaIds,
-  validate,
+  makeAjv,
+  makeValidate,
 } = require('./schemaValidation')
+
+const ajv = makeAjv()
+const validate = makeValidate(ajv)
 
 describe('schemaValidation', () => {
   describe('validate', () => {
 
-    test('validates valid data', () => {
+    test('validates valid registration confirmation', () => {
       const validRegistrationConfirmation = {
         username: 'carl_gieringer',
         shortName: 'Carl',
@@ -19,7 +24,7 @@ describe('schemaValidation', () => {
       expect(validate(schemaIds.registrationConfirmation, validRegistrationConfirmation)).toEqual({isValid: true, errors: {}})
     })
 
-    test('validates invalid data', () => {
+    test('invalidates an invalid registration confirmation', () => {
       const invalidRegistrationConfirmation = {
         username: 'carl#gieringer',
         password: '123',
@@ -46,22 +51,15 @@ describe('schemaValidation', () => {
       })
     })
 
-    test('validates moment', () => {
-      const schema = {
-        type: "object",
-        properties: {
-          someDateTime: {
-            type: "object",
-            isMoment: {},
-          }
-        }
+    test('validates a user', () => {
+      const user = {
+        username: 'carl_gieringer',
+        email: 'carl.gieringer@domain.com',
+        shortName: 'Carl',
+        longName: 'Gieringer',
+        acceptedTerms: moment()
       }
-      const data = {
-        someDateTime: moment()
-      }
-
-      const {isValid} = validate(schema, data)
-      expect(isValid).toBe(true)
+      expect(validate(schemaIds.user, toJson(user))).toEqual({isValid: true, errors: {}})
     })
   })
 

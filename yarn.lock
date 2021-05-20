@@ -8634,6 +8634,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"howdju-ajv-sourced@workspace:howdju-ajv-sourced":
+  version: 0.0.0-use.local
+  resolution: "howdju-ajv-sourced@workspace:howdju-ajv-sourced"
+  dependencies:
+    howdju-common: ^1.0.0
+  languageName: unknown
+  linkType: soft
+
 "howdju-browser-extension@workspace:premiser-ext":
   version: 0.0.0-use.local
   resolution: "howdju-browser-extension@workspace:premiser-ext"

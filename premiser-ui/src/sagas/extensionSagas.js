@@ -3,7 +3,8 @@ import {
   takeEvery,
 } from 'redux-saga/effects'
 
-import {actions, inIframe, logger} from 'howdju-client-common'
+import {actions, inIframe} from 'howdju-client-common'
+import {logger} from '../logger'
 
 import config from '../config'
 

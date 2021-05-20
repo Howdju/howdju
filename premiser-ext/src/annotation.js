@@ -6,7 +6,7 @@ import {
   getAnnotationOf,
   isAnnotationNode
 } from './annotate'
-import {logger} from 'howdju-client-common'
+import {logger} from 'howdju-common'
 import {arrayInsertAfter, arrayInsertBefore} from './util'
 
 export const annotationMouseOverClass = 'howdju-annotation-mouse-over'

@@ -1,0 +1,14 @@
+{
+  "name": "howdju-ajv-sourced",
+  "version": "1.0.0",
+  "description": "Contains AJV schema validators read from source. Use unless CSP disallows eval.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Carl Gieringer <carl.gieringer@gmail.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "howdju-common": "^1.0.0"
+  }
+}

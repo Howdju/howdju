@@ -9,9 +9,11 @@ module.exports = assign(
   require('./general'),
   require('./httpMethods'),
   require('./httpStatusCodes'),
+  require('./logger'),
   require('./models'),
   require('./schemas'),
   require('./schemaValidation'),
+  require('./standaloneValidation'),
   require('./serialization'),
   require('./urls')
 )

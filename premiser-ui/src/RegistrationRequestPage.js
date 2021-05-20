@@ -20,9 +20,10 @@ import {
   entityErrorCodes,
   makeNewRegistrationRequest,
   schemaSettings,
-  validate,
   schemaIds,
+  toJson,
 } from 'howdju-common'
+import {validate} from 'howdju-ajv-sourced'
 
 import {editors, mapActionCreatorGroupToDispatchToProps} from './actions'
 import EmailTextField from './EmailTextField'
@@ -65,7 +66,7 @@ class RegistrationRequestPage extends React.Component {
     const email = get(registration, 'email', '')
 
     const {isValid, errors: validationErrors} = registration ?
-      validate(schemaIds.registrationRequest, registration) :
+      validate(schemaIds.registrationRequest, toJson(registration)) :
       {isValid: false, errors: {}}
 
     const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'

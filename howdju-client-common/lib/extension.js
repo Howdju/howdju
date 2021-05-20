@@ -1,4 +1,4 @@
-import {logger} from './logger'
+import {logger} from 'howdju-common'
 
 // const apis = [
 //   'alarms',
@@ -41,7 +41,7 @@ class Extension {
 
   createTab = (details) => {
     if (this.extension) {
-      this.extension.tabs.create(details);
+      this.extension.tabs.create(details)
     }
   }
 
@@ -53,7 +53,7 @@ class Extension {
 
   sendTabMessage = (tabId, message, callback) => {
     if (this.extension) {
-      this.extension.tabs.sendMessage(tabId, message, callback);
+      this.extension.tabs.sendMessage(tabId, message, callback)
     }
   }
 
