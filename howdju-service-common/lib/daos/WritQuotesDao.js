@@ -239,7 +239,7 @@ exports.WritQuotesDao = class WritQuotesDao {
     return Promise.all([
       this.database.query('readWritQuotesByIdForRootTarget', sql, args),
       this.urlsDao.readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId),
-      this.writQuoteUrlTargetsDao.readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId),
+      this.writQuoteUrlTargetsDao.readWritQuoteUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId),
     ])
       .then( ([
         {rows},

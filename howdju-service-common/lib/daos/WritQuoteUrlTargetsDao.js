@@ -12,9 +12,9 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
     this.database = database
   }
 
-  async readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
+  async readWritQuoteUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
     const {rows} = await this.database.query(
-      'readUrlTargetsForRootPropositionId',
+      'readWritQuoteUrlsByWritQuoteIdForRootTarget',
       `
         with
           statement_proposition_ids as (
