@@ -4,6 +4,7 @@ const {
 } = require('howdju-common')
 
 const {addArrayParams} = require('./daosUtil')
+const {toIdString} = require("./orm")
 
 exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
 
@@ -72,32 +73,35 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
 }
 
 function toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows) {
+  // Read all the rows to get the UrlTargets with their anchors
   const urlTargetById = new Map()
   for (const row of rows) {
-    let urlTarget = urlTargetById.get(row.writ_quote_url_target_id)
+    let urlTarget = urlTargetById.get(toIdString(row.writ_quote_url_target_id))
     if (!urlTarget) {
       urlTarget = {
-        writQuoteId: row.writ_quote_id,
-        id: row.writ_quote_url_target_id,
+        writQuoteId: toIdString(row.writ_quote_id),
+        id: toIdString(row.writ_quote_url_target_id),
         url: {
-          id: row.url_id,
+          id: toIdString(row.url_id),
         },
         anchors: []
       }
-      urlTargetById.set(String(row.writ_quote_url_target_id), urlTarget)
+      urlTargetById.set(toIdString(row.writ_quote_url_target_id), urlTarget)
     }
     urlTarget.anchors.push(extractWritQuoteUrlTargetAnchor(row))
   }
-
+  // Then index them by WritQuote ID and Url ID
   return byUrlIdByWritQuoteId(urlTargetById.values())
 }
 
 function extractWritQuoteUrlTargetAnchor(row) {
   return {
-    id: row.writ_quote_url_target_anchor_id,
+    id: toIdString(row.writ_quote_url_target_anchor_id),
     exactText: row.exact_text,
     prefixText: row.prefix_text,
     suffixText: row.suffix_text,
+    startOffset: row.start_offset,
+    endOffset: row.end_offset,
   }
 }
 
@@ -107,9 +111,9 @@ function byUrlIdByWritQuoteId(urlTargets) {
     let byUrlId = byWritQuoteId.get(urlTarget.writQuoteId)
     if (!byUrlId) {
       byUrlId = new Map()
-      byWritQuoteId.set(String(urlTarget.writQuoteId), byUrlId)
+      byWritQuoteId.set(urlTarget.writQuoteId, byUrlId)
     }
-    byUrlId.set(String(urlTarget.url.id), urlTarget)
+    byUrlId.set(urlTarget.url.id, urlTarget)
   }
   return byWritQuoteId
 }

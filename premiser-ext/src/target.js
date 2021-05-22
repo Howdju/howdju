@@ -31,7 +31,6 @@ export class TextQuoteAnchor {
     this.exact = exact
     this.prefix = prefix
     this.suffix = suffix
-    // TODO persist the position and use it as a hint
     this.start = start
     this.end = end
   }
@@ -46,9 +45,18 @@ function rangeToAnchor(range) {
 export function targetToRanges(target) {
   const ranges = []
   for (const anchor of target.anchors) {
-    // TODO figure out how to use target.start/.end as a hint.
-    const options = target.start ? {hint: target.start} : {}
-    ranges.push(textQuote.toRange(document.body, target, options))
+    let options = {}
+    if (target.startOffset) {
+      // The average of the start and end seems like a good idea
+      const hint = (target.startOffset + target.endOffset) / 2
+      options = {hint}
+    }
+    const selector = {
+      exact: anchor.exactText,
+      prefix: anchor.prefixText,
+      suffix: anchor.suffixText
+    }
+    ranges.push(textQuote.toRange(document.body, selector, options))
   }
   return ranges
 }

@@ -1,5 +1,8 @@
-import {getNodeData} from './node-data'
+import concat from 'lodash/concat'
+
 import {logger} from 'howdju-common'
+
+import {getNodeData} from './node-data'
 import {objectValues} from './util'
 import {
   getSelection,
@@ -29,6 +32,7 @@ export function annotateSelection() {
     logger.debug('selection was empty, returning')
   }
 
+  // Get target before selection may change
   const target = selectionToTarget(selection)
 
   const nodes = getNodesForSelection(selection)
@@ -51,13 +55,18 @@ export function annotateSelection() {
 
 export function annotateTarget(target) {
   const ranges = targetToRanges(target)
-  const nodes = []
-  for (const range of ranges) {
-    nodes.push(getNodesForRange(range))
-  }
+  const nodes = rangesToNodes(ranges)
   const annotation = annotateNodes(nodes)
   annotation.target = target
   return annotation
+}
+
+function rangesToNodes(ranges) {
+  const rangeNodes = []
+  for (const range of ranges) {
+    rangeNodes.push(getNodesForRange(range))
+  }
+  return concat.apply(null, rangeNodes)
 }
 
 function isSelectionEmpty(selection) {

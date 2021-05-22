@@ -121,9 +121,15 @@ function runCommand(command){
           postActionMessageToFrame(actionCreator.apply(actionCreator, value))
         })
         break
-      case "annotateTarget":
-        annotateTarget.apply(annotateTarget, value)
+      case "annotateTarget": {
+        const annotation = annotateTarget.apply(annotateTarget, value)
+        annotation.nodes[0].scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center',
+        })
         break
+      }
       default:
         logger.error(`Unrecognized command ${key}`)
     }

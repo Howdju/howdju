@@ -14,6 +14,7 @@ const {
 } = require('howdju-common')
 
 const {
+  toIdString,
   toWritQuote,
   toWritQuoteUrl,
   toUrl,
@@ -249,7 +250,7 @@ exports.WritQuotesDao = class WritQuotesDao {
         const writQuotesById = {}
         forEach(rows, row => {
           const writQuote = toWritQuote(row)
-          const writQuoteId = row.writ_quote_id
+          const writQuoteId = toIdString(row.writ_quote_id)
           writQuote.urls = urlsByWritQuoteId[writQuoteId] || []
           const urlTargetsByUrlId = urlTargetsByUrlIdByWritQuoteId.get(writQuoteId)
           if (urlTargetsByUrlId) {
@@ -322,10 +323,10 @@ exports.WritQuotesDao = class WritQuotesDao {
         'createWritQuoteUrlTarget.anchors',
         `
           insert into writ_quote_url_target_anchors 
-              (writ_quote_url_target_id, exact_text, prefix_text, suffix_text)
-          values ($1, $2, $3, $4)
+              (writ_quote_url_target_id, exact_text, prefix_text, suffix_text, start_offset, end_offset)
+          values ($1, $2, $3, $4, $5, $6)
         `,
-        [row.writ_quote_url_target_id, anchor.exact, anchor.prefix, anchor.suffix]
+        [row.writ_quote_url_target_id, anchor.exact, anchor.prefix, anchor.suffix, anchor.start, anchor.end]
       ))))
   }
 

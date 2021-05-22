@@ -146,6 +146,8 @@ describe('urlSchema', () => {
             exact: 'hi there',
             prefix: 'before',
             suffix: 'after',
+            start: 1,
+            end: 10,
           }
         ]
       }

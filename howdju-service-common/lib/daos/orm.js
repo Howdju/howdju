@@ -18,6 +18,14 @@ const {
   toSlug,
 } = require('howdju-common')
 
+// We use a convention of translating IDs to strings.
+//
+// Also, there's a built-in toString that does weird things. So rather than
+// accidentally use it by forgetting to import toString from lodash, use this
+// method.
+function toIdString(val) {
+  return toString(val)
+}
 
 function removeUndefinedProperties(obj) {
   let hasDefinedProperty = false
@@ -40,7 +48,7 @@ function makeMapper(mapper) {
 
     let mapped = mapper(row, ...args)
     if (!mapped.id && row.id) {
-      mapped.id = toString(row.id)
+      mapped.id = toIdString(row.id)
     }
     mapped = removeUndefinedProperties(mapped)
     return mapped
@@ -72,7 +80,7 @@ function unprefix (obj, prefix) {
 
 const toUser = makeMapper(function toUserMapper(row) {
   const user = merge({
-    id: toString(row.user_id),
+    id: toIdString(row.user_id),
   }, {
     email: row.email,
     longName: row.long_name,
@@ -97,7 +105,7 @@ const toUserExternalIds = makeMapper(function(row) {
 
 const toProposition = makeMapper(function toPropositionMapper(row) {
   const proposition = {
-    id: toString(row.proposition_id),
+    id: toIdString(row.proposition_id),
     text: row.text,
     normalText: row.normal_text,
     slug: toSlug(row.normal_text),
@@ -117,7 +125,7 @@ const toProposition = makeMapper(function toPropositionMapper(row) {
 const toStatement = makeMapper(function toStatementMapper(row) {
 
   const statement = {
-    id: toString(row.statement_id || row.id),
+    id: toIdString(row.statement_id || row.id),
     creator: mapRelation(toUser, 'creator_', row),
     speaker: mapRelation(toPersorg, 'speaker_', row),
     sentenceType: row['sentence_type'],
@@ -155,7 +163,7 @@ const toJustification = makeMapper(function toJustificationMapper (
   justificationBasisCompoundsById
 ) {
   const justification = {
-    id: toString(row.justification_id || row.id),
+    id: toIdString(row.justification_id || row.id),
     created: row.created,
     rootTargetType: row.root_target_type,
     rootTarget: mapRelation(justificationRootTargetMapperByType[row.root_target_type], 'root_target_', row),
@@ -163,13 +171,13 @@ const toJustification = makeMapper(function toJustificationMapper (
     target: {
       type: row.target_type,
       entity: {
-        id: toString(row.target_id)
+        id: toIdString(row.target_id)
       }
     },
     basis: {
       type: row.basis_type,
       entity: {
-        id: toString(row.basis_id)
+        id: toIdString(row.basis_id)
       }
     },
     polarity: row.polarity,
@@ -264,7 +272,7 @@ const toJustification = makeMapper(function toJustificationMapper (
 
 const toWritQuote = makeMapper(function toWritQuoteMapper(row) {
   return {
-    id: toString(row.writ_quote_id),
+    id: toIdString(row.writ_quote_id),
     quoteText: row.quote_text,
     created: row.created,
     creatorUserId: row.creator_user_id,
@@ -280,7 +288,7 @@ const toWritQuote = makeMapper(function toWritQuoteMapper(row) {
 
 const toWrit = makeMapper(function toWritMapper(row) {
   const writ = row && ({
-    id: toString(row.writ_id),
+    id: toIdString(row.writ_id),
     title: row.title,
     created: row.created,
   })
@@ -289,14 +297,14 @@ const toWrit = makeMapper(function toWritMapper(row) {
 
 const toUrl = makeMapper(function toUrlMapper(row) {
   return {
-    id: toString(row.url_id),
+    id: toIdString(row.url_id),
     url: row.url
   }
 })
 
 const toJustificationVote = makeMapper(function toJustificationVoteMapper(row) {
   return {
-    id: toString(row.justification_vote_id),
+    id: toIdString(row.justification_vote_id),
     polarity: row.polarity,
     justificationId: row.justification_id,
     created: row.created,
@@ -306,8 +314,8 @@ const toJustificationVote = makeMapper(function toJustificationVoteMapper(row) {
 
 const toWritQuoteUrl = makeMapper(function toWriteQuoteUrlMapper(row) {
   return {
-    writQuoteId: toString(row.writ_quote_id),
-    urlId: toString(row.url_id),
+    writQuoteId: toIdString(row.writ_quote_id),
+    urlId: toIdString(row.url_id),
   }
 })
 
@@ -514,13 +522,13 @@ function toPropositionTagVote(row) {
   }
 
   return {
-    id: toString(row.proposition_tag_vote_id),
+    id: toIdString(row.proposition_tag_vote_id),
     polarity: row.polarity,
     proposition: {
-      id: toString(row.proposition_id),
+      id: toIdString(row.proposition_id),
     },
     tag: {
-      id: toString(row.tag_id),
+      id: toIdString(row.tag_id),
     },
   }
 }
@@ -544,14 +552,14 @@ function toPropositionTagScore(row) {
 
 const toTag = makeMapper(function toTagMapper(row) {
   return {
-    id: toString(row.tag_id),
+    id: toIdString(row.tag_id),
     name: row.name,
   }
 })
 
 const toPersorg = makeMapper(function toPersorgMapper(row) {
   const persorg = {
-    id: toString(row.persorg_id),
+    id: toIdString(row.persorg_id),
     isOrganization: row.is_organization,
     name: row.name,
     knownFor: row.known_for,
@@ -598,6 +606,7 @@ const toPasswordResetRequest = makeMapper(function toPasswordResetRequestMapper(
 })
 
 module.exports = {
+  toIdString,
   toJobHistory,
   toJustification,
   toJustificationBasisCompound,

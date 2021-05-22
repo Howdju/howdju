@@ -102,6 +102,8 @@ const urlSchema = Joi.object().keys({
           exact: Joi.string(),
           prefix: Joi.string(),
           suffix: Joi.string(),
+          start: Joi.number(),
+          end: Joi.number(),
         })}))
   })
 })
