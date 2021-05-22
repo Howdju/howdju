@@ -4,6 +4,7 @@ import {connect} from "react-redux"
 import {Button, CircularProgress} from 'react-md'
 import get from 'lodash/get'
 import isEqual from 'lodash/isEqual'
+import isEmpty from 'lodash/isEmpty'
 import map from 'lodash/map'
 import pick from 'lodash/pick'
 import queryString from 'query-string'
@@ -21,38 +22,52 @@ import {
 import JustificationCard from "./JustificationCard"
 import {justificationsSchema} from "./normalizationSchemas"
 import config from './config'
+import {extensionHighlightingOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
+import {actions} from "howdju-client-common"
 
 
 class JustificationsSearchPage extends Component {
   static fetchCount = 20
+
+  constructor() {
+    super();
+    this.onClickWritQuoteUrl = extensionHighlightingOnClickWritQuoteUrl.bind(this)
+  }
+
+  static extractIncludeUrls = (locationSearch) =>
+    get(queryString.parse(locationSearch), 'includeUrls')
 
   static filters = (locationSearch) =>
     pick(queryString.parse(locationSearch), ValidJustificationSearchFilters)
 
   componentDidMount() {
     const filters = JustificationsSearchPage.filters(this.props.location.search)
-    this.refreshResults(filters)
+    const includeUrls = JustificationsSearchPage.extractIncludeUrls(this.props.location.search)
+    this.refreshResults(filters, includeUrls)
   }
 
   componentDidUpdate(prevProps) {
     const prevFilters = JustificationsSearchPage.filters(prevProps.location.search)
     const filters = JustificationsSearchPage.filters(this.props.location.search)
-    if (!isEqual(prevFilters, filters)) {
-      this.refreshResults(filters)
+    const prevIncludeUrls = JustificationsSearchPage.extractIncludeUrls(prevProps.location.search)
+    const includeUrls = JustificationsSearchPage.extractIncludeUrls(this.props.location.search)
+    if (!isEqual(prevFilters, filters) || includeUrls !== prevIncludeUrls) {
+      this.refreshResults(filters, includeUrls)
     }
   }
 
   fetchMore = event => {
     event.preventDefault()
     const filters = JustificationsSearchPage.filters(this.props.location.search)
+    const includeUrls = JustificationsSearchPage.extractIncludeUrls(this.props.location.search)
     const count = JustificationsSearchPage.fetchCount
     const {continuationToken} = this.props
-    this.props.api.fetchJustificationsSearch({filters, count, continuationToken})
+    this.props.api.fetchJustificationsSearch({filters, includeUrls, count, continuationToken})
   }
 
-  refreshResults = (filters) => {
+  refreshResults = (filters, includeUrls) => {
     const count = JustificationsSearchPage.fetchCount
-    this.props.api.fetchJustificationsSearch({filters, count})
+    this.props.api.fetchJustificationsSearch({filters, includeUrls, count})
   }
 
   render() {
@@ -72,9 +87,25 @@ class JustificationsSearchPage extends Component {
       />
     )
 
+    const filters = JustificationsSearchPage.filters(this.props.location.search)
+    const filtersList = isEmpty(filters) ? null : (
+      <ul className="md-cell md-cell--12">
+        {map(filters, (val, key) => (
+          <li><strong>{key}</strong>: {val}</li>
+        ))}
+      </ul>
+    )
+
     return (
       <div className="md-grid">
         <h1 className="md-cell md-cell--12">Justifications</h1>
+
+        {filtersList && (
+          <>
+            <h2 className="md-cell md-cell--12">Filters</h2>
+            {filtersList}
+          </>
+        )}
 
         <FlipMove
           {...config.ui.flipMove}
@@ -89,6 +120,8 @@ class JustificationsSearchPage extends Component {
                 id={id}
                 key={id}
                 justification={j}
+                showBasisUrls={true}
+                onClickWritQuoteUrl={this.onClickWritQuoteUrl}
               />
             )
           })}
@@ -125,5 +158,6 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
+  extension: actions.extension,
   ui,
 }))(JustificationsSearchPage)

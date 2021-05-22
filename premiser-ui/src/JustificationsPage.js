@@ -55,6 +55,7 @@ import {
 } from './viewModels'
 
 import "./JustificationsPage.scss"
+import {extensionHighlightingOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 
 
 const rootTargetInfoFromProps = (props) => ({
@@ -101,6 +102,11 @@ class JustificationsPage extends Component {
   static transientId = 'proposition-justifications-page-proposition'
   static rootTargetEditorId = combineIds(justificationsPageId, 'root-target-editor')
   static newJustificationEditorId = combineIds(justificationsPageId, 'new-justification-editor')
+
+  constructor() {
+    super();
+    this.onClickWritQuoteUrl = extensionHighlightingOnClickWritQuoteUrl.bind(this)
+  }
 
   componentDidMount() {
     const {rootTargetType, rootTargetId} = this.rootTargetInfo()
@@ -153,21 +159,12 @@ class JustificationsPage extends Component {
 
   saveNewJustification = (event) => {
     event.preventDefault()
-    this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.newJustificationEditorId, ui.hideNewJustificationDialog())
+    this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION,
+      JustificationsPage.newJustificationEditorId, ui.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog = () => {
     this.props.ui.hideNewJustificationDialog()
-  }
-
-  onClickWritQuoteUrl = (event, justification, writQuote, url) => {
-    // If we aren't in the extension iframe, then allow the native behavior of the link click
-    if (!inIframe()) {
-      return
-    }
-    // Otherwise prevent click from navigating and instead update the page hosting the extension iframe
-    event.preventDefault()
-    this.props.extension.highlightTarget(justification, writQuote, url)
   }
 
   render () {

@@ -29,6 +29,7 @@ export default class JustificationCard extends Component {
       className,
       showBasisUrls,
       doShowTargets,
+      onClickWritQuoteUrl,
       ...rest
     } = this.props
 
@@ -47,6 +48,7 @@ export default class JustificationCard extends Component {
             showBasisUrls={showBasisUrls}
             doShowRootTarget={doShowTargets}
             doShowCounterTarget={doShowTargets}
+            onClickWritQuoteUrl={onClickWritQuoteUrl}
           />
         </CardText>
       </Card>

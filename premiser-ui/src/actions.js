@@ -85,7 +85,7 @@ export const api = {
   fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
 
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
-    ({filters, count, continuationToken}) => ({filters, count, continuationToken})
+    ({filters, includeUrls, count, continuationToken}) => ({filters, includeUrls, count, continuationToken})
   ),
   login: apiActionCreator('LOGIN', (credentials) => ({credentials})),
   logout: apiActionCreator('LOGOUT'),

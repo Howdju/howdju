@@ -48,6 +48,7 @@ import {EditorTypes} from "./reducers/editors"
 import t from './texts'
 
 import './JustificationBranch.scss'
+import {justificationContainerOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 
 
 const justificationTreeId = props => {
@@ -64,6 +65,7 @@ class JustificationBranch extends Component {
       isOver: false,
       areCounterJustificationsExpanded: true,
     }
+    this.onClickWritQuoteUrl = justificationContainerOnClickWritQuoteUrl.bind(this)
   }
 
   onBubbleMouseOver = event => {
@@ -143,12 +145,6 @@ class JustificationBranch extends Component {
     this.setState({
       areCounterJustificationsExpanded: !this.state.areCounterJustificationsExpanded
     })
-  }
-
-  onClickWritQuoteUrl = (event, writQuote, url) => {
-    if (this.props.onClickWritQuoteUrl) {
-      this.props.onClickWritQuoteUrl(event, this.props.justification, writQuote, url)
-    }
   }
 
   render() {

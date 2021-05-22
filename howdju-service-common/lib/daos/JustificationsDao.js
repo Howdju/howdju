@@ -715,8 +715,10 @@ async function addUrlTargets(service, justifications) {
   for (const justification of justifications) {
     if (justification.basis.type === JustificationBasisType.WRIT_QUOTE) {
       const urlTargetByUrlId = urlTargetByUrlIdByWritQuoteId.get(justification.basis.entity.id)
-      for (const url of justification.basis.entity.urls) {
-        url.target = urlTargetByUrlId.get(url.id)
+      if (urlTargetByUrlId) {
+        for (const url of justification.basis.entity.urls) {
+          url.target = urlTargetByUrlId.get(url.id)
+        }
       }
     }
   }

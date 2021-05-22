@@ -419,6 +419,7 @@ export const resourceApiConfigs = {
   [api.fetchJustificationsSearch]: (payload) => {
     const {
       filters,
+      includeUrls,
       sorts,
       count,
       continuationToken
@@ -427,6 +428,10 @@ export const resourceApiConfigs = {
 
     if (!isEmpty(filters)) {
       params.filters = encodeQueryStringObject(filters)
+    }
+
+    if (!isEmpty(includeUrls)) {
+      params.includeUrls = includeUrls
     }
 
     if (!isEmpty(sorts)) {

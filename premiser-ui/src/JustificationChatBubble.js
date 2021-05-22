@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 
 import {
   isRootNegative,
@@ -8,57 +8,65 @@ import JustificationBasisViewer from './JustificationBasisViewer'
 import ChatBubble from './ChatBubble'
 
 import './JustificationChatBubble.scss'
+import {justificationContainerOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 
-export default function JustificationChatBubble(props) {
-  const {
-    id,
-    className,
-    justification,
-    writQuoteEditorId,
-    doShowControls,
-    doShowBasisJustifications,
-    showStatusText,
-    isCondensed,
-    isUnCondensed,
-    showBasisUrls,
-    menu,
-    actions,
-    children,
-    contextTrailItems,
-    onClickWritQuoteUrl,
-    ...rest
-  } = props
-  const _isRootPositive = isRootPositive(justification)
-  const _isRootNegative = isRootNegative(justification)
+export default class JustificationChatBubble extends Component {
 
-  const basisViewerIdPrefix = id ? id + '-' : ''
-  const basisViewerId = `${basisViewerIdPrefix}basis-viewer`
+  constructor() {
+    super();
+    this.onClickWritQuoteUrl = justificationContainerOnClickWritQuoteUrl.bind(this)
+  }
 
-  return (
-    <ChatBubble
-      {...rest}
-      className={className}
-      isPositive={_isRootPositive}
-      isNegative={_isRootNegative}
-    >
-      <div className="justification-basis-viewer-row">
-        <JustificationBasisViewer
-          id={basisViewerId}
-          justification={justification}
-          writQuoteEditorId={writQuoteEditorId}
-          doShowControls={doShowControls}
-          doShowBasisJustifications={doShowBasisJustifications}
-          isCondensed={isCondensed}
-          isUnCondensed={isUnCondensed}
-          showStatusText={showStatusText}
-          showUrls={showBasisUrls}
-          contextTrailItems={contextTrailItems}
-          onClickWritQuoteUrl={onClickWritQuoteUrl}
-        />
-        {doShowControls && menu}
-      </div>
-      {doShowControls && actions}
-      {children}
-    </ChatBubble>
-  )
+  render() {
+    const {
+      id,
+      className,
+      justification,
+      writQuoteEditorId,
+      doShowControls,
+      doShowBasisJustifications,
+      showStatusText,
+      isCondensed,
+      isUnCondensed,
+      showBasisUrls,
+      menu,
+      actions,
+      children,
+      contextTrailItems,
+      ...rest
+    } = this.props
+    const _isRootPositive = isRootPositive(justification)
+    const _isRootNegative = isRootNegative(justification)
+
+    const basisViewerIdPrefix = id ? id + '-' : ''
+    const basisViewerId = `${basisViewerIdPrefix}basis-viewer`
+
+    return (
+      <ChatBubble
+        {...rest}
+        className={className}
+        isPositive={_isRootPositive}
+        isNegative={_isRootNegative}
+      >
+        <div className="justification-basis-viewer-row">
+          <JustificationBasisViewer
+            id={basisViewerId}
+            justification={justification}
+            writQuoteEditorId={writQuoteEditorId}
+            doShowControls={doShowControls}
+            doShowBasisJustifications={doShowBasisJustifications}
+            isCondensed={isCondensed}
+            isUnCondensed={isUnCondensed}
+            showStatusText={showStatusText}
+            showUrls={showBasisUrls}
+            contextTrailItems={contextTrailItems}
+            onClickWritQuoteUrl={this.onClickWritQuoteUrl}
+          />
+          {doShowControls && menu}
+        </div>
+        {doShowControls && actions}
+        {children}
+      </ChatBubble>
+    )
+  }
 }

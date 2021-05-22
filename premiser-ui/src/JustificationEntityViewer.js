@@ -31,6 +31,7 @@ export default class JustificationEntityViewer extends Component {
       showBasisUrls,
       doShowRootTarget,
       doShowCounterTarget,
+      onClickWritQuoteUrl,
     } = this.props
 
     const _isCounter = isCounter(justification)
@@ -74,6 +75,7 @@ export default class JustificationEntityViewer extends Component {
                 doShowBasisJustifications={doShowBasisJustifications}
                 doShowControls={doShowControls}
                 showBasisUrls={showBasisUrls}
+                onClickWritQuoteUrl={onClickWritQuoteUrl}
               />
             )}
             <JustificationChatBubble
@@ -81,6 +83,7 @@ export default class JustificationEntityViewer extends Component {
               doShowBasisJustifications={doShowBasisJustifications}
               doShowControls={doShowControls}
               showBasisUrls={showBasisUrls}
+              onClickWritQuoteUrl={onClickWritQuoteUrl}
             />
           </div>
         }

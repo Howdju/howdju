@@ -138,6 +138,7 @@ _e.ValidJustificationSearchFilters = [
   'propositionCompoundId',
   'sourceExcerptParaphraseId',
   'propositionId',
+  'url',
 ]
 
 _e.SentenceType = arrayToObject([

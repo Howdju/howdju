@@ -6,7 +6,7 @@ import find from "lodash/find"
 import forOwn from "lodash/forOwn"
 
 import {decircularizeJustification, logger} from "howdju-common"
-import {extension as ext, EXTENSION_MESSAGE_SOURCE, actions} from 'howdju-client-common'
+import {extension as ext, EXTENSION_MESSAGE_SOURCE, actions, urlEquivalent} from 'howdju-client-common'
 
 import {annotateSelection, annotateTarget} from './annotate'
 import {getFrameApi, showSidebar, toggleSidebar} from './sidebar'
@@ -90,9 +90,13 @@ function highlightTarget({justification, writQuote, url}) {
   if (target) {
     commands.push({annotateTarget: [target]})
   }
-  ext.sendRuntimeMessage(runCommandsWhenTabReloaded(commands), () => {
-    window.location.href = url.url
-  })
+  if (urlEquivalent(url.url, document.location.href)) {
+    runCommands(commands)
+  } else {
+    ext.sendRuntimeMessage(runCommandsWhenTabReloaded(commands), () => {
+      window.location.href = url.url
+    })
+  }
 }
 
 function runCommands(commands) {

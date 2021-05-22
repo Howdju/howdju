@@ -31,8 +31,10 @@ function boot() {
   document.body.appendChild(root)
 
   getOption('howdjuBaseUrl', (baseUrl) => {
-    const url = baseUrl + '/recent-activity'
-    const App = <FramePanel url={url} onMount={onFramePanelMount}  />
+    // TODO move paths to howdju-client-common: paths.searchJustificaitons({url, includeUrls: true})
+    const url = encodeURIComponent(document.location.href)
+    const frameUrl = baseUrl + `/search-justifications?url=${url}&includeUrls=true`
+    const App = <FramePanel url={frameUrl} onMount={onFramePanelMount}  />
     ReactDOM.render(App, root)
   })
 }
