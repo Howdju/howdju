@@ -4,7 +4,6 @@ const map = require('lodash/map')
 const {
   JustificationBasisType,
   JustificationBasisCompoundAtomType,
-  JustificationRootTargetType,
   SourceExcerptType,
 } = require('howdju-common')
 const {

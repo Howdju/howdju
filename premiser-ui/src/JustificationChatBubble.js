@@ -13,7 +13,7 @@ import {justificationContainerOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 export default class JustificationChatBubble extends Component {
 
   constructor() {
-    super();
+    super()
     this.onClickWritQuoteUrl = justificationContainerOnClickWritQuoteUrl.bind(this)
   }
 

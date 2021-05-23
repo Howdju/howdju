@@ -2,11 +2,19 @@
 
 ## Reboot
 
+- Release
+  - Update bookmarklet for additional anchor fields?
+  - Apply migrations, release UI/API, release extension
+    - Basic iPhone app for capturing anchor fields?
+  - Implement SNS/email; enable registration
+- New directions
+  - prosemirror summary-based justifications
+  - AppSync?
+  - Semantic search? Quin
+  
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
-  
   - Extension: 
-    - load anchors/targets on page
     - update to manifest v3? Does FF support it well?
   - run npm outdated
     - Upgrade react-md https://react-md.dev/guides/working-with-v1
@@ -14,14 +22,11 @@
       - grids
     - Upgrade: premiser-ext/react
   - Look at prettier
-- New directions
-  - AppSync?
-  - Semantic search?
   
 ## Missing things (thar be dragons)
 
 * Two validation libraries: AJV and Joi
-* Proposition page has indication of related statements
+* Proposition page has no obvious indication of related statements ("See usages", though)
 * Incomplete transition to have generic justifiables
 * Legacy justification basis type: JustificationBasisCompound type
 * Mixture of async/await and promises in the API

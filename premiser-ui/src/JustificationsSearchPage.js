@@ -30,7 +30,7 @@ class JustificationsSearchPage extends Component {
   static fetchCount = 20
 
   constructor() {
-    super();
+    super()
     this.onClickWritQuoteUrl = extensionHighlightingOnClickWritQuoteUrl.bind(this)
   }
 

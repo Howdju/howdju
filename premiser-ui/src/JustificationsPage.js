@@ -25,7 +25,7 @@ import {
   JustificationTargetType,
   makeNewTrunkJustification,
 } from "howdju-common"
-import {actions, inIframe} from 'howdju-client-common'
+import {actions} from 'howdju-client-common'
 
 import {
   api,
@@ -104,7 +104,7 @@ class JustificationsPage extends Component {
   static newJustificationEditorId = combineIds(justificationsPageId, 'new-justification-editor')
 
   constructor() {
-    super();
+    super()
     this.onClickWritQuoteUrl = extensionHighlightingOnClickWritQuoteUrl.bind(this)
   }
 

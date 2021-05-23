@@ -17,3 +17,8 @@ module.exports = assign(
   require('./serialization'),
   require('./urls')
 )
+
+if (process.env.NODE_ENV === "test") {
+  const {doTests} = require('./schemaValidation.testlib')
+  module.exports.doSchemaValidationTests = doTests
+}

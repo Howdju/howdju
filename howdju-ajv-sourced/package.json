@@ -4,11 +4,19 @@
   "description": "Contains AJV schema validators read from source. Use unless CSP disallows eval.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint lib/",
+    "test": "jest --config=../jest.config.js /howdju-ajv-sourced/lib/"
   },
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
   "license": "UNLICENSED",
   "dependencies": {
     "howdju-common": "^1.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "eslint-plugin-flowtype": "^5.7.2",
+    "flow-bin": "^0.151.0",
+    "jest": "^26.6.3"
   }
 }
