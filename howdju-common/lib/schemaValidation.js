@@ -14,8 +14,6 @@ const {
   definitionsSchema,
 } = require('./schemas')
 
-const standaloneAjvModuleName = "standaloneAjv"
-
 function makeStandaloneCode() {
   const ajv = makeAjv({code: {source: true}})
   return standaloneCode(ajv)
@@ -99,5 +97,4 @@ module.exports = {
   makeStandaloneValidate,
   schemaIds,
   toJson,
-  standaloneAjvModuleName,
 }

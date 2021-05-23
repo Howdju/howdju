@@ -32,6 +32,7 @@
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "start": "yarn run lint && bin/serve.sh",
     "start:local": "env-cmd -f ../config/local.env yarn run start",
+    "start:local-bundle": "yarn run build && USE_DEV_BUNDLED_HANDLER=true env-cmd -f ../config/local.env yarn run start",
     "start:local:debug": "DEBUG='premiser-api:*' env-cmd -f ../config/local.env NODE_ENV=development node debug bin/dev-server.js",
     "start:local:inspect": " DEBUG='premiser-api:*' env-cmd -f ../config/local.env node --inspect-brk bin/dev-server.js",
     "start:localhost": "env-cmd -f ../config/localhost.env yarn start",

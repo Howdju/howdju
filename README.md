@@ -72,6 +72,19 @@ cd premiser-api
 yarn start:local
 ```
 
+### Running the API using the bundled version
+
+This can help to catch errors with the bundling process:
+
+```sh
+yarn run start:local-bundle
+```
+
+For example, `esbuild` does not support dynamic imports
+([github issue](https://github.com/evanw/esbuild/issues/56#issuecomment-643100248)),
+so don't use those in anything consumed by the API. Running the API this way can
+catch issues like that.
+
 ## Run the web app
 ```sh
 cd premiser-ui

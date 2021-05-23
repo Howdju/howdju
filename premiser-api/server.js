@@ -4,8 +4,9 @@ const express = require('express')
 const morgan = require('morgan')
 const isString = require('lodash/isString')
 
-const {handler} = require('./src/index')
-
+const {handler} = process.env.USE_DEV_BUNDLED_HANDLER ?
+  require('./dist/index') :
+  require('./src/index')
 
 const app = express()
 

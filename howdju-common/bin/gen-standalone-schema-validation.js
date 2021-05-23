@@ -1,6 +1,6 @@
-const {makeStandaloneCode, standaloneAjvModuleName} = require("../lib/schemaValidation")
+const {makeStandaloneCode} = require("../lib/schemaValidation")
 
-const standaloneAjvPath = `../lib/${standaloneAjvModuleName}.js`
+const standaloneAjvPath = `../lib/standaloneAjv.js`
 
 function writeStandaloneCode() {
   const moduleCode = makeStandaloneCode()

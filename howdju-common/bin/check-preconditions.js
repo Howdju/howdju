@@ -10,11 +10,11 @@ checkStandaloneSchemaValidationCode()
  * This function checks that they are the same.
  */
 function checkStandaloneSchemaValidationCode() {
-  const {makeStandaloneCode, standaloneAjvModuleName} = require('../lib/schemaValidation')
+  const {makeStandaloneCode} = require('../lib/schemaValidation')
 
   const fs = require("fs")
   const path = require("path")
-  const filePath = path.resolve(__dirname, `../lib/${standaloneAjvModuleName}.js`)
+  const filePath = path.resolve(__dirname, `../lib/standaloneAjv.js`)
   const standaloneCode = fs.readFileSync(filePath, {encoding: 'utf8'})
 
   if (makeStandaloneCode() !== standaloneCode) {

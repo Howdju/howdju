@@ -1,4 +1,4 @@
-const {makeStandaloneValidate, standaloneAjvModuleName} = require("./schemaValidation")
+const {makeStandaloneValidate} = require("./schemaValidation")
 
 // See bin/gen-standalone-schema-validation.js
-module.exports.validate = makeStandaloneValidate(require(`./${standaloneAjvModuleName}`))
+module.exports.validate = makeStandaloneValidate(require(`./standaloneAjv`))
