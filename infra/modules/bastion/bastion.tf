@@ -1,6 +1,9 @@
 module "bastion" {
-  source                       = "Guimove/bastion/aws"
-  version                      = "2.2.2"
+  // The author hasn't updated the module to work with terraform 0.15, so use it from
+  // Github for now.
+  source                       = "github.com/Guimove/terraform-aws-bastion"
+  //  source                       = "Guimove/bastion/aws"
+  //  version                      = "2.2.2"
   bucket_name                  = var.logs_bucket_name
   region                       = var.aws_region
   vpc_id                       = var.vpc_id
