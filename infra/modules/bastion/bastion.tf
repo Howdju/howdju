@@ -1,6 +1,6 @@
 module "bastion" {
   source                       = "Guimove/bastion/aws"
-  version                      = "2.1.0"
+  version                      = "2.2.2"
   bucket_name                  = var.logs_bucket_name
   region                       = var.aws_region
   vpc_id                       = var.vpc_id

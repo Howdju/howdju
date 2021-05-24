@@ -1,12 +1,9 @@
 provider "aws" {
   region  = var.aws_region
   profile = "premiser"
-  version = "~> 2.70.0"
 }
 
-provider "template" {
-  version = "~> 2.1.2"
-}
+provider "template" {}
 
 data "aws_caller_identity" "current" {}
 
