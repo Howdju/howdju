@@ -12,7 +12,7 @@
   },
   "externally_connectable": {
     "matches": [
-      "*://*.howdju.com/*",
+      "https://*.howdju.com/*",
       "http://localhost:3000/*"
     ]
   },

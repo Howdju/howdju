@@ -21,7 +21,7 @@ const didLoadKey = 'HowdjuDidLoad'
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://pre-prod-www.howdju.com/',
+  'https://pre-prod-www.howdju.com',
   'https://www.howdju.com',
 ]
 let messageHandlerReady = false
