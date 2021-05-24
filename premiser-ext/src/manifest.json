@@ -34,7 +34,6 @@
     "contextMenus",
     "https://*/*",
     "http://*/*",
-    "tabs",
     "webNavigation",
     "webRequest",
     "webRequestBlocking",
