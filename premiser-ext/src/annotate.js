@@ -37,14 +37,7 @@ export function annotateSelection() {
 
   const nodes = getNodesForSelection(selection)
 
-  const equivalentAnnotation = getEquivalentAnnotation(nodes)
-  if (equivalentAnnotation) {
-    normalizeNodes(nodes)
-    return equivalentAnnotation
-  }
-
-  const annotation = annotateNodes(nodes)
-  annotation.target = target
+  const annotation = getOrCreateAnnotation(nodes, target)
 
   // The selection can get messed up if we modify nodes within it.  For expediency, just clear it.  That also might be
   //  a reasonable UX choice, since the selection in a sense has been replaced with the annotation.
@@ -56,6 +49,16 @@ export function annotateSelection() {
 export function annotateTarget(target) {
   const ranges = targetToRanges(target)
   const nodes = rangesToNodes(ranges)
+  return getOrCreateAnnotation(nodes, target)
+}
+
+/** Returns an existing annotation if it's equivalent; only uses target if it returns a new annotation. */
+function getOrCreateAnnotation(nodes, target) {
+  const equivalentAnnotation = getEquivalentAnnotation(nodes)
+  if (equivalentAnnotation) {
+    return equivalentAnnotation
+  }
+
   const annotation = annotateNodes(nodes)
   annotation.target = target
   return annotation
@@ -236,6 +239,8 @@ export function annotateNodes(targetNodes) {
   for (const intersectedAnnotation of intersectedAnnotations) {
     intersectedAnnotation.incrementLevel()
   }
+
+  normalizeNodes(targetNodes)
 
   ensureSufficientAnnotationLevelStyles(intersectedAnnotations.concat(annotation))
 

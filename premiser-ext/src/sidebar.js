@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import { getOption } from './options'
 import { FramePanel } from './frame-panel'
+import {getCurrentCanonicalUrl} from "howdju-client-common"
 
 let frameApi
 
@@ -32,7 +33,7 @@ function boot() {
 
   getOption('howdjuBaseUrl', (baseUrl) => {
     // TODO move paths to howdju-client-common: paths.searchJustificaitons({url, includeUrls: true})
-    const url = encodeURIComponent(document.location.href)
+    const url = encodeURIComponent(getCurrentCanonicalUrl())
     const frameUrl = baseUrl + `/search-justifications?url=${url}&includeUrls=true`
     const App = <FramePanel url={frameUrl} onMount={onFramePanelMount}  />
     ReactDOM.render(App, root)

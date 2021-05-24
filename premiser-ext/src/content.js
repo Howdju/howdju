@@ -6,7 +6,7 @@ import find from "lodash/find"
 import forOwn from "lodash/forOwn"
 
 import {decircularizeJustification, logger} from "howdju-common"
-import {extension as ext, EXTENSION_MESSAGE_SOURCE, actions, urlEquivalent} from 'howdju-client-common'
+import {extension as ext, EXTENSION_MESSAGE_SOURCE, actions, urlEquivalent, getCurrentCanonicalUrl} from 'howdju-client-common'
 
 import {annotateSelection, annotateTarget} from './annotate'
 import {getFrameApi, showSidebar, toggleSidebar} from './sidebar'
@@ -90,7 +90,7 @@ function highlightTarget({justification, writQuote, url}) {
   if (target) {
     commands.push({annotateTarget: [target]})
   }
-  if (urlEquivalent(url.url, document.location.href)) {
+  if (urlEquivalent(url.url, getCurrentCanonicalUrl())) {
     runCommands(commands)
   } else {
     ext.sendRuntimeMessage(runCommandsWhenTabReloaded(commands), () => {
@@ -126,7 +126,7 @@ function runCommand(command){
         })
         break
       case "annotateTarget": {
-        const annotation = annotateTarget.apply(annotateTarget, value)
+        const annotation = annotateTarget(...value)
         annotation.nodes[0].scrollIntoView({
           behavior: 'smooth',
           block: 'center',
@@ -210,7 +210,7 @@ function setMessageHandlerReady(isReady) {
 
 class Source {
   constructor() {
-    this.url = window.location.href
+    this.url = getCurrentCanonicalUrl()
     this.title = document.title
   }
 }

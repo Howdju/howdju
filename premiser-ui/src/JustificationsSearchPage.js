@@ -29,11 +29,6 @@ import {actions} from "howdju-client-common"
 class JustificationsSearchPage extends Component {
   static fetchCount = 20
 
-  constructor() {
-    super()
-    this.onClickWritQuoteUrl = extensionHighlightingOnClickWritQuoteUrl.bind(this)
-  }
-
   static extractIncludeUrls = (locationSearch) =>
     get(queryString.parse(locationSearch), 'includeUrls')
 
@@ -68,6 +63,10 @@ class JustificationsSearchPage extends Component {
   refreshResults = (filters, includeUrls) => {
     const count = JustificationsSearchPage.fetchCount
     this.props.api.fetchJustificationsSearch({filters, includeUrls, count})
+  }
+
+  onClickWritQuoteUrl = (event, justification, writQuote, url) => {
+    extensionHighlightingOnClickWritQuoteUrl(this.props.extension.highlightTarget, event, justification, writQuote, url)
   }
 
   render() {

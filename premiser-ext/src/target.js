@@ -1,6 +1,8 @@
 import * as textPosition from 'dom-anchor-text-position'
 import * as textQuote from 'dom-anchor-text-quote'
 import {UrlTargetAnchorType} from 'howdju-common'
+import {getCurrentCanonicalUrl} from "howdju-client-common"
+import {nodeIsBefore, getPreviousLeafNode} from "./dom"
 
 export class Target {
   constructor(url, anchors, date) {
@@ -19,7 +21,7 @@ export function selectionToTarget(selection) {
     anchors.push(anchor)
   }
 
-  const url = window.location.href
+  const url = getCurrentCanonicalUrl()
   const date = new Date()
 
   return new Target(url, anchors, date)
@@ -46,9 +48,9 @@ export function targetToRanges(target) {
   const ranges = []
   for (const anchor of target.anchors) {
     let options = {}
-    if (target.startOffset) {
+    if (anchor.startOffset) {
       // The average of the start and end seems like a good idea
-      const hint = (target.startOffset + target.endOffset) / 2
+      const hint = Math.floor((anchor.startOffset + anchor.endOffset) / 2)
       options = {hint}
     }
     const selector = {
@@ -56,7 +58,17 @@ export function targetToRanges(target) {
       prefix: anchor.prefixText,
       suffix: anchor.suffixText
     }
-    ranges.push(textQuote.toRange(document.body, selector, options))
+    const range = textQuote.toRange(document.body, selector, options)
+    // textQuote.toRange returns a range that is exclusive at the end.
+    // If the end is at the beginning of a node that is after the start
+    // node (indicating from the library that the range should include
+    // the END of the previous node) then update the range to move
+    // back to the end of that previous node.
+    if (range.endOffset === 0 && nodeIsBefore(range.startContainer, range.endContainer)) {
+      const node = getPreviousLeafNode(range.endContainer)
+      range.setEnd(node, node.length)
+    }
+    ranges.push(range)
   }
   return ranges
 }

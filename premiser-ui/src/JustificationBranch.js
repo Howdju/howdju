@@ -48,7 +48,6 @@ import {EditorTypes} from "./reducers/editors"
 import t from './texts'
 
 import './JustificationBranch.scss'
-import {justificationContainerOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 
 
 const justificationTreeId = props => {
@@ -65,7 +64,6 @@ class JustificationBranch extends Component {
       isOver: false,
       areCounterJustificationsExpanded: true,
     }
-    this.onClickWritQuoteUrl = justificationContainerOnClickWritQuoteUrl.bind(this)
   }
 
   onBubbleMouseOver = event => {
@@ -158,6 +156,7 @@ class JustificationBranch extends Component {
       canHover,
       showBasisUrls,
       contextTrailItems,
+      onClickWritQuoteUrl,
     } = this.props
     const _isVerified = isVerified(justification)
     const _isDisverified = isDisverified(justification)
@@ -358,7 +357,7 @@ class JustificationBranch extends Component {
           }
           onMouseOver={this.onBubbleMouseOver}
           onMouseLeave={this.onBubbleMouseLeave}
-          onClickWritQuoteUrl={this.onClickWritQuoteUrl}
+          onClickWritQuoteUrl={onClickWritQuoteUrl}
         >
           {areCounterJustificationsExpanded && counterJustifications}
         </JustificationChatBubble>

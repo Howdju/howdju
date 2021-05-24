@@ -103,11 +103,6 @@ class JustificationsPage extends Component {
   static rootTargetEditorId = combineIds(justificationsPageId, 'root-target-editor')
   static newJustificationEditorId = combineIds(justificationsPageId, 'new-justification-editor')
 
-  constructor() {
-    super()
-    this.onClickWritQuoteUrl = extensionHighlightingOnClickWritQuoteUrl.bind(this)
-  }
-
   componentDidMount() {
     const {rootTargetType, rootTargetId} = this.rootTargetInfo()
     this.props.api.fetchRootJustificationTarget(rootTargetType, rootTargetId)
@@ -165,6 +160,10 @@ class JustificationsPage extends Component {
 
   cancelNewJustificationDialog = () => {
     this.props.ui.hideNewJustificationDialog()
+  }
+
+  onClickWritQuoteUrl = (event, justification, writQuote, url) => {
+    extensionHighlightingOnClickWritQuoteUrl(this.props.extension.highlightTarget, event, justification, writQuote, url)
   }
 
   render () {

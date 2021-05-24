@@ -42,7 +42,7 @@ Hitting enter in the console will allow the tests to re-run any changes since th
 Update the version in `package.json` and `manifest.json`.  Then:
 
 ```sh
-yarn build
+yarn build-prod
 yarn package
 ```
 

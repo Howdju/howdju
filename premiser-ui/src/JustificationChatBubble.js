@@ -8,13 +8,13 @@ import JustificationBasisViewer from './JustificationBasisViewer'
 import ChatBubble from './ChatBubble'
 
 import './JustificationChatBubble.scss'
-import {justificationContainerOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 
 export default class JustificationChatBubble extends Component {
 
-  constructor() {
-    super()
-    this.onClickWritQuoteUrl = justificationContainerOnClickWritQuoteUrl.bind(this)
+  onClickWritQuoteUrl = (event, writQuote, url) => {
+    if (this.props.onClickWritQuoteUrl) {
+      this.props.onClickWritQuoteUrl(event, this.props.justification, writQuote, url)
+    }
   }
 
   render() {
