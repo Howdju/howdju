@@ -3,8 +3,6 @@ provider "aws" {
   profile = "premiser"
 }
 
-provider "template" {}
-
 data "aws_caller_identity" "current" {}
 
 module "constants" {

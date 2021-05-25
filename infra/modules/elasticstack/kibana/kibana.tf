@@ -64,7 +64,21 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerServiceRole" {
 
 resource "aws_ecs_task_definition" "kibana" {
   family                = "kibana"
-  container_definitions = data.template_file.kibana_container_definitions.rendered
+  container_definitions = templatefile(
+    "${path.module}/kibana_container_definitions.tpl.json",
+    {
+      container_name                    = var.container_name
+      aws_account_id                    = var.aws_account_id
+      aws_region                        = var.aws_region
+      repository_name                   = var.repository_name
+      container_version                 = var.container_version
+      elasticsearch_url                 = var.elasticsearch_url
+      port                              = var.container_port
+      host_port                         = module.constants.ecs_ephemeral_host_port
+      health_check_grace_period_seconds = 120
+      log_group                         = "/ecs/kibana"
+      log_stream_prefix                 = "ecs"
+    })
   network_mode          = "bridge"
   cpu                   = var.task_cpu
   memory                = var.task_memory_mib
@@ -90,24 +104,6 @@ resource "aws_iam_role" "kibana_task" {
 }
 EOF
 
-}
-
-data "template_file" "kibana_container_definitions" {
-  template = file("${path.module}/kibana_container_definitions.tpl.json")
-
-  vars = {
-    container_name                    = var.container_name
-    aws_account_id                    = var.aws_account_id
-    aws_region                        = var.aws_region
-    repository_name                   = var.repository_name
-    container_version                 = var.container_version
-    elasticsearch_url                 = var.elasticsearch_url
-    port                              = var.container_port
-    host_port                         = module.constants.ecs_ephemeral_host_port
-    health_check_grace_period_seconds = 120
-    log_group                         = "/ecs/kibana"
-    log_stream_prefix                 = "ecs"
-  }
 }
 
 resource "aws_cloudwatch_log_group" "kibana" {

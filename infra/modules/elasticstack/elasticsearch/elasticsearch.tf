@@ -79,7 +79,30 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerServiceRole" {
 
 resource "aws_ecs_task_definition" "elasticsearch" {
   family                = "elasticsearch"
-  container_definitions = data.template_file.elasticsearch_container_definitions.rendered
+  container_definitions = templatefile(
+      "${path.module}/elasticsearch_container_definitions.tpl.json",
+      {
+        container_name    = var.container_name
+        aws_account_id    = var.aws_account_id
+        aws_region        = var.aws_region
+        repository_name   = var.repository_name
+        container_version = var.container_version
+        // Use this command_override instead to get debug logging
+        // command_override = "\"command\": [\"elasticsearch\", \"-Elogger.level=debug\"]",
+        command_override = ""
+        // Elasticsearch recommends using no more than half of the available memory for the task, so that the rest can be
+        // memory mapped to shards/indices.
+        memory_mib                 = var.task_memory_mib / 2
+        memlock_limit              = var.task_memory_mib * 1024
+        port                       = var.container_port
+        host_port                  = module.constants.ecs_ephemeral_host_port
+        transport_port             = var.container_transport_port
+        host_transport_port        = module.constants.ecs_ephemeral_host_port
+        data_volume_name           = var.data_volume_name
+        data_volume_container_path = var.elasticsearch_data_path
+        log_group                  = "/ecs/elasticsearch"
+        log_stream_prefix          = "ecs"
+      })
   network_mode          = "bridge"
   cpu                   = var.task_cpu
   memory                = var.task_memory_mib
@@ -178,43 +201,6 @@ data "aws_iam_policy_document" "elasticsearch_s3_snapshots" {
 
 resource "aws_s3_bucket" "snapshots" {
   bucket = "howdju-elasticsearch-snapshots"
-}
-
-// For debugging template rendering:
-// terraform plan -target=module.elasticstack.module.elasticsearch.null_resource.test_template
-//resource "null_resource" "test_template" {
-//  triggers = {
-//    json = "${data.template_file.elasticsearch_container_definitions.rendered}"
-//  }
-//}
-
-data "template_file" "elasticsearch_container_definitions" {
-  template = file(
-    "${path.module}/elasticsearch_container_definitions.tpl.json",
-  )
-
-  vars = {
-    container_name    = var.container_name
-    aws_account_id    = var.aws_account_id
-    aws_region        = var.aws_region
-    repository_name   = var.repository_name
-    container_version = var.container_version
-    // Use this command_override instead to get debug logging
-    // command_override = "\"command\": [\"elasticsearch\", \"-Elogger.level=debug\"]",
-    command_override = ""
-    // Elasticsearch recommends using no more than half of the available memory for the task, so that the rest can be
-    // memory mapped to shards/indices.
-    memory_mib                 = var.task_memory_mib / 2
-    memlock_limit              = var.task_memory_mib * 1024
-    port                       = var.container_port
-    host_port                  = module.constants.ecs_ephemeral_host_port
-    transport_port             = var.container_transport_port
-    host_transport_port        = module.constants.ecs_ephemeral_host_port
-    data_volume_name           = var.data_volume_name
-    data_volume_container_path = var.elasticsearch_data_path
-    log_group                  = "/ecs/elasticsearch"
-    log_stream_prefix          = "ecs"
-  }
 }
 
 resource "aws_cloudwatch_log_group" "elasticsearch" {

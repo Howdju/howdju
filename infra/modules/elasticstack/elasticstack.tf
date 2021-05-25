@@ -68,7 +68,15 @@ resource "aws_instance" "elasticstack" {
   vpc_security_group_ids = [aws_security_group.elasticstack_instance.id]
   ebs_optimized          = true
   key_name               = var.key_name
-  user_data              = data.template_file.elasticstack_user_data.rendered
+  user_data              = templatefile(
+      "${path.module}/elasticstack_user_data.tpl.sh",
+      {
+        data_device_name = var.elasticstack_data_device_name
+        data_mount_path  = var.elasticstack_data_mount_path
+        data_owner       = var.elasticsearch_data_owner
+        data_directory   = var.elasticsearch_data_directory
+        cluster_name     = aws_ecs_cluster.elasticstack.name
+      })
   iam_instance_profile   = aws_iam_instance_profile.elasticstack.name
   tags = {
     Name                   = "elasticstack"
@@ -110,17 +118,6 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerServiceforEC2Role" 
 // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
 data "aws_iam_policy" "AmazonEC2ContainerServiceforEC2Role" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-}
-
-data "template_file" "elasticstack_user_data" {
-  template = file("${path.module}/elasticstack_user_data.tpl.sh")
-  vars = {
-    data_device_name = var.elasticstack_data_device_name
-    data_mount_path  = var.elasticstack_data_mount_path
-    data_owner       = var.elasticsearch_data_owner
-    data_directory   = var.elasticsearch_data_directory
-    cluster_name     = aws_ecs_cluster.elasticstack.name
-  }
 }
 
 resource "aws_ebs_volume" "elasticstack" {
