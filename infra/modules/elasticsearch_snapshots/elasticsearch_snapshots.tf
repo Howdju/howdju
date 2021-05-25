@@ -7,7 +7,7 @@ resource "aws_lambda_function" "elasticsearch_snapshots" {
   s3_key            = data.aws_s3_bucket_object.lambda_function_zip.key
   s3_object_version = data.aws_s3_bucket_object.lambda_function_zip.version_id
   timeout           = var.lambda_timeout
-  publish           = true
+  publish           = false
   vpc_config {
     security_group_ids = var.vpc_security_group_ids
     subnet_ids         = var.vpc_subnet_ids
