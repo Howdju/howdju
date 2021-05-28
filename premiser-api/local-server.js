@@ -3,10 +3,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const isString = require('lodash/isString')
-
-const {handler} = process.env.USE_DEV_BUNDLED_HANDLER ?
-  require('./dist/index') :
-  require('./src/index')
+const {handler} = require('./src/index')
 
 const app = express()
 
@@ -61,4 +58,4 @@ app.use('/api/*', function (req, res) {
   setTimeout(() => handler(event, context, callback), 500)
 })
 
-module.exports = app
+module.exports.app = app
