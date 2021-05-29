@@ -15,7 +15,9 @@ export class TopicMessageSender {
 
     try {
       const response = await this.sns.publish(params).promise()
-      this.logger.info(`Message sent to topic ${params.TopicArn} (MessageId: ${response.MessageId}, type ${message.type})`);
+      const {MessageId} = response
+      const {type} = topicMessage
+      this.logger.info(`Message sent to topic ${params.TopicArn} (${{MessageId, type}})`)
     } catch (err){
       this.logger.exception(err, `Error sending message to topic: ${{params}}`)
     }
