@@ -26,13 +26,14 @@ const {
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
 } = require('../serviceErrors')
+const {topicMessages} = require('./topicMessages')
 
 exports.RegistrationService = class RegistrationService {
 
-  constructor(logger, config, emailService, usersService, authService, registrationRequestsDao) {
+  constructor(logger, config, topicMessageSender, usersService, authService, registrationRequestsDao) {
     this.logger = logger
     this.config = config
-    this.emailService = emailService
+    this.topicMessageSender = topicMessageSender
     this.usersService = usersService
     this.authService = authService
     this.registrationRequestsDao = registrationRequestsDao
@@ -149,7 +150,7 @@ async function sendConfirmationEmail(self, registrationRequest, registrationCode
         If you did not register on howdju.com, you may ignore this email and the registration will expire.
       `,
   }
-  await self.emailService.sendEmail(emailParams)
+  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
 }
 
 async function sendExistingAccountNotificationEmail(self, registrationRequest) {
@@ -181,7 +182,7 @@ async function sendExistingAccountNotificationEmail(self, registrationRequest) {
         If you did not register on howdju.com, you may ignore this email.
       `,
   }
-  await self.emailService.sendEmail(emailParams)
+  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
 }
 
 async function checkRegistrationRequestValidity(registrationRequest, now) {

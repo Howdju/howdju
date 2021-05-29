@@ -8,9 +8,11 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
+    "check:pushed": "bin/check-pushed.sh",
     "check-preconditions:all": "yarn workspaces foreach -Apv run check-preconditions ",
     "lint:all": "bin/lint-all.sh",
-    "test:all": "bin/test-all.sh"
+    "test:all": "bin/test-all.sh",
+    "start:api:localhost": "yarn workspaces premiser-api run start-localhost"
   },
   "workspaces": [
     "eslint-config-howdju",
@@ -21,6 +23,7 @@
     "howdju-elastic",
     "howdju-service-common",
     "howdju-test-common",
+    "lambdas/*",
     "premiser-api",
     "premiser-ext",
     "premiser-processing",

@@ -3,10 +3,9 @@
 ## Reboot
 
 - Release
-  - Update bookmarklet for additional anchor fields?
-  - Apply migrations, release UI/API, release extension
-    - Basic iPhone app for capturing anchor fields?
   - Implement SNS/email; enable registration
+    Terms
+  - Basic iPhone app for capturing anchor fields?
 - New directions
   - prosemirror summary-based justifications
   - AppSync?

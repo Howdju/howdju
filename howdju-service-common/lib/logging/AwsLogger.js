@@ -139,5 +139,6 @@ class AwsLogger {
 }
 const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) => makeLogMethod(logLevel, logLevelNumber))
 assign(AwsLogger.prototype, logMethods)
+AwsLogger.prototype.exception = AwsLogger.prototype.error
 
 exports.AwsLogger = AwsLogger

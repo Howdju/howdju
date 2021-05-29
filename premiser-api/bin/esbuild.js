@@ -9,8 +9,6 @@ argParser.add_argument('--outfile', {default: 'dist/index.js'})
 argParser.add_argument('--watch', {action: 'store_true'})
 const args = argParser.parse_args()
 
-console.log({args})
-
 esbuilder({
   entryPoints: args.entryPoints,
   outfile: args.outfile,

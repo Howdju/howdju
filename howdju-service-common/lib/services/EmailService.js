@@ -7,9 +7,8 @@ const {
 
 
 exports.EmailService = class EmailService {
-  constructor(logger, ses, sesv2) {
+  constructor(logger, sesv2) {
     this.logger = logger
-    this.ses = ses
     this.sesv2 = sesv2
   }
 

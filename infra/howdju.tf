@@ -30,6 +30,12 @@ module bastion {
   subnet_ids          = data.aws_subnet_ids.default.ids
 }
 
+module messages {
+  source = "./modules/messages"
+  aws_region = var.aws_region
+  lambda_version = "1.0.0"
+}
+
 module "elasticstack" {
   // referencing this repo as a version should allow us to have different envs with different module versions
   // source = "git::git@bitbucket.org:howdju/premiser.git//infra/modules/elasticstack?ref=v0.0.1"

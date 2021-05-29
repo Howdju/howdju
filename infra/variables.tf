@@ -109,4 +109,3 @@ variable "elasticsearch_snapshots_lambda_log_level" {
 variable "elasticsearch_snapshots_lambda_live_version" {
   default = 6
 }
-

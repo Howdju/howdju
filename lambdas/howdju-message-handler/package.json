@@ -1,0 +1,29 @@
+{
+  "name": "howdju-message-handler",
+  "version": "1.0.0",
+  "description": "AWS Lambda function for handling SNS messages",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "node ../../premiser-api/bin/esbuild.js --entryPoint=src/handler.js --outfile=dist/index.js",
+    "clean": "rm -rf dist",
+    "lint": "eslint src/",
+    "release": "../bin/release.sh",
+    "test": "jest --config=../../jest.config.js --testPathPattern=/lambdas/howdju-message-handler/src/",
+    "test-inspect": " node inspect node_modules/.bin/jest --config=../../jest.config.js --testPathPattern=/lambdas/howdju-message-handler/src/"
+  },
+  "author": "Carl Gieringer <carl.gieringer@gmail.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "aws-sdk": "^2.912.0",
+    "howdju-service-common": "workspace:howdju-service-common"
+  },
+  "devDependencies": {
+    "cli-progress": "^3.9.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.27.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "flow-bin": "^0.152.0",
+    "howdju-ops": "workspace:howdju-ops",
+    "jest": "^26"
+  }
+}

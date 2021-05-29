@@ -48,13 +48,12 @@
   "devDependencies": {
     "argparse": "^2.0.1",
     "artillery": "^1.6.0-21",
-    "aws-sdk": "^2.902.0",
+    "aws-sdk": "^2.918.0",
     "body-parser": "^1.17.1",
     "cross-env": "^7.0.3",
     "debug": "^4.3.1",
     "env-cmd": "^10.1.0",
     "esbuild": "^0.11.19",
-    "esbuild-plugin-flow": "^0.3.2",
     "eslint": "^7.25.0",
     "eslint-config-howdju": "^1.0.0",
     "eslint-plugin-flowtype": "^5.7.2",
@@ -65,6 +64,7 @@
     "jest": "^26.6.3",
     "morgan": "^1.8.1",
     "node-zip": "^1.1.1",
+    "npm-version": "^1.1.0",
     "read": "^1.0.7",
     "run-sequence": "^1.2.2"
   },

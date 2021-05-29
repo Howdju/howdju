@@ -1,6 +1,7 @@
 const cryptohat = require('cryptohat')
 const moment = require('moment')
 const outdent = require('outdent')
+const {topicMessages} = require("./topicMessages")
 
 const {
   commonPaths,
@@ -17,10 +18,10 @@ const {
 
 exports.PasswordResetService = class PasswordResetsService {
 
-  constructor(logger, config, emailService, usersService, authService, passwordResetRequestsDao) {
+  constructor(logger, config, topicMessageSender, usersService, authService, passwordResetRequestsDao) {
     this.logger = logger
     this.config = config
-    this.emailService = emailService
+    this.topicMessageSender = topicMessageSender
     this.usersService = usersService
     this.authService = authService
     this.passwordResetRequestsDao = passwordResetRequestsDao
@@ -125,5 +126,5 @@ async function sendConfirmationEmail(self, email, passwordResetCode, duration) {
       expire after ${durationText}.
     `,
   }
-  await self.emailService.sendEmail(emailParams)
+  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
 }

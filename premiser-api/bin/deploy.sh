@@ -2,27 +2,12 @@
 
 set -e
 
-if [[ -n $2 ]]; then
-  git_branch=$1
-  lambda_alias=$2
-else
-  git_branch=master
-  lambda_alias=$1
-fi
-
-if [[ -z $lambda_alias ]]; then
-  echo "Usage: deploy.sh [<git_branch=master>] <lambda_alias>"
-  exit 1
-fi
-
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 bash "$script_dir/check-preconditions.sh"
 
-echo deploying $git_branch to $lambda_alias
-
 pushd ..
-bin/lint-all.sh || { exit 1; }
-bin/test-all.sh || { exit 1; }
+yarn run lint:all || { exit 1; }
+yarn run test:all || { exit 1; }
 popd
 
 npm run build-and-update-lambda-function-code

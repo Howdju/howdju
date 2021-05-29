@@ -6,15 +6,15 @@ const moment = require('moment')
 const path = require('path')
 
 const {
-  utcNow
+  utcNow,
+  gitCommitMetadataKey,
 } = require('howdju-common')
 const {
   gitSha,
 } = require('howdju-ops')
 const packageInfo = require('../package.json')
 
-const gitCommitMetadataKey = 'x-amz-meta-howdju-git-commit'
-const versionMetadataKey = 'x-amz-meta-howdju-ui-version'
+const versionMetadataKey = 'howdju-ui-version'
 const projectConfig = require('../config/project.config')
 
 const argParser = new ArgumentParser({

@@ -1,10 +1,9 @@
 const assign = require('lodash/assign')
+const {TopicMessageSender} = require("howdju-service-common")
 
 const {
   ActionsService,
   AuthService,
-  DevEmailService,
-  EmailService,
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
@@ -188,14 +187,13 @@ exports.init = function init(provider) {
     provider.persorgsNameSearcher
   )
 
-  const emailService = provider.isProduction ?
-    new EmailService(provider.logger, provider.ses, provider.sesv2) :
-    new DevEmailService(provider.logger)
+  const topicMessageSender = new TopicMessageSender(provider.logger, provider.sns,
+    provider.getConfigVal("MESSAGES_TOPIC_ARN"))
 
   const registrationService = new RegistrationService(
     provider.logger,
     provider.appConfig,
-    emailService,
+    topicMessageSender,
     usersService,
     authService,
     provider.registrationRequestsDao,
@@ -204,7 +202,7 @@ exports.init = function init(provider) {
   const passwordResetService = new PasswordResetService(
     provider.logger,
     provider.appConfig,
-    emailService,
+    topicMessageSender,
     usersService,
     authService,
     provider.passwordResetRequestsDao,
@@ -213,7 +211,6 @@ exports.init = function init(provider) {
   assign(provider, {
     actionsService,
     authService,
-    emailService,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,
@@ -232,6 +229,7 @@ exports.init = function init(provider) {
     rootTargetJustificationsService,
     statementsService,
     tagsService,
+    topicMessageSender,
     urlsService,
     usersService,
     writQuotesService,
