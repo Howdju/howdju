@@ -2,5 +2,5 @@
 
 set -e
 
-node ../../bin/check-uncommitted.mjs
+node ../bin/check-uncommitted.mjs
 yarn run check:pushed
