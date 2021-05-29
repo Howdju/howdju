@@ -11,14 +11,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 /** Throw an error if any workspace deps of the CWD package have uncommitted changes. */
 async function ensureCommitted() {
   const depsSet = await getDepsSet()
-  const workspaceDirs = await getWorkspaceDirs(depsSet)
+  const workspaceSubDirs = await getWorkspaceSubDirs(depsSet)
+  const codeDirs = workspaceSubDirs.map(d => resolve(__dirname, '..', d))
+  // Also check the current directory
+  codeDirs.unshift(process.cwd())
   const uncommittedDirs = []
-  for (const subdir of workspaceDirs) {
-    const dir = resolve(__dirname, '..', subdir)
-    // Ensure the directory exists, because the git status command will succeed if the path doesn't exist
-    await fs.access(dir, constants.F_OK)
-    const {stdout} = await exec(`git status -s ${dir}`)
-    if (stdout) {
+  for (const dir of codeDirs) {
+    if (!await isCommitted(dir)) {
       uncommittedDirs.push(dir)
     }
   }
@@ -27,7 +26,15 @@ async function ensureCommitted() {
   }
 }
 
-async function getWorkspaceDirs(depsSet) {
+async function isCommitted(dir) {
+  // Ensure the directory exists, because the git status command will succeed if the path doesn't exist
+  await fs.access(dir, constants.F_OK)
+  const {stdout} = await exec(`git status -s ${dir}`)
+  // If there is output, then there are uncommitted changes
+  return !stdout
+}
+
+async function getWorkspaceSubDirs(depsSet) {
   /*
   The output of `yarn workspaces list` looks like:
   ```
