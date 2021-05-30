@@ -10,6 +10,10 @@ const reduce = require('lodash/reduce')
 const values = require('lodash/values')
 
 const {
+  fromJson,
+  toJson,
+} = require('./general')
+const {
   schemas,
   definitionsSchema,
 } = require('./schemas')
@@ -86,8 +90,9 @@ function transformErrors(errors) {
   }, {})
 }
 
-function toJson(val) {
-  return JSON.parse(JSON.stringify(val))
+/** Convert val to a JSON compatible object. Useful for ensuring moments are converted to strings. */
+function toJsonVal(val) {
+  return fromJson(toJson(val))
 }
 
 module.exports = {
@@ -96,5 +101,5 @@ module.exports = {
   makeStandaloneCode,
   makeStandaloneValidate,
   schemaIds,
-  toJson,
+  toJsonVal,
 }

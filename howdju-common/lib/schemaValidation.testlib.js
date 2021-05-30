@@ -1,5 +1,5 @@
 const moment = require('moment')
-const {toJson} = require("./schemaValidation")
+const {toJsonVal} = require("./schemaValidation")
 
 const {
   schemaIds,
@@ -57,7 +57,7 @@ export const doTests = (validate) => {
           longName: 'Gieringer',
           acceptedTerms: moment()
         }
-        expect(validate(schemaIds.user, toJson(user))).toEqual({isValid: true, errors: {}})
+        expect(validate(schemaIds.user, toJsonVal(user))).toEqual({isValid: true, errors: {}})
       })
     })
 

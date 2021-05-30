@@ -206,10 +206,18 @@ function makeOmittingCloneDeepCustomizer(predicate) {
 }
 
 _e.keysTo = (collection, val) => reduce(
-  keys(collection), 
+  keys(collection),
   (acc, name) => {
     acc[name] = val
     return acc
-  }, 
+  },
   {}
 )
+
+_e.toJson = function toJson(val) {
+  return JSON.stringify(val)
+}
+
+_e.fromJson = function fromJson(json) {
+  return JSON.parse(json)
+}

@@ -8877,6 +8877,7 @@ fsevents@^1.2.7:
     flow-bin: ^0.152.0
     howdju-ops: "workspace:howdju-ops"
     howdju-service-common: "workspace:howdju-service-common"
+    howdju-test-common: "workspace:howdju-test-common"
     jest: ^26
   languageName: unknown
   linkType: soft

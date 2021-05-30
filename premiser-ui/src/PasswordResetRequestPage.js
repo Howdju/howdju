@@ -10,7 +10,7 @@ import {
   keysTo,
   schemaIds,
   schemaSettings,
-  toJson,
+  toJsonVal,
 } from 'howdju-common'
 import {validate} from 'howdju-ajv-sourced'
 
@@ -50,7 +50,7 @@ class PasswordResetRequestPage extends React.Component {
       wasSubmitAttempted,
     } = this.state
 
-    const {isValid, errors: validationErrors} = validate(schemaIds.passwordResetRequest, toJson(passwordResetRequest))
+    const {isValid, errors: validationErrors} = validate(schemaIds.passwordResetRequest, toJsonVal(passwordResetRequest))
 
     const email = dirtyInputs.email ? passwordResetRequest.email : (authEmail || '')
 

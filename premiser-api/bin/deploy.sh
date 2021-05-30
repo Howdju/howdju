@@ -2,6 +2,8 @@
 
 set -e
 
+lambda_alias=$1
+
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 bash "$script_dir/check-preconditions.sh"
 

@@ -24,6 +24,7 @@
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "flow-bin": "^0.152.0",
     "howdju-ops": "workspace:howdju-ops",
+    "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^26"
   }
 }

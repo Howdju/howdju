@@ -10,6 +10,7 @@ export class TopicMessageSender {
   async sendMessage(topicMessage) {
     const params = {
       TopicArn: this.topicArn,
+      // TODO compress the message?
       Message: toJson(topicMessage),
     }
 
