@@ -40,6 +40,7 @@ exports.init = function init(provider) {
     modifyEntityGracePeriod: {hours: 24},
     passwordResetDuration: {hours: 4},
     registrationDuration: {hours: 24},
+    uiAuthority: provider.getConfigVal('UI_AUTHORITY', "http://localhost"),
   }
 
   const appConfig = merge({}, baseConfig, envConfig)

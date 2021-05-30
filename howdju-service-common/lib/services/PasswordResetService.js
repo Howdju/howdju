@@ -97,7 +97,7 @@ async function consumeRequest(self, passwordResetCode) {
 }
 
 async function sendConfirmationEmail(self, email, passwordResetCode, duration) {
-  const confirmationUrl = `https://www.howdju.com${commonPaths.confirmPasswordReset()}?passwordResetCode=${passwordResetCode}`
+  const confirmationUrl = `${this.config.uiAuthority}${commonPaths.confirmPasswordReset()}?passwordResetCode=${passwordResetCode}`
   const durationText = duration.format(self.config.durationFormatTemplate, {trim: self.config.durationFormatTrim})
   const emailParams = {
     to: email,

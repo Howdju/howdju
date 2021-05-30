@@ -32,6 +32,7 @@ const {
 
 
 exports.init = function init(provider) {
+
   const actionsService = new ActionsService(
     provider.actionsDao
   )

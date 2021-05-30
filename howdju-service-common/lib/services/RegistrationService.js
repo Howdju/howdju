@@ -121,7 +121,7 @@ async function createRegistration(self, registrationRequest) {
 async function sendConfirmationEmail(self, registrationRequest, registrationCode, duration) {
   const {email} = registrationRequest
   const confirmationUrl =
-    `https://www.howdju.com${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`
+    `${this.config.uiAuthority}${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`
   const durationText = duration.format(self.config.durationFormatTemplate, {trim: self.config.durationFormatTrim})
   const emailParams = {
     to: email,
@@ -155,8 +155,8 @@ async function sendConfirmationEmail(self, registrationRequest, registrationCode
 
 async function sendExistingAccountNotificationEmail(self, registrationRequest) {
   const {email} = registrationRequest
-  const loginUrl = `https://www.howdju.com${commonPaths.login()}`
-  const resetUrl = `https://www.howdju.com${commonPaths.requestPasswordReset()}`
+  const loginUrl = `${this.config.uiAuthority}${commonPaths.login()}`
+  const resetUrl = `${this.config.uiAuthority}${commonPaths.requestPasswordReset()}`
   const emailParams = {
     to: email,
     subject: 'Howdju Registration',

@@ -5,6 +5,7 @@
 - Release
   - Implement SNS/email; enable registration
     Terms
+    User activity page
   - Basic iPhone app for capturing anchor fields?
 - New directions
   - prosemirror summary-based justifications
@@ -29,6 +30,11 @@
 * Incomplete transition to have generic justifiables
 * Legacy justification basis type: JustificationBasisCompound type
 * Mixture of async/await and promises in the API
+* Two approaches to lambdas: premiser-processing (old Grunt build) and lambdas
+* Lint warnings
+* Test extension warnings
+* Incomplete handling of UI/API validation errors/messages
+* Custom routing
 
 ## Current plan
 
