@@ -24,7 +24,6 @@ import {
   makeNewRegistrationConfirmation,
   schemaIds,
   schemaSettings,
-  toJsonVal,
 } from 'howdju-common'
 import {validate} from 'howdju-ajv-sourced'
 
@@ -100,7 +99,7 @@ class RegistrationConfirmationPage extends React.Component {
     const doesAcceptTerms = get(registrationConfirmation, 'doesAcceptTerms', false)
 
     const {isValid, errors: validationErrors} = registrationConfirmation ?
-      validate(schemaIds.registrationConfirmation, toJsonVal(registrationConfirmation)) :
+      validate(schemaIds.registrationConfirmation, registrationConfirmation) :
       {isValid: false, errors: {}}
 
     const errorNotificeMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'

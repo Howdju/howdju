@@ -21,7 +21,6 @@ import {
   makeNewRegistrationRequest,
   schemaSettings,
   schemaIds,
-  toJsonVal,
 } from 'howdju-common'
 import {validate} from 'howdju-ajv-sourced'
 
@@ -66,7 +65,7 @@ class RegistrationRequestPage extends React.Component {
     const email = get(registration, 'email', '')
 
     const {isValid, errors: validationErrors} = registration ?
-      validate(schemaIds.registrationRequest, toJsonVal(registration)) :
+      validate(schemaIds.registrationRequest, registration) :
       {isValid: false, errors: {}}
 
     const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'

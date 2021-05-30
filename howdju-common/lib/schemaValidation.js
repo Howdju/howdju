@@ -48,7 +48,8 @@ function makeAjv(extraOpts) {
 function makeStandaloneValidate(validateFunctions) {
   return function validate(schemaOrRef, data) {
     const validationFunction = validateFunctions[schemaOrRef]
-    const isValid = validationFunction(data)
+    const jsonVal = toJsonVal(data)
+    const isValid = validationFunction(jsonVal)
     const errors = isValid ?
       {} :
       transformErrors(validationFunction.errors)
@@ -58,7 +59,8 @@ function makeStandaloneValidate(validateFunctions) {
 
 function makeValidate(ajv) {
   return function validate(schemaOrRef, data) {
-    const isValid = ajv.validate(schemaOrRef, data)
+    const jsonVal = toJsonVal(data)
+    const isValid = ajv.validate(schemaOrRef, jsonVal)
     const errors = isValid ?
       {} :
       transformErrors(ajv.errors)
@@ -101,5 +103,4 @@ module.exports = {
   makeStandaloneCode,
   makeStandaloneValidate,
   schemaIds,
-  toJsonVal,
 }
