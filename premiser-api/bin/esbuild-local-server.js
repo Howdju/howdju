@@ -45,7 +45,9 @@ esbuilder({
 
 function startServer() {
   // Require is relative to the current file
-  const {app} = require('../dist/local-server.js')
+  const localServerDistPath = '../dist/local-server.js'
+  delete require.cache[require.resolve(localServerDistPath)];
+  const {app} = require(localServerDistPath)
   const port = devApiServerPort()
   return app.listen(port, () => {
     debug(`Server is now running at http://${apiHost}:${port}.`)
