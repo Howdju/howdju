@@ -14,7 +14,8 @@ npm version minor
 # So create the commit here.
 lambda_name=$(cat package.json | jq -r .name)
 lambda_version=$(cat package.json | jq -r .version)
-git commit -m "Bump version ${lambda_name}: $lambda_version"
+git add .
+git commit -m "Bump version ${lambda_name}: ${lambda_version}"
 git tag "versions/${lambda_name}-${lambda_version}"
 git push
 
