@@ -28,7 +28,7 @@ exports.UsersService = class UsersService {
     this.userExternalIdsDao = userExternalIdsDao
     this.usersDao = usersDao
   }
-  
+
   async isEmailInUse(email) {
     return await this.usersDao.isEmailInUse(email)
   }
@@ -45,7 +45,7 @@ exports.UsersService = class UsersService {
   async readUserForId(userId) {
     return await this.usersDao.readUserForId(userId)
   }
-  
+
   async readUserForEmail(email) {
     return await this.usersDao.readUserForEmail(email)
   }
@@ -64,13 +64,13 @@ exports.UsersService = class UsersService {
       })
       .then(([user]) => user)
   }
-  
+
   async createRegisteredUser(user, passwordHash, passwordHashType, now) {
     const {isValid, errors} = validate(schemaIds.user, user)
     if (!isValid) {
       throw new EntityValidationError(errors)
     }
-    
+
     const createdUser = await this.usersDao.createUser(user, null, now)
     await this.authService.createPasswordHashAuthForUserId(createdUser.id, passwordHash, passwordHashType)
     await this.userExternalIdsDao.createExternalIdsForUserId(createdUser.id)

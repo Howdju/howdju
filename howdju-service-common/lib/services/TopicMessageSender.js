@@ -20,7 +20,7 @@ export class TopicMessageSender {
       const {type} = topicMessage
       this.logger.info(`Message sent to topic ${params.TopicArn} (${{MessageId, type}})`)
     } catch (err){
-      this.logger.exception(err, `Error sending message to topic: ${{params}}`)
+      this.logger.exception(err, `Error sending message to topic: ${toJson(params)}`)
     }
   }
 }

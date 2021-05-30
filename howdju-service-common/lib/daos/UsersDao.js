@@ -23,13 +23,14 @@ exports.UsersDao = class UsersDao extends BaseDao {
       user.phoneNumber,
       creatorUserId,
       user.isActive,
+      user.acceptedTerms,
       now,
     ]
     return this.database.query(
       'createUser',
       `
-        insert into users (email, short_name, long_name, phone_number, creator_user_id, is_active, created) 
-        values ($1, $2, $3, $4, $5, $6, $7) returning *
+        insert into users (email, short_name, long_name, phone_number, creator_user_id, is_active, accepted_terms, created)
+        values ($1, $2, $3, $4, $5, $6, $7, $8) returning *
       `,
       args
     )
@@ -69,7 +70,7 @@ exports.UsersDao = class UsersDao extends BaseDao {
     )
       .then(mapSingle(this.logger, toUser, 'users', {email}))
   }
-  
+
   readUserForUsername(username) {
     return this.database.query(
       'readUserForUsername',
