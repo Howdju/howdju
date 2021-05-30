@@ -4,6 +4,9 @@ node "${script_dir}"/../../bin/check-uncommitted.mjs
 
 yarn run lint
 yarn run test
+
+npm version minor
+
 yarn run clean
 yarn run build
 
