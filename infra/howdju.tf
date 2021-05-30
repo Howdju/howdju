@@ -33,7 +33,7 @@ module bastion {
 module messages {
   source = "./modules/messages"
   aws_region = var.aws_region
-  lambda_version = "1.0.0"
+  lambda_version = "1.1.0"
 }
 
 module "elasticstack" {
