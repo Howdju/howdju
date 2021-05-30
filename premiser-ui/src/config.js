@@ -30,6 +30,7 @@ const config = {
     environment: process.env.SENTRY_ENV,
     tracesSampleRate: 1.0,
   },
+  sentryShowReportDialogThrottleMs: 5000,
   ui: {
     narrowBreakpoint: 840,
     shortTextLength: 256,

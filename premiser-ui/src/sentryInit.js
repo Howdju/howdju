@@ -1,10 +1,13 @@
 import assign from 'lodash/assign'
+import throttle from 'lodash/throttle'
 import * as Sentry from "@sentry/browser"
 import { Integrations } from "@sentry/tracing"
-import config from './config'
 import {Severity} from '@sentry/types'
-import {uiErrorTypes} from './uiErrors'
+
 import {apiErrorCodes} from 'howdju-common'
+
+import config from './config'
+import {uiErrorTypes} from './uiErrors'
 
 
 export default () => {
@@ -31,8 +34,9 @@ function handleExceptionEvent(event, hint) {
   }
 
   if (isUnexpectedError) {
-    // Only prompt the user when we don't know what is going on
-    Sentry.showReportDialog({eventId: event.event_id})
+    // Only prompt the user when we don't know what is going on, and only prompte them occassionally
+    // (E.g., if all fetches on a page fail, we don't want to show them the dialog for each failure.)
+    throttledShowReportDialog({eventId: event.event_id})
     event.level = Severity.Error
   } else {
     // Expected exceptions are just informational
@@ -41,3 +45,9 @@ function handleExceptionEvent(event, hint) {
 
   return event
 }
+
+function showReportDialog(options) {
+  Sentry.showReportDialog(options)
+}
+
+const throttledShowReportDialog = throttle(showReportDialog, config.sentryShowReportDialogThrottleMs)
