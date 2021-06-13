@@ -17,3 +17,4 @@ export const selectRegistrationEmail = (state) => get(state, 'ui.registrationCon
 export const selectRegistrationErrorCode = (state) => get(state, 'ui.registrationConfirmationPage.registrationErrorCode')
 export const selectPasswordResetRequestPage = (state) => get(state, 'ui.passwordResetRequestPage')
 export const selectPasswordResetConfirmationPage = (state) => get(state, 'ui.passwordResetConfirmationPage')
+export const selectPrivacyConsent = (state) => get(state, ['privacyConsent'])

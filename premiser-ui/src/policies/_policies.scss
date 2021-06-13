@@ -1,0 +1,31 @@
+@import '../colors';
+
+// Use policies class to override reset.css
+.policies {
+  a {
+    color: $link-color;
+  }
+
+  ul {
+    list-style: circle;
+    margin-left: 1.5em;
+    margin-bottom: 10px;
+  }
+
+  code {
+    font-family: monospace;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th {
+    font-weight: bold;
+  }
+
+  th, td {
+    border: 1px solid black;
+    padding: 5px;
+  }
+}

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {goBack} from 'connected-react-router'
 import {Link} from 'react-router-dom'
-import Helmet from 'react-helmet'
+import Helmet from './Helmet'
 import {
   TextField,
   Button,
@@ -19,7 +19,6 @@ import map from 'lodash/map'
 
 import {makeNewCredentials} from "howdju-common"
 
-import analytics from "./analytics"
 import {
   api,
   editors,
@@ -55,10 +54,6 @@ class LoginPage extends Component {
 
   onCancel = () => {
     this.props.goBack()
-  }
-
-  onSubscribeSubmit = (event) => {
-    analytics.sendEvent('Mailing List Signup Form', 'submit')
   }
 
   render () {
@@ -169,7 +164,6 @@ class LoginPage extends Component {
                     method="post"
                     target="_blank"
                     rel="noopener"
-                    onSubmit={this.onSubscribeSubmit}
               >
                 <CardText>
                   Howdju 2.0 is currently in private gamma.  Enter your email to be notified when signups are available:

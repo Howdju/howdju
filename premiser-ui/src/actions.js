@@ -285,6 +285,10 @@ export const pages = {
     (properties) => ({properties})),
 }
 
+export const privacyConsent = {
+  update: actionCreator('PRIVACY_CONSENT/UPDATE', (cookies) => ({cookies}))
+}
+
 const commitEdit = actionCreator('EDITORS/COMMIT_EDIT', (editorType, editorId) => ({editorType, editorId}))
 commitEdit.result = actionCreator('EDITORS/COMMIT_EDIT' + actionTypeDelim + 'RESULT',
   (editorType, editorId, result) => ({editorType, editorId, result}),

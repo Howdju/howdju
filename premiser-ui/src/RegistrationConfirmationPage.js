@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import {goBack} from 'connected-react-router'
 import {
   Button,
@@ -12,7 +11,7 @@ import {
   FocusContainer,
 } from 'react-md'
 import {connect} from 'react-redux'
-import Helmet from 'react-helmet'
+import Helmet from './Helmet'
 import cn from 'classnames'
 import get from 'lodash/get'
 import queryString from 'query-string'
@@ -33,6 +32,7 @@ import {
   editors,
   mapActionCreatorGroupToDispatchToProps
 } from './actions'
+import Link from './Link'
 import PasswordTextField from './PasswordTextField'
 import paths from './paths'
 import {EditorTypes} from './reducers/editors'
@@ -78,7 +78,7 @@ class RegistrationConfirmationPage extends React.Component {
     const {
       email,
       didCheckRegistration,
-      registrationErrorCode,
+      apiErrorCode,
       editorState,
     } = this.props
     const {
@@ -97,18 +97,22 @@ class RegistrationConfirmationPage extends React.Component {
     const longName = get(registrationConfirmation, 'longName', '')
     const password = get(registrationConfirmation, 'password', '')
     const doesAcceptTerms = get(registrationConfirmation, 'doesAcceptTerms', false)
+    const hasMajorityConsent = get(registrationConfirmation, 'hasMajorityConsent', false)
+    const is13YearsOrOlder = get(registrationConfirmation, 'is13YearsOrOlder', false)
+    const isNotGdpr = get(registrationConfirmation, 'isNotGdpr', false)
 
     const {isValid, errors: validationErrors} = registrationConfirmation ?
       validate(schemaIds.registrationConfirmation, registrationConfirmation) :
       {isValid: false, errors: {}}
+    console.log({isValid, validationErrors})
 
-    const errorNotificeMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
+    const validationErrorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
 
     const submitButtonTitle = isValid ? 'Complete registration' : wasSubmitAttempted ?
       'Please correct the errors to continue' :
       'Please complete the form to continue'
 
-    const subtitle = subtitleByRegistrationErrorCode[registrationErrorCode]
+    const subtitle = subtitleByRegistrationErrorCode[apiErrorCode]
 
     const form =
       <form onSubmit={this.onSubmit}>
@@ -131,7 +135,7 @@ class RegistrationConfirmationPage extends React.Component {
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
               required
-              error={(blurredInputs.username || wasSubmitAttempted) && (!!validationErrors.username || !!apiErrors.username)}
+              error={(blurredInputs.username || wasSubmitAttempted) && (validationErrors.username || apiErrors.username)}
               errorText={
                 <React.Fragment>
                   {validationErrors.username &&
@@ -154,7 +158,7 @@ class RegistrationConfirmationPage extends React.Component {
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
               required
-              error={(blurredInputs.password || wasSubmitAttempted) && !!validationErrors.password}
+              error={(blurredInputs.password || wasSubmitAttempted) && validationErrors.password}
               errorText={validationErrors.password && 'Please enter a valid password (6 characters or more)'}
             />
             <SingleLineTextField
@@ -168,8 +172,8 @@ class RegistrationConfirmationPage extends React.Component {
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
               required
-              error={(blurredInputs.longName || wasSubmitAttempted) && !!validationErrors.longName}
-              errorText={validationErrors.longName && 'Please enter a full name name'}
+              error={(blurredInputs.longName || wasSubmitAttempted) && validationErrors.longName}
+              errorText={validationErrors.longName && 'Please enter a full name'}
             />
             <SingleLineTextField
               id="short-name"
@@ -181,11 +185,11 @@ class RegistrationConfirmationPage extends React.Component {
               onBlur={this.onBlur}
               onSubmit={this.onSubmit}
               disabled={isSubmitting}
-              error={(blurredInputs.shortName || wasSubmitAttempted) && !!validationErrors.shortName}
-              errorText={validationErrors.shortName && 'Please enter a first name'}
+              error={(blurredInputs.shortName || wasSubmitAttempted) && validationErrors.shortName}
+              errorText={validationErrors.shortName && 'Please enter a preferred first name'}
             />
             <Checkbox
-              id="accept-terms"
+              id="does-accept-terms"
               name="doesAcceptTerms"
               value={doesAcceptTerms}
               onChange={this.onChange}
@@ -195,7 +199,56 @@ class RegistrationConfirmationPage extends React.Component {
                     'error-message': (dirtyInputs.doesAcceptTerms || wasSubmitAttempted) && validationErrors.doesAcceptTerms})
                   }
                 >
-                  I have read and agree to the <Link className="text-link" to={paths.terms()}>Terms of Use</Link>
+                  I have read and agree to
+                  the <Link newWindow={true} className="text-link" to={paths.userAgreement()}>User Agreement</Link> and
+                  the <Link newWindow={true} className="text-link" to={paths.privacyPolicy()}>Privacy Policy</Link>.
+                </div>
+              }
+            />
+            <Checkbox
+              id="is-13-years-or-older"
+              name="is13YearsOrOlder"
+              value={is13YearsOrOlder}
+              onChange={this.onChange}
+              label={
+                <div
+                  className={cn({
+                    'error-message': (dirtyInputs.is13YearsOrOlder || wasSubmitAttempted) && validationErrors.is13YearsOrOlder})
+                  }
+                >
+                  I am 13 years old or older.
+                </div>
+              }
+            />
+            <Checkbox
+              id="has-majority-consent"
+              name="hasMajorityConsent"
+              value={hasMajorityConsent}
+              onChange={this.onChange}
+              label={
+                <div
+                  className={cn({
+                    'error-message': (dirtyInputs.hasMajorityConsent || wasSubmitAttempted) && validationErrors.hasMajorityConsent})
+                  }
+                >
+                  I am old enough in my local jurisdiction to enter into legal agreements and to consent to the
+                  processing of my personal data.
+                </div>
+              }
+            />
+            <Checkbox
+              id="is-not-gdpr"
+              name="isNotGdpr"
+              value={isNotGdpr}
+              onChange={this.onChange}
+              label={
+                <div
+                  className={cn({
+                    'error-message': (dirtyInputs.isNotGdpr || wasSubmitAttempted) && validationErrors.isNotGdpr})
+                  }
+                >
+                  I am not located in the European Union (EU), the European Economic Area (EEA),
+                  or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR).
                 </div>
               }
             />
@@ -238,16 +291,16 @@ class RegistrationConfirmationPage extends React.Component {
         </CardActions>
       </React.Fragment>
 
-    const errorMessage = registrationErrorMessageByCode[registrationErrorCode]
+    const apiErrorMessage = registrationErrorMessageByCode[apiErrorCode]
 
     const formWithNotice = (
       <React.Fragment>
         <CardText>
           Please enter the following to complete your registration
         </CardText>
-        {errorNotificeMessage &&
+        {validationErrorMessage &&
           <CardText className="error-message">
-            {errorNotificeMessage}
+            {validationErrorMessage}
           </CardText>
         }
         {form}
@@ -257,7 +310,7 @@ class RegistrationConfirmationPage extends React.Component {
     return (
       <div id="register-page">
         <Helmet>
-          <title>Register — Howdju</title>
+          <title>Complete Registration — Howdju</title>
         </Helmet>
         <div className="md-grid">
           <div className="md-cell md-cell--12">
@@ -272,8 +325,8 @@ class RegistrationConfirmationPage extends React.Component {
                   <CircularProgress id="checking-registration-code-progress"/>
                 </CardText>
               )}
-              {didCheckRegistration && !isConfirmed && registrationErrorCode && errorMessage}
-              {didCheckRegistration && !isConfirmed && !registrationErrorCode && formWithNotice}
+              {didCheckRegistration && !isConfirmed && apiErrorCode && apiErrorMessage}
+              {didCheckRegistration && !isConfirmed && !apiErrorCode && formWithNotice}
               {isConfirmed && confirmedMessage}
             </Card>
           </div>
@@ -360,7 +413,7 @@ const mapStateToProps = (state, ownProps) => {
 
   const email = selectRegistrationEmail(state)
   const didCheckRegistration = selectDidCheckRegistration(state)
-  const registrationErrorCode = selectRegistrationErrorCode(state)
+  const apiErrorCode = selectRegistrationErrorCode(state)
 
   const queryParams = queryString.parse(ownProps.location.search)
   const registrationCode = queryParams.registrationCode
@@ -368,7 +421,7 @@ const mapStateToProps = (state, ownProps) => {
     editorState,
     email,
     didCheckRegistration,
-    registrationErrorCode,
+    apiErrorCode,
     registrationCode,
   }
 }

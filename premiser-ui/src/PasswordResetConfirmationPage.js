@@ -11,7 +11,7 @@ import {
   FocusContainer,
 } from 'react-md'
 import {connect} from 'react-redux'
-import Helmet from 'react-helmet'
+import Helmet from './Helmet'
 import cn from 'classnames'
 import queryString from 'query-string'
 

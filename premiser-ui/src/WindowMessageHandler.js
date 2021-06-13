@@ -1,5 +1,6 @@
 import {logger} from './logger'
 import {EXTENSION_MESSAGE_SOURCE, actions, inIframe} from "howdju-client-common"
+import {getOrCreateSessionStorageId, clearSessionStorageId} from "./identifiers"
 
 
 export default class WindowMessageHandler {
@@ -11,6 +12,18 @@ export default class WindowMessageHandler {
   }
 
   handleEvent(event) {
+    if (event.source === window) {
+      if (event.data.howdjuTrackingConsent) {
+        const {enabled} = event.data.howdjuTrackingConsent
+        if (enabled) {
+          getOrCreateSessionStorageId()
+        } else {
+          clearSessionStorageId()
+        }
+        return
+      }
+    }
+
     // Howdju would be loaded in an iframe of the content script's window when loaded by the extension
     if (event.source !== window.parent) {
       return

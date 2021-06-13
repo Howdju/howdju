@@ -1,0 +1,50 @@
+## Can I delete my Howdju content?
+
+Howdju provides value by accepting user submitted content and allowing users to build on top of other user's submitted
+content. Examples include one user adding a justification for another user's proposition, one user countering another
+user's justification, or one user critiquing another user's summary justification. Such a system cannot reliably provide
+value to its users if users remove their content because doing so would invalidate the content of other users
+that was built on top of it. For that reason, content you submit to Howdju may persist indefinitely.
+
+That said, Howdju recognizes the importance of allowing users to change their minds. Currently we support disassociating
+a user from a particular piece of content. In the future we plan to support versioned edits.
+
+If there are extenuating circumstances which require immediate disassociation of a user from content, or deletion of
+content, please report the content or email us at
+<span data-type="email" data-email-user="report" data-email-domain="howdju.com"></span>.
+
+## Can I delete my Howdju account?
+
+Howdju believes that the subjects with which a user chooses to interact and the ways that a user behaves provide
+important context to understanding the user's motivations and authenticity. Other users deserve some ability to access
+this context instead of seeing content divorced from the context of the person who was motivated to create it.
+
+For this reason, Howdju balances users' needs to disassociate themselves personally from Howdua and their created
+content by replacing accounts with anonymized accounts rather than complete deletion. This approach allows other users
+the opportunity to see the content in context, while disassociating the creator from the activity.
+
+## Does Howdju sell my data?
+
+Howdju will never sell personally indentifiable information, but we may sell aggregated information that cannot be
+personally identified. For example, we will never sell information that would allow an advertiser to advertise to
+a user based upon that user's activity on Howdju. But we may sell information about the probability of support between
+non-identifiable groups for a proposition.
+
+## Is the information on Howdju accurate?
+
+Howdju provides a system for presenting viewpoints on uncertain or disputed topics. Howdju does not confirm the
+expertise of the users who submit content, and we do not verify the accuracy of information submitted or of citations
+used. Therefore, the information on Howdju should be used as a starting point for one's own research into the truth of any
+particular topic. We hope that our system can help make your research efficient and enjoyable.
+
+That said, Howdju is designed to be open to critique, so if a factually incorrect proposition appears on Howdju, other
+users can add disjustifications to show that it is false. The reliability of such a system depends on users viewing
+and adding such disjustifictions, and so Howdju attempts to provide proxies to help users understand the difference
+between the cases when valid disjustifications don't exist and when users just haven't had the opportunity yet to add
+disjustifications, such as how old a proposition is and how many unique persons have viewed it.
+
+## Why can't Europeans create a Howdju account or submit content?
+
+While we have attempted both to inform about and to provide control over our collection of personal information, Howdju
+lacks the expertise or resources to confirm our compliance with the General Data Protection Regulation. We apologize for
+any inconvenience, but we require that you not submit any personal information to Howdju if you are subject to the GDPR.

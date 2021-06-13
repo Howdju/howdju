@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import {connect} from 'react-redux'
 import {goBack} from "connected-react-router"
-import Helmet from 'react-helmet'
+import Helmet from './Helmet'
 import {
   Button,
   Card,
@@ -147,7 +147,7 @@ class RegistrationRequestPage extends React.Component {
     return (
       <div id="register-page">
         <Helmet>
-          <title>Register — Howdju</title>
+          <title>Request Registration — Howdju</title>
         </Helmet>
         <div className="md-grid">
           <div className="md-cell md-cell--12">

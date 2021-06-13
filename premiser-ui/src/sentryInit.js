@@ -8,12 +8,18 @@ import {apiErrorCodes} from 'howdju-common'
 
 import config from './config'
 import {uiErrorTypes} from './uiErrors'
+import {cookieConsent, ERROR_REPORTING, FULL_ERROR_REPORTING} from './cookieConsent'
 
 
 export default () => {
+  const integrations = []
+  if (cookieConsent.isAccepted(FULL_ERROR_REPORTING)) {
+    integrations.push(new Integrations.BrowserTracing())
+  }
   Sentry.init(assign({
-    integrations: [new Integrations.BrowserTracing()],
+    integrations,
     beforeSend(event, hint) {
+      if (!cookieConsent.isAccepted(ERROR_REPORTING)) return null
       if (event.exception) {
         event = handleExceptionEvent(event, hint)
       }

@@ -100,8 +100,13 @@ class Paths {
 
   tools = () => '/tools'
 
-  privacyPolicy = () => "/terms/privacy-policy"
-  terms = () => "/terms/terms-of-use"
+  policiesOverview = () => "/policies"
+  principles = () => "/principles"
+  userAgreement = () => "/policies/user-agreement"
+  codeOfConduct = () => "/policies/code-of-conduct"
+  privacyPolicy = () => "/policies/privacy-policy"
+  cookieNotice = () => "/policies/cookie-notice"
+  faq = () => "/faq"
 
   tag = (tag) => `/tags/${tag.id}/${toSlug(tag.name)}`
 }

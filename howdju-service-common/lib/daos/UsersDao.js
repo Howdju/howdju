@@ -24,13 +24,18 @@ exports.UsersDao = class UsersDao extends BaseDao {
       creatorUserId,
       user.isActive,
       user.acceptedTerms,
+      user.affirmedMajorityConsent,
+      user.affirmed13YearsOrOlder,
+      user.affirmedNotGdpr,
       now,
     ]
     return this.database.query(
       'createUser',
       `
-        insert into users (email, short_name, long_name, phone_number, creator_user_id, is_active, accepted_terms, created)
-        values ($1, $2, $3, $4, $5, $6, $7, $8) returning *
+        insert into users 
+            (email, short_name, long_name, phone_number, creator_user_id, is_active, accepted_terms,
+             affirmed_majority_consent, affirmed_13_years_or_older, affirmed_not_gdpr, created)
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning *
       `,
       args
     )

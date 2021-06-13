@@ -434,7 +434,7 @@ const editorReducerByType = {
     [editors.commitEdit.result]: {
       next: (state, action) => ({
         ...state,
-        duration: action.payload.duration,
+        duration: action.payload.result.duration,
         isSaving: false,
         isSubmitted: true
       }),

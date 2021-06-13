@@ -105,7 +105,15 @@ const registrationConfirmation = {
   "title": "RegistrationConfirmation",
   "description": "The information necessary to complete a registration and make a user",
   "type": "object",
-  "required": ["username", "longName", "password", "doesAcceptTerms"],
+  "required": [
+    "username",
+    "longName",
+    "password",
+    "doesAcceptTerms",
+    "is13YearsOrOlder",
+    "hasMajorityConsent",
+    "isNotGdpr",
+  ],
   "properties": {
     "username": {$ref: 'definitions.json#/definitions/username'},
     "password": {$ref: 'definitions.json#/definitions/password'},
@@ -114,7 +122,19 @@ const registrationConfirmation = {
     "doesAcceptTerms": {
       "const": true,
       "description": "Whether the user agreed to the terms.  Must be true."
-    }
+    },
+    "is13YearsOrOlder": {
+      "const": true,
+      "description": "Whether the user is 13 years or older.  Must be true."
+    },
+    "hasMajorityConsent": {
+      "const": true,
+      "description": "Whether the user affirms that they are old enough to accept the terms.  Must be true."
+    },
+    "isNotGdpr": {
+      "const": true,
+      "description": "Whether the user is not subject to the GDPR.  Must be true."
+    },
   }
 }
 
@@ -124,7 +144,15 @@ const user = {
   "title": "User",
   "description": "A user of the system",
   "type": "object",
-  "required": ["email", "username", "longName", "acceptedTerms"],
+  "required": [
+    "email",
+    "username",
+    "longName",
+    "acceptedTerms",
+    "affirmedMajorityConsent",
+    "affirmed13YearsOrOlder",
+    "affirmedNotGdpr",
+  ],
   "properties": {
     username: { $ref: 'definitions.json#/definitions/username'},
     email: { $ref: 'definitions.json#/definitions/userEmail'},
@@ -132,6 +160,21 @@ const user = {
     longName: { $ref: 'definitions.json#/definitions/longName'},
     acceptedTerms: {
       description: 'The time when the user accepted the terms.',
+      type: 'string',
+      format: 'date-time',
+    },
+    affirmedMajorityConsent: {
+      description: 'The time when the user affirmed that they had majority consent to accept the terms.',
+      type: 'string',
+      format: 'date-time',
+    },
+    affirmed13YearsOrOlder: {
+      description: 'The time when the user affirmed that they are older than 13 years.',
+      type: 'string',
+      format: 'date-time',
+    },
+    affirmedNotGdpr: {
+      description: 'The time when the user affirmed that GDPR does not apply to them.',
       type: 'string',
       format: 'date-time',
     },

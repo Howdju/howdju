@@ -2,7 +2,7 @@ import React from 'react'
 import {goBack} from 'connected-react-router'
 import {Button, Card, CardActions, CardText, CardTitle, CircularProgress, FocusContainer} from 'react-md'
 import {connect} from 'react-redux'
-import Helmet from 'react-helmet'
+import Helmet from './Helmet'
 import cn from 'classnames'
 import get from 'lodash/get'
 

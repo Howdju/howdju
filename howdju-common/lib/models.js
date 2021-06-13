@@ -92,7 +92,10 @@ _e.makeUser = (props) => assign({
   username: '',
   shortName: '',
   longName: '',
-  acceptedTerms: false,
+  acceptedTerms: null,
+  affirmedMajorityConsent: null,
+  affirmed13YearsOrOlder: null,
+  affirmedNotGdpr: null,
   isActive: false,
 }, props)
 

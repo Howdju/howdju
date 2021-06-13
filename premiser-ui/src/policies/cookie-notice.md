@@ -1,0 +1,63 @@
+# Howdju Cookie Notice
+
+Last Updated 12 June 2021
+
+This Cookie Notice explains how we use cookies and similar technologies as well as the options you have to control them.
+
+This Cookie Notice is part of our [Privacy Policy](/policies/privacy-policy).
+
+## What are cookies and how does Howdju use them?
+
+A cookie is a small data file that a site stores on your computer or mobile device when you visit the site. Browsers support cookies and similar technologies (such as local storage and pixels) so that a site like Howdju can remember information about your visit and can use the information to improve your experience and to create aggregated anonymized statistics about usage of the site. In this Notice, we use the term “cookie” to refer both to cookies and similar technologies.
+
+Cookies may be set by the site you are visiting (called “first-party cookies”) or by a third party, such as those who provide analytics or advertising services or interactive content on the site (“third-party cookies”).
+
+Our first-party cookies include cookies that are strictly necessary, functional cookies, support cookies, and cookies related to analytics/performance.
+
+* **Strictly Necessary**: These cookies are technically required. These cookies include cookies to persist your privacy settings.
+* **Functional**: These cookies enable Howdju to provide basic functionality and personalization. If you do not allow these cookies then some or all of these features may not function properly. These cookies include cookies to store an authentication token so that you don’t need to provide your account credentials each time you load the website.
+* **Analytics/Performance**: These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site. They help us to know which pages are the most and least popular and see how visitors move around the site.
+* **Third-Party Cookies**: Howdju’s services also include cookies from third parties that we partner with directly or indirectly.
+
+### Howdju's first party cookies
+
+Name | Classification | Purpose | Duration | Technology |
+--- | --- | --- | --- | ---
+`cookie-consent-preferences` | Strictly Necessary | Persists your privacy consent settings | Indefinite | Local Storage 
+`persist:root` | Functional | Stores your authentication token so that you remain logged in when you reload the app | Indefinite, but token expires after 30 days or when you logout | Local Storage
+`ssid` | Analytics | The 'session storage ID' allows us to associate the actions you perform | Current Session | Session Storage
+
+## Third-party's services
+
+Howdju uses third parties to provide services that may set cookies on your machine to improve your experience with the services. Howdju does not control how third party services collect data when they serve their content. Howdju does not directly provide any personally identifiable information to these services. We generate special-purpose distinct unique identifiers to connect any activity on Howdju.com with information recorded by these services.  If you explicitly enter your personal information, such as name or email address, when using these services (e.g., while using the Smallchat widget) then this information may be transmitted directly to these services. If you enable Full error reporting, you might also transmit personal identifiers that are used shortly before an error is reported.
+
+Examples of third party service providers we use include:
+
+* Smallchat website messaging: allows you to chat with us directly from our website
+* Google Analytics: allows us to analyze anonymized usage data
+* Sentry.io error monitoring: allows us to monitor any errors that occur on the site and to fix them
+
+## How do I control cookies and how my data is used?
+
+There are a number of ways you can control how information is collected from cookies on Howdju and how that information is used.
+
+### Your browser settings
+
+Your browser includes controls that allow you to manage the use of cookies by the sites that you visit. Most browsers have features that enable you to see and delete cookies stored on your device and to block cookies from all or selected sites. For more information, here are links to external help materials from some of the popular browsers:
+
+* [Mozilla Firefox](https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer)
+* [Apple Safari](https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac)
+* [Google Chrome](https://support.google.com/chrome/answer/95647)
+* [Microsoft Edge](https://support.microsoft.com/en-us/help/4027947/microsoft-edge-delete-cookies)
+
+### Your mobile device settings
+
+Your mobile device may also include browser settings that allow you to manage the use of cookies, especially if the device supports installing apps such as iOS and Android devices.
+
+### Third-party opt-outs
+
+Google provides web users with the [Google Analytics Opt-out Browser Add-on](https://tools.google.com/dlpage/gaoptout) to prevent the collection of data via Google Analytics.
+
+### Howdju user settings
+
+On Howdju, you can control your privacy settings and how Howdju uses data by visiting https://www.howdju.com/settings/privacy.

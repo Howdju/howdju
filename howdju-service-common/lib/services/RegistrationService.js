@@ -121,7 +121,7 @@ async function createRegistration(self, registrationRequest) {
 async function sendConfirmationEmail(self, registrationRequest, registrationCode, duration) {
   const {email} = registrationRequest
   const confirmationUrl =
-    `${this.config.uiAuthority}${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`
+    `${self.config.uiAuthority}${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`
   const durationText = duration.format(self.config.durationFormatTemplate, {trim: self.config.durationFormatTrim})
   const emailParams = {
     to: email,
@@ -155,8 +155,8 @@ async function sendConfirmationEmail(self, registrationRequest, registrationCode
 
 async function sendExistingAccountNotificationEmail(self, registrationRequest) {
   const {email} = registrationRequest
-  const loginUrl = `${this.config.uiAuthority}${commonPaths.login()}`
-  const resetUrl = `${this.config.uiAuthority}${commonPaths.requestPasswordReset()}`
+  const loginUrl = `${self.config.uiAuthority}${commonPaths.login()}`
+  const resetUrl = `${self.config.uiAuthority}${commonPaths.requestPasswordReset()}`
   const emailParams = {
     to: email,
     subject: 'Howdju Registration',
@@ -230,6 +230,9 @@ async function registerUser(self, registration, registrationConfirmation, now) {
     shortName: registrationConfirmation.shortName,
     longName: registrationConfirmation.longName,
     acceptedTerms: now,
+    affirmedMajorityConsent: now,
+    affirmed13YearsOrOlder: now,
+    affirmedNotGdpr: now,
     isActive: true,
   })
   return await self.usersService.createRegisteredUser(user, passwordHash, HashTypes.BCRYPT, now)

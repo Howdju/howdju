@@ -46,7 +46,9 @@ module.exports = {
     "./howdju-common/",
     "./howdju-service-common/",
     "./howdju-test-common/",
+    "./premiser-api/",
     "./premiser-ext/",
     "./premiser-ui/",
+    "./lambdas/*",
   ],
 }

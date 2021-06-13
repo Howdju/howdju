@@ -85,11 +85,20 @@ const baseWebpackConfig = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
-        loader: 'babel-loader',
-        options: {
-          cacheDirectory: true,
-          rootMode: "upward",
+        test: /\.m?jsx?$/,
+        resolve: {
+          fullySpecified: false,  // Allow cookie-consent's modules to import files without their extension
+          // Support ES module and JSX extensions when resolving the file corresponding to an extensionless package
+          // cookie-consent uses .mjs; we don't use .jsx, but we could, and we should probably include it since our
+          // test pattern includes it.
+          extensions: ['.mjs', '.jsx', '...'],
+        },
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            rootMode: "upward",
+          },
         },
       },
       {

@@ -29,9 +29,8 @@ export function* configureAfterLogin() {
       sentry.setUserContext(sentryId)
     }
 
-    const {shortName, longName} = yield select(selectUser)
     if (smallchatId) {
-      smallchat.identify(smallchatId, shortName, longName)
+      smallchat.identify(smallchatId)
     }
     analytics.identify(externalIds)
   })

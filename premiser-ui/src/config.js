@@ -41,6 +41,7 @@ const config = {
       staggerDelayBy: 50,
     }
   },
+  sessionStorageIdKey: 'ssid',
 }
 
 export default config

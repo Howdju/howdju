@@ -4,13 +4,23 @@
 
 - Release
   - Implement SNS/email; enable registration
-    Terms
+    Add autofill attributes: https://www.chromium.org/developers/design-documents/create-amazing-password-forms
+    Terms:
+      Add https://www.howdju.com/settings/privacy page
+      profile page/paid affiliation box,
+      deleted accounts: anonymous replacement
+      report functionality
+    Rate limiting, secret management
     User activity page
+    Add non-sentry error-handling
+    Citation confirmation crawler
   - Basic iPhone app for capturing anchor fields?
 - New directions
-  - prosemirror summary-based justifications
-  - AppSync?
+  - prosemirror summary-based justifications / Appearances / Better source handling
+  - AppSync / Dynamo
   - Semantic search? Quin
+  
+Followed all directions here: https://web.archive.org/web/20201020180006/https://dev.to/markosaric/how-to-make-google-analytics-gdpr-compliant-so-you-don-t-need-to-ask-for-user-consent-42mh
   
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?

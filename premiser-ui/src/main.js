@@ -15,10 +15,11 @@ import momentDurationFormatSetup from "moment-duration-format"
 
 import App from './App'
 import config  from './config'
-import configureStore from './configureStore'
+import {cookieConsent, ERROR_REPORTING} from './cookieConsent'
+import {configureStore} from './configureStore'
 import sentryInit from './sentryInit'
 
-if (config.sentry.enabled) {
+if (config.sentry.enabled && cookieConsent.isAccepted(ERROR_REPORTING)) {
   sentryInit()
 }
 
@@ -29,7 +30,7 @@ const root = document.getElementById('root')
 const {store, persistor} = configureStore(window.__INITIAL_STATE__)
 
 const overrides: ConfigurationProps = {
-  // your configuration overrides
+  // your react-md configuration overrides
 }
 
 render(

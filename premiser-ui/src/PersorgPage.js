@@ -4,7 +4,7 @@ import map from 'lodash/map'
 import React from 'react'
 import {connect} from 'react-redux'
 import {denormalize} from 'normalizr'
-import Helmet from 'react-helmet'
+import Helmet from './Helmet'
 import {FontIcon, ListItem, MenuButton} from 'react-md'
 
 import {

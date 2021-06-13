@@ -45,7 +45,6 @@ export const setUserId = googleAnalyticsUserId => {
   }
 }
 
-
 export const unsetUserId = () => {
   if (window.ga) {
     // Does this work?

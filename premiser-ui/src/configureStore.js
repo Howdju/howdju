@@ -1,6 +1,6 @@
 /* Hot module replace needs these dynamic import globals */
 /* globals module require */
-import { createStore, applyMiddleware, compose } from 'redux'
+import {createStore, applyMiddleware, compose} from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
@@ -11,8 +11,11 @@ import config from './config'
 import {history} from './history'
 import * as actionCreators from './actions'
 import getSagas from './sagas'
+import {BASIC_FUNCTIONALITY, cookieConsent} from "./cookieConsent"
 
-export default function configureStore(initialState) {
+let persistor
+
+export function configureStore(initialState) {
   const composeEnhancers =
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
@@ -33,9 +36,14 @@ export default function configureStore(initialState) {
     }
   })
 
+  // Don't persist app data until we have consent
+  const serialize = (data) => {
+    return cookieConsent.isAccepted(BASIC_FUNCTIONALITY) ? JSON.stringify(data) : ''
+  }
   const persistedReducer = persistReducer({
     key: 'root',
     storage,
+    serialize,
     whitelist: config.reduxPersistWhitelist,
   }, createRootReducer(history))
 
@@ -50,7 +58,7 @@ export default function configureStore(initialState) {
     )
   )
 
-  const persistor = persistStore(store)
+  persistor = persistStore(store)
 
   let rootTask = sagaMiddleware.run(function* () {
     yield getSagas()
@@ -73,4 +81,8 @@ export default function configureStore(initialState) {
   }
 
   return {persistor, store}
+}
+
+export function persist() {
+  persistor.persist()
 }

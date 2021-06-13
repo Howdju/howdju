@@ -4,7 +4,7 @@ import { hot } from 'react-hot-loader/root'
 import { Switch } from 'react-router'
 import { Link } from 'react-router-dom'
 import { ConnectedRouter } from 'connected-react-router'
-import Helmet from 'react-helmet'
+import Helmet from './Helmet'
 import {
   Button,
   Drawer,
@@ -17,13 +17,14 @@ import {
 } from 'react-md'
 import { connect } from 'react-redux'
 import cn from 'classnames'
+import forEach from 'lodash/forEach'
 import get from 'lodash/get'
 import isFinite from 'lodash/isFinite'
 import map from 'lodash/map'
 import throttle from 'lodash/throttle'
 
 import {
-  isTruthy
+  isTruthy,
 } from 'howdju-common'
 import {
   actions
@@ -33,21 +34,30 @@ import {
   api,
   flows,
   goto,
+  privacyConsent,
   ui,
   mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import config from './config'
+import {
+  ANALYTICS,
+  BASIC_FUNCTIONALITY,
+  cookieConsent, ERROR_REPORTING, fixConsentCookieIds, FULL_ERROR_REPORTING,
+  isMissingPrivacyConsent, LIVE_CHAT, REQUIRED_FUNCTIONALITY,
+  showPrivacyConsentDialog
+} from "./cookieConsent"
+import {persist} from "./configureStore"
 import ErrorBoundary from './ErrorBoundary'
 import Header from './Header'
 import {history} from './history'
-import {readOrCreateSessionStorageId, readOrCreateSessionCookieId} from "./identifiers"
-import WindowMessageHandler from './WindowMessageHandler'
+import {logger} from './logger'
 import paths from './paths'
 import routes from './routes'
 import {
   selectAuthToken,
-  selectAuthEmail,
+  selectAuthEmail, selectPrivacyConsent,
 } from "./selectors"
+import sentryInit from "./sentryInit"
 import * as smallchat from './smallchat'
 import t, {
   MAIN_TABS_RECENT_ACTIVITY_TAB_NAME,
@@ -59,10 +69,10 @@ import {
   isScrollPastTop,
   isDevice,
 } from "./util"
+import WindowMessageHandler from './WindowMessageHandler'
 
-import './fonts.js'
 import './App.scss'
-
+import './fonts.js'
 
 const tabInfos = [
   {
@@ -95,9 +105,6 @@ class App extends Component {
     }
 
     this.throttledOnWindowScroll = throttle(this.onWindowScroll, 100)
-
-    readOrCreateSessionStorageId()
-    readOrCreateSessionCookieId()
   }
 
   componentDidMount() {
@@ -114,6 +121,80 @@ class App extends Component {
       flows: this.props.flows,
       goto: this.props.goto,
     })
+
+    if (isMissingPrivacyConsent()) {
+      showPrivacyConsentDialog()
+    }
+    // cookieConsent.on(update) fires when it loads the cookies from storage, so persist them first.
+    this.props.privacyConsent.update(cookieConsent.getPreferences())
+    // Load the cookie consent after the privacyConsent.update has had a chance to occur.
+    setTimeout(() => cookieConsent.on('update', this.onCookieConsentUpdate))
+  }
+
+  onCookieConsentUpdate = (cookies) => {
+    let requiresReload = false
+    const privacyConsentState = this.props.privacyConsentState
+    forEach(cookies, (cookie) => {
+      const prevCookie = privacyConsentState[cookie.id]
+      if (prevCookie && cookie.accepted === prevCookie.accepted) {
+        // Only process differences
+        return
+      }
+      let requestReload = false
+      switch (cookie.id) {
+        case REQUIRED_FUNCTIONALITY:
+          // Required functionality can't be changed, so there's never anything to do.
+          break
+        case BASIC_FUNCTIONALITY:
+          if (cookie.accepted) {
+            persist()
+          } else {
+            // Our custom serializer to redux-persist checks this value before persisting
+          }
+          break
+        case ERROR_REPORTING:
+          if  (cookie.accepted) {
+            sentryInit()
+          } else {
+            // Sentry's beforeSend checks this value before sending events
+          }
+          break
+        case FULL_ERROR_REPORTING:
+          requestReload = true
+          break
+        case LIVE_CHAT:
+          if  (cookie.accepted) {
+            requestReload = true
+          } else {
+            const smallchatDiv = document.querySelector('div#Smallchat')
+            if (smallchatDiv) {
+              smallchatDiv.parentNode.removeChild(smallchatDiv)
+            } else {
+              // If we can't find the div for som reason, just reload
+              requestReload = true
+            }
+          }
+          break
+        case ANALYTICS:
+          window.postMessage({howdjuTrackingConsent: {enabled: cookie.accepted}}, window.location.href)
+          requestReload = true
+          break
+        default:
+          logger.error(`Unsupported cookie consent id: ${cookie.id}`)
+          // Require reload just to be safe
+          requestReload = true
+          // It's possible that the user has an old version of the cookie IDs.
+          fixConsentCookieIds()
+          break
+      }
+      // Assume that functionality is disabled by default, and so if there is no previous cookie,
+      // then we only need a reload if the functionality is now accepted.
+      requiresReload = requiresReload || requestReload  && (isTruthy(prevCookie) || cookie.accepted)
+    })
+    if (requiresReload) {
+      this.props.ui.addToast("Please reload the page for changes to take effect.")
+    }
+    this.props.privacyConsent.update(cookies)
   }
 
   componentWillUnmount() {
@@ -270,11 +351,16 @@ class App extends Component {
                 component={Link}
                 to={paths.tools()}
       />,
-      <ListItem key="privacy"
-                primaryText="Privacy Policy"
-                leftIcon={<FontIcon>laptop_chromebook</FontIcon>}
+      <ListItem key="policies"
+                primaryText="Policies"
+                leftIcon={<FontIcon>gavel</FontIcon>}
                 component={Link}
-                to={paths.privacyPolicy()}
+                to={paths.policiesOverview()}
+      />,
+      <ListItem key="privacySettings"
+                primaryText="Privacy settings"
+                leftIcon={<FontIcon>speaker_phone</FontIcon>}
+                onClick={() => showPrivacyConsentDialog()}
       />,
     ]
     if (isDevice()) {
@@ -408,6 +494,11 @@ class App extends Component {
 
             </div>
 
+            <div id="footer">
+              Use of this site constitutes acceptance of
+              our <Link to={paths.userAgreement()}>User Agreement</Link> and <Link to={paths.privacyPolicy()}>Privacy Policy</Link>.
+            </div>
+
             <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
 
           </div>
@@ -428,6 +519,7 @@ const mapStateToProps = state => {
   const hasAuthToken = isTruthy(selectAuthToken(state))
   const isNavDrawerVisible = get(ui, ['app', 'isNavDrawerVisible'])
   const toasts = get(ui, ['app', 'toasts'])
+  const privacyConsentState = selectPrivacyConsent(state)
 
   const isMobileSiteDisabled = get(ui, ['app', 'isMobileSiteDisabled'])
 
@@ -437,6 +529,7 @@ const mapStateToProps = state => {
     isNavDrawerVisible,
     toasts,
     isMobileSiteDisabled,
+    privacyConsentState,
   }
 }
 
@@ -446,5 +539,6 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   extensionFrame: actions.extensionFrame,
   flows,
   goto,
+  privacyConsent,
   ui,
 }))(hot(App))

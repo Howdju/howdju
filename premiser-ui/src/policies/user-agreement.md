@@ -1,0 +1,169 @@
+# Howdju User Agreement
+
+Last Updated 12 June 2021
+
+Hello truthseekers! Howdju's mission is to minimize the time required to understand representative viewpoints about uncertain or disputed topics. This User Agreement and your conduct make that possible.
+
+This Howdju User Agreement (“Terms”) applies to your access to and use of the websites, APIs, mobile apps, and extensions, and other online products and services (collectively, the “Services”) provided by Carl Gieringer, an individual, (“Howdju,” “we,” “us,” or “our”).
+
+By accessing or using our Services, you agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use our Services.
+
+Please note that these Terms incorporate several other documents, the additional terms of which you agree to when you agree to these Terms:
+
+* The [Code of Conduct](/policies/code-of-conduct) explains how best to use Howdju, as well as things you cannot do with Howdju.
+* The [Privacy Policy](/policies/privacy-policy) explains what personal information we collect and how we use it.
+* The [Cookie Notice](/policies/cookie-notice) goes into detail about how we use cookies and related technologies.
+
+## 1. Your Access to the Services
+
+Children under the age of 13 are not allowed to create an account or otherwise use the Services. All users must be over the age required by the laws of their locality to enter into legally binding agreements and to provide the information described in this Agreement. Persons requiring consent from a parent or guardian to do any of these things may not use the Services.
+
+The Services may only be used in an individual capacity. Persons may not accept these Terms on behalf of another legal entity, including a business or government entity.
+
+Persons located in the European Union (EU), the European Economic Area (EEA), or in any other jurisdiction that is subject to the General Data Protection Regulation (GDPR), are not allowed to create a Howdju account or to submit content to the services.
+
+## 2. Your Use of the Services
+
+Howdju grants you a personal, non-transferable, non-exclusive, revocable, limited license to use and access the Services solely as permitted by these Terms. We reserve all rights not expressly granted to you by these Terms.
+
+Except as permitted through the Services or as otherwise permitted by us in writing, your license does not include the right to:
+
+* license, sell, transfer, assign, distribute, host, or otherwise commercially exploit the Services or Content;
+* modify, prepare derivative works of, disassemble, decompile, or reverse engineer any part of the Services or Content; or
+* access the Services or Content in order to build a similar or competitive website, product, or service.
+
+We reserve the right to modify, suspend, or discontinue the Services (in whole or in part) at any time, with or without notice to you. Any future release, update, or other addition to functionality of the Services will be subject to these Terms, which may be updated from time to time. You agree that we will not be liable to you or to any third party for any modification, suspension, or discontinuation of the Services or any part thereof.
+
+## 3. Your Howdju Account and Account Security
+
+To use certain features of our Services, you may be required to create a Howdju account (an “Account”) and provide us with a username, password, and certain other information about yourself as set forth in the [Privacy Policy](/policies/privacy-policy).  Accounts may not belong to or be used by corporations or government entities.
+
+You are allowed to have one and only one Howdju account at any time. Each Howdju account may only be used by a single accountable person. You may not create another account, even if your account is suspended or restricted in any way. If your account has been suspended, you must wait until the suspension expires before you can use that account.
+
+You may create another account one month after deleting an account. If your account was suspended or restricted at the time you deleted your account, then the suspension or restriction period will continue to elapse, and will apply to any new account you may create until the suspension or restriction expires.
+
+You must safeguard your account credentials, and you must not share the account credentials with anyone. You must immediately notify Howdju if you discover or suspect that someone has accessed your Account. We recommend that you use a strong password that is used only with your Account.
+
+You are solely responsible for the content associated with your Howdju Account and anything that happens related to it.
+
+## 4. Your Content
+
+The Services may contain information, text, links, graphics, photos, videos, or other materials (“Content”), including Content created or submitted to the Services by you or through your Account (“Your Content”). We take no responsibility for and we do not expressly or implicitly endorse, support, or guarantee the completeness, truthfulness, accuracy, or reliability of any of Your Content.
+
+By submitting Your Content to the Services, you represent and warrant that you have all rights, power, and authority necessary to grant the rights to Your Content contained within these Terms and that it will not violate any law or the rights of any person.
+
+Because you alone are responsible for Your Content, you may expose yourself to liability if you post or share Content illegally or without all necessary rights.
+
+You retain any ownership rights you have in Your Content, but you grant Howdju the following license to use that Content:
+
+When Your Content is created with or submitted to the Services, you grant us a worldwide, royalty-free, perpetual, irrevocable, non-exclusive, transferable, and sublicensable license to use, copy, modify, adapt, prepare derivative works of, distribute, store, perform, and display Your Content and any name, username, voice, or likeness provided in connection with Your Content in all media formats and channels now known or later developed anywhere in the world. This license includes the right for us to make Your Content available for syndication, broadcast, distribution, or publication by other companies, organizations, or individuals who partner with Howdju. You also agree that we may remove metadata associated with Your Content, and you irrevocably waive any claims and assertions of moral rights or attribution with respect to Your Content.
+
+You also grant a limited non-exclusive, royalty-free license to other Howdju users to use, copy, reproduce, process, adapt, modify, publish, transmit, display, and distribute any content posted by you to the Services solely in connection with that user’s use of the Services. The licenses granted by you hereunder do not include any moral rights or right of attribution.
+
+Any ideas, suggestions, and feedback about Howdju or our Services that you provide to us are entirely voluntary, and you agree that Howdju may use such ideas, suggestions, and feedback without compensation or obligation to you.
+
+Although we have no obligation to screen, edit, or monitor Your Content, we may, in our sole discretion, delete, remove, or hide Your Content at any time and for any reason, including for violating these Terms, violating our Code of Conduct, or if you otherwise create or are likely to create liability for us.
+
+Any invitation made by Howdju to you to use the Services or submit content to the Services, or the fact that Howdju may receive a benefit from your use of the Services or provision of content to the Services, will not obligate Howdju to maintain any content or maintain your access to the Services. Howdju will have no liability to you for removing any content, for terminating your access to the Services, or for modifying or terminating the Services.
+
+## 5. Things You Must Not Do
+
+When using or accessing Howdju, you must comply with these Terms and all applicable laws, rules, and regulations. Please review the Code of Conduct, which are part of these Terms and contain Howdju’s rules about prohibited content and conduct. In addition to what is prohibited in the Code of Conduct, you may not do any of the following:
+
+* Use the Services in any manner that could interfere with, disable, disrupt, overburden, or otherwise impair the Services.
+* Gain access to (or attempt to gain access to) another user’s Account or any non-public portions of the Services, including the computer systems or networks connected to or used together with the Services.
+* Upload, transmit, or distribute to or through the Services any malware, viruses, spyware, worms, malicious code, or other software intended to interfere with the Services, including its security-related features.
+* Use the Services to violate applicable law or infringe any person’s or entity's intellectual property rights or any other proprietary rights.
+* Access, search, collect, or submit data from the Services by any means (automated or otherwise) except as permitted in these Terms or in a separate agreement with Howdju. We conditionally grant permission to crawl the Services in accordance with the parameters set forth in our robots.txt file, but scraping the Services without Howdju’s prior consent is prohibited.
+* Use the Services in any manner that we reasonably believe to be an abuse of or fraud on Howdju.
+
+We encourage you to report content or conduct that you believe violates these Terms or our Code of Conduct. We also support the responsible reporting of security vulnerabilities. To report a security issue, please email
+<span data-type="email" data-email-user="security" data-email-domain="howdju.com"></span>.
+
+## 6. Copyright, Trademark, the DMCA, and Takedowns
+
+Howdju respects the intellectual property of others and requires that users of our Services do the same. If you believe that anything on our Services infringes a copyright or a trademark that you own or control, you may notify us by email at
+<span data-type="email" data-email-user="legal" data-email-domain="howdju.com"></span>. Please include:
+
+* The email address you wish to use for correspondence
+* A subject line summarizing the nature of your inquiry
+* Your affirmation that the information you provide may be provided to affected parties upon request
+* The copyright owners full legal name
+* Your name, if different from the copyright owner’s
+* The full legal address of the copyright owner, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
+* Your contact address, if different from the full legal address of the copyright owner, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
+* Your contact phone number, if you would like to be contacted by phone
+* The URL(s) upon which the infringing material appears
+* Screenshots of the infringing material
+* The title of the copyrighted work, if applicable
+* A full description of the copyrighted work
+* Your affirmation of the following statement: “I state that I have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.”
+* Your affirmation of the following statement: “I state that the information in the notification is accurate, and under penalty of perjury, that I am authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.”
+* Include your full legal name again along with your affirmation of your intent to use your electronically transmitted name as your legally binding signature
+* Any additional attachment that may help us to understand and respond to your inquiry
+
+If you knowingly misrepresent that any activity or material on our Service is infringing, you may be liable to Howdju for certain costs and damages. Upon receiving a notice satisfying these requirements, Howdju will take whatever action, in its sole discretion, it deems appropriate, including removal of the challenged content from the services.
+
+If we remove Your Content in response to a copyright or trademark notice, we will notify you via email. If you believe Your Content was wrongly removed due to a mistake or misidentification in a copyright notice, you can send a counter notification via email to <span data-type="email" data-email-user="legal" data-email-domain="howdju.com"></span>. Please include the following in your email:
+
+* The email address you wish to use for correspondence
+* A subject line summarizing the nature of your inquiry
+* Details of your inquiry
+* Your full and legal name
+* Your full and legal address, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
+* Your contact phone number, if you would like to be contacted by phone
+* The URLs upon which the material you believe was mistakenly removed appears
+* Your explanation of why the material is not subject to removal for infringing the intellectual property rights of another
+* Your affirmation of the following statement: “I state, under penalty of perjury, that I have a good faith belief that the material was removed or disabled as a result of mistake or misidentification of the material to be removed or disabled.”
+* Your affirmation of the following statement: “I consent to the jurisdiction of federal district court for the judicial district in which my provided address is located, or if my address is outside of the United States, for any judicial district in which the service provider may be found”
+* Your affirmation of the following statement: “I will accept service of process from the person who provided notification under 17 U.S.C. § 512(c)(1)(c) or an agent of such person”
+* Include your full legal name again along with your affirmation of your intent to use your electronically transmitted name as your legally binding signature
+* Any additional attachment that may help us to understand and respond to your inquiry
+
+Please see 17 U.S.C. § 512(g)(3) for the requirements of a proper counter notification.
+
+## 7. Indemnity
+
+Except to the extent prohibited by law, you agree to defend, indemnify, and hold us, our directors, officers, employees, affiliates, agents, contractors, third-party service providers, and licensors (the “Howdju Entities”) harmless from any claim or demand, including costs and attorneys’ fees, made by any third party due to or arising out of (a) your use of the Services, (b) your violation of these Terms, (c) your violation of applicable laws or regulations, or (d) Your Content. We reserve the right to control the defense of any matter for which you are required to indemnify us, and you agree to cooperate with our defense of these claims.
+
+## 8. Disclaimers
+
+THE SERVICES ARE PROVIDED “AS IS” AND “AS AVAILABLE” WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, TITLE, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. HOWDJU ENTITIES DO NOT WARRANT THAT THE SERVICES OR THE CONTENT CONTAINED THEREIN ARE ACCURATE, COMPLETE, RELIABLE, CURRENT, OR ERROR FREE. HOWDJU DOES NOT CONTROL, ENDORSE, OR TAKE RESPONSIBILITY FOR ANY CONTENT AVAILABLE ON OR LINKED TO THE SERVICES OR THE ACTIONS OF ANY THIRD PARTY OR USER. WHILE HOWDJU ATTEMPTS TO MAKE YOUR ACCESS TO AND USE OF OUR SERVICES SAFE, WE DO NOT REPRESENT OR WARRANT THAT OUR SERVICES OR SERVERS ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.
+
+## 9. Limitation of Liability
+
+IN NO EVENT AND UNDER NO THEORY OF LIABILITY, INCLUDING CONTRACT, TORT, NEGLIGENCE, STRICT LIABILITY, WARRANTY, OR OTHERWISE, WILL THE HOWDJU ENTITIES BE LIABLE TO YOU FOR ANY INDIRECT, CONSEQUENTIAL, EXEMPLARY, INCIDENTAL, SPECIAL, OR PUNITIVE DAMAGES, OR LOST PROFITS ARISING FROM OR RELATING TO THESE TERMS OR THE SERVICES, INCLUDING THOSE ARISING FROM OR RELATING TO CONTENT MADE AVAILABLE ON THE SERVICES THAT IS ALLEGED TO BE UNTRUE, MISLEADING, HARMFUL, DEFAMATORY, OFFENSIVE, OR ILLEGAL. ACCESS TO, AND USE OF, THE SERVICES IS AT YOUR OWN DISCRETION AND RISK, AND YOU WILL BE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR DEVICE OR COMPUTER SYSTEM, OR LOSS OF DATA RESULTING THEREFROM. IN NO EVENT WILL THE AGGREGATE LIABILITY OF THE HOWDJU ENTITIES EXCEED THE GREATER OF ONE HUNDRED U.S. DOLLARS ($100) OR ANY AMOUNT YOU PAID HOWDJU IN THE PREVIOUS SIX MONTHS FOR THE SERVICES GIVING RISE TO THE CLAIM. THE LIMITATIONS OF THIS SECTION WILL APPLY TO ANY THEORY OF LIABILITY, INCLUDING THOSE BASED ON WARRANTY, CONTRACT, STATUTE, TORT (INCLUDING NEGLIGENCE) OR OTHERWISE, AND EVEN IF THE HOWDJU ENTITIES HAVE BEEN ADVISED OF THE POSSIBILITY OF ANY SUCH DAMAGE, AND EVEN IF ANY REMEDY SET FORTH HEREIN IS FOUND TO HAVE FAILED ITS ESSENTIAL PURPOSE. THE FOREGOING LIMITATION OF LIABILITY WILL APPLY TO THE FULLEST EXTENT PERMITTED BY LAW IN THE APPLICABLE JURISDICTION.
+
+Howdju has no responsibility or liability to you arising from hacking event, data breach, theft, misuse of information, conspiracy, racket, fraud, act of terrorism, misappropriation of information, technical malfunction, interruption of service, or similar event that may cause you to suffer damage, loss, or injury, including without limitation any damage to or loss of your personal property, data, operations, information, reputation, goodwill, profits, etc.
+
+## 10. Governing Law, Venue and Duration of Claims
+
+These terms are governed by the laws of Washington State, United States of America. You assent to jurisdiction of the courts of King County, Washington State, United States of America. You agree that the laws of the State of Washington and, to the extent applicable, the laws of the United States of America, will govern these Terms of Use, as well as any legal claim that might arise between you and us (without reference to conflict of laws principles). You agree to submit to the personal jurisdiction of, and agree that venue is proper in, the courts located in King County, Washington, in any legal action or proceeding relating to us or these Terms.
+
+If you are a federal, state, or local government entity in the United States using the Services in your official capacity and legally unable to accept the controlling law, jurisdiction or venue clauses above, then those clauses do not apply to you. For such U.S. federal government entities, these Terms and any action related thereto will be governed by the laws of the United States of America (without reference to conflict of laws) and, in the absence of federal law and to the extent permitted under federal law, the laws of the State of Washington (excluding choice of law).
+
+To ensure that disputes are dealt with soon after they arise, you agree that regardless of any statute or law to the contrary, any claim or cause of action you might have arising out of or related to use of our services or these Terms must be filed within the applicable statute of limitations or, if earlier, one (1) year after the pertinent facts underlying such claim or cause of action could have been discovered with reasonable diligence (or be forever barred).
+
+## 11. Changes to these Terms
+
+We may make changes to these Terms from time to time. If we make changes, we will post the revised Terms and update the Effective Date above. If the changes, in our sole discretion, are material, we may also notify you by sending an email to the address associated with your Account (if you have chosen to provide an email address) or by otherwise providing notice through our Services. By continuing to access or use the Services on or after the Effective Date of the revised Terms, you agree to be bound by the revised Terms. If you do not agree to the revised Terms, you must stop accessing and using our Services before the changes become effective.
+
+## 12. Additional Terms
+
+Because we offer a variety of Services, you may be asked to agree to additional terms before using a specific product or service offered by Howdju (“Additional Terms”). To the extent any Additional Terms conflict with these Terms, the Additional Terms govern with respect to your use of the corresponding Service.
+
+## 13. Termination
+
+You may terminate these Terms at any time and for any reason by deleting your Account and discontinuing use of all Services. If you stop using the Services without deleting your Account, your Account may be deactivated due to prolonged inactivity.
+
+We may suspend or terminate your Account or ability to access or use the Services at any time for any or no reason, including for violating these Terms or our Code of Conduct.
+
+The following sections will survive any termination of these Terms or of your Account: 4 (Your Content), 5 (Things You Cannot Do), 7 (Indemnity), 8 (Disclaimers), 9 (Limitation of Liability), 10 (Governing Law and Venue), 13 (Termination), and 14 (Miscellaneous).
+
+## 17. Miscellaneous
+
+These Terms do not create an employment, agency, partnership, or joint venture relationship between you Howdju. These Terms constitute the entire agreement between you and us regarding your access to and use of the Services. Our failure to exercise or enforce any right or provision of these Terms will not operate as a waiver of such right or provision. If any provision or part of a provision of these Terms is found unlawful, invalid, void, or unenforceable, that provision or part of the provision is deemed severable from these Terms and will be enforced to the maximum extent permissible, and all other provisions of these Terms will remain in full force and effect. You may not assign or transfer any of your rights or obligations under these Terms without our consent. We may freely assign any of our rights and obligations under these Terms.
+
+Contact Information:
+Carl Gieringer
+<span data-type="email" data-email-user="carl" data-email-domain="howdju.com"></span>

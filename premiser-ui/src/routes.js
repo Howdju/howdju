@@ -24,17 +24,23 @@ import PasswordResetRequestPage from './PasswordResetRequestPage'
 import PasswordResetConfirmationPage from './PasswordResetConfirmationPage'
 import paths, {createJustificationPath} from './paths'
 import PersorgPage from './PersorgPage'
-import PrivacyPolicyPage from './PrivacyPolicyPage'
+import PoliciesOverviewPage from './policies/PoliciesOverviewPage'
 import PropositionUsagesPage from './PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
 import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import RegistrationRequestPage from './RegistrationRequestPage'
 import TagPage from './TagPage'
-import TermsPage from './TermsPage'
 import TestErrorPage from './TestErrorPage'
 import ToolsPage from './ToolsPage'
 import WhatsNextPage from './WhatsNextPage'
+import PolicyPage from "./policies/PolicyPage"
 
+import principlesInnerHtml from './policies/principles.md'
+import userAgreementInnerHtml from './policies/user-agreement.md'
+import codeOfConductInnerHtml from './policies/code-of-conduct.md'
+import privacyPolicyInnerHtml from './policies/privacy-policy.md'
+import cookieNoticeInnerHtml from './policies/cookie-notice.md'
+import faqInnerHtml from './policies/faq.md'
 
 const renderHomePath = props => {
   const mainSearchText = mainSearcher.mainSearchText(props.location)
@@ -78,8 +84,27 @@ const routes = [
   )} />,
 
   <Route key="tools" exact path="/tools" component={ToolsPage} />,
-  <Route key="privacyPolicy" exact path={paths.privacyPolicy()} component={PrivacyPolicyPage} />,
-  <Route key="terms" exact path={paths.terms()} component={TermsPage} />,
+
+  <Route key="policiesOverview" exact path={paths.policiesOverview()} component={PoliciesOverviewPage} />,
+  <Route key="values" exact path={paths.principles()} render={() => (
+    <PolicyPage pageTitle="Values" innerHtml={principlesInnerHtml} />
+  )} />,
+  <Route key="userAgreement" exact path={paths.userAgreement()} render={() => (
+    <PolicyPage pageTitle="User Agreement" innerHtml={userAgreementInnerHtml} />
+  )} />,
+  <Route key="codeOfConduct" exact path={paths.codeOfConduct()} render={() => (
+    <PolicyPage pageTitle="Code of Conduct" innerHtml={codeOfConductInnerHtml} />
+  )} />,
+  <Route key="privacyPolicy" exact path={paths.privacyPolicy()} render={() => (
+    <PolicyPage pageTitle="Privacy Policy" innerHtml={privacyPolicyInnerHtml} />
+  )} />,
+  <Route key="cookieNotice" exact path={paths.cookieNotice()} render={() => (
+    <PolicyPage pageTitle="Cookie Notice" innerHtml={cookieNoticeInnerHtml} />
+  )} />,
+  <Route key="faq" exact path={paths.faq()} render={() => (
+    <PolicyPage pageTitle="Frequently Asked Questions" innerHtml={faqInnerHtml} />
+  )} />,
+
   <Route key="icons" exact path="/icons" component={IconPage} />,
 
   <Route key="testError" exact path="/test-error" component={TestErrorPage} />,
