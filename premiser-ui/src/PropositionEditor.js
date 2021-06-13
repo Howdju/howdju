@@ -16,7 +16,7 @@ import {
 import {EditorTypes} from "./reducers/editors"
 import PropositionEditorFields from "./PropositionEditorFields"
 import {
-  CANCEL_BUTTON_LABEL, EDIT_PROPOSITION_SUBMIT_BUTTON_LABEL
+  CANCEL_BUTTON_LABEL, EDIT_ENTITY_SUBMIT_BUTTON_LABEL
 } from "./texts"
 import t from './texts'
 
@@ -82,7 +82,7 @@ class PropositionEditor extends Component {
                   primary
                   key="submitButton"
                   type="submit"
-                  children={t(EDIT_PROPOSITION_SUBMIT_BUTTON_LABEL)}
+                  children={t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
                   disabled={inProgress}
           />
         </CardActions>

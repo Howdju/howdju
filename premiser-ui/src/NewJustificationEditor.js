@@ -15,7 +15,7 @@ import {
 import {EditorTypes} from "./reducers/editors"
 import t, {
   CANCEL_BUTTON_LABEL,
-  EDIT_PROPOSITION_SUBMIT_BUTTON_LABEL
+  EDIT_ENTITY_SUBMIT_BUTTON_LABEL
 } from "./texts"
 import {
   combineIds,
@@ -105,7 +105,7 @@ class NewJustificationEditor extends Component {
         primary
         key="submitButton"
         type="submit"
-        children={t(EDIT_PROPOSITION_SUBMIT_BUTTON_LABEL)}
+        children={t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
         disabled={isSaving}
       />
     ]
