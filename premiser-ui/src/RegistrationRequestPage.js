@@ -81,6 +81,7 @@ class RegistrationRequestPage extends React.Component {
             <EmailTextField
               id="email"
               name="email"
+              autocomplete="email"
               value={email}
               maxLength={schemaSettings.userEmailMaxLength}
               onBlur={this.onBlur}

@@ -122,6 +122,7 @@ class LoginPage extends Component {
                       {...passwordInputProps}
                       id="password"
                       name="password"
+                      autofill="current-password"
                       value={password}
                       required
                       onPropertyChange={this.onPropertyChange}
@@ -169,11 +170,9 @@ class LoginPage extends Component {
                   Howdju 2.0 is currently in private gamma.  Enter your email to be notified when signups are available:
                 </CardText>
                 <CardText>
-                  <TextField id="mce-email"
-                             type="email"
-                             name="EMAIL"
-                             label="Email"
-                             required
+                  <EmailTextField id="mce-email"
+                                  name="EMAIL"
+                                  required
                   />
                   <input type="hidden" name="b_ccf334287da1fbf7af0904629_f08c3a775d" tabIndex="-1" />
                 </CardText>

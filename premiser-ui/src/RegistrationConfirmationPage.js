@@ -33,6 +33,7 @@ import {
   mapActionCreatorGroupToDispatchToProps
 } from './actions'
 import Link from './Link'
+import EmailTextField from './EmailTextField'
 import PasswordTextField from './PasswordTextField'
 import paths from './paths'
 import {EditorTypes} from './reducers/editors'
@@ -118,15 +119,15 @@ class RegistrationConfirmationPage extends React.Component {
       <form onSubmit={this.onSubmit}>
         <FocusContainer focusOnMount containFocus={false}>
           <CardText>
-            <SingleLineTextField
+            <EmailTextField
               id="email"
               value={email}
-              label="Email"
               disabled
             />
             <SingleLineTextField
               id="username"
               name="username"
+              autocomplete="username"
               label="Username"
               value={username}
               maxLength={schemaSettings.usernameMaxLength}
@@ -150,6 +151,7 @@ class RegistrationConfirmationPage extends React.Component {
             <PasswordTextField
               id="password"
               name="password"
+              autocomplete="new-password"
               value={password}
               minLength={schemaSettings.passwordMinLength}
               maxLength={schemaSettings.passwordMaxLength}
@@ -164,6 +166,7 @@ class RegistrationConfirmationPage extends React.Component {
             <SingleLineTextField
               id="long-name"
               name="longName"
+              autocomplete="name"
               label="Full Name"
               value={longName}
               maxLength={schemaSettings.longNameMaxLength}
@@ -178,6 +181,7 @@ class RegistrationConfirmationPage extends React.Component {
             <SingleLineTextField
               id="short-name"
               name="shortName"
+              autocomplete="given-name"
               label="First Name"
               value={shortName}
               maxLength={schemaSettings.shortNameMaxLength}
