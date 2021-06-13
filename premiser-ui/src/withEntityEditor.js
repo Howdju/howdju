@@ -18,6 +18,14 @@ import {
 } from "./texts"
 import t, {EDIT_ENTITY_SUBMIT_BUTTON_LABEL} from './texts'
 
+/**
+ * HOC for creating an editor of an entity.
+ *
+ * @param editorType {EditorType|string} The EditorType
+ * @param EntityEditorFields {EditorFields} The fields for editing the entity
+ * @param editorFieldsEditEntityPropName {string} The prop name under which the edited entity should be provided to the editor fields
+ * @returns {Component} An entity editor component
+ */
 export default function withEntityEditor(editorType, EntityEditorFields, editorFieldsEditEntityPropName) {
 
   class EntityEditor extends Component {

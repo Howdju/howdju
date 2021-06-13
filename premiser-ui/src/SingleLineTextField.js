@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {TextField} from 'react-md'
 import PropTypes from 'prop-types'
+import isNull from 'lodash/isNull'
 
 import {
   toSingleLine
@@ -35,6 +36,7 @@ export default class SingleLineTextField extends Component {
     const {
       name,
       type,
+      value,
       rows,
       maxRows,
       disabled,
@@ -46,11 +48,14 @@ export default class SingleLineTextField extends Component {
     } = this.props
     // password inputs must be <input>, which don't support rows.  If you try it becomes a <textfield> and shows the password!
     const rowProps = type !== 'password' ? {rows, maxRows} : {}
+    // ``value` prop on `textarea` should not be null. Consider using an empty string to clear the component or `undefined` for uncontrolled components.`
+    const textareaValue = isNull(value) ? '' : value
     return (
       <TextField
         {...rest}
         name={name}
         type={type}
+        value={textareaValue}
         {...rowProps}
         disabled={disabled}
         onKeyDown={this.onKeyDown}
