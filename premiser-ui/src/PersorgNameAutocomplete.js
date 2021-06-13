@@ -3,9 +3,11 @@ import PropTypes from 'prop-types'
 
 import ApiAutocomplete from "./ApiAutocomplete"
 import {persorgSchema} from './normalizationSchemas'
+import {connect} from "react-redux"
+import {api, mapActionCreatorGroupToDispatchToProps} from "./actions"
 
 
-export default class PersorgNameAutocomplete extends Component {
+class PersorgNameAutocomplete extends Component {
 
   onAutocomplete = (persorg) => {
     if (this.props.onAutocomplete) {
@@ -51,3 +53,7 @@ export default class PersorgNameAutocomplete extends Component {
     )
   }
 }
+
+export default connect(null, mapActionCreatorGroupToDispatchToProps({
+  api,
+}))(PersorgNameAutocomplete)

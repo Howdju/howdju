@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import get from 'lodash/get'
 import has from 'lodash/has'
@@ -10,7 +9,6 @@ import {
 
 import {schemaSettings} from 'howdju-common'
 
-import {api, mapActionCreatorGroupToDispatchToProps} from './actions'
 import PersorgNameAutocomplete from './PersorgNameAutocomplete'
 import ErrorMessages from "./ErrorMessages"
 import {toErrorText} from "./modelErrorMessages"
@@ -29,7 +27,7 @@ import {
 
 const nameName = 'name'
 
-class PersorgEditorFields extends Component {
+export default class PersorgEditorFields extends Component {
 
   static propTypes = {
     persorg: PropTypes.object,
@@ -202,7 +200,3 @@ class PersorgEditorFields extends Component {
     )
   }
 }
-
-export default connect(null, mapActionCreatorGroupToDispatchToProps({
-  api,
-}))(PersorgEditorFields)
