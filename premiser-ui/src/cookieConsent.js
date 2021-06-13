@@ -79,11 +79,9 @@ export function isMissingPrivacyConsent() {
 
 export function showPrivacyConsentDialog() {
   if (!haveAppendedDialog) {
-    logger.debug('appending privacy consent dialog')
     document.body.appendChild(cookieConsent.getDialog())
     haveAppendedDialog = true
   }
-  logger.debug('showing privacy consent dialog')
   cookieConsent.showDialog()
 }
 

@@ -24,6 +24,7 @@ import PasswordResetRequestPage from './PasswordResetRequestPage'
 import PasswordResetConfirmationPage from './PasswordResetConfirmationPage'
 import paths, {createJustificationPath} from './paths'
 import PersorgPage from './PersorgPage'
+import PrivacySettingsPage from "./PrivacySettingsPage"
 import PoliciesOverviewPage from './policies/PoliciesOverviewPage'
 import PropositionUsagesPage from './PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
@@ -84,10 +85,11 @@ const routes = [
   )} />,
 
   <Route key="tools" exact path="/tools" component={ToolsPage} />,
+  <Route key="privacySettings" exact path="/settings/privacy" component={PrivacySettingsPage} />,
 
   <Route key="policiesOverview" exact path={paths.policiesOverview()} component={PoliciesOverviewPage} />,
   <Route key="values" exact path={paths.principles()} render={() => (
-    <PolicyPage pageTitle="Values" innerHtml={principlesInnerHtml} />
+    <PolicyPage pageTitle="Principles" innerHtml={principlesInnerHtml} />
   )} />,
   <Route key="userAgreement" exact path={paths.userAgreement()} render={() => (
     <PolicyPage pageTitle="User Agreement" innerHtml={userAgreementInnerHtml} />

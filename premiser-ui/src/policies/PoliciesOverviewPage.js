@@ -3,9 +3,9 @@ import {Card, CardText} from 'react-md'
 import {Link} from "react-router-dom"
 
 import paths from "../paths"
+import Helmet from '../Helmet'
 
 import './PoliciesOverviewPage.scss'
-import Helmet from '../Helmet'
 
 const PoliciesOverviewPage = () => (
   <div className="md-grid policies">

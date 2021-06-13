@@ -3,13 +3,12 @@
 ## Reboot
 
 - Release
-  - Implement SNS/email; enable registration
-    Add autofill attributes: https://www.chromium.org/developers/design-documents/create-amazing-password-forms
+  - Enable registration
     Terms:
-      Add https://www.howdju.com/settings/privacy page
       profile page/paid affiliation box,
       deleted accounts: anonymous replacement
       report functionality
+    Fix front page example
     Rate limiting, secret management
     User activity page
     Add non-sentry error-handling

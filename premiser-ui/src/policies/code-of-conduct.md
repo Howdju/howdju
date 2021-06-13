@@ -7,7 +7,7 @@ violates this Code of Conduct, please report it using the provided functionality
 
 This Code of Conduct helps you understand what behaviors are desirable and which are unacceptable when using Howdju. Please note that engaging in unacceptable behavior constitutes grounds for temporary suspension or permanent account termination.
 
-This Code of Conduct is part of our [User Agreement](/polices/user-agreement).
+This Code of Conduct is part of our [User Agreement](/policies/user-agreement).
 
 ## Things you should do
 
@@ -58,7 +58,9 @@ We will terminate accounts and block addresses of those who attempt unauthorized
 
 You must not infringe copyrights, trademarks, patents, or other proprietary rights under applicable law.
 
-Using copyrighted material does not constitute infringement in all cases. In general, however, you should be careful when using copyrighted content without the permission of those who created it. It is our policy to respond to notices of alleged infringement sent to legal@howdju.com that comply with the Digital Millennium Copyright Act ("DMCA").
+Using copyrighted material does not constitute infringement in all cases. In general, however, you should be careful when using copyrighted content without the permission of those who created it. It is our policy to respond to notices of alleged infringement sent to
+<span data-type="email" data-email-user="legal" data-email-domain="howdju.com"></span> that comply with the Digital
+Millennium Copyright Act ("DMCA").
 
 ### Automation and Mass Registration
 

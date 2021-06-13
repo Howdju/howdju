@@ -2,7 +2,8 @@
 
 ## Mission
 
-Howdju's mission is to minimize the time required to understand representative viewpoints about uncertain or disputed topics.
+Howdju's mission is to minimize the time required to understand representative viewpoints about uncertain or disputed
+topics by connecting users with the most relevant and authoritative sources for those viewpoints.
 
 ## Vision
 
