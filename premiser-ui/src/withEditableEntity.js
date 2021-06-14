@@ -11,7 +11,8 @@ import {isTruthy} from 'howdju-common'
  *
  * @param entityPropName {string} The name of the prop by which the entity will be provided to the component. The entity
  *     is provided to the viewer component using the same prop name.
- * @param EditorComponent {Component} The editor component. Shown when there is an active edit for the editor type and ID.
+ * @param EditorComponent {Component} The editor component. Shown when there is an active edit for the editor type and
+ *     ID. The component must have a static property editorType of type string|EditorType.
  * @param ViewerComponent {Component} The viewer component. Shown when there is no active edit for the editor type and ID.
  * @returns {Component} An editable entity component
  */

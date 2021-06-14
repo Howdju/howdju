@@ -7,10 +7,13 @@ import EntityViewer from './EntityViewer'
  *
  * @param EntityComponent {Component} The component for rendering the entity
  * @param entityPropName {string} The prop name of the entity
+ * @param iconName {string} The icon name to use
+ * @param iconTitle {string} The title to use for hte icon
  * @param entityLinkFn {function<object,string>} creates a link to an entity. Only called when the entity is truthy.
  * @returns {Component}
  */
-export default function(EntityComponent, entityPropName, entityLinkFn) {
+export default function withEntityViewer(EntityComponent, entityPropName, iconName,
+                                         iconTitle, entityLinkFn) {
   return class extends Component {
     static propTypes = {
       id: PropTypes.string.isRequired,
@@ -33,8 +36,8 @@ export default function(EntityComponent, entityPropName, entityLinkFn) {
       const entity = this.props[entityPropName]
       return (
         <EntityViewer
-          iconName="person"
-          iconTitle="Person/Organization"
+          iconName={iconName}
+          iconTitle={iconTitle}
           iconLink={entity && entityLinkFn(entity)}
           className={className}
           component={component}
