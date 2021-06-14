@@ -100,7 +100,7 @@ class PersorgPage extends React.Component {
           className="md-cell md-cell--12"
           persorg={persorg}
           menu={menu}
-          suggestionKeys={combineSuggestionsKeys(PersorgPage.id, 'persorg')}
+          suggestionsKey={combineSuggestionsKeys(PersorgPage.id, 'persorg')}
         />
         <h2 className="md-cell md-cell--12">Statements</h2>
         <CellList className="md-grid md-cell md-cell--12 md-grid--card-list--tablet">{statementCards}</CellList>

@@ -9,14 +9,13 @@ import {isTruthy} from 'howdju-common'
 /**
  * HOC for creating an editable entity component
  *
- * @param editorType
  * @param entityPropName {string} The name of the prop by which the entity will be provided to the component. The entity
  *     is provided to the viewer component using the same prop name.
  * @param EditorComponent {Component} The editor component. Shown when there is an active edit for the editor type and ID.
  * @param ViewerComponent {Component} The viewer component. Shown when there is no active edit for the editor type and ID.
  * @returns {Component} An editable entity component
  */
-export default function withEditableEntity(editorType, entityPropName, EditorComponent, ViewerComponent) {
+export default function withEditableEntity(entityPropName, EditorComponent, ViewerComponent) {
   class EditableEntity extends Component {
 
     static propTypes = {
@@ -80,7 +79,7 @@ export default function withEditableEntity(editorType, entityPropName, EditorCom
   const mapStateToProps = (state, ownProps) => {
     const editorId = ownProps.editorId
     const {editEntity, isFetching} = editorId ?
-      get(state.editors, [editorType, editorId], {}) :
+      get(state.editors, [EditorComponent.editorType, editorId], {}) :
       {}
     const isEditing = isTruthy(editEntity)
     return {
