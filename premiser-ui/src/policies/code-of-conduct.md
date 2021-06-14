@@ -72,7 +72,7 @@ You may not post obscene, sexually explicit or pornographic material, or links t
 
 ### Paid contributions without disclosure
 
-You must disclose your employer, client, and affiliation with respect to the creation or submission of any content for which you receive, or expect to receive, compensation. You must make that disclosure in the designated field on your profile page. An example disclosure is the following: “I may/will/do receive compensation from Company A for my content relating to topics X, Y, and Z.” (Select the applicable wording from “may/will/do”.) Your paid contribution disclosure will remain on your anonymized profile page even after your account is deleted.
+If you receive, or expect to receive, any compensation for any actions you take using the Services, you must disclose this on your profile page. You must list all employers, clients, or affiliations from which you receive, or expect to receive, compensation, and you must list the topics about which the payments relate. An example disclosure is the following: “I receive compensation from Company A for my content relating to topics X, Y, and Z.” Your paid contribution disclosure will remain on your anonymized profile page after your account is deleted.
 
 Applicable law, such as those addressing conflicts of interest, may further limit paid contributions or require more detailed disclosure.
 

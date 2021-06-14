@@ -136,9 +136,8 @@ export const tagPage = handleActions({
 }, defaultTagPageState)
 
 const defaultPersorgPageState = {
-  propositions: [],
+  statements: [],
   isFetching: false,
-  tagId: null,
 }
 export const persorgPage = handleActions({
   [api.fetchSpeakerStatements]: (state, action) => ({
@@ -165,6 +164,42 @@ export const persorgPage = handleActions({
     ...defaultTagPageState
   }),
 }, defaultPersorgPageState)
+
+
+const defaultAccountSettingsPageState = {
+  accountSettings: null,
+  isFetching: false,
+}
+export const accountSettingsPage = handleActions({
+  [api.fetchAccountSettings]: (state, action) => ({
+    ...state,
+    isFetching: true,
+  }),
+  [api.fetchAccountSettings.response]: {
+    next: (state, action) => {
+      return {
+        ...state,
+        accountSettings: action.payload.accountSettings,
+        isFetching: false
+      }
+    },
+    throw: (state, action) => ({
+      ...state,
+      accountSettings: null,
+      isFetching: false
+    }),
+  },
+  [api.updateAccountSettings.response]: {
+    next: (state, action) => {
+      return {
+        ...state,
+        accountSettings: action.payload.accountSettings,
+      }
+    },
+  },
+}, defaultAccountSettingsPageState)
+
+
 
 export const propositionUsagesPage = handleActions({
   [api.fetchSentenceStatements]: {
@@ -225,7 +260,7 @@ export const propositionUsagesPage = handleActions({
 
 export const registrationConfirmationPage = handleActions({
   [combineActions(
-    api.checkRegistration.response, 
+    api.checkRegistration.response,
     api.confirmRegistration.response,
   )]: {
     next: (state, action) => ({...state, email: action.payload.email, didCheckRegistration: true, registrationErrorCode: null}),
@@ -253,9 +288,9 @@ export const passwordResetRequestPage = handleActions({
   [api.requestPasswordReset]: (state, action) => ({...state, isSubmitting: true}),
   [api.requestPasswordReset.response]: {
     next: (state, action) => ({
-      ...state, 
-      duration: action.payload.duration, 
-      isSubmitting: false, 
+      ...state,
+      duration: action.payload.duration,
+      isSubmitting: false,
       isSubmitted: true,
     }),
     throw: (state, action) => {

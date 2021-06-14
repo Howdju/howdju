@@ -11,8 +11,11 @@
     "check:pushed": "bin/check-pushed.sh",
     "check-preconditions:all": "yarn workspaces foreach -Apv run check-preconditions ",
     "lint:all": "bin/lint-all.sh",
+    "lint:howdju-client-common": "yarn workspace howdju-client-common run lint",
+    "lint:howdju-common": "yarn workspace howdju-common run lint",
+    "lint:howdju-service-common": "yarn workspace howdju-service-common run lint",
     "test:all": "bin/test-all.sh",
-    "start:api:localhost": "yarn workspaces premiser-api run start-localhost"
+    "start:api:localhost": "yarn workspace premiser-api run start-localhost"
   },
   "workspaces": [
     "eslint-config-howdju",

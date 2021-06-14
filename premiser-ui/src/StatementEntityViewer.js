@@ -49,9 +49,9 @@ export default class StatementEntityViewer extends Component {
       const creatorName = get(statement, 'creator.longName')
       const creatorNameDescription = creatorName && ` by ${creatorName}` || ''
 
-      const modifiedDescription = modified && (
-        <span>(modified <span title={modified}>{modifiedAge}</span>)</span>
-      )
+      const modifiedTitle = <span title={modified}>{modifiedAge}</span>
+      const modifiedSpan = (<span>(modified {modifiedTitle})</span>)
+      const modifiedDescription = modified && modifiedSpan
       entityStatusText = (
         <span className="entity-status-text">
           created{creatorNameDescription} {modifiedDescription} <span title={created}>{age}</span>

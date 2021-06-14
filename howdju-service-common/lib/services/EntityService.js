@@ -10,8 +10,9 @@ const {
 } = require('./validationSchemas')
 
 module.exports.EntityService = class EntityService {
-  constructor(logger, authService) {
-    requireArgs({logger, authService})
+  constructor(entitySchema, logger, authService) {
+    requireArgs({entitySchema, logger, authService})
+    this.entitySchema = entitySchema
     this.logger = logger
     this.authService = authService
   }

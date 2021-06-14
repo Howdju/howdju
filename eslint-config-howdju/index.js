@@ -25,7 +25,9 @@ module.exports = {
     indent: [
       "warn",
       2,
-      {SwitchCase: 1,}
+      {
+        SwitchCase: 1,
+      },
     ],
     "linebreak-style": ["error", "unix"],
     "no-cond-assign": [

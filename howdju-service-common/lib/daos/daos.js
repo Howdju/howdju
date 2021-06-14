@@ -2,6 +2,7 @@ const assign = require('lodash/assign')
 
 module.exports = assign(
   {},
+  require('./AccountSettingsDao'),
   require('./ActionsDao'),
   require('./AuthDao'),
   require('./JobHistoryDao'),

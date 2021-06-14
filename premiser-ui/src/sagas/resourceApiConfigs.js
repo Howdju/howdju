@@ -255,6 +255,26 @@ export const resourceApiConfigs = {
     normalizationSchema: {statements: statementsSchema}
   }),
 
+  /* Account */
+
+  [api.createAccountSettings]: (payload) => ({
+    endpoint: `account-settings`,
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload
+    },
+  }),
+  [api.fetchAccountSettings]: () => ({
+    endpoint: `account-settings`,
+  }),
+  [api.updateAccountSettings]: (payload) => ({
+    endpoint: `account-settings`,
+    fetchInit: {
+      method: httpMethods.PUT,
+      body: payload
+    },
+  }),
+
   /* Auth */
 
   [api.login]: (payload) => ({

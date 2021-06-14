@@ -2,6 +2,7 @@ const assign = require('lodash/assign')
 
 module.exports = assign(
   {},
+  require('./AccountSettingsService'),
   require('./ActionsService'),
   require('./AuthService'),
   require('./EmailService'),

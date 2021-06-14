@@ -4,7 +4,6 @@ import {goBack} from 'connected-react-router'
 import {Link} from 'react-router-dom'
 import Helmet from './Helmet'
 import {
-  TextField,
   Button,
   Card,
   CardTitle,
@@ -33,8 +32,6 @@ import paths from './paths'
 import {EditorTypes} from "./reducers/editors"
 import {selectAuthEmail} from './selectors'
 import t from './texts'
-
-import './LoginPage.scss'
 
 class LoginPage extends Component {
 

@@ -13,8 +13,7 @@ module.exports.StatementsService = class StatementsService extends EntityService
 
   constructor(logger, authService, statementsDao, persorgsService, propositionsService) {
     requireArgs({logger, authService, statementsDao, persorgsService, propositionsService})
-    super(logger, authService)
-    this.entitySchema = statementSchema
+    super(statementSchema, logger, authService)
     this.statementsDao = statementsDao
     this.persorgsService = persorgsService
     this.propositionsService = propositionsService

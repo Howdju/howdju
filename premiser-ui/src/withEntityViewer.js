@@ -13,8 +13,9 @@ import EntityViewer from './EntityViewer'
  * @returns {Component}
  */
 export default function withEntityViewer(EntityComponent, entityPropName, iconName,
-                                         iconTitle, entityLinkFn) {
-  return class extends Component {
+  iconTitle, entityLinkFn
+) {
+  return class EntityViewerWrapper extends Component {
     static propTypes = {
       id: PropTypes.string.isRequired,
     }

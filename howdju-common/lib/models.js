@@ -99,6 +99,10 @@ _e.makeUser = (props) => assign({
   isActive: false,
 }, props)
 
+_e.makeAccountSettings = (props) => assign({
+  paidContributionsDisclosure: '',
+}, props)
+
 _e.makeNewProposition = (props) => assign({text: ''}, props)
 
 _e.makeNewStatement = (speaker, sentenceType, sentence) => ({

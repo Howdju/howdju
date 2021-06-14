@@ -5,12 +5,12 @@
 - Release
   - Enable registration
     Terms:
-      profile page/paid affiliation box,
-      deleted accounts: anonymous replacement
       report functionality
+      deleted accounts: anonymous replacement
     Fix front page example
     Rate limiting, secret management
-    User activity page
+    other profile page
+    user activity page (filter recent activity by user additionally)
     Add non-sentry error-handling
     Citation confirmation crawler
   - Basic iPhone app for capturing anchor fields?
@@ -35,6 +35,8 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
 ## Missing things (thar be dragons)
 
 * Two validation libraries: AJV and Joi
+* Update other 'Entity' classes to use the HOCs withEntityCard, withEntityViewer, withEditableEntity, and withEntityEditor
+  (see PersorgEntityCard for an example)
 * Proposition page has no obvious indication of related statements ("See usages", though)
 * Incomplete transition to have generic justifiables
 * Legacy justification basis type: JustificationBasisCompound type
@@ -44,6 +46,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
 * Test extension warnings
 * Incomplete handling of UI/API validation errors/messages
 * Custom routing
+* The entities reducer makes some questionable assumptions
 
 ## Current plan
 

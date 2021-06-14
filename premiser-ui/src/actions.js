@@ -84,6 +84,10 @@ export const api = {
 
   fetchFeaturedPerspectives: apiActionCreator('FETCH_FEATURED_PERSPECTIVES', (widgetId) => ({widgetId})),
 
+  createAccountSettings: apiActionCreator('CREATE_ACCOUNT_SETTINGS', (accountSettings) => ({accountSettings})),
+  fetchAccountSettings: apiActionCreator('FETCH_ACCOUNT_SETTINGS'),
+  updateAccountSettings: apiActionCreator('UPDATE_ACCOUNT_SETTINGS', (accountSettings) => ({accountSettings})),
+
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
     ({filters, includeUrls, count, continuationToken}) => ({filters, includeUrls, count, continuationToken})
   ),

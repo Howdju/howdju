@@ -67,7 +67,7 @@ exports.JustificationsService = class JustificationsService extends EntityServic
     justificationsDao,
     permissionsDao
   ) {
-    super(logger, authService)
+    super(justificationSchema, logger, authService)
     requireArgs({
       config,
       logger,
@@ -81,7 +81,6 @@ exports.JustificationsService = class JustificationsService extends EntityServic
       justificationsDao,
       permissionsDao
     })
-    this.entitySchema = justificationSchema
     this.config = config
     this.logger = logger
     this.actionsService = actionsService

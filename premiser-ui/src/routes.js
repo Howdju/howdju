@@ -30,6 +30,7 @@ import PropositionUsagesPage from './PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
 import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import RegistrationRequestPage from './RegistrationRequestPage'
+import AccountSettingsPage from "./AccountSettingsPage"
 import TagPage from './TagPage'
 import TestErrorPage from './TestErrorPage'
 import ToolsPage from './ToolsPage'
@@ -84,8 +85,9 @@ const routes = [
     <CreatePropositionPage {...props} mode={CreatePropositionPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING} />
   )} />,
 
-  <Route key="tools" exact path="/tools" component={ToolsPage} />,
+  <Route key="settings" exact path="/settings" component={AccountSettingsPage} />,
   <Route key="privacySettings" exact path="/settings/privacy" component={PrivacySettingsPage} />,
+  <Route key="tools" exact path="/tools" component={ToolsPage} />,
 
   <Route key="policiesOverview" exact path={paths.policiesOverview()} component={PoliciesOverviewPage} />,
   <Route key="values" exact path={paths.principles()} render={() => (

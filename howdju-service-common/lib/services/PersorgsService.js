@@ -19,8 +19,7 @@ const {
 
 exports.PersorgsService = class PersorgsService extends EntityService {
   constructor(logger, authService, permissionsService, persorgsDao) {
-    super(logger, authService)
-    this.entitySchema = persorgSchema
+    super(persorgSchema, logger, authService)
     this.logger = logger
     this.permissionsService = permissionsService
     this.persorgsDao = persorgsDao

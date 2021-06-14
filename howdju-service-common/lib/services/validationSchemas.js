@@ -207,6 +207,19 @@ const justificationSchema = Joi.object().keys({
   .shared(statementSchema)
   .id(JUSTIFICATION_SCHEMA_ID)
 
+const accountSettingSchema = Joi.object().keys({
+  id: idSchema,
+  userId: idSchema,
+  paidContributionsDisclosure: Joi.string()
+    .max(schemaSettings.paidContributionsDisclosureTextMaxLength)
+    .empty(Joi.valid(null, '')),
+})
+  .when(idMissing, {
+    then: Joi.object({
+      name: Joi.required()
+    })
+  })
+
 const extantEntity = Joi.object().keys({
   id: idSchema.required()
 })
@@ -238,6 +251,7 @@ function translateJoiError(joiError) {
 }
 
 module.exports = {
+  accountSettingSchema,
   extantEntity,
   justificationSchema,
   persorgSchema,

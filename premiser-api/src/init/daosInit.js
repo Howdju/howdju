@@ -1,6 +1,7 @@
 const assign = require('lodash/assign')
 
 const {
+  AccountSettingsDao,
   ActionsDao,
   AuthDao,
   WritQuotesDao,
@@ -36,6 +37,7 @@ exports.init = function init(provider) {
   const logger = provider.logger
   const database = provider.database
 
+  const accountSettingsDao = new AccountSettingsDao(logger, database)
   const actionsDao = new ActionsDao(database)
   const authDao = new AuthDao(logger, database)
   const urlsDao = new UrlsDao(logger, database)
@@ -68,6 +70,7 @@ exports.init = function init(provider) {
   const tagsDao = new TagsDao(logger, database)
 
   assign(provider, {
+    accountSettingsDao,
     actionsDao,
     authDao,
     jobHistoryDao,

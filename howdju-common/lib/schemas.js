@@ -13,6 +13,7 @@ const schemaSettings = {
   shortNameMaxLength: 32,
   passwordMinLength: 6,
   passwordMaxLength: 64,
+  paidContributionsDisclosureTextMaxLength: 4096,
 }
 
 const definitionsSchema = {

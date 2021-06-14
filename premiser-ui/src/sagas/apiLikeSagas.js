@@ -3,8 +3,9 @@ import {
   takeEvery,
 } from 'redux-saga/effects'
 
+import {JustificationRootTargetType, newExhaustedEnumError} from 'howdju-common'
+
 import {api, apiLike, str} from '../actions'
-import {JustificationRootTargetType, newExhaustedEnumError} from '../../../howdju-common/lib'
 import {logger} from '../logger'
 
 

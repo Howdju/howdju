@@ -2,6 +2,7 @@ const assign = require('lodash/assign')
 const {TopicMessageSender} = require("howdju-service-common")
 
 const {
+  AccountSettingsService,
   ActionsService,
   AuthService,
   GroupsService,
@@ -163,13 +164,17 @@ exports.init = function init(provider) {
     statementsService,
     justificationsService
   )
+  const accountSettingsService = new AccountSettingsService(
+    provider.logger, authService, provider.accountSettingsDao
+  )
   const usersService = new UsersService(
     provider.userValidator,
     actionsService,
     authService,
     permissionsService,
     provider.userExternalIdsDao,
-    provider.usersDao
+    provider.usersDao,
+    provider.accountSettingsDao,
   )
   const justificationVotesService = new JustificationVotesService(
     provider.logger,
@@ -210,6 +215,7 @@ exports.init = function init(provider) {
   )
 
   assign(provider, {
+    accountSettingsService,
     actionsService,
     authService,
     groupsService,

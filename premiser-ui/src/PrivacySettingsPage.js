@@ -4,6 +4,10 @@ import {Button, Card, CardText} from 'react-md'
 import Helmet from './Helmet'
 import {showPrivacyConsentDialog} from "./cookieConsent"
 
+/**
+ * A page where a user an access their privacy settings. Provided so that there is a URL to navigate directly to
+ * from the privacy policy. If we had better tab/react-router integration, we would just link to the settings page
+ */
 export default class PrivacySettingsPage extends Component {
   componentDidMount() {
     showPrivacyConsentDialog()

@@ -63,6 +63,7 @@ export const EditorTypes = arrayToObject([
   'REGISTRATION_REQUEST',
   'REGISTRATION_CONFIRMATION',
   'PERSORG',
+  'ACCOUNT_SETTINGS',
 ])
 
 const defaultEditorState = {

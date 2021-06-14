@@ -13,7 +13,6 @@ const {
 } = require('./BaseDao')
 
 
-
 exports.PersorgsDao = class PersorgsDao extends BaseDao {
   constructor(logger, database) {
     super(logger, database, toPersorg)

@@ -100,6 +100,9 @@ class Paths {
 
   tools = () => '/tools'
 
+  settings = () => "/settings"
+  privacySettings = () => "/settings/privacy"
+
   policiesOverview = () => "/policies"
   principles = () => "/principles"
   userAgreement = () => "/policies/user-agreement"
@@ -109,6 +112,7 @@ class Paths {
   faq = () => "/faq"
 
   tag = (tag) => `/tags/${tag.id}/${toSlug(tag.name)}`
+
 }
 
 export default new Paths()

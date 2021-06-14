@@ -9,7 +9,6 @@ import * as smallchat from "../smallchat"
 import analytics from "../analytics"
 import {
   selectUserExternalIds,
-  selectUser,
 } from '../selectors'
 import {api, str} from '../actions'
 

@@ -605,7 +605,16 @@ const toPasswordResetRequest = makeMapper(function toPasswordResetRequestMapper(
   }
 })
 
+const toAccountSettings = makeMapper(function toAccountSettingsMapper(row) {
+  return {
+    id: toIdString(row.account_settings_id),
+    userId: toIdString(row.user_id),
+    paidContributionsDisclosure: row.paid_contributions_disclosure,
+  }
+})
+
 module.exports = {
+  toAccountSettings,
   toIdString,
   toJobHistory,
   toJustification,

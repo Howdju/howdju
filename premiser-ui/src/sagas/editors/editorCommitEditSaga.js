@@ -108,6 +108,10 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.PERSORG]: {
     [CrudActions.UPDATE]: api.updatePersorg
   },
+  [EditorTypes.ACCOUNT_SETTINGS]: {
+    [CrudActions.CREATE]: api.createAccountSettings,
+    [CrudActions.UPDATE]: api.updateAccountSettings,
+  },
 }
 
 function constructStatement(speakers, proposition) {
@@ -169,7 +173,7 @@ function createEditorCommitApiResourceAction(editorType, editEntity) {
   } else {
     const actionCreator = editorCommitApiResourceActions[crudType]
     if (!actionCreator) {
-      throw new Error(`Missing ${crudType} action creator to commit edit of ${editorType}.`)
+      throw new Error(`Missing ${crudType} action creator to commit edit of ${editorType} (add to editorTypeCommitApiResourceActions).`)
     }
     action = actionCreator(editEntity)
   }

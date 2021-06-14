@@ -357,12 +357,29 @@ class App extends Component {
                 component={Link}
                 to={paths.policiesOverview()}
       />,
-      <ListItem key="privacySettings"
-                primaryText="Privacy settings"
-                leftIcon={<FontIcon>speaker_phone</FontIcon>}
-                onClick={() => showPrivacyConsentDialog()}
-      />,
     ]
+
+    if (authEmail || hasAuthToken) {
+      // Authenticated users can access their settings
+      navItems.push(
+        <ListItem key="Settings"
+                  primaryText="Settings"
+                  leftIcon={<FontIcon>settings</FontIcon>}
+                  component={Link}
+                  to={paths.settings()}
+        />
+      )
+    } else {
+      // Anonymous users still need access to privacy settings
+      navItems.push(
+        <ListItem key="privacySettings"
+                  primaryText="Privacy settings"
+                  leftIcon={<FontIcon>speaker_phone</FontIcon>}
+                  onClick={() => showPrivacyConsentDialog()}
+        />
+      )
+    }
+
     if (isDevice()) {
       if (isMobileSiteDisabled) {
         navItems.push(

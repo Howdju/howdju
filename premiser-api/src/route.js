@@ -782,6 +782,50 @@ const routes = [
     }) => appProvider.perspectivesService.readFeaturedPerspectives(authToken)
       .then( (perspectives) => ok({callback, body: {perspectives}}) )
   },
+
+  /*
+   * Account settings
+   */
+  {
+    id: 'createAccountSettings',
+    path: 'account-settings',
+    method: httpMethods.POST,
+    handler: (appProvider, {
+      callback,
+      request: {
+        authToken,
+        body: {
+          accountSettings,
+        }
+      },
+    }) => appProvider.accountSettingsService.createAccountSettings(authToken, accountSettings)
+      .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
+  },
+  {
+    id: 'readAccountSettings',
+    path: 'account-settings',
+    method: httpMethods.GET,
+    handler: (appProvider, {
+      callback,
+      request: {authToken},
+    }) => appProvider.accountSettingsService.readAccountSettings(authToken)
+      .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
+  },
+  {
+    id: 'updateAccountSettings',
+    path: 'account-settings',
+    method: httpMethods.PUT,
+    handler: (appProvider, {
+      callback,
+      request: {
+        authToken,
+        body: {
+          accountSettings,
+        }
+      },
+    }) => appProvider.accountSettingsService.update(accountSettings, authToken)
+      .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
+  },
 ]
 
 const selectRoute = (appProvider) => (request) => {

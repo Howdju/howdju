@@ -43,7 +43,6 @@ export default class PersorgEditorFields extends Component {
     onPropertyChange: PropTypes.func.isRequired,
     errors: PropTypes.object,
     disabled: PropTypes.bool,
-    onKeyDown: PropTypes.func,
     /** If present, overrides the default label for the proposition text input */
     nameLabel: PropTypes.string,
   }
@@ -85,7 +84,6 @@ export default class PersorgEditorFields extends Component {
       disabled,
       onPropertyChange,
       errors,
-      onKeyDown,
       onSubmit,
       // ignore
       onPersorgNameAutocomplete,
@@ -111,7 +109,6 @@ export default class PersorgEditorFields extends Component {
       maxLength: schemaSettings.persorgNameMaxLength,
       value: persorgName,
       required: true,
-      onKeyDown,
       onSubmit,
       onPropertyChange,
       disabled: disabled || !hasName

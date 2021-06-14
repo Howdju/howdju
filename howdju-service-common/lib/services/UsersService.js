@@ -4,11 +4,13 @@ const {
   ActionType,
   ActionTargetType,
   EntityType,
+  makeAccountSettings,
   requireArgs,
   schemaIds,
   utcNow,
   validate,
 } = require('howdju-common')
+
 
 const {
   permissions
@@ -20,13 +22,15 @@ const {
 
 exports.UsersService = class UsersService {
 
-  constructor(userValidator, actionsService, authService, permissionsService, userExternalIdsDao, usersDao) {
+  constructor(userValidator, actionsService, authService, permissionsService, userExternalIdsDao, usersDao, accountSettingsDao) {
+    requireArgs({userValidator, actionsService, authService, permissionsService, userExternalIdsDao, usersDao, accountSettingsDao})
     this.userValidator = userValidator
     this.actionsService = actionsService
     this.authService = authService
     this.permissionsService = permissionsService
     this.userExternalIdsDao = userExternalIdsDao
     this.usersDao = usersDao
+    this.accountSettingsDao = accountSettingsDao
   }
 
   async isEmailInUse(email) {
@@ -91,12 +95,16 @@ exports.UsersService = class UsersService {
       })
       .then(() => {
         const now = utcNow()
-        return this.usersDao.createUser(user, creatorUserId, now)
+        return [
+          this.usersDao.createUser(user, creatorUserId, now),
+          now,
+        ]
       })
-      .then((dbUser) => Promise.all([
+      .then(([dbUser, now]) => Promise.all([
         dbUser,
         this.authService.createOrUpdatePasswordAuthForUserId(dbUser.id, password),
-        this.userExternalIdsDao.createExternalIdsForUserId(dbUser.id)
+        this.userExternalIdsDao.createExternalIdsForUserId(dbUser.id),
+        this.accountSettingsDao.createAccountSettingsForUserId(dbUser.id, makeAccountSettings(), now),
       ]))
       .then(([dbUser]) => {
         this.actionsService.asyncRecordAction(creatorUserId, dbUser.created, ActionType.CREATE, ActionTargetType.USER, dbUser.id)
