@@ -33,6 +33,8 @@ export default class JustificationChatBubble extends Component {
       actions,
       children,
       contextTrailItems,
+      // ignore
+      onClickWritQuoteUrl,
       ...rest
     } = this.props
     const _isRootPositive = isRootPositive(justification)
