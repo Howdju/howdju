@@ -53,9 +53,9 @@ import {
   describeRootTarget,
   rootTargetNormalizationSchemasByType,
 } from './viewModels'
+import {extensionHighlightingOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 
 import "./JustificationsPage.scss"
-import {extensionHighlightingOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
 
 
 const rootTargetInfoFromProps = (props) => ({
@@ -268,7 +268,6 @@ class JustificationsPage extends Component {
           onSubmit={this.saveNewJustification}
           onHide={this.cancelNewJustificationDialog}
         />
-
       </div>
     )
   }

@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import {LOCATION_CHANGE} from 'connected-react-router'
 import {handleActions} from "redux-actions"
+import merge from 'lodash/merge'
 
 import {
   ui
@@ -41,6 +42,27 @@ export const app = handleActions({
   toasts: [],
 })
 
+const defaultReportContentDialogState = {
+  isReportDialogVisible: false,
+  entity: {},
+  form: {
+    checkedByCode: {},
+    description: '',
+  },
+}
+export const reportContentDialog = handleActions({
+  [ui.showReportContentDialog]: (state, action) =>
+    ({...state, isReportDialogVisible: true, entity: action.payload}),
+  [ui.hideReportContentDialog]: (state) =>
+    ({...state, ...defaultReportContentDialogState}),
+  [ui.editReportContentDialogForm]: (state, action) =>
+    ({...state, form: {
+      ...state.form,
+      ...action.payload,
+      checkedByCode: {...state.form.checkedByCode, ...action.payload.checkedByCode},
+    }}),
+}, defaultReportContentDialogState)
+
 export const mainSearch = handleActions({
   [ui.mainSearchTextChange]: (state, action) => ({...state, mainSearchText: action.payload}),
   [LOCATION_CHANGE]: (state, action) => {
@@ -66,6 +88,7 @@ export default combineReducers({
   persorgPage,
   propositionUsagesPage,
   registrationConfirmationPage,
+  reportContentDialog,
   tagPage,
   transients,
 })

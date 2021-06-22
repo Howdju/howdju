@@ -18,7 +18,6 @@ import {
 import { connect } from 'react-redux'
 import cn from 'classnames'
 import forEach from 'lodash/forEach'
-import get from 'lodash/get'
 import isFinite from 'lodash/isFinite'
 import map from 'lodash/map'
 import throttle from 'lodash/throttle'
@@ -73,6 +72,7 @@ import WindowMessageHandler from './WindowMessageHandler'
 
 import './App.scss'
 import './fonts.js'
+import ReportContentDialog from "./ReportContentDialog"
 
 const tabInfos = [
   {
@@ -518,6 +518,7 @@ class App extends Component {
 
             <Snackbar toasts={toasts} onDismiss={this.dismissSnackbar} />
 
+            <ReportContentDialog/>
           </div>
         </ConnectedRouter>
       </ErrorBoundary>
@@ -534,16 +535,21 @@ const mapStateToProps = state => {
   } = state
   const authEmail = selectAuthEmail(state)
   const hasAuthToken = isTruthy(selectAuthToken(state))
-  const isNavDrawerVisible = get(ui, ['app', 'isNavDrawerVisible'])
-  const toasts = get(ui, ['app', 'toasts'])
   const privacyConsentState = selectPrivacyConsent(state)
-
-  const isMobileSiteDisabled = get(ui, ['app', 'isMobileSiteDisabled'])
+  const {
+    isMobileSiteDisabled,
+    isNavDrawerVisible,
+    toasts,
+  } = ui.app
+  const {
+    isReportDialogVisible
+  } = ui.reportContentDialog
 
   return {
     authEmail,
     hasAuthToken,
     isNavDrawerVisible,
+    isReportDialogVisible,
     toasts,
     isMobileSiteDisabled,
     privacyConsentState,

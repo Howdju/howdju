@@ -8,6 +8,8 @@ import {
 } from 'howdju-common'
 
 import config from './config'
+import {Divider} from "react-md"
+import React from "react"
 
 export const isWindowNarrow = () => {
   return window.innerWidth < config.ui.narrowBreakpoint
@@ -92,4 +94,19 @@ export function isTwitterUrl(url) {
 
 export function getComponentDisplayName(component) {
   return component.displayName || component.name || 'Component'
+}
+
+/** Inserts a <Divider> between the groups of components. */
+export function divideMenuItems(...componentGroups) {
+  const dividedComponents = []
+  for (let i = 0; i < componentGroups.length; i++) {
+    const components = componentGroups[i]
+    dividedComponents.splice(dividedComponents.length, 0, ...components)
+    if (i < componentGroups.length - 1) {
+      // Assume that the keys are unique, so that we can build a unique key off of the previous component
+      const lastComponentKey = dividedComponents[dividedComponents.length-1].key
+      dividedComponents.push(<Divider key={`${lastComponentKey}-divider`}/>)
+    }
+  }
+  return dividedComponents
 }

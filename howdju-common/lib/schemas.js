@@ -14,6 +14,7 @@ const schemaSettings = {
   passwordMinLength: 6,
   passwordMaxLength: 64,
   paidContributionsDisclosureTextMaxLength: 4096,
+  reportContentDescriptionMaxLength: 4096,
 }
 
 const definitionsSchema = {

@@ -24,7 +24,7 @@
     "lint": "yarn run lint:build && yarn run lint:app",
     "lint-all": "yarn run lint && yarn run lint-deps",
     "lint-deps": "yarn run lint:howdju-common && yarn run lint:howdju-client-common",
-    "lint:build": "eslint --config .aeslintrc.build.js bin/ config/",
+    "lint:build": "eslint --config .eslintrc.build.js bin/ config/",
     "lint:app": "  eslint --config .eslintrc.js       src/ bookmarklet/",
     "start:local": "yarn run build:local && yarn run serve:local",
     "serve:local": "     cross-env NODE_ENV=development SENTRY_ENV=local HOST_ADDRESS=localhost             DEBUG='premiser-ui:*' webpack serve --config config/webpack.config.js",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
+    "@babel/plugin-transform-parameters": "^7.14.5",
     "@babel/preset-react": "^7.13.13",
     "argparse": "^2.0.1",
     "aws-sdk": "^2.890.0",

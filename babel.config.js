@@ -4,7 +4,6 @@ module.exports = {
     "@babel/preset-flow",
   ],
   plugins: [
-
     // Stage 1
     "@babel/plugin-proposal-export-default-from",
     "@babel/plugin-proposal-logical-assignment-operators",
@@ -32,6 +31,9 @@ module.exports = {
     // loose must be the same as for plugin-proposal-class-properties
     ["@babel/plugin-proposal-private-methods", { "loose": true }],
     "@babel/plugin-proposal-json-strings",
+
+    // I think this is already supported in all major browsers
+    "@babel/plugin-transform-parameters",
   ],
   env: {
     test: {

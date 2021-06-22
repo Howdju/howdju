@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
-import {TextField} from 'react-md'
+import {Checkbox} from 'react-md'
 
-/** Translate TextField's onChange to the more convenient onPropertyChange */
-export default class HowdjuTextField extends Component {
+/** Translate Checkbox's onChange to the more convenient onPropertyChange */
+export default class HowdjuCheckBox extends Component {
 
   onChange = (value, event) => {
     if (this.props.onPropertyChange) {
       const target = event.target
       const name = target.name
-      this.props.onPropertyChange({[name]: value}, event)
+      this.props.onPropertyChange({[name]: value})
     }
   }
 
@@ -19,9 +19,9 @@ export default class HowdjuTextField extends Component {
       ...rest
     } = this.props
     return (
-      <TextField onChange={this.onChange} {...rest}>
+      <Checkbox onChange={this.onChange} {...rest}>
         {this.props.children}
-      </TextField>
+      </Checkbox>
     )
   }
 }

@@ -273,6 +273,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-plugin-utils@npm:^7.14.5":
+  version: 7.14.5
+  resolution: "@babel/helper-plugin-utils@npm:7.14.5"
+  checksum: 76404ef3aadc25879f7b4c5945bafcca935d4af0cf451a95ff9f131f29ac3dc589e2ed19904ce746c7cf6c2a8a7ea33fa4eaf881b9b272d31f2be91984f505d6
+  languageName: node
+  linkType: hard
+
 "@babel/helper-remap-async-to-generator@npm:^7.13.0":
   version: 7.13.0
   resolution: "@babel/helper-remap-async-to-generator@npm:7.13.0"
@@ -1214,6 +1221,17 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: f23977501cac4712bb0fdadc5e5c394d69ca67a111e337dce7c2e92e3bf2cd47fe23f7b5a316c0b175e14725c7554b8c044bff8af690a6188e80b16ae7a10935
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-transform-parameters@npm:^7.14.5":
+  version: 7.14.5
+  resolution: "@babel/plugin-transform-parameters@npm:7.14.5"
+  dependencies:
+    "@babel/helper-plugin-utils": ^7.14.5
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 42419b3db8dc9c84ce8a2b819d56bf2678177ab982401c1e7b93ffed31adb2ad54b9cb6ff745bb03e6e657ece7deacb69d74e0169f21a5911faa2455e305d153
   languageName: node
   linkType: hard
 
@@ -14114,6 +14132,7 @@ fsevents@^1.2.7:
   resolution: "premiser-ui@workspace:premiser-ui"
   dependencies:
     "@babel/core": ^7.14.0
+    "@babel/plugin-transform-parameters": ^7.14.5
     "@babel/preset-react": ^7.13.13
     "@grrr/cookie-consent": ^1.0.4
     "@react-md/icon": ^2.8.2

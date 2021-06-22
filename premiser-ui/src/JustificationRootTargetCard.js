@@ -6,14 +6,12 @@ import some from 'lodash/some'
 import {
   Card,
   CardText,
-  Divider,
   FontIcon,
   ListItem,
   MenuButton,
 } from 'react-md'
 
 import {
-  insertAt,
   isNegative,
   isPositive,
   isVerified,
@@ -32,15 +30,17 @@ import {
   combineSuggestionsKeys,
 } from './viewModels'
 import {Link} from 'react-router-dom'
-import connect from 'react-redux/es/connect/connect'
+import {connect} from 'react-redux'
 import {
   api,
-  editors,
   apiLike,
-  mapActionCreatorGroupToDispatchToProps
+  editors,
+  mapActionCreatorGroupToDispatchToProps,
+  ui,
 } from './actions'
 
 import './JustificationRootTargetCard.scss'
+import {divideMenuItems} from "./util"
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetType.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -73,7 +73,7 @@ class JustificationRootTargetCard extends React.Component {
 
     const doHideControls = !isOver && canHover
 
-    const thisMenuItems = [
+    const baseEditMenuItems = [
       <ListItem
         primaryText="Delete"
         key="delete"
@@ -81,61 +81,23 @@ class JustificationRootTargetCard extends React.Component {
         onClick={this.deleteRootTarget}
       />
     ]
-    const divider = extraMenuItems ? [<Divider key="divider" />] : []
-    switch (rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION: {
-        const propositionId = get(rootTarget, 'id')
-        insertAt(divider, 0,
-          <ListItem
-            primaryText="See usages"
-            key="usages"
-            title={`See usages of this proposition`}
-            leftIcon={<FontIcon>call_merge</FontIcon>}
-            component={Link}
-            to={paths.propositionUsages(propositionId)}
-          />
-        )
-        insertAt(divider, 0,
-          <ListItem
-            primaryText="Use"
-            key="use"
-            title="Justify another proposition with this one"
-            leftIcon={<FontIcon>call_made</FontIcon>}
-            component={Link}
-            to={this.createJustificationPath(propositionId)}
-          />
-        )
-        insertAt(thisMenuItems, 0,
-          <ListItem
-            primaryText="Edit"
-            key="edit"
-            leftIcon={<FontIcon>edit</FontIcon>}
-            onClick={this.editRootTarget}
-          />
-        )
-        break
-      }
-      // case JustificationRootTargetType.STATEMENT: {
-      //   // Statements are not directly editable currently.  One must edit their persorgs/propositions
-      //   const statementId = get(rootTarget, 'id')
-      //   insertAt(divider, 0,
-      //     <ListItem
-      //       primaryText="See usages"
-      //       key="usages"
-      //       title={`See usages of this statement`}
-      //       leftIcon={<FontIcon>call_merge</FontIcon>}
-      //       component={Link}
-      //       to={paths.statementUsages(statementId)}
-      //     />
-      //   )
-      //   break
-      // }
-      default:
-        // nothing
-        break
-    }
+    const {
+      entity: typeEntityMenuItems,
+      edit: typeEditMenuItems
+    } = this.menuItemsForType(rootTargetType, rootTarget)
 
-    const menuItems = concat(extraMenuItems, divider, thisMenuItems)
+    const entityMenuItems = concat(extraMenuItems, typeEntityMenuItems)
+    const editMenuItems = concat(typeEditMenuItems, baseEditMenuItems)
+    const reportMenuItems = [
+      <ListItem
+        primaryText="Report"
+        key="report"
+        leftIcon={<FontIcon>flag</FontIcon>}
+        onClick={this.showReportContentDialog}
+      />,
+    ]
+
+    const menuItems = divideMenuItems(entityMenuItems, editMenuItems, reportMenuItems)
 
     const menu = (
       <MenuButton
@@ -197,6 +159,67 @@ class JustificationRootTargetCard extends React.Component {
     )
   }
 
+  showReportContentDialog = () => {
+    const {
+      rootTargetType,
+      rootTarget,
+    } = this.props
+    this.props.ui.showReportContentDialog(rootTargetType, rootTarget.id)
+  }
+
+  menuItemsForType(rootTargetType, rootTarget) {
+    switch (rootTargetType) {
+      case JustificationRootTargetType.PROPOSITION: {
+        const propositionId = get(rootTarget, 'id')
+        return {
+          entity: [
+            <ListItem
+              primaryText="Use"
+              key="use"
+              title="Justify another proposition with this one"
+              leftIcon={<FontIcon>call_made</FontIcon>}
+              component={Link}
+              to={this.createJustificationPath(propositionId)}
+            />,
+            <ListItem
+              primaryText="See usages"
+              key="usages"
+              title={`See usages of this proposition`}
+              leftIcon={<FontIcon>call_merge</FontIcon>}
+              component={Link}
+              to={paths.propositionUsages(propositionId)}
+            />,
+          ],
+          edit: [
+            <ListItem
+              primaryText="Edit"
+              key="edit"
+              leftIcon={<FontIcon>edit</FontIcon>}
+              onClick={this.editRootTarget}
+            />,
+          ],
+        }
+      }
+      // case JustificationRootTargetType.STATEMENT: {
+      //   // Statements are not directly editable currently.  One must edit their persorgs/propositions
+      //   const statementId = get(rootTarget, 'id')
+      //   insertAt(divider, 0,
+      //     <ListItem
+      //       primaryText="See usages"
+      //       key="usages"
+      //       title={`See usages of this statement`}
+      //       leftIcon={<FontIcon>call_merge</FontIcon>}
+      //       component={Link}
+      //       to={paths.statementUsages(statementId)}
+      //     />
+      //   )
+      //   break
+      // }
+      default:
+        return []
+    }
+  }
+
   createJustificationPath = (propositionId) => {
     return paths.createJustification(JustificationBasisSourceType.PROPOSITION, propositionId)
   }
@@ -221,6 +244,7 @@ class JustificationRootTargetCard extends React.Component {
 
 export default connect(null, mapActionCreatorGroupToDispatchToProps({
   api,
-  editors,
   apiLike,
+  editors,
+  ui,
 }))(hoverAware(JustificationRootTargetCard))
