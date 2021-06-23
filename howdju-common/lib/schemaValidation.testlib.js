@@ -17,6 +17,9 @@ export const doTests = (validate) => {
           longName: 'Gieringer',
           password: '123456',
           doesAcceptTerms: true,
+          hasMajorityConsent: true,
+          is13YearsOrOlder: true,
+          isNotGdpr: true,
         }
         expect(validate(schemaIds.registrationConfirmation, validRegistrationConfirmation)).toEqual({isValid: true, errors: {}})
       })
@@ -32,7 +35,7 @@ export const doTests = (validate) => {
 
         const {isValid, errors} = validate(schemaIds.registrationConfirmation, invalidRegistrationConfirmation)
         expect(isValid).toBe(false)
-        expect(errors).toEqual({
+        expect(errors).toEqual(expect.objectContaining({
           username: expect.objectContaining({
             keyword: 'pattern'
           }),
@@ -44,8 +47,8 @@ export const doTests = (validate) => {
           }),
           doesAcceptTerms: expect.objectContaining({
             keyword: 'const'
-          })
-        })
+          }),
+        }))
       })
 
       test('validates a user', () => {
@@ -54,7 +57,10 @@ export const doTests = (validate) => {
           email: 'carl.gieringer@domain.com',
           shortName: 'Carl',
           longName: 'Gieringer',
-          acceptedTerms: moment()
+          acceptedTerms: moment(),
+          affirmedMajorityConsent: moment(),
+          affirmed13YearsOrOlder: moment(),
+          affirmedNotGdpr: moment(),
         }
         expect(validate(schemaIds.user, user)).toEqual({isValid: true, errors: {}})
       })
