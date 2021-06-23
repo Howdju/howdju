@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux'
 import {LOCATION_CHANGE} from 'connected-react-router'
 import {handleActions} from "redux-actions"
-import merge from 'lodash/merge'
 
 import {
   ui
