@@ -27,6 +27,10 @@ function toIdString(val) {
   return toString(val)
 }
 
+function fromIdString(val) {
+  return parseInt(val)
+}
+
 function removeUndefinedProperties(obj) {
   let hasDefinedProperty = false
   for (const key of Object.keys(obj)) {
@@ -83,6 +87,7 @@ const toUser = makeMapper(function toUserMapper(row) {
     id: toIdString(row.user_id),
   }, {
     email: row.email,
+    username: row.username,
     longName: row.long_name,
     shortName: row.short_name,
     created: row.created,
@@ -613,8 +618,23 @@ const toAccountSettings = makeMapper(function toAccountSettingsMapper(row) {
   }
 })
 
+const toContentReport = makeMapper(function toContentReportMapper(row) {
+  return {
+    id: toIdString(row.content_report_id),
+    entityType: row.entity_type,
+    entityId: row.entity_id,
+    url: row.url,
+    types: row.types,
+    description: row.description,
+    reporterUserId: row.reporter_user_id,
+    created: row.created,
+  }
+})
+
 module.exports = {
+  fromIdString,
   toAccountSettings,
+  toContentReport,
   toIdString,
   toJobHistory,
   toJustification,

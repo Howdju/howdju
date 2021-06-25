@@ -7,6 +7,7 @@
     Terms:
       report functionality
       deleted accounts: anonymous replacement
+  - Is search by URL working? (open extension on page.)
     Fix front page example
     Rate limiting, secret management
     other profile page

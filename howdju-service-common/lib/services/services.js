@@ -5,6 +5,7 @@ module.exports = assign(
   require('./AccountSettingsService'),
   require('./ActionsService'),
   require('./AuthService'),
+  require('./ContentReportsService'),
   require('./EmailService'),
   require('./GroupsService'),
   require('./JustificationBasisCompoundsService'),

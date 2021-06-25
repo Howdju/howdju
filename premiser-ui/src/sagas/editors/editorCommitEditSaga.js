@@ -112,6 +112,9 @@ const editorTypeCommitApiResourceActions = {
     [CrudActions.CREATE]: api.createAccountSettings,
     [CrudActions.UPDATE]: api.updateAccountSettings,
   },
+  [EditorTypes.CONTENT_REPORT]: {
+    [CrudActions.CREATE]: api.createContentReport,
+  },
 }
 
 function constructStatement(speakers, proposition) {

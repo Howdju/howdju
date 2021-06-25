@@ -16,5 +16,8 @@ try {
 }
 
 module.exports = {
+  contentReportNotificationEmails: [
+    "dev-content-report-recipient@test.com",
+  ],
   corsAllowOrigin
 }

@@ -1,5 +1,9 @@
 
 module.exports = {
+  contentReportNotificationEmails: [
+    "carl@howdju.com",
+    "carl.gieringer@gmail.com",
+  ],
   corsAllowOrigin: [
     'http://www.howdju.com',
     'https://www.howdju.com',

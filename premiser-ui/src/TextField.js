@@ -14,12 +14,13 @@ export default class HowdjuTextField extends Component {
 
   render() {
     const {
+      value,
       //ignore
       onPropertyChange,
       ...rest
     } = this.props
     return (
-      <TextField onChange={this.onChange} {...rest}>
+      <TextField onChange={this.onChange} value={value || ''} {...rest}>
         {this.props.children}
       </TextField>
     )

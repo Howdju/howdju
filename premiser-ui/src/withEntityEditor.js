@@ -61,6 +61,8 @@ export default function withEntityEditor(editorType, EntityEditorFields, editorF
       onCancel: PropTypes.func,
       /** If present, called when the user submits */
       onSubmit: PropTypes.func,
+      /** The label to use for the submit button. If missing, a default is used. */
+      submitText: PropTypes.string,
     }
 
     render() {
@@ -68,6 +70,7 @@ export default function withEntityEditor(editorType, EntityEditorFields, editorF
         id,
         nameId,
         suggestionsKey,
+        submitText,
         editorState: {
           errors,
           editEntity,
@@ -114,7 +117,7 @@ export default function withEntityEditor(editorType, EntityEditorFields, editorF
                     primary
                     key="submitButton"
                     type="submit"
-                    children={t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
+                    children={submitText || t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
                     disabled={inProgress}
             />
           </CardActions>

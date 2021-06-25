@@ -4,6 +4,7 @@ const {
   AccountSettingsDao,
   ActionsDao,
   AuthDao,
+  ContentReportsDao,
   WritQuotesDao,
   WritsDao,
   JobHistoryDao,
@@ -40,6 +41,7 @@ exports.init = function init(provider) {
   const accountSettingsDao = new AccountSettingsDao(logger, database)
   const actionsDao = new ActionsDao(database)
   const authDao = new AuthDao(logger, database)
+  const contentReportsDao = new ContentReportsDao(logger, database)
   const urlsDao = new UrlsDao(logger, database)
   const writsDao = new WritsDao(logger, database)
   const jobHistoryDao = new JobHistoryDao(database)
@@ -73,6 +75,7 @@ exports.init = function init(provider) {
     accountSettingsDao,
     actionsDao,
     authDao,
+    contentReportsDao,
     jobHistoryDao,
     justificationScoresDao,
     justificationVotesDao,

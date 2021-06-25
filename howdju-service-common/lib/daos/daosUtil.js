@@ -19,7 +19,6 @@ const {
 } = require('howdju-common')
 
 
-
 exports.normalizeText = text => {
 
   // Postgres SQL for the same
@@ -87,19 +86,19 @@ exports.groupRootJustifications = (rootTargetType, rootTargetId, justification_r
   }
 }
 
-/** Renumber the SQL arguments starting from {@link start} */
-exports.renumberSqlArgs = (sql, start) => {
-  if (!isNumber(start) || start < 0) {
-    throw newProgrammingError('start must be a non-negative number')
+/** Renumber the SQL arguments starting from after {@link after} */
+exports.renumberSqlArgs = (sql, after) => {
+  if (!isNumber(after) || after < 0) {
+    throw newProgrammingError('after must be a non-negative number')
   }
-  if (start === 0) {
+  if (after === 0) {
     // Nothing to do
     return sql
   }
 
   const renumberedSql = sql.replace(/\$(\d+)/g, (match, paramNumber) => {
     const paramNumberNumber = toNumber(paramNumber)
-    const paramRenumber = paramNumberNumber + start
+    const paramRenumber = paramNumberNumber + after
     return `$${paramRenumber}`
   })
 
@@ -116,4 +115,8 @@ exports.addArrayParams = function addArrayParams(baseArgs, values) {
     params,
     args: concat(baseArgs, values),
   }
+}
+
+exports.createParams = function createParams(count, start) {
+  return map(Array.from(Array(count).keys()), (i) => '$' + (i+start))
 }

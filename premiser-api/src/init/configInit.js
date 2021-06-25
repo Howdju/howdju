@@ -30,6 +30,7 @@ exports.init = function init(provider) {
       },
     },
     authTokenDuration: {days: 30},
+    contentReportNotificationEmails: [],
     /** Whether to prevent responses that indicate whether an email has been registered with the system */
     doConcealEmailExistence: true,
     // https://github.com/jsmreese/moment-duration-format#template-string

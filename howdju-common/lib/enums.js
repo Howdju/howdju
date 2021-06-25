@@ -6,7 +6,7 @@ const {
 
 const _e = module.exports
 
-_e.EntityType = arrayToObject([
+_e.EntityTypeArray = [
   'JUSTIFICATION',
   'JUSTIFICATION_VOTE',
   'PASSWORD_HASH',
@@ -18,7 +18,8 @@ _e.EntityType = arrayToObject([
   'USER',
   'WRIT',
   'WRIT_QUOTE',
-])
+]
+_e.EntityType = arrayToObject(_e.EntityTypeArray)
 
 _e.ActionType = arrayToObject([
   /** The user created something */
@@ -149,3 +150,20 @@ _e.SentenceType = arrayToObject([
 _e.UrlTargetAnchorType = arrayToObject([
   'TEXT_QUOTE'
 ])
+
+_e.ContentReportTypesArray = [
+  "HARASSMENT",
+  "THREATENING_VIOLENCE",
+  "HATEFUL",
+  "OBSCENE",
+  "SEXUALIZATION_OF_MINORS",
+  "SHARING_PRIVATE_PERSONAL_INFORMATION",
+  "PORNOGRAPHY",
+  "ILLEGAL_ACTIVITY",
+  "IMPERSONATION",
+  "COPYRIGHT_VIOLATION",
+  "TRADEMARK_VIOLATION",
+  "SPAM",
+  "OTHER",
+]
+_e.ContentReportTypes = arrayToObject(_e.ContentReportTypesArray)

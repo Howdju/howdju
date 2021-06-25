@@ -5,6 +5,7 @@ const {
   AccountSettingsService,
   ActionsService,
   AuthService,
+  ContentReportsService,
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
@@ -214,10 +215,14 @@ exports.init = function init(provider) {
     provider.passwordResetRequestsDao,
   )
 
+  const contentReportsService = new ContentReportsService(provider.appConfig, provider.logger, authService,
+    usersService, topicMessageSender, provider.contentReportsDao)
+
   assign(provider, {
     accountSettingsService,
     actionsService,
     authService,
+    contentReportsService,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,

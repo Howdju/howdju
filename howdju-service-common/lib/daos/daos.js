@@ -5,6 +5,7 @@ module.exports = assign(
   require('./AccountSettingsDao'),
   require('./ActionsDao'),
   require('./AuthDao'),
+  require('./ContentReportsDao'),
   require('./JobHistoryDao'),
   require('./JustificationsDao'),
   require('./JustificationBasisCompoundsDao'),

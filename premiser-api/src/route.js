@@ -826,6 +826,25 @@ const routes = [
     }) => appProvider.accountSettingsService.update(accountSettings, authToken)
       .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
   },
+
+  /*
+   * Account settings
+   */
+  {
+    id: 'createContentReport',
+    path: 'content-reports',
+    method: httpMethods.POST,
+    handler: (appProvider, {
+      callback,
+      request: {
+        authToken,
+        body: {
+          contentReport,
+        }
+      },
+    }) => appProvider.contentReportsService.createContentReport(authToken, contentReport)
+      .then( (accountSettings) => ok({callback}) )
+  },
 ]
 
 const selectRoute = (appProvider) => (request) => {

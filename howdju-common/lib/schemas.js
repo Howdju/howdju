@@ -16,6 +16,10 @@ const schemaSettings = {
   paidContributionsDisclosureTextMaxLength: 4096,
   reportContentDescriptionMaxLength: 4096,
 }
+const {
+  ContentReportTypesArray,
+  EntityTypeArray,
+} = require('howdju-common')
 
 const definitionsSchema = {
   $id: "https://howdju.com/schemas/definitions.json",
@@ -61,6 +65,13 @@ const definitionsSchema = {
       ],
       "minLength": 1,
       "maxLength": schemaSettings.longNameMaxLength
+    },
+    entityId: {
+      "type": "string",
+      format: "int32",
+      "description": "An identifier for an entity. Usually used in the database to identify the entity. A positive integer" +
+        " formatted as a string.",
+      "examples": ["1", "2", "42"]
     }
   }
 }
@@ -183,9 +194,46 @@ const user = {
   }
 }
 
+const contentReport = {
+  "$id": "https://howdju.com/schemas/content-report.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Content Report",
+  "description": "A user-submitted report of content that may violate our policies.",
+  "type": "object",
+  "required": [
+    'url',
+    'types',
+  ],
+  "properties": {
+    entityType: {
+      description: "The type of entity being reported, if the report can pertain to a particular entity.",
+      enum: EntityTypeArray
+    },
+    entityId: { $ref: 'definitions.json#/definitions/entityId' },
+    url: {
+      description: 'The URL upon which the user made the report, and so likely an URL where the content appears.',
+      type: 'string',
+      format: 'uri',
+    },
+    types: {
+      type: "array",
+      uniqueItems: true,
+      items: {enum: ContentReportTypesArray},
+      // A report must have at least one type
+      minItems: 1,
+    },
+    description: {
+      description: "The user's description of the report.",
+      type: 'string',
+      maxLength: schemaSettings.reportContentDescriptionMaxLength
+    },
+  }
+}
+
 module.exports = {
   schemaSettings,
   schemas: {
+    contentReport,
     passwordResetRequest,
     passwordResetConfirmation,
     registrationRequest,

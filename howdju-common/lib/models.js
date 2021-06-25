@@ -333,6 +333,17 @@ _e.makeNewPersorg = () => ({
   wikipediaUrl: null,
 })
 
+_e.makeNewContentReport = (fields) => merge({
+  entityType: null,
+  entityId: null,
+  // type (string) to boolean of whether the type is selected
+  checkedByType: {},
+  // Holds only the selected types; populated before posting to API
+  types: [],
+  description: null,
+  url: null
+}, fields)
+
 /**
  * Compare two entity IDs for equality
  *

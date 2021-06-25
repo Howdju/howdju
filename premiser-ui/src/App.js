@@ -72,7 +72,7 @@ import WindowMessageHandler from './WindowMessageHandler'
 
 import './App.scss'
 import './fonts.js'
-import ReportContentDialog from "./ReportContentDialog"
+import ReportContentDialog from "./content-report/ReportContentDialog"
 
 const tabInfos = [
   {

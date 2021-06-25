@@ -275,6 +275,16 @@ export const resourceApiConfigs = {
     },
   }),
 
+  /* Content Reports */
+
+  [api.createContentReport]: (payload) => ({
+    endpoint: `content-reports`,
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload
+    },
+  }),
+
   /* Auth */
 
   [api.login]: (payload) => ({

@@ -88,6 +88,8 @@ export const api = {
   fetchAccountSettings: apiActionCreator('FETCH_ACCOUNT_SETTINGS'),
   updateAccountSettings: apiActionCreator('UPDATE_ACCOUNT_SETTINGS', (accountSettings) => ({accountSettings})),
 
+  createContentReport: apiActionCreator('CREATE_CONTENT_REPORT', (contentReport) => ({contentReport})),
+
   fetchJustificationsSearch: apiActionCreator('FETCH_JUSTIFICATIONS_SEARCH',
     ({filters, includeUrls, count, continuationToken}) => ({filters, includeUrls, count, continuationToken})
   ),
@@ -282,8 +284,6 @@ export const ui = {
   showReportContentDialog: actionCreator('UI/SHOW_REPORT_DIALOG',
     (entityType, entityId) => ({entityType, entityId})),
   hideReportContentDialog: actionCreator('UI/HIDE_REPORT_DIALOG'),
-  editReportContentDialogForm: actionCreator('UI/EDIT_REPORT_DIALOG_FORM',
-    (propertyChanges) => propertyChanges)
 }
 
 export const pages = {
