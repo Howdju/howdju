@@ -38,7 +38,7 @@ class ReportContentDialog extends Component {
         visible={isEditing}
         className="md-overlay--wide-dialog"
       >
-        <div className="md-grid">
+        <div className="md-grid report-content-dialog">
           <div className="md-cell md-cell--12">
             <Card>
               <ContentReportEditor

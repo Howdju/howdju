@@ -108,13 +108,17 @@ function makeContentReportEmailContent(contentReport) {
   } = contentReport
   return {
     html: outdent`
-      <table>
+      <table style="border:1px solid black;">
         <tr>
-         <th>Types</th><td>${types}</td>
-         <th>URL</th><td>${url}</td>
-         <th>Entity type</th><td>${entityType}</td>
-         <th>Entity ID</th><td>${entityId}</td>
-         <th>Description</th><td>${description}</td>
+          <th>Types</th><td>${types}</td>
+        </tr><tr>
+          <th>URL</th><td>${url}</td>
+        </tr><tr>
+           <th>Entity type</th><td>${entityType}</td>
+        </tr><tr>
+          <th>Entity ID</th><td>${entityId}</td>
+        </tr><tr>
+          <th>Description</th><td>${description}</td>
         </tr>
       </table>
     `,
