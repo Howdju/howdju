@@ -1,3 +1,8 @@
+const {
+  ContentReportTypesArray,
+  EntityTypeArray,
+} = require('./enums')
+
 const schemaSettings = {
   propositionTextMaxLength: 512,
   tagNameMaxLength: 64,
@@ -16,10 +21,6 @@ const schemaSettings = {
   paidContributionsDisclosureTextMaxLength: 4096,
   reportContentDescriptionMaxLength: 4096,
 }
-const {
-  ContentReportTypesArray,
-  EntityTypeArray,
-} = require('howdju-common')
 
 const definitionsSchema = {
   $id: "https://howdju.com/schemas/definitions.json",
