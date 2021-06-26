@@ -62,33 +62,17 @@ Do each of the following in different terminal windows.
 
 ```
 docker restart premiser_postgres
-cd premiser-api
-yarn db:local:shell
+yarn run db:local:shell
 ```
 
 ## Running the API
 ```sh
-cd premiser-api
-yarn start:local
+yarn run start:api:local
 ```
-
-### Running the API using the bundled version
-
-This can help to catch errors with the bundling process:
-
-```sh
-yarn run start:local-bundle
-```
-
-For example, `esbuild` does not support dynamic imports
-([github issue](https://github.com/evanw/esbuild/issues/56#issuecomment-643100248)),
-so don't use those in anything consumed by the API. Running the API this way can
-catch issues like that.
 
 ## Run the web app
 ```sh
-cd premiser-ui
-yarn start:local
+yarn run start:ui:local
 ```
 
 ## Visit the app
@@ -98,8 +82,8 @@ Open browser to localhost:3000
 # Linting and testing
 
 ```sh
-bin/lint-all.sh
-bin/test-all.sh
+yarn run lint:all
+yarn run test:all
 ```
 
 # Doing something in each workspace
@@ -114,7 +98,7 @@ yarn workspaces foreach -Av exec bash -c 'yarn add --dev flow-bin'
 
 ```sh
 cd premiser-api/
-AWS_PROFILE=premiser yarn run deploy pre-prod
+AWS_PROFILE=premiser yarn run deploy:api pre-prod
 
 # (Visit pre-prod-www.howdju.com and test the changes)
 
@@ -128,28 +112,28 @@ I think just check out that branch and follow instructions above.
 
 ## Publishing the web app
 ```sh
-yarn run deploy:pre-prod
+yarn run deploy:ui:pre-prod
 
 # (Visit pre-prod-www.howdju.com and test the changes)
 
-yarn run deploy:prod
+yarn run deploy:ui:prod
 ```
 
 ## Publishing database changes (migrations)
 
 ```sh
 cd premiser-api
-yarn db:tunnel
+yarn run db:tunnel
 
 # In different tab
-yarn db:tunnel:shell:pre-prod
+yarn run db:tunnel:shell:pre-prod
 howdju_pre_prod> \i db/migrations/xxxx_the_migration.sql
 howdju_pre_prod> exit
 
 # (Visit pre-prod-www.howdju.com and test the changes)
 
 # apply the migration to prod:
-yarn db:tunnel:shell:prod
+yarn run db:tunnel:shell:prod
 howdju_prod> \i db/migrations/xxxx_the_migration.sql
 howdju_prod> exit
 ```
@@ -160,7 +144,7 @@ howdju_prod> exit
 
 ```sh
 cd premiser-api
-yarn start:local:inspect
+yarn run start:local:inspect
 ```
 
 Open Chrome to `chrome://inspect`.  Click "Open dedicated DevTools for Node".  The Chrome debugger should automatically
