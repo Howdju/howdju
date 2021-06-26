@@ -280,10 +280,6 @@ export const ui = {
   disableMobileSite: actionCreator('UI/DISABLE_MOBILE_SITE'),
 
   clearTaggedPropositions: actionCreator('UI/CLEAR_TAGGED_PROPOSITIONS'),
-
-  showReportContentDialog: actionCreator('UI/SHOW_REPORT_DIALOG',
-    (entityType, entityId) => ({entityType, entityId})),
-  hideReportContentDialog: actionCreator('UI/HIDE_REPORT_DIALOG'),
 }
 
 export const pages = {

@@ -541,15 +541,11 @@ const mapStateToProps = state => {
     isNavDrawerVisible,
     toasts,
   } = ui.app
-  const {
-    isReportDialogVisible
-  } = ui.reportContentDialog
 
   return {
     authEmail,
     hasAuthToken,
     isNavDrawerVisible,
-    isReportDialogVisible,
     toasts,
     isMobileSiteDisabled,
     privacyConsentState,

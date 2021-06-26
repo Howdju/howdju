@@ -12,37 +12,18 @@ import {combineIds} from "../viewModels"
 import get from "lodash/get"
 
 const baseId = 'reportContentDialog'
-const id = combineIds(baseId, 'editor')
-const editorId = combineIds(baseId, 'contentReportEditor')
 
 class ReportContentDialog extends Component {
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const {
-      isReportDialogVisible
-    } = this.props
-    if (isReportDialogVisible && !prevProps.isReportDialogVisible) {
-      const {
-        entityType,
-        entityId,
-      } = this.props
-      const url = window.location.href
-      this.props.editors.beginEdit(EditorTypes.CONTENT_REPORT, editorId, makeNewContentReport({entityType, entityId, url}))
-    }
-  }
+  static id = combineIds(baseId, 'editor')
+  static editorId = combineIds(baseId, 'contentReportEditor')
+  static editorType = EditorTypes.CONTENT_REPORT
 
   onHide = () => {
-    this.props.ui.hideReportContentDialog()
-  }
-
-  onSubmit = () => {
-    // const reportTypes = keys(pickBy(checkedByCode))
-    this.props.ui.hideReportContentDialog()
+    this.props.editors.cancelEdit(EditorTypes.CONTENT_REPORT, editorId)
   }
 
   render() {
     const {
-      isReportDialogVisible,
       isEditing,
     } = this.props
 
@@ -53,22 +34,18 @@ class ReportContentDialog extends Component {
         id="report-content-dialog"
         title="Report Content"
         onHide={this.onHide}
-        visible={isReportDialogVisible && isEditing}
+        visible={isEditing}
         className="md-overlay--wide-dialog"
       >
         <div className="md-grid">
           <div className="md-cell md-cell--12">
-            <form onSubmit={this.onSubmit}>
             <Card>
               <ContentReportEditor
-                id={id}
-                editorId={editorId}
-                onSubmit={this.onSubmit}
-                onCancel={this.onHide}
+                id={ReportContentDialog.id}
+                editorId={ReportContentDialog.editorId}
                 submitText="Report"
               />
             </Card>
-          </form>
           </div>
         </div>
       </DialogContainer>
@@ -77,20 +54,10 @@ class ReportContentDialog extends Component {
 }
 
 const mapStateToProps = state => {
-  const {
-    isReportDialogVisible,
-    entity: {
-      entityType,
-      entityId,
-    },
-  } = state.ui.reportContentDialog
-  const {editEntity} = get(state.editors, [EditorTypes.CONTENT_REPORT, editorId], {})
+  const {editEntity} = get(state.editors, [ReportContentDialog.editorType, ReportContentDialog.editorId], {})
   const isEditing = isTruthy(editEntity)
 
   return {
-    entityType,
-    entityId,
-    isReportDialogVisible,
     isEditing,
   }
 }

@@ -17,6 +17,7 @@ import {
   isVerified,
   JustificationBasisSourceType,
   JustificationRootTargetType,
+  makeNewContentReport,
 } from 'howdju-common'
 
 import hoverAware from './hoverAware'
@@ -41,6 +42,7 @@ import {
 
 import './JustificationRootTargetCard.scss'
 import {divideMenuItems} from "./util"
+import ReportContentDialog from "./content-report/ReportContentDialog"
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetType.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -161,10 +163,14 @@ class JustificationRootTargetCard extends React.Component {
 
   showReportContentDialog = () => {
     const {
-      rootTargetType,
-      rootTarget,
+      rootTargetType: entityType,
+      rootTarget: {
+        id: entityId
+      },
     } = this.props
-    this.props.ui.showReportContentDialog(rootTargetType, rootTarget.id)
+    const url = window.location.href
+    this.props.editors.beginEdit(ReportContentDialog.editorType, ReportContentDialog.editorId,
+      makeNewContentReport({entityType, entityId, url}))
   }
 
   menuItemsForType(rootTargetType, rootTarget) {

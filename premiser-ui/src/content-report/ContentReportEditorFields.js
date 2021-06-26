@@ -51,16 +51,16 @@ export default class ContentReportEditorFields extends Component {
       errors: apiValidationErrors,
       onPropertyChange,
     } = this.props
-    const {
-      description,
-      checkedByType,
-    } = contentReport
+
+    const description = get(contentReport, 'description')
+    const checkedByType = get(contentReport, 'checkedByType')
 
     const modelErrors = get(apiValidationErrors, '_model')
 
     // TODO because the API should validate the same datq using the same schema, it shouldn't be possible
     // to receive apiErrors that didn't fail client validation.
     // Log an error if they don't correspond, and merge the errors.
+    // Can we do it in the withEntityEditor so that the pattern is reused?
     const {isValid, errors: validationErrors} = contentReport ?
       validate(schemaIds.contentReport, contentReport) :
       {isValid: false, errors: {}}
@@ -75,7 +75,7 @@ export default class ContentReportEditorFields extends Component {
             name={combineNames(name, `checkedByType[${code}]`)}
             label={description}
             value={code}
-            checked={checkedByType[code]}
+            checked={get(checkedByType, code)}
             disabled={disabled}
             onPropertyChange={onPropertyChange}
           />
