@@ -230,12 +230,61 @@ const contentReport = {
   }
 }
 
+const persorg = {
+  "$id": "https://howdju.com/schemas/persorg.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Persorg",
+  "description": "A person or organization. Something that can be a speaker.",
+  "type": "object",
+  "required": ["name", "isOrganization", "knownFor"],
+  "properties": {
+    name: {
+      type: "string",
+      maxLength: schemaSettings.persorgNameMaxLength,
+      description: "The name of the persorg.",
+    },
+    isOrganization: {
+      type: "boolean",
+      description: "Whether the persorg is an organization (or a person.)"
+    },
+    knownFor: {
+      type: "string",
+      maxLength: schemaSettings.persorgKnownForMaxLength,
+      description: "A short desription of what the persorg is known for, to help distinguish the persorg from other" +
+        " persorgs, to provide context about the persorg's significance, or to provide context about the significance" +
+        " or motivationi for the persorg's speech.",
+    },
+    websiteUrl: {
+      type: "string",
+      format: 'uri',
+      maxLength: schemaSettings.urlMaxLength,
+      description: "The URL of the website the persorg represents as its primary website. If there is none, then then" +
+        " the generally accepted primary website representing the persorg."
+    },
+    twitterUrl: {
+      type: "string",
+      format: 'uri',
+      maxLength: schemaSettings.urlMaxLength,
+      description: "The URL of the Twitter profile that the persorg represents as belonging to it. If the persorg does" +
+        " not publicly represent that it has a Twitter account, then no unofficial Twitter account should be substituted" +
+        " here."
+    },
+    wikipediaUrl: {
+      type: "string",
+      format: 'uri',
+      maxLength: schemaSettings.urlMaxLength,
+      description: "The URL of the Wikipedia page representing the persorg. The persorg need not endorse this page."
+    },
+  }
+}
+
 module.exports = {
   schemaSettings,
   schemas: {
     contentReport,
     passwordResetRequest,
     passwordResetConfirmation,
+    persorg,
     registrationRequest,
     registrationConfirmation,
     user,

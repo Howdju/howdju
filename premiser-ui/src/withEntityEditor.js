@@ -8,6 +8,11 @@ import {
   CardText,
 } from 'react-md'
 import get from 'lodash/get'
+import isEqual from 'lodash/isEqual'
+import merge from 'lodash/merge'
+
+import {toJson} from "howdju-common"
+import {validate, emptyValidationResult} from "howdju-ajv-sourced"
 
 import {
   editors,
@@ -17,16 +22,20 @@ import {
   CANCEL_BUTTON_LABEL,
 } from "./texts"
 import t, {EDIT_ENTITY_SUBMIT_BUTTON_LABEL} from './texts'
+import {logger} from './logger'
 
 /**
  * HOC for creating an editor of an entity.
  *
  * @param editorType {EditorType|string} The EditorType
  * @param EntityEditorFields {EditorFields} The fields for editing the entity
- * @param editorFieldsEditEntityPropName {string} The prop name under which the edited entity should be provided to the editor fields
+ * @param editorFieldsEditEntityPropName {string} The prop name under which the edited entity should be provided to the
+ *     editor fields
+ * @param schemaId The ID of the schema for validating the editEntity.
  * @returns {Component} An entity editor component
  */
-export default function withEntityEditor(editorType, EntityEditorFields, editorFieldsEditEntityPropName) {
+export default function withEntityEditor(
+  editorType, EntityEditorFields, editorFieldsEditEntityPropName, schemaId) {
 
   class EntityEditor extends Component {
     static editorType = editorType
@@ -72,7 +81,7 @@ export default function withEntityEditor(editorType, EntityEditorFields, editorF
         suggestionsKey,
         submitText,
         editorState: {
-          errors,
+          errors: apiValidationErrors,
           editEntity,
           isFetching,
           isSaving,
@@ -89,6 +98,19 @@ export default function withEntityEditor(editorType, EntityEditorFields, editorF
       const entityEditorFields = {
         [editorFieldsEditEntityPropName]: editEntity
       }
+
+      const {errors: clientValidationErrors} = editEntity ?
+        validate(schemaId, editEntity) :
+        emptyValidationResult()
+      // Because the API should validate the same data using the same schema, it shouldn't be possible
+      // to receive API errors that didn't also fail client validation.
+      if (apiValidationErrors && !isEqual(clientValidationErrors, apiValidationErrors)) {
+        logger.error(`clientValidationErrors and apiValidationErrors do not match ` +
+            `${toJson({clientValidationErrors, apiValidationErrors})}`)
+      }
+      // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
+      // must accept the value.
+      const errors = merge(clientValidationErrors, apiValidationErrors)
 
       return (
         <form onSubmit={this.onSubmit}>

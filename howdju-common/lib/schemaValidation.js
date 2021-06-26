@@ -97,7 +97,12 @@ function toJsonVal(val) {
   return fromJson(toJson(val))
 }
 
+function emptyValidationResult() {
+  return {errors: {}}
+}
+
 module.exports = {
+  emptyValidationResult,
   makeAjv,
   makeValidate,
   makeStandaloneCode,

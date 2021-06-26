@@ -22,7 +22,7 @@ import {
   schemaSettings,
   schemaIds,
 } from 'howdju-common'
-import {validate} from 'howdju-ajv-sourced'
+import {emptyValidationResult, validate} from 'howdju-ajv-sourced'
 
 import {editors, mapActionCreatorGroupToDispatchToProps} from './actions'
 import EmailTextField from './EmailTextField'
@@ -64,9 +64,10 @@ class RegistrationRequestPage extends React.Component {
     const registration = get(editorState, 'editEntity')
     const email = get(registration, 'email', '')
 
-    const {isValid, errors: validationErrors} = registration ?
+    const {errors: validationErrors} = registration ?
       validate(schemaIds.registrationRequest, registration) :
-      {isValid: false, errors: {}}
+      emptyValidationResult()
+    const isValid = isEmpty(errors)
 
     const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
 

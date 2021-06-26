@@ -24,7 +24,7 @@ import {
   schemaIds,
   schemaSettings,
 } from 'howdju-common'
-import {validate} from 'howdju-ajv-sourced'
+import {emptyValidationResult, validate} from 'howdju-ajv-sourced'
 
 
 import {
@@ -102,9 +102,10 @@ class RegistrationConfirmationPage extends React.Component {
     const is13YearsOrOlder = get(registrationConfirmation, 'is13YearsOrOlder', false)
     const isNotGdpr = get(registrationConfirmation, 'isNotGdpr', false)
 
-    const {isValid, errors: validationErrors} = registrationConfirmation ?
+    const {errors: validationErrors} = registrationConfirmation ?
       validate(schemaIds.registrationConfirmation, registrationConfirmation) :
-      {isValid: false, errors: {}}
+      emptyValidationResult()
+    const isValid = isEmpty(errors)
     console.log({isValid, validationErrors})
 
     const validationErrorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
