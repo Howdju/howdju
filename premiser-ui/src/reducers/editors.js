@@ -2,7 +2,6 @@ import assign from 'lodash/assign'
 import clone from 'lodash/clone'
 import cloneDeep from 'lodash/cloneDeep'
 import concat from 'lodash/concat'
-import keys from 'lodash/keys'
 import difference from 'lodash/difference'
 import find from 'lodash/find'
 import forEach from 'lodash/forEach'
@@ -13,7 +12,6 @@ import includes from 'lodash/includes'
 import merge from 'lodash/merge'
 import reduce from 'lodash/reduce'
 import set from 'lodash/set'
-import pickBy from "lodash/pickBy"
 import { handleActions } from 'redux-actions'
 
 import {
@@ -73,6 +71,8 @@ const defaultEditorState = {
   editEntity: null,
   errors: null,
   isSaving: false,
+  dirtyFields: {},
+  wasSubmitAttempted: false,
 }
 
 const editorErrorReducer = (errorKey) => (state, action) => {
@@ -145,14 +145,27 @@ const defaultEditorActions = {
   [editors.propertyChange]: (state, action) => {
     const editEntity = cloneDeep(state.editEntity)
     const properties = action.payload.properties
+    const newDirtyFields = {}
     forEach(properties, (val, key) => {
       set(editEntity, key, val)
+      newDirtyFields[key] = true
     })
-    return {...state, editEntity}
+    const dirtyFields = {...state.dirtyFields, ...newDirtyFields}
+    return {...state, editEntity, dirtyFields}
   },
-  [editors.commitEdit]: (state, action) => ({...state, isSaving: true, errors: null}),
+  [editors.commitEdit]: (state, action) => ({
+    ...state,
+    isSaving: true,
+    errors: null,
+    wasSubmitAttempted: true,
+  }),
   [editors.commitEdit.result]: {
-    next: (state, action) => ({...state, isSaving: false, editEntity: null}),
+    next: (state, action) => ({
+      ...state,
+      isSaving: false,
+      editEntity: null,
+      dirtyFields: {},
+    }),
     throw: (state, action) => {
       const sourceError = action.payload.sourceError
       if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
@@ -165,7 +178,11 @@ const defaultEditorActions = {
       return {...state, isSaving: false}
     }
   },
-  [editors.cancelEdit]: (state, action) => ({...state, editEntity: null}),
+  [editors.cancelEdit]: (state, action) => ({
+    ...state,
+    editEntity: null,
+    dirtyFields: {},
+  }),
 }
 const defaultEditorReducer = handleActions(defaultEditorActions, defaultEditorState)
 const editorReducerByType = {
@@ -462,15 +479,6 @@ const editorReducerByType = {
     },
     [editors.resetSubmission]: (state, action) => ({...state, isSubmitted: false}),
   }, defaultEditorState),
-
-  [EditorTypes.CONTENT_REPORT]: handleActions({
-    [editors.commitEdit]: (state, action) => {
-      // Convert map of string to boolean to array of strings
-      const types = keys(pickBy(state.editEntity.checkedByType))
-      const editEntity = {...state.editEntity, ...{types}}
-      return defaultEditorActions[editors.commitEdit]({...state, ...{editEntity}}, action)
-    },
-  }, defaultEditorState)
 }
 
 function makePropositionTagReducer(polarity, combiner) {

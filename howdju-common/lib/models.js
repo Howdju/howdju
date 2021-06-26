@@ -340,7 +340,7 @@ _e.makeNewContentReport = (fields) => merge({
   checkedByType: {},
   // Holds only the selected types; populated before posting to API
   types: [],
-  description: null,
+  description: "",
   url: null
 }, fields)
 

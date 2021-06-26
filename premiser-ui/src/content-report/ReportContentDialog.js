@@ -19,7 +19,7 @@ class ReportContentDialog extends Component {
   static editorType = EditorTypes.CONTENT_REPORT
 
   onHide = () => {
-    this.props.editors.cancelEdit(EditorTypes.CONTENT_REPORT, editorId)
+    this.props.editors.cancelEdit(ReportContentDialog.editorType, ReportContentDialog.editorId)
   }
 
   render() {

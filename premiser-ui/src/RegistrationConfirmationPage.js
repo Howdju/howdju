@@ -14,6 +14,7 @@ import {connect} from 'react-redux'
 import Helmet from './Helmet'
 import cn from 'classnames'
 import get from 'lodash/get'
+import isEmpty from 'lodash/isEmpty'
 import queryString from 'query-string'
 
 import {
@@ -105,8 +106,7 @@ class RegistrationConfirmationPage extends React.Component {
     const {errors: validationErrors} = registrationConfirmation ?
       validate(schemaIds.registrationConfirmation, registrationConfirmation) :
       emptyValidationResult()
-    const isValid = isEmpty(errors)
-    console.log({isValid, validationErrors})
+    const isValid = isEmpty(validationErrors)
 
     const validationErrorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
 

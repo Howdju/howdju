@@ -9,6 +9,7 @@ import {
 } from 'react-md'
 import get from 'lodash/get'
 import isEqual from 'lodash/isEqual'
+import isEmpty from 'lodash/isEmpty'
 import merge from 'lodash/merge'
 
 import {toJson} from "howdju-common"
@@ -85,6 +86,7 @@ export default function withEntityEditor(
           editEntity,
           isFetching,
           isSaving,
+          dirtyFields,
         },
         // ignore
         editors,
@@ -119,11 +121,12 @@ export default function withEntityEditor(
               {...rest}
               id={id}
               nameId={nameId}
-              disabled={isSaving}
               suggestionsKey={suggestionsKey}
               onPropertyChange={this.onPropertyChange}
               onSubmit={this.onSubmit}
+              dirtyFields={dirtyFields}
               errors={errors}
+              disabled={inProgress}
               {...entityEditorFields}
             />
           </CardText>
@@ -140,7 +143,7 @@ export default function withEntityEditor(
                     key="submitButton"
                     type="submit"
                     children={submitText || t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
-                    disabled={inProgress}
+                    disabled={inProgress || !isEmpty(errors)}
             />
           </CardActions>
         </form>

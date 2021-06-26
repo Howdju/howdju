@@ -1,12 +1,10 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import get from 'lodash/get'
-import map from "lodash/map"
 
-import {ContentReportTypes, schemaIds, schemaSettings} from "howdju-common"
-import {validate} from "howdju-ajv-sourced"
+import {ContentReportTypes, schemaSettings} from "howdju-common"
 
-import Checkbox from "../Checkbox"
+import CheckboxList from "../CheckboxList"
 import ErrorMessages from "../ErrorMessages"
 import TextField from '../TextField'
 import {
@@ -48,30 +46,38 @@ export default class ContentReportEditorFields extends Component {
       id,
       name,
       disabled,
-      errors: apiValidationErrors,
+      errors,
       onPropertyChange,
+      dirtyFields,
+      wasSubmitAttempted,
     } = this.props
 
     const description = get(contentReport, 'description')
-    const checkedByType = get(contentReport, 'checkedByType')
+    const types = get(contentReport, 'types')
 
-    const modelErrors = get(apiValidationErrors, '_model')
+    const modelErrors = get(errors, '_model')
+
+    const typesErrorText = get(errors, combineNames(name, "types", 'message'))
+    const isTypesError = typesErrorText &&
+      (get(dirtyFields, combineNames(name, "types")) || wasSubmitAttempted)
+
+    const descriptionErrorText = get(errors, combineNames(name, "description", 'message'))
+    const isDescriptionError = descriptionErrorText &&
+      (get(dirtyFields, combineNames(name, "description")) || wasSubmitAttempted)
 
     return (
       <>
         <ErrorMessages errors={modelErrors}/>
-        {map(reportTypeDescriptions, (description, code)  => (
-          <Checkbox
-            id={combineIds(id, `${code}-checkbox`)}
-            key={code}
-            name={combineNames(name, `checkedByType[${code}]`)}
-            label={description}
-            value={code}
-            checked={get(checkedByType, code)}
-            disabled={disabled}
-            onPropertyChange={onPropertyChange}
-          />
-        ))}
+        <CheckboxList
+          id={combineIds(id, "types")}
+          name={combineNames(name, "types")}
+          value={types}
+          onPropertyChange={onPropertyChange}
+          descriptionsByCode={reportTypeDescriptions}
+          disabled={disabled}
+          error={isTypesError}
+          errorText={typesErrorText}
+        />
         <TextField
           id={combineIds(id, "description")}
           key="description"
@@ -79,6 +85,8 @@ export default class ContentReportEditorFields extends Component {
           label="Description"
           rows={2}
           maxRows={8}
+          error={isDescriptionError}
+          errorText={descriptionErrorText}
           maxLength={schemaSettings.reportContentDescriptionMaxLength}
           value={description}
           disabled={disabled}

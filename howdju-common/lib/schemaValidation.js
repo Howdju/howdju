@@ -6,6 +6,8 @@ const addFormats = require('ajv-formats')
 const {default: standaloneCode} = require("ajv/dist/standalone")
 const mapValues = require('lodash/mapValues')
 const assign = require('lodash/assign')
+const pick = require('lodash/pick')
+const set = require('lodash/set')
 const reduce = require('lodash/reduce')
 const values = require('lodash/values')
 
@@ -81,13 +83,14 @@ function transformErrors(errors) {
         throw new Error(`unsupported Ajv error ${JSON.stringify(error)}`)
       }
     } else {
-      // Ajv instancePaths start with a root period
+      // Ajv instancePaths start with a root slash
       name = error.instancePath.substr(1)
     }
-    transformed[name] = {
-      keyword: error.keyword,
-      params: error.params,
-    }
+    set(transformed, name, pick(error, [
+      "keyword",
+      "message",
+      "params",
+    ]))
     return transformed
   }, {})
 }

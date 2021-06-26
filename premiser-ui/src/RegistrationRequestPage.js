@@ -13,6 +13,7 @@ import {
   FocusContainer
 } from 'react-md'
 import get from 'lodash/get'
+import isEmpty from 'lodash/isEmpty'
 import moment from 'moment'
 import cn from 'classnames'
 
@@ -67,7 +68,7 @@ class RegistrationRequestPage extends React.Component {
     const {errors: validationErrors} = registration ?
       validate(schemaIds.registrationRequest, registration) :
       emptyValidationResult()
-    const isValid = isEmpty(errors)
+    const isValid = isEmpty(validationErrors)
 
     const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
 

@@ -1,0 +1,7 @@
+@import './colors';
+
+fieldset.error {
+  * {
+    color: $error-color;
+  }
+}
