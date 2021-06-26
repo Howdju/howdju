@@ -110,7 +110,12 @@ function makeContentReportEmailContent(contentReport) {
     html: outdent`
       <table style="border:1px solid black;">
         <tr>
-          <th>Types</th><td>${types}</td>
+          <th>Types</th>
+          <td>
+            <ul>
+              ${types.map(t =>`<li>${t}</li>`)}
+            </ul>
+          </td>
         </tr><tr>
           <th>URL</th><td>${url}</td>
         </tr><tr>
