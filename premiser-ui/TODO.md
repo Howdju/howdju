@@ -2,23 +2,24 @@
 
 ## Reboot
 
+- Basic iPhone app for capturing anchor fields?
+  
 - Release
-  - Enable registration
     Terms:
-      report functionality
       deleted accounts: anonymous replacement
-  - Is search by URL working? (open extension on page.)
     Fix front page example
     Rate limiting, secret management
     other profile page
     user activity page (filter recent activity by user additionally)
     Add non-sentry error-handling
-    Citation confirmation crawler
-  - Basic iPhone app for capturing anchor fields?
+Cool improvements
+  - Citation confirmation crawler
 - New directions
   - prosemirror summary-based justifications / Appearances / Better source handling
   - AppSync / Dynamo
   - Semantic search? Quin
+  - Clustering: of propositions
+    voting to cluster
   
 Followed all directions here: https://web.archive.org/web/20201020180006/https://dev.to/markosaric/how-to-make-google-analytics-gdpr-compliant-so-you-don-t-need-to-ask-for-user-consent-42mh
   

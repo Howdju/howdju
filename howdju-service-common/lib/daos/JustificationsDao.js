@@ -1094,6 +1094,23 @@ function makeWritQuoteUrlJustificationClause(url,  justificationColumns) {
             and wq.deleted is null
             and wqut.deleted is null
             and u.url = $2
+        
+        union
+        
+        select 
+          ${select}
+        from 
+          justifications ${justificationTableAlias}
+            join writ_quotes wq on 
+                  ${justificationTableAlias}.basis_type = $1 
+              and ${justificationTableAlias}.basis_id = wq.writ_quote_id
+            join writ_quote_urls wqu using (writ_quote_id)
+            join urls u using (url_id)
+          where
+                ${justificationTableAlias}.deleted is null 
+            and wq.deleted is null
+            and wqu.deleted is null
+            and u.url = $2
       `,
     args: [
       JustificationBasisType.WRIT_QUOTE,
