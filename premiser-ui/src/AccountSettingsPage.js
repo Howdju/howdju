@@ -71,7 +71,7 @@ class AccountSettingsPage extends Component {
         <div className="md-cell md-cell--12">
 
           <Card className="md-cell--12">
-            <CardTitle>Privacy settings</CardTitle>
+            <CardTitle title="Privacy settings" />
             <CardText>
               <Button raised primary onClick={showPrivacyConsentDialog}>Show privacy consent dialog</Button>
             </CardText>

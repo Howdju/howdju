@@ -1,5 +1,6 @@
 const {
   requireArgs,
+  makeNewAccountSettings,
 } = require('howdju-common')
 const {EntityService} = require('./EntityService')
 const {
@@ -20,12 +21,16 @@ exports.AccountSettingsService = class AccountSettingsService extends EntityServ
   async createAccountSettings(authToken, accountSettings) {
     const userId = await this.authService.readUserIdForAuthToken(authToken)
     const now = new Date()
-    return await this.accountSettingsDao.createAccountSettingsForUserId(userId, accountSettings, now)
+    return this.accountSettingsDao.createAccountSettingsForUserId(userId, accountSettings, now)
   }
 
-  async readAccountSettings(authToken) {
+  async readOrCreateAccountSettings(authToken) {
     const userId = await this.authService.readUserIdForAuthToken(authToken)
-    return await this.accountSettingsDao.readAccountSettingsForUserId(userId)
+    const accountSettings =  await this.accountSettingsDao.readAccountSettingsForUserId(userId)
+    if (accountSettings) {
+      return accountSettings
+    }
+    return this.createAccountSettings(authToken, makeNewAccountSettings())
   }
 
   async doUpdate(accountSettings, userId, now) {

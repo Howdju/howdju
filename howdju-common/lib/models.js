@@ -363,3 +363,5 @@ _e.tagEqual = (tag1, tag2) => _e.idEqual(tag1.id, tag2.id) || isDefined(tag1.nam
 _e.makePropositionTagVote = (props) => merge({}, props)
 
 _e.doTargetSameRoot = (j1, j2) => _e.idEqual(j1.rootTarget.id, j2.rootTarget.id) && j1.rootTargetType === j2.rootTargetType
+
+_e.makeNewAccountSettings = () => ({})

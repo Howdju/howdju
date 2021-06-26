@@ -808,7 +808,7 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {authToken},
-    }) => appProvider.accountSettingsService.readAccountSettings(authToken)
+    }) => appProvider.accountSettingsService.readOrCreateAccountSettings(authToken)
       .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
   },
   {

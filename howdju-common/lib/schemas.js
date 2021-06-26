@@ -279,9 +279,28 @@ const persorg = {
   }
 }
 
+const accountSettings = {
+  "$id": "https://howdju.com/schemas/account-settings.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Account Settings",
+  "description": "The settings associate with a user's account.",
+  "type": "object",
+  "required": [],
+  "properties": {
+    paidContributionsDisclosure: {
+      type: "string",
+      description: "The user's disclosure that they are paid to contribute to Howdju.",
+      maxLength: schemaSettings.paidContributionsDisclosureTextMaxLength,
+    },
+  }
+}
+
+
+
 module.exports = {
   schemaSettings,
   schemas: {
+    accountSettings,
     contentReport,
     passwordResetRequest,
     passwordResetConfirmation,
