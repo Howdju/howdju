@@ -113,7 +113,7 @@ function makeContentReportEmailContent(contentReport) {
           <th>Types</th>
           <td>
             <ul>
-              ${types.map(t =>`<li>${t}</li>`)}
+              ${types.map(t => `<li>${t}</li>`).join('')}
             </ul>
           </td>
         </tr><tr>
