@@ -222,7 +222,7 @@ class JustificationRootTargetCard extends React.Component {
       //   break
       // }
       default:
-        return []
+        return {entity: [], edit: []}
     }
   }
 
