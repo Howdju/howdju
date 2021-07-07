@@ -28,8 +28,10 @@ Howdju grants you a personal, non-transferable, non-exclusive, revocable, limite
 
 Except as permitted through the Services or as otherwise permitted by us in writing, your license does not include the right to:
 
-* license, sell, transfer, assign, distribute, host, or otherwise commercially exploit the Services or Content; or
-* modify, prepare derivative works of, disassemble, decompile, or reverse engineer any part of the Services or Content.
+* license, sell, transfer, assign, distribute, host, or otherwise commercially exploit the Services or Content;
+* modify, prepare derivative works of, disassemble, decompile, or reverse engineer any part of the Services or Content; or
+* access the Services or Content in order to build a similar or competitive website, product, or service that is for-profit
+  — members of organizations developing similar products for non-profit organizations are welcome to use the Services.
 
 We reserve the right to modify, suspend, or discontinue the Services (in whole or in part) at any time, with or without notice to you. Any future release, update, or other addition to functionality of the Services will be subject to these Terms, which may be updated from time to time. You agree that we will not be liable to you or to any third party for any modification, suspension, or discontinuation of the Services or any part thereof.
 
