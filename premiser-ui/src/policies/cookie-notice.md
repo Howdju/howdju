@@ -1,6 +1,6 @@
 # Howdju Cookie Notice
 
-Last Updated 12 June 2021
+Last Updated 6 July 2021
 
 This Cookie Notice explains how we use cookies and similar technologies as well as the options you have to control them.
 

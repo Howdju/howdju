@@ -1,6 +1,6 @@
 # Howdju Code of Conduct
 
-Last Updated 12 June 2021
+Last Updated 6 July 2021
 
 Howdju wants to make the process of presenting alternative viewpoints and verifying claims relating to them efficient and enjoyable. This goal is only possible through the hard work and cooperation of the many people who can represent those viewpoints. If you see anything on Howdju that
 violates this Code of Conduct, please report it using the provided functionality, or email <span data-type="email" data-email-user="report" data-email-domain="howdju.com"></span> with a link to the content and an explanation of the problem.

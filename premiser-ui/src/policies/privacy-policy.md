@@ -1,6 +1,6 @@
 #  Howdju Privacy Policy
 
-Last Updated 12 June 2021
+Last Updated 6 July 2021
 
 This Privacy Policy explains how Howdju (“we”, “us”) collects, uses, and shares information about you when you use our Services or when you otherwise interact with us or receive a communication from us.
 

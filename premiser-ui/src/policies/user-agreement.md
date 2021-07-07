@@ -1,6 +1,6 @@
 # Howdju User Agreement
 
-Last Updated 12 June 2021
+Last Updated 6 July 2021
 
 Hello truthseekers! Howdju's mission is to minimize the time required to understand representative viewpoints about uncertain or disputed topics. This User Agreement and your conduct make that possible.
 
