@@ -21,7 +21,7 @@ function processHtml(html) {
   return DOMPurify.sanitize(processCodes(html))
 }
 
-const emailRegExp = /<span data-type="email" data-email-user="(.+)" data-email-domain="(.+)"><\/span>/g
+const emailRegExp = /<span data-type="email" data-email-user="(.+?)" data-email-domain="(.+?)"><\/span>/g
 
 function processCodes(html) {
   return html.replaceAll(emailRegExp, '$1@$2')
