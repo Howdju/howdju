@@ -1,12 +1,12 @@
 # About Howdju
 
-Howdju is a platform to fight disinformation online premised upon three hypotheses:
+Howdju is a platform for countering misunderstanding based upon three hypotheses:
 
 1. We are more open to alternative perspectives when we share why we believe what we believe than when we are told what
    is correct or incorrect. (“How d’ya know that…?”)
-2. Doubt and resistance will persist until we we are confident that all sides have had an opportunity to present all
+2. Doubt and resistance will persist until we are confident that all sides have had an opportunity to present alternative
    perspectives and respond to others’ perspectives.
-3. We need an efficient way to evaluate new information, because fact-checking everything would take too much time.
+3. We need a human-centered aggregatator that focuses on the efficient transmission .
 
 Howdju is a personal project by [Carl Gieringer](https://twitter.com/carlgieringer)
 
@@ -24,7 +24,7 @@ information, even when such information challenges their partisan and ideologica
 
 ## Introduction
 
-Information online is growing fast. Besides the large amount of information generated daily by traditional news and
+Information online is growing quickly. Besides the large amount of information generated daily by traditional news and
 institutional sources, social media and a variety of new media sources are generating information faster than the
 average person can keep up. New tools are needed to help people aggregate and filter the content that is most relevant
 to them and to help them to evalute new information efficiently.

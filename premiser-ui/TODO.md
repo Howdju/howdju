@@ -11,6 +11,7 @@
     Rate limiting, secret management
     other profile page
     user activity page (filter recent activity by user additionally)
+      filter by tag, filter by domain, filter by URL
     Add non-sentry error-handling
 Cool improvements
   - Citation confirmation crawler
@@ -20,6 +21,8 @@ Cool improvements
   - Semantic search? Quin
   - Clustering: of propositions
     voting to cluster
+Security
+  - https://github.com/99designs/aws-vault
   
 Followed all directions here: https://web.archive.org/web/20201020180006/https://dev.to/markosaric/how-to-make-google-analytics-gdpr-compliant-so-you-don-t-need-to-ask-for-user-consent-42mh
   
