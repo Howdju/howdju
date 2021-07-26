@@ -18,6 +18,10 @@ module "lambdas" {
   expiration_days = var.lambdas_s3_noncurrent_version_expiration_days
 }
 
+module "s3_backend" {
+  source          = "./modules/s3_backend"
+}
+
 module bastion {
   source              = "./modules/bastion"
   instance_count      = 1
