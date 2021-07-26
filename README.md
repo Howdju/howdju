@@ -27,6 +27,71 @@ dependencies.
 yarn install
 ``` 
 
+## Install `aws-vault`
+
+
+[`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
+development environment.  You'll need an AWS admin to provide your AWS username, access key, and secret access key.
+
+```sh
+brew install --cask aws-vault
+aws-vault add username@howdju
+```
+
+Update `~/.aws/config`:
+
+```ini
+[default]
+region = us-east-1
+
+[profile username@howdju]
+mfa_serial = arn:aws:iam::007899441171:mfa/username
+
+[profile terraform@howdju]
+source_profile = username@howdju
+role_arn = arn:aws:iam::007899441171:role/TerraformStateUpdater
+```
+
+### Running commands using aws-vault
+
+Logging in:
+
+```shell
+aws-vault login username@howdju --duration 2h
+```
+
+Running commands with your credentials:
+
+```
+aws-vault exec username@howdju -- terraform apply
+```
+
+See `aws-vault`'s [USAGE](https://github.com/99designs/aws-vault/blob/master/USAGE.md) page for more.
+
+## SSH access
+
+Upload your public key named like `username.pub` to `s3://howdju-bastion-logs/public-keys/`. (The username for the
+bastion host need not match your AWS username, but it should for simplicity.) The bastion host refreshes
+from these every 5 minutes.
+
+Generate a new SSH key:
+
+```
+ssh-keygen -t ed25519 -C "username@howdju.com"
+```
+
+Update `~/.ssh/config`:
+
+```
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+
+Host bastion.howdju.com
+  User username
+```
+
 # Prepare a local database server
 
 ```
