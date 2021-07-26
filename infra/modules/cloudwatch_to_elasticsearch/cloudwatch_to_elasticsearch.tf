@@ -2,7 +2,7 @@ resource "aws_lambda_function" "cloudwatch_logs_to_elasticsearch" {
   function_name     = "CloudwatchLogsToElasticsearch"
   role              = aws_iam_role.cloudwatch_logs_to_elasticsearch.arn
   handler           = "index.handler"
-  runtime           = "nodejs8.10"
+  runtime           = "nodejs14.x"
   s3_bucket         = data.aws_s3_bucket_object.lambda.bucket
   s3_key            = data.aws_s3_bucket_object.lambda.key
   s3_object_version = data.aws_s3_bucket_object.lambda.version_id

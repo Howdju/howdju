@@ -2,7 +2,7 @@ resource "aws_lambda_function" "elasticsearch_snapshots" {
   function_name     = "ElasticsearchSnapshots"
   role              = aws_iam_role.elasticsearch_snapshots.arn
   handler           = "index.handler"
-  runtime           = "nodejs8.10"
+  runtime           = "nodejs14.x"
   s3_bucket         = data.aws_s3_bucket_object.lambda_function_zip.bucket
   s3_key            = data.aws_s3_bucket_object.lambda_function_zip.key
   s3_object_version = data.aws_s3_bucket_object.lambda_function_zip.version_id
