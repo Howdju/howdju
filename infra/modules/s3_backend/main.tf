@@ -19,7 +19,7 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
   }
 }
 
-resource "aws_iam_role" "role" {
+resource "aws_iam_role" "terraform_state_updater" {
   name = "TerraformStateUpdater"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -38,7 +38,7 @@ resource "aws_iam_role" "role" {
   })
 }
 
-resource "aws_iam_policy" "policy" {
+resource "aws_iam_policy" "terraform_state_update" {
   name        = "TerraformStateUpdate"
   description = "Allows updating Terraform state"
 
@@ -53,7 +53,7 @@ resource "aws_iam_policy" "policy" {
       {
         Effect: "Allow",
         Action: ["s3:GetObject", "s3:PutObject"],
-        Resource: "arn:aws:s3:::${aws_s3_bucket.terraform_state.bucket}/terraform.tfstate"
+        Resource: "arn:aws:s3:::${aws_s3_bucket.terraform_state.bucket}/terraform-state/*"
       },
       {
         Effect: "Allow",
@@ -66,4 +66,9 @@ resource "aws_iam_policy" "policy" {
       }
     ]
   })
+}
+
+resource aws_iam_role_policy_attachment "terraform_state_updater" {
+  policy_arn = aws_iam_policy.terraform_state_update.arn
+  role       = aws_iam_role.terraform_state_updater.name
 }

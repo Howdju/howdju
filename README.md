@@ -46,10 +46,6 @@ region = us-east-1
 
 [profile username@howdju]
 mfa_serial = arn:aws:iam::007899441171:mfa/username
-
-[profile terraform@howdju]
-source_profile = username@howdju
-role_arn = arn:aws:iam::007899441171:role/TerraformStateUpdater
 ```
 
 ### Running commands using aws-vault
@@ -158,6 +154,24 @@ yarn workspaces foreach -Av exec bash -c 'yarn add --dev flow-bin'
 ```
 
 # Publishing
+
+## Publishing infrastructure changes
+
+TODO(GH-46): give TerraformStateUpdater appropriate permissions
+
+Request that your user get access to the role `TerraformStateUpdater`. Add a section to `~/.aws/config` for the role:
+
+```ini
+[profile terraform@howdju]
+source_profile = username@howdju
+role_arn = arn:aws:iam::007899441171:role/TerraformStateUpdater
+```
+
+Then run terraform commands using the role:
+
+```
+aws-vault exec terraform@howdju -- terraform plan
+```
 
 ## Publishing the API
 
