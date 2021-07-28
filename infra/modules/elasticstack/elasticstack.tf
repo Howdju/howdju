@@ -68,16 +68,16 @@ resource "aws_instance" "elasticstack" {
   vpc_security_group_ids = [aws_security_group.elasticstack_instance.id]
   ebs_optimized          = true
   key_name               = var.key_name
-  user_data              = templatefile(
-      "${path.module}/elasticstack_user_data.tpl.sh",
-      {
-        data_device_name = var.elasticstack_data_device_name
-        data_mount_path  = var.elasticstack_data_mount_path
-        data_owner       = var.elasticsearch_data_owner
-        data_directory   = var.elasticsearch_data_directory
-        cluster_name     = aws_ecs_cluster.elasticstack.name
-      })
-  iam_instance_profile   = aws_iam_instance_profile.elasticstack.name
+  user_data = templatefile(
+    "${path.module}/elasticstack_user_data.tpl.sh",
+    {
+      data_device_name = var.elasticstack_data_device_name
+      data_mount_path  = var.elasticstack_data_mount_path
+      data_owner       = var.elasticsearch_data_owner
+      data_directory   = var.elasticsearch_data_directory
+      cluster_name     = aws_ecs_cluster.elasticstack.name
+  })
+  iam_instance_profile = aws_iam_instance_profile.elasticstack.name
   tags = {
     Name                   = "elasticstack"
     ElasticsearchDiscovery = "elasticstack_esnode"

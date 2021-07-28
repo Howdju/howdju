@@ -29,7 +29,7 @@ resource "aws_iam_role" "terraform_state_updater" {
         Effect = "Allow"
         Sid    = ""
         Principal = {
-          AWS: [
+          AWS : [
             "arn:aws:iam::007899441171:user/carl"
           ]
         }
@@ -43,32 +43,32 @@ resource "aws_iam_policy" "terraform_state_update" {
   description = "Allows updating Terraform state"
 
   policy = jsonencode({
-    Version: "2012-10-17",
-    Statement: [
+    Version : "2012-10-17",
+    Statement : [
       {
-        Effect: "Allow",
-        Action: "s3:ListBucket",
-        Resource: "arn:aws:s3:::howdju-terraform"
+        Effect : "Allow",
+        Action : "s3:ListBucket",
+        Resource : "arn:aws:s3:::howdju-terraform"
       },
       {
-        Effect: "Allow",
-        Action: ["s3:GetObject", "s3:PutObject"],
-        Resource: "arn:aws:s3:::${aws_s3_bucket.terraform_state.bucket}/terraform-state/*"
+        Effect : "Allow",
+        Action : ["s3:GetObject", "s3:PutObject"],
+        Resource : "arn:aws:s3:::${aws_s3_bucket.terraform_state.bucket}/terraform-state/*"
       },
       {
-        Effect: "Allow",
-        Action: [
+        Effect : "Allow",
+        Action : [
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:DeleteItem"
         ],
-        Resource: "arn:aws:dynamodb:*:*:table/${aws_dynamodb_table.terraform_state_lock.name}"
+        Resource : "arn:aws:dynamodb:*:*:table/${aws_dynamodb_table.terraform_state_lock.name}"
       }
     ]
   })
 }
 
-resource aws_iam_role_policy_attachment "terraform_state_updater" {
+resource "aws_iam_role_policy_attachment" "terraform_state_updater" {
   policy_arn = aws_iam_policy.terraform_state_update.arn
   role       = aws_iam_role.terraform_state_updater.name
 }

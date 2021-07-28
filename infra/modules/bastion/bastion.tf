@@ -16,5 +16,5 @@ module "bastion" {
   tags = {
     "Terraform" : "true",
   }
-  bastion_instance_count       = var.instance_count
+  bastion_instance_count = var.instance_count
 }

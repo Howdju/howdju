@@ -19,10 +19,10 @@ module "lambdas" {
 }
 
 module "s3_backend" {
-  source          = "./modules/s3_backend"
+  source = "./modules/s3_backend"
 }
 
-module bastion {
+module "bastion" {
   source              = "./modules/bastion"
   instance_count      = 1
   aws_region          = var.aws_region
@@ -34,9 +34,9 @@ module bastion {
   subnet_ids          = data.aws_subnet_ids.default.ids
 }
 
-module messages {
-  source = "./modules/messages"
-  aws_region = var.aws_region
+module "messages" {
+  source         = "./modules/messages"
+  aws_region     = var.aws_region
   lambda_version = "1.1.0"
 }
 

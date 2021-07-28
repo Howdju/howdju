@@ -70,14 +70,14 @@ resource "aws_iam_policy" "ses_send_email" {
   description = "Allows the role to send email via SES"
 
   policy = jsonencode({
-    Version: "2012-10-17",
-    Statement: [
+    Version : "2012-10-17",
+    Statement : [
       {
-        Effect: "Allow",
-        Action: [
-            "ses:*"
+        Effect : "Allow",
+        Action : [
+          "ses:*"
         ],
-        Resource: "*"
+        Resource : "*"
       }
     ]
   })

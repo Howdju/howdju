@@ -78,35 +78,35 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerServiceRole" {
 //variable "data_volume_name" {default = "data"}
 
 resource "aws_ecs_task_definition" "elasticsearch" {
-  family                = "elasticsearch"
+  family = "elasticsearch"
   container_definitions = templatefile(
-      "${path.module}/elasticsearch_container_definitions.tpl.json",
-      {
-        container_name    = var.container_name
-        aws_account_id    = var.aws_account_id
-        aws_region        = var.aws_region
-        repository_name   = var.repository_name
-        container_version = var.container_version
-        // Use this command_override instead to get debug logging
-        // command_override = "\"command\": [\"elasticsearch\", \"-Elogger.level=debug\"]",
-        command_override = ""
-        // Elasticsearch recommends using no more than half of the available memory for the task, so that the rest can be
-        // memory mapped to shards/indices.
-        memory_mib                 = var.task_memory_mib / 2
-        memlock_limit              = var.task_memory_mib * 1024
-        port                       = var.container_port
-        host_port                  = module.constants.ecs_ephemeral_host_port
-        transport_port             = var.container_transport_port
-        host_transport_port        = module.constants.ecs_ephemeral_host_port
-        data_volume_name           = var.data_volume_name
-        data_volume_container_path = var.elasticsearch_data_path
-        log_group                  = "/ecs/elasticsearch"
-        log_stream_prefix          = "ecs"
-      })
-  network_mode          = "bridge"
-  cpu                   = var.task_cpu
-  memory                = var.task_memory_mib
-  task_role_arn         = aws_iam_role.elasticsearch_task.arn
+    "${path.module}/elasticsearch_container_definitions.tpl.json",
+    {
+      container_name    = var.container_name
+      aws_account_id    = var.aws_account_id
+      aws_region        = var.aws_region
+      repository_name   = var.repository_name
+      container_version = var.container_version
+      // Use this command_override instead to get debug logging
+      // command_override = "\"command\": [\"elasticsearch\", \"-Elogger.level=debug\"]",
+      command_override = ""
+      // Elasticsearch recommends using no more than half of the available memory for the task, so that the rest can be
+      // memory mapped to shards/indices.
+      memory_mib                 = var.task_memory_mib / 2
+      memlock_limit              = var.task_memory_mib * 1024
+      port                       = var.container_port
+      host_port                  = module.constants.ecs_ephemeral_host_port
+      transport_port             = var.container_transport_port
+      host_transport_port        = module.constants.ecs_ephemeral_host_port
+      data_volume_name           = var.data_volume_name
+      data_volume_container_path = var.elasticsearch_data_path
+      log_group                  = "/ecs/elasticsearch"
+      log_stream_prefix          = "ecs"
+  })
+  network_mode  = "bridge"
+  cpu           = var.task_cpu
+  memory        = var.task_memory_mib
+  task_role_arn = aws_iam_role.elasticsearch_task.arn
   volume {
     name      = var.data_volume_name
     host_path = var.host_data_directory

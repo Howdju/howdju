@@ -63,7 +63,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerServiceRole" {
 }
 
 resource "aws_ecs_task_definition" "kibana" {
-  family                = "kibana"
+  family = "kibana"
   container_definitions = templatefile(
     "${path.module}/kibana_container_definitions.tpl.json",
     {
@@ -78,11 +78,11 @@ resource "aws_ecs_task_definition" "kibana" {
       health_check_grace_period_seconds = 120
       log_group                         = "/ecs/kibana"
       log_stream_prefix                 = "ecs"
-    })
-  network_mode          = "bridge"
-  cpu                   = var.task_cpu
-  memory                = var.task_memory_mib
-  task_role_arn         = aws_iam_role.kibana_task.arn
+  })
+  network_mode  = "bridge"
+  cpu           = var.task_cpu
+  memory        = var.task_memory_mib
+  task_role_arn = aws_iam_role.kibana_task.arn
 }
 
 resource "aws_iam_role" "kibana_task" {
