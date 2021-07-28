@@ -29,7 +29,6 @@ yarn install
 
 ## Install `aws-vault`
 
-
 [`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
 development environment.  You'll need an AWS admin to provide your AWS username, access key, and secret access key.
 
