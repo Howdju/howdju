@@ -27,7 +27,7 @@ module bastion {
   instance_count      = 1
   aws_region          = var.aws_region
   vpc_id              = aws_vpc.default.id
-  key_pair_name       = local.key_name_bastion2
+  key_pair_name       = local.key_name_bastion
   hosted_zone_id      = data.aws_route53_zone.howdju.id
   bastion_record_name = "bastion.howdju.com."
   logs_bucket_name    = "howdju-bastion"
@@ -126,5 +126,5 @@ locals {
   // https://github.com/hashicorp/terraform-provider-aws/issues/1092
   // Since our state is now stored in S3, and it's inconvenient to edit it manually, and because the only thing we need
   // to reference is the key name, just use that directly.
-  key_name_bastion2 = "bastion2"
+  key_name_bastion = "bastion"
 }
