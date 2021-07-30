@@ -11,9 +11,6 @@ nodenv install 14.16.0
 # Activates this node version just for this shell via an env. var
 nodenv shell 14.16.0
 npm install -g yarn
-# I had to install this to successfully install bcrypt in howdju-service-common
-# (Since we replaced bcrypt with bcryptjs, we can probably remove this now.)
-#npm install -g node-gyp
 ```
 
 The correct node version automatically activates due to the `.node-version` file.
@@ -25,7 +22,24 @@ dependencies.
 
 ```
 yarn install
-``` 
+```
+
+## Password management
+
+* Use a password manager.
+* Memorize your: computer password, email password, and password manager password.
+* Store all non-memorized passwords in your password manager.
+* Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
+  manager.
+* Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like 
+  `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if you can't copy-paste for some
+  reason) and can be easy to remember, if you make up an image or story that goes along with the password. So, for this
+  example password, you might imagine a tongue licking a gardenia flower, agreeing with it with a soft whispering
+  voice. (See [XKCD](https://xkcd.com/936/).) It's important that you allow a professional password manager
+  auto-generate these phrases, and that you not iterate through multiple choices to select one that is easy to remember,
+  as this decreases the effective search space of the generated passwords. Instead, come up with a mental image to help
+  you remember the words. The more silly or ridiculous, the easier it may be to remember.
+* Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator. 
 
 ## Install `aws-vault`
 
@@ -95,11 +109,12 @@ yarn run db:tunnel
 
 # in another terminal:
 pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
-pg_dump -h 127.0.0.1  -p 5433 premiser -U premiser_rds > $pg_dump_file_name
+pg_dump -h 127.0.0.1 -p 5433 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
 # you can kill `yarn run db:tunnel` once this completes
 
 # In any available terminal (fill in a password for the postgres user):
-docker run -d -p 5432:5432 --name premiser_postgres -e POSTGRES_PASSWORD= postgres:12.5
+printf 'Enter Postgres superuser password:'; read -s POSTGRES_SUPERUSER_PASSWORD
+docker run -d -p 5432:5432 --name premiser_postgres -e POSTGRES_PASSWORD=$POSTGRES_SUPERUSER_PASSWORD postgres:12.5
 
 # If you want to see the output from the db, either omit -d from the run command or run:
 docker logs premiser_postgres --follow
