@@ -10606,6 +10606,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-dev-client@npm:^0.6.3":
+  version: 0.6.3
+  resolution: "expo-dev-client@npm:0.6.3"
+  dependencies:
+    "@expo/config-plugins": ^4.0.2
+    expo-dev-launcher: 0.8.4
+    expo-dev-menu: 0.8.4
+    expo-dev-menu-interface: 0.4.1
+    expo-manifests: ~0.2.2
+    expo-updates-interface: ~0.4.0
+  checksum: 77beaf77764d2ea252db19ca0cc6142f5112339931be9164018872c8f80bea2bcc0c6f70b58bbb8025d5eb72d3ca54bdcd9f8cb62461f5304d4cf6528b4b1105
+  languageName: node
+  linkType: hard
+
+"expo-dev-launcher@npm:0.8.4":
+  version: 0.8.4
+  resolution: "expo-dev-launcher@npm:0.8.4"
+  dependencies:
+    "@expo/config-plugins": ^4.0.2
+    resolve-from: ^5.0.0
+    semver: ^7.3.5
+  checksum: 37093b21a3a44604a715bd74063ccc9e58154b8dbbb96b6b93530264b481da4c74bc7bd714af9d8c6e1c9935b21f00dca9d57c21cd78e82bf1817e3851e12eb6
+  languageName: node
+  linkType: hard
+
+"expo-dev-menu-interface@npm:0.4.1":
+  version: 0.4.1
+  resolution: "expo-dev-menu-interface@npm:0.4.1"
+  checksum: 00be4f593a1a3c359e0e8e43d06fcaec51e9218e5888c3d0d12927d11633a8e3aaf110b30c645fa9a6dea6684160435b0a2e777449d75f73aef6492bc5e231b8
+  languageName: node
+  linkType: hard
+
+"expo-dev-menu@npm:0.8.4":
+  version: 0.8.4
+  resolution: "expo-dev-menu@npm:0.8.4"
+  dependencies:
+    "@expo/config-plugins": ^4.0.2
+    expo-dev-menu-interface: 0.4.1
+  checksum: 439e69eab645b8713b4b1c27a4175fde133a6285323dada6004669011e75d629504a5b16bbec004b0abaaf33cdcdbdca6d681bbfbcd42bb46a5f889bababe811
+  languageName: node
+  linkType: hard
+
 "expo-error-recovery@npm:~3.0.3":
   version: 3.0.3
   resolution: "expo-error-recovery@npm:3.0.3"
@@ -10636,10 +10678,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-json-utils@npm:~0.2.0":
+  version: 0.2.0
+  resolution: "expo-json-utils@npm:0.2.0"
+  checksum: f824972dddbd086dbfe217d60287754dcd199ae64511255fc46f0d0d8b5350608a6095989b186fd4aaa13836c26c3116139a8d4012bfac5a7de5a791bd4d9f49
+  languageName: node
+  linkType: hard
+
 "expo-keep-awake@npm:~10.0.0":
   version: 10.0.0
   resolution: "expo-keep-awake@npm:10.0.0"
   checksum: 81c349bbc917f33824e3a709d7070dc57f4603e58ce2f893aff3ffe95bd0242851c2c124660444299cc4fdfbdd1c6bc5616507f410994292b33c7803d85ed15c
+  languageName: node
+  linkType: hard
+
+"expo-manifests@npm:~0.2.2":
+  version: 0.2.2
+  resolution: "expo-manifests@npm:0.2.2"
+  dependencies:
+    expo-json-utils: ~0.2.0
+  checksum: c975589ec5cae07ae3e05c3b58e8293ef10bb2e676a087dcc31e7756e09575d3ecfbca5cedc99c529b2ac72c3885ab750a37e5e2dc645449968815981cafc455
   languageName: node
   linkType: hard
 
@@ -10687,6 +10745,13 @@ __metadata:
   version: 1.1.0
   resolution: "expo-status-bar@npm:1.1.0"
   checksum: 5db12d2acc71239f3519d0546749ad7f51645125354313bc341d4f95ac550425ae0e1f77f1d1c927686ff9761d1691a81049a454abc4ec38dd9b06e181f3df87
+  languageName: node
+  linkType: hard
+
+"expo-updates-interface@npm:~0.4.0":
+  version: 0.4.0
+  resolution: "expo-updates-interface@npm:0.4.0"
+  checksum: f837a0688f5040521f08828962fc22fba8d0a2794c540187c27089015fab24e4d2c8b7bdb96294e610f2ca45e5e0cc5f2290e2bc0299dd7b5fccf4f5f9981e3e
   languageName: node
   linkType: hard
 
@@ -12608,6 +12673,7 @@ fsevents@^1.2.7:
     "@types/react": ~17.0.21
     "@types/react-native": ~0.64.12
     expo: ~43.0.2
+    expo-dev-client: ^0.6.3
     expo-status-bar: ~1.1.0
     expo-yarn-workspaces: ^1.6.0
     react: 17.0.1

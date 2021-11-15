@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "build_dev_client_ios": "eas build --profile development --platform ios",
+    "start": "expo start --dev-client",
+    "android": "expo start --dev-client --android",
+    "start_dev_ios": "expo start --dev-client --ios",
+    "web": "expo start --dev-client --web",
     "eject": "expo eject",
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
     "expo": "~43.0.2",
+    "expo-dev-client": "^0.6.3",
     "expo-status-bar": "~1.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
