@@ -21,3 +21,10 @@ Also, add this to this package.json:
 Otherwise I was getting `expo` installed in the root directory and `react-native` installed in his package's `node_modules`, and `expo` couldn't find `react_native`. (Another solution would have been to try to force react-native to install in the root...`expo-yarn-workspaces` would have sym-linked it into this package. But I couldn't figure out how to do that. I also didn't understand why `react-native` wasn't hoisted into the root.)
 
 Note: that it appears that `workspaces.nohoist` has been replaced with `installConfig.hoistingLimits` in Yarn 3.
+
+## EAS Build and Expo custom development client notes
+
+Follow these guides:
+
+* https://docs.expo.dev/build/setup/
+* https://docs.expo.dev/build-reference/how-tos/#how-to-set-up-eas-build-with

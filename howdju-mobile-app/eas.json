@@ -1,0 +1,29 @@
+{
+  "cli": {
+    "version": ">= 0.35.0"
+  },
+  "build": {
+    "base": {
+      "node": "14.16.0",
+      "env": {
+        "YARN_ENABLE_IMMUTABLE_INSTALLS": "false",
+        "ENTRY_FILE": "./__generated__/AppEntry.js"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "extends": "base",
+      "distribution": "internal"
+    },
+    "production": {
+      "extends": "base"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
