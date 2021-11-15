@@ -18,23 +18,27 @@
     "test:howdju-common": "yarn workspace howdju-common run test",
     "test:howdju-client-common": "yarn workspace howdju-service-common run test",
     "test:howdju-service-common": "yarn workspace howdju-service-common run test",
-    "start:api:localhost": "yarn workspace premiser-api run start-localhost"
+    "start:api:localhost": "yarn workspace premiser-api run start-localhost",
+    "start:mobile": "yarn workspace howdju-mobile-app expo start"
   },
-  "workspaces": [
-    "eslint-config-howdju",
-    "howdju-ajv-sourced",
-    "howdju-client-common",
-    "howdju-common",
-    "howdju-ops",
-    "howdju-elastic",
-    "howdju-service-common",
-    "howdju-test-common",
-    "lambdas/*",
-    "premiser-api",
-    "premiser-ext",
-    "premiser-processing",
-    "premiser-ui"
-  ],
+  "workspaces": {
+    "packages": [
+      "eslint-config-howdju",
+      "howdju-ajv-sourced",
+      "howdju-client-common",
+      "howdju-common",
+      "howdju-ops",
+      "howdju-elastic",
+      "howdju-mobile-app",
+      "howdju-service-common",
+      "howdju-test-common",
+      "lambdas/*",
+      "premiser-api",
+      "premiser-ext",
+      "premiser-processing",
+      "premiser-ui"
+    ]
+  },
   "devDependencies": {
     "@babel/cli": "^7.13.14",
     "@babel/core": "^7.13.15",
