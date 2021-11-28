@@ -36,7 +36,8 @@
       "premiser-api",
       "premiser-ext",
       "premiser-processing",
-      "premiser-ui"
+      "premiser-ui",
+      "HowdjuMobileApp"
     ]
   },
   "devDependencies": {
