@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '11.0'
 
-target 'HowdjuMobileApp' do
+target 'App' do
   config = use_native_modules!
 
   use_react_native!(
@@ -12,7 +12,7 @@ target 'HowdjuMobileApp' do
     :hermes_enabled => false
   )
 
-  target 'HowdjuMobileAppTests' do
+  target 'AppTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -26,5 +26,17 @@ target 'HowdjuMobileApp' do
   post_install do |installer|
     react_native_post_install(installer)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'NO'
+      end
+    end
   end
+end
+
+target 'ShareExtension' do
+  use_react_native!
+
+  pod 'RNShareMenu', :path => '../node_modules/react-native-share-menu'
+  # Manually link packages here to keep your extension bundle size minimal
 end

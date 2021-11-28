@@ -8,8 +8,9 @@
  * @format
  */
 
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -21,11 +22,15 @@ import {
 
 import {
   Colors,
-  DebugInstructions,
   Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import ShareMenu from 'react-native-share-menu';
+
+type SharedItem = {
+  mimeType: string;
+  data: string;
+  extraData: any;
+};
 
 const Section: React.FC<{
   title: string;
@@ -62,6 +67,34 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const [sharedData, setSharedData] = useState('');
+  const [sharedMimeType, setSharedMimeType] = useState('');
+  const [sharedExtraData, setSharedExtraData] = useState(null);
+
+  const handleShare = useCallback((item: SharedItem | null) => {
+    if (!item) {
+      return;
+    }
+
+    const {mimeType, data, extraData} = item;
+
+    setSharedData(data);
+    setSharedExtraData(extraData);
+    setSharedMimeType(mimeType);
+  }, []);
+
+  useEffect(() => {
+    ShareMenu.getInitialShare(handleShare);
+  }, []);
+
+  useEffect(() => {
+    const listener = ShareMenu.addNewShareListener(handleShare);
+
+    return () => {
+      listener.remove();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -73,20 +106,26 @@ const App = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
+          <Section title="Shared type">{sharedMimeType}</Section>
+          <Section title="Shared data">{sharedData}</Section>
+          <Section title="Shared image">
+            {sharedMimeType.startsWith('image/') && (
+              <Image
+                style={styles.image}
+                source={{uri: sharedData}}
+                resizeMode="contain"
+              />
+            )}
           </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
+          <Section title="Shared file">
+            {sharedMimeType !== 'text/plain' &&
+            !sharedMimeType.startsWith('image/')
+              ? sharedData
+              : ''}
           </Section>
-          <Section title="Debug">
-            <DebugInstructions />
+          <Section title="Extra data">
+            {sharedExtraData ? JSON.stringify(sharedExtraData) : ''}
           </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -109,6 +148,10 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  image: {
+    width: '100%',
+    height: 200,
   },
 });
 

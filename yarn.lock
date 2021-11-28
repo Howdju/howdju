@@ -10957,6 +10957,7 @@ fsevents@^1.2.7:
     metro-react-native-babel-preset: ^0.66.2
     react: 17.0.2
     react-native: 0.66.3
+    react-native-share-menu: ^5.0.5
     react-test-renderer: 17.0.2
     typescript: ^4.4.4
   languageName: unknown
@@ -17465,6 +17466,13 @@ fsevents@^1.2.7:
     jscodeshift: ^0.11.0
     nullthrows: ^1.1.1
   checksum: d550d6e985a0d564f0ac470b19c9a2e4e78ffc0f5769ba46992a4d10130928093e9c2ada7eda0ec8bd976db4ba4c21ef410280e979226f11844aa0215335cde5
+  languageName: node
+  linkType: hard
+
+"react-native-share-menu@npm:^5.0.5":
+  version: 5.0.5
+  resolution: "react-native-share-menu@npm:5.0.5"
+  checksum: b894618a75eda653a596881051c17b2349e49815fe688d071b4cf4d8724b1faa057075485c1528c9967ba235bdebf84e3d9955243589f361668f7044c840cde0
   languageName: node
   linkType: hard
 
