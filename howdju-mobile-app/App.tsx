@@ -85,15 +85,14 @@ const App = () => {
 
   useEffect(() => {
     ShareMenu.getInitialShare(handleShare);
-  }, []);
+  }, [handleShare]);
 
   useEffect(() => {
     const listener = ShareMenu.addNewShareListener(handleShare);
-
     return () => {
       listener.remove();
     };
-  }, []);
+  }, [handleShare]);
 
   return (
     <SafeAreaView style={backgroundStyle}>

@@ -14,6 +14,7 @@
 		382829A92753733000139164 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 382829A72753733000139164 /* MainInterface.storyboard */; };
 		382829AD2753733000139164 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 382829A32753733000139164 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		389F7DD92753E4EA008DDDC5 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */; };
+		389F7DDB275432AA008DDDC5 /* ReactShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */; };
 		3BBB2A78EC13EA6811A21091 /* libPods-App.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0086B980E68C275A1C5812A6 /* libPods-App.a */; };
 		3D54DF206A980E34AA3F8BB7 /* libPods-ShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4D58510914C8ACBB1BA819 /* libPods-ShareExtension.a */; };
 		482A704D95451C661E2EEF20 /* libPods-App-AppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A2976E470FC10221B8151 /* libPods-App-AppTests.a */; };
@@ -70,7 +71,8 @@
 		382829B22753766900139164 /* ShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		382829B5275377B000139164 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		382829B62753783A00139164 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
-		389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ShareViewController.swift"; sourceTree = "<group>"; };
+		389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ShareViewController.swift"; sourceTree = "<group>"; wrapsLines = 1; };
+		389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReactShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ReactShareViewController.swift"; sourceTree = "<group>"; };
 		3B351031CF192AB9BA164A2D /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		5BFF253FBACB84FF84AB3B4A /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		6C97AB639B58BBB4B15BBE30 /* Pods-HowdjuMobileApp-HowdjuMobileAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuMobileApp-HowdjuMobileAppTests.debug.xcconfig"; path = "Target Support Files/Pods-HowdjuMobileApp-HowdjuMobileAppTests/Pods-HowdjuMobileApp-HowdjuMobileAppTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 		382829A42753733000139164 /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
+				389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */,
 				389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */,
 				382829B62753783A00139164 /* ShareExtension.entitlements */,
 				382829A72753733000139164 /* MainInterface.storyboard */,
@@ -273,6 +276,7 @@
 				3828299F2753733000139164 /* Sources */,
 				382829A02753733000139164 /* Frameworks */,
 				382829A12753733000139164 /* Resources */,
+				389F7DDC2754348C008DDDC5 /* Bundle React Native code and images */,
 				48C47EFB8382475B5826EF6D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -384,6 +388,24 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-AppTests/Pods-App-AppTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		389F7DDC2754348C008DDDC5 /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Bundle React Native code and images";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export NODE_BINARY=node\nexport ENTRY_FILE=index.share.js\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		3E482C27206C4DEF2FE45063 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -562,6 +584,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				389F7DDB275432AA008DDDC5 /* ReactShareViewController.swift in Sources */,
 				389F7DD92753E4EA008DDDC5 /* ShareViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
