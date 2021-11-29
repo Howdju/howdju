@@ -10957,7 +10957,7 @@ fsevents@^1.2.7:
     metro-react-native-babel-preset: ^0.66.2
     react: 17.0.2
     react-native: 0.66.3
-    react-native-share-menu: ^5.0.5
+    react-native-share-menu: ../../react-native-share-menu
     react-test-renderer: 17.0.2
     typescript: ^4.4.4
   languageName: unknown
@@ -17469,10 +17469,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-native-share-menu@npm:^5.0.5":
+"react-native-share-menu@file:../../react-native-share-menu::locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app":
   version: 5.0.5
-  resolution: "react-native-share-menu@npm:5.0.5"
-  checksum: b894618a75eda653a596881051c17b2349e49815fe688d071b4cf4d8724b1faa057075485c1528c9967ba235bdebf84e3d9955243589f361668f7044c840cde0
+  resolution: "react-native-share-menu@file:../../react-native-share-menu#../../react-native-share-menu::hash=e50eb7&locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app"
+  checksum: 5d34a718c4ba77ac787e4035efb11c28b100fd7bf1462c5fba5cf5136c8c11bab9dccce62ee8439e3d5573f76c1afd65d09153bf38a1219d9d3c41f4b639e094
   languageName: node
   linkType: hard
 
