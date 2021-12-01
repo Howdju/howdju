@@ -12,7 +12,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		382829A92753733000139164 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 382829A72753733000139164 /* MainInterface.storyboard */; };
-		382829AD2753733000139164 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 382829A32753733000139164 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		382829AD2753733000139164 /* HowdjuShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 382829A32753733000139164 /* HowdjuShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		384A1C882755B8FD00F808FE /* Share.js in Resources */ = {isa = PBXBuildFile; fileRef = 384A1C872755B8FD00F808FE /* Share.js */; };
 		389F7DD92753E4EA008DDDC5 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */; };
 		389F7DDB275432AA008DDDC5 /* ReactShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */; };
 		3BBB2A78EC13EA6811A21091 /* libPods-App.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0086B980E68C275A1C5812A6 /* libPods-App.a */; };
@@ -45,7 +46,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				382829AD2753733000139164 /* ShareExtension.appex in Embed App Extensions */,
+				382829AD2753733000139164 /* HowdjuShareExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,7 +55,7 @@
 
 /* Begin PBXFileReference section */
 		0086B980E68C275A1C5812A6 /* libPods-App.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		00E356EE1AD99517003FC87E /* AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* HowdjuAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HowdjuAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* HowdjuMobileAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HowdjuMobileAppTests.m; sourceTree = "<group>"; };
 		102A2976E470FC10221B8151 /* libPods-App-AppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-AppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,12 +66,13 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = HowdjuMobileApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = HowdjuMobileApp/main.m; sourceTree = "<group>"; };
 		1D0AE47A65C8663E3B452821 /* Pods-HowdjuMobileApp-HowdjuMobileAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuMobileApp-HowdjuMobileAppTests.release.xcconfig"; path = "Target Support Files/Pods-HowdjuMobileApp-HowdjuMobileAppTests/Pods-HowdjuMobileApp-HowdjuMobileAppTests.release.xcconfig"; sourceTree = "<group>"; };
-		382829A32753733000139164 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		382829A32753733000139164 /* HowdjuShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HowdjuShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		382829A82753733000139164 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		382829AA2753733000139164 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		382829B22753766900139164 /* ShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
+		382829B22753766900139164 /* HowdjuShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HowdjuShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		382829B5275377B000139164 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
-		382829B62753783A00139164 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
+		382829B62753783A00139164 /* HowdjuShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HowdjuShareExtension.entitlements; sourceTree = "<group>"; };
+		384A1C872755B8FD00F808FE /* Share.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Share.js; sourceTree = "<group>"; };
 		389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ShareViewController.swift"; sourceTree = "<group>"; wrapsLines = 1; };
 		389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReactShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ReactShareViewController.swift"; sourceTree = "<group>"; };
 		3B351031CF192AB9BA164A2D /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
@@ -115,13 +117,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00E356EF1AD99517003FC87E /* AppTests */ = {
+		00E356EF1AD99517003FC87E /* HowdjuAppTests */ = {
 			isa = PBXGroup;
 			children = (
 				00E356F21AD99517003FC87E /* HowdjuMobileAppTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
 			);
-			path = AppTests;
+			path = HowdjuAppTests;
 			sourceTree = "<group>";
 		};
 		00E356F01AD99517003FC87E /* Supporting Files */ = {
@@ -132,7 +134,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* App */ = {
+		13B07FAE1A68108700A75B9A /* HowdjuApp */ = {
 			isa = PBXGroup;
 			children = (
 				382829B5275377B000139164 /* App.entitlements */,
@@ -143,7 +145,7 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
-			name = App;
+			name = HowdjuApp;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
@@ -157,17 +159,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		382829A42753733000139164 /* ShareExtension */ = {
+		382829A42753733000139164 /* HowdjuShareExtension */ = {
 			isa = PBXGroup;
 			children = (
 				389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */,
 				389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */,
-				382829B62753783A00139164 /* ShareExtension.entitlements */,
+				382829B62753783A00139164 /* HowdjuShareExtension.entitlements */,
 				382829A72753733000139164 /* MainInterface.storyboard */,
 				382829AA2753733000139164 /* Info.plist */,
-				382829B22753766900139164 /* ShareExtension-Bridging-Header.h */,
+				382829B22753766900139164 /* HowdjuShareExtension-Bridging-Header.h */,
+				384A1C872755B8FD00F808FE /* Share.js */,
 			);
-			path = ShareExtension;
+			path = HowdjuShareExtension;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -180,10 +183,10 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* App */,
+				13B07FAE1A68108700A75B9A /* HowdjuApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* AppTests */,
-				382829A42753733000139164 /* ShareExtension */,
+				00E356EF1AD99517003FC87E /* HowdjuAppTests */,
+				382829A42753733000139164 /* HowdjuShareExtension */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				E233CBF5F47BEE60B243DCF8 /* Pods */,
@@ -197,8 +200,8 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* HowdjuMobileApp.app */,
-				00E356EE1AD99517003FC87E /* AppTests.xctest */,
-				382829A32753733000139164 /* ShareExtension.appex */,
+				00E356EE1AD99517003FC87E /* HowdjuAppTests.xctest */,
+				382829A32753733000139164 /* HowdjuShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -223,9 +226,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* AppTests */ = {
+		00E356ED1AD99517003FC87E /* HowdjuAppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "AppTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "HowdjuAppTests" */;
 			buildPhases = (
 				A130D646172E58E1D159D8F2 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -239,14 +242,14 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = AppTests;
-			productName = HowdjuMobileAppTests;
-			productReference = 00E356EE1AD99517003FC87E /* AppTests.xctest */;
+			name = HowdjuAppTests;
+			productName = HowdjuAppTests;
+			productReference = 00E356EE1AD99517003FC87E /* HowdjuAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* App */ = {
+		13B07F861A680F5B00A75B9A /* HowdjuApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "App" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "HowdjuApp" */;
 			buildPhases = (
 				3E482C27206C4DEF2FE45063 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -263,14 +266,14 @@
 			dependencies = (
 				382829AC2753733000139164 /* PBXTargetDependency */,
 			);
-			name = App;
+			name = HowdjuApp;
 			productName = HowdjuMobileApp;
 			productReference = 13B07F961A680F5B00A75B9A /* HowdjuMobileApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		382829A22753733000139164 /* ShareExtension */ = {
+		382829A22753733000139164 /* HowdjuShareExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 382829B12753733000139164 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildConfigurationList = 382829B12753733000139164 /* Build configuration list for PBXNativeTarget "HowdjuShareExtension" */;
 			buildPhases = (
 				8FF7ED7C2FF2110274E8A925 /* [CP] Check Pods Manifest.lock */,
 				3828299F2753733000139164 /* Sources */,
@@ -283,9 +286,9 @@
 			);
 			dependencies = (
 			);
-			name = ShareExtension;
-			productName = ShareExtension;
-			productReference = 382829A32753733000139164 /* ShareExtension.appex */;
+			name = HowdjuShareExtension;
+			productName = HowdjuShareExtension;
+			productReference = 382829A32753733000139164 /* HowdjuShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -323,9 +326,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* App */,
-				00E356ED1AD99517003FC87E /* AppTests */,
-				382829A22753733000139164 /* ShareExtension */,
+				13B07F861A680F5B00A75B9A /* HowdjuApp */,
+				00E356ED1AD99517003FC87E /* HowdjuAppTests */,
+				382829A22753733000139164 /* HowdjuShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -351,6 +354,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				384A1C882755B8FD00F808FE /* Share.js in Resources */,
 				382829A92753733000139164 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -594,12 +598,12 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* App */;
+			target = 13B07F861A680F5B00A75B9A /* HowdjuApp */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 		382829AC2753733000139164 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 382829A22753733000139164 /* ShareExtension */;
+			target = 382829A22753733000139164 /* HowdjuShareExtension */;
 			targetProxy = 382829AB2753733000139164 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -625,7 +629,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = HowdjuMobileAppTests/Info.plist;
+				INFOPLIST_FILE = HowdjuAppTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -649,7 +653,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = HowdjuMobileAppTests/Info.plist;
+				INFOPLIST_FILE = HowdjuAppTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -679,6 +683,7 @@
 				DEVELOPMENT_TEAM = L9G96VPNNP;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = HowdjuMobileApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -708,6 +713,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L9G96VPNNP;
 				INFOPLIST_FILE = HowdjuMobileApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -736,14 +742,14 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HowdjuShareExtension/HowdjuShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = L9G96VPNNP;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_FILE = HowdjuShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HowdjuShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -755,12 +761,13 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.howdju.mobile.app.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.howdju.mobile.app.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "ShareExtension/ShareExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "HowdjuShareExtension/HowdjuShareExtension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -778,15 +785,14 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HowdjuShareExtension/HowdjuShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L9G96VPNNP;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ShareExtension/Info.plist;
+				INFOPLIST_FILE = HowdjuShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = HowdjuShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -797,12 +803,13 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.howdju.mobile.app.ShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.howdju.mobile.app.share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "ShareExtension/ShareExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "HowdjuShareExtension/HowdjuShareExtension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -937,7 +944,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "AppTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "HowdjuAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -946,7 +953,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "App" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "HowdjuApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -955,7 +962,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		382829B12753733000139164 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+		382829B12753733000139164 /* Build configuration list for PBXNativeTarget "HowdjuShareExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				382829AF2753733000139164 /* Debug */,

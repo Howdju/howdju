@@ -17471,8 +17471,8 @@ fsevents@^1.2.7:
 
 "react-native-share-menu@file:../../react-native-share-menu::locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app":
   version: 5.0.5
-  resolution: "react-native-share-menu@file:../../react-native-share-menu#../../react-native-share-menu::hash=e50eb7&locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app"
-  checksum: 5d34a718c4ba77ac787e4035efb11c28b100fd7bf1462c5fba5cf5136c8c11bab9dccce62ee8439e3d5573f76c1afd65d09153bf38a1219d9d3c41f4b639e094
+  resolution: "react-native-share-menu@file:../../react-native-share-menu#../../react-native-share-menu::hash=2bfbd6&locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app"
+  checksum: 67046d384b621ab415749040dbe739c90ff6bd1b4783e69e3f9ce7a0edbab346c71bf82b0a1c487e7ef197888054f8f416d8815ccd3b3e9b06e4d49d9372577c
   languageName: node
   linkType: hard
 
