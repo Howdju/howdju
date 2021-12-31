@@ -20,7 +20,7 @@ if (!process.env.API_HOST) {
 let server = null
 
 esbuilder({
-  // entryPoints and outfile are relative to the CWD of the scipt
+  // entryPoints and outfile are relative to the CWD of the script
   entryPoints: ['local-server.js'],
   outfile: 'dist/local-server.js',
   watch: {

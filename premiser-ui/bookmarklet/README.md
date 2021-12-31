@@ -1,14 +1,22 @@
 # Local bookmarklet development
 
-1. Start local server
-   ```shell
-   yarn run start:local
-   ```
-2. Build bookmarklet 
-   ```shell
-   yarn run build:bookmarklet:local
-   ```
-3. Copy load.js into a bookmarklet.  Edit it to use `http://localhost:3000/submit.js` as the URL
+1. Edit the start command (`start:ui:local`) to use `HOST_ADDRESS=` to your machine's local address.
+
+    This is required because I can't figure out how to add a CORS header to the public resources.
+
+3. Start local server
+    
+    ```shell
+    yarn run start:ui:local
+    ```
+    
+4. Build bookmarklet 
+
+    ```shell
+    yarn run build:bookmarklet:local
+    ```
+    
+5. Copy load.js into a bookmarklet.
 
 # Deploy bookmarklet
 

@@ -9,7 +9,7 @@
     "analyze-size": "cross-env NODE_ENV=production DEBUG='*,-babel' webpack --config config/webpack.config.js --profile --json > dist/stats.json && webpack-bundle-size-analyzer dist/stats.json && open dist/stats.html",
     "analyze-size-2": "cross-env NODE_ENV=production BUNDLE_ANALYZER=yes webpack --config config/webpack.config.js",
     "analyze-js-size": "zip - dist/premiser-ui.js 2>/dev/null | dd 2>&1 >/dev/null",
-    "build:bookmarklet": "rm -f dist/bookmarklet/* && mkdir -p dist/bookmarklet && babel --no-babelrc bookmarklet/submit.js --out-file dist/bookmarklet/submit.js --presets=env && uglifyjs --compress negate_iife=false --mangle toplevel --output dist/bookmarklet/submit.min.js -- dist/bookmarklet/submit.js",
+    "build:bookmarklet": "rm -rf dist/bookmarklet && mkdir -p dist/bookmarklet && npx babel --no-babelrc bookmarklet/submit.js --out-file dist/bookmarklet/submit.js && npx uglifyjs --compress negate_iife=false --mangle toplevel --output dist/bookmarklet/submit.min.js -- dist/bookmarklet/submit.js",
     "build:bookmarklet:local": "bin/build-bookmarklet-local.sh",
     "build-local": "     yarn run lint-all && cross-env NODE_ENV=development SENTRY_ENV=local    DEBUG='*,-babel'                                               webpack --config config/webpack.config.js",
     "build-pre-prod": "  yarn run lint-all && cross-env NODE_ENV=production  SENTRY_ENV=pre-prod DEBUG='*,-babel' API_ROOT=https://pre-prod-api.howdju.com/api/ webpack --config config/webpack.config.js",
@@ -37,6 +37,7 @@
     "test-dns": "dig +recurse +trace howdju.com any"
   },
   "devDependencies": {
+    "@babel/cli": "^7.16.0",
     "@babel/core": "^7.14.0",
     "@babel/plugin-transform-parameters": "^7.14.5",
     "@babel/preset-react": "^7.13.13",
@@ -75,8 +76,8 @@
     "webpack": "^5.33.2",
     "webpack-bundle-analyzer": "^4.4.0",
     "webpack-bundle-size-analyzer": "^3.1.0",
-    "webpack-cli": "^4.6.0",
-    "webpack-dev-server": "^3.11.2",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.7.2",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^5.7.3",
     "webpack-sources": "^2.2.0",

@@ -68,19 +68,40 @@ const baseWebpackConfig = {
     publicPath: OUTPUT_PUBLIC_PATH,
   },
   devServer: {
+    bonjour: true,
     compress: true,
-    contentBase: projectConfig.paths.src(),
     // hot: true,
     // Behave like an SPA, serving index.html for paths that don't match files
     historyApiFallback: true,
-    open: 'Google Chrome',
-    port: devWebServerPort(),
-    publicPath: OUTPUT_PUBLIC_PATH,
-    stats: {
-      // chunks: false,
-      // chunkModules: false,
-      colors: true
+    open: {
+      app: {
+        name: 'Google Chrome',
+      },
     },
+    port: devWebServerPort(),
+    static: [
+      {
+        directory: 'public',
+        staticOptions: {
+          setHeaders: (res, path, stat) => {
+            console.log(`public path: ${path}`)
+            // In development, the static resources should be accessible from localhost, 127.0.0.1, or any other
+            // local address, even though we bind to 0.0.0.0.
+            res.set('Access-Control-Allow-Origin', '*')
+          },
+        },
+      }, {
+        directory: 'dist/bookmarklet',
+        staticOptions: {
+          setHeaders: (res, path, stat) => {
+            console.log(`bookmarklet path: ${path}`)
+            if (path.endsWith('.js')) {
+              res.set('Content-Type', 'application/javascript')
+            }
+          },
+        },
+      }
+    ],
   },
   module: {
     rules: [
