@@ -4625,6 +4625,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"add@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "add@npm:2.0.6"
+  checksum: e2d23d40494565dfed4acd65e478570c444db5ac6c053551ed429c39ea0f2c99d83df63e7befec936df601827d2254d06a2fb6f7dcfd2022e810b25eab818b8c
+  languageName: node
+  linkType: hard
+
 "adjust-sourcemap-loader@npm:3.0.0":
   version: 3.0.0
   resolution: "adjust-sourcemap-loader@npm:3.0.0"
@@ -6560,24 +6567,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0":
-  version: 1.0.30001223
-  resolution: "caniuse-lite@npm:1.0.30001223"
-  checksum: 9fd38da346eae4b34a2cae11e40e1ea097245eb1d64c88ed80e69e488633e2c2d69f3b3c37ca4069f42e3271af623053808f7b44d1b27cab34296079ea009aa4
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001219":
-  version: 1.0.30001222
-  resolution: "caniuse-lite@npm:1.0.30001222"
-  checksum: 14a725756db4751131b0e8ff83ae7ddccd779e294fefe7a49a2b1065b57be75e7df83b6752127766874229f6e490ac3974932e6bccfd047f9ab6c422e60d13bd
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001274":
-  version: 1.0.30001279
-  resolution: "caniuse-lite@npm:1.0.30001279"
-  checksum: c0330577718e4221caae92a1bee8131f546668001840cf66455d5aa6050797f44709865779c5cdcba7cbf32527004a743dc2879497d23f60478f8bbb203cfeeb
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001219, caniuse-lite@npm:^1.0.30001274":
+  version: 1.0.30001294
+  resolution: "caniuse-lite@npm:1.0.30001294"
+  checksum: 4e22649ef83781afbe6c81d6112ceac23c3ba29f91597ca1c14d323d5bfb646571edeb17436e76a29b07c8e9d75468655a2098a3e13dcc1438db47ff46fbb3ad
   languageName: node
   linkType: hard
 
@@ -8868,17 +8861,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"escape-string-regexp@npm:2.0.0, escape-string-regexp@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "escape-string-regexp@npm:2.0.0"
+  checksum: 9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
+  languageName: node
+  linkType: hard
+
 "escape-string-regexp@npm:^1.0.2, escape-string-regexp@npm:^1.0.5":
   version: 1.0.5
   resolution: "escape-string-regexp@npm:1.0.5"
   checksum: 6092fda75c63b110c706b6a9bfde8a612ad595b628f0bd2147eea1d3406723020810e591effc7db1da91d80a71a737a313567c5abb3813e8d9c71f4aa595b410
-  languageName: node
-  linkType: hard
-
-"escape-string-regexp@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "escape-string-regexp@npm:2.0.0"
-  checksum: 9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
   languageName: node
   linkType: hard
 
@@ -11114,6 +11107,7 @@ __metadata:
     "@types/jest": ^26.0.23
     "@types/react-native": ^0.66.4
     "@types/react-test-renderer": ^17.0.1
+    add: ^2.0.6
     babel-jest: ^26.6.3
     eslint: ^7.14.0
     jest: ^26.6.3
@@ -11121,8 +11115,10 @@ __metadata:
     react: 17.0.2
     react-native: 0.66.3
     react-native-share-menu: ../../react-native-share-menu
+    react-native-webview: ^11.15.0
     react-test-renderer: 17.0.2
     typescript: ^4.4.4
+    yarn: ^1.22.17
   languageName: unknown
   linkType: soft
 
@@ -11815,7 +11811,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:^2.2.2, invariant@npm:^2.2.4":
+"invariant@npm:2.2.4, invariant@npm:^2.2.2, invariant@npm:^2.2.4":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
@@ -17598,6 +17594,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-webview@npm:^11.15.0":
+  version: 11.15.0
+  resolution: "react-native-webview@npm:11.15.0"
+  dependencies:
+    escape-string-regexp: 2.0.0
+    invariant: 2.2.4
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 38b631fa685810d26c9d169d62e7c88bb07dd7e30d0972497ec470ec7b1300c789a3ffb67bfa97a9c282feaf6b1ecdb9e8fcd472ac920aec0973930b282b4ffc
+  languageName: node
+  linkType: hard
+
 "react-native@npm:0.66.3":
   version: 0.66.3
   resolution: "react-native@npm:0.66.3"
@@ -22030,6 +22039,16 @@ resolve@^2.0.0-next.3:
     y18n: ^3.2.1
     yargs-parser: ^7.0.0
   checksum: ee4b8a568ba00be3dad638540e4cf0b0cc809ca4d4c61ef9cb57830ee4e802178a5ca86234365398554a52452fc0921c357594e3a2d050546e3f83fcd6c8287b
+  languageName: node
+  linkType: hard
+
+"yarn@npm:^1.22.17":
+  version: 1.22.17
+  resolution: "yarn@npm:1.22.17"
+  bin:
+    yarn: ./bin/yarn.js
+    yarnpkg: ./bin/yarn.js
+  checksum: 9d5211477d439a4d7b5632d7c290a3be36d2edc13599b64964bff520d3a3a480db85010f3262293981abb4e618ac92aaafa4c4c54bae50a7713c7b8ec431adac
   languageName: node
   linkType: hard
 

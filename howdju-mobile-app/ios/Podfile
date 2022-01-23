@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '11.0'
 
-target 'App' do
+target 'HowdjuApp' do
   config = use_native_modules!
 
   use_react_native!(
@@ -12,7 +12,7 @@ target 'App' do
     :hermes_enabled => false
   )
 
-  target 'AppTests' do
+  target 'HowdjuAppTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -34,7 +34,7 @@ target 'App' do
   end
 end
 
-target 'ShareExtension' do
+target 'HowdjuShareExtension' do
   use_react_native!
 
   pod 'RNShareMenu', :path => '../node_modules/react-native-share-menu'

@@ -16,10 +16,10 @@
 		384A1C882755B8FD00F808FE /* Share.js in Resources */ = {isa = PBXBuildFile; fileRef = 384A1C872755B8FD00F808FE /* Share.js */; };
 		389F7DD92753E4EA008DDDC5 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */; };
 		389F7DDB275432AA008DDDC5 /* ReactShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */; };
-		3BBB2A78EC13EA6811A21091 /* libPods-App.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0086B980E68C275A1C5812A6 /* libPods-App.a */; };
-		3D54DF206A980E34AA3F8BB7 /* libPods-ShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4D58510914C8ACBB1BA819 /* libPods-ShareExtension.a */; };
-		482A704D95451C661E2EEF20 /* libPods-App-AppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A2976E470FC10221B8151 /* libPods-App-AppTests.a */; };
+		727CCE3021C615922AC1EFBE /* libPods-HowdjuApp-HowdjuAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 67E1D0743BB5FE26949B0CFB /* libPods-HowdjuApp-HowdjuAppTests.a */; };
+		7774B7B8F483B9E84C5406FE /* libPods-HowdjuShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F36008A2AB3549FCC7B6FB2 /* libPods-HowdjuShareExtension.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		AB1011635B2A75514C0C8409 /* libPods-HowdjuApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3DEEF1D11EB154FB28956C /* libPods-HowdjuApp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,11 +54,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0086B980E68C275A1C5812A6 /* libPods-App.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356EE1AD99517003FC87E /* HowdjuAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HowdjuAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* HowdjuMobileAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HowdjuMobileAppTests.m; sourceTree = "<group>"; };
-		102A2976E470FC10221B8151 /* libPods-App-AppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-AppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* HowdjuMobileApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HowdjuMobileApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = HowdjuMobileApp/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = HowdjuMobileApp/AppDelegate.m; sourceTree = "<group>"; };
@@ -66,6 +64,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = HowdjuMobileApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = HowdjuMobileApp/main.m; sourceTree = "<group>"; };
 		1D0AE47A65C8663E3B452821 /* Pods-HowdjuMobileApp-HowdjuMobileAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuMobileApp-HowdjuMobileAppTests.release.xcconfig"; path = "Target Support Files/Pods-HowdjuMobileApp-HowdjuMobileAppTests/Pods-HowdjuMobileApp-HowdjuMobileAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		2846BC5B2F13283F9195A84D /* Pods-HowdjuShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuShareExtension.release.xcconfig"; path = "Target Support Files/Pods-HowdjuShareExtension/Pods-HowdjuShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		382829A32753733000139164 /* HowdjuShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HowdjuShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		382829A82753733000139164 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		382829AA2753733000139164 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -76,17 +75,24 @@
 		389F7DD82753E4E9008DDDC5 /* ShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ShareViewController.swift"; sourceTree = "<group>"; wrapsLines = 1; };
 		389F7DDA275432AA008DDDC5 /* ReactShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReactShareViewController.swift; path = "../../node_modules/react-native-share-menu/ios/ReactShareViewController.swift"; sourceTree = "<group>"; };
 		3B351031CF192AB9BA164A2D /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
+		470BED0F01C38F9CA62C51B2 /* Pods-HowdjuApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuApp.release.xcconfig"; path = "Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp.release.xcconfig"; sourceTree = "<group>"; };
+		4F36008A2AB3549FCC7B6FB2 /* libPods-HowdjuShareExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowdjuShareExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BFF253FBACB84FF84AB3B4A /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		5F3DEEF1D11EB154FB28956C /* libPods-HowdjuApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowdjuApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		67E1D0743BB5FE26949B0CFB /* libPods-HowdjuApp-HowdjuAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HowdjuApp-HowdjuAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C97AB639B58BBB4B15BBE30 /* Pods-HowdjuMobileApp-HowdjuMobileAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuMobileApp-HowdjuMobileAppTests.debug.xcconfig"; path = "Target Support Files/Pods-HowdjuMobileApp-HowdjuMobileAppTests/Pods-HowdjuMobileApp-HowdjuMobileAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		8094168A4E37358EE366AEDB /* Pods-HowdjuApp-HowdjuAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuApp-HowdjuAppTests.release.xcconfig"; path = "Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = HowdjuMobileApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		85D5528C75057E85E76AAA42 /* Pods-HowdjuApp-HowdjuAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuApp-HowdjuAppTests.debug.xcconfig"; path = "Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		93C4F1253DBDB8021C75A271 /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
+		93E2927B0B2FA58764BCA2BF /* Pods-HowdjuApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuApp.debug.xcconfig"; path = "Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp.debug.xcconfig"; sourceTree = "<group>"; };
 		A66CE0D595B76740ACEF4166 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		C0A881CF5CF3F2B244570E2A /* Pods-HowdjuMobileApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuMobileApp.debug.xcconfig"; path = "Target Support Files/Pods-HowdjuMobileApp/Pods-HowdjuMobileApp.debug.xcconfig"; sourceTree = "<group>"; };
 		C579E44FE1A7B6474EF92711 /* Pods-App-AppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-AppTests.release.xcconfig"; path = "Target Support Files/Pods-App-AppTests/Pods-App-AppTests.release.xcconfig"; sourceTree = "<group>"; };
 		D00AAFFCFCFDA5787532823F /* Pods-HowdjuMobileApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuMobileApp.release.xcconfig"; path = "Target Support Files/Pods-HowdjuMobileApp/Pods-HowdjuMobileApp.release.xcconfig"; sourceTree = "<group>"; };
 		EB68515CC54E07278718F3B2 /* Pods-App-AppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-AppTests.debug.xcconfig"; path = "Target Support Files/Pods-App-AppTests/Pods-App-AppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FB4D58510914C8ACBB1BA819 /* libPods-ShareExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShareExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F71BA7401A27A6AA0D4DA642 /* Pods-HowdjuShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HowdjuShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-HowdjuShareExtension/Pods-HowdjuShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,7 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				482A704D95451C661E2EEF20 /* libPods-App-AppTests.a in Frameworks */,
+				727CCE3021C615922AC1EFBE /* libPods-HowdjuApp-HowdjuAppTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +108,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3BBB2A78EC13EA6811A21091 /* libPods-App.a in Frameworks */,
+				AB1011635B2A75514C0C8409 /* libPods-HowdjuApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,7 +116,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D54DF206A980E34AA3F8BB7 /* libPods-ShareExtension.a in Frameworks */,
+				7774B7B8F483B9E84C5406FE /* libPods-HowdjuShareExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,9 +158,9 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				0086B980E68C275A1C5812A6 /* libPods-App.a */,
-				102A2976E470FC10221B8151 /* libPods-App-AppTests.a */,
-				FB4D58510914C8ACBB1BA819 /* libPods-ShareExtension.a */,
+				5F3DEEF1D11EB154FB28956C /* libPods-HowdjuApp.a */,
+				67E1D0743BB5FE26949B0CFB /* libPods-HowdjuApp-HowdjuAppTests.a */,
+				4F36008A2AB3549FCC7B6FB2 /* libPods-HowdjuShareExtension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -219,6 +225,12 @@
 				C579E44FE1A7B6474EF92711 /* Pods-App-AppTests.release.xcconfig */,
 				5BFF253FBACB84FF84AB3B4A /* Pods-ShareExtension.debug.xcconfig */,
 				A66CE0D595B76740ACEF4166 /* Pods-ShareExtension.release.xcconfig */,
+				93E2927B0B2FA58764BCA2BF /* Pods-HowdjuApp.debug.xcconfig */,
+				470BED0F01C38F9CA62C51B2 /* Pods-HowdjuApp.release.xcconfig */,
+				85D5528C75057E85E76AAA42 /* Pods-HowdjuApp-HowdjuAppTests.debug.xcconfig */,
+				8094168A4E37358EE366AEDB /* Pods-HowdjuApp-HowdjuAppTests.release.xcconfig */,
+				F71BA7401A27A6AA0D4DA642 /* Pods-HowdjuShareExtension.debug.xcconfig */,
+				2846BC5B2F13283F9195A84D /* Pods-HowdjuShareExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -382,15 +394,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-AppTests/Pods-App-AppTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-AppTests/Pods-App-AppTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-AppTests/Pods-App-AppTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		389F7DDC2754348C008DDDC5 /* Bundle React Native code and images */ = {
@@ -426,7 +438,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-App-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-HowdjuApp-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -439,15 +451,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShareExtension/Pods-ShareExtension-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuShareExtension/Pods-HowdjuShareExtension-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShareExtension/Pods-ShareExtension-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuShareExtension/Pods-HowdjuShareExtension-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShareExtension/Pods-ShareExtension-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowdjuShareExtension/Pods-HowdjuShareExtension-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		4E62BDF20514810D028A5FBF /* [CP] Copy Pods Resources */ = {
@@ -456,15 +468,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-AppTests/Pods-App-AppTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-AppTests/Pods-App-AppTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-AppTests/Pods-App-AppTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp-HowdjuAppTests/Pods-HowdjuApp-HowdjuAppTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8FF7ED7C2FF2110274E8A925 /* [CP] Check Pods Manifest.lock */ = {
@@ -482,7 +494,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ShareExtension-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-HowdjuShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -504,7 +516,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-App-AppTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-HowdjuApp-HowdjuAppTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -517,15 +529,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C8AC78B0264D0F9F6F6D630E /* [CP] Embed Pods Frameworks */ = {
@@ -534,15 +546,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-HowdjuApp/Pods-HowdjuApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -622,7 +634,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EB68515CC54E07278718F3B2 /* Pods-App-AppTests.debug.xcconfig */;
+			baseConfigurationReference = 85D5528C75057E85E76AAA42 /* Pods-HowdjuApp-HowdjuAppTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -649,7 +661,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C579E44FE1A7B6474EF92711 /* Pods-App-AppTests.release.xcconfig */;
+			baseConfigurationReference = 8094168A4E37358EE366AEDB /* Pods-HowdjuApp-HowdjuAppTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -673,7 +685,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 93C4F1253DBDB8021C75A271 /* Pods-App.debug.xcconfig */;
+			baseConfigurationReference = 93E2927B0B2FA58764BCA2BF /* Pods-HowdjuApp.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -704,7 +716,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B351031CF192AB9BA164A2D /* Pods-App.release.xcconfig */;
+			baseConfigurationReference = 470BED0F01C38F9CA62C51B2 /* Pods-HowdjuApp.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -733,7 +745,7 @@
 		};
 		382829AF2753733000139164 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5BFF253FBACB84FF84AB3B4A /* Pods-ShareExtension.debug.xcconfig */;
+			baseConfigurationReference = F71BA7401A27A6AA0D4DA642 /* Pods-HowdjuShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -776,7 +788,7 @@
 		};
 		382829B02753733000139164 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A66CE0D595B76740ACEF4166 /* Pods-ShareExtension.release.xcconfig */;
+			baseConfigurationReference = 2846BC5B2F13283F9195A84D /* Pods-HowdjuShareExtension.release.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;

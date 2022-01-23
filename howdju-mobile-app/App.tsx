@@ -9,6 +9,7 @@
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
+import { WebView } from 'react-native-webview';
 import {
   Image,
   SafeAreaView,
@@ -95,39 +96,10 @@ const App = () => {
   }, [handleShare]);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Shared type">{sharedMimeType}</Section>
-          <Section title="Shared data">{sharedData}</Section>
-          <Section title="Shared image">
-            {sharedMimeType.startsWith('image/') && (
-              <Image
-                style={styles.image}
-                source={{uri: sharedData}}
-                resizeMode="contain"
-              />
-            )}
-          </Section>
-          <Section title="Shared file">
-            {sharedMimeType !== 'text/plain' &&
-            !sharedMimeType.startsWith('image/')
-              ? sharedData
-              : ''}
-          </Section>
-          <Section title="Extra data">
-            {sharedExtraData ? JSON.stringify(sharedExtraData) : ''}
-          </Section>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <WebView
+      source={{uri: 'https://howdju.com/recent-activity/'}}
+      style={{marginTop: 20}}
+    />
   );
 };
 
