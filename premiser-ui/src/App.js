@@ -241,9 +241,9 @@ class App extends Component {
       isOverscrolledTop,
       isOverscrolledBottom,
     } = this.state
-    if (didScrollDown && !isOverscrolledTop) {
+    if (didScrollDown && !isOverscrolledTop && smallchat.isVisible()) {
       smallchat.hide()
-    } else if (didScrollUp && !isOverscrolledBottom) {
+    } else if (didScrollUp && !isOverscrolledBottom && !smallchat.isVisible()) {
       smallchat.show()
     }
   }
