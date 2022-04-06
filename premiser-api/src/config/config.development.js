@@ -30,7 +30,7 @@ if (!localHostAddress) {
       } else {
         localHostAddress = stdout
       }
-    });
+    })
   } catch (err) {
     debug(`Unable to retrieve local hostname using ipconfig`, {err})
   }
@@ -41,7 +41,7 @@ if (localHostAddress) {
   debug(`Allowing local origin for CORS: ${localOrigin}`)
   corsAllowOrigin.push(localOrigin)
 } else {
-  debug(`Unable to add local hostname to CORS config`, {err})
+  debug(`Unable to add local hostname to CORS config`)
 }
 
 module.exports = {
