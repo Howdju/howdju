@@ -136,8 +136,10 @@ class Extension {
 
 let extension
 if (window.chrome) {
+  // Chrome
   extension = new Extension(window.chrome)
 } else if (window.browser) {
+  // Firefox and Safari
   extension = new Extension(window.browser)
 } else {
   logger.warn("Unsupported extension environment.")
