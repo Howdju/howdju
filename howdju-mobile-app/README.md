@@ -19,3 +19,8 @@ npx react-native run-ios
 ```shell
 npx react-native run-android
 ```
+
+## Running on a real device
+
+Run the app from Xcode targeting your device. See the instructions here:
+<https://reactnative.dev/docs/running-on-device>
