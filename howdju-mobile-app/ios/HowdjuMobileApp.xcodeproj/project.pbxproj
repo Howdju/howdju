@@ -687,7 +687,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93E2927B0B2FA58764BCA2BF /* Pods-HowdjuApp.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = App.entitlements;
@@ -718,7 +717,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 470BED0F01C38F9CA62C51B2 /* Pods-HowdjuApp.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = App.entitlements;
