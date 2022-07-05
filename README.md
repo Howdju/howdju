@@ -1,10 +1,14 @@
-# Prerequisites
+# Howdju monorepo
 
-## Install node
+This repository contains client and server code for the Howdju platform.
+
+## Prerequisites
+
+### Install node
 
 Install node and yarn:
 
-```sh
+```shell
 brew install nodenv
 nodenv init
 nodenv install 14.16.0
@@ -15,23 +19,23 @@ npm install -g yarn
 
 The correct node version automatically activates due to the `.node-version` file.
 
-## Install dependencies
+### Install dependencies
 
 This project uses Yarn workspaces to allow packages to depend on each other during development and to share
 dependencies.
 
-```
+```shell
 yarn install
 ```
 
-## Password management
+### Password management
 
 * Use a password manager.
 * Memorize your: computer password, email password, and password manager password.
 * Store all non-memorized passwords in your password manager.
 * Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
   manager.
-* Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like 
+* Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like
   `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if you can't copy-paste for some
   reason) and can be easy to remember, if you make up an image or story that goes along with the password. So, for this
   example password, you might imagine a tongue licking a gardenia flower, agreeing with it with a soft whispering
@@ -39,14 +43,14 @@ yarn install
   auto-generate these phrases, and that you not iterate through multiple choices to select one that is easy to remember,
   as this decreases the effective search space of the generated passwords. Instead, come up with a mental image to help
   you remember the words. The more silly or ridiculous, the easier it may be to remember.
-* Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator. 
+* Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator.
 
-## Install `aws-vault`
+### Install `aws-vault`
 
 [`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
 development environment.  You'll need an AWS admin to provide your AWS username, access key, and secret access key.
 
-```sh
+```shell
 brew install --cask aws-vault
 aws-vault add username@howdju
 ```
@@ -61,7 +65,7 @@ region = us-east-1
 mfa_serial = arn:aws:iam::007899441171:mfa/username
 ```
 
-### Running commands using aws-vault
+#### Running commands using aws-vault
 
 Logging in:
 
@@ -71,13 +75,13 @@ aws-vault login username@howdju --duration 2h
 
 Running commands with your credentials:
 
-```
+```shell
 aws-vault exec username@howdju -- terraform apply
 ```
 
 See `aws-vault`'s [USAGE](https://github.com/99designs/aws-vault/blob/master/USAGE.md) page for more.
 
-## SSH access
+### SSH access
 
 Upload your public key named like `username.pub` to `s3://howdju-bastion-logs/public-keys/`. (The username for the
 bastion host need not match your AWS username, but it should for simplicity.) The bastion host refreshes
@@ -85,13 +89,13 @@ from these every 5 minutes.
 
 Generate a new SSH key:
 
-```
+```shell
 ssh-keygen -t ed25519 -C "username@howdju.com"
 ```
 
 Update `~/.ssh/config`:
 
-```
+```ssh
 Host *
   AddKeysToAgent yes
   UseKeychain yes
@@ -101,14 +105,16 @@ Host bastion.howdju.com
   User username
 ```
 
-# Prepare a local database server
+### Prepare a local database server
 
-```
+TODO(#54): update this process to use a snapshot file.
+
+```shell
 cd premiser-api
 yarn run db:tunnel
 
 # in another terminal:
-pg_dump_file_name=premiser_prod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
+pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
 pg_dump -h 127.0.0.1 -p 5433 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
 # you can kill `yarn run db:tunnel` once this completes
 
@@ -129,47 +135,49 @@ psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_na
 rm $pg_dump_file_name
 ```
 
-# Running the platform locally
+## Running the platform locally
 
 Do each of the following in different terminal windows.
 
-## Run and connect to the database 
+### Run and connect to the database
 
-```
+```shell
 docker restart premiser_postgres
 yarn run db:local:shell
 ```
 
-## Running the API
-```sh
+### Running the API
+
+```shell
 yarn run start:api:local
 ```
 
-## Run the web app
-```sh
+### Run the web app
+
+```shell
 yarn run start:ui:local
 ```
 
-## Visit the app
+### Visit the app
 
 Open browser to localhost:3000
 
-# Linting and testing
+## Linting and testing
 
-```sh
+```shell
 yarn run lint:all
 yarn run test:all
 ```
 
-# Doing something in each workspace
+## Doing something in each workspace
 
-```sh
+```shell
 yarn workspaces foreach -Av exec bash -c 'yarn add --dev flow-bin'
 ```
 
-# Publishing
+## Publishing
 
-## Publishing infrastructure changes
+### Publishing infrastructure changes
 
 TODO(GH-46): give TerraformStateUpdater appropriate permissions
 
@@ -183,13 +191,13 @@ role_arn = arn:aws:iam::007899441171:role/TerraformStateUpdater
 
 Then run terraform commands using the role:
 
-```
+```shell
 aws-vault exec terraform@howdju -- terraform plan
 ```
 
-## Publishing the API
+### Publishing the API
 
-```sh
+```shell
 cd premiser-api/
 AWS_PROFILE=premiser yarn run deploy:api pre-prod
 
@@ -199,12 +207,13 @@ AWS_PROFILE=premiser yarn run deploy:api pre-prod
 AWS_PROFILE=premiser yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
 ```
 
-### Publishing a feature branch
+#### Publishing a feature branch
 
 I think just check out that branch and follow instructions above.
 
-## Publishing the web app
-```sh
+### Publishing the web app
+
+```shell
 yarn run deploy:ui:pre-prod
 
 # (Visit pre-prod-www.howdju.com and test the changes)
@@ -212,9 +221,9 @@ yarn run deploy:ui:pre-prod
 yarn run deploy:ui:prod
 ```
 
-## Publishing database changes (migrations)
+### Publishing database changes (migrations)
 
-```sh
+```shell
 cd premiser-api
 yarn run db:tunnel
 
@@ -231,11 +240,11 @@ howdju_prod> \i db/migrations/xxxx_the_migration.sql
 howdju_prod> exit
 ```
 
-# Debugging
+## Debugging
 
-## Debugging/inspecting the API
+### Debugging/inspecting the API
 
-```sh
+```shell
 cd premiser-api
 yarn run start:local:inspect
 ```
@@ -243,13 +252,13 @@ yarn run start:local:inspect
 Open Chrome to `chrome://inspect`.  Click "Open dedicated DevTools for Node".  The Chrome debugger should automatically
 connect to the node process.  The Chrome debugger should automatically reconnect whenever the API restarts.
 
-## Debugging/inspecting the UI
+### Debugging/inspecting the UI
 
 Use your web browser's Javascript debugging features as usual.
 
-## Adding a new lambda
+### Adding a new lambda
 
-```sh
+```shell
 lamdba_name=...
 mkidr lambdas/$lambda_name
 cp lambdas/howdju-message-handler/.eslintrc.js lambdas/$lambda_name
