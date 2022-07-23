@@ -12,3 +12,7 @@
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# For now just ignore vscode, although at some point we may want to figure
+# out what should be shared.
+/.vscode/
