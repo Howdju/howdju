@@ -1,3 +1,5 @@
 rootProject.name = 'howdju-mobile-app-android'
+include ':react-native-share-menu', ':app'
+project(':react-native-share-menu').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share-menu/android')
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
