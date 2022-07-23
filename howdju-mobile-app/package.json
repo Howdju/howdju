@@ -14,7 +14,7 @@
     "add": "^2.0.6",
     "react": "17.0.2",
     "react-native": "0.66.3",
-    "react-native-share-menu": "../../react-native-share-menu",
+    "react-native-share-menu": "react-native-share-menu",
     "react-native-webview": "^11.15.0",
     "yarn": "^1.22.17"
   },

@@ -18565,12 +18565,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-share-menu@file:../../react-native-share-menu::locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app":
-  version: 5.0.5
-  resolution: "react-native-share-menu@file:../../react-native-share-menu#../../react-native-share-menu::hash=efae17&locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app"
-  checksum: 8818d896f7c72c865d6ae1e7b12f7b4276c1e2296dccfe2d8a220474a02d32be83f5868b2ab3d2ab5fb8375468a79401339f73ae8a4e25ea56a79d8f13af3b91
+"react-native-share-menu@portal:/Users/transverna/code/github/Howdju/react-native-share-menu::locator=howdju-monorepo%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "react-native-share-menu@portal:/Users/transverna/code/github/Howdju/react-native-share-menu::locator=howdju-monorepo%40workspace%3A."
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "react-native-webview@npm:^11.15.0":
   version: 11.15.0

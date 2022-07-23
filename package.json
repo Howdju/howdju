@@ -70,5 +70,8 @@
     "eslint-plugin-react": "^7.23.1",
     "flow-bin": "^0.150.1",
     "jest": "^26.6.3"
+  },
+  "resolutions": {
+    "react-native-share-menu": "portal:../react-native-share-menu"
   }
 }
