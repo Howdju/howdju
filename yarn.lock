@@ -17589,8 +17589,8 @@ __metadata:
 
 "react-native-share-menu@file:../../react-native-share-menu::locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app":
   version: 5.0.5
-  resolution: "react-native-share-menu@file:../../react-native-share-menu#../../react-native-share-menu::hash=ff2122&locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app"
-  checksum: 76cc0cc602132ee4b5c2c5a3bd22c15464efaec6f1c10412c73dbe467a434331bec1bfe657e89a50d58bcd3e86e720acd6ea0f773114437f69ec0aa5a82c2af8
+  resolution: "react-native-share-menu@file:../../react-native-share-menu#../../react-native-share-menu::hash=b9a590&locator=howdju-mobile-app%40workspace%3Ahowdju-mobile-app"
+  checksum: a86055ec74231d75d53e53519201751e74d0c40f5f8f1af2578a11f0447df638b5028e9e7b2eaafdfc47207fe114e0d8f3140d8ef3d6e4408700762f392b1b3d
   languageName: node
   linkType: hard
 
