@@ -4,21 +4,23 @@ Howdju React Native mobile app.
 
 ## Running
 
-Start the Metro bundler:
+Start the bundler:
 
 ```shell
- npx react-native start
- ```
+ yarn run start
+```
 
 In another terminal, build and run the mobile app:
 
 ```shell
-npx react-native run-ios
+yarn run ios
 ```
 
 ```shell
-npx react-native run-android
+yarn run android
 ```
+
+Or run the mobile app from Xcode/Android Studio.
 
 ## Running on a real device
 
@@ -27,8 +29,8 @@ Run the app from Xcode targeting your device. See the instructions here:
 
 ## Debugging the share extension code
 
-Be sure to run the HowdjuShareExtension target instead of the HowdjuMobileApp
-extension.
+Run the HowdjuShareExtension target instead of the HowdjuMobileApp extension so
+that the debugger attaches to that process.
 
 ## Local development
 
@@ -39,9 +41,12 @@ sibling of the howdju monorepo, and then from this package directory
 
 Workarounds to support this local link:
 
-* `ios/Podfile` refers to this dependency by its resolved path
-(`../../../react-native-share-menu`), not it's `node_modules` path. That will
-need to change if `react-native-share-menu` is installed from NPM.
-* `webpack.config.js` has `resolve.symlinks: false` so that
-it treats `react-native-share-menu` as if it were in `node_modules`. Otherwise
-that dep can't find `react-native`.
+- `ios/Podfile` refers to this dependency by its resolved path
+  (`../../../react-native-share-menu`), not it's `node_modules` path. That will
+  need to change if `react-native-share-menu` is installed from NPM.
+- `webpack.config.js` has `resolve.symlinks: false` so that
+  it treats `react-native-share-menu` as if it were in `node_modules`. Otherwise
+  that dep can't find `react-native`.
+- We use Re.Pack to bundle the app rather than Metro because it follows
+  symlinks. We had to follow
+  [these instructions](http://web.archive.org/web/20220724134937/https://re-pack.netlify.app/docs/getting-started/)

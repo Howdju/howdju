@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Pressable, Image, StyleSheet} from 'react-native';
+import {FlatList, View, Text, Pressable, StyleSheet} from 'react-native';
 import {ShareMenuReactView} from 'react-native-share-menu';
+import ShareDataItemPreview from './ShareDataItemPreview';
 
 const Button = ({onPress, title, style}) => (
   <Pressable onPress={onPress}>
@@ -9,20 +10,19 @@ const Button = ({onPress, title, style}) => (
 );
 
 const Share = () => {
-  const [sharedData, setSharedData] = useState({items:[]});
+  const [shareData, setShareData] = useState({items:[]});
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     ShareMenuReactView.data()
       .then(({data}) => {
-        setSharedData(data);
+        setShareData(data);
       })
       .catch(console.error);
   }, []);
 
-  const item = sharedData?.items?.[0];
-  const {value, mimeType} = item ? item : {value: null, mimeType: ""};
-  console.log({sharedData, value, mimeType})
+  console.log({shareData})
+  const shareItems = shareData?.items;
 
   return (
     <View style={styles.container}>
@@ -47,16 +47,12 @@ const Share = () => {
           style={sending ? styles.sending : styles.send}
         />
       </View>
-      {mimeType.startsWith('text/') && (
-        <Text disabled={true}>{value}</Text>
-      )}
-      {mimeType.startsWith('image/') && (
-        <Image
-          style={styles.image}
-          resizeMode="contain"
-          source={{uri: value}}
-        />
-      )}
+      <FlatList 
+        data={shareItems}
+        renderItem={({item}) => (
+          <ShareDataItemPreview item={item} />
+        )}>
+      </FlatList>
       <View style={styles.buttonGroup}>
         <Button
           title="Dismiss with Error"
@@ -99,10 +95,6 @@ const styles = StyleSheet.create({
   },
   sending: {
     color: 'grey',
-  },
-  image: {
-    width: '100%',
-    height: 200,
   },
   buttonGroup: {
     alignItems: 'center',

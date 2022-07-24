@@ -26,11 +26,19 @@ import {
   Header,
 } from 'react-native/Libraries/NewAppScreen';
 import ShareMenu from 'react-native-share-menu';
+import ShareDataItemPreview from './ShareDataItemPreview';
 
-type SharedItem = {
-  mimeType: string;
-  data: string;
-  extraData: any;
+type ShareResponse = {
+  data: ShareData,
+  extraData: object | null,
+};
+type ShareData = {
+  items: ShareDataItem[]
+};
+type ShareDataItem = {
+  value: any,
+  mimeType: string,
+  itemGroup: string,
 };
 
 const Section: React.FC<{
@@ -61,6 +69,8 @@ const Section: React.FC<{
   );
 };
 
+const EMPTY_SHARE_DATA: ShareData = {items:[]}
+
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -68,20 +78,18 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const [sharedData, setSharedData] = useState('');
-  const [sharedMimeType, setSharedMimeType] = useState('');
-  const [sharedExtraData, setSharedExtraData] = useState(null);
+  const [shareData, setShareData] = useState(EMPTY_SHARE_DATA);
+  const [extraData, setExtraData] = useState(null);
 
-  const handleShare = useCallback((item: SharedItem | null) => {
-    if (!item) {
+  const handleShare = useCallback((response: ShareResponse | null) => {
+    if (!response) {
       return;
     }
 
-    const {mimeType, data, extraData} = item;
+    const {data, extraData} = response;
 
-    setSharedData(data);
-    setSharedExtraData(extraData);
-    setSharedMimeType(mimeType);
+    setShareData(data);
+    setExtraData(extraData);
   }, []);
 
   useEffect(() => {
@@ -95,6 +103,9 @@ const App = () => {
     };
   }, [handleShare]);
 
+  console.log('App', {shareData})
+  const items = shareData?.items;
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -106,25 +117,16 @@ const App = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Shared type">{sharedMimeType}</Section>
-          <Section title="Shared data">{sharedData}</Section>
-          <Section title="Shared image">
-            {sharedMimeType.startsWith('image/') && (
-              <Image
-                style={styles.image}
-                source={{uri: sharedData}}
-                resizeMode="contain"
-              />
-            )}
-          </Section>
-          <Section title="Shared file">
-            {sharedMimeType !== 'text/plain' &&
-            !sharedMimeType.startsWith('image/')
-              ? sharedData
-              : ''}
+            
+          <Section title="Share data">
+            {items && items.map((item, i) => (
+              <Section title={item.itemGroup} key={i}>
+                <ShareDataItemPreview item={item} />
+              </Section>
+            ))}
           </Section>
           <Section title="Extra data">
-            {sharedExtraData ? JSON.stringify(sharedExtraData) : ''}
+            {extraData ? JSON.stringify(extraData) : ''}
           </Section>
         </View>
       </ScrollView>
