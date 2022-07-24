@@ -2,10 +2,10 @@ import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 
 const ShareDataItemPreview = ({item}) => {
-  const {mimeType, value} = item;
+  const {value, mimeType, role} = item;
   return (
     <View>
-      <Text style={styles.mimeTypeText} disabled={true}>{mimeType}</Text>
+      <Text style={styles.mimeTypeText} disabled={true}>{mimeType} ({role ?? 'None'})</Text>
       {mimeType.startsWith('text/') && (
         <Text disabled={true}>{value}</Text>
       )}
@@ -15,6 +15,15 @@ const ShareDataItemPreview = ({item}) => {
           resizeMode="contain"
           source={{uri: value}}
         />
+      )}
+      {mimeType.startsWith('application/pdf') && (
+        <Text disabled={true}>{value}</Text>
+      )}
+      {mimeType.startsWith('audio/') && (
+        <Text disabled={true}>{value}</Text>
+      )}
+      {mimeType.startsWith('video/') && (
+        <Text disabled={true}>{value}</Text>
       )}
     </View>
   );
