@@ -27,6 +27,13 @@ target 'HowdjuApp' do
     react_native_post_install(installer)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
     installer.pods_project.targets.each do |target|
+      if target.name == "RNShareMenu"
+        # I think that react-native/scripts/react_native_pods.rb is overwriting all Pod
+        # IPHONEOS_DEPLOYMENT_TARGET to 11.0
+        target.build_configurations.each do |config|
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+        end
+      end
       target.build_configurations.each do |config|
         config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'NO'
       end
@@ -37,5 +44,6 @@ end
 target 'HowdjuShareExtension' do
   use_react_native!
 
+  pod 'RNShareMenu', :path => '../../../react-native-share-menu'
   # Manually link packages here to keep your extension bundle size minimal
 end
