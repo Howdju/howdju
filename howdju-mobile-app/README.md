@@ -33,11 +33,15 @@ extension.
 ## Local development
 
 This package currently depends on a local version of react-native-share-menu
-(<https://github.com/Howdju/react-native-share-menu>).
+(<https://github.com/Howdju/react-native-share-menu>). Clone that repo as a
+sibling of the howdju monorepo, and then from this package directory
+(howdju/howdju-mobile-app) do `yarn link ../../react-native-share-menu`.
 
-Due to issues depending directly on the local dependency
-([#55](https://github.com/Howdju/howdju/issues/55)), it is necessary to do
-`yarn add ../../react-native-share-menu` whenever that code changes.
+Workarounds to support this local link:
 
-Changes made in XCode are to the `node_modules` version, not the local source
-controlled version, and so will not survive another `yarn install ...`.
+* `ios/Podfile` refers to this dependency by its resolved path
+(`../../../react-native-share-menu`), not it's `node_modules` path. That will
+need to change if `react-native-share-menu` is installed from NPM.
+* `webpack.config.js` has `resolve.symlinks: false` so that
+it treats `react-native-share-menu` as if it were in `node_modules`. Otherwise
+that dep can't find `react-native`.

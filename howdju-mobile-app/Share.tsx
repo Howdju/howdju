@@ -9,16 +9,20 @@ const Button = ({onPress, title, style}) => (
 );
 
 const Share = () => {
-  const [sharedData, setSharedData] = useState('');
-  const [sharedMimeType, setSharedMimeType] = useState('');
+  const [sharedData, setSharedData] = useState({items:[]});
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    ShareMenuReactView.data().then(({mimeType, data}) => {
-      setSharedData(data);
-      setSharedMimeType(mimeType);
-    });
+    ShareMenuReactView.data()
+      .then(({data}) => {
+        setSharedData(data);
+      })
+      .catch(console.error);
   }, []);
+
+  const item = sharedData?.items?.[0];
+  const {value, mimeType} = item ? item : {value: null, mimeType: ""};
+  console.log({sharedData, value, mimeType})
 
   return (
     <View style={styles.container}>
@@ -43,14 +47,14 @@ const Share = () => {
           style={sending ? styles.sending : styles.send}
         />
       </View>
-      {sharedMimeType === 'text/plain' && (
-        <Text disabled={true}>{sharedData}</Text>
+      {mimeType.startsWith('text/') && (
+        <Text disabled={true}>{value}</Text>
       )}
-      {sharedMimeType.startsWith('image/') && (
+      {mimeType.startsWith('image/') && (
         <Image
           style={styles.image}
           resizeMode="contain"
-          source={{uri: sharedData}}
+          source={{uri: value}}
         />
       )}
       <View style={styles.buttonGroup}>

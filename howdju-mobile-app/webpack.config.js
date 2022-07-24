@@ -66,12 +66,21 @@ module.exports = {
    * If you don't want to use Hot Module Replacement, set `hmr` option to `false`. By default,
    * HMR will be enabled in development mode.
    */
-  entry: [
-    ...ReactNative.getInitializationEntries(reactNativePath, {
-      hmr: devServer.hmr,
-    }),
-    entry,
-  ],
+  entry: {
+    'index': [
+      ...ReactNative.getInitializationEntries(reactNativePath, {
+        hmr: devServer.hmr,
+      }),
+      entry,
+    ],
+    // react-native-share-menu entry point
+    'index.share': [
+      ...ReactNative.getInitializationEntries(reactNativePath, {
+        hmr: devServer.hmr,
+      }),
+      './index.share.js'
+    ],
+  },
   resolve: {
     /**
      * `getResolveOptions` returns additional resolution configuration for React Native.
@@ -80,6 +89,8 @@ module.exports = {
      * in their `package.json` might not work correctly.
      */
     ...ReactNative.getResolveOptions(platform),
+    // Treat `yarn link`ed react-native-share-menu as if it was in node_modules.
+    symlinks: false,
 
     /**
      * Uncomment this to ensure all `react-native*` imports will resolve to the same React Native
@@ -100,7 +111,7 @@ module.exports = {
   output: {
     clean: true,
     path: path.join(__dirname, 'build', platform),
-    filename: 'index.bundle',
+    filename: '[name].bundle',
     chunkFilename: '[name].chunk.bundle',
     publicPath: ReactNative.getPublicPath(devServer),
   },
