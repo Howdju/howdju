@@ -1,73 +1,27 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
 import React, {useCallback, useEffect, useState} from 'react';
-import { WebView } from 'react-native-webview';
+
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
-  View,
 } from 'react-native';
 
 import {
   Colors,
-  Header,
 } from 'react-native/Libraries/NewAppScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ShareMenu from 'react-native-share-menu';
-import ShareDataItemPreview from './ShareDataItemPreview';
+
+import BrowserScreen from 'screens/BrowserScreen';
+import ShareDebugScreen from 'screens/ShareDebugScreen';
+import ShareData from 'models/ShareData';
 
 type ShareResponse = {
   data: ShareData,
   extraData: object | null,
 };
-type ShareData = {
-  items: ShareDataItem[]
-};
-type ShareDataItem = {
-  value: any,
-  mimeType: string,
-  itemGroup: string,
-};
 
-const Section: React.FC<{
-  title: string;
-}> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+const Tab = createBottomTabNavigator();
 
 const EMPTY_SHARE_DATA: ShareData = {items:[]}
 
@@ -79,9 +33,9 @@ const App = () => {
   };
 
   const [shareData, setShareData] = useState(EMPTY_SHARE_DATA);
-  const [extraData, setExtraData] = useState(null);
+  const [extraData, setExtraData] = useState(null as object | null);
 
-  const handleShare = useCallback((response: ShareResponse | null) => {
+  const handleShare = useCallback((response: ShareResponse) => {
     if (!response) {
       return;
     }
@@ -107,30 +61,16 @@ const App = () => {
   const items = shareData?.items;
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-            
-          <Section title="Share data">
-            {items && items.map((item, i) => (
-              <Section title={item.itemGroup} key={i}>
-                <ShareDataItemPreview item={item} />
-              </Section>
-            ))}
-          </Section>
-          <Section title="Extra data">
-            {extraData ? JSON.stringify(extraData) : ''}
-          </Section>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="Browser">
+          {(props) => <BrowserScreen {...props} items={items}/>}
+        </Tab.Screen>
+        <Tab.Screen name="ShareDebug">
+          {(props) => <ShareDebugScreen {...props} items={items} extraData={extraData}/>}
+        </Tab.Screen>
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 };
 

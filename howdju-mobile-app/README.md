@@ -50,3 +50,11 @@ Workarounds to support this local link:
 - We use Re.Pack to bundle the app rather than Metro because it follows
   symlinks. We had to follow
   [these instructions](http://web.archive.org/web/20220724134937/https://re-pack.netlify.app/docs/getting-started/)
+
+## Adding a new native dependency
+
+After installing via Yarn, don't forget:
+
+```shell
+yarn run install-pods
+```

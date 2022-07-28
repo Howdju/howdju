@@ -92,6 +92,11 @@ module.exports = {
     // Treat `yarn link`ed react-native-share-menu as if it was in node_modules.
     symlinks: false,
 
+    alias: {
+      screens: path.resolve(__dirname, 'src/screens/'),
+      models: path.resolve(__dirname, 'src/models/'),
+    },
+
     /**
      * Uncomment this to ensure all `react-native*` imports will resolve to the same React Native
      * dependency. You might need it when using workspaces/monorepos or unconventional project

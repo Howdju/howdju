@@ -4,7 +4,7 @@ Share.prototype = {
     run: function(arguments) {
       try {
         arguments.completionFunction({
-            "URL": document.URL,
+            "url": document.URL,
             "selectedText": document.getSelection().toString(),
             "title": document.title
         });
