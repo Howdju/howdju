@@ -1,22 +1,33 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, GestureResponderEvent, View, Text, Pressable, StyleSheet} from 'react-native';
-import {ShareMenuReactView, SharePreviewResponse} from 'react-native-share-menu';
+import {
+  FlatList,
+  GestureResponderEvent,
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
+import {
+  ShareMenuReactView,
+  SharePreviewResponse,
+} from 'react-native-share-menu';
 
 import ShareDataItemPreview from '@/views/ShareDataItemPreview';
 
 const Share = () => {
-  const [sharePreviewResponse, setSharePreviewResponse] = useState<SharePreviewResponse>({items:[]});
+  const [sharePreviewResponse, setSharePreviewResponse] =
+    useState<SharePreviewResponse>({items: []});
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     ShareMenuReactView.data()
-      .then((sharePreviewResponse: SharePreviewResponse) => {
-        setSharePreviewResponse(sharePreviewResponse);
+      .then((response: SharePreviewResponse) => {
+        setSharePreviewResponse(response);
       })
       .catch(console.error);
   }, []);
 
-  console.log({sharePreviewResponse})
+  console.log({sharePreviewResponse});
   const items = sharePreviewResponse?.items;
 
   return (
@@ -42,12 +53,10 @@ const Share = () => {
           style={sending ? styles.sending : styles.send}
         />
       </View>
-      <FlatList 
+      <FlatList
         data={items}
-        renderItem={({item}) => (
-          <ShareDataItemPreview item={item} />
-        )}>
-      </FlatList>
+        renderItem={({item}) => <ShareDataItemPreview item={item} />}
+      />
       <View style={styles.buttonGroup}>
         <Button
           title="Dismiss with Error"
@@ -94,18 +103,22 @@ const styles = StyleSheet.create({
   buttonGroup: {
     alignItems: 'center',
   },
+  buttonText: {
+    fontSize: 16,
+    margin: 16,
+  },
 });
 
 type ButtonProps = {
-  onPress: (event: GestureResponderEvent) => void,
-  title: string,
-  style?: typeof styles[keyof typeof styles],
-  disabled?: boolean
-}
+  onPress: (event: GestureResponderEvent) => void;
+  title: string;
+  style?: typeof styles[keyof typeof styles];
+  disabled?: boolean;
+};
 
 const Button = ({onPress, title, style, disabled}: ButtonProps) => (
   <Pressable onPress={onPress} disabled={disabled}>
-    <Text style={[{fontSize: 16, margin: 16}, style]}>{title}</Text>
+    <Text style={[styles.buttonText, style]}>{title}</Text>
   </Pressable>
 );
 

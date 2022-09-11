@@ -7,13 +7,11 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
-import { ShareDataItem } from 'react-native-share-menu';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {ShareDataItem} from 'react-native-share-menu';
 
-import { inferSubmitUrl } from '@/services/submitUrls';
-import * as webBrowser from '@/services/webBrowser'
+import {inferSubmitUrl} from '@/services/submitUrls';
+import * as webBrowser from '@/services/webBrowser';
 import ShareDataItemPreview from '@/views/ShareDataItemPreview';
 
 const Section: React.FC<{
@@ -25,18 +23,8 @@ const Section: React.FC<{
   };
   return (
     <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          backgroundStyle,
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          backgroundStyle,
-        ]}>
+      <Text style={[styles.sectionTitle, backgroundStyle]}>{title}</Text>
+      <Text style={[styles.sectionDescription, backgroundStyle]}>
         {children}
       </Text>
     </View>
@@ -45,24 +33,23 @@ const Section: React.FC<{
 
 async function openUrl(url: string | null) {
   if (!url) {
-    console.error('openUrl must be called with a URL')
-    return
+    console.error('openUrl must be called with a URL');
+    return;
   }
-  await webBrowser.openUrl(url)
+  await webBrowser.openUrl(url);
 }
 
 const ShareDebugScreen: React.FC<{
-  items: ShareDataItem[],
-  extraData?: object,
+  items: ShareDataItem[];
+  extraData?: object;
 }> = ({items, extraData}) => {
-
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  }
+  };
 
-  const submitUrl = inferSubmitUrl(items)
+  const submitUrl = inferSubmitUrl(items);
 
   return (
     <ScrollView
@@ -72,25 +59,28 @@ const ShareDebugScreen: React.FC<{
         style={{
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
         }}>
-        <Button title="Open Submit Page"
+        <Button
+          title="Open Submit Page"
           onPress={async () => openUrl(submitUrl)}
-          disabled={!!submitUrl}/>
+          disabled={!!submitUrl}
+        />
         <Section title="Share data">
-          {items && items.map((item, i) => (
-            <Section title={item.itemGroup ?? "No item Group"} key={i}>
-              <ShareDataItemPreview item={item} />
-            </Section>
-          ))}
+          {items &&
+            items.map((item, i) => (
+              <Section title={item.itemGroup ?? 'No item Group'} key={i}>
+                <ShareDataItemPreview item={item} />
+              </Section>
+            ))}
         </Section>
         <Section title="Extra data">
           {extraData ? JSON.stringify(extraData) : ''}
         </Section>
       </View>
     </ScrollView>
-  )
-}
+  );
+};
 
-export default ShareDebugScreen
+export default ShareDebugScreen;
 
 const styles = StyleSheet.create({
   sectionContainer: {

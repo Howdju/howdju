@@ -1,5 +1,3 @@
-import isFunction from 'lodash/isFunction'
-
 import {logger} from './logger'
 
 /* https://docs.small.chat/javascriptapi */

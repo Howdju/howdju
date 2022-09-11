@@ -7,10 +7,10 @@ const ShareDataItemPreview = ({item}: {item: ShareDataItem}) => {
   const {value, mimeType, itemGroup, role} = item;
   return (
     <View>
-      <Text style={styles.mimeTypeText}>{mimeType} ({itemGroup ?? 'No Group'}, {role ?? 'No Role'})</Text>
-      {mimeType.startsWith('text/') && (
-        <Text>{value}</Text>
-      )}
+      <Text style={styles.mimeTypeText}>
+        {mimeType} ({itemGroup ?? 'No Group'}, {role ?? 'No Role'})
+      </Text>
+      {mimeType.startsWith('text/') && <Text>{value}</Text>}
       {mimeType.startsWith('image/') && (
         <Image
           style={styles.image}
@@ -18,18 +18,12 @@ const ShareDataItemPreview = ({item}: {item: ShareDataItem}) => {
           source={{uri: value}}
         />
       )}
-      {mimeType.startsWith('application/pdf') && (
-        <Text>{value}</Text>
-      )}
-      {mimeType.startsWith('audio/') && (
-        <Text>{value}</Text>
-      )}
-      {mimeType.startsWith('video/') && (
-        <Text>{value}</Text>
-      )}
+      {mimeType.startsWith('application/pdf') && <Text>{value}</Text>}
+      {mimeType.startsWith('audio/') && <Text>{value}</Text>}
+      {mimeType.startsWith('video/') && <Text>{value}</Text>}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   mimeTypeText: {
@@ -41,4 +35,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ShareDataItemPreview
+export default ShareDataItemPreview;
