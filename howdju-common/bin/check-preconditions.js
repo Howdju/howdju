@@ -18,7 +18,8 @@ function checkStandaloneSchemaValidationCode() {
   const standaloneCode = fs.readFileSync(filePath, {encoding: 'utf8'})
 
   if (makeStandaloneCode() !== standaloneCode) {
-    throw new Error("file system standalone AJV does not match generated one." +
-      " Please run gen-standalone-schema-validation and commit the result.")
+    throw new Error("File system standalone AJV does not match generated one." +
+      " Please run `yarn run gen-standalone-schema-validation` and commit the" +
+      " result.")
   }
 }
