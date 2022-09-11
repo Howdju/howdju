@@ -1,28 +1,23 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, View, Text, Pressable, StyleSheet} from 'react-native';
-import {ShareMenuReactView} from 'react-native-share-menu';
-import ShareDataItemPreview from './ShareDataItemPreview';
+import {FlatList, GestureResponderEvent, View, Text, Pressable, StyleSheet} from 'react-native';
+import {ShareMenuReactView, SharePreviewResponse} from 'react-native-share-menu';
 
-const Button = ({onPress, title, style}) => (
-  <Pressable onPress={onPress}>
-    <Text style={[{fontSize: 16, margin: 16}, style]}>{title}</Text>
-  </Pressable>
-);
+import ShareDataItemPreview from '@/views/ShareDataItemPreview';
 
 const Share = () => {
-  const [shareData, setShareData] = useState({items:[]});
+  const [sharePreviewResponse, setSharePreviewResponse] = useState<SharePreviewResponse>({items:[]});
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     ShareMenuReactView.data()
-      .then(({data}) => {
-        setShareData(data);
+      .then((sharePreviewResponse: SharePreviewResponse) => {
+        setSharePreviewResponse(sharePreviewResponse);
       })
       .catch(console.error);
   }, []);
 
-  console.log({shareData})
-  const shareItems = shareData?.items;
+  console.log({sharePreviewResponse})
+  const items = sharePreviewResponse?.items;
 
   return (
     <View style={styles.container}>
@@ -48,7 +43,7 @@ const Share = () => {
         />
       </View>
       <FlatList 
-        data={shareItems}
+        data={items}
         renderItem={({item}) => (
           <ShareDataItemPreview item={item} />
         )}>
@@ -100,5 +95,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+type ButtonProps = {
+  onPress: (event: GestureResponderEvent) => void,
+  title: string,
+  style?: typeof styles[keyof typeof styles],
+  disabled?: boolean
+}
+
+const Button = ({onPress, title, style, disabled}: ButtonProps) => (
+  <Pressable onPress={onPress} disabled={disabled}>
+    <Text style={[{fontSize: 16, margin: 16}, style]}>{title}</Text>
+  </Pressable>
+);
 
 export default Share;

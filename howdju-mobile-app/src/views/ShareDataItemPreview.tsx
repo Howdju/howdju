@@ -1,13 +1,15 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 
-const ShareDataItemPreview = ({item}) => {
-  const {value, mimeType, role} = item;
+import type {ShareDataItem} from 'react-native-share-menu';
+
+const ShareDataItemPreview = ({item}: {item: ShareDataItem}) => {
+  const {value, mimeType, itemGroup, role} = item;
   return (
     <View>
-      <Text style={styles.mimeTypeText} disabled={true}>{mimeType} ({role ?? 'None'})</Text>
+      <Text style={styles.mimeTypeText}>{mimeType} ({itemGroup ?? 'No Group'}, {role ?? 'No Role'})</Text>
       {mimeType.startsWith('text/') && (
-        <Text disabled={true}>{value}</Text>
+        <Text>{value}</Text>
       )}
       {mimeType.startsWith('image/') && (
         <Image
@@ -17,13 +19,13 @@ const ShareDataItemPreview = ({item}) => {
         />
       )}
       {mimeType.startsWith('application/pdf') && (
-        <Text disabled={true}>{value}</Text>
+        <Text>{value}</Text>
       )}
       {mimeType.startsWith('audio/') && (
-        <Text disabled={true}>{value}</Text>
+        <Text>{value}</Text>
       )}
       {mimeType.startsWith('video/') && (
-        <Text disabled={true}>{value}</Text>
+        <Text>{value}</Text>
       )}
     </View>
   );

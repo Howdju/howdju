@@ -169,11 +169,33 @@ yarn run lint:all
 yarn run test:all
 ```
 
-## Doing something in each workspace
+## Development
+
+### Upgrading dependencies
+
+```shell
+yarn upgrade-interactive
+```
+
+### Doing something in each workspace
 
 ```shell
 yarn workspaces foreach -Av exec bash -c 'yarn add --dev flow-bin'
 ```
+
+### Adding a new lambda
+
+```shell
+lamdba_name=...
+mkidr lambdas/$lambda_name
+cp lambdas/howdju-message-handler/.eslintrc.js lambdas/$lambda_name
+cp lambdas/howdju-message-handler/.gitignore lambdas/$lambda_name
+cd lambdas/$lambda_name
+npm init
+yarn add --dev eslint eslint-config-howdju jest
+```
+
+Add commands: `build`, `clean`, `lint`, `release`, `test`.
 
 ## Publishing
 
@@ -255,17 +277,3 @@ connect to the node process.  The Chrome debugger should automatically reconnect
 ### Debugging/inspecting the UI
 
 Use your web browser's Javascript debugging features as usual.
-
-### Adding a new lambda
-
-```shell
-lamdba_name=...
-mkidr lambdas/$lambda_name
-cp lambdas/howdju-message-handler/.eslintrc.js lambdas/$lambda_name
-cp lambdas/howdju-message-handler/.gitignore lambdas/$lambda_name
-cd lambdas/$lambda_name
-npm init
-yarn add --dev eslint eslint-config-howdju jest
-```
-
-Add commands: `build`, `clean`, `lint`, `release`, `test`.

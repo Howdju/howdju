@@ -11925,7 +11925,7 @@ __metadata:
     react-native: ^0.66
     react-native-safe-area-context: ^4.3.1
     react-native-screens: ^3.15.0
-    react-native-share-menu: ^5.0
+    react-native-share-menu: "file:../../react-native-share-menu"
     react-native-webview: ^11.15.0
     react-test-renderer: 17.0.2
     terser-webpack-plugin: ^5.3.3
@@ -18715,9 +18715,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-share-menu@portal:/Users/transverna/code/github/Howdju/react-native-share-menu::locator=howdju-monorepo%40workspace%3A.":
+"react-native-share-menu@portal:../react-native-share-menu::locator=howdju-monorepo%40workspace%3A.":
   version: 0.0.0-use.local
-  resolution: "react-native-share-menu@portal:/Users/transverna/code/github/Howdju/react-native-share-menu::locator=howdju-monorepo%40workspace%3A."
+  resolution: "react-native-share-menu@portal:../react-native-share-menu::locator=howdju-monorepo%40workspace%3A."
   peerDependencies:
     react: ^17.0
     react-native: ^0.66

@@ -1,7 +1,6 @@
 import React from 'react';
-
-import ShareDataItem from 'models/ShareDataItem';
 import {
+  Button,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,29 +10,32 @@ import {
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
-import ShareDataItemPreview from '../ShareDataItemPreview';
+import { ShareDataItem } from 'react-native-share-menu';
+
+import { inferSubmitUrl } from '@/services/submitUrls';
+import * as webBrowser from '@/services/webBrowser'
+import ShareDataItemPreview from '@/views/ShareDataItemPreview';
 
 const Section: React.FC<{
   title: string;
 }> = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
   return (
     <View style={styles.sectionContainer}>
       <Text
         style={[
           styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
+          backgroundStyle,
         ]}>
         {title}
       </Text>
       <Text
         style={[
           styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
+          backgroundStyle,
         ]}>
         {children}
       </Text>
@@ -41,9 +43,17 @@ const Section: React.FC<{
   );
 };
 
+async function openUrl(url: string | null) {
+  if (!url) {
+    console.error('openUrl must be called with a URL')
+    return
+  }
+  await webBrowser.openUrl(url)
+}
+
 const ShareDebugScreen: React.FC<{
   items: ShareDataItem[],
-  extraData: object | null,
+  extraData?: object,
 }> = ({items, extraData}) => {
 
   const isDarkMode = useColorScheme() === 'dark';
@@ -51,6 +61,8 @@ const ShareDebugScreen: React.FC<{
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   }
+
+  const submitUrl = inferSubmitUrl(items)
 
   return (
     <ScrollView
@@ -60,9 +72,12 @@ const ShareDebugScreen: React.FC<{
         style={{
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
         }}>
+        <Button title="Open Submit Page"
+          onPress={async () => openUrl(submitUrl)}
+          disabled={!!submitUrl}/>
         <Section title="Share data">
           {items && items.map((item, i) => (
-            <Section title={item.itemGroup} key={i}>
+            <Section title={item.itemGroup ?? "No item Group"} key={i}>
               <ShareDataItemPreview item={item} />
             </Section>
           ))}
