@@ -47,6 +47,10 @@ Workarounds to support this local link:
 - `webpack.config.js` has `resolve.symlinks: false` so that
   it treats `react-native-share-menu` as if it were in `node_modules`. Otherwise
   that dep can't find `react-native`.
+- Add `react-native-share-menu` to Jest's `transformIgnorePatterns` so that we
+  transform the raw code.
+- Add a custom jest resolver that will resolve `react-native-share-menu` peer
+  dependencies from within this package.
 - We use Re.Pack to bundle the app rather than Metro because it follows
   symlinks. We had to follow
   [these instructions](http://web.archive.org/web/20220724134937/https://re-pack.netlify.app/docs/getting-started/)
