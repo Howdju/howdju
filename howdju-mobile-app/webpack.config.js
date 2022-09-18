@@ -93,8 +93,8 @@ module.exports = {
     symlinks: false,
 
     alias: {
-      screens: path.resolve(__dirname, 'src/screens/'),
-      models: path.resolve(__dirname, 'src/models/'),
+      // Support project-relative imports
+      '@': path.resolve(__dirname, 'src/'),
     },
 
     /**

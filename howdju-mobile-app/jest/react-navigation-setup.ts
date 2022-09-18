@@ -1,3 +1,4 @@
+/* global jest */
 // Based on https://reactnavigation.org/docs/testing/
 
 import 'react-native-gesture-handler/jestSetup';

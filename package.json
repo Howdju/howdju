@@ -9,13 +9,15 @@
   "private": true,
   "scripts": {
     "check:pushed": "bin/check-pushed.sh",
-    "check-preconditions:all": "yarn workspaces foreach -Apv run check-preconditions",
+    "check:committed": "node bin/check-committed.mjs",
+    "check:pre-deploy": "bin/pre-deploy-check.sh",
     "lint:all": "yarn workspaces foreach -Apv run lint",
     "lint:howdju-client-common": "yarn workspace howdju-client-common run lint",
     "lint:howdju-common": "yarn workspace howdju-common run lint",
     "lint:howdju-service-common": "yarn workspace howdju-service-common run lint",
+    "premerge-check:all": "yarn workspaces foreach -Apv run premerge-check",
     "typecheck:all": "yarn workspaces foreach -Apv run typecheck",
-    "test:all": "bin/test-all.sh",
+    "test:all": "yarn workspaces foreach -Apv run test",
     "test:howdju-common": "yarn workspace howdju-common run test",
     "test:howdju-client-common": "yarn workspace howdju-service-common run test",
     "test:howdju-service-common": "yarn workspace howdju-service-common run test",
@@ -71,8 +73,5 @@
     "eslint-plugin-react": "^7.23.1",
     "flow-bin": "^0.150.1",
     "jest": "^26.6.3"
-  },
-  "resolutions": {
-    "react-native-share-menu": "portal:../react-native-share-menu"
   }
 }

@@ -162,11 +162,19 @@ yarn run start:ui:local
 
 Open browser to localhost:3000
 
-## Linting and testing
+## Automatic code checks
+
+The most thorough way to run automated checks is to run the
+Github premerge action. See [Testing Github actions](#testing-github-actions)
+below.
+
+See `.github/workflows/main.yml` for the full list of pre-merge checks.
 
 ```shell
 yarn run lint:all
+yarn run typecheck:all
 yarn run test:all
+yarn run premerge-check:all
 ```
 
 ## Development
@@ -277,3 +285,23 @@ connect to the node process.  The Chrome debugger should automatically reconnect
 ### Debugging/inspecting the UI
 
 Use your web browser's Javascript debugging features as usual.
+
+## Updating Yarn
+
+```sh
+yarn set version stable
+```
+
+## Testing Github actions
+
+Install nektos/act:
+
+```sh
+brew install act
+```
+
+To test the actions, run `act` (it has many options):
+
+```sh
+act
+```

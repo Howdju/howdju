@@ -347,6 +347,35 @@ PODS:
     - React-jsi (= 0.66.4)
     - React-logger (= 0.66.4)
     - React-perflogger (= 0.66.4)
+  - RNGestureHandler (2.6.0):
+    - React-Core
+  - RNReanimated (2.10.0):
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - glog
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-callinvoker
+    - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
@@ -412,8 +441,10 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - RNShareMenu (from `../../../react-native-share-menu`)
+  - RNShareMenu (from `../node_modules/react-native-share-menu`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -498,10 +529,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNShareMenu:
-    :path: "../../../react-native-share-menu"
+    :path: "../node_modules/react-native-share-menu"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -551,11 +586,13 @@ SPEC CHECKSUMS:
   React-RCTVibration: e3ffca672dd3772536cb844274094b0e2c31b187
   React-runtimeexecutor: dec32ee6f2e2a26e13e58152271535fadff5455a
   ReactCommon: 57b69f6383eafcbd7da625bfa6003810332313c4
+  RNGestureHandler: 920eb17f5b1e15dae6e5ed1904045f8f90e0b11e
+  RNReanimated: f9055ab75a49358b30f99155637f95d77727e7dc
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNShareMenu: fa541ddd4d7c5863903d8e796dac9915c2fc9eb7
   Yoga: e7dc4e71caba6472ff48ad7d234389b91dadc280
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: c670fc9d26670196dd7d904be6f93cde6865133f
+PODFILE CHECKSUM: 39ed600e91455aa8575a2f4a125684ad5165799b
 
 COCOAPODS: 1.11.3

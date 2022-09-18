@@ -5,11 +5,13 @@ set -e
 lambda_alias=$1
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-bash "$script_dir/check-preconditions.sh"
+yarn run check:pre-deploy
 
 pushd ..
 yarn run lint:all || { exit 1; }
+yarn run typecheck:all || { exit 1; }
 yarn run test:all || { exit 1; }
+yarn run pre-merge-check:all || { exit 1; }
 popd
 
 npm run build-and-update-lambda-function-code
