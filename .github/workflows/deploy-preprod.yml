@@ -15,8 +15,8 @@ env:
 
 jobs:
   deployment:
-    # Only deploy if CI succeeded.
-    if: github.event.workflow_run.conclusion == 'success'
+    # Only deploy if CI succeeded and only if it was run on master.
+    if: github.event.workflow_run.conclusion == 'success' and github.event.workflow_run.head_branch == 'master'
     runs-on: ubuntu-latest
     environment: preprod
     steps:

@@ -11,7 +11,7 @@ pushd ..
 yarn run lint:all || { exit 1; }
 yarn run typecheck:all || { exit 1; }
 yarn run test:all || { exit 1; }
-yarn run pre-merge-check:all || { exit 1; }
+yarn run premerge-check:all || { exit 1; }
 popd
 
 npm run build-and-update-lambda-function-code
