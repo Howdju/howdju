@@ -3,10 +3,11 @@ name: Deploy to preprod
 concurrency: preprod
 
 on:
-  push:
-    branches:
-      # Treat master as a CD branch for preprod.
-      - master
+  # Run after the CI workflow has completed.
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
   workflow_dispatch:
 
 env:
@@ -14,6 +15,8 @@ env:
 
 jobs:
   deployment:
+    # Only deploy if CI succeeded.
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment: preprod
     steps:
