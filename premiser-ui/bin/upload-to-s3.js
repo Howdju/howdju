@@ -25,8 +25,6 @@ argParser.add_argument('--filter')
 const args = argParser.parse_args()
 const filter = args.filter && new RegExp(args.filter)
 
-AWS.config.region = projectConfig.aws.region
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile})
 const s3 = new AWS.S3({apiVersion: '2006-03-01'})
 
 const contentTypes = {

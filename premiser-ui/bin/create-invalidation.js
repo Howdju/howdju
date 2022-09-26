@@ -12,8 +12,6 @@ const argParser = new ArgumentParser({
 argParser.add_argument('distributionId')
 const args = argParser.parse_args()
 
-AWS.config.region = projectConfig.aws.region
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: projectConfig.aws.profile})
 const cloudfront = new AWS.CloudFront({apiVersion: '2017-03-25'})
 
 const items = [
