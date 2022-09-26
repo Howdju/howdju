@@ -1,0 +1,36 @@
+name: Deploy to prod
+
+concurrency: prod
+
+on:
+  # Only manually triggered after testing preprod.
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1 
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Corepack
+        # Enables yarn v2
+        run: corepack enable
+      - name: Yarn install
+        run: yarn install
+      - name: Update API Lambda Alias
+        # Must have previously deployed to preprod.
+        run: yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
+      - name: Deploy UI
+        run: yarn run deploy:ui:prod
