@@ -316,8 +316,8 @@ To test the deployment:
 ```sh
 act workflow_run\
  -e .github/workflows/test-deploy-event.json\
--s AWS_ACCESS_KEY_ID
--s AWS_SECRET_ACCESS_KEY
+ -s AWS_ACCESS_KEY_ID\
+ -s AWS_SECRET_ACCESS_KEY
 ```
 
 See

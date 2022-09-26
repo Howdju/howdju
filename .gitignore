@@ -16,3 +16,7 @@
 # For now just ignore vscode, although at some point we may want to figure
 # out what should be shared.
 /.vscode/
+
+# macOS file system metadata. These were showing up in act's Github Workflow
+# runner.
+.DS_Store
