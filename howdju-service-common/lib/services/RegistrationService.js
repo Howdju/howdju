@@ -192,7 +192,7 @@ async function checkRegistrationRequestValidity(registrationRequest, now) {
   if (registrationRequest.isConsumed) {
     throw new RegistrationAlreadyConsumedError()
   }
-  if (now.isAfter(registrationRequest.expires)) {
+  if (now.isSameOrAfter(registrationRequest.expires)) {
     // We could delete registration here, but then the next time the user tries the link they would get a "missing" error
     //  which would be confusing.  So instead cleanup old registrations on a schedule?
     throw new RegistrationExpiredError()
