@@ -13,6 +13,7 @@ export default class WritQuoteEntityViewer extends Component {
       suggestionsKey,
       doShowControls,
       showUrls,
+      showStatusText,
       onClickUrl,
       ...rest
     } = this.props
@@ -29,6 +30,7 @@ export default class WritQuoteEntityViewer extends Component {
             suggestionsKey={suggestionsKey}
             doShowControls={doShowControls}
             showUrls={showUrls}
+            showStatusText={showStatusText}
             onClickUrl={onClickUrl}
           />
         }
@@ -42,6 +44,7 @@ WritQuoteEntityViewer.propTypes = {
   editorId: PropTypes.string,
   suggestionsKey: PropTypes.string,
   doShowControls: PropTypes.bool,
+  showStatusText: PropTypes.bool,
 }
 WritQuoteEntityViewer.defaultProps = {
   doShowControls: true,

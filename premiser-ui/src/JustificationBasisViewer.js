@@ -44,6 +44,7 @@ export default class JustificationBasisViewer extends Component {
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showBasisUrls={showUrls}
+            showStatusText={showStatusText}
             contextTrailItems={contextTrailItems}
           />
         )
@@ -56,6 +57,7 @@ export default class JustificationBasisViewer extends Component {
             writQuote={basis.entity}
             editorId={writQuoteEditorId}
             doShowControls={doShowControls}
+            showStatusText={showStatusText}
             showUrls={showUrls}
             onClickUrl={onClickWritQuoteUrl}
           />

@@ -49,6 +49,7 @@ class PropositionCompoundViewerAtomItem extends Component {
       isUnCondensed,
       component: Component,
       showBasisUrls,
+      showStatusText,
       contextTrailItems,
     } = this.props
 
@@ -66,6 +67,7 @@ class PropositionCompoundViewerAtomItem extends Component {
           editorId={propositionEditorId(this.props)}
           suggestionsKey={combineSuggestionsKeys(id, 'proposition')}
           doShowControls={doShowControls}
+          showStatusText={showStatusText}
           contextTrailItems={contextTrailItems}
         />
         {doShowJustifications && hasJustifications && (
@@ -90,6 +92,7 @@ PropositionCompoundViewerAtomItem.propTypes = {
   atom: PropTypes.object.isRequired,
   doShowJustifications: PropTypes.bool,
   doShowControls: PropTypes.bool,
+  showStatusText: PropTypes.bool,
 }
 PropositionCompoundViewerAtomItem.defaultProps = {
   doShowControls: true,

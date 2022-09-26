@@ -156,6 +156,7 @@ class JustificationBranch extends Component {
       canHover,
       showBasisUrls,
       contextTrailItems,
+      showStatusText,
       onClickWritQuoteUrl,
     } = this.props
     const _isVerified = isVerified(justification)
@@ -348,6 +349,7 @@ class JustificationBranch extends Component {
           doShowBasisJustifications={doShowBasisJustifications}
           doShowControls={doShowControls}
           showBasisUrls={showBasisUrls}
+          showStatusText={showStatusText}
           menu={menu}
           contextTrailItems={contextTrailItems}
           actions={

@@ -150,6 +150,18 @@ _e.makeNewJustification = (props) => {
   return newJustification
 }
 
+_e.makeNewSourceExcerptJustification = props => {
+  const init = {
+    target: null,
+    basis: {
+      type: JustificationBasisType.WRIT_QUOTE,
+      entity: null,
+    },
+  }
+  const merged = merge(init, props)
+  return merged
+}
+
 function correctJustificationRootPolarity(justification) {
   let targetEntity = justification.target.entity
   let rootPolarity = justification.polarity
@@ -204,10 +216,10 @@ _e.makeNewSourceExcerptParaphrase = (props) => merge({
   sourceExcerpt: _e.makeNewSourceExcerpt(),
 }, props)
 
-_e.makeNewSourceExcerpt = () => ({
+_e.makeNewSourceExcerpt = (props) => merge({
   type: SourceExcerptType.WRIT_QUOTE,
   writQuote: _e.makeNewWritQuote(),
-})
+}, props)
 
 _e.makeNewWritQuote = (props) => merge({
   writ: _e.makeNewWrit(),
@@ -320,6 +332,10 @@ _e.makeNewCounterJustification = (targetJustification) => ({
     propositionCompound: _e.makeNewPropositionCompound()
   },
   polarity: JustificationPolarity.NEGATIVE
+})
+
+_e.makeNewPropositionCompoundAtomFromProposition = (proposition) => ({
+  entity: proposition,
 })
 
 _e.makeNewUrl = () => ({url: ''})
