@@ -3,9 +3,6 @@ const AWS = require('aws-sdk')
 const debug = require('debug')('premiser-ui:upload-to-s3')
 const uuid = require('uuid')
 
-
-const projectConfig = require('../config/project.config')
-
 const argParser = new ArgumentParser({
   description: 'Create a Cloudfront invalidation'
 })
