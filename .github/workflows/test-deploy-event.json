@@ -1,0 +1,10 @@
+{
+  "action": "completed",
+  "workflow": {
+    "name": "CI"
+  },
+  "workflow_run": {
+    "conclusion": "success",
+    "head_branch": "master"
+  }
+}

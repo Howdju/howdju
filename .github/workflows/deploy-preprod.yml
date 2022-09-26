@@ -11,7 +11,8 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: us-east-1 
+  AWS_REGION: us-east-1
+  HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
 
 jobs:
   deployment:
@@ -38,6 +39,6 @@ jobs:
       - name: Yarn install
         run: yarn install
       - name: Deploy API
-        run: yarn run deploy:api -- pre-prod
+        run: yarn run deploy:api pre-prod
       - name: Deploy UI
         run: yarn run deploy:ui:pre-prod
