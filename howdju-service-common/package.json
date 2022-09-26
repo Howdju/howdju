@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint lib/",
     "test": "jest --config=../jest.config.js /howdju-service-common/lib/",
-    "test:inspect": "node --inspect-brk node_modules/.bin/jest --config=../jest.config.js /howdju-service-common/lib/ --runInBand --watch"
+    "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --config=../jest.config.js /howdju-service-common/lib/ --runInBand --watch"
   },
   "dependencies": {
     "@joi/date": "^2.1.0",

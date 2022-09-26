@@ -63,13 +63,13 @@ _e.utcNow = () => moment.utc()
 _e.momentAdd = (momentInstance, summand) => {
   const result = momentInstance.clone()
   // add mutates the instance, so we must clone first
-  result.add(summand)
+  result.add.apply(result, summand)
   return result
 }
 _e.momentSubtract = (momentInstance, subtrahend) => {
   const result = momentInstance.clone()
   // add mutates the instance, so we must clone first
-  result.subtract(subtrahend)
+  result.subtract.apply(result, subtrahend)
   return result
 }
 

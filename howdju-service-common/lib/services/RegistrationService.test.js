@@ -4,6 +4,7 @@ const pick = require('lodash/pick')
 
 const {
   utcNow,
+  momentAdd,
   momentSubtract,
   makeNewRegistrationRequest,
   makeNewRegistrationConfirmation,
@@ -62,6 +63,7 @@ describe('RegistrationService', () => {
     test('consumes valid registration code and returns created user', async () => {
       const registrationRequest = makeNewRegistrationRequest({
         email: 'the-email',
+        expires: momentAdd(utcNow(), [5, 'minutes'])
       })
       const registrationConfirmation = makeNewRegistrationConfirmation({
         username: 'the-username',
@@ -87,7 +89,7 @@ describe('RegistrationService', () => {
       }
       
       const authToken = 'the-auth-token'
-      const expires = utcNow()
+      const expires = momentAdd(utcNow(), [1, 'minute'])
       const authService = {
         createAuthToken: sinon.fake.returns({authToken, expires})
       }
