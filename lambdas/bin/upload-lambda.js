@@ -11,10 +11,6 @@ const {
   logger,
 } = require('howdju-ops')
 
-AWS.config.region = 'us-east-1'
-const profile = process.env.AWS_PROFILE || 'premiser'
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile})
-
 // Assume we are run from the lambda package root
 const packagePath = process.cwd()
 const packageInfoPath = path.resolve(packagePath, 'package.json')

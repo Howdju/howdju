@@ -18,9 +18,6 @@ const lambdarcPath = path.resolve(lambdaDir, 'lambdarc')
 const lambdarc = require(lambdarcPath)
 const lambdaName = lambdarc.name
 
-AWS.config.region = 'us-east-1'
-const profile = process.env.AWS_PROFILE || 'BuildTools'
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile})
 const s3 = new AWS.S3()
 
 const zipPath = path.resolve(`dist/lambda-functions/${lambdaName}/${lambdaName}.zip`)
