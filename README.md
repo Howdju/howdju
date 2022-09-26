@@ -305,8 +305,21 @@ Install nektos/act:
 brew install act
 ```
 
-To test the actions, run `act` (it has many options):
+To test the `push` workflows:
 
 ```sh
 act
 ```
+
+To test the deployment:
+
+```sh
+act workflow_run\
+ -e .github/workflows/test-deploy-event.json\
+-s AWS_ACCESS_KEY_ID
+-s AWS_SECRET_ACCESS_KEY
+```
+
+See
+[here](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_run)
+for the possible contents of the JSON file.
