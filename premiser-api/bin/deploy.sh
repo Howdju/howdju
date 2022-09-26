@@ -15,6 +15,8 @@ if [ -z ${HOWDJU_RUNNING_IN_GITHUB_WORKFLOW+present} ]; then
   yarn run test:all || { exit 1; }
   yarn run premerge-check:all || { exit 1; }
   popd
+else
+  echo Skipping lint and test because in Github Workflow
 fi
 
 npm run build-and-update-lambda-function-code

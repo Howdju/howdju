@@ -18,12 +18,14 @@ const versionMetadataKey = 'howdju-ui-version'
 const projectConfig = require('../config/project.config')
 
 const argParser = new ArgumentParser({
-  description: 'Upload the app to S3'
+  description: 'Upload the web app to S3'
 })
 argParser.add_argument('bucket')
 argParser.add_argument('--filter')
 const args = argParser.parse_args()
 const filter = args.filter && new RegExp(args.filter)
+
+debug(`${argParser} ${args}`)
 
 const s3 = new AWS.S3({apiVersion: '2006-03-01'})
 
@@ -40,6 +42,7 @@ const contentTypes = {
 }
 
 const upload = (filename) => {
+  debug(`Uploading ${filename}`)
   fs.readFile(projectConfig.paths.dist(filename), (err, data) => {
     if (err) throw err
 
@@ -60,7 +63,10 @@ const upload = (filename) => {
       ContentType: contentTypes[extension] || 'application/octet-stream',
     }
     s3.upload(params, function(err, data) {
-      if (err) throw err
+      if (err) {
+        debug(`Error uploading ${filename}: ${err}`)
+        throw err
+      }
       debug(`Uploaded ${filename} to ${args.bucket} (ETag: ${data.ETag})`)
     })
   })

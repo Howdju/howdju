@@ -3,6 +3,9 @@ import {promises as fs, constants} from 'fs'
 import {basename, dirname, resolve} from 'path'
 import { fileURLToPath } from 'url'
 import { promisify } from 'util'
+import Debug from 'debug'
+
+const debug = Debug('howdju:check-committed')
 
 const exec = promisify(child_process.exec)
 
@@ -31,6 +34,9 @@ async function isCommitted(dir) {
   await fs.access(dir, constants.F_OK)
   const {stdout} = await exec(`git status -s ${dir}`)
   // If there is output, then there are uncommitted changes
+  if (stdout) {
+    debug(`Uncomitted changes: \n${stdout}`)
+  }
   return !stdout
 }
 
