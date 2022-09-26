@@ -13,7 +13,6 @@ import {
   makeNewPropositionCompound,
   makeNewPropositionCompoundAtomFromProposition,
   makeNewProposition,
-  makeNewSourceExcerpt,
   makeNewSourceExcerptJustification,
   makeNewWrit,
   makeNewWritQuote,
