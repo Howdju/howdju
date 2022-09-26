@@ -94,7 +94,8 @@ const editorTypeCommitApiResourceActions = {
     }
   },
   [EditorTypes.WRIT_QUOTE]: {
-    [CrudActions.UPDATE]: api.updateWritQuote
+    [CrudActions.CREATE]: api.createWritQuote,
+    [CrudActions.UPDATE]: api.updateWritQuote,
   },
   [EditorTypes.LOGIN_CREDENTIALS]: {
     [CrudActions.CREATE]: api.login,

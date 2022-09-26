@@ -8,6 +8,7 @@ import forEach from 'lodash/forEach'
 import get from 'lodash/get'
 import has from 'lodash/has'
 import isNumber from 'lodash/isNumber'
+import isString from 'lodash/isString'
 import includes from 'lodash/includes'
 import merge from 'lodash/merge'
 import reduce from 'lodash/reduce'
@@ -92,6 +93,7 @@ const editorErrorReducer = (errorKey) => (state, action) => {
   return state
 }
 
+// TODO(#83): replace bespoke list reducers with addListItem/removeListItem
 const makeAddAtomReducer = (atomsPath, atomMaker) => (state, action) => {
   const editEntity = {...state.editEntity}
   const atoms = clone(get(editEntity, atomsPath))
@@ -152,6 +154,27 @@ const defaultEditorActions = {
     })
     const dirtyFields = {...state.dirtyFields, ...newDirtyFields}
     return {...state, editEntity, dirtyFields}
+  },
+  [editors.addListItem]: (state, action) => {
+    const {itemIndex, listPathMaker, itemFactory} = action.payload
+    const editEntity = {...state.editEntity}
+
+    const listPath = isString(listPathMaker) ? listPathMaker : listPathMaker(action.payload)
+    const list = clone(get(editEntity, listPath))
+    const insertIndex = isNumber(itemIndex) ? itemIndex : list.length
+    insertAt(list, insertIndex, itemFactory())
+    set(editEntity, listPath, list)
+    return {...state, editEntity}
+  },
+  [editors.removeListItem]: (state, action) => {
+    const {itemIndex, listPathMaker} = action.payload
+    const editEntity = {...state.editEntity}
+
+    const listPath = isString(listPathMaker) ? listPathMaker : listPathMaker(action.payload)
+    const list = clone(get(editEntity, listPath))
+    removeAt(list, itemIndex)
+    set(editEntity, listPath, list)
+    return {...state, editEntity}
   },
   [editors.commitEdit]: (state, action) => ({
     ...state,

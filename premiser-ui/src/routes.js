@@ -8,6 +8,7 @@ import {
   commonPaths,
 } from 'howdju-common'
 
+import AccountSettingsPage from "./AccountSettingsPage"
 import AboutPage from './AboutPage'
 import CreatePropositionPage, {CreatePropositionPageMode} from './CreatePropositionPage'
 import FeaturedPerspectivesPage from './FeaturedPerspectivesPage'
@@ -26,16 +27,16 @@ import paths, {createJustificationPath} from './paths'
 import PersorgPage from './PersorgPage'
 import PrivacySettingsPage from "./PrivacySettingsPage"
 import PoliciesOverviewPage from './policies/PoliciesOverviewPage'
+import PolicyPage from "./policies/PolicyPage"
 import PropositionUsagesPage from './PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
 import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import RegistrationRequestPage from './RegistrationRequestPage'
-import AccountSettingsPage from "./AccountSettingsPage"
+import SubmitSourceExcerptPage from './pages/SubmitSourceExcerptPage'
 import TagPage from './TagPage'
 import TestErrorPage from './TestErrorPage'
 import ToolsPage from './ToolsPage'
 import WhatsNextPage from './WhatsNextPage'
-import PolicyPage from "./policies/PolicyPage"
 
 import principlesInnerHtml from './policies/principles.md'
 import userAgreementInnerHtml from './policies/user-agreement.md'
@@ -75,13 +76,16 @@ const routes = [
   <Route key="searchJustifications" exact path="/search-justifications" component={JustificationsSearchPage} />,
   <Route key="proposition-usages" exact path="/proposition-usages" component={PropositionUsagesPage} />,
 
+  <Route key="submitSourceExcerpt" exact path="/submit-source-excerpt" render={props => (
+    <SubmitSourceExcerptPage {...props} />
+  )} />,
   <Route key="createProposition" exact path="/create-proposition" render={props => (
     <CreatePropositionPage {...props} mode={CreatePropositionPageMode.CREATE_PROPOSITION} />
   )} />,
   <Route key="createJustification" exact path={createJustificationPath} render={props => (
     <CreatePropositionPage {...props} mode={CreatePropositionPageMode.CREATE_JUSTIFICATION} />
   )} />,
-  <Route key="submit" exact path="/submit" render={props => (
+  <Route key="createProposition" exact path="/submit" render={props => (
     <CreatePropositionPage {...props} mode={CreatePropositionPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING} />
   )} />,
 

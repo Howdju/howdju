@@ -5,6 +5,7 @@ module.exports = assign(
   require('./codes'),
   require('./consts'),
   require('./commonPaths'),
+  require('./entities'),
   require('./enums'),
   require('./commonErrors'),
   require('./general'),

@@ -66,7 +66,11 @@ export const api = {
       rootTargetId,
     })
   ),
+
   fetchWritQuote: apiActionCreator('FETCH_WRIT_QUOTE', (writQuoteId) => ({writQuoteId})),
+  createWritQuote: apiActionCreator('CREATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
+  updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
+
   fetchJustificationBasisCompound: apiActionCreator('FETCH_JUSTIFICATION_BASIS_COMPOUND',
     (justificationBasisCompoundId) => ({justificationBasisCompoundId})),
   fetchSourceExcerptParaphrase: apiActionCreator('FETCH_SOURCE_EXCERPT_PARAPHRASE',
@@ -214,7 +218,6 @@ export const api = {
   })),
 
   createJustification: apiActionCreator('CREATE_JUSTIFICATION', (justification) => ({justification})),
-  updateWritQuote: apiActionCreator('UPDATE_WRIT_QUOTE', (writQuote) => ({writQuote})),
   deleteJustification: apiActionCreator('DELETE_JUSTIFICATION', (justification) => ({justification})),
 
   fetchMainSearchResults: apiActionCreator('FETCH_MAIN_SEARCH_RESULTS', (searchText) => ({searchText})),
@@ -313,6 +316,11 @@ export const editors = {
   propertyChange: actionCreator('EDITORS/PROPERTY_CHANGE', (editorType, editorId, properties) => ({editorType, editorId, properties})),
   commitEdit,
   cancelEdit: actionCreator('EDITORS/CANCEL_EDIT', (editorType, editorId) => ({editorType, editorId})),
+
+  addListItem: actionCreator('EDITORS/ON_ADD_LIST_ITEM',
+    (editorType, editorId, itemIndex, listPathMaker, itemFactory) => ({editorType, editorId, itemIndex, listPathMaker, itemFactory})),
+  removeListItem: actionCreator('EDITORS/ON_REMOVE_LIST_ITEM',
+    (editorType, editorId, itemIndex, listPathMaker) => ({editorType, editorId, itemIndex, listPathMaker})),
 
   addSpeaker: actionCreator('EDITORS/ADD_SPEAKER', (editorType, editorId) => ({editorType, editorId})),
   removeSpeaker: actionCreator('EDITORS/REMOVE_SPEAKER', (editorType, editorId, speaker, index) => ({

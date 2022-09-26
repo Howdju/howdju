@@ -1,8 +1,9 @@
-const debug = require('debug')('howdju-ui:webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
 const {merge} = require('webpack-merge')
+const debug = require('debug')('howdju-ui:webpack')
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
 const { DuplicatesPlugin } = require("inspectpack/plugin")
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
@@ -71,6 +72,12 @@ const baseWebpackConfig = {
     clean: true,
     publicPath: OUTPUT_PUBLIC_PATH,
   },
+  resolve: {
+    alias: {
+      // Support project-relative imports
+      '@': path.resolve(__dirname, '../src/'),
+    },
+  },
   devServer: {
     bonjour: true,
     compress: true,
@@ -110,13 +117,13 @@ const baseWebpackConfig = {
   module: {
     rules: [
       {
-        test: /\.m?jsx?$/,
+        test: /\.m?(j|t)sx?$/,
         resolve: {
           fullySpecified: false,  // Allow cookie-consent's modules to import files without their extension
           // Support ES module and JSX extensions when resolving the file corresponding to an extensionless package
           // cookie-consent uses .mjs; we don't use .jsx, but we could, and we should probably include it since our
           // test pattern includes it.
-          extensions: ['.mjs', '.jsx', '...'],
+          extensions: ['.mjs', '.jsx', '.tsx', '.ts', '...'],
         },
         use: {
           loader: 'babel-loader',
