@@ -32,6 +32,6 @@ jobs:
         run: yarn install
       - name: Update API Lambda Alias
         # Must have previously deployed to preprod.
-        run: yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
+        run: yarn workspace premiser-api run update-lambda-function-alias --aliasName prod --newTarget pre-prod
       - name: Deploy UI
         run: yarn run deploy:ui:prod
