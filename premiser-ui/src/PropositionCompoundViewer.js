@@ -20,6 +20,7 @@ export default class PropositionCompoundViewer extends Component {
       isCondensed,
       isUnCondensed,
       showBasisUrls,
+      showStatusText,
       contextTrailItems,
       ...rest
     } = this.props
@@ -37,6 +38,7 @@ export default class PropositionCompoundViewer extends Component {
           isCondensed={isCondensed}
           isUnCondensed={isUnCondensed}
           showBasisUrls={showBasisUrls}
+          showStatusText={showStatusText}
           doShowPropositionAtomJustifications={doShowPropositionAtomJustifications}
           contextTrailItems={contextTrailItems}
         />
@@ -64,5 +66,6 @@ PropositionCompoundViewer.propTypes = {
   doShowControls: PropTypes.bool,
   doShowAtomJustifications: PropTypes.bool,
   isCondensed: PropTypes.bool,
+  showStatusText: PropTypes.bool,
   isUnCondensed: PropTypes.bool,
 }
