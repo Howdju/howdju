@@ -8,7 +8,6 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "node bin/esbuild.js",
-    "build-and-update-lambda-function-code": "yarn run clean && yarn run lint-all && yarn run build && yarn run update-lambda-function-code",
     "change-password:local": "env-cmd -f ../config/local.env node bin/change-user-password.js",
     "change-password:pre-prod": "env-cmd -f ../config/pre-prod-local-tunnel.env node bin/change-user-password.js",
     "change-password:prod": "env-cmd -f ../config/prod-local-tunnel.env && node bin/change-user-password.js",
