@@ -19,7 +19,10 @@ else
   echo Skipping lint and test because in Github Workflow
 fi
 
-npm run build-and-update-lambda-function-code
+yarn run clean
+yarn run build
+yarn run update-lambda-function-code
+
 bin/lambda-smoke-test.sh us-east-1 premiserApi test-events/login.json || {
   echo 'smoke test failed'
   exit 1

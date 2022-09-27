@@ -42,7 +42,7 @@ const contentTypes = {
 }
 
 const upload = (filename) => {
-  debug(`Uploading ${filename}`)
+  debug(`Reading ${filename}`)
   fs.readFile(projectConfig.paths.dist(filename), (err, data) => {
     if (err) throw err
 
@@ -62,6 +62,7 @@ const upload = (filename) => {
       Expires: utcNow().add(duration).toDate(),
       ContentType: contentTypes[extension] || 'application/octet-stream',
     }
+    debug(`Uploading ${filename}`)
     s3.upload(params, function(err, data) {
       if (err) {
         debug(`Error uploading ${filename}: ${err}`)
