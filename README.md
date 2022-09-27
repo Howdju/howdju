@@ -173,7 +173,7 @@ The most thorough way to run automated checks is to run the
 Github premerge action. See [Testing Github actions](#testing-github-actions)
 below.
 
-See `.github/workflows/main.yml` for the full list of pre-merge checks.
+See `.github/workflows/ci.yml` for the full list of pre-merge checks.
 
 ```shell
 yarn run lint:all
@@ -212,6 +212,17 @@ Add commands: `build`, `clean`, `lint`, `release`, `test`.
 
 ## Publishing
 
+Deployments are partially automated.
+
+### API and web app
+
+A Github action automatically deploys the API and web app to the preprod
+environment.
+
+After confirming that the preprod environment is valid, deploy the API and
+web app to prod using the
+[prod deployment Github Action](https://github.com/Howdju/howdju/actions/workflows/deploy-prod.yml).
+
 ### Publishing infrastructure changes
 
 TODO(GH-46): give TerraformStateUpdater appropriate permissions
@@ -228,32 +239,6 @@ Then run terraform commands using the role:
 
 ```shell
 aws-vault exec terraform@howdju -- terraform plan
-```
-
-### Publishing the API
-
-```shell
-cd premiser-api/
-AWS_PROFILE=premiser yarn run deploy:api pre-prod
-
-# (Visit pre-prod-www.howdju.com and test the changes)
-
-# To deploy to prod, just point the `prod` alias to the same version as the `pre-prod` alias
-AWS_PROFILE=premiser yarn run update-lambda-function-alias --aliasName prod --newTarget pre-prod
-```
-
-#### Publishing a feature branch
-
-I think just check out that branch and follow instructions above.
-
-### Publishing the web app
-
-```shell
-yarn run deploy:ui:pre-prod
-
-# (Visit pre-prod-www.howdju.com and test the changes)
-
-yarn run deploy:ui:prod
 ```
 
 ### Publishing database changes (migrations)
