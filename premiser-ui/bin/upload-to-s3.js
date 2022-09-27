@@ -62,7 +62,7 @@ const upload = (filename) => {
       Expires: utcNow().add(duration).toDate(),
       ContentType: contentTypes[extension] || 'application/octet-stream',
     }
-    debug(`Uploading ${filename}`)
+    debug(`Uploading ${params}`)
     s3.upload(params, function(err, data) {
       if (err) {
         debug(`Error uploading ${filename}: ${err}`)
