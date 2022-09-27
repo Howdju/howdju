@@ -72,9 +72,11 @@ export default class LandingPage extends Component {
       rootTargetType: JustificationRootTargetType.PROPOSITION,
       basis: {
         entity: makeNewWritQuote({
-          quoteText: 'The original law limited buildings to the height of the Capitol, but was amended in 1910 to the width of the adjacent street plus 20 feet, so a building facing a 90-foot-wide street could be only 110 feet tall.',
-          writ: makeNewWrit({title: "D.C.'s Fear of Heights"}),
-          urls: [{url: 'http://www.washingtonpost.com/wp-dyn/content/article/2006/06/30/AR2006063001316.html'}],
+          quoteText: 'The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.',
+          writ: makeNewWrit({title: "Vantage Point: The Curse of (Certain) Tall Buildings — The American Surveyor"}),
+          urls: [
+            {url: 'https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf'},
+          ],
         })
       }
     })

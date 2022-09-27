@@ -12,7 +12,7 @@ $banner-padding: 3em;
   background-color: white;
 
   // Override this so that the top-level justification tree has margin.
-  .justification-tree > .chat-bubble {
+  .justification-tree > .chat-bubble.chat-bubble--positive {
     margin-right: 60px;
   }
 
