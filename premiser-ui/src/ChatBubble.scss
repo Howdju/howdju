@@ -1,4 +1,5 @@
 @import "./colors";
+@import "./tree";
 
 .chat-bubble {
   background-color: #fff;
@@ -12,11 +13,11 @@
   border-radius: 0.4em;
 
   &.chat-bubble--positive {
-    margin-right: 60px;
+    margin-right: $tree-branch-offset;
     border: 1px solid $entity-border-color;
   }
   &.chat-bubble--negative {
-    margin-left: 60px;
+    margin-left: $tree-branch-offset;
     border: 1px solid $entity-border-color--negative;
   }
 }

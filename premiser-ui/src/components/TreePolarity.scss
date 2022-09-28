@@ -1,0 +1,12 @@
+@import '../colors';
+@import '../tree';
+
+.tree-polarity {
+  &--positive {
+    margin-right: $tree-branch-offset;
+  }
+  &--negative {
+    margin-left: $tree-branch-offset;
+    border: 1px solid $disagree-color;
+  }
+}

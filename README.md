@@ -169,18 +169,11 @@ Open browser to localhost:3000
 
 ## Automatic code checks
 
-The most thorough way to run automated checks is to run the
+The most precise way to run automated checks is to run the
 Github premerge action. See [Testing Github actions](#testing-github-actions)
 below.
 
-See `.github/workflows/ci.yml` for the full list of pre-merge checks.
-
-```shell
-yarn run lint:all
-yarn run typecheck:all
-yarn run test:all
-yarn run premerge-check:all
-```
+You can also run `yarn run check:everything`.
 
 ## Development
 

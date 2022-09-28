@@ -26,6 +26,7 @@ import {combineIds} from './viewModels'
 
 import './LandingPage.scss'
 import { JustificationRootTargetType } from 'howdju-common/lib/enums'
+import ContextTrail from './ContextTrail'
 
 
 export default class LandingPage extends Component {
@@ -49,27 +50,15 @@ export default class LandingPage extends Component {
         })
       },
     })
-    const conJustification = makeNewJustification({
-      target: {
-        type: JustificationTargetType.PROPOSITION,
-        entity: rootProposition,
-      },
-      polarity: JustificationPolarity.NEGATIVE,
-      basis: {
-        type: JustificationBasisType.PROPOSITION_COMPOUND,
-        entity: makeNewPropositionCompound({
-          atoms: [makeNewPropositionCompoundAtomFromProposition(makeNewProposition({
-            text: 'In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet '
-          }))],
-        })
-      },
-    })
-
     const proJustificationJustification = makeNewSourceExcerptJustification({
-      target: proJustificationProposition,
       rootTarget: proJustificationProposition,
       rootPolarity: JustificationRootPolarity.POSITIVE,
       rootTargetType: JustificationRootTargetType.PROPOSITION,
+      target: {
+        type: JustificationTargetType.PROPOSITION,
+        entity: proJustificationProposition,
+      },
+      polarity: JustificationPolarity.POSITIVE,
       basis: {
         entity: makeNewWritQuote({
           quoteText: 'The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.',
@@ -80,6 +69,60 @@ export default class LandingPage extends Component {
         })
       }
     })
+
+    const proTrailItems = [{
+      targetType: proJustification.target.type,
+      target: proJustification.target.entity,
+    }, {
+      targetType: proJustificationJustification.target.type,
+      target: proJustificationJustification.target.entity,
+      polarity: proJustificationJustification.polarity,
+    }]
+
+    const conJustificationProposition = makeNewProposition({
+      text: 'In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet '
+    })
+    const conJustification = makeNewJustification({
+      target: {
+        type: JustificationTargetType.PROPOSITION,
+        entity: rootProposition,
+      },
+      polarity: JustificationPolarity.NEGATIVE,
+      basis: {
+        type: JustificationBasisType.PROPOSITION_COMPOUND,
+        entity: makeNewPropositionCompound({
+          atoms: [makeNewPropositionCompoundAtomFromProposition(conJustificationProposition)],
+        })
+      },
+    })
+    const conJustificationJustification = makeNewSourceExcerptJustification({
+      rootTarget: conJustificationProposition,
+      rootPolarity: JustificationRootPolarity.POSITIVE,
+      rootTargetType: JustificationRootTargetType.PROPOSITION,
+      target: {
+        type: JustificationTargetType.PROPOSITION,
+        entity: conJustificationProposition,
+      },
+      polarity: JustificationPolarity.POSITIVE,
+      basis: {
+        entity: makeNewWritQuote({
+          quoteText: 'No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet',
+          writ: makeNewWrit({title: "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building."}),
+          urls: [
+            {url: 'https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05'},
+          ],
+        })
+      }
+    })
+
+    const conTrailItems = [{
+      targetType: conJustification.target.type,
+      target: conJustification.target.entity,
+    }, {
+      targetType: conJustificationJustification.target.type,
+      target: conJustificationJustification.target.entity,
+      polarity: conJustification.polarity,
+    }]
 
     const counterJustification = makeNewCounterJustification(proJustification)
     counterJustification.rootPolarity = JustificationRootPolarity.NEGATIVE
@@ -156,23 +199,31 @@ export default class LandingPage extends Component {
         </div>
 
         <p>
-          And good justifications have evidence.
+          Good justifications have evidence.
         </p>
 
         <div className="banner">
           <div className="banner-content">
-            <PropositionCard
-              id={combineIds(id, 'justified-proposition-example', 'proposition')}
-              proposition={rootProposition}
-              showStatusText={false}
-            />
-            <PropositionCard
-              id={combineIds(id, 'justified-proposition-example', 'proposition')}
-              proposition={proJustificationProposition}
-              showStatusText={false}
-            />
+            <ContextTrail trailItems={proTrailItems} />
             <JustificationBranch
               justification={proJustificationJustification}
+              doShowBasisJustifications={false}
+              doShowControls={false}
+              showStatusText={false}
+              showBasisUrls={true}
+            />
+          </div>
+        </div>
+
+        <p>
+          Better evidence makes a better justification
+        </p>
+
+        <div className="banner">
+          <div className="banner-content">
+            <ContextTrail trailItems={conTrailItems} />
+            <JustificationBranch
+              justification={conJustificationJustification}
               doShowBasisJustifications={false}
               doShowControls={false}
               showStatusText={false}

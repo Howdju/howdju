@@ -5,17 +5,18 @@
   "scripts": {
     "android": "react-native run-android",
     "android-release": "react-native run-android --variant release",
+    "bundle": "react-native webpack-bundle",
     "check": "typecheck && lint && test",
+    "debugger": "react-devtools",
+    "install-pods": "bin/install-pods.sh",
     "ios": "react-native run-ios",
     "ios-release": "react-native run-ios --configuration Release",
     "ios-release-device": "react-native run-ios --configuration Release --device ${0}",
-    "bundle": "react-native webpack-bundle",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "start-mobile:ios": "yarn run ios",
     "start": "react-native webpack-start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "install-pods": "bin/install-pods.sh",
-    "typecheck": "tsc",
-    "debugger": "react-devtools"
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.3.2",

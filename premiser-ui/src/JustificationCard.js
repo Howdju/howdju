@@ -25,6 +25,7 @@ export default class JustificationCard extends Component {
       justification,
       doShowBasisJustifications,
       doShowControls,
+      showStatusText,
       onExpandJustifications,
       className,
       showBasisUrls,
@@ -49,6 +50,7 @@ export default class JustificationCard extends Component {
             doShowRootTarget={doShowTargets}
             doShowCounterTarget={doShowTargets}
             onClickWritQuoteUrl={onClickWritQuoteUrl}
+            showStatusText={showStatusText}
           />
         </CardText>
       </Card>

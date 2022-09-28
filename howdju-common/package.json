@@ -9,7 +9,7 @@
   "scripts": {
     "gen-standalone-schema-validation": "node bin/gen-standalone-schema-validation.js",
     "lint": "eslint lib/ --ignore-pattern=lib/standaloneAjv.js",
-    "premerge-check": "bin/premerge-check.sh",
+    "custom-check": "bin/custom-check.sh",
     "test": "jest --config=../jest.config.js /howdju-common/lib/",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --config=../jest.config.js /howdju-common/lib/ --runInBand --watch"
   },

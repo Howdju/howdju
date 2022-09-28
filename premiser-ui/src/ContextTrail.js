@@ -11,6 +11,9 @@ import * as characters from './characters'
 import PropositionCard from './PropositionCard'
 import StatementCard from './StatementCard'
 import JustificationCard from './JustificationCard'
+import TreePolarity from './components/TreePolarity'
+
+import './ContextTrail.scss'
 
 export default class ContextTrail extends React.Component {
 
@@ -23,10 +26,12 @@ export default class ContextTrail extends React.Component {
       <ul className="context-trail" {...rest}>
         {map(trailItems, (trailItem, index) => (
           <li key={index}>
-            {trailItem && trailItem.target ?
-              this.toCard(trailItem, take(trailItems, index)) :
-              characters.ellipsis
-            }
+            <TreePolarity polarity={trailItem.polarity}>
+              {trailItem && trailItem.target ?
+                this.toCard(trailItem, take(trailItems, index)) :
+                characters.ellipsis
+              }
+            </TreePolarity>
           </li>
         ))}
       </ul>
@@ -54,6 +59,7 @@ export default class ContextTrail extends React.Component {
         id={cardId}
         proposition={proposition}
         contextTrailItems={trailItems}
+        showStatusText={false}
       />
     )
   }
@@ -66,6 +72,7 @@ export default class ContextTrail extends React.Component {
         id={cardId}
         statement={statement}
         contextTrailItems={trailItems}
+        showStatusText={false}
       />
     )
   }
@@ -81,6 +88,7 @@ export default class ContextTrail extends React.Component {
         doShowControls={false}
         doShowTargets={false}
         contextTrailItems={trailItems}
+        showStatusText={false}
       />
     )
   }
