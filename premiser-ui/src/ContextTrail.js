@@ -1,7 +1,6 @@
 import React from 'react'
 import map from 'lodash/map'
 import take from 'lodash/take'
-import cn from 'classnames'
 
 import {
   JustificationTargetType,

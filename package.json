@@ -8,20 +8,14 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
+    "check:everything": "yarn run lint:all && yarn run typecheck:all && yarn run test:all && yarn run custom-check:all",
     "check:pushed": "bin/check-pushed.sh",
     "check:committed": "node bin/check-committed.mjs",
     "check:pre-deploy": "bin/pre-deploy-check.sh",
     "lint:all": "yarn workspaces foreach -Apv run lint",
-    "lint:howdju-client-common": "yarn workspace howdju-client-common run lint",
-    "lint:howdju-common": "yarn workspace howdju-common run lint",
-    "lint:howdju-service-common": "yarn workspace howdju-service-common run lint",
-    "premerge-check:all": "yarn workspaces foreach -Apv run premerge-check",
+    "custom-check:all": "yarn workspaces foreach -Apv run custom-check",
     "typecheck:all": "yarn workspaces foreach -Apv run typecheck",
-    "test:all": "yarn workspaces foreach -Apv run test",
-    "test:howdju-common": "yarn workspace howdju-common run test",
-    "test:howdju-client-common": "yarn workspace howdju-service-common run test",
-    "test:howdju-service-common": "yarn workspace howdju-service-common run test",
-    "start:mobile": "yarn workspace howdju-mobile-app expo start"
+    "test:all": "yarn workspaces foreach -Apv run test"
   },
   "workspaces": {
     "packages": [
