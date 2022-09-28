@@ -32,6 +32,7 @@ export default class JustificationEntityViewer extends Component {
       doShowRootTarget,
       doShowCounterTarget,
       onClickWritQuoteUrl,
+      showStatusText,
     } = this.props
 
     const _isCounter = isCounter(justification)
@@ -59,6 +60,7 @@ export default class JustificationEntityViewer extends Component {
                 rootTargetType={justification.rootTargetType}
                 rootTarget={justification.rootTarget}
                 suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'rootTarget')}
+                showStatusText={showStatusText}
               />
             )}
 
@@ -76,6 +78,7 @@ export default class JustificationEntityViewer extends Component {
                 doShowControls={doShowControls}
                 showBasisUrls={showBasisUrls}
                 onClickWritQuoteUrl={onClickWritQuoteUrl}
+                showStatusText={showStatusText}
               />
             )}
             <JustificationChatBubble
@@ -84,6 +87,7 @@ export default class JustificationEntityViewer extends Component {
               doShowControls={doShowControls}
               showBasisUrls={showBasisUrls}
               onClickWritQuoteUrl={onClickWritQuoteUrl}
+              showStatusText={showStatusText}
             />
           </div>
         }

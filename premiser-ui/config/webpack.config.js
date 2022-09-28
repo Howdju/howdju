@@ -50,13 +50,17 @@ const plugins = [
   new HtmlWebpackPlugin(htmlWebpackPluginConfig),
   new webpack.DefinePlugin(definePluginConfig),
   new MiniCssExtractPlugin(),
-  new DuplicatesPlugin({emitErrors: false}),
   new MomentLocalesPlugin({localesToKeep: ['en']})
 ]
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
 // the analysis. So only add it when requested.
 if (process.env.BUNDLE_ANALYZER) {
   plugins.push(new BundleAnalyzerPlugin())
+}
+// This plugin adds a full-page overlay over the web app that reappears
+// on every hot refresh, and so is very annoying. Only enable it on purpose.
+if (process.env.CHECK_DUPLICATES) {
+  plugins.push(new DuplicatesPlugin({emitErrors: false}))
 }
 
 const baseWebpackConfig = {
