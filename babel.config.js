@@ -2,6 +2,7 @@ module.exports = {
   presets: [
     ["@babel/preset-env", { "targets": "defaults" }],
     "@babel/preset-flow",
+    "@babel/preset-typescript",
   ],
   plugins: [
     // Stage 1

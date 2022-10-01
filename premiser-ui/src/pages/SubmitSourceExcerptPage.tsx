@@ -1,20 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import queryString from 'query-string'
-import { useHistory, useLocation } from 'react-router';
+import {useLocation} from 'react-router';
 
-import { WritQuote } from "howdju-common";
+import {Url, WritQuote} from "howdju-common";
 
 import { editors } from "@/actions";
 import WritQuoteEditor from "@/editors/WritQuoteEditor";
 import get from "lodash/get";
 import { EditorTypes } from "@/reducers/editors";
-
-class Props {
-  location: {
-    search: string,
-  };
-}
+import { RootState } from "@/store";
+import { isArray } from "lodash";
 
 const id = 'SubmitSourcExcerpt';
 const editorType = EditorTypes.WRIT_QUOTE;
@@ -25,25 +21,42 @@ const editorId = 'SubmitSourcExcerpt';
  *
  * Currently only supports WritQuotes.
  */
-const SubmitSourcExcerptPage: React.PureComponent<Props> = () => {
+const SubmitSourcExcerptPage = () => {
 
-  const history = useHistory();
   const location = useLocation();
   const queryParams = queryString.parse(location.search);
-  let writQuote: WritQuote = useSelector((state) => get(state.editors, [editorType, editorId]))
+  let writQuote: WritQuote = useSelector((state: RootState) => get(state.editors, [editorType, editorId]))
+
+  const errors = [];
+
   if (!writQuote) {
-    const {
-      url,
-      description,
+    let {
       quoteText,
+      description,
+      url,
     } = queryParams;
+
+    if (isArray(quoteText)) {
+      errors.push('Can only submit one quote. Extras discarded.');
+      // If multiple query parameters are defined, the array must have at least two elements.
+      quoteText = quoteText[0];
+    }
+    if (isArray(description)) {
+      errors.push('Can only submit one description. Extras discarded.');
+      // If multiple query parameters are defined, the array must have at least two elements.
+      description = description[0];
+    }
+
+    quoteText = quoteText || '';
+    description = description || '';
+    const urls = isArray(url) ? url.map(u => new Url(u)) : [new Url(url || '')];
 
     writQuote = {
       quoteText,
       writ: {
         title: description
       },
-      urls: [{ url }]
+      urls,
     }
 
     const dispatch = useDispatch()

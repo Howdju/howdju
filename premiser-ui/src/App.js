@@ -45,7 +45,7 @@ import {
   isMissingPrivacyConsent, LIVE_CHAT, REQUIRED_FUNCTIONALITY,
   showPrivacyConsentDialog
 } from "./cookieConsent"
-import {persist} from "./configureStore"
+import {persist} from "./store"
 import ErrorBoundary from './ErrorBoundary'
 import Header from './Header'
 import {history} from './history'

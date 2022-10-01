@@ -1,13 +1,16 @@
 import WritQuoteEditorFields from '../WritQuoteEditorFields'
-import withEditor from "@/editors/withEditor"
-import { makeNewUrl } from 'howdju-common/lib/models'
+import withEditor, { EntityEditorFieldsProps } from "@/editors/withEditor"
+import { makeNewUrl } from 'howdju-common'
 import { editors } from '../actions'
+import { ComponentType } from 'react'
+import { AppDispatch } from '@/store'
 
-export default withEditor(WritQuoteEditorFields, 'writQuote', {
-  onAddUrl: (editorType: string, editorId: string, dispatch) =>
+// TODO(#1): remove typecast
+export default withEditor(WritQuoteEditorFields as ComponentType<EntityEditorFieldsProps>, 'writQuote', {
+  onAddUrl: (editorType: string, editorId: string, dispatch: AppDispatch) =>
     (index: number) =>
       dispatch(editors.addListItem(editorType, editorId, index, 'urls', makeNewUrl)),
-  onRemoveUrl: (editorType: string, editorId: string, dispatch) =>
-    (url, index) =>
+  onRemoveUrl: (editorType: string, editorId: string, dispatch: AppDispatch) =>
+    (_url: string, index: number) =>
       dispatch(editors.removeListItem(editorType, editorId, index, 'urls')),
 })

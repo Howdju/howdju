@@ -1,4 +1,4 @@
-const {doSchemaValidationTests} = require('howdju-common')
+const {doSchemaValidationTests} = require('howdju-common/lib/schemaValidation.testlib')
 const {validate} = require('./index')
 
 doSchemaValidationTests(validate)

@@ -8,7 +8,7 @@ import 'react-hot-loader'
 import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
-import { Configuration, ConfigurationProps } from "@react-md/layout"
+import { Configuration } from "@react-md/layout"
 import { PersistGate } from 'redux-persist/integration/react'
 import moment from "moment"
 import momentDurationFormatSetup from "moment-duration-format"
@@ -16,7 +16,7 @@ import momentDurationFormatSetup from "moment-duration-format"
 import App from './App'
 import config  from './config'
 import {cookieConsent, ERROR_REPORTING} from './cookieConsent'
-import {configureStore} from './configureStore'
+import {store, persistor} from './store'
 import sentryInit from './sentryInit'
 
 if (config.sentry.enabled && cookieConsent.isAccepted(ERROR_REPORTING)) {
@@ -27,9 +27,8 @@ momentDurationFormatSetup(moment)
 
 const root = document.getElementById('root')
 
-const {store, persistor} = configureStore(window.__INITIAL_STATE__)
-
-const overrides: ConfigurationProps = {
+// type: ConfigurationProps
+const overrides = {
   // your react-md configuration overrides
 }
 

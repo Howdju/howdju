@@ -3,8 +3,6 @@
     "target": "esnext",
     "allowJs": true,
     "checkJs": false,
-    "jsx": "react",
-    "declaration": true,
     "noEmit": true,
     "strict": true,
     "noImplicitAny": true,
@@ -17,7 +15,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "baseUrl": "src",
+    "baseUrl": "lib",
     "paths": {
       // Support project-relative imports
       "@/*": ["*"],
