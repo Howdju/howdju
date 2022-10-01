@@ -3560,6 +3560,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.16.7, @babel/runtime@npm:^7.18.3":
+  version: 7.19.0
+  resolution: "@babel/runtime@npm:7.19.0"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: fa69c351bb05e1db3ceb9a02fdcf620c234180af68cdda02152d3561015f6d55277265d3109815992f96d910f3db709458cae4f8df1c3def66f32e0867d82294
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.0.0, @babel/template@npm:^7.16.0":
   version: 7.16.0
   resolution: "@babel/template@npm:7.16.0"
@@ -5277,6 +5286,74 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redux-devtools/core@npm:^3.13.1":
+  version: 3.13.1
+  resolution: "@redux-devtools/core@npm:3.13.1"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@redux-devtools/instrument": ^2.1.0
+    "@types/prop-types": ^15.7.5
+    lodash: ^4.17.21
+    prop-types: ^15.8.1
+  peerDependencies:
+    react: ^0.14.9 || ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-redux: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+    redux: ^3.5.2 || ^4.0.0
+  checksum: 722e8b0769c29c0057cadf49445459b7059c6025084a5dad49fa2a0fb8987e6285fce4763488c372a21ab3ad6f75434686a3d03a60ead61fff6f1e2fca62497a
+  languageName: node
+  linkType: hard
+
+"@redux-devtools/dock-monitor@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@redux-devtools/dock-monitor@npm:3.0.1"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@types/prop-types": ^15.7.5
+    parse-key: ^0.2.1
+    prop-types: ^15.8.1
+    react-dock: ^0.6.0
+  peerDependencies:
+    "@redux-devtools/core": ^3.13.1
+    "@types/react": ^16.3.0 || ^17.0.0 || ^18.0.0
+    react: ^16.3.0 || ^17.0.0 || ^18.0.0
+    redux: ^3.4.0 || ^4.0.0
+  checksum: f3e70d7768b803ed677b575f9ce93cb587cbb452825cece0be5d779a2c4ecc969d0eb4a00632434620803ae6e15fc52455d31ff5eb6430bdb07e0564acc5a65d
+  languageName: node
+  linkType: hard
+
+"@redux-devtools/instrument@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@redux-devtools/instrument@npm:2.1.0"
+  dependencies:
+    "@babel/runtime": ^7.16.7
+    lodash: ^4.17.21
+  peerDependencies:
+    redux: ^3.4.0 || ^4.0.0
+  checksum: b84b7e2779a829d4a0807e983b00819183e4cf63056ecf8d6ef59685119f2f9dc32eb6813e3c06bc1424ebb9f33f2ff45bad66521dd2f0234bba2103e85e6423
+  languageName: node
+  linkType: hard
+
+"@redux-devtools/log-monitor@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@redux-devtools/log-monitor@npm:4.0.1"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@types/lodash.debounce": ^4.0.7
+    "@types/prop-types": ^15.7.5
+    "@types/redux-devtools-themes": ^1.0.0
+    lodash.debounce: ^4.0.8
+    prop-types: ^15.8.1
+    react-json-tree: ^0.17.0
+    redux-devtools-themes: ^1.0.0
+  peerDependencies:
+    "@redux-devtools/core": ^3.13.1
+    "@types/react": ^16.3.0 || ^17.0.0 || ^18.0.0
+    react: ^16.3.0 || ^17.0.0 || ^18.0.0
+    redux: ^3.4.0 || ^4.0.0
+  checksum: d398b85cd945e19a1dfcd133228c9ee7451fe40eddce7a1da3e319ce9627c9ae7f894b302cfb44125b64ecb550c95b2e7bfb96a09ec1afd00aff7bcf05ff0cff
+  languageName: node
+  linkType: hard
+
 "@redux-saga/core@npm:^1.1.3":
   version: 1.1.3
   resolution: "@redux-saga/core@npm:1.1.3"
@@ -5623,6 +5700,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/base16@npm:*, @types/base16@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@types/base16@npm:1.0.2"
+  checksum: 5bc587d45066dae6fb14a4a7f72e57044fa1a8057eed86d4005f9e38a0c38b83009828ac3072e6e9e4be1cf5d5032849690adf8cd51efd545fa281bee5cf0fa5
+  languageName: node
+  linkType: hard
+
 "@types/body-parser@npm:*":
   version: 1.19.2
   resolution: "@types/body-parser@npm:1.19.2"
@@ -5875,7 +5959,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.186":
+"@types/lodash.debounce@npm:^4.0.7":
+  version: 4.0.7
+  resolution: "@types/lodash.debounce@npm:4.0.7"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: e873b2d77f89010876baba3437ef826b17221b98948e00b5590828334a481dea1c8f9d28543210e564adc53199584f42c3cb171f8b6c3614fefc0b4e0888679c
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*, @types/lodash@npm:^4.14.178, @types/lodash@npm:^4.14.182, @types/lodash@npm:^4.14.186":
   version: 4.14.186
   resolution: "@types/lodash@npm:4.14.186"
   checksum: ee0c1368a8100bb6efb88335107473a41928fc307ff1ef4ff1278868ccddba9c04c68c36d1ffe3a0392ef4a956e1955f7de3203ec09df4f1655dd1b88485c549
@@ -5935,6 +6028,13 @@ __metadata:
   version: 15.7.3
   resolution: "@types/prop-types@npm:15.7.3"
   checksum: 41831d53c44c9eeafdaf9762bcb4553c13a3bbf990745ed9065a1cc3581b80633113b53fd49b202bf51731b258da5d0a9aa09c9035d5af7f78b0f6bc273f1325
+  languageName: node
+  linkType: hard
+
+"@types/prop-types@npm:^15.7.5":
+  version: 15.7.5
+  resolution: "@types/prop-types@npm:15.7.5"
+  checksum: 5b43b8b15415e1f298243165f1d44390403bb2bd42e662bca3b5b5633fdd39c938e91b7fce3a9483699db0f7a715d08cef220c121f723a634972fdf596aec980
   languageName: node
   linkType: hard
 
@@ -6020,6 +6120,15 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 36c1a7c9d507e81e2e629c1ad3db51d7b84d8b010c2d5008da411874286c6a5ccc711ae1d4c470efc0bdc77153cc8804a40e927e929e5164c669ca41b84b846d
+  languageName: node
+  linkType: hard
+
+"@types/redux-devtools-themes@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/redux-devtools-themes@npm:1.0.0"
+  dependencies:
+    "@types/base16": "*"
+  checksum: 6d211cb0e62d67e148645ea0e4d20ce28330af4d7b38eda61f389b55dadc65d4c9df751ab562c1f82537cb441b0bae1ab7a3cf0abad82f8615e18fc9f5f761cb
   languageName: node
   linkType: hard
 
@@ -8280,6 +8389,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base16@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "base16@npm:1.0.0"
+  checksum: 0cd449a2db0f0f957e4b6b57e33bc43c9e20d4f1dd744065db94b5da35e8e71fa4dc4bc7a901e59a84d5f8b6936e3c520e2471787f667fc155fb0f50d8540f5d
+  languageName: node
+  linkType: hard
+
 "base64-arraybuffer@npm:0.1.4":
   version: 0.1.4
   resolution: "base64-arraybuffer@npm:0.1.4"
@@ -9272,7 +9388,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-convert@npm:^1.9.0, color-convert@npm:^1.9.1":
+"color-convert@npm:^1.9.0, color-convert@npm:^1.9.1, color-convert@npm:^1.9.3":
   version: 1.9.3
   resolution: "color-convert@npm:1.9.3"
   dependencies:
@@ -9314,7 +9430,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-string@npm:^1.9.0":
+"color-string@npm:^1.6.0, color-string@npm:^1.9.0":
   version: 1.9.1
   resolution: "color-string@npm:1.9.1"
   dependencies:
@@ -9340,6 +9456,16 @@ __metadata:
     color-convert: ^1.9.1
     color-string: ^1.5.4
   checksum: d52a77ae239e1cdb55d9920e73d730df69a05cec9cb5d9b83a3e311b23009fd4053f4a88e7f6152207db498838f10e3ba4b1661a64a3acb41a50b14944214f26
+  languageName: node
+  linkType: hard
+
+"color@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "color@npm:3.2.1"
+  dependencies:
+    color-convert: ^1.9.3
+    color-string: ^1.6.0
+  checksum: f81220e8b774d35865c2561be921f5652117638dcda7ca4029262046e37fc2444ac7bbfdd110cf1fd9c074a4ee5eda8f85944ffbdda26186b602dd9bb05f6400
   languageName: node
   linkType: hard
 
@@ -10094,6 +10220,13 @@ __metadata:
   dependencies:
     cssom: ~0.3.6
   checksum: 5f05e6fd2e3df0b44695c2f08b9ef38b011862b274e320665176467c0725e44a53e341bc4959a41176e83b66064ab786262e7380fd1cabeae6efee0d255bb4e3
+  languageName: node
+  linkType: hard
+
+"csstype@npm:^3.0.10":
+  version: 3.1.1
+  resolution: "csstype@npm:3.1.1"
+  checksum: 1f7b4f5fdd955b7444b18ebdddf3f5c699159f13e9cf8ac9027ae4a60ae226aef9bbb14a6e12ca7dba3358b007cee6354b116e720262867c398de6c955ea451d
   languageName: node
   linkType: hard
 
@@ -16994,6 +17127,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.curry@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "lodash.curry@npm:4.1.1"
+  checksum: 9192b70fe7df4d1ff780c0260bee271afa9168c93fe4fa24bc861900240531b59781b5fdaadf4644fea8f4fbcd96f0700539ab294b579ffc1022c6c15dcc462a
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -19427,6 +19567,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"parse-key@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "parse-key@npm:0.2.1"
+  checksum: f36d545c8bf0ab599096c04b6d9c426ab019e555f7da11b4721a143fa145be61c847a100bef6a50e78d06bf2369a9076ed6d488743d8e273f59d4bfc0e0c3ca9
+  languageName: node
+  linkType: hard
+
 "parse-node-version@npm:^1.0.0":
   version: 1.0.1
   resolution: "parse-node-version@npm:1.0.1"
@@ -20461,6 +20608,9 @@ __metadata:
     "@react-md/theme": ^2.8.2
     "@react-md/typography": ^2.8.2
     "@react-md/utils": ^2.8.2
+    "@redux-devtools/core": ^3.13.1
+    "@redux-devtools/dock-monitor": ^3.0.1
+    "@redux-devtools/log-monitor": ^4.0.1
     "@sentry/browser": ^6.2.5
     "@sentry/tracing": ^6.2.5
     "@types/lodash": ^4.14.186
@@ -20731,6 +20881,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prop-types@npm:^15.8.1":
+  version: 15.8.1
+  resolution: "prop-types@npm:15.8.1"
+  dependencies:
+    loose-envify: ^1.4.0
+    object-assign: ^4.1.1
+    react-is: ^16.13.1
+  checksum: c056d3f1c057cb7ff8344c645450e14f088a915d078dcda795041765047fa080d38e5d626560ccaac94a4e16e3aa15f3557c1a9a8d1174530955e992c675e459
+  languageName: node
+  linkType: hard
+
 "proposition-tag-scorer@workspace:premiser-processing/lambda-functions/proposition-tag-scorer":
   version: 0.0.0-use.local
   resolution: "proposition-tag-scorer@workspace:premiser-processing/lambda-functions/proposition-tag-scorer"
@@ -20940,6 +21101,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-base16-styling@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "react-base16-styling@npm:0.9.1"
+  dependencies:
+    "@babel/runtime": ^7.16.7
+    "@types/base16": ^1.0.2
+    "@types/lodash": ^4.14.178
+    base16: ^1.0.0
+    color: ^3.2.1
+    csstype: ^3.0.10
+    lodash.curry: ^4.1.1
+  checksum: 1e61e1158ee5250ad68860840368f9228685680df15385c0fc4d5c63dd0925f27f4f1d1762134de623fe005e75ef9543191aa648cde2c16d0153341d00ceeecb
+  languageName: node
+  linkType: hard
+
 "react-devtools-core@npm:^4.13.0":
   version: 4.21.0
   resolution: "react-devtools-core@npm:4.21.0"
@@ -20947,6 +21123,22 @@ __metadata:
     shell-quote: ^1.6.1
     ws: ^7
   checksum: 50550bf283a87fb370ed27bbb02743064aae4c6374d4050b65b2c6cddecbde7b2f820d2a77144710886f7ba7bb387a60f279fa345de0c5db09d239cebc2d0b60
+  languageName: node
+  linkType: hard
+
+"react-dock@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "react-dock@npm:0.6.0"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@types/lodash": ^4.14.182
+    "@types/prop-types": ^15.7.5
+    lodash.debounce: ^4.0.8
+    prop-types: ^15.8.1
+  peerDependencies:
+    "@types/react": ^16.3.0 || ^17.0.0 || ^18.0.0
+    react: ^16.3.0 || ^17.0.0 || ^18.0.0
+  checksum: 44fc25b89a5e5244116d704dc670f32d47e822a4218e819db544c8cd81af9d56c1f740e7f9fe083e2acc81f08039ae037fc02da2dab83b0df81d61aa0e3c5ce3
   languageName: node
   linkType: hard
 
@@ -21085,6 +21277,22 @@ __metadata:
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
   checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
+  languageName: node
+  linkType: hard
+
+"react-json-tree@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "react-json-tree@npm:0.17.0"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@types/lodash": ^4.14.182
+    "@types/prop-types": ^15.7.5
+    prop-types: ^15.8.1
+    react-base16-styling: ^0.9.1
+  peerDependencies:
+    "@types/react": ^16.3.0 || ^17.0.0 || ^18.0.0
+    react: ^16.3.0 || ^17.0.0 || ^18.0.0
+  checksum: 71c092e97441f27a866ccf0135c910f9bd2fa9a1bf6f3f127ce72fd55cb7b79065acec056ceacbf995718000a81ae1583d9884da6899bce8e071d102c78340cd
   languageName: node
   linkType: hard
 
@@ -21670,6 +21878,15 @@ __metadata:
     reduce-reducers: ^0.4.3
     to-camel-case: ^1.0.0
   checksum: 677a727d0be42aa1cbdb4c8d6296b4167c0c4ce4f28d36453764edba3c4dc5f82064290ce494209fa56eeb245262b4cdc58e7e6a50fe2f17e1d94d79c387e9e3
+  languageName: node
+  linkType: hard
+
+"redux-devtools-themes@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "redux-devtools-themes@npm:1.0.0"
+  dependencies:
+    base16: ^1.0.0
+  checksum: 694afd7302f88bcd4a5484ea0d840b5ff48382c1d23be439465da0bfbbfa3c6e94d732f8488f639d563f3ebe35d20973a137d492e1da029a645344fccaf3f811
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 /* Hot module replace needs these dynamic import globals */
 /* globals module require */
-import {createStore, applyMiddleware, compose} from 'redux'
+import {createStore, applyMiddleware, compose, StoreEnhancer} from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
@@ -9,25 +9,10 @@ import createRootReducer from './reducers/index'
 import {logger} from './logger'
 import config from './config'
 import {history} from './history'
-import * as actionCreators from './actions'
 import getSagas from './sagas'
 import {BASIC_FUNCTIONALITY, cookieConsent} from "./cookieConsent"
+import DevTools from './DevTools'
 
-// TODO(#85): replace with library Redux DevTools.
-declare global {
-  interface Window {
-    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
-  }
-}
-
-const composeEnhancers =
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-      actionCreators,
-      trace: config.reduxDevtoolsExtension.doTrace,
-      traceLimit: config.reduxDevtoolsExtension.traceLimit,
-    }) : compose
 const sagaMiddleware = createSagaMiddleware({
   onError: (error, { sagaStack }) => {
     logger.error(`Uncaught error in sagas: ${error}: ${sagaStack}`)
@@ -51,15 +36,24 @@ const persistedReducer = persistReducer({
   whitelist: config.reduxPersistWhitelist,
 }, createRootReducer(history))
 
+const composeArgs: Array<StoreEnhancer<any, {}>> = [
+  applyMiddleware(
+    routerMiddleware(history),
+    sagaMiddleware,
+  )
+];
+if (config.isDev) {
+  composeArgs.push(
+    DevTools.instrument({
+      trace: config.reduxDevtoolsExtension.doTrace,
+      traceLimit: config.reduxDevtoolsExtension.traceLimit,
+    })
+  );
+}
 const store = createStore(
   persistedReducer,
   window.__INITIAL_STATE__,
-  composeEnhancers(
-    applyMiddleware(
-      routerMiddleware(history),
-      sagaMiddleware
-    ),
-  )
+  compose.apply(null, composeArgs) as StoreEnhancer<unknown, {}>,
 )
 
 const persistor = persistStore(store)

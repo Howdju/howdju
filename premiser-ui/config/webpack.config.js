@@ -118,6 +118,10 @@ const baseWebpackConfig = {
     rules: [
       {
         test: /\.m?(j|t)sx?$/,
+        exclude: [
+          /node_modules(.*[/\\])+base16/,
+          /node_modules(.*[/\\])+redux-devtools-themes/,
+        ],
         resolve: {
           fullySpecified: false,  // Allow cookie-consent's modules to import files without their extension
           // Support ES module and JSX extensions when resolving the file corresponding to an extensionless package

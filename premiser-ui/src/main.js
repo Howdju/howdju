@@ -18,6 +18,7 @@ import config  from './config'
 import {cookieConsent, ERROR_REPORTING} from './cookieConsent'
 import {store, persistor} from './store'
 import sentryInit from './sentryInit'
+import DevTools from "./DevTools"
 
 if (config.sentry.enabled && cookieConsent.isAccepted(ERROR_REPORTING)) {
   sentryInit()
@@ -37,6 +38,7 @@ render(
     <PersistGate loading={null} persistor={persistor}>
       <Configuration {...overrides}>
         <App />
+        {config.isDev ? <DevTools /> : null}
       </Configuration>
     </PersistGate>
   </Provider>,
