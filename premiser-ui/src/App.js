@@ -122,13 +122,48 @@ class App extends Component {
       goto: this.props.goto,
     })
 
+    // Persist the current settings first in case cookieConsent.on('update') fires.
+    this.props.privacyConsent.update(cookieConsent.getPreferences())
+    this.initPrivacyConsent(cookieConsent.getPreferences())
+    // Add this handler before showPrivacyConsentDialog to catch any changes
+    // that result from it.
+    cookieConsent.on('update', this.onCookieConsentUpdate)
     if (isMissingPrivacyConsent()) {
       showPrivacyConsentDialog()
     }
-    // cookieConsent.on(update) fires when it loads the cookies from storage, so persist them first.
-    this.props.privacyConsent.update(cookieConsent.getPreferences())
-    // Load the cookie consent after the privacyConsent.update has had a chance to occur.
-    setTimeout(() => cookieConsent.on('update', this.onCookieConsentUpdate))
+  }
+
+  /** Read the current privacy consent and perform any initializations */
+  initPrivacyConsent = (cookies) => {
+    forEach(cookies, (cookie) => {
+      switch (cookie.id) {
+        case REQUIRED_FUNCTIONALITY:
+          // Required functionality can't be changed, so there's never anything to do.
+          break
+        case BASIC_FUNCTIONALITY:
+          if (cookie.accepted) {
+            startPersisting()
+          }
+          break
+        case ERROR_REPORTING:
+          if  (cookie.accepted) {
+            sentryInit()
+          }
+          break
+        case FULL_ERROR_REPORTING:
+          // sentryInit checks this
+          break
+        case LIVE_CHAT:
+          // Nothing to do, cookie-consent will automatically load the div having [data-cookie-consent="live-chat"]
+          break
+        case ANALYTICS:
+          window.postMessage({howdjuTrackingConsent: {enabled: cookie.accepted}}, window.location.href)
+          break
+        default:
+          logger.error(`Unsupported cookie consent id: ${cookie.id}`)
+          break
+      }
+    })
   }
 
   onCookieConsentUpdate = (cookies) => {
@@ -160,11 +195,12 @@ class App extends Component {
           }
           break
         case FULL_ERROR_REPORTING:
+          // sentryInit must handle this; it is not possiblet to update after initialization.
           requestReload = true
           break
         case LIVE_CHAT:
           if  (cookie.accepted) {
-            requestReload = true
+            // Nothing to do, cookie-consent will automatically load the div having [data-cookie-consent="live-chat"]
           } else {
             const smallchatDiv = document.querySelector('div#Smallchat')
             if (smallchatDiv) {

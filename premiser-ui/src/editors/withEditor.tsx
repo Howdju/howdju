@@ -43,6 +43,7 @@ type WithEditorProps = {
   editorId: string,
   menu?: JSX.Element,
   className?: string,
+  submitButtonText?: string,
 }
 
 /**
@@ -68,6 +69,7 @@ export default function withEditor(
       editorId,
       menu,
       className,
+      submitButtonText,
       ...rest
     } = props
 
@@ -126,7 +128,7 @@ export default function withEditor(
                   primary
                   key="submitButton"
                   type="submit"
-                  children={t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
+                  children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
                   disabled={inProgress}
           />
         </CardActions>

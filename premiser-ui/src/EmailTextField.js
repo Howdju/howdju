@@ -5,7 +5,7 @@ export default class EmailTextField extends React.Component {
   render() {
     return (
       <SingleLineTextField
-        autocomplete="email"
+        autoComplete="email"
         label="Email"
         {...this.props}
         type="email"

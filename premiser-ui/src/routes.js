@@ -85,7 +85,7 @@ const routes = [
   <Route key="createJustification" exact path={createJustificationPath} render={props => (
     <CreatePropositionPage {...props} mode={CreatePropositionPageMode.CREATE_JUSTIFICATION} />
   )} />,
-  <Route key="createProposition" exact path="/submit" render={props => (
+  <Route key="submitJustificationViaQueryString" exact path="/submit" render={props => (
     <CreatePropositionPage {...props} mode={CreatePropositionPageMode.SUBMIT_JUSTIFICATION_VIA_QUERY_STRING} />
   )} />,
 

@@ -11,6 +11,8 @@ import get from "lodash/get";
 import { EditorTypes } from "@/reducers/editors";
 import { RootState } from "@/store";
 import { isArray } from "lodash";
+import HowdjuHelmet from "@/Helmet";
+import t, { CREATE_ENTITY_SUBMIT_BUTTON_LABEL } from "@/texts";
 
 const id = 'SubmitSourcExcerpt';
 const editorType = EditorTypes.WRIT_QUOTE;
@@ -65,9 +67,12 @@ const SubmitSourcExcerptPage = () => {
 
   return (
     <div className="md-grid">
+      <HowdjuHelmet>
+        <title>Submit Source Excerpt — Howdju</title>
+      </HowdjuHelmet>
       <h1 className="md-cell--12">Create WritQuote</h1>
       <WritQuoteEditor id={id} editorType={editorType} editorId={editorId}
-        className="md-cell--12" />
+        className="md-cell--12" submitButtonText={t(CREATE_ENTITY_SUBMIT_BUTTON_LABEL)} />
     </div>
   )
 };
