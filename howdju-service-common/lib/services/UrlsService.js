@@ -28,10 +28,10 @@ exports.UrlsService = class UrlsService {
           return equivalentUrl
         }
         return this.urlsDao.createUrl(url, userId, now)
-          .then( (url) => {
-            this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE, ActionTargetType.URL, url.id)
-            return url
-          })
+      })
+      .then( (url) => {
+        this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE, ActionTargetType.URL, url.id)
+        return url
       })
   }
 }

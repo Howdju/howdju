@@ -29,7 +29,7 @@
     "inspect-server": "node --inspect-brk bin/esbuild-local-server.js",
     "lint": "eslint bin src local-server.js",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
-    "start-server": "node bin/esbuild-local-server.js",
+    "start-server": "node --trace-warnings bin/esbuild-local-server.js",
     "start:api:local": "env-cmd -f ../config/local.env yarn run start-server",
     "start:api:local:inspect": "env-cmd -f ../config/local.env yarn run inspect-server",
     "start:api:localhost": "env-cmd -f ../config/localhost.env yarn run start-server",

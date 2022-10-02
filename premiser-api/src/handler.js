@@ -9,6 +9,7 @@ const isEmpty = require('lodash/isEmpty')
 const join = require('lodash/join')
 const keys = require('lodash/keys')
 const pick = require('lodash/pick')
+const some = require('lodash/some')
 const sourceMapSupport = require('source-map-support')
 const toLower = require('lodash/toLower')
 const uuid = require('uuid')
@@ -184,10 +185,20 @@ exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
   }
 }
 
-process.on('unhandledRejection', (err) => {
+// Only add the handler once even if we are hotloading in dev. Otherwise we
+// get memory leaks.
+function howdjuHandlerunhandledRejectionHandler(err) {
   console.error(err)
   process.exit(1)
-})
+}
+if (!some(
+  process.listeners('unhandledRejection'),
+  l => l.toString().includes('howdjuHandlerunhandledRejectionHandler'))
+) {
+  console.log('adding howdjuHandlerunhandledRejectionHandler')
+  process.on('unhandledRejection', howdjuHandlerunhandledRejectionHandler)
+}
+
 
 const appProviderByStage = {}
 

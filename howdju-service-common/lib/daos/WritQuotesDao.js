@@ -40,12 +40,12 @@ exports.WritQuotesDao = class WritQuotesDao {
       this.database.query(
         'readWritQuoteForId',
         `
-          select 
+          select
               wq.*
             , w.title as writ_title
             , w.created as writ_created
             , w.creator_user_id as writ_creator_user_id
-          from writ_quotes wq join writs w on 
+          from writ_quotes wq join writs w on
                 wq.writ_quote_id = $1
             and wq.writ_id = w.writ_id
             and wq.deleted is null
@@ -99,14 +99,14 @@ exports.WritQuotesDao = class WritQuotesDao {
     const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
 
     const sql = `
-      select 
+      select
           wq.*
         , w.title as writ_title
         , w.created as writ_created
         , w.creator_user_id as writ_creator_user_id
       from writ_quotes wq
           join writs w USING (writ_id)
-        where 
+        where
           ${whereSql}
       ${orderBySql}
       ${countSql}
@@ -152,13 +152,13 @@ exports.WritQuotesDao = class WritQuotesDao {
     const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
 
     const sql = `
-      select 
+      select
           wq.*
         , w.title as writ_title
         , w.created as writ_created
       from writ_quotes wq
           join writs w using (writ_id)
-        where 
+        where
           ${whereSql}
         and (
           ${continuationWhereSql}
@@ -176,7 +176,7 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   readWritQuotesByIdForRootTarget(rootTargetType, rootTargetId) {
     const sql = `
-        select 
+        select
             wq.writ_quote_id
           , wq.quote_text
           , wq.created
@@ -185,8 +185,8 @@ exports.WritQuotesDao = class WritQuotesDao {
           , w.title as writ_title
           , w.created as writ_created
           , w.creator_user_id as writ_creator_user_id
-        from justifications j 
-            join writ_quotes wq on 
+        from justifications j
+            join writ_quotes wq on
                   j.basis_type = $2
               and j.basis_id = wq.writ_quote_id
             join writs w using (writ_id)
@@ -196,10 +196,10 @@ exports.WritQuotesDao = class WritQuotesDao {
             and j.deleted is null
             and wq.deleted is null
             and w.deleted is null
-      
+
       union
-      
-        select 
+
+        select
             wq.writ_quote_id
           , wq.quote_text
           , wq.created
@@ -208,7 +208,7 @@ exports.WritQuotesDao = class WritQuotesDao {
           , w.title as writ_title
           , w.created as writ_created
           , w.creator_user_id as writ_creator_user_id
-        from justifications j 
+        from justifications j
             join justification_basis_compounds jbc on
                   j.basis_type = $3
               and j.basis_id = jbc.justification_basis_compound_id
@@ -220,7 +220,7 @@ exports.WritQuotesDao = class WritQuotesDao {
                   sep.source_excerpt_type = $5
               and sep.source_excerpt_id = wq.writ_quote_id
             join writs w using (writ_id)
-          where 
+          where
                 j.root_target_type = $6
             and j.root_target_id = $1
             and j.deleted is null
@@ -277,17 +277,17 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   readWritQuotesHavingUrlContainingText(text) {
     const sql = `
-      with 
+      with
         containing_urls as (
           select url_id from urls where url ilike '%'|| $1 || '%'
         )
       select distinct wq.writ_quote_id
-      from 
-        writ_quotes wq 
+      from
+        writ_quotes wq
           join writs w using (writ_id)
           join writ_quote_urls wqu using (writ_quote_id)
           join containing_urls u using (url_id)
-        where 
+        where
               wq.deleted is null
           and w.deleted is null
           and wqu.deleted is null
@@ -304,7 +304,7 @@ exports.WritQuotesDao = class WritQuotesDao {
     return this.database.query(
       'createWritQuoteUrl',
       `
-        insert into writ_quote_urls (writ_quote_id, url_id, creator_user_id, created) 
+        insert into writ_quote_urls (writ_quote_id, url_id, creator_user_id, created)
         values ($1, $2, $3, $4)
         returning *
       `,
@@ -322,7 +322,7 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then(({rows: [row]}) => Promise.all(map(url.target.anchors, (anchor) => this.database.query(
         'createWritQuoteUrlTarget.anchors',
         `
-          insert into writ_quote_url_target_anchors 
+          insert into writ_quote_url_target_anchors
               (writ_quote_url_target_id, exact_text, prefix_text, suffix_text, start_offset, end_offset)
           values ($1, $2, $3, $4, $5, $6)
         `,
@@ -332,8 +332,8 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   createWritQuote(writQuote, userId, now) {
     const sql = `
-      insert into writ_quotes (quote_text, normal_quote_text, writ_id, creator_user_id, created) 
-      values ($1, $2, $3, $4, $5) 
+      insert into writ_quotes (quote_text, normal_quote_text, writ_id, creator_user_id, created)
+      values ($1, $2, $3, $4, $5)
       returning *
     `
     // Don't insert an empty quote
@@ -346,12 +346,44 @@ exports.WritQuotesDao = class WritQuotesDao {
       .then( ({rows: [row]}) => toWritQuote(row))
   }
 
+  /**
+   * Returns a WritQuote having the same field values and relations as `writQuote`.
+   *
+   * URLs are not considered for equivalence.
+   *
+   * If more than one equivalent WritQuote exists, this is an error, but for
+   * reliability we return the first one.
+   */
+  async readWritQuoteEquivalentTo(writQuote) {
+    const sql = `
+      select *
+      from writ_quotes wq
+        where
+              wq.writ_id = $2
+          and wq.quote_text = $1
+          and wq.deleted is null
+      `
+    const args = [writQuote.quoteText, writQuote.writ.id]
+    const {rows} = await this.database.query('readEquivalentWritQuote', sql, args)
+    if (rows.length < 1) {
+      return null
+    }
+    if (rows.length > 1) {
+      this.logger.error(`Multiple WritQuotes are equivalent to ${{writQuote}}. Returning the first.`)
+    }
+    return toWritQuote(rows[0])
+  }
+
   hasEquivalentWritQuotes(writQuote) {
     const sql = `
-      select count(*) > 0 has_conflict 
+      select count(*) > 0 has_conflict
       from writ_quotes wq join writs w using (writ_id)
-        where 
-              wq.writ_quote_id != $1 
+        where
+              wq.writ_quote_id != $1
+          -- TODO shouldn't read title here because the logic of what an equivalent
+          -- Writ is should occur within the WritsDao. This could lead to inconsistent
+          -- logic with WritsDao.readWritEquivalentTo (and in fact already is because
+          -- we don't normalize the title here!)
           and (wq.writ_id = $3 or w.title = $4)
           and wq.quote_text = $2
           and wq.deleted is null
@@ -364,8 +396,8 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   hasWritQuoteChanged(writQuote) {
     const sql = `
-      select count(*) < 1 as has_changed 
-      from writ_quotes 
+      select count(*) < 1 as has_changed
+      from writ_quotes
         where writ_quote_id = $1 and quote_text = $2
       `
     return this.database.query('hasWritQuoteChanged', sql, [writQuote.id, writQuote.quoteText])
@@ -376,9 +408,9 @@ exports.WritQuotesDao = class WritQuotesDao {
     return this.database.query(
       'readUrlsForWritQuoteId',
       `
-      select u.* 
-      from urls u join writ_quote_urls wqu using (url_id) 
-        where 
+      select u.*
+      from urls u join writ_quote_urls wqu using (url_id)
+        where
                 wqu.writ_quote_id = $1
             and u.deleted is null
             and wqu.deleted is null
@@ -412,10 +444,10 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   isBasisToOtherUsersJustifications(userId, writQuote) {
     const sql = `
-      select count(*) > 0 as has_other_users_justifications 
-      from justifications where 
-            basis_type = $1 
-        and basis_id = $2 
+      select count(*) > 0 as has_other_users_justifications
+      from justifications where
+            basis_type = $1
+        and basis_id = $2
         and creator_user_id != $3
         and deleted is null
         `
@@ -435,9 +467,9 @@ exports.WritQuotesDao = class WritQuotesDao {
             where basis_type = $1 and basis_id = $2 and deleted is null
         )
         , counters as (
-          select * from justifications cj join basis_justifications j on 
-                cj.creator_user_id != $3 
-            and cj.target_type = $4 
+          select * from justifications cj join basis_justifications j on
+                cj.creator_user_id != $3
+            and cj.target_type = $4
             and cj.target_id = j.justification_id
             and cj.deleted is null
         )
@@ -467,8 +499,8 @@ exports.WritQuotesDao = class WritQuotesDao {
 
   deleteWritQuoteUrls(writQuote, urls, now) {
     const sql = `
-      update writ_quote_urls set deleted = $1 
-        where writ_quote_id = $2 and url_id = any ($3) 
+      update writ_quote_urls set deleted = $1
+        where writ_quote_id = $2 and url_id = any ($3)
         returning *
     `
     return this.database.query('deleteWritQuoteUrls', sql, [now, writQuote.id, map(urls, url => url.id)])

@@ -1,3 +1,4 @@
+// Tell any libraries that support any-promise to use Bluebird instead of the built-in.
 require('any-promise/register')('bluebird', {Promise: require('bluebird')})
 
 const moment = require('moment')

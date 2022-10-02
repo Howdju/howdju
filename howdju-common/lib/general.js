@@ -58,6 +58,8 @@ _e.isDefined = val => !isUndefined(val)
 
 _e.utcNow = () => moment.utc()
 
+_e.utcNowIsAfter = dateTimeString => _e.utcNow().isAfter(moment.utc(dateTimeString))
+
 // Reference for these interesting operand names
 // https://math.stackexchange.com/a/1736991/116432
 _e.momentAdd = (momentInstance, summand) => {
