@@ -17,7 +17,6 @@ import { handleActions } from 'redux-actions'
 
 import {
   apiErrorCodes,
-  arrayToObject,
   insertAt,
   JustificationRootTargetType,
   makeNewPropositionAtom,
