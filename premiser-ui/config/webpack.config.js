@@ -40,6 +40,7 @@ const htmlWebpackPluginConfig = merge({
 }, envHtmlWebpackPluginConfig)
 
 const definePluginConfig = merge({
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   'process.env.SENTRY_ENV': JSON.stringify(process.env.SENTRY_ENV),
   'process.env.PACKAGE_VERSION': JSON.stringify(packageInfo.version),
   'process.env.GIT_COMMIT_HASH_SHORT': JSON.stringify(gitShaShort()),
@@ -118,12 +119,25 @@ const baseWebpackConfig = {
     rules: [
       {
         test: /\.m?(j|t)sx?$/,
+        exclude: /node_modules/,
+        resolve: {
+          extensions: ['.jsx', '.tsx', '.ts', '...'],
+        },
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            rootMode: "upward",
+          },
+        },
+      },
+      {
+        test: /node_modules\/@grrr\/(cookie-consent|utils)/,
         resolve: {
           fullySpecified: false,  // Allow cookie-consent's modules to import files without their extension
-          // Support ES module and JSX extensions when resolving the file corresponding to an extensionless package
-          // cookie-consent uses .mjs; we don't use .jsx, but we could, and we should probably include it since our
-          // test pattern includes it.
-          extensions: ['.mjs', '.jsx', '.tsx', '.ts', '...'],
+          // Support ES module extensions when resolving the file corresponding to an extensionless package
+          // because cookie-consent uses .mjs
+          extensions: ['.mjs', '...'],
         },
         use: {
           loader: 'babel-loader',

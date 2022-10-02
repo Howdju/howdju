@@ -171,11 +171,11 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
   yield takeEvery(LOCATION_CHANGE, function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthenticationWorker() {
     yield* tryWaitOnRehydrate()
     const isAuthenticated = isTruthy(yield select(selectAuthToken))
-    const doesPathRequireAuthentication = () => some([
+    const doesPathRequireAuthentication = some([
       routeIds.createProposition,
       routeIds.submit,
     ], isActivePath)
-    if (!isAuthenticated && doesPathRequireAuthentication()) {
+    if (!isAuthenticated && doesPathRequireAuthentication) {
       const routerLocation = history.location
       yield put(goto.login(routerLocation))
     }

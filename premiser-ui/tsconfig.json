@@ -17,10 +17,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "baseUrl": "src",
     "paths": {
       // Support project-relative imports
-      "@/*": ["*"],
+      "@/*": ["./src/*"],
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

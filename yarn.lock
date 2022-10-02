@@ -3560,6 +3560,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.18.3":
+  version: 7.19.0
+  resolution: "@babel/runtime@npm:7.19.0"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: fa69c351bb05e1db3ceb9a02fdcf620c234180af68cdda02152d3561015f6d55277265d3109815992f96d910f3db709458cae4f8df1c3def66f32e0867d82294
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.0.0, @babel/template@npm:^7.16.0":
   version: 7.16.0
   resolution: "@babel/template@npm:7.16.0"
@@ -5277,6 +5286,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@redux-devtools/extension@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "@redux-devtools/extension@npm:3.2.3"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    immutable: ^4.0.0
+  peerDependencies:
+    redux: ^3.1.0 || ^4.0.0
+  checksum: 320d6154026ad5368d8df762629b286d82774b9342f1489ba00d9a6f202f226b7bb6d44252791c84b50f1fd07e0ffa0d94607f1ffd9845bc2bda5da6597adbd4
+  languageName: node
+  linkType: hard
+
 "@redux-saga/core@npm:^1.1.3":
   version: 1.1.3
   resolution: "@redux-saga/core@npm:1.1.3"
@@ -6078,6 +6099,13 @@ __metadata:
   version: 2.0.0
   resolution: "@types/stack-utils@npm:2.0.0"
   checksum: b3fbae25b073116977ecb5c67d22f14567b51a7792403b0bf46e5de8f29bde3bd4ec1626afb22065495ca7f1c699c8bd66720050c94b8f8f9bcefbee79d161fd
+  languageName: node
+  linkType: hard
+
+"@types/webpack-env@npm:^1.18.0":
+  version: 1.18.0
+  resolution: "@types/webpack-env@npm:1.18.0"
+  checksum: ecf4daa31cb37d474ac0ce058d83a3cadeb9881ca8107ae93c2299eaa9954943aae09b43e143c62ccbe4288a14db00c918c9debd707afe17c3998f873eaabc59
   languageName: node
   linkType: hard
 
@@ -14291,6 +14319,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"immutable@npm:^4.0.0":
+  version: 4.1.0
+  resolution: "immutable@npm:4.1.0"
+  checksum: b9bc1f14fb18eb382d48339c064b24a1f97ae4cf43102e0906c0a6e186a27afcd18b55ca4a0b63c98eefb58143e2b5ebc7755a5fb4da4a7ad84b7a6096ac5b13
+  languageName: node
+  linkType: hard
+
 "import-fresh@npm:^2.0.0":
   version: 2.0.0
   resolution: "import-fresh@npm:2.0.0"
@@ -20461,11 +20496,13 @@ __metadata:
     "@react-md/theme": ^2.8.2
     "@react-md/typography": ^2.8.2
     "@react-md/utils": ^2.8.2
+    "@redux-devtools/extension": ^3.2.3
     "@sentry/browser": ^6.2.5
     "@sentry/tracing": ^6.2.5
     "@types/lodash": ^4.14.186
     "@types/react": ^18.0.21
     "@types/react-router": ^5.1.19
+    "@types/webpack-env": ^1.18.0
     argparse: ^2.0.1
     aws-sdk: ^2.890.0
     axios: ^0.21.1

@@ -10,8 +10,9 @@ import errors from './errors'
 import privacyConsent from "./privacyConsent"
 import ui from "./ui"
 import widgets from './widgets'
+import { History } from 'history'
 
-export default (history) => combineReducers({
+export default (history: History<unknown>) => combineReducers({
   app,
   auth,
   autocompletes,

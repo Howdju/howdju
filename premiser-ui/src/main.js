@@ -34,11 +34,9 @@ const overrides = {
 
 render(
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Configuration {...overrides}>
-        <App />
-      </Configuration>
-    </PersistGate>
+    <Configuration {...overrides}>
+      <App />
+    </Configuration>
   </Provider>,
   root
 )

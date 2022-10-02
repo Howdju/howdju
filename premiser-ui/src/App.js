@@ -45,7 +45,7 @@ import {
   isMissingPrivacyConsent, LIVE_CHAT, REQUIRED_FUNCTIONALITY,
   showPrivacyConsentDialog
 } from "./cookieConsent"
-import {persist} from "./store"
+import {startPersisting, stopPersisting} from "./store"
 import ErrorBoundary from './ErrorBoundary'
 import Header from './Header'
 import {history} from './history'
@@ -147,9 +147,9 @@ class App extends Component {
           break
         case BASIC_FUNCTIONALITY:
           if (cookie.accepted) {
-            persist()
+            startPersisting()
           } else {
-            // Our custom serializer to redux-persist checks this value before persisting
+            stopPersisting()
           }
           break
         case ERROR_REPORTING:
