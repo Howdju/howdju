@@ -170,7 +170,7 @@ function annotateSelectionAndEdit() {
 
 function postActionMessageToFrame(action) {
   getOption('howdjuBaseUrl', (baseUrl) => {
-      logger.trace(`difficult postActionMessageToFrame ${JSON.stringify({action})}`)
+    logger.trace(`difficult postActionMessageToFrame ${JSON.stringify({action})}`)
     doWhenFrameMessageHandlerReady((frameApi) => {
       frameApi.postMessage({
         source: EXTENSION_MESSAGE_SOURCE,
