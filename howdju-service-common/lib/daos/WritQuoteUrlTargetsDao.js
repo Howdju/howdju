@@ -49,6 +49,7 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
   async readByUrlIdByWritQuoteIdForJustificationIds(justificationIds) {
     const baseArgs = [JustificationBasisType.WRIT_QUOTE]
     const {params: justificationIdParams, args} = addArrayParams(baseArgs, justificationIds)
+    // TODO(89): replace string interpolation with query arguments
     const {rows} = await this.database.query(
       'readWritQuoteUrlTargetsForJustificationIds',
       `

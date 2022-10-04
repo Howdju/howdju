@@ -132,6 +132,11 @@ export function* goTo() {
     } = action.payload
     yield put(push(paths.tag(tag)))
   })
+
+  yield takeEvery(str(goto.writQuote), function* goToWritQuoteWorker(action) {
+    const {writQuote} = action.payload
+    yield put(push(paths.writQuote(writQuote)))
+  })
 }
 
 export function* redirectHomeFromMissingRootTarget() {

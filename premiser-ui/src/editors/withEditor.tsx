@@ -9,10 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 import reduce from 'lodash/reduce';
 
-import { editors } from '@/actions';
+import { editors, flows } from '@/actions';
 import { AppDispatch, RootState } from '@/store';
 import {combineIds, combineSuggestionsKeys} from '@/viewModels';
 import t, { CANCEL_BUTTON_LABEL, EDIT_ENTITY_SUBMIT_BUTTON_LABEL } from '@/texts';
+import { AnyAction } from 'redux';
 
 type OnPropertyChangeCallback = (properties: {[key: string]: any}) => void
 // A map of maps bottoming out in strings.
@@ -34,6 +35,11 @@ interface EditorState {
   isSaving: boolean
 }
 
+export type CommitThenPutAction = {
+  // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
+  action: AnyAction
+}
+
 type ListItemTranslator = (editorType: string, editorId: string, dispatch: AppDispatch) =>
   (...args : any[]) => void;
 
@@ -44,6 +50,7 @@ type WithEditorProps = {
   menu?: JSX.Element,
   className?: string,
   submitButtonText?: string,
+  editorCommitBehavior: 'JustCommit' | 'CommitThenView' | CommitThenPutAction
 }
 
 /**
@@ -70,6 +77,7 @@ export default function withEditor(
       menu,
       className,
       submitButtonText,
+      editorCommitBehavior,
       ...rest
     } = props
 
@@ -80,7 +88,13 @@ export default function withEditor(
     }
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault()
-      dispatch(editors.commitEdit(editorType, editorId))
+      if (editorCommitBehavior === 'JustCommit') {
+        dispatch(editors.commitEdit(editorType, editorId))
+      } else if (editorCommitBehavior === 'CommitThenView') {
+        dispatch(flows.commitEditThenView(editorType, editorId))
+      } else if (editorCommitBehavior.action) {
+        dispatch(flows.commitEditThenPutActionOnSuccess(editorType, editorId, editorCommitBehavior.action))
+      }
     }
     const onCancelEdit = () => {
       dispatch(editors.cancelEdit(editorType, editorId))

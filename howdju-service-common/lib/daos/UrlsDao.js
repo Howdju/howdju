@@ -30,15 +30,22 @@ exports.UrlsDao = class UrlsDao {
       })
   }
 
+  async readUrlsForIds(ids) {
+    const {rows} = await this.database.query('readUrlsForIds',
+      'select * from urls where url_id in ($1) and deleted is null',
+      [ids.join(',')])
+    return rows.map(toUrl)
+  }
+
   readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
     const sql = `
-        select 
+        select
             wq.writ_quote_id
           , u.url_id
           , u.url
-        from justifications j 
+        from justifications j
             join writ_quotes wq on
-                  j.basis_type = $2 
+                  j.basis_type = $2
               and j.basis_id = wq.writ_quote_id
             join writ_quote_urls wqu using (writ_quote_id)
             join urls u USING (url_id)
@@ -47,16 +54,16 @@ exports.UrlsDao = class UrlsDao {
             and j.root_target_id = $1
             and j.deleted is null
             and wq.deleted is null
-            and wqu.deleted is null 
+            and wqu.deleted is null
             and u.deleted is null
-            
+
       union
-        
-        select 
+
+        select
             wq.writ_quote_id
           , u.url_id
           , u.url
-        from justifications j 
+        from justifications j
             join justification_basis_compounds jbc on
                   j.basis_type = $3
               and j.basis_id = jbc.justification_basis_compound_id
@@ -68,7 +75,7 @@ exports.UrlsDao = class UrlsDao {
                   sep.source_excerpt_type = $5
               and sep.source_excerpt_id = wq.writ_quote_id
             join writ_quote_urls wqu using (writ_quote_id)
-              
+
             join urls u USING (url_id)
           where
                 j.root_target_type = $6

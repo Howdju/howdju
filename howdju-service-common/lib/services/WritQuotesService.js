@@ -124,30 +124,36 @@ exports.WritQuotesService = class WritQuotesService {
 
     const now = utcNow()
 
-    const equivalentWrit = await this.writsDao.readWritEquivalentTo(writQuote.writ)
+    let writ
+    const equivalentWrit = writ = await this.writsDao.readWritEquivalentTo(writQuote.writ)
     if (equivalentWrit) {
       writQuote.writ = equivalentWrit
 
       const equivalentWritQuote = await this.writQuotesDao.readWritQuoteEquivalentTo(writQuote)
       if (equivalentWritQuote) {
+        equivalentWritQuote.writ = equivalentWrit
+
         // Creating an equivalent writQuote will only add URLs.
         const {addedUrls} = diffUrls(equivalentWritQuote.urls, writQuote.urls)
-        if (addedUrls) {
+        if (addedUrls.length) {
           const urls = await this.urlsService.readOrCreateUrlsAsUser(addedUrls, userId, now)
           // TODO(20): use createWritQuoteUrlTarget instead.
           await this.writQuotesDao.createWritQuoteUrls(equivalentWritQuote, urls, userId, now)
+          equivalentWritQuote.urls = concat(equivalentWritQuote.urls, urls)
         }
         return {writQuote: equivalentWritQuote, alreadyExists: true}
       }
     } else {
-      writQuote.writ = await this.writsDao.createWrit(writQuote.writ, userId, now)
+      writQuote.writ = writ = await this.writsDao.createWrit(writQuote.writ, userId, now)
     }
 
+    const urls = writQuote.urls
     writQuote = await this.writQuotesDao.createWritQuote(writQuote, userId, now)
+    writQuote.writ = writ
 
-    const urls = await this.urlsService.readOrCreateUrlsAsUser(writQuote.urls, userId, now)
+    writQuote.urls = await this.urlsService.readOrCreateUrlsAsUser(urls, userId, now)
     // TODO(20): use createWritQuoteUrlTarget instead.
-    await this.writQuotesDao.createWritQuoteUrls(writQuote, urls, userId, now)
+    await this.writQuotesDao.createWritQuoteUrls(writQuote, writQuote.urls, userId, now)
 
     this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE,
       ActionTargetType.WRIT_QUOTE, writQuote.id)
@@ -454,8 +460,8 @@ function getAndDiffUrls(writQuotesDao, writQuote) {
 }
 
 function diffUrls(extantUrls, urls) {
-  const addedUrls = differenceBy(urls, [extantUrls], url => url.url)
-  const removedUrls = differenceBy(extantUrls, [urls], url => url.url)
+  const addedUrls = differenceBy(urls, extantUrls, url => url.url)
+  const removedUrls = differenceBy(extantUrls, urls, url => url.url)
   const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
   return {
     addedUrls,

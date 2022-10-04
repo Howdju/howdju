@@ -44,6 +44,7 @@ import codeOfConductInnerHtml from './policies/code-of-conduct.md'
 import privacyPolicyInnerHtml from './policies/privacy-policy.md'
 import cookieNoticeInnerHtml from './policies/cookie-notice.md'
 import faqInnerHtml from './policies/faq.md'
+import WritQuotePage from './pages/WritQuotePage'
 
 const renderHomePath = props => {
   const mainSearchText = mainSearcher.mainSearchText(props.location)
@@ -65,6 +66,7 @@ const routes = [
   <Route key="whatsNext" exact path={paths.whatsNext()} component={WhatsNextPage} />,
   <Route key="about" exact path={paths.about()} component={AboutPage} />,
 
+  <Route key="writQuote" exact path="/writ-quotes/:writQuoteId/:slug?" component={WritQuotePage} />,
   <Route key="proposition" exact path="/p/:rootTargetId/:slug?" render={props => (
     <JustificationsPage {...props} rootTargetType={JustificationRootTargetType.PROPOSITION} />
   )} />,

@@ -22,6 +22,7 @@ import {
 
 const editorCommitResultGotoActionCreators = {
   [EditorTypes.PROPOSITION]: ({proposition}) => goto.proposition(proposition),
+  [EditorTypes.WRIT_QUOTE]: ({writQuote}) => goto.writQuote(writQuote),
   [EditorTypes.PROPOSITION_JUSTIFICATION]: ({proposition, statement, justification}) => {
     if (proposition) {
       return goto.proposition(proposition)

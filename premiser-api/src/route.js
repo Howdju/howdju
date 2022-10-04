@@ -46,10 +46,6 @@ const notFound = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.NOT_FOUND,
   body,
 })
-const conflict = ({callback, body}) => callback({
-  httpStatusCode: httpStatusCodes.CONFLICT,
-  body,
-})
 const unauthenticated = ({callback, body={errorCode: apiErrorCodes.UNAUTHENTICATED} }) => callback({
   httpStatusCode: httpStatusCodes.UNAUTHORIZED,
   body
@@ -563,12 +559,7 @@ const routes = [
         }
       }
     }) => Promise.resolve(appProvider.writQuotesService.createWritQuote({authToken, writQuote}))
-      .then( ({writQuote, alreadyExists}) => {
-        if (alreadyExists) {
-          return conflict({callback, body: {writQuote}})
-        }
-        return ok({callback, body: {writQuote}})
-      })
+      .then(({writQuote, alreadyExists}) => ok({callback, body: {writQuote, alreadyExists}}))
       .catch(
         EntityValidationError,
         EntityConflictError,

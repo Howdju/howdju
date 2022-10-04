@@ -72,7 +72,7 @@ exports.WritsDao = class WritsDao {
     const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
 
     const sql = `
-      select * 
+      select *
       from writs where ${whereSql}
       ${orderBySql}
       ${countSql}
@@ -115,8 +115,8 @@ exports.WritsDao = class WritsDao {
     const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
 
     const sql = `
-      select * 
-      from writs where 
+      select *
+      from writs where
         ${whereSql}
         and (
           ${continuationWhereSql}
@@ -164,7 +164,7 @@ exports.WritsDao = class WritsDao {
         )
         , basis_justifications as (
           select *
-          from justifications j join writ_writ_quotes wq on 
+          from justifications j join writ_writ_quotes wq on
                 j.basis_type = $2
             and j.basis_id = wq.writ_quote_id
             and j.deleted is null
@@ -187,15 +187,15 @@ exports.WritsDao = class WritsDao {
 
   isWritOfBasisToOtherUsersJustifications(userId, writ) {
     const sql = `
-      with 
+      with
         writ_writ_quotes as (
           select *
           from writ_quotes where writ_id = $1 and deleted is null
         )
-      select count(*) > 0 as has_other_users_justifications 
+      select count(*) > 0 as has_other_users_justifications
       from justifications j join writ_writ_quotes wq on
             j.basis_id = wq.writ_quote_id
-        and j.basis_type = $2 
+        and j.basis_type = $2
         and j.creator_user_id != $3
         and j.deleted is null
     `
@@ -216,12 +216,12 @@ exports.WritsDao = class WritsDao {
         , basis_justifications as (
           select *
           from justifications j join writ_writ_quotes wq on
-                basis_type = $2 
+                basis_type = $2
             and j.basis_id = wq.writ_quote_id and j.deleted is null
         )
         , counters as (
-          select * from justifications cj join basis_justifications j on 
-                cj.creator_user_id != $3 
+          select * from justifications cj join basis_justifications j on
+                cj.creator_user_id != $3
             and cj.target_type = $4
             and cj.target_id = j.justification_id
             and cj.deleted is null

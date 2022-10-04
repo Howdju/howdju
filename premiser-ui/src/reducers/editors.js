@@ -67,6 +67,10 @@ export const EditorTypes = {
   CONTENT_REPORT: 'CONTENT_REPORT',
 }
 
+export const EntityTypeDescriptions = {
+  [EditorTypes.WRIT_QUOTE]: 'WritQuote',
+}
+
 const defaultEditorState = {
   editEntity: null,
   errors: null,

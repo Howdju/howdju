@@ -65,6 +65,8 @@ const SubmitSourcExcerptPage = () => {
     dispatch(editors.beginEdit(editorType, editorId, writQuote))
   }
 
+  // TODO add a schema to prevent submission, display errors
+  // TODO display API errors in fields.
   return (
     <div className="md-grid">
       <HowdjuHelmet>
@@ -72,7 +74,8 @@ const SubmitSourcExcerptPage = () => {
       </HowdjuHelmet>
       <h1 className="md-cell--12">Create WritQuote</h1>
       <WritQuoteEditor id={id} editorType={editorType} editorId={editorId}
-        className="md-cell--12" submitButtonText={t(CREATE_ENTITY_SUBMIT_BUTTON_LABEL)} />
+        className="md-cell--12" submitButtonText={t(CREATE_ENTITY_SUBMIT_BUTTON_LABEL)}
+        editorCommitBehavior={'CommitThenView'} />
     </div>
   )
 };

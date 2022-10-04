@@ -15,12 +15,14 @@ export default class WritQuoteEntityViewer extends Component {
       showUrls,
       showStatusText,
       onClickUrl,
+      menu,
       ...rest
     } = this.props
     return (
       <EntityViewer
         iconName="format_quote"
         iconTitle="Writ quote"
+        menu={menu}
         entity={
           <EditableWritQuote
             {...rest}

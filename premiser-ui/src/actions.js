@@ -391,6 +391,7 @@ export const goto = {
   mainSearch: actionCreator('GOTO/MAIN_SEARCH', (mainSearchText) => ({mainSearchText})),
   tag: actionCreator('GOTO/TAG', (tag) => ({tag})),
   createJustification: actionCreator('GOTO/CREATE_JUSTIFICATION'),
+  writQuote: actionCreator('GOTO/WRIT_QUOTE', (writQuote) => ({writQuote})),
 }
 
 /** Actions that represent multi-step flows */

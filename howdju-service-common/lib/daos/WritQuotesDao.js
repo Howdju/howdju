@@ -28,9 +28,10 @@ const {DatabaseSortDirection} = require('./daoModels')
 
 exports.WritQuotesDao = class WritQuotesDao {
 
-  constructor(logger, database, urlsDao, writQuoteUrlTargetsDao) {
+  constructor(logger, database, urlsDao, writsDao, writQuoteUrlTargetsDao) {
     this.logger = logger
     this.database = database
+    this.writsDao = writsDao
     this.urlsDao = urlsDao
     this.writQuoteUrlTargetsDao = writQuoteUrlTargetsDao
   }
@@ -347,7 +348,7 @@ exports.WritQuotesDao = class WritQuotesDao {
   }
 
   /**
-   * Returns a WritQuote having the same field values and relations as `writQuote`.
+   * Returns a fully materialized WritQuote having the same field values and relations as `writQuote`.
    *
    * URLs are not considered for equivalence.
    *
@@ -356,14 +357,16 @@ exports.WritQuotesDao = class WritQuotesDao {
    */
   async readWritQuoteEquivalentTo(writQuote) {
     const sql = `
-      select *
+      select wq.*, array_agg(wqu.url_id) as url_ids
       from writ_quotes wq
+          join writ_quote_urls wqu using(writ_quote_id)
         where
               wq.writ_id = $2
-          and wq.quote_text = $1
+          and wq.normal_quote_text = $1
           and wq.deleted is null
+      group by 1,2,3,4,5,6,7
       `
-    const args = [writQuote.quoteText, writQuote.writ.id]
+    const args = [normalizeText(writQuote.quoteText), writQuote.writ.id]
     const {rows} = await this.database.query('readEquivalentWritQuote', sql, args)
     if (rows.length < 1) {
       return null
@@ -371,7 +374,12 @@ exports.WritQuotesDao = class WritQuotesDao {
     if (rows.length > 1) {
       this.logger.error(`Multiple WritQuotes are equivalent to ${{writQuote}}. Returning the first.`)
     }
-    return toWritQuote(rows[0])
+
+    const row = rows[0]
+    const equivalentWritQuote = toWritQuote(row)
+    equivalentWritQuote.writ = await this.writsDao.readWritForId(equivalentWritQuote.writ.id)
+    equivalentWritQuote.urls = await this.urlsDao.readUrlsForIds(row.url_ids)
+    return equivalentWritQuote
   }
 
   hasEquivalentWritQuotes(writQuote) {
