@@ -4,4 +4,8 @@ module.exports = {
   transform: {
     "^.+\\.(t|j)sx?$": "./babel-jest.js",
   },
+  reporters: [
+    '<rootDir>/jest/OutputConsoleOnFailureOnlyReporter.js',
+    '<rootDir>/node_modules/@jest/reporters/build/SummaryReporter.js',
+  ]
 }
