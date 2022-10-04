@@ -33,7 +33,6 @@ const App = () => {
     };
   }, [handleShare]);
 
-  console.log('App', {shareResponse});
   const items = shareResponse?.items;
   const extraData = shareResponse?.extraData;
 

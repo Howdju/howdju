@@ -328,6 +328,9 @@ exports.PropositionsService = class PropositionsService {
           // (Anti-votes don't make any sense, because anti-votes are votes against tags recommended by the system
           //  based upon other users' activity.  But new propositions don't have other user activity, and so have no
           //  recommended tags against which to vote)
+          //
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           return readOrCreateTagsAndVotes(this, userId, wrapper.proposition.id, proposition.tags, now)
             .then(([tags, propositionTagVotes]) => {
               wrapper.proposition.tags = tags

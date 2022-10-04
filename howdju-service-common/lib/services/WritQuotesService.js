@@ -441,6 +441,8 @@ function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
         if (extantWritQuoteUrl) {
           return extantWritQuoteUrl
         }
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         return Promise.all([
           service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now),
           url.target && service.writQuotesDao.createWritQuoteUrlTarget(writQuote, url, userId, now),

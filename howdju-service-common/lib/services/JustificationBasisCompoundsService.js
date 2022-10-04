@@ -117,6 +117,8 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
     .then( (atomWrappers) => {
       if (every(atomWrappers, ({isExtant}) => isExtant)) {
         const atoms = map(atomWrappers, ({atom}) => atom)
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         return service.justificationBasisCompoundsDao.readJustificationBasisCompoundHavingAtoms(atoms)
           .then( (justificationBasisCompound) => {
             if (justificationBasisCompound) {
@@ -130,6 +132,8 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
               }
             }
 
+            // TODO(1,2,3): remove exception
+            // eslint-disable-next-line promise/no-nesting
             return createJustificationBasisCompoundHavingAtoms(
               service,
               justificationBasisCompound,
@@ -145,6 +149,8 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
       }
 
       const atoms = map(atomWrappers, ({atom}) => atom)
+      // TODO(1,2,3): remove exception
+      // eslint-disable-next-line promise/no-nesting
       return createJustificationBasisCompoundHavingAtoms(
         service,
         justificationBasisCompound,
