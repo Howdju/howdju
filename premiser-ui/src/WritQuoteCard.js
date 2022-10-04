@@ -8,6 +8,7 @@ import WritQuoteEntityViewer from './WritQuoteEntityViewer'
 
 import './WritQuoteCard.scss'
 import { combineIds } from './viewModels'
+import { newUnimplementedError } from 'howdju-common'
 
 export default class WritQuoteCard extends Component {
 
@@ -26,13 +27,13 @@ export default class WritQuoteCard extends Component {
         primaryText="Create appearance"
         key="createAppearance"
         leftIcon={<FontIcon>add</FontIcon>}
-        onClick={() => {}}
+        onClick={() => {throw newUnimplementedError()}}
       />,
       <ListItem
         primaryText="Create justification"
         key="createJustification"
         leftIcon={<FontIcon>add</FontIcon>}
-        onClick={() => {}}
+        onClick={() => {throw newUnimplementedError()}}
       />,
     ]
     const menuButton = (

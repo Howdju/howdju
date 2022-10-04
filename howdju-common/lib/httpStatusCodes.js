@@ -20,20 +20,5 @@ exports.httpStatusCodes = {
   /** The requested resource, or some required resource, was not found */
   NOT_FOUND: 404,
 
-  /** The request conflicts with the current server state.
-   *
-   * One use case is if a user tries to create an entity that has the same value for
-   * some field that must be unique. For example if a user creates Proposition
-   * having the same `text` as an existing Proposition.
-   *
-   * When possible, the server should respond with the existing entity that
-   * caused the conflict. When possible, clients should try and handle the
-   * response graceffully, such as re-using the existing entity for the same
-   * action as the user intended or redirecting the user to the existing entity.
-   * Clients should show an informational notice about the conflitc, such as a
-   * toast.
-   */
-  CONFLICT: 409,
-
   ERROR: 500,
 }

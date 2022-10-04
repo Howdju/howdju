@@ -13,6 +13,7 @@ import { RootState } from "@/store";
 import { isArray } from "lodash";
 import HowdjuHelmet from "@/Helmet";
 import t, { CREATE_ENTITY_SUBMIT_BUTTON_LABEL } from "@/texts";
+import ErrorMessages from "@/ErrorMessages";
 
 const id = 'SubmitSourcExcerpt';
 const editorType = EditorTypes.WRIT_QUOTE;
@@ -73,6 +74,7 @@ const SubmitSourcExcerptPage = () => {
         <title>Submit Source Excerpt — Howdju</title>
       </HowdjuHelmet>
       <h1 className="md-cell--12">Create WritQuote</h1>
+      <ErrorMessages errors={errors}></ErrorMessages>
       <WritQuoteEditor id={id} editorType={editorType} editorId={editorId}
         className="md-cell--12" submitButtonText={t(CREATE_ENTITY_SUBMIT_BUTTON_LABEL)}
         editorCommitBehavior={'CommitThenView'} />
