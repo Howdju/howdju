@@ -28,36 +28,28 @@ parser.add_argument('--groups', {help: 'comma-delimited list'})
 parser.add_argument('--permissions', {help: 'comma-delimited list'})
 const args = parser.parse_args()
 
-read({ prompt: `Please enter the password for ${args.email}:`, silent: true }, createUserWithPassword)
-
-function createUserWithPassword(error, password) {
-  if (error) throw error
-
-  const creatorUserId = args.creatorUserId
-  const user = {
-    email: args.email,
-    shortName: args.shortName,
-    longName: args.longName,
-    phoneNumber: args.phoneNumber,
-    isActive: !args.inactive,
-  }
-  return usersService.createUserAsUser(creatorUserId, user, password)
-    .then( user => {
-      logger.info('Created user', {id: user.id, email: user.email})
-      return user
-    })
-    .then( (user) => {
-      return Promise.all([
-        user,
-        addPermissionsToUser(user, args.permissions)
-      ])
-    })
-    .then( ([user]) => Promise.all([
-      user,
-      addUserToGroups(user, args.groups)
-    ]))
-    .finally(() => pool.end())
-}
+Promise.promisify(read)({ prompt: `Please enter the password for ${args.email}:`, silent: true })
+  .then(password => {
+    const creatorUserId = args.creatorUserId
+    const user = {
+      email: args.email,
+      shortName: args.shortName,
+      longName: args.longName,
+      phoneNumber: args.phoneNumber,
+      isActive: !args.inactive,
+    }
+    return usersService.createUserAsUser(creatorUserId, user, password)
+  })
+  .then( user => {
+    logger.info('Created user', {id: user.id, email: user.email})
+    return user
+  })
+  .then(user => Promise.all([
+    addPermissionsToUser(user, args.permissions),
+    addUserToGroups(user, args.groups)
+  ]))
+  .finally(() => pool.end())
+  .catch(err => console.log({err}))
 
 const addPermissionsToUser = (user, permissions) => {
   if (permissions) {

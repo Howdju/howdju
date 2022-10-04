@@ -1,7 +1,11 @@
 module.exports = {
-  testRegex: ".*\\.test\\.js$",
+  testRegex: ".*\\.test\\.[tj]s$",
   setupFiles: ["./jest.setup.js"],
   transform: {
-    "^.+\\.jsx?$": "./babel-jest.js",
+    "^.+\\.(t|j)sx?$": "./babel-jest.js",
   },
+  reporters: [
+    '<rootDir>/jest/OutputConsoleOnFailureOnlyReporter.js',
+    '<rootDir>/node_modules/@jest/reporters/build/SummaryReporter.js',
+  ]
 }

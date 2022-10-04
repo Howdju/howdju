@@ -86,6 +86,14 @@ export const resourceApiConfigs = {
     endpoint: `writ-quotes/${payload.writQuoteId}`,
     normalizationSchema: {writQuote: writQuoteSchema},
   }),
+  [api.createWritQuote]: (payload) => ({
+    endpoint: `writ-quotes`,
+    fetchInit: {
+      method: httpMethods.POST,
+      body: payload
+    },
+    normalizationSchema: {writQuote: writQuoteSchema},
+  }),
   [api.updateWritQuote]: (payload) => ({
     endpoint: `writ-quotes/${payload.writQuote.id}`,
     fetchInit: {

@@ -98,7 +98,7 @@ exports.JustificationsDao = class JustificationsDao {
         limited_justifications as (
           ${justificationsRenumberedLimitedJustificationsSql}
         )
-      select 
+      select
           ${tableAlias}.justification_id
         , ${tableAlias}.root_target_type
         , ${tableAlias}.root_target_id
@@ -110,12 +110,12 @@ exports.JustificationsDao = class JustificationsDao {
         , ${tableAlias}.polarity
         , ${tableAlias}.creator_user_id
         , ${tableAlias}.created
-        
+
         , rp.proposition_id       as root_target_proposition_id
         , rp.text                 as root_target_proposition_text
         , rp.created              as root_target_proposition_created
         , rp.creator_user_id      as root_target_proposition_creator_user_id
-        
+
         , wq.writ_quote_id          as basis_writ_quote_id
         , wq.quote_text             as basis_writ_quote_quote_text
         , wq.created                as basis_writ_quote_created
@@ -124,24 +124,24 @@ exports.JustificationsDao = class JustificationsDao {
         , w.title                   as basis_writ_quote_writ_title
         , w.created                 as basis_writ_quote_writ_created
         , w.creator_user_id         as basis_writ_quote_writ_creator_user_id
-        
+
         , sc.proposition_compound_id  as basis_proposition_compound_id
         , sca.order_position        as basis_proposition_compound_atom_order_position
         , scas.proposition_id         as basis_proposition_compound_atom_proposition_id
         , scas.text                 as basis_proposition_compound_atom_proposition_text
         , scas.created              as basis_proposition_compound_atom_proposition_created
         , scas.creator_user_id      as basis_proposition_compound_atom_proposition_creator_user_id
-        
+
         , jbc.justification_basis_compound_id          as basis_jbc_id
         , jbca.justification_basis_compound_atom_id    as basis_jbc_atom_id
         , jbca.entity_type                             as basis_jbc_atom_entity_type
         , jbca.order_position                          as basis_jbc_atom_order_position
-        
+
         , jbcas.proposition_id                           as basis_jbc_atom_proposition_id
         , jbcas.text                                   as basis_jbc_atom_proposition_text
         , jbcas.created                                as basis_jbc_atom_proposition_created
         , jbcas.creator_user_id                        as basis_jbc_atom_proposition_creator_user_id
-        
+
         , sep.source_excerpt_paraphrase_id             as basis_jbc_atom_sep_id
         , sep_s.proposition_id                           as basis_jbc_atom_sep_paraphrasing_proposition_id
         , sep_s.text                                   as basis_jbc_atom_sep_paraphrasing_proposition_text
@@ -158,22 +158,22 @@ exports.JustificationsDao = class JustificationsDao {
         , sep_wqw.creator_user_id                      as basis_jbc_atom_sep_writ_quote_writ_creator_user_id
       from limited_justifications
           join justifications ${tableAlias} using (justification_id)
-          
+
           left join propositions rp on
-                ${tableAlias}.root_target_type = $1 
+                ${tableAlias}.root_target_type = $1
             and ${tableAlias}.root_target_id = rp.proposition_id
-          
-          left join writ_quotes wq on 
+
+          left join writ_quotes wq on
                 ${tableAlias}.basis_type = $2
-            and ${tableAlias}.basis_id = wq.writ_quote_id 
+            and ${tableAlias}.basis_id = wq.writ_quote_id
           left join writs w using (writ_id)
-          
-          left join proposition_compounds sc on 
+
+          left join proposition_compounds sc on
                 ${tableAlias}.basis_type = $3
             and ${tableAlias}.basis_id = sc.proposition_compound_id
           left join proposition_compound_atoms sca using (proposition_compound_id)
           left join propositions scas on sca.proposition_id = scas.proposition_id
-          
+
           left join justification_basis_compounds jbc on
                 ${tableAlias}.basis_type = $4
             and ${tableAlias}.basis_id = jbc.justification_basis_compound_id
@@ -196,7 +196,7 @@ exports.JustificationsDao = class JustificationsDao {
           and rp.deleted is null
           and wq.deleted is null
           and w.deleted is null
-          and sc.deleted is null 
+          and sc.deleted is null
           and scas.deleted is null
           and jbc.deleted is null
           and jbcas.deleted is null
@@ -225,10 +225,10 @@ exports.JustificationsDao = class JustificationsDao {
         limited_justifications as (
           ${targetJustificationsRenumberedLimitedJustificationsSql}
         )
-      select 
+      select
          -- We don't use this, but just for completeness
           ${tableAlias}.justification_id
-                 
+
         , tj.justification_id       as ${targetJustificationPrefix}justification_id
         , tj.root_target_type       as ${targetJustificationPrefix}root_target_type
         , tj.root_target_id         as ${targetJustificationPrefix}root_target_id
@@ -240,12 +240,12 @@ exports.JustificationsDao = class JustificationsDao {
         , tj.polarity               as ${targetJustificationPrefix}polarity
         , tj.creator_user_id        as ${targetJustificationPrefix}creator_user_id
         , tj.created                as ${targetJustificationPrefix}created
-        
+
         , rp.proposition_id         as ${targetJustificationPrefix}root_target_proposition_id
         , rp.text                   as ${targetJustificationPrefix}root_target_proposition_text
         , rp.created                as ${targetJustificationPrefix}root_target_proposition_created
         , rp.creator_user_id        as ${targetJustificationPrefix}root_target_proposition_creator_user_id
-        
+
         , wq.writ_quote_id          as ${targetJustificationPrefix}basis_writ_quote_id
         , wq.quote_text             as ${targetJustificationPrefix}basis_writ_quote_quote_text
         , wq.created                as ${targetJustificationPrefix}basis_writ_quote_created
@@ -254,24 +254,24 @@ exports.JustificationsDao = class JustificationsDao {
         , w.title                   as ${targetJustificationPrefix}basis_writ_quote_writ_title
         , w.created                 as ${targetJustificationPrefix}basis_writ_quote_writ_created
         , w.creator_user_id         as ${targetJustificationPrefix}basis_writ_quote_writ_creator_user_id
-        
+
         , sc.proposition_compound_id  as ${targetJustificationPrefix}basis_proposition_compound_id
         , sca.order_position        as ${targetJustificationPrefix}basis_proposition_compound_atom_order_position
         , scas.proposition_id         as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_id
         , scas.text                 as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_text
         , scas.created              as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_created
         , scas.creator_user_id      as ${targetJustificationPrefix}basis_proposition_compound_atom_proposition_creator_user_id
-        
+
         , jbc.justification_basis_compound_id        as ${targetJustificationPrefix}basis_jbc_id
         , jbca.justification_basis_compound_atom_id  as ${targetJustificationPrefix}basis_jbc_atom_id
         , jbca.entity_type                           as ${targetJustificationPrefix}basis_jbc_atom_entity_type
         , jbca.order_position                        as ${targetJustificationPrefix}basis_jbc_atom_order_position
-        
+
         , jbcas.proposition_id                         as ${targetJustificationPrefix}basis_jbc_atom_proposition_id
         , jbcas.text                                 as ${targetJustificationPrefix}basis_jbc_atom_proposition_text
         , jbcas.created                              as ${targetJustificationPrefix}basis_jbc_atom_proposition_created
         , jbcas.creator_user_id                      as ${targetJustificationPrefix}basis_jbc_atom_proposition_creator_user_id
-        
+
         , sep.source_excerpt_paraphrase_id           as ${targetJustificationPrefix}basis_jbc_atom_sep_id
         , sep_s.proposition_id                         as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_proposition_id
         , sep_s.text                                 as ${targetJustificationPrefix}basis_jbc_atom_sep_paraphrasing_proposition_text
@@ -288,26 +288,26 @@ exports.JustificationsDao = class JustificationsDao {
         , sep_wqw.creator_user_id                    as ${targetJustificationPrefix}basis_jbc_atom_sep_writ_quote_writ_creator_user_id
       from limited_justifications lj
           join justifications ${tableAlias} using (justification_id)
-         
+
           left join propositions rp on
-                ${tableAlias}.root_target_type = $1 
+                ${tableAlias}.root_target_type = $1
             and ${tableAlias}.root_target_id = rp.proposition_id
-          
-          join justifications tj on 
+
+          join justifications tj on
                 ${tableAlias}.target_type = $2
-            and ${tableAlias}.target_id = tj.justification_id 
-          
-          left join writ_quotes wq on 
+            and ${tableAlias}.target_id = tj.justification_id
+
+          left join writ_quotes wq on
                 tj.basis_type = $3
-            and tj.basis_id = wq.writ_quote_id 
+            and tj.basis_id = wq.writ_quote_id
           left join writs w on wq.writ_id = w.writ_id
-          
-          left join proposition_compounds sc on 
+
+          left join proposition_compounds sc on
                 tj.basis_type = $4
             and tj.basis_id = sc.proposition_compound_id
           left join proposition_compound_atoms sca using (proposition_compound_id)
           left join propositions scas on sca.proposition_id = scas.proposition_id
-          
+
           left join justification_basis_compounds jbc on
                 tj.basis_type = $5
             and tj.basis_id = jbc.justification_basis_compound_id
@@ -331,7 +331,7 @@ exports.JustificationsDao = class JustificationsDao {
           and tj.deleted is null
           and wq.deleted is null
           and w.deleted is null
-          and sc.deleted is null 
+          and sc.deleted is null
           and scas.deleted is null
           and jbc.deleted is null
           and jbcas.deleted is null
@@ -352,14 +352,14 @@ exports.JustificationsDao = class JustificationsDao {
         limited_justifications as (
           ${targetPropositionsRenumberedLimitedJustificationsSql}
         )
-      select 
+      select
           tp.proposition_id
         , tp.text
         , tp.created
         , tp.creator_user_id
       from limited_justifications lj
           join justifications j using (justification_id)
-          left join propositions tp on 
+          left join propositions tp on
                 j.target_type = $1
             and j.target_id = tp.proposition_id
         where
@@ -422,27 +422,27 @@ exports.JustificationsDao = class JustificationsDao {
 
   readJustificationsWithBasesAndVotesByRootTarget(rootTargetType, rootTargetId, {userId}) {
     const sql = `
-      with 
+      with
         extant_users as (select * from users where deleted is null)
-      select 
+      select
           j.*
         , v.justification_vote_id
         , v.polarity    as vote_polarity
         , v.justification_id   as vote_justification_id
         , u.long_name as creator_user_long_name
-      from justifications j 
+      from justifications j
         left join extant_users u on j.creator_user_id = u.user_id
-        left join proposition_compounds sc on 
+        left join proposition_compounds sc on
               j.basis_type = $5
-          and j.basis_id = sc.proposition_compound_id 
-        left join writ_quotes wq on 
+          and j.basis_id = sc.proposition_compound_id
+        left join writ_quotes wq on
               j.basis_type = $4
           and j.basis_id = wq.writ_quote_id
-        left join justification_votes v on 
+        left join justification_votes v on
               j.justification_id = v.justification_id
           and v.user_id = $3
           and v.deleted IS NULL
-        where 
+        where
               j.deleted is null
           and j.root_target_type = $1
           and j.root_target_id = $2
@@ -480,9 +480,9 @@ exports.JustificationsDao = class JustificationsDao {
             root_target_type = $1
         and root_target_id = $2
       union
-        select j.* 
-        from justifications j 
-          join proposition_compounds sc on 
+        select j.*
+        from justifications j
+          join proposition_compounds sc on
                 j.basis_type = $3
             and j.basis_id = sc.proposition_compound_id
           join proposition_compound_atoms pca using (proposition_compound_id)
@@ -557,7 +557,7 @@ exports.JustificationsDao = class JustificationsDao {
     return this.database.query('readRootJustificationCountByPolarityForRoot', `
       select polarity, count(*) as count
       from justifications
-        where 
+        where
               root_target_type = $1
           and root_target_id = $2
           and target_type = $1
@@ -635,10 +635,10 @@ exports.JustificationsDao = class JustificationsDao {
     return this.database.query(
       'deleteCounterJustificationsToJustificationIds',
       `
-        update justifications set deleted = $1 
-        where 
+        update justifications set deleted = $1
+        where
               target_type = $2
-          and target_id = any ($3) 
+          and target_id = any ($3)
         returning justification_id`,
       [now, JustificationTargetType.JUSTIFICATION, justificationIds]
     ).then( ({rows}) => map(rows, row => row.justification_id))
@@ -907,17 +907,17 @@ function makeWritQuoteJustificationClause(writQuoteId, justificationColumns) {
     // writ-quote-based justifications
     {
       sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join writ_quotes wq on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join writ_quotes wq on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = wq.writ_quote_id
           where
-                ${justificationTableAlias}.deleted is null 
+                ${justificationTableAlias}.deleted is null
             and wq.deleted is null
-            and wq.writ_quote_id = $2 
+            and wq.writ_quote_id = $2
       `,
       args: [
         JustificationBasisType.WRIT_QUOTE,
@@ -927,22 +927,22 @@ function makeWritQuoteJustificationClause(writQuoteId, justificationColumns) {
     // paraphrased writ-quotes
     {
       sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join justification_basis_compounds jbc on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join justification_basis_compounds jbc on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = jbc.justification_basis_compound_id
             join justification_basis_compound_atoms bca using (justification_basis_compound_id)
             join source_excerpt_paraphrases sep on
                   bca.entity_type = $2
               and bca.entity_id = sep.source_excerpt_paraphrase_id
-            join writ_quotes wq on 
-                  sep.source_excerpt_type = $3 
+            join writ_quotes wq on
+                  sep.source_excerpt_type = $3
               and sep.source_excerpt_id = wq.writ_quote_id
           where
-                ${justificationTableAlias}.deleted is null 
+                ${justificationTableAlias}.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
             and wq.deleted is null
@@ -965,19 +965,19 @@ function makeWritJustificationClause(writId, justificationColumns) {
   return [
     {
       sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join writ_quotes wq on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join writ_quotes wq on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = wq.writ_quote_id
             join writs w using (writ_id)
-          where 
+          where
                 ${justificationTableAlias}.deleted is null
             and wq.deleted is null
             and w.deleted is null
-            and w.writ_id = $2 
+            and w.writ_id = $2
       `,
       args: [
         JustificationBasisType.WRIT_QUOTE,
@@ -987,23 +987,23 @@ function makeWritJustificationClause(writId, justificationColumns) {
     // paraphrased writ-quote writs
     {
       sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join justification_basis_compounds jbc on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join justification_basis_compounds jbc on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = jbc.justification_basis_compound_id
             join justification_basis_compound_atoms bca using (justification_basis_compound_id)
             join source_excerpt_paraphrases sep on
                   bca.entity_type = $2
               and bca.entity_id = sep.source_excerpt_id
-            join writ_quotes wq on 
-                  sep.source_excerpt_type = $3 
+            join writ_quotes wq on
+                  sep.source_excerpt_type = $3
               and sep.source_excerpt_id = wq.writ_quote_id
             join writs w using (writ_id)
           where
-                ${justificationTableAlias}.deleted is null 
+                ${justificationTableAlias}.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
             and wq.deleted is null
@@ -1023,17 +1023,17 @@ function makeWritJustificationClause(writId, justificationColumns) {
 function makePropositionCompoundJustificationClause(propositionCompoundId, justificationColumns) {
   const select = toSelect(justificationColumns, 'j')
   const sql = `
-    select 
+    select
       ${select}
-    from 
+    from
       justifications j
-        join proposition_compounds sc on 
-              j.basis_type = $1 
+        join proposition_compounds sc on
+              j.basis_type = $1
           and j.basis_id = sc.proposition_compound_id
-      where 
+      where
             j.deleted is null
         and sc.deleted is null
-        and sc.proposition_compound_id = $2 
+        and sc.proposition_compound_id = $2
   `
   const args = [
     JustificationBasisType.PROPOSITION_COMPOUND,
@@ -1048,21 +1048,21 @@ function makePropositionCompoundJustificationClause(propositionCompoundId, justi
 function makeSourceExcerptParaphraseJustificationClause(sourceExcerptParaphraseId, justificationColumns) {
   const select = toSelect(justificationColumns, 'j')
   const sql = `
-    select 
+    select
       ${select}
-    from 
+    from
       justifications j
-        join justification_basis_compounds jbc on 
-              j.basis_type = $1 
+        join justification_basis_compounds jbc on
+              j.basis_type = $1
           and j.basis_id = jbc.justification_basis_compound_id
         join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
         join source_excerpt_paraphrases sep on
-              jbca.entity_type = $2 
+              jbca.entity_type = $2
           and jbca.entity_id = sep.source_excerpt_paraphrase_id
-      where 
+      where
             j.deleted is null
         and sep.deleted is null
-        and sep.source_excerpt_paraphrase_id = $3 
+        and sep.source_excerpt_paraphrase_id = $3
   `
   const args = [
     JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
@@ -1080,34 +1080,34 @@ function makeWritQuoteUrlJustificationClause(url,  justificationColumns) {
   const select = toSelect(justificationColumns, justificationTableAlias)
   return {
     sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join writ_quotes wq on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join writ_quotes wq on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = wq.writ_quote_id
             join writ_quote_url_targets wqut using (writ_quote_id)
             join urls u using (url_id)
           where
-                ${justificationTableAlias}.deleted is null 
+                ${justificationTableAlias}.deleted is null
             and wq.deleted is null
             and wqut.deleted is null
             and u.url = $2
-        
+
         union
-        
-        select 
+
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join writ_quotes wq on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join writ_quotes wq on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = wq.writ_quote_id
             join writ_quote_urls wqu using (writ_quote_id)
             join urls u using (url_id)
           where
-                ${justificationTableAlias}.deleted is null 
+                ${justificationTableAlias}.deleted is null
             and wq.deleted is null
             and wqu.deleted is null
             and u.url = $2
@@ -1126,15 +1126,15 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
     // Proposition compound propositions
     {
       sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join proposition_compounds sc on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join proposition_compounds sc on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = sc.proposition_compound_id
             join proposition_compound_atoms sca using (proposition_compound_id)
-          where 
+          where
                 ${justificationTableAlias}.deleted is null
             and sc.deleted is null
             and sca.proposition_id = $2
@@ -1147,18 +1147,18 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
     // compound justification propositions
     {
       sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join justification_basis_compounds jbc on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join justification_basis_compounds jbc on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = jbc.justification_basis_compound_id
             join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
-            join propositions s on 
+            join propositions s on
                   jbca.entity_type = $2
               and jbca.entity_id = s.proposition_id
-          where 
+          where
                 ${justificationTableAlias}.deleted is null
             and jbc.deleted is null
             and s.proposition_id = $3
@@ -1172,20 +1172,20 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
     // paraphrasing propositions
     {
       sql: `
-        select 
+        select
           ${select}
-        from 
+        from
           justifications ${justificationTableAlias}
-            join justification_basis_compounds jbc on 
-                  ${justificationTableAlias}.basis_type = $1 
+            join justification_basis_compounds jbc on
+                  ${justificationTableAlias}.basis_type = $1
               and ${justificationTableAlias}.basis_id = jbc.justification_basis_compound_id
             join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
             join source_excerpt_paraphrases sep on
                   jbca.entity_type = $2
               and jbca.entity_id = sep.source_excerpt_paraphrase_id
-            join propositions ps on 
+            join propositions ps on
               sep.paraphrasing_proposition_id = ps.proposition_id
-          where 
+          where
                 ${justificationTableAlias}.deleted is null
             and jbc.deleted is null
             and sep.deleted is null
@@ -1335,7 +1335,7 @@ function makeLimitedJustificationsClause(logger, filters, sorts, count, isContin
 
   args.push(count)
   const sql = `
-    select ${tableAlias}.* 
+    select ${tableAlias}.*
     from (
       ${renumberedFilteredJustificationClauseSqls.join('\n union \n')}
     ) ${tableAlias}
@@ -1378,6 +1378,8 @@ function getNewJustificationRootPolarity(justification, logger, database) {
           // root justifications have root polarity equal to their polarity
           return justification.polarity
         case JustificationTargetType.JUSTIFICATION:
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           return getTargetRootPolarity(logger, database, justification)
             .then(rootPolarity => {
               assert(justification.polarity === JustificationPolarity.NEGATIVE, "Justifications targeting justifications must be negative")

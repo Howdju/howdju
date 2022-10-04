@@ -8,9 +8,9 @@ import {LOCATION_CHANGE, push, replace} from 'connected-react-router'
 
 import {
   httpStatusCodes,
-  isTruthy,
   JustificationRootTargetType,
   newExhaustedEnumError,
+  utcNowIsAfter,
 } from 'howdju-common'
 
 import t, {
@@ -21,7 +21,7 @@ import t, {
 import paths from "../paths"
 import mainSearcher from '../mainSearcher'
 import {
-  selectAuthToken,
+  selectAuthTokenExpiration,
   selectLoginRedirectLocation,
 } from "../selectors"
 import {
@@ -132,6 +132,11 @@ export function* goTo() {
     } = action.payload
     yield put(push(paths.tag(tag)))
   })
+
+  yield takeEvery(str(goto.writQuote), function* goToWritQuoteWorker(action) {
+    const {writQuote} = action.payload
+    yield put(push(paths.writQuote(writQuote)))
+  })
 }
 
 export function* redirectHomeFromMissingRootTarget() {
@@ -170,14 +175,18 @@ export function* redirectHomeFromMissingRootTarget() {
 export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication() {
   yield takeEvery(LOCATION_CHANGE, function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthenticationWorker() {
     yield* tryWaitOnRehydrate()
-    const isAuthenticated = isTruthy(yield select(selectAuthToken))
-    const doesPathRequireAuthentication = () => some([
+    const authTokenExpiration = yield select(selectAuthTokenExpiration)
+    const isExpired = dateTimeString => utcNowIsAfter(dateTimeString)
+    const isAuthenticated = authTokenExpiration && !isExpired(authTokenExpiration)
+    const doesPathRequireAuthentication = some([
+      routeIds.submitSourceExcerpt,
       routeIds.createProposition,
-      routeIds.submit,
+      routeIds.createJustification,
+      routeIds.submitJustificationViaQueryString,
     ], isActivePath)
-    if (!isAuthenticated && doesPathRequireAuthentication()) {
-      const routerLocation = history.location
-      yield put(goto.login(routerLocation))
+    if (!isAuthenticated && doesPathRequireAuthentication) {
+      const loginRedirectLocation = history.location
+      yield put(goto.login(loginRedirectLocation))
     }
   })
 }

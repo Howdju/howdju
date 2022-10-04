@@ -33,19 +33,19 @@ class PerspectivesDao {
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join justification_votes v on 
+        left join justification_votes v on
               j.justification_id = v.justification_id
           and v.user_id = $1
           and v.deleted IS NULL
         ` :
       ''
     const perspectiveJustificationsSql = `
-      select 
+      select
           p.perspective_id
         , p.creator_user_id as perspective_creator_user_id
         , j.*
         ${votesSelectSql}
-      from perspectives p 
+      from perspectives p
         join perspective_justifications pj on
               p.is_featured
           and p.deleted is null
@@ -61,6 +61,8 @@ class PerspectivesDao {
         const transitiveRowsPromise =
           this._readFeaturedPerspectiveJustificationTransitiveJustifications(userId, 1, 4, rows)
         if (rows.length > 0) {
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           return Promise.all([
             transitiveRowsPromise,
             this._readFeaturedPerspectivesCounteredJustifications(userId, 1, rows),
@@ -95,7 +97,7 @@ class PerspectivesDao {
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join justification_votes v on 
+        left join justification_votes v on
               j${targetDepth}.justification_id = v.justification_id
           and v.user_id = $1
           and v.deleted IS NULL
@@ -117,19 +119,19 @@ class PerspectivesDao {
         and j${currentDepth}.deleted is null
         and j${currentDepth}.root_target_type = $4
         and p.proposition_id = j${currentDepth}.root_target_id
-        
+
     `)
     const sql = `
-      select 
+      select
           p.perspective_id
         , j${targetDepth}.*
         ${votesSelectSql}
-      from perspectives p 
+      from perspectives p
           join perspective_justifications pj on
                 p.is_featured
             and p.deleted is null
             and p.perspective_id = pj.perspective_id
-          join justifications j0 on 
+          join justifications j0 on
                 pj.justification_id = j0.justification_id
             and j0.deleted is null
           ${transitiveSql}
@@ -162,7 +164,7 @@ class PerspectivesDao {
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join justification_votes v on 
+        left join justification_votes v on
               j${targetHeight}.justification_id = v.justification_id
           and v.user_id = $1
           and v.deleted IS NULL
@@ -174,16 +176,16 @@ class PerspectivesDao {
                 and j${currentHeight}.deleted is null`)
     const justificationsJoinSql = join(justificationsJoinSqls, '\n')
     const counteredJustificationsSql = `
-            select 
+            select
                 p.perspective_id
               , j${targetHeight}.*
               ${votesSelectSql}
-            from perspectives p 
+            from perspectives p
               join perspective_justifications pj on
                     p.is_featured
                 and p.deleted is null
                 and p.perspective_id = pj.perspective_id
-              join justifications j0 on 
+              join justifications j0 on
                     pj.justification_id = j0.justification_id
                 and j0.deleted is null
               ${justificationsJoinSql}

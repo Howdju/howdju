@@ -99,12 +99,12 @@ const urlSchema = Joi.object().keys({
     date: Joi.date().utc(),
     anchors: Joi.array().min(1).items(Joi.object()
       .when('type', {is: UrlTargetAnchorType.TEXT_QUOTE, then: Joi.object({
-          exact: Joi.string(),
-          prefix: Joi.string(),
-          suffix: Joi.string(),
-          start: Joi.number(),
-          end: Joi.number(),
-        })}))
+        exact: Joi.string(),
+        prefix: Joi.string(),
+        suffix: Joi.string(),
+        start: Joi.number(),
+        end: Joi.number(),
+      })}))
   })
 })
   .when(idMissing, {

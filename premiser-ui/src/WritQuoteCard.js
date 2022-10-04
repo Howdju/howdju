@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import {Card, CardText} from 'react-md'
+import {Card, CardText, FontIcon, ListItem, MenuButton} from 'react-md'
 import cn from 'classnames'
 
 import ExpandableChildContainer from './ExpandableChildContainer'
 import WritQuoteEntityViewer from './WritQuoteEntityViewer'
 
 import './WritQuoteCard.scss'
+import { combineIds } from './viewModels'
+import { newUnimplementedError } from 'howdju-common'
 
 export default class WritQuoteCard extends Component {
 
@@ -16,11 +18,38 @@ export default class WritQuoteCard extends Component {
       writQuote,
       className,
       showUrls,
+      doHideControls,
       ...rest
     } = this.props
 
+    const menuItems = [
+      <ListItem
+        primaryText="Create appearance"
+        key="createAppearance"
+        leftIcon={<FontIcon>add</FontIcon>}
+        onClick={() => {throw newUnimplementedError()}}
+      />,
+      <ListItem
+        primaryText="Create justification"
+        key="createJustification"
+        leftIcon={<FontIcon>add</FontIcon>}
+        onClick={() => {throw newUnimplementedError()}}
+      />,
+    ]
+    const menuButton = (
+      <MenuButton
+        icon
+        id={combineIds(id, 'menu')}
+        className={cn({hidden: doHideControls})}
+        menuClassName="context-menu"
+        children={'more_vert'}
+        position={MenuButton.Positions.TOP_RIGHT}
+        menuItems={menuItems}
+      />
+    )
+
     return (
-      <Card {...rest}
+      <Card
             className={cn(className, "entity-card")}
       >
         <CardText>
@@ -30,6 +59,7 @@ export default class WritQuoteCard extends Component {
             expandableChildComponent={WritQuoteEntityViewer}
             writQuote={writQuote}
             showUrls={showUrls}
+            menu={menuButton}
           />
         </CardText>
       </Card>

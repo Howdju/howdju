@@ -1,9 +1,9 @@
-const {
+import {
   ContentReportTypesArray,
   EntityTypeArray,
-} = require('./enums')
+} from './enums';
 
-const schemaSettings = {
+export const schemaSettings = {
   propositionTextMaxLength: 512,
   tagNameMaxLength: 64,
   writQuoteQuoteTextMaxLength: 4096,
@@ -22,7 +22,7 @@ const schemaSettings = {
   reportContentDescriptionMaxLength: 4096,
 }
 
-const definitionsSchema = {
+export const definitionsSchema = {
   $id: "https://howdju.com/schemas/definitions.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Definitions",
@@ -295,19 +295,13 @@ const accountSettings = {
   }
 }
 
-
-
-module.exports = {
-  schemaSettings,
-  schemas: {
-    accountSettings,
-    contentReport,
-    passwordResetRequest,
-    passwordResetConfirmation,
-    persorg,
-    registrationRequest,
-    registrationConfirmation,
-    user,
-  },
-  definitionsSchema,
-}
+export const schemas = {
+  accountSettings,
+  contentReport,
+  passwordResetRequest,
+  passwordResetConfirmation,
+  persorg,
+  registrationRequest,
+  registrationConfirmation,
+  user,
+};

@@ -8,10 +8,11 @@ const {
 const {selectRoute} = require('./route')
 
 const mockAppProvider = {
-  logger: mockLogger
+  logger: mockLogger,
 }
 
 describe('routes', () => {
+
 
   test('readProposition route path should match a proposition path', () => {
     const path = 'propositions/2'

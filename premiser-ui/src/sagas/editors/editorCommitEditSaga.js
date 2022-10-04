@@ -21,17 +21,19 @@ import {
 import {
   selectEditorState,
 } from "../../selectors"
-import {EditorTypes} from "../../reducers/editors"
+import {EditorTypes, EntityTypeDescriptions} from "../../reducers/editors"
 import {
   api,
   editors,
   str,
+  ui,
 } from "../../actions"
 import {consolidateNewJustificationEntities} from '../../viewModels'
 import {
   newEditorCommitResultError,
 } from "../../uiErrors"
 import {callApiForResource} from '../resourceApiSagas'
+import { logger } from '@/logger'
 
 
 const CrudActions = arrayToObject([
@@ -94,7 +96,8 @@ const editorTypeCommitApiResourceActions = {
     }
   },
   [EditorTypes.WRIT_QUOTE]: {
-    [CrudActions.UPDATE]: api.updateWritQuote
+    [CrudActions.CREATE]: api.createWritQuote,
+    [CrudActions.UPDATE]: api.updateWritQuote,
   },
   [EditorTypes.LOGIN_CREDENTIALS]: {
     [CrudActions.CREATE]: api.login,
@@ -154,6 +157,14 @@ export function* editorCommitEdit() {
       if (resultAction.error) {
         return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, resultAction.payload), meta))
       } else {
+        if (resultAction.payload.alreadyExists) {
+          let entityTypeDescription = EntityTypeDescriptions[editorType]
+          if (!entityTypeDescription) {
+            logger.warn(`No EntityTypeDesription for editorType ${editorType}`)
+            entityTypeDescription = 'entity'
+          }
+          yield put(ui.addToast(`That ${entityTypeDescription} already exists.`))
+        }
         return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload, meta))
       }
     } catch (error) {

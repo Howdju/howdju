@@ -451,6 +451,8 @@ function deleteCounterJustificationsToJustificationIds (
       if (justificationIds.length === 0) {
         return deletedJustificationIds
       }
+      // TODO(1,2,3): remove exception
+      // eslint-disable-next-line promise/no-nesting
       return justificationsDao.deleteCounterJustificationsToJustificationIds(justificationIds, now)
         .then(currentlyDeletedJustificationIds =>
           deleteCounterJustificationsToJustificationIds(justificationsDao, currentlyDeletedJustificationIds, userId, now,

@@ -110,7 +110,7 @@ class LoginPage extends Component {
                       id="email"
                       name="email"
                       value={email}
-                      autocomplete="username"
+                      autoComplete="username"
                       required
                       onPropertyChange={this.onPropertyChange}
                       onSubmit={this.onSubmit}
@@ -122,7 +122,7 @@ class LoginPage extends Component {
                       name="password"
                       autofill="current-password"
                       value={password}
-                      autocomplete="current-password"
+                      autoComplete="current-password"
                       required
                       onPropertyChange={this.onPropertyChange}
                       onSubmit={this.onSubmit}

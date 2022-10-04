@@ -6,6 +6,7 @@ import {goto} from "../actions"
 export default handleActions({
   [LOCATION_CHANGE]: (state, action) => {
     // If the user navigates anywhere other than the login page, clear any login redirection
+    // TODO(88): it should be action.payload.location.pathname
     if (action.payload.pathname !== paths.login()) {
       return {...state, loginRedirectLocation: null}
     }

@@ -1,4 +1,5 @@
 const {ArgumentParser} = require('argparse')
+const {promisify} = require('bluebird')
 const read = require('read')
 
 const {logger} = require('howdju-ops')
@@ -16,12 +17,7 @@ const parser = new ArgumentParser({
 parser.add_argument('--email', {required: true})
 const args = parser.parse_args()
 
-read({ prompt: `Please enter the new password for ${args.email}:`, silent: true }, setUserPassword)
-
-function setUserPassword(error, password) {
-  if (error) throw error
-
-  return usersService.updatePasswordForEmail(args.email, password)
-    .catch(err => logger.error({err}))
-    .finally(() => pool.end())
-}
+promisify(read)({ prompt: `Please enter the new password for ${args.email}:`, silent: true })
+  .then(password => usersService.updatePasswordForEmail(args.email, password))
+  .finally(() => pool.end())
+  .catch(err => logger.error({err}))

@@ -54,38 +54,42 @@ exports.JustificationScoresService = class JustificationScoresService {
     const startedAt = utcNow()
     const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
-      /* eslint-disable indent */
+      // TODO(1,2,3): remove exception
+      // eslint-disable-next-line promise/no-nesting
       .then( (job) => Promise.all([
-          this.justificationVotesDao.readVotes(),
-          this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
-        ])
-          .then( ([votes, deletions]) => {
-            this.logger.info(`Deleted ${deletions.length} scores`)
-            this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
-            return votes
-          })
-          .then( (votes) => this.processVoteScores(job, votes, this.createJustificationScore))
-          .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
-          .then( () => {
-            const completedAt = utcNow()
-            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
-          })
-          .catch( (err) => {
-            const completedAt = utcNow()
-            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
-            throw err
-          })
+        this.justificationVotesDao.readVotes(),
+        this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+      ])
+        .then( ([votes, deletions]) => {
+          this.logger.info(`Deleted ${deletions.length} scores`)
+          this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
+          return votes
+        })
+        .then( (votes) => this.processVoteScores(job, votes, this.createJustificationScore))
+        .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
+        .then( () => {
+          const completedAt = utcNow()
+          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+        })
+        .catch( (err) => {
+          const completedAt = utcNow()
+          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+          throw err
+        })
       )
-    /* eslint-enable indent */
   }
 
   updateJustificationScoresUsingUnscoredVotes() {
     const startedAt = utcNow()
     this.logger.silly(`Starting updateJustificationScoresUsingUnscoredVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
-      /* eslint-disable indent */
+
+      // TODO(1,2,3): remove exception
+      // eslint-disable-next-line promise/no-nesting
       .then( (job) =>
-          this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM)
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
+        this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM)
           .then( (votes) => {
             this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
             return votes
@@ -103,7 +107,6 @@ exports.JustificationScoresService = class JustificationScoresService {
             throw err
           })
       )
-    /* eslint-enable indent */
   }
 
   processVoteScores(job, votes, processVote) {

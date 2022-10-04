@@ -120,6 +120,8 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
       if (isPropositionExtant && isSourceExcerptExtant) {
         service.logger.debug(`Found extant proposition (ID ${proposition.id}) and sourceExcerpt (ID ${sourceExcerptEntity.id}  Attempting to find extant sourceExcerptParaphrase from them.`)
         const sourceExcerptType = sourceExcerptParaphrase.sourceExcerpt.type
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         return service.sourceExcerptParaphrasesDao.readSourceExcerptHavingPropositionIdAndSourceExcerptTypeAndId(proposition.id,
           sourceExcerptType, sourceExcerptEntity.id)
           .then ( (extantSourceExcerptParaphrase) => {
@@ -136,6 +138,8 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
             service.logger.debug(`Did not find extant sourceExcerptParaphrase based upon proposition and sourceExcerpt`)
             sourceExcerptParaphrase.paraphrasingProposition = proposition
             sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
+            // TODO(1,2,3): remove exception
+            // eslint-disable-next-line promise/no-nesting
             return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
               .then( (sourceExcerptParaphrase) => {
                 service.logger.debug(`Created sourceExcerptParaphrase (ID ${sourceExcerptParaphrase.id})`)
@@ -148,6 +152,8 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
       }
       sourceExcerptParaphrase.paraphrasingProposition = proposition
       sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
+      // TODO(1,2,3): remove exception
+      // eslint-disable-next-line promise/no-nesting
       return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
         .then( (sourceExcerptParaphrase) => {
           service.logger.debug(`Created sourceExcerptParaphrase (ID ${sourceExcerptParaphrase.id})`)

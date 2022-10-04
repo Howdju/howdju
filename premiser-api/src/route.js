@@ -42,7 +42,6 @@ const noContent = (appProvider, args) => {
     httpStatusCode: httpStatusCodes.NO_CONTENT
   })
 }
-/* eslint-enable no-unused-vars */
 const notFound = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.NOT_FOUND,
   body,
@@ -547,6 +546,26 @@ const routes = [
   /*
    * Writ quotes
    */
+  {
+    id: 'createWritQuote',
+    path: 'writ-quotes',
+    method: httpMethods.POST,
+    handler: (appProvider, {
+      callback,
+      request: {
+        authToken,
+        body: {
+          writQuote
+        }
+      }
+    }) => Promise.resolve(appProvider.writQuotesService.createWritQuote({authToken, writQuote}))
+      .then(({writQuote, alreadyExists}) => ok({callback, body: {writQuote, alreadyExists}}))
+      .catch(
+        EntityValidationError,
+        EntityConflictError,
+        UserActionsConflictError,
+        rethrowTranslatedErrors('writQuote'))
+  },
   {
     id: 'readWritQuotes',
     path: 'writ-quotes',

@@ -54,11 +54,13 @@ const ShareDebugScreen: React.FC<{
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}>
+      style={backgroundStyle}
+    >
       <View
         style={{
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        }}>
+        }}
+      >
         <Button
           title="Open Submit Page"
           onPress={async () => openUrl(submitUrl)}

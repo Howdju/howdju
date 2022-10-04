@@ -1,10 +1,6 @@
-const assign = require('lodash/assign')
-module.exports = assign(
-  {},
-  require('./apiErrorCodes'),
-  require('./authorizationErrorCodes'),
-  require('./entityConflictCodes'),
-  require('./entityErrorCodes'),
-  require('./modelErrorCodes'),
-  require('./userActionsConflictCodes')
-)
+export * from './apiErrorCodes'
+export * from './authorizationErrorCodes'
+export * from './entityConflictCodes'
+export * from './entityErrorCodes'
+export * from './modelErrorCodes'
+export * from './userActionsConflictCodes'

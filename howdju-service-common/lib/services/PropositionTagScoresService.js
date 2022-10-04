@@ -29,27 +29,28 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
     const startedAt = utcNow()
     const jobType = JobTypes.SCORE_PROPOSITION_TAGS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
-      /* eslint-disable indent */
+      // TODO(1,2,3): remove exception
+      // eslint-disable-next-line promise/no-nesting
       .then( (job) => Promise.all([
-          this.propositionTagVotesDao.readVotes(),
-          this.propositionTagScoresDao.deleteScoresForType(PropositionTagScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
-        ])
-          .then( ([votes, deletions]) => {
-            this.logger.info(`Deleted ${deletions.length} scores`)
-            this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
-            return votes
-          })
-          .then( (votes) => this.processVoteScores(job, votes, this.createPropositionTagScore))
-          .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
-          .then( () => {
-            const completedAt = utcNow()
-            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
-          })
-          .catch( (err) => {
-            const completedAt = utcNow()
-            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
-            throw err
-          })
+        this.propositionTagVotesDao.readVotes(),
+        this.propositionTagScoresDao.deleteScoresForType(PropositionTagScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+      ])
+        .then( ([votes, deletions]) => {
+          this.logger.info(`Deleted ${deletions.length} scores`)
+          this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
+          return votes
+        })
+        .then( (votes) => this.processVoteScores(job, votes, this.createPropositionTagScore))
+        .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
+        .then( () => {
+          const completedAt = utcNow()
+          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+        })
+        .catch( (err) => {
+          const completedAt = utcNow()
+          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+          throw err
+        })
       )
     /* eslint-enable indent */
   }
@@ -58,8 +59,11 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
     const startedAt = utcNow()
     this.logger.silly(`Starting updatePropositionTagScoresUsingUnscoredVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_PROPOSITION_TAGS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
-      /* eslint-disable indent */
+      // TODO(1,2,3): remove exception
+      // eslint-disable-next-line promise/no-nesting
       .then( (job) =>
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         this.propositionTagScoresDao.readUnscoredVotesForScoreType(PropositionTagScoreType.GLOBAL_VOTE_SUM)
           .then( (votes) => {
             this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
@@ -78,14 +82,13 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
             throw err
           })
       )
-    /* eslint-enable indent */
   }
 
   processVoteScores(job, votes, processVote) {
     return Promise.resolve(sumVotesByPropositionIdByTagId(votes, this.logger))
       .then( (voteSumByPropositionIdByTagId) =>
         Promise.all(flatMap(voteSumByPropositionIdByTagId, (voteSumByPropositionId, tagId) => map(voteSumByPropositionId, (voteSum, propositionId) =>
-            processVote.call(this, propositionId, tagId, voteSum, job)
+          processVote.call(this, propositionId, tagId, voteSum, job)
         )))
       )
   }

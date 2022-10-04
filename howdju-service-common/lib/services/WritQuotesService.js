@@ -22,6 +22,7 @@ const {
   SortDirection,
   entityConflictCodes,
   userActionsConflictCodes,
+  utcNow,
 } = require('howdju-common')
 
 const {
@@ -113,6 +114,53 @@ exports.WritQuotesService = class WritQuotesService {
     return this.writQuotesDao.readWritQuotesHavingUrlContainingText(text)
   }
 
+  async createWritQuote({authToken, writQuote}) {
+    const userId = await this.authService.readUserIdForAuthToken(authToken)
+
+    const validationErrors = this.writQuoteValidator.validate(writQuote)
+    if (validationErrors.hasErrors) {
+      throw new EntityValidationError({writQuote: validationErrors})
+    }
+
+    const now = utcNow()
+
+    let writ
+    const equivalentWrit = writ = await this.writsDao.readWritEquivalentTo(writQuote.writ)
+    if (equivalentWrit) {
+      writQuote.writ = equivalentWrit
+
+      const equivalentWritQuote = await this.writQuotesDao.readWritQuoteEquivalentTo(writQuote)
+      if (equivalentWritQuote) {
+        equivalentWritQuote.writ = equivalentWrit
+
+        // Creating an equivalent writQuote will only add URLs.
+        const {addedUrls} = diffUrls(equivalentWritQuote.urls, writQuote.urls)
+        if (addedUrls.length) {
+          const urls = await this.urlsService.readOrCreateUrlsAsUser(addedUrls, userId, now)
+          // TODO(20): use createWritQuoteUrlTarget instead.
+          await this.writQuotesDao.createWritQuoteUrls(equivalentWritQuote, urls, userId, now)
+          equivalentWritQuote.urls = concat(equivalentWritQuote.urls, urls)
+        }
+        return {writQuote: equivalentWritQuote, alreadyExists: true}
+      }
+    } else {
+      writQuote.writ = writ = await this.writsDao.createWrit(writQuote.writ, userId, now)
+    }
+
+    const urls = writQuote.urls
+    writQuote = await this.writQuotesDao.createWritQuote(writQuote, userId, now)
+    writQuote.writ = writ
+
+    writQuote.urls = await this.urlsService.readOrCreateUrlsAsUser(urls, userId, now)
+    // TODO(20): use createWritQuoteUrlTarget instead.
+    await this.writQuotesDao.createWritQuoteUrls(writQuote, writQuote.urls, userId, now)
+
+    this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE,
+      ActionTargetType.WRIT_QUOTE, writQuote.id)
+
+    return {writQuote}
+  }
+
   updateWritQuote({authToken, writQuote}) {
     return this.authService.readUserIdForAuthToken(authToken)
       .then(userId => {
@@ -126,7 +174,7 @@ exports.WritQuotesService = class WritQuotesService {
         userId,
         this.writQuotesDao.hasWritQuoteChanged(writQuote),
         this.writsDao.hasWritChanged(writQuote.writ),
-        diffUrls(this.writQuotesDao, writQuote),
+        getAndDiffUrls(this.writQuotesDao, writQuote),
       ]))
       .then( ([
         userId,
@@ -143,6 +191,8 @@ exports.WritQuotesService = class WritQuotesService {
         if (writQuoteHasChanged) {
           entityConflicts[entityConflictCodes.ANOTHER_WRIT_QUOTE_HAS_SAME_TEXT] =
             this.writQuotesDao.hasEquivalentWritQuotes(writQuote)
+          // A user can't upate a justification basis if others have already
+          // made other actions relying upon its current state.
           assign(userActionConflicts, {
             [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT_QUOTE]:
               this.writQuotesDao.isBasisToJustificationsHavingOtherUsersVotes(userId, writQuote),
@@ -168,13 +218,12 @@ exports.WritQuotesService = class WritQuotesService {
           })
         }
         if (urlDiffs.haveChanged) {
-          // When URLs are votable, ensure that no one has voted them (or at least up-voted them) before deleting
-          // Adding should always be okay
+          // TODO: when URLs are votable, ensure that no one has voted them (or at least up-voted
+          // them) before deleting. Adding should always be okay
         }
 
         return Promise.props({
           userId,
-          now: new Date(),
           writQuoteHasChanged,
           writHasChanged,
           urlDiffs,
@@ -185,7 +234,6 @@ exports.WritQuotesService = class WritQuotesService {
       })
       .then( ({
         userId,
-        now,
         hasPermission,
         entityConflicts,
         userActionConflicts,
@@ -219,24 +267,27 @@ exports.WritQuotesService = class WritQuotesService {
           this.logger.info(`User ${userId} overriding userActionsConflictCodes ${userActionsConflictCodes}`)
         }
 
-        return {userId, now, writQuoteHasChanged, writHasChanged, urlDiffs}
+        return {userId, writQuoteHasChanged, writHasChanged, urlDiffs}
       })
-      .then( ({userId, now, writQuoteHasChanged, writHasChanged, urlDiffs}) => Promise.all([
-        userId,
-        now,
-        writQuoteHasChanged ?
-          this.writQuotesDao.updateWritQuote(writQuote) :
-          writQuote,
-        writHasChanged ?
-          this.writsService.updateWritAsUser(userId, writQuote.writ, now) :
-          writQuote.writ,
-        urlDiffs.haveChanged ?
-          this.updateWritQuoteUrlsAsUser(writQuote, urlDiffs, userId, now) :
-          writQuote.urls,
-        writQuoteHasChanged,
-        writHasChanged,
-        urlDiffs.haveChanged,
-      ]))
+      .then( ({userId, writQuoteHasChanged, writHasChanged, urlDiffs}) => {
+        const now = utcNow()
+        return Promise.all([
+          userId,
+          now,
+          writQuoteHasChanged ?
+            this.writQuotesDao.updateWritQuote(writQuote) :
+            writQuote,
+          writHasChanged ?
+            this.writsService.updateWritAsUser(userId, writQuote.writ, now) :
+            writQuote.writ,
+          urlDiffs.haveChanged ?
+            this.updateWritQuoteUrlsAsUser(writQuote, urlDiffs, userId, now) :
+            writQuote.urls,
+          writQuoteHasChanged,
+          writHasChanged,
+          urlDiffs.haveChanged,
+        ])
+      })
       .then( ([
         userId,
         now,
@@ -390,6 +441,8 @@ function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
         if (extantWritQuoteUrl) {
           return extantWritQuoteUrl
         }
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         return Promise.all([
           service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now),
           url.target && service.writQuotesDao.createWritQuoteUrlTarget(writQuote, url, userId, now),
@@ -400,17 +453,21 @@ function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
     })
 }
 
-function diffUrls(writQuotesDao, writQuote) {
+function getAndDiffUrls(writQuotesDao, writQuote) {
   return Promise.resolve()
     .then(() => writQuotesDao.readUrlsForWritQuoteId(writQuote.id))
     .then(extantUrls => {
-      const addedUrls = differenceBy(writQuote.urls, [extantUrls], url => url.url)
-      const removedUrls = differenceBy(extantUrls, [writQuote.urls], url => url.url)
-      const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
-      return {
-        addedUrls,
-        removedUrls,
-        haveChanged
-      }
+      return diffUrls(extantUrls, writQuote.urls)
     })
+}
+
+function diffUrls(extantUrls, urls) {
+  const addedUrls = differenceBy(urls, extantUrls, url => url.url)
+  const removedUrls = differenceBy(extantUrls, urls, url => url.url)
+  const haveChanged = addedUrls.length > 0 || removedUrls.length > 0
+  return {
+    addedUrls,
+    removedUrls,
+    haveChanged
+  }
 }

@@ -2,4 +2,4 @@
 
 set -e
 
-node bin/check-standalone-schema-validation-code.js
+DEBUG=*,-agentkeepalive npx ts-node bin/check-standalone-schema-validation-code.js

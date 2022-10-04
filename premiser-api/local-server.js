@@ -55,7 +55,7 @@ app.use('/api/*', function (req, res) {
   }
 
   // Introduce artificial latency
-  setTimeout(() => handler(event, context, callback), 500)
+  setTimeout(() => handler(event, context, callback), parseInt(process.env.LOCAL_API_SERVER_ARTIFICIAL_LATENCY_MS))
 })
 
 module.exports.app = app

@@ -8,6 +8,7 @@ import forEach from 'lodash/forEach'
 import get from 'lodash/get'
 import has from 'lodash/has'
 import isNumber from 'lodash/isNumber'
+import isString from 'lodash/isString'
 import includes from 'lodash/includes'
 import merge from 'lodash/merge'
 import reduce from 'lodash/reduce'
@@ -16,7 +17,6 @@ import { handleActions } from 'redux-actions'
 
 import {
   apiErrorCodes,
-  arrayToObject,
   insertAt,
   JustificationRootTargetType,
   makeNewPropositionAtom,
@@ -48,24 +48,28 @@ const EditorActions = reduce(editors, (editorActions, actionCreator) => {
   return editorActions
 }, {})
 
-export const EditorTypes = arrayToObject([
-  'DEFAULT',
-  'PROPOSITION',
-  'PROPOSITION_COMPOUND',
-  'JUSTIFICATION_BASIS_COMPOUND',
-  'WRIT_QUOTE',
-  'COUNTER_JUSTIFICATION',
+export const EditorTypes = {
+  DEFAULT: 'DEFAULT',
+  PROPOSITION: 'PROPOSITION',
+  PROPOSITION_COMPOUND: 'PROPOSITION_COMPOUND',
+  JUSTIFICATION_BASIS_COMPOUND: 'JUSTIFICATION_BASIS_COMPOUND',
+  WRIT_QUOTE: 'WRIT_QUOTE',
+  COUNTER_JUSTIFICATION: 'COUNTER_JUSTIFICATION',
   /* e.g. new justification dialog */
-  'NEW_JUSTIFICATION',
+  NEW_JUSTIFICATION: 'NEW_JUSTIFICATION',
   /* e.g. Proposition justification page */
-  'PROPOSITION_JUSTIFICATION',
-  'LOGIN_CREDENTIALS',
-  'REGISTRATION_REQUEST',
-  'REGISTRATION_CONFIRMATION',
-  'PERSORG',
-  'ACCOUNT_SETTINGS',
-  'CONTENT_REPORT',
-])
+  PROPOSITION_JUSTIFICATION: 'PROPOSITION_JUSTIFICATION',
+  LOGIN_CREDENTIALS: 'LOGIN_CREDENTIALS',
+  REGISTRATION_REQUEST: 'REGISTRATION_REQUEST',
+  REGISTRATION_CONFIRMATION: 'REGISTRATION_CONFIRMATION',
+  PERSORG: 'PERSORG',
+  ACCOUNT_SETTINGS: 'ACCOUNT_SETTINGS',
+  CONTENT_REPORT: 'CONTENT_REPORT',
+}
+
+export const EntityTypeDescriptions = {
+  [EditorTypes.WRIT_QUOTE]: 'WritQuote',
+}
 
 const defaultEditorState = {
   editEntity: null,
@@ -92,6 +96,7 @@ const editorErrorReducer = (errorKey) => (state, action) => {
   return state
 }
 
+// TODO(#83): replace bespoke list reducers with addListItem/removeListItem
 const makeAddAtomReducer = (atomsPath, atomMaker) => (state, action) => {
   const editEntity = {...state.editEntity}
   const atoms = clone(get(editEntity, atomsPath))
@@ -152,6 +157,27 @@ const defaultEditorActions = {
     })
     const dirtyFields = {...state.dirtyFields, ...newDirtyFields}
     return {...state, editEntity, dirtyFields}
+  },
+  [editors.addListItem]: (state, action) => {
+    const {itemIndex, listPathMaker, itemFactory} = action.payload
+    const editEntity = {...state.editEntity}
+
+    const listPath = isString(listPathMaker) ? listPathMaker : listPathMaker(action.payload)
+    const list = clone(get(editEntity, listPath))
+    const insertIndex = isNumber(itemIndex) ? itemIndex : list.length
+    insertAt(list, insertIndex, itemFactory())
+    set(editEntity, listPath, list)
+    return {...state, editEntity}
+  },
+  [editors.removeListItem]: (state, action) => {
+    const {itemIndex, listPathMaker} = action.payload
+    const editEntity = {...state.editEntity}
+
+    const listPath = isString(listPathMaker) ? listPathMaker : listPathMaker(action.payload)
+    const list = clone(get(editEntity, listPath))
+    removeAt(list, itemIndex)
+    set(editEntity, listPath, list)
+    return {...state, editEntity}
   },
   [editors.commitEdit]: (state, action) => ({
     ...state,

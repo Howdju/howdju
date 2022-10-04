@@ -67,6 +67,8 @@ exports.PropositionTagVotesService = class PropositionTagVotesService {
             this.tagsService.readTagForId(extantVote.tag.id),
           ])
         }
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         return this.tagsService.readOrCreateValidTagAsUser(userId, propositionTagVote.tag, now)
           .then((tag) => Promise.all([
             this.propositionTagVotesDao.readPropositionTagVote(userId, propositionTagVote.proposition.id, tag.id),
@@ -95,6 +97,8 @@ exports.PropositionTagVotesService = class PropositionTagVotesService {
           return redundantVote
         }
         propositionTagVote.tag = tag
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         return this.propositionTagVotesDao.createPropositionTagVote(userId, propositionTagVote, now)
           .then((propositionTagVote) => {
             propositionTagVote.tag = tag

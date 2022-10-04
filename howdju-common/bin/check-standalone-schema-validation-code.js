@@ -1,3 +1,5 @@
+const debug = require('debug')('howdju:howdju-common')
+
 checkStandaloneSchemaValidationCode()
 
 /**
@@ -22,4 +24,6 @@ function checkStandaloneSchemaValidationCode() {
       " Please run `yarn run gen-standalone-schema-validation` and commit the" +
       " result.")
   }
+
+  debug('Standalone schema validation is up-to-date.')
 }

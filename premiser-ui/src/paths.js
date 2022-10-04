@@ -67,6 +67,8 @@ class Paths {
 
   persorg = (persorg) => `/persorgs/${persorg.id}/${toSlug(persorg.name)}`
 
+  writQuote = (writQuote) => `/writ-quotes/${writQuote.id}/${toSlug(writQuote.writ.title)}`
+
   writUsages = writ => this.searchJustifications({writId: writ.id})
   writQuoteUsages = (writQuote) => {
     if (!writQuote.id) {
