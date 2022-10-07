@@ -4,7 +4,7 @@ const map = require('lodash/map')
 
 const {
   ActionType,
-  ActionTargetType,
+  ActionTargetTypes,
 } = require('howdju-common')
 
 
@@ -30,7 +30,7 @@ exports.UrlsService = class UrlsService {
         return this.urlsDao.createUrl(url, userId, now)
       })
       .then( (url) => {
-        this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE, ActionTargetType.URL, url.id)
+        this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE, ActionTargetTypes.URL, url.id)
         return url
       })
   }

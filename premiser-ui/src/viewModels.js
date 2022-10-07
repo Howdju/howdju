@@ -18,12 +18,12 @@ import truncate from 'lodash/truncate'
 import config from './config'
 import {
   isFalsey,
-  JustificationBasisCompoundAtomType,
-  JustificationBasisType,
-  JustificationRootTargetType,
-  JustificationTargetType,
+  JustificationBasisCompoundAtomTypes,
+  JustificationBasisTypes,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
   newExhaustedEnumError,
-  SourceExcerptType,
+  SourceExcerptTypes,
 } from 'howdju-common'
 
 import * as characters from './characters'
@@ -61,14 +61,14 @@ export const removeJustificationBasisCompoundIds = (justificationBasisCompound) 
     delete atom.id
     delete atom.compoundId
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.PROPOSITION:
+      case JustificationBasisCompoundAtomTypes.PROPOSITION:
         removePropositionIds(atom.entity)
         break
-      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+      case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
         removeSourceExcerptParaphraseIds(atom.entity)
         break
       default:
-        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
     }
   })
 }
@@ -77,34 +77,34 @@ export const removeSourceExcerptParaphraseIds = (sourceExcerptParaphrase) => {
   delete sourceExcerptParaphrase.id
   delete sourceExcerptParaphrase.sourceExcerpt.entity.id
   switch (sourceExcerptParaphrase.sourceExcerpt.type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       delete sourceExcerptParaphrase.sourceExcerpt.entity.writ.id
       break
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       delete sourceExcerptParaphrase.sourceExcerpt.entity.pic.id
       break
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       delete sourceExcerptParaphrase.sourceExcerpt.entity.vid.id
       break
     default:
-      throw newExhaustedEnumError('SourceExcerptType', sourceExcerptParaphrase.sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerptParaphrase.sourceExcerpt.type)
   }
 }
 
 export const consolidateNewJustificationEntities = (newJustification) => {
   const justification = cloneDeep(newJustification)
   switch (justification.basis.type) {
-    case JustificationBasisType.PROPOSITION_COMPOUND:
+    case JustificationBasisTypes.PROPOSITION_COMPOUND:
       justification.basis.entity = justification.basis.propositionCompound
       break
-    case JustificationBasisType.WRIT_QUOTE:
+    case JustificationBasisTypes.WRIT_QUOTE:
       justification.basis.entity = justification.basis.writQuote
       break
-    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+    case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND:
       justification.basis.entity = consolidateNewJustificationBasisCompoundEntities(justification.basis.justificationBasisCompound)
       break
     default:
-      throw newExhaustedEnumError('JustificationBasisType', justification.basis.type)
+      throw newExhaustedEnumError('JustificationBasisTypes', justification.basis.type)
   }
   delete justification.basis.propositionCompound
   delete justification.basis.writQuote
@@ -117,10 +117,10 @@ export function consolidateNewJustificationBasisCompoundEntities(newJustificatio
   const justificationBasisCompound = cloneDeep(newJustificationBasisCompound)
   justificationBasisCompound.atoms = map(justificationBasisCompound.atoms, atom => {
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.PROPOSITION:
+      case JustificationBasisCompoundAtomTypes.PROPOSITION:
         atom.entity = atom.proposition
         break
-      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+      case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
         atom.entity = consolidateNewSourceExcerptParaphraseEntities(atom.sourceExcerptParaphrase)
         break
     }
@@ -137,13 +137,13 @@ export function consolidateNewSourceExcerptParaphraseEntities(newSourceExcerptPa
   const sourceExcerptParaphrase = cloneDeep(newSourceExcerptParaphrase)
   const sourceExcerpt = sourceExcerptParaphrase.sourceExcerpt
   switch (sourceExcerpt.type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       sourceExcerpt.entity = sourceExcerpt.writQuote
       break
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       sourceExcerpt.entity = sourceExcerpt.picRegion
       break
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       sourceExcerpt.entity = sourceExcerpt.vidSegment
       break
   }
@@ -165,47 +165,47 @@ export function translateNewJustificationErrors(newJustification, errors) {
   const newJustificationErrors = cloneDeep(errors)
   const basisFieldErrors = newJustificationErrors.fieldErrors.basis.fieldErrors
   switch (newJustification.basis.type) {
-    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND: {
+    case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND: {
       basisFieldErrors.justificationBasisCompound = errors.fieldErrors.basis.fieldErrors.entity
       const atomItemErrors = get(basisFieldErrors, 'justificationBasisCompound.fieldErrors.atoms.itemErrors')
       forEach(atomItemErrors, (itemErrors, i) => {
         const atom = newJustification.basis.justificationBasisCompound.atoms[i]
         switch (atom.type) {
-          case JustificationBasisCompoundAtomType.PROPOSITION:
+          case JustificationBasisCompoundAtomTypes.PROPOSITION:
             itemErrors.fieldErrors.proposition = itemErrors.fieldErrors.entity
             break
-          case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
+          case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE: {
             itemErrors.fieldErrors.sourceExcerptParaphrase = itemErrors.fieldErrors.entity
             const sourceExcerptFieldErrors = itemErrors.fieldErrors.sourceExcerptParaphrase.fieldErrors.sourceExcerpt.fieldErrors
             switch (atom.sourceExcerptParaphrase.sourceExcerpt.type) {
-              case SourceExcerptType.WRIT_QUOTE:
+              case SourceExcerptTypes.WRIT_QUOTE:
                 sourceExcerptFieldErrors.writQuote = sourceExcerptFieldErrors.entity
                 break
-              case SourceExcerptType.PIC_REGION:
+              case SourceExcerptTypes.PIC_REGION:
                 sourceExcerptFieldErrors.picRegion = sourceExcerptFieldErrors.entity
                 break
-              case SourceExcerptType.VID_SEGMENT:
+              case SourceExcerptTypes.VID_SEGMENT:
                 sourceExcerptFieldErrors.vidSegment = sourceExcerptFieldErrors.entity
                 break
               default:
-                throw newExhaustedEnumError('SourceExcerptType', atom.sourceExcerptParaphrase.sourceExcerpt.type)
+                throw newExhaustedEnumError('SourceExcerptTypes', atom.sourceExcerptParaphrase.sourceExcerpt.type)
             }
             break
           }
           default:
-            throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+            throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
         }
       })
       break
     }
-    case JustificationBasisType.PROPOSITION_COMPOUND:
+    case JustificationBasisTypes.PROPOSITION_COMPOUND:
       basisFieldErrors.propositionCompound = errors.fieldErrors.basis.fieldErrors.entity
       break
-    case JustificationBasisType.WRIT_QUOTE:
+    case JustificationBasisTypes.WRIT_QUOTE:
       basisFieldErrors.writQuote = errors.fieldErrors.basis.fieldErrors.entity
       break
     default:
-      throw newExhaustedEnumError('JustificationBasisType', newJustification.basis.type)
+      throw newExhaustedEnumError('JustificationBasisTypes', newJustification.basis.type)
   }
 
   return newJustificationErrors
@@ -227,27 +227,27 @@ export function sourceExcerptDescription(sourceExcerpt) {
 
 export function sourceExcerptIconName(sourceExcerpt) {
   switch (sourceExcerpt.type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       return "format_quote"
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       return "photo"
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       return "videocam"
     default:
-      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
   }
 }
 
 export function sourceExcerptSourceDescription(sourceExcerpt) {
   switch (sourceExcerpt.type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       return "writ"
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       return "pic"
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       return "vid"
     default:
-      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
   }
 }
 
@@ -307,22 +307,22 @@ export function makeChip(props) {
 }
 
 export const contextTrailTypeByShortcut = {
-  p: JustificationTargetType.PROPOSITION,
-  s: JustificationTargetType.STATEMENT,
+  p: JustificationTargetTypes.PROPOSITION,
+  s: JustificationTargetTypes.STATEMENT,
 }
 
 export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut)
 
 export const rootTargetNormalizationSchemasByType = {
-  [JustificationRootTargetType.PROPOSITION]: propositionSchema,
-  [JustificationRootTargetType.STATEMENT]: statementSchema,
+  [JustificationRootTargetTypes.PROPOSITION]: propositionSchema,
+  [JustificationRootTargetTypes.STATEMENT]: statementSchema,
 }
 
 export function describeRootTarget(rootTargetType, rootTarget) {
   switch(rootTargetType) {
-    case JustificationRootTargetType.PROPOSITION:
+    case JustificationRootTargetTypes.PROPOSITION:
       return rootTarget.text
-    case JustificationRootTargetType.STATEMENT: {
+    case JustificationRootTargetTypes.STATEMENT: {
       const descriptionParts = []
       let currSentence = rootTarget
       while (currSentence.sentenceType) {
@@ -333,6 +333,6 @@ export function describeRootTarget(rootTargetType, rootTarget) {
       return join(descriptionParts, " ")
     }
     default:
-      throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
+      throw newExhaustedEnumError('JustificationRootTargetTypes', rootTargetType)
   }
 }

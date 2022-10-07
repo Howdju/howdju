@@ -2,12 +2,12 @@ const Promise = require('bluebird')
 const forEach = require('lodash/forEach')
 
 const {
-  JustificationBasisType,
-  JustificationBasisCompoundAtomType,
-  JustificationRootTargetType,
+  JustificationBasisTypes,
+  JustificationBasisCompoundAtomTypes,
+  JustificationRootTargetTypes,
   newExhaustedEnumError,
   requireArgs,
-  SourceExcerptType,
+  SourceExcerptTypes,
 } = require('howdju-common')
 
 const {
@@ -39,7 +39,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
     } = sourceExcerptParaphrase
     return this.database.query(
       'createSourceExcerptParaphrase',
-      `insert into source_excerpt_paraphrases (paraphrasing_proposition_id, source_excerpt_type, source_excerpt_id, creator_user_id, created) 
+      `insert into source_excerpt_paraphrases (paraphrasing_proposition_id, source_excerpt_type, source_excerpt_id, creator_user_id, created)
       values ($1, $2, $3, $4, $5)
       returning *`,
       [paraphrasingProposition.id, sourceExcerpt.type, sourceExcerpt.entity.id, userId, now]
@@ -78,7 +78,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
     const sql = `
       select
         sep.*
-      from justifications j 
+      from justifications j
           join justification_basis_compounds jbc on
                 j.basis_type = $1
             and j.basis_id = jbc.justification_basis_compound_id
@@ -94,9 +94,9 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
           and sep.deleted is null
     `
     const args = [
-      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-      JustificationRootTargetType.PROPOSITION,
+      JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
+      JustificationRootTargetTypes.PROPOSITION,
       rootPropositionId
     ]
     return Promise.all([
@@ -120,17 +120,17 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
           sourceExcerptParaphrase.paraphrasingProposition = paraphrasingPropositionsById[sourceExcerptParaphrase.paraphrasingProposition.id]
 
           switch (sourceExcerptParaphrase.sourceExcerpt.type) {
-            case SourceExcerptType.WRIT_QUOTE:
+            case SourceExcerptTypes.WRIT_QUOTE:
               sourceExcerptParaphrase.sourceExcerpt.entity = writQuotesById[sourceExcerptParaphrase.sourceExcerpt.entity.id]
               break
-            case SourceExcerptType.PIC_REGION:
+            case SourceExcerptTypes.PIC_REGION:
               sourceExcerptParaphrase.sourceExcerpt.entity = picRegionsById[sourceExcerptParaphrase.sourceExcerpt.entity.id]
               break
-            case SourceExcerptType.VID_SEGMENT:
+            case SourceExcerptTypes.VID_SEGMENT:
               sourceExcerptParaphrase.sourceExcerpt.entity = vidSegmentsById[sourceExcerptParaphrase.sourceExcerpt.entity.id]
               break
             default:
-              throw newExhaustedEnumError('SourceExcerptType', sourceExcerptParaphrase.sourceExcerpt.type)
+              throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerptParaphrase.sourceExcerpt.type)
           }
         })
         return sourceExcerptParaphrasesById
@@ -142,7 +142,7 @@ function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, 
   const sql = `
     select
       ps.*
-    from justifications j 
+    from justifications j
         join justification_basis_compounds jbc on
               j.basis_type = $1
           and j.basis_id = jbc.justification_basis_compound_id
@@ -150,7 +150,7 @@ function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, 
         join source_excerpt_paraphrases sep on
               jbca.entity_type = $2
           and jbca.entity_id = sep.source_excerpt_paraphrase_id
-        join propositions ps on 
+        join propositions ps on
               sep.paraphrasing_proposition_id = ps.proposition_id
       where
             j.root_target_type = $3
@@ -161,9 +161,9 @@ function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, 
         and ps.deleted is null
   `
   const args = [
-    JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-    JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-    JustificationRootTargetType.PROPOSITION,
+    JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+    JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
+    JustificationRootTargetTypes.PROPOSITION,
     rootPropositionId
   ]
   return database.query('readParaphrasingPropositionsByIdForRootPropositionId', sql, args)

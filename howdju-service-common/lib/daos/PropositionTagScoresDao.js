@@ -14,13 +14,13 @@ exports.PropositionTagScoresDao = class PropositionTagScoresDao {
     this.database = database
   }
 
-  createPropositionTagScore(propositionId, tagId, PropositionTagScoreType, score, created, jobHistoryId) {
+  createPropositionTagScore(propositionId, tagId, PropositionTagScoreTypes, score, created, jobHistoryId) {
     return this.database.query(
       'createPropositionTagScore',
       `insert into proposition_tag_scores (proposition_id, tag_id, score_type, score, created, creator_job_history_id) values
-       ($1, $2, $3, $4, $5, $6) 
+       ($1, $2, $3, $4, $5, $6)
        returning *`,
-      [propositionId, tagId, PropositionTagScoreType, score, created, jobHistoryId]
+      [propositionId, tagId, PropositionTagScoreTypes, score, created, jobHistoryId]
     )
       .then(mapSingle(this.logger, toPropositionTagScore, 'proposition_tag_scores'))
   }
@@ -29,11 +29,11 @@ exports.PropositionTagScoresDao = class PropositionTagScoresDao {
     return this.database.query(
       'readUnscoredVotesForScoreType',
       `
-        select v.* 
+        select v.*
         from proposition_tag_votes v
           left join proposition_tag_scores s using (proposition_id, tag_id)
-          where 
-            s.deleted is null 
+          where
+            s.deleted is null
             and (
               -- the vote's target has no score (and the vote isn't already deleted)
               (
@@ -63,8 +63,8 @@ exports.PropositionTagScoresDao = class PropositionTagScoresDao {
   deleteScoresForType(scoreType, now, jobHistoryId) {
     return this.database.query(
       'deleteScoresForType',
-      `update proposition_tag_scores 
-       set deleted = $1, deletor_job_history_id = $2 
+      `update proposition_tag_scores
+       set deleted = $1, deletor_job_history_id = $2
        where score_type = $3 and deleted is null`,
       [now, jobHistoryId, scoreType]
     )
@@ -73,22 +73,22 @@ exports.PropositionTagScoresDao = class PropositionTagScoresDao {
   deletePropositionTagScoreFor(
     propositionId,
     tagId,
-    PropositionTagScoreType,
+    PropositionTagScoreTypes,
     deletedAt,
     deletorJobHistoryId
   ) {
     return this.database.query(
       'deletePropositionTagScoreFor',
-      `update proposition_tag_scores 
+      `update proposition_tag_scores
        set deletor_job_history_id = $1, deleted = $2
-       where 
+       where
              proposition_id = $3
          and tag_id = $4
          and score_type = $5
          and deleted is null
        returning *
        `,
-      [deletorJobHistoryId, deletedAt, propositionId, tagId, PropositionTagScoreType])
-      .then(mapSingle(this.logger, toPropositionTagScore, 'proposition_tag_scores', {propositionId, tagId, PropositionTagScoreType}))
+      [deletorJobHistoryId, deletedAt, propositionId, tagId, PropositionTagScoreTypes])
+      .then(mapSingle(this.logger, toPropositionTagScore, 'proposition_tag_scores', {propositionId, tagId, PropositionTagScoreTypes}))
   }
 }

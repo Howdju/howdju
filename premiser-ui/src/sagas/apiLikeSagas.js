@@ -3,7 +3,7 @@ import {
   takeEvery,
 } from 'redux-saga/effects'
 
-import {JustificationRootTargetType, newExhaustedEnumError} from 'howdju-common'
+import {JustificationRootTargetTypes, newExhaustedEnumError} from 'howdju-common'
 
 import {api, apiLike, str} from '../actions'
 import {logger} from '../logger'
@@ -16,11 +16,11 @@ export function* deleteJustificationRootTargetTranslator() {
       rootTarget,
     } = action.payload
     switch (rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION: {
+      case JustificationRootTargetTypes.PROPOSITION: {
         yield put(api.deleteProposition(rootTarget))
         break
       }
-      case JustificationRootTargetType.STATEMENT: {
+      case JustificationRootTargetTypes.STATEMENT: {
         logger.error('deleting statements is unimplemented')
         break
       }
@@ -41,15 +41,15 @@ export function* fetchJustificationTargets() {
         targetId,
       } = targetInfo
       switch (targetType) {
-        case JustificationRootTargetType.PROPOSITION: {
+        case JustificationRootTargetTypes.PROPOSITION: {
           yield put(api.fetchProposition(targetId))
           break
         }
-        case JustificationRootTargetType.STATEMENT: {
+        case JustificationRootTargetTypes.STATEMENT: {
           logger.error('fetching statement by ID is unimplemented')
           break
         }
-        case JustificationRootTargetType.JUSTIFICATION: {
+        case JustificationRootTargetTypes.JUSTIFICATION: {
           logger.error('fetching justification by ID is unimplemented')
           break
         }

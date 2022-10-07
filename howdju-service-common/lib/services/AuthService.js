@@ -3,7 +3,7 @@ const cryptohat = require('cryptohat')
 const Promise = require('bluebird')
 
 const {
-  EntityType,
+  EntityTypes,
   utcNow,
 } = require('howdju-common')
 
@@ -74,7 +74,7 @@ exports.AuthService = class AuthService {
     return this.authDao.readUserHashForEmail(credentials.email, HashTypes.BCRYPT)
       .then( (userHash) => {
         if (!userHash) {
-          throw new EntityNotFoundError(EntityType.PASSWORD_HASH)
+          throw new EntityNotFoundError(EntityTypes.PASSWORD_HASH)
         }
         this.logger.silly("Found user hash")
         const {userId, hash} = userHash

@@ -4,10 +4,10 @@ import {FontIcon} from 'react-md'
 import cloneDeep from 'lodash/cloneDeep'
 
 import {
-  JustificationBasisType,
-  JustificationTargetType,
-  JustificationPolarity,
-  JustificationRootPolarity,
+  JustificationBasisTypes,
+  JustificationTargetTypes,
+  JustificationPolarities,
+  JustificationRootPolarities,
   makeNewCounterJustification,
   makeNewJustification,
   makeNewPropositionCompound,
@@ -25,7 +25,7 @@ import JustificationBranch from './JustificationBranch'
 import {combineIds} from './viewModels'
 
 import './LandingPage.scss'
-import { JustificationRootTargetType } from 'howdju-common/lib/enums'
+import { JustificationRootTargetTypes } from 'howdju-common/lib/enums'
 import ContextTrail from './ContextTrail'
 
 
@@ -40,11 +40,11 @@ export default class LandingPage extends Component {
     })
     const proJustification = makeNewJustification({
       target: {
-        type: JustificationTargetType.PROPOSITION,
+        type: JustificationTargetTypes.PROPOSITION,
         entity: rootProposition,
       },
       basis: {
-        type: JustificationBasisType.PROPOSITION_COMPOUND,
+        type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: makeNewPropositionCompound({
           atoms: [makeNewPropositionCompoundAtomFromProposition(proJustificationProposition)],
         })
@@ -52,13 +52,13 @@ export default class LandingPage extends Component {
     })
     const proJustificationJustification = makeNewSourceExcerptJustification({
       rootTarget: proJustificationProposition,
-      rootPolarity: JustificationRootPolarity.POSITIVE,
-      rootTargetType: JustificationRootTargetType.PROPOSITION,
+      rootPolarity: JustificationRootPolarities.POSITIVE,
+      rootTargetType: JustificationRootTargetTypes.PROPOSITION,
       target: {
-        type: JustificationTargetType.PROPOSITION,
+        type: JustificationTargetTypes.PROPOSITION,
         entity: proJustificationProposition,
       },
-      polarity: JustificationPolarity.POSITIVE,
+      polarity: JustificationPolarities.POSITIVE,
       basis: {
         entity: makeNewWritQuote({
           quoteText: 'The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.',
@@ -84,12 +84,12 @@ export default class LandingPage extends Component {
     })
     const conJustification = makeNewJustification({
       target: {
-        type: JustificationTargetType.PROPOSITION,
+        type: JustificationTargetTypes.PROPOSITION,
         entity: rootProposition,
       },
-      polarity: JustificationPolarity.NEGATIVE,
+      polarity: JustificationPolarities.NEGATIVE,
       basis: {
-        type: JustificationBasisType.PROPOSITION_COMPOUND,
+        type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: makeNewPropositionCompound({
           atoms: [makeNewPropositionCompoundAtomFromProposition(conJustificationProposition)],
         })
@@ -97,13 +97,13 @@ export default class LandingPage extends Component {
     })
     const conJustificationJustification = makeNewSourceExcerptJustification({
       rootTarget: conJustificationProposition,
-      rootPolarity: JustificationRootPolarity.POSITIVE,
-      rootTargetType: JustificationRootTargetType.PROPOSITION,
+      rootPolarity: JustificationRootPolarities.POSITIVE,
+      rootTargetType: JustificationRootTargetTypes.PROPOSITION,
       target: {
-        type: JustificationTargetType.PROPOSITION,
+        type: JustificationTargetTypes.PROPOSITION,
         entity: conJustificationProposition,
       },
-      polarity: JustificationPolarity.POSITIVE,
+      polarity: JustificationPolarities.POSITIVE,
       basis: {
         entity: makeNewWritQuote({
           quoteText: 'No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet',
@@ -125,9 +125,9 @@ export default class LandingPage extends Component {
     }]
 
     const counterJustification = makeNewCounterJustification(proJustification)
-    counterJustification.rootPolarity = JustificationRootPolarity.NEGATIVE
+    counterJustification.rootPolarity = JustificationRootPolarities.NEGATIVE
     counterJustification.basis = {
-      type: JustificationBasisType.PROPOSITION_COMPOUND,
+      type: JustificationBasisTypes.PROPOSITION_COMPOUND,
       entity: makeNewPropositionCompound({
         atoms: [makeNewPropositionCompoundAtomFromProposition(makeNewProposition({
           text: 'The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.'

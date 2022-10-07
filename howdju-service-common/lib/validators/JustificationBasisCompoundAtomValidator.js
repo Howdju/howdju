@@ -3,7 +3,7 @@ const get = require('lodash/get')
 const {
   requireArgs,
   modelErrorCodes,
-  JustificationBasisCompoundAtomType,
+  JustificationBasisCompoundAtomTypes,
 } = require('howdju-common')
 
 class JustificationBasisCompoundAtomValidator {
@@ -29,14 +29,14 @@ class JustificationBasisCompoundAtomValidator {
       errors.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED)
     } else {
       switch (type) {
-        case JustificationBasisCompoundAtomType.PROPOSITION: {
+        case JustificationBasisCompoundAtomTypes.PROPOSITION: {
           errors.fieldErrors.entity = this.propositionValidator.validate(atom.entity)
           if (errors.fieldErrors.entity.hasErrors) {
             errors.hasErrors = true
           }
           break
         }
-        case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+        case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
           errors.fieldErrors.entity = this.sourceExcerptParaphraseValidator.validate(atom.entity)
           if (errors.fieldErrors.entity.hasErrors) {
             errors.hasErrors = true

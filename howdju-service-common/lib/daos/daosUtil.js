@@ -11,7 +11,7 @@ const toNumber = require('lodash/toNumber')
 
 const {
   assert,
-  JustificationTargetType,
+  JustificationTargetTypes,
   newProgrammingError,
   idEqual,
   newImpossibleError,
@@ -67,8 +67,8 @@ exports.groupRootJustifications = (rootTargetType, rootTargetId, justification_r
   const rootJustifications = [], counterJustificationsByJustificationId = {}
   for (let justification_row of justification_rows) {
     // There are two types of justifications: those targeting other justifications or those targeting the current root
-    if (justification_row.target_type === JustificationTargetType.JUSTIFICATION) {
-      assert( () => justification_row.target_type === JustificationTargetType.JUSTIFICATION)
+    if (justification_row.target_type === JustificationTargetTypes.JUSTIFICATION) {
+      assert( () => justification_row.target_type === JustificationTargetTypes.JUSTIFICATION)
       if (!Object.prototype.hasOwnProperty.call(counterJustificationsByJustificationId, justification_row.target_id)) {
         counterJustificationsByJustificationId[justification_row.target_id] = []
       }

@@ -4,7 +4,7 @@ const {
   mockLogger
 } = require('howdju-test-common')
 const {
-  SentenceType
+  SentenceTypes
 } = require('howdju-common')
 
 const {StatementsDao} = require('./StatementsDao')
@@ -41,7 +41,7 @@ describe('StatementsDao', () => {
                     ],
                     rows: [[
                       statementId,
-                      SentenceType.STATEMENT,
+                      SentenceTypes.STATEMENT,
                       statement2Id,
                       speakerId,
                       propositionId,
@@ -62,7 +62,7 @@ describe('StatementsDao', () => {
                     ],
                     rows: [[
                       statement2Id,
-                      SentenceType.PROPOSITION,
+                      SentenceTypes.PROPOSITION,
                       propositionId,
                       speaker2Id,
                       propositionId,
@@ -88,10 +88,10 @@ describe('StatementsDao', () => {
 
       expect(await statementsDao.readStatementForId(statementId)).toMatchObject({
         id: statementId,
-        sentenceType: SentenceType.STATEMENT,
+        sentenceType: SentenceTypes.STATEMENT,
         sentence: {
           id: statement2Id,
-          sentenceType: SentenceType.PROPOSITION,
+          sentenceType: SentenceTypes.PROPOSITION,
           sentence: {
             id: propositionId,
             text: propositionText,

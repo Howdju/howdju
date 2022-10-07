@@ -90,7 +90,7 @@ class RegistrationConfirmationPage extends React.Component {
     } = this.state
 
     const isSubmitting = get(editorState, 'isSaving')
-    const isConfirmed = get(editorState, 'isConfirmed')
+    const isConfirmed = get(editorState, 'isSaved')
     const apiErrors = get(editorState, 'errors') || {}
 
     const registrationConfirmation = get(editorState, 'editEntity')

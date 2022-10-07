@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 
 const {
-  EntityType
+  EntityTypes
 } = require('howdju-common')
 
 const {
@@ -62,7 +62,7 @@ exports.JustificationVotesService = class JustificationVotesService {
       .then(deletedVoteIds => {
         if (deletedVoteIds.length === 0) {
           this.logger.debug('No votes to unvote')
-          throw new EntityNotFoundError(EntityType.VOTE, vote.id)
+          throw new EntityNotFoundError(EntityTypes.VOTE, vote.id)
         } else if (deletedVoteIds.length > 1) {
           this.logger.warn(`Deleted ${deletedVoteIds.length} votes at once!`)
         }

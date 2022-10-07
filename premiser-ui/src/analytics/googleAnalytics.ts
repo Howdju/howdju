@@ -1,4 +1,20 @@
-export const sendPageView = path => {
+declare global {
+  interface Window {
+    ga?: {
+      (action: string, name?: string, arg?: any): void
+    }
+  }
+}
+
+interface Fields {
+  eventCategory: string
+  eventAction: string
+  eventLabel?: string
+  eventValue?: string
+  nonInteraction?: boolean
+}
+
+export const sendPageView = (path: string) => {
   if (window.ga) {
     window.ga('set', 'page', path)
     window.ga('send', 'pageview')
@@ -9,9 +25,9 @@ export const sendPageView = path => {
  https://developers.google.com/analytics/devguides/collection/analyticsjs/events
  https://developers.google.com/analytics/devguides/collection/analyticsjs/command-queue-reference#send
  */
-export const sendEvent = (category, action, label = null, value = null, isNonInteraction = false) => {
+export const sendEvent = (category: string, action: string, label?: string, value?: string, isNonInteraction = false) => {
   if (window.ga) {
-    const fields = {
+    const fields: Fields = {
       eventCategory: category,
       eventAction: action,
     }
@@ -28,7 +44,7 @@ export const sendEvent = (category, action, label = null, value = null, isNonInt
   }
 }
 
-export const trackOutboundLinkClick = url => {
+export const trackOutboundLinkClick = (url: string) => {
   if (window.ga) {
     window.ga('send', 'event', {
       eventCategory: 'Outbound Link',
@@ -39,7 +55,7 @@ export const trackOutboundLinkClick = url => {
   }
 }
 
-export const setUserId = googleAnalyticsUserId => {
+export const setUserId = (googleAnalyticsUserId: string) => {
   if (window.ga) {
     window.ga('set', 'userId', googleAnalyticsUserId)
   }

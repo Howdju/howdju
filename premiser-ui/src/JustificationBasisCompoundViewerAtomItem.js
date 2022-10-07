@@ -12,13 +12,13 @@ import {
 import cn from 'classnames'
 
 import {
-  JustificationBasisCompoundAtomType,
+  JustificationBasisCompoundAtomTypes,
   insertAt,
   newExhaustedEnumError,
-  JustificationBasisSourceType,
+  JustificationBasisSourceTypes,
   pushAll,
   insertAllAt,
-  SourceExcerptType,
+  SourceExcerptTypes,
 } from 'howdju-common'
 
 import {
@@ -95,13 +95,13 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
       atom
     } = this.props
     const editorTypeBySourceExcerptType = {
-      [SourceExcerptType.WRIT_QUOTE]: EditorTypes.WRIT_QUOTE,
-      [SourceExcerptType.PIC_REGION]: EditorTypes.PIC_REGION,
-      [SourceExcerptType.VID_SEGMENT]: EditorTypes.VID_SEGMENT,
+      [SourceExcerptTypes.WRIT_QUOTE]: EditorTypes.WRIT_QUOTE,
+      [SourceExcerptTypes.PIC_REGION]: EditorTypes.PIC_REGION,
+      [SourceExcerptTypes.VID_SEGMENT]: EditorTypes.VID_SEGMENT,
     }
     const editorType = editorTypeBySourceExcerptType[atom.entity.sourceExcerpt.type]
     if (!editorType) {
-      throw newExhaustedEnumError('SourceExcerptType', atom.entity.sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', atom.entity.sourceExcerpt.type)
     }
     this.props.editors.beginEdit(editorType, this.sourceExcerptParaphraseEditorId(), atom.entity.sourceExcerpt.entity)
   }
@@ -209,7 +209,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
     ]
 
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.PROPOSITION: {
+      case JustificationBasisCompoundAtomTypes.PROPOSITION: {
         const gotoPropositionListItem = (
           <ListItem primaryText="Go to"
                     key="go-to-proposition"
@@ -231,7 +231,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
         menuListItems.push(editPropositionListItem)
         break
       }
-      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
+      case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE: {
         const {
           paraphrasingProposition,
           sourceExcerpt,
@@ -277,7 +277,7 @@ class JustificationBasisCompoundViewerAtomItem extends Component {
         break
       }
       default:
-        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
     }
 
     return menuListItems
@@ -306,23 +306,23 @@ JustificationBasisCompoundViewerAtomItem.defaultProps = {
 
 function menuTitle(atom) {
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.PROPOSITION:
+    case JustificationBasisCompoundAtomTypes.PROPOSITION:
       return 'Proposition actions'
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+    case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       return 'Paraphrase actions'
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
   }
 }
 
 function atomEntityDescription(atom) {
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.PROPOSITION:
+    case JustificationBasisCompoundAtomTypes.PROPOSITION:
       return 'proposition'
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+    case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       return 'paraphrase'
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
   }
 }
 
@@ -330,14 +330,14 @@ function seeBasisUsagesPath(atom) {
   const params = {}
 
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.PROPOSITION:
+    case JustificationBasisCompoundAtomTypes.PROPOSITION:
       params.propositionId = atom.entity.id
       break
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+    case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       params.sourceExcerptParaphraseId = atom.entity.id
       break
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
   }
 
   return paths.searchJustifications(params)
@@ -346,17 +346,17 @@ function seeBasisUsagesPath(atom) {
 function seeSourceExcerptUsagesPath(sourceExcerpt) {
   const params = {}
   switch (sourceExcerpt.type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       params.writQuoteId = sourceExcerpt.entity.id
       break
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       params.picRegionId = sourceExcerpt.entity.id
       break
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       params.vidSegmentId = sourceExcerpt.entity.id
       break
     default:
-      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
   }
 
   return paths.searchJustifications(params)
@@ -365,17 +365,17 @@ function seeSourceExcerptUsagesPath(sourceExcerpt) {
 function seeSourceExcerptSourceUsagesPath(sourceExcerpt) {
   const params = {}
   switch (sourceExcerpt.type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       params.writId = sourceExcerpt.entity.writ.id
       break
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       params.picId = sourceExcerpt.entity.pic.id
       break
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       params.vidId = sourceExcerpt.entity.vid.id
       break
     default:
-      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
   }
 
   return paths.searchJustifications(params)
@@ -383,12 +383,12 @@ function seeSourceExcerptSourceUsagesPath(sourceExcerpt) {
 
 function createJustificationPath(atom) {
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.PROPOSITION:
-      return paths.createJustification(JustificationBasisSourceType.PROPOSITION, atom.entity.id)
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
-      return paths.createJustification(JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE, atom.entity.id)
+    case JustificationBasisCompoundAtomTypes.PROPOSITION:
+      return paths.createJustification(JustificationBasisSourceTypes.PROPOSITION, atom.entity.id)
+    case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
+      return paths.createJustification(JustificationBasisSourceTypes.SOURCE_EXCERPT_PARAPHRASE, atom.entity.id)
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
   }
 }
 

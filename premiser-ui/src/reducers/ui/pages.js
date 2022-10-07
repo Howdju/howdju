@@ -4,7 +4,7 @@ import {normalize} from 'normalizr'
 import {handleActions, combineActions} from "redux-actions"
 
 import {
-  EntityType,
+  EntityTypes,
   httpStatusCodes,
 } from 'howdju-common'
 
@@ -297,7 +297,7 @@ export const passwordResetRequestPage = handleActions({
       const errors = {}
       if (
         action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND &&
-        action.payload.body.entityType === EntityType.USER &&
+        action.payload.body.entityType === EntityTypes.USER &&
         get(action, 'payload.body.identifier.email')
       ) {
         errors.email = {value: get(action, 'payload.body.identifier.email')}

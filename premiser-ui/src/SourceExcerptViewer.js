@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import EditableWritQuote from './EditableWritQuote'
 
 import {
-  SourceExcerptType,
+  SourceExcerptTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
 
@@ -21,7 +21,7 @@ export default class SourceExcerptViewer extends Component {
     } = this.props
 
     switch (sourceExcerpt.type) {
-      case SourceExcerptType.WRIT_QUOTE:
+      case SourceExcerptTypes.WRIT_QUOTE:
         return (
           <EditableWritQuote
             {...rest}
@@ -35,7 +35,7 @@ export default class SourceExcerptViewer extends Component {
           />
         )
       default:
-        throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+        throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
     }
   }
 }

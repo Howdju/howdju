@@ -23,8 +23,8 @@ import {
   httpStatusCodes,
   idEqual,
   isTruthy,
-  JustificationRootTargetType,
-  JustificationTargetType,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
 
@@ -119,14 +119,14 @@ export default handleActions({
         } = action.meta.requestPayload
         let entitiesKey
         switch (rootTargetType) {
-          case JustificationRootTargetType.PROPOSITION:
+          case JustificationRootTargetTypes.PROPOSITION:
             entitiesKey = 'propositions'
             break
-          case JustificationRootTargetType.STATEMENT:
+          case JustificationRootTargetTypes.STATEMENT:
             entitiesKey = 'statements'
             break
           default:
-            throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
+            throw newExhaustedEnumError('JustificationRootTargetTypes', rootTargetType)
         }
         const update = {[entitiesKey]: pickBy(state[entitiesKey], (s, id) => id !== rootTargetId)}
         return {
@@ -310,20 +310,20 @@ export function makeUpdatesAddingJustificationsToTargets(entities, state) {
     let entitiesKey, justificationsKey
     const targetId = justification.target.entity.id
     switch (justification.target.type) {
-      case JustificationTargetType.PROPOSITION:
+      case JustificationTargetTypes.PROPOSITION:
         entitiesKey = 'propositions'
         justificationsKey = 'justifications'
         break
-      case JustificationTargetType.STATEMENT:
+      case JustificationTargetTypes.STATEMENT:
         entitiesKey = 'statements'
         justificationsKey = 'justifications'
         break
-      case JustificationTargetType.JUSTIFICATION:
+      case JustificationTargetTypes.JUSTIFICATION:
         entitiesKey = 'justifications'
         justificationsKey = 'counterJustifications'
         break
       default:
-        throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+        throw newExhaustedEnumError('JustificationTargetTypes', justification.target.type)
     }
     const target = entities[entitiesKey][targetId]
     const extantTarget = state[entitiesKey][targetId] || {}
@@ -343,20 +343,20 @@ export function makeUpdateRemovingJustificationFromTarget(justification, state) 
   let entitiesKey, justificationsKey
   const targetId = justification.target.entity.id
   switch (justification.target.type) {
-    case JustificationTargetType.PROPOSITION:
+    case JustificationTargetTypes.PROPOSITION:
       entitiesKey = 'propositions'
       justificationsKey = 'justifications'
       break
-    case JustificationTargetType.STATEMENT:
+    case JustificationTargetTypes.STATEMENT:
       entitiesKey = 'statements'
       justificationsKey = 'justifications'
       break
-    case JustificationTargetType.JUSTIFICATION:
+    case JustificationTargetTypes.JUSTIFICATION:
       entitiesKey = 'justifications'
       justificationsKey = 'counterJustifications'
       break
     default:
-      throw newExhaustedEnumError('JustificationTargetType', justification.target.type)
+      throw newExhaustedEnumError('JustificationTargetTypes', justification.target.type)
   }
   const target = state[entitiesKey][targetId]
   if (!updates[entitiesKey]) {

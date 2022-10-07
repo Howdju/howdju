@@ -15,8 +15,8 @@ import {
   isNegative,
   isPositive,
   isVerified,
-  JustificationBasisSourceType,
-  JustificationRootTargetType,
+  JustificationBasisSourceTypes,
+  JustificationRootTargetTypes,
   makeNewContentReport,
 } from 'howdju-common'
 
@@ -45,8 +45,8 @@ import {divideMenuItems} from "./util"
 import ReportContentDialog from "./content-report/ReportContentDialog"
 
 const editorTypesByRootTargetType = {
-  [JustificationRootTargetType.PROPOSITION]: EditorTypes.PROPOSITION,
-  [JustificationRootTargetType.STATEMENT]: EditorTypes.STATEMENT,
+  [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
+  [JustificationRootTargetTypes.STATEMENT]: EditorTypes.STATEMENT,
 }
 
 class JustificationRootTargetCard extends React.Component {
@@ -136,7 +136,7 @@ class JustificationRootTargetCard extends React.Component {
               showJustificationCount={false}
               onFetchedRootTarget={onFetchedRootTarget}
             />
-            {rootTarget && rootTargetType !== JustificationRootTargetType.PROPOSITION && (
+            {rootTarget && rootTargetType !== JustificationRootTargetTypes.PROPOSITION && (
               <Tagger
                 trargetType={rootTargetType}
                 target={rootTarget}
@@ -144,7 +144,7 @@ class JustificationRootTargetCard extends React.Component {
                 suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'tagger')}
               />
             )}
-            {rootTarget && rootTargetType === JustificationRootTargetType.PROPOSITION && (
+            {rootTarget && rootTargetType === JustificationRootTargetTypes.PROPOSITION && (
               <PropositionTagger
                 propositionId={rootTarget.id}
                 tags={rootTarget.tags}
@@ -175,7 +175,7 @@ class JustificationRootTargetCard extends React.Component {
 
   menuItemsForType(rootTargetType, rootTarget) {
     switch (rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION: {
+      case JustificationRootTargetTypes.PROPOSITION: {
         const propositionId = get(rootTarget, 'id')
         return {
           entity: [
@@ -206,7 +206,7 @@ class JustificationRootTargetCard extends React.Component {
           ],
         }
       }
-      // case JustificationRootTargetType.STATEMENT: {
+      // case JustificationRootTargetTypes.STATEMENT: {
       //   // Statements are not directly editable currently.  One must edit their persorgs/propositions
       //   const statementId = get(rootTarget, 'id')
       //   insertAt(divider, 0,
@@ -227,7 +227,7 @@ class JustificationRootTargetCard extends React.Component {
   }
 
   createJustificationPath = (propositionId) => {
-    return paths.createJustification(JustificationBasisSourceType.PROPOSITION, propositionId)
+    return paths.createJustification(JustificationBasisSourceTypes.PROPOSITION, propositionId)
   }
 
   editRootTarget = () => {

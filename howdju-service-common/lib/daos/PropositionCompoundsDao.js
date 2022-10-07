@@ -11,8 +11,8 @@ const values = require('lodash/values')
 const {normalizeText} = require("./daosUtil")
 
 const {
-  JustificationBasisType,
-  JustificationRootTargetType,
+  JustificationBasisTypes,
+  JustificationRootTargetTypes,
 } = require('howdju-common')
 const {
   toPropositionCompound,
@@ -42,8 +42,8 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
     return this.database.query(
       'createPropositionCompoundAtom',
       `
-        insert into proposition_compound_atoms (proposition_compound_id, proposition_id, order_position) 
-          values ($1, $2, $3) 
+        insert into proposition_compound_atoms (proposition_compound_id, proposition_id, order_position)
+          values ($1, $2, $3)
           returning *`,
       [propositionCompound.id, propositionCompoundAtom.entity.id, orderPosition]
     )
@@ -52,14 +52,14 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
 
   read(propositionCompoundId) {
     const sql = `
-        select 
+        select
             sc.proposition_compound_id
           , sca.order_position
           , s.proposition_id
           , s.text as proposition_text
           , s.creator_user_id as proposition_creator_user_id
-        from proposition_compounds sc 
-          join proposition_compound_atoms sca on 
+        from proposition_compounds sc
+          join proposition_compound_atoms sca on
                 sc.proposition_compound_id = $1
             and sca.proposition_compound_id = sc.proposition_compound_id
             and sc.deleted is null
@@ -87,13 +87,13 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
     ])
     const selectsSql = selects.join('\n,')
     const joins = map(propositionCompound.atoms, (atom, index) => `
-        join proposition_compound_atoms sca${index} on 
+        join proposition_compound_atoms sca${index} on
               sc.deleted is null
-          and sc.proposition_compound_id = sca${index}.proposition_compound_id 
+          and sc.proposition_compound_id = sca${index}.proposition_compound_id
           and sca${index}.order_position = $${2*index + 2}
         join propositions s${index} on
               s${index}.deleted is null
-          and sca${index}.proposition_id = s${index}.proposition_id 
+          and sca${index}.proposition_id = s${index}.proposition_id
           and s${index}.normal_text = $${2*index + 3}
           `)
     const joinsSql = joins.join("\n")
@@ -105,7 +105,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
       with
         -- Without this limit, we would include compounds that included these propositions and more
         proposition_compounds_with_atom_count as (
-          select 
+          select
               sc.*
             , count(sca.proposition_id) over (partition by sc.proposition_compound_id) as proposition_atom_count
           from proposition_compounds sc
@@ -188,7 +188,7 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
   }
 
   readPropositionCompoundsByIdForRootPropositionId(propositionId) {
-    return this.readPropositionCompoundsByIdForRootTarget(JustificationRootTargetType.PROPOSITION, propositionId)
+    return this.readPropositionCompoundsByIdForRootTarget(JustificationRootTargetTypes.PROPOSITION, propositionId)
   }
 
   readPropositionCompoundsByIdForRootTarget(rootTargetType, rootTargetId, {userId}) {
@@ -209,8 +209,8 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
         , scas.text as proposition_text
         , scas.created as proposition_created
       from
-        justifications j  
-          join proposition_compounds sc on 
+        justifications j
+          join proposition_compounds sc on
                 j.basis_type = $3
             and j.basis_id = sc.proposition_compound_id
             and j.root_target_type = $1
@@ -218,17 +218,17 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
             and j.deleted is null
             and sc.deleted is null
           join proposition_compound_atoms sca using (proposition_compound_id)
-          join propositions scas on 
-                sca.proposition_id = scas.proposition_id 
+          join propositions scas on
+                sca.proposition_id = scas.proposition_id
             and scas.deleted is null
-      order by 
+      order by
         sca.proposition_compound_id,
         sca.order_position
     `
     return this.database.query(
       'readPropositionAtomsByPropositionCompoundIdForRootPropositionId',
       sql,
-      [rootTargetType, rootTargetId, JustificationBasisType.PROPOSITION_COMPOUND]
+      [rootTargetType, rootTargetId, JustificationBasisTypes.PROPOSITION_COMPOUND]
     )
       .then( ({rows}) => {
         const propositionAtomsByPropositionCompoundId = {}

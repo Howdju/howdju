@@ -1,6 +1,8 @@
+import { keys } from 'lodash';
+
 import {
-  ContentReportTypesArray,
-  EntityTypeArray,
+  ContentReportTypes,
+  EntityTypes,
 } from './enums';
 
 export const schemaSettings = {
@@ -20,7 +22,7 @@ export const schemaSettings = {
   passwordMaxLength: 64,
   paidContributionsDisclosureTextMaxLength: 4096,
   reportContentDescriptionMaxLength: 4096,
-}
+} as const
 
 export const definitionsSchema = {
   $id: "https://howdju.com/schemas/definitions.json",
@@ -75,7 +77,7 @@ export const definitionsSchema = {
       "examples": ["1", "2", "42"]
     }
   }
-}
+} as const
 
 const passwordResetRequest = {
   "$id": "https://howdju.com/schemas/password-reset-request.schema.json",
@@ -87,7 +89,7 @@ const passwordResetRequest = {
   "properties": {
     "email": { "$ref": 'definitions.json#/definitions/userEmail' },
   }
-}
+} as const
 
 const passwordResetConfirmation = {
   "$id": "https://howdju.com/schemas/password-reset-confirmation.schema.json",
@@ -99,7 +101,7 @@ const passwordResetConfirmation = {
   "properties": {
     "newPassword": { "$ref": 'definitions.json#/definitions/password' },
   }
-}
+} as const
 
 const registrationRequest = {
   "$id": "https://howdju.com/schemas/registration-request.schema.json",
@@ -111,7 +113,7 @@ const registrationRequest = {
   "properties": {
     "email": { "$ref": 'definitions.json#/definitions/userEmail' },
   }
-}
+} as const
 
 const registrationConfirmation = {
   "$id": "https://howdju.com/schemas/registration-confirmation.schema.json",
@@ -150,7 +152,7 @@ const registrationConfirmation = {
       "description": "Whether the user is not subject to the GDPR.  Must be true."
     },
   }
-}
+} as const
 
 const user = {
   "$id": "https://howdju.com/schemas/user.schema.json",
@@ -193,7 +195,7 @@ const user = {
       format: 'date-time',
     },
   }
-}
+} as const
 
 const contentReport = {
   "$id": "https://howdju.com/schemas/content-report.schema.json",
@@ -208,7 +210,7 @@ const contentReport = {
   "properties": {
     entityType: {
       description: "The type of entity being reported, if the report can pertain to a particular entity.",
-      enum: EntityTypeArray
+      enum: keys(EntityTypes)
     },
     entityId: { $ref: 'definitions.json#/definitions/entityId' },
     url: {
@@ -219,7 +221,7 @@ const contentReport = {
     types: {
       type: "array",
       uniqueItems: true,
-      items: {enum: ContentReportTypesArray},
+      items: {enum: keys(ContentReportTypes)},
       // A report must have at least one type
       minItems: 1,
     },
@@ -229,7 +231,48 @@ const contentReport = {
       maxLength: schemaSettings.reportContentDescriptionMaxLength
     },
   }
-}
+} as const
+
+const writ = {
+  "$id": "https://howdju.com/schemas/writ.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Writ",
+  "description": "A textual media source. Ex a book or news article.",
+  "type": "object",
+  "required": ["textQuote", "writ"],
+  "properties": {
+    title: {
+      type: "string",
+      maxLength: schemaSettings.writTitleMaxLength,
+      description: "The title of the Writ. Ex: the title of a book.",
+    },
+  }
+} as const
+
+const writQuote = {
+  "$id": "https://howdju.com/schemas/writ-quote.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WritQuote",
+  "description": "A quoted excerpt from textual media.",
+  "type": "object",
+  "required": ["textQuote", "writ"],
+  "properties": {
+    textQuote: {
+      type: "string",
+      maxLength: schemaSettings.writQuoteQuoteTextMaxLength,
+      description: "The text quoted from the media.",
+    },
+    writ: { "$ref": "/writ.schema.json" },
+    urls: {
+      description: 'URLs where users can find the quote.',
+      type: 'array',
+      items: {
+        type: 'string',
+        format: 'uri',
+      }
+    },
+  }
+} as const
 
 const persorg = {
   "$id": "https://howdju.com/schemas/persorg.schema.json",
@@ -277,7 +320,7 @@ const persorg = {
       description: "The URL of the Wikipedia page representing the persorg. The persorg need not endorse this page."
     },
   }
-}
+} as const
 
 const accountSettings = {
   "$id": "https://howdju.com/schemas/account-settings.schema.json",
@@ -293,7 +336,7 @@ const accountSettings = {
       maxLength: schemaSettings.paidContributionsDisclosureTextMaxLength,
     },
   }
-}
+} as const
 
 export const schemas = {
   accountSettings,
@@ -304,4 +347,9 @@ export const schemas = {
   registrationRequest,
   registrationConfirmation,
   user,
-};
+  writ,
+  writQuote,
+} as const;
+
+export type Schema = typeof schemas[keyof typeof schemas]
+export type SchemaId = typeof schemas[keyof typeof schemas]['$id']

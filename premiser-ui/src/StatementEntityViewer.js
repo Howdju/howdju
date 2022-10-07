@@ -5,7 +5,7 @@ import get from 'lodash/get'
 import moment from 'moment'
 
 import {
-  SentenceType,
+  SentenceTypes,
 } from 'howdju-common'
 
 import config from './config'
@@ -81,7 +81,7 @@ export default class StatementEntityViewer extends Component {
     let entity
     if (!statement) {
       entity = null
-    } else if (statement.sentenceType === SentenceType.STATEMENT) {
+    } else if (statement.sentenceType === SentenceTypes.STATEMENT) {
       entity =
         <StatementEntityViewer
           id={combineIds(id, 'statement')}

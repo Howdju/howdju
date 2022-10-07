@@ -8,8 +8,8 @@ import {
   decircularizeProposition,
   encodeQueryStringObject,
   httpMethods,
-  JustificationRootTargetType,
-  SortDirection,
+  JustificationRootTargetTypes,
+  SortDirections,
 } from 'howdju-common'
 
 import {
@@ -40,14 +40,14 @@ import {
 } from '../normalizationSchemas'
 
 
-const defaultSorts = `created=${SortDirection.DESCENDING}`
+const defaultSorts = `created=${SortDirections.DESCENDING}`
 
 const rootTargetEndpointsByType = {
-  [JustificationRootTargetType.PROPOSITION]: {
+  [JustificationRootTargetTypes.PROPOSITION]: {
     endpoint: 'propositions',
     normalizationSchema: {proposition: propositionSchema},
   },
-  [JustificationRootTargetType.STATEMENT]: {
+  [JustificationRootTargetTypes.STATEMENT]: {
     endpoint: 'statements',
     normalizationSchema: {statement: statementSchema},
   },

@@ -3,22 +3,28 @@ import * as mixpanel from "./mixpanel"
 import * as heapAnalytics from './heapAnalytics'
 
 
-export const sendPageView = path => {
+export const sendPageView = (path: string) => {
   googleAnalytics.sendPageView(path)
 }
 
-export const sendEvent = (category, action, label = null, value = null, isNonInteraction = false) => {
+export const sendEvent = (category: string, action: string, label?: string, value?: string, isNonInteraction = false) => {
   googleAnalytics.sendEvent(category, action, label, value, isNonInteraction)
   const eventName = `${category} - ${action}`
   mixpanel.track(eventName, label, value)
   heapAnalytics.track(eventName, label, value)
 }
 
-export const trackOutboundLinkClick = url => {
+export const trackOutboundLinkClick = (url: string) => {
   googleAnalytics.trackOutboundLinkClick(url)
 }
 
-export const identify = externalIds => {
+interface ExternalIds {
+  googleAnalyticsId: string
+  mixpanelId: string
+  heapAnalyticsId: string
+}
+
+export const identify = (externalIds: ExternalIds) => {
   const {
     googleAnalyticsId,
     mixpanelId,

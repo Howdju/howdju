@@ -3,10 +3,10 @@ const moment = require('moment')
 const sinon = require('sinon')
 
 const {
-  JustificationRootTargetType,
-  JustificationPolarity,
-  JustificationTargetType,
-  JustificationBasisType,
+  JustificationRootTargetTypes,
+  JustificationPolarities,
+  JustificationTargetTypes,
+  JustificationBasisTypes,
 } = require('howdju-common')
 
 const {JustificationsDao} = require('./JustificationsDao')
@@ -16,12 +16,12 @@ const {
 
 describe('createJustification', () => {
   test('creates a statement justification', () => {
-    const rootTargetType = JustificationRootTargetType.STATEMENT
+    const rootTargetType = JustificationRootTargetTypes.STATEMENT
     const rootTargetId = "1"
-    const polarity = JustificationPolarity.NEGATIVE
-    const targetType = JustificationTargetType.STATEMENT
+    const polarity = JustificationPolarities.NEGATIVE
+    const targetType = JustificationTargetTypes.STATEMENT
     const targetId = rootTargetId
-    const basisType = JustificationBasisType.PROPOSITION_COMPOUND
+    const basisType = JustificationBasisTypes.PROPOSITION_COMPOUND
     const basisId = "2"
     const userId = "4"
     const now = moment()

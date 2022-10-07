@@ -1,18 +1,14 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import get from 'lodash/get'
+import React from 'react'
+import get from "lodash/get"
 
-import {ContentReportTypes, schemaSettings} from "howdju-common"
+import { ContentReportTypes, schemaSettings } from "howdju-common"
 
 import CheckboxList from "../CheckboxList"
 import ErrorMessages from "../ErrorMessages"
-import TextField from '../TextField'
-import {
-  combineIds,
-  combineNames,
-} from '../viewModels'
+import TextField from "../TextField"
+import { combineIds, combineNames } from "../viewModels"
 
-const  reportTypeDescriptions = {
+const reportTypeDescriptions = {
   [ContentReportTypes.HARASSMENT]: "Harassment",
   [ContentReportTypes.THREATENING_VIOLENCE]: "Threatening violence",
   [ContentReportTypes.HATEFUL]: "Hateful content",
@@ -25,22 +21,25 @@ const  reportTypeDescriptions = {
   [ContentReportTypes.COPYRIGHT_VIOLATION]: "Copyright violation",
   [ContentReportTypes.TRADEMARK_VIOLATION]: "Trademark violation",
   [ContentReportTypes.SPAM]: "Spam",
-  [ContentReportTypes.OTHER]: "Other",
+  [ContentReportTypes.OTHER]: "Other"
 }
 
-export default class ContentReportEditorFields extends Component {
+type BooleanObject = {
+  [key: string]: boolean | BooleanObject;
+};
 
-  static propTypes = {
-    contentReport: PropTypes.object,
-    id: PropTypes.string.isRequired,
-    /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
-    name: PropTypes.string,
-    disabled: PropTypes.bool,
-    errors: PropTypes.object,
-    onPropertyChange: PropTypes.func.isRequired,
-  }
+type ContentReportEditorFieldsProps = {
+  contentReport?: object,
+  id: string,
+  name?: string,
+  disabled?: boolean,
+  errors?: object,
+  dirtyFields: BooleanObject,
+  wasSubmitAttempted: boolean,
+  onPropertyChange: (...args: any[]) => any
+}
 
-  render() {
+export default function ContentReportEditorFields(props: ContentReportEditorFieldsProps) {
     const {
       contentReport,
       id,
@@ -50,24 +49,19 @@ export default class ContentReportEditorFields extends Component {
       onPropertyChange,
       dirtyFields,
       wasSubmitAttempted,
-    } = this.props
-
-    const description = get(contentReport, 'description')
-    const types = get(contentReport, 'types')
-
-    const modelErrors = get(errors, '_model')
-
-    const typesErrorText = get(errors, combineNames(name, "types", 'message'))
-    const isTypesError = typesErrorText &&
-      (get(dirtyFields, combineNames(name, "types")) || wasSubmitAttempted)
-
-    const descriptionErrorText = get(errors, combineNames(name, "description", 'message'))
-    const isDescriptionError = descriptionErrorText &&
-      (get(dirtyFields, combineNames(name, "description")) || wasSubmitAttempted)
-
+    } = props
+    const description = get(contentReport, "description")
+    const types = get(contentReport, "types")
+    const modelErrors = get(errors, "_model")
+    const typesErrorText = get(errors, combineNames(name, "types", "message"))
+    const isTypesError =
+      typesErrorText && (get(dirtyFields, combineNames(name, "types")) || wasSubmitAttempted)
+    const descriptionErrorText = get(errors, combineNames(name, "description", "message"))
+    const isDescriptionError =
+      descriptionErrorText && (get(dirtyFields, combineNames(name, "description")) || wasSubmitAttempted)
     return (
       <>
-        <ErrorMessages errors={modelErrors}/>
+        <ErrorMessages errors={modelErrors} />
         <CheckboxList
           id={combineIds(id, "types")}
           name={combineNames(name, "types")}
@@ -94,7 +88,4 @@ export default class ContentReportEditorFields extends Component {
         />
       </>
     )
-  }
 }
-
-

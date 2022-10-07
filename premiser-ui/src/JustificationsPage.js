@@ -21,8 +21,8 @@ import queryString from 'query-string'
 import {
   isVerified,
   isDisverified,
-  JustificationPolarity,
-  JustificationTargetType,
+  JustificationPolarities,
+  JustificationTargetTypes,
   makeNewTrunkJustification,
 } from "howdju-common"
 import {actions} from 'howdju-client-common'
@@ -145,11 +145,11 @@ class JustificationsPage extends Component {
   }
 
   showNewPositiveJustificationDialog = (event) => {
-    this.showNewJustificationDialog(event, JustificationPolarity.POSITIVE)
+    this.showNewJustificationDialog(event, JustificationPolarities.POSITIVE)
   }
 
   showNewNegativeJustificationDialog = (event) => {
-    this.showNewJustificationDialog(event, JustificationPolarity.NEGATIVE)
+    this.showNewJustificationDialog(event, JustificationPolarities.NEGATIVE)
   }
 
   saveNewJustification = (event) => {
@@ -287,9 +287,9 @@ const sortJustifications = justifications => {
 }
 
 const entitiesStoreKeyByJustificationTargetType = {
-  [JustificationTargetType.PROPOSITION]: 'propositions',
-  [JustificationTargetType.STATEMENT]: 'statements',
-  [JustificationTargetType.JUSTIFICATION]: 'justifications',
+  [JustificationTargetTypes.PROPOSITION]: 'propositions',
+  [JustificationTargetTypes.STATEMENT]: 'statements',
+  [JustificationTargetTypes.JUSTIFICATION]: 'justifications',
 }
 
 function toContextTrailItem(state, info) {

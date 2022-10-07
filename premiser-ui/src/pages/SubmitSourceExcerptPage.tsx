@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import queryString from 'query-string'
 import {useLocation} from 'react-router';
 
-import {Url, WritQuote} from "howdju-common";
+import {WritQuote, Url} from "howdju-common";
 
 import { editors } from "@/actions";
 import WritQuoteEditor from "@/editors/WritQuoteEditor";
@@ -28,7 +28,8 @@ const SubmitSourcExcerptPage = () => {
 
   const location = useLocation();
   const queryParams = queryString.parse(location.search);
-  let writQuote: WritQuote = useSelector((state: RootState) => get(state.editors, [editorType, editorId]))
+  const {editEntity} = useSelector((state: RootState) => get(state.editors, [editorType, editorId]))
+  let writQuote: WritQuote | null = editEntity as WritQuote
 
   const errors = [];
 
@@ -75,7 +76,7 @@ const SubmitSourcExcerptPage = () => {
       </HowdjuHelmet>
       <h1 className="md-cell--12">Create WritQuote</h1>
       <ErrorMessages errors={errors}></ErrorMessages>
-      <WritQuoteEditor id={id} editorType={editorType} editorId={editorId}
+      <WritQuoteEditor id={id} editorId={editorId}
         className="md-cell--12" submitButtonText={t(CREATE_ENTITY_SUBMIT_BUTTON_LABEL)}
         editorCommitBehavior={'CommitThenView'} />
     </div>

@@ -7,7 +7,7 @@ import get from 'lodash/get'
 import moment from 'moment'
 
 import {
-  JustificationRootTargetType
+  JustificationRootTargetTypes
 } from 'howdju-common'
 
 import config from './config'
@@ -64,7 +64,7 @@ export default class StatementViewer extends React.Component {
           <div className="statement-viewer">
             <div className="statement-text">
               <Link to={paths.statement(statement, contextTrailItems)}>
-                {describeRootTarget(JustificationRootTargetType.STATEMENT, statement)}
+                {describeRootTarget(JustificationRootTargetTypes.STATEMENT, statement)}
                 {' '}
                 {showJustificationCount && statement.rootJustificationCountByPolarity && (
                   <JustificationCountViewer justificationCountByPolarity={statement.rootJustificationCountByPolarity}/>
@@ -84,4 +84,3 @@ export default class StatementViewer extends React.Component {
     )
   }
 }
-

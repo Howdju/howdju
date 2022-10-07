@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 
 import {
-  JustificationBasisCompoundAtomType,
+  JustificationBasisCompoundAtomTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
 
@@ -28,7 +28,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
     const entityViewerId = combineIds(id, 'entity')
 
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.PROPOSITION:
+      case JustificationBasisCompoundAtomTypes.PROPOSITION:
         return (
           <PropositionEntityViewer
             component={component}
@@ -41,7 +41,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
             contextTrailItems={contextTrailItems}
           />
         )
-      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+      case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
         return (
           <SourceExcerptParaphraseEntityViewer
             component={component}
@@ -57,7 +57,7 @@ export default class JustificationBasisCompoundAtomViewer extends Component {
           />
         )
       default:
-        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
     }
   }
 }

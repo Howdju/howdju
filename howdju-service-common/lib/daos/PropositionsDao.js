@@ -8,10 +8,10 @@ const toNumber = require('lodash/toNumber')
 
 const {
   cleanWhitespace,
-  JustificationBasisType,
-  JustificationRootTargetType,
+  JustificationBasisTypes,
+  JustificationRootTargetTypes,
   requireArgs,
-  SortDirection,
+  SortDirections,
 } = require('howdju-common')
 
 const {toProposition} = require("./orm")
@@ -58,7 +58,7 @@ exports.PropositionsDao = class PropositionsDao {
     const orderBySqls = []
     forEach(sorts, sort => {
       const columnName = sort.property === 'id' ? 'proposition_id' : snakeCase(sort.property)
-      const direction = sort.direction === SortDirection.DESCENDING ?
+      const direction = sort.direction === SortDirections.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       whereSqls.push(`${columnName} is not null`)
@@ -68,7 +68,7 @@ exports.PropositionsDao = class PropositionsDao {
     const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
 
     const sql = `
-      select * 
+      select *
       from propositions where ${whereSql}
       ${orderBySql}
       ${countSql}
@@ -92,7 +92,7 @@ exports.PropositionsDao = class PropositionsDao {
     forEach(sortContinuations, (sortContinuation) => {
       const value = sortContinuation.value
       // The default direction is ascending
-      const direction = sortContinuation.direction === SortDirection.DESCENDING ?
+      const direction = sortContinuation.direction === SortDirections.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
@@ -111,8 +111,8 @@ exports.PropositionsDao = class PropositionsDao {
     const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
 
     const sql = `
-      select * 
-      from propositions where 
+      select *
+      from propositions where
         ${whereSql}
         and (
           ${continuationWhereSql}
@@ -137,9 +137,9 @@ exports.PropositionsDao = class PropositionsDao {
     return this.database.query(
       'readPropositionForId',
       `
-        with 
+        with
           extant_users as (select * from users where deleted is null)
-        select 
+        select
             s.*
           , u.long_name as creator_user_long_name
         from propositions s left join extant_users u on s.creator_user_id = u.user_id
@@ -196,11 +196,11 @@ exports.PropositionsDao = class PropositionsDao {
 
   countEquivalentPropositions(proposition) {
     const sql = `
-      select count(*) as count 
-      from propositions 
-        where 
-              normal_text = $1 
-          and proposition_id != $2 
+      select count(*) as count
+      from propositions
+        where
+              normal_text = $1
+          and proposition_id != $2
           and deleted is null
       `
     return this.database.query(
@@ -216,15 +216,15 @@ exports.PropositionsDao = class PropositionsDao {
 
   hasOtherUsersRootedJustifications(proposition, userId) {
     const sql = `
-      select count(*) > 0 as result 
-      from justifications 
-        where 
+      select count(*) > 0 as result
+      from justifications
+        where
               root_target_type = $1
           and root_target_id = $2
           and creator_user_id != $3
           and deleted is null
     `
-    return this.database.query('hasOtherUsersRootedJustifications', sql, [JustificationRootTargetType.PROPOSITION,
+    return this.database.query('hasOtherUsersRootedJustifications', sql, [JustificationRootTargetTypes.PROPOSITION,
       proposition.id, userId])
       .then( ({rows: [{result}]}) => result)
   }
@@ -233,17 +233,17 @@ exports.PropositionsDao = class PropositionsDao {
   hasOtherUsersRootedJustificationsVotes(proposition, userId) {
     const sql = `
       with
-        proposition_justifications as ( 
-          select * from justifications where root_target_type = $1 and root_target_id = $2 
+        proposition_justifications as (
+          select * from justifications where root_target_type = $1 and root_target_id = $2
         )
       select count(v.*) > 0 as result
-      from proposition_justifications sj 
-        join justification_votes v on 
+      from proposition_justifications sj
+        join justification_votes v on
               v.justification_id = sj.justification_id
           and v.user_id != $3
           and v.deleted is null
     `
-    return this.database.query('hasOtherUsersRootedJustificationsVotes', sql, [JustificationRootTargetType.PROPOSITION,
+    return this.database.query('hasOtherUsersRootedJustificationsVotes', sql, [JustificationRootTargetTypes.PROPOSITION,
       proposition.id, userId])
       .then( ({rows: [{result}]}) => result )
   }
@@ -251,8 +251,8 @@ exports.PropositionsDao = class PropositionsDao {
   isBasisToOtherUsersJustifications(proposition, userId) {
     const sql = `
       select count(*) > 0 as result
-      from justifications j 
-        join proposition_compounds sc on 
+      from justifications j
+        join proposition_compounds sc on
               j.creator_user_id != $3
           and j.basis_type = $2
           and j.basis_id = sc.proposition_compound_id
@@ -262,7 +262,7 @@ exports.PropositionsDao = class PropositionsDao {
           and scas.proposition_id = $1
     `
     return this.database.query('isBasisToOtherUsersJustifications', sql,
-      [proposition.id, JustificationBasisType.PROPOSITION_COMPOUND, userId])
+      [proposition.id, JustificationBasisTypes.PROPOSITION_COMPOUND, userId])
       .then( ({rows: [{result}]}) => result)
   }
 }

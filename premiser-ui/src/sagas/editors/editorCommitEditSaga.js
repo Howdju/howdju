@@ -11,11 +11,11 @@ import reverse from 'lodash/reverse'
 
 import {
   arrayToObject,
-  JustificationRootTargetType,
-  JustificationTargetType,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
   newProgrammingError,
   makeNewStatement,
-  SentenceType,
+  SentenceTypes,
 } from 'howdju-common'
 
 import {
@@ -55,10 +55,10 @@ const editorTypeCommitApiResourceActions = {
           // If the statement is justified, then create a justification targeting the statement
           if (model.doCreateJustification) {
             const justification = consolidateNewJustificationEntities(model.newJustification)
-            justification.rootTargetType = JustificationRootTargetType.STATEMENT
+            justification.rootTargetType = JustificationRootTargetTypes.STATEMENT
             justification.target = {
               entity: statement,
-              type: JustificationTargetType.STATEMENT,
+              type: JustificationTargetTypes.STATEMENT,
             }
             return api.createJustification(justification)
           }
@@ -125,9 +125,9 @@ function constructStatement(speakers, proposition) {
   // but we need to build the statements outward so that we have the target of the next statement.
   // So take them in reverse order
   speakers = reverse(clone(speakers))
-  let statement = makeNewStatement(speakers[0], SentenceType.PROPOSITION, proposition)
+  let statement = makeNewStatement(speakers[0], SentenceTypes.PROPOSITION, proposition)
   for (const speaker of drop(speakers, 1)) {
-    statement = makeNewStatement(speaker, SentenceType.STATEMENT, statement)
+    statement = makeNewStatement(speaker, SentenceTypes.STATEMENT, statement)
   }
   return statement
 }

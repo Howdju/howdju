@@ -5,9 +5,9 @@ const map = require('lodash/map')
 const zip = require('lodash/zip')
 
 const {
-  ActionTargetType,
-  ActionType,
-  JustificationBasisCompoundAtomType,
+  ActionTargetTypes,
+  ActionTypes,
+  JustificationBasisCompoundAtomTypes,
   newExhaustedEnumError,
   requireArgs,
 } = require('howdju-common')
@@ -164,8 +164,8 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
         }))
     })
     .then( ({isExtant, justificationBasisCompound}) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.JUSTIFICATION_BASIS_COMPOUND, justificationBasisCompound.id)
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.JUSTIFICATION_BASIS_COMPOUND, justificationBasisCompound.id)
       return {
         isExtant,
         justificationBasisCompound,
@@ -257,7 +257,7 @@ function readOrCreateJustificationBasisCompoundAtomEntity(
 ) {
   const type = atom.type
   switch (type) {
-    case JustificationBasisCompoundAtomType.PROPOSITION:
+    case JustificationBasisCompoundAtomTypes.PROPOSITION:
       return service.propositionsService.readOrCreateValidPropositionAsUser(atom.entity, userId, now)
         .then( ({isExtant, proposition}) => {
           atom.entity = proposition
@@ -266,7 +266,7 @@ function readOrCreateJustificationBasisCompoundAtomEntity(
             atom,
           }
         })
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+    case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       return service.sourceExcerptParaphrasesService.readOrCreateValidSourceExcerptParaphraseAsUser(atom.entity, userId, now)
         .then( ({isExtant, sourceExcerptParaphrase}) => {
           atom.entity = sourceExcerptParaphrase
@@ -276,7 +276,7 @@ function readOrCreateJustificationBasisCompoundAtomEntity(
           }
         })
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
   }
 }
 
@@ -287,11 +287,11 @@ function getJustificationBasisCompoundAtomEntity(
   userId
 ) {
   switch (entityType) {
-    case JustificationBasisCompoundAtomType.PROPOSITION:
+    case JustificationBasisCompoundAtomTypes.PROPOSITION:
       return service.propositionsService.readPropositionForId(entityId, {userId})
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+    case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       return service.sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(entityId, {userId})
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomType', entityType)
+      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', entityType)
   }
 }

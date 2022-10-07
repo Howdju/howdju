@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 
 const {
-  EntityType,
+  EntityTypes,
 } = require('howdju-common')
 
 const {EntityService} = require('./EntityService')
@@ -69,7 +69,7 @@ exports.PersorgsService = class PersorgsService extends EntityService {
 
     const updatedPersorg = await this.persorgsDao.updatePersorg(persorg, now)
     if (!updatedPersorg) {
-      throw new EntityNotFoundError(EntityType.PERSORG, persorg.id)
+      throw new EntityNotFoundError(EntityTypes.PERSORG, persorg.id)
     }
     return updatedPersorg
   }

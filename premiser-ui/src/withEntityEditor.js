@@ -33,6 +33,7 @@ import {logger} from './logger'
  * @param editorFieldsEditEntityPropName {string} The prop name under which the edited entity should be provided to the
  *     editor fields
  * @param schemaId The ID of the schema for validating the editEntity.
+ * @deprecated Use withEditor instead
  * @returns {Component} An entity editor component
  */
 export default function withEntityEditor(

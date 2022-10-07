@@ -1,7 +1,7 @@
 const {
   newImpossibleError,
   requireArgs,
-  SentenceType,
+  SentenceTypes,
 } = require('howdju-common')
 
 const {
@@ -80,16 +80,16 @@ function collectSentences(statement) {
   let currStatement = statement
   while (currStatement) {
     switch (currStatement.sentenceType) {
-      case SentenceType.STATEMENT:
+      case SentenceTypes.STATEMENT:
         statements.push(currStatement.sentence)
         currStatement = currStatement.sentence
         break
-      case SentenceType.PROPOSITION:
+      case SentenceTypes.PROPOSITION:
         proposition = currStatement.sentence
         currStatement = null
         break
       default:
-        throw newImpossibleError(`Invalid SentenceType ${currStatement.sentenceType}`)
+        throw newImpossibleError(`Invalid SentenceTypes ${currStatement.sentenceType}`)
     }
   }
   return {

@@ -1,8 +1,8 @@
 const {
-  EntityType,
-  JustificationRootTargetType,
+  JustificationRootTargetTypes,
   newExhaustedEnumError,
   requireArgs,
+  EntityTypes,
 } = require('howdju-common')
 
 const {
@@ -10,9 +10,9 @@ const {
 } = require('../serviceErrors')
 
 const entityTypeByRootTargetType = {
-  [JustificationRootTargetType.PROPOSITION]: EntityType.PROPOSITION,
-  [JustificationRootTargetType.STATEMENT]: EntityType.STATEMENT,
-  [JustificationRootTargetType.JUSTIFICATION]: EntityType.JUSTIFICATION,
+  [JustificationRootTargetTypes.PROPOSITION]: EntityTypes.PROPOSITION,
+  [JustificationRootTargetTypes.STATEMENT]: EntityTypes.STATEMENT,
+  [JustificationRootTargetTypes.JUSTIFICATION]: EntityTypes.JUSTIFICATION,
 }
 
 exports.RootTargetJustificationsService = class RootTargetJustificationsService {
@@ -27,12 +27,12 @@ exports.RootTargetJustificationsService = class RootTargetJustificationsService 
 
   async readRootTarget(rootTargetType, rootTargetId, userId) {
     switch (rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION:
+      case JustificationRootTargetTypes.PROPOSITION:
         return await this.propositionsService.readPropositionForId(rootTargetId, {userId})
-      case JustificationRootTargetType.STATEMENT:
+      case JustificationRootTargetTypes.STATEMENT:
         return await this.statementsService.readStatementForId(rootTargetId)
       default:
-        throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
+        throw newExhaustedEnumError('JustificationRootTargetTypes', rootTargetType)
     }
   }
 

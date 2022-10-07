@@ -4,7 +4,7 @@ const map = require('lodash/map')
 const {
   newExhaustedEnumError,
   requireArgs,
-  SentenceType,
+  SentenceTypes,
 } = require('howdju-common')
 
 const {BaseDao, START_PREFIX} = require('./BaseDao')
@@ -24,18 +24,18 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
     while (nextSentenceId) {
       let nextSentence
       switch (sentence.sentenceType) {
-        case SentenceType.STATEMENT: {
+        case SentenceTypes.STATEMENT: {
           nextSentence = await this.readStatementWithoutSentenceForId(nextSentenceId)
           nextSentenceId = nextSentence.sentence.id
           break
         }
-        case SentenceType.PROPOSITION: {
+        case SentenceTypes.PROPOSITION: {
           nextSentence = await this.propositionsDao.readPropositionForId(nextSentenceId)
           nextSentenceId = null
           break
         }
         default:
-          throw newExhaustedEnumError('SentenceType', sentence.sentenceType)
+          throw newExhaustedEnumError('SentenceTypes', sentence.sentenceType)
       }
       sentence.sentence = nextSentence
       sentence = nextSentence
@@ -48,22 +48,22 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
     return await this.queryOne(
       'readEquivalentStatement',
       `
-        with 
+        with
           extant_users as (select * from users where deleted is null)
           , extant_persorgs as (select * from persorgs where deleted is null)
-        select 
+        select
             s.*
           , '' as ${START_PREFIX}creator_
           , u.*
           , '' as ${START_PREFIX}speaker_
           , p.*
-        from statements s 
+        from statements s
           left join extant_users u on s.creator_user_id = u.user_id
           left join extant_persorgs p on s.speaker_persorg_id = p.persorg_id
-          where 
+          where
                 s.speaker_persorg_id = $1
             and s.sentence_type = $2
-            and s.sentence_id = $3 
+            and s.sentence_id = $3
             and s.deleted is null
       `,
       [statement.speaker.id, statement.sentenceType, statement.sentence.id]
@@ -74,8 +74,8 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
     return await this.queryOne(
       'createStatement',
       `
-        insert into statements 
-          (sentence_type, sentence_id, speaker_persorg_id, root_proposition_id, creator_user_id, created) 
+        insert into statements
+          (sentence_type, sentence_id, speaker_persorg_id, root_proposition_id, creator_user_id, created)
           values ($1, $2, $3, $4, $5, $6)
           returning *
       `,
@@ -88,16 +88,16 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
     return await this.queryOne(
       'readStatementWithoutSentenceForId',
       `
-        with 
+        with
             extant_users as (select * from users where deleted is null)
           , extant_persorgs as (select * from persorgs where deleted is null)
-        select 
+        select
             s.*
           , '' as _prefix__creator_
           , u.*
           , '' as _prefix__speaker_
           , p.*
-        from statements s 
+        from statements s
           left join extant_users u on s.creator_user_id = u.user_id
           left join extant_persorgs p on s.speaker_persorg_id = p.persorg_id
           where s.statement_id = $1 and s.deleted is null
@@ -136,12 +136,12 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
   async readIndirectStatementsForRootPropositionId(rootPropositionId) {
     const {rows} = await this.database.query(
       'readIndirectStatementsForRootPropositionId.statementIds',
-      `select * from statements s 
-         where 
-               s.root_proposition_id = $1 
+      `select * from statements s
+         where
+               s.root_proposition_id = $1
            and s.sentence_type <> $2
            and s.deleted is null`,
-      [rootPropositionId, SentenceType.PROPOSITION]
+      [rootPropositionId, SentenceTypes.PROPOSITION]
     )
     return await Promise.all(map(rows, (row) => this.readStatementForId(row.statement_id)))
   }

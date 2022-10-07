@@ -22,9 +22,9 @@ import queryString from 'query-string'
 import {
   arrayToObject,
   makeNewPropositionJustification,
-  JustificationBasisType,
+  JustificationBasisTypes,
   makeNewJustificationBasisCompoundFromWritQuote,
-  PropositionTagVotePolarity
+  PropositionTagVotePolarities
 } from "howdju-common"
 
 import {
@@ -147,7 +147,7 @@ class CreatePropositionPage extends Component {
         }
         const justificationProps = {
           basis: {
-            type: JustificationBasisType.WRIT_QUOTE,
+            type: JustificationBasisTypes.WRIT_QUOTE,
             writQuote,
             justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote(writQuote),
           }
@@ -370,8 +370,8 @@ class CreatePropositionPage extends Component {
                       name={combineNames(propositionName, tagsName)}
                       suggestionsKey={combineSuggestionsKeys(id, tagsName)}
                       votePolarity={{
-                        POSITIVE: PropositionTagVotePolarity.POSITIVE,
-                        NEGATIVE: PropositionTagVotePolarity.NEGATIVE,
+                        POSITIVE: PropositionTagVotePolarities.POSITIVE,
+                        NEGATIVE: PropositionTagVotePolarities.NEGATIVE,
                       }}
                       onTag={this.onTagProposition}
                       onUnTag={this.onUnTagProposition}

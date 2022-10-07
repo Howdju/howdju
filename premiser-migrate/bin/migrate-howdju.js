@@ -9,9 +9,9 @@ const toNumber = require('lodash/toNumber')
 const mysql = require('mysql')
 
 const {
-  JustificationBasisType,
-  JustificationPolarity,
-  JustificationTargetType,
+  JustificationBasisTypes,
+  JustificationPolarities,
+  JustificationTargetTypes,
 } = require('howdju-common')
 const {
   loadEnvironmentEnvVars
@@ -85,8 +85,8 @@ const migrateUsers = () => {
         return Promise.all(map(rows, row => {
           if (has(userIdTranslations, row.id)) return Promise.resolve()
           const sql = `
-            insert into users (email, short_name, long_name, created, last_login) 
-            values ($1, $2, $3, $4, $5) 
+            insert into users (email, short_name, long_name, created, last_login)
+            values ($1, $2, $3, $4, $5)
             returning user_id`
           const args = [row.email, row.first_name, `${row.first_name} ${row.last_name}`, row.date_joined, row.last_login]
           return query(sql, args)
@@ -117,8 +117,8 @@ const migrateStatements = () => {
           return getNewUserId(row.creator_id)
               .then( userId => {
                 const sql = `
-                  insert into statements (text, normal_text, creator_user_id, created) 
-                  values ($1, $2, $3, $4) 
+                  insert into statements (text, normal_text, creator_user_id, created)
+                  values ($1, $2, $3, $4)
                   returning statement_id`
                 const args = [row.text, normalizeText(row.text), userId, row.date_created]
                 return query(sql, args)
@@ -155,8 +155,8 @@ const migrateCitations = () => {
                         ])
                       } else {
                         const sql = `
-                          insert into citations (text, normal_title, creator_user_id, created) 
-                          values ($1, $2, $3, $4) 
+                          insert into citations (text, normal_title, creator_user_id, created)
+                          values ($1, $2, $3, $4)
                           returning citation_id`
                         const args = [row.description, normalizeText(row.description), userId, row.date_created]
                         return query(sql, args)
@@ -318,7 +318,7 @@ const getJustificationTargetId = row => Promise.resolve()
     })
     .then( ({rows: [targetRow]}) => {
       if (!targetRow) {
-        const targetType = row.statement_id ? JustificationTargetType.PROPOSITION : JustificationTargetType.JUSTIFICATION
+        const targetType = row.statement_id ? JustificationTargetTypes.PROPOSITION : JustificationTargetTypes.JUSTIFICATION
         throw new Error(`justification ${row.id} is missing migrated target ID for ${targetType} ${row.statement_id || row.justification_id}`)
       }
       return targetRow.new_id
@@ -330,8 +330,8 @@ const migrateRootJustifications = () => log('migrate root justifications')
 const migrateRemainingJustifications = () => log('migrate remaining justifications')
     .then(() => oldQuery(`
         -- select justifications that target a migrated justification, but which haven't been migrated yet
-        select * 
-        from local_justification j 
+        select *
+        from local_justification j
           join migration_translations t1 on
                 t1.old_table_name = 'local_justification'
             and t1.new_table_name = 'justifications'
@@ -413,18 +413,18 @@ const migrateCompoundJustificationBasis = row => {
 
 const migrateJustifications = ({rows}) => Promise.all(map(rows, row => Promise.all([
       migrateJustificationBasis(row),
-      row.citation_id ? JustificationBasisType.CITATION_REFERENCE : JustificationBasisType.PROPOSITION_COMPOUND,
+      row.citation_id ? JustificationBasisTypes.CITATION_REFERENCE : JustificationBasisTypes.PROPOSITION_COMPOUND,
       getJustificationTargetId(row),
-      row.statement_id ? JustificationTargetType.PROPOSITION : JustificationTargetType.JUSTIFICATION,
+      row.statement_id ? JustificationTargetTypes.PROPOSITION : JustificationTargetTypes.JUSTIFICATION,
       getNewUserId(row.creator_id),
       getRootStatementId(row),
       getRootPositive(row),
     ])
     .then( ([basisId, basisType, targetId, targetType, userId, rootStatementId, rootPositive]) => {
-      const polarity = row.positive === 0 ? JustificationPolarity.NEGATIVE : JustificationPolarity.POSITIVE
-      const rootPolarity = rootPositive === 0 ? JustificationPolarity.NEGATIVE : JustificationPolarity.POSITIVE
+      const polarity = row.positive === 0 ? JustificationPolarities.NEGATIVE : JustificationPolarities.POSITIVE
+      const rootPolarity = rootPositive === 0 ? JustificationPolarities.NEGATIVE : JustificationPolarities.POSITIVE
       return query(
-          `insert into justifications (root_statement_id, root_polarity, target_id, target_type, basis_id, basis_type, polarity, creator_user_id, created) 
+          `insert into justifications (root_statement_id, root_polarity, target_id, target_type, basis_id, basis_type, polarity, creator_user_id, created)
                 values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 returning justification_id`,
           [rootStatementId, rootPolarity, targetId, targetType, basisId, basisType, polarity, userId, row.date_created]

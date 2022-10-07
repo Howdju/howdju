@@ -10,8 +10,8 @@ import {
   isWritQuoteBased,
   isPropositionCompoundBased,
   isJustificationBasisCompoundBased,
-  JustificationPolarity,
-  JustificationBasisType,
+  JustificationPolarities,
+  JustificationBasisTypes,
 } from "howdju-common"
 
 import t, {
@@ -38,17 +38,17 @@ const writQuoteName = "basis.writQuote"
 const justificationBasisCompoundName = 'basis.justificationBasisCompound'
 
 const polarityControls = [{
-  value: JustificationPolarity.POSITIVE,
+  value: JustificationPolarities.POSITIVE,
   label: t(JUSTIFICATION_POLARITY_POSITIVE),
   title: "Support the truth of the proposition",
 }, {
-  value: JustificationPolarity.NEGATIVE,
+  value: JustificationPolarities.NEGATIVE,
   label: t(JUSTIFICATION_POLARITY_NEGATIVE),
   title: "Oppose the truth of the proposition",
 }]
 const basisTypeControls = [
   {
-    value: JustificationBasisType.PROPOSITION_COMPOUND,
+    value: JustificationBasisTypes.PROPOSITION_COMPOUND,
     label: (
       <div title="A list of propositions that together imply the target">
         {t(JUSTIFICATION_BASIS_TYPE_PROPOSITION_COMPOUND)}
@@ -56,7 +56,7 @@ const basisTypeControls = [
     ),
   },
   {
-    value: JustificationBasisType.WRIT_QUOTE,
+    value: JustificationBasisTypes.WRIT_QUOTE,
     label: (
       <div title="An external reference">
         {t(JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE)}
@@ -64,7 +64,7 @@ const basisTypeControls = [
     ),
   },
   {
-    value: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
+    value: JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
     label: (
       <div title="A list of justifications that together imply the target">
         {t('Compound (deprecated)')}
@@ -94,7 +94,7 @@ export default class NewJustificationEditorFields extends Component {
     /** Passed to subcontrols */
     onKeyDown: PropTypes.func,
   }
-  
+
   static defaultProps = {
     doShowTypeSelection: true
   }
@@ -210,7 +210,7 @@ export default class NewJustificationEditorFields extends Component {
         <Divider />
         {doShowTypeSelection &&
           <React.Fragment>
-            <Subheader 
+            <Subheader
               primary
               primaryText="Type"
               component="div"
@@ -227,7 +227,7 @@ export default class NewJustificationEditorFields extends Component {
             />
           </React.Fragment>
         }
-        
+
         <Divider />
         {_isPropositionCompoundBased && propositionCompoundEditorFields}
         {_isWritQuoteBased && writQuoteEditorFields}

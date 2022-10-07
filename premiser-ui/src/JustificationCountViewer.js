@@ -3,7 +3,7 @@ import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
 
 import {
-  JustificationPolarity
+  JustificationPolarities
 } from 'howdju-common'
 
 export default function JustificationCountViewer(props) {
@@ -11,8 +11,8 @@ export default function JustificationCountViewer(props) {
     justificationCountByPolarity
   } = props
 
-  const positiveJustificationCount = get(justificationCountByPolarity, JustificationPolarity.POSITIVE, 0)
-  const negativeJustificationCount = get(justificationCountByPolarity, JustificationPolarity.NEGATIVE, 0)
+  const positiveJustificationCount = get(justificationCountByPolarity, JustificationPolarities.POSITIVE, 0)
+  const negativeJustificationCount = get(justificationCountByPolarity, JustificationPolarities.NEGATIVE, 0)
   return isEmpty(justificationCountByPolarity) ? (
     <span title="no justifications">
       (0)

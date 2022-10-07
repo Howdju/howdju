@@ -2,7 +2,7 @@ const has = require('lodash/has')
 
 const {
   modelErrorCodes,
-  PropositionTagVotePolarity,
+  PropositionTagVotePolarities,
 } = require('howdju-common')
 
 const {TagValidator} = require('./TagValidator')
@@ -20,7 +20,7 @@ class PropositionTagVoteValidator {
     }
 
     if (has(propositionTagVote, 'polarity')) {
-      if (!has(PropositionTagVotePolarity, propositionTagVote.polarity)) {
+      if (!has(PropositionTagVotePolarities, propositionTagVote.polarity)) {
         errors.hasErrors = true
         errors.fieldErrors.polarity.push(modelErrorCodes.INVALID_VALUE)
       }

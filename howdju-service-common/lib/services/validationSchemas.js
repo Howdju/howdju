@@ -4,17 +4,17 @@ const set = require('lodash/set')
 const Joi = require('./validation')
 
 const {
-  JustificationBasisCompoundAtomType,
-  JustificationBasisType,
-  JustificationPolarity,
-  JustificationRootPolarity,
-  JustificationRootTargetType,
-  JustificationTargetType,
-  PropositionTagVotePolarity,
+  JustificationBasisCompoundAtomTypes,
+  JustificationBasisTypes,
+  JustificationPolarities,
+  JustificationRootPolarities,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
+  PropositionTagVotePolarities,
   schemaSettings,
-  SentenceType,
-  SourceExcerptType,
-  UrlTargetAnchorType,
+  SentenceTypes,
+  SourceExcerptTypes,
+  UrlTargetAnchorTypes,
 } = require('howdju-common')
 
 
@@ -47,7 +47,7 @@ const tagSchema = Joi.object().keys({
   })
 
 const propositionTagVoteSchema = Joi.object().keys({
-  polarity: Joi.string().valid(...Object.keys(PropositionTagVotePolarity)),
+  polarity: Joi.string().valid(...Object.keys(PropositionTagVotePolarities)),
   tag: tagSchema,
 })
 
@@ -67,10 +67,10 @@ const STATEMENT_SCHEMA_ID = "statement"
 const statementSchema = Joi.object().keys({
   id: idSchema,
   speaker: persorgSchema,
-  sentenceType: Joi.valid(...Object.keys(SentenceType)).empty(null),
+  sentenceType: Joi.valid(...Object.keys(SentenceTypes)).empty(null),
   sentence: Joi
-    .when('sentenceType', { is: SentenceType.STATEMENT, then: Joi.link(`#${STATEMENT_SCHEMA_ID}`) })
-    .when('sentenceType', { is: SentenceType.PROPOSITION, then: propositionSchema })
+    .when('sentenceType', { is: SentenceTypes.STATEMENT, then: Joi.link(`#${STATEMENT_SCHEMA_ID}`) })
+    .when('sentenceType', { is: SentenceTypes.PROPOSITION, then: propositionSchema })
 })
   .when(idMissing, {
     then: Joi.object({
@@ -98,7 +98,7 @@ const urlSchema = Joi.object().keys({
   target: Joi.object({
     date: Joi.date().utc(),
     anchors: Joi.array().min(1).items(Joi.object()
-      .when('type', {is: UrlTargetAnchorType.TEXT_QUOTE, then: Joi.object({
+      .when('type', {is: UrlTargetAnchorTypes.TEXT_QUOTE, then: Joi.object({
         exact: Joi.string(),
         prefix: Joi.string(),
         suffix: Joi.string(),
@@ -140,9 +140,9 @@ const sourceExcerptParaphraseSchema = Joi.object().keys({
   id: idSchema,
   paraphrasingProposition: propositionSchema,
   sourceExcerpt: {
-    type: Joi.valid(...Object.keys(SourceExcerptType)).required().empty(null),
+    type: Joi.valid(...Object.keys(SourceExcerptTypes)).required().empty(null),
     entity: Joi
-      .when('type', {is: SourceExcerptType.WRIT_QUOTE, then: writQuoteSchema})
+      .when('type', {is: SourceExcerptTypes.WRIT_QUOTE, then: writQuoteSchema})
       .required()
   },
 })
@@ -154,10 +154,10 @@ const sourceExcerptParaphraseSchema = Joi.object().keys({
   })
 const justificationBasisCompoundSchema = Joi.object().keys({
   atoms: Joi.array().items(Joi.object().keys({
-    type: Joi.valid(...Object.keys(JustificationBasisCompoundAtomType)).required().empty(null),
+    type: Joi.valid(...Object.keys(JustificationBasisCompoundAtomTypes)).required().empty(null),
     entity: Joi
-      .when('type', {is: JustificationBasisCompoundAtomType.PROPOSITION, then: propositionSchema})
-      .when('type', {is: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE, then: sourceExcerptParaphraseSchema})
+      .when('type', {is: JustificationBasisCompoundAtomTypes.PROPOSITION, then: propositionSchema})
+      .when('type', {is: JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE, then: sourceExcerptParaphraseSchema})
       .required()
   }))
 })
@@ -170,30 +170,30 @@ const justificationBasisCompoundSchema = Joi.object().keys({
 const JUSTIFICATION_SCHEMA_ID = "justification"
 const justificationSchema = Joi.object().keys({
   id: idSchema,
-  polarity: Joi.valid(...Object.keys(JustificationPolarity)).empty(null),
+  polarity: Joi.valid(...Object.keys(JustificationPolarities)).empty(null),
   target: Joi.object().keys({
-    type: Joi.allow(...Object.keys(JustificationTargetType)).required().empty(null),
+    type: Joi.allow(...Object.keys(JustificationTargetTypes)).required().empty(null),
     entity: Joi
-      .when('type', { is: JustificationTargetType.PROPOSITION, then: propositionSchema})
-      .when('type', { is: JustificationTargetType.STATEMENT, then: statementSchema})
-      .when('type', { is: JustificationTargetType.JUSTIFICATION, then: Joi.link(`#${JUSTIFICATION_SCHEMA_ID}`)})
+      .when('type', { is: JustificationTargetTypes.PROPOSITION, then: propositionSchema})
+      .when('type', { is: JustificationTargetTypes.STATEMENT, then: statementSchema})
+      .when('type', { is: JustificationTargetTypes.JUSTIFICATION, then: Joi.link(`#${JUSTIFICATION_SCHEMA_ID}`)})
       .required()
   }),
   basis: Joi.object().keys({
-    type: Joi.valid(...Object.keys(JustificationBasisType)).required().empty(null),
+    type: Joi.valid(...Object.keys(JustificationBasisTypes)).required().empty(null),
     entity: Joi
-      .when('type', {is: JustificationBasisType.PROPOSITION_COMPOUND, then: propositionCompoundSchema})
-      .when('type', {is: JustificationBasisType.WRIT_QUOTE, then: writQuoteSchema})
-      .when('type', {is: JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND, then: justificationBasisCompoundSchema})
+      .when('type', {is: JustificationBasisTypes.PROPOSITION_COMPOUND, then: propositionCompoundSchema})
+      .when('type', {is: JustificationBasisTypes.WRIT_QUOTE, then: writQuoteSchema})
+      .when('type', {is: JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND, then: justificationBasisCompoundSchema})
       .required()
   }),
   // The API accepts root polarity, but since it is determined by the target, it is ignored.
   // We could throw an error if it is incorrect.
-  rootPolarity: Joi.valid(...Object.keys(JustificationRootPolarity)).empty(null),
-  rootTargetType: Joi.valid(...Object.keys(JustificationRootTargetType)).empty(null),
+  rootPolarity: Joi.valid(...Object.keys(JustificationRootPolarities)).empty(null),
+  rootTargetType: Joi.valid(...Object.keys(JustificationRootTargetTypes)).empty(null),
   rootTarget: Joi
-    .when('rootTargetType', { is: JustificationTargetType.PROPOSITION, then: propositionSchema})
-    .when('rootTargetType', { is: JustificationTargetType.STATEMENT, then: statementSchema}),
+    .when('rootTargetType', { is: JustificationTargetTypes.PROPOSITION, then: propositionSchema})
+    .when('rootTargetType', { is: JustificationTargetTypes.STATEMENT, then: statementSchema}),
 })
   .when(idMissing, {
     then: Joi.object({

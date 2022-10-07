@@ -9,14 +9,14 @@ const {
   newExhaustedEnumError,
 } = require('./commonErrors')
 const {
-  JustificationPolarity,
-  JustificationRootPolarity,
-  JustificationRootTargetType,
-  JustificationVotePolarity,
-  JustificationBasisType,
-  JustificationTargetType,
-  JustificationBasisCompoundAtomType,
-  SourceExcerptType,
+  JustificationPolarities,
+  JustificationRootPolarities,
+  JustificationRootTargetTypes,
+  JustificationVotePolarities,
+  JustificationBasisTypes,
+  JustificationTargetTypes,
+  JustificationBasisCompoundAtomTypes,
+  SourceExcerptTypes,
 } = require('./enums')
 const {
   isDefined
@@ -25,39 +25,39 @@ const {
 
 const _e = module.exports
 
-_e.isPositive = (j) => j.polarity === JustificationPolarity.POSITIVE
-_e.isNegative = (j) => j.polarity === JustificationPolarity.NEGATIVE
-_e.isRootPositive = (j) => j.rootPolarity === JustificationRootPolarity.POSITIVE
-_e.isRootNegative = (j) => j.rootPolarity === JustificationRootPolarity.NEGATIVE
-_e.isVerified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.POSITIVE
-_e.isDisverified = (j) => j.vote && j.vote.polarity === JustificationVotePolarity.NEGATIVE
+_e.isPositive = (j) => j.polarity === JustificationPolarities.POSITIVE
+_e.isNegative = (j) => j.polarity === JustificationPolarities.NEGATIVE
+_e.isRootPositive = (j) => j.rootPolarity === JustificationRootPolarities.POSITIVE
+_e.isRootNegative = (j) => j.rootPolarity === JustificationRootPolarities.NEGATIVE
+_e.isVerified = (j) => j.vote && j.vote.polarity === JustificationVotePolarities.POSITIVE
+_e.isDisverified = (j) => j.vote && j.vote.polarity === JustificationVotePolarities.NEGATIVE
 // If a justification targets another justification, its polarity should always be negative
-_e.isCounter = (j) => j.target.type === JustificationTargetType.JUSTIFICATION && _e.isNegative(j)
+_e.isCounter = (j) => j.target.type === JustificationTargetTypes.JUSTIFICATION && _e.isNegative(j)
 _e.isRootJustification = (j) =>
   j.target.type === j.rootTargetType &&
   j.target.entity.id === j.rootTarget.id
 _e.hasQuote = (j) => _e.isWritQuoteBased(j) && j.basis.entity.quoteText
-_e.isPropositionCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.PROPOSITION_COMPOUND : false
-_e.isWritQuoteBased = (j) => j ? j.basis.type === JustificationBasisType.WRIT_QUOTE : false
-_e.isJustificationBasisCompoundBased = (j) => j ? j.basis.type === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND : false
+_e.isPropositionCompoundBased = (j) => j ? j.basis.type === JustificationBasisTypes.PROPOSITION_COMPOUND : false
+_e.isWritQuoteBased = (j) => j ? j.basis.type === JustificationBasisTypes.WRIT_QUOTE : false
+_e.isJustificationBasisCompoundBased = (j) => j ? j.basis.type === JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND : false
 
 _e.negateJustificationVotePolarity = (polarity) => {
   switch (polarity) {
-    case JustificationVotePolarity.POSITIVE:
-      return JustificationVotePolarity.NEGATIVE
-    case JustificationVotePolarity.NEGATIVE:
-      return JustificationVotePolarity.POSITIVE
+    case JustificationVotePolarities.POSITIVE:
+      return JustificationVotePolarities.NEGATIVE
+    case JustificationVotePolarities.NEGATIVE:
+      return JustificationVotePolarities.POSITIVE
     default:
-      throw newExhaustedEnumError('JustificationVotePolarity', polarity)
+      throw newExhaustedEnumError('JustificationVotePolarities', polarity)
   }
 }
 
 _e.negateRootPolarity = (rootPolarity) => {
   switch (rootPolarity) {
-    case JustificationRootPolarity.POSITIVE:
-      return JustificationRootPolarity.NEGATIVE
-    case JustificationRootPolarity.NEGATIVE:
-      return JustificationRootPolarity.POSITIVE
+    case JustificationRootPolarities.POSITIVE:
+      return JustificationRootPolarities.NEGATIVE
+    case JustificationRootPolarities.NEGATIVE:
+      return JustificationRootPolarities.POSITIVE
     default:
       throw newImpossibleError(`unsupported root polarity: ${rootPolarity}`)
   }
@@ -113,18 +113,18 @@ _e.makeNewStatement = (speaker, sentenceType, sentence) => ({
 
 _e.makeNewJustification = (props) => {
   let newJustification = {
-    rootTargetType: JustificationRootTargetType.PROPOSITION,
+    rootTargetType: JustificationRootTargetTypes.PROPOSITION,
     rootTarget: {id: null},
-    polarity: JustificationPolarity.POSITIVE,
-    rootPolarity: JustificationRootPolarity.POSITIVE,
+    polarity: JustificationPolarities.POSITIVE,
+    rootPolarity: JustificationRootPolarities.POSITIVE,
     target: {
-      type: JustificationTargetType.PROPOSITION,
+      type: JustificationTargetTypes.PROPOSITION,
       entity: {
         id: null
       }
     },
     basis: {
-      type: JustificationBasisType.PROPOSITION_COMPOUND,
+      type: JustificationBasisTypes.PROPOSITION_COMPOUND,
       // Store both these types directly on the basis for the view-model
       // Before the justification is sent to the server, the one corresponding to the current type should be put on the
       // entity property
@@ -137,7 +137,7 @@ _e.makeNewJustification = (props) => {
   if (
     props &&
     props.basis &&
-    props.basis.type === JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND &&
+    props.basis.type === JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND &&
     props.basis.justificationBasisCompound
   ) {
     translateNewJustificationBasisCompoundAtomEntities(props.basis.justificationBasisCompound.atoms)
@@ -154,7 +154,7 @@ _e.makeNewSourceExcerptJustification = props => {
   const init = {
     target: null,
     basis: {
-      type: JustificationBasisType.WRIT_QUOTE,
+      type: JustificationBasisTypes.WRIT_QUOTE,
       entity: null,
     },
   }
@@ -176,15 +176,15 @@ function correctJustificationRootPolarity(justification) {
 function translateNewJustificationBasisCompoundAtomEntities(atoms) {
   forEach(atoms, (atom) => {
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.PROPOSITION:
+      case JustificationBasisCompoundAtomTypes.PROPOSITION:
         atom.proposition = atom.proposition || atom.entity
         break
-      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+      case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
         atom.sourceExcerptParaphrase = atom.sourceExcerptParaphrase || atom.entity
         translateNewSourceExcerptEntity(atom.sourceExcerptParaphrase.sourceExcerpt)
         break
       default:
-        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
     }
     delete atom.entity
   })
@@ -192,17 +192,17 @@ function translateNewJustificationBasisCompoundAtomEntities(atoms) {
 
 function translateNewSourceExcerptEntity(sourceExcerpt) {
   switch (sourceExcerpt.type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       sourceExcerpt.writQuote = sourceExcerpt.writQuote || sourceExcerpt.entity
       break
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       sourceExcerpt.picRegion = sourceExcerpt.picRegion || sourceExcerpt.entity
       break
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       sourceExcerpt.vidSegment = sourceExcerpt.vidSegment || sourceExcerpt.entity
       break
     default:
-      throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
   }
   delete sourceExcerpt.entity
 }
@@ -217,7 +217,7 @@ _e.makeNewSourceExcerptParaphrase = (props) => merge({
 }, props)
 
 _e.makeNewSourceExcerpt = (props) => merge({
-  type: SourceExcerptType.WRIT_QUOTE,
+  type: SourceExcerptTypes.WRIT_QUOTE,
   writQuote: _e.makeNewWritQuote(),
 }, props)
 
@@ -239,14 +239,14 @@ _e.makeNewJustificationBasisCompound = (props) => assign(
 
 _e.makeNewJustificationBasisCompoundAtom = (props) => {
   const atom = {
-    type: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+    type: JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
     proposition: _e.makeNewProposition(),
     sourceExcerptParaphrase: _e.makeNewSourceExcerptParaphrase(),
   }
 
   if (
     props &&
-    props.type === JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE &&
+    props.type === JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE &&
     props.sourceExcerptParaphrase.sourceExcerpt
   ) {
     translateNewSourceExcerptEntity(props.sourceExcerptParaphrase.sourceExcerpt)
@@ -264,7 +264,7 @@ _e.makeNewJustificationBasisCompoundFromSourceExcerptParaphrase = (sourceExcerpt
   _e.makeNewJustificationBasisCompound({
     atoms: [
       _e.makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+        type: JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
         sourceExcerptParaphrase
       })
     ]
@@ -274,7 +274,7 @@ _e.makeNewJustificationBasisCompoundFromProposition = (proposition) =>
   _e.makeNewJustificationBasisCompound({
     atoms: [
       _e.makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomType.PROPOSITION,
+        type: JustificationBasisCompoundAtomTypes.PROPOSITION,
         proposition
       })
     ]
@@ -295,7 +295,7 @@ _e.makeNewJustificationBasisCompoundFromPropositionCompound = (propositionCompou
   _e.makeNewJustificationBasisCompound({
     atoms: map(propositionCompound.atoms, propositionAtom =>
       _e.makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomType.PROPOSITION,
+        type: JustificationBasisCompoundAtomTypes.PROPOSITION,
         proposition: propositionAtom.entity
       })
     )
@@ -324,14 +324,14 @@ _e.makeNewCounterJustification = (targetJustification) => ({
   rootTargetType: targetJustification.rootTargetType,
   rootTarget: {id: targetJustification.rootTarget.id},
   target: {
-    type: JustificationTargetType.JUSTIFICATION,
+    type: JustificationTargetTypes.JUSTIFICATION,
     entity: targetJustification,
   },
   basis: {
-    type: JustificationBasisType.PROPOSITION_COMPOUND,
+    type: JustificationBasisTypes.PROPOSITION_COMPOUND,
     propositionCompound: _e.makeNewPropositionCompound()
   },
-  polarity: JustificationPolarity.NEGATIVE
+  polarity: JustificationPolarities.NEGATIVE
 })
 
 _e.makeNewPropositionCompoundAtomFromProposition = (proposition) => ({

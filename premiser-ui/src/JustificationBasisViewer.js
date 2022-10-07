@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Paper} from 'react-md'
 
 import {
-  JustificationBasisType,
+  JustificationBasisTypes,
   newExhaustedEnumError,
 } from "howdju-common"
 
@@ -33,7 +33,7 @@ export default class JustificationBasisViewer extends Component {
     const basis = justification.basis
 
     switch (basis.type) {
-      case JustificationBasisType.PROPOSITION_COMPOUND:
+      case JustificationBasisTypes.PROPOSITION_COMPOUND:
         return (
           <PropositionCompoundViewer
             {...rest}
@@ -48,7 +48,7 @@ export default class JustificationBasisViewer extends Component {
             contextTrailItems={contextTrailItems}
           />
         )
-      case JustificationBasisType.WRIT_QUOTE:
+      case JustificationBasisTypes.WRIT_QUOTE:
         return (
           <WritQuoteEntityViewer
             {...rest}
@@ -62,7 +62,7 @@ export default class JustificationBasisViewer extends Component {
             onClickUrl={onClickWritQuoteUrl}
           />
         )
-      case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+      case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND:
         return (
           <JustificationBasisCompoundViewer
             {...rest}
@@ -78,7 +78,7 @@ export default class JustificationBasisViewer extends Component {
           />
         )
       default:
-        throw newExhaustedEnumError('JustificationBasisType', basis.type)
+        throw newExhaustedEnumError('JustificationBasisTypes', basis.type)
     }
   }
 }

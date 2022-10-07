@@ -9,15 +9,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 import reduce from 'lodash/reduce';
 
+import {validate, emptyValidationResult} from "howdju-ajv-sourced"
+
 import { editors, flows } from '@/actions';
 import { AppDispatch, RootState } from '@/store';
 import {combineIds, combineSuggestionsKeys} from '@/viewModels';
 import t, { CANCEL_BUTTON_LABEL, EDIT_ENTITY_SUBMIT_BUTTON_LABEL } from '@/texts';
 import { AnyAction } from 'redux';
+import { DirtyFields, EditorFieldsErrors, EditorType } from '@/reducers/editors';
+import { logger, SchemaId, toJson } from 'howdju-common';
+import { isEqual, merge } from 'lodash';
+import { PropertyChanges } from '@/types';
 
-type OnPropertyChangeCallback = (properties: {[key: string]: any}) => void
-// A map of maps bottoming out in strings.
-type EditorFieldsErrors = {[key: string]: string} | {[key: string]: EditorFieldsErrors};
+type OnPropertyChangeCallback = (properties: PropertyChanges) => void
+
 
 export interface EntityEditorFieldsProps {
   id: string
@@ -26,13 +31,18 @@ export interface EntityEditorFieldsProps {
   onPropertyChange: OnPropertyChangeCallback
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   errors: EditorFieldsErrors
+  dirtyFields: DirtyFields
+  wasSubmitAttempted: boolean
 }
 
 interface EditorState {
   errors: EditorFieldsErrors,
   editEntity: {},
   isFetching: boolean,
-  isSaving: boolean
+  isSaving: boolean,
+  // TODO make EditorState generic so that dirtyFields knows the actual editEntity fields?
+  dirtyFields: DirtyFields,
+  wasSubmitAttempted: boolean,
 }
 
 export type CommitThenPutAction = {
@@ -40,12 +50,11 @@ export type CommitThenPutAction = {
   action: AnyAction
 }
 
-type ListItemTranslator = (editorType: string, editorId: string, dispatch: AppDispatch) =>
+type ListItemTranslator = (editorType: EditorType, editorId: string, dispatch: AppDispatch) =>
   (...args : any[]) => void;
 
 type WithEditorProps = {
   id: string,
-  editorType: string,
   editorId: string,
   menu?: JSX.Element,
   className?: string,
@@ -58,21 +67,24 @@ type WithEditorProps = {
  *
  * Fires the appropriate editor actions for editing, submitting, and canceling.
  *
+ * @param editorType The editor type to determine editor behaviors and state location.
  * @param EntityEditorFields The EditorFields class for the entity.
  * @param entityPropName The field on EntityEditorFields for the editEntity
+ * @param schemaId: The ID of the schema to use to validate the entity.
  * @param listItemTranslators An object keyed by callbacks for attributes of
  *   EntityEditorFields that produce callbacks that will dispatch the
  *   correct addListItem/removeListItem editor actions.
  */
 export default function withEditor(
+  editorType: EditorType,
   EntityEditorFields: React.ComponentType<EntityEditorFieldsProps>,
   entityPropName: string,
-  listItemTranslators: {[key: string]: ListItemTranslator}
+  schemaId: SchemaId,
+  listItemTranslators?: {[key: string]: ListItemTranslator}
 ) {
   return function EntityEditor(props: WithEditorProps) {
     const {
       id,
-      editorType,
       editorId,
       menu,
       className,
@@ -108,12 +120,28 @@ export default function withEditor(
 
     const editorState = useSelector((state: RootState) => get(state.editors, [editorType, editorId], {}));
     const {
-      errors,
+      errors: apiValidationErrors,
       editEntity,
       isFetching,
       isSaving,
+      dirtyFields,
+      wasSubmitAttempted,
     } = editorState as EditorState;
     const inProgress = isFetching || isSaving
+
+
+    const {errors: clientValidationErrors} = editEntity ?
+      validate(schemaId, editEntity) :
+      emptyValidationResult()
+    // Because the API should validate the same data using the same schema, it shouldn't be possible
+    // to receive API errors that didn't also fail client validation.
+    if (apiValidationErrors && !isEqual(clientValidationErrors, apiValidationErrors)) {
+      logger.error(`clientValidationErrors and apiValidationErrors do not match ` +
+          `${toJson({clientValidationErrors, apiValidationErrors})}`)
+    }
+    // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
+    // must accept the value.
+    const errors = merge(clientValidationErrors, apiValidationErrors)
 
     return (
       <form onSubmit={onSubmit} className={className}>
@@ -128,6 +156,8 @@ export default function withEditor(
             onSubmit={onSubmit}
             {...listItemCallbackAttributes}
             errors={errors}
+            dirtyFields={dirtyFields}
+            wasSubmitAttempted={wasSubmitAttempted}
           />
         </CardText>
         <CardActions>

@@ -6,9 +6,9 @@ const map = require('lodash/map')
 const range = require('lodash/range')
 
 const {
-  JustificationBasisType,
-  JustificationRootTargetType,
-  JustificationTargetType,
+  JustificationBasisTypes,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
 } = require('howdju-common')
 const {toJustification} = require('../orm')
 const propositionsDao = require('./propositionsDao')
@@ -86,9 +86,9 @@ class PerspectivesDao {
   _readFeaturedPerspectiveJustificationTransitiveJustifications(userId, targetDepth, maxDepth, rows) {
     const args = [
       userId,
-      JustificationTargetType.PROPOSITION,
-      JustificationBasisType.PROPOSITION_COMPOUND,
-      JustificationRootTargetType.PROPOSITION,
+      JustificationTargetTypes.PROPOSITION,
+      JustificationBasisTypes.PROPOSITION_COMPOUND,
+      JustificationRootTargetTypes.PROPOSITION,
     ]
     const votesSelectSql = userId ? `
         , v.justification_vote_id
@@ -194,7 +194,7 @@ class PerspectivesDao {
     return this.database.query(
       '_readFeaturedPerspectivesCounteredJustifications',
       counteredJustificationsSql,
-      [userId, JustificationTargetType.JUSTIFICATION]
+      [userId, JustificationTargetTypes.JUSTIFICATION]
     )
       .then( ({rows: newRows}) => {
         if (newRows.length > 0) {
@@ -229,7 +229,7 @@ class PerspectivesDao {
           propositionCompoundsById,
           writQuotesById
         ]) => {
-          const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(JustificationRootTargetType.PROPOSITION, rootPropositionId, rows)
+          const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(JustificationRootTargetTypes.PROPOSITION, rootPropositionId, rows)
           const justifications = map(rootJustifications, j =>
             toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById))
           return Promise.props({

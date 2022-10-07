@@ -4,9 +4,9 @@ const isUndefined = require('lodash/isUndefined')
 const map = require('lodash/map')
 
 const {
-  JustificationVotePolarity,
-  JustificationScoreType,
-  JobHistoryStatus,
+  JustificationVotePolarities,
+  JustificationScoreTypes,
+  JobHistoryStatuses,
   utcNow,
 } = require('howdju-common')
 
@@ -24,14 +24,14 @@ const sumVotesByJustificationId = (votes, logger) => {
     }
 
     switch (vote.polarity) {
-      case JustificationVotePolarity.POSITIVE:
+      case JustificationVotePolarities.POSITIVE:
         sum += vote.deleted ? -1 : 1
         break
-      case JustificationVotePolarity.NEGATIVE:
+      case JustificationVotePolarities.NEGATIVE:
         sum -= vote.deleted ? 1 : -1
         break
       default:
-        logger.error(`Unknown JustificationVotePolarity "${vote.polarity} in vote ID ${vote.id}`)
+        logger.error(`Unknown JustificationVotePolarities "${vote.polarity} in vote ID ${vote.id}`)
         break
     }
 
@@ -58,7 +58,7 @@ exports.JustificationScoresService = class JustificationScoresService {
       // eslint-disable-next-line promise/no-nesting
       .then( (job) => Promise.all([
         this.justificationVotesDao.readVotes(),
-        this.justificationScoresDao.deleteScoresForType(JustificationScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+        this.justificationScoresDao.deleteScoresForType(JustificationScoreTypes.GLOBAL_VOTE_SUM, job.startedAt, job.id)
       ])
         .then( ([votes, deletions]) => {
           this.logger.info(`Deleted ${deletions.length} scores`)
@@ -69,11 +69,11 @@ exports.JustificationScoresService = class JustificationScoresService {
         .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
         .then( () => {
           const completedAt = utcNow()
-          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.SUCCESS, completedAt)
         })
         .catch( (err) => {
           const completedAt = utcNow()
-          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.FAILURE, completedAt, err.stack)
           throw err
         })
       )
@@ -89,7 +89,7 @@ exports.JustificationScoresService = class JustificationScoresService {
       .then( (job) =>
         // TODO(1,2,3): remove exception
         // eslint-disable-next-line promise/no-nesting
-        this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreType.GLOBAL_VOTE_SUM)
+        this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreTypes.GLOBAL_VOTE_SUM)
           .then( (votes) => {
             this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
             return votes
@@ -99,11 +99,11 @@ exports.JustificationScoresService = class JustificationScoresService {
           .then( () => {
             const completedAt = utcNow()
             this.logger.silly(`Ending updateJustificationScoresUsingUnscoredVotes at ${completedAt}`)
-            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.SUCCESS, completedAt)
           })
           .catch( (err) => {
             const completedAt = utcNow()
-            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.FAILURE, completedAt, err.stack)
             throw err
           })
       )
@@ -119,7 +119,7 @@ exports.JustificationScoresService = class JustificationScoresService {
   }
 
   createJustificationScore(justificationId, score, job) {
-    const scoreType = JustificationScoreType.GLOBAL_VOTE_SUM
+    const scoreType = JustificationScoreTypes.GLOBAL_VOTE_SUM
     return this.justificationScoresDao.createJustificationScore(justificationId, scoreType, score, job.startedAt, job.id)
       .then( (justificationScore) => {
         this.logger.debug(`Set justification ${justificationScore.justificationId}'s score to ${justificationScore.score}`)
@@ -128,7 +128,7 @@ exports.JustificationScoresService = class JustificationScoresService {
   }
 
   createSummedJustificationScore(justificationId, voteSum, job) {
-    const scoreType = JustificationScoreType.GLOBAL_VOTE_SUM
+    const scoreType = JustificationScoreTypes.GLOBAL_VOTE_SUM
     return this.justificationScoresDao.deleteJustificationScoreForJustificationIdAndType(justificationId, scoreType,
       job.startedAt, job.id)
       .then( (justificationScore) => {

@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import find from 'lodash/find'
 
 import {
-  PropositionTagVotePolarity,
+  PropositionTagVotePolarities,
   tagEqual,
 } from 'howdju-common'
 
@@ -70,8 +70,8 @@ class Tagger extends React.Component {
         recommendedTags={recommendedTags}
         extraChildren={[]}
         votePolarity={{
-          POSITIVE: PropositionTagVotePolarity.POSITIVE,
-          NEGATIVE: PropositionTagVotePolarity.NEGATIVE,
+          POSITIVE: PropositionTagVotePolarities.POSITIVE,
+          NEGATIVE: PropositionTagVotePolarities.NEGATIVE,
         }}
         suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'tagName')}
         onTag={this.onTag}
