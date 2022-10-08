@@ -22,7 +22,7 @@ const {
   userActionsConflictCodes,
   entityConflictCodes,
   authorizationErrorCodes,
-  ActionType,
+  ActionTypes,
   ActionTargetTypes,
   requireArgs,
   PropositionTagVotePolarities,
@@ -228,7 +228,7 @@ exports.PropositionsService = class PropositionsService {
           throw new EntityNotFoundError(EntityTypes.PROPOSITION, proposition.id)
         }
 
-        this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetTypes.PROPOSITION, updatedProposition.id)
+        this.actionsService.asyncRecordAction(userId, now, ActionTypes.UPDATE, ActionTargetTypes.PROPOSITION, updatedProposition.id)
         return updatedProposition
       })
   }
@@ -280,9 +280,9 @@ exports.PropositionsService = class PropositionsService {
       .then(([userId, now, deletedPropositionId, deletedJustificationIds]) => Promise.all([
         deletedPropositionId,
         deletedJustificationIds,
-        this.actionsService.asyncRecordAction(userId, now, ActionType.DELETE, ActionTargetTypes.PROPOSITION, deletedPropositionId),
+        this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.PROPOSITION, deletedPropositionId),
         Promise.all(map(deletedJustificationIds, id =>
-          this.actionsService.asyncRecordAction(userId, now, ActionType.DELETE, ActionTargetTypes.JUSTIFICATION, id)))
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.JUSTIFICATION, id)))
       ]))
       .then(([deletedPropositionId, deletedJustificationIds]) => ({
         deletedPropositionId,
@@ -383,7 +383,7 @@ function readOrCreateEquivalentValidPropositionAsUser(service, proposition, user
       ])
     })
     .then(([userId, now, isExtant, proposition]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
       service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.PROPOSITION, proposition.id)
 
       return {

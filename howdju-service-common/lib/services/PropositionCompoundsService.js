@@ -6,7 +6,7 @@ const zip = require('lodash/zip')
 
 const {
   ActionTargetTypes,
-  ActionType,
+  ActionTypes,
 } = require('howdju-common')
 
 const {
@@ -58,7 +58,7 @@ exports.PropositionCompoundsService = class PropositionCompoundsService {
         isExtant ? propositionCompound.atoms : this.createPropositionCompoundAtoms(propositionCompound, propositionCompoundAtoms, userId, now)
       ]))
       .then(([isExtant, propositionCompound, propositionCompoundAtoms]) => {
-        const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+        const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
         this.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.PROPOSITION_COMPOUND, propositionCompound.id)
 
         propositionCompound.atoms = propositionCompoundAtoms

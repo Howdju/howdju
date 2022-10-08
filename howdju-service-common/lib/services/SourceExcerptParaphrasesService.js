@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 
 const {
-  ActionType,
+  ActionTypes,
   ActionTargetTypes,
   requireArgs,
   SourceExcerptTypes,
@@ -164,7 +164,7 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
         })
     })
     .then( ({isExtant, sourceExcerptParaphrase}) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
       service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.SOURCE_EXCERPT_PARAPHRASE,
         sourceExcerptParaphrase.id)
 

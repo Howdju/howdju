@@ -19,7 +19,7 @@ const {
   JustificationRootTargetTypes,
   JustificationTargetTypes,
   CANNOT_MODIFY_OTHER_USERS_ENTITIES,
-  ActionType,
+  ActionTypes,
   ActionTargetTypes,
   newImpossibleError,
   idEqual,
@@ -224,11 +224,11 @@ exports.JustificationsService = class JustificationsService extends EntityServic
         userId,
         now,
         this.justificationsDao.deleteJustification(justification, now),
-        map(deletedCounterJustificationIds, id => this.actionsService.asyncRecordAction(userId, now, ActionType.DELETE, ActionTargetTypes.JUSTIFICATION, id)),
+        map(deletedCounterJustificationIds, id => this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.JUSTIFICATION, id)),
       ]))
       .then(([userId, now, deletedJustificationId]) => Promise.all([
         deletedJustificationId,
-        this.actionsService.asyncRecordAction(userId, now, ActionType.DELETE, ActionTargetTypes.JUSTIFICATION, deletedJustificationId),
+        this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.JUSTIFICATION, deletedJustificationId),
       ]))
       .then(([deletedJustificationId]) => ({
         deletedJustificationId,
@@ -341,7 +341,7 @@ function readOrCreateEquivalentValidJustificationAsUser(service, justification, 
       equivalentJustification || service.justificationsDao.createJustification(justification, userId, now)
     ]))
     .then( ([now, justification, isExtant, dbJustification]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
       service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.JUSTIFICATION, dbJustification.id)
       return [justification, isExtant, dbJustification]
     })

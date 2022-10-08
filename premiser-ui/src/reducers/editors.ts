@@ -43,6 +43,7 @@ import {
   SourceExcerptParaphrase,
   JustificationBasisCompoundAtomType,
   WritQuote,
+  RecursiveObject,
 } from "howdju-common";
 
 import {
@@ -99,8 +100,6 @@ export const EntityTypeDescriptions = {
   [EditorTypes.WRIT_QUOTE]: "WritQuote",
 };
 
-// A map of maps bottoming out in some type
-type RecursiveObject<T> = { [key: string]: T | RecursiveObject<T> };
 export type EditorFieldsErrors = RecursiveObject<string>;
 type ApiFieldsErrors = RecursiveObject<string>;
 export type DirtyFields = RecursiveObject<boolean>;

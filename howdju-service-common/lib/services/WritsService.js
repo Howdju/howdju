@@ -4,7 +4,7 @@ const toNumber = require('lodash/toNumber')
 
 const {
   SortDirections,
-  ActionType,
+  ActionTypes,
   ActionTargetTypes,
 } = require('howdju-common')
 
@@ -71,7 +71,7 @@ exports.WritsService = class WritsService {
   updateWritAsUser(userId, writ, now) {
     return this.writsDao.update(writ)
       .then( (writ) => {
-        this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetTypes.WRIT, writ.id)
+        this.actionsService.asyncRecordAction(userId, now, ActionTypes.UPDATE, ActionTargetTypes.WRIT, writ.id)
         return writ
       })
   }
@@ -98,7 +98,7 @@ function readOrCreateEquivalentWritAsUser(service, writ, userId, now) {
       equivalentWrit || service.writsDao.createWrit(writ, userId, now)
     ]))
     .then( ([isExtant, writ]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
       service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.WRIT, writ.id)
 
       return {

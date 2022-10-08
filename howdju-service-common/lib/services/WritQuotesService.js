@@ -18,7 +18,7 @@ const zip = require('lodash/zip')
 const {
   ActionTargetTypes,
   ActionSubjectTypes,
-  ActionType,
+  ActionTypes,
   SortDirections,
   entityConflictCodes,
   userActionsConflictCodes,
@@ -155,7 +155,7 @@ exports.WritQuotesService = class WritQuotesService {
     // TODO(20): use createWritQuoteUrlTarget instead.
     await this.writQuotesDao.createWritQuoteUrls(writQuote, writQuote.urls, userId, now)
 
-    this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE,
+    this.actionsService.asyncRecordAction(userId, now, ActionTypes.CREATE,
       ActionTargetTypes.WRIT_QUOTE, writQuote.id)
 
     return {writQuote}
@@ -297,7 +297,7 @@ exports.WritQuotesService = class WritQuotesService {
         writQuoteHasChanged,
       ]) => {
         if (writQuoteHasChanged) {
-          this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetTypes.WRIT_QUOTE,
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.UPDATE, ActionTargetTypes.WRIT_QUOTE,
             writQuote.id)
         }
         return [writQuote, writ, urls]
@@ -349,10 +349,10 @@ exports.WritQuotesService = class WritQuotesService {
       ]))
       .then( ([updatedUrls, createdWritQuoteUrls, deletedWritQuoteUrls]) => {
         map(createdWritQuoteUrls, writQuoteUrl =>
-          this.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetTypes.WRIT_QUOTE,
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.ASSOCIATE, ActionTargetTypes.WRIT_QUOTE,
             writQuoteUrl.writQuoteId, ActionSubjectTypes.URL, writQuoteUrl.urlId))
         map(deletedWritQuoteUrls, writQuoteUrl =>
-          this.actionsService.asyncRecordAction(userId, now, ActionType.DISASSOCIATE,
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.DISASSOCIATE,
             ActionTargetTypes.WRIT_QUOTE, writQuoteUrl.writQuoteId, ActionSubjectTypes.URL,
             writQuoteUrl.urlId))
         return updatedUrls
@@ -423,7 +423,7 @@ function readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now) {
       equivalentWritQuote || service.writQuotesDao.createWritQuote(writQuote, userId, now)
     ]))
     .then( ([isExtant, writQuote]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
       service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.WRIT_QUOTE, writQuote.id)
       return {
         isExtant,
@@ -447,7 +447,7 @@ function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
           service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now),
           url.target && service.writQuotesDao.createWritQuoteUrlTarget(writQuote, url, userId, now),
         ])
-          .then( ([writQuoteUrl]) => service.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetTypes.WRIT_QUOTE,
+          .then( ([writQuoteUrl]) => service.actionsService.asyncRecordAction(userId, now, ActionTypes.ASSOCIATE, ActionTargetTypes.WRIT_QUOTE,
             writQuoteUrl.writQuoteId, ActionSubjectTypes.URL, writQuoteUrl.urlId))
       })
     })

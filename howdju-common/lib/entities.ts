@@ -124,6 +124,10 @@ interface SourceExcerptJustificationBasis {
   type: "SOURCE_EXCERPT";
   entity: SourceExcerpt;
 }
+
+/**
+ * @deprecated Use {@link SourceExcerptJustificationBasis} or
+ *   {@link PropositionCompoundJustificationBasis} */
 interface JustificationBasisCompoundJustificationBasis {
   type: "JUSTIFICATION_BASIS_COMPOUND";
   entity: JustificationBasisCompound;
