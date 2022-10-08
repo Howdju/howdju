@@ -18,9 +18,9 @@ import {pageLoadId, getSessionStorageId} from "../identifiers"
 import * as customHeaderKeys from "../customHeaderKeys"
 
 
-export function* callApi(endpoint, fetchInit = {}, requiresRehydrate = false) {
+export function* callApi(endpoint, fetchInit = {}, canSkipRehydrate = false) {
   try {
-    if (requiresRehydrate) {
+    if (!canSkipRehydrate) {
       yield* tryWaitOnRehydrate()
     }
 
