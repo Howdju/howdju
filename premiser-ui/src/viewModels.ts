@@ -17,13 +17,29 @@ import truncate from 'lodash/truncate'
 
 import config from './config'
 import {
+  SourceExcerpt,
   isFalsey,
+  Justification,
+  JustificationBasis,
+  JustificationBasisCompound,
   JustificationBasisCompoundAtomTypes,
+  JustificationBasisType,
   JustificationBasisTypes,
+  JustificationPolarity,
+  JustificationRootPolarity,
+  JustificationRootTarget,
+  JustificationRootTargetType,
   JustificationRootTargetTypes,
+  JustificationTarget,
   JustificationTargetTypes,
   newExhaustedEnumError,
+  newImpossibleError,
+  Proposition,
+  PropositionCompound,
+  SourceExcerptViewModel,
+  SourceExcerptParaphrase,
   SourceExcerptTypes,
+  WritQuote,
 } from 'howdju-common'
 
 import * as characters from './characters'
@@ -33,7 +49,7 @@ import {
 } from './normalizationSchemas'
 
 
-export const removePropositionCompoundIds = (propositionCompound) => {
+export const removePropositionCompoundIds = (propositionCompound: PropositionCompound) => {
   if (!propositionCompound) return propositionCompound
   delete propositionCompound.id
 
@@ -44,18 +60,18 @@ export const removePropositionCompoundIds = (propositionCompound) => {
   return propositionCompound
 }
 
-export const removePropositionIds = (proposition) => {
+export const removePropositionIds = (proposition: Proposition) => {
   delete proposition.id
   return proposition
 }
 
-export const removeWritQuoteIds = (writQuote) => {
+export const removeWritQuoteIds = (writQuote: WritQuote) => {
   delete writQuote.id
   delete writQuote.writ.id
   return writQuote
 }
 
-export const removeJustificationBasisCompoundIds = (justificationBasisCompound) => {
+export const removeJustificationBasisCompoundIds = (justificationBasisCompound: JustificationBasisCompound) => {
   delete justificationBasisCompound.id
   forEach(justificationBasisCompound.atoms, (atom) => {
     delete atom.id
@@ -65,15 +81,18 @@ export const removeJustificationBasisCompoundIds = (justificationBasisCompound) 
         removePropositionIds(atom.entity)
         break
       case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
+        // TODO make the SourceExcerpt type generic up the whole object graph?
         removeSourceExcerptParaphraseIds(atom.entity)
         break
       default:
-        throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom)
     }
   })
 }
 
-export const removeSourceExcerptParaphraseIds = (sourceExcerptParaphrase) => {
+export const removeSourceExcerptParaphraseIds = (
+  sourceExcerptParaphrase: SourceExcerptParaphrase<SourceExcerpt>
+) => {
   delete sourceExcerptParaphrase.id
   delete sourceExcerptParaphrase.sourceExcerpt.entity.id
   switch (sourceExcerptParaphrase.sourceExcerpt.type) {
@@ -87,30 +106,76 @@ export const removeSourceExcerptParaphraseIds = (sourceExcerptParaphrase) => {
       delete sourceExcerptParaphrase.sourceExcerpt.entity.vid.id
       break
     default:
-      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerptParaphrase.sourceExcerpt.type)
+      throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerptParaphrase.sourceExcerpt)
   }
 }
 
-export const consolidateNewJustificationEntities = (newJustification) => {
-  const justification = cloneDeep(newJustification)
-  switch (justification.basis.type) {
+
+export interface SourceExcerptViewModel extends Entity {
+  writQuote?: WritQuote;
+  picRegion?: PicRegion;
+  vidSegment?: VidSegment;
+}
+
+interface NewJustificationBasisViewModel {
+  type: JustificationBasisType
+  propositionCompound?: PropositionCompound
+  writQuote?: WritQuote
+  justificationBasisCompound?: JustificationBasisCompound
+}
+
+/** A viewmodel for creating a new justification.
+ *
+ * Supports edits to alternative bases at the same time (whereas a materialized Justification can
+ * have just one basis type.)
+ */
+export interface NewJustificationViewModel {
+  target: JustificationTarget;
+  polarity: JustificationPolarity;
+  basis: NewJustificationBasisViewModel;
+  rootTarget: JustificationRootTarget;
+  rootTargetType: JustificationRootTargetType;
+  rootPolarity: JustificationRootPolarity;
+}
+
+export const consolidateNewJustificationEntities = (newJustification: NewJustificationViewModel): Justification => {
+  const basis = translateViewModelEntity(newJustification.basis)
+  const justification: Justification = assign(cloneDeep(newJustification), {basis})
+  return justification
+}
+
+const translateViewModelEntity = (basis: NewJustificationBasisViewModel): JustificationBasis {
+  switch (basis.type) {
     case JustificationBasisTypes.PROPOSITION_COMPOUND:
-      justification.basis.entity = justification.basis.propositionCompound
+      if (!basis.propositionCompound) {
+        throw newImpossibleError("propositionCompound was missing for newJustiication having type PROPOSITION_COMPOUND")
+      }
+      return {
+        type: "PROPOSITION_COMPOUND",
+        entity: basis.propositionCompound,
+      }
       break
     case JustificationBasisTypes.WRIT_QUOTE:
-      justification.basis.entity = justification.basis.writQuote
+      if (!basis.writQuote) {
+        throw newImpossibleError("writQuote was missing for newJustiication having type PROPOSITION_COMPOUND")
+      }
+      return {
+        type: "WRIT_QUOTE",
+        entity: basis.writQuote,
+      }
       break
     case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND:
-      justification.basis.entity = consolidateNewJustificationBasisCompoundEntities(justification.basis.justificationBasisCompound)
+      if (!basis.justificationBasisCompound) {
+        throw newImpossibleError("justificationBasisCompound was missing for newJustiication having type PROPOSITION_COMPOUND")
+      }
+      return {
+        type: "JUSTIFICATION_BASIS_COMPOUND",
+        entity: consolidateNewJustificationBasisCompoundEntities(basis.justificationBasisCompound),
+      }
       break
     default:
-      throw newExhaustedEnumError('JustificationBasisTypes', justification.basis.type)
+      throw newExhaustedEnumError('JustificationBasisTypes', basis.type)
   }
-  delete justification.basis.propositionCompound
-  delete justification.basis.writQuote
-  delete justification.basis.justificationBasisCompound
-
-  return justification
 }
 
 export function consolidateNewJustificationBasisCompoundEntities(newJustificationBasisCompound) {
@@ -225,7 +290,7 @@ export function sourceExcerptDescription(sourceExcerpt) {
   return lowerCase(sourceExcerpt.type)
 }
 
-export function sourceExcerptIconName(sourceExcerpt) {
+export function sourceExcerptIconName(sourceExcerpt: SourceExcerptViewModel) {
   switch (sourceExcerpt.type) {
     case SourceExcerptTypes.WRIT_QUOTE:
       return "format_quote"

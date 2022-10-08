@@ -1,9 +1,8 @@
 import {
-  JustificationPolarityType,
-  JustificationRootPolarityType,
+  JustificationPolarity,
+  JustificationRootPolarity,
   JustificationRootTargetType,
 } from "./enums";
-import { OneOf } from "./typeUtils";
 
 /** The value of an entity's `id` property. */
 export type EntityId = string;
@@ -14,13 +13,22 @@ export type Entity = {
   id?: EntityId;
 };
 
+export interface Writ extends Entity {
+  title: string;
+}
+
 /** A SourceExcerpt excerpting a quote from a written Source. */
 export interface WritQuote extends Entity {
   quoteText: string;
-  writ: {
-    title: string;
-  };
+  writ: Writ;
   urls: Array<Url>;
+}
+
+export interface PicRegion extends Entity {
+  pic: Entity
+}
+export interface VidSegment extends Entity {
+  vid: Entity
 }
 
 /** A uniform resource locator */
@@ -48,22 +56,32 @@ export interface Statement extends Entity {
   speaker: Persorg;
 }
 
-export interface PicRegion extends Entity {}
-export interface VidSegment extends Entity {}
-
-export type SourceExcerpt = Entity & {
-  // Add common properties here
-} & OneOf<{
-    writQuote: WritQuote;
-    picRegion: PicRegion;
-    vidSegment: VidSegment;
-  }>;
+/**
+ * A version of SourcExcerpt that uses discriminated union to distinguish the SourcExcerpt type.
+ *
+ * viewModels.removeSourceExcerptParaphraseIds uses these, whereas
+ * models.translateNewSourceExcerptEntity supports either this or {@link SourceExcerptViewModel}
+ */
+export type SourceExcerpt = WritQuoteSourceExcerpt | PicRegionSourceExcerpt | VidSegmentSourceExcerpt
+export interface WritQuoteSourceExcerpt extends Entity {
+  type: "WRIT_QUOTE"
+  entity: WritQuote
+}
+export interface PicRegionSourceExcerpt extends Entity {
+  type: "PIC_REGION"
+  entity: PicRegion
+}
+export interface VidSegmentSourceExcerpt extends Entity {
+  type: "VID_SEGMENT"
+  entity: VidSegment
+}
 
 export interface PropositionCompoundAtom {
+  compoundId?: EntityId
   entity: Proposition;
 }
 
-export interface PropositionCompound {
+export interface PropositionCompound extends Entity{
   atoms: PropositionCompoundAtom[];
 }
 
@@ -77,19 +95,21 @@ export type JustificationBasisCompoundAtom = (
 )
 
 /** @deprecated */
-export interface JustificationBasisCompoundAtomProposition {
+export interface JustificationBasisCompoundAtomProposition extends Entity {
   type: "PROPOSITION";
+  compoundId?: EntityId
   entity: Proposition;
 }
 
 /** @deprecated */
-export interface JustificationBasisCompoundAtomSourceExcerptParaphrase {
+export interface JustificationBasisCompoundAtomSourceExcerptParaphrase extends Entity {
   type: "SOURCE_EXCERPT_PARAPHRASE"
+  compoundId?: EntityId
   entity: SourceExcerptParaphrase
 }
 
 /** @deprecated */
-export interface JustificationBasisCompound {
+export interface JustificationBasisCompound extends Entity {
   atoms: JustificationBasisCompoundAtom[];
 }
 
@@ -146,11 +166,11 @@ export type JustificationRootTarget = Proposition | Statement
 
 export interface Justification extends Entity {
   target: JustificationTarget;
-  polarity: JustificationPolarityType;
+  polarity: JustificationPolarity;
   basis: JustificationBasis;
   rootTarget: JustificationRootTarget;
   rootTargetType: JustificationRootTargetType;
-  rootPolarity: JustificationRootPolarityType;
+  rootPolarity: JustificationRootPolarity;
 }
 
 export interface CounteredJustification extends Justification {

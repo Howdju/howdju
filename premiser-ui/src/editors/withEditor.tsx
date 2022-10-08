@@ -34,6 +34,7 @@ export interface EntityEditorFieldsProps {
   errors: EditorFieldsErrors
   dirtyFields: DirtyFields
   wasSubmitAttempted: boolean
+  // Allow additional fields
   [key: string]: any
 }
 

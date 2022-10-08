@@ -7,7 +7,7 @@ import {
   Perspective,
   PropositionCompound,
   PropositionCompoundAtom,
-  SourceExcerpt,
+  SourceExcerptViewModel,
   SourceExcerptParaphrase,
 } from "./entities";
 
@@ -118,7 +118,7 @@ export const decircularizeSourceExcerptParaphrase = (
   return sourceExcerptParaphrase;
 };
 
-export const decircularizeSourceExcerpt = (sourceExcerpt: SourceExcerpt) => {
+export const decircularizeSourceExcerpt = (sourceExcerpt: SourceExcerptViewModel) => {
   // Source excerpts don't reference any entities that need decircularizing
   return sourceExcerpt;
 };
