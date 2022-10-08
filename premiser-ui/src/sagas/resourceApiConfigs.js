@@ -270,6 +270,8 @@ export const resourceApiConfigs = {
   }),
   [api.fetchAccountSettings]: () => ({
     endpoint: `account-settings`,
+    // TODO(98): replace rehydrate opt-ins with opt-out
+    requiresRehydrate: true,
   }),
   [api.updateAccountSettings]: (payload) => ({
     endpoint: `account-settings`,

@@ -1,7 +1,7 @@
 import {EditorTypes} from "./reducers/editors"
-import withEntityEditor from "./withEntityEditor"
+import withEditor from "@/editors/withEditor"
 import AccountSettingsEditorFields from "./AccountSettingsEditorFields"
 import {schemaIds} from "howdju-common"
 
-export default withEntityEditor(EditorTypes.ACCOUNT_SETTINGS, AccountSettingsEditorFields,
+export default withEditor(EditorTypes.ACCOUNT_SETTINGS, AccountSettingsEditorFields,
   'accountSettings', schemaIds.accountSettings)

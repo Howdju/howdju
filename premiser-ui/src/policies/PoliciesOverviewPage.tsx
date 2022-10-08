@@ -10,11 +10,11 @@ import './PoliciesOverviewPage.scss'
 const PoliciesOverviewPage = () => (
   <div className="md-grid policies">
     <Helmet>
-      <title>Principles & Policies — Howdju</title>
+      <title>Principles &amp; Policies — Howdju</title>
     </Helmet>
     <Card className="md-cell--12">
       <CardText>
-        <h1 className="md-cell md-cell--12">Principles & Policies</h1>
+        <h1 className="md-cell md-cell--12">Principles &amp; Policies</h1>
 
         <p>
           Howdju is a mission-driven organization, and we have articulated

@@ -19,20 +19,22 @@ import { AnyAction } from 'redux';
 import { DirtyFields, EditorFieldsErrors, EditorType } from '@/reducers/editors';
 import { logger, SchemaId, toJson } from 'howdju-common';
 import { isEqual, merge } from 'lodash';
-import { PropertyChanges } from '@/types';
+import { ComponentId, ComponentName, PropertyChanges, SuggestionsKey } from '@/types';
 
 type OnPropertyChangeCallback = (properties: PropertyChanges) => void
 
 
 export interface EntityEditorFieldsProps {
-  id: string
+  id: ComponentId
+  name: ComponentName
   disabled: boolean
-  suggestionsKey: string
+  suggestionsKey: SuggestionsKey
   onPropertyChange: OnPropertyChangeCallback
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   errors: EditorFieldsErrors
   dirtyFields: DirtyFields
   wasSubmitAttempted: boolean
+  [key: string]: any
 }
 
 interface EditorState {
@@ -75,9 +77,9 @@ type WithEditorProps = {
  *   EntityEditorFields that produce callbacks that will dispatch the
  *   correct addListItem/removeListItem editor actions.
  */
-export default function withEditor(
+export default function withEditor<P extends EntityEditorFieldsProps>(
   editorType: EditorType,
-  EntityEditorFields: React.ComponentType<EntityEditorFieldsProps>,
+  EntityEditorFields: React.ComponentType<P>,
   entityPropName: string,
   schemaId: SchemaId,
   listItemTranslators?: {[key: string]: ListItemTranslator}

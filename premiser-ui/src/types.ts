@@ -5,6 +5,18 @@ export interface ContextTrailItem {
   targetId: EntityId
 }
 
+/**
+ * A DOM element's `id` attribute. If passed to a container, the ID should be
+ * a prefix for the child elements.
+ */
+export type ComponentId = string
+
+/**
+ * A DOM element's `name` attribute which identifies it in form callbacks.
+ * If passed to a container, the ID should be a prefix for the child elements.
+ */
+export type ComponentName = string
+
 /** Identifies a UI widget */
 export type WidgetId = string
 

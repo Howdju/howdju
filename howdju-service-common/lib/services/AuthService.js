@@ -13,6 +13,7 @@ const {
   EntityValidationError,
   InvalidLoginError,
   AuthenticationError,
+  RequestValidationError,
 } = require("../serviceErrors")
 const {
   HashTypes
@@ -30,6 +31,9 @@ exports.AuthService = class AuthService {
   }
 
   readOptionalUserIdForAuthToken(authToken) {
+    if (!authToken) {
+      throw new RequestValidationError("Empty authToken.")
+    }
     return this.authDao.getUserIdForAuthToken(authToken)
   }
 
