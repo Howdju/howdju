@@ -38,7 +38,7 @@ export function* callApiForResource(action) {
     if (!config) {
       return yield put(responseActionCreator(newImpossibleError(`Missing resource API config for action type: ${action.type}`)))
     }
-    const {endpoint, fetchInit, normalizationSchema, requiresRehydrate, cancelKey} = isFunction(config) ?
+    const {endpoint, fetchInit, normalizationSchema, canSkipRehydrate, cancelKey} = isFunction(config) ?
       config(action.payload) :
       config
 
@@ -49,7 +49,7 @@ export function* callApiForResource(action) {
       }
     }
 
-    const task = yield fork(callApi, endpoint, fetchInit, requiresRehydrate)
+    const task = yield fork(callApi, endpoint, fetchInit, canSkipRehydrate)
 
     if (cancelKey) {
       cancelableResourceCallTasks[cancelKey] = task

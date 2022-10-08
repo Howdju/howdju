@@ -219,7 +219,6 @@ export const resourceApiConfigs = {
   [api.fetchFeaturedPerspectives]: (payload) => ({
     endpoint: 'perspectives?featured',
     normalizationSchema: {perspectives: perspectivesSchema},
-    requiresRehydrate: true,
   }),
 
   [api.fetchRootJustificationTarget]: (payload) => {
@@ -234,20 +233,17 @@ export const resourceApiConfigs = {
         method: httpMethods.GET,
       },
       normalizationSchema,
-      requiresRehydrate: true
     }
   },
 
   [api.fetchTaggedPropositions]: (payload) => ({
     endpoint: `propositions?tagId=${payload.tagId}`,
     normalizationSchema: {propositions: propositionsSchema},
-    requiresRehydrate: true,
   }),
 
   [api.fetchSpeakerStatements]: (payload) => ({
     endpoint: `statements?speakerPersorgId=${payload.speakerPersorgId}`,
     normalizationSchema: {statements: statementsSchema},
-    requiresRehydrate: true,
   }),
 
   [api.fetchSentenceStatements]: (payload) => ({
