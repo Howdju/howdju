@@ -262,7 +262,7 @@ const writQuote = {
       maxLength: schemaSettings.writQuoteQuoteTextMaxLength,
       description: "The text quoted from the media.",
     },
-    writ: { "$ref": "/writ.schema.json" },
+    writ: { "$ref": "/schemas/writ.schema.json" },
     urls: {
       description: 'URLs where users can find the quote.',
       type: 'array',
