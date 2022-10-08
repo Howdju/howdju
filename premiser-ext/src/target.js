@@ -1,6 +1,6 @@
 import * as textPosition from 'dom-anchor-text-position'
 import * as textQuote from 'dom-anchor-text-quote'
-import {UrlTargetAnchorType} from 'howdju-common'
+import {UrlTargetAnchorTypes} from 'howdju-common'
 import {getCurrentCanonicalUrl} from "howdju-client-common"
 import {nodeIsBefore, getPreviousLeafNode} from "./dom"
 
@@ -29,7 +29,7 @@ export function selectionToTarget(selection) {
 
 export class TextQuoteAnchor {
   constructor({exact, prefix, suffix}, {start, end}) {
-    this.type = UrlTargetAnchorType.TEXT_QUOTE
+    this.type = UrlTargetAnchorTypes.TEXT_QUOTE
     this.exact = exact
     this.prefix = prefix
     this.suffix = suffix
@@ -39,8 +39,8 @@ export class TextQuoteAnchor {
 }
 
 function rangeToAnchor(range) {
-  const position = textPosition.fromRange(document.body, range)
   const selector = textQuote.fromTextPosition(document.body, position)
+  const position = textPosition.fromRange(document.body, range)
   return new TextQuoteAnchor(selector, position)
 }
 

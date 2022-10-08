@@ -3,7 +3,7 @@ import map from 'lodash/map'
 import take from 'lodash/take'
 
 import {
-  JustificationTargetType,
+  JustificationTargetTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
 
@@ -40,14 +40,14 @@ export default class ContextTrail extends React.Component {
 
   toCard = (trailItem, trailItems) => {
     switch (trailItem.targetType) {
-      case JustificationTargetType.PROPOSITION:
+      case JustificationTargetTypes.PROPOSITION:
         return this.propositionToCard(trailItem.target, trailItems)
-      case JustificationTargetType.STATEMENT:
+      case JustificationTargetTypes.STATEMENT:
         return this.statementToCard(trailItem.target, trailItems)
-      case JustificationTargetType.JUSTIFICATION:
+      case JustificationTargetTypes.JUSTIFICATION:
         return this.justificationToCard(trailItem.target, trailItems)
       default:
-        throw newExhaustedEnumError('JustificationTargetType', trailItem.targetType)
+        throw newExhaustedEnumError('JustificationTargetTypes', trailItem.targetType)
     }
   }
 

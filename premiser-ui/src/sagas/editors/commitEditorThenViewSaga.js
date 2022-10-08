@@ -7,8 +7,8 @@ import {
 import {
   assert,
   isTruthy,
-  JustificationRootTargetType,
-  JustificationTargetType,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
   newImpossibleError,
 } from 'howdju-common'
 
@@ -34,25 +34,25 @@ const editorCommitResultGotoActionCreators = {
 
     assert(() => isTruthy(justification))
     switch (justification.target.type) {
-      case JustificationTargetType.PROPOSITION: {
+      case JustificationTargetTypes.PROPOSITION: {
         return goto.proposition(justification.target.entity)
       }
-      case JustificationTargetType.STATEMENT: {
+      case JustificationTargetTypes.STATEMENT: {
         return goto.statement(justification.target.entity)
       }
     }
 
-    assert(() => justification.target.type === JustificationTargetType.JUSTIFICATION)
+    assert(() => justification.target.type === JustificationTargetTypes.JUSTIFICATION)
     switch (justification.rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION: {
+      case JustificationRootTargetTypes.PROPOSITION: {
         return goto.proposition(justification.rootTarget)
       }
-      case JustificationRootTargetType.STATEMENT: {
+      case JustificationRootTargetTypes.STATEMENT: {
         return goto.statement(justification.rootTarget)
       }
     }
 
-    throw newImpossibleError(`A justification must either target or be rooted in a JustificationRootTargetType`)
+    throw newImpossibleError(`A justification must either target or be rooted in a JustificationRootTargetTypes`)
   },
 }
 

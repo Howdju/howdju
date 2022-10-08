@@ -4,7 +4,7 @@ import { Route } from 'react-router'
 import { pathToRegexp } from 'path-to-regexp'
 
 import {
-  JustificationRootTargetType,
+  JustificationRootTargetTypes,
   commonPaths,
 } from 'howdju-common'
 
@@ -68,10 +68,10 @@ const routes = [
 
   <Route key="writQuote" exact path="/writ-quotes/:writQuoteId/:slug?" component={WritQuotePage} />,
   <Route key="proposition" exact path="/p/:rootTargetId/:slug?" render={props => (
-    <JustificationsPage {...props} rootTargetType={JustificationRootTargetType.PROPOSITION} />
+    <JustificationsPage {...props} rootTargetType={JustificationRootTargetTypes.PROPOSITION} />
   )} />,
   <Route key="statement" exact path="/s/:rootTargetId/:slug?" render={props => (
-    <JustificationsPage {...props} rootTargetType={JustificationRootTargetType.STATEMENT} />
+    <JustificationsPage {...props} rootTargetType={JustificationRootTargetTypes.STATEMENT} />
   )} />,
   <Route key="persorg" exact path="/persorgs/:persorgId/:slug?" component={PersorgPage} />,
   <Route key="tag" exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,

@@ -5,9 +5,9 @@ const isUndefined = require('lodash/isUndefined')
 const map = require('lodash/map')
 
 const {
-  PropositionTagVotePolarity,
-  PropositionTagScoreType,
-  JobHistoryStatus,
+  PropositionTagVotePolarities,
+  PropositionTagScoreTypes,
+  JobHistoryStatuses,
   utcNow,
 } = require('howdju-common')
 
@@ -33,7 +33,7 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
       // eslint-disable-next-line promise/no-nesting
       .then( (job) => Promise.all([
         this.propositionTagVotesDao.readVotes(),
-        this.propositionTagScoresDao.deleteScoresForType(PropositionTagScoreType.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+        this.propositionTagScoresDao.deleteScoresForType(PropositionTagScoreTypes.GLOBAL_VOTE_SUM, job.startedAt, job.id)
       ])
         .then( ([votes, deletions]) => {
           this.logger.info(`Deleted ${deletions.length} scores`)
@@ -44,11 +44,11 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
         .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
         .then( () => {
           const completedAt = utcNow()
-          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+          return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.SUCCESS, completedAt)
         })
         .catch( (err) => {
           const completedAt = utcNow()
-          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+          this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.FAILURE, completedAt, err.stack)
           throw err
         })
       )
@@ -64,7 +64,7 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
       .then( (job) =>
         // TODO(1,2,3): remove exception
         // eslint-disable-next-line promise/no-nesting
-        this.propositionTagScoresDao.readUnscoredVotesForScoreType(PropositionTagScoreType.GLOBAL_VOTE_SUM)
+        this.propositionTagScoresDao.readUnscoredVotesForScoreType(PropositionTagScoreTypes.GLOBAL_VOTE_SUM)
           .then( (votes) => {
             this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
             return votes
@@ -74,11 +74,11 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
           .then( () => {
             const completedAt = utcNow()
             this.logger.silly(`Ending updateJustificationScoresUsingUnscoredVotes at ${completedAt}`)
-            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.SUCCESS, completedAt)
+            return this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.SUCCESS, completedAt)
           })
           .catch( (err) => {
             const completedAt = utcNow()
-            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatus.FAILURE, completedAt, err.stack)
+            this.jobHistoryDao.updateJobCompleted(job, JobHistoryStatuses.FAILURE, completedAt, err.stack)
             throw err
           })
       )
@@ -94,7 +94,7 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
   }
 
   createPropositionTagScore(propositionId, tagId, score, job) {
-    const scoreType = PropositionTagScoreType.GLOBAL_VOTE_SUM
+    const scoreType = PropositionTagScoreTypes.GLOBAL_VOTE_SUM
     return this.propositionTagScoresDao.createPropositionTagScore(propositionId, tagId, scoreType, score, job.startedAt, job.id)
       .then( (propositionTagScore) => {
         this.logger.debug(`Set proposition ${propositionTagScore.propositionId} / tag ${propositionTagScore.tagId}'s score to ${propositionTagScore.score}`)
@@ -103,7 +103,7 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
   }
 
   createSummedPropositionTagScore(propositionId, tagId, voteSum, job) {
-    const scoreType = PropositionTagScoreType.GLOBAL_VOTE_SUM
+    const scoreType = PropositionTagScoreTypes.GLOBAL_VOTE_SUM
     return this.propositionTagScoresDao.deletePropositionTagScoreFor(propositionId, tagId, scoreType, job.startedAt, job.id)
       .then( (propositionTagScore) => {
         const currentScore = propositionTagScore ?
@@ -136,14 +136,14 @@ function sumVotesByPropositionIdByTagId(votes, logger) {
     }
 
     switch (vote.polarity) {
-      case PropositionTagVotePolarity.POSITIVE:
+      case PropositionTagVotePolarities.POSITIVE:
         sum += vote.deleted ? -1 : 1
         break
-      case PropositionTagVotePolarity.NEGATIVE:
+      case PropositionTagVotePolarities.NEGATIVE:
         sum -= vote.deleted ? 1 : -1
         break
       default:
-        logger.error(`Unknown PropositionTagVotePolarity "${vote.polarity} in vote ID ${vote.id}`)
+        logger.error(`Unknown PropositionTagVotePolarities "${vote.polarity} in vote ID ${vote.id}`)
         break
     }
 

@@ -1,7 +1,7 @@
 const forEach = require('lodash/forEach')
 
 const {
-  PropositionTagVotePolarity
+  PropositionTagVotePolarities
 } = require('howdju-common')
 
 const {
@@ -23,18 +23,18 @@ exports.PropositionTagsDao = class PropositionTagsDao {
     return this.database.query(
       'readTagsForPropositionId',
       `
-        with 
+        with
           proposition_tag_ids as (
-            select distinct tag_id 
-            from proposition_tag_votes 
-              where 
+            select distinct tag_id
+            from proposition_tag_votes
+              where
                     proposition_id = $1
                 and polarity = $2
                 and deleted is null
           )
         select * from tags where tag_id in (select * from proposition_tag_ids) and deleted is null
       `,
-      [propositionId, PropositionTagVotePolarity.POSITIVE]
+      [propositionId, PropositionTagVotePolarities.POSITIVE]
     )
       .then(mapMany(toTag))
   }
@@ -43,17 +43,17 @@ exports.PropositionTagsDao = class PropositionTagsDao {
     return this.database.query(
       'readRecommendedTagsForPropositionId',
       `
-        with 
+        with
           tag_scores as (
-            select tag_id, score 
-            from proposition_tag_scores 
-              where 
+            select tag_id, score
+            from proposition_tag_scores
+              where
                     proposition_id = $1
                 and score > 0
                 and deleted is null
           )
-        select t.* 
-        from tags t 
+        select t.*
+        from tags t
             join tag_scores s using (tag_id)
           where t.deleted is null
         order by s.score desc
@@ -67,17 +67,17 @@ exports.PropositionTagsDao = class PropositionTagsDao {
     return this.database.query(
       'readPropositionsRecommendedForTagId',
       `
-        with 
+        with
           proposition_scores as (
-            select proposition_id, score 
-            from proposition_tag_scores 
-              where 
+            select proposition_id, score
+            from proposition_tag_scores
+              where
                     tag_id = $1
                 and score > 0
                 and deleted is null
           )
-        select s.* 
-        from propositions s 
+        select s.*
+        from propositions s
             join proposition_scores ss using (proposition_id)
           where s.deleted is null
         order by ss.score desc
@@ -94,10 +94,10 @@ exports.PropositionTagsDao = class PropositionTagsDao {
         select
             s.*
           , v.polarity
-        from 
+        from
           proposition_tag_votes v
             join propositions s using (proposition_id)
-          where 
+          where
                 v.user_id = $1
             and v.tag_id = $2
             and v.deleted is null

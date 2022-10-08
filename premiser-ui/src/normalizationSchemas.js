@@ -1,12 +1,12 @@
 import { schema } from 'normalizr'
 
 import {
-  JustificationBasisCompoundAtomType,
-  JustificationBasisType,
-  JustificationRootTargetType,
-  JustificationTargetType,
-  SentenceType,
-  SourceExcerptType,
+  JustificationBasisCompoundAtomTypes,
+  JustificationBasisTypes,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
+  SentenceTypes,
+  SourceExcerptTypes,
 } from 'howdju-common'
 
 export const userSchema = new schema.Entity('users')
@@ -40,8 +40,8 @@ export const statementSchema = new schema.Entity('statements', {
 })
 export const statementsSchema = [statementSchema]
 sentenceSchema.define({
-  [SentenceType.PROPOSITION]: propositionSchema,
-  [SentenceType.STATEMENT]: statementSchema,
+  [SentenceTypes.PROPOSITION]: propositionSchema,
+  [SentenceTypes.STATEMENT]: statementSchema,
 })
 
 export const propositionCompoundSchema = new schema.Entity('propositionCompounds', {
@@ -72,9 +72,9 @@ export const vidSegmentsSchema = new schema.Entity('vidSegments', {
 export const justificationVoteSchema = new schema.Entity('justificationVotes')
 
 const sourceExcerptSchema = new schema.Union({
-  [SourceExcerptType.WRIT_QUOTE]: writQuoteSchema,
-  [SourceExcerptType.PIC_REGION]: picRegionSchema,
-  [SourceExcerptType.VID_SEGMENT]: vidSegmentsSchema,
+  [SourceExcerptTypes.WRIT_QUOTE]: writQuoteSchema,
+  [SourceExcerptTypes.PIC_REGION]: picRegionSchema,
+  [SourceExcerptTypes.VID_SEGMENT]: vidSegmentsSchema,
 }, (value, parent) => parent.type)
 
 export const sourceExcerptParaphraseSchema = new schema.Entity('sourceExcerptParaphrases', {
@@ -85,8 +85,8 @@ export const sourceExcerptParaphraseSchema = new schema.Entity('sourceExcerptPar
 })
 
 export const justificationBasisCompoundAtomEntitySchema = new schema.Union({
-  [JustificationBasisCompoundAtomType.PROPOSITION]: propositionSchema,
-  [JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE]: sourceExcerptParaphraseSchema,
+  [JustificationBasisCompoundAtomTypes.PROPOSITION]: propositionSchema,
+  [JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE]: sourceExcerptParaphraseSchema,
 }, (value, parent) => parent.type)
 
 export const justificationBasisCompoundSchema = new schema.Entity('justificationBasisCompounds', {
@@ -97,14 +97,14 @@ export const justificationBasisCompoundSchema = new schema.Entity('justification
 
 export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)
 export const justificationBasisSchema = new schema.Union({
-  [JustificationBasisType.PROPOSITION_COMPOUND]: propositionCompoundSchema,
-  [JustificationBasisType.WRIT_QUOTE]: writQuoteSchema,
-  [JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND]: justificationBasisCompoundSchema,
+  [JustificationBasisTypes.PROPOSITION_COMPOUND]: propositionCompoundSchema,
+  [JustificationBasisTypes.WRIT_QUOTE]: writQuoteSchema,
+  [JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND]: justificationBasisCompoundSchema,
 }, (value, parent) => parent.type)
 
 const justificationRootTargetSchema = new schema.Union({
-  [JustificationRootTargetType.STATEMENT]: statementSchema,
-  [JustificationRootTargetType.PROPOSITION]: propositionSchema,
+  [JustificationRootTargetTypes.STATEMENT]: statementSchema,
+  [JustificationRootTargetTypes.PROPOSITION]: propositionSchema,
 }, (value, parent) => parent.rootTargetType)
 
 export const justificationSchema = new schema.Entity('justifications')
@@ -122,9 +122,9 @@ justificationSchema.define({
 export const justificationsSchema = [justificationSchema]
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there, at least for Unions
 justificationTargetSchema.define({
-  [JustificationTargetType.PROPOSITION]: propositionSchema,
-  [JustificationTargetType.STATEMENT]: statementSchema,
-  [JustificationTargetType.JUSTIFICATION]: justificationSchema,
+  [JustificationTargetTypes.PROPOSITION]: propositionSchema,
+  [JustificationTargetTypes.STATEMENT]: statementSchema,
+  [JustificationTargetTypes.JUSTIFICATION]: justificationSchema,
 })
 
 propositionSchema.define({

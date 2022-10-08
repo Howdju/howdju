@@ -23,7 +23,7 @@ import {
   makeNewCounterJustification,
   isRootPositive,
   isRootNegative,
-  JustificationBasisType,
+  JustificationBasisTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
 
@@ -123,17 +123,17 @@ class JustificationBranch extends Component {
     const params = {}
 
     switch (justificationBasis.type) {
-      case JustificationBasisType.WRIT_QUOTE:
+      case JustificationBasisTypes.WRIT_QUOTE:
         params.writQuoteId = justificationBasis.entity.id
         break
-      case JustificationBasisType.PROPOSITION_COMPOUND:
+      case JustificationBasisTypes.PROPOSITION_COMPOUND:
         params.propositionCompoundId = justificationBasis.entity.id
         break
-      case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND:
+      case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND:
         params.justificationBasisCompoundId = justificationBasis.entity.id
         break
       default:
-        throw newExhaustedEnumError('JustificationBasisType', justificationBasis.type)
+        throw newExhaustedEnumError('JustificationBasisTypes', justificationBasis.type)
     }
 
     return paths.searchJustifications(params)

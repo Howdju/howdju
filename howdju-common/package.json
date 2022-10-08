@@ -7,7 +7,7 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "gen-standalone-schema-validation": "node bin/gen-standalone-schema-validation.js",
+    "gen-standalone-schema-validation": "npx ts-node bin/gen-standalone-schema-validation.js",
     "lint": "eslint lib/ --ignore-pattern=lib/standaloneAjv.js",
     "custom-check": "bin/custom-check.sh",
     "test": "jest --config=../jest.config.js /howdju-common/lib/",

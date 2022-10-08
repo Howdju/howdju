@@ -5,9 +5,9 @@ const forEach = require('lodash/forEach')
 const concat = require('lodash/concat')
 
 const {
-  JustificationBasisType,
-  SortDirection,
-  JustificationTargetType,
+  JustificationBasisTypes,
+  SortDirections,
+  JustificationTargetTypes,
   cleanWhitespace,
 } = require('howdju-common')
 
@@ -62,7 +62,7 @@ exports.WritsDao = class WritsDao {
     const orderBySqls = []
     forEach(sorts, sort => {
       const columnName = sort.property === 'id' ? 'writ_id' : snakeCase(sort.property)
-      const direction = sort.direction === SortDirection.DESCENDING ?
+      const direction = sort.direction === SortDirections.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       whereSqls.push(`${columnName} is not null`)
@@ -96,7 +96,7 @@ exports.WritsDao = class WritsDao {
     forEach(sortContinuations, (sortContinuation) => {
       const value = sortContinuation.value
       // The default direction is ascending
-      const direction = sortContinuation.direction === SortDirection.DESCENDING ?
+      const direction = sortContinuation.direction === SortDirections.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
@@ -180,7 +180,7 @@ exports.WritsDao = class WritsDao {
     `
     return this.database.query('isWritOfBasisToJustificationsHavingOtherUsersVotes', sql, [
       writ.id,
-      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
       userId,
     ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
   }
@@ -201,7 +201,7 @@ exports.WritsDao = class WritsDao {
     `
     return this.database.query('isWritOfBasisToOtherUsersJustifications', sql, [
       writ.id,
-      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
       userId,
     ]).then( ({rows: [{has_other_users_justifications: isBasisToOtherUsersJustifications}]}) => isBasisToOtherUsersJustifications)
   }
@@ -230,9 +230,9 @@ exports.WritsDao = class WritsDao {
     `
     return this.database.query('isWritOfBasisToJustificationsHavingOtherUsersCounters', sql, [
       writ.id,
-      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
       userId,
-      JustificationTargetType.JUSTIFICATION,
+      JustificationTargetTypes.JUSTIFICATION,
     ]).then( ({rows: [{has_other_user_counters: isBasisToJustificationsHavingOtherUsersCounters}]}) => isBasisToJustificationsHavingOtherUsersCounters)
   }
 }

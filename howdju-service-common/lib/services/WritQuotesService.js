@@ -16,10 +16,10 @@ const values = require('lodash/values')
 const zip = require('lodash/zip')
 
 const {
-  ActionTargetType,
-  ActionSubjectType,
-  ActionType,
-  SortDirection,
+  ActionTargetTypes,
+  ActionSubjectTypes,
+  ActionTypes,
+  SortDirections,
   entityConflictCodes,
   userActionsConflictCodes,
   utcNow,
@@ -83,7 +83,7 @@ exports.WritQuotesService = class WritQuotesService {
   }
 
   readInitialWritQuotes(requestedSorts, count) {
-    const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
+    const disambiguationSorts = [{property: 'id', direction: SortDirections.ASCENDING}]
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
     return this.writQuotesDao.readWritQuotes(unambiguousSorts, count)
       .then(writQuotes => {
@@ -155,8 +155,8 @@ exports.WritQuotesService = class WritQuotesService {
     // TODO(20): use createWritQuoteUrlTarget instead.
     await this.writQuotesDao.createWritQuoteUrls(writQuote, writQuote.urls, userId, now)
 
-    this.actionsService.asyncRecordAction(userId, now, ActionType.CREATE,
-      ActionTargetType.WRIT_QUOTE, writQuote.id)
+    this.actionsService.asyncRecordAction(userId, now, ActionTypes.CREATE,
+      ActionTargetTypes.WRIT_QUOTE, writQuote.id)
 
     return {writQuote}
   }
@@ -297,7 +297,7 @@ exports.WritQuotesService = class WritQuotesService {
         writQuoteHasChanged,
       ]) => {
         if (writQuoteHasChanged) {
-          this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.WRIT_QUOTE,
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.UPDATE, ActionTargetTypes.WRIT_QUOTE,
             writQuote.id)
         }
         return [writQuote, writ, urls]
@@ -349,11 +349,11 @@ exports.WritQuotesService = class WritQuotesService {
       ]))
       .then( ([updatedUrls, createdWritQuoteUrls, deletedWritQuoteUrls]) => {
         map(createdWritQuoteUrls, writQuoteUrl =>
-          this.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.WRIT_QUOTE,
-            writQuoteUrl.writQuoteId, ActionSubjectType.URL, writQuoteUrl.urlId))
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.ASSOCIATE, ActionTargetTypes.WRIT_QUOTE,
+            writQuoteUrl.writQuoteId, ActionSubjectTypes.URL, writQuoteUrl.urlId))
         map(deletedWritQuoteUrls, writQuoteUrl =>
-          this.actionsService.asyncRecordAction(userId, now, ActionType.DISASSOCIATE,
-            ActionTargetType.WRIT_QUOTE, writQuoteUrl.writQuoteId, ActionSubjectType.URL,
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.DISASSOCIATE,
+            ActionTargetTypes.WRIT_QUOTE, writQuoteUrl.writQuoteId, ActionSubjectTypes.URL,
             writQuoteUrl.urlId))
         return updatedUrls
       })
@@ -423,8 +423,8 @@ function readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now) {
       equivalentWritQuote || service.writQuotesDao.createWritQuote(writQuote, userId, now)
     ]))
     .then( ([isExtant, writQuote]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.WRIT_QUOTE, writQuote.id)
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.WRIT_QUOTE, writQuote.id)
       return {
         isExtant,
         writQuote,
@@ -447,8 +447,8 @@ function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
           service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now),
           url.target && service.writQuotesDao.createWritQuoteUrlTarget(writQuote, url, userId, now),
         ])
-          .then( ([writQuoteUrl]) => service.actionsService.asyncRecordAction(userId, now, ActionType.ASSOCIATE, ActionTargetType.WRIT_QUOTE,
-            writQuoteUrl.writQuoteId, ActionSubjectType.URL, writQuoteUrl.urlId))
+          .then( ([writQuoteUrl]) => service.actionsService.asyncRecordAction(userId, now, ActionTypes.ASSOCIATE, ActionTargetTypes.WRIT_QUOTE,
+            writQuoteUrl.writQuoteId, ActionSubjectTypes.URL, writQuoteUrl.urlId))
       })
     })
 }

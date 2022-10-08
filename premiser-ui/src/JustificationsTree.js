@@ -8,7 +8,7 @@ import cn from 'classnames'
 import {Button} from 'react-md'
 
 import {
-  JustificationPolarity,
+  JustificationPolarities,
 } from 'howdju-common'
 
 import config from './config'
@@ -62,8 +62,8 @@ class JustificationsTree extends Component {
     } = this.props
 
     const justificationsByPolarity = groupBy(justifications, j => j.polarity)
-    const positiveJustifications = get(justificationsByPolarity, JustificationPolarity.POSITIVE, [])
-    const negativeJustifications = get(justificationsByPolarity, JustificationPolarity.NEGATIVE, [])
+    const positiveJustifications = get(justificationsByPolarity, JustificationPolarities.POSITIVE, [])
+    const negativeJustifications = get(justificationsByPolarity, JustificationPolarities.NEGATIVE, [])
     const hasPositiveJustifications = positiveJustifications.length > 0
     const hasNegativeJustifications = negativeJustifications.length > 0
     const hasBothSides = hasPositiveJustifications && hasNegativeJustifications

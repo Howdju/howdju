@@ -4,7 +4,7 @@ import {FontIcon, SelectionControlGroup} from 'react-md'
 import get from 'lodash/get'
 
 import {
-  SourceExcerptType,
+  SourceExcerptTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
 
@@ -47,7 +47,7 @@ class SourceExcerptEditorFields extends Component {
         inline={isWindowNarrow}
         controls={[
           {
-            value: SourceExcerptType.WRIT_QUOTE,
+            value: SourceExcerptTypes.WRIT_QUOTE,
             label: (
               <div className="selection-label">
                 <FontIcon>book</FontIcon>
@@ -57,7 +57,7 @@ class SourceExcerptEditorFields extends Component {
             title: 'Writ quote',
           },
           {
-            value: SourceExcerptType.PIC_REGION,
+            value: SourceExcerptTypes.PIC_REGION,
             label: (
               <div className="selection-label">
                 <FontIcon>photo</FontIcon>
@@ -67,7 +67,7 @@ class SourceExcerptEditorFields extends Component {
             title: 'Pic',
           },
           {
-            value: SourceExcerptType.VID_SEGMENT,
+            value: SourceExcerptTypes.VID_SEGMENT,
             label: (
               <div className="selection-label">
                 <FontIcon>videocam</FontIcon>
@@ -83,7 +83,7 @@ class SourceExcerptEditorFields extends Component {
 
     let sourceExcerptEntityEditorFields
     switch (sourceExcerpt.type) {
-      case SourceExcerptType.WRIT_QUOTE: {
+      case SourceExcerptTypes.WRIT_QUOTE: {
         const entity = sourceExcerpt.writQuote
         const entityId = id + '--writ-quote'
         const entityName = name + '.writQuote'
@@ -106,20 +106,20 @@ class SourceExcerptEditorFields extends Component {
         )
         break
       }
-      case SourceExcerptType.PIC_REGION: {
+      case SourceExcerptTypes.PIC_REGION: {
         sourceExcerptEntityEditorFields = (
           <span>Coming soon</span>
         )
         break
       }
-      case SourceExcerptType.VID_SEGMENT: {
+      case SourceExcerptTypes.VID_SEGMENT: {
         sourceExcerptEntityEditorFields = (
           <span>Coming soon</span>
         )
         break
       }
       default:
-        throw newExhaustedEnumError('SourceExcerptType', sourceExcerpt.type)
+        throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
     }
     return (
 

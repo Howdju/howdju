@@ -9,7 +9,7 @@ import queryString from 'query-string'
 import {denormalize} from "normalizr"
 
 import {
-  SentenceType,
+  SentenceTypes,
 } from 'howdju-common'
 
 import {
@@ -52,7 +52,7 @@ class PropositionUsagesPage extends React.Component {
   }
 
   refreshResults = (propositionId) => {
-    this.props.api.fetchSentenceStatements(SentenceType.PROPOSITION, propositionId)
+    this.props.api.fetchSentenceStatements(SentenceTypes.PROPOSITION, propositionId)
     this.props.api.fetchIndirectPropositionStatements(propositionId)
     const count = PropositionUsagesPage.fetchCount
     this.props.api.fetchJustificationsSearch({filters: {propositionId}, count})

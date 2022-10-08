@@ -5,7 +5,7 @@ import {
 
 import {
   makeNewPropositionJustification,
-  JustificationBasisType,
+  JustificationBasisTypes,
 } from 'howdju-common'
 
 import {editors, flows, str, goto} from '../../actions'
@@ -36,7 +36,7 @@ function toPropositionJustification(content, source, target) {
   }
   const justificationProps = {
     basis: {
-      type: JustificationBasisType.WRIT_QUOTE,
+      type: JustificationBasisTypes.WRIT_QUOTE,
       writQuote,
     }
   }

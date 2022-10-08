@@ -6,15 +6,15 @@ const toString = require('lodash/toString')
 const values = require('lodash/values')
 
 const {
-  JustificationBasisCompoundAtomType,
-  JustificationBasisType,
-  JustificationRootTargetType,
+  JustificationBasisCompoundAtomTypes,
+  JustificationBasisTypes,
+  JustificationRootTargetTypes,
   newExhaustedEnumError,
   newImpossibleError,
-  PropositionCompoundAtomType,
+  PropositionCompoundAtomTypes,
   requireArgs,
-  SentenceType,
-  SourceExcerptType,
+  SentenceTypes,
+  SourceExcerptTypes,
   toSlug,
 } = require('howdju-common')
 
@@ -139,10 +139,10 @@ const toStatement = makeMapper(function toStatementMapper(row) {
 
   let sentence = statement['sentence'] = {id: row['sentence_id']}
   switch (statement.sentenceType) {
-    case SentenceType.STATEMENT:
+    case SentenceTypes.STATEMENT:
       sentence = mapRelation(toStatement, 'sentence_statement_', row)
       break
-    case SentenceType.PROPOSITION:
+    case SentenceTypes.PROPOSITION:
       sentence = mapRelation(toProposition, 'sentence_proposition_', row)
       break
     default:
@@ -156,8 +156,8 @@ const toStatement = makeMapper(function toStatementMapper(row) {
 })
 
 const justificationRootTargetMapperByType = {
-  [JustificationRootTargetType.PROPOSITION]: toProposition,
-  [JustificationRootTargetType.STATEMENT]: toStatement,
+  [JustificationRootTargetTypes.PROPOSITION]: toProposition,
+  [JustificationRootTargetTypes.STATEMENT]: toStatement,
 }
 
 const toJustification = makeMapper(function toJustificationMapper (
@@ -203,7 +203,7 @@ const toJustification = makeMapper(function toJustificationMapper (
   }
 
   switch (row.basis_type) {
-    case JustificationBasisType.WRIT_QUOTE: {
+    case JustificationBasisTypes.WRIT_QUOTE: {
       const basisId = row.basis_id || row.basis_writ_quote_id
       if (basisId) {
         if (writQuotesById) {
@@ -221,7 +221,7 @@ const toJustification = makeMapper(function toJustificationMapper (
       break
     }
 
-    case JustificationBasisType.PROPOSITION_COMPOUND: {
+    case JustificationBasisTypes.PROPOSITION_COMPOUND: {
       const basisId = row.basis_id || row.basis_proposition_compound_id
       if (basisId) {
         if (propositionCompoundsById) {
@@ -238,7 +238,7 @@ const toJustification = makeMapper(function toJustificationMapper (
       break
     }
 
-    case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND: {
+    case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND: {
       const basisId = row.basis_id || row.basis_justification_basis_compound_id
       if (basisId) {
         if (justificationBasisCompoundsById) {
@@ -256,7 +256,7 @@ const toJustification = makeMapper(function toJustificationMapper (
     }
 
     default:
-      throw newImpossibleError(`Unsupported JustificationBasisType: ${row.basis_type}`)
+      throw newImpossibleError(`Unsupported JustificationBasisTypes: ${row.basis_type}`)
   }
 
   if (!justification.basis.entity) {
@@ -349,7 +349,7 @@ const toPropositionCompound = (row, atoms) => {
 
 const toPropositionCompoundAtom = (row) => row && ({
   compoundId: row.proposition_compound_id,
-  type: PropositionCompoundAtomType.PROPOSITION,
+  type: PropositionCompoundAtomTypes.PROPOSITION,
   entity: toProposition({
     proposition_id: row.proposition_id,
     text: row.proposition_text,
@@ -429,7 +429,7 @@ const toJustificationBasisCompoundAtom = (row) => {
   }
 
   switch (atom.type) {
-    case JustificationBasisCompoundAtomType.PROPOSITION:
+    case JustificationBasisCompoundAtomTypes.PROPOSITION:
       if (row.proposition_id) {
         atom.entity = toProposition({
           proposition_id: row.proposition_id,
@@ -439,7 +439,7 @@ const toJustificationBasisCompoundAtom = (row) => {
         })
       }
       break
-    case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+    case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       if (row.source_excerpt_paraphrase_id) {
         atom.entity = toSourceExcerptParaphrase({
           source_excerpt_paraphrase_id: row.source_excerpt_paraphrase_id,
@@ -505,7 +505,7 @@ const toSourceExcerptEntity = (row) => {
   }
 
   switch (row.source_excerpt_type) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       return toWritQuote({
         writ_quote_id: row.writ_quote_id,
         quote_text: row.writ_quote_quote_text,
@@ -517,7 +517,7 @@ const toSourceExcerptEntity = (row) => {
         writ_creator_user_id: row.writ_quote_writ_creator_user_id,
       })
     default:
-      throw newExhaustedEnumError('SourceExcerptType', row.source_excerpt_type)
+      throw newExhaustedEnumError('SourceExcerptTypes', row.source_excerpt_type)
   }
 }
 

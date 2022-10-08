@@ -1,10 +1,10 @@
 const Promise = require('bluebird')
 
 const {
-  ActionType,
-  ActionTargetType,
+  ActionTypes,
+  ActionTargetTypes,
   requireArgs,
-  SourceExcerptType,
+  SourceExcerptTypes,
   newImpossibleError,
 } = require('howdju-common')
 
@@ -90,14 +90,14 @@ function getSourceExcerptEntity(
   userId
 ) {
   switch (sourceExcerptType) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       return service.writQuotesService.readWritQuoteForId(sourceExcerptEntityId, {userId})
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       return service.picRegionsService.readPicRegionForId(sourceExcerptEntityId, {userId})
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       return service.vidSegmentsService.readVidSegmentForId(sourceExcerptEntityId, {userId})
     default:
-      throw newImpossibleError(`Impossible SourceExcerptType: ${sourceExcerptType}`)
+      throw newImpossibleError(`Impossible SourceExcerptTypes: ${sourceExcerptType}`)
   }
 }
 
@@ -164,8 +164,8 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
         })
     })
     .then( ({isExtant, sourceExcerptParaphrase}) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.SOURCE_EXCERPT_PARAPHRASE,
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.SOURCE_EXCERPT_PARAPHRASE,
         sourceExcerptParaphrase.id)
 
       return {
@@ -183,16 +183,16 @@ function readOrCreateSourceExcerptEntity(
   now
 ) {
   switch (sourceExcerptType) {
-    case SourceExcerptType.WRIT_QUOTE:
+    case SourceExcerptTypes.WRIT_QUOTE:
       return service.writQuotesService.readOrCreateWritQuoteAsUser(sourceExcerptEntity, userId, now)
         .then( ({isExtant, writQuote: sourceExcerptEntity}) => ({isExtant, sourceExcerptEntity}) )
-    case SourceExcerptType.PIC_REGION:
+    case SourceExcerptTypes.PIC_REGION:
       return service.picRegionsService.readOrCreatePicRegionAsUser(sourceExcerptEntity, userId, now)
         .then( ({isExtant, picRegion: sourceExcerptEntity}) => ({isExtant, sourceExcerptEntity}) )
-    case SourceExcerptType.VID_SEGMENT:
+    case SourceExcerptTypes.VID_SEGMENT:
       return service.vidSegmentsService.readOrCreateVidSegmentAsUser(sourceExcerptEntity, userId, now)
         .then( ({isExtant, vidSegment: sourceExcerptEntity}) => ({isExtant, sourceExcerptEntity}) )
     default:
-      throw newImpossibleError(`Impossible SourceExcerptType: ${sourceExcerptType}`)
+      throw newImpossibleError(`Impossible SourceExcerptTypes: ${sourceExcerptType}`)
   }
 }

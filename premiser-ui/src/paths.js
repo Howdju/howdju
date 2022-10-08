@@ -5,7 +5,7 @@ import join from 'lodash/join'
 import queryString from 'query-string'
 
 import {
-  JustificationRootTargetType,
+  JustificationRootTargetTypes,
   newExhaustedEnumError,
   toSlug,
 } from 'howdju-common'
@@ -56,12 +56,12 @@ class Paths {
   }
   justification = j => {
     switch (j.rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION:
+      case JustificationRootTargetTypes.PROPOSITION:
         return this.proposition(j.rootTarget, null, false, j.id)
-      case JustificationRootTargetType.STATEMENT:
+      case JustificationRootTargetTypes.STATEMENT:
         return this.statement(j.rootTarget, j.id)
       default:
-        throw newExhaustedEnumError('JustificationRootTargetType', j.rootTargetType)
+        throw newExhaustedEnumError('JustificationRootTargetTypes', j.rootTargetType)
     }
   }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {JustificationRootTargetType, newExhaustedEnumError} from 'howdju-common'
+import {JustificationRootTargetTypes, newExhaustedEnumError} from 'howdju-common'
 
 import PropositionEntityViewer from './PropositionEntityViewer'
 import StatementEntityViewer from './StatementEntityViewer'
@@ -22,7 +22,7 @@ export default class JustificationRootTargetViewer extends React.Component {
       menu,
     } = this.props
     switch (rootTargetType) {
-      case JustificationRootTargetType.PROPOSITION:
+      case JustificationRootTargetTypes.PROPOSITION:
         return (
           <PropositionEntityViewer
             id={id}
@@ -33,7 +33,7 @@ export default class JustificationRootTargetViewer extends React.Component {
             menu={menu}
           />
         )
-      case JustificationRootTargetType.STATEMENT:
+      case JustificationRootTargetTypes.STATEMENT:
         return (
           <StatementEntityViewer
             id={id}
@@ -44,7 +44,7 @@ export default class JustificationRootTargetViewer extends React.Component {
           />
         )
       default:
-        throw newExhaustedEnumError('JustificationRootTargetType', rootTargetType)
+        throw newExhaustedEnumError('JustificationRootTargetTypes', rootTargetType)
     }
   }
 }

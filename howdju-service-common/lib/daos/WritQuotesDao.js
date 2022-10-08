@@ -5,12 +5,12 @@ const Promise = require('bluebird')
 const snakeCase = require('lodash/snakeCase')
 
 const {
-  JustificationBasisType,
-  JustificationTargetType,
-  JustificationBasisCompoundAtomType,
-  JustificationRootTargetType,
-  SortDirection,
-  SourceExcerptType,
+  JustificationBasisTypes,
+  JustificationTargetTypes,
+  JustificationBasisCompoundAtomTypes,
+  JustificationRootTargetTypes,
+  SortDirections,
+  SourceExcerptTypes,
 } = require('howdju-common')
 
 const {
@@ -90,7 +90,7 @@ exports.WritQuotesDao = class WritQuotesDao {
     const orderBySqls = []
     forEach(sorts, sort => {
       const columnName = sort.property === 'id' ? 'writ_quote_id' : snakeCase(sort.property)
-      const direction = sort.direction === SortDirection.DESCENDING ?
+      const direction = sort.direction === SortDirections.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       whereSqls.push(`wq.${columnName} is not null`)
@@ -134,7 +134,7 @@ exports.WritQuotesDao = class WritQuotesDao {
     forEach(sortContinuations, (sortContinuation) => {
       const value = sortContinuation.value
       // The default direction is ascending
-      const direction = sortContinuation.direction === SortDirection.DESCENDING ?
+      const direction = sortContinuation.direction === SortDirections.DESCENDING ?
         DatabaseSortDirection.DESCENDING :
         DatabaseSortDirection.ASCENDING
       // 'id' is a special property name for entities. The column is prefixed by the entity type
@@ -172,7 +172,7 @@ exports.WritQuotesDao = class WritQuotesDao {
   }
 
   readWritQuotesByIdForRootPropositionId(propositionId) {
-    return this.readWritQuotesByIdForRootTarget(JustificationRootTargetType.PROPOSITION, propositionId)
+    return this.readWritQuotesByIdForRootTarget(JustificationRootTargetTypes.PROPOSITION, propositionId)
   }
 
   readWritQuotesByIdForRootTarget(rootTargetType, rootTargetId) {
@@ -232,10 +232,10 @@ exports.WritQuotesDao = class WritQuotesDao {
       `
     const args = [
       rootTargetId,
-      JustificationBasisType.WRIT_QUOTE,
-      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-      SourceExcerptType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
+      JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
+      SourceExcerptTypes.WRIT_QUOTE,
       rootTargetType,
     ]
     return Promise.all([
@@ -444,7 +444,7 @@ exports.WritQuotesDao = class WritQuotesDao {
       select count(*) > 0 as has_votes from basis_justification_votes
     `
     return this.database.query('isBasisToJustificationsHavingOtherUsersVotes', sql, [
-      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
       writQuote.id,
       userId,
     ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
@@ -460,7 +460,7 @@ exports.WritQuotesDao = class WritQuotesDao {
         and deleted is null
         `
     return this.database.query('isBasisToOtherUsersJustifications', sql, [
-      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
       writQuote.id,
       userId,
     ]).then( ({rows: [{has_other_users_justifications: isBasisToOtherUsersJustifications}]}) => isBasisToOtherUsersJustifications)
@@ -484,10 +484,10 @@ exports.WritQuotesDao = class WritQuotesDao {
       select count(*) > 0 as has_other_user_counters from counters
     `
     return this.database.query('isBasisToJustificationsHavingOtherUsersCounters', sql, [
-      JustificationBasisType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
       writQuote.id,
       userId,
-      JustificationTargetType.JUSTIFICATION,
+      JustificationTargetTypes.JUSTIFICATION,
     ]).then( ({rows: [{has_other_user_counters: isBasisToJustificationsHavingOtherUsersCounters}]}) => isBasisToJustificationsHavingOtherUsersCounters)
   }
 

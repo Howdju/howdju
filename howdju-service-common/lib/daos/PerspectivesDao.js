@@ -2,11 +2,11 @@ const forEach = require('lodash/forEach')
 const values = require('lodash/values')
 
 const {
-  JustificationBasisType,
-  JustificationTargetType,
+  JustificationBasisTypes,
+  JustificationTargetTypes,
   newImpossibleError,
-  JustificationBasisCompoundAtomType,
-  SourceExcerptType,
+  JustificationBasisCompoundAtomTypes,
+  SourceExcerptTypes,
   assert,
   isTruthy,
   newExhaustedEnumError,
@@ -41,12 +41,12 @@ exports.PerspectivesDao = class PerspectivesDao {
    */
   readFeaturedPerspectivesWithVotes({userId}) {
     const args = [
-      JustificationBasisType.PROPOSITION_COMPOUND,
-      JustificationBasisType.WRIT_QUOTE,
-      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomType.PROPOSITION,
-      JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-      SourceExcerptType.WRIT_QUOTE,
+      JustificationBasisTypes.PROPOSITION_COMPOUND,
+      JustificationBasisTypes.WRIT_QUOTE,
+      JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationBasisCompoundAtomTypes.PROPOSITION,
+      JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
+      SourceExcerptTypes.WRIT_QUOTE,
     ]
     if (userId) {
       args.push(userId)
@@ -59,14 +59,14 @@ exports.PerspectivesDao = class PerspectivesDao {
         ` :
       ''
     const votesJoinSql = userId ? `
-        left join justification_votes v on 
+        left join justification_votes v on
               j.justification_id = v.justification_id
           and v.user_id = $7
           and v.deleted IS NULL
         ` :
       ''
     const perspectiveJustificationsSql = `
-      select 
+      select
           p.perspective_id
         , p.creator_user_id         as perspective_creator_user_id
         , p.proposition_id            as perspective_proposition_id
@@ -90,17 +90,17 @@ exports.PerspectivesDao = class PerspectivesDao {
         , w.creator_user_id         as basis_writ_quote_writ_creator_user_id
         , cru.url_id                as basis_writ_quote_url_id
         , u.url                     as basis_writ_quote_url_url
-        
+
         , jbc.justification_basis_compound_id          as basis_jbc_id
         , jbca.justification_basis_compound_atom_id    as basis_jbc_atom_id
         , jbca.entity_type                             as basis_jbc_atom_entity_type
         , jbca.order_position                          as basis_jbc_atom_order_position
-        
+
         , jbcas.proposition_id                           as basis_jbc_atom_proposition_id
         , jbcas.text                                   as basis_jbc_atom_proposition_text
         , jbcas.created                                as basis_jbc_atom_proposition_created
         , jbcas.creator_user_id                        as basis_jbc_atom_proposition_creator_user_id
-        
+
         , sep.source_excerpt_paraphrase_id             as basis_jbc_atom_sep_id
         , sep_s.proposition_id                           as basis_jbc_atom_sep_paraphrasing_proposition_id
         , sep_s.text                                   as basis_jbc_atom_sep_paraphrasing_proposition_text
@@ -115,10 +115,10 @@ exports.PerspectivesDao = class PerspectivesDao {
         , sep_wqw.title                                as basis_jbc_atom_sep_writ_quote_writ_title
         , sep_wqw.created                              as basis_jbc_atom_sep_writ_quote_writ_created
         , sep_wqw.creator_user_id                      as basis_jbc_atom_sep_writ_quote_writ_creator_user_id
-        
+
         ${votesSelectSql}
-      from perspectives p 
-        join propositions ps on 
+      from perspectives p
+        join propositions ps on
               p.is_featured
           and p.proposition_id = ps.proposition_id
           and p.deleted is null
@@ -128,7 +128,7 @@ exports.PerspectivesDao = class PerspectivesDao {
         join justifications j on
               j.deleted is null
           and pj.justification_id = j.justification_id
-          
+
         left join proposition_compounds sc on
               j.basis_type = $1
           and j.basis_id = sc.proposition_compound_id
@@ -138,7 +138,7 @@ exports.PerspectivesDao = class PerspectivesDao {
         left join propositions scas on
               sca.proposition_id = scas.proposition_id
           and scas.deleted is null
-          
+
         left join justification_basis_compounds jbc on
               j.basis_type = $3
           and j.basis_id = jbc.justification_basis_compound_id
@@ -156,7 +156,7 @@ exports.PerspectivesDao = class PerspectivesDao {
           and sep.source_excerpt_id = sep_wq.writ_quote_id
         left join writs sep_wqw on
               sep_wq.writ_id = sep_wqw.writ_id
-          
+
         left join writ_quotes wq on
               j.basis_type = $2
           and j.basis_id = wq.writ_quote_id
@@ -395,7 +395,7 @@ exports.PerspectivesDao = class PerspectivesDao {
       j.rootProposition = propositionsById[j.rootProposition.id]
 
       switch (j.target.type) {
-        case JustificationTargetType.PROPOSITION: {
+        case JustificationTargetTypes.PROPOSITION: {
           const targetProposition = propositionsById[j.target.entity.id]
           j.target.entity = targetProposition
           if (!targetProposition.justifications) {
@@ -404,7 +404,7 @@ exports.PerspectivesDao = class PerspectivesDao {
           targetProposition.justifications.push(j)
         }
           break
-        case JustificationTargetType.JUSTIFICATION: {
+        case JustificationTargetTypes.JUSTIFICATION: {
           const targetJustification = justificationsById[j.target.entity.id]
           j.target.entity = targetJustification
           targetJustification.counterJustifications.push(j)
@@ -415,20 +415,20 @@ exports.PerspectivesDao = class PerspectivesDao {
       }
 
       switch (j.basis.type) {
-        case JustificationBasisType.PROPOSITION_COMPOUND: {
+        case JustificationBasisTypes.PROPOSITION_COMPOUND: {
           j.basis.entity = propositionCompoundsById[j.basis.entity.id]
           break
         }
-        case JustificationBasisType.WRIT_QUOTE: {
+        case JustificationBasisTypes.WRIT_QUOTE: {
           j.basis.entity = writQuotesById[j.basis.entity.id]
           break
         }
-        case JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND: {
+        case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND: {
           j.basis.entity = justificationBasisCompoundsById[j.basis.entity.id]
           break
         }
         default:
-          throw newExhaustedEnumError('JustificationBasisType', j.basis.type, `justification ${j.id} has unsupported basis type ${j.basis.type}`)
+          throw newExhaustedEnumError('JustificationBasisTypes', j.basis.type, `justification ${j.id} has unsupported basis type ${j.basis.type}`)
       }
 
       assert(isTruthy(j.basis.entity))

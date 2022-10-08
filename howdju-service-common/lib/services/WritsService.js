@@ -3,9 +3,9 @@ const Promise = require('bluebird')
 const toNumber = require('lodash/toNumber')
 
 const {
-  SortDirection,
-  ActionType,
-  ActionTargetType,
+  SortDirections,
+  ActionTypes,
+  ActionTargetTypes,
 } = require('howdju-common')
 
 const {
@@ -41,7 +41,7 @@ exports.WritsService = class WritsService {
   }
 
   readInitialWrits (requestedSorts, count) {
-    const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
+    const disambiguationSorts = [{property: 'id', direction: SortDirections.ASCENDING}]
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
     return this.writsDao.readWrits(unambiguousSorts, count)
       .then(writs => {
@@ -71,7 +71,7 @@ exports.WritsService = class WritsService {
   updateWritAsUser(userId, writ, now) {
     return this.writsDao.update(writ)
       .then( (writ) => {
-        this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.WRIT, writ.id)
+        this.actionsService.asyncRecordAction(userId, now, ActionTypes.UPDATE, ActionTargetTypes.WRIT, writ.id)
         return writ
       })
   }
@@ -98,8 +98,8 @@ function readOrCreateEquivalentWritAsUser(service, writ, userId, now) {
       equivalentWrit || service.writsDao.createWrit(writ, userId, now)
     ]))
     .then( ([isExtant, writ]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.WRIT, writ.id)
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.WRIT, writ.id)
 
       return {
         isExtant,

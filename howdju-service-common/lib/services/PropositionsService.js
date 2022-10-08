@@ -17,15 +17,15 @@ const unionBy = require('lodash/unionBy')
 const unzip = require('lodash/unzip')
 
 const {
-  EntityType,
-  SortDirection,
+  EntityTypes,
+  SortDirections,
   userActionsConflictCodes,
   entityConflictCodes,
   authorizationErrorCodes,
-  ActionType,
-  ActionTargetType,
+  ActionTypes,
+  ActionTargetTypes,
   requireArgs,
-  PropositionTagVotePolarity,
+  PropositionTagVotePolarities,
   makePropositionTagVote,
   tagEqual,
 } = require('howdju-common')
@@ -52,8 +52,8 @@ const {
 } = require('../serviceErrors')
 
 const emptyPropositionsByVotePolarity = {
-  [PropositionTagVotePolarity.POSITIVE]: [],
-  [PropositionTagVotePolarity.NEGATIVE]: [],
+  [PropositionTagVotePolarities.POSITIVE]: [],
+  [PropositionTagVotePolarities.NEGATIVE]: [],
 }
 
 exports.PropositionsService = class PropositionsService {
@@ -106,7 +106,7 @@ exports.PropositionsService = class PropositionsService {
       ]))
       .then(([proposition, tags, recommendedTags, propositionTagVotes]) => {
         if (!proposition) {
-          throw new EntityNotFoundError(EntityType.PROPOSITION, propositionId)
+          throw new EntityNotFoundError(EntityTypes.PROPOSITION, propositionId)
         }
         // Ensure recommended tags also appear in full tags
         proposition.tags = unionBy(tags, recommendedTags, tag => tag.id)
@@ -136,7 +136,7 @@ exports.PropositionsService = class PropositionsService {
   }
 
   readInitialPropositions(requestedSorts, count) {
-    const disambiguationSorts = [{property: 'id', direction: SortDirection.ASCENDING}]
+    const disambiguationSorts = [{property: 'id', direction: SortDirections.ASCENDING}]
     const unambiguousSorts = concat(requestedSorts, disambiguationSorts)
     return this.propositionsDao.readPropositions(unambiguousSorts, count)
       .then(propositions => {
@@ -225,10 +225,10 @@ exports.PropositionsService = class PropositionsService {
       })
       .then(([userId, now, updatedProposition]) => {
         if (!updatedProposition) {
-          throw new EntityNotFoundError(EntityType.PROPOSITION, proposition.id)
+          throw new EntityNotFoundError(EntityTypes.PROPOSITION, proposition.id)
         }
 
-        this.actionsService.asyncRecordAction(userId, now, ActionType.UPDATE, ActionTargetType.PROPOSITION, updatedProposition.id)
+        this.actionsService.asyncRecordAction(userId, now, ActionTypes.UPDATE, ActionTargetTypes.PROPOSITION, updatedProposition.id)
         return updatedProposition
       })
   }
@@ -246,7 +246,7 @@ exports.PropositionsService = class PropositionsService {
         const result = [userId, now, proposition, dependentJustifications]
 
         if (!proposition) {
-          throw new EntityNotFoundError(EntityType.PROPOSITION, propositionId)
+          throw new EntityNotFoundError(EntityTypes.PROPOSITION, propositionId)
         }
         if (hasPermission) {
           return result
@@ -280,9 +280,9 @@ exports.PropositionsService = class PropositionsService {
       .then(([userId, now, deletedPropositionId, deletedJustificationIds]) => Promise.all([
         deletedPropositionId,
         deletedJustificationIds,
-        this.actionsService.asyncRecordAction(userId, now, ActionType.DELETE, ActionTargetType.PROPOSITION, deletedPropositionId),
+        this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.PROPOSITION, deletedPropositionId),
         Promise.all(map(deletedJustificationIds, id =>
-          this.actionsService.asyncRecordAction(userId, now, ActionType.DELETE, ActionTargetType.JUSTIFICATION, id)))
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.JUSTIFICATION, id)))
       ]))
       .then(([deletedPropositionId, deletedJustificationIds]) => ({
         deletedPropositionId,
@@ -351,8 +351,8 @@ exports.PropositionsService = class PropositionsService {
       ]))
       .then(([recommendedPropositions, userTaggedPropositionsByVotePolarity]) => {
         const {
-          [PropositionTagVotePolarity.POSITIVE]: taggedPositivePropositions,
-          [PropositionTagVotePolarity.NEGATIVE]: taggedNegativePropositions,
+          [PropositionTagVotePolarities.POSITIVE]: taggedPositivePropositions,
+          [PropositionTagVotePolarities.NEGATIVE]: taggedNegativePropositions,
         } = userTaggedPropositionsByVotePolarity
 
         const taggedNegativePropositionIds = reduce(taggedNegativePropositions, (acc, s, id) => {
@@ -383,8 +383,8 @@ function readOrCreateEquivalentValidPropositionAsUser(service, proposition, user
       ])
     })
     .then(([userId, now, isExtant, proposition]) => {
-      const actionType = isExtant ? ActionType.TRY_CREATE_DUPLICATE : ActionType.CREATE
-      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetType.PROPOSITION, proposition.id)
+      const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
+      service.actionsService.asyncRecordAction(userId, now, actionType, ActionTargetTypes.PROPOSITION, proposition.id)
 
       return {
         isExtant,
@@ -400,7 +400,7 @@ function readOrCreateTagsAndVotes(service, userId, propositionId, tags, now) {
         const propositionTagVote = makePropositionTagVote({
           proposition: {id: propositionId},
           tag,
-          polarity: PropositionTagVotePolarity.POSITIVE,
+          polarity: PropositionTagVotePolarities.POSITIVE,
         })
         return Promise.all([
           tag,

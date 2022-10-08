@@ -58,7 +58,7 @@ class RegistrationRequestPage extends React.Component {
     } = this.state
 
     const isSubmitting = get(editorState, 'isSaving')
-    const isSubmitted = get(editorState, 'isSubmitted')
+    const isSubmitted = get(editorState, 'isSaved')
     const apiErrors = get(editorState, 'errors') || {}
     const duration = get(editorState, 'duration')
 

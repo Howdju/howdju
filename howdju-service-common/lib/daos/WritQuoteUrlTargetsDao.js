@@ -1,6 +1,6 @@
 const {
-  JustificationBasisType,
-  JustificationRootTargetType,
+  JustificationBasisTypes,
+  JustificationRootTargetTypes,
 } = require('howdju-common')
 
 const {addArrayParams} = require('./daosUtil')
@@ -39,15 +39,15 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
       [
         rootTargetId,
         rootTargetType,
-        JustificationRootTargetType.STATEMENT,
-        JustificationBasisType.WRIT_QUOTE,
+        JustificationRootTargetTypes.STATEMENT,
+        JustificationBasisTypes.WRIT_QUOTE,
       ]
     )
     return toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows)
   }
 
   async readByUrlIdByWritQuoteIdForJustificationIds(justificationIds) {
-    const baseArgs = [JustificationBasisType.WRIT_QUOTE]
+    const baseArgs = [JustificationBasisTypes.WRIT_QUOTE]
     const {params: justificationIdParams, args} = addArrayParams(baseArgs, justificationIds)
     // TODO(89): replace string interpolation with query arguments
     const {rows} = await this.database.query(

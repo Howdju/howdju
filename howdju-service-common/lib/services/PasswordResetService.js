@@ -5,7 +5,7 @@ const {topicMessages} = require("./topicMessages")
 
 const {
   commonPaths,
-  EntityType,
+  EntityTypes,
   momentAdd,
   newImpossibleError,
   utcNow,
@@ -37,7 +37,7 @@ exports.PasswordResetService = class PasswordResetsService {
         this.logger.info(`silently ignoring password reset request the email of which did not correspond to a user: ${email}`)
         return
       }
-      throw new EntityNotFoundError(EntityType.USER, {email})
+      throw new EntityNotFoundError(EntityTypes.USER, {email})
     }
 
     // TODO delete previous unconsumed password resets?
@@ -77,7 +77,7 @@ exports.PasswordResetService = class PasswordResetsService {
 
 async function checkRequestValidity(passwordResetRequest, now) {
   if (!passwordResetRequest) {
-    throw new EntityNotFoundError(EntityType.PASSWORD_RESET_REQUEST)
+    throw new EntityNotFoundError(EntityTypes.PASSWORD_RESET_REQUEST)
   }
   if (passwordResetRequest.isConsumed) {
     throw new PasswordResetAlreadyConsumedError()
@@ -112,17 +112,17 @@ async function sendConfirmationEmail(self, email, passwordResetCode, duration) {
       <br/>
       ${confirmationUrl}<br/>
       <br/>
-      If you did not request a password request, you may disregard this message and the password request will 
+      If you did not request a password request, you may disregard this message and the password request will
       expire after ${durationText}.
     `,
     bodyText: outdent`
       Hello,
-      
+
       Howdju received a password reset request for this email address.  Click here to reset your password:
-      
+
       ${confirmationUrl}
-      
-      If you did not request a password request, you may disregard this message and the password request will 
+
+      If you did not request a password request, you may disregard this message and the password request will
       expire after ${durationText}.
     `,
   }

@@ -2,9 +2,9 @@ const forEach = require('lodash/forEach')
 const map = require('lodash/map')
 
 const {
-  JustificationBasisType,
-  JustificationBasisCompoundAtomType,
-  SourceExcerptType,
+  JustificationBasisTypes,
+  JustificationBasisCompoundAtomTypes,
+  SourceExcerptTypes,
 } = require('howdju-common')
 const {
   toUrl,
@@ -89,10 +89,10 @@ exports.UrlsDao = class UrlsDao {
     `
     return this.database.query('readUrlsByWritQuoteIdForRootTarget', sql, [
       rootTargetId,
-      JustificationBasisType.WRIT_QUOTE,
-      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
-      SourceExcerptType.WRIT_QUOTE,
+      JustificationBasisTypes.WRIT_QUOTE,
+      JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
+      SourceExcerptTypes.WRIT_QUOTE,
       rootTargetType,
     ])
       .then( ({rows}) => groupUrlsByWritQuoteId(rows))

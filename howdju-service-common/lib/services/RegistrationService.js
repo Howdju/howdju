@@ -7,7 +7,7 @@ const outdent = require('outdent')
 const {
   commonPaths,
   entityErrorCodes,
-  EntityType,
+  EntityTypes,
   makeUser,
   momentAdd,
   newImpossibleError,
@@ -140,13 +140,13 @@ async function sendConfirmationEmail(self, registrationRequest, registrationCode
       `,
     bodyText: outdent`
         Hello,
-        
+
         Please click this link to complete your registration:
-        
+
         ${confirmationUrl}
-        
+
         You must complete your registration within 24 hours.  If your registration expires, please register again.
-        
+
         If you did not register on howdju.com, you may ignore this email and the registration will expire.
       `,
   }
@@ -187,7 +187,7 @@ async function sendExistingAccountNotificationEmail(self, registrationRequest) {
 
 async function checkRegistrationRequestValidity(registrationRequest, now) {
   if (!registrationRequest) {
-    throw new EntityNotFoundError(EntityType.REGISTRATION_REQUEST)
+    throw new EntityNotFoundError(EntityTypes.REGISTRATION_REQUEST)
   }
   if (registrationRequest.isConsumed) {
     throw new RegistrationAlreadyConsumedError()

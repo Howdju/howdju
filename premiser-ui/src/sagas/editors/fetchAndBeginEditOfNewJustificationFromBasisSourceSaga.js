@@ -5,13 +5,13 @@ import {
 } from 'redux-saga/effects'
 
 import {
-  JustificationBasisType,
+  JustificationBasisTypes,
   makeNewJustificationBasisCompoundFromWritQuote,
   makeNewJustificationBasisCompoundFromSourceExcerptParaphrase,
   makeNewJustificationBasisCompoundFromPropositionCompound,
   makeNewJustificationBasisCompoundFromProposition,
   makeNewPropositionJustification,
-  JustificationBasisSourceType,
+  JustificationBasisSourceTypes,
   newExhaustedEnumError,
   makeNewPropositionCompoundFromProposition,
 } from 'howdju-common'
@@ -57,41 +57,41 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
       }
 
       switch (basisSourceType) {
-        case JustificationBasisSourceType.PROPOSITION_COMPOUND:
+        case JustificationBasisSourceTypes.PROPOSITION_COMPOUND:
           removePropositionCompoundIds(basisSource)
-          basis.type = JustificationBasisType.PROPOSITION_COMPOUND
+          basis.type = JustificationBasisTypes.PROPOSITION_COMPOUND
           basis.propositionCompound = basisSource
 
-          // basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          // basis.type = JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromPropositionCompound(basisSource)
           break
-        case JustificationBasisSourceType.PROPOSITION:
+        case JustificationBasisSourceTypes.PROPOSITION:
           removePropositionIds(basisSource)
-          basis.type = JustificationBasisType.PROPOSITION_COMPOUND
+          basis.type = JustificationBasisTypes.PROPOSITION_COMPOUND
           basis.propositionCompound = makeNewPropositionCompoundFromProposition(basisSource)
 
-          // basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          // basis.type = JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromProposition(basisSource)
           break
-        case JustificationBasisSourceType.WRIT_QUOTE:
+        case JustificationBasisSourceTypes.WRIT_QUOTE:
           removeWritQuoteIds(basisSource)
-          basis.type = JustificationBasisType.WRIT_QUOTE
+          basis.type = JustificationBasisTypes.WRIT_QUOTE
           basis.writQuote = basisSource
 
-          // basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          // basis.type = JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromWritQuote(basisSource)
           break
-        case JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND:
+        case JustificationBasisSourceTypes.JUSTIFICATION_BASIS_COMPOUND:
           removeJustificationBasisCompoundIds(basisSource)
           basis.justificationBasisCompound = basisSource
           break
-        case JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE:
+        case JustificationBasisSourceTypes.SOURCE_EXCERPT_PARAPHRASE:
           removeSourceExcerptParaphraseIds(basisSource)
-          basis.type = JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND
+          basis.type = JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND
           basis.justificationBasisCompound = makeNewJustificationBasisCompoundFromSourceExcerptParaphrase(basisSource)
           break
         default:
-          throw newExhaustedEnumError('JustificationBasisSourceType', basisSourceType)
+          throw newExhaustedEnumError('JustificationBasisSourceTypes', basisSourceType)
       }
 
       const editModel = makeNewPropositionJustification({}, {basis})
@@ -102,30 +102,30 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
 
 function fetchActionCreatorForBasisSourceType (basisType) {
   const actionCreatorByBasisType = {
-    [JustificationBasisSourceType.PROPOSITION_COMPOUND]: api.fetchPropositionCompound,
-    [JustificationBasisSourceType.WRIT_QUOTE]: api.fetchWritQuote,
-    [JustificationBasisSourceType.PROPOSITION]: api.fetchProposition,
-    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: api.fetchJustificationBasisCompound,
-    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: api.fetchSourceExcerptParaphrase,
+    [JustificationBasisSourceTypes.PROPOSITION_COMPOUND]: api.fetchPropositionCompound,
+    [JustificationBasisSourceTypes.WRIT_QUOTE]: api.fetchWritQuote,
+    [JustificationBasisSourceTypes.PROPOSITION]: api.fetchProposition,
+    [JustificationBasisSourceTypes.JUSTIFICATION_BASIS_COMPOUND]: api.fetchJustificationBasisCompound,
+    [JustificationBasisSourceTypes.SOURCE_EXCERPT_PARAPHRASE]: api.fetchSourceExcerptParaphrase,
   }
   const actionCreator = actionCreatorByBasisType[basisType]
   if (!actionCreator) {
-    throw newExhaustedEnumError('JustificationBasisSourceType', basisType)
+    throw newExhaustedEnumError('JustificationBasisSourceTypes', basisType)
   }
   return actionCreator
 }
 
 function extractBasisSourceFromFetchResponseAction (basisSourceType, fetchResponseAction) {
   const basisSourceGetterByBasisType = {
-    [JustificationBasisSourceType.PROPOSITION_COMPOUND]: (result) => result.propositionCompound,
-    [JustificationBasisSourceType.WRIT_QUOTE]: (result) => result.writQuote,
-    [JustificationBasisSourceType.PROPOSITION]: (result) => result.proposition,
-    [JustificationBasisSourceType.JUSTIFICATION_BASIS_COMPOUND]: (result) => result.justificationBasisCompound,
-    [JustificationBasisSourceType.SOURCE_EXCERPT_PARAPHRASE]: (result) => result.sourceExcerptParaphrase,
+    [JustificationBasisSourceTypes.PROPOSITION_COMPOUND]: (result) => result.propositionCompound,
+    [JustificationBasisSourceTypes.WRIT_QUOTE]: (result) => result.writQuote,
+    [JustificationBasisSourceTypes.PROPOSITION]: (result) => result.proposition,
+    [JustificationBasisSourceTypes.JUSTIFICATION_BASIS_COMPOUND]: (result) => result.justificationBasisCompound,
+    [JustificationBasisSourceTypes.SOURCE_EXCERPT_PARAPHRASE]: (result) => result.sourceExcerptParaphrase,
   }
   const basisSourceGetter = basisSourceGetterByBasisType[basisSourceType]
   if (!basisSourceGetter) {
-    throw newExhaustedEnumError(JustificationBasisSourceType, basisSourceType)
+    throw newExhaustedEnumError(JustificationBasisSourceTypes, basisSourceType)
   }
 
   const basisSource = basisSourceGetter(fetchResponseAction.payload)

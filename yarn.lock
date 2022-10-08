@@ -6044,6 +6044,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/redux-actions@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "@types/redux-actions@npm:2.6.2"
+  checksum: 61388ab6f590b61037c5366ddd030c1445c86d61314554488cf62cc3a79a0a4d76da5b61cf4e5fcd40b83d07d40a428a2eff0b2f4f8433f9c620db2b88061b2d
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:*, @types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -13672,6 +13679,7 @@ __metadata:
     flow-bin: ^0.151.0
     howdju-common: ^1.0.0
     jest: ^26.6.3
+    typescript: ^4.8.4
   languageName: unknown
   linkType: soft
 
@@ -13726,6 +13734,7 @@ __metadata:
     howdju-common: ^1.0.0
     jest: ^26.6.3
     redux-actions: ^2.6.4
+    typescript: ^4.8.4
   languageName: unknown
   linkType: soft
 
@@ -20517,6 +20526,7 @@ __metadata:
     "@types/lodash": ^4.14.186
     "@types/react": ^18.0.21
     "@types/react-router": ^5.1.19
+    "@types/redux-actions": ^2.6.2
     "@types/webpack-env": ^1.18.0
     argparse: ^2.0.1
     aws-sdk: ^2.890.0

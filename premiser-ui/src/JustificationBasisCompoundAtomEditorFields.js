@@ -8,7 +8,7 @@ import {
 import get from 'lodash/get'
 
 import {
-  JustificationBasisCompoundAtomType,
+  JustificationBasisCompoundAtomTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
 
@@ -61,7 +61,7 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
         className="atom-type-controls"
         controls={[
           {
-            value: JustificationBasisCompoundAtomType.PROPOSITION,
+            value: JustificationBasisCompoundAtomTypes.PROPOSITION,
             label: (
               <div className="selection-label">
                 <FontIcon>short_text</FontIcon>
@@ -71,7 +71,7 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
             title: 'Proposition-based clause',
           },
           {
-            value: JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE,
+            value: JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
             label: (
               <div className="selection-label">
                 <FontIcon>textsms</FontIcon>
@@ -87,7 +87,7 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
 
     let entityControls
     switch (atom.type) {
-      case JustificationBasisCompoundAtomType.PROPOSITION: {
+      case JustificationBasisCompoundAtomTypes.PROPOSITION: {
         const entityName = 'proposition'
         const entityEditorFieldsId = combineIds(id, entityName)
         const entityEditorFieldsName = combineNames(name, entityName)
@@ -109,7 +109,7 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
         )
         break
       }
-      case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE: {
+      case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE: {
         const entityName = 'sourceExcerptParaphrase'
         const entityEditorFieldsId = combineIds(id, entityName)
         const entityEditorFieldsName = combineNames(name, entityName)
@@ -134,7 +134,7 @@ class JustificationBasisCompoundAtomEditorFields extends Component {
         break
       }
       default:
-        throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+        throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
     }
 
     const addRemoveAtomControlProps = {

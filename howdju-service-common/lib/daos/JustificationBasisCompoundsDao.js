@@ -7,9 +7,9 @@ const map = require('lodash/map')
 const {
   assert,
   isDefined,
-  JustificationBasisType,
-  JustificationBasisCompoundAtomType,
-  JustificationRootTargetType,
+  JustificationBasisTypes,
+  JustificationBasisCompoundAtomTypes,
+  JustificationRootTargetTypes,
   newExhaustedEnumError,
   pushAll,
   requireArgs,
@@ -47,7 +47,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
   readAtomsForJustificationBasisCompoundId(justificationBasisCompoundId) {
     return this.database.query(
       'readAtomsForJustificationBasisCompoundId',
-      `select * from justification_basis_compound_atoms 
+      `select * from justification_basis_compound_atoms
        where justification_basis_compound_id = $1`,
       [justificationBasisCompoundId]
     )
@@ -69,20 +69,20 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     })
     const atomConditionsSql = join(atomConditions, ' or ')
     const sql = `
-      with 
+      with
         compounds_having_correct_atom_count as (
           select justification_basis_compound_id
-          from justification_basis_compound_atoms 
-          group by justification_basis_compound_id 
+          from justification_basis_compound_atoms
+          group by justification_basis_compound_id
           having count(justification_basis_compound_atom_id) = $1
         )
         , target_atoms as (
-          select * 
-          from justification_basis_compound_atoms 
-          where ${atomConditionsSql} 
+          select *
+          from justification_basis_compound_atoms
+          where ${atomConditionsSql}
         )
         , compounds_having_only_all_target_atoms as (
-          select 
+          select
               c.*
             , a.*
           from justification_basis_compounds c
@@ -91,9 +91,9 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
             -- ensure they have the target atoms
             join target_atoms a using (justification_basis_compound_id)
         )
-      select * 
-      from compounds_having_only_all_target_atoms 
-      order by order_position 
+      select *
+      from compounds_having_only_all_target_atoms
+      order by order_position
     `
     return this.database.query('readJustificationBasisCompoundHavingAtoms', sql, args)
       .then( ({rows}) => {
@@ -113,12 +113,12 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
   readJustificationBasisCompoundsByIdForRootPropositionId(rootPropositionId) {
     const sql = `
-      with 
+      with
         -- it's possible that justifications rooted in the same proposition may use the same basis (either counters or different polarity)
         root_proposition_justification_basis_compounds as (
           select distinct
             jbc.*
-          from justifications j 
+          from justifications j
             join justification_basis_compounds jbc on
                   j.basis_type = $1
               and j.basis_id = jbc.justification_basis_compound_id
@@ -131,15 +131,15 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
       select
           jbc.*
         , jbca.*
-      from root_proposition_justification_basis_compounds jbc 
+      from root_proposition_justification_basis_compounds jbc
           join justification_basis_compound_atoms jbca using (justification_basis_compound_id)
-        order by 
+        order by
             jbca.justification_basis_compound_id
           , jbca.order_position
     `
     const args = [
-      JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationRootTargetType.PROPOSITION,
+      JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+      JustificationRootTargetTypes.PROPOSITION,
       rootPropositionId
     ]
     return Promise.all([
@@ -166,14 +166,14 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
           justificationBasisCompound.atoms.push(atom)
 
           switch (atom.type) {
-            case JustificationBasisCompoundAtomType.SOURCE_EXCERPT_PARAPHRASE:
+            case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
               atom.entity = sourceExcerptParaphrasesById[atom.entity.id]
               break
-            case JustificationBasisCompoundAtomType.PROPOSITION:
+            case JustificationBasisCompoundAtomTypes.PROPOSITION:
               atom.entity = atomPropositionsById[atom.entity.id]
               break
             default:
-              throw newExhaustedEnumError('JustificationBasisCompoundAtomType', atom.type)
+              throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
           }
           assert(isDefined(atom.entity))
 
@@ -186,7 +186,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     return this.database.query(
       'createJustificationBasisCompound',
       `insert into justification_basis_compounds (creator_user_id, created)
-       values ($1, $2) 
+       values ($1, $2)
        returning *`,
       [userId, now]
     )
@@ -201,8 +201,8 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
   ) {
     return this.database.query(
       'createAtomForJustificationBasisCompoundId',
-      `insert into justification_basis_compound_atoms (justification_basis_compound_id, entity_type, entity_id, order_position) 
-          values ($1, $2, $3, $4) 
+      `insert into justification_basis_compound_atoms (justification_basis_compound_id, entity_type, entity_id, order_position)
+          values ($1, $2, $3, $4)
           returning *`,
       [justificationBasisCompoundId, atomType, atomEntityId, orderPosition]
     )
@@ -214,7 +214,7 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
   const sql = `
       select
         s.*
-      from justifications j 
+      from justifications j
           join justification_basis_compounds jbc on
                 j.basis_type = $1
             and j.basis_id = jbc.justification_basis_compound_id
@@ -222,7 +222,7 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
           join propositions s on
                 jbca.entity_type = $2
             and jbca.entity_id = s.proposition_id
-        where 
+        where
               j.root_target_type = $3
           and j.root_target_id = $4
           and j.deleted is null
@@ -230,9 +230,9 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
           and s.deleted is null
     `
   const args = [
-    JustificationBasisType.JUSTIFICATION_BASIS_COMPOUND,
-    JustificationBasisCompoundAtomType.PROPOSITION,
-    JustificationRootTargetType.PROPOSITION,
+    JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+    JustificationBasisCompoundAtomTypes.PROPOSITION,
+    JustificationRootTargetTypes.PROPOSITION,
     rootPropositionId
   ]
   return database.query('readAtomPropositionsForRootPropositionId', sql, args)

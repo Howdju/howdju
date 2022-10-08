@@ -8,7 +8,7 @@ import {LOCATION_CHANGE, push, replace} from 'connected-react-router'
 
 import {
   httpStatusCodes,
-  JustificationRootTargetType,
+  JustificationRootTargetTypes,
   newExhaustedEnumError,
   utcNowIsAfter,
 } from 'howdju-common'
@@ -152,16 +152,16 @@ export function* redirectHomeFromMissingRootTarget() {
 
       let path, messageKey
       switch (rootTargetType) {
-        case JustificationRootTargetType.PROPOSITION:
+        case JustificationRootTargetTypes.PROPOSITION:
           path = paths.proposition({id: rootTargetId})
           messageKey = MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE
           break
-        case JustificationRootTargetType.STATEMENT:
+        case JustificationRootTargetTypes.STATEMENT:
           path = paths.statement({id: rootTargetId})
           messageKey = MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE
           break
         default:
-          throw newExhaustedEnumError('JustificationRootTargetType')
+          throw newExhaustedEnumError('JustificationRootTargetTypes')
       }
       // startsWith because we don't have a slug
       if (routerLocation.pathname.startsWith(path)) {

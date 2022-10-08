@@ -8,7 +8,7 @@ const map = require('lodash/map')
 const mapKeys = require('lodash/mapKeys')
 
 const {
-  SortDirection,
+  SortDirections,
 } = require('howdju-common')
 
 
@@ -24,10 +24,10 @@ const SortContinuationShortPropertyNames = {
   value: 'v',
 }
 const SortContinuationFullPropertyNames = invert(SortContinuationShortPropertyNames)
-/** Shorter than SortDirection so that the continuations tokens are smaller */
+/** Shorter than SortDirections so that the continuations tokens are smaller */
 const ShortSortDirection = {
-  [SortDirection.ASCENDING]: 'a',
-  [SortDirection.DESCENDING]: 'd',
+  [SortDirections.ASCENDING]: 'a',
+  [SortDirections.DESCENDING]: 'd',
 }
 const LongSortDirection = invert(ShortSortDirection)
 
@@ -57,8 +57,8 @@ exports.createContinuationInfo = (sorts, lastEntity, filters) => {
       value,
     }
     // Only set the direction if necessary to overcome the default
-    if (direction === SortDirection.DESCENDING) {
-      continuationInfo.direction = SortDirection.DESCENDING
+    if (direction === SortDirections.DESCENDING) {
+      continuationInfo.direction = SortDirections.DESCENDING
     }
     return continuationInfo
   })

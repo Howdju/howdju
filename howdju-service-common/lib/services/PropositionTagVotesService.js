@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const {
   requireArgs,
   EntityNotFoundError,
-  EntityType,
+  EntityTypes,
   EntityValidationError,
 } = require('howdju-common')
 
@@ -115,7 +115,7 @@ exports.PropositionTagVotesService = class PropositionTagVotesService {
       ]))
       .then( ([deletedPropositionTagVoteId, userId]) => {
         if (!deletedPropositionTagVoteId) {
-          throw new EntityNotFoundError(EntityType.PROPOSITION_TAG_VOTE, {userId, propositionTagVoteId})
+          throw new EntityNotFoundError(EntityTypes.PROPOSITION_TAG_VOTE, {userId, propositionTagVoteId})
         }
         return deletedPropositionTagVoteId
       })

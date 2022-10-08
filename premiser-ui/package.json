@@ -43,6 +43,7 @@
     "@types/lodash": "^4.14.186",
     "@types/react": "^18.0.21",
     "@types/react-router": "^5.1.19",
+    "@types/redux-actions": "^2.6.2",
     "@types/webpack-env": "^1.18.0",
     "argparse": "^2.0.1",
     "aws-sdk": "^2.890.0",

@@ -4,9 +4,9 @@ import merge from 'lodash/merge'
 import mergeWith from 'lodash/mergeWith'
 
 import {
-  JustificationPolarity,
-  JustificationRootTargetType,
-  JustificationTargetType,
+  JustificationPolarities,
+  JustificationRootTargetTypes,
+  JustificationTargetTypes,
   omitDeep,
 } from "howdju-common"
 
@@ -52,10 +52,10 @@ describe('reducers', () => {
             },
             justification = {
               id: "1",
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: {id: rootProposition.id},
               target: {
-                type: JustificationTargetType.PROPOSITION,
+                type: JustificationTargetTypes.PROPOSITION,
                 entity: {
                   id: rootProposition.id,
                 },
@@ -94,10 +94,10 @@ describe('reducers', () => {
             },
             justification = {
               id: 1,
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: {id: rootProposition.id},
               target: {
-                type: JustificationTargetType.PROPOSITION,
+                type: JustificationTargetTypes.PROPOSITION,
                 entity: {
                   id: rootProposition.id,
                 },
@@ -288,21 +288,21 @@ describe('reducers', () => {
             },
             existingJustification = {
               id: "1",
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: clone(targetProposition),
-              target: {type: JustificationTargetType.PROPOSITION, entity: clone(targetProposition)}
+              target: {type: JustificationTargetTypes.PROPOSITION, entity: clone(targetProposition)}
             },
 
             newJustification = {
               id: "2",
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: {id: "1"},
               target: {
-                type: JustificationTargetType.PROPOSITION,
+                type: JustificationTargetTypes.PROPOSITION,
                 entity: targetProposition
               },
               basis: {
-                type: JustificationTargetType.PROPOSITION,
+                type: JustificationTargetTypes.PROPOSITION,
                 entity: basisProposition
               },
             },
@@ -336,8 +336,8 @@ describe('reducers', () => {
                 {},
                 newJustification,
                 {
-                  target: {entity: {text: toOmit, justifications: toOmit, schema: JustificationTargetType.PROPOSITION}},
-                  rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
+                  target: {entity: {text: toOmit, justifications: toOmit, schema: JustificationTargetTypes.PROPOSITION}},
+                  rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
                 }
               ),
             },
@@ -353,22 +353,22 @@ describe('reducers', () => {
             rootProposition = {id: "1"},
             targetJustification = {
               id: "2",
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
               target: {
-                type: JustificationTargetType.PROPOSITION,
+                type: JustificationTargetTypes.PROPOSITION,
                 entity: rootProposition,
               },
             }
           const counterJustification = {
               id: "3",
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
               target: {
-                type: JustificationTargetType.JUSTIFICATION,
+                type: JustificationTargetTypes.JUSTIFICATION,
                 entity: targetJustification
               },
-              polarity: JustificationPolarity.NEGATIVE,
+              polarity: JustificationPolarities.NEGATIVE,
             },
             initialState = {
               propositions: {
@@ -397,10 +397,10 @@ describe('reducers', () => {
                   targetJustification,
                   {
                     counterJustifications: [counterJustification.id],
-                    rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
+                    rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
                     target: {
                       entity: {
-                        schema: JustificationTargetType.PROPOSITION,
+                        schema: JustificationTargetTypes.PROPOSITION,
                       }
                     },
                   },
@@ -410,12 +410,12 @@ describe('reducers', () => {
                   counterJustification,
                   {
                     target: {entity: {
-                      schema: JustificationTargetType.JUSTIFICATION,
+                      schema: JustificationTargetTypes.JUSTIFICATION,
                       rootTarget: toOmit,
                       rootTargetType: toOmit,
                       target: toOmit
                     }},
-                    rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
+                    rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
                   }
                 ), (val) => val === toOmit),
               },
@@ -430,23 +430,23 @@ describe('reducers', () => {
             rootProposition = {id: "1"},
             targetJustification = {
               id: "2",
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
               target: {
-                type: JustificationTargetType.PROPOSITION,
+                type: JustificationTargetTypes.PROPOSITION,
                 entity: rootProposition,
               },
               counterJustifications: [existingCounterJustificationId]
             },
             counterJustification = {
               id: "4",
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
               target: {
-                type: JustificationTargetType.JUSTIFICATION,
+                type: JustificationTargetTypes.JUSTIFICATION,
                 entity: targetJustification
               },
-              polarity: JustificationPolarity.NEGATIVE,
+              polarity: JustificationPolarities.NEGATIVE,
             },
             expectedTargetJustification = {
               ...targetJustification,
@@ -478,23 +478,23 @@ describe('reducers', () => {
                 [expectedTargetJustification.id]: merge(
                   {},
                   expectedTargetJustification,
-                  {rootTarget: {schema: JustificationRootTargetType.PROPOSITION}},
-                  {target: {entity: {schema: JustificationRootTargetType.PROPOSITION}}},
+                  {rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION}},
+                  {target: {entity: {schema: JustificationRootTargetTypes.PROPOSITION}}},
                 ),
                 [counterJustification.id]: omitDeep(merge(
                   {},
                   counterJustification,
                   {
                     target: {entity: {
-                      schema: JustificationTargetType.JUSTIFICATION,
+                      schema: JustificationTargetTypes.JUSTIFICATION,
                       rootTarget: toOmit,
                       rootTargetType: toOmit,
                       counterJustifications: toOmit,
                       target: toOmit,
                     }},
-                    rootTarget: {schema: JustificationRootTargetType.PROPOSITION},
+                    rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
                   },
-                  {rootTarget: {schema: JustificationRootTargetType.PROPOSITION}},
+                  {rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION}},
                 ), (val) => val === toOmit),
               },
             }
@@ -508,20 +508,20 @@ describe('reducers', () => {
           //     id: 81,
           //     rootProposition: {id:19},
           //     target: {
-          //       type: JustificationTargetType.JUSTIFICATION,
+          //       type: JustificationTargetTypes.JUSTIFICATION,
           //       // Justification
           //       entity: {
           //         id: 78,
           //         rootProposition: {id:19},
           //         // Justification
           //         target: {
-          //           type: JustificationTargetType.JUSTIFICATION,
+          //           type: JustificationTargetTypes.JUSTIFICATION,
           //           entity: {
           //             id: 49
           //           }
           //         },
           //         basis: {
-          //           type: JustificationBasisType.PROPOSITION_COMPOUND,
+          //           type: JustificationBasisTypes.PROPOSITION_COMPOUND,
           //           entity: {
           //             atoms: [
           //               {
@@ -534,14 +534,14 @@ describe('reducers', () => {
           //             ]
           //           }
           //         },
-          //         polarity: JustificationPolarity.NEGATIVE,
+          //         polarity: JustificationPolarities.NEGATIVE,
           //         vote: null,
           //         // TODO this is inaccurate: it has counter-justifications
           //         counterJustifications: []
           //       }
           //     },
           //     basis: {
-          //       type: JustificationBasisType.PROPOSITION_COMPOUND,
+          //       type: JustificationBasisTypes.PROPOSITION_COMPOUND,
           //       entity: {
           //         atoms: [
           //           {
@@ -554,7 +554,7 @@ describe('reducers', () => {
           //         ]
           //       }
           //     },
-          //     polarity: JustificationPolarity.NEGATIVE
+          //     polarity: JustificationPolarities.NEGATIVE
           //   }
           // }
 
@@ -566,18 +566,18 @@ describe('reducers', () => {
           const
             rootProposition = {id: "1"},
             targetJustification = {
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
               id: "2",
             },
             counterJustification = {
               id: "3",
-              polarity: JustificationPolarity.NEGATIVE,
+              polarity: JustificationPolarities.NEGATIVE,
               target: {
-                type: JustificationTargetType.JUSTIFICATION,
+                type: JustificationTargetTypes.JUSTIFICATION,
                 entity: targetJustification
               },
-              rootTargetType: JustificationRootTargetType.PROPOSITION,
+              rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
             },
 

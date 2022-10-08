@@ -11,7 +11,7 @@ const {
   decodeSorts,
   httpStatusCodes,
   httpMethods,
-  JustificationRootTargetType,
+  JustificationRootTargetTypes,
 } = require('howdju-common')
 const {
   AuthenticationError,
@@ -409,7 +409,7 @@ const routes = [
       }
     }) => {
       const proposition = await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
-        JustificationRootTargetType.PROPOSITION, propositionId, authToken)
+        JustificationRootTargetTypes.PROPOSITION, propositionId, authToken)
       return ok({callback, body: {proposition}})
     }
   },
@@ -428,7 +428,7 @@ const routes = [
       }
     }) => {
       const statement = await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
-        JustificationRootTargetType.STATEMENT, statementId, authToken)
+        JustificationRootTargetTypes.STATEMENT, statementId, authToken)
       return ok({callback, body: {statement}})
     }
   },

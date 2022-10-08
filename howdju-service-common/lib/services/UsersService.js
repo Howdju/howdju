@@ -1,9 +1,9 @@
 const Promise = require('bluebird')
 
 const {
-  ActionType,
-  ActionTargetType,
-  EntityType,
+  ActionTypes,
+  ActionTargetTypes,
+  EntityTypes,
   makeAccountSettings,
   requireArgs,
   schemaIds,
@@ -58,7 +58,7 @@ exports.UsersService = class UsersService {
     return this.usersDao.readUserForEmail(email)
       .then((user) => {
         if (!user) {
-          throw new EntityNotFoundError(EntityType.USER, email)
+          throw new EntityNotFoundError(EntityTypes.USER, email)
         }
 
         return Promise.all([
@@ -78,7 +78,7 @@ exports.UsersService = class UsersService {
     const createdUser = await this.usersDao.createUser(user, null, now)
     await this.authService.createPasswordHashAuthForUserId(createdUser.id, passwordHash, passwordHashType)
     await this.userExternalIdsDao.createExternalIdsForUserId(createdUser.id)
-    this.actionsService.asyncRecordAction(createdUser.id, createdUser.created, ActionType.CREATE, ActionTargetType.USER, createdUser.id)
+    this.actionsService.asyncRecordAction(createdUser.id, createdUser.created, ActionTypes.CREATE, ActionTargetTypes.USER, createdUser.id)
     return this.usersDao.readUserForId(createdUser.id)
   }
 
@@ -107,7 +107,7 @@ exports.UsersService = class UsersService {
         this.accountSettingsDao.createAccountSettingsForUserId(dbUser.id, makeAccountSettings(), now),
       ]))
       .then(([dbUser]) => {
-        this.actionsService.asyncRecordAction(creatorUserId, dbUser.created, ActionType.CREATE, ActionTargetType.USER, dbUser.id)
+        this.actionsService.asyncRecordAction(creatorUserId, dbUser.created, ActionTypes.CREATE, ActionTargetTypes.USER, dbUser.id)
         return dbUser
       })
   }

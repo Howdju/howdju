@@ -8,7 +8,7 @@ const {
   mockLogger
 } = require('howdju-test-common')
 const {
-  SentenceType
+  SentenceTypes
 } = require('howdju-common')
 
 const {
@@ -40,12 +40,12 @@ describe('StatementsService', () => {
       }
       const innerStatement = {
         speaker: speaker1,
-        sentenceType: SentenceType.PROPOSITION,
+        sentenceType: SentenceTypes.PROPOSITION,
         sentence: proposition
       }
       const statement = {
         speaker: speaker2,
-        sentenceType: SentenceType.STATEMENT,
+        sentenceType: SentenceTypes.STATEMENT,
         sentence: innerStatement
       }
       const statementsDao = {
