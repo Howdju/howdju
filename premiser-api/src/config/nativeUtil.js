@@ -1,18 +1,21 @@
-const dnsSync = require('dns-sync')
 const os = require('os')
 const forEach = require('lodash/forEach')
+const isIpPrivate = require('private-ip')
 
 const emptyMac = '00:00:00:00:00:00'
 const loopbackAddress = '127.0.0.1'
 
-exports.apiHostOrHostnameAddress = () => {
+exports.apiHostOrHostnameAddress = (dnsLookup = true) => {
   let apiHost = process.env['API_HOST']
   if (apiHost) {
     return apiHost
   }
-  const dnsName = dnsSync.resolve(os.hostname())
-  if (dnsName !== loopbackAddress) {
-    return dnsName
+  if (dnsLookup) {
+    const dnsSync = require('dns-sync')
+    const dnsAddress = dnsSync.resolve(os.hostname())
+    if (dnsAddress !== loopbackAddress) {
+      return dnsAddress
+    }
   }
   return localAddress()
 }
@@ -23,6 +26,9 @@ function localAddress() {
   forEach(os.networkInterfaces(), (infos, name) => {
     forEach(infos, (info) => {
       if (info.internal || info.mac === emptyMac) {
+        return
+      }
+      if (!isIpPrivate(info.address)) {
         return
       }
       if (info.family === 'IPv4') {
