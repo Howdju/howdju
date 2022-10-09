@@ -29,7 +29,7 @@
     "inspect-server": "node --inspect-brk bin/esbuild-local-server.js",
     "lint": "eslint bin src local-server.js",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
-    "start-server": "node --trace-warnings bin/esbuild-local-server.js",
+    "start-server": "esbuild bin/esbuild-local-server.js --bundle --platform=node --external:esbuild --outfile=dist/esbuild-local-server.js && node dist/esbuild-local-server.js",
     "start:api:local": "env-cmd -f ../config/local.env yarn run start-server",
     "start:api:local:inspect": "env-cmd -f ../config/local.env yarn run inspect-server",
     "start:api:localhost": "env-cmd -f ../config/localhost.env yarn run start-server",
@@ -63,6 +63,7 @@
     "morgan": "^1.8.1",
     "node-zip": "^1.1.1",
     "npm-version": "^1.1.0",
+    "private-ip": "^2.3.4",
     "read": "^1.0.7",
     "run-sequence": "^1.2.2"
   },

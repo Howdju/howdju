@@ -6,7 +6,7 @@ const {devApiServerPort} = require('howdju-ops')
 const {apiHostOrHostnameAddress} = require('../src/config/nativeUtil')
 
 
-const apiHost = apiHostOrHostnameAddress()
+const apiHost = apiHostOrHostnameAddress(false)
 
 // The handler depends on API_HOST, but can't depend on the native utils to look it up via DNS
 // (or else it isn't bundleable), so set it here if necessary. For local development, this

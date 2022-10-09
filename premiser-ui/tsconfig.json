@@ -2,9 +2,16 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "jsx": "react",
+    "module": "es6",  // `target: es5` implies `module: CommonJS`, which prevents Webpack treeshaking. See #102
+    "target": "es5",
     "paths": {
       // Support project-relative imports
       "@/*": ["./src/*"],
     },
   },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"  // ts-node only supports CommonJS.
+    }
+  }
 }

@@ -1,12 +1,9 @@
-const CopyPlugin = require("copy-webpack-plugin")
-const {
-  hostAddress,
-} = require('./util')
-const {
-  devApiServerPort,
-} = require('howdju-ops')
+import CopyPlugin from "copy-webpack-plugin"
+import { hostAddress } from './util'
+import { devApiServerPort } from 'howdju-ops'
+import HtmlWebpackPlugin from "html-webpack-plugin"
 
-module.exports.htmlWebpackPluginConfig = {
+export const htmlWebpackPluginConfig = {
   minify: {
     preserveLineBreaks: true,
   },
@@ -22,14 +19,14 @@ module.exports.htmlWebpackPluginConfig = {
 }
 
 const apiRoot = process.env.API_ROOT || `http://${hostAddress()}:${devApiServerPort()}/api/`
-module.exports.definePluginConfig = {
+export const definePluginConfig = {
   'process.env.API_ROOT': JSON.stringify(apiRoot),
   'process.env.DO_ASSERT': JSON.stringify(true),
   // Sentry wraps errors so that all exceptions appear to come from it, obscuring the source. So just omit it from dev.
   'process.env.SENTRY_ENABLED': JSON.stringify(false),
 }
 
-module.exports.webpackConfig = {
+export const webpackConfig: HtmlWebpackPlugin.Options = {
   mode: 'development',
   // For an explanation of possible values, see: https://webpack.js.org/configuration/devtool/#development
   // 'cheap-module-source-map' is recommended for React development.  See: https://reactjs.org/docs/cross-origin-errors.html#source-maps

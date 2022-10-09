@@ -2,7 +2,7 @@
   "name": "howdju-ops",
   "version": "1.0.0",
   "description": "Build and deployment code.  Should never be included in an application.",
-  "main": "lib/index.js",
+  "main": "lib/index.ts",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
@@ -21,6 +21,7 @@
     "eslint-plugin-flowtype": "^5.7.2",
     "flow-bin": "^0.150.1",
     "howdju-test-common": "^1.0.0",
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "typescript": "^4.8.4"
   }
 }

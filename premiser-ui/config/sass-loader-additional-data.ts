@@ -1,12 +1,8 @@
-const {
-  hostAddress,
-} = require('./util')
-const {
-  devWebServerPort,
-} = require('howdju-ops')
+import { hostAddress } from './util'
+import { devWebServerPort } from 'howdju-ops'
 
 
-/** Extract out the sass-loader config because webpack.production.config.js requires it for ExtractTextPlugin */
+/** Extract out the sass-loader config because webpack.production.config.ts requires it for ExtractTextPlugin */
 
 const devSassLoaderData =
   `$dev-font-url-material-icons: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Material-Icons.woff2);` +
@@ -28,5 +24,5 @@ const sassLoaderData =
   `$font-url-bebas-neue-regular: url(${fontServerAuthority}/fonts/BebasNeue-Regular.otf);` +
   `$font-url-bebas-neue-bold: url(${fontServerAuthority}/fonts/BebasNeue-Bold.otf);`
 
-exports.sassLoaderAdditionalData = process.env.NODE_ENV === 'development' ?
+export const sassLoaderAdditionalData = process.env.NODE_ENV === 'development' ?
   sassLoaderData + devSassLoaderData : sassLoaderData
