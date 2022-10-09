@@ -7,7 +7,8 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "node bin/esbuild.js",
+    "build": "esbuild bin/esbuild.js --bundle --platform=node --external:esbuild --outfile=dist/esbuild.js && node dist/esbuild.js",
+    "build-local-server": "esbuild bin/esbuild-local-server.js --bundle --platform=node --external:esbuild --outfile=dist/esbuild-local-server.js",
     "change-password:local": "env-cmd -f ../config/local.env node bin/change-user-password.js",
     "change-password:pre-prod": "env-cmd -f ../config/pre-prod-local-tunnel.env node bin/change-user-password.js",
     "change-password:prod": "env-cmd -f ../config/prod-local-tunnel.env && node bin/change-user-password.js",
@@ -29,7 +30,7 @@
     "inspect-server": "node --inspect-brk bin/esbuild-local-server.js",
     "lint": "eslint bin src local-server.js",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
-    "start-server": "esbuild bin/esbuild-local-server.js --bundle --platform=node --external:esbuild --outfile=dist/esbuild-local-server.js && node dist/esbuild-local-server.js",
+    "start-server": "yarn run build-local-server && node dist/esbuild-local-server.js",
     "start:api:local": "env-cmd -f ../config/local.env yarn run start-server",
     "start:api:local:inspect": "env-cmd -f ../config/local.env yarn run inspect-server",
     "start:api:localhost": "env-cmd -f ../config/localhost.env yarn run start-server",
