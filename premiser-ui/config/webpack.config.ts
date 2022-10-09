@@ -1,28 +1,26 @@
-const webpack = require('webpack')
-const {merge} = require('webpack-merge')
+import webpack, { WebpackPluginInstance } from 'webpack'
+import { merge } from 'webpack-merge'
 const debug = require('debug')('howdju-ui:webpack')
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
-const { DuplicatesPlugin } = require("inspectpack/plugin")
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
+import path from 'path'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+import { DuplicatesPlugin } from "inspectpack/plugin"
+import MomentLocalesPlugin from 'moment-locales-webpack-plugin'
+import {Response} from 'webpack-dev-server'
 
-const {
-  devWebServerPort,
-  gitShaShort,
-} = require('howdju-ops')
-const packageInfo = require('../package.json')
-const projectConfig = require('./project.config')
-const {sassLoaderAdditionalData} = require('./sass-loader-additional-data')
+import { devWebServerPort, gitShaShort } from 'howdju-ops'
+import packageInfo from '../package.json'
+import projectConfig from './project.config'
+import { sassLoaderAdditionalData } from './sass-loader-additional-data'
 
-const envWebpackPath = `./webpack.${process.env.NODE_ENV}.config.js`
+const envWebpackPath = `./webpack.${process.env.NODE_ENV}.config.ts`
 debug(`Loading env webpack from ${envWebpackPath}`)
-const {
-  htmlWebpackPluginConfig: envHtmlWebpackPluginConfig,
-  definePluginConfig: envDefinePluginConfig,
-  webpackConfig: envWebpackConfig,
-} = require(envWebpackPath)
+import {
+  envHtmlWebpackPluginConfig,
+  envDefinePluginConfig,
+  envWebpackConfig,
+} from './webpack.env.config'
 
 const htmlWebpackPluginConfig = merge({
   appMountId: 'root',
@@ -44,11 +42,11 @@ const definePluginConfig = merge({
   'process.env.SENTRY_ENV': JSON.stringify(process.env.SENTRY_ENV),
   'process.env.PACKAGE_VERSION': JSON.stringify(packageInfo.version),
   'process.env.GIT_COMMIT_HASH_SHORT': JSON.stringify(gitShaShort()),
-}, envDefinePluginConfig)
+}, envDefinePluginConfig as Record<string, string>)
 
 const OUTPUT_PUBLIC_PATH = '/'
 
-const plugins = [
+const plugins: WebpackPluginInstance[] = [
   new HtmlWebpackPlugin(htmlWebpackPluginConfig),
   new webpack.DefinePlugin(definePluginConfig),
   new MiniCssExtractPlugin(),
@@ -57,7 +55,7 @@ const plugins = [
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
 // the analysis. So only add it when requested.
 if (process.env.BUNDLE_ANALYZER) {
-  plugins.push(new BundleAnalyzerPlugin())
+  plugins.push(new BundleAnalyzerPlugin() as unknown as WebpackPluginInstance)
 }
 // This plugin adds a full-page overlay over the web app that reappears
 // on every hot refresh, and so is very annoying. Only enable it on purpose.
@@ -95,7 +93,7 @@ const baseWebpackConfig = {
       {
         directory: 'public',
         staticOptions: {
-          setHeaders: (res, path, stat) => {
+          setHeaders: (res: Response, path: string, _stat: unknown) => {
             console.log(`public path: ${path}`)
             // In development, the static resources should be accessible from localhost, 127.0.0.1, or any other
             // local address, even though we bind to 0.0.0.0.
@@ -105,7 +103,7 @@ const baseWebpackConfig = {
       }, {
         directory: 'dist/bookmarklet',
         staticOptions: {
-          setHeaders: (res, path, stat) => {
+          setHeaders: (res: Response, path: string, _stat: unknown) => {
             console.log(`bookmarklet path: ${path}`)
             if (path.endsWith('.js')) {
               res.set('Content-Type', 'application/javascript')
@@ -182,4 +180,5 @@ const baseWebpackConfig = {
   plugins
 }
 
-module.exports = merge(baseWebpackConfig, envWebpackConfig)
+type BaseWebPackConfigOverrides = Partial<typeof baseWebpackConfig>
+export default merge(baseWebpackConfig, envWebpackConfig as BaseWebPackConfigOverrides)

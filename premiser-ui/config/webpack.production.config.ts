@@ -1,20 +1,17 @@
-const CopyPlugin = require('copy-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const webpack = require('webpack')
-const Visualizer = require('webpack-visualizer-plugin2')
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+import CopyPlugin from 'copy-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import webpack from 'webpack'
+// import Visualizer from 'webpack-visualizer-plugin2'
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 
-const {
-  utcTimestamp
-} = require('howdju-common')
+import { utcTimestamp } from 'howdju-common'
 
-const {
-  gitSha,
-} = require("howdju-ops")
-const packageInfo = require('../package.json')
-const projectConfig = require('./project.config')
+import { gitSha } from "howdju-ops"
+import packageInfo from '../package.json'
+import projectConfig from './project.config'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 
-module.exports.htmlWebpackPluginConfig = {
+export const htmlWebpackPluginConfig: HtmlWebpackPlugin.Options = {
   smallChat: true,
   googleAnalytics: {
     trackingId: 'UA-104314283-1',
@@ -25,7 +22,7 @@ module.exports.htmlWebpackPluginConfig = {
 }
 
 const apiRoot = process.env.API_ROOT || 'https://api.howdju.com/api/'
-module.exports.definePluginConfig = {
+export const definePluginConfig = {
   'process.env.API_ROOT': JSON.stringify(apiRoot),
   'process.env.DO_ASSERT': JSON.stringify(false),
   'process.env.SENTRY_ENABLED': JSON.stringify(true),
@@ -48,7 +45,7 @@ version: ${packageInfo.version}
 timstamp: ${utcTimestamp()}
 git_commit: ${gitSha()}`
 
-module.exports.webpackConfig = {
+export const webpackConfig = {
   /*
   production values: https://webpack.js.org/configuration/devtool/#production
   - source-map - A full SourceMap is emitted as a separate file. It adds a
@@ -78,10 +75,13 @@ module.exports.webpackConfig = {
       ],
     }),
     new MiniCssExtractPlugin(),
-    new Visualizer({
-      filename: './stats.html'
+    // new Visualizer({
+    //   filename: './stats.html'
+    // }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
     }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
   optimization: {
     minimize: true,
