@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# This script encapsulates bundling a build script using esbuild.
+# esbuild is fast and supports importing TypeScript files.
+
 set -e
 
 echo "Running ${@}"
