@@ -15,7 +15,7 @@ const {
 const packageInfo = require('../package.json')
 
 const versionMetadataKey = 'howdju-ui-version'
-const projectConfig = require('../config/project.config')
+const projectConfig = require(path.join(process.cwd(), 'config/project.config'))
 
 const argParser = new ArgumentParser({
   description: 'Upload the web app to S3'
