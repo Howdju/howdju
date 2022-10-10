@@ -45,7 +45,7 @@ esbuilder({
 
 function startServer() {
   // Require is relative to the current file
-  const localServerDistPath = '../dist/local-server.js'
+  const localServerDistPath = '../local-server.js'
   delete require.cache[require.resolve(localServerDistPath)]
   const {app} = require(localServerDistPath)
   const port = devApiServerPort()
