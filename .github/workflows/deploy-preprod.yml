@@ -52,6 +52,6 @@ jobs:
       - name: Yarn install
         run: yarn install
       - name: Deploy API
-        run: yarn run deploy:api pre-prod
+        run: yarn run deploy:api:pre-prod
       - name: Deploy UI
         run: yarn run deploy:ui:pre-prod

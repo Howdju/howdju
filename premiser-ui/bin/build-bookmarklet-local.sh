@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 yarn run build:bookmarklet
 rm dist/bookmarklet/submit.min.js
 sed -i.sed "s/const schema = 'https';/const schema = 'http';/g" dist/bookmarklet/submit.js

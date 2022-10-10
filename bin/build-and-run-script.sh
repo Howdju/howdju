@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 echo "Running ${@}"
 script_path=$1
 echo "Building script ${script_path}"

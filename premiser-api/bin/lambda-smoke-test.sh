@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 region=$1
 lambda_name=$2
 payload=$3

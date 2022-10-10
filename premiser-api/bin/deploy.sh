@@ -9,12 +9,10 @@ lambda_alias=$1
 if [ -z ${HOWDJU_RUNNING_IN_GITHUB_WORKFLOW+present} ]; then
   yarn run check:pre-deploy
 
-  pushd ..
-  yarn run lint:all || { exit 1; }
-  yarn run typecheck:all || { exit 1; }
-  yarn run test:all || { exit 1; }
-  yarn run custom-check:all || { exit 1; }
-  popd
+  yarn run lint:all
+  yarn run typecheck:all
+  yarn run test:all
+  yarn run custom-check:all
 else
   echo Skipping lint and test because in Github Workflow
 fi
