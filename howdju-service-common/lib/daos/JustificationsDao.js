@@ -397,7 +397,7 @@ exports.JustificationsDao = class JustificationsDao {
           targetEntity = justification.target.entity
           break
         default: {
-          throw newExhaustedEnumError('JustificationTargetTypes', justification.target.type)
+          throw newExhaustedEnumError(justification.target)
         }
       }
       if (!targetEntity) {

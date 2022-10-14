@@ -517,7 +517,7 @@ const toSourceExcerptEntity = (row) => {
         writ_creator_user_id: row.writ_quote_writ_creator_user_id,
       })
     default:
-      throw newExhaustedEnumError('SourceExcerptTypes', row.source_excerpt_type)
+      throw newExhaustedEnumError(row)
   }
 }
 

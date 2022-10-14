@@ -35,7 +35,7 @@ module.exports.StatementsDao = class StatementsDao extends BaseDao {
           break
         }
         default:
-          throw newExhaustedEnumError('SentenceTypes', sentence.sentenceType)
+          throw newExhaustedEnumError(sentence)
       }
       sentence.sentence = nextSentence
       sentence = nextSentence

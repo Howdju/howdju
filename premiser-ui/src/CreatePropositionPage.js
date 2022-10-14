@@ -21,9 +21,8 @@ import queryString from 'query-string'
 
 import {
   arrayToObject,
-  makeNewPropositionJustification,
+  makeJustifiedPropositionFormInputModel,
   JustificationBasisTypes,
-  makeNewJustificationBasisCompoundFromWritQuote,
   PropositionTagVotePolarities
 } from "howdju-common"
 
@@ -41,12 +40,12 @@ import t, {
   CREATE_PROPOSITION_SUBMIT_BUTTON_TITLE, CREATE_PROPOSITION_TITLE, JUSTIFICATION_TITLE,
 } from "./texts"
 import {
-  translateNewJustificationErrors,
+  translateJustificationErrorsFromFormInput,
   combineIds,
   combineNames,
   combineSuggestionsKeys, array,
 } from './viewModels'
-import NewJustificationEditorFields from "./NewJustificationEditorFields"
+import JustificationEditorFields from "./JustificationEditorFields"
 import PropositionEditorFields from "./PropositionEditorFields"
 import {EditorTypes} from "./reducers/editors"
 import TagsControl from './TagsControl'
@@ -92,7 +91,7 @@ const propositionName = 'proposition'
 const speakersName = 'speakers'
 const tagsName = 'tags'
 const doCreateJustificationName = 'doCreateJustification'
-const newJustificationName = 'newJustification'
+const justificationName = 'justification'
 
 class CreatePropositionPage extends Component {
 
@@ -107,7 +106,7 @@ class CreatePropositionPage extends Component {
   initializeEditor = () => {
     switch (this.props.mode) {
       case CreatePropositionPageMode.CREATE_PROPOSITION:
-        this.props.editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId, makeNewPropositionJustification())
+        this.props.editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId, makeJustifiedPropositionFormInputModel())
         break
       case CreatePropositionPageMode.CREATE_JUSTIFICATION: {
         const {
@@ -149,12 +148,11 @@ class CreatePropositionPage extends Component {
           basis: {
             type: JustificationBasisTypes.WRIT_QUOTE,
             writQuote,
-            justificationBasisCompound: makeNewJustificationBasisCompoundFromWritQuote(writQuote),
           }
         }
-        const propositionJustification = makeNewPropositionJustification({}, justificationProps)
+        const justifiedProposition = makeJustifiedPropositionFormInputModel({}, justificationProps)
         this.props.editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId,
-          propositionJustification)
+          justifiedProposition)
         break
       }
       default: {
@@ -195,24 +193,6 @@ class CreatePropositionPage extends Component {
     this.props.editors.removePropositionCompoundAtom(CreatePropositionPage.editorType, CreatePropositionPage.editorId, atom, index)
   }
 
-  addJustificationBasisCompoundAtom = (index) => {
-    this.props.editors.addJustificationBasisCompoundAtom(CreatePropositionPage.editorType, CreatePropositionPage.editorId, index)
-  }
-
-  removeJustificationBasisCompoundAtom = (atom, index) => {
-    this.props.editors.removeJustificationBasisCompoundAtom(CreatePropositionPage.editorType, CreatePropositionPage.editorId, atom, index)
-  }
-
-  onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atomIndex, urlIndex) => {
-    this.props.editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(CreatePropositionPage.editorType,
-      CreatePropositionPage.editorId, atomIndex, urlIndex)
-  }
-
-  onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl = (atom, atomIndex, url, urlIndex) => {
-    this.props.editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl(CreatePropositionPage.editorType,
-      CreatePropositionPage.editorId, atom, atomIndex, url, urlIndex)
-  }
-
   onDoCreateJustificationSwitchChange = (checked) => {
     this.props.editors.propertyChange(CreatePropositionPage.editorType, CreatePropositionPage.editorId, {[doCreateJustificationName]: checked})
   }
@@ -247,7 +227,7 @@ class CreatePropositionPage extends Component {
     const {
       proposition,
       speakers,
-      newJustification,
+      justification,
       doCreateJustification,
     } = editEntity || {}
 
@@ -266,8 +246,8 @@ class CreatePropositionPage extends Component {
         get(errors, 'justification.fieldErrors.target.fieldErrors.entity') :
         errors.proposition
     )
-    const justificationErrors = errors && doCreateJustification ? errors.justification : null
-    const newJustificationErrors = translateNewJustificationErrors(newJustification, justificationErrors)
+    const justificationEntityErrors = errors && doCreateJustification ? errors.justification : null
+    const justificationFormInputErrors = translateJustificationErrorsFromFormInput(justification, justificationEntityErrors)
 
     const propositionTags = get(proposition, 'tags')
     const propositionTagVotes = get(proposition, 'propositionTagVotes')
@@ -396,11 +376,11 @@ class CreatePropositionPage extends Component {
                   />
 
                   <CardText className={cn({hidden: !isCreateJustificationMode && !doCreateJustification})}>
-                    <NewJustificationEditorFields
-                      newJustification={newJustification}
-                      id={combineIds(id, newJustificationName)}
-                      name={newJustificationName}
-                      suggestionsKey={combineSuggestionsKeys(id, newJustificationName)}
+                    <JustificationEditorFields
+                      justification={justification}
+                      id={combineIds(id, justificationName)}
+                      name={justificationName}
+                      suggestionsKey={combineSuggestionsKeys(id, justificationName)}
                       disabled={isSaving}
                       doShowTypeSelection={doShowTypeSelection}
                       onPropertyChange={this.onPropertyChange}
@@ -409,11 +389,7 @@ class CreatePropositionPage extends Component {
                       onRemoveUrl={this.removeJustificationUrl}
                       onAddPropositionCompoundAtom={this.addJustificationPropositionCompoundAtom}
                       onRemovePropositionCompoundAtom={this.removeJustificationPropositionCompoundAtom}
-                      onAddJustificationBasisCompoundAtom={this.addJustificationBasisCompoundAtom}
-                      onRemoveJustificationBasisCompoundAtom={this.removeJustificationBasisCompoundAtom}
-                      onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onAddJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
-                      onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl={this.onRemoveJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl}
-                      errors={newJustificationErrors}
+                      errors={justificationFormInputErrors}
                     />
                   </CardText>
 

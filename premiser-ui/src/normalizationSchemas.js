@@ -1,7 +1,6 @@
 import { schema } from 'normalizr'
 
 import {
-  JustificationBasisCompoundAtomTypes,
   JustificationBasisTypes,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
@@ -23,7 +22,7 @@ export const propositionSchema = new schema.Entity('propositions', {
   tags: tagsSchema,
   recommendedTags: tagsSchema,
   propositionTagVotes: propositionTagVoteSchemas,
-  // justifications added below
+  // justifications added below via justificationTargetSchema
 })
 export const propositionsSchema = [propositionSchema]
 
@@ -36,7 +35,7 @@ const sentenceSchema = new schema.Union({}, (value, parent) => parent.sentenceTy
 export const statementSchema = new schema.Entity('statements', {
   speaker: persorgSchema,
   sentence: sentenceSchema,
-  // justifications added below
+  // justifications added below via justificationTargetSchema
 })
 export const statementsSchema = [statementSchema]
 sentenceSchema.define({
@@ -84,22 +83,10 @@ export const sourceExcerptParaphraseSchema = new schema.Entity('sourceExcerptPar
   },
 })
 
-export const justificationBasisCompoundAtomEntitySchema = new schema.Union({
-  [JustificationBasisCompoundAtomTypes.PROPOSITION]: propositionSchema,
-  [JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE]: sourceExcerptParaphraseSchema,
-}, (value, parent) => parent.type)
-
-export const justificationBasisCompoundSchema = new schema.Entity('justificationBasisCompounds', {
-  atoms: [{
-    entity: justificationBasisCompoundAtomEntitySchema
-  }]
-})
-
 export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)
 export const justificationBasisSchema = new schema.Union({
   [JustificationBasisTypes.PROPOSITION_COMPOUND]: propositionCompoundSchema,
   [JustificationBasisTypes.WRIT_QUOTE]: writQuoteSchema,
-  [JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND]: justificationBasisCompoundSchema,
 }, (value, parent) => parent.type)
 
 const justificationRootTargetSchema = new schema.Union({

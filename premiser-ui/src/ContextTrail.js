@@ -47,7 +47,7 @@ export default class ContextTrail extends React.Component {
       case JustificationTargetTypes.JUSTIFICATION:
         return this.justificationToCard(trailItem.target, trailItems)
       default:
-        throw newExhaustedEnumError('JustificationTargetTypes', trailItem.targetType)
+        throw newExhaustedEnumError(trailItem.targetType)
     }
   }
 

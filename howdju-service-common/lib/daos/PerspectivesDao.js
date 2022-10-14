@@ -428,7 +428,7 @@ exports.PerspectivesDao = class PerspectivesDao {
           break
         }
         default:
-          throw newExhaustedEnumError('JustificationBasisTypes', j.basis.type, `justification ${j.id} has unsupported basis type ${j.basis.type}`)
+          throw newExhaustedEnumError(j.basis)
       }
 
       assert(isTruthy(j.basis.entity))

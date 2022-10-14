@@ -43,6 +43,7 @@ export default function ReportContentDialog() {
           <Card>
             <ContentReportEditor
               id={id}
+              name="report-content-editor"
               editorCommitBehavior='JustCommit'
               editorId={editorId}
               submitButtonText="Report"

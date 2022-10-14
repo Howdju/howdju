@@ -6,8 +6,8 @@ const {
   utcNow,
   momentAdd,
   momentSubtract,
-  makeNewRegistrationRequest,
-  makeNewRegistrationConfirmation,
+  makeRegistrationRequest,
+  makeRegistrationConfirmation,
 } = require('howdju-common')
 const {
   mockLogger
@@ -22,19 +22,19 @@ const {RegistrationService} = require('./RegistrationService')
 
 
 describe('RegistrationService', () => {
-  
+
   describe('confirmRegistrationAndLogin', () => {
-  
+
     test('missing registration code', async () => {
       const registrationConfirmation = {}
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns(null),
       }
       const service = new RegistrationService(mockLogger, null, null, null, null, registrationRequestsDao)
-      
+
       await expect(service.confirmRegistrationAndLogin(registrationConfirmation)).rejects.toThrow(EntityNotFoundError)
     })
-  
+
     test('consumed registration code', async () => {
       const registrationConfirmation = {}
       const registrationRequestsDao = {
@@ -46,10 +46,10 @@ describe('RegistrationService', () => {
 
       await expect(service.confirmRegistrationAndLogin(registrationConfirmation)).rejects.toThrow(RegistrationAlreadyConsumedError)
     })
-  
+
     test('expired registration code', async () => {
       const registrationConfirmation = {}
-      
+
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns({
           expires: momentSubtract(utcNow(), [1, 'minute'])
@@ -59,13 +59,13 @@ describe('RegistrationService', () => {
 
       await expect(service.confirmRegistrationAndLogin(registrationConfirmation)).rejects.toThrow(RegistrationExpiredError)
     })
-  
+
     test('consumes valid registration code and returns created user', async () => {
-      const registrationRequest = makeNewRegistrationRequest({
+      const registrationRequest = makeRegistrationRequest({
         email: 'the-email',
         expires: momentAdd(utcNow(), [5, 'minutes'])
       })
-      const registrationConfirmation = makeNewRegistrationConfirmation({
+      const registrationConfirmation = makeRegistrationConfirmation({
         username: 'the-username',
         password: 'the-password-hash',
         longName: 'the-looooong-name',
@@ -77,7 +77,7 @@ describe('RegistrationService', () => {
         readForCode: sinon.fake.returns(registrationRequest),
         consumeForCode: sinon.fake.returns(1),
       }
-      
+
       const userIn = assign(
         {},
         pick(registrationConfirmation, ['username', 'email', 'longName', 'shortName']),
@@ -87,23 +87,23 @@ describe('RegistrationService', () => {
         isUsernameInUse: sinon.fake.returns(false),
         createRegisteredUser: sinon.fake.returns(userIn),
       }
-      
+
       const authToken = 'the-auth-token'
       const expires = momentAdd(utcNow(), [1, 'minute'])
       const authService = {
         createAuthToken: sinon.fake.returns({authToken, expires})
       }
-      
-      const service = new RegistrationService(mockLogger, config, null, usersService, authService, 
+
+      const service = new RegistrationService(mockLogger, config, null, usersService, authService,
         registrationRequestsDao)
-      
+
       // Act
       const {
-        user: userOut, 
-        authToken: authTokenOut, 
+        user: userOut,
+        authToken: authTokenOut,
         expires: expiresOut
       } = await service.confirmRegistrationAndLogin(registrationConfirmation)
-      
+
       expect(userOut).toBe(userIn)
       expect(authTokenOut).toBe(authToken)
       expect(expiresOut).toBe(expires)

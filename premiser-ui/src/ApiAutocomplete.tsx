@@ -1,7 +1,6 @@
 import throttle from 'lodash/throttle'
 import map from 'lodash/map'
 import {denormalize} from "normalizr"
-import PropTypes from 'prop-types'
 import React, {Component} from "react"
 import {Autocomplete} from 'react-md'
 import { connect } from 'react-redux'
@@ -19,29 +18,106 @@ import {
   autocompletes,
   mapActionCreatorGroupToDispatchToProps
 } from "./actions"
+import { DebouncedFunc } from 'lodash'
+import { OnKeyDownCallback, OnPropertyChangeCallback, OnSubmitCallback, PropertyChanges, SuggestionsKey } from './types'
+import { RootState } from './store'
 
 const dataLabel = 'data-label'
 const dataValue = 'data-value'
 
-const hasFocus = el => window.document.activeElement === el
+const hasFocus = (el: HTMLInputElement) => window.document.activeElement === el
 
-class ApiAutocomplete extends Component {
+// TODO(1): remove use of any, conver to functional component?
 
-  componentDidMount() {
-    this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
+interface Props {
+  name: string
+  /** ms to throttle autocomplete refresh by */
+  autocompleteThrottle?: number
+  /**
+   * If the result of suggestionTransform is an object, this property is
+   * required and tells the autocomplete which property of the object is the
+   * label
+   */
+  dataLabel: string
+  /** Optional name of property to extract from the suggestion to use as a react key */
+  dataValue: string
+  /** If true, pressing escape when the suggestions are already hidden will clear the field */
+  escapeClears?: boolean
+  /** A dispatch-wrapped actionCreator to update the suggestions. */
+  fetchSuggestions: (value: string, suggestionsKey: SuggestionsKey) => void
+  /** A dispatch-wrapped actionCreator to cancel updating the suggestions */
+  cancelSuggestions: (suggestionsKey: SuggestionsKey) => void
+  /** Where to store the component's suggestions in the react state (under state.autocompletes.suggestions) */
+  suggestionsKey: string
+  /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
+  onPropertyChange?: OnPropertyChangeCallback
+  /** The callback for when the user selects a suggestion.  Called with the suggested value. */
+  onAutocomplete: (suggestion: any) => void
+  /** An optional function for transforming the stored suggestions.  Called
+   * with item to transform.  Provides flexibility when the results from
+   * the API don't match the form required for the Autocomplete
+   */
+  suggestionTransform?: (suggestion: any) => any
+  /** The value to display in the text input */
+  value: string
+  onKeyDown?: OnKeyDownCallback
+  /** If true, will try to keep autocomplete closed */
+  forcedClosed?: boolean
+  focusInputOnAutocomplete?: boolean
+  /** The schema which the component uses to denormalize suggestions */
+  suggestionSchema: any
+  /** If present, enter will trigger this function */
+  onSubmit?: OnSubmitCallback
+  /** If true, enforces no line breaks */
+  singleLine: boolean
+}
+
+interface ConnectProps {
+  /** The auto-suggestions. Added by mapStateToProps. Required, but must be
+   * optional so that components aren't asked to send it.
+   */
+  suggestions?: any[]
+  transformedSuggestions?: any[]
+  // TODO(1): the type should be a bound dispatch method of the autocompletes.
+  // But rather than fix, maybe we should be using the useDispatch hook instead.
+  autocompletes?: typeof autocompletes
+  dispatch?: any // ignore. Only here to prevent passing it as ...rest
+}
+
+class ApiAutocomplete extends Component<Props & ConnectProps> {
+
+  public static defaultProps = {
+    autocompleteThrottle: 250,
+    escapeClears: false,
+    singleLine: false,
+    focusInputOnAutocomplete: false,
   }
 
-  componentDidUpdate(prevProps) {
+  throttledRefreshAutocomplete: DebouncedFunc<(value: any) => void>
+  autocomplete: any
+
+  constructor(props: Props & {autocompletes: any}) {
+    super(props)
+    this.throttledRefreshAutocomplete = throttle(() => {return})
+  }
+
+  componentDidMount() {
+    this.throttledRefreshAutocomplete = throttle(
+      this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
+  }
+
+  componentDidUpdate(prevProps: Props) {
     autocompleter.fixOpen(this.autocomplete, this.props.value, this.props.transformedSuggestions)
     if (prevProps.forcedClosed) {
       this.closeAutocomplete()
     }
     if (prevProps.autocompleteThrottle !== this.props.autocompleteThrottle) {
-      this.throttledRefreshAutocomplete = throttle(this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
+      this.throttledRefreshAutocomplete = throttle(
+        this.refreshAutocomplete.bind(this), this.props.autocompleteThrottle)
     }
   }
 
-  onChange = (val, event) => {
+  onChange = (val: any, event: any) => {
     const name = event.target.name
     if (this.props.singleLine) {
       val = toSingleLine(val)
@@ -49,7 +125,7 @@ class ApiAutocomplete extends Component {
     this.onPropertyChange({[name]: val})
   }
 
-  onPropertyChange = (properties) => {
+  onPropertyChange = (properties: PropertyChanges) => {
     if (this.props.onPropertyChange) {
       this.props.onPropertyChange(properties)
     }
@@ -62,7 +138,7 @@ class ApiAutocomplete extends Component {
     }
   }
 
-  onKeyDown = (event) => {
+  onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (this.props.onKeyDown) {
       this.props.onKeyDown(event)
       if (event.defaultPrevented) {
@@ -90,7 +166,7 @@ class ApiAutocomplete extends Component {
       }
       if (this.props.onSubmit) {
         event.preventDefault()
-        this.props.onSubmit(event)
+        this.props.onSubmit(event as any)
       }
     }
   }
@@ -114,18 +190,18 @@ class ApiAutocomplete extends Component {
     this.autocomplete._close()
   }
 
-  refreshAutocomplete = (value) => {
+  refreshAutocomplete = (value: string) => {
     this.props.fetchSuggestions(value, this.props.suggestionsKey)
   }
 
-  onAutocomplete = (label, index, transformedSuggestions) => {
+  onAutocomplete = (_label: any, index: number, _transformedSuggestions: any[]) => {
     if (this.props.onAutocomplete) {
-      const suggestion = this.props.suggestions[index]
+      const suggestion = this.props.suggestions?.[index]
       this.props.onAutocomplete(suggestion)
     }
   }
 
-  onMenuOpen = (event) => {
+  onMenuOpen = () => {
     // react-md is opening the autocomplete when it doesn't have focus
     if (!hasFocus(this.autocomplete._field)) {
       this.closeAutocomplete()
@@ -135,7 +211,7 @@ class ApiAutocomplete extends Component {
     }
   }
 
-  onBlur = (event) => {
+  onBlur = () => {
     this.throttledRefreshAutocomplete.cancel()
     if (this.props.cancelSuggestions) {
       this.props.cancelSuggestions(this.props.suggestionsKey)
@@ -146,10 +222,10 @@ class ApiAutocomplete extends Component {
   }
 
   clearSuggestions = () => {
-    this.props.autocompletes.clearSuggestions(this.props.suggestionsKey)
+    this.props.autocompletes?.clearSuggestions(this.props.suggestionsKey)
   }
 
-  setAutocomplete = (autocomplete) => this.autocomplete = autocomplete
+  setAutocomplete = (autocomplete: any) => this.autocomplete = autocomplete
 
   render() {
     const {
@@ -177,7 +253,6 @@ class ApiAutocomplete extends Component {
     return (
       <Autocomplete
         {...rest}
-        type="text"
         value={value}
         dataLabel={dataLabel}
         dataValue={dataValue}
@@ -188,7 +263,7 @@ class ApiAutocomplete extends Component {
         onBlur={this.onBlur}
         onTouchEnd={this.onTouchEnd}
         onClick={this.onClick}
-        data={transformedSuggestions}
+        data={transformedSuggestions!}
         filter={null}
         ref={this.setAutocomplete}
         focusInputOnAutocomplete={focusInputOnAutocomplete}
@@ -196,57 +271,16 @@ class ApiAutocomplete extends Component {
     )
   }
 }
-ApiAutocomplete.propTypes = {
-  /** ms to throttle autocomplete refresh by */
-  autocompleteThrottle: PropTypes.number,
-  /** If the result of suggestionTransform is an object, this property is required and tells the autocomplete which property of the object is the label */
-  dataLabel: PropTypes.string,
-  /** Optional name of property to extract from the suggestion to use as a react key */
-  dataValue: PropTypes.string,
-  /** If true, pressing escape when the suggestions are already hidden will clear the field */
-  escapeClears: PropTypes.bool,
-  /** A dispatch-wrapped actionCreator to update the suggestions. */
-  fetchSuggestions: PropTypes.func,
-  /** A dispatch-wrapped actionCreator to cancel updating the suggestions */
-  cancelSuggestions: PropTypes.func,
-  /** Where to store the component's suggestions in the react state (under state.autocompletes.suggestions) */
-  suggestionsKey: PropTypes.string.isRequired,
-  /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
-  onPropertyChange: PropTypes.func,
-  /** The callback for when the user selects a suggestion.  Called with the suggested value. */
-  onAutocomplete: PropTypes.func,
-  /** An optional function for transforming the stored suggestions.  Called
-   * with item to transform.  Provides flexibility when the results from
-   * the API don't match the form required for the Autocomplete
-   */
-  suggestionTransform: PropTypes.func,
-  /** The value to display in the text input */
-  value: PropTypes.string,
-  onKeyDown: PropTypes.func,
-  /** If true, will try to keep autocomplete closed */
-  forcedClosed: PropTypes.bool,
-  /** The schema which the component uses to denormalize suggestions */
-  suggestionSchema: PropTypes.object.isRequired,
-  /** If present, enter will trigger this function */
-  onSubmit: PropTypes.func,
-  /** If true, enforces no line breaks */
-  singleLine: PropTypes.bool,
-}
-ApiAutocomplete.defaultProps = {
-  autocompleteThrottle: 250,
-  escapeClears: false,
-  singleLine: false,
-  focusInputOnAutocomplete: false,
-}
 
-/** Pluck the properties from the model and give them names appropriate to a DOM element; react-md will put all its members as attributes on the element */
-const defaultSuggestionTransform = (props) => (model) => ({
+// Pluck the properties from the model and give them names appropriate to a DOM element;
+// react-md will put all its members as attributes on the element
+const defaultSuggestionTransform = (props: any) => (model: any) => ({
   [dataLabel]: model[props.dataLabel],
   [dataValue]: model[props.dataValue],
 })
 
-const mapStateToProps = (state, ownProps) => {
-  const normalized = state.autocompletes.suggestions[ownProps.suggestionsKey]
+const mapStateToProps = (state: RootState, ownProps: Props) => {
+  const normalized = (state.autocompletes.suggestions as any)[ownProps.suggestionsKey]
   const suggestions = denormalize(normalized, [ownProps.suggestionSchema], state.entities) || []
   const transformedSuggestions = ownProps.suggestionTransform ?
     map(suggestions, ownProps.suggestionTransform).map(defaultSuggestionTransform(ownProps)) :
@@ -260,4 +294,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   autocompletes,
-}))(ApiAutocomplete)
+}))(ApiAutocomplete as any)

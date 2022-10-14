@@ -35,7 +35,7 @@ export default class SourceExcerptViewer extends Component {
           />
         )
       default:
-        throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
+        throw newExhaustedEnumError(sourceExcerpt.type)
     }
   }
 }

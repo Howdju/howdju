@@ -5,7 +5,11 @@ import DOMPurify from 'dompurify'
 import './PolicyPage.scss'
 import Helmet from "../Helmet"
 
-const PolicyPage = (props) => (
+interface Props {
+  pageTitle: string
+  innerHtml: string
+}
+const PolicyPage = (props: Props) => (
   <div className="md-grid policies">
     <Helmet>
       <title>{props.pageTitle} — Howdju Policies</title>
@@ -17,12 +21,13 @@ const PolicyPage = (props) => (
 )
 export default PolicyPage
 
-function processHtml(html) {
+function processHtml(html: string) {
   return DOMPurify.sanitize(processCodes(html))
 }
 
+// Reconstruct emails dynamically to try and avoid automated email harvesting
 const emailRegExp = /<span data-type="email" data-email-user="(.+?)" data-email-domain="(.+?)"><\/span>/g
 
-function processCodes(html) {
+function processCodes(html: string) {
   return html.replaceAll(emailRegExp, '$1@$2')
 }

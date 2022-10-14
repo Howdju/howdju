@@ -827,8 +827,9 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {authToken},
-    }) => appProvider.accountSettingsService.readOrCreateAccountSettings(authToken)
+    }) => Promise.resolve(appProvider.accountSettingsService.readOrCreateAccountSettings(authToken))
       .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
+      .catch(RequestValidationError, e => badRequest({callback, body: {message: e.message}}))
   },
   {
     id: 'updateAccountSettings',

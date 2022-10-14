@@ -30,6 +30,9 @@ exports.AuthService = class AuthService {
   }
 
   readOptionalUserIdForAuthToken(authToken) {
+    if (!authToken) {
+      return Promise.resolve(null)
+    }
     return this.authDao.getUserIdForAuthToken(authToken)
   }
 

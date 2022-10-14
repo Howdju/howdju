@@ -16,7 +16,7 @@ import cn from 'classnames'
 import get from 'lodash/get'
 import map from 'lodash/map'
 
-import {makeNewCredentials} from "howdju-common"
+import {makeCredentials} from "howdju-common"
 
 import {
   api,
@@ -37,7 +37,7 @@ class LoginPage extends Component {
 
   componentDidMount() {
     const email = this.props.authEmail || ''
-    this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, makeNewCredentials({email}))
+    this.props.editors.beginEdit(EditorTypes.LOGIN_CREDENTIALS, LoginPage.editorId, makeCredentials({email}))
   }
 
   onPropertyChange = (properties) => {

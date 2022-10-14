@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import queryString from 'query-string'
 import {useLocation} from 'react-router';
 
-import {WritQuote, Url} from "howdju-common";
+import {WritQuote, makeUrl} from "howdju-common";
 
 import { editors } from "@/actions";
 import WritQuoteEditor from "@/editors/WritQuoteEditor";
@@ -53,7 +53,7 @@ const SubmitSourcExcerptPage = () => {
 
     quoteText = quoteText || '';
     description = description || '';
-    const urls = isArray(url) ? url.map(u => new Url(u)) : [new Url(url || '')];
+    const urls = isArray(url) ? url.map(u => makeUrl({url: u})) : [makeUrl({url: url || ''})];
 
     writQuote = {
       quoteText,
@@ -76,8 +76,13 @@ const SubmitSourcExcerptPage = () => {
       </HowdjuHelmet>
       <h1 className="md-cell--12">Create WritQuote</h1>
       <ErrorMessages errors={errors}></ErrorMessages>
-      <WritQuoteEditor id={id} editorId={editorId}
-        className="md-cell--12" submitButtonText={t(CREATE_ENTITY_SUBMIT_BUTTON_LABEL)}
+      <WritQuoteEditor
+        id={id}
+        editorId={editorId}
+        writQuote={writQuote}
+        name="writ-quote-editor"
+        className="md-cell--12"
+        submitButtonText={t(CREATE_ENTITY_SUBMIT_BUTTON_LABEL)}
         editorCommitBehavior={'CommitThenView'} />
     </div>
   )

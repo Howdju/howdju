@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react'
 import cn from 'classnames'
-import { JustificationPolarities, JustificationPolarityType } from 'howdju-common'
+import { JustificationPolarities, JustificationPolarity } from 'howdju-common'
 import './TreePolarity.scss'
 
 interface Props {
-  polarity: JustificationPolarityType
+  polarity: JustificationPolarity
   children: ReactNode
 }
 // Offsets and colors justifications in a tree according to their polarity.

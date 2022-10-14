@@ -1,18 +1,16 @@
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import map from "lodash/map"
+
 import {
   CounteredJustification,
   Entity,
-  JustificationBasisCompoundAtom,
-  JustifiedProposition,
   Perspective,
   PropositionCompound,
   PropositionCompoundAtom,
+  Proposition,
   SourceExcerpt,
-  SourceExcerptParaphrase,
 } from "./entities";
 
-import forEach from "lodash/forEach"
-import map from "lodash/map"
 
 import { newExhaustedEnumError } from "./commonErrors"
 
@@ -28,20 +26,22 @@ type Decircularized<T> = {
 export const decircularizePropositionCompoundAtom = (
   propositionCompoundAtom: PropositionCompoundAtom
 ) => {
-  propositionCompoundAtom.entity = decircularizeProposition(
+  const decircularized: Decircularized<PropositionCompoundAtom> = cloneDeep(propositionCompoundAtom)
+  decircularized.entity = decircularizeProposition(
     propositionCompoundAtom.entity
   );
-  return propositionCompoundAtom;
+  return decircularized;
 };
 
 export const decircularizePropositionCompound = (
   propositionCompound: PropositionCompound
 ) => {
-  propositionCompound.atoms = map(
+  const decircularized: Decircularized<PropositionCompound> = cloneDeep(propositionCompound)
+  decircularized.atoms = map(
     propositionCompound.atoms,
     decircularizePropositionCompoundAtom
   );
-  return propositionCompound;
+  return decircularized;
 };
 
 export const decircularizeJustification = (
@@ -69,53 +69,13 @@ export const decircularizeJustification = (
       }
       break;
     case "SOURCE_EXCERPT":
-      // writ quotes can't have circular dependencies.  They reference writs, which are leaf entities.
-      break;
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      forEach(
-        justification.basis.entity.atoms,
-        decircularizeJustificationBasisCompoundAtom
-      );
+    case "WRIT_QUOTE":
+      // writ quotes and source excerpts can't have circular dependencies.
       break;
     default:
-      throw newExhaustedEnumError(
-        "JustificationBasisTypes",
-        justification.basis
-      );
+      return newExhaustedEnumError(justification.basis);
   }
   return decircularized;
-};
-
-export const decircularizeJustificationBasisCompoundAtom = (
-  atom: JustificationBasisCompoundAtom
-) => {
-  switch (atom.type) {
-    case "PROPOSITION":
-      atom.entity = decircularizeProposition(atom.entity);
-      break;
-    case "SOURCE_EXCERPT_PARAPHRASE":
-      atom.entity = decircularizeSourceExcerptParaphrase(atom.entity);
-      break;
-    default:
-      throw newExhaustedEnumError(
-        "JustificationBasisCompoundAtomTypes",
-        atom
-      );
-  }
-  return atom;
-};
-
-export const decircularizeSourceExcerptParaphrase = (
-  sourceExcerptParaphrase: SourceExcerptParaphrase
-) => {
-  sourceExcerptParaphrase.paraphrasingProposition =
-    decircularizeProposition(
-      sourceExcerptParaphrase.paraphrasingProposition
-    );
-  sourceExcerptParaphrase.sourceExcerpt = decircularizeSourceExcerpt(
-    sourceExcerptParaphrase.sourceExcerpt
-  );
-  return sourceExcerptParaphrase;
 };
 
 export const decircularizeSourceExcerpt = (sourceExcerpt: SourceExcerpt) => {
@@ -123,8 +83,8 @@ export const decircularizeSourceExcerpt = (sourceExcerpt: SourceExcerpt) => {
   return sourceExcerpt;
 };
 
-export const decircularizeProposition = (proposition: JustifiedProposition): Decircularized<JustifiedProposition> => {
-  const decircularized: Decircularized<JustifiedProposition> = cloneDeep(proposition)
+export const decircularizeProposition = (proposition: Proposition): Decircularized<Proposition> => {
+  const decircularized: Decircularized<Proposition> = cloneDeep(proposition)
   if (proposition.justifications) {
     decircularized.justifications = proposition.justifications.map(
       decircularizeJustification);
@@ -133,8 +93,9 @@ export const decircularizeProposition = (proposition: JustifiedProposition): Dec
 };
 
 export const decircularizePerspective = (perspective: Perspective) => {
-  perspective.proposition = decircularizeProposition(
+  const decircularized: Decircularized<Perspective> = cloneDeep(perspective)
+  decircularized.proposition = decircularizeProposition(
     perspective.proposition
   );
-  return perspective;
+  return decircularized;
 };

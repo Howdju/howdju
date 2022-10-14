@@ -13,27 +13,15 @@ import {validate, emptyValidationResult} from "howdju-ajv-sourced"
 
 import { editors, flows } from '@/actions';
 import { AppDispatch, RootState } from '@/store';
-import {combineIds, combineSuggestionsKeys} from '@/viewModels';
+import {combineIds, combineSuggestionsKeys, ValidationErrors} from '@/viewModels';
 import t, { CANCEL_BUTTON_LABEL, EDIT_ENTITY_SUBMIT_BUTTON_LABEL } from '@/texts';
 import { AnyAction } from 'redux';
 import { DirtyFields, EditorFieldsErrors, EditorType } from '@/reducers/editors';
 import { logger, SchemaId, toJson } from 'howdju-common';
 import { isEqual, merge } from 'lodash';
-import { PropertyChanges } from '@/types';
+import { ComponentId, ComponentName, EditorId, OnSubmitCallback, PropertyChanges, SuggestionsKey } from '@/types';
 
 type OnPropertyChangeCallback = (properties: PropertyChanges) => void
-
-
-export interface EntityEditorFieldsProps {
-  id: string
-  disabled: boolean
-  suggestionsKey: string
-  onPropertyChange: OnPropertyChangeCallback
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  errors: EditorFieldsErrors
-  dirtyFields: DirtyFields
-  wasSubmitAttempted: boolean
-}
 
 interface EditorState {
   errors: EditorFieldsErrors,
@@ -54,12 +42,23 @@ type ListItemTranslator = (editorType: EditorType, editorId: string, dispatch: A
   (...args : any[]) => void;
 
 type WithEditorProps = {
-  id: string,
-  editorId: string,
-  menu?: JSX.Element,
+  id: ComponentId,
+  name: ComponentName,
+  editorId: EditorId,
   className?: string,
   submitButtonText?: string,
   editorCommitBehavior: 'JustCommit' | 'CommitThenView' | CommitThenPutAction
+}
+export type EntityEditorFieldsProps = {
+  id: ComponentId
+  name: ComponentName
+  disabled: boolean
+  suggestionsKey: SuggestionsKey
+  onPropertyChange: OnPropertyChangeCallback
+  onSubmit: OnSubmitCallback
+  errors: ValidationErrors
+  dirtyFields: DirtyFields
+  wasSubmitAttempted: boolean
 }
 
 /**
@@ -74,19 +73,28 @@ type WithEditorProps = {
  * @param listItemTranslators An object keyed by callbacks for attributes of
  *   EntityEditorFields that produce callbacks that will dispatch the
  *   correct addListItem/removeListItem editor actions.
+ * @typeparam P the type of Props that EntityEditorFields requires.
  */
-export default function withEditor(
+export default function withEditor<P extends EntityEditorFieldsProps, LIT extends {[key: string]: ListItemTranslator}>(
   editorType: EditorType,
-  EntityEditorFields: React.ComponentType<EntityEditorFieldsProps>,
+  EntityEditorFields: React.FC<P>,
   entityPropName: string,
   schemaId: SchemaId,
-  listItemTranslators?: {[key: string]: ListItemTranslator}
+  listItemTranslators?: LIT
 ) {
-  return function EntityEditor(props: WithEditorProps) {
+
+  type RestPropsKeys = Exclude<keyof P, keyof EntityEditorFieldsProps | keyof LIT>
+  // For some reason accessing the optional fields like
+  // `type RestProps = {[key in RestPropsKeys]: P[key]}`
+  // was making them non-optional. So separate them so that we can ensure they are optional (`+?`).
+  type OptionalRestPropsKeys = {[key in RestPropsKeys as undefined extends P[key] ? key : never]+?: P[key]};
+  type RequiredRestPropsKeys = {[key in RestPropsKeys as undefined extends P[key] ? never : key]: P[key]};
+  type RestProps = RequiredRestPropsKeys & OptionalRestPropsKeys;
+  return function EntityEditor(props: WithEditorProps & RestProps) {
     const {
       id,
+      name,
       editorId,
-      menu,
       className,
       submitButtonText,
       editorCommitBehavior,
@@ -129,7 +137,6 @@ export default function withEditor(
     } = editorState as EditorState;
     const inProgress = isFetching || isSaving
 
-
     const {errors: clientValidationErrors} = editEntity ?
       validate(schemaId, editEntity) :
       emptyValidationResult()
@@ -143,22 +150,25 @@ export default function withEditor(
     // must accept the value.
     const errors = merge(clientValidationErrors, apiValidationErrors)
 
+    const editorFieldsProps = {
+      ...rest,
+      id,
+      name,
+      ...{[entityPropName]: editEntity},
+      disabled: isSaving,
+      suggestionsKey: combineSuggestionsKeys(editorType, editorId),
+      onPropertyChange,
+      onSubmit,
+      ...listItemCallbackAttributes,
+      errors,
+      dirtyFields,
+      wasSubmitAttempted,
+    } as unknown as P  // TODO(1): can we remove this typecast?
+
     return (
       <form onSubmit={onSubmit} className={className}>
         <CardText>
-          <EntityEditorFields
-            {...rest}
-            id={id}
-            {...{[entityPropName]: editEntity}}
-            disabled={isSaving}
-            suggestionsKey={combineSuggestionsKeys(editorType, editorId)}
-            onPropertyChange={onPropertyChange}
-            onSubmit={onSubmit}
-            {...listItemCallbackAttributes}
-            errors={errors}
-            dirtyFields={dirtyFields}
-            wasSubmitAttempted={wasSubmitAttempted}
-          />
+          <EntityEditorFields {...editorFieldsProps} />
         </CardText>
         <CardActions>
           {inProgress && <CircularProgress key="progress" id={combineIds(id, "progress")} />}

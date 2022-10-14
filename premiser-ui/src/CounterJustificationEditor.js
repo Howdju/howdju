@@ -20,7 +20,7 @@ import t, {
   COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts"
 import {
-  translateNewJustificationErrors
+  translateJustificationErrorsFromFormInput
 } from './viewModels'
 
 
@@ -67,8 +67,8 @@ class CounterJustificationEditor extends Component {
     delete rest.editorId
 
 
-    const newJustificationErrors = translateNewJustificationErrors(editEntity, errors)
-    const propositionCompoundErrors = get(newJustificationErrors, 'fieldErrors.basis.fieldErrors.propositionCompound')
+    const justificationErrors = translateJustificationErrorsFromFormInput(editEntity, errors)
+    const propositionCompoundErrors = get(justificationErrors, 'fieldErrors.basis.fieldErrors.propositionCompound')
     const propositionCompound = get(editEntity, 'basis.propositionCompound')
 
     return (

@@ -24,10 +24,9 @@ import {
   apiErrorCodes,
   insertAt,
   JustificationRootTargetTypes,
-  makeNewPropositionAtom,
-  makeNewJustificationBasisCompoundAtom,
-  makeNewPersorg,
-  makeNewUrl,
+  makePropositionAtom,
+  makePersorg,
+  makeUrl,
   newProgrammingError,
   removeAt,
   makePropositionTagVote,
@@ -39,9 +38,6 @@ import {
   Persorg,
   Proposition,
   PropositionTagVotePolarity,
-  OneOf,
-  SourceExcerptParaphrase,
-  JustificationBasisCompoundAtomType,
   WritQuote,
   RecursiveObject,
 } from "howdju-common";
@@ -100,9 +96,9 @@ export const EntityTypeDescriptions = {
   [EditorTypes.WRIT_QUOTE]: "WritQuote",
 };
 
-export type EditorFieldsErrors = RecursiveObject<string>;
 type ApiFieldsErrors = RecursiveObject<string>;
 export type DirtyFields = RecursiveObject<boolean>;
+export type EditorFieldsErrors = RecursiveObject<string>;
 
 interface JustificationEditEntity extends Entity {
   basis: {
@@ -114,23 +110,13 @@ interface JustificationEditEntity extends Entity {
         entity: Proposition;
       }>;
     };
-    justificationBasisCompound: {
-      atoms: Array<
-        {
-          type: JustificationBasisCompoundAtomType;
-        } & OneOf<{
-          proposition: Proposition;
-          sourceExcerptParaphrase: SourceExcerptParaphrase;
-        }>
-      >;
-    };
   };
 }
 
 interface PropositionJustificationsEditEntity extends Entity {
   proposition: Proposition;
   speakers: Persorg[];
-  newJustification: JustificationEditEntity;
+  justification: JustificationEditEntity;
 }
 
 interface EditorState {
@@ -219,34 +205,6 @@ const makeRemoveAtomReducer =
     const atoms = clone(get(editEntity, atomsPath));
     removeAt(atoms, action.payload.index);
     set(editEntity, atomsPath, atoms);
-    return { ...state, editEntity };
-  };
-
-/** Accepts a payload and returns something suitable to pass to lodash's second `get` argument. */
-type PathFactory = (payload: any) => string | (string | number)[];
-
-const makeAddUrlReducer =
-  (urlsPathMaker: PathFactory) => (state: EditorState, action: AnyAction) => {
-    const { urlIndex } = action.payload;
-    const editEntity = { ...state.editEntity };
-
-    const urlsPath = urlsPathMaker(action.payload);
-    const urls = clone(get(editEntity, urlsPath));
-    const insertIndex = isNumber(urlIndex) ? urlIndex : urls.length;
-    insertAt(urls, insertIndex, makeNewUrl());
-    set(editEntity, urlsPath, urls);
-    return { ...state, editEntity };
-  };
-
-const makeRemoveUrlReducer =
-  (urlsPathMaker: PathFactory) => (state: EditorState, action: AnyAction) => {
-    const { urlIndex } = action.payload;
-    const editEntity = { ...state.editEntity };
-
-    const urlsPath = urlsPathMaker(action.payload);
-    const urls = clone(get(editEntity, urlsPath));
-    removeAt(urls, urlIndex);
-    set(editEntity, urlsPath, urls);
     return { ...state, editEntity };
   };
 
@@ -403,41 +361,11 @@ const editorReducerByType: {
     {
       [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
         "basis.propositionCompound.atoms",
-        makeNewPropositionAtom
+        makePropositionAtom
       ),
       [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
         "basis.propositionCompound.atoms"
       ),
-      [str(editors.addJustificationBasisCompoundAtom)]: makeAddAtomReducer(
-        "basis.justificationBasisCompound.atoms",
-        makeNewJustificationBasisCompoundAtom
-      ),
-      [str(editors.removeJustificationBasisCompoundAtom)]:
-        makeRemoveAtomReducer("basis.justificationBasisCompound.atoms"),
-      [str(
-        editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl
-      )]: makeAddUrlReducer(({ atomIndex }: { atomIndex: number }) => [
-        "basis",
-        "justificationBasisCompound",
-        "atoms",
-        atomIndex,
-        "sourceExcerptParaphrase",
-        "sourceExcerpt",
-        "writQuote",
-        "urls",
-      ]),
-      [str(
-        editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl
-      )]: makeRemoveUrlReducer(({ atomIndex }: { atomIndex: number }) => [
-        "basis",
-        "justificationBasisCompound",
-        "atoms",
-        atomIndex,
-        "sourceExcerptParaphrase",
-        "sourceExcerpt",
-        "writQuote",
-        "urls",
-      ]),
       [str(editors.commitEdit.result)]: {
         throw: editorErrorReducer("justification"),
       },
@@ -452,7 +380,7 @@ const editorReducerByType: {
           ...state.editEntity,
         } as unknown as JustificationEditEntity;
         editEntity.basis.writQuote.urls =
-          editEntity.basis.writQuote.urls.concat([makeNewUrl()]);
+          editEntity.basis.writQuote.urls.concat([makeUrl()]);
         return { ...state, editEntity };
       },
       [str(editors.removeUrl)]: (state, action) => {
@@ -468,41 +396,11 @@ const editorReducerByType: {
       },
       [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
         "basis.propositionCompound.atoms",
-        makeNewPropositionAtom
+        makePropositionAtom
       ),
       [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
         "basis.propositionCompound.atoms"
       ),
-      [str(editors.addJustificationBasisCompoundAtom)]: makeAddAtomReducer(
-        "basis.justificationBasisCompound.atoms",
-        makeNewJustificationBasisCompoundAtom
-      ),
-      [str(editors.removeJustificationBasisCompoundAtom)]:
-        makeRemoveAtomReducer("basis.justificationBasisCompound.atoms"),
-      [str(
-        editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl
-      )]: makeAddUrlReducer(({ atomIndex }) => [
-        "basis",
-        "justificationBasisCompound",
-        "atoms",
-        atomIndex,
-        "sourceExcerptParaphrase",
-        "sourceExcerpt",
-        "writQuote",
-        "urls",
-      ]),
-      [str(
-        editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl
-      )]: makeRemoveUrlReducer(({ atomIndex }) => [
-        "basis",
-        "justificationBasisCompound",
-        "atoms",
-        atomIndex,
-        "sourceExcerptParaphrase",
-        "sourceExcerpt",
-        "writQuote",
-        "urls",
-      ]),
       [str(editors.commitEdit.result)]: {
         throw: editorErrorReducer("justification"),
       },
@@ -519,7 +417,7 @@ const editorReducerByType: {
         return assign({}, state, {
           editEntity: {
             ...editEntity,
-            speakers: [makeNewPersorg(), ...speakers],
+            speakers: [makePersorg(), ...speakers],
           },
         });
       },
@@ -550,11 +448,11 @@ const editorReducerByType: {
       [str(editors.addUrl)]: (state) => {
         const editEntity =
           state.editEntity as unknown as PropositionJustificationsEditEntity;
-        const writQuote = { ...editEntity.newJustification.basis.writQuote };
-        writQuote.urls = writQuote.urls.concat([makeNewUrl()]);
+        const writQuote = { ...editEntity.justification.basis.writQuote };
+        writQuote.urls = writQuote.urls.concat([makeUrl()]);
         return merge(
           { ...state },
-          { editEntity: { newJustification: { basis: { writQuote } } } }
+          { editEntity: { justification: { basis: { writQuote } } } }
         );
       },
       [str(editors.removeUrl)]: (state, action) => {
@@ -562,53 +460,19 @@ const editorReducerByType: {
           ...state.editEntity,
         } as unknown as PropositionJustificationsEditEntity;
 
-        const urls = clone(editEntity.newJustification.basis.writQuote.urls);
+        const urls = clone(editEntity.justification.basis.writQuote.urls);
         removeAt(urls, action.payload.index);
-        editEntity.newJustification.basis.writQuote.urls = urls;
+        editEntity.justification.basis.writQuote.urls = urls;
 
         return { ...state, editEntity };
       },
       [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
-        "newJustification.basis.propositionCompound.atoms",
-        makeNewPropositionAtom
+        "justification.basis.propositionCompound.atoms",
+        makePropositionAtom
       ),
       [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
-        "newJustification.basis.propositionCompound.atoms"
+        "justification.basis.propositionCompound.atoms"
       ),
-      [str(editors.addJustificationBasisCompoundAtom)]: makeAddAtomReducer(
-        "newJustification.basis.justificationBasisCompound.atoms",
-        makeNewJustificationBasisCompoundAtom
-      ),
-      [str(editors.removeJustificationBasisCompoundAtom)]:
-        makeRemoveAtomReducer(
-          "newJustification.basis.justificationBasisCompound.atoms"
-        ),
-      [str(
-        editors.addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl
-      )]: makeAddUrlReducer(({ atomIndex }) => [
-        "newJustification",
-        "basis",
-        "justificationBasisCompound",
-        "atoms",
-        atomIndex,
-        "sourceExcerptParaphrase",
-        "sourceExcerpt",
-        "writQuote",
-        "urls",
-      ]),
-      [str(
-        editors.removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl
-      )]: makeRemoveUrlReducer(({ atomIndex }) => [
-        "newJustification",
-        "basis",
-        "justificationBasisCompound",
-        "atoms",
-        atomIndex,
-        "sourceExcerptParaphrase",
-        "sourceExcerpt",
-        "writQuote",
-        "urls",
-      ]),
 
       [str(editors.tagProposition)]: makePropositionTagReducer(
         PropositionTagVotePolarities.POSITIVE,
@@ -626,7 +490,7 @@ const editorReducerByType: {
     {
       [str(editors.addUrl)]: (state) => {
         const editEntity = { ...state.editEntity } as WritQuote;
-        editEntity.urls = editEntity.urls.concat([makeNewUrl()]);
+        editEntity.urls = editEntity.urls.concat([makeUrl()]);
         return { ...state, editEntity };
       },
       [str(editors.removeUrl)]: (state, action) => {

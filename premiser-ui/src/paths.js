@@ -61,7 +61,7 @@ class Paths {
       case JustificationRootTargetTypes.STATEMENT:
         return this.statement(j.rootTarget, j.id)
       default:
-        throw newExhaustedEnumError('JustificationRootTargetTypes', j.rootTargetType)
+        throw newExhaustedEnumError(j.rootTargetType)
     }
   }
 

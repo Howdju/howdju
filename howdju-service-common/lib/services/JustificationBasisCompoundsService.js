@@ -276,7 +276,7 @@ function readOrCreateJustificationBasisCompoundAtomEntity(
           }
         })
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
+      throw newExhaustedEnumError(atom.type)
   }
 }
 
@@ -292,6 +292,6 @@ function getJustificationBasisCompoundAtomEntity(
     case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       return service.sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(entityId, {userId})
     default:
-      throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', entityType)
+      throw newExhaustedEnumError(entityType)
   }
 }

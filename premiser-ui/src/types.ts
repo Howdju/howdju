@@ -5,6 +5,18 @@ export interface ContextTrailItem {
   targetId: EntityId
 }
 
+/**
+ * A DOM element's `id` attribute. If passed to a container, the ID should be
+ * a prefix for the child elements.
+ */
+export type ComponentId = string
+
+/**
+ * A DOM element's `name` attribute which identifies it in form callbacks.
+ * If passed to a container, the ID should be a prefix for the child elements.
+ */
+export type ComponentName = string
+
 /** Identifies a UI widget */
 export type WidgetId = string
 
@@ -20,6 +32,12 @@ export type SuggestionsKey = string
  * Often used for OnPropertyChange callbacks.
  */
 export type PropertyChanges = {[key: string]: any}
+export type OnPropertyChangeCallback = (changes: PropertyChanges) => void
+export type OnKeyDownCallback = (event: React.KeyboardEvent<HTMLElement>) => void
+export type OnChangeCallback = (value: number | string, event: Event) => void
+export type OnSubmitCallback = (event: React.FormEvent<HTMLFormElement>) => void
+export type OnClickHandler = (event: React.MouseEvent<HTMLElement>) => void
+export type OnRemoveHandler<T> = (value: T, index: number) => void
 
 export interface PrivacyConsentCookie {
   id: string

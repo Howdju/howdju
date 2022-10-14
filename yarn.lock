@@ -5722,6 +5722,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dompurify@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "@types/dompurify@npm:2.3.4"
+  dependencies:
+    "@types/trusted-types": "*"
+  checksum: ea55678bc9fd32fcdae904ca191f2b8cc5b475277937e5e4c024690b0c3b9c73accfb7391f56d26d0f53fcff496a013773293e189a07a79afdd2b2ed4efacd5f
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.0":
   version: 3.7.0
   resolution: "@types/eslint-scope@npm:3.7.0"
@@ -6033,7 +6042,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-router@npm:^5.1.19":
+"@types/react-router-dom@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "@types/react-router-dom@npm:5.3.3"
+  dependencies:
+    "@types/history": ^4.7.11
+    "@types/react": "*"
+    "@types/react-router": "*"
+  checksum: 28c4ea48909803c414bf5a08502acbb8ba414669b4b43bb51297c05fe5addc4df0b8fd00e0a9d1e3535ec4073ef38aaafac2c4a2b95b787167d113bc059beff3
+  languageName: node
+  linkType: hard
+
+"@types/react-router@npm:*, @types/react-router@npm:^5.1.19":
   version: 5.1.19
   resolution: "@types/react-router@npm:5.1.19"
   dependencies:
@@ -6145,6 +6165,13 @@ __metadata:
   version: 2.0.0
   resolution: "@types/stack-utils@npm:2.0.0"
   checksum: b3fbae25b073116977ecb5c67d22f14567b51a7792403b0bf46e5de8f29bde3bd4ec1626afb22065495ca7f1c699c8bd66720050c94b8f8f9bcefbee79d161fd
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:*":
+  version: 2.0.2
+  resolution: "@types/trusted-types@npm:2.0.2"
+  checksum: 3371eef5f1c50e1c3c07a127c1207b262ba65b83dd167a1c460fc1b135a3fb0c97b9f508efebd383f239cc5dd5b7169093686a692a501fde9c3f7208657d9b0d
   languageName: node
   linkType: hard
 
@@ -14024,6 +14051,7 @@ __metadata:
     flow-bin: ^0.150.1
     howdju-common: ^1.0.0
     jest: ^26.6.3
+    lodash: ^4.17.21
     redux-actions: ^2.6.4
     typescript: ^4.8.4
   languageName: unknown
@@ -20846,11 +20874,13 @@ __metadata:
     "@redux-devtools/extension": ^3.2.3
     "@sentry/browser": ^6.2.5
     "@sentry/tracing": ^6.2.5
+    "@types/dompurify": ^2.3.4
     "@types/lodash": ^4.14.186
     "@types/moment-locales-webpack-plugin": ^1.2.3
     "@types/node": ^18.8.3
     "@types/react": ^18.0.21
     "@types/react-router": ^5.1.19
+    "@types/react-router-dom": ^5.3.3
     "@types/redux-actions": ^2.6.2
     "@types/webpack": ^5.28.0
     "@types/webpack-bundle-analyzer": ^4.6.0

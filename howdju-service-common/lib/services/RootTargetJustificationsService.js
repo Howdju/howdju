@@ -32,7 +32,7 @@ exports.RootTargetJustificationsService = class RootTargetJustificationsService 
       case JustificationRootTargetTypes.STATEMENT:
         return await this.statementsService.readStatementForId(rootTargetId)
       default:
-        throw newExhaustedEnumError('JustificationRootTargetTypes', rootTargetType)
+        throw newExhaustedEnumError(rootTargetType)
     }
   }
 

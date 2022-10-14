@@ -3,7 +3,7 @@
 ## Reboot
 
 - Basic iPhone app for capturing anchor fields?
-  
+
 - Release
     Terms:
       deleted accounts: anonymous replacement
@@ -23,12 +23,12 @@ Cool improvements
     voting to cluster
 Security
   - https://github.com/99designs/aws-vault
-  
+
 Followed all directions here: https://web.archive.org/web/20201020180006/https://dev.to/markosaric/how-to-make-google-analytics-gdpr-compliant-so-you-don-t-need-to-ask-for-user-consent-42mh
-  
+
 - Housekeeping
   - WritQuoteTarget -> QuoteSourceLocator?
-  - Extension: 
+  - Extension:
     - update to manifest v3? Does FF support it well?
   - run npm outdated
     - Upgrade react-md https://react-md.dev/guides/working-with-v1
@@ -36,7 +36,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
       - grids
     - Upgrade: premiser-ext/react
   - Look at prettier
-  
+
 ## Missing things (thar be dragons)
 
 * Two validation libraries: AJV and Joi
@@ -44,7 +44,6 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
   (see PersorgEntityCard for an example)
 * Proposition page has no obvious indication of related statements ("See usages", though)
 * Incomplete transition to have generic justifiables
-* Legacy justification basis type: JustificationBasisCompound type
 * Mixture of async/await and promises in the API
 * Two approaches to lambdas: premiser-processing (old Grunt build) and lambdas
 * Lint warnings
@@ -58,7 +57,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
 ### STS track
 - Export part of wikipedia
 - Create a system that lets you search for sentences semantically similar to
-  an input sentence 
+  an input sentence
 - Train on wikipedia edits?
 
 ### Browser plugin track
@@ -91,7 +90,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
   change the components so that they aren't clickable?
 
 * Why do I have PostCSS in my project?
-  
+
 * Improve not found page
 
 * Dynamo (pricing of triggered events?)
@@ -111,8 +110,8 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
   * How to know whether a user agrees or disagrees with a proposition to show them "your" ranking of justifications vs.
     "their" ranking when they first view a proposition?  Really need four things: justifications from your cluster in support,
     justifications from your cluster opposing, representation of justifications from other clusters in support, justifications
-    from other clusters opposing 
-  
+    from other clusters opposing
+
 ## what to do next?
 * example-based justifications
   * Would need a new vote type for scoring examples as in or out of
@@ -134,7 +133,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
   * FF: can't downvote tag
 * Race condition of multiple votes being sent (disable tagging/untagging after click)
 
-* Rename makeNewProposition etc. to makeProposition (except makeNewJustification)
+* Rename makeProposition etc. to makeProposition (except makeNewJustification)
 * Does hitting API /propositions result in an error because sorts is required?  It shouldn't be required; have default sorts and limit
 
 * Potential big priorities
@@ -178,7 +177,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
 
 * Store referrer when submitting justification?  Generally should match up with URL...
 * Are 401s to login in FF showing up as errors in sentry?
-      
+
 * Need to remove entities from redux store when they are successfully deleted?
 
 * pagination for search results
@@ -199,7 +198,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
   * move out configuration
   * add tests
   * add CI
-  
+
 * Security
   * Add an HttpOnly, Secure cookie so that authentication can't be taken off site (no XSS can steal all the credentials
     necessary to make a change.  Keep the local storage token as that prevents CSRF - the attacker needs a script on teh page
@@ -210,7 +209,7 @@ Followed all directions here: https://web.archive.org/web/20201020180006/https:/
 Improvements to propositions trail:
   * Confirm that trailPropositions are in fact parents?
     * Show some context like: supports..., opposes..., counters a justification of...
-    
+
 * Why does windowAware need to be pure=false?
 
 * recent quotes: exclude those with empty quotes?
@@ -222,38 +221,38 @@ Improvements to propositions trail:
 * Redirecting from deleted proposition fails if the URL does not contain the same slug (i.e. when manually entering /s/123)
   * https://stackoverflow.com/a/39507279/39396
 
-* Build UI into subfolder to prevent collisions while running locally and building for prod? 
+* Build UI into subfolder to prevent collisions while running locally and building for prod?
   * local env has production sentry env?
      * This occurs when we deploy to production while serving dev.  The deployment replaces index.html
 
 * While researching these old propositions, it's really annoying not to be able to know where the citations are hidden.
   * A tree view showing the primary sources in relation to the overall would be great.
-  
+
 * Command-clicking on tab navigates in current tab
 
 
 
 * when scroll area is smaller than header smallchat doesnt reappear
-  
+
 * When updating lambda alias, return previous version
   * Configure S3 versions for UI?
 * Don't use prod values as fall-backs in lambda env. vars.  Throw an error if a fall-back is missing.
-  
+
 * Is a Paraphrased citation equal to a citation-based justification?
   * Automatically create citation-based justification?
-  
+
 * Send raw API requests to S3 so that we have a log of actions taken, in case we decide to aggregate the data differently later?
 
-* Paraphrases 
+* Paraphrases
   * Recent paraphrases / search paraphrases by source excerpt type/ID
   * See usages of writ from paraphrase
   * Search paraphrases by url/url domain?
     * If I search justifications by writId/writQuoteId, do I get paraphrases using it?
-  
+
   * We probably want to allow people to vote on the paraphrase/connection between a proposition and a source?
     * This could be by voting on the justification
-  
-  
+
+
 * API_ROOT vs. API_HOST env. vars, shared API config between prod and pre-prod (right now I think pre-prod returns Bearer Authorization header for prod)
 
 * randomly got this message: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage'
@@ -267,9 +266,9 @@ Improvements to propositions trail:
 * Don't persist isActive, Name, email identifiers etc. in local storage.  Only authtoken.  Obfuscate it.  Request other information upon page load
   and leave it in-memory
   * Do not track: don't use analytics.  Don't even load libraries.
-  
+
 * Setup cdn.howdju.com DNS/Cloudflare
-  
+
 * Safari OS X recent activity UI bugs
   * The Progresses don't hide
   * There is an annoying repetitive flash where a horizontal scroll bar appears and disappoears
@@ -286,7 +285,7 @@ Cat meeting design notes:
     on main search results page
   * Figure out a 'feed' of suggested content
     * How relates to 'notifications', which are more transactional?
-    * Distinction is whether you can ignore the thing; if you ignore a thing, will somebody be 
+    * Distinction is whether you can ignore the thing; if you ignore a thing, will somebody be
       disappointed; is someone expecting you to respond?
   * How to deal with diverse content issue?  People might post about the best beer?
     * Stackoverflow approach: no opinions
@@ -302,7 +301,7 @@ Cat meeting design notes:
 * Somehow provide ability to roll back UI.  Either output current version of UI when updating or have a history somewhere
 
 * What is my data backup strategy?  Should I switch to Aurora Postgres?
-  
+
 * pg native?
   * https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
 
@@ -393,7 +392,7 @@ Cat meeting design notes:
   * Tags
     * paraphrases and quotes are amenable to tagging because they have context.
       propositions might be amenable, depending on how specifically they are written.
-      Justification text could be too, depending on how specifically written and 
+      Justification text could be too, depending on how specifically written and
       particularly if the tagging is adjusted for the context: i.e. more likely when
       the proposition justified implicates a similar context.
 * Others can use the system
@@ -406,7 +405,7 @@ Cat meeting design notes:
   * SEO
     * Server-side rendering
   * Gamification
-  
+
 * Other devs can contribute
   * Dev environment
     * Continuous delivery
@@ -469,7 +468,7 @@ Cat meeting design notes:
 * Bot/spam/abuse detection
   * IP rate limiting
   * account rate limiting (sharing account)
-  
+
 ## Update release (I can use it and show it to people)
 * When opening many recent propositions to delete them, the last one wouldn't load; chrome said "waiting for available socket"
 
@@ -481,7 +480,7 @@ Cat meeting design notes:
 * Need to add a continuation token forwards too, so that when the recents page is reloaded, we can request anything new.
   * When there is a backwards continuation token, we don't request the initial entities, but can request new ones.
   * Then can remove sortBy from recent widgets reducer
-  
+
 * Add proposition.justifications generally, like I did with perspective.proposition.justifications?
   * Rename page to CreatePropositionPage?
 * Tools for editing faster
@@ -497,7 +496,7 @@ Cat meeting design notes:
 
 ### Social login
 * https://developers.facebook.com/docs/facebook-login/web
-  
+
 * Autosubmit cited pages to archive.org
 
 * Add site sections
@@ -506,12 +505,12 @@ Cat meeting design notes:
     * May not automate use of system
   * About
   * Contact
-  
+
 * All propositions page with URL pagination for web crawlers
   * Or just do site map for crawlers
 * All domains page
   * When click on one, show justifications or show rootPropositions?
-  
+
 * Advanced search
   * find propositions supported/opposed by a domain
 * Source/author truthyness heat map
@@ -528,9 +527,9 @@ Cat meeting design notes:
   * Active pages (cited pages with some measure of activity based upon the justifications/propositions)
     * Provides a way for a user to find interesting content with the extension (requires extension)
 
-* Home page: suggested consumption (what the system thinks the user might like to see, read, learn), 
-  suggested creation (what the user might be able to contribute to or decide or play the game), 
-  and transactional notifications (interactions with things the user has done or notifications that the user has explicitly 
+* Home page: suggested consumption (what the system thinks the user might like to see, read, learn),
+  suggested creation (what the user might be able to contribute to or decide or play the game),
+  and transactional notifications (interactions with things the user has done or notifications that the user has explicitly
   configured)
 * What has changed since the user last came to the site that would be interesting to the user
   * counters to justifications the user has verified (transactional?)
@@ -546,8 +545,8 @@ Cat meeting design notes:
 * Recent (propositions, verifications)
 * Example propositions
 * Topics of interest to user
-  * Activity on propositions relevant to the user 
-  
+  * Activity on propositions relevant to the user
+
 ### Features
 * Add refinement/intervening proposition justification (justification drop-down item creating new proposition justifying
   same proposition and justified by this justification)
@@ -564,14 +563,14 @@ Cat meeting design notes:
     * [{text, urls}, ...]
   * Free text (with annotations))
   * Argument (propositions connected with joiner words: "or", "because", "then", "therefore", "if")
-  * Math/formula/calculation: 
+  * Math/formula/calculation:
     * basic math expression that result in a number
     * Spreadsheet style data
     * Cite scrapable/tabular data?
   * MEDIA (Image/Video) (how handle editing to add higher-resolution images?)
     * Button to show image/video URL in-context
 * Implement full model constraints in services
-  * don't let a user edit their own entities when they are older than a certain age (really this is to prevent 
+  * don't let a user edit their own entities when they are older than a certain age (really this is to prevent
     anyone from having seen it; so should we track views instead?)
 * warn if they try and navigate away after entering text
 * Add delete proposition/justification confirmation (or better, undo)
@@ -587,7 +586,7 @@ Cat meeting design notes:
     * How to tell when text on a page is quoting another source rather than a direct proposition
       * X said
       * quotation marks
-* Recent votes: see what proposition justifications look like when limited to a time period, either pre-selected time 
+* Recent votes: see what proposition justifications look like when limited to a time period, either pre-selected time
   periods or according to the 'most recent activity' however recent that most recent activity is
 * Add facets to main search:
   * citation text
@@ -617,7 +616,7 @@ Cat meeting design notes:
   * Or should we not be normalizing from API?  Should we normalize in reducer?
   * Change this for autocomplete fetches in entities
 * Delete writ quote URL right button is misaligned
-* Support [pg prepared statements](https://node-postgres.com/features/queries#prepared-statements)  
+* Support [pg prepared statements](https://node-postgres.com/features/queries#prepared-statements)
 * Create indices in postgres
 
 ### ML Support
@@ -634,7 +633,7 @@ Cat meeting design notes:
 * Add progress and disabled to vote buttons
   * Don't slide/hide the vote actions until the vote has successfully responded
 * EditPropositionCitationPage: can I move focus to basis component when first showing them?
-* Escape key while focusing (i.e. arrow-keying onto it) autocomplete list should close it 
+* Escape key while focusing (i.e. arrow-keying onto it) autocomplete list should close it
 * Need loading indicator when using basis to create a justification (especially on lambda cold start, justification can be empty for awhile)
 
 ### Refactoring/stability
@@ -662,7 +661,7 @@ Cat meeting design notes:
   * When goto statement, show hierarchy of statements above
   * show sub-justifications in-context
 * Fix statement at top of viewport when scrolling through its justifications
-  * Get statement to stay in place and float above justifications? Or maybe collapse to something 
+  * Get statement to stay in place and float above justifications? Or maybe collapse to something
     smaller, but that lets you see the statement still as you scroll.  maybe combine with header.
 
 ### UI
@@ -681,11 +680,11 @@ Cat meeting design notes:
   * Can counter justification with same statement as basis for target justification
 * When someone verifies a justification with weak basis/weak justifications, ask them: "Are you sure? How do you know?" ?
 
-  
+
 ### Bugs
 * react-md autocomplete still shows when there are no results
 * disverified negative justification causes horizontal scrollbar
-  
+
 ### Error/Requirements
 * Am I transitioning color on the verification icons?
 * Require statement to be non-empty, or >3 words?
@@ -730,7 +729,7 @@ Cat meeting design notes:
 * https://prerender.io/
 
 ## Bundle size
-* Minimize react-md (don't use react-md-everything): 
+* Minimize react-md (don't use react-md-everything):
   * https://react-md.mlaursen.com/customization/minimizing-bundle#minimizing-css-bundle-size
 * Minimize lodash
   * https://www.npmjs.com/package/eslint-plugin-lodash-fp
@@ -783,7 +782,7 @@ Cat meeting design notes:
   * [ecosystem](http://redux.js.org/docs/introduction/Ecosystem.html)
 
 
-## Cool 
+## Cool
 * https://github.com/palmerhq/the-platform
 * [Talk rich text editor](https://github.com/coralproject/talk/tree/master/plugins/talk-plugin-rich-text/client/components/rte)
 * [Bundle Buddy helps optimize webpack bundles](https://github.com/samccone/bundle-buddy)
@@ -800,7 +799,7 @@ Cat meeting design notes:
 * https://github.com/ajbrock/Neural-Photo-Editor
 * Community
   * https://github.com/discourse/discourse/blob/master/docs/INSTALL.md
-* [Parallax](https://github.com/dixonandmoe/rellax) 
+* [Parallax](https://github.com/dixonandmoe/rellax)
 * [Scroll animation](https://github.com/michalsnik/aos)
 * [Web designy repositories](https://github.com/ajlkn?tab=repositories)
 * Improving redux persist
@@ -857,7 +856,7 @@ Cat meeting design notes:
       * fixedTo - Child will be hidden if it goes outside this (by default it's the viewport)
       * toggle - The thing relative to which the layover displays the children
       * child - The thing(s) the layover is displaying
-    
+
     * I think that the issue is that getBoundingClientRect is relative to viewport, while top/left
       are relative to first positioned ancestor.  So one solution would be to find the first positioned
       ancestor and subtract its getBoundingClientRect top/left from those calculated for the child.
@@ -866,9 +865,9 @@ Cat meeting design notes:
         _setContainer?)
       * This happens because _setContainer reaches the fixed md-dialog before it reaches its md-dialog-container
         I think md-dialog must be fixed, so I think the error is that it is not looking for md-dialog
-    * Why doesn't it _positionChild within _fixateChild for md-dialog--centered? 
+    * Why doesn't it _positionChild within _fixateChild for md-dialog--centered?
     * _init seems to get `left` correct, while positionChild does not
-    
+
     * _handleTick and _initialFix
     * Layover._fixateChild: no _dialog even though in dialog
       * Takes first of fixed !md-layover-child or dialog

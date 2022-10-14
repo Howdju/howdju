@@ -19,7 +19,7 @@ import cn from 'classnames'
 
 import {
   entityErrorCodes,
-  makeNewRegistrationRequest,
+  makeRegistrationRequest,
   schemaSettings,
   schemaIds,
 } from 'howdju-common'
@@ -45,7 +45,7 @@ class RegistrationRequestPage extends React.Component {
   }
 
   componentDidMount() {
-    this.props.editors.beginEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, makeNewRegistrationRequest())
+    this.props.editors.beginEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, makeRegistrationRequest())
   }
 
   render() {
@@ -207,7 +207,7 @@ class RegistrationRequestPage extends React.Component {
       dirty: {},
       wasSubmitAttempted: false,
     })
-    this.props.editors.beginEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, makeNewRegistrationRequest())
+    this.props.editors.beginEdit(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId, makeRegistrationRequest())
     this.props.editors.resetSubmission(RegistrationRequestPage.editorType, RegistrationRequestPage.editorId)
   }
 }
