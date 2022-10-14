@@ -125,9 +125,8 @@ class App extends Component {
     // Persist the current settings first in case cookieConsent.on('update') fires.
     this.props.privacyConsent.update(cookieConsent.getPreferences())
     this.initPrivacyConsent(cookieConsent.getPreferences())
-    // Add this handler before showPrivacyConsentDialog to catch any changes
-    // that result from it.
-    cookieConsent.on('update', this.onCookieConsentUpdate)
+    // setTimeout: load the cookie consent after the privacyConsent.update has had a chance to occur.
+    setTimeout(() => cookieConsent.on('update', this.onCookieConsentUpdate))
     if (isMissingPrivacyConsent()) {
       showPrivacyConsentDialog()
     }
@@ -195,7 +194,7 @@ class App extends Component {
           }
           break
         case FULL_ERROR_REPORTING:
-          // sentryInit must handle this; it is not possiblet to update after initialization.
+          // sentryInit must handle this; it is not possible to update after initialization.
           requestReload = true
           break
         case LIVE_CHAT:
