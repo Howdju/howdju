@@ -15,7 +15,6 @@ import {
   Persorg,
   Url,
   PropositionCompoundAtom,
-  JustificationBasisCompoundAtom,
   Tag,
   Statement,
   Justification,
@@ -56,7 +55,7 @@ export const str = actions.str;
  * groups like those defined below.
  */
 export const mapActionCreatorGroupToDispatchToProps =
-  (actionCreatorGroups: any, otherActions: any) => (dispatch: AppDispatch) => {
+  (actionCreatorGroups: any, otherActions?: any) => (dispatch: AppDispatch) => {
     const dispatchProps = mapValues(actionCreatorGroups, (actionCreatorGroup) =>
       // Why not mapValues(..., bindActionCreators)? https://redux.js.org/api/bindactioncreators
       mapValues(
@@ -158,10 +157,6 @@ export const api = {
     (writQuote: WritQuote) => ({ writQuote })
   ),
 
-  fetchJustificationBasisCompound: apiActionCreator(
-    "FETCH_JUSTIFICATION_BASIS_COMPOUND",
-    (justificationBasisCompoundId) => ({ justificationBasisCompoundId })
-  ),
   fetchSourceExcerptParaphrase: apiActionCreator(
     "FETCH_SOURCE_EXCERPT_PARAPHRASE",
     (sourceExcerptParaphraseId) => ({ sourceExcerptParaphraseId })
@@ -746,53 +741,6 @@ export const editors = {
       index,
     })
   ),
-
-  addJustificationBasisCompoundAtom: actionCreator(
-    "EDITORS/ADD_JUSTIFICATION_BASIS_COMPOUND_ATOM",
-    (editorType: EditorType, editorId: EditorId, index: number) => ({
-      editorType,
-      editorId,
-      index,
-    })
-  ),
-  removeJustificationBasisCompoundAtom: actionCreator(
-    "EDITORS/REMOVE_JUSTIFICATION_BASIS_COMPOUND_ATOM",
-    (
-      editorType: EditorType,
-      editorId: EditorId,
-      atom: JustificationBasisCompoundAtom,
-      index: number
-    ) => ({
-      editorType,
-      editorId,
-      atom,
-      index,
-    })
-  ),
-  addJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl:
-    actionCreator(
-      "EDITORS/ADD_JUSTIFICATION_BASIS_COMPOUND_ATOM_SOURCE_EXCERPT_PARAPHRASE_WRIT_QUOTE_URL",
-      (
-        editorType: EditorType,
-        editorId: EditorId,
-        atomIndex: number,
-        urlIndex: number
-      ) => ({ editorType, editorId, atomIndex, urlIndex })
-    ),
-  removeJustificationBasisCompoundAtomSourceExcerptParaphraseWritQuoteUrl:
-    actionCreator(
-      "EDITORS/REMOVE_JUSTIFICATION_BASIS_COMPOUND_ATOM_SOURCE_EXCERPT_PARAPHRASE_WRIT_QUOTE_URL",
-      (
-        editorType: EditorType,
-        editorId: EditorId,
-        atom: JustificationBasisCompoundAtom,
-        atomIndex: number,
-        url: Url,
-        urlIndex: number
-      ) => ({ editorType, editorId, atom, atomIndex, url, urlIndex }),
-      // no-op metaCreator to trigger the ActionCreatorAny type
-      () => null
-    ),
 
   tagProposition: actionCreator(
     "EDITORS/TAG_PROPOSITION",

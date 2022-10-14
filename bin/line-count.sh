@@ -5,6 +5,7 @@ cd "${0%/*}/../"
 ( find .\
   \(\
     -name '*.ts' -o\
+    -name '*.tsx' -o\
     -name '*.js' -o\
     -name '*.sh' -o\
     -name '*.tf' \

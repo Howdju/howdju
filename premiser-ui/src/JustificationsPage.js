@@ -19,13 +19,15 @@ import {denormalize} from "normalizr"
 import queryString from 'query-string'
 
 import {
-  isVerified,
-  isDisverified,
   JustificationPolarities,
   JustificationTargetTypes,
-  makeNewTrunkJustification,
 } from "howdju-common"
-import {actions} from 'howdju-client-common'
+import {
+  actions,
+  isVerified,
+  isDisverified,
+  makeJustificationFormInputModelTargetingRoot,
+} from 'howdju-client-common'
 
 import {
   api,
@@ -40,7 +42,7 @@ import * as characters from './characters'
 import ContextTrail from './ContextTrail'
 import JustificationsTree from './JustificationsTree'
 import {logger} from "./logger"
-import NewJustificationDialog from './NewJustificationDialog'
+import CreateJustificationDialog from './CreateJustificationDialog'
 import {EditorTypes} from "./reducers/editors"
 import JustificationRootTargetCard from './JustificationRootTargetCard'
 import t, {
@@ -101,7 +103,7 @@ class JustificationsPage extends Component {
   static suggestionsKey = justificationsPageId
   static transientId = 'proposition-justifications-page-proposition'
   static rootTargetEditorId = combineIds(justificationsPageId, 'root-target-editor')
-  static newJustificationEditorId = combineIds(justificationsPageId, 'new-justification-editor')
+  static justificationEditorId = combineIds(justificationsPageId, 'justification-editor')
 
   componentDidMount() {
     const {rootTargetType, rootTargetId} = this.rootTargetInfo()
@@ -138,8 +140,8 @@ class JustificationsPage extends Component {
       rootTargetType,
       rootTargetId,
     } = this.rootTargetInfo()
-    const newJustification = makeNewTrunkJustification(rootTargetType, rootTargetId, polarity)
-    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.newJustificationEditorId, newJustification)
+    const justification = makeJustificationFormInputModelTargetingRoot(rootTargetType, rootTargetId, polarity)
+    this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.justificationEditorId, justification)
 
     this.props.ui.showNewJustificationDialog()
   }
@@ -155,7 +157,7 @@ class JustificationsPage extends Component {
   saveNewJustification = (event) => {
     event.preventDefault()
     this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION,
-      JustificationsPage.newJustificationEditorId, ui.hideNewJustificationDialog())
+      JustificationsPage.justificationEditorId, ui.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog = () => {
@@ -259,9 +261,9 @@ class JustificationsPage extends Component {
           className="md-grid--bottom"
         />
 
-        <NewJustificationDialog
+        <CreateJustificationDialog
           id={this.id('new-justification-dialog')}
-          editorId={JustificationsPage.newJustificationEditorId}
+          editorId={JustificationsPage.justificationEditorId}
           suggestionsKey={this.suggestionsKey('new-justification-dialog')}
           visible={isNewJustificationDialogVisible}
           onCancel={this.cancelNewJustificationDialog}

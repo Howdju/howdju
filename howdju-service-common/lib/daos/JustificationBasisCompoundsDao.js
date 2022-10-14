@@ -173,7 +173,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
               atom.entity = atomPropositionsById[atom.entity.id]
               break
             default:
-              throw newExhaustedEnumError('JustificationBasisCompoundAtomTypes', atom.type)
+              throw newExhaustedEnumError(atom)
           }
           assert(isDefined(atom.entity))
 

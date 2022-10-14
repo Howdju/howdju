@@ -11,6 +11,7 @@ export const EntityTypes = {
   WRIT: 'WRIT',
   WRIT_QUOTE: 'WRIT_QUOTE',
 } as const
+export type EntityType = typeof EntityTypes[keyof typeof EntityTypes]
 
 export const ActionTypes = {
   /** The user created something */
@@ -72,20 +73,30 @@ export const JustificationBasisTypes = {
   /* One or more propositions */
   PROPOSITION_COMPOUND: 'PROPOSITION_COMPOUND',
   /**
-   * A quote
+   * A quote from a written source
    *
-   * @deprecated Use SOURCE_EXCERPT instead.
+   * @deprecated Use SOURCE_EXCERPT's WRIT_QUOTE type instead.
    */
   WRIT_QUOTE: 'WRIT_QUOTE',
+  /** An except from some fixed media. See {@link SourceExcerpt} */
+  SOURCE_EXCERPT: 'SOURCE_EXCERPT',
   /* One or more {@see JustificationBasisCompoundAtomTypes}
    *
    * This type will replace the others
+   * 
+   * @deprecated
    */
   JUSTIFICATION_BASIS_COMPOUND: 'JUSTIFICATION_BASIS_COMPOUND',
 } as const
 export type JustificationBasisType = typeof JustificationBasisTypes[keyof typeof JustificationBasisTypes]
-// Anything you can start with to create a justification based upon.
-// (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
+/**
+ * Anything you can start with to create a justification based upon.
+ *
+ * (Which would include JustificationBasisTypes, too, but right now we are only adding those here that aren't also JustificationBasisTypes)
+ *
+ * TODO: this should go into a client package since only clients are concerned with translating
+ * a source into a Justification.
+ */
 export const JustificationBasisSourceTypes = {
   /* One or more propositions */
   PROPOSITION_COMPOUND: 'PROPOSITION_COMPOUND',
@@ -114,6 +125,7 @@ export const SourceExcerptTypes = {
   PIC_REGION: 'PIC_REGION',
   VID_SEGMENT: 'VID_SEGMENT',
 } as const
+export type SourceExcerptType = typeof SourceExcerptTypes[keyof typeof SourceExcerptTypes]
 
 export const JustificationVotePolarities = {
   POSITIVE: 'POSITIVE',
@@ -161,6 +173,7 @@ export const SentenceTypes = {
   PROPOSITION: 'PROPOSITION',
   STATEMENT: 'STATEMENT',
 } as const
+export type SentenceType = typeof SentenceTypes[keyof typeof SentenceTypes]
 
 export const UrlTargetAnchorTypes = {
   TEXT_QUOTE: 'TEXT_QUOTE',
@@ -182,3 +195,4 @@ export const ContentReportTypes = {
   SPAM: "SPAM",
   OTHER: "OTHER",
 } as const
+export type ContentReportType = typeof ContentReportTypes[keyof typeof ContentReportTypes]

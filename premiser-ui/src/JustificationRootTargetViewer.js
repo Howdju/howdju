@@ -44,7 +44,7 @@ export default class JustificationRootTargetViewer extends React.Component {
           />
         )
       default:
-        throw newExhaustedEnumError('JustificationRootTargetTypes', rootTargetType)
+        throw newExhaustedEnumError(rootTargetType)
     }
   }
 }

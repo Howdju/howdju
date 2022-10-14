@@ -19,7 +19,6 @@ import {
 import {
   justificationSchema,
   justificationsSchema,
-  justificationBasisCompoundSchema,
   justificationVoteSchema,
   mainSearchResultsSchema,
   perspectivesSchema,
@@ -77,10 +76,6 @@ export const resourceApiConfigs = {
   [api.fetchSourceExcerptParaphrase]: (payload) => ({
     endpoint: `source-excerpt-paraphrases/${payload.sourceExcerptParaphraseId}`,
     normalizationSchema: {sourceExcerptParaphrase: sourceExcerptParaphraseSchema},
-  }),
-  [api.fetchJustificationBasisCompound]: (payload) => ({
-    endpoint: `justification-basis-compounds/${payload.justificationBasisCompoundId}`,
-    normalizationSchema: {justificationBasisCompound: justificationBasisCompoundSchema},
   }),
   [api.fetchWritQuote]: (payload) => ({
     endpoint: `writ-quotes/${payload.writQuoteId}`,

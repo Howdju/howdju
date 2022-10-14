@@ -8,7 +8,6 @@ import {
 
 import PropositionCompoundViewer from "./PropositionCompoundViewer"
 import WritQuoteEntityViewer from "./WritQuoteEntityViewer"
-import JustificationBasisCompoundViewer from "./JustificationBasisCompoundViewer"
 
 import './JustificationBasisViewer.scss'
 
@@ -62,23 +61,8 @@ export default class JustificationBasisViewer extends Component {
             onClickUrl={onClickWritQuoteUrl}
           />
         )
-      case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND:
-        return (
-          <JustificationBasisCompoundViewer
-            {...rest}
-            id={id}
-            justificationBasisCompound={basis.entity}
-            doShowControls={doShowControls}
-            doShowPropositionAtomJustifications={doShowBasisJustifications}
-            showStatusText={showStatusText}
-            isCondensed={isCondensed}
-            isUnCondensed={isUnCondensed}
-            showUrls={showUrls}
-            contextTrailItems={contextTrailItems}
-          />
-        )
       default:
-        throw newExhaustedEnumError('JustificationBasisTypes', basis.type)
+        throw newExhaustedEnumError(basis.type)
     }
   }
 }

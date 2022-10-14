@@ -293,7 +293,7 @@ describe('reducers', () => {
               target: {type: JustificationTargetTypes.PROPOSITION, entity: clone(targetProposition)}
             },
 
-            newJustification = {
+            justification = {
               id: "2",
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: {id: "1"},
@@ -317,7 +317,7 @@ describe('reducers', () => {
             },
 
             action = api.createJustification.response(
-              {justification: newJustification},
+              {justification: justification},
               {normalizationSchema: {justification: justificationSchema}}
             )
 
@@ -327,14 +327,14 @@ describe('reducers', () => {
             propositions: {
               [targetProposition.id]: {
                 ...targetProposition,
-                justifications: [...targetProposition.justifications, newJustification.id],
+                justifications: [...targetProposition.justifications, justification.id],
               },
             },
             justifications: {
               [existingJustification.id]: existingJustification,
-              [newJustification.id]: merge(
+              [justification.id]: merge(
                 {},
-                newJustification,
+                justification,
                 {
                   target: {entity: {text: toOmit, justifications: toOmit, schema: JustificationTargetTypes.PROPOSITION}},
                   rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},

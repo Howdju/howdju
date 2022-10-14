@@ -1,56 +1,70 @@
 import assign from "lodash/assign";
-import map from "lodash/map";
 import merge from "lodash/merge";
 import asString from "lodash/toString";
 
 import { newImpossibleError, newExhaustedEnumError } from "./commonErrors";
-import { Justification } from "./entities";
+import {
+  EntityId,
+  Justification,
+  Persorg,
+  PicRegion,
+  Proposition,
+  PropositionCompound,
+  PropositionCompoundAtom,
+  PropositionTagVote,
+  Sentence,
+  SourceExcerpt,
+  Statement,
+  Tag,
+  Url,
+  VidSegment,
+  Writ,
+  WritQuote,
+} from "./entities";
 import {
   JustificationPolarities,
   JustificationRootPolarities,
   JustificationVotePolarities,
   JustificationBasisTypes,
   JustificationTargetTypes,
-  JustificationBasisCompoundAtomTypes,
-  SourceExcerptTypes,
   JustificationVotePolarity,
   JustificationRootPolarity,
+  SentenceType,
+  SourceExcerptTypes,
 } from "./enums";
 import { isDefined } from "./general";
 
-export const isPositive = (j: Justification) => j.polarity === JustificationPolarities.POSITIVE;
-export const isNegative = (j: Justification) => j.polarity === JustificationPolarities.NEGATIVE;
+export const isPositive = (j: Justification) =>
+  j.polarity === JustificationPolarities.POSITIVE;
+export const isNegative = (j: Justification) =>
+  j.polarity === JustificationPolarities.NEGATIVE;
 export const isRootPositive = (j: Justification) =>
   j.rootPolarity === JustificationRootPolarities.POSITIVE;
 export const isRootNegative = (j: Justification) =>
   j.rootPolarity === JustificationRootPolarities.NEGATIVE;
-export const isVerified = (j: JustificationViewModel) =>
-  j.vote && j.vote.polarity === JustificationVotePolarities.POSITIVE;
-export const isDisverified = (j: JustificationViewModel) =>
-  j.vote && j.vote.polarity === JustificationVotePolarities.NEGATIVE;
 // If a justification targets another justification, its polarity should always be negative
 export const isCounter = (j: Justification) =>
   j.target.type === JustificationTargetTypes.JUSTIFICATION && isNegative(j);
 export const isRootJustification = (j: Justification) =>
   j.target.type === j.rootTargetType && j.target.entity.id === j.rootTarget.id;
-export const hasQuote = (j: Justification) => isWritQuoteBased(j) && j.basis.entity.quoteText;
+export const hasQuote = (j: Justification) =>
+  j.basis.type === JustificationBasisTypes.WRIT_QUOTE &&
+  j.basis.entity.quoteText;
 export const isPropositionCompoundBased = (j: Justification) =>
   j ? j.basis.type === JustificationBasisTypes.PROPOSITION_COMPOUND : false;
 export const isWritQuoteBased = (j: Justification) =>
   j ? j.basis.type === JustificationBasisTypes.WRIT_QUOTE : false;
-export const isJustificationBasisCompoundBased = (j: Justification) =>
-  j
-    ? j.basis.type === JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND
-    : false;
 
-export const negateJustificationVotePolarity = (polarity: JustificationVotePolarity) => {
+export const negateJustificationVotePolarity = (
+  polarity: JustificationVotePolarity
+) => {
   switch (polarity) {
     case JustificationVotePolarities.POSITIVE:
       return JustificationVotePolarities.NEGATIVE;
     case JustificationVotePolarities.NEGATIVE:
       return JustificationVotePolarities.POSITIVE;
     default:
-      throw newExhaustedEnumError("JustificationVotePolarities", polarity);
+      throw newExhaustedEnumError(polarity);
   }
 };
 
@@ -61,38 +75,43 @@ export const negateRootPolarity = (rootPolarity: JustificationRootPolarity) => {
     case JustificationRootPolarities.NEGATIVE:
       return JustificationRootPolarities.POSITIVE;
     default:
-      throw newImpossibleError(`unsupported root polarity: ${rootPolarity}`);
+      throw newImpossibleError(rootPolarity);
   }
 };
 
-export const makeNewCredentials = (props) => assign({ email: "", password: "" }, props);
+export interface Credentials {
+  email: string;
+  password: string;
+}
 
-export const makeNewPasswordResetRequest = (props) =>
+export const makeCredentials = (props?: Partial<Credentials>): Credentials =>
+  assign({ email: "", password: "" }, props);
+
+export interface RegistrationRequest {
+  email: string;
+}
+
+export const makeRegistrationRequest = (
+  props?: Partial<RegistrationRequest>
+): RegistrationRequest =>
   assign(
     {
       email: "",
     },
     props
   );
-export const makeNewPasswordResetConfirmation = (props) =>
-  assign(
-    {
-      userId: null,
-      email: null,
-      passwordResetCode: null,
-    },
-    props
-  );
 
-export const makeNewRegistrationRequest = (props) =>
-  assign(
-    {
-      email: "",
-    },
-    props
-  );
-
-export const makeNewRegistrationConfirmation = (props) =>
+export interface RegistrationConfirmation {
+  registrationCode: string;
+  username: string;
+  shortName: string;
+  longName: string;
+  password: string;
+  doesAcceptTerms: boolean;
+}
+export const makeRegistrationConfirmation = (
+  props?: Partial<RegistrationConfirmation>
+): RegistrationConfirmation =>
   assign(
     {
       registrationCode: "",
@@ -105,7 +124,19 @@ export const makeNewRegistrationConfirmation = (props) =>
     props
   );
 
-export const makeUser = (props) =>
+export interface User {
+  email: string;
+  username: string;
+  shortName: string;
+  longName: string;
+  acceptedTerms: boolean;
+  affirmedMajorityConsent: boolean;
+  affirmed13YearsOrOlder: boolean;
+  affirmedNotGdpr: boolean;
+  isActive: boolean;
+}
+
+export const makeUser = (props?: Partial<User>): User =>
   assign(
     {
       email: "",
@@ -121,7 +152,13 @@ export const makeUser = (props) =>
     props
   );
 
-export const makeAccountSettings = (props) =>
+export interface AccountSettings {
+  paidContributionsDisclosure: string;
+}
+
+export const makeAccountSettings = (
+  props?: Partial<AccountSettings>
+): AccountSettings =>
   assign(
     {
       paidContributionsDisclosure: "",
@@ -129,15 +166,22 @@ export const makeAccountSettings = (props) =>
     props
   );
 
-export const makeNewProposition = (props) => assign({ text: "" }, props);
+export const makeProposition = (props?: Partial<Proposition>): Proposition =>
+  assign({ text: "" }, props);
 
-export const makeNewStatement = (speaker, sentenceType, sentence) => ({
+export const makeStatement = (
+  speaker: Persorg,
+  sentenceType: SentenceType,
+  sentence: Sentence
+): Statement => ({
   speaker,
   sentenceType,
   sentence,
 });
 
-export const makeNewSourceExcerptJustification = (props) => {
+export const makeSourceExcerptJustification = (
+  props?: Partial<Justification>
+): Justification => {
   const init = {
     target: null,
     basis: {
@@ -149,25 +193,7 @@ export const makeNewSourceExcerptJustification = (props) => {
   return merged;
 };
 
-function translateNewSourceExcerptEntity(sourceExcerpt) {
-  switch (sourceExcerpt.type) {
-    case SourceExcerptTypes.WRIT_QUOTE:
-      sourceExcerpt.writQuote = sourceExcerpt.writQuote || sourceExcerpt.entity;
-      break;
-    case SourceExcerptTypes.PIC_REGION:
-      sourceExcerpt.picRegion = sourceExcerpt.picRegion || sourceExcerpt.entity;
-      break;
-    case SourceExcerptTypes.VID_SEGMENT:
-      sourceExcerpt.vidSegment =
-        sourceExcerpt.vidSegment || sourceExcerpt.entity;
-      break;
-    default:
-      throw newExhaustedEnumError("SourceExcerptTypes", sourceExcerpt.type);
-  }
-  delete sourceExcerpt.entity;
-}
-
-export const makeNewWrit = (props) =>
+export const makeWrit = (props?: Partial<Writ>): Writ =>
   merge(
     {
       title: "",
@@ -175,177 +201,47 @@ export const makeNewWrit = (props) =>
     props
   );
 
-export const makeNewSourceExcerptParaphrase = (props) =>
+export const makeWritQuote = (props?: Partial<WritQuote>): WritQuote =>
   merge(
     {
-      paraphrasingProposition: makeNewProposition(),
-      sourceExcerpt: makeNewSourceExcerpt(),
-    },
-    props
-  );
-
-export const makeNewSourceExcerpt = (props) =>
-  merge(
-    {
-      type: SourceExcerptTypes.WRIT_QUOTE,
-      writQuote: makeNewWritQuote(),
-    },
-    props
-  );
-
-export const makeNewWritQuote = (props) =>
-  merge(
-    {
-      writ: makeNewWrit(),
+      writ: makeWrit(),
       quoteText: "",
-      urls: [makeNewUrl()],
+      urls: [makeUrl()],
     },
     props
   );
 
-export const makeNewPropositionCompound = (props) =>
-  assign({ atoms: [makeNewPropositionAtom()] }, props);
+export const makePropositionCompound = (
+  props?: Partial<PropositionCompound>
+): PropositionCompound => assign({ atoms: [makePropositionAtom()] }, props);
 
-export const makeNewJustificationBasisCompound = (props) =>
-  assign({ atoms: [makeNewJustificationBasisCompoundAtom()] }, props);
+export const makePropositionAtom = (
+  props?: Partial<PropositionCompoundAtom>
+): PropositionCompoundAtom => assign({ entity: makeProposition() }, props);
 
-export const makeNewJustificationBasisCompoundAtom = (props) => {
-  const atom = {
-    type: JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
-    proposition: makeNewProposition(),
-    sourceExcerptParaphrase: makeNewSourceExcerptParaphrase(),
-  };
-
-  if (
-    props &&
-    props.type ===
-      JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE &&
-    props.sourceExcerptParaphrase.sourceExcerpt
-  ) {
-    translateNewSourceExcerptEntity(
-      props.sourceExcerptParaphrase.sourceExcerpt
-    );
-  }
-
-  return merge(atom, props);
-};
-
-export const makeNewPropositionAtom = (props) =>
-  assign({ entity: makeNewProposition() }, props);
-
-export const makeNewJustificationBasisCompoundFromSourceExcerptParaphrase = (
-  sourceExcerptParaphrase
-) =>
-  makeNewJustificationBasisCompound({
-    atoms: [
-      makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
-        sourceExcerptParaphrase,
-      }),
-    ],
+export const makePropositionCompoundFromProposition = (
+  proposition: Proposition
+): PropositionCompound =>
+  makePropositionCompound({
+    atoms: [makePropositionAtom({ entity: proposition })],
   });
 
-export const makeNewJustificationBasisCompoundFromProposition = (proposition) =>
-  makeNewJustificationBasisCompound({
-    atoms: [
-      makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomTypes.PROPOSITION,
-        proposition,
-      }),
-    ],
-  });
-
-export const makeNewJustificationBasisCompoundFromWritQuote = (writQuote) =>
-  makeNewJustificationBasisCompound({
-    atoms: [
-      makeNewJustificationBasisCompoundAtom({
-        sourceExcerptParaphrase: makeNewSourceExcerptParaphrase({
-          sourceExcerpt: { writQuote },
-        }),
-      }),
-    ],
-  });
-
-export const makeNewJustificationBasisCompoundFromPropositionCompound = (
-  propositionCompound
-) =>
-  makeNewJustificationBasisCompound({
-    atoms: map(propositionCompound.atoms, (propositionAtom) =>
-      makeNewJustificationBasisCompoundAtom({
-        type: JustificationBasisCompoundAtomTypes.PROPOSITION,
-        proposition: propositionAtom.entity,
-      })
-    ),
-  });
-
-export const makeNewPropositionCompoundFromProposition = (proposition) =>
-  makeNewPropositionCompound({
-    atoms: [makeNewPropositionAtom({ entity: proposition })],
-  });
-
-/** Trunk justifications directly target the root */
-export const makeNewTrunkJustification = (targetType, targetId, polarity = null) =>
-  makeNewJustification({
-    rootTargetType: targetType,
-    rootTarget: { id: targetId },
-    polarity,
-    target: { type: targetType, entity: { id: targetId } },
-  });
-
-export const makeNewPropositionJustification = (
-  propositionProps,
-  justificationProps
+export const makePropositionCompoundAtomFromProposition = (
+  proposition: Proposition
 ) => ({
-  proposition: makeNewProposition(propositionProps),
-  speakers: [],
-  newJustification: makeNewJustification(justificationProps),
-  // whether to have the justification controls expanded and to create a justification along with the proposition
-  doCreateJustification: !!justificationProps,
-});
-
-export const makeNewCounterJustification = (targetJustification) => ({
-  rootTargetType: targetJustification.rootTargetType,
-  rootTarget: { id: targetJustification.rootTarget.id },
-  target: {
-    type: JustificationTargetTypes.JUSTIFICATION,
-    entity: targetJustification,
-  },
-  basis: {
-    type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-    propositionCompound: makeNewPropositionCompound(),
-  },
-  polarity: JustificationPolarities.NEGATIVE,
-});
-
-export const makeNewPropositionCompoundAtomFromProposition = (proposition) => ({
   entity: proposition,
 });
 
-export const makeNewUrl = () => ({ url: "" });
+export const makeUrl = (props?: Partial<Url>): Url => merge({ url: "" }, props);
 
-export const makeNewPersorg = () => ({
+export const makePersorg = (): Persorg => ({
   isOrganization: false,
   name: "",
   knownFor: "",
-  websiteUrl: null,
-  twitterUrl: null,
-  wikipediaUrl: null,
+  websiteUrl: undefined,
+  twitterUrl: undefined,
+  wikipediaUrl: undefined,
 });
-
-export const makeNewContentReport = (fields) =>
-  merge(
-    {
-      entityType: null,
-      entityId: null,
-      // type (string) to boolean of whether the type is selected
-      checkedByType: {},
-      // Holds only the selected types; populated before posting to API
-      types: [],
-      description: "",
-      url: null,
-    },
-    fields
-  );
 
 /**
  * Compare two entity IDs for equality
@@ -355,10 +251,10 @@ export const makeNewContentReport = (fields) =>
  * to strings.  But because this comparison is so important, it is worthwile having a special method to ensure that
  * there is no mistake.  One thing we don't do is convert an integer identifier from the client into a string, e.g..
  */
-export const idEqual = (id1, id2) =>
+export const idEqual = (id1?: EntityId, id2?: EntityId) =>
   isDefined(id1) && isDefined(id2) && asString(id1) === asString(id2);
 
-export const makeTag = (props) =>
+export const makeTag = (props: Partial<Tag>): Tag =>
   merge(
     {
       name: "",
@@ -366,14 +262,32 @@ export const makeTag = (props) =>
     props
   );
 
-export const tagEqual = (tag1, tag2) =>
+export const tagEqual = (tag1: Tag, tag2: Tag) =>
   idEqual(tag1.id, tag2.id) ||
   (isDefined(tag1.name) && tag1.name === tag2.name);
 
-export const makePropositionTagVote = (props) => merge({}, props);
+export const makePropositionTagVote = (
+  props: Partial<PropositionTagVote>
+): PropositionTagVote => merge({}, props);
 
-export const doTargetSameRoot = (j1, j2) =>
+export const doTargetSameRoot = (j1: Justification, j2: Justification) =>
   idEqual(j1.rootTarget.id, j2.rootTarget.id) &&
   j1.rootTargetType === j2.rootTargetType;
 
 export const makeNewAccountSettings = () => ({});
+
+export function makeVidSegment(): VidSegment {
+  return {vid: {}}
+}
+
+export function makePicRegion(): PicRegion {
+  return {pic: {}}
+}
+
+export const makeSourceExcerpt = (
+  props?: Partial<SourceExcerpt>
+): SourceExcerpt =>
+  merge({
+    type: SourceExcerptTypes.WRIT_QUOTE,
+    entity: makeWritQuote(),
+  }, props);

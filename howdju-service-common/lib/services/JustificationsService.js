@@ -274,7 +274,7 @@ function readJustificationTarget(service, justificationTarget, {userId}) {
       return service.readJustificationForId(justificationTarget.entity.id, {userId})
 
     default:
-      throw newExhaustedEnumError('JustificationTargetTypes', justificationTarget.type)
+      throw newExhaustedEnumError(justificationTarget.type)
   }
 }
 
@@ -291,7 +291,7 @@ function readJustificationBasis(service, justificationBasis, {userId}) {
       return service.justificationBasisCompoundsService.readJustificationBasisCompoundForId(justificationBasis.entity.id, {userId})
 
     default:
-      throw newExhaustedEnumError('JustificationBasisTypes', justificationBasis.type)
+      throw newExhaustedEnumError(justificationBasis.type)
   }
 }
 
@@ -324,7 +324,7 @@ function readOrCreateEquivalentValidJustificationAsUser(service, justification, 
           justification.rootTargetType = justification.target.entity.rootTargetType
           break
         default:
-          throw newExhaustedEnumError('JustificationTargetTypes', justification.target.type)
+          throw newExhaustedEnumError(justification.target.type)
       }
 
       return [now, justification]
@@ -387,7 +387,7 @@ function readOrCreateJustificationTarget(service, justificationTarget, userId, n
         }))
 
     default:
-      throw newExhaustedEnumError('JustificationTargetTypes', justificationTarget.type)
+      throw newExhaustedEnumError(justificationTarget.type)
   }
 }
 

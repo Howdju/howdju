@@ -6,7 +6,7 @@ import { ContentReportTypes, schemaSettings } from "howdju-common"
 import CheckboxList from "../CheckboxList"
 import ErrorMessages from "../ErrorMessages"
 import TextField from "../TextField"
-import { combineIds, combineNames } from "../viewModels"
+import { ArrayIndex, combineIds, combineNames } from "../viewModels"
 
 const reportTypeDescriptions = {
   [ContentReportTypes.HARASSMENT]: "Harassment",
@@ -31,7 +31,7 @@ type BooleanObject = {
 type ContentReportEditorFieldsProps = {
   contentReport?: object,
   id: string,
-  name?: string,
+  name: string | ArrayIndex,
   disabled?: boolean,
   errors?: object,
   dirtyFields: BooleanObject,

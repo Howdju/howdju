@@ -130,7 +130,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
               sourceExcerptParaphrase.sourceExcerpt.entity = vidSegmentsById[sourceExcerptParaphrase.sourceExcerpt.entity.id]
               break
             default:
-              throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerptParaphrase.sourceExcerpt.type)
+              throw newExhaustedEnumError(sourceExcerptParaphrase.sourceExcerpt)
           }
         })
         return sourceExcerptParaphrasesById

@@ -82,7 +82,6 @@ export default handleActions({
       const {entities} = normalize(action.payload, action.meta.normalizationSchema)
 
       const updates = map([
-        ['justificationBasisCompounds'],
         ['justifications', justificationsCustomizer()],
         ['justificationVotes'],
         ['persorgs'],
@@ -126,7 +125,7 @@ export default handleActions({
             entitiesKey = 'statements'
             break
           default:
-            throw newExhaustedEnumError('JustificationRootTargetTypes', rootTargetType)
+            throw newExhaustedEnumError(rootTargetType)
         }
         const update = {[entitiesKey]: pickBy(state[entitiesKey], (s, id) => id !== rootTargetId)}
         return {
@@ -323,7 +322,7 @@ export function makeUpdatesAddingJustificationsToTargets(entities, state) {
         justificationsKey = 'counterJustifications'
         break
       default:
-        throw newExhaustedEnumError('JustificationTargetTypes', justification.target.type)
+        throw newExhaustedEnumError(justification.target.type)
     }
     const target = entities[entitiesKey][targetId]
     const extantTarget = state[entitiesKey][targetId] || {}
@@ -356,7 +355,7 @@ export function makeUpdateRemovingJustificationFromTarget(justification, state) 
       justificationsKey = 'counterJustifications'
       break
     default:
-      throw newExhaustedEnumError('JustificationTargetTypes', justification.target.type)
+      throw newExhaustedEnumError(justification.target.type)
   }
   const target = state[entitiesKey][targetId]
   if (!updates[entitiesKey]) {

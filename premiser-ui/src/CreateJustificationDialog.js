@@ -16,12 +16,12 @@ import {
   ESCAPE_KEY_CODE,
 } from "./keyCodes"
 
-import NewJustificationEditor from './NewJustificationEditor'
+import JustificationEditor from './JustificationEditor'
 
-import './NewJustificationDialog.scss'
+import './CreateJustificationDialog.scss'
 
 
-class NewJustificationDialog extends Component {
+class CreateJustificationDialog extends Component {
 
   onKeyDown = (event) => {
     if (event.keyCode === ESCAPE_KEY_CODE) {
@@ -92,7 +92,7 @@ class NewJustificationDialog extends Component {
             {addNewJustificationDialogTitle}
           </h2>
         )}
-        <NewJustificationEditor
+        <JustificationEditor
           editorId={editorId}
           id={id}
           suggestionsKey={suggestionsKey}
@@ -111,7 +111,7 @@ class NewJustificationDialog extends Component {
     )
   }
 }
-NewJustificationDialog.propTypes = {
+CreateJustificationDialog.propTypes = {
   id: PropTypes.string.isRequired,
   editorId: PropTypes.string.isRequired,
 }
@@ -132,4 +132,4 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default connect(mapStateToProps)(NewJustificationDialog)
+export default connect(mapStateToProps)(CreateJustificationDialog)

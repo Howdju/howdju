@@ -21,7 +21,7 @@ import {
   apiErrorCodes,
   entityErrorCodes,
   keysTo,
-  makeNewRegistrationConfirmation,
+  makeRegistrationConfirmation,
   schemaIds,
   schemaSettings,
 } from 'howdju-common'
@@ -65,7 +65,7 @@ class RegistrationConfirmationPage extends React.Component {
   componentDidMount() {
     this.props.api.checkRegistration(this.props.registrationCode)
     this.props.editors.beginEdit(RegistrationConfirmationPage.editorType, RegistrationConfirmationPage.editorId,
-      makeNewRegistrationConfirmation({registrationCode: this.props.registrationCode}))
+      makeRegistrationConfirmation({registrationCode: this.props.registrationCode}))
   }
 
   componentDidUpdate(prevProps) {

@@ -119,7 +119,7 @@ class SourceExcerptEditorFields extends Component {
         break
       }
       default:
-        throw newExhaustedEnumError('SourceExcerptTypes', sourceExcerpt.type)
+        throw newExhaustedEnumError(sourceExcerpt.type)
     }
     return (
 

@@ -14,7 +14,7 @@ import {
   JustificationRootTargetTypes,
   JustificationTargetTypes,
   newProgrammingError,
-  makeNewStatement,
+  makeStatement,
   SentenceTypes,
 } from 'howdju-common'
 
@@ -54,7 +54,7 @@ const editorTypeCommitApiResourceActions = {
 
           // If the statement is justified, then create a justification targeting the statement
           if (model.doCreateJustification) {
-            const justification = consolidateNewJustificationEntities(model.newJustification)
+            const justification = consolidateNewJustificationEntities(model.justification)
             justification.rootTargetType = JustificationRootTargetTypes.STATEMENT
             justification.target = {
               entity: statement,
@@ -66,7 +66,7 @@ const editorTypeCommitApiResourceActions = {
           return api.createStatement(statement)
 
         } else if (model.doCreateJustification) {
-          const justification = consolidateNewJustificationEntities(model.newJustification)
+          const justification = consolidateNewJustificationEntities(model.justification)
           // It is sort of an arbitrary decision to create the justification instead of the proposition.
           // We could support creating a proposition and justification at the same
           // time by either targeting the proposition from the justification, or adding the justification to the proposition's
@@ -125,9 +125,9 @@ function constructStatement(speakers, proposition) {
   // but we need to build the statements outward so that we have the target of the next statement.
   // So take them in reverse order
   speakers = reverse(clone(speakers))
-  let statement = makeNewStatement(speakers[0], SentenceTypes.PROPOSITION, proposition)
+  let statement = makeStatement(speakers[0], SentenceTypes.PROPOSITION, proposition)
   for (const speaker of drop(speakers, 1)) {
-    statement = makeNewStatement(speaker, SentenceTypes.STATEMENT, statement)
+    statement = makeStatement(speaker, SentenceTypes.STATEMENT, statement)
   }
   return statement
 }

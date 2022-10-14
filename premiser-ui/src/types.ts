@@ -32,6 +32,12 @@ export type SuggestionsKey = string
  * Often used for OnPropertyChange callbacks.
  */
 export type PropertyChanges = {[key: string]: any}
+export type OnPropertyChangeCallback = (changes: PropertyChanges) => void
+export type OnKeyDownCallback = (event: React.KeyboardEvent<HTMLElement>) => void
+export type OnChangeCallback = (value: number | string, event: Event) => void
+export type OnSubmitCallback = (event: React.FormEvent<HTMLFormElement>) => void
+export type OnClickHandler = (event: React.MouseEvent<HTMLElement>) => void
+export type OnRemoveHandler<T> = (value: T, index: number) => void
 
 export interface PrivacyConsentCookie {
   id: string

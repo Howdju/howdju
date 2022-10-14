@@ -17,15 +17,17 @@ import {
 } from "react-md"
 
 import {
-  isVerified,
-  isDisverified,
   isWritQuoteBased,
-  makeNewCounterJustification,
   isRootPositive,
   isRootNegative,
   JustificationBasisTypes,
   newExhaustedEnumError,
 } from 'howdju-common'
+import {
+  isVerified,
+  isDisverified,
+  makeCounterJustification
+} from "howdju-client-common"
 
 import {
   api,
@@ -99,7 +101,7 @@ class JustificationBranch extends Component {
   onEditNewCounterJustification = () => {
     const justification = this.props.justification
     this.props.editors.beginEdit(EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification),
-      makeNewCounterJustification(justification))
+      makeCounterJustification(justification))
   }
 
   onEditBasis = () => {
@@ -129,11 +131,8 @@ class JustificationBranch extends Component {
       case JustificationBasisTypes.PROPOSITION_COMPOUND:
         params.propositionCompoundId = justificationBasis.entity.id
         break
-      case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND:
-        params.justificationBasisCompoundId = justificationBasis.entity.id
-        break
       default:
-        throw newExhaustedEnumError('JustificationBasisTypes', justificationBasis.type)
+        throw newExhaustedEnumError(justificationBasis.type)
     }
 
     return paths.searchJustifications(params)

@@ -4,7 +4,6 @@ const set = require('lodash/set')
 const Joi = require('./validation')
 
 const {
-  JustificationBasisCompoundAtomTypes,
   JustificationBasisTypes,
   JustificationPolarities,
   JustificationRootPolarities,
@@ -13,7 +12,6 @@ const {
   PropositionTagVotePolarities,
   schemaSettings,
   SentenceTypes,
-  SourceExcerptTypes,
   UrlTargetAnchorTypes,
 } = require('howdju-common')
 
@@ -136,37 +134,6 @@ const writQuoteSchema = Joi.object().keys({
     })
   })
 
-const sourceExcerptParaphraseSchema = Joi.object().keys({
-  id: idSchema,
-  paraphrasingProposition: propositionSchema,
-  sourceExcerpt: {
-    type: Joi.valid(...Object.keys(SourceExcerptTypes)).required().empty(null),
-    entity: Joi
-      .when('type', {is: SourceExcerptTypes.WRIT_QUOTE, then: writQuoteSchema})
-      .required()
-  },
-})
-  .when(idMissing, {
-    then: Joi.object({
-      paraphrasingProposition: Joi.required(),
-      sourceExcerpt: Joi.required(),
-    })
-  })
-const justificationBasisCompoundSchema = Joi.object().keys({
-  atoms: Joi.array().items(Joi.object().keys({
-    type: Joi.valid(...Object.keys(JustificationBasisCompoundAtomTypes)).required().empty(null),
-    entity: Joi
-      .when('type', {is: JustificationBasisCompoundAtomTypes.PROPOSITION, then: propositionSchema})
-      .when('type', {is: JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE, then: sourceExcerptParaphraseSchema})
-      .required()
-  }))
-})
-  .when(idMissing, {
-    then: Joi.object({
-      atoms: Joi.array().min(1).required(),
-    })
-  })
-
 const JUSTIFICATION_SCHEMA_ID = "justification"
 const justificationSchema = Joi.object().keys({
   id: idSchema,
@@ -184,7 +151,6 @@ const justificationSchema = Joi.object().keys({
     entity: Joi
       .when('type', {is: JustificationBasisTypes.PROPOSITION_COMPOUND, then: propositionCompoundSchema})
       .when('type', {is: JustificationBasisTypes.WRIT_QUOTE, then: writQuoteSchema})
-      .when('type', {is: JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND, then: justificationBasisCompoundSchema})
       .required()
   }),
   // The API accepts root polarity, but since it is determined by the target, it is ignored.
