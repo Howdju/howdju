@@ -31,6 +31,7 @@ export function* resourceApiCalls() {
 const cancelableResourceCallTasks = {}
 
 export function* callApiForResource(action) {
+  // const responseActionCreator = action.meta.responseActionCreator
   const responseActionCreator = apiActionCreatorsByActionType[action.type].response
 
   try {

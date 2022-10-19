@@ -13,11 +13,17 @@ have any fields that are alternative types, they will have all of the alternativ
 at once. The alternatives must be translated to a single entity prior to API
 submission.
 
-`FormSubmissiontModel`: An entity we have edited and are ready to submit. The
+`FormSubmissionModel`: An entity we have edited and are ready to submit. The
 alternative types have been consolidated to select just one entity. They differ
 from the `Entity` because some related entities may be `Persisted` since we
 only need to refer to them by `id` to create a relation with them.
 
+Use `TSubmission = T & Related<T, "related1" | "related2">` to create a new submission
+type where the fields `related1` and `related2` on `T` is `Persisted`.
+
 `ViewModel`: these are either UI specific models or extensions to entities that
 contain additional useful fields for displaying the entity to a user. They
 may contain Tags or Votes that are tailored to the viewing user.
+
+ViewModels always display a persisted Entity, but we also want their fields to
+be required. We use the helper `Materialized\<TEntity>` to represent this.

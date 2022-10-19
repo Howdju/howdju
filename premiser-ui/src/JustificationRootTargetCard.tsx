@@ -6,16 +6,22 @@ import some from 'lodash/some'
 import {
   Card,
   CardText,
+  DropdownMenu,
   FontIcon,
   ListItem,
   MenuButton,
 } from 'react-md'
 
 import {
+  EntityId,
   isNegative,
   isPositive,
   JustificationBasisSourceTypes,
+  JustificationRootTarget,
+  JustificationRootTargetType,
   JustificationRootTargetTypes,
+  logger,
+  Persisted,
 } from 'howdju-common'
 
 import hoverAware from './hoverAware'
@@ -29,7 +35,7 @@ import {
   combineSuggestionsKeys,
 } from './viewModels'
 import {Link} from 'react-router-dom'
-import {connect} from 'react-redux'
+import {connect, ConnectedProps} from 'react-redux'
 import {
   api,
   apiLike,
@@ -40,15 +46,28 @@ import {
 
 import './JustificationRootTargetCard.scss'
 import {divideMenuItems} from "./util"
-import ReportContentDialog from "./content-report/ReportContentDialog"
-import { isVerified, makeContentReportFormInputModel } from 'howdju-client-common'
+import { contentReportEditorId } from "./content-report/ReportContentDialog"
+import { isVerified, JustificationRootTargetViewModel, makeContentReportFormInputModel } from 'howdju-client-common'
+import { ComponentId, ContextTrailItem, EditorId, MenuItems, SuggestionsKey } from './types'
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
-  [JustificationRootTargetTypes.STATEMENT]: EditorTypes.STATEMENT,
 }
 
-class JustificationRootTargetCard extends React.Component {
+interface OwnProps {
+  id: ComponentId,
+  editorId: EditorId,
+  suggestionsKey: SuggestionsKey,
+  rootTargetType: JustificationRootTargetType,
+  rootTarget: JustificationRootTargetViewModel,
+  contextTrailItems: ContextTrailItem[],
+  extraMenuItems: MenuItems,
+  canHover: boolean,
+}
+
+interface Props extends OwnProps, PropsFromRedux {}
+
+class JustificationRootTargetCard extends React.Component<Props> {
   state = {
     isOver: false
   }
@@ -61,7 +80,6 @@ class JustificationRootTargetCard extends React.Component {
       rootTargetType,
       rootTarget,
       contextTrailItems,
-      onFetchedRootTarget,
       extraMenuItems,
       canHover,
     } = this.props
@@ -100,14 +118,16 @@ class JustificationRootTargetCard extends React.Component {
 
     const menuItems = divideMenuItems(entityMenuItems, editMenuItems, reportMenuItems)
 
+    // TODO(17): pass props directly after upgrading react-md to a version with correct types
+    const menuClassNameProps = {menuClassName: "context-menu context-menu--proposition"} as any
     const menu = (
       <MenuButton
         icon
         id={combineIds(id, 'menu')}
         className={cn({hidden: doHideControls})}
-        menuClassName="context-menu context-menu--proposition"
+        {...menuClassNameProps}
         children={'more_vert'}
-        position={MenuButton.Positions.TOP_RIGHT}
+        position={DropdownMenu.Positions.TOP_RIGHT}
         menuItems={menuItems}
       />
     )
@@ -133,11 +153,10 @@ class JustificationRootTargetCard extends React.Component {
               menu={menu}
               contextTrailItems={contextTrailItems}
               showJustificationCount={false}
-              onFetchedRootTarget={onFetchedRootTarget}
             />
             {rootTarget && rootTargetType !== JustificationRootTargetTypes.PROPOSITION && (
               <Tagger
-                trargetType={rootTargetType}
+                targetType={rootTargetType}
                 target={rootTarget}
                 id={combineIds(id, 'tagger')}
                 suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'tagger')}
@@ -168,11 +187,14 @@ class JustificationRootTargetCard extends React.Component {
       },
     } = this.props
     const url = window.location.href
-    this.props.editors.beginEdit(ReportContentDialog.editorType, ReportContentDialog.editorId,
+    // TODO: replace this with this.props.flows.startContentReport({entityType, entityId, url}) that
+    // encapsulates the showing of the dialog, the starting of the edit, and the creation of the
+    // form input model
+    this.props.editors.beginEdit("CONTENT_REPORT", contentReportEditorId,
       makeContentReportFormInputModel({entityType, entityId, url}))
   }
 
-  menuItemsForType(rootTargetType, rootTarget) {
+  menuItemsForType(rootTargetType: JustificationRootTargetType, rootTarget: Persisted<JustificationRootTarget>) {
     switch (rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION: {
         const propositionId = get(rootTarget, 'id')
@@ -225,13 +247,22 @@ class JustificationRootTargetCard extends React.Component {
     }
   }
 
-  createJustificationPath = (propositionId) => {
+  createJustificationPath = (propositionId: EntityId) => {
     return paths.createJustification(JustificationBasisSourceTypes.PROPOSITION, propositionId)
   }
 
   editRootTarget = () => {
-    const editorType = editorTypesByRootTargetType[this.props.rootTargetType]
-    this.props.editors.beginEdit(editorType, this.props.editorId, this.props.rootTarget)
+    const {
+      rootTargetType,
+      editorId,
+      rootTarget,
+    } = this.props
+    if (rootTargetType !== "PROPOSITION") {
+      logger.error(`Editing a ${rootTargetType} is not supported`)
+      return
+    }
+    const editorType = editorTypesByRootTargetType[rootTargetType]
+    this.props.editors.beginEdit(editorType, editorId, rootTarget)
   }
 
   deleteRootTarget = () => {
@@ -247,9 +278,13 @@ class JustificationRootTargetCard extends React.Component {
   }
 }
 
-export default connect(null, mapActionCreatorGroupToDispatchToProps({
+const connector = connect(null, mapActionCreatorGroupToDispatchToProps({
   api,
   apiLike,
   editors,
   ui,
-}))(hoverAware(JustificationRootTargetCard))
+}))
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export default connector(hoverAware(JustificationRootTargetCard))

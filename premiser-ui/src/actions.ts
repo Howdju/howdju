@@ -1,15 +1,23 @@
 import {
   ActionFunctionAny,
   createAction as actionCreator,
+  Action as PayloadAction,
+  combineActions as untypedCombineActions,
+  ActionMeta,
 } from "redux-actions";
+import reduce from "lodash/reduce";
+import mapValues from "lodash/mapValues";
+import assign from "lodash/assign";
+import { ActionCreator, ActionCreatorsMapObject } from "@reduxjs/toolkit";
+import { Location } from "history";
+import { Action, bindActionCreators } from "redux";
+
 import {
   EntityId,
   JustificationVotePolarities,
-  makePropositionTagVote,
   PropositionTagVotePolarities,
   WritQuote,
   JustificationRootTargetType,
-  Entity,
   Proposition,
   JustificationRootTarget,
   Persorg,
@@ -19,25 +27,22 @@ import {
   Statement,
   Justification,
   JustificationBasisSourceType,
+  Persisted,
+  PropositionTagVote,
+  makePropositionTagVoteSubmission,
 } from "howdju-common";
-import reduce from "lodash/reduce";
-import mapValues from "lodash/mapValues";
-import assign from "lodash/assign";
+import { actions, Source, Target, ExtensionAnnotationContent } from "howdju-client-common";
 
-import { actions, Source, Target } from "howdju-client-common";
-import { EditorType } from "./reducers/editors";
-import { Location } from "history";
-import { Action } from "redux";
+import { EditorEntity, EditorType } from "./reducers/editors";
 import { AppDispatch } from "./store";
 import {
-  ContextTrailItem,
+  ContextTrailItemInfo,
   PrivacyConsentCookie,
   PropertyChanges,
   SuggestionsKey,
   WidgetId,
   EditorId,
 } from "./types";
-import { ExtensionAnnotationContent } from "howdju-client-common";
 
 const actionTypeDelim = "/";
 
@@ -47,46 +52,61 @@ const actionTypeDelim = "/";
  */
 export const str = actions.str;
 
-/** Helper to easily allow us to pass an object with 'action groups' to redux-react's connect method.
+export interface TypedActionCreatorsMapObject<A = any> {
+  [key: string]: ActionCreator<PayloadAction<A>>
+}
+
+// redux-action's combineActions return value is recognized as a valid object key.
+// So provide this typed version instead.
+export const combineActions = untypedCombineActions as (...actionTypes: Array<ActionFunctionAny<Action<string>> | string | symbol>) => any
+
+/**
+ * Helper to bind action creator groups to dispatch for redux-react's connect method.
+ *
  * Action groups are what we call the objects below with react-actions action creators.  They are just
  * a way to organize related action creators.  The convention with redux-react's connect method's mapDispatchToProps
  * is to pass an object with keys equal to action creators.  redux-react will automatically turn the action creators
  * into dispatched versions.  This helper accomplishes the same for an object the properties of which are action creator
  * groups like those defined below.
+ *
+ * @param actionCreatorGroups a map of action creator groups that will be bound by the name of the
+ *   action creator group on the returned value.
+ * @param otherActions a map of ActionCreators that will be bound to dispatch directly on the
+ *   returned value.
  */
 export const mapActionCreatorGroupToDispatchToProps =
-  (actionCreatorGroups: any, otherActions?: any) => (dispatch: AppDispatch) => {
-    const dispatchProps = mapValues(actionCreatorGroups, (actionCreatorGroup) =>
-      // Why not mapValues(..., bindActionCreators)? https://redux.js.org/api/bindactioncreators
-      mapValues(
-        actionCreatorGroup,
-        (actionCreator) =>
-          (...args: any[]) =>
-            dispatch(actionCreator.apply(null, args))
-      )
-    );
+  <M extends object, N>(actionCreatorGroups: M, otherActions?: N) =>
+    (dispatch: AppDispatch): M & N => {
+      const dispatchingProps = mapValues(
+        actionCreatorGroups, (actionCreatorGroup: ActionCreatorsMapObject<any>) =>
+          bindActionCreators(actionCreatorGroup, dispatch)
+        ) as { [P in keyof M]: M[P]; } & { [P in keyof N]: N[P]; };
 
-    if (otherActions) {
-      assign(
-        dispatchProps,
-        mapValues(
-          otherActions,
-          (actionCreator) =>
-            (...args: any[]) =>
-              dispatch(actionCreator.apply(null, args))
-        )
-      );
-    }
+      if (otherActions) {
+        assign(
+          dispatchingProps,
+          bindActionCreators(otherActions, dispatch)
+        );
+      }
 
-    return dispatchProps;
-  };
+      return dispatchingProps;
+    };
 
-type ApiAction = ActionFunctionAny<Action<string>> & {
-  response: ActionFunctionAny<Action<string>>;
+type ActionType = string
+// ActionFunction: something that creates ActionCreators.
+// ActionCreator: a factory for actions.
+type ApiActionFunction = ActionFunctionAny<Action<ActionType>> & {
+  response: ActionFunctionAny<Action<ActionType>>;
 };
 
 const apiActionType = (actionType: string) =>
   "API" + actionTypeDelim + actionType;
+
+export type ApiActionMeta = {
+  normalizationSchema: any,
+  requestPayload: any,
+}
+export type ApiAction<T = {}> = ActionMeta<T, ApiActionMeta>
 
 /** Create an action creator having a property `.response` with another action creator for corresponding API responses */
 function apiActionCreator<P, M>(
@@ -95,15 +115,15 @@ function apiActionCreator<P, M>(
   metaCreator?: ActionFunctionAny<M>
 ) {
   const fullActionType = apiActionType(actionType);
-  const ac: ApiAction = payloadCreator
+  const ac = payloadCreator
     ? metaCreator
       ? (actionCreator(
           fullActionType,
           payloadCreator,
           metaCreator
-        ) as unknown as ApiAction)
-      : (actionCreator(fullActionType, payloadCreator) as unknown as ApiAction)
-    : (actionCreator(fullActionType) as unknown as ApiAction);
+        ) as unknown as ApiActionFunction)
+      : (actionCreator(fullActionType, payloadCreator) as unknown as ApiActionFunction)
+    : (actionCreator(fullActionType) as unknown as ApiActionFunction);
   ac.response = actionCreator(
     fullActionType + actionTypeDelim + "RESPONSE",
     (payload, _meta) => payload,
@@ -338,8 +358,8 @@ export const api = {
 
   tagProposition: apiActionCreator(
     "TAG_PROPOSITION",
-    (propositionId, tag, propositionTagVote) => ({
-      propositionTagVote: makePropositionTagVote({
+    (propositionId: EntityId, tag: Tag, propositionTagVote: PropositionTagVote) => ({
+      propositionTagVote: makePropositionTagVoteSubmission({
         polarity: PropositionTagVotePolarities.POSITIVE,
         proposition: { id: propositionId },
         tag,
@@ -350,7 +370,7 @@ export const api = {
   antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
     (propositionId, tag, propositionTagVote) => ({
-      propositionTagVote: makePropositionTagVote({
+      propositionTagVote: makePropositionTagVoteSubmission({
         polarity: PropositionTagVotePolarities.NEGATIVE,
         proposition: { id: propositionId },
         tag,
@@ -360,7 +380,7 @@ export const api = {
   ),
   unTagProposition: apiActionCreator(
     "UN_TAG_PROPOSITION",
-    (propositionTagVote) => ({ prevPropositionTagVote: propositionTagVote })
+    (propositionTagVote: Persisted<PropositionTagVote>) => ({ prevPropositionTagVote: propositionTagVote })
   ),
 
   createProposition: apiActionCreator("CREATE_PROPOSITION", (proposition) => ({
@@ -482,7 +502,7 @@ export const api = {
 };
 export const apiActionCreatorsByActionType = reduce(
   api,
-  (result: { [key: string]: ApiAction }, actionCreator) => {
+  (result: { [key: string]: ApiActionFunction }, actionCreator) => {
     result[str(actionCreator)] = actionCreator;
     return result;
   },
@@ -497,12 +517,12 @@ export const apiLike = {
     "DELETE_JUSTIFICATION_ROOT_TARGET",
     (
       rootTargetType: JustificationRootTargetType,
-      rootTarget: JustificationRootTarget
+      rootTarget: Persisted<JustificationRootTarget>
     ) => ({ rootTargetType, rootTarget })
   ),
   fetchJustificationTargets: actionCreator(
     "FETCH_JUSTIFICATION_TARGETS",
-    (targetInfos: ContextTrailItem[]) => ({ targetInfos })
+    (targetInfos: ContextTrailItemInfo[]) => ({ targetInfos })
   ),
 };
 
@@ -516,9 +536,6 @@ export const ui = {
   setNavDrawerVisibility: actionCreator("SET_NAV_DRAWER_VISIBILITY"),
   addToast: actionCreator("ADD_TOAST", (text: string) => ({ text })),
   dismissToast: actionCreator("DISMISS_TOAST"),
-
-  showNewJustificationDialog: actionCreator("SHOW_NEW_JUSTIFICATION_DIALOG"),
-  hideNewJustificationDialog: actionCreator("HIDE_NEW_JUSTIFICATION_DIALOG"),
 
   mainSearchTextChange: actionCreator("MAIN_SEARCH_TEXT_CHANGE"),
   loginCredentialChange: actionCreator("LOGIN_CREDENTIAL_CHANGE"),
@@ -629,7 +646,7 @@ export type ListPathFactory = string | ((payload: any) => string);
 export const editors = {
   beginEdit: actionCreator(
     "EDITORS/BEGIN_EDIT",
-    (editorType: EditorType, editorId: EditorId, entity: Entity) => ({
+    (editorType: EditorType, editorId: EditorId, entity: EditorEntity) => ({
       editorType,
       editorId,
       entity,

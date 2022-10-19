@@ -2,7 +2,9 @@
 import merge from "lodash/merge";
 
 import {
+  ContentReport,
   ContentReportType,
+  Entity,
   EntityId,
   EntityType,
   Justification,
@@ -13,6 +15,7 @@ import {
   JustificationPolarity,
   JustificationRootPolarities,
   JustificationRootPolarity,
+  JustificationRootTarget,
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   JustificationTargetType,
@@ -25,17 +28,22 @@ import {
   makeSourceExcerpt,
   makeVidSegment,
   makeWritQuote,
+  Materialized,
+  MaterializedEntity,
   negateRootPolarity,
   newExhaustedEnumError,
   Persisted,
   PicRegion,
   Proposition,
   PropositionCompound,
+  PropositionTagVote,
   SourceExcerpt,
   SourceExcerptParaphrase,
   SourceExcerptType,
   SourceExcerptTypes,
   Statement,
+  Tag,
+  TagVotePolarity,
   VidSegment,
   WritQuote,
 } from "howdju-common";
@@ -52,6 +60,10 @@ export interface JustificationFormInputModel {
   rootTargetType: JustificationRootTargetType;
   rootTarget: JustificationRootTargetFormInputModel;
   rootPolarity: JustificationRootPolarity;
+}
+
+export interface CounterJustificationFormInputModel extends Omit<JustificationFormInputModel, "basis"> {
+  basis: CounterJustificationBasisFormInputModel;
 }
 
 export interface JustificationFormSubmissionModel {
@@ -92,11 +104,14 @@ interface JustificationTarget_Statement_FormInputModel {
 
 export interface JustificationBasisFormInputModel {
   type: JustificationBasisType;
-  propositionCompound?: PropositionCompoundFormInputModel;
+  propositionCompound: PropositionCompoundFormInputModel;
   /** @deprecated use {@link sourceExcerpt} instead. */
-  writQuote?: WritQuoteFormInputModel;
-  sourceExcerpt?: SourceExcerptFormInputModel;
+  writQuote: WritQuoteFormInputModel;
+  sourceExcerpt: SourceExcerptFormInputModel;
 }
+
+export interface CounterJustificationBasisFormInputModel
+  extends Omit<JustificationBasisFormInputModel, "writQuote" | "sourceExcerpt"> {}
 
 export type PropositionCompoundFormInputModel = PropositionCompound;
 export type WritQuoteFormInputModel = WritQuote;
@@ -105,16 +120,34 @@ export type PicRegionFormInputModel = PicRegion;
 
 export interface SourceExcerptFormInputModel {
   type: SourceExcerptType;
-  writQuote?: WritQuote;
-  picRegion?: PicRegion;
-  vidSegment?: VidSegment;
+  writQuote: WritQuote;
+  picRegion: PicRegion;
+  vidSegment: VidSegment;
 }
 
 export type PropositionFormInputModel = Proposition;
 
-export interface JustificationViewModel extends Justification {
+export interface JustificationViewModel extends Materialized<Justification> {
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
+  // The sorting score for the current user
+  score?: number
+  // Justifications countering this justification.
+  counterJustifications: JustificationViewModel[]
+}
+
+export type JustificationRootTargetViewModel = Materialized<JustificationRootTarget> & TaggedEntityViewModel & {
+  justifications: JustificationViewModel[]
+  // TODO make tags a view model and put the votes on them.
+  // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
+  propositionTagVotes: PropositionTagVoteViewModel[]
+}
+
+export interface TaggedEntityViewModel extends Entity {
+  tags: Tag[]
+  // TODO put votes on tags and type it as a viewmodel
+  tagVotes: TagVoteViewModel[]
+  recommendedTags: Tag[]
 }
 
 export interface JustificationVote extends Vote {
@@ -153,7 +186,7 @@ export const makeJustificationFormInputModel = (
   return justificationInput;
 };
 
-export const makeJustificationViewModel = (props?: Partial<JustificationViewModel>): JustificationViewModel => {
+export const makeJustificationViewModel = (props?: MaterializedEntity & Partial<JustificationViewModel>): JustificationViewModel => {
   const init = {
     rootTarget: {},
     rootTargetType: JustificationRootTargetTypes.PROPOSITION,
@@ -161,13 +194,14 @@ export const makeJustificationViewModel = (props?: Partial<JustificationViewMode
     target: {},
     polarity: JustificationPolarities.POSITIVE,
     basis: {},
+    counterJustifications: [],
   }
   const merged = merge(init, props)
   inferJustificationRootTarget(merged)
   return merged
 }
 
-function makeSourceExcerptFormInputModel(
+export function makeSourceExcerptFormInputModel(
   props?: Partial<SourceExcerptFormInputModel>
 ): SourceExcerptFormInputModel {
   return merge(
@@ -181,25 +215,25 @@ function makeSourceExcerptFormInputModel(
   );
 }
 
-function makeVidSegmentFormInputModel(): VidSegmentFormInputModel {
+export function makeVidSegmentFormInputModel(): VidSegmentFormInputModel {
   return makeVidSegment();
 }
 
-function makeWritQuoteFormInputModel(): WritQuoteFormInputModel {
+export function makeWritQuoteFormInputModel(): WritQuoteFormInputModel {
   return makeWritQuote();
 }
 
-function makePicRegionFormInputModel(): PicRegionFormInputModel {
+export function makePicRegionFormInputModel(): PicRegionFormInputModel {
   return makePicRegion();
 }
 
-function makePropositionCompoundFormInputModel(): PropositionCompoundFormInputModel {
+export function makePropositionCompoundFormInputModel(): PropositionCompoundFormInputModel {
   return {
     atoms: [{ entity: makePropositionFormInputModel() }],
   };
 }
 
-function makePropositionFormInputModel(): PropositionFormInputModel {
+export function makePropositionFormInputModel(): PropositionFormInputModel {
   return makeProposition();
 }
 
@@ -292,7 +326,7 @@ export const makeJustificationFormInputModelTargetingRoot = (
 
 export const makeCounterJustification = (
   targetJustification: Persisted<Justification> & Pick<Justification, "rootTargetType" | "rootTarget" | "rootPolarity">
-): JustificationFormInputModel => ({
+): CounterJustificationFormInputModel => ({
   rootTargetType: targetJustification.rootTargetType,
   rootTarget: { id: targetJustification.rootTarget.id },
   rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
@@ -313,15 +347,6 @@ export interface ContentReportFormInputModel {
   // Map of whether a particular content type is selected
   checkedByType: Map<ContentReportType, boolean>;
   description: "";
-  url: null;
-}
-
-export interface ContentReport {
-  entityType: EntityType;
-  entityId: EntityId;
-  // Just the selected types
-  types: ContentReportType[];
-  description: string;
   url: string;
 }
 
@@ -341,3 +366,11 @@ export const makeContentReportFormInputModel = (
     },
     fields
   );
+
+export interface TagVoteViewModel extends Entity {
+  // TagVoteViewModel don't need a target because they are added to their targets
+  polarity: TagVotePolarity
+  tag: Tag
+}
+
+export interface PropositionTagVoteViewModel extends Omit<PropositionTagVote, "proposition"> {}

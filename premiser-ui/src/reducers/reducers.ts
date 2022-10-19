@@ -1,5 +1,7 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from '@reduxjs/toolkit'
 import { connectRouter } from 'connected-react-router'
+import { History } from 'history'
+import mapValues from 'lodash/mapValues'
 
 import app from "./app"
 import auth from './auth'
@@ -10,9 +12,9 @@ import errors from './errors'
 import privacyConsent from "./privacyConsent"
 import ui from "./ui"
 import widgets from './widgets'
-import { History } from 'history'
+import * as sagaSlices from '../sagaSlices'
 
-export default (history: History<unknown>) => combineReducers({
+export default (history: History) => combineReducers({
   app,
   auth,
   autocompletes,
@@ -23,4 +25,5 @@ export default (history: History<unknown>) => combineReducers({
   router: connectRouter(history),
   ui,
   widgets,
+  ...mapValues(sagaSlices, s => s.reducer)
 })

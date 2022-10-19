@@ -1,4 +1,4 @@
-import React, {Component} from "react"
+import React, {Component, UIEvent} from "react"
 import Helmet from './Helmet'
 import {
   Button,
@@ -6,7 +6,7 @@ import {
   FontIcon,
   ListItem,
 } from "react-md"
-import {connect} from "react-redux"
+import {connect, ConnectedProps} from "react-redux"
 import concat from 'lodash/concat'
 import forEach from 'lodash/forEach'
 import isEmpty from 'lodash/isEmpty'
@@ -17,16 +17,27 @@ import split from 'lodash/split'
 import toLower from 'lodash/toLower'
 import {denormalize} from "normalizr"
 import queryString from 'query-string'
+import { isArray } from "lodash"
+import { RouteComponentProps } from "react-router"
+
 
 import {
+  EntityId,
+  Justification,
   JustificationPolarities,
+  JustificationRootPolarity,
+  JustificationRootTarget,
+  JustificationRootTargetType,
   JustificationTargetTypes,
+  Url,
+  WritQuote,
 } from "howdju-common"
 import {
   actions,
   isVerified,
   isDisverified,
   makeJustificationFormInputModelTargetingRoot,
+  JustificationViewModel,
 } from 'howdju-client-common'
 
 import {
@@ -38,6 +49,7 @@ import {
   goto,
   flows,
 } from "./actions"
+import {actions as justificationsPage, JustificationPageState} from '@/sagaSlices/justificationsPage'
 import * as characters from './characters'
 import ContextTrail from './ContextTrail'
 import JustificationsTree from './JustificationsTree'
@@ -51,40 +63,18 @@ import t, {
 import {
   combineIds,
   combineSuggestionsKeys,
+  ContextTrailShortcut,
   contextTrailTypeByShortcut,
   describeRootTarget,
   rootTargetNormalizationSchemasByType,
 } from './viewModels'
 import {extensionHighlightingOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
+import { RootState } from "./store"
+import { ComponentId, ContextTrailItemInfo, SuggestionsKey } from "./types"
 
 import "./JustificationsPage.scss"
 
-
-const rootTargetInfoFromProps = (props) => ({
-  rootTargetType: props.rootTargetType,
-  rootTargetId: props.match.params.rootTargetId,
-})
-
-function toContextTrailInfos(contextTrailParam) {
-  const contextTrailItemStrings = split(contextTrailParam, ';')
-  const contextTrailItems = map(contextTrailItemStrings, (s) => {
-    const [typeShortcut, targetId] = split(s, ',')
-    return {
-      targetType: contextTrailTypeByShortcut[typeShortcut],
-      targetId,
-    }
-  })
-  return contextTrailItems
-}
-
-const contextTrailInfosFromProps = (props) => {
-  const queryParams = queryString.parse(props.location.search)
-  const contextTrailParam = queryParams['context-trail']
-  return contextTrailParam ? toContextTrailInfos(contextTrailParam) : []
-}
-
 /*
- * contextItems/rootTrail/trailRootItems/contextTrail
  * isVerified => isApproved
  *
  * Next steps:
@@ -98,7 +88,16 @@ const contextTrailInfosFromProps = (props) => {
 
 const justificationsPageId = 'justifications-page'
 
-class JustificationsPage extends Component {
+interface MatchParams {
+  rootTargetId: EntityId;
+}
+interface OwnProps extends RouteComponentProps<MatchParams> {
+  rootTargetType: JustificationRootTargetType,
+}
+
+interface Props extends OwnProps, PropsFromRedux {}
+
+class JustificationsPage extends Component<Props> {
   static id = justificationsPageId
   static suggestionsKey = justificationsPageId
   static transientId = 'proposition-justifications-page-proposition'
@@ -107,35 +106,36 @@ class JustificationsPage extends Component {
 
   componentDidMount() {
     const {rootTargetType, rootTargetId} = this.rootTargetInfo()
-    this.props.api.fetchRootJustificationTarget(rootTargetType, rootTargetId)
+    // TODO: SagaSlice is not generic on its actions, and so doesn't typecheck them (worse, it says all actions accept zero arguments)
+    this.props.justificationsPage.fetchRootJustificationTarget({rootTargetType, rootTargetId})
 
-    const contextTrailItems = contextTrailInfosFromProps(this.props)
+    const contextTrailItems = contextTrailItemInfosFromProps(this.props)
     if (!isEmpty(contextTrailItems)) {
-      this.props.apiLike.fetchJustificationTargets(contextTrailItems)
+      this.props.apiLike.fetchJustificationTargets(filterContextTrailItems(contextTrailItems))
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     const prevRootTargetInfo = rootTargetInfoFromProps(prevProps)
     const rootTargetInfo = this.rootTargetInfo()
     if (!isEqual(rootTargetInfo, prevRootTargetInfo)) {
-      this.props.api.fetchRootJustificationTarget(rootTargetInfo.rootTargetType, rootTargetInfo.rootTargetId)
+      this.props.justificationsPage.fetchRootJustificationTarget(rootTargetInfo)
     }
 
-    const prevContextTrailInfos = contextTrailInfosFromProps(prevProps)
-    const contextTrailInfos = contextTrailInfosFromProps(this.props)
+    const prevContextTrailInfos = contextTrailItemInfosFromProps(prevProps)
+    const contextTrailInfos = contextTrailItemInfosFromProps(this.props)
     if (!isEqual(contextTrailInfos, prevContextTrailInfos) && !isEmpty(contextTrailInfos)) {
-      this.props.apiLike.fetchJustificationTargets(contextTrailInfos)
+      this.props.apiLike.fetchJustificationTargets(filterContextTrailItems(contextTrailInfos))
     }
   }
 
-  id = (...args) => combineIds(JustificationsPage.id, ...args)
+  id = (...args: ComponentId[]) => combineIds(JustificationsPage.id, ...args)
 
-  suggestionsKey = (...args) => combineSuggestionsKeys(JustificationsPage.suggestionsKey, ...args)
+  suggestionsKey = (...args: SuggestionsKey[]) => combineSuggestionsKeys(JustificationsPage.suggestionsKey, ...args)
 
   rootTargetInfo = () => rootTargetInfoFromProps(this.props)
 
-  showNewJustificationDialog = (event, polarity = null) => {
+  showNewJustificationDialog = (_event: UIEvent, polarity?: JustificationRootPolarity) => {
     const {
       rootTargetType,
       rootTargetId,
@@ -143,28 +143,28 @@ class JustificationsPage extends Component {
     const justification = makeJustificationFormInputModelTargetingRoot(rootTargetType, rootTargetId, polarity)
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.justificationEditorId, justification)
 
-    this.props.ui.showNewJustificationDialog()
+    this.props.justificationsPage.showNewJustificationDialog()
   }
 
-  showNewPositiveJustificationDialog = (event) => {
+  showNewPositiveJustificationDialog = (event: UIEvent) => {
     this.showNewJustificationDialog(event, JustificationPolarities.POSITIVE)
   }
 
-  showNewNegativeJustificationDialog = (event) => {
+  showNewNegativeJustificationDialog = (event: UIEvent) => {
     this.showNewJustificationDialog(event, JustificationPolarities.NEGATIVE)
   }
 
-  saveNewJustification = (event) => {
+  saveNewJustification = (event: Event) => {
     event.preventDefault()
     this.props.flows.commitEditThenPutActionOnSuccess(EditorTypes.NEW_JUSTIFICATION,
-      JustificationsPage.justificationEditorId, ui.hideNewJustificationDialog())
+      JustificationsPage.justificationEditorId, justificationsPage.hideNewJustificationDialog())
   }
 
   cancelNewJustificationDialog = () => {
-    this.props.ui.hideNewJustificationDialog()
+    this.props.justificationsPage.hideNewJustificationDialog()
   }
 
-  onClickWritQuoteUrl = (event, justification, writQuote, url) => {
+  onClickWritQuoteUrl = (event: Event, justification: Justification, writQuote: WritQuote, url: Url) => {
     extensionHighlightingOnClickWritQuoteUrl(this.props.extension.highlightTarget, event, justification, writQuote, url)
   }
 
@@ -275,11 +275,11 @@ class JustificationsPage extends Component {
   }
 }
 
-function describeRootTargetType(rootTargetType) {
+function describeRootTargetType(rootTargetType: JustificationRootTargetType) {
   return toLower(rootTargetType)
 }
 
-const sortJustifications = justifications => {
+const sortJustifications = (justifications: JustificationViewModel[]) => {
   justifications = sortBy(justifications, j => j.score)
   justifications = sortBy(justifications, j => isDisverified(j) ? 1 : isVerified(j) ? -1 : 0)
   forEach(justifications, j => {
@@ -292,22 +292,9 @@ const entitiesStoreKeyByJustificationTargetType = {
   [JustificationTargetTypes.PROPOSITION]: 'propositions',
   [JustificationTargetTypes.STATEMENT]: 'statements',
   [JustificationTargetTypes.JUSTIFICATION]: 'justifications',
-}
+} as const
 
-function toContextTrailItem(state, info) {
-  const {
-    targetType,
-    targetId,
-  } = info
-  const storeKey = entitiesStoreKeyByJustificationTargetType[targetType]
-  const target = state.entities[storeKey][targetId]
-  return {
-    targetType,
-    target,
-  }
-}
-
-const mapStateToProps = (state, ownProps) => {
+const mapState = (state: RootState, ownProps: OwnProps) => {
   const {
     rootTargetType,
     rootTargetId,
@@ -320,12 +307,12 @@ const mapStateToProps = (state, ownProps) => {
   const schema = rootTargetNormalizationSchemasByType[rootTargetType]
   const rootTarget = denormalize(rootTargetId, schema, state.entities)
 
-  const contextTrailItems = map(contextTrailInfosFromProps(ownProps), info => toContextTrailItem(state, info) || null)
+  const contextTrailItems = map(contextTrailItemInfosFromProps(ownProps), info => toContextTrailItem(state, info))
 
   const sortedJustifications = rootTarget ? sortJustifications(rootTarget.justifications) : []
 
   return {
-    ...state.ui.justificationsPage,
+    ...state.justificationsPage as JustificationPageState,
     rootTargetType,
     rootTarget,
     contextTrailItems,
@@ -333,12 +320,85 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
+const rootTargetInfoFromProps = (props: OwnProps) => ({
+  rootTargetType: props.rootTargetType,
+  rootTargetId: props.match.params.rootTargetId,
+})
+
+const contextTrailItemInfosFromProps = (props: OwnProps) => {
+  const queryParams = queryString.parse(props.location.search)
+  let contextTrailParam = queryParams['context-trail']
+  if (isArray(contextTrailParam)) {
+    logger.error(`contextTrailParam can only appear once, but appeared multiple times: ${contextTrailParam}. Using first item.`)
+    contextTrailParam = contextTrailParam[0]
+  }
+  return contextTrailParam ? toContextTrailItemInfos(contextTrailParam) : []
+}
+
+// It there was an error parsing a context item, we replace it with a null placeholder
+type NullContextTrailItemInfo = {[key in keyof ContextTrailItemInfo]: null}
+type MaybeContextTrailItemInfo = (ContextTrailItemInfo | NullContextTrailItemInfo)
+
+function toContextTrailItemInfos(contextTrailParam: string): MaybeContextTrailItemInfo[] {
+  const infoStrings = split(contextTrailParam, ';')
+  const itemInfos = map(infoStrings, (s) => {
+    const [typeShortcut, targetId] = split(s, ',')
+    if (!(typeShortcut in contextTrailTypeByShortcut)) {
+      logger.error(`Invalid context trail type shortcut: ${typeShortcut}`)
+      return {
+        targetType: null,
+        targetId: null,
+      }
+    }
+    return {
+      // casting is necessary because `k in o` does not narrow `k`
+      // (see https://github.com/microsoft/TypeScript/issues/43284)
+      targetType: contextTrailTypeByShortcut[typeShortcut as ContextTrailShortcut],
+      targetId,
+    }
+  })
+  return itemInfos
+}
+
+function isPresentContextTrailItemInfo(itemInfo: MaybeContextTrailItemInfo): itemInfo is ContextTrailItemInfo {
+  return !!itemInfo.targetId
+}
+
+function filterContextTrailItems(contextTailsItems: MaybeContextTrailItemInfo[]): ContextTrailItemInfo[] {
+  return contextTailsItems.filter(isPresentContextTrailItemInfo)
+}
+
+const connector = connect(mapState, mapActionCreatorGroupToDispatchToProps({
   api,
   apiLike,
   ui,
   editors,
   goto,
   flows,
+  justificationsPage,
   extension: actions.extension,
-}))(JustificationsPage)
+}))
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+function toContextTrailItem(state: RootState, item: MaybeContextTrailItemInfo) {
+  const {
+    targetType,
+    targetId,
+  } = item
+  if (targetType === null) {
+    return {
+      targetType,
+      target: null,
+    }
+  }
+  const storeKey = entitiesStoreKeyByJustificationTargetType[targetType]
+  // TODO(1): remove typecast
+  const target: JustificationRootTarget | undefined = (state.entities[storeKey] as any)?.[targetId]
+  return {
+    targetType,
+    target,
+  }
+}
+
+export default connector(JustificationsPage)

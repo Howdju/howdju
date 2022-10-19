@@ -1,10 +1,14 @@
 /** Types describing fundamental concepts in our domain. */
 
 import {
+  ContentReportType,
+  EntityType,
   JustificationPolarity,
   JustificationRootPolarity,
   JustificationRootTargetType,
+  PropositionTagVotePolarity,
   SentenceType,
+  TagVotePolarity,
 } from "./enums";
 
 /** The value of an entity's `id` property. */
@@ -167,7 +171,29 @@ export interface Tag extends Entity {
   name: string
 }
 
-export interface PropositionTagVote {}
+export interface TagVoteTarget {
+  type: TagVoteTarget
+  entity: Entity
+}
+
+export interface TagVote extends Entity {
+  target: TagVoteTarget
+  polarity: TagVotePolarity
+  tag: Tag
+}
+
+// TODO: replace with TagVote
+export interface PropositionTagVote extends Entity {
+  proposition: Proposition
+  polarity: PropositionTagVotePolarity
+  tag: Tag
+}
+
+export interface PropositionTagVoteSubmissionModel {
+  proposition: Persisted<Proposition>
+  polarity: PropositionTagVotePolarity
+  tag: Tag
+}
 
 /**
  * An Entity that has been persisted.
@@ -199,11 +225,7 @@ export type Persisted<T> = T extends Entity ?
   PersistedEntity<T> & {
     // Other fields become optional (`+?`) because the PersistedEntity implies
     // their value.
-    [key in keyof T]+?:
-      T[key] extends Entity ?
-        // If they are entites, then they must be persisted, too.
-        PersistedEntity<T[key]> :
-        T[key]
+    [key in keyof T]+?: Persisted<T[key]>
   } :
   // If the top-level type is not an entity...
   T & {
@@ -212,5 +234,24 @@ export type Persisted<T> = T extends Entity ?
     [key in keyof T]: Persisted<T[key]>
   }
 
+/** A materialized Entity has a required ID. */
+export type MaterializedEntity<T extends Entity = Entity> = Required<Pick<T, 'id'>> & T
+export type Materialized<T> = T extends Entity ?
+  MaterializedEntity<T> & {
+    [key in keyof T]: Materialized<T[key]>
+  } :
+  T & {
+    [key in keyof T]: Materialized<T[key]>
+  }
+
 /**  */
 export type EntityReference<T extends Entity> = Required<Pick<T, 'id'>> & Partial<T>
+
+export interface ContentReport extends Entity {
+  entityType: EntityType;
+  entityId: EntityId;
+  // Just the selected types
+  types: ContentReportType[];
+  description: string;
+  url: string;
+}

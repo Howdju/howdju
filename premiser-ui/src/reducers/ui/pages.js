@@ -14,27 +14,6 @@ import {
   ui,
 } from '../../actions'
 
-export const justificationsPage = handleActions({
-  [api.fetchRootJustificationTarget]: (state, action) => ({
-    ...state,
-    isFetching: true,
-  }),
-  [api.fetchRootJustificationTarget.response]: (state, action) => ({
-    ...state,
-    isFetching: false,
-  }),
-  [ui.showNewJustificationDialog]: (state, action) => ({
-    ...state,
-    isNewJustificationDialogVisible: true,
-  }),
-  [ui.hideNewJustificationDialog]: (state, action) => ({
-    ...state,
-    isNewJustificationDialogVisible: false
-  }),
-}, {
-  isNewJustificationDialogVisible: false,
-  isFetching: false,
-})
 
 export const mainSearchPage = handleActions({
   [api.fetchMainSearchResults]: (state, action) => ({...state, isFetching: true}),

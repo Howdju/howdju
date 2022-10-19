@@ -33,10 +33,11 @@ import {
   ModelErrorCode,
   Sentence,
   newUnimplementedError,
+  EntityId,
 } from "howdju-common";
 
 import * as characters from "./characters";
-import { propositionSchema, statementSchema } from "./normalizationSchemas";
+import { justificationSchema, propositionSchema, statementSchema } from "./normalizationSchemas";
 import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
 import {
   JustificationBasisFormInputModel,
@@ -338,16 +339,20 @@ export function makeChip(props: Partial<ChipInfo>): Partial<ChipInfo> {
   return cloneDeep(props);
 }
 
+
+
 export const contextTrailTypeByShortcut = {
   p: JustificationTargetTypes.PROPOSITION,
   s: JustificationTargetTypes.STATEMENT,
-};
+} as const;
+export type ContextTrailShortcut = keyof typeof contextTrailTypeByShortcut
 
 export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut);
 
 export const rootTargetNormalizationSchemasByType = {
   [JustificationRootTargetTypes.PROPOSITION]: propositionSchema,
   [JustificationRootTargetTypes.STATEMENT]: statementSchema,
+  [JustificationRootTargetTypes.JUSTIFICATION]: justificationSchema,
 };
 
 export function describeRootTarget(
@@ -375,4 +380,9 @@ export function describeRootTarget(
     default:
       throw newExhaustedEnumError(rootTargetType);
   }
+}
+
+export interface RootTargetInfo {
+  rootTargetType: JustificationRootTargetType;
+  rootTargetId: EntityId;
 }

@@ -1,9 +1,17 @@
 import { Entity, EntityId } from "howdju-common";
 
-export interface ContextTrailItem {
-  targetType: "PROPOSITION" | "STATEMENT",
+export interface ContextTrailItemInfo {
+  targetType: "PROPOSITION" | "STATEMENT" | "JUSTIFICATION",
   targetId: EntityId
 }
+
+export interface ContextTrailItem {
+  targetType: "PROPOSITION" | "STATEMENT" | "JUSTIFICATION",
+  target: Entity
+}
+
+/** The type that react-md expected for menu items */
+export type MenuItems = React.ReactNode | React.ReactNode[]
 
 /**
  * A DOM element's `id` attribute. If passed to a container, the ID should be

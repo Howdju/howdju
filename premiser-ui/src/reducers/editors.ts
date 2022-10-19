@@ -23,7 +23,6 @@ import set from "lodash/set";
 import {
   apiErrorCodes,
   insertAt,
-  JustificationRootTargetTypes,
   makePropositionAtom,
   makePersorg,
   makeUrl,
@@ -34,7 +33,6 @@ import {
   tagEqual,
   Entity,
   ApiErrorCode,
-  Url,
   Persorg,
   Proposition,
   PropositionTagVotePolarity,
@@ -58,6 +56,7 @@ import {
 } from "@/texts";
 import { logger } from "@/logger";
 import { EditorId, EntityFactory, PropertyChanges } from "@/types";
+import { JustificationFormInputModel } from "howdju-client-common";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};
@@ -100,32 +99,25 @@ type ApiFieldsErrors = RecursiveObject<string>;
 export type DirtyFields = RecursiveObject<boolean>;
 export type EditorFieldsErrors = RecursiveObject<string>;
 
-interface JustificationEditEntity extends Entity {
-  basis: {
-    writQuote: {
-      urls: Url[];
-    };
-    propositionCompound: {
-      atoms: Array<{
-        entity: Proposition;
-      }>;
-    };
-  };
-}
 
 interface PropositionJustificationsEditEntity extends Entity {
   proposition: Proposition;
   speakers: Persorg[];
-  justification: JustificationEditEntity;
+  justification: JustificationFormInputModel;
 }
 
+/**
+ * Something we have an editor for.
+ *
+ * TODO: deduplicate this with *FormInputModels.
+ */
+export type EditorEntity = | Entity
+| JustificationFormInputModel
+| PropositionJustificationsEditEntity
+| WritQuote
+
 interface EditorState {
-  editEntity:
-    | Entity
-    | JustificationEditEntity
-    | PropositionJustificationsEditEntity
-    | WritQuote
-    | null;
+  editEntity: EditorEntity | null;
   errors: EditorFieldsErrors | null;
   isSaving: boolean;
   isSaved: boolean;
@@ -314,32 +306,10 @@ const editorReducerByType: {
   // TODO(94): adopt Redux's slice pattern to get precise reducer typechecking
   [EditorTypes.PROPOSITION]: handleActions<EditorState, any, EditorMeta>(
     {
-      [str(api.fetchRootJustificationTarget)]: (state, action) => {
-        const { rootTargetType, rootTargetId } = action.payload;
-        const propositionId = get(state, "editEntity.id");
-        if (
-          rootTargetType === JustificationRootTargetTypes.PROPOSITION &&
-          propositionId === rootTargetId
-        ) {
-          return { ...state, isFetching: true };
-        }
-        return state;
-      },
       [str(api.fetchProposition)]: (state, action) => {
         const propositionId = get(state, "editEntity.id");
         if (propositionId === action.payload.propositionId) {
           return { ...state, isFetching: true };
-        }
-        return state;
-      },
-      [str(api.fetchRootJustificationTarget.response)]: (state, action) => {
-        const { rootTargetType, rootTargetId } = action.meta.requestPayload;
-        const propositionId = get(state, "editEntity.id");
-        if (
-          rootTargetType === JustificationRootTargetTypes.PROPOSITION &&
-          propositionId === rootTargetId
-        ) {
-          return { ...state, isFetching: false };
         }
         return state;
       },
@@ -378,7 +348,7 @@ const editorReducerByType: {
       [str(editors.addUrl)]: (state) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationEditEntity;
+        } as unknown as JustificationFormInputModel;
         editEntity.basis.writQuote.urls =
           editEntity.basis.writQuote.urls.concat([makeUrl()]);
         return { ...state, editEntity };
@@ -386,7 +356,7 @@ const editorReducerByType: {
       [str(editors.removeUrl)]: (state, action) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationEditEntity;
+        } as unknown as JustificationFormInputModel;
 
         const urls = clone(editEntity.basis.writQuote.urls);
         removeAt(urls, action.payload.index);

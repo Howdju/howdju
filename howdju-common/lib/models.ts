@@ -6,12 +6,14 @@ import { newImpossibleError, newExhaustedEnumError } from "./commonErrors";
 import {
   EntityId,
   Justification,
+  Persisted,
   Persorg,
   PicRegion,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
+  PropositionTagVoteSubmissionModel,
   Sentence,
   SourceExcerpt,
   Statement,
@@ -31,6 +33,7 @@ import {
   JustificationRootPolarity,
   SentenceType,
   SourceExcerptTypes,
+  PropositionTagVotePolarities,
 } from "./enums";
 import { isDefined } from "./general";
 
@@ -266,9 +269,40 @@ export const tagEqual = (tag1: Tag, tag2: Tag) =>
   idEqual(tag1.id, tag2.id) ||
   (isDefined(tag1.name) && tag1.name === tag2.name);
 
+
+/** Make some fields required and the rest optional. */
+export type RequireSome<T, Fields extends keyof T> = Partial<T> & Required<Pick<T, Fields>>
+
+/** Transform a type to represent a submission model. */
+export type Submission<T, RequiredFields extends keyof T, RelatedFields extends keyof T> = T &
+  Required<Pick<T, RequiredFields>> & {
+  [key in RelatedFields]: Persisted<T[key]>
+}
+
+/**
+ * Transform a type to represent an input to a submission model factory.
+ *
+ * Fields that are not required or related must provide defaults in the factory
+ * if necessary to satisfy the base type.
+ */
+export type SubmissionInput<T, RequiredFields extends keyof T, RelatedFields extends keyof T> =
+  Partial<Omit<T, RequiredFields | RelatedFields>> &
+  Required<Pick<T, RequiredFields>> &
+  {
+    [key in RelatedFields]: Persisted<T[key]>
+  }
+
 export const makePropositionTagVote = (
-  props: Partial<PropositionTagVote>
-): PropositionTagVote => merge({}, props);
+  props: RequireSome<PropositionTagVote, "tag" | "proposition">
+): PropositionTagVote => merge({
+  polarity: PropositionTagVotePolarities.POSITIVE,
+}, props);
+
+export const makePropositionTagVoteSubmission = (
+  props: SubmissionInput<PropositionTagVote, "tag", "proposition">
+): PropositionTagVoteSubmissionModel => merge({
+  polarity: PropositionTagVotePolarities.POSITIVE,
+}, props);
 
 export const doTargetSameRoot = (j1: Justification, j2: Justification) =>
   idEqual(j1.rootTarget.id, j2.rootTarget.id) &&

@@ -16,6 +16,12 @@ import {
 import {
   JustificationBasisFormInputModel,
   makeJustifiedPropositionFormInputModel,
+  makePropositionCompoundFormInputModel,
+  makeSourceExcerptFormInputModel,
+  makeWritQuoteFormInputModel,
+  PropositionCompoundFormInputModel,
+  SourceExcerptFormInputModel,
+  WritQuoteFormInputModel,
 } from "howdju-client-common";
 
 import { api, editors, flows, str } from "@/actions";
@@ -55,8 +61,9 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
         );
 
         let type: JustificationBasisType
-        let propositionCompound: PropositionCompound | undefined
-        let writQuote: WritQuote | undefined
+        let propositionCompound: PropositionCompoundFormInputModel | undefined
+        let writQuote: WritQuoteFormInputModel | undefined
+        let sourceExcerpt: SourceExcerptFormInputModel | undefined
 
         switch (alternatives.basisType) {
           case JustificationBasisSourceTypes.PROPOSITION_COMPOUND:
@@ -73,6 +80,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
           case JustificationBasisSourceTypes.WRIT_QUOTE:
             type = "WRIT_QUOTE"
             writQuote = removeWritQuoteIds(alternatives.writQuote);
+            sourceExcerpt = makeSourceExcerptFormInputModel({writQuote});
             break;
           default:
             throw newExhaustedEnumError(alternatives);
@@ -80,8 +88,9 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
 
         const basis: JustificationBasisFormInputModel = {
           type,
-          propositionCompound,
-          writQuote,
+          propositionCompound: propositionCompound || makePropositionCompoundFormInputModel(),
+          writQuote: writQuote || makeWritQuoteFormInputModel(),
+          sourceExcerpt: sourceExcerpt || makeSourceExcerptFormInputModel(),
         };
 
         const editModel = makeJustifiedPropositionFormInputModel({}, { basis });

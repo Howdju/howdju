@@ -163,7 +163,8 @@ export default function withEditor<P extends EntityEditorFieldsProps, LIT extend
       errors,
       dirtyFields,
       wasSubmitAttempted,
-    } as unknown as P  // TODO(1): can we remove this typecast?
+    // TODO(1): can we remove this typecast? https://stackoverflow.com/questions/74072249/
+    } as unknown as P
 
     return (
       <form onSubmit={onSubmit} className={className}>

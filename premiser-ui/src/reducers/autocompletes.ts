@@ -1,8 +1,12 @@
 import {normalize} from 'normalizr'
-import {handleActions, combineActions} from "redux-actions"
-import {api, autocompletes} from "../actions"
+import {handleActions} from "redux-actions"
+import {api, ApiActionMeta, autocompletes, combineActions, str} from "../actions"
 
-export default handleActions({
+const initialState = {
+  suggestions: {}
+}
+
+export default handleActions<typeof initialState, any, ApiActionMeta>({
   [combineActions(
     api.fetchPersorgNameSuggestions.response,
     api.fetchPropositionTextSuggestions.response,
@@ -20,7 +24,7 @@ export default handleActions({
       }
     }
   },
-  [api.fetchMainSearchSuggestions.response]: {
+  [str(api.fetchMainSearchSuggestions.response)]: {
     next: (state, action) => {
       const {result} = normalize(action.payload, action.meta.normalizationSchema)
       return {
@@ -32,13 +36,11 @@ export default handleActions({
       }
     }
   },
-  [autocompletes.clearSuggestions]: (state, action) => ({
+  [str(autocompletes.clearSuggestions)]: (state, action) => ({
     ...state,
     suggestions: {
       ...state.suggestions,
       [action.payload.suggestionsKey]: [],
     },
   }),
-}, {
-  suggestions: {}
-})
+}, initialState)
