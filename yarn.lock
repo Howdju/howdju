@@ -14080,7 +14080,7 @@ __metadata:
     howdju-test-common: ^1.0.0
     jest: ^26.6.3
     lodash: ^4.17.4
-    moment: ^2.18.1
+    moment: ^2.29.4
     typescript: ^4.8.4
   languageName: unknown
   linkType: soft
@@ -14231,7 +14231,7 @@ __metadata:
     jest: ^26.6.3
     joi: ^17.4.0
     lodash: ^4.17.4
-    moment: ^2.18.1
+    moment: ^2.29.4
     moment-duration-format: ^2.2.2
     outdent: ^0.8.0
     pg: ^8.6.0
@@ -18595,10 +18595,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:2.x.x, moment@npm:^2.18.1, moment@npm:^2.22.1, moment@npm:^2.29.1":
+"moment@npm:2.x.x, moment@npm:^2.22.1":
   version: 2.29.1
   resolution: "moment@npm:2.29.1"
   checksum: 1e14d5f422a2687996be11dd2d50c8de3bd577c4a4ca79ba5d02c397242a933e5b941655de6c8cb90ac18f01cc4127e55b4a12ae3c527a6c0a274e455979345e
+  languageName: node
+  linkType: hard
+
+"moment@npm:^2.29.4":
+  version: 2.29.4
+  resolution: "moment@npm:2.29.4"
+  checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
   languageName: node
   linkType: hard
 
@@ -20837,7 +20844,7 @@ __metadata:
     howdju-service-common: ^1.0.0
     howdju-test-common: ^1.0.0
     jest: ^26.6.3
-    moment: ^2.18.1
+    moment: ^2.29.4
     morgan: ^1.8.1
     node-zip: ^1.1.1
     npm-version: ^1.1.0
@@ -20937,7 +20944,7 @@ __metadata:
     lodash: ^4.17.21
     markdown-loader: ^6.0.0
     mini-css-extract-plugin: ^2.6.1
-    moment: ^2.29.1
+    moment: ^2.29.4
     moment-duration-format: ^2.3.2
     moment-locales-webpack-plugin: ^1.2.0
     node-sass: ^6.0.0
