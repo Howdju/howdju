@@ -269,10 +269,6 @@ export const tagEqual = (tag1: Tag, tag2: Tag) =>
   idEqual(tag1.id, tag2.id) ||
   (isDefined(tag1.name) && tag1.name === tag2.name);
 
-
-/** Make some fields required and the rest optional. */
-export type RequireSome<T, Fields extends keyof T> = Partial<T> & Required<Pick<T, Fields>>
-
 /** Transform a type to represent a submission model. */
 export type SubmissionModel<T, RequiredFields extends keyof T, RelatedFields extends keyof T> = T &
   Required<Pick<T, RequiredFields>> & {
@@ -291,8 +287,8 @@ export type FactoryInput<T, RequiredFields extends keyof T, RelatedFields extend
   { [key in RelatedFields]: Persisted<T[key]> }
 
 export const makePropositionTagVote = (
-  props: RequireSome<PropositionTagVote, "tag" | "proposition">
-): PropositionTagVote => merge({
+  props: FactoryInput<PropositionTagVote, never, "tag" | "proposition">
+): PropositionTagVoteSubmissionModel => merge({
   polarity: PropositionTagVotePolarities.POSITIVE,
 }, props);
 

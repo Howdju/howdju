@@ -10,7 +10,11 @@ export interface ContextTrailItem {
   target: Entity
 }
 
-/** The type that react-md expected for menu items */
+/**
+ * The type that react-md expects for menu items.
+ *
+ * This allows us to type props to receive menu items.
+ */
 export type MenuItems = React.ReactNode | React.ReactNode[]
 
 /**

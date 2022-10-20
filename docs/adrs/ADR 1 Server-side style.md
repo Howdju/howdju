@@ -1,4 +1,4 @@
-# ADR 1 — Serverside style
+# ADR 1 — Server-side style
 
 This ADR provides high-level guidance for how to write and structure serverside
 code.

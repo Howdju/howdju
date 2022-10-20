@@ -46,17 +46,14 @@ import {
 
 const actionTypeDelim = "/";
 
-/** react-actions has a convention that its action creators .toString return the action type.
+/**
+ * react-actions has a convention that its action creators .toString return the action type.
  * .toString appears to happen automatically when an action creator is the key of an object, but in some
  * cases we will need to call .toString manually.  This method will help us locate those places in the code
  */
 export const str = actions.str;
 
-export interface TypedActionCreatorsMapObject<A = any> {
-  [key: string]: ActionCreator<PayloadAction<A>>
-}
-
-// redux-action's combineActions return value is recognized as a valid object key.
+// redux-action's combineActions return value is not recognized as a valid object key.
 // So provide this typed version instead.
 export const combineActions = untypedCombineActions as (...actionTypes: Array<ActionFunctionAny<Action<string>> | string | symbol>) => any
 

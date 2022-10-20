@@ -111,10 +111,11 @@ interface PropositionJustificationsEditEntity extends Entity {
  *
  * TODO: deduplicate this with *EditModels.
  */
-export type EditorEntity = | Entity
-| JustificationEditModel
-| PropositionJustificationsEditEntity
-| WritQuote
+export type EditorEntity =
+  | Entity
+  | JustificationEditModel
+  | PropositionJustificationsEditEntity
+  | WritQuote
 
 interface EditorState {
   editEntity: EditorEntity | null;
