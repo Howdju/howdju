@@ -1,13 +1,17 @@
 import {
   ActionFunctionAny,
-  createAction as actionCreator,
   combineActions as untypedCombineActions,
-  ActionMeta,
 } from "redux-actions";
 import reduce from "lodash/reduce";
 import mapValues from "lodash/mapValues";
 import assign from "lodash/assign";
-import { ActionCreatorsMapObject } from "@reduxjs/toolkit";
+import {
+  ActionCreatorsMapObject,
+  PayloadActionCreator,
+  createAction as toolkitCreateAction,
+  PrepareAction,
+  ActionCreatorWithPayload,
+} from "@reduxjs/toolkit";
 import { Location } from "history";
 import { Action, bindActionCreators } from "redux";
 
@@ -30,7 +34,12 @@ import {
   PropositionTagVote,
   makePropositionTagVoteSubmissionModel,
 } from "howdju-common";
-import { actions, Source, Target, ExtensionAnnotationContent } from "howdju-client-common";
+import {
+  actions,
+  Source,
+  Target,
+  ExtensionAnnotationContent,
+} from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
 import { AppDispatch } from "./store";
@@ -54,7 +63,9 @@ export const str = actions.str;
 
 // redux-action's combineActions return value is not recognized as a valid object key.
 // So provide this typed version instead.
-export const combineActions = untypedCombineActions as (...actionTypes: Array<ActionFunctionAny<Action<string>> | string | symbol>) => any
+export const combineActions = untypedCombineActions as (
+  ...actionTypes: Array<ActionFunctionAny<Action<string>> | string | symbol>
+) => any;
 
 /**
  * Helper to bind action creator groups to dispatch for redux-react's connect method.
@@ -72,69 +83,134 @@ export const combineActions = untypedCombineActions as (...actionTypes: Array<Ac
  */
 export const mapActionCreatorGroupToDispatchToProps =
   <M extends object, N>(actionCreatorGroups: M, otherActions?: N) =>
-    (dispatch: AppDispatch): M & N => {
-      const dispatchingProps = mapValues(
-        actionCreatorGroups, (actionCreatorGroup: ActionCreatorsMapObject<any>) =>
-          bindActionCreators(actionCreatorGroup, dispatch)
-        ) as { [P in keyof M]: M[P]; } & { [P in keyof N]: N[P]; };
+  (dispatch: AppDispatch): M & N => {
+    const dispatchingProps = mapValues(
+      actionCreatorGroups,
+      (actionCreatorGroup: ActionCreatorsMapObject<any>) =>
+        bindActionCreators(actionCreatorGroup, dispatch)
+    ) as { [P in keyof M]: M[P] } & { [P in keyof N]: N[P] };
 
-      if (otherActions) {
-        assign(
-          dispatchingProps,
-          bindActionCreators(otherActions, dispatch)
-        );
-      }
+    if (otherActions) {
+      assign(dispatchingProps, bindActionCreators(otherActions, dispatch));
+    }
 
-      return dispatchingProps;
-    };
+    return dispatchingProps;
+  };
 
-type ActionType = string
-// ActionFunction: something that creates ActionCreators.
-// ActionCreator: a factory for actions.
-type ApiActionFunction = ActionFunctionAny<Action<ActionType>> & {
-  response: ActionFunctionAny<Action<ActionType>>;
+// The terminology around redux actions is terrible.
+//
+// `createAction`: a reduxjs/toolkit helper returning an ActionCreator
+// `ActionCreator`: a factory for functions that create actions. Really an ActionCreatorFactory.
+
+/**
+ * ApiActionCreator types must be strings because we generate them.
+ *
+ * @typeparam P payload type
+ * @typeparam RP response payload type
+ * @typeparam PA prepare action type
+ */
+type ApiActionCreator<
+  P,
+  RP,
+  PA extends void | PrepareAction<P>
+> = PayloadActionCreator<P, string, PA> & {
+  response: ActionCreatorWithPayload<RP, string>;
 };
 
-const apiActionType = (actionType: string) =>
-  "API" + actionTypeDelim + actionType;
+const makeApiActionTypes = (type: string) => {
+  const requestType = "API" + actionTypeDelim + type;
+  const responseType = requestType + actionTypeDelim + "RESPONSE";
+  return [requestType, responseType];
+};
 
-export type ApiActionMeta = {
-  normalizationSchema: any,
-  requestPayload: any,
+export type ApiActionMeta<P = any> = {
+  normalizationSchema: any;
+  requestPayload: P;
+};
+
+/**
+ * Helper to create a reduxjs/toolkit prepare method that is compatible with redux-actions syle calls.
+ *
+ * redux-actions had a couple of conventions for their 'ActionFunctions' returned by their createAction:
+ *   * the first argument is the `payload` and the second is the `meta`
+ *   * unless the first argument is an Error, then it is the `error`.
+ */
+function reduxActionsCompatiblePrepare<P>(
+  prepare: PrepareAction<P>
+): PrepareAction<P> {
+  return function (payload: P, meta?: any) {
+    if (payload instanceof Error) {
+      return {
+        payload, // payload is required by reduxjs/toolkit; I forget if redux-actions also set the error as the payload.
+        error: payload,
+      };
+    }
+    return prepare(payload, meta);
+  };
 }
-export type ApiAction<T = {}> = ActionMeta<T, ApiActionMeta>
+
+/**
+ * A createAction that translates the redux-actions calling convention to the reduxjs/toolkit convention.
+ *
+ * The redux-actions calling convention is to pass two different functions: one to create the
+ * payload from the arguments and a second to create the meta from the same arguments. (The meta
+ * function was optional.)
+ *
+ * The reduxjs/toolkit calling convention is to pass a single `prepare` method that must return an
+ * object like `{payload, meta?, error?}`.
+ *
+ * redux-actions avoided the boilerplate of specifying the `payload` and `meta` fields, while
+ * reduxjs/toolkit avoids the boilerplate of multiple functions receiving the same argumnets to
+ * create a meta, when often the functions will ignore some of the arguments.
+ *
+ * For apps that use meta infrequently, redux-actions convention probably makes more sense, but
+ * either works. To remove conceptual dependencies on redux-actions from our code we will probably
+ * want to remove this eventually, and replace our createAction invocations below with ones
+ * that use a prepare function directly rather than accepting separate meta functions.
+ */
+function createAction<T extends string, P>(
+  type: T,
+  payloadCreator?: (...args: any[]) => P,
+  metaCreator?: (...args: any[]) => any
+) {
+  const prepare: PrepareAction<P | undefined> = payloadCreator
+    ? metaCreator
+      ? (...args: any[]) => ({
+          payload: payloadCreator(...args),
+          meta: metaCreator(...args),
+        })
+      : (...args: any[]) => ({ payload: payloadCreator(...args) })
+    : () => ({ payload: undefined });
+  return toolkitCreateAction(type, reduxActionsCompatiblePrepare(prepare));
+}
 
 /** Create an action creator having a property `.response` with another action creator for corresponding API responses */
-function apiActionCreator<P, M>(
-  actionType: string,
-  payloadCreator?: ActionFunctionAny<P>,
-  metaCreator?: ActionFunctionAny<M>
-) {
-  const fullActionType = apiActionType(actionType);
-  const ac = payloadCreator
-    ? metaCreator
-      ? (actionCreator(
-          fullActionType,
-          payloadCreator,
-          metaCreator
-        ) as unknown as ApiActionFunction)
-      : (actionCreator(fullActionType, payloadCreator) as unknown as ApiActionFunction)
-    : (actionCreator(fullActionType) as unknown as ApiActionFunction);
-  ac.response = actionCreator(
-    fullActionType + actionTypeDelim + "RESPONSE",
+function apiActionCreator<P, RP, PA extends (...args: any[]) => { payload: P }>(
+  type: string,
+  payloadCreator?: (...args: any[]) => P,
+  metaCreator?: (...args: any[]) => any
+): ApiActionCreator<P, RP, PA> {
+  const [requestType, responseType] = makeApiActionTypes(type);
+  const ac = createAction(
+    requestType,
+    payloadCreator,
+    metaCreator
+  ) as ApiActionCreator<P, RP, PA>;
+  ac.response = createAction(
+    responseType,
     (payload, _meta) => payload,
-    (_payload, meta) => meta
-  );
+    (_payload, meta: ApiActionMeta<P>) => meta
+  ) as ActionCreatorWithPayload<RP, string>;
   return ac;
 }
 
 export const app = {
-  searchMainSearch: actionCreator(
+  searchMainSearch: createAction(
     "APP/SEARCH_MAIN_SEARCH",
     (searchText: string) => ({ searchText })
   ),
-  clearAuthToken: actionCreator("APP/CLEAR_AUTH_TOKEN"),
-  checkAuthExpiration: actionCreator("APP/CHECK_AUTH_EXPIRATION"),
+  clearAuthToken: createAction("APP/CLEAR_AUTH_TOKEN"),
+  checkAuthExpiration: createAction("APP/CHECK_AUTH_EXPIRATION"),
 };
 
 /** Actions that directly result in API calls */
@@ -354,7 +430,11 @@ export const api = {
 
   tagProposition: apiActionCreator(
     "TAG_PROPOSITION",
-    (propositionId: EntityId, tag: Tag, propositionTagVote: PropositionTagVote) => ({
+    (
+      propositionId: EntityId,
+      tag: Tag,
+      propositionTagVote: PropositionTagVote
+    ) => ({
       propositionTagVote: makePropositionTagVoteSubmissionModel({
         polarity: PropositionTagVotePolarities.POSITIVE,
         proposition: { id: propositionId },
@@ -376,7 +456,9 @@ export const api = {
   ),
   unTagProposition: apiActionCreator(
     "UN_TAG_PROPOSITION",
-    (propositionTagVote: Persisted<PropositionTagVote>) => ({ prevPropositionTagVote: propositionTagVote })
+    (propositionTagVote: Persisted<PropositionTagVote>) => ({
+      prevPropositionTagVote: propositionTagVote,
+    })
   ),
 
   createProposition: apiActionCreator("CREATE_PROPOSITION", (proposition) => ({
@@ -407,7 +489,7 @@ export const api = {
   cancelPropositionTextSuggestions: apiActionCreator(
     "CANCEL_PROPOSITION_TEXT_SUGGESTIONS",
     (suggestionsKey) => ({
-      cancelTarget: apiActionType("FETCH_PROPOSITION_TEXT_SUGGESTIONS"),
+      cancelTarget: makeApiActionTypes("FETCH_PROPOSITION_TEXT_SUGGESTIONS")[0],
       suggestionsKey,
     })
   ),
@@ -422,7 +504,7 @@ export const api = {
   cancelWritTitleSuggestions: apiActionCreator(
     "CANCEL_WRIT_TITLE_SUGGESTIONS",
     (suggestionsKey) => ({
-      cancelTarget: apiActionType("FETCH_WRIT_TITLE_SUGGESTIONS"),
+      cancelTarget: makeApiActionTypes("FETCH_WRIT_TITLE_SUGGESTIONS")[0],
       suggestionsKey,
     })
   ),
@@ -437,7 +519,7 @@ export const api = {
   cancelTagNameSuggestions: apiActionCreator(
     "CANCEL_TAG_NAME_SUGGESTIONS",
     (suggestionsKey) => ({
-      cancelTarget: apiActionType("FETCH_TAG_NAME_SUGGESTIONS"),
+      cancelTarget: makeApiActionTypes("FETCH_TAG_NAME_SUGGESTIONS")[0],
       suggestionsKey,
     })
   ),
@@ -452,7 +534,7 @@ export const api = {
   cancelMainSearchSuggestions: apiActionCreator(
     "CANCEL_MAIN_SEARCH_SUGGESTIONS",
     (suggestionsKey) => ({
-      cancelTarget: apiActionType("FETCH_MAIN_SEARCH_SUGGESTIONS"),
+      cancelTarget: makeApiActionTypes("FETCH_MAIN_SEARCH_SUGGESTIONS")[0],
       suggestionsKey,
     })
   ),
@@ -467,7 +549,7 @@ export const api = {
   cancelPersorgNameSuggestions: apiActionCreator(
     "CANCEL_PERSORG_NAME_SUGGESTIONS",
     (suggestionsKey) => ({
-      cancelTarget: apiActionType("FETCH_PERSORG_NAME_SUGGESTIONS"),
+      cancelTarget: makeApiActionTypes("FETCH_PERSORG_NAME_SUGGESTIONS")[0],
       suggestionsKey,
     })
   ),
@@ -496,10 +578,15 @@ export const api = {
     (tagId) => ({ tagId })
   ),
 };
+type UnknownApiActionCreator = ApiActionCreator<
+  unknown,
+  unknown,
+  void | PrepareAction<unknown>
+>;
 export const apiActionCreatorsByActionType = reduce(
   api,
-  (result: { [key: string]: ApiActionFunction }, actionCreator) => {
-    result[str(actionCreator)] = actionCreator;
+  (result: { [key: string]: UnknownApiActionCreator }, actionCreator) => {
+    result[str(actionCreator)] = actionCreator as any;
     return result;
   },
   {}
@@ -509,14 +596,14 @@ export const apiActionCreatorsByActionType = reduce(
  * API call depending on some payload value or those that correspond to multiple API calls
  */
 export const apiLike = {
-  deleteJustificationRootTarget: actionCreator(
+  deleteJustificationRootTarget: createAction(
     "DELETE_JUSTIFICATION_ROOT_TARGET",
     (
       rootTargetType: JustificationRootTargetType,
       rootTarget: Persisted<JustificationRootTarget>
     ) => ({ rootTargetType, rootTarget })
   ),
-  fetchJustificationTargets: actionCreator(
+  fetchJustificationTargets: createAction(
     "FETCH_JUSTIFICATION_TARGETS",
     (targetInfos: ContextTrailItemInfo[]) => ({ targetInfos })
   ),
@@ -524,88 +611,88 @@ export const apiLike = {
 
 /** UI actions */
 export const ui = {
-  unhandledAppClick: actionCreator("UI/UNHANDLED_APP_CLICK"),
-  unhandledAppTouch: actionCreator("UI/UNHANDLED_APP_TOUCH"),
-  showNavDrawer: actionCreator("SHOW_NAV_DRAWER"),
-  hideNavDrawer: actionCreator("HIDE_NAV_DRAWER"),
-  toggleNavDrawerVisibility: actionCreator("TOGGLE_NAV_DRAWER_VISIBILITY"),
-  setNavDrawerVisibility: actionCreator("SET_NAV_DRAWER_VISIBILITY"),
-  addToast: actionCreator("ADD_TOAST", (text: string) => ({ text })),
-  dismissToast: actionCreator("DISMISS_TOAST"),
+  unhandledAppClick: createAction("UI/UNHANDLED_APP_CLICK"),
+  unhandledAppTouch: createAction("UI/UNHANDLED_APP_TOUCH"),
+  showNavDrawer: createAction("SHOW_NAV_DRAWER"),
+  hideNavDrawer: createAction("HIDE_NAV_DRAWER"),
+  toggleNavDrawerVisibility: createAction("TOGGLE_NAV_DRAWER_VISIBILITY"),
+  setNavDrawerVisibility: createAction("SET_NAV_DRAWER_VISIBILITY"),
+  addToast: createAction("ADD_TOAST", (text: string) => ({ text })),
+  dismissToast: createAction("DISMISS_TOAST"),
 
-  mainSearchTextChange: actionCreator("MAIN_SEARCH_TEXT_CHANGE"),
-  loginCredentialChange: actionCreator("LOGIN_CREDENTIAL_CHANGE"),
-  clearJustificationsSearch: actionCreator("UI/CLEAR_JUSTIFICATIONS_SEARCH"),
+  mainSearchTextChange: createAction("MAIN_SEARCH_TEXT_CHANGE"),
+  loginCredentialChange: createAction("LOGIN_CREDENTIAL_CHANGE"),
+  clearJustificationsSearch: createAction("UI/CLEAR_JUSTIFICATIONS_SEARCH"),
 
   // TODO(92): remove transient actions, reducers, and sagas
-  beginInteractionWithTransient: actionCreator(
+  beginInteractionWithTransient: createAction(
     "UI/BEGIN_INTERACTION_WITH_TRANSIENT",
     (transientId: unknown) => ({ transientId })
   ),
-  endInteractionWithTransient: actionCreator(
+  endInteractionWithTransient: createAction(
     "UI/END_INTERACTION_WITH_TRANSIENT",
     (transientId: unknown) => ({ transientId })
   ),
-  showTransient: actionCreator("UI/SHOW_TRANSIENT", (transientId: unknown) => ({
+  showTransient: createAction("UI/SHOW_TRANSIENT", (transientId: unknown) => ({
     transientId,
   })),
-  scheduleDelayedHideTransient: actionCreator(
+  scheduleDelayedHideTransient: createAction(
     "UI/SCHEDULE_DELAYED_HIDE_TRANSIENT",
     (transientId: unknown, hideDelay: unknown) => ({ transientId, hideDelay })
   ),
-  tryCancelDelayedHideTransient: actionCreator(
+  tryCancelDelayedHideTransient: createAction(
     "UI/TRY_CANCEL_DELAYED_HIDE_TRANSIENT",
     (transientId, _cause) => ({ transientId }),
     (_transientId, cause) => ({ cause })
   ),
-  cancelDelayedHideTransient: actionCreator(
+  cancelDelayedHideTransient: createAction(
     "UI/CANCEL_DELAYED_HIDE_TRANSIENT",
     (transientId: unknown) => ({ transientId })
   ),
-  hideAllTransients: actionCreator("UI/HIDE_ALL_TRANSIENTS"),
-  hideOtherTransients: actionCreator(
+  hideAllTransients: createAction("UI/HIDE_ALL_TRANSIENTS"),
+  hideOtherTransients: createAction(
     "UI/HIDE_OTHER_TRANSIENTS",
     (visibleTransientId: unknown) => ({ visibleTransientId })
   ),
-  hideTransient: actionCreator(
+  hideTransient: createAction(
     "UI/HIDE_TRANSIENT",
     (transientId, _cause) => ({ transientId }),
     (_transientId, cause) => ({ cause })
   ),
-  windowResize: actionCreator("UI/WINDOW_RESIZE"),
-  setCanHover: actionCreator("UI/SET_CAN_HOVER", (canHover: boolean) => ({
+  windowResize: createAction("UI/WINDOW_RESIZE"),
+  setCanHover: createAction("UI/SET_CAN_HOVER", (canHover: boolean) => ({
     canHover,
   })),
 
-  expand: actionCreator("UI/EXPAND", (widgetId: WidgetId) => ({ widgetId })),
-  collapse: actionCreator("UI/COLLAPSE", (widgetId: WidgetId) => ({
+  expand: createAction("UI/EXPAND", (widgetId: WidgetId) => ({ widgetId })),
+  collapse: createAction("UI/COLLAPSE", (widgetId: WidgetId) => ({
     widgetId,
   })),
 
-  enableMobileSite: actionCreator("UI/ENABLE_MOBILE_SITE"),
-  disableMobileSite: actionCreator("UI/DISABLE_MOBILE_SITE"),
+  enableMobileSite: createAction("UI/ENABLE_MOBILE_SITE"),
+  disableMobileSite: createAction("UI/DISABLE_MOBILE_SITE"),
 
-  clearTaggedPropositions: actionCreator("UI/CLEAR_TAGGED_PROPOSITIONS"),
+  clearTaggedPropositions: createAction("UI/CLEAR_TAGGED_PROPOSITIONS"),
 };
 
 export const pages = {
   // TODO(93): replace bespoke password reset page actions with an editor, if possible.
-  beginPasswordResetRequest: actionCreator("PAGES/BEGIN_PASSWORD_RESET"),
-  passwordResetRequestPropertyChange: actionCreator(
+  beginPasswordResetRequest: createAction("PAGES/BEGIN_PASSWORD_RESET"),
+  passwordResetRequestPropertyChange: createAction(
     "PAGES/PASSWORD_RESET_REQUEST_PROPERTY_CHANGE",
     (properties: PropertyChanges) => ({ properties })
   ),
-  beginPasswordResetConfirmation: actionCreator(
+  beginPasswordResetConfirmation: createAction(
     "PAGES/BEGIN_PASSWORD_RESET_CONFIRMATION"
   ),
-  passwordResetConfirmationPropertyChange: actionCreator(
+  passwordResetConfirmationPropertyChange: createAction(
     "PAGES/PASSWORD_RESET_CONFIRMATION_PROPERTY_CHANGE",
     (properties: PropertyChanges) => ({ properties })
   ),
 };
 
 export const privacyConsent = {
-  update: actionCreator(
+  update: createAction(
     "PRIVACY_CONSENT/UPDATE",
     (cookies: PrivacyConsentCookie[]) => ({ cookies })
   ),
@@ -615,11 +702,11 @@ export type EditorActionCreator = ActionFunctionAny<Action<string>>;
 export type EditorCommitActionCreator = EditorActionCreator & {
   result: ActionFunctionAny<Action<string>>;
 };
-const commitEdit = actionCreator(
+const commitEdit = createAction(
   "EDITORS/COMMIT_EDIT",
   (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
 ) as ActionFunctionAny<Action<string>> as EditorCommitActionCreator;
-commitEdit.result = actionCreator(
+commitEdit.result = createAction(
   "EDITORS/COMMIT_EDIT" + actionTypeDelim + "RESULT",
   (editorType: EditorType, editorId: EditorId, result) => ({
     editorType,
@@ -640,7 +727,7 @@ export type ListPathFactory = string | ((payload: any) => string);
 
 /** Editor actions */
 export const editors = {
-  beginEdit: actionCreator(
+  beginEdit: createAction(
     "EDITORS/BEGIN_EDIT",
     (editorType: EditorType, editorId: EditorId, entity: EditorEntity) => ({
       editorType,
@@ -648,7 +735,7 @@ export const editors = {
       entity,
     })
   ),
-  propertyChange: actionCreator(
+  propertyChange: createAction(
     "EDITORS/PROPERTY_CHANGE",
     (
       editorType: EditorType,
@@ -657,12 +744,12 @@ export const editors = {
     ) => ({ editorType, editorId, properties })
   ),
   commitEdit,
-  cancelEdit: actionCreator(
+  cancelEdit: createAction(
     "EDITORS/CANCEL_EDIT",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
 
-  addListItem: actionCreator(
+  addListItem: createAction(
     "EDITORS/ON_ADD_LIST_ITEM",
     (
       editorType: EditorType,
@@ -675,7 +762,7 @@ export const editors = {
     // so we provide a no-op one.
     () => null
   ),
-  removeListItem: actionCreator(
+  removeListItem: createAction(
     "EDITORS/ON_REMOVE_LIST_ITEM",
     (
       editorType: EditorType,
@@ -685,11 +772,11 @@ export const editors = {
     ) => ({ editorType, editorId, itemIndex, listPathMaker })
   ),
 
-  addSpeaker: actionCreator(
+  addSpeaker: createAction(
     "EDITORS/ADD_SPEAKER",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
-  removeSpeaker: actionCreator(
+  removeSpeaker: createAction(
     "EDITORS/REMOVE_SPEAKER",
     (
       editorType: EditorType,
@@ -703,7 +790,7 @@ export const editors = {
       index,
     })
   ),
-  replaceSpeaker: actionCreator(
+  replaceSpeaker: createAction(
     "EDITORS/REPLACE_SPEAKER",
     (
       editorType: EditorType,
@@ -718,11 +805,11 @@ export const editors = {
     })
   ),
 
-  addUrl: actionCreator(
+  addUrl: createAction(
     "EDITORS/ADD_URL",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
-  removeUrl: actionCreator(
+  removeUrl: createAction(
     "EDITORS/REMOVE_URL",
     (editorType: EditorType, editorId: EditorId, url: Url, index: number) => ({
       editorType,
@@ -732,7 +819,7 @@ export const editors = {
     })
   ),
 
-  addPropositionCompoundAtom: actionCreator(
+  addPropositionCompoundAtom: createAction(
     "EDITORS/ADD_PROPOSITION_COMPOUND_ATOM",
     (editorType: EditorType, editorId: EditorId, index: number) => ({
       editorType,
@@ -740,7 +827,7 @@ export const editors = {
       index,
     })
   ),
-  removePropositionCompoundAtom: actionCreator(
+  removePropositionCompoundAtom: createAction(
     "EDITORS/REMOVE_PROPOSITION_COMPOUND_ATOM",
     (
       editorType: EditorType,
@@ -755,7 +842,7 @@ export const editors = {
     })
   ),
 
-  tagProposition: actionCreator(
+  tagProposition: createAction(
     "EDITORS/TAG_PROPOSITION",
     (editorType: EditorType, editorId: EditorId, tag: Tag) => ({
       editorType,
@@ -763,7 +850,7 @@ export const editors = {
       tag,
     })
   ),
-  unTagProposition: actionCreator(
+  unTagProposition: createAction(
     "EDITORS/UN_TAG_PROPOSITION",
     (editorType: EditorType, editorId: EditorId, tag: Tag) => ({
       editorType,
@@ -771,7 +858,7 @@ export const editors = {
       tag,
     })
   ),
-  antiTagProposition: actionCreator(
+  antiTagProposition: createAction(
     "EDITORS/ANTI_TAG_PROPOSITION",
     (editorType: EditorType, editorId: EditorId, tag: Tag) => ({
       editorType,
@@ -780,7 +867,7 @@ export const editors = {
     })
   ),
 
-  resetSubmission: actionCreator(
+  resetSubmission: createAction(
     "EDITORS/RESET_SUBMISSION",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
@@ -788,34 +875,33 @@ export const editors = {
 
 /** Actions that change the current page */
 export const goto = {
-  login: actionCreator(
+  login: createAction(
     "GOTO/LOGIN",
     (loginRedirectLocation: Location<unknown>) => ({ loginRedirectLocation })
   ),
-  proposition: actionCreator(
-    "GOTO/PROPOSITION",
-    (proposition: Proposition) => ({ proposition })
-  ),
-  statement: actionCreator("GOTO/STATEMENT", (statement: Statement) => ({
+  proposition: createAction("GOTO/PROPOSITION", (proposition: Proposition) => ({
+    proposition,
+  })),
+  statement: createAction("GOTO/STATEMENT", (statement: Statement) => ({
     statement,
   })),
-  justification: actionCreator(
+  justification: createAction(
     "GOTO/JUSTIFICATION",
     (justification: Justification) => ({ justification })
   ),
-  mainSearch: actionCreator("GOTO/MAIN_SEARCH", (mainSearchText: string) => ({
+  mainSearch: createAction("GOTO/MAIN_SEARCH", (mainSearchText: string) => ({
     mainSearchText,
   })),
-  tag: actionCreator("GOTO/TAG", (tag: Tag) => ({ tag })),
-  createJustification: actionCreator("GOTO/CREATE_JUSTIFICATION"),
-  writQuote: actionCreator("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
+  tag: createAction("GOTO/TAG", (tag: Tag) => ({ tag })),
+  createJustification: createAction("GOTO/CREATE_JUSTIFICATION"),
+  writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
     writQuote,
   })),
 };
 
 /** Actions that represent multi-step flows */
 export const flows = {
-  fetchAndBeginEditOfNewJustificationFromBasisSource: actionCreator(
+  fetchAndBeginEditOfNewJustificationFromBasisSource: createAction(
     "FLOWS/FETCH_AND_BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_BASIS_SOURCE",
     (
       editorType: EditorType,
@@ -824,7 +910,7 @@ export const flows = {
       basisSourceId: EntityId
     ) => ({ editorType, editorId, basisSourceType, basisSourceId })
   ),
-  beginEditOfNewJustificationFromTarget: actionCreator(
+  beginEditOfNewJustificationFromTarget: createAction(
     "FLOWS/BEGIN_EDIT_OF_NEW_JUSTIFICATION_FROM_TARGET",
     (content: ExtensionAnnotationContent, source: Source, target: Target) => ({
       content,
@@ -832,11 +918,11 @@ export const flows = {
       target,
     })
   ),
-  commitEditThenView: actionCreator(
+  commitEditThenView: createAction(
     "FLOWS/COMMIT_PROPOSITION_THEN_VIEW",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
-  commitEditThenPutActionOnSuccess: actionCreator(
+  commitEditThenPutActionOnSuccess: createAction(
     "FLOWS/COMMIT_EDIT_THEN_PUT_ACTION_ON_SUCCESS",
     (editorType: EditorType, editorId: EditorId, onSuccessAction: Action) => ({
       editorType,
@@ -847,12 +933,12 @@ export const flows = {
 };
 
 export const autocompletes = {
-  clearSuggestions: actionCreator(
+  clearSuggestions: createAction(
     "AUTOCOMPLETES/CLEAR_SUGGESTIONS",
     (suggestionsKey: SuggestionsKey) => ({ suggestionsKey })
   ),
 };
 
 export const errors = {
-  clearLoggedErrors: actionCreator("ERRORS/CLEAR_LOGGED_ERRORS"),
+  clearLoggedErrors: createAction("ERRORS/CLEAR_LOGGED_ERRORS"),
 };
