@@ -21,10 +21,13 @@ import queryString from 'query-string'
 
 import {
   arrayToObject,
-  makeJustifiedPropositionEditModel,
   JustificationBasisTypes,
   PropositionTagVotePolarities
 } from "howdju-common"
+
+import {
+  makeJustifiedPropositionEditModel,
+} from "howdju-client-common"
 
 import {
   editors,
