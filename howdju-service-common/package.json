@@ -21,7 +21,7 @@
     "howdju-common": "^1.0.0",
     "joi": "^17.4.0",
     "lodash": "^4.17.4",
-    "moment": "^2.18.1",
+    "moment": "^2.29.4",
     "moment-duration-format": "^2.2.2",
     "outdent": "^0.8.0",
     "pg": "^8.6.0",
