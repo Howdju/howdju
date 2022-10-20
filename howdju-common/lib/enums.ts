@@ -83,7 +83,7 @@ export const JustificationBasisTypes = {
   /* One or more {@see JustificationBasisCompoundAtomTypes}
    *
    * This type will replace the others
-   * 
+   *
    * @deprecated
    */
   JUSTIFICATION_BASIS_COMPOUND: 'JUSTIFICATION_BASIS_COMPOUND',
@@ -137,6 +137,7 @@ export const PropositionTagVotePolarities = {
   NEGATIVE: 'NEGATIVE',
 } as const
 export type PropositionTagVotePolarity = typeof PropositionTagVotePolarities[keyof typeof PropositionTagVotePolarities]
+export type TagVotePolarity = PropositionTagVotePolarity
 
 export const SortDirections = {
   ASCENDING: 'ascending',
@@ -196,3 +197,8 @@ export const ContentReportTypes = {
   OTHER: "OTHER",
 } as const
 export type ContentReportType = typeof ContentReportTypes[keyof typeof ContentReportTypes]
+
+export const TaggableEntityTypes = {
+  PROPOSITION: 'PROPOSITION',
+}
+export type TaggableEntityType = typeof TaggableEntityTypes[keyof typeof TaggableEntityTypes]

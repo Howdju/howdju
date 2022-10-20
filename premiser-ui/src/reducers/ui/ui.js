@@ -9,7 +9,6 @@ import mainSearcher from '../../mainSearcher'
 import {
   accountSettingsPage,
   featuredPerspectivesPage,
-  justificationsPage,
   justificationsSearchPage,
   mainSearchPage,
   passwordResetConfirmationPage,
@@ -57,7 +56,6 @@ export default combineReducers({
   app,
   accountSettingsPage,
   featuredPerspectivesPage,
-  justificationsPage,
   justificationsSearchPage,
   mainSearch,
   mainSearchPage,

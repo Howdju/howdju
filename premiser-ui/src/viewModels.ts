@@ -33,16 +33,17 @@ import {
   ModelErrorCode,
   Sentence,
   newUnimplementedError,
+  EntityId,
 } from "howdju-common";
 
 import * as characters from "./characters";
-import { propositionSchema, statementSchema } from "./normalizationSchemas";
+import { justificationSchema, propositionSchema, statementSchema } from "./normalizationSchemas";
 import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
 import {
-  JustificationBasisFormInputModel,
-  JustificationFormInputModel,
-  JustificationFormSubmissionModel,
-  SourceExcerptFormInputModel,
+  JustificationBasisEditModel,
+  JustificationEditModel,
+  JustificationSubmissionModel,
+  SourceExcerptEditModel,
 } from "howdju-client-common";
 import { TruncateOptions } from "lodash";
 
@@ -89,17 +90,17 @@ export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
 };
 
 export const consolidateNewJustificationEntities = (
-  justificationInput: JustificationFormInputModel
-): JustificationFormSubmissionModel => {
-  const basis = translateFormInputBasis(justificationInput.basis);
-  const justification: JustificationFormSubmissionModel = assign(cloneDeep(justificationInput), {
+  justificationInput: JustificationEditModel
+): JustificationSubmissionModel => {
+  const basis = translateBasisEditModel(justificationInput.basis);
+  const justification: JustificationSubmissionModel = assign(cloneDeep(justificationInput), {
     basis,
   });
   return justification;
 };
 
-const translateFormInputBasis = (
-  basis: JustificationBasisFormInputModel
+const translateBasisEditModel = (
+  basis: JustificationBasisEditModel
 ): JustificationBasis => {
   switch (basis.type) {
     case JustificationBasisTypes.PROPOSITION_COMPOUND:
@@ -130,7 +131,7 @@ const translateFormInputBasis = (
       }
       return {
         type: "SOURCE_EXCERPT",
-        entity: translateFormInputSourceExcerpt(basis.sourceExcerpt),
+        entity: translateSourceExcerptEditModel(basis.sourceExcerpt),
       };
     case "JUSTIFICATION_BASIS_COMPOUND":
       throw newUnimplementedError(`Unsupported basis type: ${basis.type}`)
@@ -139,14 +140,14 @@ const translateFormInputBasis = (
   }
 };
 
-export function translateFormInputSourceExcerpt(
-  sourceExcerpt: SourceExcerptFormInputModel
+export function translateSourceExcerptEditModel(
+  sourceExcerpt: SourceExcerptEditModel
 ): SourceExcerpt {
   switch (sourceExcerpt.type) {
     case "PIC_REGION":
       if (!sourceExcerpt.picRegion) {
         throw newImpossibleError(
-          "picRegion was missing for SourceExcerptFormInputModel having type PIC_REGION"
+          "picRegion was missing for SourceExcerptEditModel having type PIC_REGION"
         );
       }
       return {
@@ -156,7 +157,7 @@ export function translateFormInputSourceExcerpt(
     case "VID_SEGMENT":
       if (!sourceExcerpt.vidSegment) {
         throw newImpossibleError(
-          "vidSegment was missing for SourceExcerptFormInputModel having type VID_SEGMENT"
+          "vidSegment was missing for SourceExcerptEditModel having type VID_SEGMENT"
         );
       }
       return {
@@ -166,7 +167,7 @@ export function translateFormInputSourceExcerpt(
     case "WRIT_QUOTE":
       if (!sourceExcerpt.writQuote) {
         throw newImpossibleError(
-          "writQuote was missing for SourceExcerptFormInputModel having type WRIT_QUOTE"
+          "writQuote was missing for SourceExcerptEditModel having type WRIT_QUOTE"
         );
       }
       return {
@@ -199,7 +200,7 @@ export type ValidationErrors = {
 };
 
 export function translateJustificationErrorsFromFormInput(
-  justification: JustificationFormInputModel,
+  justification: JustificationEditModel,
   errors: ValidationErrors
 ) {
   if (!justification || !errors) {
@@ -338,16 +339,20 @@ export function makeChip(props: Partial<ChipInfo>): Partial<ChipInfo> {
   return cloneDeep(props);
 }
 
+
+
 export const contextTrailTypeByShortcut = {
   p: JustificationTargetTypes.PROPOSITION,
   s: JustificationTargetTypes.STATEMENT,
-};
+} as const;
+export type ContextTrailShortcut = keyof typeof contextTrailTypeByShortcut
 
 export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut);
 
 export const rootTargetNormalizationSchemasByType = {
   [JustificationRootTargetTypes.PROPOSITION]: propositionSchema,
   [JustificationRootTargetTypes.STATEMENT]: statementSchema,
+  [JustificationRootTargetTypes.JUSTIFICATION]: justificationSchema,
 };
 
 export function describeRootTarget(
@@ -375,4 +380,9 @@ export function describeRootTarget(
     default:
       throw newExhaustedEnumError(rootTargetType);
   }
+}
+
+export interface RootTargetInfo {
+  rootTargetType: JustificationRootTargetType;
+  rootTargetId: EntityId;
 }

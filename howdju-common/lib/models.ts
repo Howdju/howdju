@@ -6,12 +6,14 @@ import { newImpossibleError, newExhaustedEnumError } from "./commonErrors";
 import {
   EntityId,
   Justification,
+  Persisted,
   Persorg,
   PicRegion,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
+  PropositionTagVoteSubmissionModel,
   Sentence,
   SourceExcerpt,
   Statement,
@@ -31,6 +33,7 @@ import {
   JustificationRootPolarity,
   SentenceType,
   SourceExcerptTypes,
+  PropositionTagVotePolarities,
 } from "./enums";
 import { isDefined } from "./general";
 
@@ -266,9 +269,37 @@ export const tagEqual = (tag1: Tag, tag2: Tag) =>
   idEqual(tag1.id, tag2.id) ||
   (isDefined(tag1.name) && tag1.name === tag2.name);
 
+/** Transform a type to represent a submission model. */
+export type SubmissionModel<T, RequiredFields extends keyof T, RelatedFields extends keyof T> = T &
+  Required<Pick<T, RequiredFields>> & {
+  [key in RelatedFields]: Persisted<T[key]>
+}
+
+/**
+ * Transform a type to represent an input to a submission model factory.
+ *
+ * Fields that are not required or related must provide defaults in the factory
+ * if necessary to satisfy the base type.
+ */
+export type FactoryInput<T, RequiredFields extends keyof T, RelatedFields extends keyof T> =
+  Partial<Omit<T, RequiredFields | RelatedFields>> &
+  Required<Pick<T, RequiredFields>> &
+  { [key in RelatedFields]:
+    // The related field can be persisted or not. If it is not persisted, it will
+    // be deduplicated on the API with an equivalent entity.
+    T[key] | Persisted<T[key]> }
+
 export const makePropositionTagVote = (
-  props: Partial<PropositionTagVote>
-): PropositionTagVote => merge({}, props);
+  props: FactoryInput<PropositionTagVote, never, "proposition" | "tag">
+): PropositionTagVoteSubmissionModel => merge({
+  polarity: PropositionTagVotePolarities.POSITIVE,
+}, props);
+
+export const makePropositionTagVoteSubmissionModel = (
+  props: FactoryInput<PropositionTagVote, "tag", "proposition">
+): PropositionTagVoteSubmissionModel => merge({
+  polarity: PropositionTagVotePolarities.POSITIVE,
+}, props);
 
 export const doTargetSameRoot = (j1: Justification, j2: Justification) =>
   idEqual(j1.rootTarget.id, j2.rootTarget.id) &&

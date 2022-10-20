@@ -114,6 +114,11 @@ class CreateJustificationDialog extends Component {
 CreateJustificationDialog.propTypes = {
   id: PropTypes.string.isRequired,
   editorId: PropTypes.string.isRequired,
+  suggestionsKey: PropTypes.string,
+  visible: PropTypes.bool,
+  onCancel: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onHide: PropTypes.func,
 }
 
 const mapStateToProps = (state, ownProps) => {

@@ -14,14 +14,15 @@ import withEditor from "@/editors/withEditor"
 
 const baseId = "reportContentDialog"
 const id = combineIds(baseId, 'editor')
-const editorType = EditorTypes.CONTENT_REPORT
+export const editorType = EditorTypes.CONTENT_REPORT
 const editorId = combineIds(baseId, 'contentReportEditor')
+export const contentReportEditorId = editorId
 
 export default function ReportContentDialog() {
   const dispatch = useDispatch()
 
   const { editEntity } = useAppSelector((state: RootState) =>
-    state.editors?.[editorType]?.[editorId] ?? {})
+    state.editors[editorType]?.[editorId] ?? {})
   const isEditing = isTruthy(editEntity)
 
   const ContentReportEditor = withEditor(
