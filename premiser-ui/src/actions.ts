@@ -1,14 +1,13 @@
 import {
   ActionFunctionAny,
   createAction as actionCreator,
-  Action as PayloadAction,
   combineActions as untypedCombineActions,
   ActionMeta,
 } from "redux-actions";
 import reduce from "lodash/reduce";
 import mapValues from "lodash/mapValues";
 import assign from "lodash/assign";
-import { ActionCreator, ActionCreatorsMapObject } from "@reduxjs/toolkit";
+import { ActionCreatorsMapObject } from "@reduxjs/toolkit";
 import { Location } from "history";
 import { Action, bindActionCreators } from "redux";
 

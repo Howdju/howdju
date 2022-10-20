@@ -284,10 +284,13 @@ export type SubmissionModel<T, RequiredFields extends keyof T, RelatedFields ext
 export type FactoryInput<T, RequiredFields extends keyof T, RelatedFields extends keyof T> =
   Partial<Omit<T, RequiredFields | RelatedFields>> &
   Required<Pick<T, RequiredFields>> &
-  { [key in RelatedFields]: Persisted<T[key]> }
+  { [key in RelatedFields]:
+    // The related field can be persisted or not. If it is not persisted, it will
+    // be deduplicated on the API with an equivalent entity.
+    T[key] | Persisted<T[key]> }
 
 export const makePropositionTagVote = (
-  props: FactoryInput<PropositionTagVote, never, "tag" | "proposition">
+  props: FactoryInput<PropositionTagVote, never, "proposition" | "tag">
 ): PropositionTagVoteSubmissionModel => merge({
   polarity: PropositionTagVotePolarities.POSITIVE,
 }, props);

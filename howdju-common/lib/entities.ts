@@ -190,9 +190,9 @@ export interface PropositionTagVote extends Entity {
 }
 
 export interface PropositionTagVoteSubmissionModel {
-  proposition: Persisted<Proposition>
-  polarity: PropositionTagVotePolarity
+  proposition: Proposition | Persisted<Proposition>
   tag: Tag | Persisted<Tag>
+  polarity: PropositionTagVotePolarity
 }
 
 /**
