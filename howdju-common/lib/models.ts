@@ -274,7 +274,7 @@ export const tagEqual = (tag1: Tag, tag2: Tag) =>
 export type RequireSome<T, Fields extends keyof T> = Partial<T> & Required<Pick<T, Fields>>
 
 /** Transform a type to represent a submission model. */
-export type Submission<T, RequiredFields extends keyof T, RelatedFields extends keyof T> = T &
+export type SubmissionModel<T, RequiredFields extends keyof T, RelatedFields extends keyof T> = T &
   Required<Pick<T, RequiredFields>> & {
   [key in RelatedFields]: Persisted<T[key]>
 }
@@ -285,12 +285,10 @@ export type Submission<T, RequiredFields extends keyof T, RelatedFields extends 
  * Fields that are not required or related must provide defaults in the factory
  * if necessary to satisfy the base type.
  */
-export type SubmissionInput<T, RequiredFields extends keyof T, RelatedFields extends keyof T> =
+export type FactoryInput<T, RequiredFields extends keyof T, RelatedFields extends keyof T> =
   Partial<Omit<T, RequiredFields | RelatedFields>> &
   Required<Pick<T, RequiredFields>> &
-  {
-    [key in RelatedFields]: Persisted<T[key]>
-  }
+  { [key in RelatedFields]: Persisted<T[key]> }
 
 export const makePropositionTagVote = (
   props: RequireSome<PropositionTagVote, "tag" | "proposition">
@@ -298,8 +296,8 @@ export const makePropositionTagVote = (
   polarity: PropositionTagVotePolarities.POSITIVE,
 }, props);
 
-export const makePropositionTagVoteSubmission = (
-  props: SubmissionInput<PropositionTagVote, "tag", "proposition">
+export const makePropositionTagVoteSubmissionModel = (
+  props: FactoryInput<PropositionTagVote, "tag", "proposition">
 ): PropositionTagVoteSubmissionModel => merge({
   polarity: PropositionTagVotePolarities.POSITIVE,
 }, props);

@@ -29,7 +29,7 @@ import {
   JustificationBasisSourceType,
   Persisted,
   PropositionTagVote,
-  makePropositionTagVoteSubmission,
+  makePropositionTagVoteSubmissionModel,
 } from "howdju-common";
 import { actions, Source, Target, ExtensionAnnotationContent } from "howdju-client-common";
 
@@ -359,7 +359,7 @@ export const api = {
   tagProposition: apiActionCreator(
     "TAG_PROPOSITION",
     (propositionId: EntityId, tag: Tag, propositionTagVote: PropositionTagVote) => ({
-      propositionTagVote: makePropositionTagVoteSubmission({
+      propositionTagVote: makePropositionTagVoteSubmissionModel({
         polarity: PropositionTagVotePolarities.POSITIVE,
         proposition: { id: propositionId },
         tag,
@@ -370,7 +370,7 @@ export const api = {
   antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
     (propositionId, tag, propositionTagVote) => ({
-      propositionTagVote: makePropositionTagVoteSubmission({
+      propositionTagVote: makePropositionTagVoteSubmissionModel({
         polarity: PropositionTagVotePolarities.NEGATIVE,
         proposition: { id: propositionId },
         tag,

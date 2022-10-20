@@ -5,7 +5,7 @@ import {Button, CircularProgress} from 'react-md'
 import get from 'lodash/get'
 
 import {
-  makeJustificationFormInputModel,
+  makeJustificationEditModel,
 } from "howdju-client-common"
 
 import {
@@ -70,7 +70,7 @@ class JustificationEditor extends Component {
     delete rest.editorId
     delete rest.onSubmit
 
-    const justification = editorState.editEntity || makeJustificationFormInputModel()
+    const justification = editorState.editEntity || makeJustificationEditModel()
     const {errors, isSaving} = editorState
     const justificationErrors = translateJustificationErrorsFromFormInput(justification, errors) || errors
 

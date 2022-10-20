@@ -21,7 +21,7 @@ import queryString from 'query-string'
 
 import {
   arrayToObject,
-  makeJustifiedPropositionFormInputModel,
+  makeJustifiedPropositionEditModel,
   JustificationBasisTypes,
   PropositionTagVotePolarities
 } from "howdju-common"
@@ -106,7 +106,7 @@ class CreatePropositionPage extends Component {
   initializeEditor = () => {
     switch (this.props.mode) {
       case CreatePropositionPageMode.CREATE_PROPOSITION:
-        this.props.editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId, makeJustifiedPropositionFormInputModel())
+        this.props.editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId, makeJustifiedPropositionEditModel())
         break
       case CreatePropositionPageMode.CREATE_JUSTIFICATION: {
         const {
@@ -150,7 +150,7 @@ class CreatePropositionPage extends Component {
             writQuote,
           }
         }
-        const justifiedProposition = makeJustifiedPropositionFormInputModel({}, justificationProps)
+        const justifiedProposition = makeJustifiedPropositionEditModel({}, justificationProps)
         this.props.editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId,
           justifiedProposition)
         break

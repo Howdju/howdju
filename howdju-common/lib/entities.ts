@@ -244,9 +244,6 @@ export type Materialized<T> = T extends Entity ?
     [key in keyof T]: Materialized<T[key]>
   }
 
-/**  */
-export type EntityReference<T extends Entity> = Required<Pick<T, 'id'>> & Partial<T>
-
 export interface ContentReport extends Entity {
   entityType: EntityType;
   entityId: EntityId;

@@ -4,7 +4,7 @@ import {
 } from 'redux-saga/effects'
 
 import {
-  makeJustifiedPropositionFormInputModel,
+  makeJustifiedPropositionEditModel,
   JustificationBasisTypes,
 } from 'howdju-common'
 
@@ -40,5 +40,5 @@ function toPropositionJustification(content, source, target) {
       writQuote,
     }
   }
-  return makeJustifiedPropositionFormInputModel(null, justificationProps)
+  return makeJustifiedPropositionEditModel(null, justificationProps)
 }

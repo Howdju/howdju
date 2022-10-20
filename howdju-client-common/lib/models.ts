@@ -7,6 +7,7 @@ import {
   Entity,
   EntityId,
   EntityType,
+  FactoryInput,
   Justification,
   JustificationBasis,
   JustificationBasisType,
@@ -29,7 +30,6 @@ import {
   makeVidSegment,
   makeWritQuote,
   Materialized,
-  MaterializedEntity,
   negateRootPolarity,
   newExhaustedEnumError,
   Persisted,
@@ -53,79 +53,79 @@ import {
  * Supports edits to alternative bases at the same time (whereas a materialized Justification can
  * have just one basis type.) This used to be called a NewJustification.
  */
-export interface JustificationFormInputModel {
-  target: JustificationTargetFormInputModel;
+export interface JustificationEditModel {
+  target: JustificationTargetEditModel;
   polarity: JustificationPolarity;
-  basis: JustificationBasisFormInputModel;
+  basis: JustificationBasisEditModel;
   rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTargetFormInputModel;
+  rootTarget: JustificationRootTargetEditModel;
   rootPolarity: JustificationRootPolarity;
 }
 
-export interface CounterJustificationFormInputModel extends Omit<JustificationFormInputModel, "basis"> {
-  basis: CounterJustificationBasisFormInputModel;
+export interface CounterJustificationEditModel extends Omit<JustificationEditModel, "basis"> {
+  basis: CounterJustificationBasisEditModel;
 }
 
-export interface JustificationFormSubmissionModel {
-  target: JustificationTargetFormInputModel;
+export interface JustificationSubmissionModel {
+  target: JustificationTargetEditModel;
   polarity: JustificationPolarity;
   basis: FormSubmission<JustificationBasis>;
   rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTargetFormInputModel;
+  rootTarget: JustificationRootTargetEditModel;
   rootPolarity: JustificationRootPolarity;
 }
 
 type FormSubmission<T> = T | Persisted<T>
 
 // A root target might have just its ID.
-export type JustificationRootTargetFormInputModel =
+export type JustificationRootTargetEditModel =
 | Persisted<Proposition>
 | Persisted<Statement>;
 
-export type JustificationTargetFormInputModel =
-  | JustificationTarget_Proposition_FormInputModel
-  | JustificationTarget_Justification_FormInputModel
-  | JustificationTarget_Statement_FormInputModel;
+export type JustificationTargetEditModel =
+  | JustificationTarget_Proposition_EditModel
+  | JustificationTarget_Justification_EditModel
+  | JustificationTarget_Statement_EditModel;
 
-interface JustificationTarget_Proposition_FormInputModel {
+interface JustificationTarget_Proposition_EditModel {
   type: "PROPOSITION";
   entity: Proposition | Persisted<Proposition>;
 }
 
-interface JustificationTarget_Justification_FormInputModel {
+interface JustificationTarget_Justification_EditModel {
   type: "JUSTIFICATION";
   entity: Justification | Persisted<Justification>;
 }
 
-interface JustificationTarget_Statement_FormInputModel {
+interface JustificationTarget_Statement_EditModel {
   type: "STATEMENT";
   entity: Statement | Persisted<Statement>;
 }
 
-export interface JustificationBasisFormInputModel {
+export interface JustificationBasisEditModel {
   type: JustificationBasisType;
-  propositionCompound: PropositionCompoundFormInputModel;
+  propositionCompound: PropositionCompoundEditModel;
   /** @deprecated use {@link sourceExcerpt} instead. */
-  writQuote: WritQuoteFormInputModel;
-  sourceExcerpt: SourceExcerptFormInputModel;
+  writQuote: WritQuoteEditModel;
+  sourceExcerpt: SourceExcerptEditModel;
 }
 
-export interface CounterJustificationBasisFormInputModel
-  extends Omit<JustificationBasisFormInputModel, "writQuote" | "sourceExcerpt"> {}
+export interface CounterJustificationBasisEditModel
+  extends Omit<JustificationBasisEditModel, "writQuote" | "sourceExcerpt"> {}
 
-export type PropositionCompoundFormInputModel = PropositionCompound;
-export type WritQuoteFormInputModel = WritQuote;
-export type VidSegmentFormInputModel = VidSegment;
-export type PicRegionFormInputModel = PicRegion;
+export type PropositionCompoundEditModel = PropositionCompound;
+export type WritQuoteEditModel = WritQuote;
+export type VidSegmentEditModel = VidSegment;
+export type PicRegionEditModel = PicRegion;
 
-export interface SourceExcerptFormInputModel {
+export interface SourceExcerptEditModel {
   type: SourceExcerptType;
   writQuote: WritQuote;
   picRegion: PicRegion;
   vidSegment: VidSegment;
 }
 
-export type PropositionFormInputModel = Proposition;
+export type PropositionEditModel = Proposition;
 
 export interface JustificationViewModel extends Materialized<Justification> {
   /** The current user's vote on this justification. */
@@ -156,9 +156,9 @@ export interface JustificationVote extends Vote {
 
 export interface Vote {}
 
-export const makeJustificationFormInputModel = (
-  props: Partial<JustificationFormInputModel>
-): JustificationFormInputModel => {
+export const makeJustificationEditModel = (
+  props: Partial<JustificationEditModel>
+): JustificationEditModel => {
   const justificationInput = merge(
     {
       rootTargetType: JustificationRootTargetTypes.PROPOSITION,
@@ -173,72 +173,71 @@ export const makeJustificationFormInputModel = (
       },
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        propositionCompound: makePropositionCompoundFormInputModel(),
-        sourceExcerpt: makeSourceExcerptFormInputModel(),
-        writQuote: makeWritQuoteFormInputModel(),
+        propositionCompound: makePropositionCompoundEditModel(),
+        sourceExcerpt: makeSourceExcerptEditModel(),
+        writQuote: makeWritQuoteEditModel(),
       },
     },
     props
-  ) as JustificationFormInputModel;
+  ) as JustificationEditModel;
 
   inferJustificationRootTarget(justificationInput);
 
   return justificationInput;
 };
 
-export const makeJustificationViewModel = (props?: MaterializedEntity & Partial<JustificationViewModel>): JustificationViewModel => {
+export const makeJustificationViewModel = (
+  props?: FactoryInput<JustificationViewModel, "id" | "rootTarget", "target" | "basis">
+): JustificationViewModel => {
   const init = {
-    rootTarget: {},
     rootTargetType: JustificationRootTargetTypes.PROPOSITION,
     rootPolarity: JustificationRootPolarities.POSITIVE,
-    target: {},
     polarity: JustificationPolarities.POSITIVE,
-    basis: {},
     counterJustifications: [],
   }
-  const merged = merge(init, props)
+  const merged: JustificationViewModel = merge(init, props)
   inferJustificationRootTarget(merged)
   return merged
 }
 
-export function makeSourceExcerptFormInputModel(
-  props?: Partial<SourceExcerptFormInputModel>
-): SourceExcerptFormInputModel {
+export function makeSourceExcerptEditModel(
+  props?: Partial<SourceExcerptEditModel>
+): SourceExcerptEditModel {
   return merge(
     {
       type: SourceExcerptTypes.WRIT_QUOTE,
-      writQuote: makeWritQuoteFormInputModel(),
-      picRegion: makePicRegionFormInputModel(),
-      vidSegment: makeVidSegmentFormInputModel(),
+      writQuote: makeWritQuoteEditModel(),
+      picRegion: makePicRegionEditModel(),
+      vidSegment: makeVidSegmentEditModel(),
     },
     props
   );
 }
 
-export function makeVidSegmentFormInputModel(): VidSegmentFormInputModel {
+export function makeVidSegmentEditModel(): VidSegmentEditModel {
   return makeVidSegment();
 }
 
-export function makeWritQuoteFormInputModel(): WritQuoteFormInputModel {
+export function makeWritQuoteEditModel(): WritQuoteEditModel {
   return makeWritQuote();
 }
 
-export function makePicRegionFormInputModel(): PicRegionFormInputModel {
+export function makePicRegionEditModel(): PicRegionEditModel {
   return makePicRegion();
 }
 
-export function makePropositionCompoundFormInputModel(): PropositionCompoundFormInputModel {
+export function makePropositionCompoundEditModel(): PropositionCompoundEditModel {
   return {
-    atoms: [{ entity: makePropositionFormInputModel() }],
+    atoms: [{ entity: makePropositionEditModel() }],
   };
 }
 
-export function makePropositionFormInputModel(): PropositionFormInputModel {
+export function makePropositionEditModel(): PropositionEditModel {
   return makeProposition();
 }
 
 function inferJustificationRootTarget(
-  justification: JustificationFormInputModel | JustificationViewModel
+  justification: JustificationEditModel | JustificationViewModel
 ) {
   let targetEntity = justification.target.entity;
   let targetType = justification.target.type;
@@ -251,7 +250,7 @@ function inferJustificationRootTarget(
   }
   justification.rootTargetType = targetType;
   justification.rootTarget =
-    targetEntity as JustificationRootTargetFormInputModel;
+    targetEntity as JustificationRootTargetEditModel;
   justification.rootPolarity = rootPolarity;
 }
 
@@ -261,10 +260,10 @@ export const isDisverified = (j: JustificationViewModel) =>
   j.vote && j.vote.polarity === JustificationVotePolarities.NEGATIVE;
 
 // TODO(1): must we export this? Where will we use it?
-export function convertSourceExcerptToFormInputModel(
+export function convertSourceExcerptToEditModel(
   sourceExcerpt: SourceExcerpt
-): SourceExcerptFormInputModel {
-  const formModel = makeSourceExcerptFormInputModel(sourceExcerpt);
+): SourceExcerptEditModel {
+  const formModel = makeSourceExcerptEditModel(sourceExcerpt);
   switch (sourceExcerpt.type) {
     case SourceExcerptTypes.WRIT_QUOTE:
       formModel.writQuote = sourceExcerpt.entity;
@@ -298,26 +297,26 @@ export interface JustifiedPropositionViewModel extends Proposition {
   justifications?: JustificationViewModel[];
 }
 
-export interface CreatePropositionFormInputModel {}
+export interface CreatePropositionEditModel {}
 
-export const makeJustifiedPropositionFormInputModel = (
-  propositionProps: Partial<PropositionFormInputModel>,
-  justificationProps: Partial<JustificationFormInputModel>
-): CreatePropositionFormInputModel => ({
+export const makeJustifiedPropositionEditModel = (
+  propositionProps: Partial<PropositionEditModel>,
+  justificationProps: Partial<JustificationEditModel>
+): CreatePropositionEditModel => ({
   proposition: makeProposition(propositionProps),
   speakers: [],
-  justification: makeJustificationFormInputModel(justificationProps),
+  justification: makeJustificationEditModel(justificationProps),
   // whether to have the justification controls expanded and to create a justification along with the proposition
   doCreateJustification: !!justificationProps,
 });
 
 /** Trunk justifications directly target the root */
-export const makeJustificationFormInputModelTargetingRoot = (
+export const makeJustificationEditModelTargetingRoot = (
   targetType: JustificationRootTargetType & JustificationTargetType,
   targetId: EntityId,
   polarity?: JustificationPolarity
-): JustificationFormInputModel =>
-  makeJustificationFormInputModel({
+): JustificationEditModel =>
+  makeJustificationEditModel({
     rootTargetType: targetType,
     rootTarget: { id: targetId },
     polarity,
@@ -326,7 +325,7 @@ export const makeJustificationFormInputModelTargetingRoot = (
 
 export const makeCounterJustification = (
   targetJustification: Persisted<Justification> & Pick<Justification, "rootTargetType" | "rootTarget" | "rootPolarity">
-): CounterJustificationFormInputModel => ({
+): CounterJustificationEditModel => ({
   rootTargetType: targetJustification.rootTargetType,
   rootTarget: { id: targetJustification.rootTarget.id },
   rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
@@ -341,7 +340,7 @@ export const makeCounterJustification = (
   polarity: JustificationPolarities.NEGATIVE,
 });
 
-export interface ContentReportFormInputModel {
+export interface ContentReportEditModel {
   entityType: EntityType;
   entityId: EntityId;
   // Map of whether a particular content type is selected
@@ -350,8 +349,8 @@ export interface ContentReportFormInputModel {
   url: string;
 }
 
-export const makeContentReportFormInputModel = (
-  fields: Partial<ContentReportFormInputModel>
+export const makeContentReportEditModel = (
+  fields: Partial<ContentReportEditModel>
 ): ContentReport =>
   merge(
     {

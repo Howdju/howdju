@@ -36,7 +36,7 @@ import {
   actions,
   isVerified,
   isDisverified,
-  makeJustificationFormInputModelTargetingRoot,
+  makeJustificationEditModelTargetingRoot,
   JustificationViewModel,
 } from 'howdju-client-common'
 
@@ -140,7 +140,7 @@ class JustificationsPage extends Component<Props> {
       rootTargetType,
       rootTargetId,
     } = this.rootTargetInfo()
-    const justification = makeJustificationFormInputModelTargetingRoot(rootTargetType, rootTargetId, polarity)
+    const justification = makeJustificationEditModelTargetingRoot(rootTargetType, rootTargetId, polarity)
     this.props.editors.beginEdit(EditorTypes.NEW_JUSTIFICATION, JustificationsPage.justificationEditorId, justification)
 
     this.props.justificationsPage.showNewJustificationDialog()

@@ -56,7 +56,7 @@ import {
 } from "@/texts";
 import { logger } from "@/logger";
 import { EditorId, EntityFactory, PropertyChanges } from "@/types";
-import { JustificationFormInputModel } from "howdju-client-common";
+import { JustificationEditModel } from "howdju-client-common";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};
@@ -103,16 +103,16 @@ export type EditorFieldsErrors = RecursiveObject<string>;
 interface PropositionJustificationsEditEntity extends Entity {
   proposition: Proposition;
   speakers: Persorg[];
-  justification: JustificationFormInputModel;
+  justification: JustificationEditModel;
 }
 
 /**
  * Something we have an editor for.
  *
- * TODO: deduplicate this with *FormInputModels.
+ * TODO: deduplicate this with *EditModels.
  */
 export type EditorEntity = | Entity
-| JustificationFormInputModel
+| JustificationEditModel
 | PropositionJustificationsEditEntity
 | WritQuote
 
@@ -348,7 +348,7 @@ const editorReducerByType: {
       [str(editors.addUrl)]: (state) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationFormInputModel;
+        } as unknown as JustificationEditModel;
         editEntity.basis.writQuote.urls =
           editEntity.basis.writQuote.urls.concat([makeUrl()]);
         return { ...state, editEntity };
@@ -356,7 +356,7 @@ const editorReducerByType: {
       [str(editors.removeUrl)]: (state, action) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationFormInputModel;
+        } as unknown as JustificationEditModel;
 
         const urls = clone(editEntity.basis.writQuote.urls);
         removeAt(urls, action.payload.index);

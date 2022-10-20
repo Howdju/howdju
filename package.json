@@ -8,7 +8,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "check:everything": "yarn run lint:all && yarn run typecheck:all && yarn run test:all && yarn run custom-check:all",
+    "check:everything": "yarn run lint:all && yarn run typecheck:all && yarn run test:all && yarn run custom-check:all && echo 'all is well'",
     "check:pushed": "bin/check-pushed.sh",
     "check:committed": "node bin/check-committed.mjs",
     "check:pre-deploy": "bin/pre-deploy-check.sh",

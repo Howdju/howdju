@@ -47,7 +47,7 @@ import {
 import './JustificationRootTargetCard.scss'
 import {divideMenuItems} from "./util"
 import { contentReportEditorId } from "./content-report/ReportContentDialog"
-import { isVerified, JustificationRootTargetViewModel, makeContentReportFormInputModel } from 'howdju-client-common'
+import { isVerified, JustificationRootTargetViewModel, makeContentReportEditModel } from 'howdju-client-common'
 import { ComponentId, ContextTrailItem, EditorId, MenuItems, SuggestionsKey } from './types'
 
 const editorTypesByRootTargetType = {
@@ -191,7 +191,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
     // encapsulates the showing of the dialog, the starting of the edit, and the creation of the
     // form input model
     this.props.editors.beginEdit("CONTENT_REPORT", contentReportEditorId,
-      makeContentReportFormInputModel({entityType, entityId, url}))
+      makeContentReportEditModel({entityType, entityId, url}))
   }
 
   menuItemsForType(rootTargetType: JustificationRootTargetType, rootTarget: Persisted<JustificationRootTarget>) {
