@@ -41,7 +41,7 @@ export const ActionTargetTypes = {
   URL: 'URL',
 } as const
 
-export const ActionSubjectType = {
+export const ActionSubjectTypes = {
   URL: 'URL',
 } as const
 
