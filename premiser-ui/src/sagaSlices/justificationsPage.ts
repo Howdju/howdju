@@ -26,18 +26,17 @@ export const justificationsPage = createSlice({
     fetchRootJustificationTarget: (state, _action: PayloadAction<RootTargetInfo>) => {
       state.isFetching = true
     },
-    fetchedRootJustificationTarget: (state) => {
+  },
+  extraReducers(builder) {
+    builder.addCase(api.fetchRootJustificationTarget.response, (state) => {
       state.isFetching = false
-    },
+    })
   },
   sagas: (A) => ({
     *[A.fetchRootJustificationTarget](action: PayloadAction<RootTargetInfo>) {
       const {rootTargetType, rootTargetId} = action.payload
         yield put(api.fetchRootJustificationTarget(rootTargetType, rootTargetId));
     },
-    *[str(api.fetchRootJustificationTarget.response)]() {
-      yield put(A.fetchedRootJustificationTarget());
-    }
   }),
 });
 

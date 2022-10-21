@@ -236,7 +236,8 @@ export const api = {
     (rootTargetType: JustificationRootTargetType, rootTargetId: EntityId) => ({
       rootTargetType,
       rootTargetId,
-    })
+    }),
+    
   ),
 
   fetchWritQuote: apiActionCreator(
