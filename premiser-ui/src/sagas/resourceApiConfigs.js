@@ -8,7 +8,6 @@ import {
   decircularizeProposition,
   encodeQueryStringObject,
   httpMethods,
-  JustificationRootTargetTypes,
   SortDirections,
 } from 'howdju-common'
 
@@ -40,17 +39,6 @@ import {
 
 
 const defaultSorts = `created=${SortDirections.DESCENDING}`
-
-const rootTargetEndpointsByType = {
-  [JustificationRootTargetTypes.PROPOSITION]: {
-    endpoint: 'propositions',
-    normalizationSchema: {proposition: propositionSchema},
-  },
-  [JustificationRootTargetTypes.STATEMENT]: {
-    endpoint: 'statements',
-    normalizationSchema: {statement: statementSchema},
-  },
-}
 
 export const resourceApiConfigs = {
 
@@ -215,21 +203,6 @@ export const resourceApiConfigs = {
     endpoint: 'perspectives?featured',
     normalizationSchema: {perspectives: perspectivesSchema},
   }),
-
-  [api.fetchRootJustificationTarget]: (payload) => {
-    const {
-      rootTargetType,
-      rootTargetId,
-    } = payload
-    const {endpoint, normalizationSchema} = rootTargetEndpointsByType[rootTargetType]
-    return {
-      endpoint: `${endpoint}/${rootTargetId}?include=justifications`,
-      fetchInit: {
-        method: httpMethods.GET,
-      },
-      normalizationSchema,
-    }
-  },
 
   [api.fetchTaggedPropositions]: (payload) => ({
     endpoint: `propositions?tagId=${payload.tagId}`,

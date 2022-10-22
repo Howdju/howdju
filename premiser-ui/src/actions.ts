@@ -33,6 +33,11 @@ import {
   Persisted,
   PropositionTagVote,
   makePropositionTagVoteSubmissionModel,
+  JustificationRootTargetTypes,
+  httpMethods,
+  HttpMethod,
+  JustificationRootTargetInfo,
+  logger,
 } from "howdju-common";
 import {
   actions,
@@ -51,6 +56,8 @@ import {
   WidgetId,
   EditorId,
 } from "./types";
+import { justificationSchema, propositionSchema, statementSchema } from "./normalizationSchemas";
+import { schema } from "normalizr";
 
 const actionTypeDelim = "/";
 
@@ -153,6 +160,9 @@ function reduxActionsCompatiblePrepare<P>(
 /**
  * A createAction that translates the redux-actions calling convention to the reduxjs/toolkit convention.
  *
+ * TODO: how about a convention where we accept a single function. If it returns something with a payload
+ * key on it, then we use that directly. Otherwise, we use the return value as the payload.
+ *
  * The redux-actions calling convention is to pass two different functions: one to create the
  * payload from the arguments and a second to create the meta from the same arguments. (The meta
  * function was optional.)
@@ -172,38 +182,96 @@ function reduxActionsCompatiblePrepare<P>(
 function createAction<T extends string, P>(
   type: T,
   payloadCreator?: (...args: any[]) => P,
-  metaCreator?: (...args: any[]) => any
+  metaCreator?: (...args: any[]) => any,
+  apiConfigCreator?: (p: P) => ResourceApiConfig<any>
 ) {
-  const prepare: PrepareAction<P | undefined> = payloadCreator
-    ? metaCreator
-      ? (...args: any[]) => ({
-        payload: payloadCreator(...args),
-        meta: metaCreator(...args),
-      })
-      : (...args: any[]) => ({ payload: payloadCreator(...args) })
-    : () => ({ payload: undefined });
+  function prepare(...args: any[]) {
+    const payload = payloadCreator ? payloadCreator(...args) : undefined
+    const meta = metaCreator ? metaCreator(...args) : apiConfigCreator ? {} : undefined
+    if (apiConfigCreator) {
+      if (!payload) {
+        logger.error("apiConfigCreator passed but payload was falsy.")
+      } else {
+        meta.apiConfig = apiConfigCreator(payload)
+      }
+    }
+    return {payload, meta}
+  }
   return toolkitCreateAction(type, reduxActionsCompatiblePrepare(prepare));
 }
 
-/** Create an action creator having a property `.response` with another action creator for corresponding API responses */
-function apiActionCreator<P, RP, PA extends (...args: any[]) => { payload: P }>(
+/**
+ * @typeparam N the type of the normalization schema
+ */
+interface ResourceApiConfig<N> {
+  endpoint: string
+  normalizationSchema: N
+  fetchInit?: {
+    method: HttpMethod
+    body?: any
+  }
+  canSkipRehydrate?: boolean
+  cancelKey?: string
+}
+
+/**
+ * Converts a normalizr schema into a response payload.
+ *
+ * Replaces the schemas with their generic entity type.
+ *
+ * For example, given this schema:
+ *
+ * ```typescript
+ * const someSchema: {
+ *   proposition: schema.Entity<Proposition>;
+ *   example: {
+ *       justification: schema.Entity<Justification>;
+ *   };
+ * }
+ * ```
+ *
+ * `ExtractSchemaEntity<typeof someSchema>` will be:
+ *
+ * ```typescript
+ * type someSchemaEntities = {
+ *   proposition: Proposition;
+ *   example: {
+ *       justification: Justification;
+ *   };
+ * }
+ * ```
+ */
+type ExtractSchemaEntity<S> = S extends schema.Entity<infer E> ? E : {
+  [Key in keyof S]: ExtractSchemaEntity<S[Key]>
+}
+
+/**
+ * Create an action creator having a property `.response` with another action creator for corresponding API responses
+ *
+ * @typeparam P the payload type
+ * @typeparam N the type of the normalization schema
+ * @typeparam RP the response payload type
+ * @typeparam PA the prepare function type
+ */
+function apiActionCreator<P, N, PA extends (...args: any[]) => { payload: P }>(
   type: string,
   payloadCreator?: (...args: any[]) => P,
-  metaCreator?: (...args: any[]) => any
-): ApiActionCreator<P, RP, PA> {
+  apiConfigCreator?: (p: P) => ResourceApiConfig<N>
+): ApiActionCreator<P, ExtractSchemaEntity<N>, PA> {
   const [requestType, responseType] = makeApiActionTypes(type);
   const ac = createAction(
     requestType,
     payloadCreator,
-    metaCreator
-  ) as ApiActionCreator<P, RP, PA>;
+    undefined,  // We no longer need meta for API actions
+    apiConfigCreator,
+  ) as ApiActionCreator<P, ExtractSchemaEntity<N>, PA>;
   ac.response = createAction(
     responseType,
     // The response action currently follows redux-actions convention of providing args like
     // (payload, meta).
     (payload, _meta) => payload,
-    (_payload, meta: ApiActionMeta<P>) => meta
-  ) as ActionCreatorWithPayload<RP, string>;
+    (_payload, meta: ApiActionMeta<P>) => meta  // But we still use meta for API responses in resourceApiSagas.
+  ) as ActionCreatorWithPayload<ExtractSchemaEntity<N>, string>;
   return ac;
 }
 
@@ -215,6 +283,21 @@ export const app = {
   clearAuthToken: createAction("APP/CLEAR_AUTH_TOKEN"),
   checkAuthExpiration: createAction("APP/CHECK_AUTH_EXPIRATION"),
 };
+
+const rootTargetEndpointsByType = {
+  [JustificationRootTargetTypes.PROPOSITION]: {
+    endpoint: 'propositions',
+    normalizationSchema: {proposition: propositionSchema},
+  },
+  [JustificationRootTargetTypes.STATEMENT]: {
+    endpoint: 'statements',
+    normalizationSchema: {statement: statementSchema},
+  },
+  [JustificationRootTargetTypes.JUSTIFICATION]: {
+    endpoint: 'statements',
+    normalizationSchema: {justification: justificationSchema},
+  },
+}
 
 /** Actions that directly result in API calls */
 export const api = {
@@ -233,11 +316,23 @@ export const api = {
   ),
   fetchRootJustificationTarget: apiActionCreator(
     "FETCH_ROOT_JUSTIFICATION_TARGET",
-    (rootTargetType: JustificationRootTargetType, rootTargetId: EntityId) => ({
+    (rootTargetType: JustificationRootTargetType, rootTargetId: EntityId): JustificationRootTargetInfo => ({
       rootTargetType,
       rootTargetId,
     }),
-    
+    ({
+      rootTargetType,
+      rootTargetId,
+    }) => {
+      const {endpoint, normalizationSchema} = rootTargetEndpointsByType[rootTargetType]
+      return {
+        endpoint: `${endpoint}/${rootTargetId}?include=justifications`,
+        fetchInit: {
+          method: httpMethods.GET,
+        },
+        normalizationSchema,
+      }
+    }
   ),
 
   fetchWritQuote: apiActionCreator(
@@ -471,7 +566,6 @@ export const api = {
   updateProposition: apiActionCreator(
     "UPDATE_PROPOSITION",
     (proposition: Proposition) => ({ proposition }),
-    (_p: Proposition, nonce) => ({ nonce })
   ),
   deleteProposition: apiActionCreator("DELETE_PROPOSITION", (proposition) => ({
     proposition,
@@ -646,8 +740,7 @@ export const ui = {
   ),
   tryCancelDelayedHideTransient: createAction(
     "UI/TRY_CANCEL_DELAYED_HIDE_TRANSIENT",
-    (transientId, _cause) => ({ transientId }),
-    (_transientId, cause) => ({ cause })
+    (transientId, cause) => ({ transientId, cause }),
   ),
   cancelDelayedHideTransient: createAction(
     "UI/CANCEL_DELAYED_HIDE_TRANSIENT",
@@ -660,8 +753,7 @@ export const ui = {
   ),
   hideTransient: createAction(
     "UI/HIDE_TRANSIENT",
-    (transientId, _cause) => ({ transientId }),
-    (_transientId, cause) => ({ cause })
+    (transientId, cause) => ({ transientId, cause }),
   ),
   windowResize: createAction("UI/WINDOW_RESIZE"),
   setCanHover: createAction("UI/SET_CAN_HOVER", (canHover: boolean) => ({
@@ -716,15 +808,7 @@ commitEdit.result = createAction(
     editorType,
     editorId,
     result,
-  }),
-  (...args) => {
-    if (args.length === 4) {
-      return args[3];
-    } else if (args.length === 2 && args[0] instanceof Error) {
-      return args[1];
-    }
-    return undefined;
-  }
+  })
 );
 
 export type ListPathFactory = string | ((payload: any) => string);
@@ -762,9 +846,6 @@ export const editors = {
       listPathMaker: () => ListPathFactory,
       itemFactory: () => any
     ) => ({ editorType, editorId, itemIndex, listPathMaker, itemFactory }),
-    // The actionCreator overload ActionCreatorAny requires a meta creator,
-    // so we provide a no-op one.
-    () => null
   ),
   removeListItem: createAction(
     "EDITORS/ON_REMOVE_LIST_ITEM",

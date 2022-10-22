@@ -149,13 +149,10 @@ export function* editorCommitEdit() {
 
     const {editEntity} = yield select(selectEditorState(editorType, editorId))
     const editorCommitApiResourceAction = createEditorCommitApiResourceAction(editorType, editEntity)
-    const meta = {
-      editEntity
-    }
     try {
       const resultAction = yield call(callApiForResource, editorCommitApiResourceAction)
       if (resultAction.error) {
-        return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, resultAction.payload), meta))
+        return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, resultAction.payload)))
       } else {
         if (resultAction.payload.alreadyExists) {
           let entityTypeDescription = EntityTypeDescriptions[editorType]
@@ -165,10 +162,10 @@ export function* editorCommitEdit() {
           }
           yield put(ui.addToast(`That ${entityTypeDescription} already exists.`))
         }
-        return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload, meta))
+        return yield put(editors.commitEdit.result(editorType, editorId, resultAction.payload))
       }
     } catch (error) {
-      return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, error), meta))
+      return yield put(editors.commitEdit.result(newEditorCommitResultError(editorType, editorId, error)))
     }
   })
 }
