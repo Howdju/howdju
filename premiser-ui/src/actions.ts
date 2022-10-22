@@ -138,14 +138,15 @@ export type ApiActionMeta<P = any> = {
 function reduxActionsCompatiblePrepare<P>(
   prepare: PrepareAction<P>
 ): PrepareAction<P> {
-  return function (payload: P, meta?: any) {
-    if (payload instanceof Error) {
+  return function (...args: any[]) {
+    const prepared = prepare(...args)
+    if (prepared.payload instanceof Error) {
       return {
-        payload, // payload is required by reduxjs/toolkit; I forget if redux-actions also set the error as the payload.
-        error: payload,
+        ...prepared,
+        error: prepared.payload,
       };
     }
-    return prepare(payload, meta);
+    return prepared;
   };
 }
 
@@ -176,9 +177,9 @@ function createAction<T extends string, P>(
   const prepare: PrepareAction<P | undefined> = payloadCreator
     ? metaCreator
       ? (...args: any[]) => ({
-          payload: payloadCreator(...args),
-          meta: metaCreator(...args),
-        })
+        payload: payloadCreator(...args),
+        meta: metaCreator(...args),
+      })
       : (...args: any[]) => ({ payload: payloadCreator(...args) })
     : () => ({ payload: undefined });
   return toolkitCreateAction(type, reduxActionsCompatiblePrepare(prepare));
@@ -198,6 +199,8 @@ function apiActionCreator<P, RP, PA extends (...args: any[]) => { payload: P }>(
   ) as ApiActionCreator<P, RP, PA>;
   ac.response = createAction(
     responseType,
+    // The response action currently follows redux-actions convention of providing args like
+    // (payload, meta).
     (payload, _meta) => payload,
     (_payload, meta: ApiActionMeta<P>) => meta
   ) as ActionCreatorWithPayload<RP, string>;
