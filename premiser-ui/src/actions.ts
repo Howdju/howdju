@@ -14,6 +14,7 @@ import {
 } from "@reduxjs/toolkit";
 import { Location } from "history";
 import { Action, bindActionCreators } from "redux";
+import { schema } from "normalizr";
 
 import {
   EntityId,
@@ -56,7 +57,6 @@ import {
   EditorId,
 } from "./types";
 import { justificationSchema, propositionSchema, statementSchema } from "./normalizationSchemas";
-import { schema } from "normalizr";
 
 const actionTypeDelim = "/";
 
@@ -132,9 +132,9 @@ export type ApiActionMeta<P = any> = {
 /**
  * Helper to create a reduxjs/toolkit prepare method that is compatible with redux-actions syle calls.
  *
- * redux-actions had a couple of conventions for their 'ActionFunctions' returned by their createAction:
- *   * the first argument is the `payload` and the second is the `meta`
- *   * unless the first argument is an Error, then it is the `error`.
+ * redux-actions's `handleActions` helper accepts separate `next` and `throw` reducers. It will call
+ * the `throw` reducer if the action's `error` field `=== true`.
+ * (https://github.com/redux-utilities/redux-actions/blob/4bd68b11b841718e64999d214544d6a87337644e/src/handleAction.js#L33)
  */
 function reduxActionsCompatiblePrepare<P>(
   prepare: PrepareAction<P>
@@ -144,7 +144,7 @@ function reduxActionsCompatiblePrepare<P>(
     if (prepared.payload instanceof Error) {
       return {
         ...prepared,
-        error: prepared.payload,
+        error: true,
       };
     }
     return prepared;
