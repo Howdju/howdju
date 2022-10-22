@@ -1,4 +1,4 @@
-import { api, str } from "@/actions";
+import { api } from "@/actions";
 import { put } from "redux-saga/effects";
 import { createSlice } from "saga-slice";
 import { RootTargetInfo } from "@/viewModels";
