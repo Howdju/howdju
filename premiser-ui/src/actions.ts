@@ -37,7 +37,6 @@ import {
   httpMethods,
   HttpMethod,
   JustificationRootTargetInfo,
-  logger,
 } from "howdju-common";
 import {
   actions,
@@ -61,11 +60,6 @@ import { schema } from "normalizr";
 
 const actionTypeDelim = "/";
 
-/**
- * react-actions has a convention that its action creators .toString return the action type.
- * .toString appears to happen automatically when an action creator is the key of an object, but in some
- * cases we will need to call .toString manually.  This method will help us locate those places in the code
- */
 export const str = actions.str;
 
 // redux-action's combineActions return value is not recognized as a valid object key.
@@ -158,46 +152,54 @@ function reduxActionsCompatiblePrepare<P>(
 }
 
 /**
- * A createAction that translates the redux-actions calling convention to the reduxjs/toolkit convention.
- *
- * TODO: how about a convention where we accept a single function. If it returns something with a payload
- * key on it, then we use that directly. Otherwise, we use the return value as the payload.
- *
- * The redux-actions calling convention is to pass two different functions: one to create the
- * payload from the arguments and a second to create the meta from the same arguments. (The meta
- * function was optional.)
+ * A createAction that translates our calling convention to the reduxjs/toolkit convention.
  *
  * The reduxjs/toolkit calling convention is to pass a single `prepare` method that must return an
  * object like `{payload, meta?, error?}`.
  *
- * redux-actions avoided the boilerplate of specifying the `payload` and `meta` fields, while
- * reduxjs/toolkit avoids the boilerplate of multiple functions receiving the same argumnets to
- * create a meta, when often the functions will ignore some of the arguments.
+ * Since our app uses the convention of invoking action creators with multiple positional arguments
+ * that are translated into a payload, reduxjs./toolkit's convention would add a lot of verbose
+ * boilerplate like:
  *
- * For apps that use meta infrequently, redux-actions convention probably makes more sense, but
- * either works. To remove conceptual dependencies on redux-actions from our code we will probably
- * want to remove this eventually, and replace our createAction invocations below with ones
- * that use a prepare function directly rather than accepting separate meta functions.
+ * ```
+ * createAction('THE_ACTION_TYPE', (arg1, arg2) => ({payload: {arg1, arg2}}))
+ * ```
+ *
+ * as opposed to:
+ *
+ * ```
+ * createAction('THE_ACTION_TYPE', (arg1, arg2) => ({arg1, arg2}))
+ * ```
+ *
+ * (where we can omit the `payload` field.)
+ *
+ * To avoid the boilerplate, we adopt a createAction callling convention accepting a
+ * payloadCreatorOrPrepare function. If this function returns an object containing a `payload`
+ * field, then the return value is used directly as the prepared value. Otherwise, the return value
+ * is used as the `payload` of a new prepared object.
+ *
+ * One consequence of this is that, in the unlikely event that the payload should contain a field
+ * called payload, then the payloadCreatorOrPrepare function should return a fully prepared object like:
+ *
+ * ```json
+ * {payload: {payload: {...}}}
+ * ```
  */
 function createAction<T extends string, P>(
   type: T,
-  payloadCreator?: (...args: any[]) => P,
-  metaCreator?: (...args: any[]) => any,
-  apiConfigCreator?: (p: P) => ResourceApiConfig<any>
+  payloadCreatorOrPrepare?: (...args: any[]) => P | {payload: P, meta?: any},
 ) {
-  function prepare(...args: any[]) {
-    const payload = payloadCreator ? payloadCreator(...args) : undefined
-    const meta = metaCreator ? metaCreator(...args) : apiConfigCreator ? {} : undefined
-    if (apiConfigCreator) {
-      if (!payload) {
-        logger.error("apiConfigCreator passed but payload was falsy.")
-      } else {
-        meta.apiConfig = apiConfigCreator(payload)
-      }
+  const prepare = payloadCreatorOrPrepare && function prepare(...args: any[]) {
+    let prepared = payloadCreatorOrPrepare(...args)
+    if (!('payload' in prepared)) {
+      prepared = {payload: prepared}
     }
-    return {payload, meta}
+    return prepared
   }
-  return toolkitCreateAction(type, reduxActionsCompatiblePrepare(prepare));
+  if (prepare) {
+    return toolkitCreateAction(type, reduxActionsCompatiblePrepare(prepare));
+  }
+  return toolkitCreateAction(type);
 }
 
 /**
@@ -255,22 +257,32 @@ type ExtractSchemaEntity<S> = S extends schema.Entity<infer E> ? E : {
  */
 function apiActionCreator<P, N, PA extends (...args: any[]) => { payload: P }>(
   type: string,
-  payloadCreator?: (...args: any[]) => P,
+  payloadCreatorOrPrepare?: (...args: any[]) => P | {payload: P, meta?: any},
   apiConfigCreator?: (p: P) => ResourceApiConfig<N>
 ): ApiActionCreator<P, ExtractSchemaEntity<N>, PA> {
   const [requestType, responseType] = makeApiActionTypes(type);
+
+  // Add apiConfig to meta
+  const requestPrepare = payloadCreatorOrPrepare && function requestPrepare(...args: any[]) {
+    let prepared = payloadCreatorOrPrepare(...args)
+    if (apiConfigCreator) {
+      if(!('payload' in prepared)) {
+        prepared = {payload: prepared, meta: {}}
+      } else if (!prepared.meta) {
+        prepared.meta = {}
+      }
+      prepared.meta.apiConfig = apiConfigCreator(prepared.payload)
+    }
+    return prepared
+  }
+
   const ac = createAction(
     requestType,
-    payloadCreator,
-    undefined,  // We no longer need meta for API actions
-    apiConfigCreator,
+    requestPrepare,
   ) as ApiActionCreator<P, ExtractSchemaEntity<N>, PA>;
   ac.response = createAction(
     responseType,
-    // The response action currently follows redux-actions convention of providing args like
-    // (payload, meta).
-    (payload, _meta) => payload,
-    (_payload, meta: ApiActionMeta<P>) => meta  // But we still use meta for API responses in resourceApiSagas.
+    (payload: ExtractSchemaEntity<N>, meta: ApiActionMeta<P>) => ({payload, meta}),
   ) as ActionCreatorWithPayload<ExtractSchemaEntity<N>, string>;
   return ac;
 }
