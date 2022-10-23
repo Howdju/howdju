@@ -31,11 +31,16 @@ export interface WritQuote extends Entity {
   urls: Array<Url>;
 }
 
+export interface Pic extends Entity {}
+
 export interface PicRegion extends Entity {
-  pic: Entity
+  pic: Pic
 }
+
+export interface Vid extends Entity {}
+
 export interface VidSegment extends Entity {
-  vid: Entity
+  vid: Vid
 }
 
 /** A uniform resource locator */

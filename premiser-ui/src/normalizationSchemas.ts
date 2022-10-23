@@ -1,24 +1,40 @@
 import { schema } from 'normalizr'
 
 import {
+  Justification,
   JustificationBasisTypes,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
+  Persorg,
+  Pic,
+  PicRegion,
+  Proposition,
+  PropositionCompound,
+  PropositionTagVote,
   SentenceTypes,
+  SourceExcerptParaphrase,
   SourceExcerptTypes,
+  Statement,
+  Tag,
+  User,
+  Vid,
+  VidSegment,
+  Writ,
+  WritQuote,
 } from 'howdju-common'
+import { JustificationVote } from 'howdju-client-common'
 
-export const userSchema = new schema.Entity('users')
+export const userSchema = new schema.Entity<User>('users')
 
-export const tagSchema = new schema.Entity('tags')
+export const tagSchema = new schema.Entity<Tag>('tags')
 export const tagsSchema = [tagSchema]
 
-export const propositionTagVoteSchema = new schema.Entity('propositionTagVotes', {
+export const propositionTagVoteSchema = new schema.Entity<PropositionTagVote>('propositionTagVotes', {
   tag: tagSchema
 })
 const propositionTagVoteSchemas = [propositionTagVoteSchema]
 
-export const propositionSchema = new schema.Entity('propositions', {
+export const propositionSchema = new schema.Entity<Proposition>('propositions', {
   tags: tagsSchema,
   recommendedTags: tagsSchema,
   propositionTagVotes: propositionTagVoteSchemas,
@@ -26,13 +42,13 @@ export const propositionSchema = new schema.Entity('propositions', {
 })
 export const propositionsSchema = [propositionSchema]
 
-export const persorgSchema = new schema.Entity('persorgs', {
+export const persorgSchema = new schema.Entity<Persorg>('persorgs', {
   creator: userSchema
 })
 export const persorgsSchema = [persorgSchema]
 
-const sentenceSchema = new schema.Union({}, (value, parent) => parent.sentenceType)
-export const statementSchema = new schema.Entity('statements', {
+const sentenceSchema = new schema.Union({}, (_value, parent) => parent.sentenceType)
+export const statementSchema = new schema.Entity<Statement>('statements', {
   speaker: persorgSchema,
   sentence: sentenceSchema,
   // justifications added below via justificationTargetSchema
@@ -43,58 +59,58 @@ sentenceSchema.define({
   [SentenceTypes.STATEMENT]: statementSchema,
 })
 
-export const propositionCompoundSchema = new schema.Entity('propositionCompounds', {
+export const propositionCompoundSchema = new schema.Entity<PropositionCompound>('propositionCompounds', {
   atoms: [{
     entity: propositionSchema,
   }],
 })
-export const writSchema = new schema.Entity('writs')
+export const writSchema = new schema.Entity<Writ>('writs')
 export const writsSchema = [writSchema]
 
-export const writQuoteSchema = new schema.Entity('writQuotes', {
+export const writQuoteSchema = new schema.Entity<WritQuote>('writQuotes', {
   writ: writSchema
 })
 export const writQuotesSchema = [writQuoteSchema]
 
-export const picSchema = new schema.Entity('pics')
+export const picSchema = new schema.Entity<Pic>('pics')
 
-export const picRegionSchema = new schema.Entity('picRegions', {
+export const picRegionSchema = new schema.Entity<PicRegion>('picRegions', {
   pic: picSchema,
 })
 
-export const vidSchema = new schema.Entity('vids')
+export const vidSchema = new schema.Entity<Vid>('vids')
 
-export const vidSegmentsSchema = new schema.Entity('vidSegments', {
+export const vidSegmentsSchema = new schema.Entity<VidSegment>('vidSegments', {
   vid: vidSchema
 })
 
-export const justificationVoteSchema = new schema.Entity('justificationVotes')
+export const justificationVoteSchema = new schema.Entity<JustificationVote>('justificationVotes')
 
 const sourceExcerptSchema = new schema.Union({
   [SourceExcerptTypes.WRIT_QUOTE]: writQuoteSchema,
   [SourceExcerptTypes.PIC_REGION]: picRegionSchema,
   [SourceExcerptTypes.VID_SEGMENT]: vidSegmentsSchema,
-}, (value, parent) => parent.type)
+}, (_value, parent) => parent.type)
 
-export const sourceExcerptParaphraseSchema = new schema.Entity('sourceExcerptParaphrases', {
+export const sourceExcerptParaphraseSchema = new schema.Entity<SourceExcerptParaphrase>('sourceExcerptParaphrases', {
   paraphrasingProposition: propositionSchema,
   sourceExcerpt: {
     entity: sourceExcerptSchema
   },
 })
 
-export const justificationTargetSchema = new schema.Union({}, (value, parent) => parent.type)
+export const justificationTargetSchema = new schema.Union({}, (_value, parent) => parent.type)
 export const justificationBasisSchema = new schema.Union({
   [JustificationBasisTypes.PROPOSITION_COMPOUND]: propositionCompoundSchema,
   [JustificationBasisTypes.WRIT_QUOTE]: writQuoteSchema,
-}, (value, parent) => parent.type)
+}, (_value, parent) => parent.type)
 
 const justificationRootTargetSchema = new schema.Union({
   [JustificationRootTargetTypes.STATEMENT]: statementSchema,
   [JustificationRootTargetTypes.PROPOSITION]: propositionSchema,
-}, (value, parent) => parent.rootTargetType)
+}, (_value, parent) => parent.rootTargetType)
 
-export const justificationSchema = new schema.Entity('justifications')
+export const justificationSchema = new schema.Entity<Justification>('justifications')
 justificationSchema.define({
   rootTarget: justificationRootTargetSchema,
   target: {

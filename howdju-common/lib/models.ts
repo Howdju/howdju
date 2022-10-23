@@ -34,6 +34,7 @@ import {
   SentenceType,
   SourceExcerptTypes,
   PropositionTagVotePolarities,
+  JustificationRootTargetType,
 } from "./enums";
 import { isDefined } from "./general";
 
@@ -322,3 +323,8 @@ export const makeSourceExcerpt = (
     type: SourceExcerptTypes.WRIT_QUOTE,
     entity: makeWritQuote(),
   }, props);
+
+  export interface JustificationRootTargetInfo {
+    rootTargetType: JustificationRootTargetType
+    rootTargetId: EntityId
+  }

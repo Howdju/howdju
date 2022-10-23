@@ -8,9 +8,16 @@ import {
   WritQuote,
 } from "howdju-common";
 
-/** react-actions has a convention that its action creators .toString return the action type.
- * .toString appears to happen automatically when an action creator is the key of an object, but in some
- * cases we will need to call .toString manually.  This method will help us locate those places in the code
+/**
+ * redux-actions and @reduxjs/toolkit have a convention that action creators get a .toString method
+ * that returns the action type. The call to .toString appears to happen automatically when an
+ * action creator is the key of an object, but:
+ *
+ * 1) TypeScript doesn't recognize action creators as valid object keys, and
+ * 2) The reducers/sagas keyed in this way cannot receive inferred types.
+ *
+ * We can use this method to satisfy (1). Because of (2), though, we will probably eventually want
+ * to phase out this function.
  */
 export const str = (ac: ActionCreator<unknown>) => ac.toString();
 

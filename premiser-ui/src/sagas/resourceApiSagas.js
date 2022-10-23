@@ -7,7 +7,7 @@ import {
   cancelled,
 } from 'redux-saga/effects'
 import isFunction from 'lodash/isFunction'
-import keys from 'lodash/keys'
+import values from 'lodash/values'
 
 import {
   newImpossibleError
@@ -24,7 +24,7 @@ import {callApi} from './apiSagas'
 
 
 export function* resourceApiCalls() {
-  const actionTypes = keys(resourceApiConfigs)
+  const actionTypes = values(api)
   yield takeEvery(actionTypes, callApiForResource)
 }
 
@@ -34,7 +34,8 @@ export function* callApiForResource(action) {
   const responseActionCreator = apiActionCreatorsByActionType[action.type].response
 
   try {
-    let config = resourceApiConfigs[action.type]
+    // TODO(1): replace resourceApiConfigs with apiConfig from meta
+    let config = resourceApiConfigs[action.type] || action.meta.apiConfig
     if (!config) {
       return yield put(responseActionCreator(newImpossibleError(`Missing resource API config for action type: ${action.type}`)))
     }
