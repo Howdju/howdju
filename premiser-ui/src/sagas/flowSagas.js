@@ -19,7 +19,6 @@ import t, {
   MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE,
 } from '../texts'
 import paths from "../paths"
-import mainSearcher from '../mainSearcher'
 import {
   selectAuthTokenExpiration,
   selectLoginRedirectLocation,
@@ -31,6 +30,7 @@ import {
   ui,
   str,
 } from "../actions"
+import {callApiResponse} from "../apiActions"
 import {history} from '../history'
 import {isActivePath, routeIds} from '../routes'
 import {tryWaitOnRehydrate} from './appSagas'
@@ -50,7 +50,7 @@ export function* goHomeIfDeletePropositionWhileViewing() {
 }
 
 export function* redirectToLoginWhenUnauthenticated() {
-  yield takeEvery(str(api.callApi.response), function* redirectToLoginWhenUnauthenticatedWorker(action) {
+  yield takeEvery(str(callApiResponse), function* redirectToLoginWhenUnauthenticatedWorker(action) {
     if (action.error) {
       const {httpStatusCode} = action.payload
       if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
@@ -62,7 +62,7 @@ export function* redirectToLoginWhenUnauthenticated() {
 }
 
 export function* clearAuthTokenWhenUnauthorized() {
-  yield takeEvery(str(api.callApi.response), function* clearAuthTokenWhenUnauthorizedWorker(action) {
+  yield takeEvery(str(callApiResponse), function* clearAuthTokenWhenUnauthorizedWorker(action) {
     if (action.error) {
       const {httpStatusCode} = action.payload
       if (httpStatusCode === httpStatusCodes.UNAUTHORIZED) {
@@ -95,22 +95,6 @@ export function* goTo() {
     yield put(push(paths.createJustification()))
   })
 
-  yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
-    const {
-      mainSearchText
-    } = action.payload
-
-    const mainSearchPath = paths.mainSearch(mainSearchText)
-    const routerLocation = history.location
-    const routerMainSearchText = mainSearcher.mainSearchText(routerLocation)
-    const urlSearchText = paths.mainSearch(routerMainSearchText)
-    if (urlSearchText !== mainSearchPath) {
-      yield put(push(mainSearchPath))
-    }
-
-    yield put(api.fetchPropositionsSearch(mainSearchText))
-  })
-
   yield takeEvery(str(goto.proposition), function* goToPropositionWorker(action) {
     const {proposition} = action.payload
     yield put(push(paths.proposition(proposition)))
@@ -119,6 +103,14 @@ export function* goTo() {
   yield takeEvery(str(goto.justification), function* goToJustificationWorker(action) {
     const {justification} = action.payload
     yield put(push(paths.justification(justification)))
+  })
+
+  yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
+    const {
+      mainSearchText
+    } = action.payload
+    const mainSearchPath = paths.mainSearch(mainSearchText)
+    yield put(push(mainSearchPath))
   })
 
   yield takeEvery(str(goto.statement), function* goToStatementWorker(action) {

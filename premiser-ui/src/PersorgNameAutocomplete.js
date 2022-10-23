@@ -4,7 +4,8 @@ import PropTypes from 'prop-types'
 import ApiAutocomplete from "./ApiAutocomplete"
 import {persorgSchema} from './normalizationSchemas'
 import {connect} from "react-redux"
-import {api, mapActionCreatorGroupToDispatchToProps} from "./actions"
+import { mapActionCreatorGroupToDispatchToProps} from "./actions"
+import {api, cancelPersorgNameSuggestions} from "./apiActions"
 
 
 class PersorgNameAutocomplete extends Component {
@@ -45,7 +46,7 @@ class PersorgNameAutocomplete extends Component {
         onAutocomplete={this.onAutocomplete}
         suggestionSchema={persorgSchema}
         fetchSuggestions={api.fetchPersorgNameSuggestions}
-        cancelSuggestions={api.cancelPersorgNameSuggestions}
+        cancelSuggestions={cancelPersorgNameSuggestions}
         suggestionsKey={suggestionsKey}
         dataLabel="name"
         dataValue="id"

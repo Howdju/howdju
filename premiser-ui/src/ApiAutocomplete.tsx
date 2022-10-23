@@ -2,7 +2,7 @@ import throttle from 'lodash/throttle'
 import map from 'lodash/map'
 import {denormalize} from "normalizr"
 import React, {Component} from "react"
-import {Autocomplete} from 'react-md'
+import {Autocomplete, AutocompleteProps} from 'react-md'
 import { connect } from 'react-redux'
 
 import {
@@ -19,7 +19,7 @@ import {
   mapActionCreatorGroupToDispatchToProps
 } from "./actions"
 import { DebouncedFunc } from 'lodash'
-import { OnKeyDownCallback, OnPropertyChangeCallback, OnSubmitCallback, PropertyChanges, SuggestionsKey } from './types'
+import { ComponentId, OnKeyDownCallback, OnPropertyChangeCallback, OnSubmitCallback, PropertyChanges, SuggestionsKey } from './types'
 import { RootState } from './store'
 
 const dataLabel = 'data-label'
@@ -27,9 +27,13 @@ const dataValue = 'data-value'
 
 const hasFocus = (el: HTMLInputElement) => window.document.activeElement === el
 
-// TODO(1): remove use of any, conver to functional component?
+// TODO(1): remove use of any, convert to functional component? At least use PropsFromRedux
 
-interface Props {
+interface Props extends Omit<AutocompleteProps, "data"> {
+  /** An ID for the DOM element */
+  id?: ComponentId
+  /** The type of the text input */
+  type?: "text" | "search"
   name: string
   /** ms to throttle autocomplete refresh by */
   autocompleteThrottle?: number
@@ -44,6 +48,8 @@ interface Props {
   /** If true, pressing escape when the suggestions are already hidden will clear the field */
   escapeClears?: boolean
   /** A dispatch-wrapped actionCreator to update the suggestions. */
+  // TODO(1): should we add displatch here, and instead accept just the action creator? I think it
+  // would remove boilerplate from users.
   fetchSuggestions: (value: string, suggestionsKey: SuggestionsKey) => void
   /** A dispatch-wrapped actionCreator to cancel updating the suggestions */
   cancelSuggestions: (suggestionsKey: SuggestionsKey) => void
@@ -161,9 +167,6 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
       }
     } else if (event.key === Keys.ENTER) {
       this.closeAutocomplete()
-      if (this.props.singleLine) {
-        event.preventDefault()
-      }
       if (this.props.onSubmit) {
         event.preventDefault()
         this.props.onSubmit(event as any)

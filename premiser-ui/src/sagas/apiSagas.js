@@ -11,8 +11,8 @@ import {
   selectAuthToken,
 } from "../selectors"
 import {
-  api,
-} from "../actions"
+  callApiResponse
+} from "../apiActions"
 import {tryWaitOnRehydrate} from './appSagas'
 import {pageLoadId, getSessionStorageId} from "../identifiers"
 import * as customHeaderKeys from "../customHeaderKeys"
@@ -28,9 +28,9 @@ export function* callApi(endpoint, fetchInit = {}, canSkipRehydrate = false) {
     fetchInit.headers = yield* constructHeaders(fetchInit)
 
     const result = yield call(request, {endpoint, ...fetchInit})
-    return yield put(api.callApi.response(result))
+    return yield put(callApiResponse(result))
   } catch (error) {
-    return yield put(api.callApi.response(error))
+    return yield put(callApiResponse(error))
   }
 }
 

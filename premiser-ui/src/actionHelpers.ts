@@ -1,8 +1,8 @@
-// The terminology around redux actions is terrible.
+// The terminology around redux actions is confusing.
 //
-// `ActionCreator`: a factory for functions that create actions. Really an ActionCreatorFactory.
-// `createAction`: a reduxjs/toolkit helper returning an AllTheGoodNamesWereTaken
-// `AllTheGoodNamesWereTaken`: a function that returns an Action. Usually you call this inside dispatch.
+// The types `*ActionCreator`: a factory for functions that create actions. Really an ActionCreatorFactory.
+// The function `createAction`: a reduxjs/toolkit helper returning an AllTheGoodNamesWereTaken
+// There is no word for this concept: `AllTheGoodNamesWereTaken`: a function that returns an Action. Usually you call this inside dispatch.
 // `Action`: something passed to redux reducers. Created by AllTheGoodNamesWereTaken.
 
 import {
@@ -11,8 +11,11 @@ import {
 } from "redux-actions";
 import mapValues from "lodash/mapValues";
 import assign from "lodash/assign";
+import { isObject } from "lodash";
 import {
   ActionCreatorsMapObject,
+  ActionCreatorWithoutPayload,
+  ActionCreatorWithPreparedPayload,
   createAction as toolkitCreateAction,
   PrepareAction,
 } from "@reduxjs/toolkit";
@@ -118,13 +121,18 @@ function reduxActionsCompatiblePrepare<P>(
  * {payload: {payload: {...}}}
  * ```
  */
-export function createAction<T extends string, P>(
+export function createAction<T extends string>(type: T): ActionCreatorWithoutPayload<T>
+export function createAction<T extends string, P extends any, Args extends any[]>(
   type: T,
-  payloadCreatorOrPrepare?: (...args: any[]) => P | {payload: P, meta?: any},
+  payloadCreatorOrPrepare: (...args: Args) => {payload: P, meta?: any} | P,
+): ActionCreatorWithPreparedPayload<Args, P, T>
+export function createAction<T extends string, P extends any>(
+  type: T,
+  payloadCreatorOrPrepare?: (...args: any[]) => {payload: P, meta?: any} | P,
 ) {
   const prepare = payloadCreatorOrPrepare && function prepare(...args: any[]) {
     let prepared = payloadCreatorOrPrepare(...args)
-    if (!('payload' in prepared)) {
+    if (!isObject(prepared) || !('payload' in prepared)) {
       prepared = {payload: prepared}
     }
     return prepared

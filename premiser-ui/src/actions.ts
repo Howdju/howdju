@@ -1,7 +1,7 @@
 import {
   ActionFunctionAny,
 } from "redux-actions";
-import { Location } from "history";
+import { Location, LocationState } from "history";
 import { Action } from "redux";
 
 import {
@@ -39,406 +39,13 @@ import { createAction, actionTypeDelim } from "./actionHelpers";
 export {str} from "./actionHelpers"
 
 export const app = {
-  searchMainSearch: createAction(
-    "APP/SEARCH_MAIN_SEARCH",
-    (searchText: string) => ({ searchText })
-  ),
   clearAuthToken: createAction("APP/CLEAR_AUTH_TOKEN"),
   checkAuthExpiration: createAction("APP/CHECK_AUTH_EXPIRATION"),
 };
 
 export {mapActionCreatorGroupToDispatchToProps, combineActions} from "./actionHelpers"
 
-/** Actions that directly result in API calls */
-export const api = {
-  callApi: apiActionCreator("CALL_API"),
-  fetchProposition: apiActionCreator(
-    "FETCH_PROPOSITION",
-    (propositionId: EntityId) => ({ propositionId })
-  ),
-  fetchPropositions: apiActionCreator(
-    "FETCH_PROPOSITIONS",
-    (propositionIds: EntityId[]) => ({ propositionIds })
-  ),
-  fetchPropositionCompound: apiActionCreator(
-    "FETCH_PROPOSITION_COMPOUND",
-    (propositionCompoundId: EntityId) => ({ propositionCompoundId })
-  ),
-  fetchRootJustificationTarget: apiActionCreator(
-    "FETCH_ROOT_JUSTIFICATION_TARGET",
-    (rootTargetType: JustificationRootTargetType, rootTargetId: EntityId): JustificationRootTargetInfo => ({
-      rootTargetType,
-      rootTargetId,
-    }),
-    ({
-      rootTargetType,
-      rootTargetId,
-    }) => {
-      const {endpoint, normalizationSchema} = rootTargetEndpointsByType[rootTargetType]
-      return {
-        endpoint: `${endpoint}/${rootTargetId}?include=justifications`,
-        fetchInit: {
-          method: httpMethods.GET,
-        },
-        normalizationSchema,
-      }
-    }
-  ),
-
-  fetchWritQuote: apiActionCreator(
-    "FETCH_WRIT_QUOTE",
-    (writQuoteId: EntityId) => ({ writQuoteId })
-  ),
-  createWritQuote: apiActionCreator(
-    "CREATE_WRIT_QUOTE",
-    (writQuote: WritQuote) => ({ writQuote })
-  ),
-  updateWritQuote: apiActionCreator(
-    "UPDATE_WRIT_QUOTE",
-    (writQuote: WritQuote) => ({ writQuote })
-  ),
-
-  fetchSourceExcerptParaphrase: apiActionCreator(
-    "FETCH_SOURCE_EXCERPT_PARAPHRASE",
-    (sourceExcerptParaphraseId) => ({ sourceExcerptParaphraseId })
-  ),
-  fetchPersorg: apiActionCreator("FETCH_PERSORG", (persorgId) => ({
-    persorgId,
-  })),
-  fetchSpeakerStatements: apiActionCreator(
-    "FETCH_PERSORG_STATEMENTS",
-    (speakerPersorgId) => ({ speakerPersorgId })
-  ),
-  fetchSentenceStatements: apiActionCreator(
-    "FETCH_SENTENCE_STATEMENTS",
-    (sentenceType, sentenceId) => ({ sentenceType, sentenceId })
-  ),
-  fetchRootPropositionStatements: apiActionCreator(
-    "FETCH_ROOT_PROPOSITION_STATEMENTS",
-    (propositionId) => ({ propositionId })
-  ),
-  fetchIndirectPropositionStatements: apiActionCreator(
-    "FETCH_INDIRECT_PROPOSITION_STATEMENTS",
-    (propositionId) => ({ propositionId })
-  ),
-
-  fetchRecentPropositions: apiActionCreator(
-    "FETCH_RECENT_PROPOSITIONS",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      count,
-      continuationToken,
-    })
-  ),
-  fetchRecentWrits: apiActionCreator(
-    "FETCH_RECENT_WRITS",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      continuationToken,
-      count,
-    })
-  ),
-  fetchRecentWritQuotes: apiActionCreator(
-    "FETCH_RECENT_WRIT_QUOTES",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      count,
-      continuationToken,
-    })
-  ),
-  fetchRecentJustifications: apiActionCreator(
-    "FETCH_RECENT_JUSTIFICATIONS",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      count,
-      continuationToken,
-    })
-  ),
-
-  fetchFeaturedPerspectives: apiActionCreator(
-    "FETCH_FEATURED_PERSPECTIVES",
-    (widgetId) => ({ widgetId })
-  ),
-
-  createAccountSettings: apiActionCreator(
-    "CREATE_ACCOUNT_SETTINGS",
-    (accountSettings) => ({ accountSettings })
-  ),
-  fetchAccountSettings: apiActionCreator("FETCH_ACCOUNT_SETTINGS"),
-  updateAccountSettings: apiActionCreator(
-    "UPDATE_ACCOUNT_SETTINGS",
-    (accountSettings) => ({ accountSettings })
-  ),
-
-  createContentReport: apiActionCreator(
-    "CREATE_CONTENT_REPORT",
-    (contentReport) => ({ contentReport })
-  ),
-
-  fetchJustificationsSearch: apiActionCreator(
-    "FETCH_JUSTIFICATIONS_SEARCH",
-    ({ filters, includeUrls, count, continuationToken }) => ({
-      filters,
-      includeUrls,
-      count,
-      continuationToken,
-    })
-  ),
-  login: apiActionCreator("LOGIN", (credentials) => ({ credentials })),
-  logout: apiActionCreator("LOGOUT"),
-
-  requestPasswordReset: apiActionCreator(
-    "REQUEST_PASSWORD_RESET",
-    (passwordResetRequest) => ({ passwordResetRequest })
-  ),
-  checkPasswordResetRequest: apiActionCreator(
-    "CHECK_PASSWORD_RESET_REQUEST",
-    (passwordResetCode) => ({ passwordResetCode })
-  ),
-  confirmPasswordReset: apiActionCreator(
-    "CONFIRM_PASSWORD_RESET",
-    (passwordResetCode, passwordResetConfirmation) => ({
-      passwordResetCode,
-      passwordResetConfirmation,
-    })
-  ),
-
-  requestRegistration: apiActionCreator(
-    "REQUEST_REGISTRATION",
-    (registrationRequest) => ({ registrationRequest })
-  ),
-  checkRegistration: apiActionCreator(
-    "CHECK_REGISTRATION",
-    (registrationCode) => ({ registrationCode })
-  ),
-  confirmRegistration: apiActionCreator(
-    "CONFIRM_REGISTRATION",
-    (registrationConfirmation) => ({ registrationConfirmation })
-  ),
-
-  verifyJustification: apiActionCreator(
-    "VERIFY_JUSTIFICATION",
-    (justification) => ({
-      justificationVote: {
-        justificationId: justification.id,
-        polarity: JustificationVotePolarities.POSITIVE,
-      },
-      previousJustificationVote: justification.vote,
-    })
-  ),
-  unVerifyJustification: apiActionCreator(
-    "UN_VERIFY_JUSTIFICATION",
-    (justification) => ({
-      justificationVote: {
-        justificationId: justification.id,
-        polarity: JustificationVotePolarities.POSITIVE,
-      },
-      previousJustificationVote: justification.vote,
-    })
-  ),
-  disverifyJustification: apiActionCreator(
-    "DISVERIFY_JUSTIFICATION",
-    (justification) => ({
-      justificationVote: {
-        justificationId: justification.id,
-        polarity: JustificationVotePolarities.NEGATIVE,
-      },
-      previousJustificationVote: justification.vote,
-    })
-  ),
-  unDisverifyJustification: apiActionCreator(
-    "UN_DISVERIFY_JUSTIFICATION",
-    (justification) => ({
-      justificationVote: {
-        justificationId: justification.id,
-        polarity: JustificationVotePolarities.NEGATIVE,
-      },
-      previousJustificationVote: justification.vote,
-    })
-  ),
-
-  createTag: apiActionCreator(
-    "CREATE_TAG",
-    (tagTagetType, tagTargetId, tag, tagVote) => ({
-      tagTagetType,
-      tagTargetId,
-      tag,
-      tagVote,
-    })
-  ),
-  createAntiTag: apiActionCreator(
-    "CREATE_ANTI_TAG",
-    (tagTagetType, tagTargetId, tag, tagVote) => ({
-      tagTagetType,
-      tagTargetId,
-      tag,
-      tagVote,
-    })
-  ),
-  unTag: apiActionCreator("UN_TAG", (tagVote) => ({ tagVote })),
-
-  tagProposition: apiActionCreator(
-    "TAG_PROPOSITION",
-    (
-      propositionId: EntityId,
-      tag: Tag,
-      propositionTagVote: PropositionTagVote
-    ) => ({
-      propositionTagVote: makePropositionTagVoteSubmissionModel({
-        polarity: PropositionTagVotePolarities.POSITIVE,
-        proposition: { id: propositionId },
-        tag,
-      }),
-      prevPropositionTagVote: propositionTagVote,
-    })
-  ),
-  antiTagProposition: apiActionCreator(
-    "ANTI_TAG_PROPOSITION",
-    (propositionId, tag, propositionTagVote) => ({
-      propositionTagVote: makePropositionTagVoteSubmissionModel({
-        polarity: PropositionTagVotePolarities.NEGATIVE,
-        proposition: { id: propositionId },
-        tag,
-      }),
-      prevPropositionTagVote: propositionTagVote,
-    })
-  ),
-  unTagProposition: apiActionCreator(
-    "UN_TAG_PROPOSITION",
-    (propositionTagVote: Persisted<PropositionTagVote>) => ({
-      prevPropositionTagVote: propositionTagVote,
-    })
-  ),
-
-  createProposition: apiActionCreator("CREATE_PROPOSITION", (proposition) => ({
-    proposition,
-  })),
-  updateProposition: apiActionCreator(
-    "UPDATE_PROPOSITION",
-    (proposition: Proposition) => ({ proposition }),
-  ),
-  deleteProposition: apiActionCreator("DELETE_PROPOSITION", (proposition) => ({
-    proposition,
-  })),
-
-  createStatement: apiActionCreator("CREATE_STATEMENT", (statement) => ({
-    statement,
-  })),
-
-  updatePersorg: apiActionCreator("UPDATE_PERSORG", (persorg) => ({ persorg })),
-
-  fetchPropositionTextSuggestions: apiActionCreator(
-    "FETCH_PROPOSITION_TEXT_SUGGESTIONS",
-    (propositionText, suggestionsKey) => ({
-      propositionText,
-      suggestionsKey,
-    })
-  ),
-  cancelPropositionTextSuggestions: apiActionCreator(
-    "CANCEL_PROPOSITION_TEXT_SUGGESTIONS",
-    (suggestionsKey) => ({
-      cancelTarget: makeApiActionTypes("FETCH_PROPOSITION_TEXT_SUGGESTIONS")[0],
-      suggestionsKey,
-    })
-  ),
-
-  fetchWritTitleSuggestions: apiActionCreator(
-    "FETCH_WRIT_TITLE_SUGGESTIONS",
-    (writTitle, suggestionsKey) => ({
-      writTitle,
-      suggestionsKey,
-    })
-  ),
-  cancelWritTitleSuggestions: apiActionCreator(
-    "CANCEL_WRIT_TITLE_SUGGESTIONS",
-    (suggestionsKey) => ({
-      cancelTarget: makeApiActionTypes("FETCH_WRIT_TITLE_SUGGESTIONS")[0],
-      suggestionsKey,
-    })
-  ),
-
-  fetchTagNameSuggestions: apiActionCreator(
-    "FETCH_TAG_NAME_SUGGESTIONS",
-    (tagName, suggestionsKey) => ({
-      tagName,
-      suggestionsKey,
-    })
-  ),
-  cancelTagNameSuggestions: apiActionCreator(
-    "CANCEL_TAG_NAME_SUGGESTIONS",
-    (suggestionsKey) => ({
-      cancelTarget: makeApiActionTypes("FETCH_TAG_NAME_SUGGESTIONS")[0],
-      suggestionsKey,
-    })
-  ),
-
-  fetchMainSearchSuggestions: apiActionCreator(
-    "FETCH_MAIN_SEARCH_SUGGESTIONS",
-    (searchText, suggestionsKey) => ({
-      searchText,
-      suggestionsKey,
-    })
-  ),
-  cancelMainSearchSuggestions: apiActionCreator(
-    "CANCEL_MAIN_SEARCH_SUGGESTIONS",
-    (suggestionsKey) => ({
-      cancelTarget: makeApiActionTypes("FETCH_MAIN_SEARCH_SUGGESTIONS")[0],
-      suggestionsKey,
-    })
-  ),
-
-  fetchPersorgNameSuggestions: apiActionCreator(
-    "FETCH_PERSORG_NAME_SUGGESTIONS",
-    (searchText, suggestionsKey) => ({
-      searchText,
-      suggestionsKey,
-    })
-  ),
-  cancelPersorgNameSuggestions: apiActionCreator(
-    "CANCEL_PERSORG_NAME_SUGGESTIONS",
-    (suggestionsKey) => ({
-      cancelTarget: makeApiActionTypes("FETCH_PERSORG_NAME_SUGGESTIONS")[0],
-      suggestionsKey,
-    })
-  ),
-
-  createJustification: apiActionCreator(
-    "CREATE_JUSTIFICATION",
-    (justification) => ({ justification })
-  ),
-  deleteJustification: apiActionCreator(
-    "DELETE_JUSTIFICATION",
-    (justification) => ({ justification })
-  ),
-
-  fetchMainSearchResults: apiActionCreator(
-    "FETCH_MAIN_SEARCH_RESULTS",
-    (searchText) => ({ searchText })
-  ),
-  fetchPropositionsSearch: apiActionCreator(
-    "FETCH_PROPOSITIONS_SEARCH",
-    (searchText) => ({ searchText })
-  ),
-
-  fetchTag: apiActionCreator("FETCH_TAG", (tagId) => ({ tagId })),
-  fetchTaggedPropositions: apiActionCreator(
-    "FETCH_TAGGED_PROPOSITIONS",
-    (tagId) => ({ tagId })
-  ),
-};
-type UnknownApiActionCreator = ApiActionCreator<
-  unknown,
-  unknown,
-  void | PrepareAction<unknown>
->;
-export const apiActionCreatorsByActionType = reduce(
-  api,
-  (result: { [key: string]: UnknownApiActionCreator }, actionCreator) => {
-    result[str(actionCreator)] = actionCreator as any;
-    return result;
-  },
-  {}
-);
+export {api} from "./apiActions"
 
 /** "API-like": actions that indirectly result in API calls, such as actions that are translated into one or another
  * API call depending on some payload value or those that correspond to multiple API calls
@@ -461,14 +68,7 @@ export const apiLike = {
 export const ui = {
   unhandledAppClick: createAction("UI/UNHANDLED_APP_CLICK"),
   unhandledAppTouch: createAction("UI/UNHANDLED_APP_TOUCH"),
-  showNavDrawer: createAction("SHOW_NAV_DRAWER"),
-  hideNavDrawer: createAction("HIDE_NAV_DRAWER"),
-  toggleNavDrawerVisibility: createAction("TOGGLE_NAV_DRAWER_VISIBILITY"),
-  setNavDrawerVisibility: createAction("SET_NAV_DRAWER_VISIBILITY"),
-  addToast: createAction("ADD_TOAST", (text: string) => ({ text })),
-  dismissToast: createAction("DISMISS_TOAST"),
 
-  mainSearchTextChange: createAction("MAIN_SEARCH_TEXT_CHANGE"),
   loginCredentialChange: createAction("LOGIN_CREDENTIAL_CHANGE"),
   clearJustificationsSearch: createAction("UI/CLEAR_JUSTIFICATIONS_SEARCH"),
 
@@ -506,17 +106,11 @@ export const ui = {
     (transientId, cause) => ({ transientId, cause }),
   ),
   windowResize: createAction("UI/WINDOW_RESIZE"),
-  setCanHover: createAction("UI/SET_CAN_HOVER", (canHover: boolean) => ({
-    canHover,
-  })),
 
   expand: createAction("UI/EXPAND", (widgetId: WidgetId) => ({ widgetId })),
   collapse: createAction("UI/COLLAPSE", (widgetId: WidgetId) => ({
     widgetId,
   })),
-
-  enableMobileSite: createAction("UI/ENABLE_MOBILE_SITE"),
-  disableMobileSite: createAction("UI/DISABLE_MOBILE_SITE"),
 
   clearTaggedPropositions: createAction("UI/CLEAR_TAGGED_PROPOSITIONS"),
 };
@@ -593,7 +187,7 @@ export const editors = {
       editorType: EditorType,
       editorId: EditorId,
       itemIndex: number,
-      listPathMaker: () => ListPathFactory,
+      listPathMaker: ListPathFactory,
       itemFactory: () => any
     ) => ({ editorType, editorId, itemIndex, listPathMaker, itemFactory }),
   ),
@@ -712,7 +306,7 @@ export const editors = {
 export const goto = {
   login: createAction(
     "GOTO/LOGIN",
-    (loginRedirectLocation: Location<unknown>) => ({ loginRedirectLocation })
+    (loginRedirectLocation: Location<LocationState>) => ({ loginRedirectLocation })
   ),
   proposition: createAction("GOTO/PROPOSITION", (proposition: Proposition) => ({
     proposition,

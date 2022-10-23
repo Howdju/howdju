@@ -9,6 +9,7 @@ import {
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
 import {propositionSchema} from "./normalizationSchemas"
+import { cancelPropositionTextSuggestions } from "./apiActions"
 
 
 class PropositionTextAutocomplete extends Component {
@@ -33,7 +34,7 @@ class PropositionTextAutocomplete extends Component {
         singleLine={true}
         onAutocomplete={this.onAutocomplete}
         fetchSuggestions={api.fetchPropositionTextSuggestions}
-        cancelSuggestions={api.cancelPropositionTextSuggestions}
+        cancelSuggestions={cancelPropositionTextSuggestions}
         suggestionsKey={suggestionsKey}
         dataLabel="text"
         dataValue="id"

@@ -14,27 +14,6 @@ import {
   ui,
 } from '../../actions'
 
-
-export const mainSearchPage = handleActions({
-  [api.fetchMainSearchResults]: (state, action) => ({...state, isFetching: true}),
-  [api.fetchMainSearchResults.response]: {
-    next: (state, action) => {
-      const {result} = normalize(action.payload, action.meta.normalizationSchema)
-      return {...state, isFetching: false, results: result}
-    },
-    throw: (state, action) => ({...state, isFetching: false})
-  }
-}, {
-  isFetching: false,
-  results: {
-    tags: [],
-    propositionTexts: [],
-    writQuoteQuoteTexts: [],
-    writQuoteUrls: [],
-    writTitles: [],
-  }
-})
-
 export const featuredPerspectivesPage = handleActions({
   [api.fetchFeaturedPerspectives]: state => ({...state, isFetching: true}),
   [api.fetchFeaturedPerspectives.response]: {

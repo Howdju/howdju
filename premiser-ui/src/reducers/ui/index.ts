@@ -1,3 +1,27 @@
-import ui from './ui'
+import { combineReducers } from 'redux'
 
-export default ui
+import {
+  accountSettingsPage,
+  featuredPerspectivesPage,
+  justificationsSearchPage,
+  passwordResetConfirmationPage,
+  passwordResetRequestPage,
+  persorgPage,
+  propositionUsagesPage,
+  registrationConfirmationPage,
+  tagPage,
+} from './pages'
+import transients from './transients'
+
+export default combineReducers({
+  accountSettingsPage,
+  featuredPerspectivesPage,
+  justificationsSearchPage,
+  passwordResetConfirmationPage,
+  passwordResetRequestPage,
+  persorgPage,
+  propositionUsagesPage,
+  registrationConfirmationPage,
+  tagPage,
+  transients,
+})

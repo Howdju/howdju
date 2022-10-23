@@ -8,6 +8,7 @@ import { ComponentName, OnKeyDownCallback, OnPropertyChangeCallback, Suggestions
 import { useDispatch } from 'react-redux'
 import { api } from './actions'
 import { combineNames } from './viewModels'
+import { cancelWritTitleSuggestions } from './apiActions'
 
 interface Props {
   name: ComponentName
@@ -42,7 +43,7 @@ const WritTitleAutocomplete = (props: Props) => {
       fetchSuggestions={(text: string, suggestionsKey: SuggestionsKey) =>
         dispatch(api.fetchWritTitleSuggestions(text, suggestionsKey))}
       cancelSuggestions={(suggestionsKey: SuggestionsKey) =>
-        dispatch(api.cancelWritTitleSuggestions(suggestionsKey))}
+        dispatch(cancelWritTitleSuggestions(suggestionsKey))}
       suggestionsKey={suggestionsKey}
       dataLabel="title"
       dataValue="id"
