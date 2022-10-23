@@ -19,7 +19,6 @@ import {
   str,
 } from "../actions"
 import {logger} from '../logger'
-import {resourceApiConfigs} from './resourceApiConfigs'
 import {callApi} from './apiSagas'
 
 
@@ -34,8 +33,7 @@ export function* callApiForResource(action) {
   const responseActionCreator = apiActionCreatorsByActionType[action.type].response
 
   try {
-    // TODO(1): replace resourceApiConfigs with apiConfig from meta
-    let config = resourceApiConfigs[action.type] || action.meta.apiConfig
+    let config = action.meta.apiConfig
     if (!config) {
       return yield put(responseActionCreator(newImpossibleError(`Missing resource API config for action type: ${action.type}`)))
     }
@@ -90,11 +88,9 @@ export function* cancelResourceApiCalls() {
         cancelTarget,
       } = action.payload
 
-      let resourceApiConfig = resourceApiConfigs[cancelTarget]
-      if (isFunction(resourceApiConfig)) {
-        resourceApiConfig = resourceApiConfig(action.payload)
-      }
-      const {cancelKey} = resourceApiConfig
+      // Call the cancel target in order to get its cancelKey.
+      let targetAction = api[cancelTarget](...action.payload.cancelTargetArgs)
+      const {cancelKey} = targetAction
 
       if (cancelKey) {
         const prevTask = cancelableResourceCallTasks[cancelKey]
