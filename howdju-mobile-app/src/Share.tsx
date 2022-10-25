@@ -1,34 +1,25 @@
-import React, {useEffect, useState} from 'react';
-import {
-  FlatList,
-  GestureResponderEvent,
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
-import {
-  ShareMenuReactView,
-  SharePreviewResponse,
-} from 'react-native-share-menu';
+import React, {useEffect, useState} from 'react'
+import {FlatList, GestureResponderEvent, View, Text, Pressable, StyleSheet} from 'react-native'
+import {ShareMenuReactView, SharePreviewResponse} from 'react-native-share-menu'
 
-import ShareDataItemPreview from '@/views/ShareDataItemPreview';
+import ShareDataItemPreview from '@/views/ShareDataItemPreview'
 
 const Share = () => {
-  const [sharePreviewResponse, setSharePreviewResponse] =
-    useState<SharePreviewResponse>({items: []});
-  const [sending, setSending] = useState(false);
+  const [sharePreviewResponse, setSharePreviewResponse] = useState<SharePreviewResponse>({
+    items: [],
+  })
+  const [sending, setSending] = useState(false)
 
   useEffect(() => {
     ShareMenuReactView.data()
       .then((response: SharePreviewResponse) => {
-        setSharePreviewResponse(response);
+        setSharePreviewResponse(response)
       })
-      .catch(console.error);
-  }, []);
+      .catch(console.error)
+  }, [])
 
-  console.log({sharePreviewResponse});
-  const items = sharePreviewResponse?.items;
+  console.log({sharePreviewResponse})
+  const items = sharePreviewResponse?.items
 
   return (
     <View style={styles.container}>
@@ -36,51 +27,48 @@ const Share = () => {
         <Button
           title="Dismiss"
           onPress={() => {
-            ShareMenuReactView.dismissExtension();
+            ShareMenuReactView.dismissExtension()
           }}
           style={styles.destructive}
         />
         <Button
           title={sending ? 'Sending...' : 'Send'}
           onPress={() => {
-            setSending(true);
+            setSending(true)
 
             setTimeout(() => {
-              ShareMenuReactView.dismissExtension();
-            }, 3000);
+              ShareMenuReactView.dismissExtension()
+            }, 3000)
           }}
           disabled={sending}
           style={sending ? styles.sending : styles.send}
         />
       </View>
-      <FlatList
-        data={items}
-        renderItem={({item}) => <ShareDataItemPreview item={item} />}
-      />
+      <FlatList data={items} renderItem={({item}) => <ShareDataItemPreview item={item} />} />
       <View style={styles.buttonGroup}>
         <Button
           title="Dismiss with Error"
           onPress={() => {
-            ShareMenuReactView.dismissExtension('Dismissed with error');
+            ShareMenuReactView.dismissExtension('Dismissed with error')
           }}
           style={styles.destructive}
         />
         <Button
           title="Continue In App"
           onPress={() => {
-            ShareMenuReactView.continueInApp();
+            ShareMenuReactView.continueInApp()
           }}
         />
         <Button
           title="Continue In App With Extra Data"
           onPress={() => {
-            ShareMenuReactView.continueInApp({hello: 'from the other side'});
+            ShareMenuReactView.continueInApp({hello: 'from the other side'})
           }}
         />
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -107,19 +95,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     margin: 16,
   },
-});
+})
 
 type ButtonProps = {
-  onPress: (event: GestureResponderEvent) => void;
-  title: string;
-  style?: typeof styles[keyof typeof styles];
-  disabled?: boolean;
-};
+  onPress: (event: GestureResponderEvent) => void
+  title: string
+  style?: typeof styles[keyof typeof styles]
+  disabled?: boolean
+}
 
 const Button = ({onPress, title, style, disabled}: ButtonProps) => (
   <Pressable onPress={onPress} disabled={disabled}>
     <Text style={[styles.buttonText, style]}>{title}</Text>
   </Pressable>
-);
+)
 
-export default Share;
+export default Share

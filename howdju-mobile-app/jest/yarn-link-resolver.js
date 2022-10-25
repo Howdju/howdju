@@ -1,6 +1,6 @@
 // A custom Jest resolver for linked deps
 module.exports = (path, options) => {
-  const {basedir} = options;
+  const {basedir} = options
   // For the dependencies we link locally for development, resolve
   // their peer dependencies with a basedir of the mobile app package.
   //
@@ -19,9 +19,9 @@ module.exports = (path, options) => {
     // this custom override to resolution.
     console.log(
       `Replacing linked basedir ${basedir} with rootDir ${options.rootDir} while resolving path ${path}`,
-    );
-    options = {...options, basedir: options.rootDir};
+    )
+    options = {...options, basedir: options.rootDir}
   }
 
-  return options.defaultResolver(path, options);
-};
+  return options.defaultResolver(path, options)
+}
