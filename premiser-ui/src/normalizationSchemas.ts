@@ -138,12 +138,6 @@ statementSchema.define({
   justifications: justificationsSchema,
 })
 
-export const perspectiveSchema = new schema.Entity('perspectives', {
-  proposition: propositionSchema,
-  justifications: justificationsSchema,
-})
-export const perspectivesSchema = [perspectiveSchema]
-
 export const mainSearchResultsSchema = {
   propositionTexts: propositionsSchema,
   writQuoteQuoteTexts: writQuotesSchema,

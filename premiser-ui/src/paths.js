@@ -23,7 +23,6 @@ export const createJustificationPath = '/create-justification'
 class Paths {
   home = () => '/'
 
-  featuredPerspectives = () => '/featured-perspectives'
   recentActivity = () => '/recent-activity'
   whatsNext = () => '/whats-next'
   about = () => '/about'
