@@ -129,6 +129,18 @@ type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
       [Key in keyof S]: ExtractSchemaEntity<S[Key]>
     }
 
+/** Properties that may be present on API responses */
+interface ApiResponseWrapper {
+  /**
+   * Whether an entity equivalent to the top-level entity of a POST's body already existed on the
+   * server.
+   *
+   * Although this should only be present for responses to Create/POSTs, it seemed overly complicated
+   * to try and type it into the response action creator. So we make it optional on all responses.
+   */
+  isExtant?: boolean
+}
+
 /**
  * Create an action creator having a property `.response` with another action creator for corresponding API responses
  *
@@ -145,7 +157,7 @@ function apiActionCreator<P, N, PA extends (...args: any[]) => {payload: P}>(
   type: string,
   payloadCreatorOrPrepare?: (...args: any[]) => P | {payload: P; meta?: any},
   apiConfigCreator?: ResourceApiConfig<N> | ((p: P) => ResourceApiConfig<N>),
-): ApiActionCreator<P, ExtractSchemaEntity<N>, PA> {
+): ApiActionCreator<P, ExtractSchemaEntity<N> & ApiResponseWrapper, PA> {
   const [requestType, responseType] = makeApiActionTypes(type)
 
   // Add apiConfig to meta
@@ -167,9 +179,12 @@ function apiActionCreator<P, N, PA extends (...args: any[]) => {payload: P}>(
       return prepared
     }
 
+  type Response = ExtractSchemaEntity<N> & ApiResponseWrapper
+
   const ac = requestPrepare
-    ? (createAction(requestType, requestPrepare) as ApiActionCreator<P, ExtractSchemaEntity<N>, PA>)
-    : (createAction(requestType) as ApiActionCreator<P, ExtractSchemaEntity<N>, PA>)
+    ? (createAction(requestType, requestPrepare) as ApiActionCreator<P, Response, PA>)
+    : (createAction(requestType) as ApiActionCreator<P, Response, PA>)
+
   ac.response = createAction(
     responseType,
     (payload: ExtractSchemaEntity<N>, meta: ApiActionMeta<P>) => ({
@@ -178,7 +193,7 @@ function apiActionCreator<P, N, PA extends (...args: any[]) => {payload: P}>(
     }),
   ) as ActionCreatorWithPreparedPayload<
     unknown[],
-    ExtractSchemaEntity<N>,
+    Response,
     string,
     Error,
     ApiActionMeta
@@ -217,7 +232,6 @@ const rootTargetEndpointsByType = {
 
 const defaultSorts = `created=${SortDirections.DESCENDING}`
 
-// export const callApi = createAction("CALL_API")
 export const callApiResponse = createAction(
   'CALL_API_RESPONSE',
   result => result,
