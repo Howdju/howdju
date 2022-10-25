@@ -14,12 +14,12 @@ import {
 } from 'howdju-common'
 
 import {
-  api,
-  apiActionCreatorsByActionType,
   str,
 } from "../actions"
+import {
+  api, apiActionCreatorsByActionType, cancelMainSearchSuggestions, cancelPersorgNameSuggestions, cancelPropositionTextSuggestions, cancelTagNameSuggestions, cancelWritTitleSuggestions
+} from "../apiActions"
 import {logger} from '../logger'
-import {resourceApiConfigs} from './resourceApiConfigs'
 import {callApi} from './apiSagas'
 
 
@@ -34,8 +34,8 @@ export function* callApiForResource(action) {
   const responseActionCreator = apiActionCreatorsByActionType[action.type].response
 
   try {
-    // TODO(1): replace resourceApiConfigs with apiConfig from meta
-    let config = resourceApiConfigs[action.type] || action.meta.apiConfig
+    // TODO(1): Move cancelation action creators out of api and make meta required.
+    let config = action.meta && action.meta.apiConfig
     if (!config) {
       return yield put(responseActionCreator(newImpossibleError(`Missing resource API config for action type: ${action.type}`)))
     }
@@ -77,24 +77,23 @@ export function* callApiForResource(action) {
 }
 
 export function* cancelResourceApiCalls() {
+  // TODO(1): move cancel onto the API action creator to avoid toil of adding them here?
   yield takeEvery(
     [
-      str(api.cancelPropositionTextSuggestions),
-      str(api.cancelWritTitleSuggestions),
-      str(api.cancelMainSearchSuggestions),
-      str(api.cancelTagNameSuggestions),
-      str(api.cancelPersorgNameSuggestions),
+      str(cancelPropositionTextSuggestions),
+      str(cancelWritTitleSuggestions),
+      str(cancelMainSearchSuggestions),
+      str(cancelTagNameSuggestions),
+      str(cancelPersorgNameSuggestions),
     ],
     function* cancelCallApiForResourceWorker(action) {
       const {
         cancelTarget,
       } = action.payload
 
-      let resourceApiConfig = resourceApiConfigs[cancelTarget]
-      if (isFunction(resourceApiConfig)) {
-        resourceApiConfig = resourceApiConfig(action.payload)
-      }
-      const {cancelKey} = resourceApiConfig
+      // Call the cancel target in order to get its cancelKey.
+      let targetAction = apiActionCreatorsByActionType[cancelTarget](...action.payload.cancelTargetArgs)
+      const {cancelKey} = targetAction
 
       if (cancelKey) {
         const prevTask = cancelableResourceCallTasks[cancelKey]

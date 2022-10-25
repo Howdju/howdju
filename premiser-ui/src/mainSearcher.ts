@@ -1,9 +1,9 @@
 import paths from './paths'
-import { createPath } from 'history'
+import { createPath, Location, LocationState } from 'history'
 import head from 'lodash/head'
 
 class MainSearcher {
-  mainSearchText = location => {
+  mainSearchText = (location: Location<LocationState>) => {
     if (
       // Return first query param if it doesn't have a value
       // Supports short-hand search like: howdju.com?politics
@@ -19,7 +19,7 @@ class MainSearcher {
 
     return null
   }
-  isSearch = location => {
+  isSearch = (location: Location<LocationState>) => {
     const searchText = this.mainSearchText(location)
     const searchPath = paths.mainSearch(searchText)
     const actualPath = createPath(location)

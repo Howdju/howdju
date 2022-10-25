@@ -9,6 +9,7 @@ import {
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
 import {tagSchema} from "./normalizationSchemas"
+import { cancelTagNameSuggestions } from "./apiActions"
 
 
 class TagNameAutocomplete extends Component {
@@ -42,7 +43,7 @@ class TagNameAutocomplete extends Component {
         {...rest}
         id={id}
         fetchSuggestions={api.fetchTagNameSuggestions}
-        cancelSuggestions={api.cancelTagNameSuggestions}
+        cancelSuggestions={cancelTagNameSuggestions}
         suggestionsKey={suggestionsKey}
         suggestionSchema={tagSchema}
         name={name}

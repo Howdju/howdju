@@ -4,7 +4,6 @@ import { hot } from 'react-hot-loader/root'
 import { Switch } from 'react-router'
 import { Link } from 'react-router-dom'
 import { ConnectedRouter } from 'connected-react-router'
-import Helmet from './Helmet'
 import {
   Button,
   Drawer,
@@ -29,6 +28,7 @@ import {
   actions
 } from 'howdju-client-common'
 
+import Helmet from './Helmet'
 import {
   api,
   flows,
@@ -45,6 +45,7 @@ import {
   isMissingPrivacyConsent, LIVE_CHAT, REQUIRED_FUNCTIONALITY,
   showPrivacyConsentDialog
 } from "./cookieConsent"
+import app from "@/app/appSlice"
 import {startPersisting, stopPersisting} from "./store"
 import ErrorBoundary from './ErrorBoundary'
 import Header from './Header'
@@ -69,10 +70,10 @@ import {
   isDevice,
 } from "./util"
 import WindowMessageHandler from './WindowMessageHandler'
+import ReportContentDialog from "./content-report/ReportContentDialog"
 
 import './App.scss'
 import './fonts.js'
-import ReportContentDialog from "./content-report/ReportContentDialog"
 
 const tabInfos = [
   {
@@ -227,7 +228,7 @@ class App extends Component {
       requiresReload = requiresReload || requestReload  && (isTruthy(prevCookie) || cookie.accepted)
     })
     if (requiresReload) {
-      this.props.ui.addToast("Please reload the page for changes to take effect.")
+      this.props.app.addToast("Please reload the page for changes to take effect.")
     }
     this.props.privacyConsent.update(cookies)
   }
@@ -249,7 +250,7 @@ class App extends Component {
   }
 
   onFirstMouseOver = () => {
-    this.props.ui.setCanHover(true)
+    this.props.app.setCanHover(true)
     window.removeEventListener('mouseover', this.onFirstMouseOver)
   }
 
@@ -319,15 +320,15 @@ class App extends Component {
   }
 
   hideNavDrawer = () => {
-    this.props.ui.hideNavDrawer()
+    this.props.app.hideNavDrawer()
   }
 
   onNavDrawerVisibilityChange = (visible) => {
-    this.props.ui.setNavDrawerVisibility({visible})
+    this.props.app.setNavDrawerVisibility({visible})
   }
 
   dismissSnackbar = () => {
-    this.props.ui.dismissToast()
+    this.props.app.dismissToast()
   }
 
   onTabChange = (newActiveTabIndex, tabId, tabControlsId, tabChildren, event) => {
@@ -348,11 +349,11 @@ class App extends Component {
   }
 
   disableMobileSite = () => {
-    this.props.ui.disableMobileSite()
+    this.props.app.disableMobileSite()
   }
 
   enableMobileSite = () => {
-    this.props.ui.enableMobileSite()
+    this.props.app.enableMobileSite()
   }
 
   render () {
@@ -566,7 +567,7 @@ App.contextTypes = {
 
 const mapStateToProps = state => {
   const {
-    ui,
+    app,
   } = state
   const authEmail = selectAuthEmail(state)
   const hasAuthToken = isTruthy(selectAuthToken(state))
@@ -575,7 +576,7 @@ const mapStateToProps = state => {
     isMobileSiteDisabled,
     isNavDrawerVisible,
     toasts,
-  } = ui.app
+  } = app
 
   return {
     authEmail,
@@ -589,6 +590,7 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
+  app,
   extension: actions.extension,
   extensionFrame: actions.extensionFrame,
   flows,

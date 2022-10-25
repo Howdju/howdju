@@ -1,6 +1,7 @@
 import {normalize} from 'normalizr'
 import {handleActions} from "redux-actions"
-import {api, ApiActionMeta, autocompletes, combineActions, str} from "../actions"
+import {autocompletes, combineActions, str} from "../actions"
+import {api, ApiActionMeta} from "../apiActions"
 
 const initialState = {
   suggestions: {}

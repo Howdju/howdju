@@ -1,22 +1,9 @@
 import {all} from 'redux-saga/effects'
+import {mapValues} from 'lodash'
 
 import handleTransientInteractions from './transientSagas'
-import {
-  cancelResourceApiCalls,
-  resourceApiCalls,
-} from './resourceApiSagas'
-import {
-  configureAfterLogin,
-  configureAfterRehydrate,
-  configureAfterLogout,
-} from './configureSagas'
-import {
-  apiFailureAlerts,
-  showAlertForExtantEntities,
-  showAlertForLogin,
-  showAlertForLogout,
-  showAlertForUnexpectedApiError
-} from './alertSagas'
+import {cancelResourceApiCalls, resourceApiCalls} from './resourceApiSagas'
+import {configureAfterLogin, configureAfterRehydrate, configureAfterLogout} from './configureSagas'
 import {sendPageView} from './analyticsSagas'
 import {
   flagRehydrate,
@@ -36,66 +23,57 @@ import {
   clearAuthTokenWhenUnauthorized,
   redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication,
 } from './flowSagas'
-import {searchMainSearch} from './searchMainSearchSaga'
 import {commitEditorThenView} from './editors/commitEditorThenViewSaga'
 import {commitEditThenPutActionOnSuccess} from './editors/commitEditThenPutActionOnSuccessSaga'
 import {fetchAndBeginEditOfNewJustificationFromBasisSource} from './editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga'
 import {editorCommitEdit} from './editors/editorCommitEditSaga'
 import {beginEditOfNewJustificationFromTarget} from './editors/beginEditOfNewJustificationFromTargetSaga'
-import {
-  deleteJustificationRootTargetTranslator,
-  fetchJustificationTargets,
-} from './apiLikeSagas'
+import {deleteJustificationRootTargetTranslator, fetchJustificationTargets} from './apiLikeSagas'
 import {contentScriptAck, postExtensionMessages} from './extensionSagas'
+import * as appSagas from '../app/appSagas'
 
+export default () =>
+  all([
+    all(mapValues(appSagas, s => s())),
 
-export default () => all([
+    resourceApiCalls(),
+    cancelResourceApiCalls(),
 
-  resourceApiCalls(),
-  cancelResourceApiCalls(),
-  searchMainSearch(),
+    flagRehydrate(),
+    checkAuthExpirationOnRehydrate(),
+    checkAuthExpirationPeriodically(),
+    checkAuthExpiration(),
+    logErrors(),
 
-  flagRehydrate(),
-  checkAuthExpirationOnRehydrate(),
-  checkAuthExpirationPeriodically(),
-  checkAuthExpiration(),
-  logErrors(),
+    resetJustificationSearchPage(),
+    resetTagPage(),
 
-  resetJustificationSearchPage(),
-  resetTagPage(),
+    configureAfterLogin(),
+    configureAfterRehydrate(),
+    configureAfterLogout(),
 
-  configureAfterLogin(),
-  configureAfterRehydrate(),
-  configureAfterLogout(),
+    clearAuthTokenWhenUnauthorized(),
 
-  clearAuthTokenWhenUnauthorized(),
+    goTo(),
+    redirectToLoginWhenUnauthenticated(),
+    redirectAfterLogin(),
+    goHomeIfDeletePropositionWhileViewing(),
+    redirectHomeFromMissingRootTarget(),
+    commitEditorThenView(),
+    commitEditThenPutActionOnSuccess(),
+    fetchAndBeginEditOfNewJustificationFromBasisSource(),
+    redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
+    beginEditOfNewJustificationFromTarget(),
 
-  goTo(),
-  redirectToLoginWhenUnauthenticated(),
-  redirectAfterLogin(),
-  goHomeIfDeletePropositionWhileViewing(),
-  redirectHomeFromMissingRootTarget(),
-  commitEditorThenView(),
-  commitEditThenPutActionOnSuccess(),
-  fetchAndBeginEditOfNewJustificationFromBasisSource(),
-  redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(),
-  beginEditOfNewJustificationFromTarget(),
+    deleteJustificationRootTargetTranslator(),
+    fetchJustificationTargets(),
 
-  deleteJustificationRootTargetTranslator(),
-  fetchJustificationTargets(),
+    editorCommitEdit(),
 
-  editorCommitEdit(),
+    handleTransientInteractions(),
 
-  apiFailureAlerts(),
-  showAlertForUnexpectedApiError(),
-  showAlertForExtantEntities(),
-  showAlertForLogin(),
-  showAlertForLogout(),
+    sendPageView(),
 
-  handleTransientInteractions(),
-
-  sendPageView(),
-
-  postExtensionMessages(),
-  contentScriptAck(),
-])
+    postExtensionMessages(),
+    contentScriptAck(),
+  ])

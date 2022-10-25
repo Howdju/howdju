@@ -92,6 +92,7 @@ const sourceExcerptSchema = new schema.Union({
   [SourceExcerptTypes.VID_SEGMENT]: vidSegmentsSchema,
 }, (_value, parent) => parent.type)
 
+/** @deprecated */
 export const sourceExcerptParaphraseSchema = new schema.Entity<SourceExcerptParaphrase>('sourceExcerptParaphrases', {
   paraphrasingProposition: propositionSchema,
   sourceExcerpt: {
