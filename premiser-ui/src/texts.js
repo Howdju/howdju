@@ -77,7 +77,6 @@ export const USER_IS_INACTIVE_ERROR = 'USER_IS_INACTIVE_ERROR'
 export const UNABLE_TO_LOGIN = 'UNABLE_TO_LOGIN'
 
 
-export const MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME = 'MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME'
 export const MAIN_TABS_RECENT_ACTIVITY_TAB_NAME = 'MAIN_TABS_RECENT_ACTIVITY_TAB_NAME'
 export const MAIN_TABS_WHATS_NEXT_TAB_NAME = 'MAIN_TABS_WHATS_NEXT_TAB_NAME'
 export const MAIN_TABS_ABOUT_TAB_NAME = 'MAIN_TABS_ABOUT_TAB_NAME'
@@ -152,7 +151,6 @@ const translations = {
   [USER_IS_INACTIVE_ERROR]: 'The account is currently inactive.  Please contact support.',
   [UNABLE_TO_LOGIN]: 'Unable to login',
 
-  [MAIN_TABS_FEATURED_PERSPECTIVES_TAB_NAME]: () => isWindowNarrow() ? "Featured" : "Featured perspectives",
   [MAIN_TABS_RECENT_ACTIVITY_TAB_NAME]: () => isWindowNarrow() ? 'Recent' : 'Recent activity',
   [MAIN_TABS_WHATS_NEXT_TAB_NAME]: () => isWindowNarrow() ? 'Next' : "What's next",
   [MAIN_TABS_ABOUT_TAB_NAME]: 'About',

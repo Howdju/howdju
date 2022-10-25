@@ -11,7 +11,6 @@ import {
 import AccountSettingsPage from "./AccountSettingsPage"
 import AboutPage from './AboutPage'
 import CreatePropositionPage, {CreatePropositionPageMode} from './CreatePropositionPage'
-import FeaturedPerspectivesPage from './FeaturedPerspectivesPage'
 import {history} from './history'
 import IconPage from './IconPage'
 import JustificationsPage from './JustificationsPage'
@@ -61,7 +60,6 @@ const routes = [
   <Route key="request-password-reset" exact path={paths.requestPasswordReset()} component={PasswordResetRequestPage} />,
   <Route key="confirm-password-reset" exact path={commonPaths.confirmPasswordReset()} component={PasswordResetConfirmationPage} />,
 
-  <Route key="featuredPerspectives" exact path={paths.featuredPerspectives()} component={FeaturedPerspectivesPage} />,
   <Route key="recentActivity" exact path={paths.recentActivity()} component={RecentActivityPage} />,
   <Route key="whatsNext" exact path={paths.whatsNext()} component={WhatsNextPage} />,
   <Route key="about" exact path={paths.about()} component={AboutPage} />,

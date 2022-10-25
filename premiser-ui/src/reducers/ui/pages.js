@@ -1,5 +1,4 @@
 import get from 'lodash/get'
-import union from 'lodash/union'
 import {normalize} from 'normalizr'
 import {handleActions, combineActions} from "redux-actions"
 
@@ -13,26 +12,6 @@ import {
   pages,
   ui,
 } from '../../actions'
-
-export const featuredPerspectivesPage = handleActions({
-  [api.fetchFeaturedPerspectives]: state => ({...state, isFetching: true}),
-  [api.fetchFeaturedPerspectives.response]: {
-    next: (state, action) => {
-      const {result} = normalize(action.payload, action.meta.normalizationSchema)
-      return {
-        ...state,
-        featuredPerspectives: union(state.featuredPerspectives, result.perspectives),
-        continuationToken: action.payload.continuationToken,
-        isFetching: false
-      }
-    },
-    throw: (state, action) => ({...state, isFetching: false})
-  },
-}, {
-  featuredPerspectives: [],
-  continuationToken: null,
-  isFetching: false,
-})
 
 const defaultJustificationSearchPageState = {
   justifications: [],

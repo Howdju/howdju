@@ -36,7 +36,6 @@ import {
   mainSearchResultsSchema,
   persorgSchema,
   persorgsSchema,
-  perspectivesSchema,
   propositionCompoundSchema,
   propositionSchema,
   propositionsSchema,
@@ -471,15 +470,6 @@ export const api = {
         normalizationSchema: {justifications: justificationsSchema},
       }
     },
-  ),
-
-  fetchFeaturedPerspectives: apiActionCreator(
-    'FETCH_FEATURED_PERSPECTIVES',
-    widgetId => ({widgetId}),
-    () => ({
-      endpoint: 'perspectives?featured',
-      normalizationSchema: {perspectives: perspectivesSchema},
-    }),
   ),
 
   createAccountSettings: apiActionCreator(
