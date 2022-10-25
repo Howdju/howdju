@@ -66,7 +66,7 @@ export function* showAlertForExtantEntities() {
     function* showAlertForExtantEntitiesWorker(action) {
       if (!action.error) {
         // TODO(1): add an ApiCreateResponseModel with isExtant
-        if ((action.payload as any).isExtant) {
+        if (action.payload.isExtant) {
           const toastMessageKey = toastMessageKeys[action.type];
           yield put(app.addToast(t(toastMessageKey)));
         }
