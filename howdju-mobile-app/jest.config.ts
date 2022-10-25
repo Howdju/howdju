@@ -1,4 +1,4 @@
-import type {Config} from 'jest';
+import type {Config} from 'jest'
 
 const config: Config = {
   preset: 'react-native',
@@ -18,6 +18,6 @@ const config: Config = {
     // Support our custom project-relative import defined in tsconig.json:compilerOptions.paths
     '@/(.*)': '<rootDir>/src/$1',
   },
-};
+}
 
-export default config;
+export default config
