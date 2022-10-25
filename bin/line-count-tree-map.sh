@@ -2,7 +2,7 @@
 
 cd "${0%/*}/../"
 
-( find .\
+find .\
   \(\
     -name '*.ts' -o\
     -name '*.tsx' -o\
@@ -17,4 +17,4 @@ cd "${0%/*}/../"
     -path '*.terraform*' -o\
     -path '*Pods*'\
   \)\
-  -print0 | xargs -0 cat ) | wc -l
+  -print | xargs wc -l | sed '$d' | npx webtreemap-cli
