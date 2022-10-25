@@ -48,7 +48,7 @@ interface Props extends Omit<AutocompleteProps, "data"> {
   /** If true, pressing escape when the suggestions are already hidden will clear the field */
   escapeClears?: boolean
   /** A dispatch-wrapped actionCreator to update the suggestions. */
-  // TODO(1): should we add displatch here, and instead accept just the action creator? I think it
+  // TODO(1): should we useDispatch in this component, and instead accept just the action creator? I think it
   // would remove boilerplate from users.
   fetchSuggestions: (value: string, suggestionsKey: SuggestionsKey) => void
   /** A dispatch-wrapped actionCreator to cancel updating the suggestions */
