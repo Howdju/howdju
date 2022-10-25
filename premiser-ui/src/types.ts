@@ -58,3 +58,20 @@ export interface PrivacyConsentCookie {
 
 /** A thunk for creating a new entity. */
 export type EntityFactory = () => Entity
+
+export const CreatePropositionPageMode = {
+  /** Blank editors, optionally show and create a justification with the proposition */
+  CREATE_PROPOSITION: 'CREATE_PROPOSITION',
+
+  /** Blank proposition editor, pre-populated justification information.  Supports receiving
+   * basisSourceType/basisSourceId as query parameters, or if both of these are missing, expects
+   * editor to have been pre-populated with propositionJustification (e.g. the browser extension passes information
+   * via a window.postMessage.)
+   *
+   * Hides the create-justification switch.
+   */
+  CREATE_JUSTIFICATION: 'CREATE_JUSTIFICATION',
+
+  /** Submit writ quote-based justification via query params */
+  SUBMIT_JUSTIFICATION_VIA_QUERY_STRING: 'SUBMIT_JUSTIFICATION_VIA_QUERY_STRING',
+}

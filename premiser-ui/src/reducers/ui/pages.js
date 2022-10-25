@@ -13,33 +13,6 @@ import {
   ui,
 } from '../../actions'
 
-const defaultJustificationSearchPageState = {
-  justifications: [],
-  continuationToken: null,
-  isFetching: false,
-  filters: null,
-}
-export const justificationsSearchPage = handleActions({
-  [api.fetchJustificationsSearch]: (state, action) => ({
-    ...state,
-    isFetching: true,
-    filters: action.payload.filters
-  }),
-  [api.fetchJustificationsSearch.response]: {
-    next: (state, action) => {
-      const {result} = normalize(action.payload, action.meta.normalizationSchema)
-      return {
-        ...state,
-        justifications: result.justifications,
-        continuationToken: action.payload.continuationToken,
-        isFetching: false,
-      }
-    },
-    throw: (state, action) => ({...state, isFetching: false}),
-  },
-  [ui.clearJustificationsSearch]: (state, action) => ({...state, ...defaultJustificationSearchPageState})
-}, defaultJustificationSearchPageState)
-
 const defaultTagPageState = {
   propositions: [],
   isFetching: false,

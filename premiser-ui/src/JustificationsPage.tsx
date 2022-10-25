@@ -23,14 +23,11 @@ import { RouteComponentProps } from "react-router"
 
 import {
   EntityId,
-  Justification,
   JustificationPolarities,
   JustificationRootPolarity,
   JustificationRootTarget,
   JustificationRootTargetType,
   JustificationTargetTypes,
-  Url,
-  WritQuote,
 } from "howdju-common"
 import {
   actions,
@@ -68,7 +65,7 @@ import {
   describeRootTarget,
   rootTargetNormalizationSchemasByType,
 } from './viewModels'
-import {extensionHighlightingOnClickWritQuoteUrl} from "./OnClickWritQuoteUrl"
+import {makeExtensionHighlightOnClickWritQuoteUrlCallback} from "./extensionCallbacks"
 import { RootState } from "./store"
 import { ComponentId, ContextTrailItemInfo, SuggestionsKey } from "./types"
 
@@ -164,10 +161,6 @@ class JustificationsPage extends Component<Props> {
     this.props.justificationsPage.hideNewJustificationDialog()
   }
 
-  onClickWritQuoteUrl = (event: Event, justification: Justification, writQuote: WritQuote, url: Url) => {
-    extensionHighlightingOnClickWritQuoteUrl(this.props.extension.highlightTarget, event, justification, writQuote, url)
-  }
-
   render () {
     const {
       rootTargetType,
@@ -176,6 +169,7 @@ class JustificationsPage extends Component<Props> {
       sortedJustifications,
       isNewJustificationDialogVisible,
       isFetching,
+      dispatch,
     } = this.props
 
     const hasJustifications = !isEmpty(sortedJustifications)
@@ -193,6 +187,9 @@ class JustificationsPage extends Component<Props> {
         onClick={this.showNewJustificationDialog}
       />,
     ]
+
+
+    const onClickWritQuoteUrl = makeExtensionHighlightOnClickWritQuoteUrlCallback(dispatch)
 
     return (
       <div id="justifications-page">
@@ -257,7 +254,7 @@ class JustificationsPage extends Component<Props> {
           showNewPositiveJustificationDialog={this.showNewPositiveJustificationDialog}
           showNewNegativeJustificationDialog={this.showNewNegativeJustificationDialog}
           contextTrailItems={nextContextTrailItems}
-          onClickWritQuoteUrl={this.onClickWritQuoteUrl}
+          onClickWritQuoteUrl={onClickWritQuoteUrl}
           className="md-grid--bottom"
         />
 

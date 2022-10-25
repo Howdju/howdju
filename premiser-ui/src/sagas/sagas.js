@@ -10,7 +10,6 @@ import {
   checkAuthExpirationOnRehydrate,
   checkAuthExpirationPeriodically,
   checkAuthExpiration,
-  resetJustificationSearchPage,
   resetTagPage,
 } from './appSagas'
 import {logErrors} from './logErrorsSaga'
@@ -31,10 +30,12 @@ import {beginEditOfNewJustificationFromTarget} from './editors/beginEditOfNewJus
 import {deleteJustificationRootTargetTranslator, fetchJustificationTargets} from './apiLikeSagas'
 import {contentScriptAck, postExtensionMessages} from './extensionSagas'
 import * as appSagas from '../app/appSagas'
+import * as justificationsSearchPageSagas from '../pages/justificationsSearch/justificationsSearchPageSagas'
 
 export default () =>
   all([
     all(mapValues(appSagas, s => s())),
+    all(mapValues(justificationsSearchPageSagas, s => s())),
 
     resourceApiCalls(),
     cancelResourceApiCalls(),
@@ -45,7 +46,6 @@ export default () =>
     checkAuthExpiration(),
     logErrors(),
 
-    resetJustificationSearchPage(),
     resetTagPage(),
 
     configureAfterLogin(),

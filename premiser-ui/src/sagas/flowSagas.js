@@ -32,7 +32,7 @@ import {
 } from "../actions"
 import {callApiResponse} from "../apiActions"
 import {history} from '../history'
-import {isActivePath, routeIds} from '../routes'
+import {isActivePath} from '../routes'
 import {tryWaitOnRehydrate} from './appSagas'
 
 
@@ -171,10 +171,10 @@ export function* redirectUnauthenticatedUserToLoginOnPagesNeedingAuthentication(
     const isExpired = dateTimeString => utcNowIsAfter(dateTimeString)
     const isAuthenticated = authTokenExpiration && !isExpired(authTokenExpiration)
     const doesPathRequireAuthentication = some([
-      routeIds.submitSourceExcerpt,
-      routeIds.createProposition,
-      routeIds.createJustification,
-      routeIds.submitJustificationViaQueryString,
+      "submitSourceExcerpt",
+      "createProposition",
+      "createJustification",
+      "submitJustificationViaQueryString",
     ], isActivePath)
     if (!isAuthenticated && doesPathRequireAuthentication) {
       const loginRedirectLocation = history.location
