@@ -8,16 +8,12 @@ import { REHYDRATE } from 'redux-persist/lib/constants'
 
 import {
   app,
-  ui,
 } from '../actions'
 import {
   selectAuthTokenExpiration,
-  selectTagPageTagId,
 } from "../selectors"
 import config from '../config'
 import {logger} from '../logger'
-import {LOCATION_CHANGE} from 'connected-react-router'
-import {getPathParam} from '../routes'
 
 
 // API calls requiring authentication will want to wait for a rehydrate before firing
@@ -64,22 +60,6 @@ export function* checkAuthExpiration() {
     const authTokenExpiration = yield select(selectAuthTokenExpiration)
     if (authTokenExpiration && moment.utc().isAfter(moment.utc(authTokenExpiration))) {
       yield put(app.clearAuthToken())
-    }
-  })
-}
-
-
-/**
- * When the user navigates to a different tag, reset the page
- */
-export function* resetTagPage() {
-  yield takeEvery(LOCATION_CHANGE, function* resetTagPage() {
-    const tagId = getPathParam("tag", 'tagId')
-    if (tagId) {
-      const tagPageTagId = yield select(selectTagPageTagId)
-      if (tagId !== tagPageTagId) {
-        yield put(ui.clearTaggedPropositions())
-      }
     }
   })
 }

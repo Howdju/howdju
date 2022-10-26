@@ -13,37 +13,6 @@ import {
   ui,
 } from '../../actions'
 
-const defaultTagPageState = {
-  propositions: [],
-  isFetching: false,
-  tagId: null,
-}
-export const tagPage = handleActions({
-  [api.fetchTaggedPropositions]: (state, action) => ({
-    ...state,
-    isFetching: true,
-    tagId: action.payload.tagId,
-  }),
-  [api.fetchTaggedPropositions.response]: {
-    next: (state, action) => {
-      const {result} = normalize(action.payload, action.meta.normalizationSchema)
-      return {
-        ...state,
-        propositions: result.propositions,
-        isFetching: false
-      }
-    },
-    throw: (state, action) => ({
-      ...state,
-      propositions: [],
-      isFetching: false
-    }),
-  },
-  [ui.clearTaggedPropositions]: (state, action) => ({
-    ...state,
-    ...defaultTagPageState
-  }),
-}, defaultTagPageState)
 
 const defaultPersorgPageState = {
   statements: [],
@@ -71,7 +40,7 @@ export const persorgPage = handleActions({
   },
   [ui.clearPersorgStatements]: (state, action) => ({
     ...state,
-    ...defaultTagPageState
+    ...defaultPersorgPageState
   }),
 }, defaultPersorgPageState)
 

@@ -5,7 +5,6 @@ import { EditorId } from './types'
 
 export const selectEditorState = (editorType: EditorType, editorId: EditorId) => (state: RootState) => get(state.editors, [editorType, editorId])
 export const selectJustificationSearchFilters = (state: RootState) => state.justificationsSearchPage.filters
-export const selectTagPageTagId = (state: RootState) => state.ui.tagPage.tagId
 export const selectLoginRedirectLocation = (state: RootState) => state.app.loginRedirectLocation
 export const selectUserExternalIds = (state: RootState, defaultValue: object) => get(state, ['auth', 'user', 'externalIds'], defaultValue)
 export const selectLoggedErrors = (state: RootState) => state.errors.loggedErrors

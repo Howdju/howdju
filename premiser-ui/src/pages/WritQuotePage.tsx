@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { denormalize } from "normalizr";
 import { CircularProgress } from "react-md";
@@ -7,9 +7,9 @@ import { CircularProgress } from "react-md";
 import { api } from "@/actions";
 import HowdjuHelmet from "@/Helmet";
 import { writQuoteSchema } from "@/normalizationSchemas";
-import { RootState } from "@/store";
 import { combineIds } from "@/viewModels";
 import WritQuoteCard from "@/WritQuoteCard";
+import { useAppSelector } from "@/hooks";
 
 const id = 'WritQuotePage';
 type Params = {
@@ -29,7 +29,7 @@ const WritQuotePage = () => {
   }, [writQuoteId])
 
   const writQuote = denormalize(
-    writQuoteId, writQuoteSchema, useSelector((state: RootState) => state.entities))
+    writQuoteId, writQuoteSchema, useAppSelector(state => state.entities))
   // const writQuote: WritQuote = useSelector((state: RootState) => get(state.editors, [editorType, editorId]))
 
   const progress = <CircularProgress id={`${id}-Progress`} />
