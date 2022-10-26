@@ -30,7 +30,6 @@ export default function TagPage(props: Props) {
     dispatch(api.fetchTaggedPropositions(tagId))
   }, [tagId])
 
-
   const entities = useAppSelector(state => state.entities)
   const tag = denormalize(tagId, tagSchema, entities)
   const {propositions: propositionIds, isFetching} = useAppSelector(state => state.tagPage)

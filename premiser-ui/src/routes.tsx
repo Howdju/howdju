@@ -23,7 +23,7 @@ import NotFoundPage from './NotFoundPage'
 import PasswordResetRequestPage from './PasswordResetRequestPage'
 import PasswordResetConfirmationPage from './PasswordResetConfirmationPage'
 import paths, {createJustificationPath} from './paths'
-import PersorgPage from './PersorgPage'
+import PersorgPage from './pages/persorg/PersorgPage'
 import PrivacySettingsPage from "./PrivacySettingsPage"
 import PoliciesOverviewPage from './policies/PoliciesOverviewPage'
 import PolicyPage from "./policies/PolicyPage"
