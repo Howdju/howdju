@@ -8,7 +8,7 @@ import {
   commonPaths,
 } from 'howdju-common'
 
-import AccountSettingsPage from "./AccountSettingsPage"
+import AccountSettingsPage from "./pages/accountSettings/AccountSettingsPage"
 import AboutPage from './AboutPage'
 import CreatePropositionPage from './CreatePropositionPage'
 import {history} from './history'

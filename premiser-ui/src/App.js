@@ -324,7 +324,7 @@ class App extends Component {
   }
 
   onNavDrawerVisibilityChange = (visible) => {
-    this.props.app.setNavDrawerVisibility({visible})
+    this.props.app.setNavDrawerVisibility(visible)
   }
 
   dismissSnackbar = () => {

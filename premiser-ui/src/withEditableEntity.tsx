@@ -1,0 +1,111 @@
+import React from 'react'
+import {CircularProgress} from 'react-md'
+
+import {AccountSettings, isTruthy, logger, newProgrammingError, Persorg, Proposition} from 'howdju-common'
+import {ComponentId, EditorId, SuggestionsKey} from './types'
+import {useAppSelector} from './hooks'
+import {EditorType} from './reducers/editors'
+import { WithEditorProps } from './editors/withEditor'
+
+type EntityPropNameProps<ET extends EditorType> = ET extends 'PROPOSITION'
+  ? {proposition: Proposition | null}
+  : ET extends 'PERSORG'
+  ? {persorg: Persorg | null}
+  : ET extends 'ACCOUNT_SETTINGS'
+  ? {accountSettings: AccountSettings | null}
+  : never
+
+interface EditorProps extends WithEditorProps {
+  /** Required for the CircularProgress */
+  id: ComponentId
+  /** Identifies the editor's state */
+  editorId: EditorId
+  /** If omitted, no autocomplete */
+  suggestionsKey: SuggestionsKey
+}
+interface ViewerProps {
+  id: ComponentId
+  showStatusText?: boolean
+}
+
+/**
+ * HOC for creating an editable entity component
+ *
+ * @param editorType The type of the editor. TODO(1) can we infer this from EditorComponent?
+ * @param EditorComponent The editor component. Shown when there is an active edit for the editor type and
+ *     ID. The component must have a static property editorType of type string|EditorType.
+ * @param ViewerComponent The viewer component. Shown when there is no active edit for the editor type and ID.
+ * @typeparam E the type of the entity this component will display and edit.
+ * @typeparam EP the props type of the editor component
+ * @typeparam VP the props type of the viewer component
+ * @returns An editable entity component
+ */
+export default function withEditableEntity<
+  ET extends EditorType,
+  EP extends EditorProps & EntityPropNameProps<ET>,
+  VP extends ViewerProps & EntityPropNameProps<ET>,
+>(editorType: ET, EditorComponent: React.FC<EP>, ViewerComponent: React.FC<VP>) {
+  // Define the prop name for the entity that the component will receive.
+  // Add additional supported entities here.
+
+  type Props = {
+    /** Required for the CircularProgress */
+    id: ComponentId
+  } & EntityPropNameProps<ET> & EditorProps & ViewerProps
+
+  return function EditableEntity({
+    id,
+    editorId,
+    suggestionsKey,
+    showStatusText = true,
+    ...rest
+  }: Props) {
+    let entity
+    switch (editorType) {
+      case 'PROPOSITION':
+        entity = (rest as any)['proposition']
+        break
+      case 'ACCOUNT_SETTINGS':
+        entity = (rest as any)['accountSettings']
+        break
+      case 'PERSORG':
+        entity = (rest as any)['persorg']
+        break
+      default:
+        throw newProgrammingError(`Unsupported withEditableEntity editorType: ${editorType}`)
+    }
+
+    const {editEntity = null, isSaving = undefined} = editorId
+      ? useAppSelector(state => state.editors[editorType]?.[editorId]) || {}
+      : {}
+    const isEditing = isTruthy(editEntity)
+
+    if (isEditing && !editorId) {
+      logger.error("Should not be editing since we lack an editorId.")
+    }
+
+    const editorProps = {
+      editorId,
+      id,
+      suggestionsKey,
+      disabled: isSaving,
+      ...rest,
+    } as unknown as EP
+    // Cast as any to avoid
+    // `Type 'EditorProps & EntityPropNameProps<ET>' is not assignable to type 'IntrinsicAttributes'`.
+    // Removing EntityPropNameProps from EP fixes the issue.
+    const editor = editorId ? (<div/>) : <EditorComponent {...editorProps as any} />
+
+    const viewerProps = {
+      id,
+      showStatusText,
+      ...rest,
+    } as unknown as VP
+    // Cast for same reason as above.
+    const viewer = <ViewerComponent {...viewerProps as any} />
+
+    const progress = <CircularProgress id={`${id}--loading`} />
+
+    return isEditing ? editor : !!entity ? viewer : progress
+  }
+}

@@ -17,8 +17,10 @@ import { justificationsSearchPage } from '@/pages/justificationsSearch/justifica
 import {tagPage} from "@/pages/tag/tagPageSlice"
 import {persorgPage} from "@/pages/persorg/persorgPageSlice"
 import {justificationsPage} from "@/pages/justifications/justificationsPageSlice"
+import {accountSettingsPage} from "@/pages/accountSettings/accountSettingsPageSlice"
 
 export default (history: History) => combineReducers({
+  accountSettingsPage,
   app,
   auth,
   autocompletes,

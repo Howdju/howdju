@@ -38,6 +38,7 @@ import {
   PropositionTagVotePolarity,
   WritQuote,
   RecursiveObject,
+  AccountSettings,
 } from "howdju-common";
 
 import {
@@ -116,12 +117,14 @@ export type EditorEntity =
   | JustificationEditModel
   | PropositionJustificationsEditEntity
   | WritQuote
+  | AccountSettings
 
-interface EditorState {
+export interface EditorState {
   editEntity: EditorEntity | null;
   errors: EditorFieldsErrors | null;
   isSaving: boolean;
   isSaved: boolean;
+  // TODO make EditorState generic so that dirtyFields knows the actual editEntity fields?
   dirtyFields: DirtyFields;
   wasSubmitAttempted: boolean;
 }
