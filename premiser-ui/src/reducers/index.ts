@@ -16,6 +16,7 @@ import * as sagaSlices from '../sagaSlices'
 import {mainSearch} from "../components/mainSearchBox/mainSearchBoxSlice"
 import {mainSearchPage} from "../pages/mainSearch/mainSearchPageSlice"
 import { justificationsSearchPage } from '@/pages/justificationsSearch/justificationsSearchPageSlice'
+import {tagPage} from "@/pages/tag/tagPageSlice"
 
 export default (history: History) => combineReducers({
   app,
@@ -29,6 +30,7 @@ export default (history: History) => combineReducers({
   mainSearchPage,
   privacyConsent,
   router: connectRouter(history),
+  tagPage,
   ui,
   widgets,
   ...mapValues(sagaSlices, s => s.reducer)

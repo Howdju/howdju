@@ -32,7 +32,7 @@ import RecentActivityPage from './RecentActivityPage'
 import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import RegistrationRequestPage from './RegistrationRequestPage'
 import SubmitSourceExcerptPage from './pages/SubmitSourceExcerptPage'
-import TagPage from './TagPage'
+import TagPage from './pages/tag/TagPage'
 import TestErrorPage from './TestErrorPage'
 import ToolsPage from './ToolsPage'
 import WhatsNextPage from './WhatsNextPage'
@@ -46,6 +46,7 @@ import faqInnerHtml from './policies/faq.md'
 import WritQuotePage from './pages/WritQuotePage'
 import { map } from 'lodash'
 import { CreatePropositionPageMode } from './types'
+import { Location, LocationState } from 'history'
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText = props.location && mainSearcher.mainSearchText(props.location)
@@ -124,8 +125,12 @@ const routesById = {
 const routes = map(routesById, (route: ReactElement, id: string) => React.cloneElement(route, {key: id}))
 
 export const getPathParam = (pathId: keyof typeof routesById, paramName: string) => {
+  return getLocationPathParam(pathId, paramName, history.location)
+}
+
+export const getLocationPathParam = (pathId: keyof typeof routesById, paramName: string, location: Location<LocationState>) => {
   const route = routesById[pathId]
-  const params = getRouteParams(route, history.location.pathname)
+  const params = getRouteParams(route, location.pathname)
   if (!params) return null
   return params[paramName]
 }

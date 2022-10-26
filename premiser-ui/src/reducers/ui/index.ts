@@ -7,7 +7,6 @@ import {
   persorgPage,
   propositionUsagesPage,
   registrationConfirmationPage,
-  tagPage,
 } from './pages'
 import transients from './transients'
 
@@ -18,6 +17,5 @@ export default combineReducers({
   persorgPage,
   propositionUsagesPage,
   registrationConfirmationPage,
-  tagPage,
   transients,
 })
