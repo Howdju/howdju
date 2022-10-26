@@ -1,5 +1,4 @@
 import React, {Component, UIEvent} from "react"
-import Helmet from './Helmet'
 import {
   Button,
   CircularProgress,
@@ -37,6 +36,7 @@ import {
   JustificationViewModel,
 } from 'howdju-client-common'
 
+import Helmet from '@/Helmet'
 import {
   api,
   apiLike,
@@ -45,18 +45,18 @@ import {
   ui,
   goto,
   flows,
-} from "./actions"
-import {actions as justificationsPage, JustificationPageState} from '@/sagaSlices/justificationsPage'
-import * as characters from './characters'
-import ContextTrail from './ContextTrail'
-import JustificationsTree from './JustificationsTree'
-import {logger} from "./logger"
-import CreateJustificationDialog from './CreateJustificationDialog'
-import {EditorTypes} from "./reducers/editors"
-import JustificationRootTargetCard from './JustificationRootTargetCard'
+} from "@/actions"
+import justificationsPage from '@/pages/justifications/justificationsPageSlice'
+import * as characters from '@/characters'
+import ContextTrail from '@/ContextTrail'
+import JustificationsTree from '@/JustificationsTree'
+import {logger} from "@/logger"
+import CreateJustificationDialog from '@/CreateJustificationDialog'
+import {EditorTypes} from "@/reducers/editors"
+import JustificationRootTargetCard from '@/JustificationRootTargetCard'
 import t, {
   ADD_JUSTIFICATION_CALL_TO_ACTION,
-} from "./texts"
+} from "@/texts"
 import {
   combineIds,
   combineSuggestionsKeys,
@@ -64,10 +64,10 @@ import {
   contextTrailTypeByShortcut,
   describeRootTarget,
   rootTargetNormalizationSchemasByType,
-} from './viewModels'
-import {makeExtensionHighlightOnClickWritQuoteUrlCallback} from "./extensionCallbacks"
-import { RootState } from "./store"
-import { ComponentId, ContextTrailItemInfo, SuggestionsKey } from "./types"
+} from '@/viewModels'
+import {makeExtensionHighlightOnClickWritQuoteUrlCallback} from "@/extensionCallbacks"
+import { RootState } from "@/store"
+import { ComponentId, ContextTrailItemInfo, SuggestionsKey } from "@/types"
 
 import "./JustificationsPage.scss"
 
@@ -103,8 +103,7 @@ class JustificationsPage extends Component<Props> {
 
   componentDidMount() {
     const {rootTargetType, rootTargetId} = this.rootTargetInfo()
-    // TODO: SagaSlice is not generic on its actions, and so doesn't typecheck them (worse, it says all actions accept zero arguments)
-    this.props.justificationsPage.fetchRootJustificationTarget({rootTargetType, rootTargetId})
+    this.props.api.fetchRootJustificationTarget(rootTargetType, rootTargetId)
 
     const contextTrailItems = contextTrailItemInfosFromProps(this.props)
     if (!isEmpty(contextTrailItems)) {
@@ -116,7 +115,7 @@ class JustificationsPage extends Component<Props> {
     const prevRootTargetInfo = rootTargetInfoFromProps(prevProps)
     const rootTargetInfo = this.rootTargetInfo()
     if (!isEqual(rootTargetInfo, prevRootTargetInfo)) {
-      this.props.justificationsPage.fetchRootJustificationTarget(rootTargetInfo)
+      this.props.api.fetchRootJustificationTarget(rootTargetInfo)
     }
 
     const prevContextTrailInfos = contextTrailItemInfosFromProps(prevProps)
@@ -309,7 +308,7 @@ const mapState = (state: RootState, ownProps: OwnProps) => {
   const sortedJustifications = rootTarget ? sortJustifications(rootTarget.justifications) : []
 
   return {
-    ...state.justificationsPage as JustificationPageState,
+    ...state.justificationsPage,
     rootTargetType,
     rootTarget,
     contextTrailItems,

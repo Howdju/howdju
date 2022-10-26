@@ -139,7 +139,6 @@
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.3",
     "regenerator-runtime": "^0.13.7",
-    "saga-slice": "Howdju/saga-slice#commit=3ee5b464d8fc2543a7df2b5e2cc38ead129d908d",
     "uuid": "^8.3.2",
     "valid-url": "^1.0.9"
   }

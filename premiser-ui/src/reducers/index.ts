@@ -1,7 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import { connectRouter } from 'connected-react-router'
 import { History } from 'history'
-import mapValues from 'lodash/mapValues'
 
 import {app} from "../app/appSlice"
 import auth from './auth'
@@ -12,12 +11,12 @@ import errors from './errors'
 import privacyConsent from "./privacyConsent"
 import ui from "./ui"
 import widgets from './widgets'
-import * as sagaSlices from '../sagaSlices'
 import {mainSearch} from "../components/mainSearchBox/mainSearchBoxSlice"
 import {mainSearchPage} from "../pages/mainSearch/mainSearchPageSlice"
 import { justificationsSearchPage } from '@/pages/justificationsSearch/justificationsSearchPageSlice'
 import {tagPage} from "@/pages/tag/tagPageSlice"
 import {persorgPage} from "@/pages/persorg/persorgPageSlice"
+import {justificationsPage} from "@/pages/justifications/justificationsPageSlice"
 
 export default (history: History) => combineReducers({
   app,
@@ -26,6 +25,7 @@ export default (history: History) => combineReducers({
   editors,
   entities,
   errors,
+  justificationsPage,
   justificationsSearchPage,
   mainSearch,
   mainSearchPage,
@@ -35,5 +35,4 @@ export default (history: History) => combineReducers({
   tagPage,
   ui,
   widgets,
-  ...mapValues(sagaSlices, s => s.reducer)
 })

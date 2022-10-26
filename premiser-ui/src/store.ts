@@ -6,8 +6,6 @@ import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
 import createSagaMiddleware from 'redux-saga'
 import {composeWithDevToolsDevelopmentOnly} from '@redux-devtools/extension'
-import { all } from 'redux-saga/effects'
-import values from 'lodash/values'
 
 import createRootReducer from './reducers/index'
 import {logger} from './logger'
@@ -15,7 +13,6 @@ import config from './config'
 import {history} from './history'
 import * as actionCreatorsUntyped from './actions'
 import getSagas from './sagas'
-import * as sagaSlices from './sagaSlices'
 
 declare global {
   interface Window {
@@ -70,14 +67,8 @@ export {store, persistor}
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 
-let rootTask = sagaMiddleware.run(function* sagaMiddlewareSaga() {
-  // Run both regular and saga-slice sagas.
-  yield all([
-    getSagas(),
-    ...values(sagaSlices)
-      .flatMap(s => s.sagas)
-      .map(saga => saga()),
-  ])
+let rootTask = sagaMiddleware.run(function* () {
+  yield getSagas()
 })
 
 if (module.hot) {
@@ -87,17 +78,10 @@ if (module.hot) {
   })
   module.hot.accept('./sagas', () => {
     const getNewSagas = require('./sagas').default
-    const newSagaSlices = require('./sagaSlices')
     rootTask.cancel()
     rootTask.toPromise().then(() => {
       rootTask = sagaMiddleware.run(function* replacedSaga() {
-        // Run both regular and saga-slice sagas.
-        yield all([
-          getNewSagas(),
-          ...values(newSagaSlices)
-            .flatMap(s => s.sagas)
-            .map(saga => saga()),
-        ])
+        yield getNewSagas()
       })
     })
   })
