@@ -51,16 +51,18 @@ export const combineActions = untypedCombineActions as (
  */
 export const mapActionCreatorGroupToDispatchToProps =
   <M extends object, N>(actionCreatorGroups: M, otherActions?: N) =>
-  (dispatch: AppDispatch): M & N => {
+  (dispatch: AppDispatch): M & N & {dispatch: AppDispatch} => {
     const dispatchingProps = mapValues(
       actionCreatorGroups,
       (actionCreatorGroup: ActionCreatorsMapObject<any>) =>
         bindActionCreators(actionCreatorGroup, dispatch)
-    ) as { [P in keyof M]: M[P] } & { [P in keyof N]: N[P] };
+    ) as { [P in keyof M]: M[P] } & { [P in keyof N]: N[P] } & {dispatch: AppDispatch};
 
     if (otherActions) {
       assign(dispatchingProps, bindActionCreators(otherActions, dispatch));
     }
+    // Some class-based components require dispatch to pass it to action-dispatching callback factories.
+    dispatchingProps.dispatch = dispatch
 
     return dispatchingProps;
   };

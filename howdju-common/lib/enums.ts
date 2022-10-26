@@ -169,6 +169,7 @@ export const ValidJustificationSearchFilters = [
   'propositionId',
   'url',
 ] as const
+export type JustificationSearchFilters = {[key in typeof ValidJustificationSearchFilters[number]]?: string}
 
 export const SentenceTypes = {
   PROPOSITION: 'PROPOSITION',

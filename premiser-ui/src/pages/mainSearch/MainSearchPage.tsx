@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { UIEvent, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import find from "lodash/find";
 import map from "lodash/map";
@@ -51,7 +51,7 @@ export default function MainSearchPage() {
   const goToTag = (
     tagName: string,
     _index: number,
-    _event: React.MouseEvent<HTMLElement>
+    _event: UIEvent
   ) => {
     const tag = find(tags, (t) => t.name === tagName);
     if (!tag) {

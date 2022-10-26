@@ -2,7 +2,6 @@ import { combineReducers } from 'redux'
 
 import {
   accountSettingsPage,
-  justificationsSearchPage,
   passwordResetConfirmationPage,
   passwordResetRequestPage,
   persorgPage,
@@ -14,7 +13,6 @@ import transients from './transients'
 
 export default combineReducers({
   accountSettingsPage,
-  justificationsSearchPage,
   passwordResetConfirmationPage,
   passwordResetRequestPage,
   persorgPage,

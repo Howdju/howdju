@@ -20,7 +20,6 @@ import map from 'lodash/map'
 import queryString from 'query-string'
 
 import {
-  arrayToObject,
   JustificationBasisTypes,
   PropositionTagVotePolarities
 } from "howdju-common"
@@ -55,24 +54,9 @@ import TagsControl from './TagsControl'
 import {logger} from './logger'
 import PersorgEditorFields from './PersorgEditorFields'
 import EntityViewer from './EntityViewer'
+import { CreatePropositionPageMode } from "./types"
 
 
-export const CreatePropositionPageMode = arrayToObject([
-  /** Blank editors, optionally show and create a justification with the proposition */
-  'CREATE_PROPOSITION',
-
-  /** Blank proposition editor, pre-populated justification information.  Supports receiving
-   * basisSourceType/basisSourceId as query parameters, or if both of these are missing, expects
-   * editor to have been pre-populated with propositionJustification (e.g. the browser extension passes information
-   * via a window.postMessage.)
-   *
-   * Hides the create-justification switch.
-   */
-  'CREATE_JUSTIFICATION',
-
-  /** Submit writ quote-based justification via query params */
-  'SUBMIT_JUSTIFICATION_VIA_QUERY_STRING',
-])
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,

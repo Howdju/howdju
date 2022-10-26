@@ -12,7 +12,7 @@ export interface ToastData {
   text: string
 }
 
-export const app = createSlice({
+export const appSlice = createSlice({
   name: "app",
   initialState: {
     canHover: false,
@@ -73,4 +73,5 @@ export const app = createSlice({
   }
 })
 
-export default app.actions
+export default appSlice.actions
+export const app = appSlice.reducer

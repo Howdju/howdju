@@ -27,6 +27,7 @@ import {
   decircularizeJustification,
   SortDirections,
   encodeQueryStringObject,
+  JustificationSearchFilters,
 } from 'howdju-common'
 
 import {
@@ -138,6 +139,8 @@ interface ApiResponseWrapper {
    * to try and type it into the response action creator. So we make it optional on all responses.
    */
   isExtant?: boolean
+  /** A pagination token. */
+  continuationToken: string
 }
 
 /**
@@ -190,13 +193,7 @@ function apiActionCreator<P, N, PA extends (...args: any[]) => {payload: P}>(
       payload,
       meta,
     }),
-  ) as ActionCreatorWithPreparedPayload<
-    unknown[],
-    Response,
-    string,
-    Error,
-    ApiActionMeta
-  >
+  ) as ActionCreatorWithPreparedPayload<unknown[], Response, string, Error, ApiActionMeta>
   return ac
 }
 
@@ -514,7 +511,19 @@ export const api = {
 
   fetchJustificationsSearch: apiActionCreator(
     'FETCH_JUSTIFICATIONS_SEARCH',
-    ({filters, includeUrls, sorts, count, continuationToken}) => ({
+    ({
+      filters,
+      includeUrls,
+      sorts,
+      count,
+      continuationToken,
+    }: {
+      filters: JustificationSearchFilters
+      includeUrls: boolean
+      sorts: string
+      count: number
+      continuationToken: string
+    }) => ({
       filters,
       includeUrls,
       sorts,
@@ -530,7 +539,7 @@ export const api = {
       }
 
       if (!isEmpty(includeUrls)) {
-        params.includeUrls = includeUrls
+        params.includeUrls = includeUrls.toString()
       }
 
       if (!isEmpty(sorts)) {

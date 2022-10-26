@@ -15,14 +15,16 @@ import widgets from './widgets'
 import * as sagaSlices from '../sagaSlices'
 import {mainSearch} from "../components/mainSearchBox/mainSearchBoxSlice"
 import {mainSearchPage} from "../pages/mainSearch/mainSearchPageSlice"
+import { justificationsSearchPage } from '@/pages/justificationsSearch/justificationsSearchPageSlice'
 
 export default (history: History) => combineReducers({
-  app: app.reducer,
+  app,
   auth,
   autocompletes,
   editors,
   entities,
   errors,
+  justificationsSearchPage,
   mainSearch,
   mainSearchPage,
   privacyConsent,
