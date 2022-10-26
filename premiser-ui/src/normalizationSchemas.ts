@@ -1,6 +1,7 @@
 import { schema } from 'normalizr'
 
 import {
+  AccountSettings,
   Justification,
   JustificationBasisTypes,
   JustificationRootTargetTypes,
@@ -146,3 +147,5 @@ export const mainSearchResultsSchema = {
   tags: tagsSchema,
   persorgsFromName: persorgsSchema,
 }
+
+export const accountSettingsSchema = new schema.Entity<AccountSettings>('accountSettings')

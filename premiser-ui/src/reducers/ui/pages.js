@@ -12,41 +12,6 @@ import {
   pages,
 } from '../../actions'
 
-const defaultAccountSettingsPageState = {
-  accountSettings: null,
-  isFetching: false,
-}
-export const accountSettingsPage = handleActions({
-  [api.fetchAccountSettings]: (state, action) => ({
-    ...state,
-    isFetching: true,
-  }),
-  [api.fetchAccountSettings.response]: {
-    next: (state, action) => {
-      return {
-        ...state,
-        accountSettings: action.payload.accountSettings,
-        isFetching: false
-      }
-    },
-    throw: (state, action) => ({
-      ...state,
-      accountSettings: null,
-      isFetching: false
-    }),
-  },
-  [api.updateAccountSettings.response]: {
-    next: (state, action) => {
-      return {
-        ...state,
-        accountSettings: action.payload.accountSettings,
-      }
-    },
-  },
-}, defaultAccountSettingsPageState)
-
-
-
 export const propositionUsagesPage = handleActions({
   [api.fetchSentenceStatements]: {
     next: (state, action) => ({

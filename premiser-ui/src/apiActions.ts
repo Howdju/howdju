@@ -31,6 +31,7 @@ import {
 } from 'howdju-common'
 
 import {
+  accountSettingsSchema,
   justificationSchema,
   justificationsSchema,
   justificationVoteSchema,
@@ -143,6 +144,8 @@ interface ApiResponseWrapper {
   continuationToken: string
 }
 
+type Prepared<P> = {payload: P; meta?: any}
+
 /**
  * Create an action creator having a property `.response` with another action creator for corresponding API responses
  *
@@ -157,18 +160,18 @@ interface ApiResponseWrapper {
  */
 function apiActionCreator<P, N, PA extends (...args: any[]) => {payload: P}>(
   type: string,
-  payloadCreatorOrPrepare?: (...args: any[]) => P | {payload: P; meta?: any},
+  payloadCreatorOrPrepare?: (...args: any[]) => P | Prepared<P>,
   apiConfigCreator?: ResourceApiConfig<N> | ((p: P) => ResourceApiConfig<N>),
 ): ApiActionCreator<P, ExtractSchemaEntity<N> & ApiResponseWrapper, PA> {
   const [requestType, responseType] = makeApiActionTypes(type)
 
   // Add apiConfig to meta
-  const requestPrepare =
-    payloadCreatorOrPrepare &&
-    function requestPrepare(...args: any[]) {
-      let prepared = payloadCreatorOrPrepare(...args)
+  const requestPrepare = function requestPrepare(...args: any[]) {
+      let prepared = payloadCreatorOrPrepare ? payloadCreatorOrPrepare(...args) : {} as Prepared<P>
       if (apiConfigCreator) {
         if (!('payload' in prepared)) {
+          // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
+          // otherwise make the entire return value the payload.
           prepared = {payload: prepared, meta: {}}
         } else if (!prepared.meta) {
           prepared.meta = {}
@@ -480,11 +483,12 @@ export const api = {
       },
     }),
   ),
-  fetchAccountSettings: apiActionCreator('FETCH_ACCOUNT_SETTINGS', undefined, () => ({
+  fetchAccountSettings: apiActionCreator('FETCH_ACCOUNT_SETTINGS', undefined, {
     endpoint: `account-settings`,
-    // TODO(98): replace rehydrate opt-ins with opt-out
-    requiresRehydrate: true,
-  })),
+    normalizationSchema: {
+      accountSettings: accountSettingsSchema,
+    },
+  }),
   updateAccountSettings: apiActionCreator(
     'UPDATE_ACCOUNT_SETTINGS',
     accountSettings => ({accountSettings}),
@@ -494,6 +498,7 @@ export const api = {
         method: httpMethods.PUT,
         body: payload,
       },
+      normalizationSchema: {accountSettings: accountSettingsSchema},
     }),
   ),
 

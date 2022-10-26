@@ -1,30 +1,30 @@
 import React from 'react'
 import get from 'lodash/get'
 
-import {schemaSettings} from 'howdju-common'
+import {AccountSettings, schemaSettings} from 'howdju-common'
 
-import ErrorMessages from "./ErrorMessages"
-import TextField from './TextField'
+import ErrorMessages from "@/ErrorMessages"
+import TextField from '@/TextField'
 import {
   combineIds,
   combineNames,
-} from './viewModels'
+} from '@/viewModels'
 import {EntityEditorFieldsProps} from '@/editors/withEditor'
 
 interface Props extends EntityEditorFieldsProps {
-  accountSettings: any
+  accountSettings: AccountSettings
 }
 
 const paidContributionsDisclosureName = 'paidContributionsDisclosure'
 
-const AccountSettingsEditorFields = ({
+export default function AccountSettingsEditorFields({
   accountSettings,
   id,
   name,
   disabled,
   errors,
   onPropertyChange,
-}: Props) => {
+}: Props) {
   const modelErrors = get(errors, '_model')
   return (
     <div>
@@ -45,4 +45,3 @@ const AccountSettingsEditorFields = ({
     </div>
   )
 }
-export default AccountSettingsEditorFields

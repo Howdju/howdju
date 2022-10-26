@@ -20,7 +20,7 @@ import t, {
 import { AnyAction } from "redux";
 import {
   DirtyFields,
-  EditorFieldsErrors,
+  EditorState,
   EditorType,
 } from "@/reducers/editors";
 import { logger, SchemaId, toJson } from "howdju-common";
@@ -34,16 +34,6 @@ import {
   SuggestionsKey,
 } from "@/types";
 
-interface EditorState {
-  errors: EditorFieldsErrors;
-  editEntity: {};
-  isFetching: boolean;
-  isSaving: boolean;
-  // TODO make EditorState generic so that dirtyFields knows the actual editEntity fields?
-  dirtyFields: DirtyFields;
-  wasSubmitAttempted: boolean;
-}
-
 export type CommitThenPutAction = {
   // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
   action: AnyAction;
@@ -55,13 +45,13 @@ type ListItemTranslator = (
   dispatch: AppDispatch
 ) => (...args: any[]) => void;
 
-type WithEditorProps = {
+export type WithEditorProps = {
   id: ComponentId;
   name: ComponentName;
   editorId: EditorId;
   className?: string;
   submitButtonText?: string;
-  editorCommitBehavior: "JustCommit" | "CommitThenView" | CommitThenPutAction;
+  editorCommitBehavior?: "JustCommit" | "CommitThenView" | CommitThenPutAction;
 };
 export type EntityEditorFieldsProps = {
   id: ComponentId;
@@ -120,8 +110,7 @@ export default function withEditor<
       editorId,
       className,
       submitButtonText,
-      editorCommitBehavior,
-      ...rest
+      editorCommitBehavior = "JustCommit",
     } = props;
 
     const dispatch = useDispatch();
@@ -165,12 +154,10 @@ export default function withEditor<
     const {
       errors: apiValidationErrors,
       editEntity,
-      isFetching,
       isSaving,
       dirtyFields,
       wasSubmitAttempted,
     } = editorState as EditorState;
-    const inProgress = isFetching || isSaving;
 
     const { errors: clientValidationErrors } = editEntity
       ? validate(schemaId, editEntity)
@@ -191,7 +178,6 @@ export default function withEditor<
     const errors = merge(clientValidationErrors, apiValidationErrors);
 
     const editorFieldsProps = {
-      ...rest,
       id,
       name,
       ...{ [entityPropName]: editEntity },
@@ -212,7 +198,7 @@ export default function withEditor<
           <EntityEditorFields {...editorFieldsProps} />
         </CardText>
         <CardActions>
-          {inProgress && (
+          {isSaving && (
             <CircularProgress key="progress" id={combineIds(id, "progress")} />
           )}
           <Button
@@ -220,7 +206,7 @@ export default function withEditor<
             key="cancelButton"
             children={t(CANCEL_BUTTON_LABEL)}
             onClick={onCancelEdit}
-            disabled={inProgress}
+            disabled={isSaving}
           />
           <Button
             raised
@@ -228,7 +214,7 @@ export default function withEditor<
             key="submitButton"
             type="submit"
             children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
-            disabled={inProgress}
+            disabled={isSaving}
           />
         </CardActions>
       </form>
