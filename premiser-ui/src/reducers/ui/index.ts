@@ -4,7 +4,6 @@ import {
   accountSettingsPage,
   passwordResetConfirmationPage,
   passwordResetRequestPage,
-  persorgPage,
   propositionUsagesPage,
   registrationConfirmationPage,
 } from './pages'
@@ -14,7 +13,6 @@ export default combineReducers({
   accountSettingsPage,
   passwordResetConfirmationPage,
   passwordResetRequestPage,
-  persorgPage,
   propositionUsagesPage,
   registrationConfirmationPage,
   transients,

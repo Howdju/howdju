@@ -17,6 +17,7 @@ import {mainSearch} from "../components/mainSearchBox/mainSearchBoxSlice"
 import {mainSearchPage} from "../pages/mainSearch/mainSearchPageSlice"
 import { justificationsSearchPage } from '@/pages/justificationsSearch/justificationsSearchPageSlice'
 import {tagPage} from "@/pages/tag/tagPageSlice"
+import {persorgPage} from "@/pages/persorg/persorgPageSlice"
 
 export default (history: History) => combineReducers({
   app,
@@ -28,6 +29,7 @@ export default (history: History) => combineReducers({
   justificationsSearchPage,
   mainSearch,
   mainSearchPage,
+  persorgPage,
   privacyConsent,
   router: connectRouter(history),
   tagPage,
