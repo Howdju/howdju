@@ -5,6 +5,7 @@
   // configured in the webpack.config and Babel configs.
   "compilerOptions": {
     "jsx": "react",
+    "lib": ["DOM"],
     "paths": {
       // Support project-relative imports
       "@/*": ["./src/*"],

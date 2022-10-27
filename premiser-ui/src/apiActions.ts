@@ -28,6 +28,8 @@ import {
   SortDirections,
   encodeQueryStringObject,
   JustificationSearchFilters,
+  AuthToken,
+  DatetimeString,
 } from 'howdju-common'
 
 import {
@@ -129,6 +131,17 @@ type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
   : {
       [Key in keyof S]: ExtractSchemaEntity<S[Key]>
     }
+
+/**
+ * A hack to allow us to define additional response properties.
+ *
+ * @param normalizationSchema the entity normaliation schema
+ * @typeparam T the type of additional, non-normalized response properties
+ * @typeParam N the type of the normalization schema.
+ * @returns the normalization schema typed as a full response
+ */
+const responseSchema =
+  <T>() => <N extends {} = {}>(normalizationSchema: N): T & N => normalizationSchema as T & N
 
 /** Properties that may be present on API responses */
 interface ApiResponseWrapper {
@@ -576,7 +589,10 @@ export const api = {
         method: httpMethods.POST,
         body: payload,
       },
-      normalizationSchema: {user: userSchema},
+      normalizationSchema: responseSchema<{
+        authToken: AuthToken,
+        expires: DatetimeString,
+      }>()({user: userSchema}),
     }),
   ),
   logout: apiActionCreator('LOGOUT', () => ({}), {
@@ -620,6 +636,10 @@ export const api = {
         method: httpMethods.POST,
         body: payload,
       },
+      normalizationSchema: responseSchema<{
+        authToken: AuthToken,
+        expires: DatetimeString,
+      }>()({user: userSchema}),
     }),
   ),
 
@@ -654,6 +674,10 @@ export const api = {
         method: httpMethods.POST,
         body: payload,
       },
+      normalizationSchema: responseSchema<{
+        authToken: AuthToken,
+        expires: DatetimeString,
+      }>()({user: userSchema}),
     }),
   ),
 

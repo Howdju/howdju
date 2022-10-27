@@ -62,7 +62,6 @@ PropositionValidator.blankErrors = () => ({
       modelErrors: [],
       itemErrors: [],
     },
-
   },
 })
 

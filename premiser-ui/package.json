@@ -30,7 +30,7 @@
     "upload-pre-prod": "cross-env NODE_ENV=production DEBUG='*' ../bin/build-and-run-script.sh bin/upload-to-s3.js pre-prod-www.howdju.com",
     "upload-prod": "    cross-env NODE_ENV=production DEBUG='*' ../bin/build-and-run-script.sh bin/upload-to-s3.js www.howdju.com",
     "test": "jest --config=../jest.config.js /premiser-ui/src/",
-    "test-inspect": "node inspect node_modules/.bin/jest --config=../jest.config.js /premiser-ui/src/ --runInBand --watch",
+    "test-inspect": "node --inspect-brk node_modules/.bin/jest --config=../jest.config.js --testPathPattern=/premiser-ui/src/ --runInBand --watch",
     "test-verbose": "jest ---config=../jest.config.js /premiser-ui/src/ --verbose",
     "test-dns": "dig +recurse +trace howdju.com any",
     "typecheck": "tsc"
@@ -116,6 +116,7 @@
     "core-js": "^3.11.0",
     "dompurify": "^2.2.9",
     "history": "^4.10.1",
+    "howdju-ajv-sourced": "^1.0.0",
     "howdju-client-common": "^1.0.0",
     "howdju-common": "^1.0.0",
     "is-valid-domain": "^0.0.19",

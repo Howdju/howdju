@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2015",
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
@@ -23,5 +23,6 @@
   "exclude": [
     "node_modules",
     "**/node_modules",
+    "**/dist",
   ],
 }

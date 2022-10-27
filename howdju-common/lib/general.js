@@ -60,18 +60,18 @@ _e.utcNow = () => moment.utc()
 
 _e.utcNowIsAfter = dateTimeString => _e.utcNow().isAfter(moment.utc(dateTimeString))
 
-// Reference for these interesting operand names
-// https://math.stackexchange.com/a/1736991/116432
 _e.momentAdd = (momentInstance, summand) => {
-  const result = momentInstance.clone()
   // add mutates the instance, so we must clone first
-  result.add.apply(result, summand)
+  const result = momentInstance.clone()
+  result.add(summand)
   return result
 }
+// Reference for these interesting operand names
+// https://math.stackexchange.com/a/1736991/116432
 _e.momentSubtract = (momentInstance, subtrahend) => {
-  const result = momentInstance.clone()
   // add mutates the instance, so we must clone first
-  result.subtract.apply(result, subtrahend)
+  const result = momentInstance.clone()
+  result.subtract(subtrahend)
   return result
 }
 

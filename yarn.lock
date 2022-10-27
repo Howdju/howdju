@@ -6318,6 +6318,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/moment-duration-format@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@types/moment-duration-format@npm:2.2.3"
+  dependencies:
+    moment: ">=2.14.0"
+  checksum: 84fe8cf1582fb51f588ce46edaf876bbe92523062bb2750d7b8a60a853a5fd59cc8edcd6b2ca7db6c91e3d0479e36e86b52997adc472e3156ca51011be46a260
+  languageName: node
+  linkType: hard
+
 "@types/moment-locales-webpack-plugin@npm:^1.2.3":
   version: 1.2.3
   resolution: "@types/moment-locales-webpack-plugin@npm:1.2.3"
@@ -14437,7 +14446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"howdju-ajv-sourced@workspace:howdju-ajv-sourced":
+"howdju-ajv-sourced@^1.0.0, howdju-ajv-sourced@workspace:howdju-ajv-sourced":
   version: 0.0.0-use.local
   resolution: "howdju-ajv-sourced@workspace:howdju-ajv-sourced"
   dependencies:
@@ -14659,6 +14668,7 @@ __metadata:
   resolution: "howdju-service-common@workspace:howdju-service-common"
   dependencies:
     "@joi/date": ^2.1.0
+    "@types/moment-duration-format": ^2.2.3
     any-promise: ^1.3.0
     aws-sdk: ^2.918.0
     bcryptjs: ^2.4.3
@@ -14679,6 +14689,7 @@ __metadata:
     pg: ^8.6.0
     react-dom: "npm:@hot-loader/react-dom@16.14.0"
     sinon: ^10.0.0
+    typescript: ^4.8.4
     urlsafe-base64: ^1.0.0
     uuid: ^8.3.2
   languageName: unknown
@@ -19111,7 +19122,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.29.4":
+"moment@npm:>=2.14.0, moment@npm:^2.29.4":
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
   checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
@@ -21442,6 +21453,7 @@ __metadata:
     file-loader: ^6.2.0
     flow-bin: ^0.150.1
     history: ^4.10.1
+    howdju-ajv-sourced: ^1.0.0
     howdju-client-common: ^1.0.0
     howdju-common: ^1.0.0
     howdju-ops: ^1.0.0

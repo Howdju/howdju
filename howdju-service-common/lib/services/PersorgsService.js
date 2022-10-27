@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 
 const {
-  EntityTypes,
+  EntityTypes, entityConflictCodes,
 } = require('howdju-common')
 
 const {EntityService} = require('./EntityService')
@@ -61,7 +61,12 @@ exports.PersorgsService = class PersorgsService extends EntityService {
     ])
 
     if (doesConflict) {
-      throw new EntityConflictError()
+      throw new EntityConflictError(
+        {
+          hasErrors: true,
+          modelErrors: [entityConflictCodes.ALREADY_EXISTS],
+        }
+      )
     }
     if (!hasPermission) {
       throw new AuthorizationError(permission)

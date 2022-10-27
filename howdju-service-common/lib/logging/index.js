@@ -1,1 +1,1 @@
-module.exports = require('./AwsLogger')
+export * from './AwsLogger'

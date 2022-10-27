@@ -9,7 +9,7 @@
     "lint": "eslint src/",
     "release": "../bin/release.sh",
     "test": "jest --config=../../jest.config.js --testPathPattern=/lambdas/howdju-message-handler/src/",
-    "test-inspect": " node inspect node_modules/.bin/jest --config=../../jest.config.js --testPathPattern=/lambdas/howdju-message-handler/src/"
+    "test-inspect": " node --inspect-brk node_modules/.bin/jest --config=../../jest.config.js --testPathPattern=/lambdas/howdju-message-handler/src/"
   },
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
   "license": "UNLICENSED",

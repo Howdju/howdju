@@ -6,9 +6,9 @@ const outdent = require('outdent')
 
 const {
   commonPaths,
-  entityErrorCodes,
+  EntityErrorCodes,
   EntityTypes,
-  makeUser,
+  makeUserRegistration,
   momentAdd,
   newImpossibleError,
   schemaIds,
@@ -84,25 +84,28 @@ exports.RegistrationService = class RegistrationService {
 /** Returns whether the registration should continue */
 async function processRegistrationConflicts(self, registrationRequest) {
   const {email} = registrationRequest
-  const entityConflicts = {}
+  const fieldErrors = {}
   if (await self.usersService.isEmailInUse(email)) {
     if (self.config.doConcealEmailExistence) {
       await sendExistingAccountNotificationEmail(self, registrationRequest)
       return false
     }
-    entityConflicts.email = {
-      code: entityErrorCodes.EMAIL_TAKEN,
+    fieldErrors.email = [{
+      code: EntityErrorCodes.EMAIL_TAKEN,
       value: email,
-    }
+    }]
   }
   if (await self.registrationRequestsDao.isEmailInUse(email)) {
-    entityConflicts.email = {
-      code: entityErrorCodes.EMAIL_TAKEN,
+    fieldErrors.email = [{
+      code: EntityErrorCodes.EMAIL_TAKEN,
       value: email
-    }
+    }]
   }
-  if (keys(entityConflicts).length > 0) {
-    throw new EntityConflictError(entityConflicts)
+  if (keys(fieldErrors).length > 0) {
+    throw new EntityConflictError({
+      hasErrors: true,
+      fieldErrors,
+    })
   }
 
   return true
@@ -201,15 +204,18 @@ async function checkRegistrationRequestValidity(registrationRequest, now) {
 
 async function checkRegistrationConfirmationConflicts(self, registrationConfirmation) {
   const {username} = registrationConfirmation
-  const entityConflicts = {}
+  const fieldErrors = {}
   if (await self.usersService.isUsernameInUse(username)) {
-    entityConflicts.username = {
-      code: entityErrorCodes.USERNAME_TAKEN,
+    fieldErrors.username = [{
+      code: EntityErrorCodes.USERNAME_TAKEN,
       value: username,
-    }
+    }]
   }
-  if (keys(entityConflicts).length > 0) {
-    throw new EntityConflictError(entityConflicts)
+  if (keys(fieldErrors).length > 0) {
+    throw new EntityConflictError({
+      hasErrors: true,
+      fieldErrors,
+    })
   }
 }
 
@@ -224,7 +230,7 @@ async function consumeRegistration(self, registrationCode) {
 
 async function registerUser(self, registration, registrationConfirmation, now) {
   const passwordHash = await bcrypt.hash(registrationConfirmation.password, self.config.auth.bcrypt.saltRounds)
-  const user = makeUser({
+  const user = makeUserRegistration({
     username: registrationConfirmation.username,
     email: registration.email,
     shortName: registrationConfirmation.shortName,

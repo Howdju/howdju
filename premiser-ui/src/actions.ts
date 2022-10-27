@@ -167,6 +167,14 @@ export const editors = {
       entity,
     })
   ),
+  blurField: createAction(
+    "EDITORS/BLUR_FIELD",
+    (editorType: EditorType, editorId: EditorId, fieldName: string) => ({
+      editorType,
+      editorId,
+      fieldName,
+    })
+  ),
   propertyChange: createAction(
     "EDITORS/PROPERTY_CHANGE",
     (

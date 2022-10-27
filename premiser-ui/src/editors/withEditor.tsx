@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import get from "lodash/get";
 import reduce from "lodash/reduce";
 
+import { BespokeValidationErrors } from "howdju-common";
 import { validate, emptyValidationResult } from "howdju-ajv-sourced";
 
 import { editors, flows } from "@/actions";
@@ -11,7 +12,6 @@ import { AppDispatch, RootState } from "@/store";
 import {
   combineIds,
   combineSuggestionsKeys,
-  ValidationErrors,
 } from "@/viewModels";
 import t, {
   CANCEL_BUTTON_LABEL,
@@ -60,7 +60,7 @@ export type EntityEditorFieldsProps = {
   suggestionsKey: SuggestionsKey;
   onPropertyChange: OnPropertyChangeCallback;
   onSubmit: OnSubmitCallback;
-  errors: ValidationErrors;
+  errors: BespokeValidationErrors;
   dirtyFields: DirtyFields;
   wasSubmitAttempted: boolean;
 };

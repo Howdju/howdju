@@ -19,6 +19,7 @@ import {persorgPage} from "@/pages/persorg/persorgPageSlice"
 import {justificationsPage} from "@/pages/justifications/justificationsPageSlice"
 import {accountSettingsPage} from "@/pages/accountSettings/accountSettingsPageSlice"
 import {propositionUsagesPage} from "@/pages/propositionUsages/propositionUsagesPageSlice"
+import {registrationConfirmationPage} from "@/pages/registration/registrationConfirmationPageSlice"
 
 export default (history: History) => combineReducers({
   accountSettingsPage,
@@ -35,6 +36,7 @@ export default (history: History) => combineReducers({
   persorgPage,
   privacyConsent,
   propositionUsagesPage,
+  registrationConfirmationPage,
   router: connectRouter(history),
   tagPage,
   ui,
