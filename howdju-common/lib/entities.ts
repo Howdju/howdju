@@ -258,3 +258,8 @@ export interface ContentReport extends Entity {
   url: string;
 }
 
+/**
+ * An opaque pagination token from the API.
+ *
+ * Encodes sorting, offset, etc. */
+export type ContinuationToken = string

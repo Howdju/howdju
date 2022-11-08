@@ -27,7 +27,7 @@ import PersorgPage from './pages/persorg/PersorgPage'
 import PrivacySettingsPage from "./PrivacySettingsPage"
 import PoliciesOverviewPage from './policies/PoliciesOverviewPage'
 import PolicyPage from "./policies/PolicyPage"
-import PropositionUsagesPage from './PropositionUsagesPage'
+import PropositionUsagesPage from './pages/propositionUsages/PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
 import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import RegistrationRequestPage from './RegistrationRequestPage'

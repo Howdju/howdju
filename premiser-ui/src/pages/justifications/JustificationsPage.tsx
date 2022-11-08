@@ -115,7 +115,7 @@ class JustificationsPage extends Component<Props> {
     const prevRootTargetInfo = rootTargetInfoFromProps(prevProps)
     const rootTargetInfo = this.rootTargetInfo()
     if (!isEqual(rootTargetInfo, prevRootTargetInfo)) {
-      this.props.api.fetchRootJustificationTarget(rootTargetInfo)
+      this.props.api.fetchRootJustificationTarget(rootTargetInfo.rootTargetType, rootTargetInfo.rootTargetId)
     }
 
     const prevContextTrailInfos = contextTrailItemInfosFromProps(prevProps)
