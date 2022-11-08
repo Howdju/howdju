@@ -177,6 +177,78 @@ You can also run `yarn run check:everything`.
 
 ## Development
 
+### Git branch workflow
+
+#### Basic feature workflow
+
+```bash
+# Start from the main branch
+git checkout master
+# Updates should always be fast-forwards because we enforce linear history.
+git pull --ff-only
+# Always develop on a branch. We prefix all development branches with `features/n-` where `n` is the
+# number of the bug corresponding to your work. We strongly encourage creating bugs for any work.
+gco -b features/n-feature-slug
+# Make your changes and commit
+git commit
+# ...more commits...
+git push --set-upstream origin <branchName>
+# Visit link output by push command to open a PR
+```
+
+We enforce 'squash and merge' for our PRs so that we have a linear history and
+so that mainline commits are easier to scan.
+
+#### Working on top of a PR branch
+
+Often you'll want to build on top of changes that are in a PR. This is fine, but
+requires some additional steps.
+
+```bash
+# Assuming that HEAD is your PR branch
+
+# Make sure you start a new branch.
+gco -b features/n-feature-slug
+
+# ...commit changes...
+
+# You can push your changes and start a PR, but I think it won't be mergeable
+# until you rebase onto master. You should select the previous feature /
+# parent PR branch as the new PR's base branch.
+
+# To prepare your branch for merging, rebase onto master:
+# git rebase --onto master parentCommitExclusive branchName
+git rebase --onto master <previousFeatureBranch> <currentFeatureBranch>
+
+git push -f
+```
+
+#### Editing a PR that you are also working on top of
+
+In order to respond to PR comments with edits for a PR you are working on top of, you'll need an
+interactive rebase.
+
+```bash
+git rebase -i HEAD~n
+
+# Make changes
+
+# Either amend the commit
+git commit --amend --no-edit
+# or add new commits
+git commit
+
+# Update the PR branch to be the new commit
+git branch -f <branch-name> HEAD
+
+# Update the PR branch
+git push -f
+
+git rebase --continue
+```
+
+where `HEAD~n` corresponds to the parent of the the commit you want to amend.
+
 ### Upgrading dependencies
 
 ```shell
