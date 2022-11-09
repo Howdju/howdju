@@ -67,6 +67,7 @@
     "eslint-config-howdju": "^1.0.0",
     "eslint-plugin-flowtype": "^5.7.2",
     "eslint-plugin-react": "^7.3.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "file-loader": "^6.2.0",
     "flow-bin": "^0.150.1",
     "howdju-ops": "^1.0.0",
