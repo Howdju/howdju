@@ -62,6 +62,10 @@ const error = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.ERROR,
   body
 })
+const conflict = ({callback, body}) => callback({
+  httpStatusCode: httpStatusCodes.CONFLICT,
+  body,
+})
 
 const routes = [
   /*
@@ -961,7 +965,7 @@ const routeRequest = (request, appProvider, callback) =>
         errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR
       }
     }))
-    .catch(EntityConflictError, e => error({
+    .catch(EntityConflictError, e => conflict({
       callback,
       body: {
         errorCode: apiErrorCodes.ENTITY_CONFLICT,

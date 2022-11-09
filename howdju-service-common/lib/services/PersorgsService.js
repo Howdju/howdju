@@ -1,7 +1,8 @@
 const Promise = require('bluebird')
 
 const {
-  EntityTypes, entityConflictCodes,
+  EntityTypes,
+  entityConflictCodes,
 } = require('howdju-common')
 
 const {EntityService} = require('./EntityService')

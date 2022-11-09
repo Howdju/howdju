@@ -297,6 +297,7 @@ export interface User extends Entity {
   },
 }
 
+/** Additional properties that we collect upon user creation, but that we don't expose later. */
 export interface UserSubmissionModel extends User {
   acceptedTerms: boolean;
   affirmedMajorityConsent: boolean;
