@@ -1,6 +1,6 @@
 import get from 'lodash/get'
 import {EditorType} from './reducers/editors'
-import {RootState} from './store'
+import {RootState} from './setupStore'
 import {EditorId} from './types'
 
 export const selectEditorState =

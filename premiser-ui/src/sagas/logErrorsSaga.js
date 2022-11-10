@@ -32,6 +32,7 @@ export function* logErrors() {
     // Sometimes we wrap the same exception in multiple actions, such as callApiResponse and then fetchPropositions.response
     // So don't log the same error multiple times
     if (!find(loggedErrors, e => e === error)) {
+      // Nest `error` in an object so that we don't recurse on this saga worker.
       yield put(errors.logError({error}))
       const identifierKeys = pick(error, customHeaderKeys.identifierKeys)
       const options = isEmpty(identifierKeys) ? undefined : {extra: identifierKeys}

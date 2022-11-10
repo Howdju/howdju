@@ -66,7 +66,7 @@ import {
   rootTargetNormalizationSchemasByType,
 } from '@/viewModels'
 import {makeExtensionHighlightOnClickWritQuoteUrlCallback} from "@/extensionCallbacks"
-import { RootState } from "@/store"
+import { RootState } from "@/setupStore"
 import { ComponentId, ContextTrailItemInfo, SuggestionsKey } from "@/types"
 
 import "./JustificationsPage.scss"

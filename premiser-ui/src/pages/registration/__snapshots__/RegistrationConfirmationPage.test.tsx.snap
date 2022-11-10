@@ -300,12 +300,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       >
                         <div
                           class="md-ink-container"
-                        >
-                          <span
-                            class="md-ink md-ink--active md-ink--expanded md-ink--leaving"
-                            style="left: 0px; top: 0px; height: 0px; width: 0px;"
-                          />
-                        </div>
+                        />
                         <i
                           class="md-icon material-icons md-text--inherit"
                         >
@@ -367,12 +362,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       >
                         <div
                           class="md-ink-container"
-                        >
-                          <span
-                            class="md-ink md-ink--active md-ink--expanded"
-                            style="left: 0px; top: 0px; height: 0px; width: 0px;"
-                          />
-                        </div>
+                        />
                         <i
                           class="md-icon material-icons md-text--inherit"
                         >
@@ -415,12 +405,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       >
                         <div
                           class="md-ink-container"
-                        >
-                          <span
-                            class="md-ink md-ink--active md-ink--expanded"
-                            style="left: 0px; top: 0px; height: 0px; width: 0px;"
-                          />
-                        </div>
+                        />
                         <i
                           class="md-icon material-icons md-text--inherit"
                         >
@@ -463,12 +448,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                       >
                         <div
                           class="md-ink-container"
-                        >
-                          <span
-                            class="md-ink md-ink--active md-ink--expanded"
-                            style="left: 0px; top: 0px; height: 0px; width: 0px;"
-                          />
-                        </div>
+                        />
                         <i
                           class="md-icon material-icons md-text--inherit"
                         >
@@ -500,7 +480,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     Cancel
                   </button>
                   <button
-                    class="md-btn md-btn--raised md-btn--text md-btn--raised-pressed md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                    class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
                     title="Complete registration"
                     type="submit"
                   >

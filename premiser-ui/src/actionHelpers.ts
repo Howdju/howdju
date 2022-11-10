@@ -25,7 +25,7 @@ import {
   actions,
 } from "howdju-client-common";
 
-import { AppDispatch } from "./store";
+import { AppDispatch } from "./setupStore";
 
 export const str = actions.str;
 

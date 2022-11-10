@@ -11,7 +11,7 @@ import PropositionCard from "../../PropositionCard";
 import WritCard from "../../WritCard";
 import WritQuoteCard from "../../WritQuoteCard";
 import CellList from "../../CellList";
-import { RootState } from "@/store";
+import { RootState } from "@/setupStore";
 import { api, goto } from "../../actions";
 import {
   writsSchema,

@@ -8,11 +8,11 @@ import RegistrationConfirmationPage from './RegistrationConfirmationPage'
 import {renderWithProviders} from '@/testUtils'
 import {apiErrorCodes, EntityErrorCodes, httpStatusCodes} from 'howdju-common'
 
-export const handlers = [
+const handlers = [
   rest.get(
     'http://localhost/registration-requests',
     (_req, res, ctx) => {
-      return res(ctx.status(httpStatusCodes.OK), ctx.json({}))
+      return res(ctx.status(httpStatusCodes.ERROR))
     },
   ),
 ]
@@ -21,11 +21,15 @@ const server = setupServer(...handlers)
 // jest.setTimeout(5 * 60 * 1000)
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  // Use fake timers so that we can ensure animations complete before snapshotting.
+  jest.useFakeTimers()
+})
 afterAll(() => server.close())
 
 describe('RegistrationConfirmationPage', () => {
-  xtest('shows form', async () => {
+  test('shows form', async () => {
     // Arrange
     const registrationCode = 'fake-registration-code'
     const email = 'the-email@domain.com'
@@ -48,7 +52,7 @@ describe('RegistrationConfirmationPage', () => {
     expect(screen.getByRole('button', {name: /register/i})).toBeDisabled()
     expect(container).toMatchSnapshot()
   })
-  xtest('shows error message for missing registration code', async () => {
+  test('shows error message for missing registration code', async () => {
     server.use(
       rest.get('http://localhost/registration-requests', (_req, res, ctx) => {
         return res(ctx.status(httpStatusCodes.NOT_FOUND))
@@ -63,7 +67,10 @@ describe('RegistrationConfirmationPage', () => {
   })
   test('shows error message for duplicate username', async () => {
     // Arrange
-    const user = userEvent.setup()
+
+    // userEvent delays between actions, so make sure it advances the fake timers.
+    // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
 
     const username = 'the_username'
 
@@ -110,6 +117,9 @@ describe('RegistrationConfirmationPage', () => {
 
     // Assert
     expect(await screen.findByText(/That username is already registered/i)).toBeInTheDocument()
+    // Let all animations complete before taking the snapshot. Otherwise we get flaky UI
+    // differences depending on where the material UI animations are at.
+    jest.runAllTimers()
     expect(container).toMatchSnapshot()
   })
 })

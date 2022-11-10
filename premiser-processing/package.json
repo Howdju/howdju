@@ -20,7 +20,7 @@
     "score-proposition-tags:local": "source ../config/local.env && node bin/score-proposition-tags.js",
     "score-proposition-tags:pre-prod": "source ../config/pre-prod-local-tunnel.env && node bin/score-proposition-tags.js",
     "score-proposition-tags:prod": "source ../config/prod-local-tunnel.env && node bin/score-proposition-tags.js",
-    "test": "jest --config=../jest.config.js --testPathPattern='/premiser-processing/lambda-functions/[^/]+/src/'",
+    "test": "jest",
     "update-lambda-function-alias": "node bin/update-lambda-function-alias.js",
     "update-lambda-function-code": "node bin/update-lambda-function-code.js",
     "upload-lambda-function-zip": "node bin/upload-lambda-function-zip.js"
@@ -37,7 +37,7 @@
     "howdju-test-common": "^1.0.0",
     "inspect-process": "^0.5.0",
     "install-local": "^0.6.0",
-    "jest": "^26.6.3",
+    "jest": "^29.3.1",
     "run-sequence": "^2.1.0"
   },
   "dependencies": {

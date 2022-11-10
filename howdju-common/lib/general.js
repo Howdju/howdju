@@ -12,6 +12,7 @@ const reject = require('lodash/reject')
 const replace = require('lodash/replace')
 const trim = require('lodash/trim')
 const moment = require('moment')
+const { newProgrammingError } = require('./commonErrors')
 
 
 const _e = module.exports
@@ -63,7 +64,14 @@ _e.utcNowIsAfter = dateTimeString => _e.utcNow().isAfter(moment.utc(dateTimeStri
 _e.momentAdd = (momentInstance, summand) => {
   // add mutates the instance, so we must clone first
   const result = momentInstance.clone()
-  result.add(summand)
+  if (isArray(summand)) {
+    result.add.apply(result, summand) // [5, 'minutes']
+  } else if (isObject(summand)) {
+    result.add(summand) // {minutes: 5}
+  } else {
+    throw newProgrammingError(`Invalid moment summand: ${summand} (type: ${typeof summand})`)
+  }
+
   return result
 }
 // Reference for these interesting operand names
@@ -71,7 +79,13 @@ _e.momentAdd = (momentInstance, summand) => {
 _e.momentSubtract = (momentInstance, subtrahend) => {
   // add mutates the instance, so we must clone first
   const result = momentInstance.clone()
-  result.subtract(subtrahend)
+  if (isArray(subtrahend)) {
+    result.subtract.apply(result, subtrahend) // [5, 'minutes']
+  } else if (isObject(subtrahend)) {
+    result.subtract(subtrahend) // {minutes: 5}
+  } else {
+    throw newProgrammingError(`Invalid moment subtrahend: ${subtrahend} (type: ${typeof subtrahend})`)
+  }
   return result
 }
 

@@ -347,6 +347,13 @@ Use your web browser's Javascript debugging features as usual.
 yarn set version stable
 ```
 
+## Snapshot tests
+
+To regenerate snapshots, run Jest with `--updateSnapshot` and optionally `--testNamePattern`
+([https://jestjs.io/docs/snapshot-testing#updating-snapshots](https://jestjs.io/docs/snapshot-testing#updating-snapshots)).
+Packages should define a `test-update-snapshot` script for this. There is also an [interactive
+mode](https://jestjs.io/docs/snapshot-testing#interactive-snapshot-mode) for updating snapshots.
+
 ## Testing Github actions
 
 Install nektos/act:
@@ -373,3 +380,43 @@ act workflow_run\
 See
 [here](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_run)
 for the possible contents of the JSON file.
+
+## Config structure
+
+### TypeScript
+
+Base config `tsconfig.json` in workspace root and packages extend it like:
+
+```json
+{
+  "extends": "../tsconfig.json",
+  // customizations here.
+}
+```
+
+### Babel
+
+`babel.config.js` in workspace root and `.babelrc.js` in packages to override.
+
+### ESLint
+
+Base `.eslintrc.js` config having `root: true` and packages with custom `.eslintrc.js` as needed. ESLint
+automatically merges them.
+
+### Jest
+
+Base config exporting the config object and packages must define their own `jest.config.js` that
+merges any customizations with the base. Preferably with `lodash`'s `merge` so that the merge is recursive.
+
+```ts
+import type {Config} from 'jest'
+import {merge} from 'lodash'
+
+import baseConfig from '../jest.config.base'
+
+const config: Config = {
+  // per-package customizations
+}
+
+export default merge(baseConfig, config);
+```

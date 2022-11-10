@@ -63,7 +63,7 @@ exports.RegistrationService = class RegistrationService {
   async checkRequestForCode(registrationCode) {
     const now = utcNow()
     const registration = await this.registrationRequestsDao.readForCode(registrationCode)
-    await checkRegistrationRequestValidity(registration, now)
+    await checkRegistrationRequestValidity(this, registration, now)
     return registration.email
   }
 
@@ -71,7 +71,7 @@ exports.RegistrationService = class RegistrationService {
     const now = utcNow()
     const registrationCode = registrationConfirmation.registrationCode
     const registrationRequest = await this.registrationRequestsDao.readForCode(registrationCode)
-    await checkRegistrationRequestValidity(registrationRequest, now)
+    await checkRegistrationRequestValidity(this, registrationRequest, now)
     // TODO this is a race condition right now with creating the registration based upon the username/email
     await checkRegistrationConfirmationConflicts(this, registrationConfirmation)
     await consumeRegistration(this, registrationCode)
@@ -188,7 +188,7 @@ async function sendExistingAccountNotificationEmail(self, registrationRequest) {
   await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
 }
 
-async function checkRegistrationRequestValidity(registrationRequest, now) {
+async function checkRegistrationRequestValidity(self, registrationRequest, now) {
   if (!registrationRequest) {
     throw new EntityNotFoundError(EntityTypes.REGISTRATION_REQUEST)
   }
@@ -198,6 +198,7 @@ async function checkRegistrationRequestValidity(registrationRequest, now) {
   if (now.isSameOrAfter(registrationRequest.expires)) {
     // We could delete registration here, but then the next time the user tries the link they would get a "missing" error
     //  which would be confusing.  So instead cleanup old registrations on a schedule?
+    self.logger.debug(`now (${now.format()}) ≥ registrationRequest.expires (${registrationRequest.expires}))`)
     throw new RegistrationExpiredError()
   }
 }

@@ -8,7 +8,7 @@ import { BespokeValidationErrors } from "howdju-common";
 import { validate, emptyValidationResult } from "howdju-ajv-sourced";
 
 import { editors, flows } from "@/actions";
-import { AppDispatch, RootState } from "@/store";
+import { AppDispatch, RootState } from "@/setupStore";
 import {
   combineIds,
   combineSuggestionsKeys,
