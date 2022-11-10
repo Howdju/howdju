@@ -11,4 +11,7 @@
       "@/*": ["./src/*"],
     },
   },
+  "include": [
+    "../jest/jest-setup-after-env.ts"
+  ],
 }

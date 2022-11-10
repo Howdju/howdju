@@ -4,6 +4,10 @@ module.exports = {
     "@babel/preset-flow",
     "@babel/preset-typescript",
   ],
+
+  ignore: [
+    /\/node_modules\/(?!(@grrr\/cookie-consent|@grrr\/utils))/,
+  ],
   plugins: [
     // Stage 1
     "@babel/plugin-proposal-export-default-from",

@@ -8,13 +8,13 @@ import {
   commonPaths,
 } from 'howdju-common'
 
-import AccountSettingsPage from "./AccountSettingsPage"
+import AccountSettingsPage from "./pages/accountSettings/AccountSettingsPage"
 import AboutPage from './AboutPage'
 import CreatePropositionPage, {CreatePropositionPageMode} from './CreatePropositionPage'
 import {history} from './history'
 import IconPage from './IconPage'
-import JustificationsPage from './JustificationsPage'
-import JustificationsSearchPage from './JustificationsSearchPage'
+import JustificationsPage from './pages/justifications/JustificationsPage'
+import JustificationsSearchPage from './pages/justificationsSearch/JustificationsSearchPage'
 import LandingPage from './LandingPage'
 import LoginPage from './LoginPage'
 import mainSearcher from './mainSearcher'
@@ -23,16 +23,16 @@ import NotFoundPage from './NotFoundPage'
 import PasswordResetRequestPage from './PasswordResetRequestPage'
 import PasswordResetConfirmationPage from './PasswordResetConfirmationPage'
 import paths, {createJustificationPath} from './paths'
-import PersorgPage from './PersorgPage'
+import PersorgPage from './pages/persorg/PersorgPage'
 import PrivacySettingsPage from "./PrivacySettingsPage"
 import PoliciesOverviewPage from './policies/PoliciesOverviewPage'
 import PolicyPage from "./policies/PolicyPage"
-import PropositionUsagesPage from './PropositionUsagesPage'
+import PropositionUsagesPage from './pages/propositionUsages/PropositionUsagesPage'
 import RecentActivityPage from './RecentActivityPage'
-import RegistrationConfirmationPage from './RegistrationConfirmationPage'
-import RegistrationRequestPage from './RegistrationRequestPage'
+import RegistrationConfirmationPage from './pages/registration/RegistrationConfirmationPage'
+import RegistrationRequestPage from './pages/registration/RegistrationRequestPage'
 import SubmitSourceExcerptPage from './pages/SubmitSourceExcerptPage'
-import TagPage from './TagPage'
+import TagPage from './pages/tag/TagPage'
 import TestErrorPage from './TestErrorPage'
 import ToolsPage from './ToolsPage'
 import WhatsNextPage from './WhatsNextPage'

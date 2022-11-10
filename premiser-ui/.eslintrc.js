@@ -2,12 +2,14 @@ module.exports = {
   extends: [
     "howdju",
     "howdju/react",
+    "plugin:jest-dom/recommended",
   ],
-  "plugins": [
-    "react-hooks"
+  plugins: [
+    "react-hooks",
+    "jest-dom",
   ],
-  "rules": {
+  rules: {
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
   }
-};
+}

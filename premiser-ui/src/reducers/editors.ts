@@ -229,8 +229,7 @@ const defaultEditorActions = {
     state: EditorState,
     action: Action<{fieldName: string}>,
   ) => {
-    const newBlurredFields = state.blurredFields
-    newBlurredFields[action.payload.fieldName] = true
+    const newBlurredFields = {[action.payload.fieldName]: true}
     const blurredFields = { ...state.blurredFields, ...newBlurredFields };
     return { ...state, blurredFields };
   },

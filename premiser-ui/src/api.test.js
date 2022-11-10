@@ -1,6 +1,3 @@
-import "core-js/modules/es.promise"
-// import Promise from "core-js/es/promise"
-
 const axiosInstance = {request: jest.fn()}
 import Axios from 'axios'
 Axios.create = () => axiosInstance
@@ -10,22 +7,18 @@ beforeEach(() => {
 })
 
 describe('api', () => {
-  test('request', () => {
+  test('request', async () => {
     const propositions = [
       { id: 1, text: 'a proposition' },
       { id: 2, text: 'another proposition' }
     ]
-    return Promise.all([import('./api')])
-      .then(([api]) => {
+    const api = await import('./api')
+    axiosInstance.request.mockImplementation(() => Promise.resolve({
+      data: propositions
+    }))
 
-        axiosInstance.request.mockImplementation(() => Promise.resolve({
-          data: propositions
-        }))
+    const result = await api.request({endpoint: 'blah'})
 
-        return api.request({endpoint: 'blah'})
-      })
-      .then( (result) => {
-        expect(result).toEqual(propositions)
-      })
+    expect(result).toEqual(propositions)
   })
 })

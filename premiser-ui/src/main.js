@@ -1,3 +1,4 @@
+/* globals process require */
 // Babel runtime dependencies
 import "core-js/stable"
 import "regenerator-runtime/runtime"
@@ -20,6 +21,11 @@ import sentryInit from './sentryInit'
 
 if (config.sentry.enabled && cookieConsent.isAccepted(ERROR_REPORTING)) {
   sentryInit()
+}
+
+if (['development', 'test'].indexOf(process.env.NODE_ENV) > -1) {
+  const { worker } = require('./mock-requests/worker')
+  worker.start()
 }
 
 momentDurationFormatSetup(moment)

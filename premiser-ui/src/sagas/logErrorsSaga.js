@@ -32,8 +32,7 @@ export function* logErrors() {
     // Sometimes we wrap the same exception in multiple actions, such as callApiResponse and then fetchPropositions.response
     // So don't log the same error multiple times
     if (!find(loggedErrors, e => e === error)) {
-      // TODO mutating the store here.
-      loggedErrors.push(error)
+      yield put(errors.logError({error}))
       const identifierKeys = pick(error, customHeaderKeys.identifierKeys)
       const options = isEmpty(identifierKeys) ? undefined : {extra: identifierKeys}
       logger.exception(error, options)

@@ -52,9 +52,6 @@ const editorType = EditorTypes.REGISTRATION_CONFIRMATION
 export default function RegistrationConfirmationPage() {
   const location = useLocation()
   const registrationCodeParam = get(queryString.parse(location.search), 'registrationCode')
-  if (!registrationCodeParam) {
-    return <span>"Missing registration code"</span>
-  }
 
   if (isArray(registrationCodeParam)) {
     logger.error(
@@ -67,6 +64,9 @@ export default function RegistrationConfirmationPage() {
 
   const dispatch = useAppDispatch()
   useEffect(() => {
+    if (!registrationCode) {
+      return
+    }
     dispatch(api.checkRegistration(registrationCode))
     dispatch(
       editors.beginEdit(editorType, editorId, makeRegistrationConfirmation({registrationCode})),
@@ -79,8 +79,11 @@ export default function RegistrationConfirmationPage() {
   const didCheckRegistration = useAppSelector(selectDidCheckRegistration)
   const apiErrorCode = useAppSelector(selectRegistrationErrorCode)
 
+  if (!registrationCode) {
+    return makePage(undefined, <span className="error-message">Missing registration code</span>)
+  }
   if (!editorState) {
-    return <CircularProgress id={editorId} />
+    return makePage(undefined, <CircularProgress id={editorId} />)
   }
 
   const isSubmitting = get(editorState, 'isSaving')
@@ -118,9 +121,6 @@ export default function RegistrationConfirmationPage() {
       subtitle =
         apiErrorCode &&
         subtitleByRegistrationErrorCode[apiErrorCode as keyof typeof subtitleByRegistrationErrorCode]
-    } else {
-      subtitle = 'Unknown error'
-      logger.error(`Unsupported subtitleByRegistrationErrorCode ApiErrorCode: ${apiErrorCode}`)
     }
   }
 
@@ -312,7 +312,7 @@ export default function RegistrationConfirmationPage() {
             primary={isValid}
             type="submit"
             children="Register"
-            disabled={isSubmitting}
+            disabled={!isValid || isSubmitting}
             title={submitButtonTitle}
             className={cn({'md-btn--raised-disabled': !isValid, 'md-text--disabled': !isValid})}
           />
@@ -336,46 +336,51 @@ export default function RegistrationConfirmationPage() {
       apiErrorMessage =
         apiErrorCode &&
         registrationErrorMessageByCode[apiErrorCode as keyof typeof registrationErrorMessageByCode]
-    } else {
-      apiErrorMessage = 'Unknown error'
-      logger.error(`Unsupported registrationErrorMessageByCode ApiErrorCode: ${apiErrorCode}`)
     }
   }
 
   const formWithNotice = (
-    <React.Fragment>
+    <>
       <CardText>Please enter the following to complete your registration</CardText>
       {validationErrorMessage && (
         <CardText className="error-message">{validationErrorMessage}</CardText>
       )}
       {form}
-    </React.Fragment>
+    </>
   )
+  const cardContents = (
+    <>
+      {!didCheckRegistration && (
+        <>
+          Checking confirmation code…
+          <CircularProgress id="checking-registration-code-progress" />
+        </>
+      )}
+      {didCheckRegistration && !isConfirmed && apiErrorMessage}
+      {didCheckRegistration && !isConfirmed && apiErrorMessage ? apiErrorMessage : formWithNotice}
+      {isConfirmed && confirmedMessage}
+    </>
+  )
+  return makePage(subtitle, cardContents)
+}
 
-  return (
-    <div id="register-page">
-      <Helmet>
-        <title>Complete Registration — Howdju</title>
-      </Helmet>
-      <div className="md-grid">
-        <div className="md-cell md-cell--12">
-          <Card>
-            <CardTitle title="Complete Registration" subtitle={subtitle} />
-            {!didCheckRegistration && (
-              <CardText>
-                Checking confirmation code…
-                <CircularProgress id="checking-registration-code-progress" />
-              </CardText>
-            )}
-            {didCheckRegistration && !isConfirmed && apiErrorCode && apiErrorMessage}
-            {didCheckRegistration && !isConfirmed && !apiErrorCode && formWithNotice}
-            {isConfirmed && confirmedMessage}
-          </Card>
-        </div>
+const makePage = (subtitle: string | undefined, cardContents: JSX.Element) => (
+  <div id="register-page">
+    <Helmet>
+      <title>Complete Registration — Howdju</title>
+    </Helmet>
+    <div className="md-grid">
+      <div className="md-cell md-cell--12">
+        <Card>
+          <CardTitle title="Complete Registration" subtitle={subtitle} />
+          <CardText>
+            {cardContents}
+          </CardText>
+        </Card>
       </div>
     </div>
-  )
-}
+  </div>
+)
 
 const subtitleByRegistrationErrorCode = {
   [apiErrorCodes.ENTITY_NOT_FOUND]: 'Registration not found',
