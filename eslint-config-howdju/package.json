@@ -14,10 +14,6 @@
   "license": "UNLICENSED",
   "homepage": "https://bitbucket.org/howdju/howdju#readme",
   "peerDependencies": {
-    "eslint": ">= 3",
-    "eslint-plugin-flowtype": ">= 5"
-  },
-  "devDependencies": {
-    "flow-bin": "^0.150.1"
+    "eslint": ">= 3"
   }
 }

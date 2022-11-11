@@ -456,7 +456,6 @@ Cat meeting design notes:
 ## Tooling
 * Consider copying this
   * https://github.com/react-boilerplate/react-boilerplate
-* https://flow.org/
 
 ## 0.2 (others can use it)
 

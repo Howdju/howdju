@@ -258,7 +258,7 @@ yarn upgrade-interactive
 ### Doing something in each workspace
 
 ```shell
-yarn workspaces foreach -Av exec bash -c 'yarn add --dev flow-bin'
+yarn workspaces foreach -Av exec bash -c 'ls'
 ```
 
 ### Adding a new lambda

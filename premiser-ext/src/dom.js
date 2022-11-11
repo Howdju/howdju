@@ -126,7 +126,7 @@ export function insertNodeBefore(node, refNode) {
   refNode.parentNode.insertBefore(node, refNode)
 }
 
-export function getPreviousLeafNode(node: Node) {
+export function getPreviousLeafNode(node) {
   // previousSibling is null for first child of a node
   while (!node.previousSibling) {
     node = node.parentNode

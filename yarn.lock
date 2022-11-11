@@ -2019,17 +2019,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-flow@npm:^7.12.13":
-  version: 7.12.13
-  resolution: "@babel/plugin-syntax-flow@npm:7.12.13"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.12.13
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 0edfd8d0a35df4d93bd5e9f859a420dd43295eaf14e4aef9bef76ce52cdbe0b57126d5b93197891357b94b4dcf587795efafb90eaf4a8737ae6e1b3020c904b9
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-syntax-function-bind@npm:^7.12.13":
   version: 7.12.13
   resolution: "@babel/plugin-syntax-function-bind@npm:7.12.13"
@@ -2672,18 +2661,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 589f65e8da13c710ee37ba01b6cfbeaa8ea2ee4bc150a1c3739403b78deeff43da766152014e74dda5c04ab14e3ad354c52dbb008f999bc3449a09e44032d216
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-transform-flow-strip-types@npm:^7.13.0":
-  version: 7.13.0
-  resolution: "@babel/plugin-transform-flow-strip-types@npm:7.13.0"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.13.0
-    "@babel/plugin-syntax-flow": ^7.12.13
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: f15fe806d33705344bcef978c69add12e5e1ccfcf75c4bce6bf1100f90e858e5b40afc333aedf4aaaff0170cd8187a86df7168e59823ec883261bda2535773ba
   languageName: node
   linkType: hard
 
@@ -3860,19 +3837,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 4417293f64d171bd4f063b2acdf7e88850ef15e1c72b4730798f7feb813785e1318bad6ae4c6bdb8d78b43a349be3e343e9d7902dc7a5b95a91abd53efe14904
-  languageName: node
-  linkType: hard
-
-"@babel/preset-flow@npm:^7.13.13":
-  version: 7.13.13
-  resolution: "@babel/preset-flow@npm:7.13.13"
-  dependencies:
-    "@babel/helper-plugin-utils": ^7.13.0
-    "@babel/helper-validator-option": ^7.12.17
-    "@babel/plugin-transform-flow-strip-types": ^7.13.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: c90b30333d9d4c3fd9f2bc38037c65de722b85d6ce670f5f6593a15075c3af858de1215995e059a34b741c63ea25a3ef8407481cfe6bc25f363485df785dd03e
   languageName: node
   linkType: hard
 
@@ -10447,8 +10411,6 @@ __metadata:
     elasticsearch: ^15.1.1
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
-    flow-bin: ^0.150.1
     howdju-service-common: ^1.0.0
     zlib: ^1.0.5
   languageName: unknown
@@ -12174,7 +12136,6 @@ __metadata:
   dependencies:
     bluebird: ^3.5.2
     elasticsearch: ^15.1.1
-    flow-bin: ^0.150.1
     ramda: ^0.25.0
   languageName: unknown
   linkType: soft
@@ -12887,11 +12848,8 @@ __metadata:
 "eslint-config-howdju@^1.0.0, eslint-config-howdju@workspace:eslint-config-howdju":
   version: 0.0.0-use.local
   resolution: "eslint-config-howdju@workspace:eslint-config-howdju"
-  dependencies:
-    flow-bin: ^0.150.1
   peerDependencies:
     eslint: ">= 3"
-    eslint-plugin-flowtype: ">= 5"
   languageName: unknown
   linkType: soft
 
@@ -12939,18 +12897,6 @@ __metadata:
   peerDependencies:
     eslint: ">=2.0.0"
   checksum: 8c64cf0ba7684063d8ac8c55f46de6f4fa6b450f0dc7e4e91c392b819caf5f3ba8bc470cd764ea1b082d21150d941f984b06a923ca51affe8c5755bb8761b852
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-flowtype@npm:^5.7.2":
-  version: 5.7.2
-  resolution: "eslint-plugin-flowtype@npm:5.7.2"
-  dependencies:
-    lodash: ^4.17.15
-    string-natural-compare: ^3.0.1
-  peerDependencies:
-    eslint: ^7.1.0
-  checksum: 6749e5952003e7d9164c214552b4c91b9b34b3e7407e9cb2655ab3e627ddbfbc8b711549a6385cd68285599c8dbda2f6dc0e5eefd7fd770c3a1e06748334a9b5
   languageName: node
   linkType: hard
 
@@ -14163,33 +14109,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flow-bin@npm:^0.150.1":
-  version: 0.150.1
-  resolution: "flow-bin@npm:0.150.1"
-  bin:
-    flow: cli.js
-  checksum: 2802190482ba4436f0ed0d6bea8648001a0635334d209ca0e66e3e63cd0cb255b6cc881a96eefb7b915317914d952568195b911116ce6612723f904b9567e3ea
-  languageName: node
-  linkType: hard
-
-"flow-bin@npm:^0.151.0":
-  version: 0.151.0
-  resolution: "flow-bin@npm:0.151.0"
-  bin:
-    flow: cli.js
-  checksum: 6d1b7b52716600d5e38dab7c5ff691ee8f51876ab02d1441f7873406d68273990abe80b1c5910dc0d320eae8757e5d9924b372a99acd4d12b661076a1eb621b8
-  languageName: node
-  linkType: hard
-
-"flow-bin@npm:^0.152.0":
-  version: 0.152.0
-  resolution: "flow-bin@npm:0.152.0"
-  bin:
-    flow: cli.js
-  checksum: 1a55575afdfdfc2b3a55051722e2c4ece058857042761a8a5af3661145727780fb5bcdaa05e0f1620a3335c35c597e1f4f503765254cabeeb594372ce846961d
-  languageName: node
-  linkType: hard
-
 "flow-parser@npm:0.*":
   version: 0.164.0
   resolution: "flow-parser@npm:0.164.0"
@@ -15374,8 +15293,6 @@ __metadata:
   dependencies:
     eslint: ^7.27.0
     eslint-config-howdju: "workspace:eslint-config-howdju"
-    eslint-plugin-flowtype: ^5.7.2
-    flow-bin: ^0.151.0
     howdju-common: ^1.0.0
     jest: ^29.3.1
     typescript: ^4.8.4
@@ -15407,9 +15324,7 @@ __metadata:
     dom-anchor-text-quote: ^4.0.2
     eslint: ^7.23.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-react: ^7.23.2
-    flow-bin: ^0.150.1
     glamor: ^2.20.40
     howdju-client-common: ^1.0.0
     howdju-common: ^1.0.0
@@ -15428,8 +15343,6 @@ __metadata:
   dependencies:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
-    flow-bin: ^0.150.1
     howdju-common: ^1.0.0
     jest: ^29.3.1
     lodash: ^4.17.21
@@ -15447,8 +15360,6 @@ __metadata:
     ajv-formats: ^2.0.2
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
-    flow-bin: ^0.150.1
     howdju-test-common: ^1.0.0
     jest: ^29.3.1
     lodash: ^4.17.4
@@ -15464,7 +15375,6 @@ __metadata:
     argparse: ^1.0.10
     bluebird: ^3.5.2
     eslint: ^7.25.0
-    flow-bin: ^0.150.1
     ini: ^1.3.5
   languageName: unknown
   linkType: soft
@@ -15478,7 +15388,6 @@ __metadata:
     cross-env: ^7.0.3
     eslint: ^7.27.0
     eslint-config-howdju: "workspace:eslint-config-howdju"
-    flow-bin: ^0.152.0
     howdju-ops: "workspace:howdju-ops"
     howdju-service-common: "workspace:howdju-service-common"
     howdju-test-common: "workspace:howdju-test-common"
@@ -15554,16 +15463,13 @@ __metadata:
     "@babel/plugin-syntax-dynamic-import": ^7.8.3
     "@babel/plugin-syntax-import-meta": ^7.10.4
     "@babel/preset-env": ^7.20.2
-    "@babel/preset-flow": ^7.13.13
     "@babel/preset-typescript": ^7.18.6
     babel-jest: ^29.3.1
     browserslist: ^4.17.0
     debug: ^4.3.4
     eslint: ^7.23.0
-    eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-promise: ^5.1.0
     eslint-plugin-react: ^7.23.1
-    flow-bin: ^0.150.1
     jest: ^29.3.1
   languageName: unknown
   linkType: soft
@@ -15575,9 +15481,7 @@ __metadata:
     aws-sdk: ^2.108.0
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-promise: ^5.1.0
-    flow-bin: ^0.150.1
     howdju-test-common: ^1.0.0
     jest: ^26.6.3
     lodash: ^4.17.4
@@ -15598,8 +15502,6 @@ __metadata:
     cryptohat: ^1.0.1
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
-    flow-bin: ^0.150.1
     howdju-common: ^1.0.0
     howdju-test-common: ^1.0.0
     jest: ^29.3.1
@@ -15623,8 +15525,6 @@ __metadata:
   dependencies:
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
-    flow-bin: ^0.150.1
     jest: ^29.3.1
     sinon: ^10.0.0
   languageName: unknown
@@ -19078,7 +18978,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "justification-scorer@workspace:premiser-processing/lambda-functions/justification-scorer"
   dependencies:
-    flow-bin: ^0.150.1
     pg: ^7.2.0
   languageName: unknown
   linkType: soft
@@ -22969,9 +22868,7 @@ __metadata:
     esbuild: ^0.11.19
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
     express: ^4.15.2
-    flow-bin: ^0.150.1
     howdju-common: ^1.0.0
     howdju-ops: ^1.0.0
     howdju-service-common: ^1.0.0
@@ -22998,8 +22895,6 @@ __metadata:
     aws-sdk: ^2.307.0
     eslint: ^7.25.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
-    flow-bin: ^0.150.1
     gulp: ^3.9.1
     gulp-install: ^1.1.0
     gulp-zip: ^4.0.0
@@ -23064,12 +22959,10 @@ __metadata:
     esbuild: ^0.15.10
     eslint: ^7.23.0
     eslint-config-howdju: ^1.0.0
-    eslint-plugin-flowtype: ^5.7.2
     eslint-plugin-jest-dom: ^4.0.2
     eslint-plugin-react: ^7.3.0
     eslint-plugin-react-hooks: ^4.6.0
     file-loader: ^6.2.0
-    flow-bin: ^0.150.1
     history: ^4.10.1
     howdju-ajv-sourced: ^1.0.0
     howdju-client-common: ^1.0.0
@@ -23358,7 +23251,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "proposition-tag-scorer@workspace:premiser-processing/lambda-functions/proposition-tag-scorer"
   dependencies:
-    flow-bin: ^0.150.1
     pg: ^7.2.0
   languageName: unknown
   linkType: soft
@@ -26304,13 +26196,6 @@ resolve@^2.0.0-next.3:
     char-regex: ^1.0.2
     strip-ansi: ^6.0.0
   checksum: ce85533ef5113fcb7e522bcf9e62cb33871aa99b3729cec5595f4447f660b0cefd542ca6df4150c97a677d58b0cb727a3fe09ac1de94071d05526c73579bf505
-  languageName: node
-  linkType: hard
-
-"string-natural-compare@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "string-natural-compare@npm:3.0.1"
-  checksum: 65910d9995074086e769a68728395effbba9b7186be5b4c16a7fad4f4ef50cae95ca16e3e9086e019cbb636ae8daac9c7b8fe91b5f21865c5c0f26e3c0725406
   languageName: node
   linkType: hard
 
