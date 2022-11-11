@@ -6,9 +6,9 @@ const outdent = require('outdent')
 
 const {
   commonPaths,
-  entityErrorCodes,
+  EntityErrorCodes,
   EntityTypes,
-  makeUser,
+  makeUserRegistration,
   momentAdd,
   newImpossibleError,
   schemaIds,
@@ -63,7 +63,7 @@ exports.RegistrationService = class RegistrationService {
   async checkRequestForCode(registrationCode) {
     const now = utcNow()
     const registration = await this.registrationRequestsDao.readForCode(registrationCode)
-    await checkRegistrationRequestValidity(registration, now)
+    await checkRegistrationRequestValidity(this, registration, now)
     return registration.email
   }
 
@@ -71,7 +71,7 @@ exports.RegistrationService = class RegistrationService {
     const now = utcNow()
     const registrationCode = registrationConfirmation.registrationCode
     const registrationRequest = await this.registrationRequestsDao.readForCode(registrationCode)
-    await checkRegistrationRequestValidity(registrationRequest, now)
+    await checkRegistrationRequestValidity(this, registrationRequest, now)
     // TODO this is a race condition right now with creating the registration based upon the username/email
     await checkRegistrationConfirmationConflicts(this, registrationConfirmation)
     await consumeRegistration(this, registrationCode)
@@ -84,25 +84,28 @@ exports.RegistrationService = class RegistrationService {
 /** Returns whether the registration should continue */
 async function processRegistrationConflicts(self, registrationRequest) {
   const {email} = registrationRequest
-  const entityConflicts = {}
+  const fieldErrors = {}
   if (await self.usersService.isEmailInUse(email)) {
     if (self.config.doConcealEmailExistence) {
       await sendExistingAccountNotificationEmail(self, registrationRequest)
       return false
     }
-    entityConflicts.email = {
-      code: entityErrorCodes.EMAIL_TAKEN,
+    fieldErrors.email = [{
+      code: EntityErrorCodes.EMAIL_TAKEN,
       value: email,
-    }
+    }]
   }
   if (await self.registrationRequestsDao.isEmailInUse(email)) {
-    entityConflicts.email = {
-      code: entityErrorCodes.EMAIL_TAKEN,
+    fieldErrors.email = [{
+      code: EntityErrorCodes.EMAIL_TAKEN,
       value: email
-    }
+    }]
   }
-  if (keys(entityConflicts).length > 0) {
-    throw new EntityConflictError(entityConflicts)
+  if (keys(fieldErrors).length > 0) {
+    throw new EntityConflictError({
+      hasErrors: true,
+      fieldErrors,
+    })
   }
 
   return true
@@ -185,7 +188,7 @@ async function sendExistingAccountNotificationEmail(self, registrationRequest) {
   await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
 }
 
-async function checkRegistrationRequestValidity(registrationRequest, now) {
+async function checkRegistrationRequestValidity(self, registrationRequest, now) {
   if (!registrationRequest) {
     throw new EntityNotFoundError(EntityTypes.REGISTRATION_REQUEST)
   }
@@ -195,21 +198,25 @@ async function checkRegistrationRequestValidity(registrationRequest, now) {
   if (now.isSameOrAfter(registrationRequest.expires)) {
     // We could delete registration here, but then the next time the user tries the link they would get a "missing" error
     //  which would be confusing.  So instead cleanup old registrations on a schedule?
+    self.logger.debug(`now (${now.format()}) ≥ registrationRequest.expires (${registrationRequest.expires}))`)
     throw new RegistrationExpiredError()
   }
 }
 
 async function checkRegistrationConfirmationConflicts(self, registrationConfirmation) {
   const {username} = registrationConfirmation
-  const entityConflicts = {}
+  const fieldErrors = {}
   if (await self.usersService.isUsernameInUse(username)) {
-    entityConflicts.username = {
-      code: entityErrorCodes.USERNAME_TAKEN,
+    fieldErrors.username = [{
+      code: EntityErrorCodes.USERNAME_TAKEN,
       value: username,
-    }
+    }]
   }
-  if (keys(entityConflicts).length > 0) {
-    throw new EntityConflictError(entityConflicts)
+  if (keys(fieldErrors).length > 0) {
+    throw new EntityConflictError({
+      hasErrors: true,
+      fieldErrors,
+    })
   }
 }
 
@@ -224,7 +231,7 @@ async function consumeRegistration(self, registrationCode) {
 
 async function registerUser(self, registration, registrationConfirmation, now) {
   const passwordHash = await bcrypt.hash(registrationConfirmation.password, self.config.auth.bcrypt.saltRounds)
-  const user = makeUser({
+  const user = makeUserRegistration({
     username: registrationConfirmation.username,
     email: registration.email,
     shortName: registrationConfirmation.shortName,

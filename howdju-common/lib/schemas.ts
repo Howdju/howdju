@@ -262,7 +262,7 @@ const writQuote = {
       maxLength: schemaSettings.writQuoteQuoteTextMaxLength,
       description: "The text quoted from the media.",
     },
-    writ: { "$ref": "/schemas/writ.schema.json" },
+    writ: { "$ref": "https://howdju.com/schemas/writ.schema.json" },
     urls: {
       description: 'URLs where users can find the quote.',
       type: 'array',
@@ -350,6 +350,19 @@ export const schemas = {
   writ,
   writQuote,
 } as const;
+
+export const schemasById = {
+  [accountSettings['$id']]: accountSettings,
+  [contentReport['$id']]: contentReport,
+  [passwordResetRequest['$id']]: passwordResetRequest,
+  [passwordResetConfirmation['$id']]: passwordResetConfirmation,
+  [persorg['$id']]: persorg,
+  [registrationRequest['$id']]: registrationRequest,
+  [registrationConfirmation['$id']]: registrationConfirmation,
+  [user['$id']]: user,
+  [writ['$id']]: writ,
+  [writQuote['$id']]: writQuote,
+} as const
 
 export type Schema = typeof schemas[keyof typeof schemas]
 export type SchemaId = typeof schemas[keyof typeof schemas]['$id']

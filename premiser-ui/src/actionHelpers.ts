@@ -25,7 +25,7 @@ import {
   actions,
 } from "howdju-client-common";
 
-import { AppDispatch } from "./store";
+import { AppDispatch } from "./setupStore";
 
 export const str = actions.str;
 
@@ -73,18 +73,23 @@ export const mapActionCreatorGroupToDispatchToProps =
  * redux-actions's `handleActions` helper accepts separate `next` and `throw` reducers. It will call
  * the `throw` reducer if the action's `error` field `=== true`.
  * (https://github.com/redux-utilities/redux-actions/blob/4bd68b11b841718e64999d214544d6a87337644e/src/handleAction.js#L33)
+ *
+ * If an action creator is called with an error object, it is set as the payload and the payload
+ * creator method (i.e. our `prepare`) will not be called.
+ * See https://redux-actions.js.org/api/createaction#createactiontype-payloadcreator
  */
 function reduxActionsCompatiblePrepare<P>(
   prepare: PrepareAction<P>
-): PrepareAction<P> {
+): PrepareAction<P | Error> {
   return function (...args: any[]) {
-    const prepared = prepare(...args)
-    if (prepared.payload instanceof Error) {
+    if (args.length > 0 && args[0] instanceof Error) {
       return {
-        ...prepared,
+        // Pass the error as the payload, to be compatible with redux-actions createAction
+        payload: args[0],
         error: true,
       };
     }
+    const prepared = prepare(...args)
     return prepared;
   };
 }

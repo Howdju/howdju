@@ -39,6 +39,9 @@ import {
   WritQuote,
   RecursiveObject,
   AccountSettings,
+  RegistrationConfirmation,
+  RegistrationRequest,
+  BespokeValidationErrors, EmptyBespokeValidationErrors,
 } from "howdju-common";
 
 import {
@@ -58,6 +61,7 @@ import {
 import { logger } from "@/logger";
 import { EditorId, EntityFactory, PropertyChanges } from "@/types";
 import { JustificationEditModel } from "howdju-client-common";
+import { keys } from "lodash";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};
@@ -96,10 +100,10 @@ export const EntityTypeDescriptions = {
   [EditorTypes.WRIT_QUOTE]: "WritQuote",
 };
 
-type ApiFieldsErrors = RecursiveObject<string>;
+// Whether the user has interacted with a control
+export type BlurredFields = RecursiveObject<boolean>
+// Whether the user has changed the value of a control
 export type DirtyFields = RecursiveObject<boolean>;
-export type EditorFieldsErrors = RecursiveObject<string>;
-
 
 interface PropositionJustificationsEditEntity extends Entity {
   proposition: Proposition;
@@ -118,12 +122,15 @@ export type EditorEntity =
   | PropositionJustificationsEditEntity
   | WritQuote
   | AccountSettings
+  | RegistrationRequest
+  | RegistrationConfirmation
 
 export interface EditorState {
   editEntity: EditorEntity | null;
-  errors: EditorFieldsErrors | null;
+  errors: BespokeValidationErrors;
   isSaving: boolean;
   isSaved: boolean;
+  blurredFields: BlurredFields;
   // TODO make EditorState generic so that dirtyFields knows the actual editEntity fields?
   dirtyFields: DirtyFields;
   wasSubmitAttempted: boolean;
@@ -131,9 +138,10 @@ export interface EditorState {
 
 const defaultEditorState: EditorState = {
   editEntity: null,
-  errors: null,
+  errors: EmptyBespokeValidationErrors,
   isSaving: false,
   isSaved: false,
+  blurredFields: {},
   dirtyFields: {},
   wasSubmitAttempted: false,
 };
@@ -143,7 +151,8 @@ interface ErrorPayload {
     errorType: UiErrorType;
     body: {
       errorCode: ApiErrorCode;
-      errors: ApiFieldsErrors;
+      // TODO(26): replace with `errors: BespokeValidationErrors` so that the type covers the entire property.
+      errors: {[key: string]: BespokeValidationErrors};
     };
   };
 }
@@ -177,7 +186,9 @@ const editorErrorReducer =
     ) {
       return state;
     }
-    const errors = responseBody.errors[errorKey] as EditorFieldsErrors;
+    // TODO(26) replace this editorErrorReducer with the default reducer behavior. Editor error reducers
+    // shouldn't be plucking BespokeValidationErrors off of the response, since the errors come as a
+    const errors = responseBody.errors[errorKey];
     return { ...state, errors, isSaving: false };
   };
 
@@ -212,7 +223,15 @@ const defaultEditorActions = {
   [str(editors.beginEdit)]: (state: EditorState, action: AnyAction) => {
     const { entity } = action.payload;
     const editEntity = cloneDeep(entity);
-    return { ...state, editEntity, errors: null };
+    return { ...state, editEntity };
+  },
+  [str(editors.blurField)]: (
+    state: EditorState,
+    action: Action<{fieldName: string}>,
+  ) => {
+    const newBlurredFields = {[action.payload.fieldName]: true}
+    const blurredFields = { ...state.blurredFields, ...newBlurredFields };
+    return { ...state, blurredFields };
   },
   [str(editors.propertyChange)]: (
     state: EditorState,
@@ -262,7 +281,7 @@ const defaultEditorActions = {
   [str(editors.commitEdit)]: (state: EditorState) => ({
     ...state,
     isSaving: true,
-    errors: null,
+    errors: EmptyBespokeValidationErrors,
     wasSubmitAttempted: true,
   }),
   [str(editors.commitEdit.result)]: {
@@ -277,7 +296,13 @@ const defaultEditorActions = {
       if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
         const responseBody = sourceError.body;
         if (get(responseBody, "errorCode") === apiErrorCodes.VALIDATION_ERROR) {
-          return { ...state, isSaving: false, errors: responseBody.errors };
+          const errorKeys = keys(responseBody.errors)
+          if (errorKeys.length !== 1) {
+            throw newProgrammingError("The default reducer can only handle a single top-level error key")
+          }
+          const errorKey = errorKeys[0]
+          const errors = responseBody.errors[errorKey]
+          return { ...state, isSaving: false, errors };
         }
       }
 

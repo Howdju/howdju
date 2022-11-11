@@ -42,5 +42,5 @@ export const apiErrorCodes = {
   ROUTE_NOT_FOUND: 'ROUTE_NOT_FOUND',
 
   UNEXPECTED_ERROR: 'UNEXPECTED_ERROR',
-}
+} as const
 export type ApiErrorCode = typeof apiErrorCodes[keyof typeof apiErrorCodes]

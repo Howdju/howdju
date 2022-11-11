@@ -20,5 +20,12 @@ exports.httpStatusCodes = {
   /** The requested resource, or some required resource, was not found */
   NOT_FOUND: 404,
 
+  /**
+   * The request conflicts with the server state.
+   *
+   * E.g., tried to create a user having the same username.
+   */
+  CONFLICT: 409,
+
   ERROR: 500,
 }

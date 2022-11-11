@@ -4,6 +4,9 @@ module.exports = {
     "@babel/preset-flow",
     "@babel/preset-typescript",
   ],
+  ignore: [
+    /\/node_modules\/(?!(@grrr\/cookie-consent|@grrr\/utils))/,
+  ],
   plugins: [
     // Stage 1
     "@babel/plugin-proposal-export-default-from",
@@ -31,6 +34,7 @@ module.exports = {
     ["@babel/plugin-proposal-class-properties", { "loose": true }],
     // loose must be the same as for plugin-proposal-class-properties
     ["@babel/plugin-proposal-private-methods", { "loose": true }],
+    ["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
     "@babel/plugin-proposal-json-strings",
 
     // I think this is already supported in all major browsers
@@ -39,7 +43,8 @@ module.exports = {
   env: {
     test: {
       presets: [
-        ["@babel/preset-env", {"targets": {"node": "current"}}]
+        ["@babel/preset-env", {"targets": {"node": "current"}}],
+        "@babel/preset-typescript",
       ],
     }
   },

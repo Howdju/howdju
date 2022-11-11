@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2015",
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
@@ -18,10 +18,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,  // Prevents internal @types/node conflicts like in #60
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
   },
   "exclude": [
     "node_modules",
     "**/node_modules",
+    "**/dist",
   ],
 }

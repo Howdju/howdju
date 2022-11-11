@@ -4,7 +4,7 @@ import {
   inIframe,
 } from "howdju-client-common"
 
-import { AppDispatch } from "./store"
+import { AppDispatch } from "./setupStore"
 import { MouseEvent } from "react"
 
 export function makeExtensionHighlightOnClickWritQuoteUrlCallback(dispatch: AppDispatch) {

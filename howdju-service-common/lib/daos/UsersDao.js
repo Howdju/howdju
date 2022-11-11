@@ -18,6 +18,7 @@ exports.UsersDao = class UsersDao extends BaseDao {
   createUser(user, creatorUserId, now) {
     const args = [
       user.email,
+      user.username,
       user.shortName,
       user.longName,
       user.phoneNumber,
@@ -32,10 +33,10 @@ exports.UsersDao = class UsersDao extends BaseDao {
     return this.database.query(
       'createUser',
       `
-        insert into users 
-            (email, short_name, long_name, phone_number, creator_user_id, is_active, accepted_terms,
+        insert into users
+            (email, username, short_name, long_name, phone_number, creator_user_id, is_active, accepted_terms,
              affirmed_majority_consent, affirmed_13_years_or_older, affirmed_not_gdpr, created)
-        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning *
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning *
       `,
       args
     )

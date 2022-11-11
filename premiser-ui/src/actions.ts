@@ -167,6 +167,14 @@ export const editors = {
       entity,
     })
   ),
+  blurField: createAction(
+    "EDITORS/BLUR_FIELD",
+    (editorType: EditorType, editorId: EditorId, fieldName: string) => ({
+      editorType,
+      editorId,
+      fieldName,
+    })
+  ),
   propertyChange: createAction(
     "EDITORS/PROPERTY_CHANGE",
     (
@@ -369,5 +377,6 @@ export const autocompletes = {
 };
 
 export const errors = {
+  logError: createAction("ERRORS/LOG_ERROR", ({error}: {error: Error}) => ({error})),
   clearLoggedErrors: createAction("ERRORS/CLEAR_LOGGED_ERRORS"),
 };

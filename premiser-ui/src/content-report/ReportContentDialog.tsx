@@ -8,7 +8,7 @@ import { editors } from "../actions"
 import { EditorTypes } from "../reducers/editors"
 import ContentReportEditorFields from "./ContentReportEditorFields"
 import { combineIds } from "../viewModels"
-import { RootState } from "@/store"
+import { RootState } from "@/setupStore"
 import { useAppSelector } from "@/hooks"
 import withEditor from "@/editors/withEditor"
 

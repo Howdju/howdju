@@ -263,3 +263,44 @@ export interface ContentReport extends Entity {
  *
  * Encodes sorting, offset, etc. */
 export type ContinuationToken = string
+
+/**
+ *  A token authorizing clients to take actions as users.
+ *
+ * Clients must keep this secret, they must expire them before too long, and
+ * we must enforce the expirations server-side.
+ */
+export type AuthToken = string
+
+/**
+ * A timestamp .
+ *
+ * I think this is an ISO 8601 datetime format
+ *
+ * Example: 2022-11-25T17:43:19.876Z */
+export type DatetimeString = string
+
+/** A user of the system */
+export interface User extends Entity {
+  email: string,
+  username: string,
+  longName: string,
+  shortName: string,
+  created: DatetimeString,
+  isActive: boolean,
+  externalIds: {
+    googleAnalyticsId: string,
+    heapAnalyticsId: string,
+    mixpanelId: string,
+    sentryId: string,
+    smallchatId: string,
+  },
+}
+
+/** Additional properties that we collect upon user creation, but that we don't expose later. */
+export interface UserSubmissionModel extends User {
+  acceptedTerms: boolean;
+  affirmedMajorityConsent: boolean;
+  affirmed13YearsOrOlder: boolean;
+  affirmedNotGdpr: boolean;
+}

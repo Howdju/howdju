@@ -9,7 +9,7 @@ import { editors } from "@/actions";
 import WritQuoteEditor from "@/editors/WritQuoteEditor";
 import get from "lodash/get";
 import { EditorTypes } from "@/reducers/editors";
-import { RootState } from "@/store";
+import { RootState } from "@/setupStore";
 import { isArray } from "lodash";
 import HowdjuHelmet from "@/Helmet";
 import t, { CREATE_ENTITY_SUBMIT_BUTTON_LABEL } from "@/texts";

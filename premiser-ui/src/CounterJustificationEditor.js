@@ -67,6 +67,8 @@ class CounterJustificationEditor extends Component {
     delete rest.editorId
 
 
+    // TODO(26): counter justifications can only have proposition compounds, so we might be able to
+    // get rid of this function call?
     const justificationErrors = translateJustificationErrorsFromFormInput(editEntity, errors)
     const propositionCompoundErrors = get(justificationErrors, 'fieldErrors.basis.fieldErrors.propositionCompound')
     const propositionCompound = get(editEntity, 'basis.propositionCompound')

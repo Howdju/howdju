@@ -10,14 +10,14 @@
   - Username display?
   - Fix homepage?
   - Fix context trail?
-  - Provide better documentation?  (comparison to other sites, use cases, motivation: 
-     "what would a system look like that helped people keep up with increasingly complex information given that 
+  - Provide better documentation?  (comparison to other sites, use cases, motivation:
+     "what would a system look like that helped people keep up with increasingly complex information given that
      there are reasonable disagreements about important facts?" "record fact-checking")
 
 * Pincites
 * Links in extension frame should load in main page
 * Context trail (alignment and appearance of pro/con, counters, compounds)
-* Better source UI: more distinct UI element, verify quote, read page with some library like newspaper for Source info. 
+* Better source UI: more distinct UI element, verify quote, read page with some library like newspaper for Source info.
 * User accounts, pages, notifications
 * Equivalent/similar proposition voting, equivalent proposition justification combination
 * Highlighting justification creator's counter or excerpt under proposition.
@@ -44,9 +44,9 @@
     - writs => sources
     - move source_id from source_excerpt to source_excerpt_paraphrases
     - remove source excerpt type; excerpts all come from sources; anchors determine media type.
-    - convert writ_quote urls to website targets and anchor each using the quote as exact_text 
+    - convert writ_quote urls to website targets and anchor each using the quote as exact_text
 * Simplify SourceExcerpts by showing type based upon browser extension target
-* Simplify UI around clauses by allowing reordering of and addition of proposition/excerpt (two buttons or a popup button with two menu options) clause at end. 
+* Simplify UI around clauses by allowing reordering of and addition of proposition/excerpt (two buttons or a popup button with two menu options) clause at end.
 * Hide justification type select
 
 * When someone highlights something on the web, they might want to:
@@ -92,9 +92,6 @@
 * Recent justifications are the most important activity.  Remove others, or at least move them to top.
 
 
-* Use JSON Schema instead of Joi? https://www.npmjs.com/package/ajv
-
-
 * Support statement justifications
   * Missing
     * StatementUsagesPage
@@ -116,11 +113,11 @@
   * sweep authentication tokens
   * collapse old votes (delete intervening deletions)
   * re-calculate normal text
-  * enforce constraints, 
+  * enforce constraints,
     * justification has root_proposition_id
-    * unique IDs, 
-    * unique proposition text, 
-    * writ quote text, 
+    * unique IDs,
+    * unique proposition text,
+    * writ quote text,
     * writ title
     * writ quote must have writ_id
     * atoms must have an entity
@@ -152,7 +149,7 @@
 * Data science tasks:
   * Clustering users
   * Recognizing propositions phrased as questions
-  * Rewriting propositions phrased as questions as propositions 
+  * Rewriting propositions phrased as questions as propositions
   * Identifying semantically equivalent propositions
   * Identifying negations of propositions (semantically opposite propositions)
   * fact-checking pages
@@ -166,7 +163,7 @@
  * https://github.com/JasonKessler/fakeout
  * https://github.com/BuzzFeedNews/everything
  * https://github.com/genyunus/Detecting_Fake_News
- 
+
 * Update prod DB, update queries to handle deleted, add action logging
 ##
 * Logging: https://www.reddit.com/r/node/comments/26mf7e/winston_logging_replacementalternative/

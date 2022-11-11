@@ -11,20 +11,6 @@ import {
   pages,
 } from '../../actions'
 
-export const registrationConfirmationPage = handleActions({
-  [combineActions(
-    api.checkRegistration.response,
-    api.confirmRegistration.response,
-  )]: {
-    next: (state, action) => ({...state, email: action.payload.email, didCheckRegistration: true, registrationErrorCode: null}),
-    throw: (state, action) =>
-      ({...state, didCheckRegistration: true, registrationErrorCode: get(action, 'payload.body.errorCode')}),
-  },
-}, {
-  didCheckRegistration: false,
-  registrationErrorCode: null,
-})
-
 const passwordResetRequestPageDefaultState = {
   passwordResetRequest: {email: ''},
   duration: null,

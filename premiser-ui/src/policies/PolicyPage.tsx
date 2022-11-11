@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify'
 
 import './PolicyPage.scss'
 import Helmet from "../Helmet"
+import { replace } from 'lodash'
 
 interface Props {
   pageTitle: string
@@ -29,5 +30,5 @@ function processHtml(html: string) {
 const emailRegExp = /<span data-type="email" data-email-user="(.+?)" data-email-domain="(.+?)"><\/span>/g
 
 function processCodes(html: string) {
-  return html.replaceAll(emailRegExp, '$1@$2')
+  return replace(html, emailRegExp, '$1@$2')
 }

@@ -13,9 +13,11 @@ import lowerCase from "lodash/lowerCase";
 import map from "lodash/map";
 import split from "lodash/split";
 import truncate from "lodash/truncate";
+import { TruncateOptions } from "lodash";
 
 import config from "./config";
 import {
+  BespokeValidationErrors,
   SourceExcerpt,
   isFalsey,
   JustificationBasis,
@@ -30,22 +32,20 @@ import {
   PropositionCompound,
   SourceExcerptTypes,
   WritQuote,
-  ModelErrorCode,
   Sentence,
   newUnimplementedError,
   EntityId,
 } from "howdju-common";
-
-import * as characters from "./characters";
-import { justificationSchema, propositionSchema, statementSchema } from "./normalizationSchemas";
-import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
 import {
   JustificationBasisEditModel,
   JustificationEditModel,
   JustificationSubmissionModel,
   SourceExcerptEditModel,
 } from "howdju-client-common";
-import { TruncateOptions } from "lodash";
+
+import * as characters from "./characters";
+import { justificationSchema, propositionSchema, statementSchema } from "./normalizationSchemas";
+import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
 
 export const removePropositionCompoundIds = (
   propositionCompound: PropositionCompound
@@ -179,35 +179,14 @@ export function translateSourceExcerptEditModel(
   }
 }
 
-type FieldSubErrors = {
-  // Errors for fields on this field
-  fieldErrors: FieldErrors
-  // Errors for items in this field (only if this field is an array)
-  itemErrors: FieldSubErrors[]
-}
-type FieldErrors = {
-  // Errors for this field
-  [key: string]: ModelErrorCode[] & FieldSubErrors
-};
-export type ValidationErrors = {
-  version: number;
-  // Whether there are any errors.
-  hasErrors: boolean;
-  // Errors that apply to the entire model
-  modelErrors: ModelErrorCode[];
-  // Errors for individual fields on the model.
-  fieldErrors: FieldErrors;
-};
-
+// TODO(26): the createJustification route currently returns a Joi error, whereas this function
+// expects a BespokeValidationErrors.
 export function translateJustificationErrorsFromFormInput(
   justification: JustificationEditModel,
-  errors: ValidationErrors
+  errors: BespokeValidationErrors
 ) {
   if (!justification || !errors) {
     return errors;
-  }
-  if (errors.version !== 1) {
-    return null;
   }
 
   const justificationErrors = cloneDeep(errors);

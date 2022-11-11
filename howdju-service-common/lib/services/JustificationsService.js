@@ -18,7 +18,7 @@ const {
   isTruthy,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
-  CANNOT_MODIFY_OTHER_USERS_ENTITIES,
+  authorizationErrorCodes,
   ActionTypes,
   ActionTargetTypes,
   newImpossibleError,
@@ -201,7 +201,7 @@ exports.JustificationsService = class JustificationsService extends EntityServic
 
         const creatorUserId = get(justification, 'creator.id')
         if (!creatorUserId || userId !== creatorUserId) {
-          throw new AuthorizationError({modelErrors: [CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
+          throw new AuthorizationError({modelErrors: [authorizationErrorCodes.CANNOT_MODIFY_OTHER_USERS_ENTITIES]})
         }
 
         const created = moment(justification.created)

@@ -1,1 +1,1 @@
-module.exports = require('./searchers')
+export * from './searchers'

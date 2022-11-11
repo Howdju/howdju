@@ -4,13 +4,13 @@ import map from "lodash/map";
 import get from "lodash/get";
 import has from "lodash/has";
 
-import { schemaSettings, Url, WritQuote } from "howdju-common";
+import { BespokeValidationErrors, schemaSettings, Url, WritQuote } from "howdju-common";
 
 import WritTitleAutocomplete from "@/WritTitleAutocomplete";
 import { toErrorText } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
-import { combineIds, combineNames, combineSuggestionsKeys, ValidationErrors } from "@/viewModels";
+import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
 import { DirtyFields } from "@/reducers/editors";
 import {
   ComponentId,
@@ -37,7 +37,7 @@ interface Props {
   onSubmit: OnSubmitCallback;
   onAddUrl: OnClickHandler;
   onRemoveUrl: OnRemoveHandler<Url>;
-  errors: ValidationErrors;
+  errors: BespokeValidationErrors;
   disabled: boolean;
   dirtyFields: DirtyFields
   wasSubmitAttempted: boolean

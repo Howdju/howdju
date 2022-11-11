@@ -20,7 +20,7 @@ import {
 } from "./actions"
 import { DebouncedFunc } from 'lodash'
 import { ComponentId, OnKeyDownCallback, OnPropertyChangeCallback, OnSubmitCallback, PropertyChanges, SuggestionsKey } from './types'
-import { RootState } from './store'
+import { RootState } from './setupStore'
 
 const dataLabel = 'data-label'
 const dataValue = 'data-value'

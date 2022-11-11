@@ -128,7 +128,7 @@ export const makeRegistrationConfirmation = (
     props
   );
 
-export interface User {
+export interface UserRegistration {
   email: string;
   username: string;
   shortName: string;
@@ -140,7 +140,7 @@ export interface User {
   isActive: boolean;
 }
 
-export const makeUser = (props?: Partial<User>): User =>
+export const makeUserRegistration = (props?: Partial<UserRegistration>): UserRegistration =>
   assign(
     {
       email: "",
