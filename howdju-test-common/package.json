@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "lint": "eslint lib/",
+    "lint": "eslint .",
     "test": "jest"
   },
   "dependencies": {

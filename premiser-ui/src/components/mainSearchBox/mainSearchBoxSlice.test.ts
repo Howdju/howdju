@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals';
+import {describe, expect, test} from '@jest/globals'
 import {LocationChangeAction, LOCATION_CHANGE, RouterLocation} from 'connected-react-router'
 import { LocationState, parsePath } from 'history'
 
@@ -19,7 +19,7 @@ describe('mainSearchSlice', () => {
       },
     }
     const newState = mainSearch(initialState, action)
-    expect(newState.text).toEqual('')
+    expect(newState.text).toBe('')
   })
 
   test('should not clear the search when navigating to the search page', () => {
@@ -38,7 +38,7 @@ describe('mainSearchSlice', () => {
     expect(newState.text).toEqual(text)
   })
 
-  // test('should load search results on page load')
+  // TODO test 'should load search results on page load'
 
-  // test('should not load search results on navigation')
+  // TODO test 'should not load search results on navigation'
 })

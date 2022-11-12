@@ -7,7 +7,7 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "lint": "eslint lib/",
+    "lint": "eslint .",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
     "typecheck": "tsc"

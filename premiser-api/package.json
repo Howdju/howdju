@@ -29,7 +29,7 @@
     "deploy:api:pre-prod": "bin/deploy.sh pre-prod",
     "deploy:api:prod": "bin/deploy.sh prod",
     "inspect-server": "yarn run build-local-server && node --inspect-brk dist/esbuild-local-server.js",
-    "lint": "eslint bin src local-server.js",
+    "lint": "eslint --ignore-path=.gitignore .",
     "publish-lambda-function-version": "../bin/build-and-run-script.sh bin/publish-lambda-function-version.js",
     "start-server": "yarn run build-local-server && node dist/esbuild-local-server.js",
     "start:api:local": "env-cmd -f ../config/local.env yarn run start-server",

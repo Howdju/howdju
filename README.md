@@ -383,6 +383,12 @@ for the possible contents of the JSON file.
 
 ## Config structure
 
+### ESLint
+
+See eslint-config-howdju/README.md.
+
+### Prettier
+
 ### TypeScript
 
 Base config `tsconfig.json` in workspace root and packages extend it like:
@@ -390,7 +396,14 @@ Base config `tsconfig.json` in workspace root and packages extend it like:
 ```json
 {
   "extends": "../tsconfig.json",
-  // customizations here.
+  // ...
+  "compilerOptions": {
+    // ...
+    "paths": {
+      // Support project-relative imports
+      "@/*": ["./src/*"],
+    },
+  },
 }
 ```
 

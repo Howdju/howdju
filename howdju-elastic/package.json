@@ -14,6 +14,9 @@
   },
   "scripts": {
     "deploy-elasticsearch-image": "node bin/deploy-elasticsearch-image.js",
-    "lint": "eslint bin/"
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "debug": "^4.3.4"
   }
 }

@@ -6,6 +6,7 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
+    "lint": "eslint .",
     "migrate:local": "node bin/migrate-howdju.js",
     "migrate:prod": "NODE_ENV=production node bin/migrate-howdju.js"
   },

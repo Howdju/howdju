@@ -1,3 +1,7 @@
+/** ESLint config for React web */
+
+const { testFilePattern } = require("./constants");
+
 module.exports = {
   parserOptions: {
     "ecmaFeatures": {
@@ -8,10 +12,12 @@ module.exports = {
     "browser": true,
   },
   extends: [
-    "plugin:react/recommended"
+    "eslint-config-howdju",
+    "plugin:react/recommended",
   ],
   plugins: [
     "react",
+    "react-hooks",
   ],
   rules: {
     indent: [
@@ -44,10 +50,23 @@ module.exports = {
       // Some of our sagas are side-effect only, requiring no yields.  And I don't think there's any harm in this.
       "off"
     ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
   },
   settings: {
     react: {
       version: "detect",
     },
   },
+  overrides: [
+    {
+      files: testFilePattern,
+      extends: [
+        "plugin:jest-dom/recommended",
+      ],
+      plugins: [
+        "jest-dom",
+      ],
+    },
+  ],
 };

@@ -7,7 +7,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import { DuplicatesPlugin } from "inspectpack/plugin"
 import MomentLocalesPlugin from 'moment-locales-webpack-plugin'
-import {Response} from 'webpack-dev-server'
+import type {Response} from 'webpack-dev-server'
 
 import { devWebServerPort, gitShaShort } from 'howdju-ops'
 import packageInfo from '../package.json'

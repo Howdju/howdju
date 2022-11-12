@@ -1,3 +1,7 @@
+/** ESLint config for node code: either build or backend code. */
+
+const { testFilePattern } = require("./constants");
+
 module.exports = {
   env: {
     "node": true
@@ -6,6 +10,7 @@ module.exports = {
     "promise"
   ],
   extends: [
+    "eslint-config-howdju",
     "plugin:promise/recommended",
   ],
   rules: {
@@ -21,9 +26,10 @@ module.exports = {
   },
   overrides: [
     {
-      files: "*.test.js",
+      files: testFilePattern,
       rules: {
-        // Tests don't need to catch errors.  If we are asserting properly, then the tests should fail if the error causes us to miss the assertion
+        // Tests don't need to catch errors.  If we are asserting properly, then the tests should
+        // fail if the error causes us to miss the assertion
         "promise/catch-or-return": "off",
       }
     },

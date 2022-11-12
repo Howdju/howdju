@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node ../../premiser-api/bin/esbuild.js --entryPoint=src/handler.js --outfile=dist/index.js",
     "clean": "rm -rf dist",
-    "lint": "eslint src/",
+    "lint": "eslint --ignore-path=.gitignore .",
     "release": "../bin/release.sh",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../../node_modules/.bin/jest --runInBand --watch"

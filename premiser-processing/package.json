@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
-    "lint": "eslint bin/ src/ lambda-functions/",
+    "lint": "eslint --ignore-path=.gitignore .",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "score-justifications:local": "source ../config/local.env && node bin/score-justifications.js",
     "score-proposition-tags:local": "source ../config/local.env && node bin/score-proposition-tags.js",

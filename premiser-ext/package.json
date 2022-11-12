@@ -8,7 +8,7 @@
     "clean": "rm -rf dist",
     "build-prod": "yarn run clean && webpack --progress --profile --color",
     "build-dev": "yarn run clean && webpack --progress --profile --color --mode development",
-    "lint": "eslint src/",
+    "lint": "eslint --ignore-path=.gitignore .",
     "package": "bin/package.sh",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --watch --runInBand",

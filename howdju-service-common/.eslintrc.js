@@ -1,6 +1,15 @@
 module.exports = {
-  extends: [
-    "howdju",
-    "howdju/node",
-  ],
-};
+  overrides: [
+    {
+      files: [
+        "**/*.{js,ts}",
+      ],
+      excludedFiles: [
+        "node_modules/**",
+      ],
+      extends: [
+        "howdju/node",
+      ],
+    },
+  ]
+}

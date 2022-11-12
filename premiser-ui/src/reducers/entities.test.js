@@ -10,7 +10,7 @@ import {
   omitDeep,
 } from "howdju-common"
 
-import {api, str} from "../actions"
+import {api} from "../actions"
 import entities, {
   unionArraysDistinctIdsCustomizer,
   makeUpdatesAddingJustificationsToTargets,
@@ -274,7 +274,7 @@ describe('reducers', () => {
 
     describe('actions', () => {
 
-      describe(str(api.createJustification.response), () => {
+      describe("api.createJustification.response", () => {
 
         test('should add justifications to targets', () => {
           const
@@ -502,66 +502,10 @@ describe('reducers', () => {
           expect(entities(initialState, action)).toEqual(expectedState)
         })
 
-        test('should handle counter-counter-justifications', () => {
-          // const responseBody = {
-          //   justification: {
-          //     id: 81,
-          //     rootProposition: {id:19},
-          //     target: {
-          //       type: JustificationTargetTypes.JUSTIFICATION,
-          //       // Justification
-          //       entity: {
-          //         id: 78,
-          //         rootProposition: {id:19},
-          //         // Justification
-          //         target: {
-          //           type: JustificationTargetTypes.JUSTIFICATION,
-          //           entity: {
-          //             id: 49
-          //           }
-          //         },
-          //         basis: {
-          //           type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-          //           entity: {
-          //             atoms: [
-          //               {
-          //                 proposition: {
-          //                   id: 75,
-          //                   text: "Counter 5",
-          //                   slug: "counter-5"
-          //                 }
-          //               }
-          //             ]
-          //           }
-          //         },
-          //         polarity: JustificationPolarities.NEGATIVE,
-          //         vote: null,
-          //         // TODO this is inaccurate: it has counter-justifications
-          //         counterJustifications: []
-          //       }
-          //     },
-          //     basis: {
-          //       type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-          //       entity: {
-          //         atoms: [
-          //           {
-          //             proposition: {
-          //               id: 77,
-          //               text: "Counter counter to 5",
-          //               slug: "counter-counter-to-5"
-          //             }
-          //           }
-          //         ]
-          //       }
-          //     },
-          //     polarity: JustificationPolarities.NEGATIVE
-          //   }
-          // }
-
-        })
+        // TODO: test 'should handle counter-counter-justifications'
       })
 
-      describe(str(api.deleteJustification.response), () => {
+      describe("api.deleteJustification.response", () => {
         test('should remove deleted counter-justification from countered justification', () => {
           const
             rootProposition = {id: "1"},

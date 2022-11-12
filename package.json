@@ -12,7 +12,8 @@
     "check:pushed": "bin/check-pushed.sh",
     "check:committed": "node bin/check-committed.mjs",
     "check:pre-deploy": "bin/pre-deploy-check.sh",
-    "lint:all": "echo lint:all && yarn workspaces foreach -Apv run lint && echo lint:all succeeded || {echo lint:all failed; exit 1}",
+    "lint": "eslint jest lambdas/bin",
+    "lint:all": "yarn run lint && echo lint:all && yarn workspaces foreach -Apv run lint && echo lint:all succeeded || {echo lint:all failed; exit 1}",
     "custom-check:all": "echo custom-check:all && yarn workspaces foreach -Apv run custom-check && echo custom-check:all succeeded || {echo custom-check:all faied; exit 1}",
     "typecheck:all": "echo typecheck:all && yarn workspaces foreach -Apv run typecheck && echo typecheck:all succeeded || {echo typecheck:all failed; exit 1}",
     "test:all": "echo test:all && yarn workspaces foreach -Apv run test && echo test:all succeeded || {echo test:all failed; exit 1}"
@@ -63,8 +64,7 @@
     "browserslist": "^4.17.0",
     "debug": "^4.3.4",
     "eslint": "^7.23.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-react": "^7.23.1",
-    "jest": "^29.3.1"
+    "jest": "^29.3.1",
+    "typescript": "^4.8.4"
   }
 }

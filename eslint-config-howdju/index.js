@@ -1,3 +1,6 @@
+const { testFilePattern } = require("./constants");
+
+/** The base ESLint config. Other ESLint configs should extend this. */
 module.exports = {
   parser: "@babel/eslint-parser",
   parserOptions: {
@@ -13,19 +16,8 @@ module.exports = {
     "eslint:recommended",
   ],
   rules: {
-    // https://eslint.org/docs/rules/comma-dangle
-    "comma-dangle": [
-      "error",
-      // "allows (but does not require) trailing commas when the last element or property is in a different line than the closing brace"
-      "only-multiline",
-    ],
-    indent: [
-      "warn",
-      2,
-      {
-        SwitchCase: 1,
-      },
-    ],
+    "comma-dangle": ["error", "always-multiline"],
+    indent: ["warn", 2, { SwitchCase: 1}],
     "linebreak-style": ["error", "unix"],
     "no-cond-assign": [
       "error",
@@ -51,13 +43,38 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        "*.test.js",
-        "*.testlib.js",
-      ],
+      files: testFilePattern,
       env: {
         jest: true,
       },
+      plugins: ["jest"],
+      extends: [
+        "plugin:jest/recommended",
+        "plugin:jest/style",
+      ],
+      rules: {
+        "jest/no-commented-out-tests": "error",
+        "jest/no-disabled-tests": "error",
+        "jest/no-large-snapshots": "warn",
+      }
     },
+    {
+      files: "*.testlib.{js,jsx,ts,tsx}",
+      rules: {
+        // testlib's should export
+        "jest/no-export": "off",
+      },
+    },
+    {
+      files: "*.{ts,tsx}",
+      plugins: ['@typescript-eslint'],
+      parser: '@typescript-eslint/parser',
+      extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+      rules: {
+        // "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+      }
+    }
   ],
 }

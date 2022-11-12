@@ -4,7 +4,7 @@
   "description": "Contains AJV schema validators read from source. Use unless CSP disallows eval.",
   "main": "lib/index.ts",
   "scripts": {
-    "lint": "eslint lib/",
+    "lint": "eslint .",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
     "typecheck": "tsc"

@@ -8,7 +8,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "gen-standalone-schema-validation": "npx ts-node bin/gen-standalone-schema-validation.js",
-    "lint": "eslint lib/ --ignore-pattern=lib/standaloneAjv.js",
+    "lint": "eslint .",
     "custom-check": "bin/custom-check.sh",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
