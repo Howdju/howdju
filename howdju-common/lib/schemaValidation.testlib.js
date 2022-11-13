@@ -37,16 +37,16 @@ export const doTests = (validate) => {
         expect(isValid).toBe(false)
         expect(errors).toEqual(expect.objectContaining({
           username: expect.objectContaining({
-            keyword: 'pattern'
+            keyword: 'pattern',
           }),
           password: expect.objectContaining({
-            keyword: 'minLength'
+            keyword: 'minLength',
           }),
           longName: expect.objectContaining({
-            keyword: 'minLength'
+            keyword: 'minLength',
           }),
           doesAcceptTerms: expect.objectContaining({
-            keyword: 'const'
+            keyword: 'const',
           }),
         }))
       })

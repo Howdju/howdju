@@ -87,8 +87,7 @@ export function makeValidate(ajv: Ajv) {
     const isValid = ajv.validate(schemaOrRef, jsonVal)
     const errors = isValid ?
       {} :
-      // Avoid `Type instantiation is excessively deep and possibly infinite.`:
-      // @ts-ignore
+      // @ts-ignore: avoid `Type instantiation is excessively deep and possibly infinite.`
       transformErrors<ToSchema<T>>(ajv.errors)
     return {isValid, errors}
   }

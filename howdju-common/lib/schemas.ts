@@ -1,9 +1,9 @@
-import { keys } from 'lodash';
+import { keys } from 'lodash'
 
 import {
   ContentReportTypes,
   EntityTypes,
-} from './enums';
+} from './enums'
 
 export const schemaSettings = {
   propositionTextMaxLength: 512,
@@ -35,19 +35,19 @@ export const definitionsSchema = {
       "pattern": "^[A-Za-z0-9_]+$",
       "description": "The user-selected identifier by which the user is publicly known in the system.  Letters, numbers, and underscore.",
       minLength: schemaSettings.usernameMinLength,
-      "maxLength": schemaSettings.usernameMaxLength
+      "maxLength": schemaSettings.usernameMaxLength,
     },
     password: {
       "type": "string",
       "description": "The user's selected password",
       "minLength": schemaSettings.passwordMinLength,
-      "maxLength": schemaSettings.passwordMaxLength
+      "maxLength": schemaSettings.passwordMaxLength,
     },
     userEmail: {
       "type": "string",
       "format": "email",
       "description": "The user's preferred email for receiving correspondence about the system",
-      "maxLength": schemaSettings.userEmailMaxLength
+      "maxLength": schemaSettings.userEmailMaxLength,
     },
     shortName: {
       "type": "string",
@@ -55,28 +55,28 @@ export const definitionsSchema = {
       "examples": [
         "Carl",
         "Rich",
-        "Anu"
+        "Anu",
       ],
-      "maxLength": schemaSettings.shortNameMaxLength
+      "maxLength": schemaSettings.shortNameMaxLength,
     },
     longName: {
       "type": "string",
       "description": "The user's actual full legal name",
       "examples": [
         "Carl Gieringer",
-        "Anuradha Sathya"
+        "Anuradha Sathya",
       ],
       "minLength": 1,
-      "maxLength": schemaSettings.longNameMaxLength
+      "maxLength": schemaSettings.longNameMaxLength,
     },
     entityId: {
       "type": "string",
       format: "int32",
       "description": "An identifier for an entity. Usually used in the database to identify the entity. A positive integer" +
         " formatted as a string.",
-      "examples": ["1", "2", "42"]
-    }
-  }
+      "examples": ["1", "2", "42"],
+    },
+  },
 } as const
 
 const passwordResetRequest = {
@@ -88,7 +88,7 @@ const passwordResetRequest = {
   "required": ["email"],
   "properties": {
     "email": { "$ref": 'definitions.json#/definitions/userEmail' },
-  }
+  },
 } as const
 
 const passwordResetConfirmation = {
@@ -100,7 +100,7 @@ const passwordResetConfirmation = {
   "required": ["newPassword"],
   "properties": {
     "newPassword": { "$ref": 'definitions.json#/definitions/password' },
-  }
+  },
 } as const
 
 const registrationRequest = {
@@ -112,7 +112,7 @@ const registrationRequest = {
   "required": ["email"],
   "properties": {
     "email": { "$ref": 'definitions.json#/definitions/userEmail' },
-  }
+  },
 } as const
 
 const registrationConfirmation = {
@@ -137,21 +137,21 @@ const registrationConfirmation = {
     "longName": {$ref: 'definitions.json#/definitions/longName'},
     "doesAcceptTerms": {
       "const": true,
-      "description": "Whether the user agreed to the terms.  Must be true."
+      "description": "Whether the user agreed to the terms.  Must be true.",
     },
     "is13YearsOrOlder": {
       "const": true,
-      "description": "Whether the user is 13 years or older.  Must be true."
+      "description": "Whether the user is 13 years or older.  Must be true.",
     },
     "hasMajorityConsent": {
       "const": true,
-      "description": "Whether the user affirms that they are old enough to accept the terms.  Must be true."
+      "description": "Whether the user affirms that they are old enough to accept the terms.  Must be true.",
     },
     "isNotGdpr": {
       "const": true,
-      "description": "Whether the user is not subject to the GDPR.  Must be true."
+      "description": "Whether the user is not subject to the GDPR.  Must be true.",
     },
-  }
+  },
 } as const
 
 const user = {
@@ -194,7 +194,7 @@ const user = {
       type: 'string',
       format: 'date-time',
     },
-  }
+  },
 } as const
 
 const contentReport = {
@@ -210,7 +210,7 @@ const contentReport = {
   "properties": {
     entityType: {
       description: "The type of entity being reported, if the report can pertain to a particular entity.",
-      enum: keys(EntityTypes)
+      enum: keys(EntityTypes),
     },
     entityId: { $ref: 'definitions.json#/definitions/entityId' },
     url: {
@@ -228,9 +228,9 @@ const contentReport = {
     description: {
       description: "The user's description of the report.",
       type: 'string',
-      maxLength: schemaSettings.reportContentDescriptionMaxLength
+      maxLength: schemaSettings.reportContentDescriptionMaxLength,
     },
-  }
+  },
 } as const
 
 const writ = {
@@ -246,7 +246,7 @@ const writ = {
       maxLength: schemaSettings.writTitleMaxLength,
       description: "The title of the Writ. Ex: the title of a book.",
     },
-  }
+  },
 } as const
 
 const writQuote = {
@@ -269,9 +269,9 @@ const writQuote = {
       items: {
         type: 'string',
         format: 'uri',
-      }
+      },
     },
-  }
+  },
 } as const
 
 const persorg = {
@@ -289,7 +289,7 @@ const persorg = {
     },
     isOrganization: {
       type: "boolean",
-      description: "Whether the persorg is an organization (or a person.)"
+      description: "Whether the persorg is an organization (or a person.)",
     },
     knownFor: {
       type: "string",
@@ -303,7 +303,7 @@ const persorg = {
       format: 'uri',
       maxLength: schemaSettings.urlMaxLength,
       description: "The URL of the website the persorg represents as its primary website. If there is none, then then" +
-        " the generally accepted primary website representing the persorg."
+        " the generally accepted primary website representing the persorg.",
     },
     twitterUrl: {
       type: "string",
@@ -311,15 +311,15 @@ const persorg = {
       maxLength: schemaSettings.urlMaxLength,
       description: "The URL of the Twitter profile that the persorg represents as belonging to it. If the persorg does" +
         " not publicly represent that it has a Twitter account, then no unofficial Twitter account should be substituted" +
-        " here."
+        " here.",
     },
     wikipediaUrl: {
       type: "string",
       format: 'uri',
       maxLength: schemaSettings.urlMaxLength,
-      description: "The URL of the Wikipedia page representing the persorg. The persorg need not endorse this page."
+      description: "The URL of the Wikipedia page representing the persorg. The persorg need not endorse this page.",
     },
-  }
+  },
 } as const
 
 const accountSettings = {
@@ -335,7 +335,7 @@ const accountSettings = {
       description: "The user's disclosure that they are paid to contribute to Howdju.",
       maxLength: schemaSettings.paidContributionsDisclosureTextMaxLength,
     },
-  }
+  },
 } as const
 
 export const schemas = {
@@ -349,7 +349,7 @@ export const schemas = {
   user,
   writ,
   writQuote,
-} as const;
+} as const
 
 export const schemasById = {
   [accountSettings['$id']]: accountSettings,

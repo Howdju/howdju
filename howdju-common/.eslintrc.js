@@ -22,5 +22,5 @@ module.exports = {
         "howdju/node",
       ],
     },
-  ]
+  ],
 }

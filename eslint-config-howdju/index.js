@@ -71,12 +71,14 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
       rules: {
-        // "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": ["error", {
           argsIgnorePattern: "^_",
           // We intentionallly extract unused props to prevent passing them to child React components
           ignoreRestSiblings: true,
+        }],
+        "@typescript-eslint/ban-ts-comment": ["error", {
+          'ts-ignore': 'allow-with-description',
         }],
       },
     },

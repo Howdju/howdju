@@ -9,7 +9,7 @@ import {
   PropositionTagVotePolarity,
   SentenceType,
   TagVotePolarity,
-} from "./enums";
+} from "./enums"
 
 /** The value of an entity's `id` property. */
 export type EntityId = string;
@@ -31,13 +31,13 @@ export interface WritQuote extends Entity {
   urls: Array<Url>;
 }
 
-export interface Pic extends Entity {}
+export type Pic = Entity
 
 export interface PicRegion extends Entity {
   pic: Pic
 }
 
-export interface Vid extends Entity {}
+export type Vid = Entity
 
 export interface VidSegment extends Entity {
   vid: Vid
