@@ -1,5 +1,5 @@
 /** Types and functions relating to clients, including view models. */
-import merge from "lodash/merge";
+import merge from "lodash/merge"
 
 import {
   ContentReport,
@@ -33,6 +33,7 @@ import {
   negateRootPolarity,
   newExhaustedEnumError,
   Persisted,
+  Persorg,
   PicRegion,
   Proposition,
   PropositionCompound,
@@ -46,7 +47,7 @@ import {
   TagVotePolarity,
   VidSegment,
   WritQuote,
-} from "howdju-common";
+} from "howdju-common"
 
 /** A view model for creating a new justification.
  *
@@ -110,8 +111,7 @@ export interface JustificationBasisEditModel {
   sourceExcerpt: SourceExcerptEditModel;
 }
 
-export interface CounterJustificationBasisEditModel
-  extends Omit<JustificationBasisEditModel, "writQuote" | "sourceExcerpt"> {}
+export type CounterJustificationBasisEditModel = Omit<JustificationBasisEditModel, "writQuote" | "sourceExcerpt">
 
 export type PropositionCompoundEditModel = PropositionCompound;
 export type WritQuoteEditModel = WritQuote;
@@ -150,11 +150,9 @@ export interface TaggedEntityViewModel extends Entity {
   recommendedTags: Tag[]
 }
 
-export interface JustificationVote extends Vote {
+export interface JustificationVote {
   polarity: JustificationVotePolarity;
 }
-
-export interface Vote {}
 
 export const makeJustificationEditModel = (
   props: Partial<JustificationEditModel>
@@ -179,12 +177,12 @@ export const makeJustificationEditModel = (
       },
     },
     props
-  ) as JustificationEditModel;
+  ) as JustificationEditModel
 
-  inferJustificationRootTarget(justificationInput);
+  inferJustificationRootTarget(justificationInput)
 
-  return justificationInput;
-};
+  return justificationInput
+}
 
 export const makeJustificationViewModel = (
   props?: FactoryInput<JustificationViewModel, "id" | "rootTarget", "target" | "basis">
@@ -211,73 +209,73 @@ export function makeSourceExcerptEditModel(
       vidSegment: makeVidSegmentEditModel(),
     },
     props
-  );
+  )
 }
 
 export function makeVidSegmentEditModel(): VidSegmentEditModel {
-  return makeVidSegment();
+  return makeVidSegment()
 }
 
 export function makeWritQuoteEditModel(): WritQuoteEditModel {
-  return makeWritQuote();
+  return makeWritQuote()
 }
 
 export function makePicRegionEditModel(): PicRegionEditModel {
-  return makePicRegion();
+  return makePicRegion()
 }
 
 export function makePropositionCompoundEditModel(): PropositionCompoundEditModel {
   return {
     atoms: [{ entity: makePropositionEditModel() }],
-  };
+  }
 }
 
 export function makePropositionEditModel(): PropositionEditModel {
-  return makeProposition();
+  return makeProposition()
 }
 
 function inferJustificationRootTarget(
   justification: JustificationEditModel | JustificationViewModel
 ) {
-  let targetEntity = justification.target.entity;
-  let targetType = justification.target.type;
-  let rootPolarity = justification.polarity;
+  let targetEntity = justification.target.entity
+  let targetType = justification.target.type
+  let rootPolarity = justification.polarity
   while ("target" in targetEntity) {
-    const targetJustification = targetEntity as Justification;
-    rootPolarity = targetJustification.polarity;
-    targetType = targetJustification.target.type;
-    targetEntity = targetJustification.target.entity;
+    const targetJustification = targetEntity as Justification
+    rootPolarity = targetJustification.polarity
+    targetType = targetJustification.target.type
+    targetEntity = targetJustification.target.entity
   }
-  justification.rootTargetType = targetType;
+  justification.rootTargetType = targetType
   justification.rootTarget =
-    targetEntity as JustificationRootTargetEditModel;
-  justification.rootPolarity = rootPolarity;
+    targetEntity as JustificationRootTargetEditModel
+  justification.rootPolarity = rootPolarity
 }
 
 export const isVerified = (j: JustificationViewModel) =>
-  j.vote && j.vote.polarity === JustificationVotePolarities.POSITIVE;
+  j.vote && j.vote.polarity === JustificationVotePolarities.POSITIVE
 export const isDisverified = (j: JustificationViewModel) =>
-  j.vote && j.vote.polarity === JustificationVotePolarities.NEGATIVE;
+  j.vote && j.vote.polarity === JustificationVotePolarities.NEGATIVE
 
 // TODO(1): must we export this? Where will we use it?
 export function convertSourceExcerptToEditModel(
   sourceExcerpt: SourceExcerpt
 ): SourceExcerptEditModel {
-  const formModel = makeSourceExcerptEditModel(sourceExcerpt);
+  const formModel = makeSourceExcerptEditModel(sourceExcerpt)
   switch (sourceExcerpt.type) {
     case SourceExcerptTypes.WRIT_QUOTE:
-      formModel.writQuote = sourceExcerpt.entity;
-      break;
+      formModel.writQuote = sourceExcerpt.entity
+      break
     case SourceExcerptTypes.PIC_REGION:
-      formModel.picRegion = sourceExcerpt.entity;
-      break;
+      formModel.picRegion = sourceExcerpt.entity
+      break
     case SourceExcerptTypes.VID_SEGMENT:
-      formModel.vidSegment = sourceExcerpt.entity;
-      break;
+      formModel.vidSegment = sourceExcerpt.entity
+      break
     default:
-      throw newExhaustedEnumError(sourceExcerpt);
+      throw newExhaustedEnumError(sourceExcerpt)
   }
-  return formModel;
+  return formModel
 }
 
 export const makeSourceExcerptParaphrase = (
@@ -289,7 +287,7 @@ export const makeSourceExcerptParaphrase = (
       sourceExcerpt: makeSourceExcerpt(),
     },
     props
-  );
+  )
 
 /** A view model for the JustificationsPage and also an API type, I think. */
 export interface JustifiedPropositionViewModel extends Proposition {
@@ -297,7 +295,12 @@ export interface JustifiedPropositionViewModel extends Proposition {
   justifications?: JustificationViewModel[];
 }
 
-export interface CreatePropositionEditModel {}
+export interface CreatePropositionEditModel {
+  proposition: Proposition
+  speakers: Persorg[]
+  justification: JustificationEditModel
+  doCreateJustification: boolean
+}
 
 export const makeJustifiedPropositionEditModel = (
   propositionProps: Partial<PropositionEditModel>,
@@ -308,7 +311,7 @@ export const makeJustifiedPropositionEditModel = (
   justification: makeJustificationEditModel(justificationProps),
   // whether to have the justification controls expanded and to create a justification along with the proposition
   doCreateJustification: !!justificationProps,
-});
+})
 
 /** Trunk justifications directly target the root */
 export const makeJustificationEditModelTargetingRoot = (
@@ -321,7 +324,7 @@ export const makeJustificationEditModelTargetingRoot = (
     rootTarget: { id: targetId },
     polarity,
     target: { type: targetType, entity: { id: targetId } },
-  });
+  })
 
 export const makeCounterJustification = (
   targetJustification: Persisted<Justification> & Pick<Justification, "rootTargetType" | "rootTarget" | "rootPolarity">
@@ -338,7 +341,7 @@ export const makeCounterJustification = (
     propositionCompound: makePropositionCompound(),
   },
   polarity: JustificationPolarities.NEGATIVE,
-});
+})
 
 export interface ContentReportEditModel {
   entityType: EntityType;
@@ -364,7 +367,7 @@ export const makeContentReportEditModel = (
       url: null,
     },
     fields
-  );
+  )
 
 export interface TagVoteViewModel extends Entity {
   // TagVoteViewModel don't need a target because they are added to their targets
@@ -372,4 +375,4 @@ export interface TagVoteViewModel extends Entity {
   tag: Tag
 }
 
-export interface PropositionTagVoteViewModel extends Omit<PropositionTagVote, "proposition"> {}
+export type PropositionTagVoteViewModel = Omit<PropositionTagVote, "proposition">

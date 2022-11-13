@@ -6,15 +6,15 @@ export function urlEquivalent(url1, url2) {
 const canonicalUrlSelectorAttributes = [
   {
     selector: 'link[rel="canonical"]',
-    attribute: 'href'
+    attribute: 'href',
   },
   {
     selector: 'meta[property="og:url"]',
-    attribute: 'content'
+    attribute: 'content',
   },
   {
     selector: 'meta[property="url"]',
-    attribute: 'content'
+    attribute: 'content',
   },
 ]
 
