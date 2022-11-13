@@ -24,6 +24,7 @@
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "howdju-ops": "workspace:howdju-ops",
     "howdju-test-common": "workspace:howdju-test-common",
-    "jest": "^29.3.1"
+    "jest": "^29.3.1",
+    "ts-node": "^10.9.1"
   }
 }

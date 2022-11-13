@@ -36,7 +36,8 @@
     "inspect-process": "^0.5.0",
     "install-local": "^0.6.0",
     "jest": "^29.3.1",
-    "run-sequence": "^2.1.0"
+    "run-sequence": "^2.1.0",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "aws-sdk": "^2.307.0",

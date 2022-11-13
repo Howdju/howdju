@@ -47,6 +47,7 @@
     "eslint-config-howdju": "^1.0.0",
     "eslint-plugin-react": "^7.23.2",
     "jest": "^29.3.1",
+    "ts-node": "^10.9.1",
     "webpack": "^5.31.0"
   }
 }

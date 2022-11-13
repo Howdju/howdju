@@ -260,7 +260,7 @@ yarn upgrade-interactive
 ### Doing something in each workspace
 
 ```shell
-yarn workspaces foreach -Av exec bash -c 'ls'
+yarn workspaces foreach -Av exec bash -c '[[ -f jest.config.ts ]] && yarn add --dev ts-node'
 ```
 
 ### Adding a new lambda
