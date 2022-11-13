@@ -35,10 +35,10 @@ export function attachHeadersListener({
     return { responseHeaders }
   }, {
     urls: ['http://*/*', 'https://*/*'],
-    types
+    types,
   }, [
     'blocking',
-    'responseHeaders'
+    'responseHeaders',
   ])
 }
 

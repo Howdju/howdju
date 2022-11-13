@@ -4,7 +4,7 @@ import {
   annotationIndexDataKey,
   annotationLevelClassPrefix,
   getAnnotationOf,
-  isAnnotationNode
+  isAnnotationNode,
 } from './annotate'
 import {logger} from 'howdju-common'
 import {arrayInsertAfter, arrayInsertBefore} from './util'

@@ -56,7 +56,7 @@ export function targetToRanges(target) {
     const selector = {
       exact: anchor.exactText,
       prefix: anchor.prefixText,
-      suffix: anchor.suffixText
+      suffix: anchor.suffixText,
     }
     const range = textQuote.toRange(document.body, selector, options)
     // textQuote.toRange returns a range that is exclusive at the end.

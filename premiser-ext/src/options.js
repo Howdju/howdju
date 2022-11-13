@@ -10,8 +10,8 @@ const optionDefinitions = {
   },
   isDevelopment: {
     storageArea: 'local',
-    default: false
-  }
+    default: false,
+  },
 }
 
 export function getOptions(keys, cb) {

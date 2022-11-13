@@ -15,7 +15,7 @@ const dragTargetClass = css({
 // Can't be declared in the render method for some reason...it just goes eventually disappears and frame becomes invisible.
 const containerVisibleClass = css({
   // must be declared !important to override containerClass which is declared after this and so can take priority
-  transform: 'translate3d(0,0,0) !important'
+  transform: 'translate3d(0,0,0) !important',
 })
 
 // Must come after containerVisibleClass to take precedence
@@ -23,11 +23,11 @@ const containerMinimizedClass = css({
   cursor: 'pointer',
   transform: 'translateX(94%) !important',
   ':hover': {
-    transform: 'translateX(92%) !important'
+    transform: 'translateX(92%) !important',
   },
   '& > iframe': {
-    pointerEvents: 'none'
-  }
+    pointerEvents: 'none',
+  },
 })
 
 const FRAME_TOGGLE_FUNCTION = 'howdjuFramePanelToggle'
@@ -77,7 +77,7 @@ export class FramePanel extends Component {
       background: 'white',
       borderRadius: '8px',
       boxShadow: '-1px 1px 8px rgba(0,0,0,.15)',
-      pointerEvents: isDragging ? 'none' : 'auto'
+      pointerEvents: isDragging ? 'none' : 'auto',
     })
 
     return (
@@ -87,7 +87,7 @@ export class FramePanel extends Component {
             [containerClass]: true,
             [containerVisibleClass]: isVisible,
             [containerMinimizedClass]: isMinimized,
-            [containerClassName]: true
+            [containerClassName]: true,
           })}
           style={containerStyle}
           onClick={this.onFramePanelClick}
@@ -102,7 +102,7 @@ export class FramePanel extends Component {
           <iframe
             className={cn({
               [iframeClass]: true,
-              [iframeClassName]: true
+              [iframeClassName]: true,
             })}
             style={iframeStyle}
             ref={frame => this.frame = frame}
@@ -131,7 +131,7 @@ export class FramePanel extends Component {
     iframeStyle: {},
     onMount: () => {},
     onUnmount: () => {},
-    onLoad: () => {}
+    onLoad: () => {},
   }
 
   state = {
@@ -154,7 +154,7 @@ export class FramePanel extends Component {
     containerChildren: node,
     onMount: func,
     onUnmount: func,
-    onLoad: func
+    onLoad: func,
   }
 
   componentDidMount() {
@@ -188,7 +188,7 @@ export class FramePanel extends Component {
   onLoad = () => {
     if (this.props.onLoad) {
       this.props.onLoad({
-        frame: this.frame
+        frame: this.frame,
       })
     }
   }
@@ -212,7 +212,7 @@ export class FramePanel extends Component {
     const deltaX = this.state.dragX - e.clientX
     this.setState({
       dragX: e.clientX,
-      containerWidth: this.state.containerWidth + deltaX
+      containerWidth: this.state.containerWidth + deltaX,
     })
   }
 
@@ -227,7 +227,7 @@ export class FramePanel extends Component {
 
   onFramePanelClick = () => {
     this.setState({
-      isMinimized: false
+      isMinimized: false,
     })
   }
 

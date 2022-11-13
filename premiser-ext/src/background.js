@@ -79,12 +79,12 @@ function sendRunCommandsMessage(tabId, commands) {
 function sendMessage(tabId, message) {
   // TODO can we avoid loading the script and css on every message?
   ext.executeScript(tabId, {
-    file: 'content.js'
+    file: 'content.js',
   }, () => {
     ext.sendTabMessage(tabId, message)
   })
   ext.insertCSS(tabId, {
-    file: 'content.css'
+    file: 'content.css',
   })
 }
 
