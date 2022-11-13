@@ -216,6 +216,8 @@ gco -b features/n-feature-slug
 # until you rebase onto master. You should select the previous feature /
 # parent PR branch as the new PR's base branch.
 
+git fetch origin master:master
+
 # To prepare your branch for merging, rebase onto master:
 # git rebase --onto master parentCommitExclusive branchName
 git rebase --onto master <previousFeatureBranch> <currentFeatureBranch>
@@ -410,11 +412,6 @@ Base config `tsconfig.json` in workspace root and packages extend it like:
 ### Babel
 
 `babel.config.js` in workspace root and `.babelrc.js` in packages to override.
-
-### ESLint
-
-Base `.eslintrc.js` config having `root: true` and packages with custom `.eslintrc.js` as needed. ESLint
-automatically merges them.
 
 ### Jest
 
