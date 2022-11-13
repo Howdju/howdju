@@ -21,7 +21,7 @@ const reportTypeDescriptions = {
   [ContentReportTypes.COPYRIGHT_VIOLATION]: "Copyright violation",
   [ContentReportTypes.TRADEMARK_VIOLATION]: "Trademark violation",
   [ContentReportTypes.SPAM]: "Spam",
-  [ContentReportTypes.OTHER]: "Other"
+  [ContentReportTypes.OTHER]: "Other",
 }
 
 type BooleanObject = {
@@ -40,29 +40,29 @@ type ContentReportEditorFieldsProps = {
 }
 
 export default function ContentReportEditorFields(props: ContentReportEditorFieldsProps) {
-    const {
-      contentReport,
-      id,
-      name,
-      disabled,
-      errors,
-      onPropertyChange,
-      dirtyFields,
-      wasSubmitAttempted,
-    } = props
-    const description = get(contentReport, "description")
-    const types = get(contentReport, "types")
-    const modelErrors = get(errors, "_model")
-    const typesErrorText = get(errors, combineNames(name, "types", "message"))
-    const isTypesError =
+  const {
+    contentReport,
+    id,
+    name,
+    disabled,
+    errors,
+    onPropertyChange,
+    dirtyFields,
+    wasSubmitAttempted,
+  } = props
+  const description = get(contentReport, "description")
+  const types = get(contentReport, "types")
+  const modelErrors = get(errors, "_model")
+  const typesErrorText = get(errors, combineNames(name, "types", "message"))
+  const isTypesError =
       typesErrorText && (get(dirtyFields, combineNames(name, "types")) || wasSubmitAttempted)
-    const descriptionErrorText = get(errors, combineNames(name, "description", "message"))
-    const isDescriptionError =
+  const descriptionErrorText = get(errors, combineNames(name, "description", "message"))
+  const isDescriptionError =
       descriptionErrorText && (get(dirtyFields, combineNames(name, "description")) || wasSubmitAttempted)
-    return (
-      <>
-        <ErrorMessages errors={modelErrors} />
-        <CheckboxList
+  return (
+    <>
+      <ErrorMessages errors={modelErrors} />
+      <CheckboxList
           id={combineIds(id, "types")}
           name={combineNames(name, "types")}
           value={types}
@@ -71,8 +71,8 @@ export default function ContentReportEditorFields(props: ContentReportEditorFiel
           disabled={disabled}
           error={isTypesError}
           errorText={typesErrorText}
-        />
-        <TextField
+      />
+      <TextField
           id={combineIds(id, "description")}
           key="description"
           name={combineNames(name, "description")}
@@ -85,7 +85,7 @@ export default function ContentReportEditorFields(props: ContentReportEditorFiel
           value={description}
           disabled={disabled}
           onPropertyChange={onPropertyChange}
-        />
-      </>
-    )
+      />
+    </>
+  )
 }

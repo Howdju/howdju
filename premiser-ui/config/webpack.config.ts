@@ -1,6 +1,6 @@
 import webpack, { WebpackPluginInstance } from 'webpack'
 import { merge } from 'webpack-merge'
-const debug = require('debug')('howdju-ui:webpack')
+import Debug from 'debug'
 import path from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
@@ -13,6 +13,8 @@ import { devWebServerPort, gitShaShort } from 'howdju-ops'
 import packageInfo from '../package.json'
 import projectConfig from './project.config'
 import { sassLoaderAdditionalData } from './sass-loader-additional-data'
+
+const debug = Debug('howdju-ui:webpack')
 
 const envWebpackPath = `./webpack.${process.env.NODE_ENV}.config.ts`
 debug(`Loading env webpack from ${envWebpackPath}`)
@@ -50,7 +52,7 @@ const plugins: WebpackPluginInstance[] = [
   new HtmlWebpackPlugin(htmlWebpackPluginConfig),
   new webpack.DefinePlugin(definePluginConfig),
   new MiniCssExtractPlugin(),
-  new MomentLocalesPlugin({localesToKeep: ['en']})
+  new MomentLocalesPlugin({localesToKeep: ['en']}),
 ]
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
 // the analysis. So only add it when requested.
@@ -110,7 +112,7 @@ const baseWebpackConfig = {
             }
           },
         },
-      }
+      },
     ],
   },
   module: {
@@ -156,7 +158,7 @@ const baseWebpackConfig = {
             options: {
               sourceMap: true,
               additionalData: sassLoaderAdditionalData,
-            }
+            },
           },
         ],
       },
@@ -172,12 +174,12 @@ const baseWebpackConfig = {
         test: /\.md$/,
         use: [
           "html-loader",
-          "markdown-loader"
-        ]
-      }
-    ]
+          "markdown-loader",
+        ],
+      },
+    ],
   },
-  plugins
+  plugins,
 }
 
 type BaseWebPackConfigOverrides = Partial<typeof baseWebpackConfig>

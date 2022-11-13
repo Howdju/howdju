@@ -99,7 +99,7 @@ export default function withEntityEditor(
 
       // Provide the editEntity using a prop name that the EntityEditorFields understands
       const entityEditorFields = {
-        [editorFieldsEditEntityPropName]: editEntity
+        [editorFieldsEditEntityPropName]: editEntity,
       }
 
       const {errors: clientValidationErrors} = editEntity ?

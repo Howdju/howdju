@@ -1,23 +1,23 @@
 /** ESLint config for React web */
 
-const { testFilePattern } = require("./constants");
+const { testFilePattern } = require("./constants")
 
 module.exports = {
   parserOptions: {
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
     },
   },
   env: {
     "browser": true,
   },
-  extends: [
-    "eslint-config-howdju",
-    "plugin:react/recommended",
-  ],
   plugins: [
     "react",
     "react-hooks",
+  ],
+  extends: [
+    "eslint-config-howdju",
+    "plugin:react/recommended",
   ],
   rules: {
     indent: [
@@ -30,7 +30,7 @@ module.exports = {
           "JSXAttribute",
           "JSXSpreadAttribute",
         ],
-      }
+      },
     ],
     "react/boolean-prop-naming": "error",
     "react/no-children-prop": [
@@ -48,7 +48,7 @@ module.exports = {
     // ],
     "require-yield": [
       // Some of our sagas are side-effect only, requiring no yields.  And I don't think there's any harm in this.
-      "off"
+      "off",
     ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
@@ -69,4 +69,4 @@ module.exports = {
       ],
     },
   ],
-};
+}

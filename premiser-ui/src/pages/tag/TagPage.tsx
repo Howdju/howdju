@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks'
 interface MatchParams {
   tagId: EntityId;
 }
-interface Props extends RouteComponentProps<MatchParams> {}
+type Props = RouteComponentProps<MatchParams>
 
 export default function TagPage(props: Props) {
 
@@ -28,7 +28,7 @@ export default function TagPage(props: Props) {
   useEffect(() => {
     dispatch(api.fetchTag(tagId))
     dispatch(api.fetchTaggedPropositions(tagId))
-  }, [tagId])
+  }, [dispatch, tagId])
 
   const entities = useAppSelector(state => state.entities)
   const tag = denormalize(tagId, tagSchema, entities)

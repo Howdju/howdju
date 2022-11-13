@@ -32,7 +32,7 @@ describe('mainSearchSlice', () => {
         location: parsePath(paths.mainSearch(text)) as RouterLocation<LocationState>,
         isFirstRendering: true,
         action: 'PUSH',
-      }
+      },
     }
     const newState = mainSearch(initialState, action)
     expect(newState.text).toEqual(text)

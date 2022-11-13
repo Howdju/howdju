@@ -1,5 +1,5 @@
-import { api } from "@/actions";
-import { createSlice } from "@reduxjs/toolkit";
+import { api } from "@/actions"
+import { createSlice } from "@reduxjs/toolkit"
 
 export const justificationsPageSlice = createSlice({
   name: "justificationsPage",
@@ -9,10 +9,10 @@ export const justificationsPageSlice = createSlice({
   },
   reducers: {
     showNewJustificationDialog: (state) => {
-      state.isNewJustificationDialogVisible = true;
+      state.isNewJustificationDialogVisible = true
     },
     hideNewJustificationDialog: (state) => {
-      state.isNewJustificationDialogVisible = false;
+      state.isNewJustificationDialogVisible = false
     },
   },
   extraReducers(builder) {
@@ -23,7 +23,7 @@ export const justificationsPageSlice = createSlice({
       state.isFetching = false
     })
   },
-});
+})
 
 export default justificationsPageSlice.actions
 export const justificationsPage = justificationsPageSlice.reducer

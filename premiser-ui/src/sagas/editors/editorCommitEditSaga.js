@@ -42,7 +42,7 @@ const CrudActions = arrayToObject([
 ])
 const editorTypeCommitApiResourceActions = {
   [EditorTypes.PROPOSITION]: {
-    [CrudActions.UPDATE]: api.updateProposition
+    [CrudActions.UPDATE]: api.updateProposition,
   },
   [EditorTypes.PROPOSITION_JUSTIFICATION]: (model, crudType) => {
     switch (crudType) {
@@ -109,7 +109,7 @@ const editorTypeCommitApiResourceActions = {
     [CrudActions.CREATE]: api.confirmRegistration,
   },
   [EditorTypes.PERSORG]: {
-    [CrudActions.UPDATE]: api.updatePersorg
+    [CrudActions.UPDATE]: api.updatePersorg,
   },
   [EditorTypes.ACCOUNT_SETTINGS]: {
     [CrudActions.CREATE]: api.createAccountSettings,

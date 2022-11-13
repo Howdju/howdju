@@ -10,14 +10,14 @@ import isFunction from 'lodash/isFunction'
 import values from 'lodash/values'
 
 import {
-  newImpossibleError
+  newImpossibleError,
 } from 'howdju-common'
 
 import {
   str,
 } from "../actions"
 import {
-  api, apiActionCreatorsByActionType, cancelMainSearchSuggestions, cancelPersorgNameSuggestions, cancelPropositionTextSuggestions, cancelTagNameSuggestions, cancelWritTitleSuggestions
+  api, apiActionCreatorsByActionType, cancelMainSearchSuggestions, cancelPersorgNameSuggestions, cancelPropositionTextSuggestions, cancelTagNameSuggestions, cancelWritTitleSuggestions,
 } from "../apiActions"
 import {logger} from '../logger'
 import {callApi} from './apiSagas'

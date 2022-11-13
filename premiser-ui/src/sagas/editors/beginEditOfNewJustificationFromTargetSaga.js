@@ -30,7 +30,7 @@ function toPropositionJustification(content, source, target) {
   const writQuote = {
     quoteText,
     writ: {
-      title
+      title,
     },
     urls: [{url, target}],
   }
@@ -38,7 +38,7 @@ function toPropositionJustification(content, source, target) {
     basis: {
       type: JustificationBasisTypes.WRIT_QUOTE,
       writQuote,
-    }
+    },
   }
   return makeJustifiedPropositionEditModel(null, justificationProps)
 }

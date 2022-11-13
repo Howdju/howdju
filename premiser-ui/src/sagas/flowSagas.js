@@ -107,7 +107,7 @@ export function* goTo() {
 
   yield takeEvery(str(goto.mainSearch), function* goToMainSearchWorker(action) {
     const {
-      mainSearchText
+      mainSearchText,
     } = action.payload
     const mainSearchPath = paths.mainSearch(mainSearchText)
     yield put(push(mainSearchPath))
@@ -120,7 +120,7 @@ export function* goTo() {
 
   yield takeEvery(str(goto.tag), function* goToTagWorker(action) {
     const {
-      tag
+      tag,
     } = action.payload
     yield put(push(paths.tag(tag)))
   })

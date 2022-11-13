@@ -4,11 +4,11 @@ import PropTypes from 'prop-types'
 import isNull from 'lodash/isNull'
 
 import {
-  toSingleLine
+  toSingleLine,
 } from 'howdju-common'
 
 import {
-  Keys
+  Keys,
 } from './keyCodes'
 
 export default class SingleLineTextField extends Component {

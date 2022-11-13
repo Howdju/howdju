@@ -156,7 +156,7 @@ class PasswordResetRequestPage extends React.Component {
   onPropertyChange = (properties) => {
     const newDirtyInputs = keysTo(properties, true)
     this.setState({
-      dirtyInputs: {...this.state.dirtyInputs, ...newDirtyInputs}
+      dirtyInputs: {...this.state.dirtyInputs, ...newDirtyInputs},
     })
     this.props.pages.passwordResetRequestPropertyChange(properties)
   }
@@ -165,7 +165,7 @@ class PasswordResetRequestPage extends React.Component {
     const name = event.target.name
     if (name) {
       this.setState({
-        blurredInputs: {...this.state.blurredInputs, [name]: true}
+        blurredInputs: {...this.state.blurredInputs, [name]: true},
       })
     }
   }
@@ -180,7 +180,7 @@ class PasswordResetRequestPage extends React.Component {
       event.preventDefault()
     }
     this.setState({
-      wasSubmitAttempted: true
+      wasSubmitAttempted: true,
     })
   }
 
@@ -201,7 +201,7 @@ const mapStateToProps = state => {
   const authEmail = selectAuthEmail(state)
   return {
     authEmail,
-    ...selectPasswordResetRequestPage(state)
+    ...selectPasswordResetRequestPage(state),
   }
 }
 
@@ -209,5 +209,5 @@ export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
   api,
   pages,
 }, {
-  goBack
+  goBack,
 }))(PasswordResetRequestPage)

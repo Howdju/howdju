@@ -7,7 +7,7 @@ import get from 'lodash/get'
 import moment from 'moment'
 
 import {
-  JustificationRootTargetTypes
+  JustificationRootTargetTypes,
 } from 'howdju-common'
 
 import config from './config'

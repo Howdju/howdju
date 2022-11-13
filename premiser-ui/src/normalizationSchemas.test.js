@@ -22,25 +22,25 @@ describe('normalizationSchemas', () => {
         propositionCompound1 = {
           id: 4,
           atoms: [
-            {entity: proposition2}
-          ]
+            {entity: proposition2},
+          ],
         },
         propositionCompound2 = {
           id: 5,
           atoms: [
-            {entity: proposition3}
-          ]
+            {entity: proposition3},
+          ],
         },
         justification1 = {
           id: 1,
           // normalizer cannot normalize circular data
           target: { type: 'PROPOSITION', entity: {...proposition1} },
-          basis: { type: 'PROPOSITION_COMPOUND', entity: {...propositionCompound1} }
+          basis: { type: 'PROPOSITION_COMPOUND', entity: {...propositionCompound1} },
         },
         justification2 = {
           id: 2,
           target: { type: 'PROPOSITION', entity: {...proposition1} },
-          basis: { type: 'PROPOSITION_COMPOUND', entity: {...propositionCompound2} }
+          basis: { type: 'PROPOSITION_COMPOUND', entity: {...propositionCompound2} },
         }
       proposition1.justifications = [justification1, justification2]
       const expected = {
@@ -55,12 +55,12 @@ describe('normalizationSchemas', () => {
             1: {
               ...justification1,
               target: { type: 'PROPOSITION', entity: { id: 1, schema: 'PROPOSITION' } },
-              basis: { type: 'PROPOSITION_COMPOUND', entity: { id: 4, schema: 'PROPOSITION_COMPOUND' } }
+              basis: { type: 'PROPOSITION_COMPOUND', entity: { id: 4, schema: 'PROPOSITION_COMPOUND' } },
             },
             2: {
               ...justification2,
               target: { type: 'PROPOSITION', entity: { id: 1, schema: 'PROPOSITION' } },
-              basis: { type: 'PROPOSITION_COMPOUND', entity: { id: 5, schema: 'PROPOSITION_COMPOUND' } }
+              basis: { type: 'PROPOSITION_COMPOUND', entity: { id: 5, schema: 'PROPOSITION_COMPOUND' } },
             },
           },
           propositionCompounds: {
@@ -77,7 +77,7 @@ describe('normalizationSchemas', () => {
               id: 5,
             },
           },
-        }
+        },
       }
 
       expect(normalize(proposition1, propositionSchema)).toEqual(expected)

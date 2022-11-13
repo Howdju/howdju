@@ -90,11 +90,11 @@ class Paths {
   }
   searchJustifications = params => createPath({
     pathname: '/search-justifications',
-    search: '?' + queryString.stringify(params)
+    search: '?' + queryString.stringify(params),
   })
   mainSearch = mainSearchText => createPath({
     pathname: mainSearchPathName,
-    search: '?' + window.encodeURIComponent(mainSearchText)
+    search: '?' + window.encodeURIComponent(mainSearchText),
   })
   propositionUsages = (propositionId) => `/proposition-usages?propositionId=${propositionId}`
   statementUsages = (statementId) => `/statement-usages?propositionId=${statementId}`

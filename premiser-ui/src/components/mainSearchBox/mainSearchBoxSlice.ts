@@ -7,7 +7,7 @@ import { LocationChangeAction, LOCATION_CHANGE } from "connected-react-router"
 export const mainSearchSlice = createSlice({
   name: "mainSearch",
   initialState: {
-    text: ""
+    text: "",
   },
   reducers: {
     textChange(state, action: PayloadAction<string>) {
@@ -21,7 +21,7 @@ export const mainSearchSlice = createSlice({
         state.text = ""
       }
     })
-  }
+  },
 })
 
 export const mainSearch = mainSearchSlice.reducer

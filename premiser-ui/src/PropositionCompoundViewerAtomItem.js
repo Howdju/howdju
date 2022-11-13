@@ -11,7 +11,7 @@ import {
 } from './actions'
 import {
   combineIds,
-  combineSuggestionsKeys
+  combineSuggestionsKeys,
 } from './viewModels'
 import {EditorTypes} from './reducers/editors'
 import PropositionEntityViewer from "./PropositionEntityViewer"

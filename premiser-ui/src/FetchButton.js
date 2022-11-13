@@ -28,5 +28,5 @@ export default class FetchButton extends Component {
 }
 FetchButton.propTypes = {
   /** The ID of the progress indicator.  Required for accessibility. */
-  progressId: PropTypes.string.isRequired
+  progressId: PropTypes.string.isRequired,
 }

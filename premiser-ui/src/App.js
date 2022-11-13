@@ -25,7 +25,7 @@ import {
   isTruthy,
 } from 'howdju-common'
 import {
-  actions
+  actions,
 } from 'howdju-client-common'
 
 import Helmet from './Helmet'
@@ -43,7 +43,7 @@ import {
   BASIC_FUNCTIONALITY,
   cookieConsent, ERROR_REPORTING, fixConsentCookieIds, FULL_ERROR_REPORTING,
   isMissingPrivacyConsent, LIVE_CHAT, REQUIRED_FUNCTIONALITY,
-  showPrivacyConsentDialog
+  showPrivacyConsentDialog,
 } from "./cookieConsent"
 import app from "@/app/appSlice"
 import {startPersisting, stopPersisting} from "./store"
@@ -79,17 +79,17 @@ const tabInfos = [
   {
     path: paths.recentActivity(),
     text: t(MAIN_TABS_RECENT_ACTIVITY_TAB_NAME),
-    id: "recent-activity-tab"
+    id: "recent-activity-tab",
   },
   {
     path: paths.whatsNext(),
     text: t(MAIN_TABS_WHATS_NEXT_TAB_NAME),
-    id: "whats-next-tab"
+    id: "whats-next-tab",
   },
   {
     path: paths.about(),
     text: t(MAIN_TABS_ABOUT_TAB_NAME),
-    id: "about-tab"
+    id: "about-tab",
   },
 ]
 
@@ -286,7 +286,7 @@ class App extends Component {
 
   resetOverscrollState = () => {
     const newState = {
-      windowPageYOffset: window.pageYOffset
+      windowPageYOffset: window.pageYOffset,
     }
     // reset overscrolls
     if (this.state.isOverscrolledTop && !isScrollPastTop()) {
@@ -365,7 +365,7 @@ class App extends Component {
       isMobileSiteDisabled,
     } = this.props
     const {
-      activeTabIndex
+      activeTabIndex,
     } = this.state
 
     const navItems = [
@@ -562,7 +562,7 @@ class App extends Component {
   }
 }
 App.contextTypes = {
-  store: PropTypes.object
+  store: PropTypes.object,
 }
 
 const mapStateToProps = state => {

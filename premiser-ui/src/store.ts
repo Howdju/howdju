@@ -1,10 +1,10 @@
-import { Reducer } from 'redux';
-import { PreloadedState } from '@reduxjs/toolkit';
+import { Reducer } from 'redux'
+import { PreloadedState } from '@reduxjs/toolkit'
 import { persistStore, PersistorOptions } from 'redux-persist'
 
-import { logger } from './logger';
+import { logger } from './logger'
 
-import { RootReducer, setupStore } from "./setupStore";
+import { RootReducer, setupStore } from "./setupStore"
 
 declare global {
   interface Window {
@@ -28,9 +28,9 @@ export function startPersisting() {
 }
 
 export function stopPersisting() {
-  persistor.pause();
+  persistor.pause()
   persistor.purge().catch(err => {
-    logger.error("Failed to purge redux persistance.");
-    logger.exception(err);
-  });
+    logger.error("Failed to purge redux persistance.")
+    logger.exception(err)
+  })
 }

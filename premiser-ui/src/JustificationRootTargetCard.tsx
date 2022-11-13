@@ -69,7 +69,7 @@ interface Props extends OwnProps, PropsFromRedux {}
 
 class JustificationRootTargetCard extends React.Component<Props> {
   state = {
-    isOver: false
+    isOver: false,
   }
 
   render() {
@@ -98,11 +98,11 @@ class JustificationRootTargetCard extends React.Component<Props> {
         key="delete"
         leftIcon={<FontIcon>delete</FontIcon>}
         onClick={this.deleteRootTarget}
-      />
+      />,
     ]
     const {
       entity: typeEntityMenuItems,
-      edit: typeEditMenuItems
+      edit: typeEditMenuItems,
     } = this.menuItemsForType(rootTargetType, rootTarget)
 
     const entityMenuItems = concat(extraMenuItems, typeEntityMenuItems)
@@ -183,7 +183,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
     const {
       rootTargetType: entityType,
       rootTarget: {
-        id: entityId
+        id: entityId,
       },
     } = this.props
     const url = window.location.href

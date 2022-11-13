@@ -31,7 +31,7 @@ export const tagSchema = new schema.Entity<Tag>('tags')
 export const tagsSchema = [tagSchema]
 
 export const propositionTagVoteSchema = new schema.Entity<PropositionTagVote>('propositionTagVotes', {
-  tag: tagSchema
+  tag: tagSchema,
 })
 const propositionTagVoteSchemas = [propositionTagVoteSchema]
 
@@ -44,7 +44,7 @@ export const propositionSchema = new schema.Entity<Proposition>('propositions', 
 export const propositionsSchema = [propositionSchema]
 
 export const persorgSchema = new schema.Entity<Persorg>('persorgs', {
-  creator: userSchema
+  creator: userSchema,
 })
 export const persorgsSchema = [persorgSchema]
 
@@ -69,7 +69,7 @@ export const writSchema = new schema.Entity<Writ>('writs')
 export const writsSchema = [writSchema]
 
 export const writQuoteSchema = new schema.Entity<WritQuote>('writQuotes', {
-  writ: writSchema
+  writ: writSchema,
 })
 export const writQuotesSchema = [writQuoteSchema]
 
@@ -82,7 +82,7 @@ export const picRegionSchema = new schema.Entity<PicRegion>('picRegions', {
 export const vidSchema = new schema.Entity<Vid>('vids')
 
 export const vidSegmentsSchema = new schema.Entity<VidSegment>('vidSegments', {
-  vid: vidSchema
+  vid: vidSchema,
 })
 
 export const justificationVoteSchema = new schema.Entity<JustificationVote>('justificationVotes')
@@ -97,7 +97,7 @@ const sourceExcerptSchema = new schema.Union({
 export const sourceExcerptParaphraseSchema = new schema.Entity<SourceExcerptParaphrase>('sourceExcerptParaphrases', {
   paraphrasingProposition: propositionSchema,
   sourceExcerpt: {
-    entity: sourceExcerptSchema
+    entity: sourceExcerptSchema,
   },
 })
 
@@ -116,13 +116,13 @@ export const justificationSchema = new schema.Entity<Justification>('justificati
 justificationSchema.define({
   rootTarget: justificationRootTargetSchema,
   target: {
-    entity: justificationTargetSchema
+    entity: justificationTargetSchema,
   },
   basis: {
-    entity: justificationBasisSchema
+    entity: justificationBasisSchema,
   },
   counterJustifications: [justificationSchema],
-  vote: justificationVoteSchema
+  vote: justificationVoteSchema,
 })
 export const justificationsSchema = [justificationSchema]
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there, at least for Unions

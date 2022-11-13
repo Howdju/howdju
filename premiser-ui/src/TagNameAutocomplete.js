@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import {schemaSettings} from 'howdju-common'
 
 import {
-  api, mapActionCreatorGroupToDispatchToProps
+  api, mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
 import ApiAutocomplete from "./ApiAutocomplete"
 import {tagSchema} from "./normalizationSchemas"
@@ -69,5 +69,5 @@ TagNameAutocomplete.propTypes = {
 }
 
 export default connect(null, mapActionCreatorGroupToDispatchToProps({
-  api
+  api,
 }))(TagNameAutocomplete)

@@ -11,7 +11,7 @@ export const persorgPageSlice = createSlice({
   name: "persorgPage",
   initialState,
   reducers: {
-    clearPersorgStatements: () => initialState
+    clearPersorgStatements: () => initialState,
   },
   extraReducers(builder) {
     builder.addCase(api.fetchSpeakerStatements, (state) => {

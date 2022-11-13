@@ -12,7 +12,7 @@ export const propositionUsagesPageSlice = createSlice({
     directStatements: [],
     indirectStatements: [],
     justifications: [],
-    continuationToken: null as ContinuationToken | null
+    continuationToken: null as ContinuationToken | null,
   },
   reducers: {},
   extraReducers(builder) {
@@ -47,7 +47,7 @@ export const propositionUsagesPageSlice = createSlice({
       state.continuationToken = action.payload.continuationToken
       state.isFetchingJustifications = false
     })
-  }
+  },
 })
 
 export default propositionUsagesPageSlice.actions

@@ -45,7 +45,7 @@ export const newApiResponseError = (message: string, identifiers: Identifiers, s
 export const newRequestConfigurationError = (message: string, identifiers: Identifiers, sourceError: AxiosError) =>
   newCustomError(uiErrorTypes.REQUEST_CONFIGURATION_ERROR, makeIdentifiersMessage(message, identifiers), sourceError, {
     ...identifiers,
-    config: sourceError.config
+    config: sourceError.config,
   })
 
 export const newEditorCommitResultError = (editorType: EditorType, editorId: EditorId, sourceError: Error) => {

@@ -20,7 +20,7 @@ import t, {
   COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts"
 import {
-  translateJustificationErrorsFromFormInput
+  translateJustificationErrorsFromFormInput,
 } from './viewModels'
 
 

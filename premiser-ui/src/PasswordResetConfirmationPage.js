@@ -25,12 +25,12 @@ import {validate} from 'howdju-ajv-sourced'
 import {
   api,
   pages,
-  mapActionCreatorGroupToDispatchToProps
+  mapActionCreatorGroupToDispatchToProps,
 } from './actions'
 import PasswordTextField from './PasswordTextField'
 import paths from './paths'
 import {
-  selectPasswordResetConfirmationPage
+  selectPasswordResetConfirmationPage,
 } from './selectors'
 
 const subtitleByErrorCode = {
@@ -191,7 +191,7 @@ class PasswordResetConfirmationPage extends React.Component {
     const name = event.target.name
     if (name) {
       this.setState({
-        dirty: {...this.state.dirty, [name]: true}
+        dirty: {...this.state.dirty, [name]: true},
       })
     }
   }
@@ -206,7 +206,7 @@ class PasswordResetConfirmationPage extends React.Component {
       event.preventDefault()
     }
     this.setState({
-      wasSubmitAttempted: true
+      wasSubmitAttempted: true,
     })
   }
 
@@ -235,7 +235,7 @@ const passwordResetErrorMessageByCode = {
       don&rsquo;t have access to your password reset email, you
       can <Link className="text-link" to={paths.requestRegistration()}>register</Link> again.
     </CardText>
-  )
+  ),
 }
 
 const mapStateToProps = (state, ownProps) => {

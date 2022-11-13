@@ -72,5 +72,5 @@ export default handleActions({
   },
   [api.deleteJustification.response]: {
     next: widgetDeleteResponseReducer(defaultRecentJustificationsWidgetState, 'recentJustifications', 'justifications'),
-  }
+  },
 }, {})

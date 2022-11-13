@@ -42,7 +42,7 @@ export const passwordResetRequestPage = handleActions({
         errors.email = {value: get(action, 'payload.body.identifier.email')}
       }
       return {...state, isSubmitting: false, isSubmitted: false, errors}
-    }
+    },
   },
 }, passwordResetRequestPageDefaultState)
 

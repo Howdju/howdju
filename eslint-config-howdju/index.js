@@ -1,4 +1,4 @@
-const { testFilePattern } = require("./constants");
+const { testFilePattern } = require("./constants")
 
 /** The base ESLint config. Other ESLint configs should extend this. */
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
   },
   plugins: [],
   env: {
-    "es6": true
+    "es6": true,
   },
   extends: [
     "eslint:recommended",
@@ -21,12 +21,12 @@ module.exports = {
     "linebreak-style": ["error", "unix"],
     "no-cond-assign": [
       "error",
-      "except-parens"
+      "except-parens",
     ],
     "no-restricted-globals": [
       "error",
       // Don't accidentally use the browser's find.  Use lodash.
-      "find"
+      "find",
     ],
     "no-unused-vars": [
       "error",
@@ -36,8 +36,8 @@ module.exports = {
         "args": "none",
         // Allow us to pluck out properties by naming them specifically and then using a rest property.  E.g.:
         // const { toIgnore, ...rest} = someProps
-        "ignoreRestSiblings": true
-      }
+        "ignoreRestSiblings": true,
+      },
     ],
     semi: ["error", "never"],
   },
@@ -56,7 +56,7 @@ module.exports = {
         "jest/no-commented-out-tests": "error",
         "jest/no-disabled-tests": "error",
         "jest/no-large-snapshots": "warn",
-      }
+      },
     },
     {
       files: "*.testlib.{js,jsx,ts,tsx}",
@@ -73,8 +73,12 @@ module.exports = {
       rules: {
         // "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
-      }
-    }
+        "@typescript-eslint/no-unused-vars": ["error", {
+          argsIgnorePattern: "^_",
+          // We intentionallly extract unused props to prevent passing them to child React components
+          ignoreRestSiblings: true,
+        }],
+      },
+    },
   ],
 }

@@ -18,7 +18,7 @@ const versionMetadataKey = 'howdju-ui-version'
 const projectConfig = require(path.join(process.cwd(), 'config/project.config'))
 
 const argParser = new ArgumentParser({
-  description: 'Upload the web app to S3'
+  description: 'Upload the web app to S3',
 })
 argParser.add_argument('bucket')
 argParser.add_argument('--filter')

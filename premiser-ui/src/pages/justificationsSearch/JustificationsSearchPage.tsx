@@ -26,7 +26,7 @@ export default function JustificationsSearchPage() {
     const filters = extractFilters(location.search)
     const includeUrls = extractIncludeUrls(location.search)
     dispatch(api.fetchJustificationsSearch({filters, includeUrls, count: fetchCount}))
-  }, [location])
+  }, [location, dispatch])
 
   const onClickWritQuoteUrl = makeExtensionHighlightOnClickWritQuoteUrlCallback(dispatch)
 

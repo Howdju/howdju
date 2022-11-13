@@ -5,7 +5,7 @@
     url: window.location.href,
     description: document.title,
     quoteText: window.getSelection()||document.getSelection||document.getSelection()||document.selection||document.selection.createRange().text,
-    source: 'bookmarklet-v1'
+    source: 'bookmarklet-v1',
   }
   const queryParams = []
   for (let param in params) {

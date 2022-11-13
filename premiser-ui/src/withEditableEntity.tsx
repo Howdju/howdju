@@ -75,9 +75,8 @@ export default function withEditableEntity<
         throw newProgrammingError(`Unsupported withEditableEntity editorType: ${editorType}`)
     }
 
-    const {editEntity = null, isSaving = undefined} = editorId
-      ? useAppSelector(state => state.editors[editorType]?.[editorId]) || {}
-      : {}
+    const editorStates = useAppSelector(state => state.editors[editorType])
+    const {editEntity = null, isSaving = undefined} = editorStates?.[editorId] || {}
     const isEditing = isTruthy(editEntity)
 
     if (isEditing && !editorId) {
@@ -106,6 +105,6 @@ export default function withEditableEntity<
 
     const progress = <CircularProgress id={`${id}--loading`} />
 
-    return isEditing ? editor : !!entity ? viewer : progress
+    return isEditing ? editor : entity ? viewer : progress
   }
 }

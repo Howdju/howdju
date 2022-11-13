@@ -12,14 +12,14 @@ class ExpandableChildContainer extends Component {
 
   onExpand = () => {
     const {
-      widgetId
+      widgetId,
     } = this.props
     this.props.ui.expand(widgetId)
   }
 
   onCollapse = () => {
     const {
-      widgetId
+      widgetId,
     } = this.props
     this.props.ui.collapse(widgetId)
   }
@@ -48,19 +48,19 @@ ExpandableChildContainer.propTypes = {
   expandableChildComponent: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
-  ]).isRequired
+  ]).isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
   const {
-    widgetId
+    widgetId,
   } = ownProps
   const widgetState = get(state, ['widgets', 'expandCollapse', widgetId], {})
   const {
-    isExpanded
+    isExpanded,
   } = widgetState
   return {
-    isExpanded
+    isExpanded,
   }
 }
 

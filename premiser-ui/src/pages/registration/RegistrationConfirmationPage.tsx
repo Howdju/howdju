@@ -71,7 +71,7 @@ export default function RegistrationConfirmationPage() {
     dispatch(
       editors.beginEdit(editorType, editorId, makeRegistrationConfirmation({registrationCode})),
     )
-  }, [registrationCode])
+  }, [dispatch, registrationCode])
 
   const editorState = useAppSelector(state => get(state, ['editors', editorType, editorId]))
 
@@ -112,8 +112,8 @@ export default function RegistrationConfirmationPage() {
   const submitButtonTitle = isValid
     ? 'Complete registration'
     : wasSubmitAttempted
-    ? 'Please correct the errors to continue'
-    : 'Please complete the form to continue'
+      ? 'Please correct the errors to continue'
+      : 'Please complete the form to continue'
 
   let subtitle
   if (apiErrorCode) {

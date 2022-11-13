@@ -12,7 +12,7 @@ import PropositionTextAutocomplete from "./PropositionTextAutocomplete"
 import {
   combineNames,
   combineIds,
-  combineSuggestionsKeys
+  combineSuggestionsKeys,
 } from './viewModels'
 
 

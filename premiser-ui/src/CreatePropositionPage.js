@@ -21,7 +21,7 @@ import queryString from 'query-string'
 
 import {
   JustificationBasisTypes,
-  PropositionTagVotePolarities
+  PropositionTagVotePolarities,
 } from "howdju-common"
 
 import {
@@ -127,15 +127,15 @@ class CreatePropositionPage extends Component {
         const writQuote = {
           quoteText,
           writ: {
-            title: description
+            title: description,
           },
-          urls: [{url}]
+          urls: [{url}],
         }
         const justificationProps = {
           basis: {
             type: JustificationBasisTypes.WRIT_QUOTE,
             writQuote,
-          }
+          },
         }
         const justifiedProposition = makeJustifiedPropositionEditModel({}, justificationProps)
         this.props.editors.beginEdit(CreatePropositionPage.editorType, CreatePropositionPage.editorId,

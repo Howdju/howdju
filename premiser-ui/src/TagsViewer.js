@@ -117,7 +117,7 @@ export default class TagsViewer extends React.Component {
         className: cn({
           'has-vote': isVoted,
           'has-anti-vote': isAntiVoted,
-        })
+        }),
       })
     })
 
@@ -144,8 +144,8 @@ TagsViewer.propTypes = {
     name: PropTypes.string.isRequired,
     vote: PropTypes.shape({
       polarity: PropTypes.string,
-    })
-  }))
+    }),
+  })),
 }
 TagsViewer.defaultProps = {
   tags: [],

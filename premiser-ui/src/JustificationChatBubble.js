@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 
 import {
   isRootNegative,
-  isRootPositive
+  isRootPositive,
 } from 'howdju-common'
 import JustificationBasisViewer from './JustificationBasisViewer'
 import ChatBubble from './ChatBubble'

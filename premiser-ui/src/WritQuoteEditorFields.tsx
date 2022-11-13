@@ -1,17 +1,17 @@
-import React from "react";
-import { Button, FontIcon, TextField } from "react-md";
-import map from "lodash/map";
-import get from "lodash/get";
-import has from "lodash/has";
+import React from "react"
+import { Button, FontIcon, TextField } from "react-md"
+import map from "lodash/map"
+import get from "lodash/get"
+import has from "lodash/has"
 
-import { BespokeValidationErrors, schemaSettings, Url, WritQuote } from "howdju-common";
+import { BespokeValidationErrors, schemaSettings, Url, WritQuote } from "howdju-common"
 
-import WritTitleAutocomplete from "@/WritTitleAutocomplete";
-import { toErrorText } from "@/modelErrorMessages";
-import ErrorMessages from "@/ErrorMessages";
-import SingleLineTextField from "@/SingleLineTextField";
-import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
-import { DirtyFields } from "@/reducers/editors";
+import WritTitleAutocomplete from "@/WritTitleAutocomplete"
+import { toErrorText } from "@/modelErrorMessages"
+import ErrorMessages from "@/ErrorMessages"
+import SingleLineTextField from "@/SingleLineTextField"
+import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels"
+import { DirtyFields } from "@/reducers/editors"
 import {
   ComponentId,
   ComponentName,
@@ -21,9 +21,9 @@ import {
   OnRemoveHandler,
   OnSubmitCallback,
   SuggestionsKey,
-} from "@/types";
+} from "@/types"
 
-import "./WritQuoteEditorFields.scss";
+import "./WritQuoteEditorFields.scss"
 
 interface Props {
   writQuote: WritQuote;
@@ -43,8 +43,8 @@ interface Props {
   wasSubmitAttempted: boolean
 }
 
-const writQuoteTextName = "quoteText";
-const writTitleName = "writ.title";
+const writQuoteTextName = "quoteText"
+const writTitleName = "writ.title"
 
 const WritQuoteEditorFields = (props: Props) => {
   const {
@@ -59,41 +59,41 @@ const WritQuoteEditorFields = (props: Props) => {
     onPropertyChange,
     onAddUrl,
     onRemoveUrl,
-  } = props;
+  } = props
 
   const onChange = (value: number | string, event: Event) => {
     if (onPropertyChange && event.target && "name" in event.target) {
-      const target: HTMLFormElement = event.target;
-      const name = target.name;
-      onPropertyChange({ [name]: value });
+      const target: HTMLFormElement = event.target
+      const name = target.name
+      onPropertyChange({ [name]: value })
     }
-  };
+  }
 
-  const urls = get(writQuote, "urls", []);
+  const urls = get(writQuote, "urls", [])
 
-  const hasErrors = get(errors, "hasErrors");
+  const hasErrors = get(errors, "hasErrors")
   const quoteInputErrorProps =
     hasErrors && errors.fieldErrors.quoteText.length > 0
       ? { error: true, errorText: toErrorText(errors.fieldErrors.quoteText) }
-      : {};
+      : {}
   const writTitleInputErrorProps =
     hasErrors && errors.fieldErrors.writ.fieldErrors.title.length > 0
       ? {
-          error: true,
-          errorText: toErrorText(errors.fieldErrors.writ.fieldErrors.title),
-        }
-      : {};
+        error: true,
+        errorText: toErrorText(errors.fieldErrors.writ.fieldErrors.title),
+      }
+      : {}
   const urlInputErrorProps = hasErrors
     ? map(errors.fieldErrors.urls.itemErrors, (urlError) =>
-        urlError.fieldErrors.url.length > 0
-          ? { error: true, errorText: toErrorText(urlError.fieldErrors.url) }
-          : {}
-      )
-    : map(urls, () => null);
+      urlError.fieldErrors.url.length > 0
+        ? { error: true, errorText: toErrorText(urlError.fieldErrors.url) }
+        : {}
+    )
+    : map(urls, () => null)
 
-  const quoteText = get(writQuote, writQuoteTextName) || "";
-  const writTitle = get(writQuote, writTitleName) || "";
-  const hasWritTitle = has(writQuote, writTitleName);
+  const quoteText = get(writQuote, writQuoteTextName) || ""
+  const writTitle = get(writQuote, writTitleName) || ""
+  const hasWritTitle = has(writQuote, writTitleName)
 
   const writTitleInputProps = {
     id: combineIds(id, writTitleName),
@@ -106,7 +106,7 @@ const WritQuoteEditorFields = (props: Props) => {
     onKeyDown,
     onSubmit,
     onPropertyChange,
-  };
+  }
 
   const combinedSuggestionKeys = combineSuggestionsKeys(suggestionsKey, writTitleName)
 
@@ -176,7 +176,7 @@ const WritQuoteEditorFields = (props: Props) => {
         <ErrorMessages errors={errors.modelErrors} />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default WritQuoteEditorFields;
+export default WritQuoteEditorFields

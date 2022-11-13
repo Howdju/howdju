@@ -15,7 +15,7 @@ export const justificationsSearchPageSlice = createSlice({
   name: "justificationsSearchPage",
   initialState,
   reducers: {
-    clearSearch: () => initialState
+    clearSearch: () => initialState,
   },
   extraReducers(builder) {
     builder.addCase(api.fetchJustificationsSearch, (state, action) => {
@@ -31,7 +31,7 @@ export const justificationsSearchPageSlice = createSlice({
       state.justifications = state.justifications.concat(result.justifications)
       state.continuationToken = action.payload.continuationToken
     })
-  }
+  },
 })
 
 export default justificationsSearchPageSlice.actions

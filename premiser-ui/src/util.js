@@ -42,7 +42,7 @@ export const isScrollPastBottom = () => {
 export const getDimensionInfo = () => {
   const {
     documentElement,
-    body
+    body,
   } = window.document
   const dimensionInfo = {
     window: {
@@ -67,7 +67,7 @@ export const getDimensionInfo = () => {
       [`window.innerHeight + window.pageYOffset >= document.body.offsetHeight : ${window.innerHeight} + ${window.pageYOffset} = ${window.innerHeight + window.pageYOffset} >= ${document.body.offsetHeight}`]: (window.innerHeight + window.pageYOffset >= document.body.offsetHeight),
       [`documentElement.clientHeight + window.pageYOffset >= document.body.offsetHeight : ${documentElement.clientHeight} + ${window.pageYOffset} = ${documentElement.clientHeight + window.pageYOffset} >= ${document.body.offsetHeight}`]: (documentElement.clientHeight + window.pageYOffset >= document.body.offsetHeight),
       [`body.scrollTop + window.innerHeight >= body.scrollHeight : ${body.scrollTop} + ${window.innerHeight} = ${body.scrollTop + window.innerHeight} >= body.scrollHeight`]: body.scrollTop + window.innerHeight >= body.scrollHeight,
-    }
+    },
   }
   return dimensionInfo
 }

@@ -25,5 +25,5 @@ export default {
       // react-md autocomplete incorrectly has menu hidden
       autocomplete.setState({visible: true})
     }
-  }
+  },
 }
