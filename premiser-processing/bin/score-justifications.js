@@ -2,7 +2,7 @@ const {ArgumentParser} = require('argparse')
 const map = require('lodash/map')
 
 const {
-  JobScopes
+  JobScopes,
 } = require('howdju-service-common')
 
 const {
@@ -14,7 +14,7 @@ const {
 } = require('../lambda-functions/justification-scorer/src/initialization/databaseInitialization')
 
 const argParser = new ArgumentParser({
-  description: 'Update justification scores'
+  description: 'Update justification scores',
 })
 argParser.add_argument('--scope', {defaultValue: JobScopes.INCREMENTAL, choices: map(JobScopes)})
 const args = argParser.parse_args()

@@ -9,7 +9,7 @@ describe('handling', () => {
       "version": "6.4.0",
       "indices": [
         ".kibana",
-        "logs"
+        "logs",
       ],
       "include_global_state": true,
       "state": "SUCCESS",
@@ -22,8 +22,8 @@ describe('handling', () => {
       "shards": {
         "total": 6,
         "failed": 0,
-        "successful": 6
-      }
+        "successful": 6,
+      },
     }
     const middleSnapshot = {
       "snapshot": "test_snapshot1",
@@ -32,7 +32,7 @@ describe('handling', () => {
       "version": "6.4.0",
       "indices": [
         ".kibana",
-        "logs"
+        "logs",
       ],
       "include_global_state": true,
       "state": "SUCCESS",
@@ -45,8 +45,8 @@ describe('handling', () => {
       "shards": {
         "total": 6,
         "failed": 0,
-        "successful": 6
-      }
+        "successful": 6,
+      },
     }
     const laterSnapshot = {
       "snapshot": "test_snapshot2",
@@ -55,7 +55,7 @@ describe('handling', () => {
       "version": "6.4.0",
       "indices": [
         ".kibana",
-        "logs"
+        "logs",
       ],
       "include_global_state": true,
       "state": "SUCCESS",
@@ -68,8 +68,8 @@ describe('handling', () => {
       "shards": {
         "total": 6,
         "failed": 0,
-        "successful": 6
-      }
+        "successful": 6,
+      },
     }
     const snapshots = [
       earlierSnapshot,

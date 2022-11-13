@@ -8,7 +8,7 @@ const {
 
 
 const parser = new ArgumentParser({
-  description: "Update an AWS Lambda function's code"
+  description: "Update an AWS Lambda function's code",
 })
 parser.add_argument('--lambdaDir', {required: true})
 const args = parser.parse_args()

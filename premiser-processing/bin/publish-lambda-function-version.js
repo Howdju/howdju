@@ -5,7 +5,7 @@ const {lambda} = require('howdju-ops')
 
 
 const argParser = new ArgumentParser({
-  description: 'Publish a lambda function version'
+  description: 'Publish a lambda function version',
 })
 argParser.add_argument('--lambdaDir', {required: true})
 argParser.add_argument('--versionDescription')

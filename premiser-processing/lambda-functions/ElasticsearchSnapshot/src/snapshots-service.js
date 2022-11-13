@@ -58,7 +58,7 @@ module.exports.SnapshotsService = class SnapshotsService {
       waitForCompletion: false,
       indices,
       repository: repositoryName,
-      snapshot: snapshotName
+      snapshot: snapshotName,
     })
   }
 
@@ -77,9 +77,9 @@ module.exports.SnapshotsService = class SnapshotsService {
         "type": "s3",
         "settings": {
           "bucket": this.s3Bucket,
-          "base_path": basePath
-        }
-      }
+          "base_path": basePath,
+        },
+      },
     })
   }
 
@@ -99,7 +99,7 @@ module.exports.SnapshotsService = class SnapshotsService {
       masterTimeout: this.masterTimeout,
       timeout: this.timeout,
       // Accepts multiple repositories
-      repository: repositoryName
+      repository: repositoryName,
     })
   }
 
@@ -197,7 +197,7 @@ module.exports.SnapshotsService = class SnapshotsService {
     return await this.elasticsearchClient.snapshot.verifyRepository({
       masterTimeout: this.masterTimeout,
       timeout: this.timeout,
-      repository: repositoryName
+      repository: repositoryName,
     })
   }
 

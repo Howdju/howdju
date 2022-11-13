@@ -5,7 +5,7 @@ const {lambda} = require('howdju-ops')
 
 
 const parser = new ArgumentParser({
-  description: 'Update an AWS Lambda function alias'
+  description: 'Update an AWS Lambda function alias',
 })
 parser.add_argument('--lambdaDir', {required: true})
 parser.add_argument('--aliasName', {required: true})

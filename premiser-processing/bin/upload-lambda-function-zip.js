@@ -8,7 +8,7 @@ const {
 } = require('howdju-ops')
 
 const parser = new ArgumentParser({
-  description: "Upload a Lambda function's code to S3"
+  description: "Upload a Lambda function's code to S3",
 })
 parser.add_argument('--lambdaDir', {required: true})
 const args = parser.parse_args()

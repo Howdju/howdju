@@ -13,7 +13,7 @@ const {LocalInstaller, progress} = require('install-local')
 /** TODO replace with esbuild bundling like in premiser-api */
 
 const argumentParser = new ArgumentParser({
-  description: 'Build lambda functions'
+  description: 'Build lambda functions',
 })
 // must use optional syntax (start with --) so that gulp doesn't think it's a task
 argumentParser.add_argument('--lambdaDir', {required: true})
@@ -36,7 +36,7 @@ const requireHowdjuDeps = lambdarc.requireHowdjuDeps
 gulp.task('clean', (next) =>
   del([
     lambdaBuildDir,
-    lambdaDistDir
+    lambdaDistDir,
   ], next)
 )
 
@@ -70,7 +70,7 @@ gulp.task('install-local', () => {
     [lambdaBuildDir]: [
       '../howdju-common',
       '../howdju-service-common',
-    ]
+    ],
   }
   //, {npmEnv: Object.assign({}, process.env, {NODE_ENV: 'production'})}
   )
