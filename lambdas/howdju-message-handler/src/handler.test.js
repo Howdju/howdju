@@ -37,9 +37,9 @@ class MockSns {
           Sns: {
             TopicArn,
             Message,
-          }
-        }
-      ]
+          },
+        },
+      ],
     }
     const context = {}
 

@@ -4,6 +4,7 @@
   "description": "Shared ESLint config for howdju",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "echo Nothing to test here"
   },
   "repository": {
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
+    "eslint": "^8.27.0",
     "eslint-plugin-promise": "^6.1.1",
     "typescript": "^4.8.4"
   }

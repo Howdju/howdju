@@ -13049,6 +13049,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.42.1
     "@typescript-eslint/parser": ^5.42.1
+    eslint: ^8.27.0
     eslint-plugin-promise: ^6.1.1
     typescript: ^4.8.4
   languageName: unknown

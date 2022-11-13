@@ -1,13 +1,13 @@
 /** ESLint config for node code: either build or backend code. */
 
-const { testFilePattern } = require("./constants");
+const { testFilePattern } = require("./constants")
 
 module.exports = {
   env: {
-    "node": true
+    "node": true,
   },
   plugins: [
-    "promise"
+    "promise",
   ],
   extends: [
     "eslint-config-howdju",
@@ -31,7 +31,7 @@ module.exports = {
         // Tests don't need to catch errors.  If we are asserting properly, then the tests should
         // fail if the error causes us to miss the assertion
         "promise/catch-or-return": "off",
-      }
+      },
     },
   ],
-};
+}

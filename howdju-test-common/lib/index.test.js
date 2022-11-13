@@ -1,9 +1,9 @@
 const {
-  mockLogger
+  mockLogger,
 } = require('./index')
 
 describe('mockLogger', () => {
   test('logs without error', () => {
-    mockLogger.log('a message')
+    expect(() => mockLogger.log('a message')).not.toThrow()
   })
 })

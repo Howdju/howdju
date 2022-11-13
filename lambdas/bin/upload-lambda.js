@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const AWS = require('aws-sdk')
-const cliProgress = require('cli-progress');
+const cliProgress = require('cli-progress')
 
 const {
   gitCommitMetadataKey,
@@ -22,7 +22,7 @@ const Bucket = 'howdju-lambdas'
 const Key = `${lambdaName}/${lambdaName}-${packageInfo.version}.zip`
 
 const zipSize = fs.statSync(zipPath).size
-const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
 progress.start(zipSize, 0)
 
 const upload = new AWS.S3.ManagedUpload({

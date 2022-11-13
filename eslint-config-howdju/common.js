@@ -7,4 +7,4 @@ module.exports = {
   extends: [
     "eslint-config-howdju",
   ],
-};
+}
