@@ -15,7 +15,7 @@ const {
   AuthenticationError,
 } = require("../serviceErrors")
 const {
-  HashTypes
+  HashTypes,
 } = require('../hashTypes')
 
 
@@ -122,7 +122,7 @@ exports.AuthService = class AuthService {
         return Promise.all([
           user,
           this.createAuthToken(user, now),
-          updateLastLogin(this, user, now)
+          updateLastLogin(this, user, now),
         ])
       })
       .then( ([user, {authToken, expires}]) => ({

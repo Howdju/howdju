@@ -1,10 +1,10 @@
 const sinon = require('sinon')
 
 const {
-  mockLogger
+  mockLogger,
 } = require('howdju-test-common')
 const {
-  SentenceTypes
+  SentenceTypes,
 } = require('howdju-common')
 
 const {StatementsDao} = require('./StatementsDao')
@@ -46,8 +46,8 @@ describe('StatementsDao', () => {
                       speakerId,
                       propositionId,
                       creatorUserId,
-                      new Date()
-                    ]]
+                      new Date(),
+                    ]],
                   }
                 case statement2Id:
                   return {
@@ -67,21 +67,21 @@ describe('StatementsDao', () => {
                       speaker2Id,
                       propositionId,
                       creatorUserId,
-                      new Date()
-                    ]]
+                      new Date(),
+                    ]],
                   }
               }
               break
             }
           }
-        })
+        }),
       }
 
       const propositionsDao = {
         readPropositionForId: sinon.fake(() => ({
           id: propositionId,
           text: propositionText,
-        }))
+        })),
       }
 
       const statementsDao = new StatementsDao(mockLogger, database, propositionsDao)
@@ -95,8 +95,8 @@ describe('StatementsDao', () => {
           sentence: {
             id: propositionId,
             text: propositionText,
-          }
-        }
+          },
+        },
       })
     })
   })

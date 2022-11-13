@@ -6,10 +6,10 @@ const {
   normalizeText,
 } = require('./daosUtil')
 const {
-  toPersorg
+  toPersorg,
 } = require('./orm')
 const {
-  BaseDao
+  BaseDao,
 } = require('./BaseDao')
 
 

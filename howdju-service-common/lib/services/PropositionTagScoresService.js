@@ -29,18 +29,20 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
     const startedAt = utcNow()
     const jobType = JobTypes.SCORE_PROPOSITION_TAGS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
-      // TODO(1,2,3): remove exception
-      // eslint-disable-next-line promise/no-nesting
       .then( (job) => Promise.all([
         this.propositionTagVotesDao.readVotes(),
-        this.propositionTagScoresDao.deleteScoresForType(PropositionTagScoreTypes.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+        this.propositionTagScoresDao.deleteScoresForType(PropositionTagScoreTypes.GLOBAL_VOTE_SUM, job.startedAt, job.id),
       ])
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         .then( ([votes, deletions]) => {
           this.logger.info(`Deleted ${deletions.length} scores`)
           this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
           return votes
         })
         .then( (votes) => this.processVoteScores(job, votes, this.createPropositionTagScore))
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
         .then( () => {
           const completedAt = utcNow()
@@ -59,17 +61,17 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
     const startedAt = utcNow()
     this.logger.silly(`Starting updatePropositionTagScoresUsingUnscoredVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_PROPOSITION_TAGS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
-      // TODO(1,2,3): remove exception
-      // eslint-disable-next-line promise/no-nesting
       .then( (job) =>
-        // TODO(1,2,3): remove exception
-        // eslint-disable-next-line promise/no-nesting
         this.propositionTagScoresDao.readUnscoredVotesForScoreType(PropositionTagScoreTypes.GLOBAL_VOTE_SUM)
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           .then( (votes) => {
             this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
             return votes
           })
           .then( (votes) => this.processVoteScores(job, votes, this.createSummedPropositionTagScore))
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
           .then( () => {
             const completedAt = utcNow()

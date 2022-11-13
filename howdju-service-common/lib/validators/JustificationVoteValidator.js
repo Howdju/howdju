@@ -31,7 +31,7 @@ JustificationVoteValidator.blankErrors = () => ({
   fieldErrors: {
     justificationId: [],
     polarity: [],
-  }
+  },
 })
 
 exports.JustificationVoteValidator = JustificationVoteValidator

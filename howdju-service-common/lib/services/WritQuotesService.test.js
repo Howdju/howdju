@@ -1,7 +1,7 @@
 const moment = require('moment')
 
 const {
-  mockLogger
+  mockLogger,
 } = require('howdju-test-common')
 
 const { WritQuotesService } = require("./WritQuotesService")
@@ -14,7 +14,7 @@ describe('WritQuotesService', () => {
       const title = "The Gettysburg address"
       const url = "http://history.com"
       const urls = [
-        {url}
+        {url},
       ]
       const writQuoteInput = {
         quoteText,
@@ -50,7 +50,7 @@ describe('WritQuotesService', () => {
         createWrit: jest.fn(() => dbWrit),
       }
       const urlsService = {
-        readOrCreateUrlsAsUser: jest.fn(() => dbUrls)
+        readOrCreateUrlsAsUser: jest.fn(() => dbUrls),
       }
       const writQuotesDao = {
         createWritQuote: jest.fn(() => dbWritQuote),
@@ -88,7 +88,7 @@ describe('WritQuotesService', () => {
       const title = "The Gettysburg address"
       const url = "http://history.com"
       const urls = [
-        {url}
+        {url},
       ]
       const writQuoteInput = {
         quoteText,
@@ -120,7 +120,7 @@ describe('WritQuotesService', () => {
         readWritEquivalentTo: jest.fn(() => dbWrit),
       }
       const urlsService = {
-        readOrCreateUrlsAsUser: jest.fn(() => urls)
+        readOrCreateUrlsAsUser: jest.fn(() => urls),
       }
       const writQuotesDao = {
         readWritQuoteEquivalentTo: jest.fn(() => null),
@@ -159,7 +159,7 @@ describe('WritQuotesService', () => {
       const title = "The Gettysburg address"
       const url = "http://history.com"
       const urls = [
-        {url}
+        {url},
       ]
       const writQuoteInput = {
         quoteText,
@@ -194,7 +194,7 @@ describe('WritQuotesService', () => {
         readWritEquivalentTo: jest.fn(() => dbWrit),
       }
       const urlsService = {
-        readOrCreateUrlsAsUser: jest.fn()
+        readOrCreateUrlsAsUser: jest.fn(),
       }
       const writQuotesDao = {
         readWritQuoteEquivalentTo: jest.fn(() => dbWritQuote),
@@ -230,6 +230,6 @@ describe('WritQuotesService', () => {
       expect(writQuoteOutput).toEqual(expectedWritQuoteOutput)
       expect(writQuotesDao.createWritQuoteUrls).not.toHaveBeenCalled()
     })
-    it('reuses extant Urls', () => {})
+    // TODO it 'reuses extant Urls'
   })
 })

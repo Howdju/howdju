@@ -6,16 +6,18 @@ const {
   urlSchema,
 } = require('./validationSchemas')
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "assertValid", "assertInvalid"] }] */
+
 describe('propositionSchema', () => {
   test('validates a valid proposition', () => {
     const proposition = {
-      text: 'a proposition'
+      text: 'a proposition',
     }
     assertValid(proposition, propositionSchema)
   })
   test('validates a valid extant proposition', () => {
     const proposition = {
-      id: '1'
+      id: '1',
     }
     assertValid(proposition, propositionSchema)
   })
@@ -39,8 +41,8 @@ describe('persorgSchema', () => {
       "created": "2018-11-02T05:12:24.318Z",
       "creator": {
         "id": "86",
-        "externalIds": null
-      }
+        "externalIds": null,
+      },
     }
     const expected = {
       "id": "1",
@@ -85,18 +87,18 @@ describe('statementSchema', () => {
         "text": "Test statement",
         "tags": [
           {
-            "name": "with tag"
-          }
+            "name": "with tag",
+          },
         ],
         "propositionTagVotes": [
           {
             "polarity": "POSITIVE",
             "tag": {
-              "name": "with tag"
+              "name": "with tag",
             },
-          }
-        ]
-      }
+          },
+        ],
+      },
     }
     assertValid(statement, statementSchema)
   })
@@ -107,13 +109,13 @@ describe('justificationSchema', () => {
     const justification = {
       "rootTargetType": "PROPOSITION",
       "rootTarget": {
-        "id": "1528"
+        "id": "1528",
       },
       "target": {
         "type": "JUSTIFICATION",
         "entity": {
-          "id": "2020"
-        }
+          "id": "2020",
+        },
       },
       "basis": {
         "type": "PROPOSITION_COMPOUND",
@@ -121,13 +123,13 @@ describe('justificationSchema', () => {
           "atoms": [
             {
               "entity": {
-                "text": "Test counter"
-              }
-            }
-          ]
-        }
+                "text": "Test counter",
+              },
+            },
+          ],
+        },
       },
-      "polarity": "NEGATIVE"
+      "polarity": "NEGATIVE",
     }
 
     assertValid(justification, justificationSchema)
@@ -148,9 +150,9 @@ describe('urlSchema', () => {
             suffix: 'after',
             start: 1,
             end: 10,
-          }
-        ]
-      }
+          },
+        ],
+      },
     }
     assertValid(url, urlSchema)
   })
@@ -167,7 +169,7 @@ function assertValid(input, schema, expected = null) {
 
 function assertInvalid(input, schema) {
   const {value, error} = schema.validate(input, {
-    abortEarly: false
+    abortEarly: false,
   })
   expect(error).toBeTruthy()
   expect(value).toEqual(input)

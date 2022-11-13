@@ -30,8 +30,8 @@ class PropositionCompoundValidator {
     } else {
       errors.fieldErrors.atoms.itemErrors = map(propositionCompound.atoms, atom => ({
         fieldErrors: {
-          entity: this.propositionValidator.validate(atom.entity)
-        }
+          entity: this.propositionValidator.validate(atom.entity),
+        },
       }))
       if (some(errors.fieldErrors.atoms.itemErrors, i => i.fieldErrors.entity.hasErrors)) {
         errors.hasErrors = true
@@ -48,8 +48,8 @@ PropositionCompoundValidator.blankErrors = () => ({
     atoms: {
       modelErrors: [],
       itemErrors: [],
-    }
-  }
+    },
+  },
 })
 
 exports.PropositionCompoundValidator = PropositionCompoundValidator

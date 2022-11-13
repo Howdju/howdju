@@ -38,22 +38,22 @@ exports.TextSearcher = class TextSearcher {
       {
         queryName: 'searchFullTextPhraseQuery',
         sql: this.searchFullTextPhraseQuery,
-        args: [normalSearchText]
+        args: [normalSearchText],
       },
       {
         queryName: 'searchFullTextPlainQuery',
         sql: this.searchFullTextPlainQuery,
-        args: [normalSearchText]
+        args: [normalSearchText],
       },
       {
         queryName: 'searchFullTextRawQuery',
         sql: makeSearchFullTextRawQuery(this.tableName, this.textColumnName, tsquery),
-        args: searchTextWords
+        args: searchTextWords,
       },
       {
         queryName: 'searchContainingTextQuery',
         sql: this.searchContainingTextQuery,
-        args: [normalSearchText]
+        args: [normalSearchText],
       },
     ]).then( ([
       {rows: phraseRows},

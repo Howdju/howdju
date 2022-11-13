@@ -1,7 +1,7 @@
 const Joi = require('joi').extend(require('@joi/date'))
 
 const {
-  extractDomain
+  extractDomain,
 } = require('howdju-common')
 
 module.exports = Joi.extend((joi) => ({
@@ -20,8 +20,8 @@ module.exports = Joi.extend((joi) => ({
           name: 'pattern',
           ref: true,
           assert: (arg) => arg instanceof RegExp,
-          message: 'must be a RegExp'
-        }
+          message: 'must be a RegExp',
+        },
       ],
       validate(value, helpers, {pattern}) {
         const domain = extractDomain(value)
@@ -29,8 +29,8 @@ module.exports = Joi.extend((joi) => ({
           return helpers.error('string.domainMatches', { value, pattern })
         }
         return value
-      }
+      },
 
-    }
+    },
   },
 }))

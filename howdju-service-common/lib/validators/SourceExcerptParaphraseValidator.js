@@ -46,7 +46,7 @@ SourceExcerptParaphraseValidator.blankErrors = () => ({
   fieldErrors: {
     paraphrasingProposition: PropositionValidator.blankErrors(),
     sourceExcerpt: SourceExcerptValidator.blankErrors(),
-  }
+  },
 })
 
 exports.SourceExcerptParaphraseValidator = SourceExcerptParaphraseValidator

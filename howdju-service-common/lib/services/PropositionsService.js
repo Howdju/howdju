@@ -34,7 +34,7 @@ const {
   PropositionValidator,
 } = require('../validators')
 const {
-  permissions
+  permissions,
 } = require('../permissions')
 const {
   createContinuationToken,
@@ -158,7 +158,7 @@ exports.PropositionsService = class PropositionsService {
         const nextContinuationToken = createNextContinuationToken(sorts, propositions, filters) || continuationToken
         return {
           propositions,
-          continuationToken: nextContinuationToken
+          continuationToken: nextContinuationToken,
         }
       })
   }
@@ -197,8 +197,8 @@ exports.PropositionsService = class PropositionsService {
             {
               hasErrors: true,
               fieldErrors: {
-                text: [entityConflictCodes.ANOTHER_PROPOSITION_HAS_EQUIVALENT_TEXT]
-              }
+                text: [entityConflictCodes.ANOTHER_PROPOSITION_HAS_EQUIVALENT_TEXT],
+              },
             }
           ))
         } else if (!hasPermission) {
@@ -220,7 +220,7 @@ exports.PropositionsService = class PropositionsService {
         return Promise.all([
           userId,
           now,
-          this.propositionsDao.updateProposition(proposition)
+          this.propositionsDao.updateProposition(proposition),
         ])
       })
       .then(([userId, now, updatedProposition]) => {
@@ -282,7 +282,7 @@ exports.PropositionsService = class PropositionsService {
         deletedJustificationIds,
         this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.PROPOSITION, deletedPropositionId),
         Promise.all(map(deletedJustificationIds, id =>
-          this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.JUSTIFICATION, id)))
+          this.actionsService.asyncRecordAction(userId, now, ActionTypes.DELETE, ActionTargetTypes.JUSTIFICATION, id))),
       ]))
       .then(([deletedPropositionId, deletedJustificationIds]) => ({
         deletedPropositionId,
@@ -316,7 +316,7 @@ exports.PropositionsService = class PropositionsService {
         if (proposition.id) {
           return Promise.props({
             isExtant: true,
-            proposition: this.readPropositionForId(proposition.id, {userId})
+            proposition: this.readPropositionForId(proposition.id, {userId}),
           })
         }
 

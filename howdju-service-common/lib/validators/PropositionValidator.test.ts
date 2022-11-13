@@ -1,7 +1,7 @@
-import {describe, expect, it} from '@jest/globals';
-import { makeProposition } from 'howdju-common';
-import { PropositionValidator } from './PropositionValidator';
-import { TagValidator } from './TagValidator';
+import {describe, expect, it} from '@jest/globals'
+import { makeProposition } from 'howdju-common'
+import { PropositionValidator } from './PropositionValidator'
+import { TagValidator } from './TagValidator'
 
 describe('PropsositionValidator', () => {
   it('validates a proposition', () => {
@@ -34,7 +34,7 @@ describe('PropsositionValidator', () => {
       modelErrors: [],
       fieldErrors: {
         text: [
-          "MUST_BE_NONEMPTY"
+          "MUST_BE_NONEMPTY",
         ],
         tags: {
           modelErrors: [],

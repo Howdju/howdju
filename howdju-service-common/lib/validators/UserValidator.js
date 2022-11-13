@@ -28,8 +28,8 @@ UserValidator.blankErrors = () => ({
   modelErrors: [],
   fieldErrors: {
     email: [],
-    password: []
-  }
+    password: [],
+  },
 })
 
 exports.UserValidator = UserValidator

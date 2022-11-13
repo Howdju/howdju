@@ -10,7 +10,7 @@ const {
 } = require('howdju-common')
 
 const {
-  EntityValidationError
+  EntityValidationError,
 } = require('../serviceErrors')
 
 exports.PropositionCompoundsService = class PropositionCompoundsService {
@@ -55,7 +55,7 @@ exports.PropositionCompoundsService = class PropositionCompoundsService {
       .then(([isExtant, propositionCompound, propositionCompoundAtoms]) => Promise.all([
         isExtant,
         propositionCompound,
-        isExtant ? propositionCompound.atoms : this.createPropositionCompoundAtoms(propositionCompound, propositionCompoundAtoms, userId, now)
+        isExtant ? propositionCompound.atoms : this.createPropositionCompoundAtoms(propositionCompound, propositionCompoundAtoms, userId, now),
       ]))
       .then(([isExtant, propositionCompound, propositionCompoundAtoms]) => {
         const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
@@ -82,7 +82,7 @@ exports.PropositionCompoundsService = class PropositionCompoundsService {
       }))
       .then(atoms => Promise.all([
         atoms,
-        Promise.all(map(atoms, (atom, index) => this.propositionCompoundsDao.createPropositionCompoundAtom(propositionCompound, atom, index)))
+        Promise.all(map(atoms, (atom, index) => this.propositionCompoundsDao.createPropositionCompoundAtom(propositionCompound, atom, index))),
       ]))
       .then(([atoms, dbAtoms]) => {
         // Merging ensures that both the proposition text and atom IDs will be present

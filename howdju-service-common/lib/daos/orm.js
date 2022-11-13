@@ -176,14 +176,14 @@ const toJustification = makeMapper(function toJustificationMapper (
     target: {
       type: row.target_type,
       entity: {
-        id: toIdString(row.target_id)
-      }
+        id: toIdString(row.target_id),
+      },
     },
     basis: {
       type: row.basis_type,
       entity: {
-        id: toIdString(row.basis_id)
-      }
+        id: toIdString(row.basis_id),
+      },
     },
     polarity: row.polarity,
     score: row.score,
@@ -303,7 +303,7 @@ const toWrit = makeMapper(function toWritMapper(row) {
 const toUrl = makeMapper(function toUrlMapper(row) {
   return {
     id: toIdString(row.url_id),
-    url: row.url
+    url: row.url,
   }
 })
 
@@ -476,8 +476,8 @@ const toSourceExcerptParaphrase = (row) => {
     sourceExcerpt: {
       type: row.source_excerpt_type,
       entity: {
-        id: row.source_excerpt_id
-      }
+        id: row.source_excerpt_id,
+      },
     },
   })
 
@@ -485,7 +485,7 @@ const toSourceExcerptParaphrase = (row) => {
     proposition_id: row.paraphrasing_proposition_id,
     text: row.paraphrasing_proposition_text,
     created: row.paraphrasing_proposition_created,
-    creator_user_id: row.paraphrasing_proposition_creator_user_id
+    creator_user_id: row.paraphrasing_proposition_creator_user_id,
   })
   if (paraphrasingProposition.id) {
     sourceExcerptParaphrase.paraphrasingProposition = paraphrasingProposition

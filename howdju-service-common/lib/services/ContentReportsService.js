@@ -4,7 +4,7 @@ const outdent = require('outdent')
 import {EntityValidationError} from "../serviceErrors"
 
 const {
-  schemaIds
+  schemaIds,
 } = require('howdju-common')
 import {validate} from 'howdju-ajv-sourced'
 import {topicMessages} from "./topicMessages"
@@ -46,7 +46,7 @@ async function sendContentReportNotificationEmail(self, contentReport, user) {
   const {email, username} = user
   const {
     html: contentReportTableHtml,
-    text: contentReportText
+    text: contentReportText,
   } = makeContentReportEmailContent(contentReport)
   const emailParams = {
     to: self.appConfig.contentReportNotificationEmails,
@@ -74,7 +74,7 @@ async function sendContentReportConfirmationEmail(self, contentReport, user) {
   const {email} = user
   const {
     html: contentReportTableHtml,
-    text: contentReportText
+    text: contentReportText,
   } = makeContentReportEmailContent(contentReport)
   const emailParams = {
     to: email,
@@ -133,6 +133,6 @@ function makeContentReportEmailContent(contentReport) {
       Entity type:\t${entityType}
       Entity ID:\t${entityId}
       Description:\t${description}
-    `
+    `,
   }
 }

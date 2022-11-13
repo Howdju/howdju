@@ -63,7 +63,7 @@ exports.WritsService = class WritsService {
         const nextContinuationToken = createNextContinuationToken(sorts, writs, filters) || continuationToken
         return {
           writs,
-          continuationToken: nextContinuationToken
+          continuationToken: nextContinuationToken,
         }
       })
   }
@@ -82,7 +82,7 @@ exports.WritsService = class WritsService {
         if (writ.id) {
           return Promise.props({
             isExtant: true,
-            writ: this.readWritForId(writ, {userId})
+            writ: this.readWritForId(writ, {userId}),
           })
         }
 
@@ -95,7 +95,7 @@ function readOrCreateEquivalentWritAsUser(service, writ, userId, now) {
   return service.writsDao.readWritEquivalentTo(writ)
     .then( (equivalentWrit) => Promise.all([
       !!equivalentWrit,
-      equivalentWrit || service.writsDao.createWrit(writ, userId, now)
+      equivalentWrit || service.writsDao.createWrit(writ, userId, now),
     ]))
     .then( ([isExtant, writ]) => {
       const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
@@ -103,7 +103,7 @@ function readOrCreateEquivalentWritAsUser(service, writ, userId, now) {
 
       return {
         isExtant,
-        writ
+        writ,
       }
     })
 }

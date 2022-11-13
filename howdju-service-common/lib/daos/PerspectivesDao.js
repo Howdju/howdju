@@ -249,7 +249,7 @@ exports.PerspectivesDao = class PerspectivesDao {
         let propositionCompound = propositionCompoundsById[row.basis_proposition_compound_id]
         if (!propositionCompound) {
           propositionCompoundsById[row.basis_proposition_compound_id] = propositionCompound = toPropositionCompound({
-            proposition_compound_id: row.basis_proposition_compound_id
+            proposition_compound_id: row.basis_proposition_compound_id,
           })
         }
 
@@ -280,7 +280,7 @@ exports.PerspectivesDao = class PerspectivesDao {
         let justificationBasisCompound = justificationBasisCompoundsById[row.basis_jbc_id]
         if (!justificationBasisCompound) {
           justificationBasisCompoundsById[row.basis_jbc_id] = justificationBasisCompound = toJustificationBasisCompound({
-            justification_basis_compound_id: row.basis_jbc_id
+            justification_basis_compound_id: row.basis_jbc_id,
           })
         }
 
@@ -348,7 +348,7 @@ exports.PerspectivesDao = class PerspectivesDao {
           if (!url) {
             urlsById[row.basis_writ_quote_url_id] = url = toUrl({
               url_id: row.basis_writ_quote_url_id,
-              url: row.basis_writ_quote_url_url
+              url: row.basis_writ_quote_url_url,
             })
           }
           let urls = urlsByWritQuoteId[writQuote.id]

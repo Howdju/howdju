@@ -21,7 +21,7 @@ exports.PropositionTagVotesService = class PropositionTagVotesService {
       propositionTagVoteValidator,
       authService,
       tagsService,
-      propositionTagVotesDao
+      propositionTagVotesDao,
     })
 
     this.logger = logger
@@ -67,12 +67,12 @@ exports.PropositionTagVotesService = class PropositionTagVotesService {
             this.tagsService.readTagForId(extantVote.tag.id),
           ])
         }
-        // TODO(1,2,3): remove exception
-        // eslint-disable-next-line promise/no-nesting
         return this.tagsService.readOrCreateValidTagAsUser(userId, propositionTagVote.tag, now)
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           .then((tag) => Promise.all([
             this.propositionTagVotesDao.readPropositionTagVote(userId, propositionTagVote.proposition.id, tag.id),
-            tag
+            tag,
           ]))
       })
       .then(([overlappingVote, tag]) => {
@@ -86,7 +86,7 @@ exports.PropositionTagVotesService = class PropositionTagVotesService {
           // overlapping vote contradicts new vote, so delete it
           return Promise.props({
             tag,
-            contradictoryVote: this.propositionTagVotesDao.deletePropositionTagVote(userId, overlappingVote.id, now)
+            contradictoryVote: this.propositionTagVotesDao.deletePropositionTagVote(userId, overlappingVote.id, now),
           })
         }
         return {tag}

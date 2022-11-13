@@ -68,14 +68,14 @@ function makeSesParams({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags
     Message: {
       Body: {
         Html: {
-          Data: bodyHtml
+          Data: bodyHtml,
         },
         Text: {
-          Data: bodyText
-        }
+          Data: bodyText,
+        },
       },
       Subject: {
-        Data: subject
+        Data: subject,
       },
     },
   }
@@ -110,7 +110,7 @@ function makeSesv2Params({from, to, cc, replyTo, subject, bodyHtml, bodyText, ta
           },
           Text: {
             Data: bodyText,
-          }
+          },
         },
       },
     },

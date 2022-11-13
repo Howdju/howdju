@@ -73,7 +73,7 @@ SourceExcerptValidator.blankErrors = (type) => {
     fieldErrors: {
       type: [],
       entity: blankEntityErrors,
-    }
+    },
   }
 }
 

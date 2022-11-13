@@ -17,7 +17,7 @@ const {
 } = require('howdju-common')
 
 const {
-  HashTypes
+  HashTypes,
 } = require('../hashTypes')
 const {
   EntityValidationError,
@@ -98,7 +98,7 @@ async function processRegistrationConflicts(self, registrationRequest) {
   if (await self.registrationRequestsDao.isEmailInUse(email)) {
     fieldErrors.email = [{
       code: EntityErrorCodes.EMAIL_TAKEN,
-      value: email
+      value: email,
     }]
   }
   if (keys(fieldErrors).length > 0) {

@@ -1,5 +1,5 @@
 const {
-  requireArgs
+  requireArgs,
 } = require('howdju-common')
 
 const {

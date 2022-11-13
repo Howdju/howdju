@@ -1,7 +1,7 @@
 const toString = require('lodash/toString')
 
 const {
-  requireArgs
+  requireArgs,
 } = require('howdju-common')
 
 exports.PermissionsDao = class PermissionsDao {

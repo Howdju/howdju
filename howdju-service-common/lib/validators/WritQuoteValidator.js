@@ -61,7 +61,7 @@ WritQuoteValidator.blankErrors = () => ({
     urls: {
       modelErrors: [],
       itemErrors: [],
-    }
+    },
   },
 })
 

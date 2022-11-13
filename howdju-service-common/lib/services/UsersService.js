@@ -13,7 +13,7 @@ const {
 
 
 const {
-  permissions
+  permissions,
 } = require('../permissions')
 const {
   EntityValidationError,

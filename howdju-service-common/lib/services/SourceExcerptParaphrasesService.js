@@ -74,7 +74,7 @@ function readSourceExcerptParaphraseForId(
         sourceExcerptParaphrase.sourceExcerpt.type,
         sourceExcerptParaphrase.sourceExcerpt.entity.id,
         userId
-      )
+      ),
     ]))
     .then( ([sourceExcerptParaphrase, paraphrasingProposition, sourceExcerptEntity]) => {
       sourceExcerptParaphrase.paraphrasingProposition = paraphrasingProposition
@@ -115,7 +115,7 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
   ])
     .then( ([
       {isExtant: isPropositionExtant, proposition},
-      {isExtant: isSourceExcerptExtant, sourceExcerptEntity}
+      {isExtant: isSourceExcerptExtant, sourceExcerptEntity},
     ]) => {
       if (isPropositionExtant && isSourceExcerptExtant) {
         service.logger.debug(`Found extant proposition (ID ${proposition.id}) and sourceExcerpt (ID ${sourceExcerptEntity.id}  Attempting to find extant sourceExcerptParaphrase from them.`)
@@ -131,16 +131,16 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
               extantSourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
               return {
                 isExtant: true,
-                sourceExcerptParaphrase: extantSourceExcerptParaphrase
+                sourceExcerptParaphrase: extantSourceExcerptParaphrase,
               }
             }
 
             service.logger.debug(`Did not find extant sourceExcerptParaphrase based upon proposition and sourceExcerpt`)
             sourceExcerptParaphrase.paraphrasingProposition = proposition
             sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
-            // TODO(1,2,3): remove exception
-            // eslint-disable-next-line promise/no-nesting
             return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
+              // TODO(1,2,3): remove exception
+              // eslint-disable-next-line promise/no-nesting
               .then( (sourceExcerptParaphrase) => {
                 service.logger.debug(`Created sourceExcerptParaphrase (ID ${sourceExcerptParaphrase.id})`)
                 return {
@@ -152,9 +152,9 @@ function readOrCreateEquivalentValidSourceExcerptParaphraseAsUser(
       }
       sourceExcerptParaphrase.paraphrasingProposition = proposition
       sourceExcerptParaphrase.sourceExcerpt.entity = sourceExcerptEntity
-      // TODO(1,2,3): remove exception
-      // eslint-disable-next-line promise/no-nesting
       return service.sourceExcerptParaphrasesDao.createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now)
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         .then( (sourceExcerptParaphrase) => {
           service.logger.debug(`Created sourceExcerptParaphrase (ID ${sourceExcerptParaphrase.id})`)
           return {

@@ -13,7 +13,7 @@ const {
 } = require('howdju-common')
 
 const {
-  EntityValidationError
+  EntityValidationError,
 } = require('../serviceErrors')
 
 
@@ -33,7 +33,7 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
       actionsService,
       propositionsService,
       sourceExcerptParaphrasesService,
-      justificationBasisCompoundsDao
+      justificationBasisCompoundsDao,
     })
 
     this.logger = logger
@@ -71,7 +71,7 @@ exports.JustificationBasisCompoundsService = class JustificationBasisCompoundsSe
         if (justificationBasisCompound.id) {
           return Promise.props({
             isExtant: true,
-            justificationBasisCompound: this.readJustificationBasisCompoundForId(justificationBasisCompound.id)
+            justificationBasisCompound: this.readJustificationBasisCompoundForId(justificationBasisCompound.id),
           })
         }
 
@@ -92,7 +92,7 @@ function readJustificationBasisCompoundForId(
         service,
         justificationBasisCompound,
         userId
-      )
+      ),
     ]))
     .then( ([justificationBasisCompound, atoms]) => {
       if (atoms) {
@@ -117,9 +117,9 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
     .then( (atomWrappers) => {
       if (every(atomWrappers, ({isExtant}) => isExtant)) {
         const atoms = map(atomWrappers, ({atom}) => atom)
-        // TODO(1,2,3): remove exception
-        // eslint-disable-next-line promise/no-nesting
         return service.justificationBasisCompoundsDao.readJustificationBasisCompoundHavingAtoms(atoms)
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           .then( (justificationBasisCompound) => {
             if (justificationBasisCompound) {
               // The atoms on the justificationBasisCompound will have their atom ID, and the ones previously read will have the entities with IDs
@@ -132,8 +132,6 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
               }
             }
 
-            // TODO(1,2,3): remove exception
-            // eslint-disable-next-line promise/no-nesting
             return createJustificationBasisCompoundHavingAtoms(
               service,
               justificationBasisCompound,
@@ -141,16 +139,16 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
               userId,
               now
             )
+              // TODO(1,2,3): remove exception
+              // eslint-disable-next-line promise/no-nesting
               .then( (justificationBasisCompound) => ({
                 isExtant: false,
-                justificationBasisCompound
+                justificationBasisCompound,
               }))
           })
       }
 
       const atoms = map(atomWrappers, ({atom}) => atom)
-      // TODO(1,2,3): remove exception
-      // eslint-disable-next-line promise/no-nesting
       return createJustificationBasisCompoundHavingAtoms(
         service,
         justificationBasisCompound,
@@ -158,9 +156,11 @@ function readOrCreateEquivalentValidJustificationBasisCompoundAsUser(
         userId,
         now
       )
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         .then( (justificationBasisCompound) => ({
           isExtant: false,
-          justificationBasisCompound
+          justificationBasisCompound,
         }))
     })
     .then( ({isExtant, justificationBasisCompound}) => {
@@ -188,7 +188,7 @@ function readAtomsForCompound(
           atom.entity.id,
           userId
         )
-      ))
+      )),
     ]))
     .then( ([atoms, entities]) => {
       forEach(zip(atoms, entities), ([atom, entity], index) => {
@@ -222,7 +222,7 @@ function createJustificationBasisCompoundHavingAtoms(
           justificationBasisCompound,
           atom,
           index
-        )))
+        ))),
       ])
     })
     .then( ([justificationBasisCompound, atoms]) => {

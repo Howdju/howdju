@@ -27,7 +27,7 @@ WritValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    title: []
+    title: [],
   },
 })
 
