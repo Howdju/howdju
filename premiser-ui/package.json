@@ -68,7 +68,7 @@
     "debug": "^4.3.1",
     "dns-sync": "^0.2.1",
     "esbuild": "^0.15.10",
-    "eslint": "^8.27.0",
+    "eslint": "^7.23.0",
     "eslint-config-howdju": "^1.0.0",
     "eslint-plugin-jest": "^27.1.4",
     "eslint-plugin-jest-dom": "^4.0.2",
