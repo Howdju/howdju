@@ -1,5 +1,5 @@
 const {
-  mockLogger
+  mockLogger,
 } = require('howdju-test-common')
 const {
   httpMethods,

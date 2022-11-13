@@ -34,7 +34,7 @@ exports.init = function init(provider) {
 
   assign(provider, {
     pool,
-    database: new Database(provider.logger, pool)
+    database: new Database(provider.logger, pool),
   })
 
   provider.logger.debug('databaseInit complete')

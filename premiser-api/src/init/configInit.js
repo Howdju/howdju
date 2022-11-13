@@ -2,7 +2,7 @@ const isArray = require('lodash/isArray')
 const merge = require('lodash/merge')
 
 const {
-  arrayToObject
+  arrayToObject,
 } = require('howdju-common')
 
 exports.init = function init(provider) {

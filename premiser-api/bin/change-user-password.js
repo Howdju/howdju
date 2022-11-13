@@ -8,11 +8,11 @@ const {AppProvider} = require('../src/init')
 const appProvider = new AppProvider()
 const {
   usersService,
-  pool
+  pool,
 } = appProvider
 
 const parser = new ArgumentParser({
-  description: 'Change a user password'
+  description: 'Change a user password',
 })
 parser.add_argument('--email', {required: true})
 const args = parser.parse_args()

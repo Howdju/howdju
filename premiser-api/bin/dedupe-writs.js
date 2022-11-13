@@ -44,7 +44,7 @@ function dedupeWrits() {
             `update writ_quotes set writ_id = $1 where writ_id = any ($2)`,
             [minDuplicateWritId, duplicateWritIds]
           )
-        ))
+        )),
       ])
     })
     // .then( ([duplicateWritIdsByMinDuplicateWritId]) => {

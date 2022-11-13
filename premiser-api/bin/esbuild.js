@@ -2,7 +2,7 @@ const {esbuilder} = require('./esbuilder')
 const {ArgumentParser} = require('argparse')
 
 const argParser = new ArgumentParser({
-  description: 'Run ESBuild with plugins etc.'
+  description: 'Run ESBuild with plugins etc.',
 })
 argParser.add_argument('--entryPoint', {dest: 'entryPoints', nargs: '+', default: ['src/index.js']})
 argParser.add_argument('--outfile', {default: 'dist/index.js'})

@@ -1,5 +1,5 @@
 const {
-  CircularReferenceDetector
+  CircularReferenceDetector,
 } = require('howdju-service-common/lib/util/CircularReferenceDetector')
 
 exports.init = function init(provider) {

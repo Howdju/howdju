@@ -28,7 +28,7 @@ app.use('/api/*', function (req, res) {
   const event = {
     headers: req.headers,
     pathParameters: {
-      proxy: req.baseUrl.substring('/api/'.length)
+      proxy: req.baseUrl.substring('/api/'.length),
     },
     httpMethod: req.method,
     queryStringParameters: req.query,
