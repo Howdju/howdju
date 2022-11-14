@@ -1,37 +1,40 @@
-import React from 'react'
-import {goBack} from 'connected-react-router'
-import {Button, Card, CardActions, CardText, CardTitle, CircularProgress, FocusContainer} from 'react-md'
-import {connect} from 'react-redux'
-import Helmet from './Helmet'
-import cn from 'classnames'
-import get from 'lodash/get'
-
+import React from "react";
+import { goBack } from "connected-react-router";
 import {
-  keysTo,
-  schemaIds,
-  schemaSettings,
-} from 'howdju-common'
-import {validate} from 'howdju-ajv-sourced'
+  Button,
+  Card,
+  CardActions,
+  CardText,
+  CardTitle,
+  CircularProgress,
+  FocusContainer,
+} from "react-md";
+import { connect } from "react-redux";
+import Helmet from "./Helmet";
+import cn from "classnames";
+import get from "lodash/get";
 
-import {api, pages, mapActionCreatorGroupToDispatchToProps} from './actions'
-import {selectAuthEmail, selectPasswordResetRequestPage} from './selectors'
-import EmailTextField from './EmailTextField'
-import moment from 'moment'
+import { keysTo, schemaIds, schemaSettings } from "howdju-common";
+import { validate } from "howdju-ajv-sourced";
+
+import { api, pages, mapActionCreatorGroupToDispatchToProps } from "./actions";
+import { selectAuthEmail, selectPasswordResetRequestPage } from "./selectors";
+import EmailTextField from "./EmailTextField";
+import moment from "moment";
 
 class PasswordResetRequestPage extends React.Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       // Which components should show their errors
       blurredInputs: {},
       dirtyInputs: {},
       wasSubmitAttempted: false,
-    }
+    };
   }
 
   componentDidMount() {
-    this.props.pages.beginPasswordResetRequest()
+    this.props.pages.beginPasswordResetRequest();
   }
 
   render() {
@@ -42,22 +45,26 @@ class PasswordResetRequestPage extends React.Component {
       isSubmitted,
       errors: apiErrors,
       duration,
-    } = this.props
-    const {
-      blurredInputs,
-      dirtyInputs,
-      wasSubmitAttempted,
-    } = this.state
+    } = this.props;
+    const { blurredInputs, dirtyInputs, wasSubmitAttempted } = this.state;
 
-    const {isValid, errors: validationErrors} = validate(schemaIds.passwordResetRequest, passwordResetRequest)
+    const { isValid, errors: validationErrors } = validate(
+      schemaIds.passwordResetRequest,
+      passwordResetRequest
+    );
 
-    const email = dirtyInputs.email ? passwordResetRequest.email : (authEmail || '')
+    const email = dirtyInputs.email
+      ? passwordResetRequest.email
+      : authEmail || "";
 
-    const errorMessage = !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
+    const errorMessage =
+      !wasSubmitAttempted || isValid ? null : "Please correct the errors below";
 
-    const submitButtonTitle = isValid ? 'Request password reset' : wasSubmitAttempted ?
-      'Please correct the errors to continue' :
-      'Please complete the form to continue'
+    const submitButtonTitle = isValid
+      ? "Request password reset"
+      : wasSubmitAttempted
+      ? "Please correct the errors to continue"
+      : "Please complete the form to continue";
 
     const form = (
       <form onSubmit={this.onSubmit}>
@@ -75,12 +82,14 @@ class PasswordResetRequestPage extends React.Component {
               required
               error={
                 (blurredInputs.email || wasSubmitAttempted) &&
-                (!!validationErrors.email || get(apiErrors, 'email.value') === email)
+                (!!validationErrors.email ||
+                  get(apiErrors, "email.value") === email)
               }
               errorText={
                 <React.Fragment>
-                  {validationErrors.email && 'Please enter a valid email.'}
-                  {get(apiErrors, 'email.value') === email && 'That email was not found'}
+                  {validationErrors.email && "Please enter a valid email."}
+                  {get(apiErrors, "email.value") === email &&
+                    "That email was not found"}
                 </React.Fragment>
               }
             />
@@ -101,22 +110,28 @@ class PasswordResetRequestPage extends React.Component {
               children="Request"
               disabled={isSubmitting}
               title={submitButtonTitle}
-              className={cn({'md-btn--raised-disabled': !isValid, 'md-text--disabled': !isValid})}
+              className={cn({
+                "md-btn--raised-disabled": !isValid,
+                "md-text--disabled": !isValid,
+              })}
               onClick={(event) => this.onClickSubmit(event, isValid)}
             />
           </CardActions>
         </FocusContainer>
       </form>
-    )
+    );
 
-    const durationText = duration &&
-      moment.duration(duration.value).format(duration.formatTemplate, {trim: duration.formatTrim})
-    const submissionMessage =
+    const durationText =
+      duration &&
+      moment
+        .duration(duration.value)
+        .format(duration.formatTemplate, { trim: duration.formatTrim });
+    const submissionMessage = (
       <React.Fragment>
         <CardText>
-          Please check your email to complete your password reset.
-          You must complete the password reset within {durationText}.  If your password reset expires, please request
-          a password reset again.
+          Please check your email to complete your password reset. You must
+          complete the password reset within {durationText}. If your password
+          reset expires, please request a password reset again.
         </CardText>
         <CardActions>
           <Button
@@ -127,6 +142,7 @@ class PasswordResetRequestPage extends React.Component {
           />
         </CardActions>
       </React.Fragment>
+    );
 
     return (
       <div id="password-reset-page">
@@ -136,78 +152,79 @@ class PasswordResetRequestPage extends React.Component {
         <div className="md-grid">
           <div className="md-cell md-cell--12">
             <Card>
-              <CardTitle
-                title="Request Password Reset"
-              />
-              {errorMessage &&
-                <CardText className="error-message">
-                  {errorMessage}
-                </CardText>
-              }
+              <CardTitle title="Request Password Reset" />
+              {errorMessage && (
+                <CardText className="error-message">{errorMessage}</CardText>
+              )}
               {isSubmitted ? submissionMessage : form}
             </Card>
           </div>
         </div>
       </div>
-    )
+    );
   }
-
 
   onPropertyChange = (properties) => {
-    const newDirtyInputs = keysTo(properties, true)
+    const newDirtyInputs = keysTo(properties, true);
     this.setState({
-      dirtyInputs: {...this.state.dirtyInputs, ...newDirtyInputs},
-    })
-    this.props.pages.passwordResetRequestPropertyChange(properties)
-  }
+      dirtyInputs: { ...this.state.dirtyInputs, ...newDirtyInputs },
+    });
+    this.props.pages.passwordResetRequestPropertyChange(properties);
+  };
 
   onBlur = (event) => {
-    const name = event.target.name
+    const name = event.target.name;
     if (name) {
       this.setState({
-        blurredInputs: {...this.state.blurredInputs, [name]: true},
-      })
+        blurredInputs: { ...this.state.blurredInputs, [name]: true },
+      });
     }
-  }
+  };
 
   onSubmit = (event) => {
-    event.preventDefault()
-    this.props.api.requestPasswordReset(this.props.passwordResetRequest)
-  }
+    event.preventDefault();
+    this.props.api.requestPasswordReset(this.props.passwordResetRequest);
+  };
 
   onClickSubmit = (event, isValid) => {
     if (!isValid) {
-      event.preventDefault()
+      event.preventDefault();
     }
     this.setState({
       wasSubmitAttempted: true,
-    })
-  }
+    });
+  };
 
   onCancel = () => {
-    this.props.goBack()
-  }
+    this.props.goBack();
+  };
 
   resetSubmission = () => {
     this.setState({
       blurredInputs: {},
       wasSubmitAttempted: false,
-    })
-    this.props.pages.beginPasswordResetRequest()
-  }
+    });
+    this.props.pages.beginPasswordResetRequest();
+  };
 }
 
-const mapStateToProps = state => {
-  const authEmail = selectAuthEmail(state)
+const mapStateToProps = (state) => {
+  const authEmail = selectAuthEmail(state);
   return {
     authEmail,
     ...selectPasswordResetRequestPage(state),
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-  api,
-  pages,
-}, {
-  goBack,
-}))(PasswordResetRequestPage)
+export default connect(
+  mapStateToProps,
+  mapActionCreatorGroupToDispatchToProps(
+    {
+      api,
+      pages,
+    },
+    {
+      goBack,
+    }
+  )
+)(PasswordResetRequestPage);

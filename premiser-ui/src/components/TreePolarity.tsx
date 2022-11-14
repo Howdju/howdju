@@ -1,25 +1,25 @@
-import React, { ReactNode } from 'react'
-import cn from 'classnames'
-import { JustificationPolarities, JustificationPolarity } from 'howdju-common'
+import React, { ReactNode } from "react";
+import cn from "classnames";
+import { JustificationPolarities, JustificationPolarity } from "howdju-common";
 
-import './TreePolarity.scss'
+import "./TreePolarity.scss";
 
 interface Props {
-  polarity: JustificationPolarity
-  children: ReactNode
+  polarity: JustificationPolarity;
+  children: ReactNode;
 }
 // Offsets and colors justifications in a tree according to their polarity.
 export default function TreePolarityOffsetter({ polarity, children }: Props) {
-  const isPositive = polarity === JustificationPolarities.POSITIVE
-  const isNegative = polarity === JustificationPolarities.NEGATIVE
+  const isPositive = polarity === JustificationPolarities.POSITIVE;
+  const isNegative = polarity === JustificationPolarities.NEGATIVE;
   return (
     <div
       className={cn({
-        'tree-polarity--positive': isPositive,
-        'tree-polarity--negative': isNegative,
+        "tree-polarity--positive": isPositive,
+        "tree-polarity--negative": isNegative,
       })}
     >
       {children}
     </div>
-  )
+  );
 }

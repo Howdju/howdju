@@ -4,8 +4,9 @@
 .chat-bubble {
   background-color: #fff;
 
-  &, &.md-grid {
-    margin-top: 1.0em;
+  &,
+  &.md-grid {
+    margin-top: 1em;
   }
   .justification-tree:first-child > & {
     margin-top: 0;

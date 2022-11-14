@@ -1,1 +1,1 @@
-module.exports = require('./handling')
+module.exports = require("./handling");

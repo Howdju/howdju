@@ -1,32 +1,32 @@
-import CopyPlugin from 'copy-webpack-plugin'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import webpack from 'webpack'
+import CopyPlugin from "copy-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import webpack from "webpack";
 // import Visualizer from 'webpack-visualizer-plugin2'
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
-import { utcTimestamp } from 'howdju-common'
+import { utcTimestamp } from "howdju-common";
 
-import { gitSha } from "howdju-ops"
-import packageInfo from '../package.json'
-import projectConfig from './project.config'
-import type HtmlWebpackPlugin from 'html-webpack-plugin'
+import { gitSha } from "howdju-ops";
+import packageInfo from "../package.json";
+import projectConfig from "./project.config";
+import type HtmlWebpackPlugin from "html-webpack-plugin";
 
 export const htmlWebpackPluginConfig: HtmlWebpackPlugin.Options = {
   smallChat: true,
   googleAnalytics: {
-    trackingId: 'UA-104314283-1',
+    trackingId: "UA-104314283-1",
   },
   // mixpanel: {
   //   trackingId: 'cfedfc23579bf718b9e5704f6f6d85bd',
   // },
-}
+};
 
-const apiRoot = process.env.API_ROOT || 'https://api.howdju.com/api/'
+const apiRoot = process.env.API_ROOT || "https://api.howdju.com/api/";
 export const definePluginConfig = {
-  'process.env.API_ROOT': JSON.stringify(apiRoot),
-  'process.env.DO_ASSERT': JSON.stringify(false),
-  'process.env.SENTRY_ENABLED': JSON.stringify(true),
-}
+  "process.env.API_ROOT": JSON.stringify(apiRoot),
+  "process.env.DO_ASSERT": JSON.stringify(false),
+  "process.env.SENTRY_ENABLED": JSON.stringify(true),
+};
 
 /*
 Supposed to support more stuff like this:
@@ -43,7 +43,7 @@ Supposed to support more stuff like this:
 const banner = `name: ${projectConfig.names.js}
 version: ${packageInfo.version}
 timstamp: ${utcTimestamp()}
-git_commit: ${gitSha()}`
+git_commit: ${gitSha()}`;
 
 export const webpackConfig = {
   /*
@@ -56,7 +56,7 @@ export const webpackConfig = {
   - nosources-source-map - A SourceMap is created without the sourcesContent in it.
     It can be used to map stack traces on the client without exposing all of the source code.
    */
-  devtool: 'source-map',
+  devtool: "source-map",
   plugins: [
     new webpack.BannerPlugin({
       banner: banner,
@@ -65,7 +65,7 @@ export const webpackConfig = {
     }),
     new CopyPlugin({
       patterns: [
-        {from: projectConfig.paths.src('error.html')},
+        { from: projectConfig.paths.src("error.html") },
         // Copy everything from public directly into dist, except for the fonts, which the client requests from CDN in prod
         {
           from: projectConfig.paths.public(),
@@ -85,11 +85,8 @@ export const webpackConfig = {
   ],
   optimization: {
     minimize: true,
-    moduleIds: 'named',
-    minimizer: [
-      `...`,
-      new CssMinimizerPlugin(),
-    ],
+    moduleIds: "named",
+    minimizer: [`...`, new CssMinimizerPlugin()],
     emitOnErrors: true,
   },
-}
+};

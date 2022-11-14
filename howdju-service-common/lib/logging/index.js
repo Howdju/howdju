@@ -1,1 +1,1 @@
-export * from './AwsLogger'
+export * from "./AwsLogger";

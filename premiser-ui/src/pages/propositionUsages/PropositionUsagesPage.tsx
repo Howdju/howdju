@@ -1,87 +1,108 @@
-import React, { UIEvent, useEffect } from "react"
-import {Button, CircularProgress} from 'react-md'
-import get from 'lodash/get'
-import isEmpty from 'lodash/isEmpty'
-import map from 'lodash/map'
-import queryString from 'query-string'
-import {denormalize} from "normalizr"
+import React, { UIEvent, useEffect } from "react";
+import { Button, CircularProgress } from "react-md";
+import get from "lodash/get";
+import isEmpty from "lodash/isEmpty";
+import map from "lodash/map";
+import queryString from "query-string";
+import { denormalize } from "normalizr";
 
-import {
-  SentenceTypes,
-} from 'howdju-common'
+import { SentenceTypes } from "howdju-common";
 
-import {
-  api,
-} from "../../actions"
-import CellList from '../../CellList'
+import { api } from "../../actions";
+import CellList from "../../CellList";
 import {
   justificationsSchema,
   statementsSchema,
-} from '../../normalizationSchemas'
-import StatementCard from "../../StatementCard"
-import {combineIds} from '../../viewModels'
-import FlipMove from 'react-flip-move'
-import JustificationCard from '../../JustificationCard'
-import config from '../../config'
-import { useLocation } from "react-router"
-import { useAppDispatch, useAppSelector } from "@/hooks"
+} from "../../normalizationSchemas";
+import StatementCard from "../../StatementCard";
+import { combineIds } from "../../viewModels";
+import FlipMove from "react-flip-move";
+import JustificationCard from "../../JustificationCard";
+import config from "../../config";
+import { useLocation } from "react-router";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 
-
-const pageId = 'proposition-usages-page'
-const fetchCount = 20
+const pageId = "proposition-usages-page";
+const fetchCount = 20;
 
 export default function PropositionUsagesPage() {
+  const location = useLocation();
+  const propositionId = get(
+    queryString.parse(location.search),
+    "propositionId"
+  );
 
-  const location = useLocation()
-  const propositionId = get(queryString.parse(location.search), 'propositionId')
-
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   useEffect(() => {
     // TODO: add fetchInternalPropositionAppearances/fetchExternalPropositionAppearances
-    dispatch(api.fetchSentenceStatements(SentenceTypes.PROPOSITION, propositionId))
-    dispatch(api.fetchIndirectPropositionStatements(propositionId))
-    dispatch(api.fetchJustificationsSearch({filters: {propositionId}, count: fetchCount}))
-  }, [dispatch, propositionId])
+    dispatch(
+      api.fetchSentenceStatements(SentenceTypes.PROPOSITION, propositionId)
+    );
+    dispatch(api.fetchIndirectPropositionStatements(propositionId));
+    dispatch(
+      api.fetchJustificationsSearch({
+        filters: { propositionId },
+        count: fetchCount,
+      })
+    );
+  }, [dispatch, propositionId]);
 
-  const pageState = useAppSelector(state => state.propositionUsagesPage)
+  const pageState = useAppSelector((state) => state.propositionUsagesPage);
   const {
     isFetchingDirect,
     isFetchingIndirect,
     isFetchingJustifications,
     continuationToken,
-  } = pageState
-  const entities = useAppSelector(state => state.entities)
-  const directStatements = denormalize(pageState.directStatements, statementsSchema, entities)
-  const indirectStatements = denormalize(pageState.indirectStatements, statementsSchema, entities)
-  const justifications = denormalize(pageState.justifications, justificationsSchema, entities)
+  } = pageState;
+  const entities = useAppSelector((state) => state.entities);
+  const directStatements = denormalize(
+    pageState.directStatements,
+    statementsSchema,
+    entities
+  );
+  const indirectStatements = denormalize(
+    pageState.indirectStatements,
+    statementsSchema,
+    entities
+  );
+  const justifications = denormalize(
+    pageState.justifications,
+    justificationsSchema,
+    entities
+  );
 
   const fetchMoreJustifications = (event: UIEvent) => {
-    event.preventDefault()
-    dispatch(api.fetchJustificationsSearch({filters: {propositionId}, count: fetchCount, continuationToken}))
-  }
+    event.preventDefault();
+    dispatch(
+      api.fetchJustificationsSearch({
+        filters: { propositionId },
+        count: fetchCount,
+        continuationToken,
+      })
+    );
+  };
 
-  const hasDirectStatements = directStatements && directStatements.length > 0
-  const hasIndirectStatements = indirectStatements && indirectStatements.length > 0
-  const hasJustifications = !isEmpty(justifications)
+  const hasDirectStatements = directStatements && directStatements.length > 0;
+  const hasIndirectStatements =
+    indirectStatements && indirectStatements.length > 0;
+  const hasJustifications = !isEmpty(justifications);
 
   const fetchMoreJustificationsButton = (
-    <Button flat
-            key="fetch-more-button"
-            children="Fetch more"
-            disabled={isFetchingJustifications}
-            onClick={fetchMoreJustifications}
+    <Button
+      flat
+      key="fetch-more-button"
+      children="Fetch more"
+      disabled={isFetchingJustifications}
+      onClick={fetchMoreJustifications}
     />
-  )
+  );
 
   return (
     <div className="md-grid">
-
       <h1 className="md-cell md-cell--12">Direct Statements</h1>
-      <CellList
-        className="md-cell md-cell--12 center-text"
-      >
-        {map(directStatements, s => {
-          const id = combineIds(pageId, 'statement', s.id)
+      <CellList className="md-cell md-cell--12 center-text">
+        {map(directStatements, (s) => {
+          const id = combineIds(pageId, "statement", s.id);
           return (
             <StatementCard
               className="md-cell md-cell--12"
@@ -89,7 +110,7 @@ export default function PropositionUsagesPage() {
               key={id}
               statement={s}
             />
-          )
+          );
         })}
       </CellList>
       {!isFetchingDirect && !hasDirectStatements && (
@@ -104,11 +125,9 @@ export default function PropositionUsagesPage() {
       )}
 
       <h1 className="md-cell md-cell--12">Indirect Statements</h1>
-      <CellList
-        className="md-cell md-cell--12 center-text"
-      >
-        {map(indirectStatements, s => {
-          const id = combineIds(pageId, 'statement', s.id)
+      <CellList className="md-cell md-cell--12 center-text">
+        {map(indirectStatements, (s) => {
+          const id = combineIds(pageId, "statement", s.id);
           return (
             <StatementCard
               className="md-cell md-cell--12"
@@ -116,7 +135,7 @@ export default function PropositionUsagesPage() {
               key={id}
               statement={s}
             />
-          )
+          );
         })}
       </CellList>
       {!isFetchingIndirect && !hasIndirectStatements && (
@@ -134,10 +153,9 @@ export default function PropositionUsagesPage() {
       <FlipMove
         {...config.ui.flipMove}
         className="md-cell md-cell--12 center-text"
-
       >
-        {map(justifications, j => {
-          const id = `justification-card-${j.id}`
+        {map(justifications, (j) => {
+          const id = `justification-card-${j.id}`;
           return (
             <JustificationCard
               className="md-cell md-cell--12"
@@ -145,13 +163,11 @@ export default function PropositionUsagesPage() {
               key={id}
               justification={j}
             />
-          )
+          );
         })}
       </FlipMove>
       {!isFetchingJustifications && !hasJustifications && (
-        <div className="md-cell md-cell--12 text-center">
-          No justifications
-        </div>
+        <div className="md-cell md-cell--12 text-center">No justifications</div>
       )}
       {isFetchingJustifications && (
         <div className="md-cell md-cell--12 cell--centered-contents">
@@ -161,7 +177,6 @@ export default function PropositionUsagesPage() {
       <div className="md-cell md-cell--12 cell--centered-contents">
         {fetchMoreJustificationsButton}
       </div>
-
     </div>
-  )
+  );
 }

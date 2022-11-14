@@ -1,7 +1,8 @@
-@import './colors';
+@import "./colors";
 
 .error > .md-selection-control-group {
-  .md-btn.md-btn--icon, .md-selection-control-label {
+  .md-btn.md-btn--icon,
+  .md-selection-control-label {
     color: $error-color;
   }
 }

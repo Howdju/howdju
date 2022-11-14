@@ -1,29 +1,29 @@
-import { UrlTargetAnchorType } from "howdju-common"
+import { UrlTargetAnchorType } from "howdju-common";
 
 export interface ExtensionAnnotationContent {
-  type: 'text'
-  title: string
-  text: string
+  type: "text";
+  title: string;
+  text: string;
 }
 
 export interface Source {
-  url: string
-  title: string
+  url: string;
+  title: string;
 }
 
 export interface Target {
-  url: string
-  anchors: TextQuoteAnchor[]
-  date: Date
+  url: string;
+  anchors: TextQuoteAnchor[];
+  date: Date;
 }
 
 export interface TextQuoteAnchor {
-  type: UrlTargetAnchorType
+  type: UrlTargetAnchorType;
   // exact, prefix, and suffix come from dom-anchor-text-quote
-  exact: string
-  prefix: string
-  suffix: string
+  exact: string;
+  prefix: string;
+  suffix: string;
   // start, end come from dom-anchor-text-position
-  start: number
-  end: number
+  start: number;
+  end: number;
 }

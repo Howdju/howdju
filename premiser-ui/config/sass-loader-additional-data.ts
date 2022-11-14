@@ -1,6 +1,5 @@
-import { hostAddress } from './util'
-import { devWebServerPort } from 'howdju-ops'
-
+import { hostAddress } from "./util";
+import { devWebServerPort } from "howdju-ops";
 
 /** Extract out the sass-loader config because webpack.production.config.ts requires it for ExtractTextPlugin */
 
@@ -12,17 +11,20 @@ const devSassLoaderData =
   `$dev-font-url-lato-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Lato-Regular_Latin.woff2);` +
   `$dev-font-url-orbitron-regular-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Orbitron-Regular_Latin.woff2);` +
   `$dev-font-url-oswald-extra-light-latin-ext: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Oswald-ExtraLight_LatinExt.woff2);` +
-  `$dev-font-url-oswald-extra-light-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Oswald-ExtraLight_Latin.woff2);`
+  `$dev-font-url-oswald-extra-light-latin: url(http://${hostAddress()}:${devWebServerPort()}/fonts/Oswald-ExtraLight_Latin.woff2);`;
 
-const fontServerAuthority = process.env.NODE_ENV === 'development' ?
-  `http://${hostAddress()}:${devWebServerPort()}` :
-  'https://cdn.howdju.com'
+const fontServerAuthority =
+  process.env.NODE_ENV === "development"
+    ? `http://${hostAddress()}:${devWebServerPort()}`
+    : "https://cdn.howdju.com";
 const sassLoaderData =
   `$font-url-bebas-neue-thin: url(${fontServerAuthority}/fonts/BebasNeue-Thin.otf);` +
   `$font-url-bebas-neue-light: url(${fontServerAuthority}/fonts/BebasNeue-Light.otf);` +
   `$font-url-bebas-neue-book: url(${fontServerAuthority}/fonts/BebasNeue-Book.otf);` +
   `$font-url-bebas-neue-regular: url(${fontServerAuthority}/fonts/BebasNeue-Regular.otf);` +
-  `$font-url-bebas-neue-bold: url(${fontServerAuthority}/fonts/BebasNeue-Bold.otf);`
+  `$font-url-bebas-neue-bold: url(${fontServerAuthority}/fonts/BebasNeue-Bold.otf);`;
 
-export const sassLoaderAdditionalData = process.env.NODE_ENV === 'development' ?
-  sassLoaderData + devSassLoaderData : sassLoaderData
+export const sassLoaderAdditionalData =
+  process.env.NODE_ENV === "development"
+    ? sassLoaderData + devSassLoaderData
+    : sassLoaderData;

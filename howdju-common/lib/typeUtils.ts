@@ -1,5 +1,7 @@
 type ValueOf<Obj> = Obj[keyof Obj];
-type OneOnly<Obj, Key extends keyof Obj> = { [key in Exclude<keyof Obj, Key>]+?: undefined } & Pick<Obj, Key>;
+type OneOnly<Obj, Key extends keyof Obj> = {
+  [key in Exclude<keyof Obj, Key>]+?: undefined;
+} & Pick<Obj, Key>;
 type OneOfByKey<Obj> = { [key in keyof Obj]: OneOnly<Obj, key> };
 /**
  * A type where only one of the object properties may be defined.

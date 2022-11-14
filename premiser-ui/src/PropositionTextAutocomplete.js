@@ -1,29 +1,21 @@
-import React, {Component} from "react"
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import {schemaSettings} from 'howdju-common'
+import { schemaSettings } from "howdju-common";
 
-import {
-  api, mapActionCreatorGroupToDispatchToProps,
-} from "./actions"
-import ApiAutocomplete from "./ApiAutocomplete"
-import {propositionSchema} from "./normalizationSchemas"
-import { cancelPropositionTextSuggestions } from "./apiActions"
-
+import { api, mapActionCreatorGroupToDispatchToProps } from "./actions";
+import ApiAutocomplete from "./ApiAutocomplete";
+import { propositionSchema } from "./normalizationSchemas";
+import { cancelPropositionTextSuggestions } from "./apiActions";
 
 class PropositionTextAutocomplete extends Component {
-
   onAutocomplete = (proposition) => {
-    this.props.onPropertyChange({[this.props.name]: proposition.text})
-  }
+    this.props.onPropertyChange({ [this.props.name]: proposition.text });
+  };
 
   render() {
-    const {
-      suggestionsKey,
-      api,
-      ...rest
-    } = this.props
+    const { suggestionsKey, api, ...rest } = this.props;
 
     return (
       <ApiAutocomplete
@@ -40,7 +32,7 @@ class PropositionTextAutocomplete extends Component {
         dataValue="id"
         suggestionSchema={propositionSchema}
       />
-    )
+    );
   }
 }
 PropositionTextAutocomplete.propTypes = {
@@ -52,8 +44,11 @@ PropositionTextAutocomplete.propTypes = {
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
   onPropertyChange: PropTypes.func.isRequired,
   onKeyDown: PropTypes.func,
-}
+};
 
-export default connect(null, mapActionCreatorGroupToDispatchToProps({
-  api,
-}))(PropositionTextAutocomplete)
+export default connect(
+  null,
+  mapActionCreatorGroupToDispatchToProps({
+    api,
+  })
+)(PropositionTextAutocomplete);

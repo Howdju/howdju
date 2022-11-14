@@ -1,33 +1,30 @@
-const {
-  AuthenticationError,
-  AuthorizationError,
-} = require('../serviceErrors')
+const { AuthenticationError, AuthorizationError } = require("../serviceErrors");
 
 exports.PermissionsService = class PermissionsService {
-
   constructor(permissionsDao, userPermissionsDao) {
-    this.permissionsDao = permissionsDao
-    this.userPermissionsDao = userPermissionsDao
+    this.permissionsDao = permissionsDao;
+    this.userPermissionsDao = userPermissionsDao;
   }
 
   readUserIdHavingPermissionForAuthToken(authToken, permission) {
-    return this.permissionsDao.getUserIdWithPermission(authToken, permission)
-      .then( ({userId, hasPermission}) => {
+    return this.permissionsDao
+      .getUserIdWithPermission(authToken, permission)
+      .then(({ userId, hasPermission }) => {
         if (!userId) {
-          throw new AuthenticationError()
+          throw new AuthenticationError();
         }
         if (!hasPermission) {
-          throw new AuthorizationError(permission)
+          throw new AuthorizationError(permission);
         }
-        return userId
-      })
+        return userId;
+      });
   }
 
   addPermissionsToUser(user, permissionNames) {
-    return this.userPermissionsDao.addPermissionsToUser(user, permissionNames)
+    return this.userPermissionsDao.addPermissionsToUser(user, permissionNames);
   }
 
   userHasPermission(userId, permission) {
-    return this.permissionsDao.userHasPermission(userId, permission)
+    return this.permissionsDao.userHasPermission(userId, permission);
   }
-}
+};

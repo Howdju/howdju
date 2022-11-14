@@ -1,65 +1,81 @@
-const isArray = require('lodash/isArray')
-const map = require('lodash/map')
+const isArray = require("lodash/isArray");
+const map = require("lodash/map");
 
-const {
-  requireArgs,
-} = require('howdju-common')
-
+const { requireArgs } = require("howdju-common");
 
 exports.EmailService = class EmailService {
   constructor(logger, sesv2) {
-    this.logger = logger
-    this.sesv2 = sesv2
+    this.logger = logger;
+    this.sesv2 = sesv2;
   }
 
   async sendEmail(emailParams) {
-    let {
-      from,
-      to,
-      cc,
-      replyTo,
-      subject,
-      bodyHtml,
-      bodyText,
-      tags,
-    } = emailParams
-    requireArgs({to, subject, bodyHtml, bodyText})
+    let { from, to, cc, replyTo, subject, bodyHtml, bodyText, tags } =
+      emailParams;
+    requireArgs({ to, subject, bodyHtml, bodyText });
 
     if (!from) {
-      from = 'notifications@howdju.com'
+      from = "notifications@howdju.com";
     }
     if (!isArray(to)) {
-      to = [to]
+      to = [to];
     }
     if (cc && !isArray(cc)) {
-      cc = [cc]
+      cc = [cc];
     }
     if (replyTo && !isArray(replyTo)) {
-      replyTo = [replyTo]
+      replyTo = [replyTo];
     }
     if (tags) {
-      tags = map(tags, (Value, Name) => ({Name, Value}))
+      tags = map(tags, (Value, Name) => ({ Name, Value }));
     }
 
     const params = this.sesv2
-      ? makeSesv2Params({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags})
-      : makeSesParams({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags})
+      ? makeSesv2Params({
+          from,
+          to,
+          cc,
+          replyTo,
+          subject,
+          bodyHtml,
+          bodyText,
+          tags,
+        })
+      : makeSesParams({
+          from,
+          to,
+          cc,
+          replyTo,
+          subject,
+          bodyHtml,
+          bodyText,
+          tags,
+        });
     try {
-      this.logger.silly('Sending email', {params, isSesv2: !!this.sesv2})
+      this.logger.silly("Sending email", { params, isSesv2: !!this.sesv2 });
       const result = await (this.sesv2
         ? this.sesv2.sendEmail(params)
         : this.ses.sendEmail(params)
-      ).promise()
-      this.logger.debug('Successfully sent email', {result})
-      return result
-    } catch(err) {
-      this.logger.error('failed to send email', {params, err})
-      throw err
+      ).promise();
+      this.logger.debug("Successfully sent email", { result });
+      return result;
+    } catch (err) {
+      this.logger.error("failed to send email", { params, err });
+      throw err;
     }
   }
-}
+};
 
-function makeSesParams({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags}) {
+function makeSesParams({
+  from,
+  to,
+  cc,
+  replyTo,
+  subject,
+  bodyHtml,
+  bodyText,
+  tags,
+}) {
   const params = {
     Source: from,
     Destination: {
@@ -78,22 +94,31 @@ function makeSesParams({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags
         Data: subject,
       },
     },
-  }
+  };
 
   if (cc) {
-    params['Destination']['CcAddresses'] = cc
+    params["Destination"]["CcAddresses"] = cc;
   }
   if (replyTo) {
-    params['ReplyToAddresses'] = replyTo
+    params["ReplyToAddresses"] = replyTo;
   }
   if (tags) {
-    params['Tags'] = tags
+    params["Tags"] = tags;
   }
 
-  return params
+  return params;
 }
 
-function makeSesv2Params({from, to, cc, replyTo, subject, bodyHtml, bodyText, tags}) {
+function makeSesv2Params({
+  from,
+  to,
+  cc,
+  replyTo,
+  subject,
+  bodyHtml,
+  bodyText,
+  tags,
+}) {
   const params = {
     FromEmailAddress: from,
     Destination: {
@@ -114,17 +139,17 @@ function makeSesv2Params({from, to, cc, replyTo, subject, bodyHtml, bodyText, ta
         },
       },
     },
-  }
+  };
 
   if (cc) {
-    params['Destination']['CcAddresses'] = cc
+    params["Destination"]["CcAddresses"] = cc;
   }
   if (replyTo) {
-    params['ReplyToAddresses'] = [replyTo]
+    params["ReplyToAddresses"] = [replyTo];
   }
   if (tags) {
-    params['EmailTags'] = tags
+    params["EmailTags"] = tags;
   }
 
-  return params
+  return params;
 }

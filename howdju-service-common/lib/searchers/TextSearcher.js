@@ -1,28 +1,37 @@
-const map = require('lodash/map')
-const Promise = require('bluebird')
+const map = require("lodash/map");
+const Promise = require("bluebird");
 
-const emptyResults = Promise.resolve([])
+const emptyResults = Promise.resolve([]);
 
 exports.TextSearcher = class TextSearcher {
   constructor(database, tableName, textColumnName, rowMapper, dedupColumnName) {
-    this.database = database
-    this.tableName = tableName
-    this.textColumnName = textColumnName
-    this.rowMapper = rowMapper
-    this.dedupColumnName = dedupColumnName
+    this.database = database;
+    this.tableName = tableName;
+    this.textColumnName = textColumnName;
+    this.rowMapper = rowMapper;
+    this.dedupColumnName = dedupColumnName;
 
-    this.searchFullTextPhraseQuery = makeSearchFullTextPhraseQuery(tableName, textColumnName)
-    this.searchFullTextPlainQuery = makeSearchFullTextPlainQuery(tableName, textColumnName)
-    this.searchContainingTextQuery = makeSearchContainingTextQuery(tableName, textColumnName)
+    this.searchFullTextPhraseQuery = makeSearchFullTextPhraseQuery(
+      tableName,
+      textColumnName
+    );
+    this.searchFullTextPlainQuery = makeSearchFullTextPlainQuery(
+      tableName,
+      textColumnName
+    );
+    this.searchContainingTextQuery = makeSearchContainingTextQuery(
+      tableName,
+      textColumnName
+    );
   }
 
   search(searchText) {
     if (!searchText) {
-      return emptyResults
+      return emptyResults;
     }
-    const normalSearchText = normalizeSearchText(searchText)
-    if (normalSearchText === '') {
-      return emptyResults
+    const normalSearchText = normalizeSearchText(searchText);
+    if (normalSearchText === "") {
+      return emptyResults;
     }
     /* Search methodology:
      *   search by phrase (words next to each other) [phraseto_tsquery]
@@ -31,66 +40,83 @@ exports.TextSearcher = class TextSearcher {
      *   then by any rows that contain the text [ilike]
      * Combine in order, removing duplicate rows.
      */
-    const searchTextWords = normalSearchText.split(/\s+/)
-    const tsqueryParts = map(searchTextWords, (w, i) => `to_tsquery('english', $${i+1})`)
-    const tsquery = tsqueryParts.join(' || ')
-    return this.database.queries([
-      {
-        queryName: 'searchFullTextPhraseQuery',
-        sql: this.searchFullTextPhraseQuery,
-        args: [normalSearchText],
-      },
-      {
-        queryName: 'searchFullTextPlainQuery',
-        sql: this.searchFullTextPlainQuery,
-        args: [normalSearchText],
-      },
-      {
-        queryName: 'searchFullTextRawQuery',
-        sql: makeSearchFullTextRawQuery(this.tableName, this.textColumnName, tsquery),
-        args: searchTextWords,
-      },
-      {
-        queryName: 'searchContainingTextQuery',
-        sql: this.searchContainingTextQuery,
-        args: [normalSearchText],
-      },
-    ]).then( ([
-      {rows: phraseRows},
-      {rows: plainRows},
-      {rows: rawRows},
-      {rows: containingRows},
-    ]) => {
-      const uniqueRows = removeDups(this.dedupColumnName, phraseRows, plainRows, rawRows, containingRows)
-      return map(uniqueRows, this.rowMapper)
-    })
+    const searchTextWords = normalSearchText.split(/\s+/);
+    const tsqueryParts = map(
+      searchTextWords,
+      (w, i) => `to_tsquery('english', $${i + 1})`
+    );
+    const tsquery = tsqueryParts.join(" || ");
+    return this.database
+      .queries([
+        {
+          queryName: "searchFullTextPhraseQuery",
+          sql: this.searchFullTextPhraseQuery,
+          args: [normalSearchText],
+        },
+        {
+          queryName: "searchFullTextPlainQuery",
+          sql: this.searchFullTextPlainQuery,
+          args: [normalSearchText],
+        },
+        {
+          queryName: "searchFullTextRawQuery",
+          sql: makeSearchFullTextRawQuery(
+            this.tableName,
+            this.textColumnName,
+            tsquery
+          ),
+          args: searchTextWords,
+        },
+        {
+          queryName: "searchContainingTextQuery",
+          sql: this.searchContainingTextQuery,
+          args: [normalSearchText],
+        },
+      ])
+      .then(
+        ([
+          { rows: phraseRows },
+          { rows: plainRows },
+          { rows: rawRows },
+          { rows: containingRows },
+        ]) => {
+          const uniqueRows = removeDups(
+            this.dedupColumnName,
+            phraseRows,
+            plainRows,
+            rawRows,
+            containingRows
+          );
+          return map(uniqueRows, this.rowMapper);
+        }
+      );
   }
-}
+};
 
 function removeDups(idName, ...rowsArr) {
-  const seenIds = {}
-  const deduped = []
+  const seenIds = {};
+  const deduped = [];
   for (const rows of rowsArr) {
     for (const row of rows) {
       if (!seenIds[row[idName]]) {
-        deduped.push(row)
-        seenIds[row[idName]] = true
+        deduped.push(row);
+        seenIds[row[idName]] = true;
       }
     }
   }
-  return deduped
+  return deduped;
 }
 
-function normalizeSearchText (searchText) {
-  let normalSearchText = searchText
+function normalizeSearchText(searchText) {
+  let normalSearchText = searchText;
   // remove non-word/non-space characters
-  normalSearchText = normalSearchText.replace(/[^\w\s]/g, '')
+  normalSearchText = normalSearchText.replace(/[^\w\s]/g, "");
   // normalize space
-  normalSearchText = normalSearchText.replace(/\s+/g, ' ')
-  return normalSearchText
+  normalSearchText = normalSearchText.replace(/\s+/g, " ");
+  return normalSearchText;
 }
 
-function makeSearchFullTextPhraseQuery (tableName, textColumnName) {
+function makeSearchFullTextPhraseQuery(tableName, textColumnName) {
   return `
     with
       results as (
@@ -106,11 +132,10 @@ function makeSearchFullTextPhraseQuery (tableName, textColumnName) {
           and deleted is null
       )
     select * from results order by rank desc
-    `
+    `;
 }
 
-
-function makeSearchFullTextPlainQuery (tableName, textColumnName) {
+function makeSearchFullTextPlainQuery(tableName, textColumnName) {
   return `
     with
       results as (
@@ -126,7 +151,7 @@ function makeSearchFullTextPlainQuery (tableName, textColumnName) {
           and deleted is null
       )
     select * from results order by rank desc
-    `
+    `;
 }
 
 function makeSearchFullTextRawQuery(tableName, textColumnName, tsquery) {
@@ -144,7 +169,7 @@ function makeSearchFullTextRawQuery(tableName, textColumnName, tsquery) {
           and deleted is null
       )
     select * from results order by rank desc
-    `
+    `;
 }
 
 function makeSearchContainingTextQuery(tableName, textColumnName) {
@@ -154,5 +179,5 @@ function makeSearchContainingTextQuery(tableName, textColumnName) {
     where 
           ${textColumnName} ilike '%' || $1 || '%'
       and deleted is null
-  `
+  `;
 }

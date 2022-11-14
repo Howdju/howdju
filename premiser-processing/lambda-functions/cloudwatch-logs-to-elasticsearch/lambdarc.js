@@ -1,4 +1,4 @@
 module.exports = {
-  name: 'CloudwatchLogsToElasticsearch',
+  name: "CloudwatchLogsToElasticsearch",
   requireHowdjuDeps: true,
-}
+};

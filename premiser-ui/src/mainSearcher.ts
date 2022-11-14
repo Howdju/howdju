@@ -1,6 +1,6 @@
-import paths from './paths'
-import { createPath, Location, LocationState } from 'history'
-import head from 'lodash/head'
+import paths from "./paths";
+import { createPath, Location, LocationState } from "history";
+import head from "lodash/head";
 
 class MainSearcher {
   mainSearchText = (location: Location<LocationState>) => {
@@ -10,21 +10,23 @@ class MainSearcher {
       location &&
       location.search
     ) {
-      const queryParams = window.decodeURIComponent(location.search.substring(1))
-      const headParam = head(queryParams.split('&'))
-      if (headParam && !headParam.includes('=')) {
-        return headParam
+      const queryParams = window.decodeURIComponent(
+        location.search.substring(1)
+      );
+      const headParam = head(queryParams.split("&"));
+      if (headParam && !headParam.includes("=")) {
+        return headParam;
       }
     }
 
-    return null
-  }
+    return null;
+  };
   isSearch = (location: Location<LocationState>) => {
-    const searchText = this.mainSearchText(location)
-    const searchPath = paths.mainSearch(searchText)
-    const actualPath = createPath(location)
-    return searchText && searchPath === actualPath
-  }
+    const searchText = this.mainSearchText(location);
+    const searchPath = paths.mainSearch(searchText);
+    const actualPath = createPath(location);
+    return searchText && searchPath === actualPath;
+  };
 }
 
-export default new MainSearcher()
+export default new MainSearcher();

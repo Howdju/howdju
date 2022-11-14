@@ -1,25 +1,19 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {Button, FontIcon} from 'react-md'
-import map from 'lodash/map'
-import get from 'lodash/get'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Button, FontIcon } from "react-md";
+import map from "lodash/map";
+import get from "lodash/get";
 
-import {toErrorText} from "./modelErrorMessages"
-import ErrorMessages from './ErrorMessages'
+import { toErrorText } from "./modelErrorMessages";
+import ErrorMessages from "./ErrorMessages";
 
-import SingleLineTextField from './SingleLineTextField'
-import PropositionTextAutocomplete from "./PropositionTextAutocomplete"
-import {
-  combineNames,
-  combineIds,
-  combineSuggestionsKeys,
-} from './viewModels'
+import SingleLineTextField from "./SingleLineTextField";
+import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
+import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 
-
-const atomsName = 'atoms'
+const atomsName = "atoms";
 
 class PropositionCompoundEditorFields extends Component {
-
   render() {
     const {
       propositionCompound,
@@ -32,30 +26,45 @@ class PropositionCompoundEditorFields extends Component {
       onRemovePropositionCompoundAtom,
       onPropertyChange,
       onSubmit,
-    } = this.props
+    } = this.props;
 
-    const atoms = get(propositionCompound, atomsName, '')
+    const atoms = get(propositionCompound, atomsName, "");
 
-    const hasErrors = errors && errors.hasErrors
-    const atomsErrorsInputProps = hasErrors ?
-      map(errors.fieldErrors.atoms.itemErrors, atomError => atomError.fieldErrors.entity.fieldErrors.text.length > 0 ?
-        {error: true, errorText: toErrorText(atomError.fieldErrors.entity.fieldErrors.text)} :
-        {}
-      ) :
-      map(atoms, () => null)
+    const hasErrors = errors && errors.hasErrors;
+    const atomsErrorsInputProps = hasErrors
+      ? map(errors.fieldErrors.atoms.itemErrors, (atomError) =>
+          atomError.fieldErrors.entity.fieldErrors.text.length > 0
+            ? {
+                error: true,
+                errorText: toErrorText(
+                  atomError.fieldErrors.entity.fieldErrors.text
+                ),
+              }
+            : {}
+        )
+      : map(atoms, () => null);
 
     return (
       <div>
         {map(atoms, (atom, index) => {
-          const atomPropositionTextName = `atoms[${index}].entity.text` // TODO .entity or .proposition?
-          const value = get(propositionCompound, atomPropositionTextName, '')
-          const leftIcon = <FontIcon>short_text</FontIcon>
-          const rightIcon = disabled ?
-            <div/> :
+          const atomPropositionTextName = `atoms[${index}].entity.text`; // TODO .entity or .proposition?
+          const value = get(propositionCompound, atomPropositionTextName, "");
+          const leftIcon = <FontIcon>short_text</FontIcon>;
+          const rightIcon = disabled ? (
+            <div />
+          ) : (
             <div>
-              <Button icon onClick={e => onAddPropositionCompoundAtom(index)}>add</Button>
-              <Button icon onClick={e => onRemovePropositionCompoundAtom(atom, index)}>delete</Button>
+              <Button icon onClick={(e) => onAddPropositionCompoundAtom(index)}>
+                add
+              </Button>
+              <Button
+                icon
+                onClick={(e) => onRemovePropositionCompoundAtom(atom, index)}
+              >
+                delete
+              </Button>
             </div>
+          );
 
           const inputProps = {
             id: combineIds(id, atomPropositionTextName),
@@ -70,30 +79,37 @@ class PropositionCompoundEditorFields extends Component {
             disabled,
             onPropertyChange,
             onSubmit,
-          }
-          return suggestionsKey && !disabled ?
+          };
+          return suggestionsKey && !disabled ? (
             <PropositionTextAutocomplete
               {...inputProps}
               {...atomsErrorsInputProps[index]}
-              suggestionsKey={combineSuggestionsKeys(suggestionsKey, atomPropositionTextName)}
-            /> :
+              suggestionsKey={combineSuggestionsKeys(
+                suggestionsKey,
+                atomPropositionTextName
+              )}
+            />
+          ) : (
             <SingleLineTextField
               {...inputProps}
               {...atomsErrorsInputProps[index]}
             />
+          );
         })}
         <Button
           flat
           className="add-button"
           key="addPropositionCompoundAtomButton"
           children="Add Proposition"
-          onClick={e => onAddPropositionCompoundAtom(atoms.length)}
-        >add</Button>
+          onClick={(e) => onAddPropositionCompoundAtom(atoms.length)}
+        >
+          add
+        </Button>
         {hasErrors && errors.modelErrors && (
           <ErrorMessages errors={errors.modelErrors} />
         )}
       </div>
-    )
+    );
   }
 }
 PropositionCompoundEditorFields.propTypes = {
@@ -109,9 +125,9 @@ PropositionCompoundEditorFields.propTypes = {
   errors: PropTypes.object,
   /** Whether to disable the inputs */
   disabled: PropTypes.bool,
-}
+};
 PropositionCompoundEditorFields.defaultProps = {
   disabled: false,
-}
+};
 
-export default PropositionCompoundEditorFields
+export default PropositionCompoundEditorFields;

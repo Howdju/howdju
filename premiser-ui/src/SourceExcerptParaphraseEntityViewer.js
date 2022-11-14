@@ -1,18 +1,14 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {Divider} from 'react-md'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Divider } from "react-md";
 
-import {
-  sourceExcerptDescription,
-  combineIds,
-} from './viewModels'
+import { sourceExcerptDescription, combineIds } from "./viewModels";
 
-import EntityViewer from './EntityViewer'
-import SourceExcerptEntityViewer from './SourceExcerptEntityViewer'
-import EditableProposition from './EditableProposition'
+import EntityViewer from "./EntityViewer";
+import SourceExcerptEntityViewer from "./SourceExcerptEntityViewer";
+import EditableProposition from "./EditableProposition";
 
-import './SourceExcerptParaphraseEntityViewer.scss'
-
+import "./SourceExcerptParaphraseEntityViewer.scss";
 
 export default class SourceExcerptParaphraseEntityViewer extends Component {
   render() {
@@ -26,11 +22,8 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
       showStatusText,
       showUrls,
       contextTrailItems,
-    } = this.props
-    const {
-      paraphrasingProposition,
-      sourceExcerpt,
-    } = sourceExcerptParaphrase
+    } = this.props;
+    const { paraphrasingProposition, sourceExcerpt } = sourceExcerptParaphrase;
     return (
       <EntityViewer
         className="source-excerpt-paraphrase-entity-viewer"
@@ -40,32 +33,32 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
         entity={
           <div>
             <EditableProposition
-              id={combineIds(id, 'proposition')}
+              id={combineIds(id, "proposition")}
               proposition={paraphrasingProposition}
               editorId={paraphrasingPropositionEditorId}
-              suggestionsKey={suggestionsKey + '-paraphrasing-proposition'}
+              suggestionsKey={suggestionsKey + "-paraphrasing-proposition"}
               showStatusText={showStatusText}
               contextTrailItems={contextTrailItems}
             />
             <div className="divider-wrapper">
-              <Divider className="divider" inset/>
+              <Divider className="divider" inset />
             </div>
             <SourceExcerptEntityViewer
-              id={combineIds(id, 'source-excerpt')}
+              id={combineIds(id, "source-excerpt")}
               sourceExcerpt={sourceExcerpt}
               editorId={sourceExcerptEditorId}
-              suggestionsKey={suggestionsKey + '-source-excerpt'}
+              suggestionsKey={suggestionsKey + "-source-excerpt"}
               showStatusText={showStatusText}
               showUrls={showUrls}
             />
           </div>
         }
       />
-    )
+    );
   }
 }
 SourceExcerptParaphraseEntityViewer.propTypes = {
   id: PropTypes.string.isRequired,
   paraphrasingPropositionEditorId: PropTypes.string,
   sourceExcerptEditorId: PropTypes.string,
-}
+};

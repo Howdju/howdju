@@ -1,24 +1,22 @@
-const urlParser = require("url")
+const urlParser = require("url");
 
-const {
-  modelErrorCodes,
-} = require('howdju-common')
+const { modelErrorCodes } = require("howdju-common");
 
 class UrlValidator {
   validate(url) {
-    const errors = UrlValidator.blankErrors()
+    const errors = UrlValidator.blankErrors();
 
     // A url can be blank (we will ignore it) but if present, it must be valid
     if (url.url) {
       try {
-        urlParser.parse(url.url)
+        urlParser.parse(url.url);
       } catch (e) {
-        errors.hasErrors = true
-        errors.fieldErrors.url.push(modelErrorCodes.INVALID_URL)
+        errors.hasErrors = true;
+        errors.fieldErrors.url.push(modelErrorCodes.INVALID_URL);
       }
     }
 
-    return errors
+    return errors;
   }
 }
 UrlValidator.blankErrors = () => ({
@@ -27,6 +25,6 @@ UrlValidator.blankErrors = () => ({
   fieldErrors: {
     url: [],
   },
-})
+});
 
-exports.UrlValidator = UrlValidator
+exports.UrlValidator = UrlValidator;

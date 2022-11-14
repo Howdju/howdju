@@ -1,21 +1,17 @@
-const {
-  configureGatewayContext,
-} = require('howdju-service-common')
+const { configureGatewayContext } = require("howdju-service-common");
 
-const {
-  propositionTagScoresService,
-  logger,
-} = require('./initialization')
+const { propositionTagScoresService, logger } = require("./initialization");
 
 exports.handler = (gatewayEvent, gatewayContext, gatewayCallback) => {
-  configureGatewayContext(gatewayContext)
+  configureGatewayContext(gatewayContext);
 
-  logger.silly({gatewayContext, gatewayEvent})
+  logger.silly({ gatewayContext, gatewayEvent });
 
-  propositionTagScoresService.updatePropositionTagScoresUsingUnscoredVotes()
-    .then(() => gatewayCallback(null, 'Scoring proposition tags succeeded'))
-    .catch( (err) => {
-      logger.error('Scoring proposition tags failed', {err})
-      return gatewayCallback(err)
-    })
-}
+  propositionTagScoresService
+    .updatePropositionTagScoresUsingUnscoredVotes()
+    .then(() => gatewayCallback(null, "Scoring proposition tags succeeded"))
+    .catch((err) => {
+      logger.error("Scoring proposition tags failed", { err });
+      return gatewayCallback(err);
+    });
+};

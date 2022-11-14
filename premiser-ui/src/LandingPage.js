@@ -1,7 +1,7 @@
-import React, {Component}  from 'react'
-import {Link} from 'react-router-dom'
-import {FontIcon} from 'react-md'
-import cloneDeep from 'lodash/cloneDeep'
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { FontIcon } from "react-md";
+import cloneDeep from "lodash/cloneDeep";
 
 import {
   JustificationBasisTypes,
@@ -14,32 +14,31 @@ import {
   makeSourceExcerptJustification,
   makeWrit,
   makeWritQuote,
-} from 'howdju-common'
+} from "howdju-common";
 import {
   makeCounterJustification,
   makeJustificationViewModel,
-} from 'howdju-client-common'
+} from "howdju-client-common";
 
-import paths from './paths'
-import PropositionCard from './PropositionCard'
-import JustificationChatBubble from './JustificationChatBubble'
-import JustificationBranch from './JustificationBranch'
-import {combineIds} from './viewModels'
+import paths from "./paths";
+import PropositionCard from "./PropositionCard";
+import JustificationChatBubble from "./JustificationChatBubble";
+import JustificationBranch from "./JustificationBranch";
+import { combineIds } from "./viewModels";
 
-import './LandingPage.scss'
-import { JustificationRootTargetTypes } from 'howdju-common/lib/enums'
-import ContextTrail from './ContextTrail'
-
+import "./LandingPage.scss";
+import { JustificationRootTargetTypes } from "howdju-common/lib/enums";
+import ContextTrail from "./ContextTrail";
 
 export default class LandingPage extends Component {
   render() {
-    const id = 'landing-page'
+    const id = "landing-page";
     const rootProposition = makeProposition({
-      text: 'By law, no building in Washington, D.C. may be taller than the Capitol building',
-    })
+      text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
+    });
     const proJustificationProposition = makeProposition({
-      text: 'The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)',
-    })
+      text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
+    });
     const proJustification = makeJustificationViewModel({
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -48,10 +47,14 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: makePropositionCompound({
-          atoms: [makePropositionCompoundAtomFromProposition(proJustificationProposition)],
+          atoms: [
+            makePropositionCompoundAtomFromProposition(
+              proJustificationProposition
+            ),
+          ],
         }),
       },
-    })
+    });
     const proJustificationJustification = makeSourceExcerptJustification({
       rootTarget: proJustificationProposition,
       rootPolarity: JustificationRootPolarities.POSITIVE,
@@ -63,27 +66,36 @@ export default class LandingPage extends Component {
       polarity: JustificationPolarities.POSITIVE,
       basis: {
         entity: makeWritQuote({
-          quoteText: 'The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.',
-          writ: makeWrit({title: "Vantage Point: The Curse of (Certain) Tall Buildings — The American Surveyor"}),
+          quoteText:
+            "The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.",
+          writ: makeWrit({
+            title:
+              "Vantage Point: The Curse of (Certain) Tall Buildings — The American Surveyor",
+          }),
           urls: [
-            {url: 'https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf'},
+            {
+              url: "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
+            },
           ],
         }),
       },
-    })
+    });
 
-    const proTrailItems = [{
-      targetType: proJustification.target.type,
-      target: proJustification.target.entity,
-    }, {
-      targetType: proJustificationJustification.target.type,
-      target: proJustificationJustification.target.entity,
-      polarity: proJustificationJustification.polarity,
-    }]
+    const proTrailItems = [
+      {
+        targetType: proJustification.target.type,
+        target: proJustification.target.entity,
+      },
+      {
+        targetType: proJustificationJustification.target.type,
+        target: proJustificationJustification.target.entity,
+        polarity: proJustificationJustification.polarity,
+      },
+    ];
 
     const conJustificationProposition = makeProposition({
-      text: 'In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ',
-    })
+      text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
+    });
     const conJustification = makeJustificationViewModel({
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -93,10 +105,14 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: makePropositionCompound({
-          atoms: [makePropositionCompoundAtomFromProposition(conJustificationProposition)],
+          atoms: [
+            makePropositionCompoundAtomFromProposition(
+              conJustificationProposition
+            ),
+          ],
         }),
       },
-    })
+    });
     const conJustificationJustification = makeSourceExcerptJustification({
       rootTarget: conJustificationProposition,
       rootPolarity: JustificationRootPolarities.POSITIVE,
@@ -108,50 +124,59 @@ export default class LandingPage extends Component {
       polarity: JustificationPolarities.POSITIVE,
       basis: {
         entity: makeWritQuote({
-          quoteText: 'No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet',
-          writ: makeWrit({title: "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building."}),
+          quoteText:
+            "No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet",
+          writ: makeWrit({
+            title:
+              "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building.",
+          }),
           urls: [
-            {url: 'https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05'},
+            {
+              url: "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
+            },
           ],
         }),
       },
-    })
+    });
 
-    const conTrailItems = [{
-      targetType: conJustification.target.type,
-      target: conJustification.target.entity,
-    }, {
-      targetType: conJustificationJustification.target.type,
-      target: conJustificationJustification.target.entity,
-      polarity: conJustification.polarity,
-    }]
+    const conTrailItems = [
+      {
+        targetType: conJustification.target.type,
+        target: conJustification.target.entity,
+      },
+      {
+        targetType: conJustificationJustification.target.type,
+        target: conJustificationJustification.target.entity,
+        polarity: conJustification.polarity,
+      },
+    ];
 
-    const counterJustification = makeCounterJustification(proJustification)
-    counterJustification.rootPolarity = JustificationRootPolarities.NEGATIVE
+    const counterJustification = makeCounterJustification(proJustification);
+    counterJustification.rootPolarity = JustificationRootPolarities.NEGATIVE;
     counterJustification.basis = {
       type: JustificationBasisTypes.PROPOSITION_COMPOUND,
       entity: makePropositionCompound({
-        atoms: [makePropositionCompoundAtomFromProposition(makeProposition({
-          text: 'The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.',
-        }))],
+        atoms: [
+          makePropositionCompoundAtomFromProposition(
+            makeProposition({
+              text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
+            })
+          ),
+        ],
       }),
-    }
-    const proJustificationCountered = cloneDeep(proJustification)
-    proJustificationCountered.counterJustifications = [counterJustification]
+    };
+    const proJustificationCountered = cloneDeep(proJustification);
+    proJustificationCountered.counterJustifications = [counterJustification];
 
     return (
       <div id={id} className="app-page">
-        <p className="primary-slogan">
-          Discover and share truth on Howdju.
-        </p>
-        <p>
-          How does one represent truth?  With justified propositions.
-        </p>
+        <p className="primary-slogan">Discover and share truth on Howdju.</p>
+        <p>How does one represent truth? With justified propositions.</p>
 
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={combineIds(id, 'proposition-example', 'proposition')}
+              id={combineIds(id, "proposition-example", "proposition")}
               proposition={rootProposition}
               showStatusText={false}
             />
@@ -159,13 +184,18 @@ export default class LandingPage extends Component {
         </div>
 
         <p>
-          A proposition on its own is just an opinion.  To become truth, a proposition must have good justifications.
+          A proposition on its own is just an opinion. To become truth, a
+          proposition must have good justifications.
         </p>
 
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={combineIds(id, 'justified-proposition-example', 'proposition')}
+              id={combineIds(
+                id,
+                "justified-proposition-example",
+                "proposition"
+              )}
               proposition={rootProposition}
               showStatusText={false}
             />
@@ -180,13 +210,18 @@ export default class LandingPage extends Component {
         </div>
 
         <p>
-          Justifications can either support or oppose the truth of a proposition.
+          Justifications can either support or oppose the truth of a
+          proposition.
         </p>
 
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={combineIds(id, 'opposing-justification-example', 'proposition')}
+              id={combineIds(
+                id,
+                "opposing-justification-example",
+                "proposition"
+              )}
               proposition={rootProposition}
               showStatusText={false}
             />
@@ -200,9 +235,7 @@ export default class LandingPage extends Component {
           </div>
         </div>
 
-        <p>
-          Good justifications have evidence.
-        </p>
+        <p>Good justifications have evidence.</p>
 
         <div className="banner">
           <div className="banner-content">
@@ -217,9 +250,7 @@ export default class LandingPage extends Component {
           </div>
         </div>
 
-        <p>
-          Better evidence makes a better justification
-        </p>
+        <p>Better evidence makes a better justification</p>
 
         <div className="banner">
           <div className="banner-content">
@@ -234,14 +265,16 @@ export default class LandingPage extends Component {
           </div>
         </div>
 
-        <p>
-          Justifications can also counter other justifications.
-        </p>
+        <p>Justifications can also counter other justifications.</p>
 
         <div className="banner">
           <div className="banner-content">
             <PropositionCard
-              id={combineIds(id, 'counter-justification-example', 'proposition')}
+              id={combineIds(
+                id,
+                "counter-justification-example",
+                "proposition"
+              )}
               proposition={rootProposition}
               showStatusText={false}
             />
@@ -257,30 +290,29 @@ export default class LandingPage extends Component {
         </div>
 
         <p>
-          Howdju&rsquo;s hypothesis is that misunderstanding and misinformation persist when not enough people have the
-          tools to evaluate truth in a way that is 1) <strong>efficient</strong>, and
-          2) designed to accommodate <strong>alternate viewpoints</strong>.
+          Howdju&rsquo;s hypothesis is that misunderstanding and misinformation
+          persist when not enough people have the tools to evaluate truth in a
+          way that is 1) <strong>efficient</strong>, and 2) designed to
+          accommodate <strong>alternate viewpoints</strong>.
         </p>
-        <p>
-          Howdju&rsquo;s goal is to provide those tools, with your help.
-        </p>
+        <p>Howdju&rsquo;s goal is to provide those tools, with your help.</p>
 
-        <p>
-          Some ways to use Howdju:
-        </p>
+        <p>Some ways to use Howdju:</p>
         <ul id="ways-to-use" className="blocks">
           <li className="block-item-spacer">
             <div className="icon">
               <FontIcon>book</FontIcon>
             </div>
-            Organize research: capture the implications of the primary sources you discover, making them available
-            to others while benefiting from the contributions of others.
+            Organize research: capture the implications of the primary sources
+            you discover, making them available to others while benefiting from
+            the contributions of others.
           </li>
           <li className="block-item-spacer">
             <div className="icon">
               <FontIcon>share</FontIcon>
             </div>
-            Share justifications with colleagues or friends to empower informed dialog and to clarify viewpoints.
+            Share justifications with colleagues or friends to empower informed
+            dialog and to clarify viewpoints.
           </li>
           <li className="block-item-spacer">
             <div className="icon">
@@ -290,9 +322,7 @@ export default class LandingPage extends Component {
           </li>
         </ul>
 
-        <p>
-          How to get started:
-        </p>
+        <p>How to get started:</p>
         <ul id="get-started" className="blocks">
           <li>
             <Link to={paths.tools()}>
@@ -317,6 +347,6 @@ export default class LandingPage extends Component {
           </li>
         </ul>
       </div>
-    )
+    );
   }
 }

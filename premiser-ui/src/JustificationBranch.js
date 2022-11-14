@@ -1,12 +1,12 @@
-import cn from "classnames"
-import get from 'lodash/get'
-import map from 'lodash/map'
-import moment from 'moment'
-import PropTypes from 'prop-types'
-import React, {Component} from "react"
-import FlipMove from 'react-flip-move'
-import { Link } from 'react-router-dom'
-import {connect} from "react-redux"
+import cn from "classnames";
+import get from "lodash/get";
+import map from "lodash/map";
+import moment from "moment";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import FlipMove from "react-flip-move";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 import {
   Divider,
   Card,
@@ -14,7 +14,7 @@ import {
   FontIcon,
   MenuButton,
   ListItem,
-} from "react-md"
+} from "react-md";
 
 import {
   isWritQuoteBased,
@@ -22,12 +22,12 @@ import {
   isRootNegative,
   JustificationBasisTypes,
   newExhaustedEnumError,
-} from 'howdju-common'
+} from "howdju-common";
 import {
   isVerified,
   isDisverified,
   makeCounterJustification,
-} from "howdju-client-common"
+} from "howdju-client-common";
 
 import {
   api,
@@ -35,114 +35,117 @@ import {
   goto,
   mapActionCreatorGroupToDispatchToProps,
   ui,
-} from './actions'
-import {suggestionKeys} from "./autocompleter"
-import config from './config'
-import CounterJustificationEditor from "./CounterJustificationEditor"
+} from "./actions";
+import { suggestionKeys } from "./autocompleter";
+import config from "./config";
+import CounterJustificationEditor from "./CounterJustificationEditor";
 import {
   counterJustificationEditorId,
   justificationBasisEditorId,
-} from './editorIds'
-import hoverAware from "./hoverAware"
-import JustificationChatBubble from './JustificationChatBubble'
-import paths from './paths'
-import {EditorTypes} from "./reducers/editors"
-import t from './texts'
+} from "./editorIds";
+import hoverAware from "./hoverAware";
+import JustificationChatBubble from "./JustificationChatBubble";
+import paths from "./paths";
+import { EditorTypes } from "./reducers/editors";
+import t from "./texts";
 
-import './JustificationBranch.scss'
+import "./JustificationBranch.scss";
 
-
-const justificationTreeId = props => {
-  const {
-    justification,
-  } = props
-  return `justification-${justification.id}-tree`
-}
+const justificationTreeId = (props) => {
+  const { justification } = props;
+  return `justification-${justification.id}-tree`;
+};
 
 class JustificationBranch extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
       isOver: false,
       areCounterJustificationsExpanded: true,
-    }
+    };
   }
 
-  onBubbleMouseOver = event => {
-    this.setState({isOver: true})
-  }
+  onBubbleMouseOver = (event) => {
+    this.setState({ isOver: true });
+  };
 
-  onBubbleMouseLeave = event => {
-    this.setState({isOver: false})
-  }
+  onBubbleMouseLeave = (event) => {
+    this.setState({ isOver: false });
+  };
 
   onVerify = () => {
-    const {justification} = this.props
+    const { justification } = this.props;
     if (isVerified(justification)) {
-      this.props.api.unVerifyJustification(justification)
+      this.props.api.unVerifyJustification(justification);
     } else {
-      this.props.api.verifyJustification(justification)
+      this.props.api.verifyJustification(justification);
     }
-  }
+  };
 
   onDisverify = () => {
-    const {justification} = this.props
+    const { justification } = this.props;
     if (isDisverified(justification)) {
-      this.props.api.unDisverifyJustification(justification)
+      this.props.api.unDisverifyJustification(justification);
     } else {
-      this.props.api.disverifyJustification(justification)
+      this.props.api.disverifyJustification(justification);
     }
-  }
+  };
 
   deleteClick = () => {
-    this.props.api.deleteJustification(this.props.justification)
-  }
+    this.props.api.deleteJustification(this.props.justification);
+  };
 
   onEditNewCounterJustification = () => {
-    const justification = this.props.justification
-    this.props.editors.beginEdit(EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification),
-      makeCounterJustification(justification))
-  }
+    const justification = this.props.justification;
+    this.props.editors.beginEdit(
+      EditorTypes.COUNTER_JUSTIFICATION,
+      counterJustificationEditorId(justification),
+      makeCounterJustification(justification)
+    );
+  };
 
   onEditBasis = () => {
-    const justificationBasis = this.props.justification.basis
-    const basisEditorType = justificationBasis.type
-    this.props.editors.beginEdit(basisEditorType, justificationBasisEditorId(justificationBasis), justificationBasis.entity)
-  }
+    const justificationBasis = this.props.justification.basis;
+    const basisEditorType = justificationBasis.type;
+    this.props.editors.beginEdit(
+      basisEditorType,
+      justificationBasisEditorId(justificationBasis),
+      justificationBasis.entity
+    );
+  };
 
   createJustificationPath = () => {
     const {
       type: basisType,
-      entity: {
-        id: basisId,
-      },
-    } = this.props.justification.basis
-    return paths.createJustification(basisType, basisId)
-  }
+      entity: { id: basisId },
+    } = this.props.justification.basis;
+    return paths.createJustification(basisType, basisId);
+  };
 
   seeUsagesPath = () => {
-    const justificationBasis = this.props.justification.basis
-    const params = {}
+    const justificationBasis = this.props.justification.basis;
+    const params = {};
 
     switch (justificationBasis.type) {
       case JustificationBasisTypes.WRIT_QUOTE:
-        params.writQuoteId = justificationBasis.entity.id
-        break
+        params.writQuoteId = justificationBasis.entity.id;
+        break;
       case JustificationBasisTypes.PROPOSITION_COMPOUND:
-        params.propositionCompoundId = justificationBasis.entity.id
-        break
+        params.propositionCompoundId = justificationBasis.entity.id;
+        break;
       default:
-        throw newExhaustedEnumError(justificationBasis.type)
+        throw newExhaustedEnumError(justificationBasis.type);
     }
 
-    return paths.searchJustifications(params)
-  }
+    return paths.searchJustifications(params);
+  };
 
   toggleCounterJustificationsExpanded = () => {
     this.setState({
-      areCounterJustificationsExpanded: !this.state.areCounterJustificationsExpanded,
-    })
-  }
+      areCounterJustificationsExpanded:
+        !this.state.areCounterJustificationsExpanded,
+    });
+  };
 
   render() {
     const {
@@ -157,27 +160,24 @@ class JustificationBranch extends Component {
       contextTrailItems,
       showStatusText,
       onClickWritQuoteUrl,
-    } = this.props
-    const _isVerified = isVerified(justification)
-    const _isDisverified = isDisverified(justification)
-    const {
-      isOver,
-      areCounterJustificationsExpanded,
-    } = this.state
+    } = this.props;
+    const _isVerified = isVerified(justification);
+    const _isDisverified = isDisverified(justification);
+    const { isOver, areCounterJustificationsExpanded } = this.state;
 
-    const _isWritQuoteBased = isWritQuoteBased(justification)
-    const _isRootPositive = isRootPositive(justification)
-    const _isRootNegative = isRootNegative(justification)
+    const _isWritQuoteBased = isWritQuoteBased(justification);
+    const _isRootPositive = isRootPositive(justification);
+    const _isRootNegative = isRootNegative(justification);
 
-    const doHideControls = !isOver && canHover
+    const doHideControls = !isOver && canHover;
 
     const menu = (
       <MenuButton
         icon
         id={`justification-${justification.id}-context-menu`}
-        className={cn({hidden: doHideControls})}
+        className={cn({ hidden: doHideControls })}
         menuClassName="context-menu justification-context-menu"
-        children={'more_vert'}
+        children={"more_vert"}
         position={MenuButton.Positions.TOP_RIGHT}
         title="Justification actions"
         menuItems={[
@@ -216,7 +216,7 @@ class JustificationBranch extends Component {
             primaryText="Edit"
             key="edit"
             leftIcon={<FontIcon>create</FontIcon>}
-            className={cn({hidden: !_isWritQuoteBased})}
+            className={cn({ hidden: !_isWritQuoteBased })}
             onClick={this.onEditBasis}
           />,
           <ListItem
@@ -227,12 +227,16 @@ class JustificationBranch extends Component {
           />,
         ]}
       />
-    )
+    );
 
-    const age = justification.created ? moment(justification.created).fromNow() : ''
-    const created = justification.created ? moment(justification.created).format(config.humanDateTimeFormat) : ''
-    const creatorName = get(justification, 'creator.longName')
-    const creatorNameDescription = creatorName && ` by ${creatorName}` || ''
+    const age = justification.created
+      ? moment(justification.created).fromNow()
+      : "";
+    const created = justification.created
+      ? moment(justification.created).format(config.humanDateTimeFormat)
+      : "";
+    const creatorName = get(justification, "creator.longName");
+    const creatorNameDescription = (creatorName && ` by ${creatorName}`) || "";
 
     const actions = [
       <Button
@@ -246,7 +250,9 @@ class JustificationBranch extends Component {
         })}
         title="Verify this justification"
         onClick={this.onVerify}
-      >thumb_up</Button>,
+      >
+        thumb_up
+      </Button>,
       <Button
         icon
         key="disverifyButton"
@@ -258,7 +264,9 @@ class JustificationBranch extends Component {
         })}
         title="Dis-verify this justification"
         onClick={this.onDisverify}
-      >thumb_down</Button>,
+      >
+        thumb_down
+      </Button>,
       <Button
         icon
         key="counterButton"
@@ -267,11 +275,16 @@ class JustificationBranch extends Component {
         })}
         title="Counter this justification"
         onClick={this.onEditNewCounterJustification}
-      >reply</Button>,
-    ]
-    const hasCounterJustifications = justification.counterJustifications && justification.counterJustifications.length > 0
+      >
+        reply
+      </Button>,
+    ];
+    const hasCounterJustifications =
+      justification.counterJustifications &&
+      justification.counterJustifications.length > 0;
     if (hasCounterJustifications) {
-      const toggleCounterJustificationsExpandedButtonIcon = areCounterJustificationsExpanded ? 'expand_more' : 'expand_less'
+      const toggleCounterJustificationsExpandedButtonIcon =
+        areCounterJustificationsExpanded ? "expand_more" : "expand_less";
       actions.push(
         <Button
           icon
@@ -279,44 +292,58 @@ class JustificationBranch extends Component {
           className={cn({
             hiding: doHideControls,
           })}
-          title={areCounterJustificationsExpanded ? t("Collapse counter-justifications") : t("Expand counter justifications")}
+          title={
+            areCounterJustificationsExpanded
+              ? t("Collapse counter-justifications")
+              : t("Expand counter justifications")
+          }
           onClick={this.toggleCounterJustificationsExpanded}
-        >{toggleCounterJustificationsExpandedButtonIcon}</Button>
-      )
+        >
+          {toggleCounterJustificationsExpandedButtonIcon}
+        </Button>
+      );
     }
     actions.push(
-      <div className="justification-status-text" key="justification-status-text">
+      <div
+        className="justification-status-text"
+        key="justification-status-text"
+      >
         <span className="entity-status-text">
           created{creatorNameDescription} <span title={created}>{age}</span>
         </span>
       </div>
-    )
+    );
 
-    const flipMoveProps = config.ui.flipMove
+    const flipMoveProps = config.ui.flipMove;
     const counterJustifications = (
       <div className="counter-justifications">
         <FlipMove {...flipMoveProps}>
-          {hasCounterJustifications &&
-            <h3 key={`justification-${justification.id}-counter-justifications`}>Counter Justifications</h3>
-          }
-          {newCounterJustification &&
-            <Card id="newCounterJustificationCard" key="newCounterJustificationCard" className="justification-card">
-
+          {hasCounterJustifications && (
+            <h3
+              key={`justification-${justification.id}-counter-justifications`}
+            >
+              Counter Justifications
+            </h3>
+          )}
+          {newCounterJustification && (
+            <Card
+              id="newCounterJustificationCard"
+              key="newCounterJustificationCard"
+              className="justification-card"
+            >
               <CounterJustificationEditor
                 editorId={counterJustificationEditorId(justification)}
                 id={`justification-${justification.id}-new-counter-justification-editor`}
-                suggestionsKey={suggestionKeys.counterJustificationEditor(justification.id)}
+                suggestionsKey={suggestionKeys.counterJustificationEditor(
+                  justification.id
+                )}
               />
-
             </Card>
-          }
-          {map(justification.counterJustifications, j => {
-            const id = `counter-justification-${j.id}-branch`
+          )}
+          {map(justification.counterJustifications, (j) => {
+            const id = `counter-justification-${j.id}-branch`;
             return (
-              <div id={id}
-                   key={id}
-                   className="counter-justification-branch"
-              >
+              <div id={id} key={id} className="counter-justification-branch">
                 <ConnectedJustificationBranch
                   justification={j}
                   doShowControls={doShowControls}
@@ -326,15 +353,15 @@ class JustificationBranch extends Component {
                   contextTrailItems={contextTrailItems}
                 />
               </div>
-            )
+            );
           })}
         </FlipMove>
       </div>
-    )
+    );
 
     return (
       <div
-        className={cn('justification-tree', {
+        className={cn("justification-tree", {
           positivey: _isRootPositive,
           negativey: _isRootNegative,
         })}
@@ -351,11 +378,7 @@ class JustificationBranch extends Component {
           showStatusText={showStatusText}
           menu={menu}
           contextTrailItems={contextTrailItems}
-          actions={
-            <div className="md-cell md-cell--12 actions">
-              {actions}
-            </div>
-          }
+          actions={<div className="md-cell md-cell--12 actions">{actions}</div>}
           onMouseOver={this.onBubbleMouseOver}
           onMouseLeave={this.onBubbleMouseLeave}
           onClickWritQuoteUrl={onClickWritQuoteUrl}
@@ -363,31 +386,39 @@ class JustificationBranch extends Component {
           {areCounterJustificationsExpanded && counterJustifications}
         </JustificationChatBubble>
       </div>
-    )
+    );
   }
 }
 JustificationBranch.propTypes = {
   doShowControls: PropTypes.bool,
-}
+};
 JustificationBranch.defaultProps = {
   doShowControls: true,
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
-  const justification = ownProps.justification
+  const justification = ownProps.justification;
 
-  const newCounterJustification = get(state, ['editors', EditorTypes.COUNTER_JUSTIFICATION, counterJustificationEditorId(justification), 'editEntity'])
+  const newCounterJustification = get(state, [
+    "editors",
+    EditorTypes.COUNTER_JUSTIFICATION,
+    counterJustificationEditorId(justification),
+    "editEntity",
+  ]);
 
   return {
     newCounterJustification,
-  }
-}
+  };
+};
 
-const ConnectedJustificationBranch = connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-  api,
-  editors,
-  goto,
-  ui,
-}))(hoverAware(JustificationBranch))
+const ConnectedJustificationBranch = connect(
+  mapStateToProps,
+  mapActionCreatorGroupToDispatchToProps({
+    api,
+    editors,
+    goto,
+    ui,
+  })
+)(hoverAware(JustificationBranch));
 
-export default ConnectedJustificationBranch
+export default ConnectedJustificationBranch;

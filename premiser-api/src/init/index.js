@@ -1,5 +1,2 @@
-const assign = require('lodash/assign')
-module.exports = assign(
-  {},
-  require('./AppProvider')
-)
+const assign = require("lodash/assign");
+module.exports = assign({}, require("./AppProvider"));

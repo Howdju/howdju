@@ -5,10 +5,7 @@ so that we can use it lik:
 
 ```js
 module.exports = {
-  extends: [
-    "howdju",
-    "howdju/node",
-  ],
+  extends: ["howdju", "howdju/node"],
 };
 ```
 
@@ -30,18 +27,12 @@ build contents:
 module.exports = {
   overrides: [
     {
-      files: [
-        "**/*.{js,ts}",
-      ],
-      excludedFiles: [
-        "node_modules/**",
-      ],
-      extends: [
-        "howdju/node",
-      ],
+      files: ["**/*.{js,ts}"],
+      excludedFiles: ["node_modules/**"],
+      extends: ["howdju/node"],
     },
-  ]
-}
+  ],
+};
 ```
 
 Otherwise, the primary and build contents require separate config:
@@ -50,27 +41,15 @@ Otherwise, the primary and build contents require separate config:
 module.exports = {
   overrides: [
     {
-      files: [
-        "lib/**/*.{js,ts}",
-      ],
-      extends: [
-        "howdju/common",
-      ],
+      files: ["lib/**/*.{js,ts}"],
+      extends: ["howdju/common"],
     },
     {
       // Everything else that isn't part of the library
-      files: [
-        "**/*.{js,ts}",
-      ],
-      excludedFiles: [
-        "lib/**",
-        "node_modules/**",
-      ],
-      extends: [
-        "howdju/node",
-      ],
+      files: ["**/*.{js,ts}"],
+      excludedFiles: ["lib/**", "node_modules/**"],
+      extends: ["howdju/node"],
     },
-  ]
-}
-
+  ],
+};
 ```

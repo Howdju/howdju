@@ -1,45 +1,42 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import {CircularProgress} from 'react-md'
-import { connect } from 'react-redux'
-import concat from 'lodash/concat'
-import get from 'lodash/get'
-import map from 'lodash/map'
-import {denormalize} from "normalizr"
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { CircularProgress } from "react-md";
+import { connect } from "react-redux";
+import concat from "lodash/concat";
+import get from "lodash/get";
+import map from "lodash/map";
+import { denormalize } from "normalizr";
 
-import CellList from './CellList'
-import FetchButton from './FetchButton'
+import CellList from "./CellList";
+import FetchButton from "./FetchButton";
 
 class ListEntitiesWidget extends Component {
-
   componentDidMount() {
     if (!this.hasEntities()) {
-      const fetchCount = this.props.initialFetchCount || this.props.fetchCount
-      this.props.fetchEntities(this.props.widgetId, fetchCount)
+      const fetchCount = this.props.initialFetchCount || this.props.fetchCount;
+      this.props.fetchEntities(this.props.widgetId, fetchCount);
     }
   }
 
   hasEntities = () => {
-    const {
-      entities,
-    } = this.props
-    return entities && entities.length > 0
-  }
+    const { entities } = this.props;
+    return entities && entities.length > 0;
+  };
 
-  fetchMore = event => {
-    event.preventDefault()
+  fetchMore = (event) => {
+    event.preventDefault();
     const {
       fetchCount,
       initialFetchCount,
       continuationToken,
       fetchEntities,
       widgetId,
-    } = this.props
-    const fetchMoreCount = this.hasEntities() ? fetchCount : initialFetchCount
-    fetchEntities(widgetId, fetchMoreCount, continuationToken)
-  }
+    } = this.props;
+    const fetchMoreCount = this.hasEntities() ? fetchCount : initialFetchCount;
+    fetchEntities(widgetId, fetchMoreCount, continuationToken);
+  };
 
-  render () {
+  render() {
     const {
       id,
       entities,
@@ -59,9 +56,9 @@ class ListEntitiesWidget extends Component {
       fetchCount,
       // end-ignore
       ...rest
-    } = this.props
-    const hasEntities = this.hasEntities()
-    const cards = () => map(entities, this.props.entityToCard)
+    } = this.props;
+    const hasEntities = this.hasEntities();
+    const cards = () => map(entities, this.props.entityToCard);
     const fetchMoreButtonCell = (
       <FetchButton
         flat
@@ -73,7 +70,7 @@ class ListEntitiesWidget extends Component {
         disabled={isFetching}
         isFetching={isFetching}
       />
-    )
+    );
     const retryButtonCell = (
       <FetchButton
         flat
@@ -85,24 +82,31 @@ class ListEntitiesWidget extends Component {
         isFetching={isFetching}
         onClick={this.fetchMore}
       />
-    )
+    );
 
     return (
-      <CellList
-        id={id}
-        {...rest}
-      >
+      <CellList id={id} {...rest}>
         {hasEntities && concat(cards(), fetchMoreButtonCell)}
         {!hasEntities && !isFetching && (
-          <div key="empty-entities-placeholder" className="md-cell md-cell--12">{emptyEntitiesMessage}</div>
+          <div key="empty-entities-placeholder" className="md-cell md-cell--12">
+            {emptyEntitiesMessage}
+          </div>
         )}
         {!hasEntities && !didError && isFetching && (
-          <CircularProgress key="fetching-progress" id={`${id}-progress`} className="md-cell md-cell--12" />
+          <CircularProgress
+            key="fetching-progress"
+            id={`${id}-progress`}
+            className="md-cell md-cell--12"
+          />
         )}
-        {didError && <span key="error-message" className="error-message">{loadErrorMessage}</span>}
+        {didError && (
+          <span key="error-message" className="error-message">
+            {loadErrorMessage}
+          </span>
+        )}
         {didError && !hasEntities && retryButtonCell}
       </CellList>
-    )
+    );
   }
 }
 ListEntitiesWidget.propTypes = {
@@ -128,32 +132,37 @@ ListEntitiesWidget.propTypes = {
   loadErrorMessage: PropTypes.string.isRequired,
   /** The classes to use for the fetch buttons that take up the space of a cell */
   cellClasses: PropTypes.string,
-}
+};
 ListEntitiesWidget.defaultProps = {
   // This way the fetchMoreButton takes up the last column
   initialFetchCount: 7,
   fetchCount: 8,
   cellClasses: CellList.smallCellClasses,
-}
+};
 const mapStateToProps = (state, ownProps) => {
-  const widgetState = get(state, ['widgets', 'listEntities', ownProps.widgetId], {})
-  const {
-    continuationToken,
-    isFetching,
-    didError,
-  } = widgetState
-  const normalEntities = get(widgetState, ownProps.entitiesWidgetStateKey)
-  const entities = denormalize(normalEntities, ownProps.entitiesSchema, state.entities)
+  const widgetState = get(
+    state,
+    ["widgets", "listEntities", ownProps.widgetId],
+    {}
+  );
+  const { continuationToken, isFetching, didError } = widgetState;
+  const normalEntities = get(widgetState, ownProps.entitiesWidgetStateKey);
+  const entities = denormalize(
+    normalEntities,
+    ownProps.entitiesSchema,
+    state.entities
+  );
   return {
     entities,
     continuationToken,
     isFetching,
     didError,
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  fetchEntities: (widgetId, fetchCount, continuationToken) => dispatch(ownProps.fetchEntities(widgetId, fetchCount, continuationToken)),
-})
+  fetchEntities: (widgetId, fetchCount, continuationToken) =>
+    dispatch(ownProps.fetchEntities(widgetId, fetchCount, continuationToken)),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(ListEntitiesWidget)
+export default connect(mapStateToProps, mapDispatchToProps)(ListEntitiesWidget);

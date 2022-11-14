@@ -1,43 +1,42 @@
-const Promise = require('bluebird')
-const moment = require('moment')
-const isDate = require('lodash/isDate')
-const map = require('lodash/map')
+const Promise = require("bluebird");
+const moment = require("moment");
+const isDate = require("lodash/isDate");
+const map = require("lodash/map");
 
-const {
-  timestampFormatString,
-  requireArgs,
-} = require('howdju-common')
+const { timestampFormatString, requireArgs } = require("howdju-common");
 
-
-const toUtc = val => {
+const toUtc = (val) => {
   if (isDate(val)) {
-    return moment.utc(val).format(timestampFormatString)
+    return moment.utc(val).format(timestampFormatString);
   }
   if (moment.isMoment(val)) {
-    return val.utc().format(timestampFormatString)
+    return val.utc().format(timestampFormatString);
   }
 
-  return val
-}
+  return val;
+};
 
 exports.Database = class Database {
-
   constructor(logger, pool) {
-    this.logger = logger
-    this.pool = pool
+    this.logger = logger;
+    this.pool = pool;
   }
 
-  query(queryName, sql, args, doArrayMode=false) {
-    requireArgs({queryName, sql})
+  query(queryName, sql, args, doArrayMode = false) {
+    requireArgs({ queryName, sql });
 
-    const utcArgs = map(args, toUtc)
-    this.logger.silly('Database.query', {queryName, sql, utcArgs})
-    return doArrayMode ?
-      this.pool.query({text: sql, values: utcArgs, rowMode: 'array'}) :
-      this.pool.query(sql, utcArgs)
+    const utcArgs = map(args, toUtc);
+    this.logger.silly("Database.query", { queryName, sql, utcArgs });
+    return doArrayMode
+      ? this.pool.query({ text: sql, values: utcArgs, rowMode: "array" })
+      : this.pool.query(sql, utcArgs);
   }
 
   queries(queryAndArgs) {
-    return Promise.all(map(queryAndArgs, ({queryName, sql, args}) => this.query(queryName, sql, args)))
+    return Promise.all(
+      map(queryAndArgs, ({ queryName, sql, args }) =>
+        this.query(queryName, sql, args)
+      )
+    );
   }
-}
+};

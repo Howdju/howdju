@@ -1,43 +1,43 @@
-const os = require('os')
-const forEach = require('lodash/forEach')
-const isIpPrivate = require('private-ip')
+const os = require("os");
+const forEach = require("lodash/forEach");
+const isIpPrivate = require("private-ip");
 
-const emptyMac = '00:00:00:00:00:00'
-const loopbackAddress = '127.0.0.1'
+const emptyMac = "00:00:00:00:00:00";
+const loopbackAddress = "127.0.0.1";
 
 exports.apiHostOrHostnameAddress = (dnsLookup = true) => {
-  let apiHost = process.env['API_HOST']
+  let apiHost = process.env["API_HOST"];
   if (apiHost) {
-    return apiHost
+    return apiHost;
   }
   if (dnsLookup) {
-    const dnsSync = require('dns-sync')
-    const dnsAddress = dnsSync.resolve(os.hostname())
+    const dnsSync = require("dns-sync");
+    const dnsAddress = dnsSync.resolve(os.hostname());
     if (dnsAddress !== loopbackAddress) {
-      return dnsAddress
+      return dnsAddress;
     }
   }
-  return localAddress()
-}
+  return localAddress();
+};
 
 function localAddress() {
-  const addresses = []
+  const addresses = [];
 
   forEach(os.networkInterfaces(), (infos, name) => {
     forEach(infos, (info) => {
       if (info.internal || info.mac === emptyMac) {
-        return
+        return;
       }
       if (!isIpPrivate(info.address)) {
-        return
+        return;
       }
-      if (info.family === 'IPv4') {
+      if (info.family === "IPv4") {
         // Prefer IPv4 since they're easier to type
-        addresses.unshift(info.address)
-      } else{
-        addresses.push(info.address)
+        addresses.unshift(info.address);
+      } else {
+        addresses.push(info.address);
       }
-    })
-  })
-  return addresses.length ? addresses[0] : loopbackAddress
+    });
+  });
+  return addresses.length ? addresses[0] : loopbackAddress;
 }

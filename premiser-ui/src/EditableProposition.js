@@ -1,18 +1,16 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {connect} from "react-redux"
-import {CircularProgress} from "react-md"
-import get from 'lodash/get'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { CircularProgress } from "react-md";
+import get from "lodash/get";
 
-import {isTruthy} from 'howdju-common'
+import { isTruthy } from "howdju-common";
 
-import {EditorTypes} from "./reducers/editors"
-import PropositionViewer from "./PropositionViewer"
-import PropositionEditor from "./PropositionEditor"
-
+import { EditorTypes } from "./reducers/editors";
+import PropositionViewer from "./PropositionViewer";
+import PropositionEditor from "./PropositionEditor";
 
 class EditableProposition extends Component {
-
   render() {
     const {
       id,
@@ -28,7 +26,7 @@ class EditableProposition extends Component {
       // ignore
       dispatch,
       ...rest
-    } = this.props
+    } = this.props;
 
     // lazy because editorId may not be available
     const editor = () => (
@@ -40,7 +38,7 @@ class EditableProposition extends Component {
         suggestionsKey={suggestionsKey}
         disabled={isFetching}
       />
-    )
+    );
 
     const viewer = (
       <PropositionViewer
@@ -51,15 +49,11 @@ class EditableProposition extends Component {
         contextTrailItems={contextTrailItems}
         showJustificationCount={showJustificationCount}
       />
-    )
+    );
 
-    const progress = (
-      <CircularProgress id={`${id}--loading`} />
-    )
+    const progress = <CircularProgress id={`${id}--loading`} />;
 
-    return isEditing ?
-      editor() :
-      !proposition ? progress : viewer
+    return isEditing ? editor() : !proposition ? progress : viewer;
   }
 }
 EditableProposition.propTypes = {
@@ -70,21 +64,21 @@ EditableProposition.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
   proposition: PropTypes.object,
-}
+};
 EditableProposition.defaultProps = {
   showJustificationCount: true,
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
-  const editorId = ownProps.editorId
-  const {editEntity, isFetching} = editorId ?
-    get(state.editors, [EditorTypes.PROPOSITION, editorId], {}) :
-    {}
-  const isEditing = isTruthy(editEntity)
+  const editorId = ownProps.editorId;
+  const { editEntity, isFetching } = editorId
+    ? get(state.editors, [EditorTypes.PROPOSITION, editorId], {})
+    : {};
+  const isEditing = isTruthy(editEntity);
   return {
     isFetching,
     isEditing,
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps)(EditableProposition)
+export default connect(mapStateToProps)(EditableProposition);

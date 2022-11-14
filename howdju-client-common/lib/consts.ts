@@ -1,1 +1,1 @@
-export const EXTENSION_MESSAGE_SOURCE = "extension"
+export const EXTENSION_MESSAGE_SOURCE = "extension";

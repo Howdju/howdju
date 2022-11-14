@@ -1,4 +1,4 @@
 module.exports = {
-  name: 'ElasticsearchSnapshot',
+  name: "ElasticsearchSnapshot",
   requireHowdjuDeps: true,
-}
+};

@@ -1,35 +1,29 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import {Button} from 'react-md'
-import cn from 'classnames'
-import concat from 'lodash/concat'
-import filter from 'lodash/filter'
-import find from 'lodash/find'
-import get from 'lodash/get'
-import map from 'lodash/map'
-import sortBy from 'lodash/sortBy'
-import zipObject from 'lodash/zipObject'
+import React from "react";
+import PropTypes from "prop-types";
+import { Button } from "react-md";
+import cn from "classnames";
+import concat from "lodash/concat";
+import filter from "lodash/filter";
+import find from "lodash/find";
+import get from "lodash/get";
+import map from "lodash/map";
+import sortBy from "lodash/sortBy";
+import zipObject from "lodash/zipObject";
 
-import {
-  tagEqual,
-} from 'howdju-common'
+import { tagEqual } from "howdju-common";
 
-import {
-  makeChip,
-} from './viewModels'
-import ChipsList from './ChipsList'
+import { makeChip } from "./viewModels";
+import ChipsList from "./ChipsList";
 
-import './TagsViewer.scss'
-
+import "./TagsViewer.scss";
 
 export default class TagsViewer extends React.Component {
-
   constructor() {
-    super()
+    super();
 
     this.state = {
       doShowAllTags: false,
-    }
+    };
   }
 
   render() {
@@ -46,25 +40,28 @@ export default class TagsViewer extends React.Component {
       onRemoveTag,
       removeIconName,
       canHide,
-    } = this.props
-    const {
-      doShowAllTags,
-    } = this.state
+    } = this.props;
+    const { doShowAllTags } = this.state;
 
-    const voteByTagName = zipObject(map(votes, vote => vote.tag.name), votes)
+    const voteByTagName = zipObject(
+      map(votes, (vote) => vote.tag.name),
+      votes
+    );
 
-    const alwaysVisibleTags = filter(tags, tag => {
-      const isRecommended = find(recommendedTags, recommendedTag => tagEqual(recommendedTag, tag))
-      const vote = voteByTagName[tag.name]
-      const polarity = get(vote, 'polarity')
-      const isVoted = polarity === votePolarity.POSITIVE
-      const isAntiVoted = polarity === votePolarity.NEGATIVE
-      return isVoted || isRecommended && !isAntiVoted
-    })
-    const visibleTags = !canHide || doShowAllTags ? tags : alwaysVisibleTags
+    const alwaysVisibleTags = filter(tags, (tag) => {
+      const isRecommended = find(recommendedTags, (recommendedTag) =>
+        tagEqual(recommendedTag, tag)
+      );
+      const vote = voteByTagName[tag.name];
+      const polarity = get(vote, "polarity");
+      const isVoted = polarity === votePolarity.POSITIVE;
+      const isAntiVoted = polarity === votePolarity.NEGATIVE;
+      return isVoted || (isRecommended && !isAntiVoted);
+    });
+    const visibleTags = !canHide || doShowAllTags ? tags : alwaysVisibleTags;
 
-    const hasHideableTags = alwaysVisibleTags.length < tags.length
-    const hideControls = []
+    const hasHideableTags = alwaysVisibleTags.length < tags.length;
+    const hideControls = [];
     if (canHide && hasHideableTags) {
       if (doShowAllTags) {
         hideControls.push(
@@ -72,56 +69,58 @@ export default class TagsViewer extends React.Component {
             flat
             key="dont-show-all-button"
             children="Don't show all"
-            onClick={() => this.setState({doShowAllTags: false})}
+            onClick={() => this.setState({ doShowAllTags: false })}
           />
-        )
+        );
       } else {
         hideControls.push(
           <Button
             flat
             key="show-all-button"
             children="Show all"
-            onClick={() => this.setState({doShowAllTags: true})}
+            onClick={() => this.setState({ doShowAllTags: true })}
           />
-        )
+        );
       }
     }
 
     const sortedVisibleTags = sortBy(visibleTags, (tag) => {
-      const vote = voteByTagName[tag.name]
-      const polarity = get(vote, 'polarity')
-      const isVoted = polarity && polarity === votePolarity.POSITIVE
-      const isAntiVoted = polarity && polarity === votePolarity.NEGATIVE
-      const isRecommended = find(recommendedTags, recommendedTag => tagEqual(recommendedTag, tag))
+      const vote = voteByTagName[tag.name];
+      const polarity = get(vote, "polarity");
+      const isVoted = polarity && polarity === votePolarity.POSITIVE;
+      const isAntiVoted = polarity && polarity === votePolarity.NEGATIVE;
+      const isRecommended = find(recommendedTags, (recommendedTag) =>
+        tagEqual(recommendedTag, tag)
+      );
 
       if (isVoted) {
-        return -2
+        return -2;
       }
       if (isAntiVoted) {
-        return 2
+        return 2;
       }
       if (isRecommended) {
-        return -1
+        return -1;
       }
-      return 1
-    })
+      return 1;
+    });
 
     const chips = map(sortedVisibleTags, (tag) => {
-      const vote = voteByTagName[tag.name]
-      const polarity = get(vote, 'polarity')
-      const isVoted = polarity && polarity === votePolarity.POSITIVE
-      const isAntiVoted = polarity && polarity === votePolarity.NEGATIVE
+      const vote = voteByTagName[tag.name];
+      const polarity = get(vote, "polarity");
+      const isVoted = polarity && polarity === votePolarity.POSITIVE;
+      const isAntiVoted = polarity && polarity === votePolarity.NEGATIVE;
       return makeChip({
         label: tag.name,
         isAntiVoted,
         className: cn({
-          'has-vote': isVoted,
-          'has-anti-vote': isAntiVoted,
+          "has-vote": isVoted,
+          "has-anti-vote": isAntiVoted,
         }),
-      })
-    })
+      });
+    });
 
-    const extraChipListChildren = concat(hideControls, extraChildren)
+    const extraChipListChildren = concat(hideControls, extraChildren);
 
     return (
       <ChipsList
@@ -134,23 +133,25 @@ export default class TagsViewer extends React.Component {
         removeIconName={removeIconName}
         showAvatars={votable}
       />
-    )
+    );
   }
 }
 TagsViewer.propTypes = {
-  tags: PropTypes.arrayOf(PropTypes.shape({
-    // Newly created tags may not have an ID
-    id: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    vote: PropTypes.shape({
-      polarity: PropTypes.string,
-    }),
-  })),
-}
+  tags: PropTypes.arrayOf(
+    PropTypes.shape({
+      // Newly created tags may not have an ID
+      id: PropTypes.string,
+      name: PropTypes.string.isRequired,
+      vote: PropTypes.shape({
+        polarity: PropTypes.string,
+      }),
+    })
+  ),
+};
 TagsViewer.defaultProps = {
   tags: [],
   removable: false,
   votePolarity: {},
   canHide: true,
   votable: true,
-}
+};

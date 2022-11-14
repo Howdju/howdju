@@ -1,37 +1,40 @@
-const {ArgumentParser} = require('argparse')
-const map = require('lodash/map')
+const { ArgumentParser } = require("argparse");
+const map = require("lodash/map");
 
-const {
-  JobScopes,
-} = require('howdju-service-common')
+const { JobScopes } = require("howdju-service-common");
 
 const {
   logger,
   justificationScoresService,
-} = require('../lambda-functions/justification-scorer/src/initialization')
+} = require("../lambda-functions/justification-scorer/src/initialization");
 const {
   pool,
-} = require('../lambda-functions/justification-scorer/src/initialization/databaseInitialization')
+} = require("../lambda-functions/justification-scorer/src/initialization/databaseInitialization");
 
 const argParser = new ArgumentParser({
-  description: 'Update justification scores',
-})
-argParser.add_argument('--scope', {defaultValue: JobScopes.INCREMENTAL, choices: map(JobScopes)})
-const args = argParser.parse_args()
+  description: "Update justification scores",
+});
+argParser.add_argument("--scope", {
+  defaultValue: JobScopes.INCREMENTAL,
+  choices: map(JobScopes),
+});
+const args = argParser.parse_args();
 
-logger.info(`Scoring justifications with scope: ${args.scope}`)
+logger.info(`Scoring justifications with scope: ${args.scope}`);
 
 const job = () => {
   switch (args.scope) {
     case JobScopes.INCREMENTAL:
-      return justificationScoresService.updateJustificationScoresUsingUnscoredVotes()
+      return justificationScoresService.updateJustificationScoresUsingUnscoredVotes();
     case JobScopes.FULL:
-      return justificationScoresService.setJustificationScoresUsingAllVotes()
+      return justificationScoresService.setJustificationScoresUsingAllVotes();
     default:
-      throw new Error(`Unsupported JobScope: ${args.scope}`)
+      throw new Error(`Unsupported JobScope: ${args.scope}`);
   }
-}
+};
 
 /* eslint-disable no-console */
-job().finally(() => pool.end()).catch(err => console.log(err))
+job()
+  .finally(() => pool.end())
+  .catch((err) => console.log(err));
 /* eslint-enable no-console */

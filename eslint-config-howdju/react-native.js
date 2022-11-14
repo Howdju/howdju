@@ -10,12 +10,6 @@
  *    we can use `prettier --check`.
  * */
 module.exports = {
-  plugins: [
-    'react-native',
-    '@react-native-community',
-  ],
-  extends: [
-    "eslint-config-howdju/client-common",
-    "prettier",
-  ],
+  plugins: ["react-native", "@react-native-community"],
+  extends: ["eslint-config-howdju/client-common", "prettier"],
 };

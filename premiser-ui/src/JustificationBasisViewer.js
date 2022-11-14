@@ -1,19 +1,14 @@
-import React, {Component} from 'react'
-import {Paper} from 'react-md'
+import React, { Component } from "react";
+import { Paper } from "react-md";
 
-import {
-  JustificationBasisTypes,
-  newExhaustedEnumError,
-} from "howdju-common"
+import { JustificationBasisTypes, newExhaustedEnumError } from "howdju-common";
 
-import PropositionCompoundViewer from "./PropositionCompoundViewer"
-import WritQuoteEntityViewer from "./WritQuoteEntityViewer"
+import PropositionCompoundViewer from "./PropositionCompoundViewer";
+import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
 
-import './JustificationBasisViewer.scss'
-
+import "./JustificationBasisViewer.scss";
 
 export default class JustificationBasisViewer extends Component {
-
   render() {
     const {
       id,
@@ -28,8 +23,8 @@ export default class JustificationBasisViewer extends Component {
       contextTrailItems,
       onClickWritQuoteUrl,
       ...rest
-    } = this.props
-    const basis = justification.basis
+    } = this.props;
+    const basis = justification.basis;
 
     switch (basis.type) {
       case JustificationBasisTypes.PROPOSITION_COMPOUND:
@@ -46,7 +41,7 @@ export default class JustificationBasisViewer extends Component {
             showStatusText={showStatusText}
             contextTrailItems={contextTrailItems}
           />
-        )
+        );
       case JustificationBasisTypes.WRIT_QUOTE:
         return (
           <WritQuoteEntityViewer
@@ -60,9 +55,9 @@ export default class JustificationBasisViewer extends Component {
             showUrls={showUrls}
             onClickUrl={onClickWritQuoteUrl}
           />
-        )
+        );
       default:
-        throw newExhaustedEnumError(basis.type)
+        throw newExhaustedEnumError(basis.type);
     }
   }
 }

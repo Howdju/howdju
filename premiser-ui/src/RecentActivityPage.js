@@ -1,14 +1,16 @@
-import React  from 'react'
+import React from "react";
 
-import RecentPropositionsWidget from "./RecentPropositionsWidget"
-import RecentWritsWidget from "./RecentWritsWidget"
-import RecentWritQuotesWidget from './RecentWritQuotesWidget'
-import RecentJustificationsWidget from './RecentJustificationsWidget'
+import RecentPropositionsWidget from "./RecentPropositionsWidget";
+import RecentWritsWidget from "./RecentWritsWidget";
+import RecentWritQuotesWidget from "./RecentWritQuotesWidget";
+import RecentJustificationsWidget from "./RecentJustificationsWidget";
 
-const recentPropositionsWidgetId = 'RecentActivityPage.recentPropositionsWidgetId'
-const recentWritsWidgetId = 'RecentActivityPage.recentWritsWidgetId'
-const recentWritQuotesWidgetId = 'RecentActivityPage.recentWritQuotesWidgetId'
-const recentJustificationsWidgetId = 'RecentActivityPage.recentJustificationsWidgetId'
+const recentPropositionsWidgetId =
+  "RecentActivityPage.recentPropositionsWidgetId";
+const recentWritsWidgetId = "RecentActivityPage.recentWritsWidgetId";
+const recentWritQuotesWidgetId = "RecentActivityPage.recentWritQuotesWidgetId";
+const recentJustificationsWidgetId =
+  "RecentActivityPage.recentJustificationsWidgetId";
 
 const RecentActivityPage = (props) => (
   <div className="md-grid">
@@ -40,5 +42,5 @@ const RecentActivityPage = (props) => (
       widgetId={recentJustificationsWidgetId}
     />
   </div>
-)
-export default RecentActivityPage
+);
+export default RecentActivityPage;

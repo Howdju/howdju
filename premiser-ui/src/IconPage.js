@@ -1,7 +1,7 @@
-import React from 'react'
-import Helmet from './Helmet'
+import React from "react";
+import Helmet from "./Helmet";
 
-const IconPage = props => (
+const IconPage = (props) => (
   <div>
     <Helmet>
       <title>Icons — Howdju</title>
@@ -75,5 +75,5 @@ const IconPage = props => (
     <i className="material-icons">star</i>
     <i className="material-icons">radio_button_checked</i>
   </div>
-)
-export default IconPage
+);
+export default IconPage;

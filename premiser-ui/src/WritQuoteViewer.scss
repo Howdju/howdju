@@ -1,5 +1,5 @@
-@import './components';
-@import './colors';
+@import "./components";
+@import "./colors";
 
 .quote-text-expand-ellipsis {
   font-weight: bold;
@@ -16,7 +16,7 @@
 
   p:first-child:before,
   p:last-child:after {
-    quotes: "\201C" "\201D" "\2018" "\2019";
+    quotes: "\201C""\201D""\2018""\2019";
     color: $asbestos;
     font-size: 200%;
     position: absolute;
@@ -33,13 +33,11 @@
 }
 
 .writ-quote-viewer {
-
   .writ-title {
     font-weight: 400;
   }
 
   ul.writ-quote-urls {
-
     margin-top: 0.8em;
 
     > li.url {

@@ -1,9 +1,9 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-import EntityViewer from './EntityViewer'
-import EditableProposition from './EditableProposition'
-import paths from './paths'
+import EntityViewer from "./EntityViewer";
+import EditableProposition from "./EditableProposition";
+import paths from "./paths";
 
 export default class PropositionEntityViewer extends Component {
   render() {
@@ -18,7 +18,7 @@ export default class PropositionEntityViewer extends Component {
       showStatusText,
       contextTrailItems,
       showJustificationCount,
-    } = this.props
+    } = this.props;
     return (
       <EntityViewer
         iconName="short_text"
@@ -39,13 +39,13 @@ export default class PropositionEntityViewer extends Component {
         }
         menu={menu}
       />
-    )
+    );
   }
 }
 PropositionEntityViewer.propTypes = {
   id: PropTypes.string.isRequired,
-}
-PropositionEntityViewer.defaultProps ={
+};
+PropositionEntityViewer.defaultProps = {
   showStatusText: true,
   showJustificationCount: true,
-}
+};

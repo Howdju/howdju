@@ -1,1 +1,1 @@
-exports.VidSegmentsService = class VidSegmentsService {}
+exports.VidSegmentsService = class VidSegmentsService {};

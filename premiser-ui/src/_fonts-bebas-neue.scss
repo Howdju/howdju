@@ -1,51 +1,41 @@
 @font-face {
-  font-family: 'Bebas Neue';
+  font-family: "Bebas Neue";
   font-style: normal;
   font-weight: 100;
   font-display: swap;
-  src:
-          local('Bebas Neue'),
-          local('Bebas-Neue'),
-          $font-url-bebas-neue-thin format('opentype');
+  src: local("Bebas Neue"), local("Bebas-Neue"),
+    $font-url-bebas-neue-thin format("opentype");
 }
 
 @font-face {
-  font-family: 'Bebas Neue';
+  font-family: "Bebas Neue";
   font-style: normal;
   font-weight: 200;
   font-display: swap;
-  src:
-          local('Bebas Neue'),
-          local('Bebas-Neue'),
-          $font-url-bebas-neue-light format('opentype');
+  src: local("Bebas Neue"), local("Bebas-Neue"),
+    $font-url-bebas-neue-light format("opentype");
 }
 @font-face {
-  font-family: 'Bebas Neue';
+  font-family: "Bebas Neue";
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src:
-          local('Bebas Neue'),
-          local('Bebas-Neue'),
-          $font-url-bebas-neue-book format('opentype');
+  src: local("Bebas Neue"), local("Bebas-Neue"),
+    $font-url-bebas-neue-book format("opentype");
 }
 @font-face {
-  font-family: 'Bebas Neue';
+  font-family: "Bebas Neue";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src:
-          local('Bebas Neue'),
-          local('Bebas-Neue'),
-          $font-url-bebas-neue-regular format('opentype');
+  src: local("Bebas Neue"), local("Bebas-Neue"),
+    $font-url-bebas-neue-regular format("opentype");
 }
 @font-face {
-  font-family: 'Bebas Neue';
+  font-family: "Bebas Neue";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src:
-          local('Bebas Neue'),
-          local('Bebas-Neue'),
-          $font-url-bebas-neue-bold format('opentype');
+  src: local("Bebas Neue"), local("Bebas-Neue"),
+    $font-url-bebas-neue-bold format("opentype");
 }

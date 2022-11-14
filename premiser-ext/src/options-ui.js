@@ -1,26 +1,29 @@
-import {extension as ext} from 'howdju-client-common'
+import { extension as ext } from "howdju-client-common";
 
-document.addEventListener('DOMContentLoaded', restoreOptions)
-document.getElementById('save').addEventListener('click', saveOptions)
+document.addEventListener("DOMContentLoaded", restoreOptions);
+document.getElementById("save").addEventListener("click", saveOptions);
 // document.getElementById('remove-howdju-base-url').addEventListener('click', (event) => removeOption(event, 'howdjuBaseUrl'))
 
 function saveOptions(event) {
-  event.preventDefault()
-  const howdjuBaseUrl = document.getElementById('howdju-base-url').value
-  const isDevelopment = document.getElementById('is-development').checked
-  ext.setStorageLocal({
-    howdjuBaseUrl,
-    isDevelopment,
-  }, () => flashStatus('Options saved.'))
+  event.preventDefault();
+  const howdjuBaseUrl = document.getElementById("howdju-base-url").value;
+  const isDevelopment = document.getElementById("is-development").checked;
+  ext.setStorageLocal(
+    {
+      howdjuBaseUrl,
+      isDevelopment,
+    },
+    () => flashStatus("Options saved.")
+  );
 }
 
 function restoreOptions() {
-  ext.getStorageLocal(['howdjuBaseUrl', 'isDevelopment'], (items) => {
+  ext.getStorageLocal(["howdjuBaseUrl", "isDevelopment"], (items) => {
     if (items.howdjuBaseUrl) {
-      document.getElementById('howdju-base-url').value = items.howdjuBaseUrl
+      document.getElementById("howdju-base-url").value = items.howdjuBaseUrl;
     }
-    document.getElementById('is-development').checked = items.isDevelopment
-  })
+    document.getElementById("is-development").checked = items.isDevelopment;
+  });
 }
 
 // function removeOption(event, key) {
@@ -41,9 +44,9 @@ function restoreOptions() {
 // }
 
 function flashStatus(message, duration = 1500) {
-  const status = document.getElementById('status')
-  status.textContent = message
-  setTimeout(function() {
-    status.textContent = ''
-  }, duration)
+  const status = document.getElementById("status");
+  status.textContent = message;
+  setTimeout(function () {
+    status.textContent = "";
+  }, duration);
 }

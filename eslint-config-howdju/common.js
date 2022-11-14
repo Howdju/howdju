@@ -3,10 +3,7 @@
 module.exports = {
   env: {
     "shared-node-browser": true,
-    "node": true,  // babel will transpile node-like imports (require, module, etc.)
+    node: true, // babel will transpile node-like imports (require, module, etc.)
   },
-  extends: [
-    "eslint-config-howdju",
-    "prettier",
-  ],
-}
+  extends: ["eslint-config-howdju", "prettier"],
+};

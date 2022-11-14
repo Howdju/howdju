@@ -1,8 +1,8 @@
-const Promise = require('bluebird')
-const forEach = require('lodash/forEach')
-const head = require('lodash/head')
-const join = require('lodash/join')
-const map = require('lodash/map')
+const Promise = require("bluebird");
+const forEach = require("lodash/forEach");
+const head = require("lodash/head");
+const join = require("lodash/join");
+const map = require("lodash/map");
 
 const {
   assert,
@@ -13,61 +13,63 @@ const {
   newExhaustedEnumError,
   pushAll,
   requireArgs,
-} = require('howdju-common')
+} = require("howdju-common");
 
 const {
   toJustificationBasisCompound,
   toJustificationBasisCompoundAtom,
   toProposition,
-} = require('./orm')
-const {
-  mapSingle,
-  mapMany,
-  mapManyById,
-} = require('./daosUtil')
+} = require("./orm");
+const { mapSingle, mapMany, mapManyById } = require("./daosUtil");
 
 exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
-
   constructor(logger, database, sourceExcerptParaphrasesDao) {
-    requireArgs({logger, database, sourceExcerptParaphrasesDao})
-    this.logger = logger
-    this.database = database
-    this.sourceExcerptParaphrasesDao = sourceExcerptParaphrasesDao
+    requireArgs({ logger, database, sourceExcerptParaphrasesDao });
+    this.logger = logger;
+    this.database = database;
+    this.sourceExcerptParaphrasesDao = sourceExcerptParaphrasesDao;
   }
 
   readJustificationBasisCompoundForId(justificationBasisCompoundId) {
-    return this.database.query(
-      'readJustificationBasisCompoundForId',
-      `select * from justification_basis_compounds where justification_basis_compound_id = $1 and deleted is null`,
-      [justificationBasisCompoundId]
-    )
-      .then(mapSingle(this.logger, toJustificationBasisCompound, 'justification_basis_compounds', {justificationBasisCompoundId}))
+    return this.database
+      .query(
+        "readJustificationBasisCompoundForId",
+        `select * from justification_basis_compounds where justification_basis_compound_id = $1 and deleted is null`,
+        [justificationBasisCompoundId]
+      )
+      .then(
+        mapSingle(
+          this.logger,
+          toJustificationBasisCompound,
+          "justification_basis_compounds",
+          { justificationBasisCompoundId }
+        )
+      );
   }
 
   readAtomsForJustificationBasisCompoundId(justificationBasisCompoundId) {
-    return this.database.query(
-      'readAtomsForJustificationBasisCompoundId',
-      `select * from justification_basis_compound_atoms
+    return this.database
+      .query(
+        "readAtomsForJustificationBasisCompoundId",
+        `select * from justification_basis_compound_atoms
        where justification_basis_compound_id = $1`,
-      [justificationBasisCompoundId]
-    )
-      .then(mapMany(toJustificationBasisCompoundAtom))
+        [justificationBasisCompoundId]
+      )
+      .then(mapMany(toJustificationBasisCompoundAtom));
   }
 
   readJustificationBasisCompoundHavingAtoms(targetAtoms) {
-    const args = [
-      targetAtoms.length,
-    ]
-    const atomConditions = []
+    const args = [targetAtoms.length];
+    const atomConditions = [];
     forEach(targetAtoms, (atom, index) => {
-      atomConditions.push(`entity_type = $${args.length+1} and entity_id = $${args.length+2} and order_position = $${args.length+3}`)
-      pushAll(args, [
-        atom.type,
-        atom.entity.id,
-        index,
-      ])
-    })
-    const atomConditionsSql = join(atomConditions, ' or ')
+      atomConditions.push(
+        `entity_type = $${args.length + 1} and entity_id = $${
+          args.length + 2
+        } and order_position = $${args.length + 3}`
+      );
+      pushAll(args, [atom.type, atom.entity.id, index]);
+    });
+    const atomConditionsSql = join(atomConditions, " or ");
     const sql = `
       with
         compounds_having_correct_atom_count as (
@@ -94,21 +96,24 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
       select *
       from compounds_having_only_all_target_atoms
       order by order_position
-    `
-    return this.database.query('readJustificationBasisCompoundHavingAtoms', sql, args)
-      .then( ({rows}) => {
+    `;
+    return this.database
+      .query("readJustificationBasisCompoundHavingAtoms", sql, args)
+      .then(({ rows }) => {
         if (rows.length < 1) {
-          return null
+          return null;
         }
-        assert(rows.length === targetAtoms.length)
+        assert(rows.length === targetAtoms.length);
 
         // Each of the rows has the compound information, so just use the first
-        const justificationBasisCompound = toJustificationBasisCompound(head(rows))
-        const atoms = map(rows, toJustificationBasisCompoundAtom)
-        justificationBasisCompound.atoms = atoms
+        const justificationBasisCompound = toJustificationBasisCompound(
+          head(rows)
+        );
+        const atoms = map(rows, toJustificationBasisCompoundAtom);
+        justificationBasisCompound.atoms = atoms;
 
-        return justificationBasisCompound
-      })
+        return justificationBasisCompound;
+      });
   }
 
   readJustificationBasisCompoundsByIdForRootPropositionId(rootPropositionId) {
@@ -136,61 +141,74 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
         order by
             jbca.justification_basis_compound_id
           , jbca.order_position
-    `
+    `;
     const args = [
       JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
       JustificationRootTargetTypes.PROPOSITION,
       rootPropositionId,
-    ]
+    ];
     return Promise.all([
-      this.database.query('readJustificationBasisCompoundsByIdForRootPropositionId', sql, args),
-      this.sourceExcerptParaphrasesDao.readSourceExcerptParaphrasesByIdForRootPropositionId(rootPropositionId),
-      readAtomPropositionsForRootPropositionId(this.logger, this.database, rootPropositionId),
-    ])
-      .then( ([{rows}, sourceExcerptParaphrasesById, atomPropositionsById]) => {
-        const justificationBasisCompoundsById = {}
+      this.database.query(
+        "readJustificationBasisCompoundsByIdForRootPropositionId",
+        sql,
+        args
+      ),
+      this.sourceExcerptParaphrasesDao.readSourceExcerptParaphrasesByIdForRootPropositionId(
+        rootPropositionId
+      ),
+      readAtomPropositionsForRootPropositionId(
+        this.logger,
+        this.database,
+        rootPropositionId
+      ),
+    ]).then(
+      ([{ rows }, sourceExcerptParaphrasesById, atomPropositionsById]) => {
+        const justificationBasisCompoundsById = {};
         if (rows.length < 1) {
-          return justificationBasisCompoundsById
+          return justificationBasisCompoundsById;
         }
 
         forEach(rows, (row) => {
-          const atom = toJustificationBasisCompoundAtom(row)
+          const atom = toJustificationBasisCompoundAtom(row);
 
-          let justificationBasisCompound = justificationBasisCompoundsById[atom.compoundId]
+          let justificationBasisCompound =
+            justificationBasisCompoundsById[atom.compoundId];
           // Each row has the compound information; so if we haven't seen one yet, grab it from the current row
           if (!justificationBasisCompound) {
-            justificationBasisCompound = toJustificationBasisCompound(row)
-            justificationBasisCompoundsById[justificationBasisCompound.id] = justificationBasisCompound
+            justificationBasisCompound = toJustificationBasisCompound(row);
+            justificationBasisCompoundsById[justificationBasisCompound.id] =
+              justificationBasisCompound;
           }
 
-          justificationBasisCompound.atoms.push(atom)
+          justificationBasisCompound.atoms.push(atom);
 
           switch (atom.type) {
             case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
-              atom.entity = sourceExcerptParaphrasesById[atom.entity.id]
-              break
+              atom.entity = sourceExcerptParaphrasesById[atom.entity.id];
+              break;
             case JustificationBasisCompoundAtomTypes.PROPOSITION:
-              atom.entity = atomPropositionsById[atom.entity.id]
-              break
+              atom.entity = atomPropositionsById[atom.entity.id];
+              break;
             default:
-              throw newExhaustedEnumError(atom)
+              throw newExhaustedEnumError(atom);
           }
-          assert(isDefined(atom.entity))
-
-        })
-        return justificationBasisCompoundsById
-      })
+          assert(isDefined(atom.entity));
+        });
+        return justificationBasisCompoundsById;
+      }
+    );
   }
 
   createJustificationBasisCompound(justificationBasisCompound, userId, now) {
-    return this.database.query(
-      'createJustificationBasisCompound',
-      `insert into justification_basis_compounds (creator_user_id, created)
+    return this.database
+      .query(
+        "createJustificationBasisCompound",
+        `insert into justification_basis_compounds (creator_user_id, created)
        values ($1, $2)
        returning *`,
-      [userId, now]
-    )
-      .then(mapSingle(toJustificationBasisCompound))
+        [userId, now]
+      )
+      .then(mapSingle(toJustificationBasisCompound));
   }
 
   createAtomForJustificationBasisCompoundId(
@@ -199,18 +217,23 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     atomEntityId,
     orderPosition
   ) {
-    return this.database.query(
-      'createAtomForJustificationBasisCompoundId',
-      `insert into justification_basis_compound_atoms (justification_basis_compound_id, entity_type, entity_id, order_position)
+    return this.database
+      .query(
+        "createAtomForJustificationBasisCompoundId",
+        `insert into justification_basis_compound_atoms (justification_basis_compound_id, entity_type, entity_id, order_position)
           values ($1, $2, $3, $4)
           returning *`,
-      [justificationBasisCompoundId, atomType, atomEntityId, orderPosition]
-    )
-      .then(mapSingle(toJustificationBasisCompoundAtom))
+        [justificationBasisCompoundId, atomType, atomEntityId, orderPosition]
+      )
+      .then(mapSingle(toJustificationBasisCompoundAtom));
   }
-}
+};
 
-function readAtomPropositionsForRootPropositionId(logger, database, rootPropositionId) {
+function readAtomPropositionsForRootPropositionId(
+  logger,
+  database,
+  rootPropositionId
+) {
   const sql = `
       select
         s.*
@@ -228,13 +251,14 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
           and j.deleted is null
           and jbc.deleted is null
           and s.deleted is null
-    `
+    `;
   const args = [
     JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomTypes.PROPOSITION,
     JustificationRootTargetTypes.PROPOSITION,
     rootPropositionId,
-  ]
-  return database.query('readAtomPropositionsForRootPropositionId', sql, args)
-    .then(mapManyById(toProposition))
+  ];
+  return database
+    .query("readAtomPropositionsForRootPropositionId", sql, args)
+    .then(mapManyById(toProposition));
 }

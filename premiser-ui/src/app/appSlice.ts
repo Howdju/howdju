@@ -1,15 +1,14 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { LocationChangeAction, LOCATION_CHANGE } from "connected-react-router";
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import {LocationChangeAction, LOCATION_CHANGE} from 'connected-react-router'
-
-import { ui } from "@/actions"
-import paths from '../paths'
-import {goto} from "../actions"
-import {isWindowNarrow} from "../util"
-import { Location, LocationState } from "history"
+import { ui } from "@/actions";
+import paths from "../paths";
+import { goto } from "../actions";
+import { isWindowNarrow } from "../util";
+import { Location, LocationState } from "history";
 
 export interface ToastData {
-  text: string
+  text: string;
 }
 
 export const appSlice = createSlice({
@@ -24,54 +23,54 @@ export const appSlice = createSlice({
   },
   reducers: {
     showNavDrawer: (state) => {
-      state.isNavDrawerVisible = true
+      state.isNavDrawerVisible = true;
     },
     hideNavDrawer: (state) => {
-      state.isNavDrawerVisible = false
+      state.isNavDrawerVisible = false;
     },
     toggleNavDrawerVisibility: (state) => {
-      state.isNavDrawerVisible = !state.isNavDrawerVisible
+      state.isNavDrawerVisible = !state.isNavDrawerVisible;
     },
     setNavDrawerVisibility: (state, action: PayloadAction<boolean>) => {
-      state.isNavDrawerVisible = action.payload
+      state.isNavDrawerVisible = action.payload;
     },
     addToast: {
-      prepare: (text: string) => ({payload: { text }}),
+      prepare: (text: string) => ({ payload: { text } }),
       reducer: (state, action: PayloadAction<ToastData>) => {
-        state.toasts.push(action.payload)
+        state.toasts.push(action.payload);
       },
     },
     dismissToast: (state) => {
-      state.toasts = state.toasts.slice(1)
+      state.toasts = state.toasts.slice(1);
     },
     setCanHover: {
-      prepare: (canHover: boolean) => ({payload: {canHover}}),
-      reducer: (state, action: PayloadAction<{canHover: boolean}>) => {
-        state.canHover = action.payload.canHover
+      prepare: (canHover: boolean) => ({ payload: { canHover } }),
+      reducer: (state, action: PayloadAction<{ canHover: boolean }>) => {
+        state.canHover = action.payload.canHover;
       },
     },
     disableMobileSite: (state) => {
-      state.isMobileSiteDisabled = true
+      state.isMobileSiteDisabled = true;
     },
     enableMobileSite: (state) => {
-      state.isMobileSiteDisabled = false
+      state.isMobileSiteDisabled = false;
     },
   },
   extraReducers(builder) {
     builder.addCase(ui.windowResize, (state) => {
-      state.isWindowNarrow = isWindowNarrow()
-    })
+      state.isWindowNarrow = isWindowNarrow();
+    });
     builder.addCase(LOCATION_CHANGE, (state, action: LocationChangeAction) => {
       if (action.payload.location.pathname !== paths.login()) {
-        return {...state, loginRedirectLocation: null}
+        return { ...state, loginRedirectLocation: null };
       }
-      return state
-    })
+      return state;
+    });
     builder.addCase(goto.login, (state, action) => {
-      state.loginRedirectLocation = action.payload.loginRedirectLocation
-    })
+      state.loginRedirectLocation = action.payload.loginRedirectLocation;
+    });
   },
-})
+});
 
-export default appSlice.actions
-export const app = appSlice.reducer
+export default appSlice.actions;
+export const app = appSlice.reducer;

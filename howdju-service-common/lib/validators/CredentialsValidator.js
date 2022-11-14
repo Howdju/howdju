@@ -1,34 +1,32 @@
-const {
-  modelErrorCodes,
-} = require('howdju-common')
+const { modelErrorCodes } = require("howdju-common");
 
 class CredentialValidator {
   validate(credentials) {
-    const errors = CredentialValidator.blankErrors()
+    const errors = CredentialValidator.blankErrors();
 
     if (!credentials) {
-      errors.hasErrors = true
-      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
-      return errors
+      errors.hasErrors = true;
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED);
+      return errors;
     }
 
-    if (credentials.email === '') {
-      errors.hasErrors = true
-      errors.fieldErrors.email.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    if (credentials.email === "") {
+      errors.hasErrors = true;
+      errors.fieldErrors.email.push(modelErrorCodes.MUST_BE_NONEMPTY);
     } else if (!credentials.email) {
-      errors.hasErrors = true
-      errors.fieldErrors.email.push(modelErrorCodes.IS_REQUIRED)
+      errors.hasErrors = true;
+      errors.fieldErrors.email.push(modelErrorCodes.IS_REQUIRED);
     }
 
-    if (credentials.password === '') {
-      errors.hasErrors = true
-      errors.fieldErrors.password.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    if (credentials.password === "") {
+      errors.hasErrors = true;
+      errors.fieldErrors.password.push(modelErrorCodes.MUST_BE_NONEMPTY);
     } else if (!credentials.password) {
-      errors.hasErrors = true
-      errors.fieldErrors.password.push(modelErrorCodes.IS_REQUIRED)
+      errors.hasErrors = true;
+      errors.fieldErrors.password.push(modelErrorCodes.IS_REQUIRED);
     }
 
-    return errors
+    return errors;
   }
 }
 CredentialValidator.blankErrors = () => ({
@@ -38,6 +36,6 @@ CredentialValidator.blankErrors = () => ({
     email: [],
     password: [],
   },
-})
+});
 
-exports.CredentialValidator = CredentialValidator
+exports.CredentialValidator = CredentialValidator;

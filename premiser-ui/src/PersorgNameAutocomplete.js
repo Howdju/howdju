@@ -1,21 +1,19 @@
-import React, {Component} from "react"
-import PropTypes from 'prop-types'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-import ApiAutocomplete from "./ApiAutocomplete"
-import {persorgSchema} from './normalizationSchemas'
-import {connect} from "react-redux"
-import { mapActionCreatorGroupToDispatchToProps} from "./actions"
-import {api, cancelPersorgNameSuggestions} from "./apiActions"
-
+import ApiAutocomplete from "./ApiAutocomplete";
+import { persorgSchema } from "./normalizationSchemas";
+import { connect } from "react-redux";
+import { mapActionCreatorGroupToDispatchToProps } from "./actions";
+import { api, cancelPersorgNameSuggestions } from "./apiActions";
 
 class PersorgNameAutocomplete extends Component {
-
   onAutocomplete = (persorg) => {
     if (this.props.onAutocomplete) {
-      this.props.onAutocomplete(persorg)
+      this.props.onAutocomplete(persorg);
     }
-    this.props.onPropertyChange({[this.props.name]: persorg.name})
-  }
+    this.props.onPropertyChange({ [this.props.name]: persorg.name });
+  };
 
   static propTypes = {
     name: PropTypes.string.isRequired,
@@ -28,14 +26,10 @@ class PersorgNameAutocomplete extends Component {
     /** If present, called with the persorg when an autocomplete occurs */
     onAutocomplete: PropTypes.func,
     onKeyDown: PropTypes.func,
-  }
+  };
 
   render() {
-    const {
-      suggestionsKey,
-      api,
-      ...rest
-    } = this.props
+    const { suggestionsKey, api, ...rest } = this.props;
 
     return (
       <ApiAutocomplete
@@ -51,10 +45,13 @@ class PersorgNameAutocomplete extends Component {
         dataLabel="name"
         dataValue="id"
       />
-    )
+    );
   }
 }
 
-export default connect(null, mapActionCreatorGroupToDispatchToProps({
-  api,
-}))(PersorgNameAutocomplete)
+export default connect(
+  null,
+  mapActionCreatorGroupToDispatchToProps({
+    api,
+  })
+)(PersorgNameAutocomplete);

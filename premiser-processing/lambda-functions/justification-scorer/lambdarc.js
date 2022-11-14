@@ -1,4 +1,4 @@
 module.exports = {
-  name: 'scoreJustifications',
+  name: "scoreJustifications",
   requireHowdjuDeps: true,
-}
+};

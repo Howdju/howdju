@@ -1,19 +1,20 @@
-import forEach from 'lodash/forEach'
+import forEach from "lodash/forEach";
 
-import { newProgrammingError } from './commonErrors'
-import { isDefined } from './general'
-
+import { newProgrammingError } from "./commonErrors";
+import { isDefined } from "./general";
 
 export function requireArgs(requiredArgs) {
-  const missing = []
+  const missing = [];
   forEach(requiredArgs, (value, name) => {
     if (!isDefined(value)) {
-      missing.push(name)
+      missing.push(name);
     }
-  })
+  });
 
   if (missing.length > 0) {
-    throw newProgrammingError(`Required arguments are undefined: ${missing.join(', ')}`)
+    throw newProgrammingError(
+      `Required arguments are undefined: ${missing.join(", ")}`
+    );
   }
-  return true
+  return true;
 }

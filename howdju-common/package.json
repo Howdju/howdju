@@ -7,8 +7,8 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
-    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "check-format": "yarn run prettier --check --ignore-path .prettierignore .",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .prettierignore .",
     "gen-standalone-schema-validation": "npx ts-node bin/gen-standalone-schema-validation.js",
     "lint": "eslint .",
     "custom-check": "bin/custom-check.sh",

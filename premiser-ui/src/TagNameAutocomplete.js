@@ -1,25 +1,21 @@
-import React, {Component} from "react"
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import {schemaSettings} from 'howdju-common'
+import { schemaSettings } from "howdju-common";
 
-import {
-  api, mapActionCreatorGroupToDispatchToProps,
-} from "./actions"
-import ApiAutocomplete from "./ApiAutocomplete"
-import {tagSchema} from "./normalizationSchemas"
-import { cancelTagNameSuggestions } from "./apiActions"
-
+import { api, mapActionCreatorGroupToDispatchToProps } from "./actions";
+import ApiAutocomplete from "./ApiAutocomplete";
+import { tagSchema } from "./normalizationSchemas";
+import { cancelTagNameSuggestions } from "./apiActions";
 
 class TagNameAutocomplete extends Component {
-
   onAutocomplete = (tag) => {
-    this.props.onPropertyChange({[this.props.name]: tag.name})
+    this.props.onPropertyChange({ [this.props.name]: tag.name });
     if (this.props.onAutocomplete) {
-      this.props.onAutocomplete(tag)
+      this.props.onAutocomplete(tag);
     }
-  }
+  };
 
   render() {
     const {
@@ -31,7 +27,7 @@ class TagNameAutocomplete extends Component {
       onKeyDown,
       focusInputOnAutocomplete,
       ...rest
-    } = this.props
+    } = this.props;
 
     return (
       <ApiAutocomplete
@@ -54,7 +50,7 @@ class TagNameAutocomplete extends Component {
         onKeyDown={onKeyDown}
         onPropertyChange={onPropertyChange}
       />
-    )
+    );
   }
 }
 TagNameAutocomplete.propTypes = {
@@ -66,8 +62,11 @@ TagNameAutocomplete.propTypes = {
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
   onPropertyChange: PropTypes.func.isRequired,
   onKeyDown: PropTypes.func,
-}
+};
 
-export default connect(null, mapActionCreatorGroupToDispatchToProps({
-  api,
-}))(TagNameAutocomplete)
+export default connect(
+  null,
+  mapActionCreatorGroupToDispatchToProps({
+    api,
+  })
+)(TagNameAutocomplete);

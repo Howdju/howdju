@@ -1,21 +1,22 @@
-import React, {Component} from 'react'
+import React, { Component } from "react";
 
-import {
-  isRootNegative,
-  isRootPositive,
-} from 'howdju-common'
-import JustificationBasisViewer from './JustificationBasisViewer'
-import ChatBubble from './ChatBubble'
+import { isRootNegative, isRootPositive } from "howdju-common";
+import JustificationBasisViewer from "./JustificationBasisViewer";
+import ChatBubble from "./ChatBubble";
 
-import './JustificationChatBubble.scss'
+import "./JustificationChatBubble.scss";
 
 export default class JustificationChatBubble extends Component {
-
   onClickWritQuoteUrl = (event, writQuote, url) => {
     if (this.props.onClickWritQuoteUrl) {
-      this.props.onClickWritQuoteUrl(event, this.props.justification, writQuote, url)
+      this.props.onClickWritQuoteUrl(
+        event,
+        this.props.justification,
+        writQuote,
+        url
+      );
     }
-  }
+  };
 
   render() {
     const {
@@ -36,12 +37,12 @@ export default class JustificationChatBubble extends Component {
       // ignore
       onClickWritQuoteUrl,
       ...rest
-    } = this.props
-    const _isRootPositive = isRootPositive(justification)
-    const _isRootNegative = isRootNegative(justification)
+    } = this.props;
+    const _isRootPositive = isRootPositive(justification);
+    const _isRootNegative = isRootNegative(justification);
 
-    const basisViewerIdPrefix = id ? id + '-' : ''
-    const basisViewerId = `${basisViewerIdPrefix}basis-viewer`
+    const basisViewerIdPrefix = id ? id + "-" : "";
+    const basisViewerId = `${basisViewerIdPrefix}basis-viewer`;
 
     return (
       <ChatBubble
@@ -69,6 +70,6 @@ export default class JustificationChatBubble extends Component {
         {doShowControls && actions}
         {children}
       </ChatBubble>
-    )
+    );
   }
 }

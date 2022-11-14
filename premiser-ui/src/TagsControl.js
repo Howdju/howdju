@@ -1,134 +1,120 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import find from 'lodash/find'
-import get from 'lodash/get'
-import includes from 'lodash/includes'
-import {Button} from 'react-md'
+import React from "react";
+import PropTypes from "prop-types";
+import find from "lodash/find";
+import get from "lodash/get";
+import includes from "lodash/includes";
+import { Button } from "react-md";
 
-import {
-  makeTag,
-  cleanWhitespace,
-  tagEqual,
-} from 'howdju-common'
+import { makeTag, cleanWhitespace, tagEqual } from "howdju-common";
 
-import {
-  combineIds,
-} from './viewModels'
-import TagNameAutocomplete from './TagNameAutocomplete'
-import TagsViewer from './TagsViewer'
-import {Keys} from './keyCodes'
+import { combineIds } from "./viewModels";
+import TagNameAutocomplete from "./TagNameAutocomplete";
+import TagsViewer from "./TagsViewer";
+import { Keys } from "./keyCodes";
 
-import './TagsControl.scss'
-
+import "./TagsControl.scss";
 
 export default class TagsControl extends React.Component {
-
   constructor() {
-    super()
+    super();
 
     this.state = {
-      tagName: '',
+      tagName: "",
       isInputCollapsed: true,
-    }
+    };
   }
 
   onTagNameKeyDown = (event) => {
-    const {
-      inputCollapsable,
-    } = this.props
-    const {
-      tagName,
-    } = this.state
+    const { inputCollapsable } = this.props;
+    const { tagName } = this.state;
 
     if (!tagName && event.key === Keys.ENTER && this.props.onSubmit) {
-      this.props.onSubmit(event)
+      this.props.onSubmit(event);
 
       if (event.isDefaultPrevented()) {
-        return
+        return;
       }
     }
 
     if (includes(this.props.commitChipKeys, event.key)) {
-      event.preventDefault()
+      event.preventDefault();
 
       if (tagName) {
-        this.addTag(tagName, event)
-        this.setState({tagName: ''})
+        this.addTag(tagName, event);
+        this.setState({ tagName: "" });
 
         if (this.props.cancelSuggestions) {
-          this.props.cancelSuggestions()
+          this.props.cancelSuggestions();
         }
       }
     }
 
     if (inputCollapsable && event.key === Keys.ENTER) {
-      this.setState({isInputCollapsed: true})
+      this.setState({ isInputCollapsed: true });
     }
-  }
+  };
 
   onTagNamePropertyChange = (properties) => {
-    this.setState({tagName: properties.tagName})
-  }
+    this.setState({ tagName: properties.tagName });
+  };
 
   onTagNameAutocomplete = (tag) => {
-    this.props.onTag(tag)
-    this.setState({tagName: ''})
-  }
+    this.props.onTag(tag);
+    this.setState({ tagName: "" });
+  };
 
   onClickTag = (tagName, index, event) => {
     if (this.props.onClickTag) {
-      const tag = find(this.props.tags, tag => tag.name === tagName)
-      this.props.onClickTag(tag)
+      const tag = find(this.props.tags, (tag) => tag.name === tagName);
+      this.props.onClickTag(tag);
     }
-  }
+  };
 
   onClickAvatar = (tagName, index, event) => {
-    const tag = find(this.props.tags, tag => tag.name === tagName)
-    const vote = find(this.props.votes, vote => tagEqual(vote.tag, tag))
+    const tag = find(this.props.tags, (tag) => tag.name === tagName);
+    const vote = find(this.props.votes, (vote) => tagEqual(vote.tag, tag));
 
-    const votePolarity = get(vote, 'polarity')
+    const votePolarity = get(vote, "polarity");
     if (votePolarity === this.props.votePolarity.POSITIVE) {
-      this.props.onUnTag(tag)
+      this.props.onUnTag(tag);
     } else {
-      this.props.onTag(tag)
+      this.props.onTag(tag);
     }
-  }
+  };
 
   onRemoveTag = (tagName, index, event) => {
-    const tag = find(this.props.tags, tag => tag.name === tagName)
+    const tag = find(this.props.tags, (tag) => tag.name === tagName);
 
-    const vote = find(this.props.votes, vote => tagEqual(vote.tag, tag))
-    const votePolarity = get(vote, 'polarity')
+    const vote = find(this.props.votes, (vote) => tagEqual(vote.tag, tag));
+    const votePolarity = get(vote, "polarity");
     if (votePolarity === this.props.votePolarity.NEGATIVE) {
-      this.props.onUnTag(tag)
+      this.props.onUnTag(tag);
     } else {
       // Only anti-tag existing tags on existing targets (the point of anti-tagging is to vote against tags recommended
       //  by the system; the system can't recommend tags for targets/tags that don't exist.
       if (this.props.onAntiTag && tag.id) {
-        this.props.onAntiTag(tag)
+        this.props.onAntiTag(tag);
       }
     }
-  }
+  };
 
   addTag = (tagName, event) => {
-    const cleanTagName = cleanWhitespace(tagName)
-    const tag = makeTag({name: cleanTagName})
-    this.props.onTag(tag)
-  }
+    const cleanTagName = cleanWhitespace(tagName);
+    const tag = makeTag({ name: cleanTagName });
+    this.props.onTag(tag);
+  };
 
   closeInput = (event) => {
-    const {
-      tagName,
-    } = this.state
+    const { tagName } = this.state;
 
     if (tagName) {
-      this.addTag(tagName, event)
+      this.addTag(tagName, event);
     }
     this.setState({
-      tagName: '',
+      tagName: "",
       isInputCollapsed: true,
-    })
-  }
+    });
+  };
 
   render() {
     const {
@@ -146,14 +132,11 @@ export default class TagsControl extends React.Component {
       onAntiTag,
       addTitle,
       ...rest
-    } = this.props
-    const {
-      tagName,
-      isInputCollapsed,
-    } = this.state
+    } = this.props;
+    const { tagName, isInputCollapsed } = this.state;
 
-    const tagNameAutocompleteId = combineIds(id, 'tag-name')
-    const extraChildren = []
+    const tagNameAutocompleteId = combineIds(id, "tag-name");
+    const extraChildren = [];
     if (!inputCollapsable || !isInputCollapsed) {
       extraChildren.push(
         <TagNameAutocomplete
@@ -169,29 +152,30 @@ export default class TagsControl extends React.Component {
           onKeyDown={this.onTagNameKeyDown}
           rightIcon={
             inputCollapsable ? (
-              <Button
-                icon
-                onClick={event => this.closeInput(event)}
-              >done</Button>
+              <Button icon onClick={(event) => this.closeInput(event)}>
+                done
+              </Button>
             ) : null
           }
           rightIconStateful={false}
           onSubmit={onSubmit}
         />
-      )
+      );
     }
     if (inputCollapsable && isInputCollapsed) {
       extraChildren.push(
         <Button
           icon
-          onClick={event => this.setState({isInputCollapsed: false})}
+          onClick={(event) => this.setState({ isInputCollapsed: false })}
           title={addTitle}
           key="show-input"
-        >add</Button>
-      )
+        >
+          add
+        </Button>
+      );
     }
 
-    const removeIconName = onAntiTag ? 'thumb_down' : 'clear'
+    const removeIconName = onAntiTag ? "thumb_down" : "clear";
 
     return (
       <TagsViewer
@@ -207,7 +191,7 @@ export default class TagsControl extends React.Component {
         onRemoveTag={this.onRemoveTag}
         removeIconName={removeIconName}
       />
-    )
+    );
   }
 }
 TagsControl.propTypes = {
@@ -218,9 +202,9 @@ TagsControl.propTypes = {
   onAntiTag: PropTypes.func,
   /** Enable collapsing the tag name input */
   inputCollapsable: PropTypes.bool,
-}
+};
 TagsControl.defaultProps = {
   commitChipKeys: [Keys.ENTER, Keys.COMMA],
   inputCollapsable: false,
-  addTitle: 'Add tag',
-}
+  addTitle: "Add tag",
+};

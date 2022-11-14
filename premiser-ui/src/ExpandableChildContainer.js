@@ -1,28 +1,20 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
-import get from 'lodash/get'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import get from "lodash/get";
 
-import {
-  mapActionCreatorGroupToDispatchToProps,
-  ui,
-} from './actions'
+import { mapActionCreatorGroupToDispatchToProps, ui } from "./actions";
 
 class ExpandableChildContainer extends Component {
-
   onExpand = () => {
-    const {
-      widgetId,
-    } = this.props
-    this.props.ui.expand(widgetId)
-  }
+    const { widgetId } = this.props;
+    this.props.ui.expand(widgetId);
+  };
 
   onCollapse = () => {
-    const {
-      widgetId,
-    } = this.props
-    this.props.ui.collapse(widgetId)
-  }
+    const { widgetId } = this.props;
+    this.props.ui.collapse(widgetId);
+  };
 
   render() {
     const {
@@ -33,7 +25,7 @@ class ExpandableChildContainer extends Component {
       ui,
       // end ignore
       ...rest
-    } = this.props
+    } = this.props;
     return (
       <ExpandableChildComponent
         {...rest}
@@ -41,7 +33,7 @@ class ExpandableChildContainer extends Component {
         onExpand={this.onExpand}
         onCollapse={this.onCollapse}
       />
-    )
+    );
   }
 }
 ExpandableChildContainer.propTypes = {
@@ -49,21 +41,20 @@ ExpandableChildContainer.propTypes = {
     PropTypes.string,
     PropTypes.func,
   ]).isRequired,
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
-  const {
-    widgetId,
-  } = ownProps
-  const widgetState = get(state, ['widgets', 'expandCollapse', widgetId], {})
-  const {
-    isExpanded,
-  } = widgetState
+  const { widgetId } = ownProps;
+  const widgetState = get(state, ["widgets", "expandCollapse", widgetId], {});
+  const { isExpanded } = widgetState;
   return {
     isExpanded,
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-  ui,
-}))(ExpandableChildContainer)
+export default connect(
+  mapStateToProps,
+  mapActionCreatorGroupToDispatchToProps({
+    ui,
+  })
+)(ExpandableChildContainer);

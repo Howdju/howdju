@@ -1,10 +1,14 @@
 .howdju-annotation {
-  background-image: linear-gradient(0deg, green 1px, white 1px, transparent 1px);
+  background-image: linear-gradient(
+    0deg,
+    green 1px,
+    white 1px,
+    transparent 1px
+  );
   background-position: 0 100%;
 }
 .howdju-annotation-mouse-over {
-  background-image:
-      linear-gradient(0deg, green 1px, white 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0,0,255,0.3), rgba(0,0,0,0) 30%),
-      linear-gradient(to top, rgba(0,0,255,0.3), rgba(0,0,0,0) 30%);
+  background-image: linear-gradient(0deg, green 1px, white 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 255, 0.3), rgba(0, 0, 0, 0) 30%),
+    linear-gradient(to top, rgba(0, 0, 255, 0.3), rgba(0, 0, 0, 0) 30%);
 }

@@ -1,11 +1,8 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import EditableWritQuote from './EditableWritQuote'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import EditableWritQuote from "./EditableWritQuote";
 
-import {
-  SourceExcerptTypes,
-  newExhaustedEnumError,
-} from 'howdju-common'
+import { SourceExcerptTypes, newExhaustedEnumError } from "howdju-common";
 
 export default class SourceExcerptViewer extends Component {
   render() {
@@ -18,7 +15,7 @@ export default class SourceExcerptViewer extends Component {
       showStatusText,
       showUrls,
       ...rest
-    } = this.props
+    } = this.props;
 
     switch (sourceExcerpt.type) {
       case SourceExcerptTypes.WRIT_QUOTE:
@@ -33,9 +30,9 @@ export default class SourceExcerptViewer extends Component {
             showStatusText={showStatusText}
             showUrls={showUrls}
           />
-        )
+        );
       default:
-        throw newExhaustedEnumError(sourceExcerpt.type)
+        throw newExhaustedEnumError(sourceExcerpt.type);
     }
   }
 }
@@ -45,7 +42,7 @@ SourceExcerptViewer.propTypes = {
   editorId: PropTypes.string,
   suggestionsKey: PropTypes.string,
   doShowControls: PropTypes.bool,
-}
+};
 SourceExcerptViewer.defaultProps = {
   doShowControls: true,
-}
+};

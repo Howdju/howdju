@@ -1,17 +1,17 @@
-const assign = require('lodash/assign')
-const Promise = require('bluebird')
+const assign = require("lodash/assign");
+const Promise = require("bluebird");
 
-const AWS = require('aws-sdk')
+const AWS = require("aws-sdk");
 
 exports.init = function init(provider) {
-  AWS.config.update({region: provider.getConfigVal('DEFAULT_AWS_REGION')})
-  AWS.config.setPromisesDependency(Promise)
+  AWS.config.update({ region: provider.getConfigVal("DEFAULT_AWS_REGION") });
+  AWS.config.setPromisesDependency(Promise);
 
-  const sns = new AWS.SNS({apiVersion: '2010-03-31'})
+  const sns = new AWS.SNS({ apiVersion: "2010-03-31" });
 
   assign(provider, {
     sns,
-  })
+  });
 
-  provider.logger.debug('awsInit complete')
-}
+  provider.logger.debug("awsInit complete");
+};

@@ -1,21 +1,16 @@
-import React, {Component} from 'react'
+import React, { Component } from "react";
 
-import ListEntitiesWidget from './ListEntitiesWidget'
-import WritCard from './WritCard'
-import CellList from './CellList'
-import t from './texts'
-import {
-  api,
-} from './actions'
-import {
-  writsSchema,
-} from "./normalizationSchemas"
+import ListEntitiesWidget from "./ListEntitiesWidget";
+import WritCard from "./WritCard";
+import CellList from "./CellList";
+import t from "./texts";
+import { api } from "./actions";
+import { writsSchema } from "./normalizationSchemas";
 
 export default class RecentWritsWidget extends Component {
-
-  writToCard = writ => {
-    const id = this.props.id
-    const cardId = `${id}-writ-${writ.id}`
+  writToCard = (writ) => {
+    const id = this.props.id;
+    const cardId = `${id}-writ-${writ.id}`;
     return (
       <WritCard
         id={cardId}
@@ -23,15 +18,11 @@ export default class RecentWritsWidget extends Component {
         writ={writ}
         className={CellList.smallCellClasses}
       />
-    )
-  }
+    );
+  };
 
   render() {
-    const {
-      id,
-      widgetId,
-      ...rest
-    } = this.props
+    const { id, widgetId, ...rest } = this.props;
     return (
       <ListEntitiesWidget
         {...rest}
@@ -44,6 +35,6 @@ export default class RecentWritsWidget extends Component {
         emptyEntitiesMessage={t("No recent writs")}
         loadErrorMessage={t("There was an error fetching the recent writs.")}
       />
-    )
+    );
   }
 }

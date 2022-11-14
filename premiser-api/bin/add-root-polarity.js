@@ -1,14 +1,16 @@
 const {
   JustificationRootPolarities,
   JustificationTargetTypes,
-} = require('howdju-common')
-const {
-  AppProvider,
-} = require('../src/init')
+} = require("howdju-common");
+const { AppProvider } = require("../src/init");
 
-const appProvider = new AppProvider()
+const appProvider = new AppProvider();
 
-const updateRootPolarity = () => appProvider.database.query('updateRootPolarity', `
+const updateRootPolarity = () =>
+  appProvider.database
+    .query(
+      "updateRootPolarity",
+      `
       update justifications j1
         set root_polarity =
           case
@@ -21,20 +23,27 @@ const updateRootPolarity = () => appProvider.database.query('updateRootPolarity'
           and j1.root_polarity is null
           and j1.target_id = j2.justification_id
           and j2.root_polarity is not null
-      `, [JustificationTargetTypes.JUSTIFICATION, JustificationRootPolarities.POSITIVE, JustificationRootPolarities.NEGATIVE])
-  .then( ({rows}) => {
-    // Continue until no more have been updated
-    return rows.length > 0 ? updateRootPolarity() : null
-  })
+      `,
+      [
+        JustificationTargetTypes.JUSTIFICATION,
+        JustificationRootPolarities.POSITIVE,
+        JustificationRootPolarities.NEGATIVE,
+      ]
+    )
+    .then(({ rows }) => {
+      // Continue until no more have been updated
+      return rows.length > 0 ? updateRootPolarity() : null;
+    });
 
-const updateRootJustificationsRootPolarity =
-  appProvider.database.query('updateRootJustificationsRootPolarity',
+const updateRootJustificationsRootPolarity = appProvider.database
+  .query(
+    "updateRootJustificationsRootPolarity",
     `update justifications
        set root_polarity = polarity where
              target_type = root_target_type
          and target_id = root_target_id
          and root_polarity is null`
   )
-    .then(updateRootPolarity)
+  .then(updateRootPolarity);
 
-updateRootJustificationsRootPolarity()
+updateRootJustificationsRootPolarity();

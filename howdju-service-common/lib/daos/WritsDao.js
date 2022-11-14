@@ -1,118 +1,141 @@
-const map = require('lodash/map')
-const head = require('lodash/head')
-const snakeCase = require('lodash/snakeCase')
-const forEach = require('lodash/forEach')
-const concat = require('lodash/concat')
+const map = require("lodash/map");
+const head = require("lodash/head");
+const snakeCase = require("lodash/snakeCase");
+const forEach = require("lodash/forEach");
+const concat = require("lodash/concat");
 
 const {
   JustificationBasisTypes,
   SortDirections,
   JustificationTargetTypes,
   cleanWhitespace,
-} = require('howdju-common')
+} = require("howdju-common");
 
-const {
-  normalizeText,
-  mapSingle,
-} = require('./daosUtil')
-const {DatabaseSortDirection} = require('./daoModels')
-const {
-  toWrit,
-} = require('./orm')
-
+const { normalizeText, mapSingle } = require("./daosUtil");
+const { DatabaseSortDirection } = require("./daoModels");
+const { toWrit } = require("./orm");
 
 exports.WritsDao = class WritsDao {
-
   constructor(logger, database) {
-    this.logger = logger
-    this.database = database
+    this.logger = logger;
+    this.database = database;
   }
 
   createWrit(writ, userId, now) {
-    const sql = 'insert into writs (title, normal_title, creator_user_id, created) values ($1, $2, $3, $4) returning *'
-    return this.database.query('createWrit', sql, [cleanWhitespace(writ.title), normalizeText(writ.title), userId, now])
-      .then( ({rows: [row]}) => toWrit(row) )
+    const sql =
+      "insert into writs (title, normal_title, creator_user_id, created) values ($1, $2, $3, $4) returning *";
+    return this.database
+      .query("createWrit", sql, [
+        cleanWhitespace(writ.title),
+        normalizeText(writ.title),
+        userId,
+        now,
+      ])
+      .then(({ rows: [row] }) => toWrit(row));
   }
 
   readWritForId(writId) {
-    return this.database.query('readWritForId', `select * from writs where writ_id = $1 and deleted is null`, [writId])
-      .then(mapSingle(this.logger, toWrit, 'writs', {writId}))
+    return this.database
+      .query(
+        "readWritForId",
+        `select * from writs where writ_id = $1 and deleted is null`,
+        [writId]
+      )
+      .then(mapSingle(this.logger, toWrit, "writs", { writId }));
   }
 
   readWritEquivalentTo(writ) {
-    return this.database.query('readWritEquivalentTo',
-      'select * from writs where normal_title = $1 and deleted is null', [normalizeText(writ.title)])
-      .then( ({rows}) => {
+    return this.database
+      .query(
+        "readWritEquivalentTo",
+        "select * from writs where normal_title = $1 and deleted is null",
+        [normalizeText(writ.title)]
+      )
+      .then(({ rows }) => {
         if (rows.length > 1) {
-          this.logger.error(`Multiple (${rows.length}) equivalent writs found`, {writ})
+          this.logger.error(
+            `Multiple (${rows.length}) equivalent writs found`,
+            { writ }
+          );
         }
-        return toWrit(head(rows))
-      })
+        return toWrit(head(rows));
+      });
   }
 
   readWrits(sorts, count) {
-    const args = []
-    let countSql = ''
+    const args = [];
+    let countSql = "";
     if (isFinite(count)) {
-      args.push(count)
-      countSql = `limit $${args.length}`
+      args.push(count);
+      countSql = `limit $${args.length}`;
     }
 
-    const whereSqls = ['deleted is null']
-    const orderBySqls = []
-    forEach(sorts, sort => {
-      const columnName = sort.property === 'id' ? 'writ_id' : snakeCase(sort.property)
-      const direction = sort.direction === SortDirections.DESCENDING ?
-        DatabaseSortDirection.DESCENDING :
-        DatabaseSortDirection.ASCENDING
-      whereSqls.push(`${columnName} is not null`)
-      orderBySqls.push(columnName + ' ' + direction)
-    })
-    const whereSql = whereSqls.join('\nand ')
-    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+    const whereSqls = ["deleted is null"];
+    const orderBySqls = [];
+    forEach(sorts, (sort) => {
+      const columnName =
+        sort.property === "id" ? "writ_id" : snakeCase(sort.property);
+      const direction =
+        sort.direction === SortDirections.DESCENDING
+          ? DatabaseSortDirection.DESCENDING
+          : DatabaseSortDirection.ASCENDING;
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(columnName + " " + direction);
+    });
+    const whereSql = whereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
 
     const sql = `
       select *
       from writs where ${whereSql}
       ${orderBySql}
       ${countSql}
-      `
-    return this.database.query('readWrits', sql, args)
-      .then(({rows}) => map(rows, toWrit))
+      `;
+    return this.database
+      .query("readWrits", sql, args)
+      .then(({ rows }) => map(rows, toWrit));
   }
 
   readMoreWrits(sortContinuations, count) {
-    const args = []
-    let countSql = ''
+    const args = [];
+    let countSql = "";
     if (isFinite(count)) {
-      args.push(count)
-      countSql = `\nlimit $${args.length}`
+      args.push(count);
+      countSql = `\nlimit $${args.length}`;
     }
 
-    const whereSqls = ['deleted is null']
-    const continuationWhereSqls = []
-    const prevWhereSqls = []
-    const orderBySqls = []
+    const whereSqls = ["deleted is null"];
+    const continuationWhereSqls = [];
+    const prevWhereSqls = [];
+    const orderBySqls = [];
     forEach(sortContinuations, (sortContinuation) => {
-      const value = sortContinuation.value
+      const value = sortContinuation.value;
       // The default direction is ascending
-      const direction = sortContinuation.direction === SortDirections.DESCENDING ?
-        DatabaseSortDirection.DESCENDING :
-        DatabaseSortDirection.ASCENDING
+      const direction =
+        sortContinuation.direction === SortDirections.DESCENDING
+          ? DatabaseSortDirection.DESCENDING
+          : DatabaseSortDirection.ASCENDING;
       // 'id' is a special property name for entities. The column is prefixed by the entity type
-      const columnName = sortContinuation.property === 'id' ? 'writ_id' : snakeCase(sortContinuation.property)
-      let operator = direction === 'asc' ? '>' : '<'
-      args.push(value)
-      const currContinuationWhereSql = concat(prevWhereSqls, [`${columnName} ${operator} $${args.length}`])
-      continuationWhereSqls.push(currContinuationWhereSql.join(' and '))
-      prevWhereSqls.push(`${columnName} = $${args.length}`)
-      whereSqls.push(`${columnName} is not null`)
-      orderBySqls.push(`${columnName} ${direction}`)
-    })
+      const columnName =
+        sortContinuation.property === "id"
+          ? "writ_id"
+          : snakeCase(sortContinuation.property);
+      let operator = direction === "asc" ? ">" : "<";
+      args.push(value);
+      const currContinuationWhereSql = concat(prevWhereSqls, [
+        `${columnName} ${operator} $${args.length}`,
+      ]);
+      continuationWhereSqls.push(currContinuationWhereSql.join(" and "));
+      prevWhereSqls.push(`${columnName} = $${args.length}`);
+      whereSqls.push(`${columnName} is not null`);
+      orderBySqls.push(`${columnName} ${direction}`);
+    });
 
-    const continuationWhereSql = continuationWhereSqls.join('\n or ')
-    const whereSql = whereSqls.join('\nand ')
-    const orderBySql = orderBySqls.length > 0 ? 'order by ' + orderBySqls.join(',') : ''
+    const continuationWhereSql = continuationWhereSqls.join("\n or ");
+    const whereSql = whereSqls.join("\nand ");
+    const orderBySql =
+      orderBySqls.length > 0 ? "order by " + orderBySqls.join(",") : "";
 
     const sql = `
       select *
@@ -123,36 +146,40 @@ exports.WritsDao = class WritsDao {
         )
       ${orderBySql}
       ${countSql}
-      `
-    return this.database.query('readMoreWrits', sql, args)
-      .then( ({rows}) => map(rows, toWrit) )
+      `;
+    return this.database
+      .query("readMoreWrits", sql, args)
+      .then(({ rows }) => map(rows, toWrit));
   }
 
   update(writ) {
-    return this.database.query(
-      'updateWrit',
-      'update writs set title = $1, normal_title = $2 where writ_id = $3 returning *',
-      [cleanWhitespace(writ.title), normalizeText(writ.title), writ.id]
-    )
-      .then( ({rows: [writRow]}) => toWrit(writRow) )
+    return this.database
+      .query(
+        "updateWrit",
+        "update writs set title = $1, normal_title = $2 where writ_id = $3 returning *",
+        [cleanWhitespace(writ.title), normalizeText(writ.title), writ.id]
+      )
+      .then(({ rows: [writRow] }) => toWrit(writRow));
   }
 
   hasEquivalentWrits(writ) {
     const sql = `
       select count(*) > 0 as has_conflict
       from writs where writ_id != $1 and normal_title = $2 and deleted is null
-      `
-    return this.database.query('hasEquivalentWrits', sql, [writ.id, normalizeText(writ.title)])
-      .then( ({rows: [{has_conflict}]}) => has_conflict )
+      `;
+    return this.database
+      .query("hasEquivalentWrits", sql, [writ.id, normalizeText(writ.title)])
+      .then(({ rows: [{ has_conflict }] }) => has_conflict);
   }
 
   hasWritChanged(writ) {
     const sql = `
       select count(*) < 1 as has_changed
       from writs where writ_id = $1 and title = $2
-      `
-    return this.database.query('hasWritChanged', sql, [writ.id, cleanWhitespace(writ.title)])
-      .then( ({rows: [{has_changed}]}) => has_changed )
+      `;
+    return this.database
+      .query("hasWritChanged", sql, [writ.id, cleanWhitespace(writ.title)])
+      .then(({ rows: [{ has_changed }] }) => has_changed);
   }
 
   isWritOfBasisToJustificationsHavingOtherUsersVotes(userId, writ) {
@@ -177,12 +204,18 @@ exports.WritsDao = class WritsDao {
               and v.deleted is null
         )
       select count(*) > 0 as has_votes from basis_justification_votes
-    `
-    return this.database.query('isWritOfBasisToJustificationsHavingOtherUsersVotes', sql, [
-      writ.id,
-      JustificationBasisTypes.WRIT_QUOTE,
-      userId,
-    ]).then( ({rows: [{has_votes: isBasisToJustificationsHavingOtherUsersVotes}]}) => isBasisToJustificationsHavingOtherUsersVotes)
+    `;
+    return this.database
+      .query("isWritOfBasisToJustificationsHavingOtherUsersVotes", sql, [
+        writ.id,
+        JustificationBasisTypes.WRIT_QUOTE,
+        userId,
+      ])
+      .then(
+        ({
+          rows: [{ has_votes: isBasisToJustificationsHavingOtherUsersVotes }],
+        }) => isBasisToJustificationsHavingOtherUsersVotes
+      );
   }
 
   isWritOfBasisToOtherUsersJustifications(userId, writ) {
@@ -198,12 +231,22 @@ exports.WritsDao = class WritsDao {
         and j.basis_type = $2
         and j.creator_user_id != $3
         and j.deleted is null
-    `
-    return this.database.query('isWritOfBasisToOtherUsersJustifications', sql, [
-      writ.id,
-      JustificationBasisTypes.WRIT_QUOTE,
-      userId,
-    ]).then( ({rows: [{has_other_users_justifications: isBasisToOtherUsersJustifications}]}) => isBasisToOtherUsersJustifications)
+    `;
+    return this.database
+      .query("isWritOfBasisToOtherUsersJustifications", sql, [
+        writ.id,
+        JustificationBasisTypes.WRIT_QUOTE,
+        userId,
+      ])
+      .then(
+        ({
+          rows: [
+            {
+              has_other_users_justifications: isBasisToOtherUsersJustifications,
+            },
+          ],
+        }) => isBasisToOtherUsersJustifications
+      );
   }
 
   isWritOfBasisToJustificationsHavingOtherUsersCounters(userId, writ) {
@@ -227,12 +270,23 @@ exports.WritsDao = class WritsDao {
             and cj.deleted is null
         )
       select count(*) > 0 as has_other_user_counters from counters
-    `
-    return this.database.query('isWritOfBasisToJustificationsHavingOtherUsersCounters', sql, [
-      writ.id,
-      JustificationBasisTypes.WRIT_QUOTE,
-      userId,
-      JustificationTargetTypes.JUSTIFICATION,
-    ]).then( ({rows: [{has_other_user_counters: isBasisToJustificationsHavingOtherUsersCounters}]}) => isBasisToJustificationsHavingOtherUsersCounters)
+    `;
+    return this.database
+      .query("isWritOfBasisToJustificationsHavingOtherUsersCounters", sql, [
+        writ.id,
+        JustificationBasisTypes.WRIT_QUOTE,
+        userId,
+        JustificationTargetTypes.JUSTIFICATION,
+      ])
+      .then(
+        ({
+          rows: [
+            {
+              has_other_user_counters:
+                isBasisToJustificationsHavingOtherUsersCounters,
+            },
+          ],
+        }) => isBasisToJustificationsHavingOtherUsersCounters
+      );
   }
-}
+};

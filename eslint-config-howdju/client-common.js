@@ -16,20 +16,13 @@ module.exports = {
     es6: true,
   },
   parserOptions: {
-    sourceType: 'module',
+    sourceType: "module",
   },
-  plugins: [
-    'react',
-    'react-hooks',
-  ],
-  extends: [
-    "eslint-config-howdju",
-    "plugin:react/recommended",
-    "prettier",
-  ],
+  plugins: ["react", "react-hooks"],
+  extends: ["eslint-config-howdju", "plugin:react/recommended", "prettier"],
   settings: {
     react: {
-      version: 'detect',
+      version: "detect",
     },
   },
   rules: {
@@ -37,8 +30,8 @@ module.exports = {
       "warn",
       2,
       {
-        "SwitchCase": 1,
-        "ignoredNodes": [
+        SwitchCase: 1,
+        ignoredNodes: [
           // We indent to the indent of the first prop, which this rule doesn't support
           "JSXAttribute",
           "JSXSpreadAttribute",
@@ -69,13 +62,8 @@ module.exports = {
   overrides: [
     {
       files: testFilePattern,
-      extends: [
-        "plugin:jest-dom/recommended",
-        "prettier",
-      ],
-      plugins: [
-        "jest-dom",
-      ],
+      extends: ["plugin:jest-dom/recommended", "prettier"],
+      plugins: ["jest-dom"],
     },
   ],
 };

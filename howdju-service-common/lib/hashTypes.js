@@ -1,6 +1,3 @@
-const {arrayToObject} = require('howdju-common')
+const { arrayToObject } = require("howdju-common");
 
-exports.HashTypes = arrayToObject([
-  'BCRYPT',
-  'ARGON2',
-])
+exports.HashTypes = arrayToObject(["BCRYPT", "ARGON2"]);

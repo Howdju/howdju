@@ -1,8 +1,6 @@
-import {
-  ActionFunctionAny,
-} from "redux-actions"
-import { Location, LocationState } from "history"
-import { Action } from "redux"
+import { ActionFunctionAny } from "redux-actions";
+import { Location, LocationState } from "history";
+import { Action } from "redux";
 
 import {
   EntityId,
@@ -18,14 +16,14 @@ import {
   Justification,
   JustificationBasisSourceType,
   Persisted,
-} from "howdju-common"
+} from "howdju-common";
 import {
   Source,
   Target,
   ExtensionAnnotationContent,
-} from "howdju-client-common"
+} from "howdju-client-common";
 
-import { EditorEntity, EditorType } from "./reducers/editors"
+import { EditorEntity, EditorType } from "./reducers/editors";
 import {
   ContextTrailItemInfo,
   PrivacyConsentCookie,
@@ -33,19 +31,22 @@ import {
   SuggestionsKey,
   WidgetId,
   EditorId,
-} from "./types"
-import { createAction, actionTypeDelim } from "./actionHelpers"
+} from "./types";
+import { createAction, actionTypeDelim } from "./actionHelpers";
 
-export {str} from "./actionHelpers"
+export { str } from "./actionHelpers";
 
 export const app = {
   clearAuthToken: createAction("APP/CLEAR_AUTH_TOKEN"),
   checkAuthExpiration: createAction("APP/CHECK_AUTH_EXPIRATION"),
-}
+};
 
-export {mapActionCreatorGroupToDispatchToProps, combineActions} from "./actionHelpers"
+export {
+  mapActionCreatorGroupToDispatchToProps,
+  combineActions,
+} from "./actionHelpers";
 
-export {api} from "./apiActions"
+export { api } from "./apiActions";
 
 /** "API-like": actions that indirectly result in API calls, such as actions that are translated into one or another
  * API call depending on some payload value or those that correspond to multiple API calls
@@ -62,7 +63,7 @@ export const apiLike = {
     "FETCH_JUSTIFICATION_TARGETS",
     (targetInfos: ContextTrailItemInfo[]) => ({ targetInfos })
   ),
-}
+};
 
 /** UI actions */
 export const ui = {
@@ -90,7 +91,7 @@ export const ui = {
   ),
   tryCancelDelayedHideTransient: createAction(
     "UI/TRY_CANCEL_DELAYED_HIDE_TRANSIENT",
-    (transientId, cause) => ({ transientId, cause }),
+    (transientId, cause) => ({ transientId, cause })
   ),
   cancelDelayedHideTransient: createAction(
     "UI/CANCEL_DELAYED_HIDE_TRANSIENT",
@@ -101,10 +102,10 @@ export const ui = {
     "UI/HIDE_OTHER_TRANSIENTS",
     (visibleTransientId: unknown) => ({ visibleTransientId })
   ),
-  hideTransient: createAction(
-    "UI/HIDE_TRANSIENT",
-    (transientId, cause) => ({ transientId, cause }),
-  ),
+  hideTransient: createAction("UI/HIDE_TRANSIENT", (transientId, cause) => ({
+    transientId,
+    cause,
+  })),
   windowResize: createAction("UI/WINDOW_RESIZE"),
 
   expand: createAction("UI/EXPAND", (widgetId: WidgetId) => ({ widgetId })),
@@ -113,7 +114,7 @@ export const ui = {
   })),
 
   clearTaggedPropositions: createAction("UI/CLEAR_TAGGED_PROPOSITIONS"),
-}
+};
 
 export const pages = {
   // TODO(93): replace bespoke password reset page actions with an editor, if possible.
@@ -129,14 +130,14 @@ export const pages = {
     "PAGES/PASSWORD_RESET_CONFIRMATION_PROPERTY_CHANGE",
     (properties: PropertyChanges) => ({ properties })
   ),
-}
+};
 
 export const privacyConsent = {
   update: createAction(
     "PRIVACY_CONSENT/UPDATE",
     (cookies: PrivacyConsentCookie[]) => ({ cookies })
   ),
-}
+};
 
 export type EditorActionCreator = ActionFunctionAny<Action<string>>;
 export type EditorCommitActionCreator = EditorActionCreator & {
@@ -145,7 +146,7 @@ export type EditorCommitActionCreator = EditorActionCreator & {
 const commitEdit = createAction(
   "EDITORS/COMMIT_EDIT",
   (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
-) as ActionFunctionAny<Action<string>> as EditorCommitActionCreator
+) as ActionFunctionAny<Action<string>> as EditorCommitActionCreator;
 commitEdit.result = createAction(
   "EDITORS/COMMIT_EDIT" + actionTypeDelim + "RESULT",
   (editorType: EditorType, editorId: EditorId, result) => ({
@@ -153,7 +154,7 @@ commitEdit.result = createAction(
     editorId,
     result,
   })
-)
+);
 
 export type ListPathFactory = string | ((payload: any) => string);
 
@@ -197,7 +198,7 @@ export const editors = {
       itemIndex: number,
       listPathMaker: ListPathFactory,
       itemFactory: () => any
-    ) => ({ editorType, editorId, itemIndex, listPathMaker, itemFactory }),
+    ) => ({ editorType, editorId, itemIndex, listPathMaker, itemFactory })
   ),
   removeListItem: createAction(
     "EDITORS/ON_REMOVE_LIST_ITEM",
@@ -308,13 +309,15 @@ export const editors = {
     "EDITORS/RESET_SUBMISSION",
     (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
   ),
-}
+};
 
 /** Actions that change the current page */
 export const goto = {
   login: createAction(
     "GOTO/LOGIN",
-    (loginRedirectLocation: Location<LocationState>) => ({ loginRedirectLocation })
+    (loginRedirectLocation: Location<LocationState>) => ({
+      loginRedirectLocation,
+    })
   ),
   proposition: createAction("GOTO/PROPOSITION", (proposition: Proposition) => ({
     proposition,
@@ -334,7 +337,7 @@ export const goto = {
   writQuote: createAction("GOTO/WRIT_QUOTE", (writQuote: WritQuote) => ({
     writQuote,
   })),
-}
+};
 
 /** Actions that represent multi-step flows */
 export const flows = {
@@ -367,16 +370,18 @@ export const flows = {
       onSuccessAction,
     })
   ),
-}
+};
 
 export const autocompletes = {
   clearSuggestions: createAction(
     "AUTOCOMPLETES/CLEAR_SUGGESTIONS",
     (suggestionsKey: SuggestionsKey) => ({ suggestionsKey })
   ),
-}
+};
 
 export const errors = {
-  logError: createAction("ERRORS/LOG_ERROR", ({error}: {error: Error}) => ({error})),
+  logError: createAction("ERRORS/LOG_ERROR", ({ error }: { error: Error }) => ({
+    error,
+  })),
   clearLoggedErrors: createAction("ERRORS/CLEAR_LOGGED_ERRORS"),
-}
+};

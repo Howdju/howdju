@@ -1,5 +1,5 @@
-import React, {ChangeEvent, FocusEvent, FormEvent, useEffect} from 'react'
-import {goBack} from 'connected-react-router'
+import React, { ChangeEvent, FocusEvent, FormEvent, useEffect } from "react";
+import { goBack } from "connected-react-router";
 import {
   Button,
   Card,
@@ -9,14 +9,14 @@ import {
   Checkbox,
   CircularProgress,
   FocusContainer,
-} from 'react-md'
-import cn from 'classnames'
-import get from 'lodash/get'
-import isEmpty from 'lodash/isEmpty'
-import queryString from 'query-string'
-import {CheckboxProps} from 'react-md/lib/SelectionControls/Checkbox'
-import {isArray} from 'lodash'
-import {useLocation} from 'react-router'
+} from "react-md";
+import cn from "classnames";
+import get from "lodash/get";
+import isEmpty from "lodash/isEmpty";
+import queryString from "query-string";
+import { CheckboxProps } from "react-md/lib/SelectionControls/Checkbox";
+import { isArray } from "lodash";
+import { useLocation } from "react-router";
 
 import {
   apiErrorCodes,
@@ -27,130 +27,159 @@ import {
   schemaSettings,
   EmptyBespokeValidationErrors,
   onlyFieldError,
-} from 'howdju-common'
-import {validate} from 'howdju-ajv-sourced'
+} from "howdju-common";
+import { validate } from "howdju-ajv-sourced";
 
-import Helmet from '../../Helmet'
-import {api, editors} from '../../actions'
-import Link from '../../Link'
-import EmailTextField from '../../EmailTextField'
-import PasswordTextField from '../../PasswordTextField'
-import paths from '../../paths'
-import {EditorTypes} from '../../reducers/editors'
+import Helmet from "../../Helmet";
+import { api, editors } from "../../actions";
+import Link from "../../Link";
+import EmailTextField from "../../EmailTextField";
+import PasswordTextField from "../../PasswordTextField";
+import paths from "../../paths";
+import { EditorTypes } from "../../reducers/editors";
 import {
   selectDidCheckRegistration,
   selectRegistrationErrorCode,
   selectRegistrationEmail,
-} from '../../selectors'
-import SingleLineTextField from '../../SingleLineTextField'
-import {useAppDispatch, useAppSelector} from '@/hooks'
-import {PropertyChanges} from '@/types'
+} from "../../selectors";
+import SingleLineTextField from "../../SingleLineTextField";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { PropertyChanges } from "@/types";
 
-const editorId = 'registration-confirmation-page'
-const editorType = EditorTypes.REGISTRATION_CONFIRMATION
+const editorId = "registration-confirmation-page";
+const editorType = EditorTypes.REGISTRATION_CONFIRMATION;
 
 export default function RegistrationConfirmationPage() {
-  const location = useLocation()
-  const registrationCodeParam = get(queryString.parse(location.search), 'registrationCode')
+  const location = useLocation();
+  const registrationCodeParam = get(
+    queryString.parse(location.search),
+    "registrationCode"
+  );
 
   if (isArray(registrationCodeParam)) {
     logger.error(
-      'RegistrationConfirmationPage visited with multiple registration codes. Using first.',
-    )
+      "RegistrationConfirmationPage visited with multiple registration codes. Using first."
+    );
   }
   const registrationCode = isArray(registrationCodeParam)
     ? registrationCodeParam[0]
-    : registrationCodeParam
+    : registrationCodeParam;
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   useEffect(() => {
     if (!registrationCode) {
-      return
+      return;
     }
-    dispatch(api.checkRegistration(registrationCode))
+    dispatch(api.checkRegistration(registrationCode));
     dispatch(
-      editors.beginEdit(editorType, editorId, makeRegistrationConfirmation({registrationCode})),
-    )
-  }, [dispatch, registrationCode])
+      editors.beginEdit(
+        editorType,
+        editorId,
+        makeRegistrationConfirmation({ registrationCode })
+      )
+    );
+  }, [dispatch, registrationCode]);
 
-  const editorState = useAppSelector(state => get(state, ['editors', editorType, editorId]))
+  const editorState = useAppSelector((state) =>
+    get(state, ["editors", editorType, editorId])
+  );
 
-  const email = useAppSelector(selectRegistrationEmail)
-  const didCheckRegistration = useAppSelector(selectDidCheckRegistration)
-  const apiErrorCode = useAppSelector(selectRegistrationErrorCode)
+  const email = useAppSelector(selectRegistrationEmail);
+  const didCheckRegistration = useAppSelector(selectDidCheckRegistration);
+  const apiErrorCode = useAppSelector(selectRegistrationErrorCode);
 
   if (!registrationCode) {
-    return makePage(undefined, <span className="error-message">Missing registration code</span>)
+    return makePage(
+      undefined,
+      <span className="error-message">Missing registration code</span>
+    );
   }
   if (!editorState) {
-    return makePage(undefined, <CircularProgress id={editorId} />)
+    return makePage(undefined, <CircularProgress id={editorId} />);
   }
 
-  const isSubmitting = get(editorState, 'isSaving')
-  const isConfirmed = get(editorState, 'isSaved')
-  const remoteErrors = get(editorState, 'errors', EmptyBespokeValidationErrors)
-  const blurredFields = get(editorState, 'blurredFields')
-  const dirtyFields = get(editorState, 'dirtyFields')
+  const isSubmitting = get(editorState, "isSaving");
+  const isConfirmed = get(editorState, "isSaved");
+  const remoteErrors = get(editorState, "errors", EmptyBespokeValidationErrors);
+  const blurredFields = get(editorState, "blurredFields");
+  const dirtyFields = get(editorState, "dirtyFields");
 
-  const registrationConfirmation = get(editorState, 'editEntity')
-  const wasSubmitAttempted = get(editorState, 'wasSubmitAttempted')
-  const username = get(registrationConfirmation, 'username', '')
-  const shortName = get(registrationConfirmation, 'shortName', '')
-  const longName = get(registrationConfirmation, 'longName', '')
-  const password = get(registrationConfirmation, 'password', '')
-  const doesAcceptTerms = get(registrationConfirmation, 'doesAcceptTerms', false)
-  const hasMajorityConsent = get(registrationConfirmation, 'hasMajorityConsent', false)
-  const is13YearsOrOlder = get(registrationConfirmation, 'is13YearsOrOlder', false)
-  const isNotGdpr = get(registrationConfirmation, 'isNotGdpr', false)
+  const registrationConfirmation = get(editorState, "editEntity");
+  const wasSubmitAttempted = get(editorState, "wasSubmitAttempted");
+  const username = get(registrationConfirmation, "username", "");
+  const shortName = get(registrationConfirmation, "shortName", "");
+  const longName = get(registrationConfirmation, "longName", "");
+  const password = get(registrationConfirmation, "password", "");
+  const doesAcceptTerms = get(
+    registrationConfirmation,
+    "doesAcceptTerms",
+    false
+  );
+  const hasMajorityConsent = get(
+    registrationConfirmation,
+    "hasMajorityConsent",
+    false
+  );
+  const is13YearsOrOlder = get(
+    registrationConfirmation,
+    "is13YearsOrOlder",
+    false
+  );
+  const isNotGdpr = get(registrationConfirmation, "isNotGdpr", false);
 
-  const {errors: localErrors} = validate(schemas.registrationConfirmation, registrationConfirmation)
-  const isValid = isEmpty(localErrors)
+  const { errors: localErrors } = validate(
+    schemas.registrationConfirmation,
+    registrationConfirmation
+  );
+  const isValid = isEmpty(localErrors);
 
   const validationErrorMessage =
-    !wasSubmitAttempted || isValid ? null : 'Please correct the errors below'
+    !wasSubmitAttempted || isValid ? null : "Please correct the errors below";
 
   const submitButtonTitle = isValid
-    ? 'Complete registration'
+    ? "Complete registration"
     : wasSubmitAttempted
-      ? 'Please correct the errors to continue'
-      : 'Please complete the form to continue'
+    ? "Please correct the errors to continue"
+    : "Please complete the form to continue";
 
-  let subtitle
+  let subtitle;
   if (apiErrorCode) {
     if (apiErrorCode in subtitleByRegistrationErrorCode) {
       subtitle =
         apiErrorCode &&
-        subtitleByRegistrationErrorCode[apiErrorCode as keyof typeof subtitleByRegistrationErrorCode]
+        subtitleByRegistrationErrorCode[
+          apiErrorCode as keyof typeof subtitleByRegistrationErrorCode
+        ];
     }
   }
 
   const onPropertyChange = (properties: PropertyChanges) => {
-    dispatch(editors.propertyChange(editorType, editorId, properties))
-  }
+    dispatch(editors.propertyChange(editorType, editorId, properties));
+  };
 
   const onBlur = (event: FocusEvent<HTMLInputElement>) => {
-    const name = event.target.name
-    dispatch(editors.blurField(editorType, editorId, name))
-  }
+    const name = event.target.name;
+    dispatch(editors.blurField(editorType, editorId, name));
+  };
 
   const onChange = ((val: any, event: ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.name
-    onPropertyChange({[name]: val})
-  }) as unknown as CheckboxProps['onChange'] // TODO(17): see if newer react-md types onChange properly.
+    const name = event.target.name;
+    onPropertyChange({ [name]: val });
+  }) as unknown as CheckboxProps["onChange"]; // TODO(17): see if newer react-md types onChange properly.
 
   const onSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    dispatch(editors.commitEdit(editorType, editorId))
-  }
+    event.preventDefault();
+    dispatch(editors.commitEdit(editorType, editorId));
+  };
 
   const onCancel = () => {
-    dispatch(goBack())
-  }
+    dispatch(goBack());
+  };
 
   const usernameConflictError = onlyFieldError(
     remoteErrors.fieldErrors.username,
-    EntityErrorCodes.USERNAME_TAKEN,
-  )
+    EntityErrorCodes.USERNAME_TAKEN
+  );
 
   const form = (
     <form onSubmit={onSubmit}>
@@ -175,9 +204,9 @@ export default function RegistrationConfirmationPage() {
             errorText={
               <span>
                 {localErrors.username &&
-                  'Please enter a valid username (letters, numbers, and underscores).'}
+                  "Please enter a valid username (letters, numbers, and underscores)."}
                 {usernameConflictError?.value === username &&
-                  'That username is already registered.'}
+                  "That username is already registered."}
               </span>
             }
           />
@@ -192,9 +221,13 @@ export default function RegistrationConfirmationPage() {
             onBlur={onBlur}
             disabled={isSubmitting}
             required
-            error={(blurredFields.password || wasSubmitAttempted) && localErrors.password}
+            error={
+              (blurredFields.password || wasSubmitAttempted) &&
+              localErrors.password
+            }
             errorText={
-              localErrors.password && 'Please enter a valid password (6 characters or more)'
+              localErrors.password &&
+              "Please enter a valid password (6 characters or more)"
             }
           />
           <SingleLineTextField
@@ -208,8 +241,11 @@ export default function RegistrationConfirmationPage() {
             onBlur={onBlur}
             disabled={isSubmitting}
             required
-            error={(blurredFields.longName || wasSubmitAttempted) && localErrors.longName}
-            errorText={localErrors.longName && 'Please enter a full name'}
+            error={
+              (blurredFields.longName || wasSubmitAttempted) &&
+              localErrors.longName
+            }
+            errorText={localErrors.longName && "Please enter a full name"}
           />
           <SingleLineTextField
             id="short-name"
@@ -221,8 +257,13 @@ export default function RegistrationConfirmationPage() {
             onPropertyChange={onPropertyChange}
             onBlur={onBlur}
             disabled={isSubmitting}
-            error={(blurredFields.shortName || wasSubmitAttempted) && localErrors.shortName}
-            errorText={localErrors.shortName && 'Please enter a preferred first name'}
+            error={
+              (blurredFields.shortName || wasSubmitAttempted) &&
+              localErrors.shortName
+            }
+            errorText={
+              localErrors.shortName && "Please enter a preferred first name"
+            }
           />
           <Checkbox
             id="does-accept-terms"
@@ -232,17 +273,25 @@ export default function RegistrationConfirmationPage() {
             label={
               <div
                 className={cn({
-                  'error-message':
+                  "error-message":
                     (dirtyFields.doesAcceptTerms || wasSubmitAttempted) &&
                     localErrors.doesAcceptTerms,
                 })}
               >
-                I have read and agree to the{' '}
-                <Link newWindow={true} className="text-link" to={paths.userAgreement()}>
+                I have read and agree to the{" "}
+                <Link
+                  newWindow={true}
+                  className="text-link"
+                  to={paths.userAgreement()}
+                >
                   User Agreement
-                </Link>{' '}
-                and the{' '}
-                <Link newWindow={true} className="text-link" to={paths.privacyPolicy()}>
+                </Link>{" "}
+                and the{" "}
+                <Link
+                  newWindow={true}
+                  className="text-link"
+                  to={paths.privacyPolicy()}
+                >
                   Privacy Policy
                 </Link>
                 .
@@ -257,7 +306,7 @@ export default function RegistrationConfirmationPage() {
             label={
               <div
                 className={cn({
-                  'error-message':
+                  "error-message":
                     (dirtyFields.is13YearsOrOlder || wasSubmitAttempted) &&
                     localErrors.is13YearsOrOlder,
                 })}
@@ -274,13 +323,13 @@ export default function RegistrationConfirmationPage() {
             label={
               <div
                 className={cn({
-                  'error-message':
+                  "error-message":
                     (dirtyFields.hasMajorityConsent || wasSubmitAttempted) &&
                     localErrors.hasMajorityConsent,
                 })}
               >
-                I am old enough in my local jurisdiction to enter into legal agreements and to
-                consent to the processing of my personal data.
+                I am old enough in my local jurisdiction to enter into legal
+                agreements and to consent to the processing of my personal data.
               </div>
             }
           />
@@ -292,20 +341,26 @@ export default function RegistrationConfirmationPage() {
             label={
               <div
                 className={cn({
-                  'error-message':
-                    (dirtyFields.isNotGdpr || wasSubmitAttempted) && localErrors.isNotGdpr,
+                  "error-message":
+                    (dirtyFields.isNotGdpr || wasSubmitAttempted) &&
+                    localErrors.isNotGdpr,
                 })}
               >
-                I am not located in the European Union (EU), the European Economic Area (EEA), or in
-                any other jurisdiction that is subject to the General Data Protection Regulation
-                (GDPR).
+                I am not located in the European Union (EU), the European
+                Economic Area (EEA), or in any other jurisdiction that is
+                subject to the General Data Protection Regulation (GDPR).
               </div>
             }
           />
         </CardText>
         <CardActions>
           {isSubmitting && <CircularProgress key="progress" id="progress" />}
-          <Button flat children="Cancel" disabled={isSubmitting} onClick={onCancel} />
+          <Button
+            flat
+            children="Cancel"
+            disabled={isSubmitting}
+            onClick={onCancel}
+          />
           <Button
             raised={isValid}
             flat={!isValid}
@@ -314,40 +369,52 @@ export default function RegistrationConfirmationPage() {
             children="Register"
             disabled={!isValid || isSubmitting}
             title={submitButtonTitle}
-            className={cn({'md-btn--raised-disabled': !isValid, 'md-text--disabled': !isValid})}
+            className={cn({
+              "md-btn--raised-disabled": !isValid,
+              "md-text--disabled": !isValid,
+            })}
           />
         </CardActions>
       </FocusContainer>
     </form>
-  )
+  );
 
   const confirmedMessage = (
     <React.Fragment>
       <CardText>You are now logged in.</CardText>
       <CardActions>
-        <Button raised primary children="Go to recent activity" href={paths.recentActivity()} />
+        <Button
+          raised
+          primary
+          children="Go to recent activity"
+          href={paths.recentActivity()}
+        />
       </CardActions>
     </React.Fragment>
-  )
+  );
 
-  let apiErrorMessage
+  let apiErrorMessage;
   if (apiErrorCode) {
     if (apiErrorCode in registrationErrorMessageByCode) {
       apiErrorMessage =
         apiErrorCode &&
-        registrationErrorMessageByCode[apiErrorCode as keyof typeof registrationErrorMessageByCode]
+        registrationErrorMessageByCode[
+          apiErrorCode as keyof typeof registrationErrorMessageByCode
+        ];
     }
   }
 
   const formWithNotice = (
     <>
-      <CardText>Please enter the following to complete your registration</CardText>
+      <CardText>
+        Please enter the following to complete your registration
+      </CardText>
       {validationErrorMessage && (
         <CardText className="error-message">{validationErrorMessage}</CardText>
       )}
       {form}
     </>
-  )
+  );
   const cardContents = (
     <>
       {!didCheckRegistration && (
@@ -357,11 +424,13 @@ export default function RegistrationConfirmationPage() {
         </>
       )}
       {didCheckRegistration && !isConfirmed && apiErrorMessage}
-      {didCheckRegistration && !isConfirmed && apiErrorMessage ? apiErrorMessage : formWithNotice}
+      {didCheckRegistration && !isConfirmed && apiErrorMessage
+        ? apiErrorMessage
+        : formWithNotice}
       {isConfirmed && confirmedMessage}
     </>
-  )
-  return makePage(subtitle, cardContents)
+  );
+  return makePage(subtitle, cardContents);
 }
 
 const makePage = (subtitle: string | undefined, cardContents: JSX.Element) => (
@@ -373,56 +442,54 @@ const makePage = (subtitle: string | undefined, cardContents: JSX.Element) => (
       <div className="md-cell md-cell--12">
         <Card>
           <CardTitle title="Complete Registration" subtitle={subtitle} />
-          <CardText>
-            {cardContents}
-          </CardText>
+          <CardText>{cardContents}</CardText>
         </Card>
       </div>
     </div>
   </div>
-)
+);
 
 const subtitleByRegistrationErrorCode = {
-  [apiErrorCodes.ENTITY_NOT_FOUND]: 'Registration not found',
-  [apiErrorCodes.EXPIRED]: 'Registration expired',
-  [apiErrorCodes.CONSUMED]: 'Registration already used',
-} as const
+  [apiErrorCodes.ENTITY_NOT_FOUND]: "Registration not found",
+  [apiErrorCodes.EXPIRED]: "Registration expired",
+  [apiErrorCodes.CONSUMED]: "Registration already used",
+} as const;
 
 const registrationErrorMessageByCode = {
   [apiErrorCodes.ENTITY_NOT_FOUND]: (
     <CardText>
-      That registration could not be found. Please double check the link in the confirmation email.
-      If this problem persists, please{' '}
+      That registration could not be found. Please double check the link in the
+      confirmation email. If this problem persists, please{" "}
       <Link className="text-link" to={paths.requestRegistration()}>
         register
-      </Link>{' '}
+      </Link>{" "}
       again.
     </CardText>
   ),
   [apiErrorCodes.EXPIRED]: (
     <CardText>
-      This registration has expired. Please{' '}
+      This registration has expired. Please{" "}
       <Link className="text-link" to={paths.requestRegistration()}>
         register
-      </Link>{' '}
+      </Link>{" "}
       again.
     </CardText>
   ),
   [apiErrorCodes.CONSUMED]: (
     <CardText>
-      That registration has already been used. Please{' '}
+      That registration has already been used. Please{" "}
       <Link className="text-link" to={paths.login()}>
         login
       </Link>
-      . If you have forgotten your password, you can{' '}
+      . If you have forgotten your password, you can{" "}
       <Link className="text-link" to={paths.requestPasswordReset()}>
         reset your password
       </Link>
-      . If you don&rsquo;t have access to your password reset email, you can{' '}
+      . If you don&rsquo;t have access to your password reset email, you can{" "}
       <Link className="text-link" to={paths.requestRegistration()}>
         register
-      </Link>{' '}
+      </Link>{" "}
       again.
     </CardText>
   ),
-}
+};

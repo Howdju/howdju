@@ -1,8 +1,6 @@
-const Promise = require('bluebird')
+const Promise = require("bluebird");
 
-const {
-  requireArgs,
-} = require('howdju-common')
+const { requireArgs } = require("howdju-common");
 
 exports.MainSearchService = class MainSearchService {
   constructor(
@@ -22,14 +20,14 @@ exports.MainSearchService = class MainSearchService {
       writsTitleSearcher,
       writQuotesQuoteTextSearcher,
       persorgsNameSearcher,
-    })
-    this.logger = logger
-    this.tagsService = tagsService
-    this.propositionsTextSearcher = propositionsTextSearcher
-    this.writsTitleSearcher = writsTitleSearcher
-    this.writQuotesQuoteTextSearcher = writQuotesQuoteTextSearcher
-    this.writQuotesService = writQuotesService
-    this.persorgsNameSearcher = persorgsNameSearcher
+    });
+    this.logger = logger;
+    this.tagsService = tagsService;
+    this.propositionsTextSearcher = propositionsTextSearcher;
+    this.writsTitleSearcher = writsTitleSearcher;
+    this.writQuotesQuoteTextSearcher = writQuotesQuoteTextSearcher;
+    this.writQuotesService = writQuotesService;
+    this.persorgsNameSearcher = persorgsNameSearcher;
   }
 
   search(searchText) {
@@ -38,8 +36,11 @@ exports.MainSearchService = class MainSearchService {
       propositionTexts: this.propositionsTextSearcher.search(searchText),
       writTitles: this.writsTitleSearcher.search(searchText),
       writQuoteQuoteTexts: this.writQuotesQuoteTextSearcher.search(searchText),
-      writQuoteUrls: this.writQuotesService.readWritQuotesHavingUrlContainingText(searchText),
+      writQuoteUrls:
+        this.writQuotesService.readWritQuotesHavingUrlContainingText(
+          searchText
+        ),
       persorgsFromName: this.persorgsNameSearcher.search(searchText),
-    })
+    });
   }
-}
+};

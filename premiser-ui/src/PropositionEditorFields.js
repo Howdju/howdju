@@ -1,23 +1,17 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import get from 'lodash/get'
-import has from 'lodash/has'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import get from "lodash/get";
+import has from "lodash/has";
 
-import SingleLineTextField from "./SingleLineTextField"
-import PropositionTextAutocomplete from './PropositionTextAutocomplete'
-import {toErrorText} from "./modelErrorMessages"
-import ErrorMessages from "./ErrorMessages"
-import {
-  combineIds,
-  combineNames,
-  combineSuggestionsKeys,
-} from './viewModels'
+import SingleLineTextField from "./SingleLineTextField";
+import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
+import { toErrorText } from "./modelErrorMessages";
+import ErrorMessages from "./ErrorMessages";
+import { combineIds, combineNames, combineSuggestionsKeys } from "./viewModels";
 
-
-const textName = 'text'
+const textName = "text";
 
 export default class PropositionEditorFields extends Component {
-
   render() {
     const {
       id,
@@ -32,18 +26,19 @@ export default class PropositionEditorFields extends Component {
       onKeyDown,
       onSubmit,
       ...rest
-    } = this.props
+    } = this.props;
 
-    const modelErrors = errors && errors.modelErrors
-    const textErrorProps = errors && errors.hasErrors && errors.fieldErrors.text.length > 0 ?
-      {error: true, errorText: toErrorText(errors.fieldErrors.text)} :
-      null
+    const modelErrors = errors && errors.modelErrors;
+    const textErrorProps =
+      errors && errors.hasErrors && errors.fieldErrors.text.length > 0
+        ? { error: true, errorText: toErrorText(errors.fieldErrors.text) }
+        : null;
 
-    const hasText = has(proposition, textName)
-    const text = get(proposition, textName, '')
+    const hasText = has(proposition, textName);
+    const text = get(proposition, textName, "");
 
     const textProps = {
-      id: textId || combineIds(id, 'text'),
+      id: textId || combineIds(id, "text"),
       name: combineNames(name, textName),
       label: textLabel,
       value: text,
@@ -52,26 +47,25 @@ export default class PropositionEditorFields extends Component {
       onSubmit,
       onPropertyChange,
       disabled: disabled || !hasText,
-    }
+    };
 
-    const textInput = (suggestionsKey && !disabled) ?
-      <PropositionTextAutocomplete
-        {...rest}
-        {...textErrorProps}
-        {...textProps}
-        suggestionsKey={combineSuggestionsKeys(suggestionsKey, textName)}
-      /> :
-      <SingleLineTextField
-        {...rest}
-        {...textErrorProps}
-        {...textProps}
-      />
+    const textInput =
+      suggestionsKey && !disabled ? (
+        <PropositionTextAutocomplete
+          {...rest}
+          {...textErrorProps}
+          {...textProps}
+          suggestionsKey={combineSuggestionsKeys(suggestionsKey, textName)}
+        />
+      ) : (
+        <SingleLineTextField {...rest} {...textErrorProps} {...textProps} />
+      );
     return (
       <div>
-        <ErrorMessages errors={modelErrors}/>
+        <ErrorMessages errors={modelErrors} />
         {textInput}
       </div>
-    )
+    );
   }
 }
 PropositionEditorFields.propTypes = {
@@ -89,8 +83,8 @@ PropositionEditorFields.propTypes = {
   onKeyDown: PropTypes.func,
   /** If present, overrides the default label for the proposition text input */
   textLabel: PropTypes.string,
-}
+};
 PropositionEditorFields.defaultProps = {
   disabled: false,
-  textLabel: 'Text',
-}
+  textLabel: "Text",
+};

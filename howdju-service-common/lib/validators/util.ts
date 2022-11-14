@@ -4,5 +4,5 @@ export const genericModelBlankErrors = function genericModelBlankErrors() {
     hasErrors: false,
     modelErrors: [],
     fieldErrors: {},
-  }
-}
+  };
+};

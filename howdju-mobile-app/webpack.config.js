@@ -1,7 +1,7 @@
-const path = require('path')
-const webpack = require('webpack')
-const TerserPlugin = require('terser-webpack-plugin')
-const ReactNative = require('@callstack/repack')
+const path = require("path");
+const webpack = require("webpack");
+const TerserPlugin = require("terser-webpack-plugin");
+const ReactNative = require("@callstack/repack");
 
 /**
  * More documentation, installation, usage, motivation and differences with Metro is available at:
@@ -31,14 +31,14 @@ const ReactNative = require('@callstack/repack')
  * to specify your values, if the defaults don't suit your project.
  */
 
-const mode = ReactNative.getMode({fallback: 'development'})
-const dev = mode === 'development'
-const context = ReactNative.getContext()
-const entry = ReactNative.getEntry()
-const platform = ReactNative.getPlatform({fallback: process.env.PLATFORM})
-const minimize = ReactNative.isMinimizeEnabled({fallback: !dev})
-const devServer = ReactNative.getDevServerOptions()
-const reactNativePath = ReactNative.getReactNativePath()
+const mode = ReactNative.getMode({ fallback: "development" });
+const dev = mode === "development";
+const context = ReactNative.getContext();
+const entry = ReactNative.getEntry();
+const platform = ReactNative.getPlatform({ fallback: process.env.PLATFORM });
+const minimize = ReactNative.isMinimizeEnabled({ fallback: !dev });
+const devServer = ReactNative.getDevServerOptions();
+const reactNativePath = ReactNative.getReactNativePath();
 
 /**
  * Depending on your Babel configuration you might want to keep it.
@@ -48,7 +48,7 @@ const reactNativePath = ReactNative.getReactNativePath()
  * to `development` or `production`. Otherwise your production code might be compiled with
  * in development mode by Babel.
  */
-process.env.BABEL_ENV = mode
+process.env.BABEL_ENV = mode;
 
 /**
  * Webpack configuration.
@@ -74,11 +74,11 @@ module.exports = {
       entry,
     ],
     // react-native-share-menu entry point
-    'index.share': [
+    "index.share": [
       ...ReactNative.getInitializationEntries(reactNativePath, {
         hmr: devServer.hmr,
       }),
-      './index.share.js',
+      "./index.share.js",
     ],
   },
   resolve: {
@@ -94,7 +94,7 @@ module.exports = {
 
     alias: {
       // Support project-relative imports
-      '@': path.resolve(__dirname, 'src/'),
+      "@": path.resolve(__dirname, "src/"),
     },
 
     /**
@@ -115,9 +115,9 @@ module.exports = {
    */
   output: {
     clean: true,
-    path: path.join(__dirname, 'build', platform),
-    filename: '[name].bundle',
-    chunkFilename: '[name].chunk.bundle',
+    path: path.join(__dirname, "build", platform),
+    filename: "[name].bundle",
+    chunkFilename: "[name].chunk.bundle",
     publicPath: ReactNative.getPublicPath(devServer),
   },
   /**
@@ -167,7 +167,7 @@ module.exports = {
           /node_modules(.*[/\\])+abort-controller/,
           /node_modules(.*[/\\])+@callstack[/\\]repack/,
         ],
-        use: 'babel-loader',
+        use: "babel-loader",
       },
       /**
        * Here you can adjust loader that will process your files.
@@ -179,10 +179,10 @@ module.exports = {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
             /** Add React Refresh transform only when HMR is enabled. */
-            plugins: devServer.hmr ? ['module:react-refresh/babel'] : undefined,
+            plugins: devServer.hmr ? ["module:react-refresh/babel"] : undefined,
           },
         },
       },
@@ -197,9 +197,11 @@ module.exports = {
        * ```
        */
       {
-        test: ReactNative.getAssetExtensionsRegExp(ReactNative.ASSET_EXTENSIONS),
+        test: ReactNative.getAssetExtensionsRegExp(
+          ReactNative.ASSET_EXTENSIONS
+        ),
         use: {
-          loader: '@callstack/repack/assets-loader',
+          loader: "@callstack/repack/assets-loader",
           options: {
             platform,
             devServerEnabled: devServer.enabled,
@@ -249,7 +251,7 @@ module.exports = {
     new ReactNative.OutputPlugin({
       platform,
       devServerEnabled: devServer.enabled,
-      remoteChunksOutput: path.join(__dirname, 'build', platform, 'remote'),
+      remoteChunksOutput: path.join(__dirname, "build", platform, "remote"),
     }),
 
     /**
@@ -271,7 +273,7 @@ module.exports = {
     new webpack.SourceMapDevToolPlugin({
       test: /\.(js)?bundle$/,
       exclude: /\.chunk\.(js)?bundle$/,
-      filename: '[file].map',
+      filename: "[file].map",
       append: `//# sourceMappingURL=[url]?platform=${platform}`,
       /**
        * Uncomment for faster builds but less accurate Source Maps
@@ -288,7 +290,7 @@ module.exports = {
     new webpack.SourceMapDevToolPlugin({
       test: /\.(js)?bundle$/,
       include: /\.chunk\.(js)?bundle$/,
-      filename: '[file].map',
+      filename: "[file].map",
       append: `//# sourceMappingURL=[url]?platform=${platform}`,
       /**
        * Uncomment for faster builds but less accurate Source Maps
@@ -314,4 +316,4 @@ module.exports = {
       },
     }),
   ],
-}
+};

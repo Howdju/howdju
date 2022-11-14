@@ -1,5 +1,3 @@
 module.exports = {
-  extends: [
-    "howdju/node",
-  ],
-}
+  extends: ["howdju/node"],
+};

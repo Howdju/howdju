@@ -1,35 +1,33 @@
-const has = require('lodash/has')
+const has = require("lodash/has");
 
 const {
   modelErrorCodes,
   PropositionTagVotePolarities,
-} = require('howdju-common')
+} = require("howdju-common");
 
-const {TagValidator} = require('./TagValidator')
-
+const { TagValidator } = require("./TagValidator");
 
 class PropositionTagVoteValidator {
-
   validate(propositionTagVote) {
-    const errors = PropositionTagVoteValidator.blankErrors()
+    const errors = PropositionTagVoteValidator.blankErrors();
 
     if (!propositionTagVote) {
-      errors.hasErrors = true
-      errors.modelErrors.push(modelErrorCodes.IF_PRESENT_MUST_BE_NONEMPTY)
-      return errors
+      errors.hasErrors = true;
+      errors.modelErrors.push(modelErrorCodes.IF_PRESENT_MUST_BE_NONEMPTY);
+      return errors;
     }
 
-    if (has(propositionTagVote, 'polarity')) {
+    if (has(propositionTagVote, "polarity")) {
       if (!has(PropositionTagVotePolarities, propositionTagVote.polarity)) {
-        errors.hasErrors = true
-        errors.fieldErrors.polarity.push(modelErrorCodes.INVALID_VALUE)
+        errors.hasErrors = true;
+        errors.fieldErrors.polarity.push(modelErrorCodes.INVALID_VALUE);
       }
     } else {
-      errors.hasErrors = true
-      errors.fieldErrors.polarity.push(modelErrorCodes.IS_REQUIRED)
+      errors.hasErrors = true;
+      errors.fieldErrors.polarity.push(modelErrorCodes.IS_REQUIRED);
     }
 
-    return errors
+    return errors;
   }
 }
 PropositionTagVoteValidator.blankErrors = () => ({
@@ -39,6 +37,6 @@ PropositionTagVoteValidator.blankErrors = () => ({
     tag: TagValidator.blankErrors(),
     polarity: [],
   },
-})
+});
 
-exports.PropositionTagVoteValidator = PropositionTagVoteValidator
+exports.PropositionTagVoteValidator = PropositionTagVoteValidator;

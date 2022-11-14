@@ -1,19 +1,13 @@
 /** ESLint config for node code: either build or backend code. */
 
-const { testFilePattern } = require("./constants")
+const { testFilePattern } = require("./constants");
 
 module.exports = {
   env: {
-    "node": true,
+    node: true,
   },
-  plugins: [
-    "promise",
-  ],
-  extends: [
-    "eslint-config-howdju",
-    "plugin:promise/recommended",
-    "prettier",
-  ],
+  plugins: ["promise"],
+  extends: ["eslint-config-howdju", "plugin:promise/recommended", "prettier"],
   rules: {
     "no-restricted-globals": [
       "error",
@@ -35,4 +29,4 @@ module.exports = {
       },
     },
   ],
-}
+};

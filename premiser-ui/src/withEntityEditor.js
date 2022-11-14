@@ -1,29 +1,19 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {connect} from "react-redux"
-import {
-  Button,
-  CircularProgress,
-  CardActions,
-  CardText,
-} from 'react-md'
-import get from 'lodash/get'
-import isEqual from 'lodash/isEqual'
-import isEmpty from 'lodash/isEmpty'
-import merge from 'lodash/merge'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { Button, CircularProgress, CardActions, CardText } from "react-md";
+import get from "lodash/get";
+import isEqual from "lodash/isEqual";
+import isEmpty from "lodash/isEmpty";
+import merge from "lodash/merge";
 
-import {toJson} from "howdju-common"
-import {validate, emptyValidationResult} from "howdju-ajv-sourced"
+import { toJson } from "howdju-common";
+import { validate, emptyValidationResult } from "howdju-ajv-sourced";
 
-import {
-  editors,
-  mapActionCreatorGroupToDispatchToProps,
-} from './actions'
-import {
-  CANCEL_BUTTON_LABEL,
-} from "./texts"
-import t, {EDIT_ENTITY_SUBMIT_BUTTON_LABEL} from './texts'
-import {logger} from './logger'
+import { editors, mapActionCreatorGroupToDispatchToProps } from "./actions";
+import { CANCEL_BUTTON_LABEL } from "./texts";
+import t, { EDIT_ENTITY_SUBMIT_BUTTON_LABEL } from "./texts";
+import { logger } from "./logger";
 
 /**
  * HOC for creating an editor of an entity.
@@ -37,29 +27,36 @@ import {logger} from './logger'
  * @returns {Component} An entity editor component
  */
 export default function withEntityEditor(
-  editorType, EntityEditorFields, editorFieldsEditEntityPropName, schemaId) {
-
+  editorType,
+  EntityEditorFields,
+  editorFieldsEditEntityPropName,
+  schemaId
+) {
   class EntityEditor extends Component {
-    static editorType = editorType
+    static editorType = editorType;
 
     onPropertyChange = (properties) => {
-      this.props.editors.propertyChange(editorType, this.props.editorId, properties)
-    }
+      this.props.editors.propertyChange(
+        editorType,
+        this.props.editorId,
+        properties
+      );
+    };
 
     onSubmit = (event) => {
-      event.preventDefault()
-      this.props.editors.commitEdit(editorType, this.props.editorId)
+      event.preventDefault();
+      this.props.editors.commitEdit(editorType, this.props.editorId);
       if (this.props.onSubmit) {
-        this.props.onSubmit()
+        this.props.onSubmit();
       }
-    }
+    };
 
     onCancelEdit = () => {
-      this.props.editors.cancelEdit(editorType, this.props.editorId)
+      this.props.editors.cancelEdit(editorType, this.props.editorId);
       if (this.props.onCancel) {
-        this.props.onCancel()
+        this.props.onCancel();
       }
-    }
+    };
 
     static propTypes = {
       id: PropTypes.string.isRequired,
@@ -74,7 +71,7 @@ export default function withEntityEditor(
       onSubmit: PropTypes.func,
       /** The label to use for the submit button. If missing, a default is used. */
       submitText: PropTypes.string,
-    }
+    };
 
     render() {
       const {
@@ -93,27 +90,32 @@ export default function withEntityEditor(
         editors,
         editorId,
         ...rest
-      } = this.props
+      } = this.props;
 
-      const inProgress = isFetching || isSaving
+      const inProgress = isFetching || isSaving;
 
       // Provide the editEntity using a prop name that the EntityEditorFields understands
       const entityEditorFields = {
         [editorFieldsEditEntityPropName]: editEntity,
-      }
+      };
 
-      const {errors: clientValidationErrors} = editEntity ?
-        validate(schemaId, editEntity) :
-        emptyValidationResult()
+      const { errors: clientValidationErrors } = editEntity
+        ? validate(schemaId, editEntity)
+        : emptyValidationResult();
       // Because the API should validate the same data using the same schema, it shouldn't be possible
       // to receive API errors that didn't also fail client validation.
-      if (apiValidationErrors && !isEqual(clientValidationErrors, apiValidationErrors)) {
-        logger.error(`clientValidationErrors and apiValidationErrors do not match ` +
-            `${toJson({clientValidationErrors, apiValidationErrors})}`)
+      if (
+        apiValidationErrors &&
+        !isEqual(clientValidationErrors, apiValidationErrors)
+      ) {
+        logger.error(
+          `clientValidationErrors and apiValidationErrors do not match ` +
+            `${toJson({ clientValidationErrors, apiValidationErrors })}`
+        );
       }
       // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
       // must accept the value.
-      const errors = merge(clientValidationErrors, apiValidationErrors)
+      const errors = merge(clientValidationErrors, apiValidationErrors);
 
       return (
         <form onSubmit={this.onSubmit}>
@@ -133,33 +135,38 @@ export default function withEntityEditor(
           </CardText>
           <CardActions>
             {inProgress && <CircularProgress key="progress" id="progress" />}
-            <Button flat
-                    key="cancelButton"
-                    children={t(CANCEL_BUTTON_LABEL)}
-                    onClick={this.onCancelEdit}
-                    disabled={inProgress}
+            <Button
+              flat
+              key="cancelButton"
+              children={t(CANCEL_BUTTON_LABEL)}
+              onClick={this.onCancelEdit}
+              disabled={inProgress}
             />
-            <Button raised
-                    primary
-                    key="submitButton"
-                    type="submit"
-                    children={submitText || t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
-                    disabled={inProgress || !isEmpty(errors)}
+            <Button
+              raised
+              primary
+              key="submitButton"
+              type="submit"
+              children={submitText || t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
+              disabled={inProgress || !isEmpty(errors)}
             />
           </CardActions>
         </form>
-      )
+      );
     }
   }
 
   const mapStateToProps = (state, ownProps) => {
-    const editorState = get(state.editors, [editorType, ownProps.editorId], {})
+    const editorState = get(state.editors, [editorType, ownProps.editorId], {});
     return {
       editorState,
-    }
-  }
+    };
+  };
 
-  return connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-    editors,
-  }))(EntityEditor)
+  return connect(
+    mapStateToProps,
+    mapActionCreatorGroupToDispatchToProps({
+      editors,
+    })
+  )(EntityEditor);
 }

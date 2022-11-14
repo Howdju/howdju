@@ -1,8 +1,8 @@
-import { put, takeEvery } from "redux-saga/effects"
-import includes from "lodash/includes"
-import get from "lodash/get"
+import { put, takeEvery } from "redux-saga/effects";
+import includes from "lodash/includes";
+import get from "lodash/get";
 
-import { apiErrorCodes } from "howdju-common"
+import { apiErrorCodes } from "howdju-common";
 
 import t, {
   THAT_JUSTIFICATION_ALREADY_EXISTS,
@@ -18,12 +18,12 @@ import t, {
   UN_DISVERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   UN_VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
   VERIFY_JUSTIFICATION_FAILURE_TOAST_MESSAGE,
-} from "@/texts"
-import { api, str } from "@/actions"
-import { callApiResponse } from "@/apiActions"
-import app from "@/app/appSlice"
-import { logger } from "../logger"
-import { uiErrorTypes } from "../uiErrors"
+} from "@/texts";
+import { api, str } from "@/actions";
+import { callApiResponse } from "@/apiActions";
+import app from "@/app/appSlice";
+import { logger } from "../logger";
+import { uiErrorTypes } from "../uiErrors";
 
 export function* showAlertForLogin() {
   yield takeEvery(
@@ -32,10 +32,10 @@ export function* showAlertForLogin() {
       if (!action.error) {
         yield put(
           app.addToast(t(YOU_ARE_LOGGED_IN_AS, action.payload.user.email))
-        )
+        );
       }
     }
-  )
+  );
 }
 
 export function* showAlertForLogout() {
@@ -43,19 +43,18 @@ export function* showAlertForLogout() {
     api.logout.response,
     function* showAlertForLogoutWorker(action) {
       if (!action.error) {
-        yield put(app.addToast(t(YOU_HAVE_BEEN_LOGGED_OUT)))
+        yield put(app.addToast(t(YOU_HAVE_BEEN_LOGGED_OUT)));
       }
     }
-  )
+  );
 }
 
 export function* showAlertForExtantEntities() {
   const toastMessageKeys = {
     [str(api.createProposition.response)]: THAT_PROPOSITION_ALREADY_EXISTS,
     [str(api.createStatement.response)]: THAT_STATEMENT_ALREADY_EXISTS,
-    [str(api.createJustification.response)]:
-      THAT_JUSTIFICATION_ALREADY_EXISTS,
-  }
+    [str(api.createJustification.response)]: THAT_JUSTIFICATION_ALREADY_EXISTS,
+  };
 
   yield takeEvery(
     [
@@ -66,12 +65,12 @@ export function* showAlertForExtantEntities() {
     function* showAlertForExtantEntitiesWorker(action) {
       if (!action.error) {
         if (action.payload.isExtant) {
-          const toastMessageKey = toastMessageKeys[action.type]
-          yield put(app.addToast(t(toastMessageKey)))
+          const toastMessageKey = toastMessageKeys[action.type];
+          yield put(app.addToast(t(toastMessageKey)));
         }
       }
     }
-  )
+  );
 }
 
 export function* apiFailureAlerts() {
@@ -91,7 +90,7 @@ export function* apiFailureAlerts() {
     [str(api.tagProposition.response)]: "Unable to create the tag",
     [str(api.antiTagProposition.response)]: "Unable to remove the tag",
     [str(api.unTagProposition.response)]: "Unable to remove the tag",
-  }
+  };
 
   yield takeEvery(
     [
@@ -107,11 +106,11 @@ export function* apiFailureAlerts() {
     ],
     function* (action) {
       if (action.error) {
-        const messageKey = messageKeysByActionType[action.type]
-        yield put(app.addToast(t(messageKey)))
+        const messageKey = messageKeysByActionType[action.type];
+        yield put(app.addToast(t(messageKey)));
       }
     }
-  )
+  );
 }
 
 export function* showAlertForUnexpectedApiError() {
@@ -122,14 +121,14 @@ export function* showAlertForUnexpectedApiError() {
         if (action.payload.errorType) {
           switch (action.payload.errorType) {
             case uiErrorTypes.NETWORK_FAILURE_ERROR: {
-              yield put(app.addToast(t(A_NETWORK_ERROR_OCCURRED)))
-              break
+              yield put(app.addToast(t(A_NETWORK_ERROR_OCCURRED)));
+              break;
             }
             case uiErrorTypes.API_RESPONSE_ERROR: {
-              const errorCode = get(action.payload, ["body", "errorCode"])
+              const errorCode = get(action.payload, ["body", "errorCode"]);
               if (!errorCode) {
-                logger.error("API response error missing error code")
-                yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+                logger.error("API response error missing error code");
+                yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)));
               } else if (
                 includes(
                   [
@@ -139,24 +138,24 @@ export function* showAlertForUnexpectedApiError() {
                   errorCode
                 )
               ) {
-                yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+                yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)));
               }
-              break
+              break;
             }
             default: {
-              logger.error(`Unexpected error type: ${action.payload}`)
-              logger.error(action.payload)
-              yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
-              break
+              logger.error(`Unexpected error type: ${action.payload}`);
+              logger.error(action.payload);
+              yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)));
+              break;
             }
           }
         } else {
-          logger.error(`${callApiResponse} missing errorType`)
-          logger.error(`Unexpected error type: ${action.payload}`)
-          logger.error(action.payload)
-          yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)))
+          logger.error(`${callApiResponse} missing errorType`);
+          logger.error(`Unexpected error type: ${action.payload}`);
+          logger.error(action.payload);
+          yield put(app.addToast(t(AN_UNEXPECTED_ERROR_OCCURRED)));
         }
       }
     }
-  )
+  );
 }

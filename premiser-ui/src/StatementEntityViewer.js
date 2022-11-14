@@ -1,33 +1,30 @@
-import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
-import PropTypes from 'prop-types'
-import get from 'lodash/get'
-import moment from 'moment'
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import get from "lodash/get";
+import moment from "moment";
 
-import {
-  SentenceTypes,
-} from 'howdju-common'
+import { SentenceTypes } from "howdju-common";
 
-import config from './config'
-import JustificationCountViewer from './JustificationCountViewer'
-import paths from './paths'
-import PropositionEntityViewer from './PropositionEntityViewer'
-import {combineIds} from './viewModels'
+import config from "./config";
+import JustificationCountViewer from "./JustificationCountViewer";
+import paths from "./paths";
+import PropositionEntityViewer from "./PropositionEntityViewer";
+import { combineIds } from "./viewModels";
 
-import './StatementEntityViewer.scss'
-import EntityViewer from './EntityViewer'
+import "./StatementEntityViewer.scss";
+import EntityViewer from "./EntityViewer";
 
 export default class StatementEntityViewer extends Component {
-
   static propTypes = {
     id: PropTypes.string.isRequired,
-  }
+  };
 
-  static defaultProps ={
+  static defaultProps = {
     showStatusText: true,
     showJustificationCount: true,
-    component: 'div',
-  }
+    component: "div",
+  };
 
   render() {
     const {
@@ -38,72 +35,86 @@ export default class StatementEntityViewer extends Component {
       menu,
       showStatusText,
       showJustificationCount,
-    } = this.props
+    } = this.props;
 
-    let entityStatusText
+    let entityStatusText;
     if (statement && showStatusText) {
-      const age = statement.created ? moment(statement.created).fromNow() : ''
-      const created = statement.created ? moment(statement.created).format(config.humanDateTimeFormat) : ''
-      const modifiedAge = statement.modified ? moment(statement.modified).fromNow() : ''
-      const modified = statement.modified ? moment(statement.modified).format(config.humanDateTimeFormat) : ''
-      const creatorName = get(statement, 'creator.longName')
-      const creatorNameDescription = creatorName && ` by ${creatorName}` || ''
+      const age = statement.created ? moment(statement.created).fromNow() : "";
+      const created = statement.created
+        ? moment(statement.created).format(config.humanDateTimeFormat)
+        : "";
+      const modifiedAge = statement.modified
+        ? moment(statement.modified).fromNow()
+        : "";
+      const modified = statement.modified
+        ? moment(statement.modified).format(config.humanDateTimeFormat)
+        : "";
+      const creatorName = get(statement, "creator.longName");
+      const creatorNameDescription =
+        (creatorName && ` by ${creatorName}`) || "";
 
-      const modifiedTitle = <span title={modified}>{modifiedAge}</span>
-      const modifiedSpan = (<span>(modified {modifiedTitle})</span>)
-      const modifiedDescription = modified && modifiedSpan
+      const modifiedTitle = <span title={modified}>{modifiedAge}</span>;
+      const modifiedSpan = <span>(modified {modifiedTitle})</span>;
+      const modifiedDescription = modified && modifiedSpan;
       entityStatusText = (
         <span className="entity-status-text">
-          created{creatorNameDescription} {modifiedDescription} <span title={created}>{age}</span>
+          created{creatorNameDescription} {modifiedDescription}{" "}
+          <span title={created}>{age}</span>
         </span>
-      )
+      );
     }
 
-    let speakerStuff
+    let speakerStuff;
     if (statement) {
-      speakerStuff =
+      speakerStuff = (
         <div className="statement-entity-header">
-          <Link
-            to={paths.persorg(statement.speaker)}
-            className="speaker-name"
-          >
+          <Link to={paths.persorg(statement.speaker)} className="speaker-name">
             {statement.speaker.name}
           </Link>
           <Link to={paths.statement(statement)}>
             said that
-            {showJustificationCount && statement.rootJustificationCountByPolarity && (
-              <JustificationCountViewer justificationCountByPolarity={statement.rootJustificationCountByPolarity}/>
-            )}
+            {showJustificationCount &&
+              statement.rootJustificationCountByPolarity && (
+                <JustificationCountViewer
+                  justificationCountByPolarity={
+                    statement.rootJustificationCountByPolarity
+                  }
+                />
+              )}
           </Link>
         </div>
+      );
     }
 
-    let entity
+    let entity;
     if (!statement) {
-      entity = null
+      entity = null;
     } else if (statement.sentenceType === SentenceTypes.STATEMENT) {
-      entity =
+      entity = (
         <StatementEntityViewer
-          id={combineIds(id, 'statement')}
+          id={combineIds(id, "statement")}
           statement={statement.sentence}
           showStatusText={false}
           showJustificationCount={showJustificationCount}
         />
+      );
     } else {
-      entity =
+      entity = (
         <PropositionEntityViewer
-          id={combineIds(id, 'proposition')}
+          id={combineIds(id, "proposition")}
           proposition={statement.sentence}
           showStatusText={false}
           showJustificationCount={showJustificationCount}
         />
+      );
     }
 
-    const speakerAndSentence =
+    const speakerAndSentence = (
       <div className="sentence-entity-wrapper">
         {speakerStuff}
         {entity}
       </div>
+    );
 
     return (
       <div>
@@ -118,6 +129,6 @@ export default class StatementEntityViewer extends Component {
         />
         {entityStatusText}
       </div>
-    )
+    );
   }
 }

@@ -1,26 +1,24 @@
-const {
-  modelErrorCodes,
-} = require('howdju-common')
+const { modelErrorCodes } = require("howdju-common");
 
 class UserValidator {
   validate(user) {
-    const errors = UserValidator.blankErrors()
+    const errors = UserValidator.blankErrors();
 
     if (!user) {
-      errors.hasErrors = true
-      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
-      return errors
+      errors.hasErrors = true;
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED);
+      return errors;
     }
 
-    if (user.email === '') {
-      errors.hasErrors = true
-      errors.fieldErrors.email.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    if (user.email === "") {
+      errors.hasErrors = true;
+      errors.fieldErrors.email.push(modelErrorCodes.MUST_BE_NONEMPTY);
     } else if (!user.email) {
-      errors.hasErrors = true
-      errors.fieldErrors.email.push(modelErrorCodes.IS_REQUIRED)
+      errors.hasErrors = true;
+      errors.fieldErrors.email.push(modelErrorCodes.IS_REQUIRED);
     }
 
-    return errors
+    return errors;
   }
 }
 UserValidator.blankErrors = () => ({
@@ -30,6 +28,6 @@ UserValidator.blankErrors = () => ({
     email: [],
     password: [],
   },
-})
+});
 
-exports.UserValidator = UserValidator
+exports.UserValidator = UserValidator;

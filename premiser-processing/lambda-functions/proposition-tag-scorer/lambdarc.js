@@ -1,4 +1,4 @@
 module.exports = {
-  name: 'propositionTagScorer',
+  name: "propositionTagScorer",
   requireHowdjuDeps: true,
-}
+};

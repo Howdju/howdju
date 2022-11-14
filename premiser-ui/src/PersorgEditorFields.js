@@ -1,34 +1,22 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import get from 'lodash/get'
-import has from 'lodash/has'
-import {
-  Button,
-  Switch,
-} from 'react-md'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import get from "lodash/get";
+import has from "lodash/has";
+import { Button, Switch } from "react-md";
 
-import {schemaSettings} from 'howdju-common'
+import { schemaSettings } from "howdju-common";
 
-import PersorgNameAutocomplete from './PersorgNameAutocomplete'
-import ErrorMessages from "./ErrorMessages"
-import {toErrorText} from "./modelErrorMessages"
-import SingleLineTextField from "./SingleLineTextField"
-import {
-  combineIds,
-  combineNames,
-  combineSuggestionsKeys,
-} from './viewModels'
-import UrlTextField from './UrlTextField'
-import {
-  isTwitterUrl,
-  isWikipediaUrl,
-} from './util'
+import PersorgNameAutocomplete from "./PersorgNameAutocomplete";
+import ErrorMessages from "./ErrorMessages";
+import { toErrorText } from "./modelErrorMessages";
+import SingleLineTextField from "./SingleLineTextField";
+import { combineIds, combineNames, combineSuggestionsKeys } from "./viewModels";
+import UrlTextField from "./UrlTextField";
+import { isTwitterUrl, isWikipediaUrl } from "./util";
 
-
-const nameName = 'name'
+const nameName = "name";
 
 export default class PersorgEditorFields extends Component {
-
   static propTypes = {
     persorg: PropTypes.object,
     id: PropTypes.string.isRequired,
@@ -45,33 +33,33 @@ export default class PersorgEditorFields extends Component {
     disabled: PropTypes.bool,
     /** If present, overrides the default label for the proposition text input */
     nameLabel: PropTypes.string,
-  }
+  };
 
   static defaultProps = {
     disabled: false,
-    nameLabel: 'Name',
-  }
+    nameLabel: "Name",
+  };
 
   state = {
     showUrls: false,
-  }
+  };
 
   onChange = (value, event) => {
-    const name = event.target.name
-    this.props.onPropertyChange({[name]: value})
-  }
+    const name = event.target.name;
+    this.props.onPropertyChange({ [name]: value });
+  };
 
   onPersorgNameAutocomplete = (persorg) => {
     if (this.props.onPersorgNameAutocomplete) {
-      this.props.onPersorgNameAutocomplete(persorg)
+      this.props.onPersorgNameAutocomplete(persorg);
     }
-  }
+  };
 
   onShowUrlsClick = () => {
     this.setState({
       showUrls: !this.state.showUrls,
-    })
-  }
+    });
+  };
 
   render() {
     const {
@@ -88,19 +76,17 @@ export default class PersorgEditorFields extends Component {
       // ignore
       onPersorgNameAutocomplete,
       ...rest
-    } = this.props
-    const {
-      showUrls,
-    } = this.state
+    } = this.props;
+    const { showUrls } = this.state;
 
-    const modelErrors = get(errors, '_model')
-    const nameErrors = get(errors, 'name')
-    const nameErrorProps = nameErrors ?
-      {error: true, errorText: toErrorText(errors.fieldErrors.name)} :
-      null
+    const modelErrors = get(errors, "_model");
+    const nameErrors = get(errors, "name");
+    const nameErrorProps = nameErrors
+      ? { error: true, errorText: toErrorText(errors.fieldErrors.name) }
+      : null;
 
-    const hasName = has(persorg, nameName)
-    const persorgName = get(persorg, nameName, '')
+    const hasName = has(persorg, nameName);
+    const persorgName = get(persorg, nameName, "");
 
     const nameInputProps = {
       id: nameId || combineIds(id, nameName),
@@ -112,28 +98,31 @@ export default class PersorgEditorFields extends Component {
       onSubmit,
       onPropertyChange,
       disabled: disabled || !hasName,
-    }
+    };
 
-    const nameInput = (suggestionsKey && !disabled) ?
-      <PersorgNameAutocomplete
-        {...rest}
-        {...nameErrorProps}
-        {...nameInputProps}
-        onAutocomplete={this.onPersorgNameAutocomplete}
-        suggestionsKey={combineSuggestionsKeys(suggestionsKey, nameName)}
-      /> :
-      <SingleLineTextField
-        {...rest}
-        {...nameErrorProps}
-        {...nameInputProps}
-      />
+    const nameInput =
+      suggestionsKey && !disabled ? (
+        <PersorgNameAutocomplete
+          {...rest}
+          {...nameErrorProps}
+          {...nameInputProps}
+          onAutocomplete={this.onPersorgNameAutocomplete}
+          suggestionsKey={combineSuggestionsKeys(suggestionsKey, nameName)}
+        />
+      ) : (
+        <SingleLineTextField
+          {...rest}
+          {...nameErrorProps}
+          {...nameInputProps}
+        />
+      );
     return (
       <div>
-        <ErrorMessages errors={modelErrors}/>
+        <ErrorMessages errors={modelErrors} />
         {nameInput}
         <Switch
-          id={combineIds(id, 'is-organization')}
-          name={combineNames(name, 'isOrganization')}
+          id={combineIds(id, "is-organization")}
+          name={combineNames(name, "isOrganization")}
           checked={persorg.isOrganization}
           label="Is Organization?"
           disabled={disabled}
@@ -141,8 +130,8 @@ export default class PersorgEditorFields extends Component {
         />
         {!persorg.isOrganization && (
           <SingleLineTextField
-            id={combineIds(id, 'known-for')}
-            name={combineNames(name, 'knownFor')}
+            id={combineIds(id, "known-for")}
+            name={combineNames(name, "knownFor")}
             label="Known for"
             value={persorg.knownFor}
             helpText="What is this person or organization known for?  (Helps disambiguate people with the same name or for obscure organizations with a better known purpose.)"
@@ -151,17 +140,14 @@ export default class PersorgEditorFields extends Component {
             onSubmit={onSubmit}
           />
         )}
-        <Button
-          flat
-          onClick={this.onShowUrlsClick}
-        >
+        <Button flat onClick={this.onShowUrlsClick}>
           {showUrls ? "Hide URLs" : "Show URLs"}
         </Button>
-        {showUrls && ([
+        {showUrls && [
           <UrlTextField
             key="website"
-            id={combineIds(id, 'website-url')}
-            name={combineNames(name, 'websiteUrl')}
+            id={combineIds(id, "website-url")}
+            name={combineNames(name, "websiteUrl")}
             label="Website"
             value={persorg.websiteUrl}
             disabled={disabled}
@@ -170,8 +156,8 @@ export default class PersorgEditorFields extends Component {
           />,
           <UrlTextField
             key="wikipedia"
-            id={combineIds(id, 'wikipedia-url')}
-            name={combineNames(name, 'wikipediaUrl')}
+            id={combineIds(id, "wikipedia-url")}
+            name={combineNames(name, "wikipediaUrl")}
             label="Wikipedia"
             value={persorg.wikipediaUrl}
             validator={isWikipediaUrl}
@@ -182,8 +168,8 @@ export default class PersorgEditorFields extends Component {
           />,
           <UrlTextField
             key="twitter"
-            id={combineIds(id, 'twitter-url')}
-            name={combineNames(name, 'twitterUrl')}
+            id={combineIds(id, "twitter-url")}
+            name={combineNames(name, "twitterUrl")}
             label="Twitter"
             value={persorg.twitterUrl}
             validator={isTwitterUrl}
@@ -192,8 +178,8 @@ export default class PersorgEditorFields extends Component {
             onPropertyChange={onPropertyChange}
             onSubmit={onSubmit}
           />,
-        ])}
+        ]}
       </div>
-    )
+    );
   }
 }

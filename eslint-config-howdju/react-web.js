@@ -1,10 +1,7 @@
 /** ESLint config for React web */
 module.exports = {
   env: {
-    "browser": true,
+    browser: true,
   },
-  extends: [
-    "eslint-config-howdju/client-common",
-    "prettier",
-  ],
-}
+  extends: ["eslint-config-howdju/client-common", "prettier"],
+};

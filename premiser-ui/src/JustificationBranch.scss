@@ -1,7 +1,7 @@
-@import '~react-md/src/scss/react-md';
-@import './colors';
-@import './grid';
-@import './util';
+@import "~react-md/src/scss/react-md";
+@import "./colors";
+@import "./grid";
+@import "./util";
 
 $slide-size: $md-btn-icon-size;
 
@@ -11,17 +11,16 @@ $slide-size: $md-btn-icon-size;
   }
 }
 .chat-bubble--positive {
-   & > .counter-justifications {
-     margin-left: $polarity-offset;
-   }
- }
+  & > .counter-justifications {
+    margin-left: $polarity-offset;
+  }
+}
 
 .counter-justifications {
   width: 100%;
 }
 
 .justification-tree {
-
   .actions {
     // Hide the actions as they slide off-screen; else they create horizontal scroll bars
     // It would be nicer to do this as far out as possible, so as to avoid any clipping of the icons
@@ -41,7 +40,8 @@ $slide-size: $md-btn-icon-size;
       position: relative;
       right: 0;
 
-      &.verified, &.disverified {
+      &.verified,
+      &.disverified {
         color: $midnight-blue;
         // Put the selected buttons (which will remain visible while others fade) above them
         z-index: 1;
@@ -73,7 +73,6 @@ $slide-size: $md-btn-icon-size;
   }
 
   &.positivey {
-
     & > * > .actions {
       // Override App.scss .md-dialog-footer--card
       justify-content: flex-start;
@@ -86,7 +85,6 @@ $slide-size: $md-btn-icon-size;
   }
 
   &.negativey {
-
     .justification-status-text {
       text-align: left;
     }

@@ -1,36 +1,37 @@
-import React from "react"
-import { useDispatch } from "react-redux"
-import { Card, DialogContainer } from "react-md"
+import React from "react";
+import { useDispatch } from "react-redux";
+import { Card, DialogContainer } from "react-md";
 
-import { isTruthy, schemaIds } from "howdju-common"
+import { isTruthy, schemaIds } from "howdju-common";
 
-import { editors } from "../actions"
-import { EditorTypes } from "../reducers/editors"
-import ContentReportEditorFields from "./ContentReportEditorFields"
-import { combineIds } from "../viewModels"
-import { RootState } from "@/setupStore"
-import { useAppSelector } from "@/hooks"
-import withEditor from "@/editors/withEditor"
+import { editors } from "../actions";
+import { EditorTypes } from "../reducers/editors";
+import ContentReportEditorFields from "./ContentReportEditorFields";
+import { combineIds } from "../viewModels";
+import { RootState } from "@/setupStore";
+import { useAppSelector } from "@/hooks";
+import withEditor from "@/editors/withEditor";
 
-const baseId = "reportContentDialog"
-const id = combineIds(baseId, 'editor')
-export const editorType = EditorTypes.CONTENT_REPORT
-const editorId = combineIds(baseId, 'contentReportEditor')
-export const contentReportEditorId = editorId
+const baseId = "reportContentDialog";
+const id = combineIds(baseId, "editor");
+export const editorType = EditorTypes.CONTENT_REPORT;
+const editorId = combineIds(baseId, "contentReportEditor");
+export const contentReportEditorId = editorId;
 
 export default function ReportContentDialog() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const { editEntity } = useAppSelector((state: RootState) =>
-    state.editors[editorType]?.[editorId] ?? {})
-  const isEditing = isTruthy(editEntity)
+  const { editEntity } = useAppSelector(
+    (state: RootState) => state.editors[editorType]?.[editorId] ?? {}
+  );
+  const isEditing = isTruthy(editEntity);
 
   const ContentReportEditor = withEditor(
     EditorTypes.CONTENT_REPORT,
     ContentReportEditorFields,
     "contentReport",
     schemaIds.contentReport
-  )
+  );
   return (
     <DialogContainer
       id="report-content-dialog"
@@ -45,7 +46,7 @@ export default function ReportContentDialog() {
             <ContentReportEditor
               id={id}
               name="report-content-editor"
-              editorCommitBehavior='JustCommit'
+              editorCommitBehavior="JustCommit"
               editorId={editorId}
               submitButtonText="Report"
             />
@@ -53,5 +54,5 @@ export default function ReportContentDialog() {
         </div>
       </div>
     </DialogContainer>
-  )
+  );
 }

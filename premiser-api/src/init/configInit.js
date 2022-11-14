@@ -1,26 +1,25 @@
-const isArray = require('lodash/isArray')
-const merge = require('lodash/merge')
+const isArray = require("lodash/isArray");
+const merge = require("lodash/merge");
 
-const {
-  arrayToObject,
-} = require('howdju-common')
+const { arrayToObject } = require("howdju-common");
 
 exports.init = function init(provider) {
-
-  let envConfig
+  let envConfig;
   switch (process.env.NODE_ENV) {
-    case 'development':
-      provider.logger.debug('loading development config')
-      envConfig = require('../config/config.development.js')
-      provider.logger.debug('loaded development config')
-      break
-    case 'production':
-      provider.logger.debug('loading production config')
-      envConfig = require('../config/config.production.js')
-      provider.logger.debug('loaded production config')
-      break
+    case "development":
+      provider.logger.debug("loading development config");
+      envConfig = require("../config/config.development.js");
+      provider.logger.debug("loaded development config");
+      break;
+    case "production":
+      provider.logger.debug("loading production config");
+      envConfig = require("../config/config.production.js");
+      provider.logger.debug("loaded production config");
+      break;
     default:
-      throw new Error(`Configuration was not found for requested env ${process.env.NODE_ENV}`)
+      throw new Error(
+        `Configuration was not found for requested env ${process.env.NODE_ENV}`
+      );
   }
 
   const baseConfig = {
@@ -29,7 +28,7 @@ exports.init = function init(provider) {
         saltRounds: 10,
       },
     },
-    authTokenDuration: {days: 30},
+    authTokenDuration: { days: 30 },
     contentReportNotificationEmails: [],
     /** Whether to prevent responses that indicate whether an email has been registered with the system */
     doConcealEmailExistence: true,
@@ -38,18 +37,21 @@ exports.init = function init(provider) {
     // https://github.com/jsmreese/moment-duration-format#trim
     durationFormatTrim: "both mid",
     /** The amount of time a user can still edit their own entities unless another user has interacted with them */
-    modifyEntityGracePeriod: {hours: 24},
-    passwordResetDuration: {hours: 4},
-    registrationDuration: {hours: 24},
-    uiAuthority: provider.getConfigVal('UI_AUTHORITY', "https://www.howdju.com"),
-  }
+    modifyEntityGracePeriod: { hours: 24 },
+    passwordResetDuration: { hours: 4 },
+    registrationDuration: { hours: 24 },
+    uiAuthority: provider.getConfigVal(
+      "UI_AUTHORITY",
+      "https://www.howdju.com"
+    ),
+  };
 
-  const appConfig = merge({}, baseConfig, envConfig)
+  const appConfig = merge({}, baseConfig, envConfig);
 
-  provider.appConfig = appConfig
-  provider.allowedOrigins = isArray(appConfig.corsAllowOrigin) ?
-    arrayToObject(appConfig.corsAllowOrigin) :
-    arrayToObject([appConfig.corsAllowOrigin])
+  provider.appConfig = appConfig;
+  provider.allowedOrigins = isArray(appConfig.corsAllowOrigin)
+    ? arrayToObject(appConfig.corsAllowOrigin)
+    : arrayToObject([appConfig.corsAllowOrigin]);
 
-  provider.logger.debug('configInit complete')
-}
+  provider.logger.debug("configInit complete");
+};

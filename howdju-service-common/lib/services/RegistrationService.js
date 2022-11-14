@@ -1,8 +1,8 @@
-const bcrypt = require('bcryptjs')
-const cryptohat = require('cryptohat')
-const keys = require('lodash/keys')
-const moment = require('moment')
-const outdent = require('outdent')
+const bcrypt = require("bcryptjs");
+const cryptohat = require("cryptohat");
+const keys = require("lodash/keys");
+const moment = require("moment");
+const outdent = require("outdent");
 
 const {
   commonPaths,
@@ -14,122 +14,173 @@ const {
   schemaIds,
   utcNow,
   validate,
-} = require('howdju-common')
+} = require("howdju-common");
 
-const {
-  HashTypes,
-} = require('../hashTypes')
+const { HashTypes } = require("../hashTypes");
 const {
   EntityValidationError,
   EntityConflictError,
   EntityNotFoundError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
-} = require('../serviceErrors')
-const {topicMessages} = require('./topicMessages')
+} = require("../serviceErrors");
+const { topicMessages } = require("./topicMessages");
 
 exports.RegistrationService = class RegistrationService {
-
-  constructor(logger, config, topicMessageSender, usersService, authService, registrationRequestsDao) {
-    this.logger = logger
-    this.config = config
-    this.topicMessageSender = topicMessageSender
-    this.usersService = usersService
-    this.authService = authService
-    this.registrationRequestsDao = registrationRequestsDao
+  constructor(
+    logger,
+    config,
+    topicMessageSender,
+    usersService,
+    authService,
+    registrationRequestsDao
+  ) {
+    this.logger = logger;
+    this.config = config;
+    this.topicMessageSender = topicMessageSender;
+    this.usersService = usersService;
+    this.authService = authService;
+    this.registrationRequestsDao = registrationRequestsDao;
   }
 
   async createRequest(registrationRequest) {
-    const {isValid, errors} = validate(schemaIds.registrationRequest, registrationRequest)
+    const { isValid, errors } = validate(
+      schemaIds.registrationRequest,
+      registrationRequest
+    );
     if (!isValid) {
-      throw new EntityValidationError(errors)
+      throw new EntityValidationError(errors);
     }
     // TODO this is a race condition right now with creating the registration based upon the username/email
-    const shouldContinue = await processRegistrationConflicts(this, registrationRequest)
+    const shouldContinue = await processRegistrationConflicts(
+      this,
+      registrationRequest
+    );
     if (!shouldContinue) {
-      return
+      return;
     }
 
-    const {registrationCode, duration} = await createRegistration(this, registrationRequest)
-    await sendConfirmationEmail(this, registrationRequest, registrationCode, duration)
+    const { registrationCode, duration } = await createRegistration(
+      this,
+      registrationRequest
+    );
+    await sendConfirmationEmail(
+      this,
+      registrationRequest,
+      registrationCode,
+      duration
+    );
 
     return {
       value: this.config.registrationDuration,
       formatTemplate: this.config.durationFormatTemplate,
       formatTrim: this.config.durationFormatTrim,
-    }
+    };
   }
 
   async checkRequestForCode(registrationCode) {
-    const now = utcNow()
-    const registration = await this.registrationRequestsDao.readForCode(registrationCode)
-    await checkRegistrationRequestValidity(this, registration, now)
-    return registration.email
+    const now = utcNow();
+    const registration = await this.registrationRequestsDao.readForCode(
+      registrationCode
+    );
+    await checkRegistrationRequestValidity(this, registration, now);
+    return registration.email;
   }
 
   async confirmRegistrationAndLogin(registrationConfirmation) {
-    const now = utcNow()
-    const registrationCode = registrationConfirmation.registrationCode
-    const registrationRequest = await this.registrationRequestsDao.readForCode(registrationCode)
-    await checkRegistrationRequestValidity(this, registrationRequest, now)
+    const now = utcNow();
+    const registrationCode = registrationConfirmation.registrationCode;
+    const registrationRequest = await this.registrationRequestsDao.readForCode(
+      registrationCode
+    );
+    await checkRegistrationRequestValidity(this, registrationRequest, now);
     // TODO this is a race condition right now with creating the registration based upon the username/email
-    await checkRegistrationConfirmationConflicts(this, registrationConfirmation)
-    await consumeRegistration(this, registrationCode)
-    const user = await registerUser(this, registrationRequest, registrationConfirmation, now)
-    const {authToken, expires} = await this.authService.createAuthToken(user, now)
-    return {user, authToken, expires}
+    await checkRegistrationConfirmationConflicts(
+      this,
+      registrationConfirmation
+    );
+    await consumeRegistration(this, registrationCode);
+    const user = await registerUser(
+      this,
+      registrationRequest,
+      registrationConfirmation,
+      now
+    );
+    const { authToken, expires } = await this.authService.createAuthToken(
+      user,
+      now
+    );
+    return { user, authToken, expires };
   }
-}
+};
 
 /** Returns whether the registration should continue */
 async function processRegistrationConflicts(self, registrationRequest) {
-  const {email} = registrationRequest
-  const fieldErrors = {}
+  const { email } = registrationRequest;
+  const fieldErrors = {};
   if (await self.usersService.isEmailInUse(email)) {
     if (self.config.doConcealEmailExistence) {
-      await sendExistingAccountNotificationEmail(self, registrationRequest)
-      return false
+      await sendExistingAccountNotificationEmail(self, registrationRequest);
+      return false;
     }
-    fieldErrors.email = [{
-      code: EntityErrorCodes.EMAIL_TAKEN,
-      value: email,
-    }]
+    fieldErrors.email = [
+      {
+        code: EntityErrorCodes.EMAIL_TAKEN,
+        value: email,
+      },
+    ];
   }
   if (await self.registrationRequestsDao.isEmailInUse(email)) {
-    fieldErrors.email = [{
-      code: EntityErrorCodes.EMAIL_TAKEN,
-      value: email,
-    }]
+    fieldErrors.email = [
+      {
+        code: EntityErrorCodes.EMAIL_TAKEN,
+        value: email,
+      },
+    ];
   }
   if (keys(fieldErrors).length > 0) {
     throw new EntityConflictError({
       hasErrors: true,
       fieldErrors,
-    })
+    });
   }
 
-  return true
+  return true;
 }
 
 async function createRegistration(self, registrationRequest) {
-  const registrationCode = cryptohat(256, 36)
-  const now = utcNow()
-  const duration = moment.duration(self.config.registrationDuration)
-  const expires = momentAdd(now, duration)
-  const isConsumed = false
-  await self.registrationRequestsDao.create(registrationRequest, registrationCode, expires, isConsumed, now)
-  return {registrationCode, duration}
+  const registrationCode = cryptohat(256, 36);
+  const now = utcNow();
+  const duration = moment.duration(self.config.registrationDuration);
+  const expires = momentAdd(now, duration);
+  const isConsumed = false;
+  await self.registrationRequestsDao.create(
+    registrationRequest,
+    registrationCode,
+    expires,
+    isConsumed,
+    now
+  );
+  return { registrationCode, duration };
 }
 
-async function sendConfirmationEmail(self, registrationRequest, registrationCode, duration) {
-  const {email} = registrationRequest
-  const confirmationUrl =
-    `${self.config.uiAuthority}${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`
-  const durationText = duration.format(self.config.durationFormatTemplate, {trim: self.config.durationFormatTrim})
+async function sendConfirmationEmail(
+  self,
+  registrationRequest,
+  registrationCode,
+  duration
+) {
+  const { email } = registrationRequest;
+  const confirmationUrl = `${
+    self.config.uiAuthority
+  }${commonPaths.confirmRegistration()}?registrationCode=${registrationCode}`;
+  const durationText = duration.format(self.config.durationFormatTemplate, {
+    trim: self.config.durationFormatTrim,
+  });
   const emailParams = {
     to: email,
-    subject: 'Howdju Registration',
-    tags: {purpose: 'confirm-registration'},
+    subject: "Howdju Registration",
+    tags: { purpose: "confirm-registration" },
     bodyHtml: outdent`
         Hello,<br/>
         <br/>
@@ -152,18 +203,20 @@ async function sendConfirmationEmail(self, registrationRequest, registrationCode
 
         If you did not register on howdju.com, you may ignore this email and the registration will expire.
       `,
-  }
-  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
+  };
+  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams));
 }
 
 async function sendExistingAccountNotificationEmail(self, registrationRequest) {
-  const {email} = registrationRequest
-  const loginUrl = `${self.config.uiAuthority}${commonPaths.login()}`
-  const resetUrl = `${self.config.uiAuthority}${commonPaths.requestPasswordReset()}`
+  const { email } = registrationRequest;
+  const loginUrl = `${self.config.uiAuthority}${commonPaths.login()}`;
+  const resetUrl = `${
+    self.config.uiAuthority
+  }${commonPaths.requestPasswordReset()}`;
   const emailParams = {
     to: email,
-    subject: 'Howdju Registration',
-    tags: {purpose: 're-registration-error'},
+    subject: "Howdju Registration",
+    tags: { purpose: "re-registration-error" },
     bodyHtml: outdent`
         Hello,
         <br/><br/>
@@ -184,53 +237,75 @@ async function sendExistingAccountNotificationEmail(self, registrationRequest) {
 
         If you did not register on howdju.com, you may ignore this email.
       `,
-  }
-  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
+  };
+  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams));
 }
 
-async function checkRegistrationRequestValidity(self, registrationRequest, now) {
+async function checkRegistrationRequestValidity(
+  self,
+  registrationRequest,
+  now
+) {
   if (!registrationRequest) {
-    throw new EntityNotFoundError(EntityTypes.REGISTRATION_REQUEST)
+    throw new EntityNotFoundError(EntityTypes.REGISTRATION_REQUEST);
   }
   if (registrationRequest.isConsumed) {
-    throw new RegistrationAlreadyConsumedError()
+    throw new RegistrationAlreadyConsumedError();
   }
   if (now.isSameOrAfter(registrationRequest.expires)) {
     // We could delete registration here, but then the next time the user tries the link they would get a "missing" error
     //  which would be confusing.  So instead cleanup old registrations on a schedule?
-    self.logger.debug(`now (${now.format()}) ≥ registrationRequest.expires (${registrationRequest.expires}))`)
-    throw new RegistrationExpiredError()
+    self.logger.debug(
+      `now (${now.format()}) ≥ registrationRequest.expires (${
+        registrationRequest.expires
+      }))`
+    );
+    throw new RegistrationExpiredError();
   }
 }
 
-async function checkRegistrationConfirmationConflicts(self, registrationConfirmation) {
-  const {username} = registrationConfirmation
-  const fieldErrors = {}
+async function checkRegistrationConfirmationConflicts(
+  self,
+  registrationConfirmation
+) {
+  const { username } = registrationConfirmation;
+  const fieldErrors = {};
   if (await self.usersService.isUsernameInUse(username)) {
-    fieldErrors.username = [{
-      code: EntityErrorCodes.USERNAME_TAKEN,
-      value: username,
-    }]
+    fieldErrors.username = [
+      {
+        code: EntityErrorCodes.USERNAME_TAKEN,
+        value: username,
+      },
+    ];
   }
   if (keys(fieldErrors).length > 0) {
     throw new EntityConflictError({
       hasErrors: true,
       fieldErrors,
-    })
+    });
   }
 }
 
 async function consumeRegistration(self, registrationCode) {
-  const rowCount = await self.registrationRequestsDao.consumeForCode(registrationCode)
+  const rowCount = await self.registrationRequestsDao.consumeForCode(
+    registrationCode
+  );
   if (rowCount < 1) {
-    throw newImpossibleError(`unable to consume registration for completion code despite previously reading unconsumed registration for it: ${registrationCode}`)
+    throw newImpossibleError(
+      `unable to consume registration for completion code despite previously reading unconsumed registration for it: ${registrationCode}`
+    );
   } else if (rowCount > 1) {
-    self.logger.error(`we consumed multiple registrations for the completion code: ${registrationCode}`)
+    self.logger.error(
+      `we consumed multiple registrations for the completion code: ${registrationCode}`
+    );
   }
 }
 
 async function registerUser(self, registration, registrationConfirmation, now) {
-  const passwordHash = await bcrypt.hash(registrationConfirmation.password, self.config.auth.bcrypt.saltRounds)
+  const passwordHash = await bcrypt.hash(
+    registrationConfirmation.password,
+    self.config.auth.bcrypt.saltRounds
+  );
   const user = makeUserRegistration({
     username: registrationConfirmation.username,
     email: registration.email,
@@ -241,6 +316,11 @@ async function registerUser(self, registration, registrationConfirmation, now) {
     affirmed13YearsOrOlder: now,
     affirmedNotGdpr: now,
     isActive: true,
-  })
-  return await self.usersService.createRegisteredUser(user, passwordHash, HashTypes.BCRYPT, now)
+  });
+  return await self.usersService.createRegisteredUser(
+    user,
+    passwordHash,
+    HashTypes.BCRYPT,
+    now
+  );
 }

@@ -1,48 +1,47 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {Divider, Subheader} from 'react-md'
-import get from 'lodash/get'
-import has from 'lodash/has'
-import map from 'lodash/map'
-import join from 'lodash/join'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Divider, Subheader } from "react-md";
+import get from "lodash/get";
+import has from "lodash/has";
+import map from "lodash/map";
+import join from "lodash/join";
 
 import {
   isWritQuoteBased,
   isPropositionCompoundBased,
   JustificationPolarities,
   JustificationBasisTypes,
-} from "howdju-common"
+} from "howdju-common";
 
 import t, {
   JUSTIFICATION_POLARITY_NEGATIVE,
   JUSTIFICATION_POLARITY_POSITIVE,
   JUSTIFICATION_BASIS_TYPE_PROPOSITION_COMPOUND,
   JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
-} from "./texts"
-import WritQuoteEditorFields from "./WritQuoteEditorFields"
-import PropositionCompoundEditorFields from "./PropositionCompoundEditorFields"
-import SelectionControlGroup from './SelectionControlGroup'
-import {
-  combineNames,
-  combineIds,
-  combineSuggestionsKeys,
-} from './viewModels'
+} from "./texts";
+import WritQuoteEditorFields from "./WritQuoteEditorFields";
+import PropositionCompoundEditorFields from "./PropositionCompoundEditorFields";
+import SelectionControlGroup from "./SelectionControlGroup";
+import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 
-import './JustificationEditorFields.scss'
+import "./JustificationEditorFields.scss";
 
-const polarityName = 'polarity'
-const propositionCompoundName = 'basis.propositionCompound'
-const writQuoteName = "basis.writQuote"
+const polarityName = "polarity";
+const propositionCompoundName = "basis.propositionCompound";
+const writQuoteName = "basis.writQuote";
 
-const polarityControls = [{
-  value: JustificationPolarities.POSITIVE,
-  label: t(JUSTIFICATION_POLARITY_POSITIVE),
-  title: "Support the truth of the proposition",
-}, {
-  value: JustificationPolarities.NEGATIVE,
-  label: t(JUSTIFICATION_POLARITY_NEGATIVE),
-  title: "Oppose the truth of the proposition",
-}]
+const polarityControls = [
+  {
+    value: JustificationPolarities.POSITIVE,
+    label: t(JUSTIFICATION_POLARITY_POSITIVE),
+    title: "Support the truth of the proposition",
+  },
+  {
+    value: JustificationPolarities.NEGATIVE,
+    label: t(JUSTIFICATION_POLARITY_NEGATIVE),
+    title: "Oppose the truth of the proposition",
+  },
+];
 const basisTypeControls = [
   {
     value: JustificationBasisTypes.PROPOSITION_COMPOUND,
@@ -64,11 +63,11 @@ const basisTypeControls = [
     value: JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
     label: (
       <div title="A list of justifications that together imply the target">
-        {t('Compound (deprecated)')}
+        {t("Compound (deprecated)")}
       </div>
     ),
   },
-]
+];
 
 export default class JustificationEditorFields extends Component {
   static propTypes = {
@@ -88,16 +87,16 @@ export default class JustificationEditorFields extends Component {
     errors: PropTypes.object,
     /** Passed to subcontrols */
     onKeyDown: PropTypes.func,
-  }
+  };
 
   static defaultProps = {
     doShowTypeSelection: true,
-  }
+  };
 
   onChange = (value, event) => {
-    const name = event.target.name
-    this.props.onPropertyChange({[name]: value})
-  }
+    const name = event.target.name;
+    this.props.onPropertyChange({ [name]: value });
+  };
 
   render() {
     const {
@@ -115,22 +114,26 @@ export default class JustificationEditorFields extends Component {
       errors,
       onKeyDown,
       onSubmit,
-    } = this.props
+    } = this.props;
 
-    const propositionCompoundErrors = get(errors, 'basis.propositionCompound')
-    const writQuoteErrors = get(errors, 'basis.writQuote')
+    const propositionCompoundErrors = get(errors, "basis.propositionCompound");
+    const writQuoteErrors = get(errors, "basis.writQuote");
 
-    const basisPropositionCompound = get(justification, propositionCompoundName)
-    const basisWritQuote = get(justification, writQuoteName)
-    const _isPropositionCompoundBased = isPropositionCompoundBased(justification)
-    const _isWritQuoteBased = isWritQuoteBased(justification)
+    const basisPropositionCompound = get(
+      justification,
+      propositionCompoundName
+    );
+    const basisWritQuote = get(justification, writQuoteName);
+    const _isPropositionCompoundBased =
+      isPropositionCompoundBased(justification);
+    const _isWritQuoteBased = isWritQuoteBased(justification);
 
     const commonFieldsProps = {
       onPropertyChange,
       onKeyDown,
       onSubmit,
       disabled,
-    }
+    };
     const propositionCompoundEditorFields = (
       <PropositionCompoundEditorFields
         {...commonFieldsProps}
@@ -138,13 +141,16 @@ export default class JustificationEditorFields extends Component {
         id={combineIds(id, propositionCompoundName)}
         key={propositionCompoundName}
         name={combineNames(name, propositionCompoundName)}
-        suggestionsKey={combineSuggestionsKeys(suggestionsKey, propositionCompoundName)}
+        suggestionsKey={combineSuggestionsKeys(
+          suggestionsKey,
+          propositionCompoundName
+        )}
         errors={propositionCompoundErrors}
         onAddPropositionCompoundAtom={onAddPropositionCompoundAtom}
         onRemovePropositionCompoundAtom={onRemovePropositionCompoundAtom}
       />
-    )
-    const writQuoteEditorFields =  (
+    );
+    const writQuoteEditorFields = (
       <WritQuoteEditorFields
         {...commonFieldsProps}
         writQuote={basisWritQuote}
@@ -156,11 +162,11 @@ export default class JustificationEditorFields extends Component {
         onAddUrl={onAddUrl}
         onRemoveUrl={onRemoveUrl}
       />
-    )
+    );
 
-    const polarity = get(justification, 'polarity')
-    const basisTypeName = 'basis.type'
-    const basisType = get(justification, basisTypeName)
+    const polarity = get(justification, "polarity");
+    const basisTypeName = "basis.type";
+    const basisType = get(justification, basisTypeName);
 
     return (
       <div>
@@ -174,16 +180,15 @@ export default class JustificationEditorFields extends Component {
           controls={polarityControls}
           disabled={disabled}
           error={has(errors, polarityName)}
-          errorText={join(map(get(errors, polarityName), e => e.message), ', ')}
+          errorText={join(
+            map(get(errors, polarityName), (e) => e.message),
+            ", "
+          )}
         />
         <Divider />
-        {doShowTypeSelection &&
+        {doShowTypeSelection && (
           <React.Fragment>
-            <Subheader
-              primary
-              primaryText="Type"
-              component="div"
-            />
+            <Subheader primary primaryText="Type" component="div" />
             <SelectionControlGroup
               inline
               id={combineIds(id, basisTypeName)}
@@ -195,12 +200,12 @@ export default class JustificationEditorFields extends Component {
               disabled={disabled}
             />
           </React.Fragment>
-        }
+        )}
 
         <Divider />
         {_isPropositionCompoundBased && propositionCompoundEditorFields}
         {_isWritQuoteBased && writQuoteEditorFields}
       </div>
-    )
+    );
   }
 }

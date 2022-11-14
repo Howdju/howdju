@@ -1,57 +1,66 @@
-const Promise = require('bluebird')
-const outdent = require('outdent')
+const Promise = require("bluebird");
+const outdent = require("outdent");
 
-import {EntityValidationError} from "../serviceErrors"
+import { EntityValidationError } from "../serviceErrors";
 
-const {
-  schemaIds,
-} = require('howdju-common')
-import {validate} from 'howdju-ajv-sourced'
-import {topicMessages} from "./topicMessages"
-
+const { schemaIds } = require("howdju-common");
+import { validate } from "howdju-ajv-sourced";
+import { topicMessages } from "./topicMessages";
 
 module.exports.ContentReportsService = class ContentReportsService {
-  constructor(appConfig, logger, authService, usersService, topicMessageSender, contentReportsDao) {
-    this.appConfig = appConfig
-    this.logger = logger
-    this.authService = authService
-    this.logger = logger
-    this.usersService = usersService
-    this.topicMessageSender = topicMessageSender
-    this.contentReportsDao = contentReportsDao
+  constructor(
+    appConfig,
+    logger,
+    authService,
+    usersService,
+    topicMessageSender,
+    contentReportsDao
+  ) {
+    this.appConfig = appConfig;
+    this.logger = logger;
+    this.authService = authService;
+    this.logger = logger;
+    this.usersService = usersService;
+    this.topicMessageSender = topicMessageSender;
+    this.contentReportsDao = contentReportsDao;
   }
 
   async createContentReport(authToken, contentReport) {
-    const now = new Date()
-    const userId = await this.authService.readUserIdForAuthToken(authToken)
+    const now = new Date();
+    const userId = await this.authService.readUserIdForAuthToken(authToken);
 
-    const {isValid, errors: validationErrors} = validate(schemaIds.contentReport, contentReport)
+    const { isValid, errors: validationErrors } = validate(
+      schemaIds.contentReport,
+      contentReport
+    );
     if (!isValid) {
       // TODO figure out AJV equivalent of validationErrors
       // const errors = translateJoiError(validationErrors)
-      throw new EntityValidationError(validationErrors)
+      throw new EntityValidationError(validationErrors);
     }
 
-    await this.contentReportsDao.createContentReport(contentReport, userId, now)
+    await this.contentReportsDao.createContentReport(
+      contentReport,
+      userId,
+      now
+    );
 
-    const user = await this.usersService.readUserForId(userId)
+    const user = await this.usersService.readUserForId(userId);
     await Promise.all([
       sendContentReportNotificationEmail(this, contentReport, user),
       sendContentReportConfirmationEmail(this, contentReport, user),
-    ])
+    ]);
   }
-}
+};
 
 async function sendContentReportNotificationEmail(self, contentReport, user) {
-  const {email, username} = user
-  const {
-    html: contentReportTableHtml,
-    text: contentReportText,
-  } = makeContentReportEmailContent(contentReport)
+  const { email, username } = user;
+  const { html: contentReportTableHtml, text: contentReportText } =
+    makeContentReportEmailContent(contentReport);
   const emailParams = {
     to: self.appConfig.contentReportNotificationEmails,
-    subject: 'Howdju Content Report Notification',
-    tags: {purpose: 'content-report-notification'},
+    subject: "Howdju Content Report Notification",
+    tags: { purpose: "content-report-notification" },
     bodyHtml: outdent`
         Hello,<br/>
         <br/>
@@ -66,20 +75,18 @@ async function sendContentReportNotificationEmail(self, contentReport, user) {
         
         ${contentReportText}
       `,
-  }
-  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
+  };
+  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams));
 }
 
 async function sendContentReportConfirmationEmail(self, contentReport, user) {
-  const {email} = user
-  const {
-    html: contentReportTableHtml,
-    text: contentReportText,
-  } = makeContentReportEmailContent(contentReport)
+  const { email } = user;
+  const { html: contentReportTableHtml, text: contentReportText } =
+    makeContentReportEmailContent(contentReport);
   const emailParams = {
     to: email,
-    subject: 'Howdju Content Report Confirmation',
-    tags: {purpose: 'content-report-confirmation'},
+    subject: "Howdju Content Report Confirmation",
+    tags: { purpose: "content-report-confirmation" },
     bodyHtml: outdent`
         Hello,<br/>
         <br/>
@@ -94,18 +101,12 @@ async function sendContentReportConfirmationEmail(self, contentReport, user) {
         
         ${contentReportText}
       `,
-  }
-  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams))
+  };
+  await self.topicMessageSender.sendMessage(topicMessages.email(emailParams));
 }
 
 function makeContentReportEmailContent(contentReport) {
-  const {
-    entityType,
-    entityId,
-    url,
-    types,
-    description,
-  } = contentReport
+  const { entityType, entityId, url, types, description } = contentReport;
   return {
     html: outdent`
       <table style="border:1px solid black;">
@@ -113,7 +114,7 @@ function makeContentReportEmailContent(contentReport) {
           <th>Types</th>
           <td>
             <ul>
-              ${types.map(t => `<li>${t}</li>`).join('')}
+              ${types.map((t) => `<li>${t}</li>`).join("")}
             </ul>
           </td>
         </tr><tr>
@@ -134,5 +135,5 @@ function makeContentReportEmailContent(contentReport) {
       Entity ID:\t${entityId}
       Description:\t${description}
     `,
-  }
+  };
 }

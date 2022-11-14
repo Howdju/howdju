@@ -41,10 +41,10 @@ dig deeply into the specifics of those events, all while helping us to keep trac
 
 ## Howdju’s goals
 
-* Collect the best information
-* Empower people to have conversations based upon the best information
-* Inform people when events relevant to their interests occur
-* Help people keep track of things they want to follow up on later
+- Collect the best information
+- Empower people to have conversations based upon the best information
+- Inform people when events relevant to their interests occur
+- Help people keep track of things they want to follow up on later
 
 ## Democracy & social cohesion
 
