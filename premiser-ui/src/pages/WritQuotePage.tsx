@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { useParams } from "react-router";
-import { denormalize } from "normalizr";
-import { CircularProgress } from "react-md";
+import React, { useEffect } from "react"
+import { useDispatch } from "react-redux"
+import { useParams } from "react-router"
+import { denormalize } from "normalizr"
+import { CircularProgress } from "react-md"
 
-import { api } from "@/actions";
-import HowdjuHelmet from "@/Helmet";
-import { writQuoteSchema } from "@/normalizationSchemas";
-import { combineIds } from "@/viewModels";
-import WritQuoteCard from "@/WritQuoteCard";
-import { useAppSelector } from "@/hooks";
+import { api } from "@/actions"
+import HowdjuHelmet from "@/Helmet"
+import { writQuoteSchema } from "@/normalizationSchemas"
+import { combineIds } from "@/viewModels"
+import WritQuoteCard from "@/WritQuoteCard"
+import { useAppSelector } from "@/hooks"
 
-const id = 'WritQuotePage';
+const id = 'WritQuotePage'
 type Params = {
   writQuoteId: string;
 };
@@ -20,13 +20,13 @@ type Params = {
 const WritQuotePage = () => {
 
   const {writQuoteId} = useParams<Params>()
-  const editorId = combineIds('write-quote', writQuoteId);
+  const editorId = combineIds('write-quote', writQuoteId)
   const suggestionsKey = 'writ-quote-page'
 
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(api.fetchWritQuote(writQuoteId))
-  }, [writQuoteId])
+  }, [dispatch, writQuoteId])
 
   const writQuote = denormalize(
     writQuoteId, writQuoteSchema, useAppSelector(state => state.entities))
@@ -42,7 +42,7 @@ const WritQuotePage = () => {
         suggestionsKey={suggestionsKey}
         className="md-cell--12"
         editorCommitBehavior={'JustCommit'}
-      />
+    />
   )
   return (
     <div className="md-grid">
@@ -53,5 +53,5 @@ const WritQuotePage = () => {
       {writQuote ? viewer : progress}
     </div>
   )
-};
-export default WritQuotePage;
+}
+export default WritQuotePage

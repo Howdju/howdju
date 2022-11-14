@@ -39,7 +39,7 @@ const config = {
       easing: "ease",
       staggerDurationBy: 15,
       staggerDelayBy: 50,
-    }
+    },
   },
   sessionStorageIdKey: 'ssid',
 }

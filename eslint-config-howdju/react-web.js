@@ -1,17 +1,23 @@
+/** ESLint config for React web */
+
+const { testFilePattern } = require("./constants")
+
 module.exports = {
   parserOptions: {
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
     },
   },
   env: {
     "browser": true,
   },
-  extends: [
-    "plugin:react/recommended"
-  ],
   plugins: [
     "react",
+    "react-hooks",
+  ],
+  extends: [
+    "eslint-config-howdju",
+    "plugin:react/recommended",
   ],
   rules: {
     indent: [
@@ -24,7 +30,7 @@ module.exports = {
           "JSXAttribute",
           "JSXSpreadAttribute",
         ],
-      }
+      },
     ],
     "react/boolean-prop-naming": "error",
     "react/no-children-prop": [
@@ -42,12 +48,25 @@ module.exports = {
     // ],
     "require-yield": [
       // Some of our sagas are side-effect only, requiring no yields.  And I don't think there's any harm in this.
-      "off"
+      "off",
     ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
   },
   settings: {
     react: {
       version: "detect",
     },
   },
-};
+  overrides: [
+    {
+      files: testFilePattern,
+      extends: [
+        "plugin:jest-dom/recommended",
+      ],
+      plugins: [
+        "jest-dom",
+      ],
+    },
+  ],
+}

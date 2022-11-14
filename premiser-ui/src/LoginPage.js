@@ -152,7 +152,7 @@ class LoginPage extends Component {
                 </CardText>,
                 <CardText key="reset-password">
                   <Link className="text-link" to={paths.requestPasswordReset()}>reset password</Link>
-                </CardText>
+                </CardText>,
               ] : null}
             </Card>
 

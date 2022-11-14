@@ -1,44 +1,44 @@
-import React, { UIEvent, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import find from "lodash/find";
-import map from "lodash/map";
-import { denormalize } from "normalizr";
-import { CircularProgress } from "react-md";
-import FlipMove from "react-flip-move";
+import React, { UIEvent, useEffect } from "react"
+import { useDispatch } from "react-redux"
+import find from "lodash/find"
+import map from "lodash/map"
+import { denormalize } from "normalizr"
+import { CircularProgress } from "react-md"
+import FlipMove from "react-flip-move"
 
-import mainSearcher from "../../mainSearcher";
-import PropositionCard from "../../PropositionCard";
-import WritCard from "../../WritCard";
-import WritQuoteCard from "../../WritQuoteCard";
-import CellList from "../../CellList";
-import { RootState } from "@/setupStore";
-import { api, goto } from "../../actions";
+import mainSearcher from "../../mainSearcher"
+import PropositionCard from "../../PropositionCard"
+import WritCard from "../../WritCard"
+import WritQuoteCard from "../../WritQuoteCard"
+import CellList from "../../CellList"
+import { RootState } from "@/setupStore"
+import { api, goto } from "../../actions"
 import {
   writsSchema,
   writQuotesSchema,
   propositionsSchema,
   tagsSchema,
-} from "../../normalizationSchemas";
-import config from "../../config";
-import { logger } from "../../logger";
-import TagsViewer from "../../TagsViewer";
-import { Proposition, Writ, WritQuote } from "howdju-common";
-import { useAppSelector } from "@/hooks";
-import { useLocation } from "react-router";
+} from "../../normalizationSchemas"
+import config from "../../config"
+import { logger } from "../../logger"
+import TagsViewer from "../../TagsViewer"
+import { Proposition, Writ, WritQuote } from "howdju-common"
+import { useAppSelector } from "@/hooks"
+import { useLocation } from "react-router"
 
 export default function MainSearchPage() {
-  const location = useLocation();
-  const dispatch = useDispatch();
+  const location = useLocation()
+  const dispatch = useDispatch()
 
-  const searchText = mainSearcher.mainSearchText(location);
+  const searchText = mainSearcher.mainSearchText(location)
 
   useEffect(() => {
-    dispatch(api.fetchMainSearchResults(searchText));
-  }, [searchText]);
+    dispatch(api.fetchMainSearchResults(searchText))
+  }, [dispatch, searchText])
 
-  const isFetching = useAppSelector((state) => state.mainSearchPage.isFetching);
-  const results = useAppSelector((state) => state.mainSearchPage.results);
-  const entities = useAppSelector((state) => state.entities);
+  const isFetching = useAppSelector((state) => state.mainSearchPage.isFetching)
+  const results = useAppSelector((state) => state.mainSearchPage.results)
+  const entities = useAppSelector((state) => state.entities)
 
   const {
     tags,
@@ -46,25 +46,25 @@ export default function MainSearchPage() {
     writQuoteQuoteTexts,
     writQuoteUrls,
     writTitles,
-  } = denormalizeResults(results, entities);
+  } = denormalizeResults(results, entities)
 
   const goToTag = (
     tagName: string,
     _index: number,
     _event: UIEvent
   ) => {
-    const tag = find(tags, (t) => t.name === tagName);
+    const tag = find(tags, (t) => t.name === tagName)
     if (!tag) {
-      logger.warn(`Missing tag for ${tagName}`);
-      return;
+      logger.warn(`Missing tag for ${tagName}`)
+      return
     }
-    dispatch(goto.tag(tag));
-  };
+    dispatch(goto.tag(tag))
+  }
 
   const loading = (
     <CircularProgress id="progress" className="md-cell md-cell--12" />
-  );
-  const noResults = <div className="md-cell md-cell--12">No results.</div>;
+  )
+  const noResults = <div className="md-cell md-cell--12">No results.</div>
 
   return (
     <div id="main-search-page" className="md-grid">
@@ -129,7 +129,7 @@ export default function MainSearchPage() {
       </FlipMove>
       {!isFetching && writQuoteUrls.length < 1 && noResults}
     </div>
-  );
+  )
 }
 
 function denormalizeResults(
@@ -142,7 +142,7 @@ function denormalizeResults(
     writQuoteQuoteTexts,
     writQuoteUrls,
     writTitles,
-  } = results;
+  } = results
   return {
     tags: denormalize(tags, tagsSchema, entities),
     propositionTexts: denormalize(
@@ -157,11 +157,11 @@ function denormalizeResults(
     ),
     writQuoteUrls: denormalize(writQuoteUrls, writQuotesSchema, entities),
     writTitles: denormalize(writTitles, writsSchema, entities),
-  };
+  }
 }
 
 function toPropositionCard(proposition: Proposition) {
-  const id = `proposition-card-${proposition.id}`;
+  const id = `proposition-card-${proposition.id}`
   return (
     <PropositionCard
       proposition={proposition}
@@ -169,11 +169,11 @@ function toPropositionCard(proposition: Proposition) {
       key={id}
       className={CellList.smallCellClasses}
     />
-  );
+  )
 }
 
 function toWritQuoteCard(writQuote: WritQuote) {
-  const id = `writ-quote-card-${writQuote.id}`;
+  const id = `writ-quote-card-${writQuote.id}`
   return (
     <WritQuoteCard
       writQuote={writQuote}
@@ -181,11 +181,11 @@ function toWritQuoteCard(writQuote: WritQuote) {
       key={id}
       className={CellList.smallCellClasses}
     />
-  );
+  )
 }
 
 function toWritQuoteWithUrlsCard(writQuote: WritQuote) {
-  const id = `writ-quote-card-${writQuote.id}`;
+  const id = `writ-quote-card-${writQuote.id}`
   return (
     <WritQuoteCard
       writQuote={writQuote}
@@ -194,11 +194,11 @@ function toWritQuoteWithUrlsCard(writQuote: WritQuote) {
       className={CellList.smallCellClasses}
       showUrls={true}
     />
-  );
+  )
 }
 
 function toWritCard(writ: Writ) {
-  const id = `writ-card-${writ.id}`;
+  const id = `writ-card-${writ.id}`
   return (
     <WritCard
       writ={writ}
@@ -206,5 +206,5 @@ function toWritCard(writ: Writ) {
       key={id}
       className={CellList.smallCellClasses}
     />
-  );
+  )
 }

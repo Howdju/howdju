@@ -5,7 +5,7 @@ const {
 } = require('howdju-common')
 
 const {
-  statementSchema
+  statementSchema,
 } = require('./validationSchemas')
 const {EntityService} = require('./EntityService')
 
@@ -27,7 +27,7 @@ module.exports.StatementsService = class StatementsService extends EntityService
     if (statement.id) {
       return {
         isExtant: true,
-        statement: await this.readStatementForId(statement.id)
+        statement: await this.readStatementForId(statement.id),
       }
     }
 

@@ -16,7 +16,7 @@ const {
 } = appProvider
 
 const parser = new ArgumentParser({
-  description: 'Add a user'
+  description: 'Add a user',
 })
 parser.add_argument('--email', {required: true})
 parser.add_argument('--shortName')
@@ -46,7 +46,7 @@ Promise.promisify(read)({ prompt: `Please enter the password for ${args.email}:`
   })
   .then(user => Promise.all([
     addPermissionsToUser(user, args.permissions),
-    addUserToGroups(user, args.groups)
+    addUserToGroups(user, args.groups),
   ]))
   .finally(() => pool.end())
   .catch(err => console.log({err}))

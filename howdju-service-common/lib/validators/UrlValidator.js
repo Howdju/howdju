@@ -25,7 +25,7 @@ UrlValidator.blankErrors = () => ({
   hasErrors: false,
   modelErrors: [],
   fieldErrors: {
-    url: []
+    url: [],
   },
 })
 

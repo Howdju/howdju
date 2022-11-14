@@ -21,7 +21,7 @@ class ListEntitiesWidget extends Component {
 
   hasEntities = () => {
     const {
-      entities
+      entities,
     } = this.props
     return entities && entities.length > 0
   }

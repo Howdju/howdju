@@ -4,7 +4,7 @@ import {autocompletes, combineActions, str} from "../actions"
 import {api, ApiActionMeta} from "../apiActions"
 
 const initialState = {
-  suggestions: {}
+  suggestions: {},
 }
 
 export default handleActions<typeof initialState, any, ApiActionMeta>({
@@ -21,9 +21,9 @@ export default handleActions<typeof initialState, any, ApiActionMeta>({
         suggestions: {
           ...state.suggestions,
           [action.meta.requestPayload.suggestionsKey]: result,
-        }
+        },
       }
-    }
+    },
   },
   [str(api.fetchMainSearchSuggestions.response)]: {
     next: (state, action) => {
@@ -33,9 +33,9 @@ export default handleActions<typeof initialState, any, ApiActionMeta>({
         suggestions: {
           ...state.suggestions,
           [action.meta.requestPayload.suggestionsKey]: result.propositionTexts,
-        }
+        },
       }
-    }
+    },
   },
   [str(autocompletes.clearSuggestions)]: (state, action) => ({
     ...state,

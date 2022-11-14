@@ -59,8 +59,8 @@ JustificationBasisCompoundAtomValidator.blankErrors = () => ({
     entity: {
       modelErrors: [],
       fieldErrors: {},
-    }
-  }
+    },
+  },
 })
 
 exports.JustificationBasisCompoundAtomValidator = JustificationBasisCompoundAtomValidator

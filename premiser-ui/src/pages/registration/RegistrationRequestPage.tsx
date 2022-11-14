@@ -58,7 +58,7 @@ export default function RegistrationRequestPage() {
 
   useEffect(() => {
     dispatch(editors.beginEdit(editorType, editorId, makeRegistrationRequest()))
-  }, [])
+  }, [dispatch])
 
   const editorState = useAppSelector(state => get(state, ['editors', editorType, editorId]))
 
@@ -85,8 +85,8 @@ export default function RegistrationRequestPage() {
   const submitButtonTitle = isValid
     ? 'Register'
     : wasSubmitAttempted
-    ? 'Please correct the errors to continue'
-    : 'Please complete the form to continue'
+      ? 'Please correct the errors to continue'
+      : 'Please complete the form to continue'
 
   const emailConflictError = onlyFieldError(
     remoteErrors.fieldErrors.email,

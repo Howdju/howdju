@@ -460,7 +460,7 @@ exports.JustificationsDao = class JustificationsDao {
         {rows: justification_rows},
         propositionCompoundsById,
         writQuotesById,
-        justificationBasisCompoundsById
+        justificationBasisCompoundsById,
       ]) => {
         const {rootJustifications, counterJustificationsByJustificationId} =
           groupRootJustifications(rootTargetType, rootTargetId, justification_rows)
@@ -802,7 +802,7 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
       const propositionCompoundRow = propositionCompoundRowsById[propositionCompoundId]
       if (!propositionCompoundRow) {
         propositionCompoundRowsById[propositionCompoundId] = {
-          proposition_compound_id: propositionCompoundId
+          proposition_compound_id: propositionCompoundId,
         }
       }
 
@@ -829,7 +829,7 @@ function mapJustificationRowsWithOrdering(rows, prefix = '') {
       const justificationBasisCompoundRow = justificationBasisCompoundRowsById[justificationBasisCompoundId]
       if (!justificationBasisCompoundRow) {
         justificationBasisCompoundRowsById[justificationBasisCompoundId] = {
-          justification_basis_compound_id: justificationBasisCompoundId
+          justification_basis_compound_id: justificationBasisCompoundId,
         }
       }
 
@@ -982,7 +982,7 @@ function makeWritJustificationClause(writId, justificationColumns) {
       args: [
         JustificationBasisTypes.WRIT_QUOTE,
         writId,
-      ]
+      ],
     },
     // paraphrased writ-quote writs
     {
@@ -1041,7 +1041,7 @@ function makePropositionCompoundJustificationClause(propositionCompoundId, justi
   ]
   return {
     sql,
-    args
+    args,
   }
 }
 
@@ -1071,7 +1071,7 @@ function makeSourceExcerptParaphraseJustificationClause(sourceExcerptParaphraseI
   ]
   return {
     sql,
-    args
+    args,
   }
 }
 
@@ -1115,7 +1115,7 @@ function makeWritQuoteUrlJustificationClause(url,  justificationColumns) {
     args: [
       JustificationBasisTypes.WRIT_QUOTE,
       url,
-    ]
+    ],
   }
 }
 
@@ -1142,7 +1142,7 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
       args: [
         JustificationBasisTypes.PROPOSITION_COMPOUND,
         propositionId,
-      ]
+      ],
     },
     // compound justification propositions
     {
@@ -1167,7 +1167,7 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
         JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
         JustificationBasisCompoundAtomTypes.PROPOSITION,
         propositionId,
-      ]
+      ],
     },
     // paraphrasing propositions
     {
@@ -1195,8 +1195,8 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
         JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
         JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
         propositionId,
-      ]
-    }
+      ],
+    },
   ]
 }
 
@@ -1205,7 +1205,7 @@ function makeFilteredJustificationClauses(logger, filters, sorts) {
   const clauses = []
 
   const columnNames = [
-    'justification_id'
+    'justification_id',
   ]
   forEach(sorts, sort => {
     const sortProperty = sort.property
@@ -1378,9 +1378,9 @@ function getNewJustificationRootPolarity(justification, logger, database) {
           // root justifications have root polarity equal to their polarity
           return justification.polarity
         case JustificationTargetTypes.JUSTIFICATION:
-          // TODO(1,2,3): remove exception
-          // eslint-disable-next-line promise/no-nesting
           return getTargetRootPolarity(logger, database, justification)
+            // TODO(1,2,3): remove exception
+            // eslint-disable-next-line promise/no-nesting
             .then(rootPolarity => {
               assert(justification.polarity === JustificationPolarities.NEGATIVE, "Justifications targeting justifications must be negative")
               return negateRootPolarity(rootPolarity)

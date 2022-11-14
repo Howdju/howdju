@@ -11,8 +11,5 @@
   },
   "scripts": {
     "test": "echo TODO"
-  },
-  "devDependencies": {
-    "flow-bin": "^0.150.1"
   }
 }

@@ -15,3 +15,62 @@ module.exports = {
 I wanted to auto-include `"howdju"` in both `"howdju/node"` and `"howdju/react"`, but I couldn't figure out how.
 
 The contents of `index.js` could also have been a root `.eslintrc.js` file.
+
+We cannot put all our shared config into a workspace root `.eslintrc.js` because we have no way to
+differentiate between some contexts: a `.ts` file may require a `node` or `dom` context depending on
+the project and/or path, and a root `.eslintrc.js` has no way to differentiate (without being
+configured with paths from packages, which violates encapsulation.)
+
+https://prettier.io/docs/en/integrating-with-linters.html
+
+If a package uses `howdju/node`, then it can use the same ESLint config for both its primary and
+build contents:
+
+```js
+module.exports = {
+  overrides: [
+    {
+      files: [
+        "**/*.{js,ts}",
+      ],
+      excludedFiles: [
+        "node_modules/**",
+      ],
+      extends: [
+        "howdju/node",
+      ],
+    },
+  ]
+}
+```
+
+Otherwise, the primary and build contents require separate config:
+
+```js
+module.exports = {
+  overrides: [
+    {
+      files: [
+        "lib/**/*.{js,ts}",
+      ],
+      extends: [
+        "howdju/common",
+      ],
+    },
+    {
+      // Everything else that isn't part of the library
+      files: [
+        "**/*.{js,ts}",
+      ],
+      excludedFiles: [
+        "lib/**",
+        "node_modules/**",
+      ],
+      extends: [
+        "howdju/node",
+      ],
+    },
+  ]
+}
+
+```

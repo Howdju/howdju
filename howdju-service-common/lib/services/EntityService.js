@@ -1,12 +1,12 @@
 const {
-  requireArgs
+  requireArgs,
 } = require('howdju-common')
 
 const {
-  EntityValidationError
+  EntityValidationError,
 } = require('../serviceErrors')
 const {
-  translateJoiError
+  translateJoiError,
 } = require('./validationSchemas')
 
 module.exports.EntityService = class EntityService {

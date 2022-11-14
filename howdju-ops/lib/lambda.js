@@ -66,7 +66,7 @@ const updateAlias = (functionName, aliasName, newTarget) => {
 const getAliasVersion = (functionName, aliasName, cb) => {
   const params = {
     FunctionName: functionName,
-    Name: aliasName
+    Name: aliasName,
   }
   lambda.getAlias(params, function(err, data) {
     if (err) return cb(err)

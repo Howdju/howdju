@@ -1,7 +1,7 @@
 const map = require('lodash/map')
 
 const {
-  decircularizePerspective
+  decircularizePerspective,
 } = require('howdju-common')
 
 exports.PerspectivesService = class PerspectivesService {

@@ -41,7 +41,7 @@ export default function PropositionUsagesPage() {
     dispatch(api.fetchSentenceStatements(SentenceTypes.PROPOSITION, propositionId))
     dispatch(api.fetchIndirectPropositionStatements(propositionId))
     dispatch(api.fetchJustificationsSearch({filters: {propositionId}, count: fetchCount}))
-  }, [propositionId])
+  }, [dispatch, propositionId])
 
   const pageState = useAppSelector(state => state.propositionUsagesPage)
   const {

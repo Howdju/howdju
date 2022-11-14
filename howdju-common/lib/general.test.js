@@ -23,7 +23,7 @@ describe('momentAdd', () => {
   test('Should add correctly', () => {
     const base = moment.utc("2022-11-08T21:44:00")
     const later = momentAdd(base, {hours: 1})
-    expect(later.format()).toEqual("2022-11-08T22:44:00Z")
+    expect(later.format()).toBe("2022-11-08T22:44:00Z")
   })
 })
 
@@ -31,7 +31,7 @@ describe('momentSubtract', () => {
   test('Should substract correctly', () => {
     const base = moment.utc("2022-11-08T21:44:00")
     const later = momentSubtract(base, {days: 1})
-    expect(later.format()).toEqual("2022-11-07T21:44:00Z")
+    expect(later.format()).toBe("2022-11-07T21:44:00Z")
   })
 })
 
@@ -50,7 +50,7 @@ describe('omitDeep', () => {
     expect(omitDeep(value, (val) => val === toOmit)).toEqual({
       foo: 'bar',
       hello: {
-        world: 'now'
+        world: 'now',
       },
       arr: [1, 2, 3],
     })

@@ -57,8 +57,8 @@ describe('getNodesBetween', () => {
 
     const nodes = getNodesFor(textNode, 0, textNode, 22)
 
-    expect(nodes.length).toBe(1)
-    expect(nodes[0].textContent).toBe("This will be annotated")
+    expect(nodes).toHaveLength(1)
+    expect(nodes[0]).toHaveTextContent("This will be annotated")
   })
 })
 

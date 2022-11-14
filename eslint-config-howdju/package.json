@@ -4,6 +4,7 @@
   "description": "Shared ESLint config for howdju",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "echo Nothing to test here"
   },
   "repository": {
@@ -13,11 +14,13 @@
   "author": "Carl Gieringer <carl@howdju.com>",
   "license": "UNLICENSED",
   "homepage": "https://bitbucket.org/howdju/howdju#readme",
-  "peerDependencies": {
-    "eslint": ">= 3",
-    "eslint-plugin-flowtype": ">= 5"
-  },
   "devDependencies": {
-    "flow-bin": "^0.150.1"
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "eslint": "^7.23.0",
+    "eslint-plugin-jest": "^27.1.5",
+    "eslint-plugin-jest-dom": "^4.0.3",
+    "eslint-plugin-promise": "^6.1.1",
+    "typescript": "^4.8.4"
   }
 }

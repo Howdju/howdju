@@ -11,7 +11,7 @@ import {
   selectAuthToken,
 } from "../selectors"
 import {
-  callApiResponse
+  callApiResponse,
 } from "../apiActions"
 import {tryWaitOnRehydrate} from './appSagas'
 import {pageLoadId, getSessionStorageId} from "../identifiers"

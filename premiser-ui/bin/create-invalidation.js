@@ -4,7 +4,7 @@ const debug = require('debug')('premiser-ui:upload-to-s3')
 const uuid = require('uuid')
 
 const argParser = new ArgumentParser({
-  description: 'Create a Cloudfront invalidation'
+  description: 'Create a Cloudfront invalidation',
 })
 argParser.add_argument('distributionId')
 const args = argParser.parse_args()
@@ -21,8 +21,8 @@ const invalidate = () => {
         Quantity: 1,
         // Invalidate everything.
         Items: ['/*'],
-      }
-    }
+      },
+    },
   }
   debug(`Invalidating ${args.distributionId} (reference: ${reference}...`)
   cloudfront.createInvalidation(params, function(err, data) {

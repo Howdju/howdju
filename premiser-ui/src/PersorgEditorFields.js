@@ -21,7 +21,7 @@ import {
 import UrlTextField from './UrlTextField'
 import {
   isTwitterUrl,
-  isWikipediaUrl
+  isWikipediaUrl,
 } from './util'
 
 
@@ -53,7 +53,7 @@ export default class PersorgEditorFields extends Component {
   }
 
   state = {
-    showUrls: false
+    showUrls: false,
   }
 
   onChange = (value, event) => {
@@ -69,7 +69,7 @@ export default class PersorgEditorFields extends Component {
 
   onShowUrlsClick = () => {
     this.setState({
-      showUrls: !this.state.showUrls
+      showUrls: !this.state.showUrls,
     })
   }
 
@@ -90,7 +90,7 @@ export default class PersorgEditorFields extends Component {
       ...rest
     } = this.props
     const {
-      showUrls
+      showUrls,
     } = this.state
 
     const modelErrors = get(errors, '_model')
@@ -111,7 +111,7 @@ export default class PersorgEditorFields extends Component {
       required: true,
       onSubmit,
       onPropertyChange,
-      disabled: disabled || !hasName
+      disabled: disabled || !hasName,
     }
 
     const nameInput = (suggestionsKey && !disabled) ?
@@ -191,7 +191,7 @@ export default class PersorgEditorFields extends Component {
             disabled={disabled}
             onPropertyChange={onPropertyChange}
             onSubmit={onSubmit}
-          />
+          />,
         ])}
       </div>
     )

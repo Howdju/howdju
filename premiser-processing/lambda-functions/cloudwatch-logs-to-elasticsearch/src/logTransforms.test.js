@@ -7,8 +7,8 @@ const {extract, logEventToDocument} = require('./logTransforms')
 
 const testLogEvent = {
   "awslogs": {
-    "data": "H4sIAAAAAAAAAHWPwQqCQBCGX0Xm7EFtK+smZBEUgXoLCdMhFtKV3akI8d0bLYmibvPPN3wz00CJxmQnTO41whwWQRIctmEcB6sQbFC3CjW3XW8kxpOpP+OC22d1Wml1qZkQGtoMsScxaczKN3plG8zlaHIta5KqWsozoTYw3/djzwhpLwivWFGHGpAFe7DL68JlBUk+l7KSN7tCOEJ4M3/qOI49vMHj+zCKdlFqLaU2ZHV2a4Ct/an0/ivdX8oYc1UVX860fQDQiMdxRQEAAA=="
-  }
+    "data": "H4sIAAAAAAAAAHWPwQqCQBCGX0Xm7EFtK+smZBEUgXoLCdMhFtKV3akI8d0bLYmibvPPN3wz00CJxmQnTO41whwWQRIctmEcB6sQbFC3CjW3XW8kxpOpP+OC22d1Wml1qZkQGtoMsScxaczKN3plG8zlaHIta5KqWsozoTYw3/djzwhpLwivWFGHGpAFe7DL68JlBUk+l7KSN7tCOEJ4M3/qOI49vMHj+zCKdlFqLaU2ZHV2a4Ct/an0/ivdX8oYc1UVX860fQDQiMdxRQEAAA==",
+  },
 }
 
 const timestampRegExp = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z/
@@ -19,13 +19,13 @@ describe('logTransforms', () => {
       expect(await extract(testLogEvent)).toEqual({
         "logEvents": [
           {"id": "eventId1", "message": "[ERROR] First test message", "timestamp": 1440442987000},
-          {"id": "eventId2", "message": "[ERROR] Second test message", "timestamp": 1440442987001}
+          {"id": "eventId2", "message": "[ERROR] Second test message", "timestamp": 1440442987001},
         ],
         "logGroup": "testLogGroup",
         "logStream": "testLogStream",
         "messageType": "DATA_MESSAGE",
         "owner": "123456789123",
-        "subscriptionFilters": ["testFilter"]
+        "subscriptionFilters": ["testFilter"],
       })
     })
   })
@@ -182,7 +182,7 @@ describe('logTransforms', () => {
             "Expires": "0",
             "Pragma": "no-cache",
             "Vary": "Origin",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
           // technically bodies are JSON for AWS, although for this test either JSON or not here should work
           body: JSON.stringify({
@@ -192,11 +192,11 @@ describe('logTransforms', () => {
                 text: "NASA awarded SpaceX a $1.6B contract to supply the International Space Station at the end of 2008",
                 normalText: "nasa awarded spacex a 16b contract to supply the international space station at the end of 2008",
                 slug: "nasa-awarded-spacex-a-16b-contract-to-supply-the-international-space-station-at-the-end-of-2008",
-                created: "2018-07-01T03:48:50.393Z"
-              }
-            ]
-          })
-        }
+                created: "2018-07-01T03:48:50.393Z",
+              },
+            ],
+          }),
+        },
       }
       const logEventMessage = `{"timestamp":"${timestamp}","context":{"clientRequestId":"${clientRequestId}",`
         + `"serverRequestId":"${serverRequestId}","stage":"${stage}"},"level":"${logLevel}",`

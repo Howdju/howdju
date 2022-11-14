@@ -30,18 +30,18 @@ const persorgSchema = Joi.object().keys({
 })
   .when(idMissing, {
     then: Joi.object({
-      name: Joi.required()
-    })
+      name: Joi.required(),
+    }),
   })
 
 const tagSchema = Joi.object().keys({
   id: idSchema,
-  name: Joi.string().max(schemaSettings.tagNameMaxLength).empty(Joi.valid(null, ''))
+  name: Joi.string().max(schemaSettings.tagNameMaxLength).empty(Joi.valid(null, '')),
 })
   .when(idMissing, {
     then: Joi.object({
-      name: Joi.required()
-    })
+      name: Joi.required(),
+    }),
   })
 
 const propositionTagVoteSchema = Joi.object().keys({
@@ -57,8 +57,8 @@ const propositionSchema = Joi.object().keys({
 })
   .when(idMissing, {
     then: Joi.object({
-      text: Joi.required()
-    })
+      text: Joi.required(),
+    }),
   })
 
 const STATEMENT_SCHEMA_ID = "statement"
@@ -68,26 +68,26 @@ const statementSchema = Joi.object().keys({
   sentenceType: Joi.valid(...Object.keys(SentenceTypes)).empty(null),
   sentence: Joi
     .when('sentenceType', { is: SentenceTypes.STATEMENT, then: Joi.link(`#${STATEMENT_SCHEMA_ID}`) })
-    .when('sentenceType', { is: SentenceTypes.PROPOSITION, then: propositionSchema })
+    .when('sentenceType', { is: SentenceTypes.PROPOSITION, then: propositionSchema }),
 })
   .when(idMissing, {
     then: Joi.object({
       speaker: Joi.required(),
       sentenceType: Joi.required(),
       sentence: Joi.required(),
-    })
+    }),
   })
   .id(STATEMENT_SCHEMA_ID)
 
 const propositionCompoundSchema = Joi.object().keys({
   atoms: Joi.array().items(Joi.object().keys({
-    entity: propositionSchema
-  }))
+    entity: propositionSchema,
+  })),
 })
   .when(idMissing, {
     then: Joi.object({
       atoms: Joi.array().min(1).required(),
-    })
+    }),
   })
 
 const urlSchema = Joi.object().keys({
@@ -102,13 +102,13 @@ const urlSchema = Joi.object().keys({
         suffix: Joi.string(),
         start: Joi.number(),
         end: Joi.number(),
-      })}))
-  })
+      })})),
+  }),
 })
   .when(idMissing, {
     then: Joi.object({
       url: Joi.required(),
-    })
+    }),
   })
 
 const writSchema = Joi.object().keys({
@@ -118,7 +118,7 @@ const writSchema = Joi.object().keys({
   .when(idMissing, {
     then: Joi.object({
       title: Joi.required(),
-    })
+    }),
   })
 
 const writQuoteSchema = Joi.object().keys({
@@ -131,7 +131,7 @@ const writQuoteSchema = Joi.object().keys({
     then: Joi.object({
       quoteText: Joi.required(),
       writ: Joi.required(),
-    })
+    }),
   })
 
 const JUSTIFICATION_SCHEMA_ID = "justification"
@@ -144,14 +144,14 @@ const justificationSchema = Joi.object().keys({
       .when('type', { is: JustificationTargetTypes.PROPOSITION, then: propositionSchema})
       .when('type', { is: JustificationTargetTypes.STATEMENT, then: statementSchema})
       .when('type', { is: JustificationTargetTypes.JUSTIFICATION, then: Joi.link(`#${JUSTIFICATION_SCHEMA_ID}`)})
-      .required()
+      .required(),
   }),
   basis: Joi.object().keys({
     type: Joi.valid(...Object.keys(JustificationBasisTypes)).required().empty(null),
     entity: Joi
       .when('type', {is: JustificationBasisTypes.PROPOSITION_COMPOUND, then: propositionCompoundSchema})
       .when('type', {is: JustificationBasisTypes.WRIT_QUOTE, then: writQuoteSchema})
-      .required()
+      .required(),
   }),
   // The API accepts root polarity, but since it is determined by the target, it is ignored.
   // We could throw an error if it is incorrect.
@@ -168,7 +168,7 @@ const justificationSchema = Joi.object().keys({
       basis: Joi.required(),
       rootTargetType: Joi.required(),
       rootTarget: Joi.required(),
-    })
+    }),
   })
   .shared(statementSchema)
   .id(JUSTIFICATION_SCHEMA_ID)
@@ -182,12 +182,12 @@ const accountSettingSchema = Joi.object().keys({
 })
   .when(idMissing, {
     then: Joi.object({
-      name: Joi.required()
-    })
+      name: Joi.required(),
+    }),
   })
 
 const extantEntity = Joi.object().keys({
-  id: idSchema.required()
+  id: idSchema.required(),
 })
 
 // const registrationSchema = Joi.object().keys({

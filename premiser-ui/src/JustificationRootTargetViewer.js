@@ -8,7 +8,7 @@ import StatementEntityViewer from './StatementEntityViewer'
 export default class JustificationRootTargetViewer extends React.Component {
 
   static defaultProps = {
-    showStatusText: true
+    showStatusText: true,
   }
 
   render() {

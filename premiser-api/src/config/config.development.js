@@ -2,7 +2,7 @@ const debug = require('debug')('premiser-api:config')
 const { exec } = require("child_process")
 
 const {
-  devWebServerPort
+  devWebServerPort,
 } = require('howdju-ops')
 
 const corsAllowOrigin = [
@@ -48,5 +48,5 @@ module.exports = {
   contentReportNotificationEmails: [
     "dev-content-report-recipient@test.com",
   ],
-  corsAllowOrigin
+  corsAllowOrigin,
 }

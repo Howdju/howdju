@@ -4,7 +4,7 @@ import pick from 'lodash/pick'
 import { CANCEL } from 'redux-saga'
 
 import {
-  httpMethods
+  httpMethods,
 } from 'howdju-common'
 
 import {logger} from './logger'

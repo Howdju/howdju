@@ -31,7 +31,7 @@ export function renderWithProviders(
   if (persist) {
     persistor.persist()
   }
-  function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
+  function Wrapper({ children }: PropsWithChildren<Record<string, unknown>>): JSX.Element {
     return (
       <Provider store={store}>
         <Router history={history}>
@@ -45,6 +45,6 @@ export function renderWithProviders(
     store,
     persistor,
     history,
-    ...render(ui, { wrapper: Wrapper, ...renderOptions })
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
   }
 }

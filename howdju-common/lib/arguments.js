@@ -1,15 +1,10 @@
-const forEach = require('lodash/forEach')
+import forEach from 'lodash/forEach'
 
-const {
-  newProgrammingError
-} = require('./commonErrors')
-const {
-  isDefined
-} = require('./general')
+import { newProgrammingError } from './commonErrors'
+import { isDefined } from './general'
 
-const _e = module.exports
 
-_e.requireArgs = (requiredArgs) => {
+export function requireArgs(requiredArgs) {
   const missing = []
   forEach(requiredArgs, (value, name) => {
     if (!isDefined(value)) {

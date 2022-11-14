@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
-    "lint": "eslint bin/ src/ lambda-functions/",
+    "lint": "eslint --ignore-path=.gitignore .",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "score-justifications:local": "source ../config/local.env && node bin/score-justifications.js",
     "score-proposition-tags:local": "source ../config/local.env && node bin/score-proposition-tags.js",
@@ -29,8 +29,6 @@
     "argparse": "^2.0.1",
     "eslint": "^7.25.0",
     "eslint-config-howdju": "^1.0.0",
-    "eslint-plugin-flowtype": "^5.7.2",
-    "flow-bin": "^0.150.1",
     "gulp": "^3.9.1",
     "gulp-install": "^1.1.0",
     "gulp-zip": "^4.0.0",

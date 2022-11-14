@@ -11,7 +11,7 @@ const {
 
 const {JustificationsDao} = require('./JustificationsDao')
 const {
-  mockLogger
+  mockLogger,
 } = require('howdju-test-common')
 
 describe('createJustification', () => {
@@ -36,7 +36,7 @@ describe('createJustification', () => {
       basis: {
         type: basisType,
         entity: {id: basisId},
-      }
+      },
     }
     const rootPolarity = polarity
     const justificationId = "3"

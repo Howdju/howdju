@@ -7,7 +7,7 @@ const {
 
 const {EntityService} = require('./EntityService')
 const {
-  permissions
+  permissions,
 } = require('../permissions')
 const {
   AuthorizationError,
@@ -15,7 +15,7 @@ const {
   EntityConflictError,
 } = require("../serviceErrors")
 const {
-  persorgSchema
+  persorgSchema,
 } = require('./validationSchemas')
 
 exports.PersorgsService = class PersorgsService extends EntityService {

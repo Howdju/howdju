@@ -9,7 +9,7 @@ const mapValues = require('lodash/mapValues')
 const {processArgs} = require('./processArgs')
 
 const {
-  utcTimestamp
+  utcTimestamp,
 } = require('howdju-common')
 
 const logLevelNumbers = {

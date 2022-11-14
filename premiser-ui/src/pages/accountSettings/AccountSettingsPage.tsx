@@ -21,7 +21,7 @@ export default function AccountSettingsPage() {
   const dispatch = useAppDispatch()
   useEffect(() => {
     dispatch(api.fetchAccountSettings())
-  }, [])
+  }, [dispatch])
 
   const {isFetching, accountSettings} = useAppSelector(state => state.accountSettingsPage)
   const {editEntity} = useAppSelector(state => state.editors.ACCOUNT_SETTINGS?.[accountSettingsEditorId] || {})

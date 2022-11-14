@@ -4,7 +4,7 @@ const {
 } = require('howdju-common')
 const {EntityService} = require('./EntityService')
 const {
-  accountSettingSchema
+  accountSettingSchema,
 } = require('./validationSchemas')
 
 exports.AccountSettingsService = class AccountSettingsService extends EntityService {

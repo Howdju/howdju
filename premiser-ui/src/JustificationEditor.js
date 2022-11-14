@@ -15,11 +15,11 @@ import {
 import {EditorTypes} from "./reducers/editors"
 import t, {
   CANCEL_BUTTON_LABEL,
-  EDIT_ENTITY_SUBMIT_BUTTON_LABEL
+  EDIT_ENTITY_SUBMIT_BUTTON_LABEL,
 } from "./texts"
 import {
   combineIds,
-  translateJustificationErrorsFromFormInput
+  translateJustificationErrorsFromFormInput,
 } from './viewModels'
 import JustificationEditorFields from "./JustificationEditorFields"
 
@@ -88,7 +88,7 @@ class JustificationEditor extends Component {
         type="submit"
         children={t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
         disabled={isSaving}
-      />
+      />,
     ]
 
     return (
@@ -124,7 +124,7 @@ JustificationEditor.propTypes = {
   onKeyDown: PropTypes.func,
 }
 JustificationEditor.defaultProps = {
-  doShowButtons: true
+  doShowButtons: true,
 }
 JustificationEditor.editorType = EditorTypes.NEW_JUSTIFICATION
 

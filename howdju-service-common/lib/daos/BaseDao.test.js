@@ -1,7 +1,7 @@
 const sinon = require('sinon')
 
 const { 
-  mockLogger
+  mockLogger,
 } = require('howdju-test-common')
 
 const {
@@ -18,7 +18,7 @@ describe('BaseDao', () => {
     test('queries a single value', async () => {
       const theValue = 'the value'
       const database = {
-        query: sinon.fake.returns({rows: [[theValue]]})
+        query: sinon.fake.returns({rows: [[theValue]]}),
       }
       const dao = new BaseDao(mockLogger, database, null)
       
@@ -33,7 +33,7 @@ describe('BaseDao', () => {
     
     test('throws on no row', async () => {
       const database = {
-        query: sinon.fake.returns({rows: []})
+        query: sinon.fake.returns({rows: []}),
       }
       const dao = new BaseDao(mockLogger, database, null)
 
@@ -55,7 +55,7 @@ describe('BaseDao', () => {
         '',
         'bar',
         '',
-        'spaz'
+        'spaz',
       ]
       const expected = {
         id: 1,

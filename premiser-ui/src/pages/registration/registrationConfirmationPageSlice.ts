@@ -1,7 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { ApiErrorCode } from "howdju-common";
+import { createSlice } from "@reduxjs/toolkit"
+import { ApiErrorCode } from "howdju-common"
 
-import { api } from "@/apiActions";
+import { api } from "@/apiActions"
 
 export const registrationConfirmationPageSlice = createSlice({
   name: "registrationConfirmationPage",
@@ -13,20 +13,20 @@ export const registrationConfirmationPageSlice = createSlice({
   },
   reducers: {},
   extraReducers(builder) {
-      builder.addMatcher(
-        (action) =>
-          api.checkRegistration.response.match(action) ||
+    builder.addMatcher(
+      (action) =>
+        api.checkRegistration.response.match(action) ||
           api.confirmRegistration.response.match(action),
-        (state, action) => {
-          state.didCheckRegistration = true
-          if (action.error) {
-            state.registrationErrorCode = action.payload.body.errorCode
-            return
-          }
-          state.email = action.payload.email
-          state.registrationErrorCode = null
+      (state, action) => {
+        state.didCheckRegistration = true
+        if (action.error) {
+          state.registrationErrorCode = action.payload.body.errorCode
+          return
         }
-      )
+        state.email = action.payload.email
+        state.registrationErrorCode = null
+      }
+    )
   },
 })
 

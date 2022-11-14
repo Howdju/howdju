@@ -10,7 +10,7 @@ import { extractFilters } from "./queryStringExtraction"
 /**
  * When the user navigates to a different justification search, reset the page
  */
- export function* resetJustificationSearchPage() {
+export function* resetJustificationSearchPage() {
   yield takeEvery(LOCATION_CHANGE, function* resetJustificationSearchPageWorker() {
     if (isActivePath("searchJustifications")) {
       const locationFilters = extractFilters(history.location.search)

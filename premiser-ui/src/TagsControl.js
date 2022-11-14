@@ -118,7 +118,7 @@ export default class TagsControl extends React.Component {
 
   closeInput = (event) => {
     const {
-      tagName
+      tagName,
     } = this.state
 
     if (tagName) {

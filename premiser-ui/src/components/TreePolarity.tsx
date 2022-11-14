@@ -16,7 +16,7 @@ export default function TreePolarityOffsetter({ polarity, children }: Props) {
     <div
       className={cn({
         'tree-polarity--positive': isPositive,
-        'tree-polarity--negative': isNegative
+        'tree-polarity--negative': isNegative,
       })}
     >
       {children}

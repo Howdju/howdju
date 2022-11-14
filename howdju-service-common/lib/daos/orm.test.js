@@ -11,7 +11,7 @@ describe('orm', () => {
     const row = {
       justification_vote_id: voteId,
       polarity,
-      justification_id: justificationId
+      justification_id: justificationId,
     }
     const expectedEntity = {
       id: voteId,

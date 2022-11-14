@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 
 const {
-  EntityTypes
+  EntityTypes,
 } = require('howdju-common')
 
 const {

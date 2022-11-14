@@ -26,7 +26,7 @@ const {
 } = require('howdju-common')
 
 const {
-  WritQuoteValidator
+  WritQuoteValidator,
 } = require('../validators')
 const {
   createContinuationToken,
@@ -105,7 +105,7 @@ exports.WritQuotesService = class WritQuotesService {
         const nextContinuationToken = createNextContinuationToken(sorts, writQuotes, filters) || continuationToken
         return {
           writQuotes,
-          continuationToken: nextContinuationToken
+          continuationToken: nextContinuationToken,
         }
       })
   }
@@ -229,7 +229,7 @@ exports.WritQuotesService = class WritQuotesService {
           urlDiffs,
           hasPermission: this.permissionsDao.userHasPermission(userId, permissions.EDIT_ANY_ENTITY),
           entityConflicts: Promise.props(entityConflicts),
-          userActionConflicts: Promise.props(userActionConflicts)
+          userActionConflicts: Promise.props(userActionConflicts),
         })
       })
       .then( ({
@@ -378,7 +378,7 @@ exports.WritQuotesService = class WritQuotesService {
         if (writQuote.id) {
           return Promise.props({
             isExtant: true,
-            writQuote: this.readWritQuoteForId(writQuote.id)
+            writQuote: this.readWritQuoteForId(writQuote.id),
           })
         }
 
@@ -399,7 +399,7 @@ function readOrCreateEquivalentValidWritQuoteAsUser(service, writQuote, userId, 
         writ,
         urls,
         readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now),
-        oldUrls
+        oldUrls,
       ])
     })
     .then( ([writ, urls, {isExtant, writQuote}, oldUrls]) => {
@@ -420,7 +420,7 @@ function readOrCreateJustWritQuoteAsUser(service, writQuote, userId, now) {
   return service.writQuotesDao.readWritQuoteHavingWritIdAndQuoteText(writQuote.writ.id, writQuote.quoteText)
     .then(equivalentWritQuote => Promise.all([
       !!equivalentWritQuote,
-      equivalentWritQuote || service.writQuotesDao.createWritQuote(writQuote, userId, now)
+      equivalentWritQuote || service.writQuotesDao.createWritQuote(writQuote, userId, now),
     ]))
     .then( ([isExtant, writQuote]) => {
       const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
@@ -441,12 +441,12 @@ function createWritQuoteUrlsAsUser(service, writQuote, userId, now) {
         if (extantWritQuoteUrl) {
           return extantWritQuoteUrl
         }
-        // TODO(1,2,3): remove exception
-        // eslint-disable-next-line promise/no-nesting
         return Promise.all([
           service.writQuotesDao.createWritQuoteUrl(writQuote, url, userId, now),
           url.target && service.writQuotesDao.createWritQuoteUrlTarget(writQuote, url, userId, now),
         ])
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           .then( ([writQuoteUrl]) => service.actionsService.asyncRecordAction(userId, now, ActionTypes.ASSOCIATE, ActionTargetTypes.WRIT_QUOTE,
             writQuoteUrl.writQuoteId, ActionSubjectTypes.URL, writQuoteUrl.urlId))
       })
@@ -468,6 +468,6 @@ function diffUrls(extantUrls, urls) {
   return {
     addedUrls,
     removedUrls,
-    haveChanged
+    haveChanged,
   }
 }

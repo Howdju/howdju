@@ -1,7 +1,7 @@
 const { DefaultReporter } = require('@jest/reporters')
 const chalk = require('chalk')
 
-const TITLE_BULLET = chalk.bold('\u25cf ');
+const TITLE_BULLET = chalk.bold('\u25cf ')
 
 /** A custom Jest reporter that skips console output for passing tests. */
 class OutputConsoleOnFailureOnlyReporter extends DefaultReporter {
@@ -16,7 +16,7 @@ class OutputConsoleOnFailureOnlyReporter extends DefaultReporter {
     if (message.startsWith(`  ${TITLE_BULLET}Console`)) {
       return
     }
-    process.stderr.write(`${message}\n`);
+    process.stderr.write(`${message}\n`)
   }
 
   printTestFileHeader(_testPath, config, result) {

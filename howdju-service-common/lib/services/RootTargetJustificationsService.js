@@ -6,7 +6,7 @@ const {
 } = require('howdju-common')
 
 const {
-  EntityNotFoundError
+  EntityNotFoundError,
 } = require('../serviceErrors')
 
 const entityTypeByRootTargetType = {

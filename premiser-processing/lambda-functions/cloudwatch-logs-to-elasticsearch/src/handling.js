@@ -17,7 +17,7 @@ const elasticsearchTimeout = process.env.ELASTICSEARCH_TIMEOUT || '10s'
 
 const client = new elasticsearch.Client({
   host: elasticsearchAuthority,
-  log: process.env.ELASTICSEARCH_LOG_LEVEL
+  log: process.env.ELASTICSEARCH_LOG_LEVEL,
 })
 
 

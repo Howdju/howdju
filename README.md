@@ -216,6 +216,8 @@ gco -b features/n-feature-slug
 # until you rebase onto master. You should select the previous feature /
 # parent PR branch as the new PR's base branch.
 
+git fetch origin master:master
+
 # To prepare your branch for merging, rebase onto master:
 # git rebase --onto master parentCommitExclusive branchName
 git rebase --onto master <previousFeatureBranch> <currentFeatureBranch>
@@ -258,7 +260,7 @@ yarn upgrade-interactive
 ### Doing something in each workspace
 
 ```shell
-yarn workspaces foreach -Av exec bash -c 'yarn add --dev flow-bin'
+yarn workspaces foreach -Av exec bash -c 'ls'
 ```
 
 ### Adding a new lambda
@@ -383,6 +385,12 @@ for the possible contents of the JSON file.
 
 ## Config structure
 
+### ESLint
+
+See eslint-config-howdju/README.md.
+
+### Prettier
+
 ### TypeScript
 
 Base config `tsconfig.json` in workspace root and packages extend it like:
@@ -390,18 +398,20 @@ Base config `tsconfig.json` in workspace root and packages extend it like:
 ```json
 {
   "extends": "../tsconfig.json",
-  // customizations here.
+  // ...
+  "compilerOptions": {
+    // ...
+    "paths": {
+      // Support project-relative imports
+      "@/*": ["./src/*"],
+    },
+  },
 }
 ```
 
 ### Babel
 
 `babel.config.js` in workspace root and `.babelrc.js` in packages to override.
-
-### ESLint
-
-Base `.eslintrc.js` config having `root: true` and packages with custom `.eslintrc.js` as needed. ESLint
-automatically merges them.
 
 ### Jest
 

@@ -9,7 +9,7 @@ import cn from 'classnames'
 import moment from 'moment'
 
 import {
-  extractDomain
+  extractDomain,
 } from 'howdju-common'
 
 import {
@@ -80,7 +80,7 @@ export default class WritQuoteViewer extends React.Component {
           <div>
             <div
               className={cn("quote", {
-                hidden: !hasQuote
+                hidden: !hasQuote,
               })}
             >
               <div className="quote-text">

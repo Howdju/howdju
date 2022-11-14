@@ -20,11 +20,11 @@ describe('normalizeText', () => {
 describe('renumberSqlArgs', () => {
   test('works', () => {
     expect(renumberSqlArgs('insert into my_table (column1, column2) values ($1, $2);', 2))
-      .toStrictEqual('insert into my_table (column1, column2) values ($3, $4);')
+      .toBe('insert into my_table (column1, column2) values ($3, $4);')
   })
   test("doesn't change when start is zero", () => {
     expect(renumberSqlArgs('insert into my_table (column1, column2) values ($1, $2);', 0))
-      .toStrictEqual('insert into my_table (column1, column2) values ($1, $2);')
+      .toBe('insert into my_table (column1, column2) values ($1, $2);')
   })
 })
 

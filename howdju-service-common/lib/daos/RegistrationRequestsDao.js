@@ -1,8 +1,8 @@
 const {
-  toRegistrationRequest
+  toRegistrationRequest,
 } = require('./orm')
 const {
-  BaseDao
+  BaseDao,
 } = require('./BaseDao')
 
 exports.RegistrationRequestsDao = class RegistrationRequestsDao extends BaseDao {

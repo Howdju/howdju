@@ -9,7 +9,7 @@ const {
   normalizeText,
 } = require('./daosUtil')
 const {
-  toTag
+  toTag,
 } = require('./orm')
 
 exports.TagsDao = class TagsDao {

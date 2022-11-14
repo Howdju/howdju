@@ -25,7 +25,7 @@ import SelectionControlGroup from './SelectionControlGroup'
 import {
   combineNames,
   combineIds,
-  combineSuggestionsKeys
+  combineSuggestionsKeys,
 } from './viewModels'
 
 import './JustificationEditorFields.scss'
@@ -91,7 +91,7 @@ export default class JustificationEditorFields extends Component {
   }
 
   static defaultProps = {
-    doShowTypeSelection: true
+    doShowTypeSelection: true,
   }
 
   onChange = (value, event) => {

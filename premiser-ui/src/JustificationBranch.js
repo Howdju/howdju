@@ -26,7 +26,7 @@ import {
 import {
   isVerified,
   isDisverified,
-  makeCounterJustification
+  makeCounterJustification,
 } from "howdju-client-common"
 
 import {
@@ -41,7 +41,7 @@ import config from './config'
 import CounterJustificationEditor from "./CounterJustificationEditor"
 import {
   counterJustificationEditorId,
-  justificationBasisEditorId
+  justificationBasisEditorId,
 } from './editorIds'
 import hoverAware from "./hoverAware"
 import JustificationChatBubble from './JustificationChatBubble'
@@ -54,7 +54,7 @@ import './JustificationBranch.scss'
 
 const justificationTreeId = props => {
   const {
-    justification
+    justification,
   } = props
   return `justification-${justification.id}-tree`
 }
@@ -114,8 +114,8 @@ class JustificationBranch extends Component {
     const {
       type: basisType,
       entity: {
-        id: basisId
-      }
+        id: basisId,
+      },
     } = this.props.justification.basis
     return paths.createJustification(basisType, basisId)
   }
@@ -140,7 +140,7 @@ class JustificationBranch extends Component {
 
   toggleCounterJustificationsExpanded = () => {
     this.setState({
-      areCounterJustificationsExpanded: !this.state.areCounterJustificationsExpanded
+      areCounterJustificationsExpanded: !this.state.areCounterJustificationsExpanded,
     })
   }
 
@@ -367,7 +367,7 @@ class JustificationBranch extends Component {
   }
 }
 JustificationBranch.propTypes = {
-  doShowControls: PropTypes.bool
+  doShowControls: PropTypes.bool,
 }
 JustificationBranch.defaultProps = {
   doShowControls: true,

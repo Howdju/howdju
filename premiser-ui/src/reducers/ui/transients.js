@@ -2,7 +2,7 @@ import {handleActions} from "redux-actions"
 import set from 'lodash/set'
 
 import {
-  ui
+  ui,
 } from '../../actions'
 
 
@@ -22,5 +22,5 @@ export default handleActions({
     set(newState, [transientId, 'isVisible'], false)
 
     return newState
-  }
+  },
 }, {})

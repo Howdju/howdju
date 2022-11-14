@@ -51,7 +51,7 @@ export default class PropositionEditorFields extends Component {
       onKeyDown,
       onSubmit,
       onPropertyChange,
-      disabled: disabled || !hasText
+      disabled: disabled || !hasText,
     }
 
     const textInput = (suggestionsKey && !disabled) ?

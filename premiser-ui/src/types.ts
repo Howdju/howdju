@@ -1,4 +1,4 @@
-import { Entity, EntityId } from "howdju-common";
+import { Entity, EntityId } from "howdju-common"
 
 export interface ContextTrailItemInfo {
   targetType: "PROPOSITION" | "STATEMENT" | "JUSTIFICATION",

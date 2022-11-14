@@ -20,7 +20,7 @@ export default class UrlTextField extends React.Component {
     /** If present, the value must pass this predicate for the control to be valid */
     validator: PropTypes.func,
     /** Error text to display when the value is invalid (is an invalid URL or fails the validator) */
-    invalidErrorText: PropTypes.string
+    invalidErrorText: PropTypes.string,
   }
 
   constructor() {

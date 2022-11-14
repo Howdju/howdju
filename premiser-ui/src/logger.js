@@ -29,5 +29,5 @@ export const logger = {
       logger[level](err)
     }
     sentry.captureException(err, extra)
-  }
+  },
 }

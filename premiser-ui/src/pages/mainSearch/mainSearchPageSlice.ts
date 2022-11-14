@@ -12,7 +12,7 @@ export const mainSearchPageSlice = createSlice({
       writQuoteQuoteTexts: [],
       writQuoteUrls: [],
       writTitles: [],
-    }
+    },
   },
   reducers: {},
   extraReducers(builder) {

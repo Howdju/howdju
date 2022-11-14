@@ -29,7 +29,7 @@ const {
 
 const {justificationSchema} = require('./validationSchemas')
 const {
-  EntityService
+  EntityService,
 } = require('./EntityService')
 const {
   createContinuationToken,
@@ -48,7 +48,7 @@ const {
   AuthorizationError,
 } = require('../serviceErrors')
 const {
-  rethrowTranslatedErrors
+  rethrowTranslatedErrors,
 } = require('../util')
 
 
@@ -79,7 +79,7 @@ exports.JustificationsService = class JustificationsService extends EntityServic
       propositionCompoundsService,
       justificationBasisCompoundsService,
       justificationsDao,
-      permissionsDao
+      permissionsDao,
     })
     this.config = config
     this.logger = logger
@@ -108,7 +108,7 @@ exports.JustificationsService = class JustificationsService extends EntityServic
         justification,
         rootTarget,
         targetEntity,
-        basisEntity
+        basisEntity,
       ]) => {
         justification.rootTarget = rootTarget
 
@@ -164,7 +164,7 @@ exports.JustificationsService = class JustificationsService extends EntityServic
         const nextContinuationToken = createNextContinuationToken(sorts, justifications, filters) || continuationToken
         return {
           justifications,
-          continuationToken: nextContinuationToken
+          continuationToken: nextContinuationToken,
         }
       })
   }
@@ -177,7 +177,7 @@ exports.JustificationsService = class JustificationsService extends EntityServic
     if (justification.id) {
       return {
         isExtant: true,
-        justification: await this.readJustificationForId(justification.id, {userId})
+        justification: await this.readJustificationForId(justification.id, {userId}),
       }
     }
 
@@ -332,13 +332,13 @@ function readOrCreateEquivalentValidJustificationAsUser(service, justification, 
     .then( ([now, justification]) => Promise.all([
       now,
       justification,
-      service.justificationsDao.readJustificationEquivalentTo(justification)
+      service.justificationsDao.readJustificationEquivalentTo(justification),
     ]))
     .then( ([now, justification, equivalentJustification]) => Promise.all([
       now,
       justification,
       !!equivalentJustification,
-      equivalentJustification || service.justificationsDao.createJustification(justification, userId, now)
+      equivalentJustification || service.justificationsDao.createJustification(justification, userId, now),
     ]))
     .then( ([now, justification, isExtant, dbJustification]) => {
       const actionType = isExtant ? ActionTypes.TRY_CREATE_DUPLICATE : ActionTypes.CREATE
@@ -451,9 +451,9 @@ function deleteCounterJustificationsToJustificationIds (
       if (justificationIds.length === 0) {
         return deletedJustificationIds
       }
-      // TODO(1,2,3): remove exception
-      // eslint-disable-next-line promise/no-nesting
       return justificationsDao.deleteCounterJustificationsToJustificationIds(justificationIds, now)
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         .then(currentlyDeletedJustificationIds =>
           deleteCounterJustificationsToJustificationIds(justificationsDao, currentlyDeletedJustificationIds, userId, now,
             deletedJustificationIds.concat(currentlyDeletedJustificationIds))

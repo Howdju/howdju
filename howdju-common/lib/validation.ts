@@ -22,7 +22,7 @@ type FieldErrorValue = FieldErrorCode | FieldErrorCodeValue
 interface FieldErrors {
   // TODO(26): FieldSubErrors will probably be overwritten by JSON serialization.
   [key: string]: FieldErrorValue[] & FieldSubErrors
-};
+}
 export type FieldErrorsValue = FieldErrors[string]
 /** @deprecated use ValidationErrors instead. */
 export interface BespokeValidationErrors {
@@ -32,7 +32,7 @@ export interface BespokeValidationErrors {
   modelErrors: ModelErrorCode[];
   // Errors for individual fields on the model.
   fieldErrors: FieldErrors;
-};
+}
 
 /**
  * This is the new preferred format for validation errors
@@ -78,7 +78,7 @@ export const EmptyBespokeValidationErrors: Readonly<BespokeValidationErrors>  = 
  * There should be only one field error for any code; the function will log an error if there are
  * multiple, and return the first.
  */
- export const onlyFieldError = (fieldError: FieldErrorsValue, code: EntityErrorCode): FieldErrorCodeValue | undefined => {
+export const onlyFieldError = (fieldError: FieldErrorsValue, code: EntityErrorCode): FieldErrorCodeValue | undefined => {
   const errors = filter(fieldError, fe => isObject(fe) && fe.code === code)
   if (errors.length > 1) {
     logger.error(`Multiple field errors have the code ${code}.`)

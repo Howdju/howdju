@@ -2,7 +2,7 @@ const {
   mapSingle,
 } = require('./daosUtil')
 const {
-  toJobHistory
+  toJobHistory,
 } = require('./orm')
 
 exports.JobHistoryDao = class JobHistoryDao {

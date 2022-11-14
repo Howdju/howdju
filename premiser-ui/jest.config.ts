@@ -8,4 +8,4 @@ const config: Config = {
   setupFilesAfterEnv: ['../jest/setup-after-env-testing-library-jest-dom.ts'],
 }
 
-export default merge(baseConfig, config);
+export default merge(baseConfig, config)

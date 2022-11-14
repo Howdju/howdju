@@ -135,13 +135,16 @@ type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
 /**
  * A hack to allow us to define additional response properties.
  *
- * @param normalizationSchema the entity normaliation schema
+ * We use a double lambda to curry `T` because TypeScript will then infer `N`
+ * (TypeScript otherwise will not infer only some of the typeparams of a single
+ * lambda.)
+ *
  * @typeparam T the type of additional, non-normalized response properties
  * @typeParam N the type of the normalization schema.
- * @returns the normalization schema typed as a full response
+ * @returns A lambda accepting and returning the normalization schema typed as a full response
  */
 const responseSchema =
-  <T>() => <N extends {} = {}>(normalizationSchema: N): T & N => normalizationSchema as T & N
+  <T>() => <N extends Record<string,unknown>>(normalizationSchema: N): T & N => normalizationSchema as T & N
 
 /** Properties that may be present on API responses */
 interface ApiResponseWrapper {
@@ -180,22 +183,22 @@ function apiActionCreator<P, N, PA extends (...args: any[]) => {payload: P}>(
 
   // Add apiConfig to meta
   const requestPrepare = function requestPrepare(...args: any[]) {
-      let prepared = payloadCreatorOrPrepare ? payloadCreatorOrPrepare(...args) : {} as Prepared<P>
-      if (apiConfigCreator) {
-        if (!('payload' in prepared)) {
-          // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
-          // otherwise make the entire return value the payload.
-          prepared = {payload: prepared, meta: {}}
-        } else if (!prepared.meta) {
-          prepared.meta = {}
-        }
-
-        prepared.meta.apiConfig = isFunction(apiConfigCreator)
-          ? apiConfigCreator(prepared.payload)
-          : apiConfigCreator
+    let prepared = payloadCreatorOrPrepare ? payloadCreatorOrPrepare(...args) : {} as Prepared<P>
+    if (apiConfigCreator) {
+      if (!('payload' in prepared)) {
+        // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
+        // otherwise make the entire return value the payload.
+        prepared = {payload: prepared, meta: {}}
+      } else if (!prepared.meta) {
+        prepared.meta = {}
       }
-      return prepared
+
+      prepared.meta.apiConfig = isFunction(apiConfigCreator)
+        ? apiConfigCreator(prepared.payload)
+        : apiConfigCreator
     }
+    return prepared
+  }
 
   type Response = ExtractSchemaEntity<N> & ApiResponseWrapper
 
@@ -271,8 +274,8 @@ export const api = {
     payload => {
       const query = payload.propositionIds
         ? `?${queryString.stringify({
-            propositionIds: join(payload.propositionIds, ','),
-          })}`
+          propositionIds: join(payload.propositionIds, ','),
+        })}`
         : ''
       return {
         endpoint: `propositions${query}`,

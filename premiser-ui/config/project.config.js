@@ -30,13 +30,13 @@ const baseConfig = {
     base: path.resolve.bind(path, basePath),
     public: path.resolve.bind(path, basePath, 'public'),
     src: path.resolve.bind(path, basePath, 'src'),
-    dist: path.resolve.bind(path, basePath, 'dist')
+    dist: path.resolve.bind(path, basePath, 'dist'),
   },
   aws: {
     profile: 'premiser',
     region: 'us-east-1',
     cacheDuration: 'P10M',
-  }
+  },
 }
 
 const envConfig = require(`./project.${process.env.NODE_ENV}.config.js`)

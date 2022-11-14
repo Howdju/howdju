@@ -14,7 +14,7 @@ import {getOption} from './options'
 import {
   ANNOTATE_SELECTION,
   runCommandsWhenTabReloaded, RUN_COMMANDS,
-  TOGGLE_SIDEBAR
+  TOGGLE_SIDEBAR,
 } from "./messages"
 
 const didLoadKey = 'HowdjuDidLoad'
@@ -85,7 +85,7 @@ function highlightTarget({justification, writQuote, url}) {
   // annotate the target in the new page.
   justification = decircularizeJustification(justification)
   const commands = [
-    {postActionMessageToFrame: {gotoJustification: [justification]}}
+    {postActionMessageToFrame: {gotoJustification: [justification]}},
   ]
   if (target) {
     commands.push({annotateTarget: [target]})
@@ -174,7 +174,7 @@ function postActionMessageToFrame(action) {
     doWhenFrameMessageHandlerReady((frameApi) => {
       frameApi.postMessage({
         source: EXTENSION_MESSAGE_SOURCE,
-        action
+        action,
       }, baseUrl)
     })
     showSidebar()

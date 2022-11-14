@@ -85,7 +85,7 @@ function toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows) {
         url: {
           id: toIdString(row.url_id),
         },
-        anchors: []
+        anchors: [],
       }
       urlTargetById.set(toIdString(row.writ_quote_url_target_id), urlTarget)
     }

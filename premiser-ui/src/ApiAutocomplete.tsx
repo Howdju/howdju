@@ -6,7 +6,7 @@ import {Autocomplete, AutocompleteProps} from 'react-md'
 import { connect } from 'react-redux'
 
 import {
-  toSingleLine
+  toSingleLine,
 } from 'howdju-common'
 
 import autocompleter from './autocompleter'
@@ -16,7 +16,7 @@ import {
 } from './keyCodes'
 import {
   autocompletes,
-  mapActionCreatorGroupToDispatchToProps
+  mapActionCreatorGroupToDispatchToProps,
 } from "./actions"
 import { DebouncedFunc } from 'lodash'
 import { ComponentId, OnKeyDownCallback, OnPropertyChangeCallback, OnSubmitCallback, PropertyChanges, SuggestionsKey } from './types'
@@ -83,7 +83,7 @@ interface ConnectProps {
    * optional so that components aren't asked to send it.
    */
   suggestions?: any[]
-  transformedSuggestions?: any[]
+  transformedSuggestions: any[]
   // TODO(1): the type should be a bound dispatch method of the autocompletes.
   // But rather than fix, maybe we should be using the useDispatch hook instead.
   autocompletes?: typeof autocompletes
@@ -102,7 +102,7 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
   throttledRefreshAutocomplete: DebouncedFunc<(value: any) => void>
   autocomplete: any
 
-  constructor(props: Props & {autocompletes: any}) {
+  constructor(props: Props & ConnectProps) {
     super(props)
     this.throttledRefreshAutocomplete = throttle(() => {return})
   }
@@ -266,7 +266,7 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
         onBlur={this.onBlur}
         onTouchEnd={this.onTouchEnd}
         onClick={this.onClick}
-        data={transformedSuggestions!}
+        data={transformedSuggestions}
         filter={null}
         ref={this.setAutocomplete}
         focusInputOnAutocomplete={focusInputOnAutocomplete}

@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals';
+import {describe, expect, test} from '@jest/globals'
 
 import {registrationConfirmationPage} from './registrationConfirmationPageSlice'
 import {api} from "@/apiActions"

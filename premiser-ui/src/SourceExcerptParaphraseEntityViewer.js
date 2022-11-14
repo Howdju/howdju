@@ -25,11 +25,11 @@ export default class SourceExcerptParaphraseEntityViewer extends Component {
       suggestionsKey,
       showStatusText,
       showUrls,
-      contextTrailItems
+      contextTrailItems,
     } = this.props
     const {
       paraphrasingProposition,
-      sourceExcerpt
+      sourceExcerpt,
     } = sourceExcerptParaphrase
     return (
       <EntityViewer

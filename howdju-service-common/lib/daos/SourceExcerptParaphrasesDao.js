@@ -35,7 +35,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
   createSourceExcerptParaphrase(sourceExcerptParaphrase, userId, now) {
     const {
       paraphrasingProposition,
-      sourceExcerpt
+      sourceExcerpt,
     } = sourceExcerptParaphrase
     return this.database.query(
       'createSourceExcerptParaphrase',
@@ -97,7 +97,7 @@ exports.SourceExcerptParaphrasesDao = class SourceExcerptParaphrasesDao {
       JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
       JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
       JustificationRootTargetTypes.PROPOSITION,
-      rootPropositionId
+      rootPropositionId,
     ]
     return Promise.all([
       this.database.query('readSourceExcerptParaphrasesByIdForRootPropositionId', sql, args),
@@ -164,7 +164,7 @@ function readParaphrasingPropositionsByIdForRootPropositionId(logger, database, 
     JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
     JustificationRootTargetTypes.PROPOSITION,
-    rootPropositionId
+    rootPropositionId,
   ]
   return database.query('readParaphrasingPropositionsByIdForRootPropositionId', sql, args)
     .then(mapManyById(toProposition))

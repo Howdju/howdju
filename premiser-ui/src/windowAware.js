@@ -27,6 +27,6 @@ export default function windowAware(WrappedComponent) {
 
 function mapStateToProps(state) {
   return {
-    isWindowNarrow: selectIsWindowNarrow(state)
+    isWindowNarrow: selectIsWindowNarrow(state),
   }
 }

@@ -37,7 +37,7 @@ export const webpackConfig: HtmlWebpackPlugin.Options = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: 'public', to: '' }
+        { from: 'public', to: '' },
       ],
     }),
   ],

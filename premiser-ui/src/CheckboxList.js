@@ -39,7 +39,7 @@ export default class CheckboxList extends Component {
       errorText,
     } = this.props
     const {
-      selectedSet
+      selectedSet,
     } = this.state
     return (
       <fieldset className={cn({error})}>

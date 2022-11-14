@@ -54,7 +54,7 @@ exports.WritQuotesDao = class WritQuotesDao {
           `,
         [writQuoteId]
       ),
-      this.readUrlsForWritQuoteId(writQuoteId)
+      this.readUrlsForWritQuoteId(writQuoteId),
     ])
       .then( ([
         {rows: [row]},

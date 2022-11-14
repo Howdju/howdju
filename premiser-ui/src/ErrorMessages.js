@@ -6,7 +6,7 @@ import map from 'lodash/map'
 class ErrorMessages extends Component {
   render() {
     const {
-      errors
+      errors,
     } = this.props
 
     const errorList = (
@@ -20,7 +20,7 @@ class ErrorMessages extends Component {
   }
 }
 ErrorMessages.propTypes = {
-  errors: PropTypes.array
+  errors: PropTypes.array,
 }
 
 export default ErrorMessages

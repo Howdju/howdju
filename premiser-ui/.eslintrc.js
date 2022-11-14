@@ -1,15 +1,28 @@
 module.exports = {
-  extends: [
-    "howdju",
-    "howdju/react",
-    "plugin:jest-dom/recommended",
+  overrides: [
+    {
+      files: [
+        "src/**/*.{js,jsx,ts,tsx}",
+        "bookmarklet/**/*.{js,jsx,ts,tsx}",
+      ],
+      extends: [
+        "howdju/react-web",
+      ],
+    },
+    {
+      // Everything else that isn't part of the app
+      files: [
+        "**/*.{js,ts}",
+      ],
+      excludedFiles: [
+        "src/**",
+        "bookmarklet/**",
+        "node_modules/**",
+        "dist/**",
+      ],
+      extends: [
+        "howdju/node",
+      ],
+    },
   ],
-  plugins: [
-    "react-hooks",
-    "jest-dom",
-  ],
-  rules: {
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-  }
 }

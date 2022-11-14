@@ -13,8 +13,6 @@
   },
   "devDependencies": {
     "eslint": "^7.25.0",
-    "eslint-config-howdju": "^1.0.0",
-    "eslint-plugin-flowtype": "^5.7.2",
-    "flow-bin": "^0.150.1"
+    "eslint-config-howdju": "^1.0.0"
   }
 }

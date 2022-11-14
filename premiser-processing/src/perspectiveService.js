@@ -67,6 +67,8 @@ class PerspectivesDao {
             transitiveRowsPromise,
             this._readFeaturedPerspectivesCounteredJustifications(userId, 1, rows),
           ])
+            // TODO(1,2,3): remove exception
+            // eslint-disable-next-line promise/no-nesting
             .then( ([transitiveRows, counteredRows]) => concat(transitiveRows, counteredRows))
         }
         return transitiveRowsPromise
@@ -227,7 +229,7 @@ class PerspectivesDao {
       ])
         .then( ([
           propositionCompoundsById,
-          writQuotesById
+          writQuotesById,
         ]) => {
           const {rootJustifications, counterJustificationsByJustificationId} = groupRootJustifications(JustificationRootTargetTypes.PROPOSITION, rootPropositionId, rows)
           const justifications = map(rootJustifications, j =>

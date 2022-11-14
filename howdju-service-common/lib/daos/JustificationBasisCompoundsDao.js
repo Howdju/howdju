@@ -56,7 +56,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
 
   readJustificationBasisCompoundHavingAtoms(targetAtoms) {
     const args = [
-      targetAtoms.length
+      targetAtoms.length,
     ]
     const atomConditions = []
     forEach(targetAtoms, (atom, index) => {
@@ -64,7 +64,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
       pushAll(args, [
         atom.type,
         atom.entity.id,
-        index
+        index,
       ])
     })
     const atomConditionsSql = join(atomConditions, ' or ')
@@ -140,7 +140,7 @@ exports.JustificationBasisCompoundsDao = class JustificationBasisCompoundsDao {
     const args = [
       JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
       JustificationRootTargetTypes.PROPOSITION,
-      rootPropositionId
+      rootPropositionId,
     ]
     return Promise.all([
       this.database.query('readJustificationBasisCompoundsByIdForRootPropositionId', sql, args),
@@ -233,7 +233,7 @@ function readAtomPropositionsForRootPropositionId(logger, database, rootProposit
     JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomTypes.PROPOSITION,
     JustificationRootTargetTypes.PROPOSITION,
-    rootPropositionId
+    rootPropositionId,
   ]
   return database.query('readAtomPropositionsForRootPropositionId', sql, args)
     .then(mapManyById(toProposition))

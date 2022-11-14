@@ -103,7 +103,7 @@ export default handleActions({
         return newState
       }
       return state
-    }
+    },
   },
   [api.fetchRootJustificationTarget.response]: {
     throw: (state, action) => {
@@ -127,17 +127,17 @@ export default handleActions({
         const update = {[entitiesKey]: pickBy(state[entitiesKey], (s, id) => id !== rootTargetId)}
         return {
           ...state,
-          ...update
+          ...update,
         }
       }
       return state
-    }
+    },
   },
   [api.deleteProposition.response]: {
     next: (state, action) => ({
       ...state,
-      propositions: pickBy(state.propositions, (p, id) => id !== action.meta.requestPayload.proposition.id )
-    })
+      propositions: pickBy(state.propositions, (p, id) => id !== action.meta.requestPayload.proposition.id ),
+    }),
   },
   [api.createJustification.response]: {
     next: (state, action) => {
@@ -150,21 +150,21 @@ export default handleActions({
         targetUpdates,
         unionArraysDistinctIdsCustomizer,
       )
-    }
+    },
   },
   [api.deleteJustification.response]: {
     next: (state, action) => {
       const deletedJustification = action.meta.requestPayload.justification
       const stateWithoutJustification = {
         ...state,
-        justifications: pickBy(state.justifications, (j, id) => !idEqual(id, deletedJustification.id) )
+        justifications: pickBy(state.justifications, (j, id) => !idEqual(id, deletedJustification.id) ),
       }
       const targetUpdate = makeUpdateRemovingJustificationFromTarget(deletedJustification, stateWithoutJustification)
       return {
         ...state,
         ...targetUpdate,
       }
-    }
+    },
   },
 
   [combineActions(
@@ -211,7 +211,7 @@ export default handleActions({
         justifications: {...state.justifications, [justification.id]: justification},
         justificationVotes: {...state.justificationVotes, ...entities.justificationVotes},
       }
-    }
+    },
   },
   [combineActions(
     api.verifyJustification.response,
@@ -223,7 +223,7 @@ export default handleActions({
       // Undo optimistic vote
       const {
         justificationVote: {
-          justificationId
+          justificationId,
         },
         previousJustificationVote,
       } = action.meta.requestPayload
@@ -233,7 +233,7 @@ export default handleActions({
         ...state,
         justifications: merge({}, state.justifications, {[justificationId]: justification}),
       }
-    }
+    },
   },
 
   [combineActions(
@@ -247,14 +247,14 @@ export default handleActions({
     api.tagProposition.response,
     api.antiTagProposition.response,
   )]: {
-    next: replaceOptimisticPropositionTagVote
+    next: replaceOptimisticPropositionTagVote,
   },
   [combineActions(
     api.tagProposition.response,
     api.antiTagProposition.response,
     api.unTagProposition.response,
   )]: {
-    throw: revertOptimisticPropositionTagVote
+    throw: revertOptimisticPropositionTagVote,
   },
 }, defaultState)
 
@@ -361,7 +361,7 @@ export function makeUpdateRemovingJustificationFromTarget(justification, state) 
   if (target[justificationsKey]) {
     updates[entitiesKey][targetId] = {
       ...target,
-      [justificationsKey]: filter(target[justificationsKey], (id) => !idEqual(id, justification.id))
+      [justificationsKey]: filter(target[justificationsKey], (id) => !idEqual(id, justification.id)),
     }
   }
   return updates
@@ -429,7 +429,7 @@ function createEntityUpdate(state, payloadEntities, key, customizer) {
 function optimisticPropositionTagVote(state, action) {
   const {
     propositionTagVote: optimisticPropositionTagVote,
-    prevPropositionTagVote
+    prevPropositionTagVote,
   } = action.payload
 
   const propositionId = optimisticPropositionTagVote.proposition.id
@@ -472,7 +472,7 @@ function optimisticPropositionTagUnvote(state, action) {
     prevPropositionTagVote,
   } = action.payload
   const {
-    proposition: {id: propositionId}
+    proposition: {id: propositionId},
   } = prevPropositionTagVote
   const proposition = state.propositions[propositionId]
 
@@ -482,7 +482,7 @@ function optimisticPropositionTagUnvote(state, action) {
   )
   const optimisticProposition = {
     ...proposition,
-    propositionTagVotes: optimisticPropositionTagVotes
+    propositionTagVotes: optimisticPropositionTagVotes,
   }
 
   return {
@@ -546,7 +546,7 @@ function revertOptimisticPropositionTagVote(state, action) {
   const revertedProposition = {
     ...optimisticProposition,
     propositionTagVotes: revertedPropositionTagVotes,
-    tags: revertedTags
+    tags: revertedTags,
   }
 
   return {

@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 
 const {
-  requireArgs
+  requireArgs,
 } = require('howdju-common')
 
 exports.TagsService = class TagsService {

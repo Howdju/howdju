@@ -2,7 +2,7 @@ const {
   toUser,
 } = require('./orm')
 const {
-  mapSingle
+  mapSingle,
 } = require('./daosUtil')
 const {BaseDao} = require('./BaseDao')
 

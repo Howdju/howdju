@@ -5,7 +5,7 @@ import {Button, DialogContainer as Dialog} from 'react-md'
 import get from 'lodash/get'
 
 import {
-  EditorTypes
+  EditorTypes,
 } from './reducers/editors'
 import t, {
   CANCEL_BUTTON_LABEL,
@@ -68,7 +68,7 @@ class CreateJustificationDialog extends Component {
     const addNewJustificationDialogTitle = "Add justification"
     const narrowDialogAttributes = {
       fullPage: true,
-      'aria-label': addNewJustificationDialogTitle
+      'aria-label': addNewJustificationDialogTitle,
     }
     const notNarrowDialogAttributes = {
       title: addNewJustificationDialogTitle,

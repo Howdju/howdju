@@ -1,7 +1,7 @@
 import {handleActions} from "redux-actions"
 
 import {
-  ui
+  ui,
 } from '../../actions'
 
 export default handleActions({

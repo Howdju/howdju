@@ -14,7 +14,7 @@ import {
 import config from './config'
 import JustificationBranch from './JustificationBranch'
 import t, {
-  ADD_JUSTIFICATION_CALL_TO_ACTION
+  ADD_JUSTIFICATION_CALL_TO_ACTION,
 } from './texts'
 import windowAware from "./windowAware"
 
@@ -119,7 +119,7 @@ class JustificationsTree extends Component {
                       children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                       onClick={showNewPositiveJustificationDialog}
               />
-            </div>
+            </div>,
           ])}
           {map(positiveJustifications, this.toBranch)}
         </FlipMove>,
@@ -146,10 +146,10 @@ class JustificationsTree extends Component {
                       children={t(ADD_JUSTIFICATION_CALL_TO_ACTION)}
                       onClick={showNewNegativeJustificationDialog}
               />
-            </div>
+            </div>,
           ])}
           {map(negativeJustifications, this.toBranch)}
-        </FlipMove>
+        </FlipMove>,
       ]
     }
 

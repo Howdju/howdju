@@ -29,7 +29,7 @@ const editorId = 'persorgPageEditorId'
 interface MatchParams {
   persorgId: EntityId;
 }
-interface Props extends RouteComponentProps<MatchParams> {}
+type Props = RouteComponentProps<MatchParams>
 
 export default function PersorgPage(props: Props) {
 
@@ -38,7 +38,7 @@ export default function PersorgPage(props: Props) {
   useEffect(() => {
     dispatch(api.fetchPersorg(persorgId))
     dispatch(api.fetchSpeakerStatements(persorgId))
-  }, [persorgId])
+  }, [dispatch, persorgId])
 
   const entities = useAppSelector(state => state.entities)
   const persorg = denormalize(persorgId, persorgSchema, entities)
@@ -75,7 +75,7 @@ export default function PersorgPage(props: Props) {
           key="edit"
           leftIcon={<FontIcon>edit</FontIcon>}
           onClick={editPersorg}
-        />
+        />,
       ]}
     />
   )

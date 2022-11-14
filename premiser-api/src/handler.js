@@ -17,10 +17,10 @@ const uuid = require('uuid')
 sourceMapSupport.install()
 
 const {
-  httpStatusCodes
+  httpStatusCodes,
 } = require('howdju-common')
 const {
-  configureGatewayContext
+  configureGatewayContext,
 } = require('howdju-service-common')
 
 const {routeRequest} = require('./route')
@@ -28,7 +28,7 @@ const {apiHost} = require('./config/util')
 const customHeaderKeys = require('./customHeaderKeys')
 const headerKeys = require('./headerKeys')
 const {
-  AppProvider
+  AppProvider,
 } = require('./init')
 
 

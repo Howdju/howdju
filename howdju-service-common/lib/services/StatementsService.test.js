@@ -5,14 +5,14 @@ const {
 } = require('lodash')
 
 const {
-  mockLogger
+  mockLogger,
 } = require('howdju-test-common')
 const {
-  SentenceTypes
+  SentenceTypes,
 } = require('howdju-common')
 
 const {
-  StatementsService
+  StatementsService,
 } = require('./StatementsService')
 
 describe('StatementsService', () => {
@@ -36,17 +36,17 @@ describe('StatementsService', () => {
         name: 'Doom Corp.',
       }
       const proposition = {
-        text: 'What if a much of a which of a wind'
+        text: 'What if a much of a which of a wind',
       }
       const innerStatement = {
         speaker: speaker1,
         sentenceType: SentenceTypes.PROPOSITION,
-        sentence: proposition
+        sentence: proposition,
       }
       const statement = {
         speaker: speaker2,
         sentenceType: SentenceTypes.STATEMENT,
-        sentence: innerStatement
+        sentence: innerStatement,
       }
       const statementsDao = {
         createStatement: sinon.fake((statement) => {
@@ -58,7 +58,7 @@ describe('StatementsService', () => {
           }
           return copy
         }),
-        readEquivalentStatement: sinon.fake.returns(null)
+        readEquivalentStatement: sinon.fake.returns(null),
       }
       const persorgsService = {
         readOrCreateValidPersorgAsUser: sinon.fake((persorg) => {
@@ -69,32 +69,32 @@ describe('StatementsService', () => {
             copy.id = speaker2Id
           }
           return {persorg: copy}
-        })
+        }),
       }
       const propositionsService = {
         readOrCreateValidPropositionAsUser: sinon.fake((proposition) => {
           const copy = clone(proposition)
           copy.id = propositionId
           return {proposition: copy}
-        })
+        }),
       }
       const statementsService = new StatementsService(mockLogger, {}, statementsDao, persorgsService, propositionsService)
       const expected = merge({
         id: statementId,
         rootPropositionId: propositionId,
         speaker: {
-          id: speaker2Id
+          id: speaker2Id,
         },
         sentence: {
           id: innerStatementId,
           rootPropositionId: propositionId,
           speaker: {
-            id: speaker1Id
+            id: speaker1Id,
           },
           sentence: {
-            id: propositionId
-          }
-        }
+            id: propositionId,
+          },
+        },
       }, statement)
 
       const {statement: actual} = await statementsService.doReadOrCreate(statement, userId, now)

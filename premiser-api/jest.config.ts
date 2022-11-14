@@ -7,4 +7,4 @@ const config: Config = {
   testPathIgnorePatterns: ["src/config/config\\.test\\.js"],
 }
 
-export default merge(baseConfig, config);
+export default merge(baseConfig, config)

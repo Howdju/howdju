@@ -1,5 +1,5 @@
 /* Hot module replace needs these dynamic import globals */
-/* globals module require */
+/* globals module */
 import {ActionCreator, Reducer, AnyAction} from 'redux'
 import { configureStore, PreloadedState } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
@@ -7,7 +7,7 @@ import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
 import createSagaMiddleware from 'redux-saga'
 
-import createRootReducer from './reducers/index'
+import createRootReducer from './reducers'
 import {logger} from './logger'
 import config from './config'
 import {history} from './history'
@@ -25,9 +25,9 @@ const sagaMiddleware = createSagaMiddleware({
       extra: {
         source: 'howdju/redux-saga',
         sagaStack,
-      }
+      },
     })
-  }
+  },
 })
 
 const rootReducer = createRootReducer(history)
@@ -52,21 +52,20 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
       traceLimit: config.reduxDevtoolsExtension.traceLimit,
     } : false,
   })
-  let rootTask = sagaMiddleware.run(function* () {
+  let rootTask = sagaMiddleware.run(function* saga() {
     yield getSagas()
   })
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
-    module.hot.accept('./reducers/index', () => {
+    module.hot.accept('./reducers', () => {
       store.replaceReducer(createRootReducer(history) as unknown as Reducer<RootState, AnyAction>)
     })
     module.hot.accept('./sagas', () => {
-      const getNewSagas = require('./sagas').default
       rootTask.cancel()
       rootTask.toPromise().then(() => {
-        rootTask = sagaMiddleware.run(function* replacedSaga() {
-          yield getNewSagas()
+        rootTask = sagaMiddleware.run(function* saga() {
+          yield getSagas()
         })
       })
     })

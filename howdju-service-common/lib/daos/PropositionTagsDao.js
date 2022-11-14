@@ -1,7 +1,7 @@
 const forEach = require('lodash/forEach')
 
 const {
-  PropositionTagVotePolarities
+  PropositionTagVotePolarities,
 } = require('howdju-common')
 
 const {

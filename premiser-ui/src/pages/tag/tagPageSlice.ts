@@ -15,7 +15,7 @@ export const tagPageSlice = createSlice({
   name: "tagPage",
   initialState,
   reducers: {
-    clearTaggedPropositions: () => initialState
+    clearTaggedPropositions: () => initialState,
   },
   extraReducers(builder) {
     builder.addCase(api.fetchTaggedPropositions, (state, action: PayloadAction<{tagId: EntityId}>) => {

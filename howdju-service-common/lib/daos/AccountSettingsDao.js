@@ -3,10 +3,10 @@ const {
 } = require('howdju-common')
 
 const {
-  toAccountSettings
+  toAccountSettings,
 } = require('./orm')
 const {
-  BaseDao
+  BaseDao,
 } = require('./BaseDao')
 
 

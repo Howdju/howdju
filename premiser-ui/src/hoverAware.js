@@ -27,6 +27,6 @@ export default function hoverAware(WrappedComponent) {
 
 function mapStateToProps(state) {
   return {
-    canHover: selectCanHover(state)
+    canHover: selectCanHover(state),
   }
 }

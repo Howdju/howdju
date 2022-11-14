@@ -54,18 +54,19 @@ exports.JustificationScoresService = class JustificationScoresService {
     const startedAt = utcNow()
     const jobType = JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM
     return this.jobHistoryDao.createJobHistory(jobType, JobScopes.FULL, startedAt)
-      // TODO(1,2,3): remove exception
-      // eslint-disable-next-line promise/no-nesting
       .then( (job) => Promise.all([
         this.justificationVotesDao.readVotes(),
-        this.justificationScoresDao.deleteScoresForType(JustificationScoreTypes.GLOBAL_VOTE_SUM, job.startedAt, job.id)
+        this.justificationScoresDao.deleteScoresForType(JustificationScoreTypes.GLOBAL_VOTE_SUM, job.startedAt, job.id),
       ])
+        // TODO(1,2,3): remove exception
+        // eslint-disable-next-line promise/no-nesting
         .then( ([votes, deletions]) => {
           this.logger.info(`Deleted ${deletions.length} scores`)
           this.logger.debug(`Recalculating scores based upon ${votes.length} votes`)
           return votes
         })
         .then( (votes) => this.processVoteScores(job, votes, this.createJustificationScore))
+        // eslint-disable-next-line promise/no-nesting
         .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
         .then( () => {
           const completedAt = utcNow()
@@ -84,17 +85,17 @@ exports.JustificationScoresService = class JustificationScoresService {
     this.logger.silly(`Starting updateJustificationScoresUsingUnscoredVotes at ${startedAt}`)
     return this.jobHistoryDao.createJobHistory(JobTypes.SCORE_JUSTIFICATIONS_BY_GLOBAL_VOTE_SUM, JobScopes.INCREMENTAL, startedAt)
 
-      // TODO(1,2,3): remove exception
-      // eslint-disable-next-line promise/no-nesting
       .then( (job) =>
-        // TODO(1,2,3): remove exception
-        // eslint-disable-next-line promise/no-nesting
         this.justificationScoresDao.readUnscoredVotesForScoreType(JustificationScoreTypes.GLOBAL_VOTE_SUM)
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           .then( (votes) => {
             this.logger.debug(`Recalculating scores based upon ${votes.length} votes since last run`)
             return votes
           })
           .then( (votes) => this.processVoteScores(job, votes, this.createSummedJustificationScore))
+          // TODO(1,2,3): remove exception
+          // eslint-disable-next-line promise/no-nesting
           .then( (updates) => this.logger.info(`Recalculated ${updates.length} scores`))
           .then( () => {
             const completedAt = utcNow()

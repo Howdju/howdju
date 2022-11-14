@@ -1,5 +1,3 @@
-/*global require module __dirname*/
-
 const path = require('path')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
@@ -22,12 +20,12 @@ module.exports = (env, argv) => ({
         {from: 'icons/**/*'},
         // `to: "[name][ext]"` flattens the files
         {from: 'src/*.css', to: "[name][ext]"},
-        {from: 'src/*.html', to: "[name][ext]"}
-      ]
+        {from: 'src/*.html', to: "[name][ext]"},
+      ],
     }),
   ],
   resolve: {
-    extensions: ['.js']
+    extensions: ['.js'],
   },
   module: {
     rules: [
@@ -38,8 +36,8 @@ module.exports = (env, argv) => ({
           cacheDirectory: true,
           rootMode: "upward",
         },
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
     ],
-  }
+  },
 })

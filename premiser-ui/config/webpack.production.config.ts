@@ -9,7 +9,7 @@ import { utcTimestamp } from 'howdju-common'
 import { gitSha } from "howdju-ops"
 import packageInfo from '../package.json'
 import projectConfig from './project.config'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
+import type HtmlWebpackPlugin from 'html-webpack-plugin'
 
 export const htmlWebpackPluginConfig: HtmlWebpackPlugin.Options = {
   smallChat: true,

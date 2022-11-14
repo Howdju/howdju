@@ -35,10 +35,10 @@ export default class LandingPage extends Component {
   render() {
     const id = 'landing-page'
     const rootProposition = makeProposition({
-      text: 'By law, no building in Washington, D.C. may be taller than the Capitol building'
+      text: 'By law, no building in Washington, D.C. may be taller than the Capitol building',
     })
     const proJustificationProposition = makeProposition({
-      text: 'The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)'
+      text: 'The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)',
     })
     const proJustification = makeJustificationViewModel({
       target: {
@@ -49,7 +49,7 @@ export default class LandingPage extends Component {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: makePropositionCompound({
           atoms: [makePropositionCompoundAtomFromProposition(proJustificationProposition)],
-        })
+        }),
       },
     })
     const proJustificationJustification = makeSourceExcerptJustification({
@@ -68,8 +68,8 @@ export default class LandingPage extends Component {
           urls: [
             {url: 'https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf'},
           ],
-        })
-      }
+        }),
+      },
     })
 
     const proTrailItems = [{
@@ -82,7 +82,7 @@ export default class LandingPage extends Component {
     }]
 
     const conJustificationProposition = makeProposition({
-      text: 'In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet '
+      text: 'In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ',
     })
     const conJustification = makeJustificationViewModel({
       target: {
@@ -94,7 +94,7 @@ export default class LandingPage extends Component {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: makePropositionCompound({
           atoms: [makePropositionCompoundAtomFromProposition(conJustificationProposition)],
-        })
+        }),
       },
     })
     const conJustificationJustification = makeSourceExcerptJustification({
@@ -113,8 +113,8 @@ export default class LandingPage extends Component {
           urls: [
             {url: 'https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05'},
           ],
-        })
-      }
+        }),
+      },
     })
 
     const conTrailItems = [{
@@ -132,9 +132,9 @@ export default class LandingPage extends Component {
       type: JustificationBasisTypes.PROPOSITION_COMPOUND,
       entity: makePropositionCompound({
         atoms: [makePropositionCompoundAtomFromProposition(makeProposition({
-          text: 'The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.'
+          text: 'The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.',
         }))],
-      })
+      }),
     }
     const proJustificationCountered = cloneDeep(proJustification)
     proJustificationCountered.counterJustifications = [counterJustification]

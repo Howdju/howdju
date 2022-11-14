@@ -32,14 +32,14 @@ const {
 const ok = ({callback, body={}, headers}) => callback({
   httpStatusCode: httpStatusCodes.OK,
   headers,
-  body
+  body,
 })
 /* eslint-disable no-unused-vars */
 const noContent = (appProvider, args) => {
   // NO CONTENT must not have a body. https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204
   if (args.body) appProvider.logger.error('noContent may not return a body.  Ignoring body')
   return args.callback({
-    httpStatusCode: httpStatusCodes.NO_CONTENT
+    httpStatusCode: httpStatusCodes.NO_CONTENT,
   })
 }
 const notFound = ({callback, body}) => callback({
@@ -48,7 +48,7 @@ const notFound = ({callback, body}) => callback({
 })
 const unauthenticated = ({callback, body={errorCode: apiErrorCodes.UNAUTHENTICATED} }) => callback({
   httpStatusCode: httpStatusCodes.UNAUTHORIZED,
-  body
+  body,
 })
 const unauthorized = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.FORBIDDEN,
@@ -56,11 +56,11 @@ const unauthorized = ({callback, body}) => callback({
 })
 const badRequest = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.BAD_REQUEST,
-  body
+  body,
 })
 const error = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.ERROR,
-  body
+  body,
 })
 const conflict = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.CONFLICT,
@@ -73,7 +73,7 @@ const routes = [
    */
   {
     method: httpMethods.OPTIONS,
-    handler: (appProvider, {callback}) => ok({callback})
+    handler: (appProvider, {callback}) => ok({callback}),
   },
 
   /*
@@ -86,11 +86,11 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {
-        queryStringParameters: { searchText }
-      }
+        queryStringParameters: { searchText },
+      },
     }) =>
       appProvider.propositionsTextSearcher.search(searchText)
-        .then( (rankedPropositions) => ok({callback, body: rankedPropositions}))
+        .then( (rankedPropositions) => ok({callback, body: rankedPropositions})),
   },
   {
     id: 'searchTags',
@@ -99,11 +99,11 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {
-        queryStringParameters: { searchText }
-      }
+        queryStringParameters: { searchText },
+      },
     }) =>
       appProvider.tagsService.readTagsLikeTagName(searchText)
-        .then( (rankedPropositions) => ok({callback, body: rankedPropositions}))
+        .then( (rankedPropositions) => ok({callback, body: rankedPropositions})),
   },
   {
     id: 'searchWrits',
@@ -112,11 +112,11 @@ const routes = [
     handler: (appProvider, {
       callback,
       request: {
-        queryStringParameters: { searchText }
+        queryStringParameters: { searchText },
       },
     }) =>
       appProvider.writsTitleSearcher.search(searchText)
-        .then( (rankedWrits) => ok({callback, body: rankedWrits}))
+        .then( (rankedWrits) => ok({callback, body: rankedWrits})),
   },
   {
     id: 'searchPersorgs',
@@ -125,12 +125,12 @@ const routes = [
     async handler(appProvider, {
       callback,
       request: {
-        queryStringParameters: { searchText }
+        queryStringParameters: { searchText },
       },
     }) {
       const rankedPersorgs = await appProvider.persorgsNameSearcher.search(searchText)
       return ok({callback, body: rankedPersorgs})
-    }
+    },
   },
   {
     id: 'mainSearch',
@@ -138,7 +138,7 @@ const routes = [
     method: httpMethods.GET,
     handler: (appProvider, {callback, request: { queryStringParameters: { searchText }}}) =>
       appProvider.mainSearchService.search(searchText)
-        .then( (results) => ok({callback, body: results}))
+        .then( (results) => ok({callback, body: results})),
   },
 
   {
@@ -149,9 +149,9 @@ const routes = [
       callback,
       request: {
         pathParameters: [tagId],
-      }
+      },
     }) => appProvider.tagsService.readTagForId(tagId)
-      .then( tag => ok({callback, body: {tag}}))
+      .then( tag => ok({callback, body: {tag}})),
   },
 
   /*
@@ -169,7 +169,7 @@ const routes = [
       },
       callback,
     }) => appProvider.propositionsService.readPropositionsForTagId(tagId, {authToken})
-      .then((propositions) => ok({callback, body: {propositions}}))
+      .then((propositions) => ok({callback, body: {propositions}})),
   },
   {
     id: 'readPropositions',
@@ -177,7 +177,7 @@ const routes = [
     method: httpMethods.GET,
     handler: (appProvider, {
       request,
-      callback
+      callback,
     }) => {
       const {
         sorts: encodedSorts,
@@ -194,7 +194,7 @@ const routes = [
         return appProvider.propositionsService.readPropositions({sorts, continuationToken, count})
           .then( ({propositions, continuationToken}) => ok({callback, body: {propositions, continuationToken}}) )
       }
-    }
+    },
   },
   {
     id: 'createProposition',
@@ -206,11 +206,11 @@ const routes = [
         authToken,
         body: {proposition},
         method,
-        path
-      }
+        path,
+      },
     }) => appProvider.propositionsService.readOrCreateProposition(authToken, proposition)
       .then( ({proposition, isExtant}) => ok({callback, body: {proposition, isExtant}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('proposition'))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('proposition')),
   },
   {
     id: 'readProposition',
@@ -223,9 +223,9 @@ const routes = [
       request: {
         pathParameters: [propositionId],
         authToken,
-      }
+      },
     }) => appProvider.propositionsService.readPropositionForId(propositionId, {authToken})
-      .then( proposition => ok({callback, body: {proposition}}))
+      .then( proposition => ok({callback, body: {proposition}})),
   },
   {
     id: 'updateProposition',
@@ -236,10 +236,10 @@ const routes = [
       request: {
         authToken,
         body: {proposition},
-      }
+      },
     }) => appProvider.propositionsService.updateProposition(authToken, proposition)
       .then( (proposition) => ok({callback, body: {proposition}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('proposition'))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('proposition')),
   },
   {
     id: 'deleteProposition',
@@ -250,10 +250,10 @@ const routes = [
       request: {
         authToken,
         pathParameters: [propositionId],
-      }
+      },
     }) => appProvider.propositionsService.deleteProposition(authToken, propositionId)
       .then( () => ok({callback}) )
-      .catch(AuthorizationError, rethrowTranslatedErrors('proposition'))
+      .catch(AuthorizationError, rethrowTranslatedErrors('proposition')),
   },
 
   /*
@@ -267,11 +267,11 @@ const routes = [
       callback,
       request: {
         authToken,
-        body: {statement: inStatement}}
+        body: {statement: inStatement}},
     }) {
       const {isExtant, statement} = await appProvider.statementsService.readOrCreate(inStatement, authToken)
       return ok({callback, body: {isExtant, statement}})
-    }
+    },
   },
   {
     id: 'readSpeakerStatements',
@@ -282,11 +282,11 @@ const routes = [
       callback,
       request: {
         queryStringParameters: {speakerPersorgId},
-      }
+      },
     }) {
       const statements = await appProvider.statementsService.readStatementsForSpeakerPersorgId(speakerPersorgId)
       return ok({callback, body: {statements}})
-    }
+    },
   },
   {
     id: 'readSentenceStatements',
@@ -303,11 +303,11 @@ const routes = [
           sentenceType,
           sentenceId,
         },
-      }
+      },
     }) {
       const statements = await appProvider.statementsService.readStatementsForSentenceTypeAndId(sentenceType, sentenceId)
       return ok({callback, body: {statements}})
-    }
+    },
   },
   {
     id: 'readIndirectRootPropositionStatements',
@@ -321,11 +321,11 @@ const routes = [
       callback,
       request: {
         queryStringParameters: {rootPropositionId},
-      }
+      },
     }) {
       const statements = await appProvider.statementsService.readIndirectStatementsForRootPropositionId(rootPropositionId)
       return ok({callback, body: {statements}})
-    }
+    },
   },
   {
     id: 'readRootPropositionStatements',
@@ -338,11 +338,11 @@ const routes = [
       callback,
       request: {
         queryStringParameters: {rootPropositionId},
-      }
+      },
     }) {
       const statements = await appProvider.statementsService.readStatementsForRootPropositionId(rootPropositionId)
       return ok({callback, body: {statements}})
-    }
+    },
   },
   {
     id: 'readStatement',
@@ -353,12 +353,12 @@ const routes = [
     async handler(appProvider, {
       callback,
       request: {
-        pathParameters: [statementId]
-      }
+        pathParameters: [statementId],
+      },
     }) {
       const {statement} = await appProvider.statementsService.readStatementForId(statementId)
       return ok({callback, body: {statement}})
-    }
+    },
   },
 
   /*
@@ -371,12 +371,12 @@ const routes = [
     async handler(appProvider, {
       callback,
       request: {
-        pathParameters: [persorgId]
-      }
+        pathParameters: [persorgId],
+      },
     }) {
       const persorg = await appProvider.persorgsService.readPersorgForId(persorgId)
       return ok({callback, body: {persorg}})
-    }
+    },
   },
   {
     id: 'updatePersorg',
@@ -387,12 +387,12 @@ const routes = [
       request: {
         authToken,
         body: {
-          persorg
-        }
-      }
+          persorg,
+        },
+      },
     }) => Promise.resolve(appProvider.persorgsService.update(persorg, authToken))
       .then( (persorg) => ok({callback, body: {persorg}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('persorg'))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('persorg')),
   },
 
   /*
@@ -403,38 +403,38 @@ const routes = [
     path: new RegExp('^propositions/([^/]+)$'),
     method: httpMethods.GET,
     queryStringParameters: {
-      include: 'justifications'
+      include: 'justifications',
     },
     handler: async (appProvider, {
       callback,
       request: {
         pathParameters: [propositionId],
         authToken,
-      }
+      },
     }) => {
       const proposition = await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
         JustificationRootTargetTypes.PROPOSITION, propositionId, authToken)
       return ok({callback, body: {proposition}})
-    }
+    },
   },
   {
     id: 'readStatementJustifications',
     path: new RegExp('^statements/([^/]+)$'),
     method: httpMethods.GET,
     queryStringParameters: {
-      include: 'justifications'
+      include: 'justifications',
     },
     handler: async (appProvider, {
       callback,
       request: {
         pathParameters: [statementId],
         authToken,
-      }
+      },
     }) => {
       const statement = await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
         JustificationRootTargetTypes.STATEMENT, statementId, authToken)
       return ok({callback, body: {statement}})
-    }
+    },
   },
 
   /*
@@ -450,9 +450,9 @@ const routes = [
       request: {
         pathParameters: [propositionCompoundId],
         authToken,
-      }
+      },
     }) => appProvider.propositionCompoundsService.readPropositionCompoundForId(propositionCompoundId, {authToken})
-      .then( (propositionCompound) => ok({callback, body: {propositionCompound}}))
+      .then( (propositionCompound) => ok({callback, body: {propositionCompound}})),
   },
 
   /*
@@ -468,9 +468,9 @@ const routes = [
       request: {
         pathParameters: [justificationBasisCompoundId],
         authToken,
-      }
+      },
     }) => appProvider.justificationBasisCompoundsService.readJustificationBasisCompoundForId(justificationBasisCompoundId, {authToken})
-      .then( (justificationBasisCompound) => ok({callback, body: {justificationBasisCompound}}) )
+      .then( (justificationBasisCompound) => ok({callback, body: {justificationBasisCompound}}) ),
   },
 
   /*
@@ -486,9 +486,9 @@ const routes = [
       request: {
         pathParameters: [sourceExcerptParaphraseId],
         authToken,
-      }
+      },
     }) => appProvider.sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {authToken})
-      .then( (sourceExcerptParaphrase) => ok({callback, body: {sourceExcerptParaphrase}}) )
+      .then( (sourceExcerptParaphrase) => ok({callback, body: {sourceExcerptParaphrase}}) ),
   },
 
   /*
@@ -503,12 +503,12 @@ const routes = [
       request: {
         authToken,
         body: {
-          justification
+          justification,
         },
-      }
+      },
     }) => Promise.resolve(appProvider.justificationsService.readOrCreate(justification, authToken))
       .then( ({justification, isExtant}) => ok({callback, body: {justification, isExtant}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification'))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('justification')),
   },
   {
     id: 'readJustifications',
@@ -528,7 +528,7 @@ const routes = [
         await appProvider.justificationsService.readJustifications(
           {filters, sorts, continuationToken, count, includeUrls})
       return ok({callback, body: {justifications, continuationToken: newContinuationToken}})
-    }
+    },
   },
   {
     id: 'deleteJustification',
@@ -540,11 +540,11 @@ const routes = [
         authToken,
         method,
         path,
-        pathParameters: [justificationId]
-      }
+        pathParameters: [justificationId],
+      },
     }) => appProvider.justificationsService.deleteJustification(authToken, justificationId)
       .then( () => ok({callback}) )
-      .catch(AuthorizationError, rethrowTranslatedErrors('justification'))
+      .catch(AuthorizationError, rethrowTranslatedErrors('justification')),
   },
 
   /*
@@ -559,16 +559,16 @@ const routes = [
       request: {
         authToken,
         body: {
-          writQuote
-        }
-      }
+          writQuote,
+        },
+      },
     }) => Promise.resolve(appProvider.writQuotesService.createWritQuote({authToken, writQuote}))
       .then(({writQuote, alreadyExists}) => ok({callback, body: {writQuote, alreadyExists}}))
       .catch(
         EntityValidationError,
         EntityConflictError,
         UserActionsConflictError,
-        rethrowTranslatedErrors('writQuote'))
+        rethrowTranslatedErrors('writQuote')),
   },
   {
     id: 'readWritQuotes',
@@ -583,7 +583,7 @@ const routes = [
       const sorts = decodeSorts(encodedSorts)
       return appProvider.writQuotesService.readWritQuotes({sorts, continuationToken, count})
         .then( ({writQuotes, continuationToken}) => ok({callback, body: {writQuotes, continuationToken}}))
-    }
+    },
   },
   {
     id: 'readWritQuote',
@@ -594,11 +594,11 @@ const routes = [
       request: {
         pathParameters: [writQuoteId],
         authToken,
-      }
+      },
     }) => {
       return appProvider.writQuotesService.readWritQuoteForId(writQuoteId, {authToken})
         .then( (writQuote) => ok({callback, body: {writQuote}}))
-    }
+    },
   },
   {
     id: 'updateWritQuote',
@@ -609,12 +609,12 @@ const routes = [
       request: {
         authToken,
         body: {
-          writQuote
-        }
-      }
+          writQuote,
+        },
+      },
     }) => appProvider.writQuotesService.updateWritQuote({authToken, writQuote})
       .then( (writQuote) => ok({callback, body: {writQuote}}))
-      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('writQuote'))
+      .catch(EntityValidationError, EntityConflictError, UserActionsConflictError, rethrowTranslatedErrors('writQuote')),
   },
 
   /*
@@ -633,7 +633,7 @@ const routes = [
       const sorts = decodeSorts(encodedSorts)
       return appProvider.writsService.readWrits({sorts, continuationToken, count})
         .then( ({writs, continuationToken}) => ok({callback, body: {writs, continuationToken}}))
-    }
+    },
   },
 
   /*
@@ -649,7 +649,7 @@ const routes = [
         .catch(EntityNotFoundError, () => {
           // Hide EntityNotFoundError to prevent someone from learning that an email does or does not correspond to an account
           throw new InvalidLoginError()
-        })
+        }),
   },
   {
     id: 'logout',
@@ -657,7 +657,7 @@ const routes = [
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {authToken}}) =>
       appProvider.authService.logout(authToken)
-        .then( () => ok({callback}) )
+        .then( () => ok({callback}) ),
   },
   {
     id: 'requestPasswordReset',
@@ -665,7 +665,7 @@ const routes = [
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {passwordResetRequest}}}) =>
       Promise.resolve(appProvider.passwordResetService.createRequest(passwordResetRequest))
-        .then( (duration) => ok({callback, body: {duration}}))
+        .then( (duration) => ok({callback, body: {duration}})),
   },
   {
     id: 'readPasswordReset',
@@ -673,7 +673,7 @@ const routes = [
     method: httpMethods.GET,
     handler: (appProvider, {callback, request: {queryStringParameters: {passwordResetCode}}}) =>
       Promise.resolve(appProvider.passwordResetService.checkRequestForCode(passwordResetCode))
-        .then( (email) => ok({callback, body: {email}}))
+        .then( (email) => ok({callback, body: {email}})),
   },
   {
     id: 'completePasswordReset',
@@ -685,10 +685,10 @@ const routes = [
         body: {
           passwordResetCode,
           passwordResetConfirmation,
-        }
+        },
       }}) =>
       Promise.resolve(appProvider.passwordResetService.resetPasswordAndLogin(passwordResetCode, passwordResetConfirmation))
-        .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}}))
+        .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}})),
   },
   {
     id: 'requestRegistration',
@@ -697,7 +697,7 @@ const routes = [
     handler: (appProvider, {callback, request: {body: {registrationRequest}}}) =>
       Promise.resolve(appProvider.registrationService.createRequest(registrationRequest))
         .then( (duration) => ok({callback, body: {duration}}) )
-        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationRequest'))
+        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationRequest')),
   },
   {
     id: 'readRegistrationRequest',
@@ -705,7 +705,7 @@ const routes = [
     method: httpMethods.GET,
     handler: (appProvider, {callback, request: {queryStringParameters: {registrationCode}}}) =>
       Promise.resolve(appProvider.registrationService.checkRequestForCode(registrationCode))
-        .then( (email) => ok({callback, body: {email}}) )
+        .then( (email) => ok({callback, body: {email}}) ),
   },
   {
     id: 'register',
@@ -714,7 +714,7 @@ const routes = [
     handler: (appProvider, {callback, request: {body: {registrationConfirmation}}}) =>
       Promise.resolve(appProvider.registrationService.confirmRegistrationAndLogin(registrationConfirmation))
         .then( ({user, authToken, expires}) => ok({callback, body: {user, authToken, expires}}) )
-        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationConfirmation'))
+        .catch(EntityValidationError, EntityConflictError, rethrowTranslatedErrors('registrationConfirmation')),
   },
 
   /*
@@ -728,12 +728,12 @@ const routes = [
       callback,
       request: {
         body: {
-          justificationVote
+          justificationVote,
         },
-        authToken
-      }
+        authToken,
+      },
     }) => appProvider.justificationVotesService.createVote(authToken, justificationVote)
-      .then( (justificationVote) => ok({callback, body: {justificationVote}}))
+      .then( (justificationVote) => ok({callback, body: {justificationVote}})),
   },
   {
     id: 'deleteJustificationVote',
@@ -744,10 +744,10 @@ const routes = [
       request: {
         body: {justificationVote},
         authToken,
-      }
+      },
     }) =>
       appProvider.justificationVotesService.deleteVote(authToken, justificationVote)
-        .then( () => ok({callback}) )
+        .then( () => ok({callback}) ),
   },
 
   {
@@ -759,9 +759,9 @@ const routes = [
       request: {
         body: {propositionTagVote},
         authToken,
-      }
+      },
     }) => appProvider.propositionTagVotesService.readOrCreatePropositionTagVote(authToken, propositionTagVote)
-      .then( (propositionTagVote) => ok({callback, body: {propositionTagVote}}))
+      .then( (propositionTagVote) => ok({callback, body: {propositionTagVote}})),
   },
   {
     id: 'deletePropositionTagVote',
@@ -772,9 +772,9 @@ const routes = [
       request: {
         pathParameters: [propositionTagVoteId],
         authToken,
-      }
+      },
     }) => appProvider.propositionTagVotesService.deletePropositionTagVoteForId(authToken, propositionTagVoteId)
-      .then(() => ok({callback}))
+      .then(() => ok({callback})),
   },
 
   /*
@@ -786,7 +786,7 @@ const routes = [
     method: httpMethods.POST,
     handler: (appProvider, {callback, request: {body: {authToken, user}}}) =>
       appProvider.usersService.createUserAsAuthToken(authToken, user)
-        .then( (user) => ok({callback, body: {user}}))
+        .then( (user) => ok({callback, body: {user}})),
   },
 
   /*
@@ -801,9 +801,9 @@ const routes = [
     },
     handler: (appProvider, {
       callback,
-      request: {authToken}
+      request: {authToken},
     }) => appProvider.perspectivesService.readFeaturedPerspectives(authToken)
-      .then( (perspectives) => ok({callback, body: {perspectives}}) )
+      .then( (perspectives) => ok({callback, body: {perspectives}}) ),
   },
 
   /*
@@ -819,10 +819,10 @@ const routes = [
         authToken,
         body: {
           accountSettings,
-        }
+        },
       },
     }) => appProvider.accountSettingsService.createAccountSettings(authToken, accountSettings)
-      .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
+      .then( (accountSettings) => ok({callback, body: {accountSettings}}) ),
   },
   {
     id: 'readAccountSettings',
@@ -833,7 +833,7 @@ const routes = [
       request: {authToken},
     }) => Promise.resolve(appProvider.accountSettingsService.readOrCreateAccountSettings(authToken))
       .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
-      .catch(RequestValidationError, e => badRequest({callback, body: {message: e.message}}))
+      .catch(RequestValidationError, e => badRequest({callback, body: {message: e.message}})),
   },
   {
     id: 'updateAccountSettings',
@@ -845,10 +845,10 @@ const routes = [
         authToken,
         body: {
           accountSettings,
-        }
+        },
       },
     }) => appProvider.accountSettingsService.update(accountSettings, authToken)
-      .then( (accountSettings) => ok({callback, body: {accountSettings}}) )
+      .then( (accountSettings) => ok({callback, body: {accountSettings}}) ),
   },
 
   /*
@@ -864,10 +864,10 @@ const routes = [
         authToken,
         body: {
           contentReport,
-        }
+        },
       },
     }) => appProvider.contentReportsService.createContentReport(authToken, contentReport)
-      .then( (accountSettings) => ok({callback}) )
+      .then( (accountSettings) => ok({callback}) ),
   },
 ]
 
@@ -875,7 +875,7 @@ const selectRoute = (appProvider) => (request) => {
   const {
     path,
     method,
-    queryStringParameters
+    queryStringParameters,
   } = request
 
   for (let route of routes) {
@@ -931,8 +931,8 @@ const routeRequest = (request, appProvider, callback) =>
       callback,
       body: {
         errorCode: apiErrorCodes.VALIDATION_ERROR,
-        errors: e.errors
-      }
+        errors: e.errors,
+      },
     }))
     .catch(RequestValidationError, e => badRequest({callback, body: {message: e.message}}))
     .catch(EntityNotFoundError, e => notFound({
@@ -940,8 +940,8 @@ const routeRequest = (request, appProvider, callback) =>
       body: {
         errorCode: apiErrorCodes.ENTITY_NOT_FOUND,
         entityType: e.entityType,
-        identifier: e.identifier
-      }
+        identifier: e.identifier,
+      },
     }))
     .catch(NoMatchingRouteError, e => notFound({ callback, body: {errorCode: apiErrorCodes.ROUTE_NOT_FOUND} }))
     .catch(AuthenticationError, e => unauthenticated({callback}))
@@ -949,47 +949,47 @@ const routeRequest = (request, appProvider, callback) =>
       callback,
       body: {
         errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS,
-        errors: e.errors
-      }
+        errors: e.errors,
+      },
     }))
     .catch(AuthorizationError, e => unauthorized({
       callback,
       body: {
         errorCode: apiErrorCodes.AUTHORIZATION_ERROR,
-        errors: e.errors
-      }
+        errors: e.errors,
+      },
     }))
     .catch(UserIsInactiveError, e => error({
       callback,
       body: {
-        errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR
-      }
+        errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR,
+      },
     }))
     .catch(EntityConflictError, e => conflict({
       callback,
       body: {
         errorCode: apiErrorCodes.ENTITY_CONFLICT,
-        errors: e.errors
-      }
+        errors: e.errors,
+      },
     }))
     .catch(UserActionsConflictError, e => error({
       callback,
       body: {
         errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT,
-        errors: e.errors
-      }
+        errors: e.errors,
+      },
     }))
     .catch(RegistrationExpiredError, e => notFound({
       callback,
       body: {
-        errorCode: apiErrorCodes.EXPIRED
-      }
+        errorCode: apiErrorCodes.EXPIRED,
+      },
     }))
     .catch(RegistrationAlreadyConsumedError, e => notFound({
       callback,
       body: {
-        errorCode: apiErrorCodes.CONSUMED
-      }
+        errorCode: apiErrorCodes.CONSUMED,
+      },
     }))
     .catch(err => {
       appProvider.logger.error('Unexpected error', {err, stack: err.stack})

@@ -10,7 +10,7 @@ const {
   makeRegistrationConfirmation,
 } = require('howdju-common')
 const {
-  mockLogger
+  mockLogger,
 } = require('howdju-test-common')
 
 const {
@@ -39,7 +39,7 @@ describe('RegistrationService', () => {
       const registrationConfirmation = {}
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns({
-          isConsumed: true
+          isConsumed: true,
         }),
       }
       const service = new RegistrationService(mockLogger, null, null, null, null, registrationRequestsDao)
@@ -52,7 +52,7 @@ describe('RegistrationService', () => {
 
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns({
-          expires: momentSubtract(utcNow(), [1, 'minute'])
+          expires: momentSubtract(utcNow(), [1, 'minute']),
         }),
       }
       const service = new RegistrationService(mockLogger, null, null, null, null, registrationRequestsDao)
@@ -63,14 +63,14 @@ describe('RegistrationService', () => {
     test('consumes valid registration code and returns created user', async () => {
       const registrationRequest = makeRegistrationRequest({
         email: 'the-email',
-        expires: momentAdd(utcNow(), [5, 'minutes'])
+        expires: momentAdd(utcNow(), [5, 'minutes']),
       })
       const registrationConfirmation = makeRegistrationConfirmation({
         username: 'the-username',
         password: 'the-password-hash',
         longName: 'the-looooong-name',
         shortName: 'the-short-name',
-        registrationCode: 'registration-code'
+        registrationCode: 'registration-code',
       })
       const config = {auth: {bcrypt: {saltRounds: 1}}}
       const registrationRequestsDao = {
@@ -91,7 +91,7 @@ describe('RegistrationService', () => {
       const authToken = 'the-auth-token'
       const expires = momentAdd(utcNow(), [1, 'minute'])
       const authService = {
-        createAuthToken: sinon.fake.returns({authToken, expires})
+        createAuthToken: sinon.fake.returns({authToken, expires}),
       }
 
       const service = new RegistrationService(mockLogger, config, null, usersService, authService,
@@ -101,7 +101,7 @@ describe('RegistrationService', () => {
       const {
         user: userOut,
         authToken: authTokenOut,
-        expires: expiresOut
+        expires: expiresOut,
       } = await service.confirmRegistrationAndLogin(registrationConfirmation)
 
       expect(userOut).toBe(userIn)

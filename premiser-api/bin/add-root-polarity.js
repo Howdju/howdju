@@ -3,7 +3,7 @@ const {
   JustificationTargetTypes,
 } = require('howdju-common')
 const {
-  AppProvider
+  AppProvider,
 } = require('../src/init')
 
 const appProvider = new AppProvider()
