@@ -13,6 +13,7 @@
     if (params.hasOwnProperty(param)) {
       queryParams.push(`${param}=${encode(params[param])}`)
     }
+    /* eslint-enable no-prototype-builtins */
   }
   const queryParamsString = queryParams.join('&')
   const schema = 'https'

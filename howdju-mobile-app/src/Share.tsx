@@ -4,7 +4,7 @@ import {ShareMenuReactView, SharePreviewResponse} from 'react-native-share-menu'
 
 import ShareDataItemPreview from '@/views/ShareDataItemPreview'
 
-const Share = () => {
+const Share = (): JSX.Element => {
   const [sharePreviewResponse, setSharePreviewResponse] = useState<SharePreviewResponse>({
     items: [],
   })
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
 })
 
 type ButtonProps = {
-  onPress: (event: GestureResponderEvent) => void
+  onPress: (_event: GestureResponderEvent) => void
   title: string
   style?: typeof styles[keyof typeof styles]
   disabled?: boolean

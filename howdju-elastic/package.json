@@ -10,9 +10,12 @@
     "argparse": "^1.0.10",
     "bluebird": "^3.5.2",
     "eslint": "^7.25.0",
-    "ini": "^1.3.5"
+    "ini": "^1.3.5",
+    "prettier": "2.7.1"
   },
   "scripts": {
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "deploy-elasticsearch-image": "node bin/deploy-elasticsearch-image.js",
     "lint": "eslint ."
   },

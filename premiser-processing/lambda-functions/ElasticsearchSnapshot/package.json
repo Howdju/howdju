@@ -9,5 +9,12 @@
     "bluebird": "^3.5.2",
     "elasticsearch": "^15.1.1",
     "ramda": "^0.25.0"
+  },
+  "devDependencies": {
+    "prettier": "2.7.1"
+  },
+  "scripts": {
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore ."
   }
 }

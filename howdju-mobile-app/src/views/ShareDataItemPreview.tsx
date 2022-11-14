@@ -3,7 +3,7 @@ import {View, Text, Image, StyleSheet} from 'react-native'
 
 import type {ShareDataItem} from 'react-native-share-menu'
 
-const ShareDataItemPreview = ({item}: {item: ShareDataItem}) => {
+const ShareDataItemPreview = ({item}: {item: ShareDataItem}): JSX.Element => {
   const {value, mimeType, itemGroup, role} = item
   return (
     <View>

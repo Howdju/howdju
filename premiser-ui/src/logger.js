@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
 import config from './config'
 import * as sentry from './sentry'
 import {Severity} from '@sentry/types'
 
+/* eslint-disable no-console */
 const logFunctions = {
   error: console.error || console.log,
   warn: console.warn || console.log,
@@ -10,6 +10,7 @@ const logFunctions = {
   debug: console.debug || console.log,
   trace: console.trace || console.log,
 }
+/* eslint-enable no-console */
 export const logger = {
   error: message => {
     logFunctions.error(message)

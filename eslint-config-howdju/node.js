@@ -12,6 +12,7 @@ module.exports = {
   extends: [
     "eslint-config-howdju",
     "plugin:promise/recommended",
+    "prettier",
   ],
   rules: {
     "no-restricted-globals": [

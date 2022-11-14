@@ -11,7 +11,7 @@ const Tab = createBottomTabNavigator()
 
 const EMPTY_SHARE_RESPONSE: ShareResponse = {items: []}
 
-const App = () => {
+const App = (): JSX.Element => {
   const [shareResponse, setShareResponse] = useState(EMPTY_SHARE_RESPONSE)
 
   const handleShare = useCallback((response?: ShareResponse) => {
@@ -34,7 +34,7 @@ const App = () => {
   }, [handleShare])
 
   const items = shareResponse?.items
-  const extraData = shareResponse?.extraData
+  const extraData = shareResponse?.extraData as Record<string, unknown>
 
   return (
     <NavigationContainer>

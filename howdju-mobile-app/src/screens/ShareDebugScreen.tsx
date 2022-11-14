@@ -32,7 +32,7 @@ async function openUrl(url: string | null) {
 
 const ShareDebugScreen: React.FC<{
   items: ShareDataItem[]
-  extraData?: object
+  extraData?: Record<string, unknown>
 }> = ({items, extraData}) => {
   const isDarkMode = useColorScheme() === 'dark'
 

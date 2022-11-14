@@ -8,12 +8,16 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "check:everything": "echo check:everything && yarn run lint:all && yarn run typecheck:all && yarn run test:all && yarn run custom-check:all && echo check:everything succeeded || {echo check:everything failed; exit 1}",
+    "check:everything": "echo check:everything && yarn run lint:all && yarn run check-format:all && yarn run typecheck:all && yarn run test:all && yarn run custom-check:all && echo check:everything succeeded || {echo check:everything failed; exit 1}",
     "check:pushed": "bin/check-pushed.sh",
     "check:committed": "node bin/check-committed.mjs",
     "check:pre-deploy": "bin/pre-deploy-check.sh",
+    "check-format": "yarn run prettier --check jest lambdas/bin",
+    "check-format:all": "echo check-format:all && yarn run check-format && yarn workspaces foreach -Apv run check-format && echo check-format:all succeeded || {echo check-format:all failed; exit 1}",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "format:all": "echo format:all && yarn run format && yarn workspaces foreach -Apv run format && echo format:all succeeded || {echo format:all failed; exit 1}",
     "lint": "eslint jest lambdas/bin",
-    "lint:all": "yarn run lint && echo lint:all && yarn workspaces foreach -Apv run lint && echo lint:all succeeded || {echo lint:all failed; exit 1}",
+    "lint:all": "echo lint:all && yarn run lint && yarn workspaces foreach -Apv run lint && echo lint:all succeeded || {echo lint:all failed; exit 1}",
     "custom-check:all": "echo custom-check:all && yarn workspaces foreach -Apv run custom-check && echo custom-check:all succeeded || {echo custom-check:all faied; exit 1}",
     "typecheck:all": "echo typecheck:all && yarn workspaces foreach -Apv run typecheck && echo typecheck:all succeeded || {echo typecheck:all failed; exit 1}",
     "test:all": "echo test:all && yarn workspaces foreach -Apv run test && echo test:all succeeded || {echo test:all failed; exit 1}"
@@ -65,6 +69,7 @@
     "debug": "^4.3.4",
     "eslint": "^7.23.0",
     "jest": "^29.3.1",
+    "prettier": "2.7.1",
     "typescript": "^4.8.4"
   }
 }

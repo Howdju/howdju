@@ -8,12 +8,16 @@ module.exports = {
       rootMode: "upward",
     },
   },
-  plugins: [],
+  plugins: [
+    "eslint-comments",
+  ],
   env: {
     "es6": true,
   },
   extends: [
     "eslint:recommended",
+    "plugin:eslint-comments/recommended",
+    "prettier",
   ],
   rules: {
     "comma-dangle": ["error", "always-multiline"],
@@ -51,6 +55,7 @@ module.exports = {
       extends: [
         "plugin:jest/recommended",
         "plugin:jest/style",
+        "prettier",
       ],
       rules: {
         "jest/no-commented-out-tests": "error",
@@ -69,7 +74,11 @@ module.exports = {
       files: "*.{ts,tsx}",
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
-      extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+      extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        "prettier",
+      ],
       rules: {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": ["error", {

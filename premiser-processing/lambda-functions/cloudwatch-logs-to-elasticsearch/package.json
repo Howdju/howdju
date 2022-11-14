@@ -13,6 +13,11 @@
   },
   "devDependencies": {
     "eslint": "^7.25.0",
-    "eslint-config-howdju": "^1.0.0"
+    "eslint-config-howdju": "^1.0.0",
+    "prettier": "2.7.1"
+  },
+  "scripts": {
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore ."
   }
 }

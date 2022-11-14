@@ -7,5 +7,6 @@ module.exports = {
   },
   extends: [
     "eslint-config-howdju",
+    "prettier",
   ],
 }

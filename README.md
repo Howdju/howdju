@@ -391,6 +391,17 @@ See eslint-config-howdju/README.md.
 
 ### Prettier
 
+Each workspace must install the `--exact` same version of `prettier` and defines a script `format`
+that calls `eslint --fix` and `prettier`:
+
+```sh
+yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .
+```
+
+Each of our configs in `eslint-config-howdju` extends `prettier` as the last extended config so that it can override
+any previous configs. If a package extends a config other than one of these, it must also be sure to
+extend `prettier` as the last overridden config.
+
 ### TypeScript
 
 Base config `tsconfig.json` in workspace root and packages extend it like:

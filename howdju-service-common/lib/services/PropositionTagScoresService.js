@@ -54,7 +54,6 @@ exports.PropositionTagScoresService = class PropositionTagScoresService {
           throw err
         })
       )
-    /* eslint-enable indent */
   }
 
   updatePropositionTagScoresUsingUnscoredVotes() {

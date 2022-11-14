@@ -7,7 +7,7 @@ type SafariShareInfo = {
   title?: string
 }
 
-export function inferSubmitUrl(items: ShareDataItem[]) {
+export function inferSubmitUrl(items: ShareDataItem[]): string | null {
   const safariShareInfo = inferSafariShareInfo(items)
   return safariShareInfo ? makeSubmitUrl(safariShareInfo) : null
 }
@@ -17,13 +17,14 @@ const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo | null =>
   let selectedText
   let title
   if (items) {
-    for (let item of items) {
+    for (const item of items) {
       // If we ever find a Javascript preprocessing result, use it.
       switch (item.role) {
         case 'provider/data/javascript-preprocessing':
-        case 'provider/property-list/javascript-preprocessing':
+        case 'provider/property-list/javascript-preprocessing': {
           const valueObject = JSON.parse(item.value)
           return valueObject as SafariShareInfo
+        }
       }
 
       // Otherwise try to infer the share info from other items.

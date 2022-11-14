@@ -6,8 +6,10 @@
     "android": "react-native run-android",
     "android-release": "react-native run-android --variant release",
     "bundle": "react-native webpack-bundle",
-    "check": "typecheck && lint && test",
+    "check": "typecheck && lint && check-format && test",
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "debugger": "react-devtools",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "install-pods": "bin/install-pods.sh",
     "ios": "react-native run-ios",
     "ios-release": "react-native run-ios --configuration Release",
@@ -47,19 +49,15 @@
     "babel-jest": "^29.0.3",
     "babel-loader": "^8.2.5",
     "eslint": "^7.14.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-jest": "^27.1.5",
+    "eslint-plugin-prettier": "^4.2.1",
     "jest": "^29.0.3",
     "metro-react-native-babel-preset": "^0.66",
+    "prettier": "2.7.1",
     "react-test-renderer": "17.0.2",
     "terser-webpack-plugin": "^5.3.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.4.4",
     "webpack": "^5.73.0"
-  },
-  "resolutions": {
-    "@types/react": "^17"
-  },
-  "installConfig": {
-    "hoistingLimits": "workspaces"
   }
 }

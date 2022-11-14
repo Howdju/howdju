@@ -66,6 +66,7 @@ const conflict = ({callback, body}) => callback({
   httpStatusCode: httpStatusCodes.CONFLICT,
   body,
 })
+/* eslint-enable no-unused-vars */
 
 const routes = [
   /*

@@ -6,6 +6,8 @@
   "scripts": {
     "build": "node ../../premiser-api/bin/esbuild.js --entryPoint=src/handler.js --outfile=dist/index.js",
     "clean": "rm -rf dist",
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "release": "../bin/release.sh",
     "test": "jest",
@@ -25,6 +27,7 @@
     "howdju-ops": "workspace:howdju-ops",
     "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
+    "prettier": "2.7.1",
     "ts-node": "^10.9.1"
   }
 }

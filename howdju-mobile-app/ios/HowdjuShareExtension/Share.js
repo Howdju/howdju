@@ -1,3 +1,5 @@
+/* globals document */
+
 var Share = function () {}
 
 Share.prototype = {
