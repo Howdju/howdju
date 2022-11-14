@@ -22,10 +22,14 @@ $context-menu-vertical-offset: 40px;
   .proposition-justifications-justification-trees--negative & {
     left: $context-menu-horizontal-offset;
   }
-  .proposition-justifications-justification-trees--combined .justification-tree.positivey & {
+  .proposition-justifications-justification-trees--combined
+    .justification-tree.positivey
+    & {
     right: $context-menu-horizontal-offset;
   }
-  .proposition-justifications-justification-trees--combined .justification-tree.negativey & {
+  .proposition-justifications-justification-trees--combined
+    .justification-tree.negativey
+    & {
     left: $context-menu-horizontal-offset;
   }
 
@@ -38,10 +42,14 @@ $context-menu-vertical-offset: 40px;
     .proposition-justifications-justification-trees--negative & {
       left: 0;
     }
-    .proposition-justifications-justification-trees--combined .justification-tree.positivey & {
+    .proposition-justifications-justification-trees--combined
+      .justification-tree.positivey
+      & {
       right: 0;
     }
-    .proposition-justifications-justification-trees--combined .justification-tree.negativey & {
+    .proposition-justifications-justification-trees--combined
+      .justification-tree.negativey
+      & {
       left: 0;
     }
   }
@@ -55,10 +63,14 @@ $context-menu-vertical-offset: 40px;
     .proposition-justifications-justification-trees--negative & {
       left: $context-menu-horizontal-offset;
     }
-    .proposition-justifications-justification-trees--combined .justification-tree.positivey & {
+    .proposition-justifications-justification-trees--combined
+      .justification-tree.positivey
+      & {
       right: $context-menu-horizontal-offset;
     }
-    .proposition-justifications-justification-trees--combined .justification-tree.negativey & {
+    .proposition-justifications-justification-trees--combined
+      .justification-tree.negativey
+      & {
       left: $context-menu-horizontal-offset;
     }
   }
@@ -74,10 +86,14 @@ $context-menu-vertical-offset: 40px;
     .proposition-justifications-justification-trees--negative & {
       left: 0;
     }
-    .proposition-justifications-justification-trees--combined .justification-tree.positivey & {
+    .proposition-justifications-justification-trees--combined
+      .justification-tree.positivey
+      & {
       right: 0;
     }
-    .proposition-justifications-justification-trees--combined .justification-tree.negativey & {
+    .proposition-justifications-justification-trees--combined
+      .justification-tree.negativey
+      & {
       left: 0;
     }
   }

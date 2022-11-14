@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+const sinon = require("sinon");
 
 module.exports.mockLogger = {
   log: sinon.fake(console.log),
@@ -7,4 +7,4 @@ module.exports.mockLogger = {
   warning: sinon.fake(console.warn),
   info: sinon.fake(console.info),
   debug: sinon.fake(console.debug),
-}
+};

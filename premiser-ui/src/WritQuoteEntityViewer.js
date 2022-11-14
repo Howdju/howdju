@@ -1,8 +1,8 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-import EntityViewer from './EntityViewer'
-import EditableWritQuote from './EditableWritQuote'
+import EntityViewer from "./EntityViewer";
+import EditableWritQuote from "./EditableWritQuote";
 
 export default class WritQuoteEntityViewer extends Component {
   render() {
@@ -17,7 +17,7 @@ export default class WritQuoteEntityViewer extends Component {
       onClickUrl,
       menu,
       ...rest
-    } = this.props
+    } = this.props;
     return (
       <EntityViewer
         iconName="format_quote"
@@ -37,7 +37,7 @@ export default class WritQuoteEntityViewer extends Component {
           />
         }
       />
-    )
+    );
   }
 }
 WritQuoteEntityViewer.propTypes = {
@@ -47,7 +47,7 @@ WritQuoteEntityViewer.propTypes = {
   suggestionsKey: PropTypes.string,
   doShowControls: PropTypes.bool,
   showStatusText: PropTypes.bool,
-}
+};
 WritQuoteEntityViewer.defaultProps = {
   doShowControls: true,
-}
+};

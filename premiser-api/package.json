@@ -12,6 +12,7 @@
     "change-password:local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/change-user-password.js",
     "change-password:pre-prod": "env-cmd -f ../config/pre-prod-local-tunnel.env ../bin/build-and-run-script.sh bin/change-user-password.js",
     "change-password:prod": "env-cmd -f ../config/prod-local-tunnel.env ../bin/build-and-run-script.sh bin/change-user-password.js",
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "clean": "rm -rf dist",
     "create-user:prod": "env-cmd -f ../config/prod-local-tunnel.env ../bin/build-and-run-script.sh bin/create-user.js",
     "create-user:pre-prod": "env-cmd -f ../config/pre-prod-local-tunnel.env ../bin/build-and-run-script.sh bin/create-user.js",
@@ -28,6 +29,7 @@
     "dedupe-writs:prod": "env-cmd -f ../config/prod-local-tunnel.env ../bin/build-and-run-script.sh bin/dedupe-writs.js",
     "deploy:api:pre-prod": "bin/deploy.sh pre-prod",
     "deploy:api:prod": "bin/deploy.sh prod",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "inspect-server": "yarn run build-local-server && node --inspect-brk dist/esbuild-local-server.js",
     "lint": "eslint --ignore-path=.gitignore .",
     "publish-lambda-function-version": "../bin/build-and-run-script.sh bin/publish-lambda-function-version.js",
@@ -62,9 +64,11 @@
     "morgan": "^1.8.1",
     "node-zip": "^1.1.1",
     "npm-version": "^1.1.0",
+    "prettier": "2.7.1",
     "private-ip": "^2.3.4",
     "read": "^1.0.7",
-    "run-sequence": "^1.2.2"
+    "run-sequence": "^1.2.2",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "bluebird": "^3.5.0",

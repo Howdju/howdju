@@ -1,28 +1,21 @@
-const forEach = require('lodash/forEach')
+const forEach = require("lodash/forEach");
 
-const {
-  PropositionTagVotePolarities,
-} = require('howdju-common')
+const { PropositionTagVotePolarities } = require("howdju-common");
 
-const {
-  mapMany,
-} = require('./daosUtil')
-const {
-  toTag,
-  toProposition,
-} = require('./orm')
+const { mapMany } = require("./daosUtil");
+const { toTag, toProposition } = require("./orm");
 
 exports.PropositionTagsDao = class PropositionTagsDao {
-
   constructor(logger, database) {
-    this.logger = logger
-    this.database = database
+    this.logger = logger;
+    this.database = database;
   }
 
   readTagsForPropositionId(propositionId) {
-    return this.database.query(
-      'readTagsForPropositionId',
-      `
+    return this.database
+      .query(
+        "readTagsForPropositionId",
+        `
         with
           proposition_tag_ids as (
             select distinct tag_id
@@ -34,15 +27,16 @@ exports.PropositionTagsDao = class PropositionTagsDao {
           )
         select * from tags where tag_id in (select * from proposition_tag_ids) and deleted is null
       `,
-      [propositionId, PropositionTagVotePolarities.POSITIVE]
-    )
-      .then(mapMany(toTag))
+        [propositionId, PropositionTagVotePolarities.POSITIVE]
+      )
+      .then(mapMany(toTag));
   }
 
   readRecommendedTagsForPropositionId(propositionId) {
-    return this.database.query(
-      'readRecommendedTagsForPropositionId',
-      `
+    return this.database
+      .query(
+        "readRecommendedTagsForPropositionId",
+        `
         with
           tag_scores as (
             select tag_id, score
@@ -58,15 +52,16 @@ exports.PropositionTagsDao = class PropositionTagsDao {
           where t.deleted is null
         order by s.score desc
       `,
-      [propositionId]
-    )
-      .then(mapMany(toTag))
+        [propositionId]
+      )
+      .then(mapMany(toTag));
   }
 
   readPropositionsRecommendedForTagId(tagId) {
-    return this.database.query(
-      'readPropositionsRecommendedForTagId',
-      `
+    return this.database
+      .query(
+        "readPropositionsRecommendedForTagId",
+        `
         with
           proposition_scores as (
             select proposition_id, score
@@ -82,15 +77,16 @@ exports.PropositionTagsDao = class PropositionTagsDao {
           where s.deleted is null
         order by ss.score desc
       `,
-      [tagId]
-    )
-      .then(mapMany(toProposition))
+        [tagId]
+      )
+      .then(mapMany(toProposition));
   }
 
   readTaggedPropositionsByVotePolarityAsUser(userId, tagId) {
-    return this.database.query(
-      'readTaggedPropositionsByVotePolarityAsUser',
-      `
+    return this.database
+      .query(
+        "readTaggedPropositionsByVotePolarityAsUser",
+        `
         select
             s.*
           , v.polarity
@@ -103,19 +99,19 @@ exports.PropositionTagsDao = class PropositionTagsDao {
             and v.deleted is null
             and s.deleted is null
       `,
-      [userId, tagId]
-    )
-      .then(({rows}) => {
-        const propositionsByPolarity = {}
-        forEach(rows, row => {
-          const proposition = toProposition(row)
-          let propositions = propositionsByPolarity[row.polarity]
+        [userId, tagId]
+      )
+      .then(({ rows }) => {
+        const propositionsByPolarity = {};
+        forEach(rows, (row) => {
+          const proposition = toProposition(row);
+          let propositions = propositionsByPolarity[row.polarity];
           if (!propositions) {
-            propositionsByPolarity[row.polarity] = propositions = []
+            propositionsByPolarity[row.polarity] = propositions = [];
           }
-          propositions.push(proposition)
-        })
-        return propositionsByPolarity
-      })
+          propositions.push(proposition);
+        });
+        return propositionsByPolarity;
+      });
   }
-}
+};

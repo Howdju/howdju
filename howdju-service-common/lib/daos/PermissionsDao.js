@@ -1,18 +1,15 @@
-const toString = require('lodash/toString')
+const toString = require("lodash/toString");
 
-const {
-  requireArgs,
-} = require('howdju-common')
+const { requireArgs } = require("howdju-common");
 
 exports.PermissionsDao = class PermissionsDao {
-
   constructor(logger, database) {
-    this.logger = logger
-    this.database = database
+    this.logger = logger;
+    this.database = database;
   }
 
   userHasPermission(userId, permission) {
-    requireArgs({userId, permission})
+    requireArgs({ userId, permission });
 
     const sql = `
       with
@@ -39,9 +36,10 @@ exports.PermissionsDao = class PermissionsDao {
           and up.deleted is null
           and ug.deleted is null
           and gp.deleted is null
-    `
-    return this.database.query('userHasPermission', sql, [userId, permission])
-      .then( ({rows: [{has_perm: hasPerm}]}) => hasPerm )
+    `;
+    return this.database
+      .query("userHasPermission", sql, [userId, permission])
+      .then(({ rows: [{ has_perm: hasPerm }] }) => hasPerm);
   }
 
   getUserIdWithPermission(authToken, permission) {
@@ -73,17 +71,24 @@ exports.PermissionsDao = class PermissionsDao {
               up.deleted is null
           and ug.deleted is null
           and gp.deleted is null
-    `
-    return this.database.query('getUserIdWithPermission', sql, [authToken, permission, new Date()])
-      .then( ({rows}) => {
+    `;
+    return this.database
+      .query("getUserIdWithPermission", sql, [
+        authToken,
+        permission,
+        new Date(),
+      ])
+      .then(({ rows }) => {
         if (rows.length < 1) {
-          return {}
+          return {};
         }
         if (rows.length > 1) {
-          this.logger.error(`Multiple rows for getUserIdWithPermission ${rows.length}`)
+          this.logger.error(
+            `Multiple rows for getUserIdWithPermission ${rows.length}`
+          );
         }
-        const [{user_id: userId, has_perm: hasPermission}] = rows
-        return {userId: toString(userId), hasPermission}
-      })
+        const [{ user_id: userId, has_perm: hasPermission }] = rows;
+        return { userId: toString(userId), hasPermission };
+      });
   }
-}
+};

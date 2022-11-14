@@ -1,82 +1,93 @@
-const assign = require('lodash/assign')
-const moment = require('moment')
-const sinon = require('sinon')
+const assign = require("lodash/assign");
+const moment = require("moment");
+const sinon = require("sinon");
 
 const {
   JustificationRootTargetTypes,
   JustificationPolarities,
   JustificationTargetTypes,
   JustificationBasisTypes,
-} = require('howdju-common')
+} = require("howdju-common");
 
-const {JustificationsDao} = require('./JustificationsDao')
-const {
-  mockLogger,
-} = require('howdju-test-common')
+const { JustificationsDao } = require("./JustificationsDao");
+const { mockLogger } = require("howdju-test-common");
 
-describe('createJustification', () => {
-  test('creates a statement justification', () => {
-    const rootTargetType = JustificationRootTargetTypes.STATEMENT
-    const rootTargetId = "1"
-    const polarity = JustificationPolarities.NEGATIVE
-    const targetType = JustificationTargetTypes.STATEMENT
-    const targetId = rootTargetId
-    const basisType = JustificationBasisTypes.PROPOSITION_COMPOUND
-    const basisId = "2"
-    const userId = "4"
-    const now = moment()
+describe("createJustification", () => {
+  test("creates a statement justification", () => {
+    const rootTargetType = JustificationRootTargetTypes.STATEMENT;
+    const rootTargetId = "1";
+    const polarity = JustificationPolarities.NEGATIVE;
+    const targetType = JustificationTargetTypes.STATEMENT;
+    const targetId = rootTargetId;
+    const basisType = JustificationBasisTypes.PROPOSITION_COMPOUND;
+    const basisId = "2";
+    const userId = "4";
+    const now = moment();
     const justification = {
       rootTargetType,
-      rootTarget: {id: rootTargetId},
+      rootTarget: { id: rootTargetId },
       polarity,
       target: {
         type: targetType,
-        entity: {id: targetId},
+        entity: { id: targetId },
       },
       basis: {
         type: basisType,
-        entity: {id: basisId},
+        entity: { id: basisId },
       },
-    }
-    const rootPolarity = polarity
-    const justificationId = "3"
+    };
+    const rootPolarity = polarity;
+    const justificationId = "3";
     const expectedJustification = assign({}, justification, {
       id: justificationId,
       counterJustifications: [],
-      creator: expect.objectContaining({id: userId}),
+      creator: expect.objectContaining({ id: userId }),
       created: now,
       rootPolarity,
       rootTarget: expect.objectContaining(justification.rootTarget),
-    })
+    });
     const database = {
       query: sinon.fake((id, sql, args) => {
         switch (id) {
-          case 'createJustification': {
+          case "createJustification": {
             return {
-              rows: [{
-                justification_id: justificationId,
-                root_target_type: rootTargetType,
-                root_target_id: rootTargetId,
-                root_polarity: rootPolarity,
-                target_type: targetType,
-                target_id: targetId,
-                basis_type: basisType,
-                basis_id: basisId,
-                polarity: polarity,
-                creator_user_id: userId,
-                created: now,
-              }],
-            }
+              rows: [
+                {
+                  justification_id: justificationId,
+                  root_target_type: rootTargetType,
+                  root_target_id: rootTargetId,
+                  root_polarity: rootPolarity,
+                  target_type: targetType,
+                  target_id: targetId,
+                  basis_type: basisType,
+                  basis_id: basisId,
+                  polarity: polarity,
+                  creator_user_id: userId,
+                  created: now,
+                },
+              ],
+            };
           }
         }
       }),
-    }
-    const emptyDependency = {}
-    const justificationsDao = new JustificationsDao(mockLogger, database, emptyDependency, emptyDependency,
-      emptyDependency, emptyDependency, emptyDependency)
+    };
+    const emptyDependency = {};
+    const justificationsDao = new JustificationsDao(
+      mockLogger,
+      database,
+      emptyDependency,
+      emptyDependency,
+      emptyDependency,
+      emptyDependency,
+      emptyDependency
+    );
 
-    return justificationsDao.createJustification(justification, userId, now).then((result) => {
-      return expect(result).toEqual(expect.objectContaining(expectedJustification))
-    })
-  })
-})
+    return justificationsDao
+      .createJustification(justification, userId, now)
+      .then((result) => {
+        return expect(result).toEqual(
+          expect.objectContaining(expectedJustification)
+        );
+      });
+  });
+});

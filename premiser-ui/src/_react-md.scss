@@ -14,11 +14,11 @@
 
 // Disable per https://react-md.dev/guides/working-with-v1#the-pain-points
 $md-typography-extended: false;
-@import '~react-md/src/scss/react-md';
-@import './react-md-variable-overrides';
-@import './react-md-everything';
+@import "~react-md/src/scss/react-md";
+@import "./react-md-variable-overrides";
+@import "./react-md-everything";
 
-@import './rmd-variable-overrides';
+@import "./rmd-variable-overrides";
 @import "~@react-md/icon/dist/mixins";
 @import "~@react-md/states/dist/mixins";
 @import "~@react-md/theme/dist/mixins";
@@ -26,5 +26,5 @@ $md-typography-extended: false;
 @import "~@react-md/utils/dist/mixins";
 @include react-md-utils;
 
-@import './react-md-fixes';
-@include react-md-fixes($md-grid-desktop-breakpoint, $md-grid-phone-gutter)
+@import "./react-md-fixes";
+@include react-md-fixes($md-grid-desktop-breakpoint, $md-grid-phone-gutter);

@@ -1,6 +1,6 @@
-const debug = require('debug')('howdju:howdju-common')
+const debug = require("debug")("howdju:howdju-common");
 
-checkStandaloneSchemaValidationCode()
+checkStandaloneSchemaValidationCode();
 
 /**
  * Check if the standalone schema validation on the file system matches generated from the current source code.
@@ -12,18 +12,20 @@ checkStandaloneSchemaValidationCode()
  * This function checks that they are the same.
  */
 function checkStandaloneSchemaValidationCode() {
-  const {makeStandaloneCode} = require('../lib/schemaValidation')
+  const { makeStandaloneCode } = require("../lib/schemaValidation");
 
-  const fs = require("fs")
-  const path = require("path")
-  const filePath = path.resolve(__dirname, `../lib/standaloneAjv.js`)
-  const standaloneCode = fs.readFileSync(filePath, {encoding: 'utf8'})
+  const fs = require("fs");
+  const path = require("path");
+  const filePath = path.resolve(__dirname, `../lib/standaloneAjv.js`);
+  const standaloneCode = fs.readFileSync(filePath, { encoding: "utf8" });
 
   if (makeStandaloneCode() !== standaloneCode) {
-    throw new Error("File system standalone AJV does not match generated one." +
-      " Please run `yarn run gen-standalone-schema-validation` and commit the" +
-      " result.")
+    throw new Error(
+      "File system standalone AJV does not match generated one." +
+        " Please run `yarn run gen-standalone-schema-validation` and commit the" +
+        " result."
+    );
   }
 
-  debug('Standalone schema validation is up-to-date.')
+  debug("Standalone schema validation is up-to-date.");
 }

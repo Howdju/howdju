@@ -1,26 +1,24 @@
-const {
-  modelErrorCodes,
-} = require('howdju-common')
+const { modelErrorCodes } = require("howdju-common");
 
 class WritValidator {
   validate(writ) {
-    const errors = WritValidator.blankErrors()
+    const errors = WritValidator.blankErrors();
 
     if (!writ) {
-      errors.hasErrors = true
-      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
-      return errors
+      errors.hasErrors = true;
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED);
+      return errors;
     }
 
-    if (writ.title === '') {
-      errors.hasErrors = true
-      errors.fieldErrors.title.push(modelErrorCodes.MUST_BE_NONEMPTY)
+    if (writ.title === "") {
+      errors.hasErrors = true;
+      errors.fieldErrors.title.push(modelErrorCodes.MUST_BE_NONEMPTY);
     } else if (!writ.title) {
-      errors.hasErrors = true
-      errors.fieldErrors.title.push(modelErrorCodes.IS_REQUIRED)
+      errors.hasErrors = true;
+      errors.fieldErrors.title.push(modelErrorCodes.IS_REQUIRED);
     }
 
-    return errors
+    return errors;
   }
 }
 WritValidator.blankErrors = () => ({
@@ -29,6 +27,6 @@ WritValidator.blankErrors = () => ({
   fieldErrors: {
     title: [],
   },
-})
+});
 
-exports.WritValidator = WritValidator
+exports.WritValidator = WritValidator;

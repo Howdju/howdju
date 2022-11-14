@@ -1,20 +1,15 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {connect} from "react-redux"
-import {CircularProgress} from "react-md"
-import get from 'lodash/get'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { CircularProgress } from "react-md";
+import get from "lodash/get";
 
-import {
-  isTruthy,
-  newUnimplementedError,
-} from 'howdju-common'
+import { isTruthy, newUnimplementedError } from "howdju-common";
 
-import {EditorTypes} from "./reducers/editors"
-import WritViewer from "./WritViewer"
-
+import { EditorTypes } from "./reducers/editors";
+import WritViewer from "./WritViewer";
 
 class EditableWrit extends Component {
-
   render() {
     const {
       id,
@@ -27,27 +22,17 @@ class EditableWrit extends Component {
       // ignore
       dispatch,
       ...rest
-    } = this.props
+    } = this.props;
 
     const editor = () => {
-      throw newUnimplementedError('WritEditor')
-    }
+      throw newUnimplementedError("WritEditor");
+    };
 
-    const viewer = (
-      <WritViewer
-        {...rest}
-        id={id}
-        writ={writ}
-      />
-    )
+    const viewer = <WritViewer {...rest} id={id} writ={writ} />;
 
-    const progress = (
-      <CircularProgress id={`${id}--loading`} />
-    )
+    const progress = <CircularProgress id={`${id}--loading`} />;
 
-    return isEditing ?
-      editor() :
-      !writ ? progress : viewer
+    return isEditing ? editor() : !writ ? progress : viewer;
   }
 }
 EditableWrit.propTypes = {
@@ -58,18 +43,18 @@ EditableWrit.propTypes = {
   /** If omitted, no autocomplete */
   suggestionsKey: PropTypes.string,
   writ: PropTypes.object,
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
-  const editorId = ownProps.editorId
-  const {editEntity, isFetching} = editorId ?
-    get(state.editors, [EditorTypes.WRIT, editorId], {}) :
-    {}
-  const isEditing = isTruthy(editEntity)
+  const editorId = ownProps.editorId;
+  const { editEntity, isFetching } = editorId
+    ? get(state.editors, [EditorTypes.WRIT, editorId], {})
+    : {};
+  const isEditing = isTruthy(editEntity);
   return {
     isFetching,
     isEditing,
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps)(EditableWrit)
+export default connect(mapStateToProps)(EditableWrit);

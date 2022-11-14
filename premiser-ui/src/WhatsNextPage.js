@@ -1,7 +1,7 @@
-import React from 'react'
-import {Card, CardText} from 'react-md'
+import React from "react";
+import { Card, CardText } from "react-md";
 
-const WhatsNextPage = props => (
+const WhatsNextPage = (props) => (
   <div className="md-grid">
     <Card className="md-cell--12">
       <CardText>
@@ -11,5 +11,5 @@ const WhatsNextPage = props => (
       </CardText>
     </Card>
   </div>
-)
-export default WhatsNextPage
+);
+export default WhatsNextPage;

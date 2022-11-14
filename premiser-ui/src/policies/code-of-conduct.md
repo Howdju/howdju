@@ -11,12 +11,12 @@ This Code of Conduct is part of our [User Agreement](/policies/user-agreement).
 
 ## Things you should do
 
-* Submit only content you believe in good faith to be beneficial to understanding truth.
-* Phrase all propositions and summaries using a neutral point of view.
-* Ensure that all citations accurately reflect the source material
-* Recognize that billions of people will have a diversity of backgrounds and viewpoints. Focus less on someone's beliefs that may contradict your own, but instead on why they believe that.
-* Consider the steel person argument: if you were to imagine a conflicting viewpoint in its most charitable form, what criticism could you offer? Don't waste your own or other's time countering justifications that are irrelevant because a stronger alternative is readily apparent to those who invest a little effort.
-* Please submit content using primarily English language vocabulary and grammar, as our resources to moderate non-English language content is limited. Incidental usage of non-English words or well known non-English phrases in primarily English language content is no problem.
+- Submit only content you believe in good faith to be beneficial to understanding truth.
+- Phrase all propositions and summaries using a neutral point of view.
+- Ensure that all citations accurately reflect the source material
+- Recognize that billions of people will have a diversity of backgrounds and viewpoints. Focus less on someone's beliefs that may contradict your own, but instead on why they believe that.
+- Consider the steel person argument: if you were to imagine a conflicting viewpoint in its most charitable form, what criticism could you offer? Don't waste your own or other's time countering justifications that are irrelevant because a stronger alternative is readily apparent to those who invest a little effort.
+- Please submit content using primarily English language vocabulary and grammar, as our resources to moderate non-English language content is limited. Incidental usage of non-English words or well known non-English phrases in primarily English language content is no problem.
 
 ## Things you must not do
 
@@ -78,4 +78,4 @@ Applicable law, such as those addressing conflicts of interest, may further limi
 
 ## Consequences
 
-We reserve the right to immediately suspend, remove or terminate, without notice, any content, account, or IP address which we determine to be violating this Code of Conduct  or otherwise disrupting the Services. When your account is suspended, public access to content contributed under that account may be blocked or removed, and your account may be suspended or deleted at our discretion. Access to other functionality or information within the Services may also be blocked or disabled.
+We reserve the right to immediately suspend, remove or terminate, without notice, any content, account, or IP address which we determine to be violating this Code of Conduct or otherwise disrupting the Services. When your account is suspended, public access to content contributed under that account may be blocked or removed, and your account may be suspended or deleted at our discretion. Access to other functionality or information within the Services may also be blocked or disabled.

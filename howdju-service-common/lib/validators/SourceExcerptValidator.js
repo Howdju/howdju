@@ -1,62 +1,65 @@
-const get = require('lodash/get')
+const get = require("lodash/get");
 
 const {
   requireArgs,
   modelErrorCodes,
   SourceExcerptTypes,
   newUnimplementedError,
-} = require('howdju-common')
+} = require("howdju-common");
 
-const {WritQuoteValidator} = require('./WritQuoteValidator')
-const {genericModelBlankErrors} = require('./util')
+const { WritQuoteValidator } = require("./WritQuoteValidator");
+const { genericModelBlankErrors } = require("./util");
 
 class SourceExcerptValidator {
-
   constructor(writQuoteValidator) {
-    requireArgs({writQuoteValidator})
-    this.writQuoteValidator = writQuoteValidator
+    requireArgs({ writQuoteValidator });
+    this.writQuoteValidator = writQuoteValidator;
   }
 
   validate(sourceExcerpt) {
-    const type = get(sourceExcerpt, 'type')
-    const errors = SourceExcerptValidator.blankErrors(type)
+    const type = get(sourceExcerpt, "type");
+    const errors = SourceExcerptValidator.blankErrors(type);
 
     if (!sourceExcerpt) {
-      errors.hasErrors = true
-      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED)
-      return errors
+      errors.hasErrors = true;
+      errors.modelErrors.push(modelErrorCodes.IS_REQUIRED);
+      return errors;
     }
 
     if (!type) {
-      errors.hasErrors = true
-      errors.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED)
+      errors.hasErrors = true;
+      errors.fieldErrors.type.push(modelErrorCodes.IS_REQUIRED);
     } else {
       switch (type) {
         case SourceExcerptTypes.WRIT_QUOTE: {
-          errors.fieldErrors.entity = this.writQuoteValidator.validate(sourceExcerpt.entity)
+          errors.fieldErrors.entity = this.writQuoteValidator.validate(
+            sourceExcerpt.entity
+          );
           if (errors.fieldErrors.entity.hasErrors) {
-            errors.hasErrors = true
+            errors.hasErrors = true;
           }
-          break
+          break;
         }
         case SourceExcerptTypes.PIC_REGION:
         case SourceExcerptTypes.VID_SEGMENT:
-          throw newUnimplementedError(`Validation is unimplemented for source excerpt type: ${type}`)
+          throw newUnimplementedError(
+            `Validation is unimplemented for source excerpt type: ${type}`
+          );
         default:
-          errors.fieldErrors.type.push(modelErrorCodes.INVALID_VALUE)
-          break
+          errors.fieldErrors.type.push(modelErrorCodes.INVALID_VALUE);
+          break;
       }
     }
 
-    return errors
+    return errors;
   }
 }
 SourceExcerptValidator.blankErrors = (type) => {
-  let blankEntityErrors
+  let blankEntityErrors;
   switch (type) {
     case SourceExcerptTypes.WRIT_QUOTE:
-      blankEntityErrors = WritQuoteValidator.blankErrors()
-      break
+      blankEntityErrors = WritQuoteValidator.blankErrors();
+      break;
     // case SourceExcerptTypes.PIC_REGION:
     //   blankEntityErrors = PicRegionValidator.blankErrors()
     //   break
@@ -64,8 +67,8 @@ SourceExcerptValidator.blankErrors = (type) => {
     //   blankEntityErrors = VidSegmentValidator.blankErrors()
     //   break
     default:
-      blankEntityErrors = genericModelBlankErrors()
-      break
+      blankEntityErrors = genericModelBlankErrors();
+      break;
   }
   return {
     hasErrors: false,
@@ -74,7 +77,7 @@ SourceExcerptValidator.blankErrors = (type) => {
       type: [],
       entity: blankEntityErrors,
     },
-  }
-}
+  };
+};
 
-exports.SourceExcerptValidator = SourceExcerptValidator
+exports.SourceExcerptValidator = SourceExcerptValidator;

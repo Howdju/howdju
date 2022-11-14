@@ -1,21 +1,23 @@
 const {
   JustificationBasisTypes,
   JustificationRootTargetTypes,
-} = require('howdju-common')
+} = require("howdju-common");
 
-const {addArrayParams} = require('./daosUtil')
-const {toIdString} = require("./orm")
+const { addArrayParams } = require("./daosUtil");
+const { toIdString } = require("./orm");
 
 exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
-
   constructor(logger, database) {
-    this.logger = logger
-    this.database = database
+    this.logger = logger;
+    this.database = database;
   }
 
-  async readWritQuoteUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
-    const {rows} = await this.database.query(
-      'readWritQuoteUrlsByWritQuoteIdForRootTarget',
+  async readWritQuoteUrlsByWritQuoteIdForRootTarget(
+    rootTargetType,
+    rootTargetId
+  ) {
+    const { rows } = await this.database.query(
+      "readWritQuoteUrlsByWritQuoteIdForRootTarget",
       `
         with
           statement_proposition_ids as (
@@ -42,16 +44,19 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
         JustificationRootTargetTypes.STATEMENT,
         JustificationBasisTypes.WRIT_QUOTE,
       ]
-    )
-    return toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows)
+    );
+    return toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows);
   }
 
   async readByUrlIdByWritQuoteIdForJustificationIds(justificationIds) {
-    const baseArgs = [JustificationBasisTypes.WRIT_QUOTE]
-    const {params: justificationIdParams, args} = addArrayParams(baseArgs, justificationIds)
+    const baseArgs = [JustificationBasisTypes.WRIT_QUOTE];
+    const { params: justificationIdParams, args } = addArrayParams(
+      baseArgs,
+      justificationIds
+    );
     // TODO(89): replace string interpolation with query arguments
-    const {rows} = await this.database.query(
-      'readWritQuoteUrlTargetsForJustificationIds',
+    const { rows } = await this.database.query(
+      "readWritQuoteUrlTargetsForJustificationIds",
       `
         select
           wq.writ_quote_id
@@ -65,19 +70,19 @@ exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
           inner join writ_quote_url_target_anchors wquta using (writ_quote_url_target_id)
           inner join urls u using (url_id)
         where
-          j.justification_id in (${justificationIdParams.join(',')})
+          j.justification_id in (${justificationIdParams.join(",")})
       `,
       args
-    )
-    return toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows)
+    );
+    return toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows);
   }
-}
+};
 
 function toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows) {
   // Read all the rows to get the UrlTargets with their anchors
-  const urlTargetById = new Map()
+  const urlTargetById = new Map();
   for (const row of rows) {
-    let urlTarget = urlTargetById.get(toIdString(row.writ_quote_url_target_id))
+    let urlTarget = urlTargetById.get(toIdString(row.writ_quote_url_target_id));
     if (!urlTarget) {
       urlTarget = {
         writQuoteId: toIdString(row.writ_quote_id),
@@ -86,13 +91,13 @@ function toWritQuoteUrlTargetsByUrlIdByWritQuoteId(rows) {
           id: toIdString(row.url_id),
         },
         anchors: [],
-      }
-      urlTargetById.set(toIdString(row.writ_quote_url_target_id), urlTarget)
+      };
+      urlTargetById.set(toIdString(row.writ_quote_url_target_id), urlTarget);
     }
-    urlTarget.anchors.push(extractWritQuoteUrlTargetAnchor(row))
+    urlTarget.anchors.push(extractWritQuoteUrlTargetAnchor(row));
   }
   // Then index them by WritQuote ID and Url ID
-  return byUrlIdByWritQuoteId(urlTargetById.values())
+  return byUrlIdByWritQuoteId(urlTargetById.values());
 }
 
 function extractWritQuoteUrlTargetAnchor(row) {
@@ -103,18 +108,18 @@ function extractWritQuoteUrlTargetAnchor(row) {
     suffixText: row.suffix_text,
     startOffset: row.start_offset,
     endOffset: row.end_offset,
-  }
+  };
 }
 
 function byUrlIdByWritQuoteId(urlTargets) {
-  const byWritQuoteId = new Map()
+  const byWritQuoteId = new Map();
   for (const urlTarget of urlTargets) {
-    let byUrlId = byWritQuoteId.get(urlTarget.writQuoteId)
+    let byUrlId = byWritQuoteId.get(urlTarget.writQuoteId);
     if (!byUrlId) {
-      byUrlId = new Map()
-      byWritQuoteId.set(urlTarget.writQuoteId, byUrlId)
+      byUrlId = new Map();
+      byWritQuoteId.set(urlTarget.writQuoteId, byUrlId);
     }
-    byUrlId.set(urlTarget.url.id, urlTarget)
+    byUrlId.set(urlTarget.url.id, urlTarget);
   }
-  return byWritQuoteId
+  return byWritQuoteId;
 }

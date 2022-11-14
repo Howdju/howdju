@@ -1,14 +1,10 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import upperFirst from 'lodash/upperFirst'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import upperFirst from "lodash/upperFirst";
 
-import {
-  sourceExcerptDescription,
-  sourceExcerptIconName,
-} from './viewModels'
-import EntityViewer from './EntityViewer'
-import SourceExcerptViewer from './SourceExcerptViewer'
-
+import { sourceExcerptDescription, sourceExcerptIconName } from "./viewModels";
+import EntityViewer from "./EntityViewer";
+import SourceExcerptViewer from "./SourceExcerptViewer";
 
 export default class SourceExcerptEntityViewer extends Component {
   render() {
@@ -21,7 +17,7 @@ export default class SourceExcerptEntityViewer extends Component {
       menu,
       showStatusText,
       showUrls,
-    } = this.props
+    } = this.props;
     return (
       <EntityViewer
         iconName={sourceExcerptIconName(sourceExcerpt)}
@@ -39,9 +35,9 @@ export default class SourceExcerptEntityViewer extends Component {
         }
         menu={menu}
       />
-    )
+    );
   }
 }
 SourceExcerptEntityViewer.propTypes = {
   id: PropTypes.string.isRequired,
-}
+};

@@ -1,54 +1,93 @@
-import join from 'lodash/join'
-import map from 'lodash/map'
+import join from "lodash/join";
+import map from "lodash/map";
 
-import {newCustomError} from 'howdju-common'
-import { EditorType } from './reducers/editors'
-import { EditorId } from './types'
-import { AxiosError, AxiosResponse } from 'axios'
+import { newCustomError } from "howdju-common";
+import { EditorType } from "./reducers/editors";
+import { EditorId } from "./types";
+import { AxiosError, AxiosResponse } from "axios";
 
 export const uiErrorTypes = {
-  NETWORK_FAILURE_ERROR: 'NETWORK_FAILURE_ERROR',
-  API_RESPONSE_ERROR: 'API_RESPONSE_ERROR',
-  REQUEST_CONFIGURATION_ERROR: 'REQUEST_CONFIGURATION_ERROR',
-  COMMIT_EDIT_RESULT_ERROR: 'COMMIT_EDIT_RESULT_ERROR',
-}
-export type UiErrorType = typeof uiErrorTypes[keyof typeof uiErrorTypes]
+  NETWORK_FAILURE_ERROR: "NETWORK_FAILURE_ERROR",
+  API_RESPONSE_ERROR: "API_RESPONSE_ERROR",
+  REQUEST_CONFIGURATION_ERROR: "REQUEST_CONFIGURATION_ERROR",
+  COMMIT_EDIT_RESULT_ERROR: "COMMIT_EDIT_RESULT_ERROR",
+};
+export type UiErrorType = typeof uiErrorTypes[keyof typeof uiErrorTypes];
 
-type Identifiers = {[key: string]: any}
+type Identifiers = { [key: string]: any };
 interface AxiosResponseError extends AxiosError {
-  response: AxiosResponse<any>
+  response: AxiosResponse<any>;
 }
 
-export const makeIdentifiersMessage = (message: string, identifiers: Identifiers) => {
-  const identifierStrings = map(identifiers, (val, key) => `${key}: ${val}`)
-  const identifiersString = join(identifierStrings, ', ')
-  return `${message} (${identifiersString})`
-}
+export const makeIdentifiersMessage = (
+  message: string,
+  identifiers: Identifiers
+) => {
+  const identifierStrings = map(identifiers, (val, key) => `${key}: ${val}`);
+  const identifiersString = join(identifierStrings, ", ");
+  return `${message} (${identifiersString})`;
+};
 
 /** The network call to the API failed */
-export const newNetworkFailureError = (message: string, identifiers: Identifiers, sourceError: AxiosError) =>
-  newCustomError(uiErrorTypes.NETWORK_FAILURE_ERROR, makeIdentifiersMessage(message, identifiers), sourceError, {
-    ...identifiers,
-    url: sourceError.config.url,
-  })
+export const newNetworkFailureError = (
+  message: string,
+  identifiers: Identifiers,
+  sourceError: AxiosError
+) =>
+  newCustomError(
+    uiErrorTypes.NETWORK_FAILURE_ERROR,
+    makeIdentifiersMessage(message, identifiers),
+    sourceError,
+    {
+      ...identifiers,
+      url: sourceError.config.url,
+    }
+  );
 
-export const newApiResponseError = (message: string, identifiers: Identifiers, sourceError: AxiosResponseError) =>
-  newCustomError(uiErrorTypes.API_RESPONSE_ERROR,
-    makeIdentifiersMessage(`${message}: ${sourceError.response.data}`, identifiers),
+export const newApiResponseError = (
+  message: string,
+  identifiers: Identifiers,
+  sourceError: AxiosResponseError
+) =>
+  newCustomError(
+    uiErrorTypes.API_RESPONSE_ERROR,
+    makeIdentifiersMessage(
+      `${message}: ${sourceError.response.data}`,
+      identifiers
+    ),
     sourceError,
     {
       ...identifiers,
       httpStatusCode: sourceError.response.status,
       body: sourceError.response.data,
-    })
+    }
+  );
 
-export const newRequestConfigurationError = (message: string, identifiers: Identifiers, sourceError: AxiosError) =>
-  newCustomError(uiErrorTypes.REQUEST_CONFIGURATION_ERROR, makeIdentifiersMessage(message, identifiers), sourceError, {
-    ...identifiers,
-    config: sourceError.config,
-  })
+export const newRequestConfigurationError = (
+  message: string,
+  identifiers: Identifiers,
+  sourceError: AxiosError
+) =>
+  newCustomError(
+    uiErrorTypes.REQUEST_CONFIGURATION_ERROR,
+    makeIdentifiersMessage(message, identifiers),
+    sourceError,
+    {
+      ...identifiers,
+      config: sourceError.config,
+    }
+  );
 
-export const newEditorCommitResultError = (editorType: EditorType, editorId: EditorId, sourceError: Error) => {
-  const message = `Error committing ${editorType} editor ${editorId} (source error message: ${sourceError.message})`
-  return newCustomError(uiErrorTypes.COMMIT_EDIT_RESULT_ERROR, message, sourceError, {editorType, editorId})
-}
+export const newEditorCommitResultError = (
+  editorType: EditorType,
+  editorId: EditorId,
+  sourceError: Error
+) => {
+  const message = `Error committing ${editorType} editor ${editorId} (source error message: ${sourceError.message})`;
+  return newCustomError(
+    uiErrorTypes.COMMIT_EDIT_RESULT_ERROR,
+    message,
+    sourceError,
+    { editorType, editorId }
+  );
+};

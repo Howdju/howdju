@@ -1,1 +1,1 @@
-module.exports = require('./initialization')
+module.exports = require("./initialization");

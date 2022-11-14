@@ -1,4 +1,4 @@
-const { testFilePattern } = require("./constants")
+const { testFilePattern } = require("./constants");
 
 /** The base ESLint config. Other ESLint configs should extend this. */
 module.exports = {
@@ -8,21 +8,20 @@ module.exports = {
       rootMode: "upward",
     },
   },
-  plugins: [],
+  plugins: ["eslint-comments"],
   env: {
-    "es6": true,
+    es6: true,
   },
   extends: [
     "eslint:recommended",
+    "plugin:eslint-comments/recommended",
+    "prettier",
   ],
   rules: {
     "comma-dangle": ["error", "always-multiline"],
-    indent: ["warn", 2, { SwitchCase: 1}],
+    indent: ["warn", 2, { SwitchCase: 1 }],
     "linebreak-style": ["error", "unix"],
-    "no-cond-assign": [
-      "error",
-      "except-parens",
-    ],
+    "no-cond-assign": ["error", "except-parens"],
     "no-restricted-globals": [
       "error",
       // Don't accidentally use the browser's find.  Use lodash.
@@ -31,12 +30,12 @@ module.exports = {
     "no-unused-vars": [
       "error",
       {
-        "vars": "all",
+        vars: "all",
         // Allow us to define unused function parameters; this helps document parameters that may be used in the future
-        "args": "none",
+        args: "none",
         // Allow us to pluck out properties by naming them specifically and then using a rest property.  E.g.:
         // const { toIgnore, ...rest} = someProps
-        "ignoreRestSiblings": true,
+        ignoreRestSiblings: true,
       },
     ],
     semi: ["error", "never"],
@@ -48,10 +47,7 @@ module.exports = {
         jest: true,
       },
       plugins: ["jest"],
-      extends: [
-        "plugin:jest/recommended",
-        "plugin:jest/style",
-      ],
+      extends: ["plugin:jest/recommended", "plugin:jest/style", "prettier"],
       rules: {
         "jest/no-commented-out-tests": "error",
         "jest/no-disabled-tests": "error",
@@ -67,20 +63,30 @@ module.exports = {
     },
     {
       files: "*.{ts,tsx}",
-      plugins: ['@typescript-eslint'],
-      parser: '@typescript-eslint/parser',
-      extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+      plugins: ["@typescript-eslint"],
+      parser: "@typescript-eslint/parser",
+      extends: [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier",
+      ],
       rules: {
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-vars": ["error", {
-          argsIgnorePattern: "^_",
-          // We intentionallly extract unused props to prevent passing them to child React components
-          ignoreRestSiblings: true,
-        }],
-        "@typescript-eslint/ban-ts-comment": ["error", {
-          'ts-ignore': 'allow-with-description',
-        }],
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            argsIgnorePattern: "^_",
+            // We intentionallly extract unused props to prevent passing them to child React components
+            ignoreRestSiblings: true,
+          },
+        ],
+        "@typescript-eslint/ban-ts-comment": [
+          "error",
+          {
+            "ts-ignore": "allow-with-description",
+          },
+        ],
       },
     },
   ],
-}
+};

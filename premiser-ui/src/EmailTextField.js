@@ -1,5 +1,5 @@
-import React from 'react'
-import SingleLineTextField from './SingleLineTextField'
+import React from "react";
+import SingleLineTextField from "./SingleLineTextField";
 
 export default class EmailTextField extends React.Component {
   render() {
@@ -10,6 +10,6 @@ export default class EmailTextField extends React.Component {
         {...this.props}
         type="email"
       />
-    )
+    );
   }
 }

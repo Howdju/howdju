@@ -1,20 +1,20 @@
-import React, { PropsWithChildren } from 'react'
-import { render } from '@testing-library/react'
-import type { RenderOptions } from '@testing-library/react'
-import type { PreloadedState } from '@reduxjs/toolkit'
-import { Provider } from 'react-redux'
-import {Router} from 'react-router-dom'
-import { createMemoryHistory, History } from 'history'
-import { persistStore, PersistorOptions } from 'redux-persist'
+import React, { PropsWithChildren } from "react";
+import { render } from "@testing-library/react";
+import type { RenderOptions } from "@testing-library/react";
+import type { PreloadedState } from "@reduxjs/toolkit";
+import { Provider } from "react-redux";
+import { Router } from "react-router-dom";
+import { createMemoryHistory, History } from "history";
+import { persistStore, PersistorOptions } from "redux-persist";
 
-import type { AppStore, RootState } from './setupStore'
-import { setupStore } from './setupStore'
+import type { AppStore, RootState } from "./setupStore";
+import { setupStore } from "./setupStore";
 
-interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
-  preloadedState?: PreloadedState<RootState>
-  store?: AppStore
-  persist?: boolean
-  history?: History<any>
+interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
+  preloadedState?: PreloadedState<RootState>;
+  store?: AppStore;
+  persist?: boolean;
+  history?: History<any>;
 }
 
 export function renderWithProviders(
@@ -27,18 +27,20 @@ export function renderWithProviders(
     ...renderOptions
   }: ExtendedRenderOptions = {}
 ) {
-  const persistor = persistStore(store, {manualPersist: true} as PersistorOptions)
+  const persistor = persistStore(store, {
+    manualPersist: true,
+  } as PersistorOptions);
   if (persist) {
-    persistor.persist()
+    persistor.persist();
   }
-  function Wrapper({ children }: PropsWithChildren<Record<string, unknown>>): JSX.Element {
+  function Wrapper({
+    children,
+  }: PropsWithChildren<Record<string, unknown>>): JSX.Element {
     return (
       <Provider store={store}>
-        <Router history={history}>
-          {children}
-        </Router>
+        <Router history={history}>{children}</Router>
       </Provider>
-    )
+    );
   }
 
   return {
@@ -46,5 +48,5 @@ export function renderWithProviders(
     persistor,
     history,
     ...render(ui, { wrapper: Wrapper, ...renderOptions }),
-  }
+  };
 }

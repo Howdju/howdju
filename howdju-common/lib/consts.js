@@ -1,1 +1,1 @@
-module.exports.gitCommitMetadataKey = 'howdju-git-commit'
+module.exports.gitCommitMetadataKey = "howdju-git-commit";

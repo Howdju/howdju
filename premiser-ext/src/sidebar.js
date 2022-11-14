@@ -1,45 +1,46 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from "react";
+import ReactDOM from "react-dom";
 
-import { getOption } from './options'
-import { FramePanel } from './frame-panel'
-import {getCurrentCanonicalUrl} from "howdju-client-common"
+import { getOption } from "./options";
+import { FramePanel } from "./frame-panel";
+import { getCurrentCanonicalUrl } from "howdju-client-common";
 
-let frameApi
+let frameApi;
 
 export function getFrameApi() {
-  return frameApi
+  return frameApi;
 }
 
 export function toggleSidebar() {
   if (frameApi) {
-    frameApi.toggle()
+    frameApi.toggle();
   } else {
-    boot()
+    boot();
   }
 }
 
 export function showSidebar() {
   if (frameApi) {
-    frameApi.show()
+    frameApi.show();
   } else {
-    boot()
+    boot();
   }
 }
 
 function boot() {
-  const root = document.createElement('div')
-  document.body.appendChild(root)
+  const root = document.createElement("div");
+  document.body.appendChild(root);
 
-  getOption('howdjuBaseUrl', (baseUrl) => {
+  getOption("howdjuBaseUrl", (baseUrl) => {
     // TODO move paths to howdju-client-common: paths.searchJustificaitons({url, includeUrls: true})
-    const url = encodeURIComponent(getCurrentCanonicalUrl())
-    const frameUrl = baseUrl + `/search-justifications?url=${url}&includeUrls=true`
-    const App = <FramePanel url={frameUrl} onMount={onFramePanelMount}  />
-    ReactDOM.render(App, root)
-  })
+    const url = encodeURIComponent(getCurrentCanonicalUrl());
+    const frameUrl =
+      baseUrl + `/search-justifications?url=${url}&includeUrls=true`;
+    const App = <FramePanel url={frameUrl} onMount={onFramePanelMount} />;
+    ReactDOM.render(App, root);
+  });
 }
 
 function onFramePanelMount(api) {
-  frameApi = api
+  frameApi = api;
 }

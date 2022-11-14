@@ -60,8 +60,9 @@
     @include placeholder;
   }
   // Is this rule necessary?
-  &:-moz-placeholder, &::-moz-placeholder {
-    opacity:  0.5;
+  &:-moz-placeholder,
+  &::-moz-placeholder {
+    opacity: 0.5;
   }
 }
 
@@ -70,7 +71,7 @@ a.md-title--toolbar {
 }
 
 #title {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 400;
 }
 

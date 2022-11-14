@@ -1,11 +1,11 @@
 /** Variables overrides for react-md@1 */
 
-@import './colors';
+@import "./colors";
 
 $md-primary-color: $primary-color;
 $md-secondary-color: $secondary-color;
 $md-text-field-error-color: $error-color;
-$md-font-family: 'Lato', sans-serif;
+$md-font-family: "Lato", sans-serif;
 $md-theme-light: false;
 
 $md-toolbar-prominent-height: 105px;
@@ -20,6 +20,6 @@ $md-data-table-contextual-fallback-color: $md-blue-grey-900;
 $md-linear-progress-fallback-color: $md-deep-orange-a-700;
 $md-switch-ball-fallback-color: $md-deep-orange-a-700;
 
-$md-avatar-default-background: rgba(0,0,0,0);
+$md-avatar-default-background: rgba(0, 0, 0, 0);
 $md-avatar-default-color: $icon-color;
 $md-chip-icon-default-color: $icon-color;

@@ -1,25 +1,20 @@
-import React, {Component} from 'react'
-import {FontIcon, SelectionControlGroup} from 'react-md'
+import React, { Component } from "react";
+import { FontIcon, SelectionControlGroup } from "react-md";
 
-import get from 'lodash/get'
+import get from "lodash/get";
 
-import {
-  SourceExcerptTypes,
-  newExhaustedEnumError,
-} from 'howdju-common'
+import { SourceExcerptTypes, newExhaustedEnumError } from "howdju-common";
 
-import WritQuoteEditorFields from './WritQuoteEditorFields'
-import windowAware from './windowAware'
+import WritQuoteEditorFields from "./WritQuoteEditorFields";
+import windowAware from "./windowAware";
 
-import './SourceExcerptEditorFields.scss'
-
+import "./SourceExcerptEditorFields.scss";
 
 class SourceExcerptEditorFields extends Component {
-
   onChange = (value, event) => {
-    const name = event.target.name
-    this.props.onPropertyChange({[name]: value})
-  }
+    const name = event.target.name;
+    this.props.onPropertyChange({ [name]: value });
+  };
 
   render() {
     const {
@@ -35,7 +30,7 @@ class SourceExcerptEditorFields extends Component {
       onSubmit,
       suggestionsKey,
       isWindowNarrow,
-    } = this.props
+    } = this.props;
 
     const sourceExcerptTypeControls = (
       <SelectionControlGroup
@@ -51,44 +46,50 @@ class SourceExcerptEditorFields extends Component {
             label: (
               <div className="selection-label">
                 <FontIcon>book</FontIcon>
-                {isWindowNarrow && <span className="selection-label--text">Writ quote</span>}
+                {isWindowNarrow && (
+                  <span className="selection-label--text">Writ quote</span>
+                )}
               </div>
             ),
-            title: 'Writ quote',
+            title: "Writ quote",
           },
           {
             value: SourceExcerptTypes.PIC_REGION,
             label: (
               <div className="selection-label">
                 <FontIcon>photo</FontIcon>
-                {isWindowNarrow && <span className="selection-label--text">Pic</span>}
+                {isWindowNarrow && (
+                  <span className="selection-label--text">Pic</span>
+                )}
               </div>
             ),
-            title: 'Pic',
+            title: "Pic",
           },
           {
             value: SourceExcerptTypes.VID_SEGMENT,
             label: (
               <div className="selection-label">
                 <FontIcon>videocam</FontIcon>
-                {isWindowNarrow && <span className="selection-label--text">Vid</span>}
+                {isWindowNarrow && (
+                  <span className="selection-label--text">Vid</span>
+                )}
               </div>
             ),
-            title: 'Vid',
+            title: "Vid",
           },
         ]}
         disabled={disabled}
       />
-    )
+    );
 
-    let sourceExcerptEntityEditorFields
+    let sourceExcerptEntityEditorFields;
     switch (sourceExcerpt.type) {
       case SourceExcerptTypes.WRIT_QUOTE: {
-        const entity = sourceExcerpt.writQuote
-        const entityId = id + '--writ-quote'
-        const entityName = name + '.writQuote'
-        const entitySuggestionsKey = suggestionsKey + '--writ-quote'
-        const entityErrors = get(errors, 'fieldErrors.writQuote')
+        const entity = sourceExcerpt.writQuote;
+        const entityId = id + "--writ-quote";
+        const entityName = name + ".writQuote";
+        const entitySuggestionsKey = suggestionsKey + "--writ-quote";
+        const entityErrors = get(errors, "fieldErrors.writQuote");
         sourceExcerptEntityEditorFields = (
           <WritQuoteEditorFields
             writQuote={entity}
@@ -103,26 +104,21 @@ class SourceExcerptEditorFields extends Component {
             onKeyDown={onKeyDown}
             onSubmit={onSubmit}
           />
-        )
-        break
+        );
+        break;
       }
       case SourceExcerptTypes.PIC_REGION: {
-        sourceExcerptEntityEditorFields = (
-          <span>Coming soon</span>
-        )
-        break
+        sourceExcerptEntityEditorFields = <span>Coming soon</span>;
+        break;
       }
       case SourceExcerptTypes.VID_SEGMENT: {
-        sourceExcerptEntityEditorFields = (
-          <span>Coming soon</span>
-        )
-        break
+        sourceExcerptEntityEditorFields = <span>Coming soon</span>;
+        break;
       }
       default:
-        throw newExhaustedEnumError(sourceExcerpt.type)
+        throw newExhaustedEnumError(sourceExcerpt.type);
     }
     return (
-
       <div className="source-excerpt-editor-fields">
         <div className="source-excerpt-editor-fields--type-controls">
           {sourceExcerptTypeControls}
@@ -131,8 +127,8 @@ class SourceExcerptEditorFields extends Component {
           {sourceExcerptEntityEditorFields}
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default windowAware(SourceExcerptEditorFields)
+export default windowAware(SourceExcerptEditorFields);

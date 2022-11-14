@@ -1,16 +1,14 @@
-const util = require('util')
+const util = require("util");
 
-const assign = require('lodash/assign')
-const concat = require('lodash/concat')
-const join = require('lodash/join')
-const map = require('lodash/map')
-const mapValues = require('lodash/mapValues')
+const assign = require("lodash/assign");
+const concat = require("lodash/concat");
+const join = require("lodash/join");
+const map = require("lodash/map");
+const mapValues = require("lodash/mapValues");
 
-const {processArgs} = require('./processArgs')
+const { processArgs } = require("./processArgs");
 
-const {
-  utcTimestamp,
-} = require('howdju-common')
+const { utcTimestamp } = require("howdju-common");
 
 const logLevelNumbers = {
   silly: 5,
@@ -19,102 +17,105 @@ const logLevelNumbers = {
   info: 2,
   warn: 1,
   error: 0,
-}
+};
 // Anything at or below this is error-ish
-const logLevelErrorMaxNumber = 1
-
+const logLevelErrorMaxNumber = 1;
 
 const makeContextString = (context) => {
-  if (!context) return ''
-  const contextParts = map(context, (val, key) => `${key}=${util.format(val)}`)
-  const contextString = join(contextParts, '; ')
-  return contextString
-}
+  if (!context) return "";
+  const contextParts = map(context, (val, key) => `${key}=${util.format(val)}`);
+  const contextString = join(contextParts, "; ");
+  return contextString;
+};
 
 /* eslint-disable no-unused-vars */
 const writeToStd = (logLevelNumber, output) => {
   if (logLevelNumber <= logLevelErrorMaxNumber) {
-    process.stderr.write(output + this.eol)
+    process.stderr.write(output + this.eol);
   } else {
-    process.stdout.write(output + this.eol)
+    process.stdout.write(output + this.eol);
   }
-}
+};
 /* eslint-enable no-unused-vars */
 
 // Must return a function instead of a lambda so that it will bind `this` when called
-const makeTextLogArguments = function(logLevel, logLevelNumber, ...args) {
-  const loggerArgs = []
+const makeTextLogArguments = function (logLevel, logLevelNumber, ...args) {
+  const loggerArgs = [];
   if (this.doLogTimestamp) {
-    loggerArgs.push(utcTimestamp())
+    loggerArgs.push(utcTimestamp());
   }
 
-  loggerArgs.push(logLevel)
+  loggerArgs.push(logLevel);
 
-  const contextString = makeContextString(this.context, this.doUseCarriageReturns)
+  const contextString = makeContextString(
+    this.context,
+    this.doUseCarriageReturns
+  );
   if (contextString) {
-    loggerArgs.push(`[${contextString}]`)
+    loggerArgs.push(`[${contextString}]`);
   }
 
-  const combinedArgs = concat(loggerArgs, args)
-  return combinedArgs
-}
+  const combinedArgs = concat(loggerArgs, args);
+  return combinedArgs;
+};
 
 // JSON.stringify doesn't handle Errors well; it skips their stack and message
 function jsonStringifyReplacer(key, value) {
   if (value instanceof Error) {
-    const errorProps = {}
+    const errorProps = {};
     Object.getOwnPropertyNames(value).forEach(function (key) {
-      errorProps[key] = value[key]
-    })
-    return errorProps
+      errorProps[key] = value[key];
+    });
+    return errorProps;
   }
-  return value
+  return value;
 }
 
 // Must return a function instead of a lambda so that it will bind `this` when called
-const makeJsonLogArguments = function(logLevel, logLevelNumber, ...args) {
-  const logRecord = {}
+const makeJsonLogArguments = function (logLevel, logLevelNumber, ...args) {
+  const logRecord = {};
   if (this.doLogTimestamp) {
-    logRecord['timestamp'] = utcTimestamp()
+    logRecord["timestamp"] = utcTimestamp();
   }
   if (this.context) {
-    logRecord['context'] = this.context
+    logRecord["context"] = this.context;
   }
   assign(logRecord, {
     level: logLevel,
     levelNumber: logLevelNumber,
-  })
-  const {message, data} = processArgs(args)
+  });
+  const { message, data } = processArgs(args);
   if (message) {
-    logRecord['message'] = message
+    logRecord["message"] = message;
   }
   if (data) {
-    logRecord['data'] = data
+    logRecord["data"] = data;
   }
 
-  const logRecordJson = JSON.stringify(logRecord, jsonStringifyReplacer)
-  return [logRecordJson]
-}
+  const logRecordJson = JSON.stringify(logRecord, jsonStringifyReplacer);
+  return [logRecordJson];
+};
 
 // Must return a function instead of a lambda so that it will bind `this` when called
-const makeLogMethod = (logLevel, logLevelNumber) => function(...args) {
-  if (this.logLevel) {
-    const loggerLevelNumber = logLevelNumbers[this.logLevel]
-    if (logLevelNumber > loggerLevelNumber) return
-  }
-  const logArgs = this.makeLogArguments(logLevel, logLevelNumber, ...args)
-  // AWS seems to overwrite console.log to add the timestamp and request ID.  Our logging handles those, so write directly to stdout
-  let formatted = util.format.apply(util, logArgs)
-  if (this.doUseCarriageReturns) {
-    formatted = formatted.replace('\n', '\r')
-  }
-  process.stdout.write(formatted + "\n")
-}
+const makeLogMethod = (logLevel, logLevelNumber) =>
+  function (...args) {
+    if (this.logLevel) {
+      const loggerLevelNumber = logLevelNumbers[this.logLevel];
+      if (logLevelNumber > loggerLevelNumber) return;
+    }
+    const logArgs = this.makeLogArguments(logLevel, logLevelNumber, ...args);
+    // AWS seems to overwrite console.log to add the timestamp and request ID.  Our logging handles those, so write directly to stdout
+    let formatted = util.format.apply(util, logArgs);
+    if (this.doUseCarriageReturns) {
+      formatted = formatted.replace("\n", "\r");
+    }
+    process.stdout.write(formatted + "\n");
+  };
 
 const makeLogArgumentsByLogFormat = {
-  'text': makeTextLogArguments,
-  'json': makeJsonLogArguments,
-}
+  text: makeTextLogArguments,
+  json: makeJsonLogArguments,
+};
 
 class AwsLogger {
   /**
@@ -126,19 +127,30 @@ class AwsLogger {
    * @param doLogTimestamp
    * @param logFormat
    */
-  constructor(console, {logLevel, doUseCarriageReturns=true, doLogTimestamp=true, logFormat='text'}) {
-    this.console = console
-    this.logLevel = logLevel
-    this.doUseCarriageReturns = doUseCarriageReturns
-    this.doLogTimestamp = doLogTimestamp
-    const makeLogArguments = makeLogArgumentsByLogFormat[logFormat]
-    if (!makeLogArguments) throw new Error(`Unsupported logFormat: ${logFormat}`)
-    this.makeLogArguments = makeLogArguments
-    this.eol = "\n"
+  constructor(
+    console,
+    {
+      logLevel,
+      doUseCarriageReturns = true,
+      doLogTimestamp = true,
+      logFormat = "text",
+    }
+  ) {
+    this.console = console;
+    this.logLevel = logLevel;
+    this.doUseCarriageReturns = doUseCarriageReturns;
+    this.doLogTimestamp = doLogTimestamp;
+    const makeLogArguments = makeLogArgumentsByLogFormat[logFormat];
+    if (!makeLogArguments)
+      throw new Error(`Unsupported logFormat: ${logFormat}`);
+    this.makeLogArguments = makeLogArguments;
+    this.eol = "\n";
   }
 }
-const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) => makeLogMethod(logLevel, logLevelNumber))
-assign(AwsLogger.prototype, logMethods)
-AwsLogger.prototype.exception = AwsLogger.prototype.error
+const logMethods = mapValues(logLevelNumbers, (logLevelNumber, logLevel) =>
+  makeLogMethod(logLevel, logLevelNumber)
+);
+assign(AwsLogger.prototype, logMethods);
+AwsLogger.prototype.exception = AwsLogger.prototype.error;
 
-exports.AwsLogger = AwsLogger
+exports.AwsLogger = AwsLogger;

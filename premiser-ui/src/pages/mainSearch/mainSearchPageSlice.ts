@@ -1,6 +1,6 @@
-import { api } from "@/apiActions"
-import { createSlice } from "@reduxjs/toolkit"
-import { normalize } from "normalizr"
+import { api } from "@/apiActions";
+import { createSlice } from "@reduxjs/toolkit";
+import { normalize } from "normalizr";
 
 export const mainSearchPageSlice = createSlice({
   name: "mainSearchPage",
@@ -17,17 +17,20 @@ export const mainSearchPageSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addCase(api.fetchMainSearchResults, (state) => {
-      state.isFetching = true
-    })
+      state.isFetching = true;
+    });
     builder.addCase(api.fetchMainSearchResults.response, (state, action) => {
-      state.isFetching = false
+      state.isFetching = false;
       if (!action.error) {
-        const {result} = normalize(action.payload, action.meta.normalizationSchema)
-        state.results = result
+        const { result } = normalize(
+          action.payload,
+          action.meta.normalizationSchema
+        );
+        state.results = result;
       }
-    })
+    });
   },
-})
+});
 
-export const mainSearchPage = mainSearchPageSlice.reducer
-export default mainSearchPageSlice.actions
+export const mainSearchPage = mainSearchPageSlice.reducer;
+export default mainSearchPageSlice.actions;

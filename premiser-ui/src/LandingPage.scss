@@ -1,6 +1,6 @@
 @import "~react-md/src/scss/grids";
-@import './flatui-colors';
-@import './tree';
+@import "./flatui-colors";
+@import "./tree";
 
 $section-margin: 1em;
 $banner-padding: 3em;
@@ -44,7 +44,9 @@ $banner-padding: 3em;
     display: flex;
     width: 66%;
 
-    &, .md-icon, a {
+    &,
+    .md-icon,
+    a {
       color: $clouds;
     }
 
@@ -114,7 +116,9 @@ $banner-padding: 3em;
   }
 
   @media (max-width: $md-grid-tablet-breakpoint - 1) {
-    > p, ul, .banner-content {
+    > p,
+    ul,
+    .banner-content {
       width: 100%;
       padding-left: $md-grid-phone-gutter;
       padding-right: $md-grid-phone-gutter;
@@ -126,7 +130,8 @@ $banner-padding: 3em;
   }
 
   @media (min-width: $md-grid-tablet-breakpoint) and (max-width: $md-grid-desktop-breakpoint - 1) {
-    > p, .banner-content {
+    > p,
+    .banner-content {
       width: 75%;
     }
     ul.blocks {
@@ -135,7 +140,8 @@ $banner-padding: 3em;
   }
 
   @media (min-width: $md-grid-desktop-breakpoint) {
-    > p, .banner-content {
+    > p,
+    .banner-content {
       width: 50%;
     }
     ul.blocks {

@@ -1,5 +1,5 @@
-const forEach = require('lodash/forEach')
-const values = require('lodash/values')
+const forEach = require("lodash/forEach");
+const values = require("lodash/values");
 
 const {
   JustificationBasisTypes,
@@ -10,7 +10,7 @@ const {
   assert,
   isTruthy,
   newExhaustedEnumError,
-} = require('howdju-common')
+} = require("howdju-common");
 
 const {
   toPerspective,
@@ -23,14 +23,12 @@ const {
   toUrl,
   toWrit,
   toWritQuote,
-} = require('./orm')
-
+} = require("./orm");
 
 exports.PerspectivesDao = class PerspectivesDao {
-
   constructor(logger, database) {
-    this.logger = logger
-    this.database = database
+    this.logger = logger;
+    this.database = database;
   }
 
   /** All justifications must be included in the perspective.
@@ -39,7 +37,7 @@ exports.PerspectivesDao = class PerspectivesDao {
    * across root proposition boundaries, but that has the added difficulties of multiple paths from perspective-justification
    * to perspective-proposition.
    */
-  readFeaturedPerspectivesWithVotes({userId}) {
+  readFeaturedPerspectivesWithVotes({ userId }) {
     const args = [
       JustificationBasisTypes.PROPOSITION_COMPOUND,
       JustificationBasisTypes.WRIT_QUOTE,
@@ -47,24 +45,26 @@ exports.PerspectivesDao = class PerspectivesDao {
       JustificationBasisCompoundAtomTypes.PROPOSITION,
       JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptTypes.WRIT_QUOTE,
-    ]
+    ];
     if (userId) {
-      args.push(userId)
+      args.push(userId);
     }
 
-    const votesSelectSql = userId ? `
+    const votesSelectSql = userId
+      ? `
         , v.justification_vote_id
         , v.polarity AS vote_polarity
         , v.justification_id AS vote_justification_id
-        ` :
-      ''
-    const votesJoinSql = userId ? `
+        `
+      : "";
+    const votesJoinSql = userId
+      ? `
         left join justification_votes v on
               j.justification_id = v.justification_id
           and v.user_id = $7
           and v.deleted IS NULL
-        ` :
-      ''
+        `
+      : "";
     const perspectiveJustificationsSql = `
       select
           p.perspective_id
@@ -172,9 +172,14 @@ exports.PerspectivesDao = class PerspectivesDao {
           and u.deleted is null
         ${votesJoinSql}
         order by sca.order_position
-    `
-    return this.database.query('readFeaturedPerspectivesWithVotes', perspectiveJustificationsSql, args)
-      .then( ({rows}) => this._postProcessRows(rows))
+    `;
+    return this.database
+      .query(
+        "readFeaturedPerspectivesWithVotes",
+        perspectiveJustificationsSql,
+        args
+      )
+      .then(({ rows }) => this._postProcessRows(rows));
   }
 
   _postProcessRows(rows) {
@@ -189,7 +194,7 @@ exports.PerspectivesDao = class PerspectivesDao {
       writQuotesById,
       writsById,
       urlsByWritQuoteId,
-    } = this._indexRows(rows)
+    } = this._indexRows(rows);
 
     this._connectEverything(
       perspectivesById,
@@ -202,127 +207,152 @@ exports.PerspectivesDao = class PerspectivesDao {
       writQuotesById,
       writsById,
       urlsByWritQuoteId
-    )
+    );
 
-    return values(perspectivesById)
+    return values(perspectivesById);
   }
 
   _indexRows(rows) {
-    const perspectivesById = {}
-    const justificationsById = {}
-    const propositionCompoundsById = {}
-    const propositionCompoundAtomsByCompoundId = {}
-    const justificationBasisCompoundsById = {}
-    const justificationBasisCompoundAtomsByCompoundId = {}
-    const propositionsById = {}
-    const writQuotesById = {}
-    const writsById = {}
-    const urlsById = {}
-    const urlsByWritQuoteId = {}
+    const perspectivesById = {};
+    const justificationsById = {};
+    const propositionCompoundsById = {};
+    const propositionCompoundAtomsByCompoundId = {};
+    const justificationBasisCompoundsById = {};
+    const justificationBasisCompoundAtomsByCompoundId = {};
+    const propositionsById = {};
+    const writQuotesById = {};
+    const writsById = {};
+    const urlsById = {};
+    const urlsByWritQuoteId = {};
 
-    forEach(rows, row => {
-
-      let perspective = perspectivesById[row.perspective_id]
+    forEach(rows, (row) => {
+      let perspective = perspectivesById[row.perspective_id];
       if (!perspective) {
         perspectivesById[row.perspective_id] = perspective = toPerspective({
           perspective_id: row.perspective_id,
           creator_user_id: row.perspective_creator_user_id,
           proposition_id: row.perspective_proposition_id,
-        })
+        });
       }
-      let perspectiveProposition = propositionsById[perspective.proposition.id]
+      let perspectiveProposition = propositionsById[perspective.proposition.id];
       if (!perspectiveProposition) {
         propositionsById[perspective.proposition.id] = toProposition({
           proposition_id: row.perspective_proposition_id,
           text: row.perspective_proposition_text,
           creator_user_id: row.perspective_proposition_creator_user_id,
           created: row.perspectivce_proposition_created,
-        })
+        });
       }
 
-      const justification = justificationsById[row.justification_id]
+      const justification = justificationsById[row.justification_id];
       if (!justification) {
-        justificationsById[row.justification_id] = toJustification(row)
+        justificationsById[row.justification_id] = toJustification(row);
       }
 
       if (row.basis_proposition_compound_id) {
-        let propositionCompound = propositionCompoundsById[row.basis_proposition_compound_id]
+        let propositionCompound =
+          propositionCompoundsById[row.basis_proposition_compound_id];
         if (!propositionCompound) {
-          propositionCompoundsById[row.basis_proposition_compound_id] = propositionCompound = toPropositionCompound({
-            proposition_compound_id: row.basis_proposition_compound_id,
-          })
+          propositionCompoundsById[row.basis_proposition_compound_id] =
+            propositionCompound = toPropositionCompound({
+              proposition_compound_id: row.basis_proposition_compound_id,
+            });
         }
 
-        let propositionCompoundAtoms = propositionCompoundAtomsByCompoundId[propositionCompound.id]
+        let propositionCompoundAtoms =
+          propositionCompoundAtomsByCompoundId[propositionCompound.id];
         if (!propositionCompoundAtoms) {
-          propositionCompoundAtomsByCompoundId[propositionCompound.id] = propositionCompoundAtoms = []
+          propositionCompoundAtomsByCompoundId[propositionCompound.id] =
+            propositionCompoundAtoms = [];
         }
         const propositionCompoundAtom = toPropositionCompoundAtom({
           proposition_compound_id: propositionCompound.id,
           proposition_id: row.basis_proposition_compound_atom_proposition_id,
           order_position: row.basis_proposition_compound_atom_order_position,
-        })
-        propositionCompoundAtoms.push(propositionCompoundAtom)
+        });
+        propositionCompoundAtoms.push(propositionCompoundAtom);
 
-        const proposition = propositionsById[propositionCompoundAtom.entity.id]
+        const proposition = propositionsById[propositionCompoundAtom.entity.id];
         if (!proposition) {
           propositionsById[propositionCompoundAtom.entity.id] = toProposition({
             proposition_id: propositionCompoundAtom.entity.id,
             text: row.basis_proposition_compound_atom_proposition_text,
-            creator_user_id: row.basis_proposition_compound_atom_proposition_creator_user_id,
+            creator_user_id:
+              row.basis_proposition_compound_atom_proposition_creator_user_id,
             created: row.basis_proposition_compound_atom_proposition_created,
-          })
+          });
         }
       }
 
-
       if (row.basis_jbc_id) {
-        let justificationBasisCompound = justificationBasisCompoundsById[row.basis_jbc_id]
+        let justificationBasisCompound =
+          justificationBasisCompoundsById[row.basis_jbc_id];
         if (!justificationBasisCompound) {
-          justificationBasisCompoundsById[row.basis_jbc_id] = justificationBasisCompound = toJustificationBasisCompound({
-            justification_basis_compound_id: row.basis_jbc_id,
-          })
+          justificationBasisCompoundsById[row.basis_jbc_id] =
+            justificationBasisCompound = toJustificationBasisCompound({
+              justification_basis_compound_id: row.basis_jbc_id,
+            });
         }
 
-        let atomsById = justificationBasisCompoundAtomsByCompoundId[justificationBasisCompound.id]
+        let atomsById =
+          justificationBasisCompoundAtomsByCompoundId[
+            justificationBasisCompound.id
+          ];
         if (!atomsById) {
-          justificationBasisCompoundAtomsByCompoundId[justificationBasisCompound.id] = atomsById = {}
+          justificationBasisCompoundAtomsByCompoundId[
+            justificationBasisCompound.id
+          ] = atomsById = {};
         }
 
-        const atomId = row['basis_jbc_atom_id']
+        const atomId = row["basis_jbc_atom_id"];
         if (!atomsById[atomId]) {
           const atom = toJustificationBasisCompoundAtom({
             justification_basis_compound_atom_id: atomId,
-            justification_basis_compound_id:      justificationBasisCompound.id,
-            entity_type:                          row['basis_jbc_atom_entity_type'],
-            order_position:                       row['basis_jbc_atom_order_position'],
+            justification_basis_compound_id: justificationBasisCompound.id,
+            entity_type: row["basis_jbc_atom_entity_type"],
+            order_position: row["basis_jbc_atom_order_position"],
 
-            proposition_id:                row['basis_jbc_atom_proposition_id'],
-            proposition_text:              row['basis_jbc_atom_proposition_text'],
-            proposition_created:           row['basis_jbc_atom_proposition_created'],
-            proposition_creator_user_id:   row['basis_jbc_atom_proposition_creator_user_id'],
-            source_excerpt_paraphrase_id:                          row['basis_jbc_atom_sep_id'],
-            source_excerpt_paraphrasing_proposition_id:              row['basis_jbc_atom_sep_paraphrasing_proposition_id'],
-            source_excerpt_paraphrasing_proposition_text:            row['basis_jbc_atom_sep_paraphrasing_proposition_text'],
-            source_excerpt_paraphrasing_proposition_created:         row['basis_jbc_atom_sep_paraphrasing_proposition_created'],
-            source_excerpt_paraphrasing_proposition_creator_user_id: row['basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id'],
-            source_excerpt_type:                            row['basis_jbc_atom_sep_source_excerpt_type'],
-            source_excerpt_writ_quote_id:                   row['basis_jbc_atom_sep_writ_quote_id'],
-            source_excerpt_writ_quote_quote_text:           row['basis_jbc_atom_sep_writ_quote_quote_text'],
-            source_excerpt_writ_quote_created:              row['basis_jbc_atom_sep_writ_quote_created'],
-            source_excerpt_writ_quote_creator_user_id:      row['basis_jbc_atom_sep_writ_quote_creator_user_id'],
-            source_excerpt_writ_quote_writ_id:              row['basis_jbc_atom_sep_writ_quote_writ_id'],
-            source_excerpt_writ_quote_writ_title:           row['basis_jbc_atom_sep_writ_quote_writ_title'],
-            source_excerpt_writ_quote_writ_created:         row['basis_jbc_atom_sep_writ_quote_writ_created'],
-            source_excerpt_writ_quote_writ_creator_user_id: row['basis_jbc_atom_sep_writ_quote_writ_creator_user_id'],
-          })
+            proposition_id: row["basis_jbc_atom_proposition_id"],
+            proposition_text: row["basis_jbc_atom_proposition_text"],
+            proposition_created: row["basis_jbc_atom_proposition_created"],
+            proposition_creator_user_id:
+              row["basis_jbc_atom_proposition_creator_user_id"],
+            source_excerpt_paraphrase_id: row["basis_jbc_atom_sep_id"],
+            source_excerpt_paraphrasing_proposition_id:
+              row["basis_jbc_atom_sep_paraphrasing_proposition_id"],
+            source_excerpt_paraphrasing_proposition_text:
+              row["basis_jbc_atom_sep_paraphrasing_proposition_text"],
+            source_excerpt_paraphrasing_proposition_created:
+              row["basis_jbc_atom_sep_paraphrasing_proposition_created"],
+            source_excerpt_paraphrasing_proposition_creator_user_id:
+              row[
+                "basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id"
+              ],
+            source_excerpt_type: row["basis_jbc_atom_sep_source_excerpt_type"],
+            source_excerpt_writ_quote_id:
+              row["basis_jbc_atom_sep_writ_quote_id"],
+            source_excerpt_writ_quote_quote_text:
+              row["basis_jbc_atom_sep_writ_quote_quote_text"],
+            source_excerpt_writ_quote_created:
+              row["basis_jbc_atom_sep_writ_quote_created"],
+            source_excerpt_writ_quote_creator_user_id:
+              row["basis_jbc_atom_sep_writ_quote_creator_user_id"],
+            source_excerpt_writ_quote_writ_id:
+              row["basis_jbc_atom_sep_writ_quote_writ_id"],
+            source_excerpt_writ_quote_writ_title:
+              row["basis_jbc_atom_sep_writ_quote_writ_title"],
+            source_excerpt_writ_quote_writ_created:
+              row["basis_jbc_atom_sep_writ_quote_writ_created"],
+            source_excerpt_writ_quote_writ_creator_user_id:
+              row["basis_jbc_atom_sep_writ_quote_writ_creator_user_id"],
+          });
 
-          atomsById[atomId] = atom
+          atomsById[atomId] = atom;
         }
       }
 
       if (row.basis_writ_quote_id) {
-        let writQuote = writQuotesById[row.basis_writ_quote_id]
+        let writQuote = writQuotesById[row.basis_writ_quote_id];
         if (!writQuote) {
           writQuotesById[row.basis_writ_quote_id] = writQuote = toWritQuote({
             writ_quote_id: row.basis_writ_quote_id,
@@ -330,35 +360,35 @@ exports.PerspectivesDao = class PerspectivesDao {
             quote_text: row.basis_writ_quote_quote_text,
             created: row.basis_writ_quote_created,
             creator_user_id: row.basis_writ_quote_creator_user_id,
-          })
+          });
         }
 
-        const writ = writsById[writQuote.writ.id]
+        const writ = writsById[writQuote.writ.id];
         if (!writ) {
           writsById[row.basis_writ_quote_writ_id] = toWrit({
             writ_id: row.basis_writ_quote_writ_id,
             title: row.basis_writ_quote_writ_title,
             created: row.basis_writ_quote_writ_created,
             creator_user_id: row.basis_writ_quote_writ_creator_user_id,
-          })
+          });
         }
 
         if (row.basis_writ_quote_url_id) {
-          let url = urlsById[row.basis_writ_quote_url_id]
+          let url = urlsById[row.basis_writ_quote_url_id];
           if (!url) {
             urlsById[row.basis_writ_quote_url_id] = url = toUrl({
               url_id: row.basis_writ_quote_url_id,
               url: row.basis_writ_quote_url_url,
-            })
+            });
           }
-          let urls = urlsByWritQuoteId[writQuote.id]
+          let urls = urlsByWritQuoteId[writQuote.id];
           if (!urls) {
-            urlsByWritQuoteId[writQuote.id] = urls = []
+            urlsByWritQuoteId[writQuote.id] = urls = [];
           }
-          urls.push(url)
+          urls.push(url);
         }
       }
-    })
+    });
 
     return {
       perspectivesById,
@@ -371,7 +401,7 @@ exports.PerspectivesDao = class PerspectivesDao {
       writQuotesById,
       writsById,
       urlsByWritQuoteId,
-    }
+    };
   }
 
   _connectEverything(
@@ -386,70 +416,73 @@ exports.PerspectivesDao = class PerspectivesDao {
     writsById,
     urlsByWritQuoteId
   ) {
-    forEach(perspectivesById, p => {
-      p.proposition = propositionsById[p.proposition.id]
-    })
+    forEach(perspectivesById, (p) => {
+      p.proposition = propositionsById[p.proposition.id];
+    });
 
-    forEach(justificationsById, j => {
-
-      j.rootProposition = propositionsById[j.rootProposition.id]
+    forEach(justificationsById, (j) => {
+      j.rootProposition = propositionsById[j.rootProposition.id];
 
       switch (j.target.type) {
-        case JustificationTargetTypes.PROPOSITION: {
-          const targetProposition = propositionsById[j.target.entity.id]
-          j.target.entity = targetProposition
-          if (!targetProposition.justifications) {
-            targetProposition.justifications = []
+        case JustificationTargetTypes.PROPOSITION:
+          {
+            const targetProposition = propositionsById[j.target.entity.id];
+            j.target.entity = targetProposition;
+            if (!targetProposition.justifications) {
+              targetProposition.justifications = [];
+            }
+            targetProposition.justifications.push(j);
           }
-          targetProposition.justifications.push(j)
-        }
-          break
-        case JustificationTargetTypes.JUSTIFICATION: {
-          const targetJustification = justificationsById[j.target.entity.id]
-          j.target.entity = targetJustification
-          targetJustification.counterJustifications.push(j)
-        }
-          break
+          break;
+        case JustificationTargetTypes.JUSTIFICATION:
+          {
+            const targetJustification = justificationsById[j.target.entity.id];
+            j.target.entity = targetJustification;
+            targetJustification.counterJustifications.push(j);
+          }
+          break;
         default:
-          throw newImpossibleError(`justification ${j.id} has unsupported target type ${j.target.type}`)
+          throw newImpossibleError(
+            `justification ${j.id} has unsupported target type ${j.target.type}`
+          );
       }
 
       switch (j.basis.type) {
         case JustificationBasisTypes.PROPOSITION_COMPOUND: {
-          j.basis.entity = propositionCompoundsById[j.basis.entity.id]
-          break
+          j.basis.entity = propositionCompoundsById[j.basis.entity.id];
+          break;
         }
         case JustificationBasisTypes.WRIT_QUOTE: {
-          j.basis.entity = writQuotesById[j.basis.entity.id]
-          break
+          j.basis.entity = writQuotesById[j.basis.entity.id];
+          break;
         }
         case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND: {
-          j.basis.entity = justificationBasisCompoundsById[j.basis.entity.id]
-          break
+          j.basis.entity = justificationBasisCompoundsById[j.basis.entity.id];
+          break;
         }
         default:
-          throw newExhaustedEnumError(j.basis)
+          throw newExhaustedEnumError(j.basis);
       }
 
-      assert(isTruthy(j.basis.entity))
-    })
+      assert(isTruthy(j.basis.entity));
+    });
 
     forEach(propositionCompoundsById, (sc) => {
-      sc.atoms = propositionCompoundAtomsByCompoundId[sc.id]
-    })
-    forEach(propositionCompoundAtomsByCompoundId, scas =>
+      sc.atoms = propositionCompoundAtomsByCompoundId[sc.id];
+    });
+    forEach(propositionCompoundAtomsByCompoundId, (scas) =>
       forEach(scas, (sca) => {
-        sca.entity = propositionsById[sca.entity.id]
+        sca.entity = propositionsById[sca.entity.id];
       })
-    )
+    );
 
     forEach(justificationBasisCompoundsById, (jbc) => {
-      jbc.atoms = values(justificationBasisCompoundAtomsByCompoundId[jbc.id])
-    })
+      jbc.atoms = values(justificationBasisCompoundAtomsByCompoundId[jbc.id]);
+    });
 
     forEach(writQuotesById, (wq) => {
-      wq.writ = writsById[wq.writ.id]
-      wq.urls = urlsByWritQuoteId[wq.id]
-    })
+      wq.writ = writsById[wq.writ.id];
+      wq.urls = urlsByWritQuoteId[wq.id];
+    });
   }
-}
+};

@@ -1,16 +1,13 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import map from 'lodash/map'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import map from "lodash/map";
 
-import PropositionCompoundViewerAtomItem from './PropositionCompoundViewerAtomItem'
-import {
-  combineIds,
-} from './viewModels'
+import PropositionCompoundViewerAtomItem from "./PropositionCompoundViewerAtomItem";
+import { combineIds } from "./viewModels";
 
-import './PropositionCompoundViewer.scss'
+import "./PropositionCompoundViewer.scss";
 
 export default class PropositionCompoundViewer extends Component {
-
   render() {
     const {
       id,
@@ -23,10 +20,14 @@ export default class PropositionCompoundViewer extends Component {
       showStatusText,
       contextTrailItems,
       ...rest
-    } = this.props
+    } = this.props;
 
-    const atomListItems = map(propositionCompound.atoms, atom => {
-      const listItemId = combineIds(id, `proposition-atom-${atom.entity.id}`, 'list-item')
+    const atomListItems = map(propositionCompound.atoms, (atom) => {
+      const listItemId = combineIds(
+        id,
+        `proposition-atom-${atom.entity.id}`,
+        "list-item"
+      );
       return (
         <PropositionCompoundViewerAtomItem
           id={listItemId}
@@ -39,20 +40,19 @@ export default class PropositionCompoundViewer extends Component {
           isUnCondensed={isUnCondensed}
           showBasisUrls={showBasisUrls}
           showStatusText={showStatusText}
-          doShowPropositionAtomJustifications={doShowPropositionAtomJustifications}
+          doShowPropositionAtomJustifications={
+            doShowPropositionAtomJustifications
+          }
           contextTrailItems={contextTrailItems}
         />
-      )
-    })
+      );
+    });
 
     return (
-      <ol
-        {...rest}
-        className="compound-viewer proposition-compound-viewer"
-      >
+      <ol {...rest} className="compound-viewer proposition-compound-viewer">
         {atomListItems}
       </ol>
-    )
+    );
   }
 }
 PropositionCompoundViewer.propTypes = {
@@ -68,4 +68,4 @@ PropositionCompoundViewer.propTypes = {
   isCondensed: PropTypes.bool,
   showStatusText: PropTypes.bool,
   isUnCondensed: PropTypes.bool,
-}
+};

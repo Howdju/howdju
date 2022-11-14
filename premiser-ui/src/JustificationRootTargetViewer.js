@@ -1,15 +1,17 @@
-import React from 'react'
+import React from "react";
 
-import {JustificationRootTargetTypes, newExhaustedEnumError} from 'howdju-common'
+import {
+  JustificationRootTargetTypes,
+  newExhaustedEnumError,
+} from "howdju-common";
 
-import PropositionEntityViewer from './PropositionEntityViewer'
-import StatementEntityViewer from './StatementEntityViewer'
+import PropositionEntityViewer from "./PropositionEntityViewer";
+import StatementEntityViewer from "./StatementEntityViewer";
 
 export default class JustificationRootTargetViewer extends React.Component {
-
   static defaultProps = {
     showStatusText: true,
-  }
+  };
 
   render() {
     const {
@@ -20,7 +22,7 @@ export default class JustificationRootTargetViewer extends React.Component {
       suggestionsKey,
       showStatusText,
       menu,
-    } = this.props
+    } = this.props;
     switch (rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION:
         return (
@@ -32,7 +34,7 @@ export default class JustificationRootTargetViewer extends React.Component {
             showStatusText={showStatusText}
             menu={menu}
           />
-        )
+        );
       case JustificationRootTargetTypes.STATEMENT:
         return (
           <StatementEntityViewer
@@ -42,9 +44,9 @@ export default class JustificationRootTargetViewer extends React.Component {
             showStatusText={showStatusText}
             menu={menu}
           />
-        )
+        );
       default:
-        throw newExhaustedEnumError(rootTargetType)
+        throw newExhaustedEnumError(rootTargetType);
     }
   }
 }

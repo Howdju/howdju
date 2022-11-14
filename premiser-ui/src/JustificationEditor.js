@@ -1,78 +1,95 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {connect} from "react-redux"
-import {Button, CircularProgress} from 'react-md'
-import get from 'lodash/get'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { Button, CircularProgress } from "react-md";
+import get from "lodash/get";
 
-import {
-  makeJustificationEditModel,
-} from "howdju-client-common"
+import { makeJustificationEditModel } from "howdju-client-common";
 
-import {
-  editors,
-  mapActionCreatorGroupToDispatchToProps,
-} from './actions'
-import {EditorTypes} from "./reducers/editors"
+import { editors, mapActionCreatorGroupToDispatchToProps } from "./actions";
+import { EditorTypes } from "./reducers/editors";
 import t, {
   CANCEL_BUTTON_LABEL,
   EDIT_ENTITY_SUBMIT_BUTTON_LABEL,
-} from "./texts"
+} from "./texts";
 import {
   combineIds,
   translateJustificationErrorsFromFormInput,
-} from './viewModels'
-import JustificationEditorFields from "./JustificationEditorFields"
-
+} from "./viewModels";
+import JustificationEditorFields from "./JustificationEditorFields";
 
 class JustificationEditor extends Component {
-
   onPropertyChange = (properties) => {
-    this.props.editors.propertyChange(JustificationEditor.editorType, this.props.editorId, properties)
-  }
+    this.props.editors.propertyChange(
+      JustificationEditor.editorType,
+      this.props.editorId,
+      properties
+    );
+  };
 
   onAddUrl = () => {
-    this.props.editors.addUrl(JustificationEditor.editorType, this.props.editorId)
-  }
+    this.props.editors.addUrl(
+      JustificationEditor.editorType,
+      this.props.editorId
+    );
+  };
 
   onRemoveUrl = (url, index) => {
-    this.props.editors.removeUrl(JustificationEditor.editorType, this.props.editorId, url, index)
-  }
+    this.props.editors.removeUrl(
+      JustificationEditor.editorType,
+      this.props.editorId,
+      url,
+      index
+    );
+  };
 
   onAddPropositionCompoundAtom = () => {
-    this.props.editors.addPropositionCompoundAtom(JustificationEditor.editorType, this.props.editorId)
-  }
+    this.props.editors.addPropositionCompoundAtom(
+      JustificationEditor.editorType,
+      this.props.editorId
+    );
+  };
 
   onRemovePropositionCompoundAtom = (atom, index) => {
-    this.props.editors.removePropositionCompoundAtom(JustificationEditor.editorType, this.props.editorId, atom, index)
-  }
+    this.props.editors.removePropositionCompoundAtom(
+      JustificationEditor.editorType,
+      this.props.editorId,
+      atom,
+      index
+    );
+  };
 
   onSubmit = (event) => {
     if (!this.props.onSubmit) {
-      event.preventDefault()
-      this.props.editors.commitEdit(JustificationEditor.editorType, this.props.editorId)
+      event.preventDefault();
+      this.props.editors.commitEdit(
+        JustificationEditor.editorType,
+        this.props.editorId
+      );
     } else {
-      this.props.onSubmit(event)
+      this.props.onSubmit(event);
     }
-  }
+  };
 
   onCancelEdit = () => {
-    this.props.editors.cancelEdit(JustificationEditor.editorType, this.props.editorId)
-  }
+    this.props.editors.cancelEdit(
+      JustificationEditor.editorType,
+      this.props.editorId
+    );
+  };
 
   render() {
-    const {
-      id,
-      editorState,
-      doShowButtons,
-      ...rest
-    } = this.props
-    delete rest.editors
-    delete rest.editorId
-    delete rest.onSubmit
+    const { id, editorState, doShowButtons, ...rest } = this.props;
+    delete rest.editors;
+    delete rest.editorId;
+    delete rest.onSubmit;
 
-    const justification = editorState.editEntity || makeJustificationEditModel()
-    const {errors, isSaving} = editorState
-    const justificationErrors = translateJustificationErrorsFromFormInput(justification, errors) || errors
+    const justification =
+      editorState.editEntity || makeJustificationEditModel();
+    const { errors, isSaving } = editorState;
+    const justificationErrors =
+      translateJustificationErrorsFromFormInput(justification, errors) ||
+      errors;
 
     const buttons = [
       <Button
@@ -89,14 +106,14 @@ class JustificationEditor extends Component {
         children={t(EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
         disabled={isSaving}
       />,
-    ]
+    ];
 
     return (
       <form className="justification-editor" onSubmit={this.onSubmit}>
         <JustificationEditorFields
           {...rest}
           justification={justification}
-          id={combineIds(id, 'editor-fields')}
+          id={combineIds(id, "editor-fields")}
           onPropertyChange={this.onPropertyChange}
           onAddUrl={this.onAddUrl}
           onRemoveUrl={this.onRemoveUrl}
@@ -108,7 +125,7 @@ class JustificationEditor extends Component {
         {isSaving && <CircularProgress key="progress" id="progress" />}
         {doShowButtons && buttons}
       </form>
-    )
+    );
   }
 }
 JustificationEditor.propTypes = {
@@ -122,19 +139,24 @@ JustificationEditor.propTypes = {
   doShowButtons: PropTypes.bool,
   disabled: PropTypes.bool,
   onKeyDown: PropTypes.func,
-}
+};
 JustificationEditor.defaultProps = {
   doShowButtons: true,
-}
-JustificationEditor.editorType = EditorTypes.NEW_JUSTIFICATION
+};
+JustificationEditor.editorType = EditorTypes.NEW_JUSTIFICATION;
 
 const mapStateToProps = (state, ownProps) => {
-  const editorState = get(state.editors, [EditorTypes.NEW_JUSTIFICATION, ownProps.editorId]) || {}
+  const editorState =
+    get(state.editors, [EditorTypes.NEW_JUSTIFICATION, ownProps.editorId]) ||
+    {};
   return {
     editorState,
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-  editors,
-}))(JustificationEditor)
+export default connect(
+  mapStateToProps,
+  mapActionCreatorGroupToDispatchToProps({
+    editors,
+  })
+)(JustificationEditor);

@@ -1,40 +1,43 @@
-const forEach = require('lodash/forEach')
-const map = require('lodash/map')
+const forEach = require("lodash/forEach");
+const map = require("lodash/map");
 
 const {
   JustificationBasisTypes,
   JustificationBasisCompoundAtomTypes,
   SourceExcerptTypes,
-} = require('howdju-common')
-const {
-  toUrl,
-} = require("./orm")
+} = require("howdju-common");
+const { toUrl } = require("./orm");
 
-const head = require('lodash/head')
-
+const head = require("lodash/head");
 
 exports.UrlsDao = class UrlsDao {
-
   constructor(logger, database) {
-    this.logger = logger
-    this.database = database
+    this.logger = logger;
+    this.database = database;
   }
 
   readUrlForUrl(url) {
-    return this.database.query('readUrlForUrl', 'select * from urls where url = $1 and deleted is null', [url])
-      .then( ({rows}) => {
+    return this.database
+      .query(
+        "readUrlForUrl",
+        "select * from urls where url = $1 and deleted is null",
+        [url]
+      )
+      .then(({ rows }) => {
         if (rows.length > 1) {
-          this.logger.error(`${rows.length} equivalent URLs`, {url})
+          this.logger.error(`${rows.length} equivalent URLs`, { url });
         }
-        return toUrl(head(rows))
-      })
+        return toUrl(head(rows));
+      });
   }
 
   async readUrlsForIds(ids) {
-    const {rows} = await this.database.query('readUrlsForIds',
-      'select * from urls where url_id in ($1) and deleted is null',
-      [ids.join(',')])
-    return rows.map(toUrl)
+    const { rows } = await this.database.query(
+      "readUrlsForIds",
+      "select * from urls where url_id in ($1) and deleted is null",
+      [ids.join(",")]
+    );
+    return rows.map(toUrl);
   }
 
   readUrlsByWritQuoteIdForRootTarget(rootTargetType, rootTargetId) {
@@ -86,41 +89,51 @@ exports.UrlsDao = class UrlsDao {
             and wq.deleted is null
             and wqu.deleted is null
             and u.deleted is null
-    `
-    return this.database.query('readUrlsByWritQuoteIdForRootTarget', sql, [
-      rootTargetId,
-      JustificationBasisTypes.WRIT_QUOTE,
-      JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
-      JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
-      SourceExcerptTypes.WRIT_QUOTE,
-      rootTargetType,
-    ])
-      .then( ({rows}) => groupUrlsByWritQuoteId(rows))
+    `;
+    return this.database
+      .query("readUrlsByWritQuoteIdForRootTarget", sql, [
+        rootTargetId,
+        JustificationBasisTypes.WRIT_QUOTE,
+        JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
+        JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
+        SourceExcerptTypes.WRIT_QUOTE,
+        rootTargetType,
+      ])
+      .then(({ rows }) => groupUrlsByWritQuoteId(rows));
   }
 
   readDomains() {
-    return this.database.query('readDomains', `select distinct substring( url from '.*://([^/]*)' ) as domain from urls order by domain`)
-      .then(({rows}) => map(rows, row => row.domain))
+    return this.database
+      .query(
+        "readDomains",
+        `select distinct substring( url from '.*://([^/]*)' ) as domain from urls order by domain`
+      )
+      .then(({ rows }) => map(rows, (row) => row.domain));
   }
 
   createUrls(urls, userId, now) {
-    return map(urls, url => this.createUrl(url, userId, now))
+    return map(urls, (url) => this.createUrl(url, userId, now));
   }
 
   createUrl(url, userId, now) {
-    return this.database.query('createUrl', 'insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *', [url.url, userId, now])
-      .then( ({rows: [row]}) => toUrl(row) )
+    return this.database
+      .query(
+        "createUrl",
+        "insert into urls (url, creator_user_id, created) values ($1, $2, $3) returning *",
+        [url.url, userId, now]
+      )
+      .then(({ rows: [row] }) => toUrl(row));
   }
-}
+};
 
 function groupUrlsByWritQuoteId(rows) {
-  const urlsByWritQuoteId = {}
-  forEach(rows, row => {
-    let urls = urlsByWritQuoteId[row.writ_quote_id]
+  const urlsByWritQuoteId = {};
+  forEach(rows, (row) => {
+    let urls = urlsByWritQuoteId[row.writ_quote_id];
     if (!urls) {
-      urlsByWritQuoteId[row.writ_quote_id] = urls = []
+      urlsByWritQuoteId[row.writ_quote_id] = urls = [];
     }
-    urls.push(toUrl(row))
-  })
-  return urlsByWritQuoteId
+    urls.push(toUrl(row));
+  });
+  return urlsByWritQuoteId;
 }

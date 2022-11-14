@@ -269,7 +269,7 @@ yarn upgrade-interactive
 ### Doing something in each workspace
 
 ```shell
-yarn workspaces foreach -Av exec bash -c 'ls'
+yarn workspaces foreach -Av exec bash -c '[[ -f jest.config.ts ]] && yarn add --dev ts-node'
 ```
 
 ### Adding a new lambda
@@ -399,6 +399,17 @@ for the possible contents of the JSON file.
 See eslint-config-howdju/README.md.
 
 ### Prettier
+
+Each workspace must install the `--exact` same version of `prettier` and defines a script `format`
+that calls `eslint --fix` and `prettier`:
+
+```sh
+yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .
+```
+
+Each of our configs in `eslint-config-howdju` extends `prettier` as the last extended config so that it can override
+any previous configs. If a package extends a config other than one of these, it must also be sure to
+extend `prettier` as the last overridden config.
 
 ### TypeScript
 

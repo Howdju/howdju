@@ -1,11 +1,8 @@
-const bcrypt = require('bcryptjs')
-const cryptohat = require('cryptohat')
-const Promise = require('bluebird')
+const bcrypt = require("bcryptjs");
+const cryptohat = require("cryptohat");
+const Promise = require("bluebird");
 
-const {
-  EntityTypes,
-  utcNow,
-} = require('howdju-common')
+const { EntityTypes, utcNow } = require("howdju-common");
 
 const {
   EntityNotFoundError,
@@ -13,137 +10,150 @@ const {
   EntityValidationError,
   InvalidLoginError,
   AuthenticationError,
-} = require("../serviceErrors")
-const {
-  HashTypes,
-} = require('../hashTypes')
-
+} = require("../serviceErrors");
+const { HashTypes } = require("../hashTypes");
 
 exports.AuthService = class AuthService {
-
   constructor(config, logger, credentialValidator, authDao, usersDao) {
-    this.config = config
-    this.logger = logger
-    this.credentialValidator = credentialValidator
-    this.authDao = authDao
-    this.usersDao = usersDao
+    this.config = config;
+    this.logger = logger;
+    this.credentialValidator = credentialValidator;
+    this.authDao = authDao;
+    this.usersDao = usersDao;
   }
 
   readOptionalUserIdForAuthToken(authToken) {
     if (!authToken) {
-      return Promise.resolve(null)
+      return Promise.resolve(null);
     }
-    return this.authDao.getUserIdForAuthToken(authToken)
+    return this.authDao.getUserIdForAuthToken(authToken);
   }
 
   readUserIdForAuthToken(authToken) {
-    return this.readOptionalUserIdForAuthToken(authToken).then(userId => {
+    return this.readOptionalUserIdForAuthToken(authToken).then((userId) => {
       if (!userId) {
-        throw new AuthenticationError()
+        throw new AuthenticationError();
       }
-      return userId
-    })
+      return userId;
+    });
   }
 
   createAuthToken(user, now) {
-    const authToken = cryptohat(256, 36)
-    const expires = now.clone()
-    expires.add(this.config.authTokenDuration)
+    const authToken = cryptohat(256, 36);
+    const expires = now.clone();
+    expires.add(this.config.authTokenDuration);
 
-    return this.authDao.insertAuthToken(user.id, authToken, now, expires)
-      .then(() => ({authToken, expires}))
+    return this.authDao
+      .insertAuthToken(user.id, authToken, now, expires)
+      .then(() => ({ authToken, expires }));
   }
 
   createOrUpdatePasswordAuthForUserId(userId, password) {
-    return Promise.all([
-      bcrypt.hash(password, this.config.auth.bcrypt.saltRounds),
-      this.authDao.readUserHashForId(userId, HashTypes.BCRYPT),
-    ])
-      .then(([hash, extantUserHash]) => {
-        if (extantUserHash) {
-          return this.authDao.updateUserAuthForUserId(userId, hash, HashTypes.BCRYPT)
-        }
-        return this.authDao.createUserAuthForUserId(userId, hash, HashTypes.BCRYPT)
-      })
-      // conceal the hash.  We never want to return it to any request
-      .then((userHash) => ({}))
+    return (
+      Promise.all([
+        bcrypt.hash(password, this.config.auth.bcrypt.saltRounds),
+        this.authDao.readUserHashForId(userId, HashTypes.BCRYPT),
+      ])
+        .then(([hash, extantUserHash]) => {
+          if (extantUserHash) {
+            return this.authDao.updateUserAuthForUserId(
+              userId,
+              hash,
+              HashTypes.BCRYPT
+            );
+          }
+          return this.authDao.createUserAuthForUserId(
+            userId,
+            hash,
+            HashTypes.BCRYPT
+          );
+        })
+        // conceal the hash.  We never want to return it to any request
+        .then((userHash) => ({}))
+    );
   }
 
-  async createPasswordHashAuthForUserId(userId, passwordHash, passwordHashType) {
-    return await this.authDao.createUserAuthForUserId(userId, passwordHash, passwordHashType)
+  async createPasswordHashAuthForUserId(
+    userId,
+    passwordHash,
+    passwordHashType
+  ) {
+    return await this.authDao.createUserAuthForUserId(
+      userId,
+      passwordHash,
+      passwordHashType
+    );
   }
 
   verifyPassword(credentials) {
-    return this.authDao.readUserHashForEmail(credentials.email, HashTypes.BCRYPT)
-      .then( (userHash) => {
+    return this.authDao
+      .readUserHashForEmail(credentials.email, HashTypes.BCRYPT)
+      .then((userHash) => {
         if (!userHash) {
-          throw new EntityNotFoundError(EntityTypes.PASSWORD_HASH)
+          throw new EntityNotFoundError(EntityTypes.PASSWORD_HASH);
         }
-        this.logger.silly("Found user hash")
-        const {userId, hash} = userHash
-        let verifyPromise
+        this.logger.silly("Found user hash");
+        const { userId, hash } = userHash;
+        let verifyPromise;
         try {
-          verifyPromise = bcrypt.compare(credentials.password, hash)
-          this.logger.silly('proceeding past verify call')
+          verifyPromise = bcrypt.compare(credentials.password, hash);
+          this.logger.silly("proceeding past verify call");
         } catch (err) {
-          this.logger.error('failed verification', {err})
-          verifyPromise = false
+          this.logger.error("failed verification", { err });
+          verifyPromise = false;
         }
-        return Promise.all([
-          verifyPromise,
-          userId,
-        ])
+        return Promise.all([verifyPromise, userId]);
       })
-      .then( ([isVerified, userId]) => {
+      .then(([isVerified, userId]) => {
         if (!isVerified) {
-          throw new InvalidLoginError()
+          throw new InvalidLoginError();
         }
 
-        return userId
-      })
+        return userId;
+      });
   }
 
   validateCredentials(credentials) {
-    const validationErrors = this.credentialValidator.validate(credentials)
+    const validationErrors = this.credentialValidator.validate(credentials);
     if (validationErrors.hasErrors) {
-      throw new EntityValidationError({credentials: validationErrors})
+      throw new EntityValidationError({ credentials: validationErrors });
     }
-    return credentials
+    return credentials;
   }
 
   login(credentials) {
     return Promise.resolve()
       .then(() => this.validateCredentials(credentials))
       .then(() => this.verifyPassword(credentials))
-      .then(userId => this.usersDao.readUserForId(userId))
-      .then(user => ensureActive(user))
-      .then(user => {
-        const now = utcNow()
+      .then((userId) => this.usersDao.readUserForId(userId))
+      .then((user) => ensureActive(user))
+      .then((user) => {
+        const now = utcNow();
         return Promise.all([
           user,
           this.createAuthToken(user, now),
           updateLastLogin(this, user, now),
-        ])
+        ]);
       })
-      .then( ([user, {authToken, expires}]) => ({
+      .then(([user, { authToken, expires }]) => ({
         user,
         authToken,
         expires,
-      }))
+      }));
   }
 
   logout(authToken) {
-    return this.authDao.deleteAuthToken(authToken)
+    return this.authDao.deleteAuthToken(authToken);
   }
-}
+};
 
 function updateLastLogin(self, user, now) {
-  return self.usersDao.updateLastLoginForUserId(user.id, now)
+  return self.usersDao.updateLastLoginForUserId(user.id, now);
 }
 
 function ensureActive(user) {
   if (!user.isActive) {
-    throw new UserIsInactiveError(user.userId)
+    throw new UserIsInactiveError(user.userId);
   }
-  return user
+  return user;
 }

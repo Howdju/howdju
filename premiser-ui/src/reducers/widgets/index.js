@@ -1,2 +1,2 @@
-import widgets from './widgets'
-export default widgets
+import widgets from "./widgets";
+export default widgets;

@@ -1,12 +1,12 @@
-const concat = require('lodash/concat')
-const forEach = require('lodash/forEach')
-const flatMap = require('lodash/flatMap')
-const has = require('lodash/has')
-const head = require('lodash/head')
-const map = require('lodash/map')
-const mapValues = require('lodash/mapValues')
-const Promise = require('bluebird')
-const snakeCase = require('lodash/snakeCase')
+const concat = require("lodash/concat");
+const forEach = require("lodash/forEach");
+const flatMap = require("lodash/flatMap");
+const has = require("lodash/has");
+const head = require("lodash/head");
+const map = require("lodash/map");
+const mapValues = require("lodash/mapValues");
+const Promise = require("bluebird");
+const snakeCase = require("lodash/snakeCase");
 
 const {
   assert,
@@ -24,7 +24,7 @@ const {
   requireArgs,
   SortDirections,
   SourceExcerptTypes,
-} = require('howdju-common')
+} = require("howdju-common");
 
 const {
   toJustification,
@@ -34,17 +34,12 @@ const {
   toJustificationBasisCompoundAtom,
   toWritQuote,
   toProposition,
-} = require('./orm')
-const {EntityNotFoundError} = require('../serviceErrors')
-const {
-  groupRootJustifications,
-  renumberSqlArgs,
-} = require('./daosUtil')
-const {DatabaseSortDirection} = require('./daoModels')
-
+} = require("./orm");
+const { EntityNotFoundError } = require("../serviceErrors");
+const { groupRootJustifications, renumberSqlArgs } = require("./daosUtil");
+const { DatabaseSortDirection } = require("./daoModels");
 
 exports.JustificationsDao = class JustificationsDao {
-
   constructor(
     logger,
     database,
@@ -52,7 +47,7 @@ exports.JustificationsDao = class JustificationsDao {
     propositionCompoundsDao,
     writQuotesDao,
     justificationBasisCompoundsDao,
-    writQuoteUrlTargetsDao,
+    writQuoteUrlTargetsDao
   ) {
     requireArgs({
       logger,
@@ -62,25 +57,34 @@ exports.JustificationsDao = class JustificationsDao {
       writQuotesDao,
       justificationBasisCompoundsDao,
       writQuoteUrlTargetsDao,
-    })
-    this.logger = logger
-    this.database = database
-    this.statementsDao = statementsDao
-    this.propositionCompoundsDao = propositionCompoundsDao
-    this.writQuotesDao = writQuotesDao
-    this.justificationBasisCompoundsDao = justificationBasisCompoundsDao
-    this.writQuoteUrlTargetsDao = writQuoteUrlTargetsDao
+    });
+    this.logger = logger;
+    this.database = database;
+    this.statementsDao = statementsDao;
+    this.propositionCompoundsDao = propositionCompoundsDao;
+    this.writQuotesDao = writQuotesDao;
+    this.justificationBasisCompoundsDao = justificationBasisCompoundsDao;
+    this.writQuoteUrlTargetsDao = writQuoteUrlTargetsDao;
   }
 
   async readJustifications(filters, sorts, count, isContinuation, includeUrls) {
-    const {
-      sql: limitedJustificationsSql,
-      args: limitedJustificationsArgs,
-    } = makeLimitedJustificationsClause(this.logger, filters, sorts, count, isContinuation)
+    const { sql: limitedJustificationsSql, args: limitedJustificationsArgs } =
+      makeLimitedJustificationsClause(
+        this.logger,
+        filters,
+        sorts,
+        count,
+        isContinuation
+      );
 
-    const tableAlias = 'j'
-    const orderByExpressionsSql = makeJustificationsQueryOrderByExpressionsSql(sorts, tableAlias)
-    const orderBySql = orderByExpressionsSql ? 'order by ' + orderByExpressionsSql : ''
+    const tableAlias = "j";
+    const orderByExpressionsSql = makeJustificationsQueryOrderByExpressionsSql(
+      sorts,
+      tableAlias
+    );
+    const orderBySql = orderByExpressionsSql
+      ? "order by " + orderByExpressionsSql
+      : "";
 
     const justificationsSelectArgs = [
       JustificationRootTargetTypes.PROPOSITION,
@@ -90,9 +94,15 @@ exports.JustificationsDao = class JustificationsDao {
       JustificationBasisCompoundAtomTypes.PROPOSITION,
       JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptTypes.WRIT_QUOTE,
-    ]
-    const justificationsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, justificationsSelectArgs.length)
-    const justificationsArgs = concat(justificationsSelectArgs, limitedJustificationsArgs)
+    ];
+    const justificationsRenumberedLimitedJustificationsSql = renumberSqlArgs(
+      limitedJustificationsSql,
+      justificationsSelectArgs.length
+    );
+    const justificationsArgs = concat(
+      justificationsSelectArgs,
+      limitedJustificationsArgs
+    );
     const justificationsSql = `
       with
         limited_justifications as (
@@ -205,7 +215,7 @@ exports.JustificationsDao = class JustificationsDao {
           and sep_wq.deleted is null
           and sep_wqw.deleted is null
       ${orderBySql}
-    `
+    `;
 
     const targetJustificationsSelectArgs = [
       JustificationRootTargetTypes.PROPOSITION,
@@ -216,10 +226,17 @@ exports.JustificationsDao = class JustificationsDao {
       JustificationBasisCompoundAtomTypes.PROPOSITION,
       JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
       SourceExcerptTypes.WRIT_QUOTE,
-    ]
-    const targetJustificationsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, targetJustificationsSelectArgs.length)
-    const targetJustificationsArgs = concat(targetJustificationsSelectArgs, limitedJustificationsArgs)
-    const targetJustificationPrefix = 'tj_'
+    ];
+    const targetJustificationsRenumberedLimitedJustificationsSql =
+      renumberSqlArgs(
+        limitedJustificationsSql,
+        targetJustificationsSelectArgs.length
+      );
+    const targetJustificationsArgs = concat(
+      targetJustificationsSelectArgs,
+      limitedJustificationsArgs
+    );
+    const targetJustificationPrefix = "tj_";
     const targetJustificationsSql = `
       with
         limited_justifications as (
@@ -340,13 +357,18 @@ exports.JustificationsDao = class JustificationsDao {
           and sep_wq.deleted is null
           and sep_wqw.deleted is null
       -- no need to order because they are joined to the ordered targeting justifications
-      `
+      `;
 
-    const targetPropositionsSelectArgs = [
-      JustificationTargetTypes.PROPOSITION,
-    ]
-    const targetPropositionsRenumberedLimitedJustificationsSql = renumberSqlArgs(limitedJustificationsSql, targetPropositionsSelectArgs.length)
-    const targetPropositionsArgs = concat(targetPropositionsSelectArgs, limitedJustificationsArgs)
+    const targetPropositionsSelectArgs = [JustificationTargetTypes.PROPOSITION];
+    const targetPropositionsRenumberedLimitedJustificationsSql =
+      renumberSqlArgs(
+        limitedJustificationsSql,
+        targetPropositionsSelectArgs.length
+      );
+    const targetPropositionsArgs = concat(
+      targetPropositionsSelectArgs,
+      limitedJustificationsArgs
+    );
     const targetPropositionsSql = `
       with
         limited_justifications as (
@@ -366,61 +388,85 @@ exports.JustificationsDao = class JustificationsDao {
               j.deleted is null
           and tp.deleted is null
       -- no need to order because they are joined to the ordered targeting justifications
-    `
+    `;
     const [
-      {rows: justificationRows},
-      {rows: targetJustificationRows},
-      {rows: targetPropositionRows},
+      { rows: justificationRows },
+      { rows: targetJustificationRows },
+      { rows: targetPropositionRows },
     ] = await Promise.all([
-      this.database.query('readJustifications', justificationsSql, justificationsArgs),
-      this.database.query('readJustifications.targetJustifications', targetJustificationsSql, targetJustificationsArgs),
-      this.database.query('readJustifications.targetPropositions', targetPropositionsSql, targetPropositionsArgs),
-    ])
-    const justifications = mapJustificationRows(justificationRows)
-    const targetJustificationsById = mapJustificationRowsById(targetJustificationRows, targetJustificationPrefix)
-    const targetPropositionsById = mapPropositionRowsById(targetPropositionRows)
+      this.database.query(
+        "readJustifications",
+        justificationsSql,
+        justificationsArgs
+      ),
+      this.database.query(
+        "readJustifications.targetJustifications",
+        targetJustificationsSql,
+        targetJustificationsArgs
+      ),
+      this.database.query(
+        "readJustifications.targetPropositions",
+        targetPropositionsSql,
+        targetPropositionsArgs
+      ),
+    ]);
+    const justifications = mapJustificationRows(justificationRows);
+    const targetJustificationsById = mapJustificationRowsById(
+      targetJustificationRows,
+      targetJustificationPrefix
+    );
+    const targetPropositionsById = mapPropositionRowsById(
+      targetPropositionRows
+    );
 
-    forEach(justifications, justification => {
-      let targetEntity
+    forEach(justifications, (justification) => {
+      let targetEntity;
       switch (justification.target.type) {
         case JustificationTargetTypes.JUSTIFICATION: {
-          targetEntity = targetJustificationsById[justification.target.entity.id]
-          break
+          targetEntity =
+            targetJustificationsById[justification.target.entity.id];
+          break;
         }
         case JustificationTargetTypes.PROPOSITION: {
-          targetEntity = targetPropositionsById[justification.target.entity.id]
-          break
+          targetEntity = targetPropositionsById[justification.target.entity.id];
+          break;
         }
         case JustificationTargetTypes.STATEMENT:
           // For expediency, we add statements below rather than try to fold them in.
           // As we add new justification targets, it's not scalable to keep writing new queries for each one
-          targetEntity = justification.target.entity
-          break
+          targetEntity = justification.target.entity;
+          break;
         default: {
-          throw newExhaustedEnumError(justification.target)
+          throw newExhaustedEnumError(justification.target);
         }
       }
       if (!targetEntity) {
-        this.logger.error(`Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`)
+        this.logger.error(
+          `Justification ${justification.id} is missing it's target justification ${justification.target.entity.id}`
+        );
       }
 
-      justification.target.entity = targetEntity
-    })
+      justification.target.entity = targetEntity;
+    });
 
     if (justifications.length) {
       // Add the statements here at the end; it is too much trouble to add them into the joins above;
       // we can add them into the joins, if that makes sense, after we remove the deprecated justification basis types
-      await addStatements(this, justifications)
+      await addStatements(this, justifications);
       if (includeUrls) {
-        await addUrls(this, justifications)
-        await addUrlTargets(this, justifications)
+        await addUrls(this, justifications);
+        await addUrlTargets(this, justifications);
       }
     }
 
-    return justifications
+    return justifications;
   }
 
-  readJustificationsWithBasesAndVotesByRootTarget(rootTargetType, rootTargetId, {userId}) {
+  readJustificationsWithBasesAndVotesByRootTarget(
+    rootTargetType,
+    rootTargetId,
+    { userId }
+  ) {
     const sql = `
       with
         extant_users as (select * from users where deleted is null)
@@ -446,32 +492,64 @@ exports.JustificationsDao = class JustificationsDao {
               j.deleted is null
           and j.root_target_type = $1
           and j.root_target_id = $2
-      `
+      `;
     return Promise.all([
-      this.database.query('readJustificationsWithBasesAndVotesByRootTarget', sql,
-        [rootTargetType, rootTargetId, userId, JustificationBasisTypes.WRIT_QUOTE, JustificationBasisTypes.PROPOSITION_COMPOUND]),
-      readPropositionCompoundsByIdForRootTarget(this, rootTargetType, rootTargetId, {userId}),
-      this.writQuotesDao.readWritQuotesByIdForRootTarget(rootTargetType, rootTargetId),
+      this.database.query(
+        "readJustificationsWithBasesAndVotesByRootTarget",
+        sql,
+        [
+          rootTargetType,
+          rootTargetId,
+          userId,
+          JustificationBasisTypes.WRIT_QUOTE,
+          JustificationBasisTypes.PROPOSITION_COMPOUND,
+        ]
+      ),
+      readPropositionCompoundsByIdForRootTarget(
+        this,
+        rootTargetType,
+        rootTargetId,
+        { userId }
+      ),
+      this.writQuotesDao.readWritQuotesByIdForRootTarget(
+        rootTargetType,
+        rootTargetId
+      ),
       // We won't support adding legacy justification basis types to statements
-      rootTargetType === JustificationRootTargetTypes.PROPOSITION ?
-        this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(rootTargetId) : [],
+      rootTargetType === JustificationRootTargetTypes.PROPOSITION
+        ? this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(
+            rootTargetId
+          )
+        : [],
     ])
-      .then( ([
-        {rows: justification_rows},
-        propositionCompoundsById,
-        writQuotesById,
-        justificationBasisCompoundsById,
-      ]) => {
-        const {rootJustifications, counterJustificationsByJustificationId} =
-          groupRootJustifications(rootTargetType, rootTargetId, justification_rows)
-        return map(rootJustifications, j =>
-          toJustification(j, counterJustificationsByJustificationId, propositionCompoundsById, writQuotesById,
-            justificationBasisCompoundsById))
-      })
+      .then(
+        ([
+          { rows: justification_rows },
+          propositionCompoundsById,
+          writQuotesById,
+          justificationBasisCompoundsById,
+        ]) => {
+          const { rootJustifications, counterJustificationsByJustificationId } =
+            groupRootJustifications(
+              rootTargetType,
+              rootTargetId,
+              justification_rows
+            );
+          return map(rootJustifications, (j) =>
+            toJustification(
+              j,
+              counterJustificationsByJustificationId,
+              propositionCompoundsById,
+              writQuotesById,
+              justificationBasisCompoundsById
+            )
+          );
+        }
+      )
       .then(async (justifications) => {
-        await addStatements(this, justifications)
-        return justifications
-      })
+        await addStatements(this, justifications);
+        return justifications;
+      });
   }
 
   readJustificationsDependentUponPropositionId(propositionId) {
@@ -489,33 +567,39 @@ exports.JustificationsDao = class JustificationsDao {
           join propositions pcap on
                 pca.proposition_id = pcap.proposition_id
             and pcap.proposition_id = $2
-    `
-    return this.database.query('readJustificationsDependentUponPropositionId', sql,
-      [JustificationRootTargetTypes.PROPOSITION, propositionId, JustificationBasisTypes.PROPOSITION_COMPOUND]
-    )
-      .then( ({rows}) => map(rows, toJustification))
+    `;
+    return this.database
+      .query("readJustificationsDependentUponPropositionId", sql, [
+        JustificationRootTargetTypes.PROPOSITION,
+        propositionId,
+        JustificationBasisTypes.PROPOSITION_COMPOUND,
+      ])
+      .then(({ rows }) => map(rows, toJustification))
       .then(async (justifications) => {
-        await addStatements(this, justifications)
-        return justifications
-      })
+        await addStatements(this, justifications);
+        return justifications;
+      });
   }
 
   readJustificationForId(justificationId) {
-    return this.database.query(
-      'readJustificationForId',
-      'select * from justifications where justification_id = $1 and deleted is null',
-      [justificationId]
-    )
-      .then( ({rows}) => {
+    return this.database
+      .query(
+        "readJustificationForId",
+        "select * from justifications where justification_id = $1 and deleted is null",
+        [justificationId]
+      )
+      .then(({ rows }) => {
         if (rows.length > 1) {
-          this.logger.error(`More than one justification has ID ${justificationId}`)
+          this.logger.error(
+            `More than one justification has ID ${justificationId}`
+          );
         }
-        return toJustification(head(rows))
+        return toJustification(head(rows));
       })
       .then(async (justification) => {
-        await addStatements(this, [justification])
-        return justification
-      })
+        await addStatements(this, [justification]);
+        return justification;
+      });
   }
 
   readJustificationEquivalentTo(justification) {
@@ -527,34 +611,41 @@ exports.JustificationsDao = class JustificationsDao {
         and j.polarity = $3
         and j.basis_type = $4
         and j.basis_id = $5
-    `
+    `;
     const args = [
       justification.target.type,
       justification.target.entity.id,
       justification.polarity,
       justification.basis.type,
       justification.basis.entity.id,
-    ]
-    return this.database.query('readJustificationEquivalentTo', sql, args)
-      .then( ({rows}) => toJustification(head(rows)) )
-      .then(equivalentJustification => {
+    ];
+    return this.database
+      .query("readJustificationEquivalentTo", sql, args)
+      .then(({ rows }) => toJustification(head(rows)))
+      .then((equivalentJustification) => {
         assert(
-          () => !equivalentJustification || doTargetSameRoot(equivalentJustification, justification),
-          () => `justification's (${justification.id}) rootTarget ${justification.rootTargetType} ${justification.rootTarget.id} does not` +
+          () =>
+            !equivalentJustification ||
+            doTargetSameRoot(equivalentJustification, justification),
+          () =>
+            `justification's (${justification.id}) rootTarget ${justification.rootTargetType} ${justification.rootTarget.id} does not` +
             ` equal equivalent justification's (${equivalentJustification.id}) rootTarget ${justification.rootTargetType} ${equivalentJustification.rootTarget.id}`
-        )
-        return equivalentJustification
+        );
+        return equivalentJustification;
       })
       .then(async (justification) => {
         if (justification) {
-          await addStatements(this, [justification])
+          await addStatements(this, [justification]);
         }
-        return justification
-      })
+        return justification;
+      });
   }
 
   readRootJustificationCountByPolarityForRoot(rootTargetType, rootTargetId) {
-    return this.database.query('readRootJustificationCountByPolarityForRoot', `
+    return this.database
+      .query(
+        "readRootJustificationCountByPolarityForRoot",
+        `
       select polarity, count(*) as count
       from justifications
         where
@@ -563,26 +654,31 @@ exports.JustificationsDao = class JustificationsDao {
           and target_type = $1
           and target_id = $2
       group by polarity
-    `, [rootTargetType, rootTargetId])
-      .then( ({rows}) => {
-        const rootJustificationCountByPolarity = {}
-        forEach(rows, row => {
-          rootJustificationCountByPolarity[row.polarity] = row.count
-        })
-        return rootJustificationCountByPolarity
-      })
+    `,
+        [rootTargetType, rootTargetId]
+      )
+      .then(({ rows }) => {
+        const rootJustificationCountByPolarity = {};
+        forEach(rows, (row) => {
+          rootJustificationCountByPolarity[row.polarity] = row.count;
+        });
+        return rootJustificationCountByPolarity;
+      });
   }
 
   createJustification(justification, userId, now) {
-
-    return getNewJustificationRootPolarity(justification, this.logger, this.database)
+    return getNewJustificationRootPolarity(
+      justification,
+      this.logger,
+      this.database
+    )
       .then((rootPolarity) => {
         const sql = `
           insert into justifications
             (root_target_type, root_target_id, root_polarity, target_type, target_id, basis_type, basis_id, polarity, creator_user_id, created)
             values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           returning *
-          `
+          `;
         const args = [
           justification.rootTargetType,
           justification.rootTarget.id,
@@ -594,107 +690,122 @@ exports.JustificationsDao = class JustificationsDao {
           justification.polarity,
           userId,
           now,
-        ]
-        return this.database.query('createJustification', sql, args)
+        ];
+        return this.database.query("createJustification", sql, args);
       })
-      .then( ({rows: [row]}) => toJustification(row))
+      .then(({ rows: [row] }) => toJustification(row));
   }
 
   deleteJustifications(justifications, now) {
-    const justificationIds = map(justifications, j => j.id)
-    return this.deleteJustificationsById(justificationIds, now)
+    const justificationIds = map(justifications, (j) => j.id);
+    return this.deleteJustificationsById(justificationIds, now);
   }
 
   deleteJustificationsById(justificationIds, now) {
-    return Promise.all(map(justificationIds, id => this.deleteJustificationById(id, now) ))
+    return Promise.all(
+      map(justificationIds, (id) => this.deleteJustificationById(id, now))
+    );
   }
 
   deleteJustification(justification, now) {
-    return this.deleteJustificationById(justification.id, now)
+    return this.deleteJustificationById(justification.id, now);
   }
 
   deleteJustificationById(justificationId, now) {
-    return this.database.query(
-      'deleteJustificationById',
-      'update justifications set deleted = $2 where justification_id = $1 returning justification_id',
-      [justificationId, now]
-    )
-      .then( ({rows}) => {
+    return this.database
+      .query(
+        "deleteJustificationById",
+        "update justifications set deleted = $2 where justification_id = $1 returning justification_id",
+        [justificationId, now]
+      )
+      .then(({ rows }) => {
         if (rows.length > 1) {
-          this.logger.error(`More than one (${rows.length}) justifications deleted for ID ${justificationId}`)
+          this.logger.error(
+            `More than one (${rows.length}) justifications deleted for ID ${justificationId}`
+          );
         }
-        const row = head(rows)
+        const row = head(rows);
         if (!row) {
-          return null
+          return null;
         }
-        return row.justification_id
-      })
+        return row.justification_id;
+      });
   }
 
   deleteCounterJustificationsToJustificationIds(justificationIds, now) {
-    return this.database.query(
-      'deleteCounterJustificationsToJustificationIds',
-      `
+    return this.database
+      .query(
+        "deleteCounterJustificationsToJustificationIds",
+        `
         update justifications set deleted = $1
         where
               target_type = $2
           and target_id = any ($3)
         returning justification_id`,
-      [now, JustificationTargetTypes.JUSTIFICATION, justificationIds]
-    ).then( ({rows}) => map(rows, row => row.justification_id))
+        [now, JustificationTargetTypes.JUSTIFICATION, justificationIds]
+      )
+      .then(({ rows }) => map(rows, (row) => row.justification_id));
   }
-}
+};
 
 async function addStatements(service, justifications) {
   // Collect all the statements we need to read, as well as the justifications that need them as rootTargets and targets
-  const statementIds = new Set()
-  const justificationsByRootTargetStatementId = new Map()
-  const justificationsByTargetStatementId = new Map()
+  const statementIds = new Set();
+  const justificationsByRootTargetStatementId = new Map();
+  const justificationsByTargetStatementId = new Map();
   for (const justification of justifications) {
-    if (justification.rootTargetType === JustificationRootTargetTypes.STATEMENT) {
-      statementIds.add(justification.rootTarget.id)
+    if (
+      justification.rootTargetType === JustificationRootTargetTypes.STATEMENT
+    ) {
+      statementIds.add(justification.rootTarget.id);
 
-      let justificationsRootedInStatementId = justificationsByRootTargetStatementId.get(justification.rootTarget.id)
+      let justificationsRootedInStatementId =
+        justificationsByRootTargetStatementId.get(justification.rootTarget.id);
       if (!justificationsRootedInStatementId) {
         justificationsByRootTargetStatementId.set(
           justification.rootTarget.id,
-          justificationsRootedInStatementId = []
-        )
+          (justificationsRootedInStatementId = [])
+        );
       }
 
-      justificationsRootedInStatementId.push(justification)
+      justificationsRootedInStatementId.push(justification);
     }
     if (justification.target.type === JustificationTargetTypes.STATEMENT) {
       // It is not possible to target a statement that is not also the root statement, so we don't need to add
       // to statementIds here since we did it above.
 
-      let justificationsTargetingStatementId = justificationsByTargetStatementId.get(justification.target.id)
+      let justificationsTargetingStatementId =
+        justificationsByTargetStatementId.get(justification.target.id);
       if (!justificationsTargetingStatementId) {
         justificationsByTargetStatementId.set(
           justification.target.id,
-          justificationsTargetingStatementId = []
-        )
+          (justificationsTargetingStatementId = [])
+        );
       }
 
-      justificationsTargetingStatementId.push(justification)
+      justificationsTargetingStatementId.push(justification);
     }
   }
 
   // Query each statement, and insert it into the justifications that need it.
   for (const statementId of statementIds.values()) {
-    const statement = await service.statementsDao.readStatementForId(statementId)
+    const statement = await service.statementsDao.readStatementForId(
+      statementId
+    );
 
-    const justificationsRootTargetingStatement = justificationsByRootTargetStatementId.get(statement.id)
+    const justificationsRootTargetingStatement =
+      justificationsByRootTargetStatementId.get(statement.id);
     if (justificationsRootTargetingStatement) {
       for (const justification of justificationsRootTargetingStatement) {
-        justification.rootTarget = statement
+        justification.rootTarget = statement;
       }
     }
 
-    const justificationsTargetingStatement = justificationsByTargetStatementId.get(statement.id)
+    const justificationsTargetingStatement =
+      justificationsByTargetStatementId.get(statement.id);
     if (justificationsTargetingStatement) {
       for (const justification of justificationsTargetingStatement) {
-        justification.target.entity = statement
+        justification.target.entity = statement;
       }
     }
   }
@@ -703,21 +814,27 @@ async function addStatements(service, justifications) {
 async function addUrls(service, justifications) {
   for (const justification of justifications) {
     if (justification.basis.type === JustificationBasisTypes.WRIT_QUOTE) {
-      const writQuoteId = justification.basis.entity.id
-      justification.basis.entity.urls = await service.writQuotesDao.readUrlsForWritQuoteId(writQuoteId)
+      const writQuoteId = justification.basis.entity.id;
+      justification.basis.entity.urls =
+        await service.writQuotesDao.readUrlsForWritQuoteId(writQuoteId);
     }
   }
 }
 
 async function addUrlTargets(service, justifications) {
-  const justificationIds = map(justifications, (j) => j.id)
-  const urlTargetByUrlIdByWritQuoteId = await service.writQuoteUrlTargetsDao.readByUrlIdByWritQuoteIdForJustificationIds(justificationIds)
+  const justificationIds = map(justifications, (j) => j.id);
+  const urlTargetByUrlIdByWritQuoteId =
+    await service.writQuoteUrlTargetsDao.readByUrlIdByWritQuoteIdForJustificationIds(
+      justificationIds
+    );
   for (const justification of justifications) {
     if (justification.basis.type === JustificationBasisTypes.WRIT_QUOTE) {
-      const urlTargetByUrlId = urlTargetByUrlIdByWritQuoteId.get(justification.basis.entity.id)
+      const urlTargetByUrlId = urlTargetByUrlIdByWritQuoteId.get(
+        justification.basis.entity.id
+      );
       if (urlTargetByUrlId) {
         for (const url of justification.basis.entity.urls) {
-          url.target = urlTargetByUrlId.get(url.id)
+          url.target = urlTargetByUrlId.get(url.id);
         }
       }
     }
@@ -725,184 +842,243 @@ async function addUrlTargets(service, justifications) {
 }
 
 /** Directly return an object of the justifications keyed by their ID */
-function mapJustificationRowsById(rows, prefix = '') {
-  const [justificationsById] = mapJustificationRowsWithOrdering(rows, prefix)
-  return justificationsById
+function mapJustificationRowsById(rows, prefix = "") {
+  const [justificationsById] = mapJustificationRowsWithOrdering(rows, prefix);
+  return justificationsById;
 }
 
 function mapPropositionRowsById(rows) {
-  const byId = {}
-  forEach(rows, row => {
-    const proposition = toProposition(row)
-    byId[proposition.id] = proposition
-  })
-  return byId
+  const byId = {};
+  forEach(rows, (row) => {
+    const proposition = toProposition(row);
+    byId[proposition.id] = proposition;
+  });
+  return byId;
 }
 
 /** Use the ordering to return the justifications as an array in query-order */
-function mapJustificationRows(rows, prefix = '') {
-  const [justificationsById, orderedJustificationIds] = mapJustificationRowsWithOrdering(rows, prefix)
-  const orderedJustifications = []
-  forEach(orderedJustificationIds, justificationId => {
-    orderedJustifications.push(justificationsById[justificationId])
-  })
-  return orderedJustifications
+function mapJustificationRows(rows, prefix = "") {
+  const [justificationsById, orderedJustificationIds] =
+    mapJustificationRowsWithOrdering(rows, prefix);
+  const orderedJustifications = [];
+  forEach(orderedJustificationIds, (justificationId) => {
+    orderedJustifications.push(justificationsById[justificationId]);
+  });
+  return orderedJustifications;
 }
 
-function mapJustificationRowsWithOrdering(rows, prefix = '') {
+function mapJustificationRowsWithOrdering(rows, prefix = "") {
   // Keep track of the order so that we can efficiently put them back in order
-  const orderedJustificationIds = []
-  const justificationRowsById = {}
-  const writQuotesRowsById = {}
-  const propositionCompoundRowsById = {}
-  const propositionCompoundAtomsByCompoundId = {}
-  const justificationBasisCompoundRowsById = {}
-  const justificationBasisCompoundAtomsByCompoundId = {}
+  const orderedJustificationIds = [];
+  const justificationRowsById = {};
+  const writQuotesRowsById = {};
+  const propositionCompoundRowsById = {};
+  const propositionCompoundAtomsByCompoundId = {};
+  const justificationBasisCompoundRowsById = {};
+  const justificationBasisCompoundAtomsByCompoundId = {};
 
-  forEach(rows, row => {
-    const rowId = row[prefix + 'justification_id']
+  forEach(rows, (row) => {
+    const rowId = row[prefix + "justification_id"];
 
     if (!has(justificationRowsById, rowId)) {
-      orderedJustificationIds.push(rowId)
+      orderedJustificationIds.push(rowId);
       justificationRowsById[rowId] = {
-        justification_id:            rowId,
-        root_polarity:               row[prefix + 'root_polarity'],
-        root_target_type:            row[prefix + 'root_target_type'],
-        root_target_id:              row[prefix + 'root_target_id'],
-        root_target_proposition_id:  row[prefix + 'root_target_proposition_id'],
-        root_target_text:            row[prefix + 'root_target_proposition_text'],
-        root_target_created:         row[prefix + 'root_target_proposition_created'],
-        root_target_creator_user_id: row[prefix + 'root_target_proposition_creator_user_id'],
-        target_type:                 row[prefix + 'target_type'],
-        target_id:                   row[prefix + 'target_id'],
-        basis_type:                  row[prefix + 'basis_type'],
-        basis_id:                    row[prefix + 'basis_id'],
-        polarity:                    row[prefix + 'polarity'],
-        creator_user_id:             row[prefix + 'creator_user_id'],
-        created:                     row[prefix + 'created'],
-      }
+        justification_id: rowId,
+        root_polarity: row[prefix + "root_polarity"],
+        root_target_type: row[prefix + "root_target_type"],
+        root_target_id: row[prefix + "root_target_id"],
+        root_target_proposition_id: row[prefix + "root_target_proposition_id"],
+        root_target_text: row[prefix + "root_target_proposition_text"],
+        root_target_created: row[prefix + "root_target_proposition_created"],
+        root_target_creator_user_id:
+          row[prefix + "root_target_proposition_creator_user_id"],
+        target_type: row[prefix + "target_type"],
+        target_id: row[prefix + "target_id"],
+        basis_type: row[prefix + "basis_type"],
+        basis_id: row[prefix + "basis_id"],
+        polarity: row[prefix + "polarity"],
+        creator_user_id: row[prefix + "creator_user_id"],
+        created: row[prefix + "created"],
+      };
     }
 
-    const basisWritQuoteId = row[prefix + 'basis_writ_quote_id']
+    const basisWritQuoteId = row[prefix + "basis_writ_quote_id"];
     if (basisWritQuoteId) {
       writQuotesRowsById[basisWritQuoteId] = toWritQuote({
-        writ_quote_id:        basisWritQuoteId,
-        quote_text:           row[prefix + 'basis_writ_quote_quote_text'],
-        created:              row[prefix + 'basis_writ_quote_created'],
-        creator_user_id:      row[prefix + 'basis_writ_quote_creator_user_id'],
-        writ_id:              row[prefix + 'basis_writ_quote_writ_id'],
-        writ_title:           row[prefix + 'basis_writ_quote_writ_title'],
-        writ_created:         row[prefix + 'basis_writ_quote_writ_created'],
-        writ_creator_user_id: row[prefix + 'basis_writ_quote_creator_user_id'],
-      })
+        writ_quote_id: basisWritQuoteId,
+        quote_text: row[prefix + "basis_writ_quote_quote_text"],
+        created: row[prefix + "basis_writ_quote_created"],
+        creator_user_id: row[prefix + "basis_writ_quote_creator_user_id"],
+        writ_id: row[prefix + "basis_writ_quote_writ_id"],
+        writ_title: row[prefix + "basis_writ_quote_writ_title"],
+        writ_created: row[prefix + "basis_writ_quote_writ_created"],
+        writ_creator_user_id: row[prefix + "basis_writ_quote_creator_user_id"],
+      });
     }
 
-    const propositionCompoundId = row[prefix + 'basis_proposition_compound_id']
+    const propositionCompoundId = row[prefix + "basis_proposition_compound_id"];
     if (isDefined(propositionCompoundId)) {
-      const propositionCompoundRow = propositionCompoundRowsById[propositionCompoundId]
+      const propositionCompoundRow =
+        propositionCompoundRowsById[propositionCompoundId];
       if (!propositionCompoundRow) {
         propositionCompoundRowsById[propositionCompoundId] = {
           proposition_compound_id: propositionCompoundId,
-        }
+        };
       }
 
       // Atoms are stored by proposition ID because proposition compound atoms don't have their own ID
-      let atomsByPropositionId = propositionCompoundAtomsByCompoundId[propositionCompoundId]
+      let atomsByPropositionId =
+        propositionCompoundAtomsByCompoundId[propositionCompoundId];
       if (!atomsByPropositionId) {
-        propositionCompoundAtomsByCompoundId[propositionCompoundId] = atomsByPropositionId = {}
+        propositionCompoundAtomsByCompoundId[propositionCompoundId] =
+          atomsByPropositionId = {};
       }
-      if (!has(atomsByPropositionId, row[prefix + 'basis_proposition_compound_atom_proposition_id'])) {
+      if (
+        !has(
+          atomsByPropositionId,
+          row[prefix + "basis_proposition_compound_atom_proposition_id"]
+        )
+      ) {
         const atom = toPropositionCompoundAtom({
-          proposition_compound_id:     propositionCompoundId,
-          proposition_id:              row[prefix + 'basis_proposition_compound_atom_proposition_id'],
-          proposition_text:            row[prefix + 'basis_proposition_compound_atom_proposition_text'],
-          proposition_created:         row[prefix + 'basis_proposition_compound_atom_proposition_created'],
-          proposition_creator_user_id: row[prefix + 'basis_proposition_compound_atom_proposition_creator_user_id'],
-          order_position:            row[prefix + 'basis_proposition_compound_atom_order_position'],
-        })
-        atomsByPropositionId[atom.entity.id] = atom
+          proposition_compound_id: propositionCompoundId,
+          proposition_id:
+            row[prefix + "basis_proposition_compound_atom_proposition_id"],
+          proposition_text:
+            row[prefix + "basis_proposition_compound_atom_proposition_text"],
+          proposition_created:
+            row[prefix + "basis_proposition_compound_atom_proposition_created"],
+          proposition_creator_user_id:
+            row[
+              prefix +
+                "basis_proposition_compound_atom_proposition_creator_user_id"
+            ],
+          order_position:
+            row[prefix + "basis_proposition_compound_atom_order_position"],
+        });
+        atomsByPropositionId[atom.entity.id] = atom;
       }
     }
 
-    const justificationBasisCompoundId = row[prefix + 'basis_jbc_id']
+    const justificationBasisCompoundId = row[prefix + "basis_jbc_id"];
     if (isDefined(justificationBasisCompoundId)) {
-      const justificationBasisCompoundRow = justificationBasisCompoundRowsById[justificationBasisCompoundId]
+      const justificationBasisCompoundRow =
+        justificationBasisCompoundRowsById[justificationBasisCompoundId];
       if (!justificationBasisCompoundRow) {
         justificationBasisCompoundRowsById[justificationBasisCompoundId] = {
           justification_basis_compound_id: justificationBasisCompoundId,
-        }
+        };
       }
 
-      let atomsById = justificationBasisCompoundAtomsByCompoundId[justificationBasisCompoundId]
+      let atomsById =
+        justificationBasisCompoundAtomsByCompoundId[
+          justificationBasisCompoundId
+        ];
       if (!atomsById) {
-        justificationBasisCompoundAtomsByCompoundId[justificationBasisCompoundId] = atomsById = {}
+        justificationBasisCompoundAtomsByCompoundId[
+          justificationBasisCompoundId
+        ] = atomsById = {};
       }
 
-      const atomId = row[prefix + 'basis_jbc_atom_id']
+      const atomId = row[prefix + "basis_jbc_atom_id"];
       if (!atomsById[atomId]) {
         const atom = toJustificationBasisCompoundAtom({
           justification_basis_compound_atom_id: atomId,
-          justification_basis_compound_id:      justificationBasisCompoundId,
-          entity_type:                          row[prefix + 'basis_jbc_atom_entity_type'],
-          order_position:                       row[prefix + 'basis_jbc_atom_order_position'],
+          justification_basis_compound_id: justificationBasisCompoundId,
+          entity_type: row[prefix + "basis_jbc_atom_entity_type"],
+          order_position: row[prefix + "basis_jbc_atom_order_position"],
 
-          proposition_id:                row[prefix + 'basis_jbc_atom_proposition_id'],
-          proposition_text:              row[prefix + 'basis_jbc_atom_proposition_text'],
-          proposition_created:           row[prefix + 'basis_jbc_atom_proposition_created'],
-          proposition_creator_user_id:   row[prefix + 'basis_jbc_atom_proposition_creator_user_id'],
-          source_excerpt_paraphrase_id:                          row[prefix + 'basis_jbc_atom_sep_id'],
-          source_excerpt_paraphrasing_proposition_id:              row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_id'],
-          source_excerpt_paraphrasing_proposition_text:            row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_text'],
-          source_excerpt_paraphrasing_proposition_created:         row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_created'],
-          source_excerpt_paraphrasing_proposition_creator_user_id: row[prefix + 'basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id'],
-          source_excerpt_type:                            row[prefix + 'basis_jbc_atom_sep_source_excerpt_type'],
-          source_excerpt_writ_quote_id:                   row[prefix + 'basis_jbc_atom_sep_writ_quote_id'],
-          source_excerpt_writ_quote_quote_text:           row[prefix + 'basis_jbc_atom_sep_writ_quote_quote_text'],
-          source_excerpt_writ_quote_created:              row[prefix + 'basis_jbc_atom_sep_writ_quote_created'],
-          source_excerpt_writ_quote_creator_user_id:      row[prefix + 'basis_jbc_atom_sep_writ_quote_creator_user_id'],
-          source_excerpt_writ_quote_writ_id:              row[prefix + 'basis_jbc_atom_sep_writ_quote_writ_id'],
-          source_excerpt_writ_quote_writ_title:           row[prefix + 'basis_jbc_atom_sep_writ_quote_writ_title'],
-          source_excerpt_writ_quote_writ_created:         row[prefix + 'basis_jbc_atom_sep_writ_quote_writ_created'],
-          source_excerpt_writ_quote_writ_creator_user_id: row[prefix + 'basis_jbc_atom_sep_writ_quote_writ_creator_user_id'],
-        })
+          proposition_id: row[prefix + "basis_jbc_atom_proposition_id"],
+          proposition_text: row[prefix + "basis_jbc_atom_proposition_text"],
+          proposition_created:
+            row[prefix + "basis_jbc_atom_proposition_created"],
+          proposition_creator_user_id:
+            row[prefix + "basis_jbc_atom_proposition_creator_user_id"],
+          source_excerpt_paraphrase_id: row[prefix + "basis_jbc_atom_sep_id"],
+          source_excerpt_paraphrasing_proposition_id:
+            row[prefix + "basis_jbc_atom_sep_paraphrasing_proposition_id"],
+          source_excerpt_paraphrasing_proposition_text:
+            row[prefix + "basis_jbc_atom_sep_paraphrasing_proposition_text"],
+          source_excerpt_paraphrasing_proposition_created:
+            row[prefix + "basis_jbc_atom_sep_paraphrasing_proposition_created"],
+          source_excerpt_paraphrasing_proposition_creator_user_id:
+            row[
+              prefix +
+                "basis_jbc_atom_sep_paraphrasing_proposition_creator_user_id"
+            ],
+          source_excerpt_type:
+            row[prefix + "basis_jbc_atom_sep_source_excerpt_type"],
+          source_excerpt_writ_quote_id:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_id"],
+          source_excerpt_writ_quote_quote_text:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_quote_text"],
+          source_excerpt_writ_quote_created:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_created"],
+          source_excerpt_writ_quote_creator_user_id:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_creator_user_id"],
+          source_excerpt_writ_quote_writ_id:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_writ_id"],
+          source_excerpt_writ_quote_writ_title:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_writ_title"],
+          source_excerpt_writ_quote_writ_created:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_writ_created"],
+          source_excerpt_writ_quote_writ_creator_user_id:
+            row[prefix + "basis_jbc_atom_sep_writ_quote_writ_creator_user_id"],
+        });
 
-        atomsById[atomId] = atom
+        atomsById[atomId] = atom;
       }
     }
 
-    assert(basisWritQuoteId || propositionCompoundId || justificationBasisCompoundId, "justification must have a basis")
-  })
+    assert(
+      basisWritQuoteId || propositionCompoundId || justificationBasisCompoundId,
+      "justification must have a basis"
+    );
+  });
 
-  const propositionCompoundsById = mapValues(propositionCompoundRowsById, (row, id) =>
-    toPropositionCompound(row, propositionCompoundAtomsByCompoundId[id])
-  )
+  const propositionCompoundsById = mapValues(
+    propositionCompoundRowsById,
+    (row, id) =>
+      toPropositionCompound(row, propositionCompoundAtomsByCompoundId[id])
+  );
 
-  const justificationBasisCompoundsById = mapValues(justificationBasisCompoundRowsById, (row, id) =>
-    toJustificationBasisCompound(row, justificationBasisCompoundAtomsByCompoundId[id])
-  )
+  const justificationBasisCompoundsById = mapValues(
+    justificationBasisCompoundRowsById,
+    (row, id) =>
+      toJustificationBasisCompound(
+        row,
+        justificationBasisCompoundAtomsByCompoundId[id]
+      )
+  );
 
-  const justificationsById = mapValues(justificationRowsById, row =>
-    toJustification(row, null, propositionCompoundsById, writQuotesRowsById, justificationBasisCompoundsById))
-  return [justificationsById, orderedJustificationIds]
+  const justificationsById = mapValues(justificationRowsById, (row) =>
+    toJustification(
+      row,
+      null,
+      propositionCompoundsById,
+      writQuotesRowsById,
+      justificationBasisCompoundsById
+    )
+  );
+  return [justificationsById, orderedJustificationIds];
 }
 
 function toSelect(columns, tableAlias) {
-  const tablePrefix = tableAlias ? tableAlias + '.' : ''
-  return map(columns, c => tablePrefix + c).join(', ')
+  const tablePrefix = tableAlias ? tableAlias + "." : "";
+  return map(columns, (c) => tablePrefix + c).join(", ");
 }
 
 function makeDefaultJustificationSql(justificationColumns) {
-  const select = toSelect(justificationColumns, 'j')
-  const sql = `select ${select} from justifications j where j.deleted is null`
+  const select = toSelect(justificationColumns, "j");
+  const sql = `select ${select} from justifications j where j.deleted is null`;
   return {
     sql,
     args: [],
-  }
+  };
 }
 
 function makeWritQuoteJustificationClause(writQuoteId, justificationColumns) {
-  const justificationTableAlias = 'j'
-  const select = toSelect(justificationColumns, justificationTableAlias)
+  const justificationTableAlias = "j";
+  const select = toSelect(justificationColumns, justificationTableAlias);
   return [
     // writ-quote-based justifications
     {
@@ -919,10 +1095,7 @@ function makeWritQuoteJustificationClause(writQuoteId, justificationColumns) {
             and wq.deleted is null
             and wq.writ_quote_id = $2
       `,
-      args: [
-        JustificationBasisTypes.WRIT_QUOTE,
-        writQuoteId,
-      ],
+      args: [JustificationBasisTypes.WRIT_QUOTE, writQuoteId],
     },
     // paraphrased writ-quotes
     {
@@ -955,13 +1128,12 @@ function makeWritQuoteJustificationClause(writQuoteId, justificationColumns) {
         writQuoteId,
       ],
     },
-  ]
-
+  ];
 }
 
 function makeWritJustificationClause(writId, justificationColumns) {
-  const justificationTableAlias = 'j'
-  const select = toSelect(justificationColumns, justificationTableAlias)
+  const justificationTableAlias = "j";
+  const select = toSelect(justificationColumns, justificationTableAlias);
   return [
     {
       sql: `
@@ -979,10 +1151,7 @@ function makeWritJustificationClause(writId, justificationColumns) {
             and w.deleted is null
             and w.writ_id = $2
       `,
-      args: [
-        JustificationBasisTypes.WRIT_QUOTE,
-        writId,
-      ],
+      args: [JustificationBasisTypes.WRIT_QUOTE, writId],
     },
     // paraphrased writ-quote writs
     {
@@ -1017,11 +1186,14 @@ function makeWritJustificationClause(writId, justificationColumns) {
         writId,
       ],
     },
-  ]
+  ];
 }
 
-function makePropositionCompoundJustificationClause(propositionCompoundId, justificationColumns) {
-  const select = toSelect(justificationColumns, 'j')
+function makePropositionCompoundJustificationClause(
+  propositionCompoundId,
+  justificationColumns
+) {
+  const select = toSelect(justificationColumns, "j");
   const sql = `
     select
       ${select}
@@ -1034,19 +1206,22 @@ function makePropositionCompoundJustificationClause(propositionCompoundId, justi
             j.deleted is null
         and sc.deleted is null
         and sc.proposition_compound_id = $2
-  `
+  `;
   const args = [
     JustificationBasisTypes.PROPOSITION_COMPOUND,
     propositionCompoundId,
-  ]
+  ];
   return {
     sql,
     args,
-  }
+  };
 }
 
-function makeSourceExcerptParaphraseJustificationClause(sourceExcerptParaphraseId, justificationColumns) {
-  const select = toSelect(justificationColumns, 'j')
+function makeSourceExcerptParaphraseJustificationClause(
+  sourceExcerptParaphraseId,
+  justificationColumns
+) {
+  const select = toSelect(justificationColumns, "j");
   const sql = `
     select
       ${select}
@@ -1063,21 +1238,21 @@ function makeSourceExcerptParaphraseJustificationClause(sourceExcerptParaphraseI
             j.deleted is null
         and sep.deleted is null
         and sep.source_excerpt_paraphrase_id = $3
-  `
+  `;
   const args = [
     JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND,
     JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE,
     sourceExcerptParaphraseId,
-  ]
+  ];
   return {
     sql,
     args,
-  }
+  };
 }
 
-function makeWritQuoteUrlJustificationClause(url,  justificationColumns) {
-  const justificationTableAlias = 'j'
-  const select = toSelect(justificationColumns, justificationTableAlias)
+function makeWritQuoteUrlJustificationClause(url, justificationColumns) {
+  const justificationTableAlias = "j";
+  const select = toSelect(justificationColumns, justificationTableAlias);
   return {
     sql: `
         select
@@ -1112,16 +1287,16 @@ function makeWritQuoteUrlJustificationClause(url,  justificationColumns) {
             and wqu.deleted is null
             and u.url = $2
       `,
-    args: [
-      JustificationBasisTypes.WRIT_QUOTE,
-      url,
-    ],
-  }
+    args: [JustificationBasisTypes.WRIT_QUOTE, url],
+  };
 }
 
-function makePropositionJustificationClause(propositionId, justificationColumns) {
-  const justificationTableAlias = 'j'
-  const select = toSelect(justificationColumns, justificationTableAlias)
+function makePropositionJustificationClause(
+  propositionId,
+  justificationColumns
+) {
+  const justificationTableAlias = "j";
+  const select = toSelect(justificationColumns, justificationTableAlias);
   return [
     // Proposition compound propositions
     {
@@ -1139,10 +1314,7 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
             and sc.deleted is null
             and sca.proposition_id = $2
       `,
-      args: [
-        JustificationBasisTypes.PROPOSITION_COMPOUND,
-        propositionId,
-      ],
+      args: [JustificationBasisTypes.PROPOSITION_COMPOUND, propositionId],
     },
     // compound justification propositions
     {
@@ -1197,112 +1369,138 @@ function makePropositionJustificationClause(propositionId, justificationColumns)
         propositionId,
       ],
     },
-  ]
+  ];
 }
 
 function makeFilteredJustificationClauses(logger, filters, sorts) {
+  const clauses = [];
 
-  const clauses = []
-
-  const columnNames = [
-    'justification_id',
-  ]
-  forEach(sorts, sort => {
-    const sortProperty = sort.property
+  const columnNames = ["justification_id"];
+  forEach(sorts, (sort) => {
+    const sortProperty = sort.property;
     // We already include the ID, so ignore it
-    if (sortProperty !== 'id') {
-      const columnName = snakeCase(sortProperty)
-      columnNames.push(columnName)
+    if (sortProperty !== "id") {
+      const columnName = snakeCase(sortProperty);
+      columnNames.push(columnName);
     }
-  })
+  });
 
   forEach(filters, (filterValue, filterName) => {
     if (!filterValue) {
-      logger.warn(`skipping filter ${filterName} because it has no value`)
-      return
+      logger.warn(`skipping filter ${filterName} because it has no value`);
+      return;
     }
     switch (filterName) {
-      case 'propositionId': {
-        pushAll(clauses, makePropositionJustificationClause(filterValue, columnNames))
-        break
+      case "propositionId": {
+        pushAll(
+          clauses,
+          makePropositionJustificationClause(filterValue, columnNames)
+        );
+        break;
       }
-      case 'propositionCompoundId': {
-        clauses.push(makePropositionCompoundJustificationClause(filterValue, columnNames))
-        break
+      case "propositionCompoundId": {
+        clauses.push(
+          makePropositionCompoundJustificationClause(filterValue, columnNames)
+        );
+        break;
       }
-      case 'sourceExcerptParaphraseId': {
-        clauses.push(makeSourceExcerptParaphraseJustificationClause(filterValue, columnNames))
-        break
+      case "sourceExcerptParaphraseId": {
+        clauses.push(
+          makeSourceExcerptParaphraseJustificationClause(
+            filterValue,
+            columnNames
+          )
+        );
+        break;
       }
-      case 'writQuoteId': {
-        pushAll(clauses, makeWritQuoteJustificationClause(filterValue, columnNames))
-        break
+      case "writQuoteId": {
+        pushAll(
+          clauses,
+          makeWritQuoteJustificationClause(filterValue, columnNames)
+        );
+        break;
       }
-      case 'writId': {
-        pushAll(clauses, makeWritJustificationClause(filterValue, columnNames))
-        break
+      case "writId": {
+        pushAll(clauses, makeWritJustificationClause(filterValue, columnNames));
+        break;
       }
-      case 'url': {
-        clauses.push(makeWritQuoteUrlJustificationClause(filterValue,  columnNames))
-        break
+      case "url": {
+        clauses.push(
+          makeWritQuoteUrlJustificationClause(filterValue, columnNames)
+        );
+        break;
       }
       default:
-        throw newImpossibleError(`Unsupported justification filter: ${filterName}`)
+        throw newImpossibleError(
+          `Unsupported justification filter: ${filterName}`
+        );
     }
-  })
+  });
 
   if (clauses.length < 1) {
-    clauses.push(makeDefaultJustificationSql(columnNames))
+    clauses.push(makeDefaultJustificationSql(columnNames));
   }
 
-  return clauses
+  return clauses;
 }
 
-function makeLimitedJustificationsOrderClauseParts(sorts, isContinuation, tableAlias) {
-  const args = []
-  const whereConditionSqls = []
-  const orderByExpressionSqls = []
+function makeLimitedJustificationsOrderClauseParts(
+  sorts,
+  isContinuation,
+  tableAlias
+) {
+  const args = [];
+  const whereConditionSqls = [];
+  const orderByExpressionSqls = [];
 
-  const continuationWhereConditionSqls = []
-  const prevContinuationWhereConditionSqls = []
-  forEach(sorts, sort => {
-
+  const continuationWhereConditionSqls = [];
+  const prevContinuationWhereConditionSqls = [];
+  forEach(sorts, (sort) => {
     // The default direction is ascending, so if it is missing that's ok
-    const direction = sort.direction === SortDirections.DESCENDING ?
-      DatabaseSortDirection.DESCENDING :
-      DatabaseSortDirection.ASCENDING
+    const direction =
+      sort.direction === SortDirections.DESCENDING
+        ? DatabaseSortDirection.DESCENDING
+        : DatabaseSortDirection.ASCENDING;
 
-    const sortProperty = sort.property
+    const sortProperty = sort.property;
     // 'id' is a special property name for entities. The column is prefixed by the entity type
-    const columnName = sortProperty === 'id' ? 'justification_id' : snakeCase(sortProperty)
+    const columnName =
+      sortProperty === "id" ? "justification_id" : snakeCase(sortProperty);
 
-    whereConditionSqls.push(`${tableAlias}.${columnName} is not null`)
-    orderByExpressionSqls.push(`${tableAlias}.${columnName} ${direction}`)
+    whereConditionSqls.push(`${tableAlias}.${columnName} is not null`);
+    orderByExpressionSqls.push(`${tableAlias}.${columnName} ${direction}`);
 
     if (isContinuation) {
-      let operator = direction === DatabaseSortDirection.ASCENDING ? '>' : '<'
-      const value = sort.value
-      args.push(value)
-      const currContinuationWhereSql = concat(prevContinuationWhereConditionSqls, [`${tableAlias}.${columnName} ${operator} $${args.length}`])
-      continuationWhereConditionSqls.push(currContinuationWhereSql.join(' and '))
-      prevContinuationWhereConditionSqls.push(`${tableAlias}.${columnName} = $${args.length}`)
+      let operator = direction === DatabaseSortDirection.ASCENDING ? ">" : "<";
+      const value = sort.value;
+      args.push(value);
+      const currContinuationWhereSql = concat(
+        prevContinuationWhereConditionSqls,
+        [`${tableAlias}.${columnName} ${operator} $${args.length}`]
+      );
+      continuationWhereConditionSqls.push(
+        currContinuationWhereSql.join(" and ")
+      );
+      prevContinuationWhereConditionSqls.push(
+        `${tableAlias}.${columnName} = $${args.length}`
+      );
     }
-  })
+  });
 
   if (continuationWhereConditionSqls.length > 0) {
     whereConditionSqls.push(`(
-      ${continuationWhereConditionSqls.join('\n or ')}
-    )`)
+      ${continuationWhereConditionSqls.join("\n or ")}
+    )`);
   }
 
-  const whereConditionsSql = whereConditionSqls.join('\n and ')
-  const orderByExpressionsSql = orderByExpressionSqls.join(', ')
+  const whereConditionsSql = whereConditionSqls.join("\n and ");
+  const orderByExpressionsSql = orderByExpressionSqls.join(", ");
 
   return {
     whereConditionsSql,
     orderByExpressionsSql,
     args,
-  }
+  };
 }
 
 /** Generates SQL and arguments for limit-querying filtered justifications.
@@ -1313,122 +1511,177 @@ function makeLimitedJustificationsOrderClauseParts(sorts, isContinuation, tableA
  * @param count integer - the maximum number of justifications to return
  * @param isContinuation boolean - whether the query is a continuation of a pagination query
  */
-function makeLimitedJustificationsClause(logger, filters, sorts, count, isContinuation) {
+function makeLimitedJustificationsClause(
+  logger,
+  filters,
+  sorts,
+  count,
+  isContinuation
+) {
+  const tableAlias = "j";
 
-  const tableAlias = 'j'
+  const { whereConditionsSql, orderByExpressionsSql, args } =
+    makeLimitedJustificationsOrderClauseParts(
+      sorts,
+      isContinuation,
+      tableAlias
+    );
 
-  const {
-    whereConditionsSql,
-    orderByExpressionsSql,
-    args,
-  } = makeLimitedJustificationsOrderClauseParts(sorts, isContinuation, tableAlias)
-
-  const filteredJustificationClauses = makeFilteredJustificationClauses(logger, filters, sorts)
-  const renumberedFilteredJustificationClauseSqls = []
+  const filteredJustificationClauses = makeFilteredJustificationClauses(
+    logger,
+    filters,
+    sorts
+  );
+  const renumberedFilteredJustificationClauseSqls = [];
   forEach(filteredJustificationClauses, (filterClause) => {
-    renumberedFilteredJustificationClauseSqls.push(renumberSqlArgs(filterClause.sql, args.length))
-    pushAll(args, filterClause.args)
-  })
+    renumberedFilteredJustificationClauseSqls.push(
+      renumberSqlArgs(filterClause.sql, args.length)
+    );
+    pushAll(args, filterClause.args);
+  });
 
-  const whereSql = whereConditionsSql ? 'where ' + whereConditionsSql : ''
-  const orderBySql = orderByExpressionsSql ? 'order by ' + orderByExpressionsSql : ''
+  const whereSql = whereConditionsSql ? "where " + whereConditionsSql : "";
+  const orderBySql = orderByExpressionsSql
+    ? "order by " + orderByExpressionsSql
+    : "";
 
-  args.push(count)
+  args.push(count);
   const sql = `
     select ${tableAlias}.*
     from (
-      ${renumberedFilteredJustificationClauseSqls.join('\n union \n')}
+      ${renumberedFilteredJustificationClauseSqls.join("\n union \n")}
     ) ${tableAlias}
     ${whereSql}
     ${orderBySql}
     limit $${args.length}
-  `
+  `;
 
   return {
     sql: sql,
     args: args,
-  }
+  };
 }
 
 function makeJustificationsQueryOrderByExpressionsSql(sorts, tableAlias) {
-  const orderByExpressionSqls = []
-  const tablePrefix = tableAlias ? tableAlias + '.' : ''
-  forEach(sorts, sort => {
+  const orderByExpressionSqls = [];
+  const tablePrefix = tableAlias ? tableAlias + "." : "";
+  forEach(sorts, (sort) => {
     // The default direction is ascending, so if it is missing that's ok
-    const direction = sort.direction === SortDirections.DESCENDING ?
-      DatabaseSortDirection.DESCENDING :
-      DatabaseSortDirection.ASCENDING
+    const direction =
+      sort.direction === SortDirections.DESCENDING
+        ? DatabaseSortDirection.DESCENDING
+        : DatabaseSortDirection.ASCENDING;
 
-    const sortProperty = sort.property
+    const sortProperty = sort.property;
     // 'id' is a special property name for entities. The column is prefixed by the entity type
-    const columnName = sortProperty === 'id' ? 'justification_id' : snakeCase(sortProperty)
+    const columnName =
+      sortProperty === "id" ? "justification_id" : snakeCase(sortProperty);
 
-    orderByExpressionSqls.push(`${tablePrefix}${columnName} ${direction}`)
-  })
+    orderByExpressionSqls.push(`${tablePrefix}${columnName} ${direction}`);
+  });
 
-  return orderByExpressionSqls.join(', ')
+  return orderByExpressionSqls.join(", ");
 }
 
 function getNewJustificationRootPolarity(justification, logger, database) {
-  return Promise.resolve()
-    .then(() => {
-      switch (justification.target.type) {
-        case JustificationTargetTypes.PROPOSITION:
-        case JustificationTargetTypes.STATEMENT:
-          // root justifications have root polarity equal to their polarity
-          return justification.polarity
-        case JustificationTargetTypes.JUSTIFICATION:
-          return getTargetRootPolarity(logger, database, justification)
+  return Promise.resolve().then(() => {
+    switch (justification.target.type) {
+      case JustificationTargetTypes.PROPOSITION:
+      case JustificationTargetTypes.STATEMENT:
+        // root justifications have root polarity equal to their polarity
+        return justification.polarity;
+      case JustificationTargetTypes.JUSTIFICATION:
+        return (
+          getTargetRootPolarity(logger, database, justification)
             // TODO(1,2,3): remove exception
             // eslint-disable-next-line promise/no-nesting
-            .then(rootPolarity => {
-              assert(justification.polarity === JustificationPolarities.NEGATIVE, "Justifications targeting justifications must be negative")
-              return negateRootPolarity(rootPolarity)
+            .then((rootPolarity) => {
+              assert(
+                justification.polarity === JustificationPolarities.NEGATIVE,
+                "Justifications targeting justifications must be negative"
+              );
+              return negateRootPolarity(rootPolarity);
             })
-        default:
-          throw newImpossibleError(`Cannot create justification because had unsupported target type: ${justification.target.type}`)
-      }
-    })
+        );
+      default:
+        throw newImpossibleError(
+          `Cannot create justification because had unsupported target type: ${justification.target.type}`
+        );
+    }
+  });
 }
 
 function getTargetRootPolarity(logger, database, justification) {
-  return database.query(
-    'getTargetRootPolarity',
-    'select root_polarity from justifications where justification_id = $1',
-    [justification.target.entity.id]
-  )
-    .then( ({rows}) => {
+  return database
+    .query(
+      "getTargetRootPolarity",
+      "select root_polarity from justifications where justification_id = $1",
+      [justification.target.entity.id]
+    )
+    .then(({ rows }) => {
       if (rows.length < 1) {
-        throw new EntityNotFoundError(`Could not create justification because target justification having ID ${justification.target.id} did not exist`)
+        throw new EntityNotFoundError(
+          `Could not create justification because target justification having ID ${justification.target.id} did not exist`
+        );
       } else if (rows.length > 1) {
-        logger.error(`while creating justification, found more than one target justification having ID ${justification.target.id}`)
+        logger.error(
+          `while creating justification, found more than one target justification having ID ${justification.target.id}`
+        );
       }
 
-      const {root_polarity} = head(rows)
-      return root_polarity
-    })
+      const { root_polarity } = head(rows);
+      return root_polarity;
+    });
 }
 
-function readPropositionCompoundsByIdForRootTarget(dao, rootTargetType, rootTargetId, {userId}) {
-  return dao.propositionCompoundsDao.readPropositionCompoundsByIdForRootTarget(rootTargetType, rootTargetId, {userId})
-    .then( (propositionCompoundsById) =>
+function readPropositionCompoundsByIdForRootTarget(
+  dao,
+  rootTargetType,
+  rootTargetId,
+  { userId }
+) {
+  return dao.propositionCompoundsDao
+    .readPropositionCompoundsByIdForRootTarget(rootTargetType, rootTargetId, {
+      userId,
+    })
+    .then((propositionCompoundsById) =>
       Promise.all([
         propositionCompoundsById,
         addRootJustificationCountByPolarity(dao, propositionCompoundsById),
       ])
     )
-    .then( ([propositionCompoundsById]) => propositionCompoundsById)
+    .then(([propositionCompoundsById]) => propositionCompoundsById);
 }
 
 function addRootJustificationCountByPolarity(dao, propositionCompoundsById) {
-  return Promise.all(flatMap(propositionCompoundsById, (propositionCompound) => propositionCompound.atoms))
-    .then( (atoms) => Promise.all(map(atoms, (atom) =>
-      Promise.all([
-        atom.entity,
-        dao.readRootJustificationCountByPolarityForRoot(JustificationRootTargetTypes.PROPOSITION, atom.entity.id),
-      ])
-    )))
-    .then( (propositionAndJustificationCounts) => Promise.all(map(propositionAndJustificationCounts, ([proposition, rootJustificationCountByPolarity]) => {
-      proposition.rootJustificationCountByPolarity = rootJustificationCountByPolarity
-    })))
+  return Promise.all(
+    flatMap(
+      propositionCompoundsById,
+      (propositionCompound) => propositionCompound.atoms
+    )
+  )
+    .then((atoms) =>
+      Promise.all(
+        map(atoms, (atom) =>
+          Promise.all([
+            atom.entity,
+            dao.readRootJustificationCountByPolarityForRoot(
+              JustificationRootTargetTypes.PROPOSITION,
+              atom.entity.id
+            ),
+          ])
+        )
+      )
+    )
+    .then((propositionAndJustificationCounts) =>
+      Promise.all(
+        map(
+          propositionAndJustificationCounts,
+          ([proposition, rootJustificationCountByPolarity]) => {
+            proposition.rootJustificationCountByPolarity =
+              rootJustificationCountByPolarity;
+          }
+        )
+      )
+    );
 }

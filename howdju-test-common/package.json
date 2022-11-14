@@ -7,6 +7,8 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint .",
     "test": "jest"
   },
@@ -16,6 +18,8 @@
   "devDependencies": {
     "eslint": "^7.25.0",
     "eslint-config-howdju": "^1.0.0",
-    "jest": "^29.3.1"
+    "jest": "^29.3.1",
+    "prettier": "2.7.1",
+    "ts-node": "^10.9.1"
   }
 }

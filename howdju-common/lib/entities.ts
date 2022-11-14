@@ -9,7 +9,7 @@ import {
   PropositionTagVotePolarity,
   SentenceType,
   TagVotePolarity,
-} from "./enums"
+} from "./enums";
 
 /** The value of an entity's `id` property. */
 export type EntityId = string;
@@ -31,82 +31,85 @@ export interface WritQuote extends Entity {
   urls: Array<Url>;
 }
 
-export type Pic = Entity
+export type Pic = Entity;
 
 export interface PicRegion extends Entity {
-  pic: Pic
+  pic: Pic;
 }
 
-export type Vid = Entity
+export type Vid = Entity;
 
 export interface VidSegment extends Entity {
-  vid: Vid
+  vid: Vid;
 }
 
 /** A uniform resource locator */
 export interface Url extends Entity {
   url: string;
-  target?: UrlTarget
+  target?: UrlTarget;
 }
 
 export interface UrlTarget extends Entity {
-  anchors: UrlTargetAnchor[]
+  anchors: UrlTargetAnchor[];
 }
 
-export type UrlTargetAnchor = UrlTargetAnchor_TextQuote
+export type UrlTargetAnchor = UrlTargetAnchor_TextQuote;
 
 export type UrlTargetAnchor_TextQuote = {
-  type: "TEXT_QUOTE"
-  exactText: string
-  prefixText: string
-  suffixText: string
-  startOffset: string
-  endOffset: string
-}
+  type: "TEXT_QUOTE";
+  exactText: string;
+  prefixText: string;
+  suffixText: string;
+  startOffset: string;
+  endOffset: string;
+};
 
 export interface Proposition extends Entity {
   text: string;
-  justifications?: Justification[]
+  justifications?: Justification[];
 }
 
 export type Sentence = Statement | Proposition;
 
 export interface Persorg extends Entity {
-  isOrganization: boolean
-  name: string
-  knownFor: string
-  websiteUrl?: string
-  twitterUrl?: string
-  wikipediaUrl?: string
+  isOrganization: boolean;
+  name: string;
+  knownFor: string;
+  websiteUrl?: string;
+  twitterUrl?: string;
+  wikipediaUrl?: string;
 }
 
 export interface Statement extends Entity {
   sentence: Sentence;
-  sentenceType: SentenceType
+  sentenceType: SentenceType;
   speaker: Persorg;
 }
 
 /** A part of some fixed media. */
-export type SourceExcerpt = WritQuoteSourceExcerpt | PicRegionSourceExcerpt | VidSegmentSourceExcerpt
+export type SourceExcerpt =
+  | WritQuoteSourceExcerpt
+  | PicRegionSourceExcerpt
+  | VidSegmentSourceExcerpt;
 export interface WritQuoteSourceExcerpt extends Entity {
-  type: "WRIT_QUOTE"
-  entity: WritQuote
+  type: "WRIT_QUOTE";
+  entity: WritQuote;
 }
 export interface PicRegionSourceExcerpt extends Entity {
-  type: "PIC_REGION"
-  entity: PicRegion
+  type: "PIC_REGION";
+  entity: PicRegion;
 }
 export interface VidSegmentSourceExcerpt extends Entity {
-  type: "VID_SEGMENT"
-  entity: VidSegment
+  type: "VID_SEGMENT";
+  entity: VidSegment;
 }
 
 export interface PropositionCompoundAtom extends Entity {
-  compoundId?: EntityId
+  compoundId?: EntityId;
   entity: Proposition;
 }
 
-export interface PropositionCompound extends Entity{
+export interface PropositionCompound extends Entity {
   atoms: PropositionCompoundAtom[];
 }
 
@@ -153,7 +156,7 @@ export type JustificationBasis =
   | SourceExcerptJustificationBasis
   | WritQuoteJustificationBasis;
 
-export type JustificationRootTarget = Proposition | Statement
+export type JustificationRootTarget = Proposition | Statement;
 
 export interface Justification extends Entity {
   target: JustificationTarget;
@@ -173,31 +176,31 @@ export interface Perspective extends Entity {
 }
 
 export interface Tag extends Entity {
-  name: string
+  name: string;
 }
 
 export interface TagVoteTarget {
-  type: TagVoteTarget
-  entity: Entity
+  type: TagVoteTarget;
+  entity: Entity;
 }
 
 export interface TagVote extends Entity {
-  target: TagVoteTarget
-  polarity: TagVotePolarity
-  tag: Tag
+  target: TagVoteTarget;
+  polarity: TagVotePolarity;
+  tag: Tag;
 }
 
 // TODO: replace with TagVote
 export interface PropositionTagVote extends Entity {
-  proposition: Proposition
-  polarity: PropositionTagVotePolarity
-  tag: Tag
+  proposition: Proposition;
+  polarity: PropositionTagVotePolarity;
+  tag: Tag;
 }
 
 export interface PropositionTagVoteSubmissionModel {
-  proposition: Proposition | Persisted<Proposition>
-  tag: Tag | Persisted<Tag>
-  polarity: PropositionTagVotePolarity
+  proposition: Proposition | Persisted<Proposition>;
+  tag: Tag | Persisted<Tag>;
+  polarity: PropositionTagVotePolarity;
 }
 
 /**
@@ -218,36 +221,39 @@ export interface PropositionTagVoteSubmissionModel {
  * Persisted<Justification> & Required<Pick<Justification, "rootTargetType" | "rootTarget" | ...>>
  * ```
  */
-type PersistedEntity<T extends Entity> = Required<Pick<T, 'id'>> & Partial<T>
+type PersistedEntity<T extends Entity> = Required<Pick<T, "id">> & Partial<T>;
 /** A type that contains Persisted entities.
  *
  * The top-most entities in any path from the root type will be required entites.
  * Within those top-most entities, their sub-fields are optional (they are
  * implied by the `id`) but if they are entities, they must also be persisted.
  */
-export type Persisted<T> = T extends Entity ?
-  // If the top-level type is an Entity, then it must be persisted.
-  PersistedEntity<T> & {
-    // Other fields become optional (`+?`) because the PersistedEntity implies
-    // their value.
-    [key in keyof T]+?: Persisted<T[key]>
-  } :
-  // If the top-level type is not an entity...
-  T & {
-    // then just recurse on its keys. The first entities found this way will be
-    // required and persisted.
-    [key in keyof T]: Persisted<T[key]>
-  }
+export type Persisted<T> = T extends Entity
+  ? // If the top-level type is an Entity, then it must be persisted.
+    PersistedEntity<T> & {
+      // Other fields become optional (`+?`) because the PersistedEntity implies
+      // their value.
+      [key in keyof T]+?: Persisted<T[key]>;
+    }
+  : // If the top-level type is not an entity...
+    T & {
+      // then just recurse on its keys. The first entities found this way will be
+      // required and persisted.
+      [key in keyof T]: Persisted<T[key]>;
+    };
 
 /** A materialized Entity has a required ID. */
-export type MaterializedEntity<T extends Entity = Entity> = Required<Pick<T, 'id'>> & T
-export type Materialized<T> = T extends Entity ?
-  MaterializedEntity<T> & {
-    [key in keyof T]: Materialized<T[key]>
-  } :
-  T & {
-    [key in keyof T]: Materialized<T[key]>
-  }
+export type MaterializedEntity<T extends Entity = Entity> = Required<
+  Pick<T, "id">
+> &
+  T;
+export type Materialized<T> = T extends Entity
+  ? MaterializedEntity<T> & {
+      [key in keyof T]: Materialized<T[key]>;
+    }
+  : T & {
+      [key in keyof T]: Materialized<T[key]>;
+    };
 
 export interface ContentReport extends Entity {
   entityType: EntityType;
@@ -262,7 +268,7 @@ export interface ContentReport extends Entity {
  * An opaque pagination token from the API.
  *
  * Encodes sorting, offset, etc. */
-export type ContinuationToken = string
+export type ContinuationToken = string;
 
 /**
  *  A token authorizing clients to take actions as users.
@@ -270,7 +276,7 @@ export type ContinuationToken = string
  * Clients must keep this secret, they must expire them before too long, and
  * we must enforce the expirations server-side.
  */
-export type AuthToken = string
+export type AuthToken = string;
 
 /**
  * A timestamp .
@@ -278,23 +284,23 @@ export type AuthToken = string
  * I think this is an ISO 8601 datetime format
  *
  * Example: 2022-11-25T17:43:19.876Z */
-export type DatetimeString = string
+export type DatetimeString = string;
 
 /** A user of the system */
 export interface User extends Entity {
-  email: string,
-  username: string,
-  longName: string,
-  shortName: string,
-  created: DatetimeString,
-  isActive: boolean,
+  email: string;
+  username: string;
+  longName: string;
+  shortName: string;
+  created: DatetimeString;
+  isActive: boolean;
   externalIds: {
-    googleAnalyticsId: string,
-    heapAnalyticsId: string,
-    mixpanelId: string,
-    sentryId: string,
-    smallchatId: string,
-  },
+    googleAnalyticsId: string;
+    heapAnalyticsId: string;
+    mixpanelId: string;
+    sentryId: string;
+    smallchatId: string;
+  };
 }
 
 /** Additional properties that we collect upon user creation, but that we don't expose later. */

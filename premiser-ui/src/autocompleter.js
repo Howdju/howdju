@@ -1,9 +1,11 @@
 export const suggestionKeys = {
-  createPropositionPageProposition: 'createPropositionPageProposition',
-  createPropositionPageJustification: 'createPropositionPageJustification',
-  counterJustificationEditor: targetJustificationId => `counterJustificationEditor_${targetJustificationId}`,
-  justificationBasisEditor: justification => `justificationBasisEditor-${justification.id}-${justification.basis.type}-${justification.basis.entity.id}`,
-}
+  createPropositionPageProposition: "createPropositionPageProposition",
+  createPropositionPageJustification: "createPropositionPageJustification",
+  counterJustificationEditor: (targetJustificationId) =>
+    `counterJustificationEditor_${targetJustificationId}`,
+  justificationBasisEditor: (justification) =>
+    `justificationBasisEditor-${justification.id}-${justification.basis.type}-${justification.basis.entity.id}`,
+};
 
 export default {
   fixOpen: (autocomplete, text, autocompleteResults) => {
@@ -13,7 +15,7 @@ export default {
       autocomplete.state.visible
     ) {
       // react-md autocomplete incorrectly shows empty autocomplete results
-      autocomplete._close()
+      autocomplete._close();
     } else if (
       text &&
       autocomplete.state.focus &&
@@ -23,7 +25,7 @@ export default {
       !autocomplete.state.visible
     ) {
       // react-md autocomplete incorrectly has menu hidden
-      autocomplete.setState({visible: true})
+      autocomplete.setState({ visible: true });
     }
   },
-}
+};

@@ -1,12 +1,12 @@
-import { ActionCreator } from "redux"
-import { createAction } from "redux-actions"
+import { ActionCreator } from "redux";
+import { createAction } from "redux-actions";
 import {
   CounteredJustification,
   decircularizeJustification,
   Justification,
   Url,
   WritQuote,
-} from "howdju-common"
+} from "howdju-common";
 
 /**
  * redux-actions and @reduxjs/toolkit have a convention that action creators get a .toString method
@@ -19,7 +19,7 @@ import {
  * We can use this method to satisfy (1). Because of (2), though, we will probably eventually want
  * to phase out this function.
  */
-export const str = (ac: ActionCreator<unknown>) => ac.toString()
+export const str = (ac: ActionCreator<unknown>) => ac.toString();
 
 // Actions to send to the extension
 export const extension = {
@@ -36,7 +36,7 @@ export const extension = {
     })
   ),
   messageHandlerReady: createAction("EXTENSION/MESSAGE_HANDLER_READY"),
-}
+};
 
 // Actions to send to the frame the extension inserts that is hosting the web app
 export const extensionFrame = {
@@ -46,4 +46,4 @@ export const extensionFrame = {
     (justification: Justification) => ({ justification })
   ),
   ackMessage: createAction("EXTENSION_FRAME/ACK_MESSAGE"),
-}
+};

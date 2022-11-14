@@ -1,6 +1,6 @@
-import { api } from "@/apiActions"
-import { createSlice } from "@reduxjs/toolkit"
-import { AccountSettings } from "howdju-common"
+import { api } from "@/apiActions";
+import { createSlice } from "@reduxjs/toolkit";
+import { AccountSettings } from "howdju-common";
 
 export const accountSettingsPageSlice = createSlice({
   name: "accountSettingsPage",
@@ -11,21 +11,21 @@ export const accountSettingsPageSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addCase(api.fetchAccountSettings, (state) => {
-      state.isFetching = true
-    })
+      state.isFetching = true;
+    });
     builder.addCase(api.fetchAccountSettings.response, (state, action) => {
-      state.isFetching = false
+      state.isFetching = false;
       if (action.error) {
-        state.accountSettings = null
-        return
+        state.accountSettings = null;
+        return;
       }
-      state.accountSettings = action.payload.accountSettings
-    })
+      state.accountSettings = action.payload.accountSettings;
+    });
     builder.addCase(api.updateAccountSettings.response, (state, action) => {
-      state.accountSettings = action.payload.accountSettings
-    })
+      state.accountSettings = action.payload.accountSettings;
+    });
   },
-})
+});
 
-export default accountSettingsPageSlice.actions
-export const accountSettingsPage = accountSettingsPageSlice.reducer
+export default accountSettingsPageSlice.actions;
+export const accountSettingsPage = accountSettingsPageSlice.reducer;

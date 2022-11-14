@@ -8,17 +8,14 @@
  */
 const config = {
   apiRoot: process.env.API_ROOT,
-  humanDateTimeFormat: 'D MMM YYYY h:mm:ss A',
-  isDev: process.env.NODE_ENV === 'development',
+  humanDateTimeFormat: "D MMM YYYY h:mm:ss A",
+  isDev: process.env.NODE_ENV === "development",
   contentScriptAckDelayMs: 1000,
   isRegistrationEnabled: true,
   rehydrateTimeoutMs: 5000,
   transientHideDelay: 1500,
-  authExpirationCheckFrequencyMs: 30*1000,
-  reduxPersistWhitelist: [
-    'auth',
-    'ui.isMobileSiteDisabled',
-  ],
+  authExpirationCheckFrequencyMs: 30 * 1000,
+  reduxPersistWhitelist: ["auth", "ui.isMobileSiteDisabled"],
   reduxDevtoolsExtension: {
     doTrace: true,
     traceLimit: 25,
@@ -41,7 +38,7 @@ const config = {
       staggerDelayBy: 50,
     },
   },
-  sessionStorageIdKey: 'ssid',
-}
+  sessionStorageIdKey: "ssid",
+};
 
-export default config
+export default config;

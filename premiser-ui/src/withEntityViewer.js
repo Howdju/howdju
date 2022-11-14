@@ -1,7 +1,7 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-import EntityViewer from './EntityViewer'
+import EntityViewer from "./EntityViewer";
 
 /**
  *
@@ -12,17 +12,21 @@ import EntityViewer from './EntityViewer'
  * @param entityLinkFn {function<object,string>} creates a link to an entity. Only called when the entity is truthy.
  * @returns {Component}
  */
-export default function withEntityViewer(EntityComponent, entityPropName, iconName,
-  iconTitle, entityLinkFn
+export default function withEntityViewer(
+  EntityComponent,
+  entityPropName,
+  iconName,
+  iconTitle,
+  entityLinkFn
 ) {
   return class EntityViewerWrapper extends Component {
     static propTypes = {
       id: PropTypes.string.isRequired,
-    }
+    };
 
     static defaultProps = {
       showStatusText: true,
-    }
+    };
 
     render() {
       const {
@@ -33,8 +37,8 @@ export default function withEntityViewer(EntityComponent, entityPropName, iconNa
         suggestionsKey,
         menu,
         showStatusText,
-      } = this.props
-      const entity = this.props[entityPropName]
+      } = this.props;
+      const entity = this.props[entityPropName];
       return (
         <EntityViewer
           iconName={iconName}
@@ -45,7 +49,7 @@ export default function withEntityViewer(EntityComponent, entityPropName, iconNa
           entity={
             <EntityComponent
               id={id}
-              {...{[entityPropName]: entity}}
+              {...{ [entityPropName]: entity }}
               editorId={editorId}
               suggestionsKey={suggestionsKey}
               showStatusText={showStatusText}
@@ -53,7 +57,7 @@ export default function withEntityViewer(EntityComponent, entityPropName, iconNa
           }
           menu={menu}
         />
-      )
+      );
     }
-  }
+  };
 }

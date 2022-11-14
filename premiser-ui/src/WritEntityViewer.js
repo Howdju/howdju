@@ -1,19 +1,12 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-import EntityViewer from './EntityViewer'
-import EditableWrit from './EditableWrit'
+import EntityViewer from "./EntityViewer";
+import EditableWrit from "./EditableWrit";
 
 export default class WritEntityViewer extends Component {
   render() {
-    const {
-      component,
-      id,
-      writ,
-      editorId,
-      suggestionsKey,
-      menu,
-    } = this.props
+    const { component, id, writ, editorId, suggestionsKey, menu } = this.props;
     return (
       <EntityViewer
         iconName="book"
@@ -29,9 +22,9 @@ export default class WritEntityViewer extends Component {
         }
         menu={menu}
       />
-    )
+    );
   }
 }
 WritEntityViewer.propTypes = {
   id: PropTypes.string.isRequired,
-}
+};

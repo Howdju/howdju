@@ -1,34 +1,37 @@
-const {
-  mapSingle,
-  mapMany,
-} = require('./daosUtil')
-const {
-  toJustificationScore,
-  toJustificationVote,
-} = require('./orm')
+const { mapSingle, mapMany } = require("./daosUtil");
+const { toJustificationScore, toJustificationVote } = require("./orm");
 
 exports.JustificationScoresDao = class JustificationScoresDao {
-
   constructor(logger, database) {
-    this.logger = logger
-    this.database = database
+    this.logger = logger;
+    this.database = database;
   }
 
-  createJustificationScore(justificationId, justificationScoreType, score, created, jobHistoryId) {
-    return this.database.query(
-      'createJustificationScore',
-      `insert into justification_scores (justification_id, score_type, score, created, creator_job_history_id) values
+  createJustificationScore(
+    justificationId,
+    justificationScoreType,
+    score,
+    created,
+    jobHistoryId
+  ) {
+    return this.database
+      .query(
+        "createJustificationScore",
+        `insert into justification_scores (justification_id, score_type, score, created, creator_job_history_id) values
        ($1, $2, $3, $4, $5) 
        returning *`,
-      [justificationId, justificationScoreType, score, created, jobHistoryId]
-    )
-      .then(mapSingle(this.logger, toJustificationScore, 'justification_scores'))
+        [justificationId, justificationScoreType, score, created, jobHistoryId]
+      )
+      .then(
+        mapSingle(this.logger, toJustificationScore, "justification_scores")
+      );
   }
 
   readUnscoredVotesForScoreType(scoreType) {
-    return this.database.query(
-      'readUnscoredVotesForScoreType',
-      `
+    return this.database
+      .query(
+        "readUnscoredVotesForScoreType",
+        `
         select v.* 
         from justification_votes v
           left join justification_scores js using (justification_id)
@@ -54,18 +57,20 @@ exports.JustificationScoresDao = class JustificationScoresDao {
                 )
               )
             )
-    `, [scoreType])
-      .then(mapMany(toJustificationVote))
+    `,
+        [scoreType]
+      )
+      .then(mapMany(toJustificationVote));
   }
 
   deleteScoresForType(scoreType, deleted, jobHistoryId) {
     return this.database.query(
-      'deleteScoresForType',
+      "deleteScoresForType",
       `update justification_scores 
        set deleted = $1, deletor_job_history_id = $2 
        where score_type = $3 and deleted is null`,
       [deleted, jobHistoryId, scoreType]
-    )
+    );
   }
 
   deleteJustificationScoreForJustificationIdAndType(
@@ -74,9 +79,10 @@ exports.JustificationScoresDao = class JustificationScoresDao {
     deletedAt,
     deletorJobHistoryId
   ) {
-    return this.database.query(
-      'deleteJustificationScoreForJustificationIdAndType',
-      `update justification_scores 
+    return this.database
+      .query(
+        "deleteJustificationScoreForJustificationIdAndType",
+        `update justification_scores 
        set deletor_job_history_id = $1, deleted = $2
        where 
              justification_id = $3
@@ -84,7 +90,18 @@ exports.JustificationScoresDao = class JustificationScoresDao {
          and deleted is null
        returning *
        `,
-      [deletorJobHistoryId, deletedAt, justificationId, justificationScoreType])
-      .then(mapSingle(this.logger, toJustificationScore, 'justification_scores', {justificationId, justificationScoreType}))
+        [
+          deletorJobHistoryId,
+          deletedAt,
+          justificationId,
+          justificationScoreType,
+        ]
+      )
+      .then(
+        mapSingle(this.logger, toJustificationScore, "justification_scores", {
+          justificationId,
+          justificationScoreType,
+        })
+      );
   }
-}
+};

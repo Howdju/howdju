@@ -8,7 +8,6 @@
 }
 
 @mixin react-md-fixes($grid-desktop-breakpoint, $grid-phone-gutter) {
-
   .md-dialog {
     // React-MD doesn't implement scrolling of md-dialog-content, so add scroll to the whole dialog and md-dialog-contents
     // overflow will need to be visible.
@@ -42,7 +41,8 @@
     padding: 25px;
   }
 
-  html, body {
+  html,
+  body {
     &.md-no-scroll {
       // This is to counteract something weird that React-MD does when showing a dialog:
       // it adds a class .md-no-scroll to the HTML, with position: fixed, which causes
@@ -70,7 +70,6 @@
     }
   }
 
-
   @media (max-width: $grid-desktop-breakpoint - 1) {
     .md-autocomplete-list {
       // Instead of displaying md-list-tiles at a constant height (which works for single line of text, which we are
@@ -83,7 +82,8 @@
         }
       }
       // On mobile, allow autoomplete suggestions to wrap so that they don't go off-screen
-      .md-tile-text--primary, .md-tile-text--secondary {
+      .md-tile-text--primary,
+      .md-tile-text--secondary {
         overflow: visible;
         text-overflow: ellipsis;
         white-space: normal;
@@ -96,5 +96,4 @@
     // For atoms, they are the only child and they don't look good with a large padding bottom
     padding-bottom: 16px;
   }
-
 }

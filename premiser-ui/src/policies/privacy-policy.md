@@ -1,4 +1,4 @@
-#  Howdju Privacy Policy
+# Howdju Privacy Policy
 
 Last Updated 6 July 2021
 
@@ -24,7 +24,7 @@ When you submit content to Howdju, such as propositions, citations, or when you 
 
 #### Actions you take
 
-We collect information about the actions you take when using the Services. This includes your interactions with content, like voting and reporting. We may  monitor or record these interactions for training purposes and to ensure a high quality of service.
+We collect information about the actions you take when using the Services. This includes your interactions with content, like voting and reporting. We may monitor or record these interactions for training purposes and to ensure a high quality of service.
 
 #### Other information
 
@@ -52,14 +52,14 @@ Howdju uses third parties to provide services as described in our Cookie Policy.
 
 We use information about you to:
 
-* Provide, maintain, and improve the Services;
-* Research and develop new services;
-* Help protect the safety of Howdju and our users, which includes blocking suspected spammers, addressing abuse, and enforcing the Howdju User Agreement and our other policies;
-* Send you technical notices, updates, security alerts, invoices, and other support and administrative messages;
-* Provide customer service;
-* Communicate with you about products, services, offers, promotions, and events, and provide other news and information we think will be of interest to you (for information about how to opt out of these communications, see “Your Choices” below);
-* Monitor and analyze trends, usage, and activities in connection with our Services;
-* Personalize the Services, and provide and optimize content, and features that match user profiles or interests.
+- Provide, maintain, and improve the Services;
+- Research and develop new services;
+- Help protect the safety of Howdju and our users, which includes blocking suspected spammers, addressing abuse, and enforcing the Howdju User Agreement and our other policies;
+- Send you technical notices, updates, security alerts, invoices, and other support and administrative messages;
+- Provide customer service;
+- Communicate with you about products, services, offers, promotions, and events, and provide other news and information we think will be of interest to you (for information about how to opt out of these communications, see “Your Choices” below);
+- Monitor and analyze trends, usage, and activities in connection with our Services;
+- Personalize the Services, and provide and optimize content, and features that match user profiles or interests.
 
 Much of the information on the Services is public and accessible to the public internet, without viewers creating or logging in with an account. By using the Services, you are directing us to share this information publicly and freely.
 
@@ -69,13 +69,13 @@ Your Howdju account has a profile page that is public. Your profile contains inf
 
 Howdju only shares personal information about you in the following ways. We do not sell this information.
 
-* **With your consent**. We may share information about you with your consent or at your direction.
-* **With our service providers**. We may share information with vendors, consultants, and other service providers who need access to such information to carry out work for us. Their use of personal data will be subject to appropriate confidentiality and security measures. A few examples: (i) cloud providers who host our data and our services, (ii) error reporting services that receive information about errors you encounter on the site to help us diagnose and fix errors.
-* **To comply with the law**. We may share information in response to a request for information if we believe disclosure is in accordance with, or required by, any applicable law, regulation, legal process, or governmental request, including, but not limited to, meeting national security or law enforcement requirements. To the extent the law allows it, we will attempt to provide you with prior notice before disclosing your information in response to such a request.
-* **In an emergency**. We may share information if we believe it's necessary to prevent imminent and serious bodily harm to a person.
-* To enforce our policies and rights. We may share information if we believe your actions are inconsistent with our User Agreement, Code of Conduct, or other Howdju policies, or to protect the rights, property, and safety of ourselves and others.
-* **With our affiliates**. We may share information between and among Howdju, and any of our parents, affiliates, subsidiaries, and other companies under common control and ownership.
-* **Aggregated or de-identified information**. We may share information about you that has been aggregated or anonymized such that it cannot reasonably be used to identify you. For example, we may show the total number of times a post has been upvoted without identifying who the visitors were.
+- **With your consent**. We may share information about you with your consent or at your direction.
+- **With our service providers**. We may share information with vendors, consultants, and other service providers who need access to such information to carry out work for us. Their use of personal data will be subject to appropriate confidentiality and security measures. A few examples: (i) cloud providers who host our data and our services, (ii) error reporting services that receive information about errors you encounter on the site to help us diagnose and fix errors.
+- **To comply with the law**. We may share information in response to a request for information if we believe disclosure is in accordance with, or required by, any applicable law, regulation, legal process, or governmental request, including, but not limited to, meeting national security or law enforcement requirements. To the extent the law allows it, we will attempt to provide you with prior notice before disclosing your information in response to such a request.
+- **In an emergency**. We may share information if we believe it's necessary to prevent imminent and serious bodily harm to a person.
+- To enforce our policies and rights. We may share information if we believe your actions are inconsistent with our User Agreement, Code of Conduct, or other Howdju policies, or to protect the rights, property, and safety of ourselves and others.
+- **With our affiliates**. We may share information between and among Howdju, and any of our parents, affiliates, subsidiaries, and other companies under common control and ownership.
+- **Aggregated or de-identified information**. We may share information about you that has been aggregated or anonymized such that it cannot reasonably be used to identify you. For example, we may show the total number of times a post has been upvoted without identifying who the visitors were.
 
 ## How We Protect Your Information
 

@@ -1,10 +1,9 @@
-const {BaseDao} = require('./BaseDao')
-const {toContentReport, fromIdString} = require('./orm')
+const { BaseDao } = require("./BaseDao");
+const { toContentReport, fromIdString } = require("./orm");
 
 module.exports.ContentReportsDao = class ContentReportsDao extends BaseDao {
-
   constructor(logger, database) {
-    super(logger, database, toContentReport)
+    super(logger, database, toContentReport);
   }
 
   async createContentReport(contentReport, userId, now) {
@@ -16,7 +15,7 @@ module.exports.ContentReportsDao = class ContentReportsDao extends BaseDao {
       contentReport.description,
       fromIdString(userId),
       now,
-    ]
+    ];
     const sql = `
       insert into content_reports (
         entity_type,
@@ -29,7 +28,7 @@ module.exports.ContentReportsDao = class ContentReportsDao extends BaseDao {
       ) 
       values ($1, $2, $3, $4, $5, $6, $7)
       returning *
-    `
-    return await this.queryOne('createContentReport', sql, args)
+    `;
+    return await this.queryOne("createContentReport", sql, args);
   }
-}
+};

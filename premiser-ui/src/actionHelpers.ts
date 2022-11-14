@@ -8,32 +8,30 @@
 import {
   ActionFunctionAny,
   combineActions as untypedCombineActions,
-} from "redux-actions"
-import mapValues from "lodash/mapValues"
-import assign from "lodash/assign"
-import { isObject } from "lodash"
+} from "redux-actions";
+import mapValues from "lodash/mapValues";
+import assign from "lodash/assign";
+import { isObject } from "lodash";
 import {
   ActionCreatorsMapObject,
   ActionCreatorWithoutPayload,
   ActionCreatorWithPreparedPayload,
   createAction as toolkitCreateAction,
   PrepareAction,
-} from "@reduxjs/toolkit"
-import { Action, bindActionCreators } from "redux"
+} from "@reduxjs/toolkit";
+import { Action, bindActionCreators } from "redux";
 
-import {
-  actions,
-} from "howdju-client-common"
+import { actions } from "howdju-client-common";
 
-import { AppDispatch } from "./setupStore"
+import { AppDispatch } from "./setupStore";
 
-export const str = actions.str
+export const str = actions.str;
 
 // redux-action's combineActions return value is not recognized as a valid object key.
 // So provide this typed version instead.
 export const combineActions = untypedCombineActions as (
   ...actionTypes: Array<ActionFunctionAny<Action<string>> | string | symbol>
-) => any
+) => any;
 
 /**
  * Helper to bind action creator groups to dispatch for redux-react's connect method.
@@ -51,21 +49,23 @@ export const combineActions = untypedCombineActions as (
  */
 export const mapActionCreatorGroupToDispatchToProps =
   <M extends object, N>(actionCreatorGroups: M, otherActions?: N) =>
-    (dispatch: AppDispatch): M & N & {dispatch: AppDispatch} => {
-      const dispatchingProps = mapValues(
-        actionCreatorGroups,
-        (actionCreatorGroup: ActionCreatorsMapObject<any>) =>
-          bindActionCreators(actionCreatorGroup, dispatch)
-      ) as { [P in keyof M]: M[P] } & { [P in keyof N]: N[P] } & {dispatch: AppDispatch}
+  (dispatch: AppDispatch): M & N & { dispatch: AppDispatch } => {
+    const dispatchingProps = mapValues(
+      actionCreatorGroups,
+      (actionCreatorGroup: ActionCreatorsMapObject<any>) =>
+        bindActionCreators(actionCreatorGroup, dispatch)
+    ) as { [P in keyof M]: M[P] } & { [P in keyof N]: N[P] } & {
+      dispatch: AppDispatch;
+    };
 
-      if (otherActions) {
-        assign(dispatchingProps, bindActionCreators(otherActions, dispatch))
-      }
-      // Some class-based components require dispatch to pass it to action-dispatching callback factories.
-      dispatchingProps.dispatch = dispatch
-
-      return dispatchingProps
+    if (otherActions) {
+      assign(dispatchingProps, bindActionCreators(otherActions, dispatch));
     }
+    // Some class-based components require dispatch to pass it to action-dispatching callback factories.
+    dispatchingProps.dispatch = dispatch;
+
+    return dispatchingProps;
+  };
 
 /**
  * Helper to create a reduxjs/toolkit prepare method that is compatible with redux-actions syle calls.
@@ -87,11 +87,11 @@ function reduxActionsCompatiblePrepare<P>(
         // Pass the error as the payload, to be compatible with redux-actions createAction
         payload: args[0],
         error: true,
-      }
+      };
     }
-    const prepared = prepare(...args)
-    return prepared
-  }
+    const prepared = prepare(...args);
+    return prepared;
+  };
 }
 
 /**
@@ -128,26 +128,30 @@ function reduxActionsCompatiblePrepare<P>(
  * {payload: {payload: {...}}}
  * ```
  */
-export function createAction<T extends string>(type: T): ActionCreatorWithoutPayload<T>
+export function createAction<T extends string>(
+  type: T
+): ActionCreatorWithoutPayload<T>;
 export function createAction<T extends string, P, Args extends any[]>(
   type: T,
-  payloadCreatorOrPrepare: (...args: Args) => {payload: P, meta?: any} | P,
-): ActionCreatorWithPreparedPayload<Args, P, T>
+  payloadCreatorOrPrepare: (...args: Args) => { payload: P; meta?: any } | P
+): ActionCreatorWithPreparedPayload<Args, P, T>;
 export function createAction<T extends string, P>(
   type: T,
-  payloadCreatorOrPrepare?: (...args: any[]) => {payload: P, meta?: any} | P,
+  payloadCreatorOrPrepare?: (...args: any[]) => { payload: P; meta?: any } | P
 ) {
-  const prepare = payloadCreatorOrPrepare && function prepare(...args: any[]) {
-    let prepared = payloadCreatorOrPrepare(...args)
-    if (!isObject(prepared) || !('payload' in prepared)) {
-      prepared = {payload: prepared}
-    }
-    return prepared
-  }
+  const prepare =
+    payloadCreatorOrPrepare &&
+    function prepare(...args: any[]) {
+      let prepared = payloadCreatorOrPrepare(...args);
+      if (!isObject(prepared) || !("payload" in prepared)) {
+        prepared = { payload: prepared };
+      }
+      return prepared;
+    };
   if (prepare) {
-    return toolkitCreateAction(type, reduxActionsCompatiblePrepare(prepare))
+    return toolkitCreateAction(type, reduxActionsCompatiblePrepare(prepare));
   }
-  return toolkitCreateAction(type)
+  return toolkitCreateAction(type);
 }
 
-export const actionTypeDelim = "/"
+export const actionTypeDelim = "/";

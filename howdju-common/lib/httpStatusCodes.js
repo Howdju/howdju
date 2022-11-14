@@ -28,4 +28,4 @@ exports.httpStatusCodes = {
   CONFLICT: 409,
 
   ERROR: 500,
-}
+};

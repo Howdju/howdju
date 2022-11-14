@@ -1,57 +1,52 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import {Card, CardText, FontIcon, ListItem, MenuButton} from 'react-md'
-import cn from 'classnames'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Card, CardText, FontIcon, ListItem, MenuButton } from "react-md";
+import cn from "classnames";
 
-import ExpandableChildContainer from './ExpandableChildContainer'
-import WritQuoteEntityViewer from './WritQuoteEntityViewer'
+import ExpandableChildContainer from "./ExpandableChildContainer";
+import WritQuoteEntityViewer from "./WritQuoteEntityViewer";
 
-import './WritQuoteCard.scss'
-import { combineIds } from './viewModels'
-import { newUnimplementedError } from 'howdju-common'
+import "./WritQuoteCard.scss";
+import { combineIds } from "./viewModels";
+import { newUnimplementedError } from "howdju-common";
 
 export default class WritQuoteCard extends Component {
-
-  render () {
-    const {
-      id,
-      writQuote,
-      className,
-      showUrls,
-      doHideControls,
-      ...rest
-    } = this.props
+  render() {
+    const { id, writQuote, className, showUrls, doHideControls, ...rest } =
+      this.props;
 
     const menuItems = [
       <ListItem
         primaryText="Create appearance"
         key="createAppearance"
         leftIcon={<FontIcon>add</FontIcon>}
-        onClick={() => {throw newUnimplementedError()}}
+        onClick={() => {
+          throw newUnimplementedError();
+        }}
       />,
       <ListItem
         primaryText="Create justification"
         key="createJustification"
         leftIcon={<FontIcon>add</FontIcon>}
-        onClick={() => {throw newUnimplementedError()}}
+        onClick={() => {
+          throw newUnimplementedError();
+        }}
       />,
-    ]
+    ];
     const menuButton = (
       <MenuButton
         icon
-        id={combineIds(id, 'menu')}
-        className={cn({hidden: doHideControls})}
+        id={combineIds(id, "menu")}
+        className={cn({ hidden: doHideControls })}
         menuClassName="context-menu"
-        children={'more_vert'}
+        children={"more_vert"}
         position={MenuButton.Positions.TOP_RIGHT}
         menuItems={menuItems}
       />
-    )
+    );
 
     return (
-      <Card
-            className={cn(className, "entity-card")}
-      >
+      <Card className={cn(className, "entity-card")}>
         <CardText>
           <ExpandableChildContainer
             {...rest}
@@ -63,12 +58,12 @@ export default class WritQuoteCard extends Component {
           />
         </CardText>
       </Card>
-    )
+    );
   }
 }
 WritQuoteCard.propTypes = {
   writQuote: PropTypes.object.isRequired,
-}
+};
 WritQuoteCard.defaultProps = {
   showUrls: false,
-}
+};

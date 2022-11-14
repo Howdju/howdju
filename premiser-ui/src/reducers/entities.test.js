@@ -1,59 +1,53 @@
-import isArray from 'lodash/isArray'
-import clone from 'lodash/clone'
-import merge from 'lodash/merge'
-import mergeWith from 'lodash/mergeWith'
+import isArray from "lodash/isArray";
+import clone from "lodash/clone";
+import merge from "lodash/merge";
+import mergeWith from "lodash/mergeWith";
 
 import {
   JustificationPolarities,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
   omitDeep,
-} from "howdju-common"
+} from "howdju-common";
 
-import {api} from "../actions"
+import { api } from "../actions";
 import entities, {
   unionArraysDistinctIdsCustomizer,
   makeUpdatesAddingJustificationsToTargets,
   makeUpdateRemovingJustificationFromTarget,
-} from './entities'
-import {
-  justificationSchema,
-} from '../normalizationSchemas'
-
+} from "./entities";
+import { justificationSchema } from "../normalizationSchemas";
 
 class ToOmit {}
-const toOmit = new ToOmit()
+const toOmit = new ToOmit();
 
-describe('lodash', () => {
-  describe('mergeWith', () => {
-    test('Should customize merge', () => {
+describe("lodash", () => {
+  describe("mergeWith", () => {
+    test("Should customize merge", () => {
       const mergeArraysCustomizer = (destVal, srcVal) => {
         if (isArray(destVal) && isArray(srcVal)) {
-          return destVal.concat(srcVal)
+          return destVal.concat(srcVal);
         }
-      }
-      expect(mergeWith({}, {a: [0]}, {a: [1]}, mergeArraysCustomizer)).toEqual({a: [0, 1]})
-    })
-  })
-})
+      };
+      expect(
+        mergeWith({}, { a: [0] }, { a: [1] }, mergeArraysCustomizer)
+      ).toEqual({ a: [0, 1] });
+    });
+  });
+});
 
-
-describe('reducers', () => {
-
-  describe('entities', () => {
-
-    describe('helpers', () => {
-
-      describe('makeUpdatesAddingJustificationsToTargets', () => {
-        test('should work', () => {
-          const
-            rootProposition = {
+describe("reducers", () => {
+  describe("entities", () => {
+    describe("helpers", () => {
+      describe("makeUpdatesAddingJustificationsToTargets", () => {
+        test("should work", () => {
+          const rootProposition = {
               id: "42",
             },
             justification = {
               id: "1",
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
-              rootTarget: {id: rootProposition.id},
+              rootTarget: { id: rootProposition.id },
               target: {
                 type: JustificationTargetTypes.PROPOSITION,
                 entity: {
@@ -73,29 +67,30 @@ describe('reducers', () => {
               propositions: {
                 [rootProposition.id]: rootProposition,
               },
-            }
+            };
 
-          expect(makeUpdatesAddingJustificationsToTargets(entities, state)).toEqual({
+          expect(
+            makeUpdatesAddingJustificationsToTargets(entities, state)
+          ).toEqual({
             propositions: {
               [rootProposition.id]: {
                 ...rootProposition,
                 justifications: [justification.id],
               },
             },
-          })
-        })
-      })
+          });
+        });
+      });
 
-      describe('makeUpdateRemovingJustificationFromTarget', () => {
-        test('should work', () => {
-          const
-            rootProposition = {
+      describe("makeUpdateRemovingJustificationFromTarget", () => {
+        test("should work", () => {
+          const rootProposition = {
               id: 42,
             },
             justification = {
               id: 1,
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
-              rootTarget: {id: rootProposition.id},
+              rootTarget: { id: rootProposition.id },
               target: {
                 type: JustificationTargetTypes.PROPOSITION,
                 entity: {
@@ -107,196 +102,197 @@ describe('reducers', () => {
               propositions: {
                 [rootProposition.id]: rootProposition,
               },
-            }
-          rootProposition.justifications = [justification.id]
+            };
+          rootProposition.justifications = [justification.id];
 
-          expect(makeUpdateRemovingJustificationFromTarget(justification, state)).toEqual({
+          expect(
+            makeUpdateRemovingJustificationFromTarget(justification, state)
+          ).toEqual({
             propositions: {
               [rootProposition.id]: {
                 ...rootProposition,
                 justifications: [],
               },
             },
-          })
-        })
-      })
+          });
+        });
+      });
 
-      describe('unionArraysDistinctIdsCustomizer', () => {
+      describe("unionArraysDistinctIdsCustomizer", () => {
+        test("should handle empty arrays", () => {
+          expect(unionArraysDistinctIdsCustomizer([], [])).toEqual([]);
 
-        test('should handle empty arrays', () => {
-          expect(unionArraysDistinctIdsCustomizer([], [])).toEqual([])
+          const array = [1, 2, 3];
+          expect(unionArraysDistinctIdsCustomizer(array, [])).toEqual(array);
+          expect(unionArraysDistinctIdsCustomizer([], array)).toEqual(array);
+        });
 
-          const array = [1, 2, 3]
-          expect(unionArraysDistinctIdsCustomizer(array, [])).toEqual(array)
-          expect(unionArraysDistinctIdsCustomizer([], array)).toEqual(array)
-        })
-
-        test('should overwrite dest vals with src vals having the same ID', () => {
+        test("should overwrite dest vals with src vals having the same ID", () => {
           const dest = [
             {
               id: 1,
-              text: 'dest',
+              text: "dest",
             },
             {
               id: 2,
-              text: 'dest',
+              text: "dest",
             },
-          ]
+          ];
           const src = [
             {
               id: 1,
-              text: 'src',
+              text: "src",
             },
-          ]
+          ];
 
           expect(unionArraysDistinctIdsCustomizer(dest, src)).toEqual([
             {
               id: 1,
-              text: 'src',
+              text: "src",
             },
             {
               id: 2,
-              text: 'dest',
+              text: "dest",
             },
-          ])
-        })
+          ]);
+        });
 
-        test('should copy dest and src vals having no IDs in-order', () => {
+        test("should copy dest and src vals having no IDs in-order", () => {
           const dest = [
             {
               id: 1,
-              text: 'dest',
+              text: "dest",
             },
             {
-              text: 'dest no-id',
+              text: "dest no-id",
             },
             {
               id: 2,
-              text: 'dest',
+              text: "dest",
             },
-          ]
+          ];
           const src = [
             {
               id: 1,
-              text: 'src',
+              text: "src",
             },
             {
-              text: 'src no-id',
+              text: "src no-id",
             },
             {
               id: 2,
-              text: 'src',
+              text: "src",
             },
-          ]
+          ];
 
           expect(unionArraysDistinctIdsCustomizer(dest, src)).toEqual([
             {
               id: 1,
-              text: 'src',
+              text: "src",
             },
             {
-              text: 'dest no-id',
+              text: "dest no-id",
             },
             {
               id: 2,
-              text: 'src',
+              text: "src",
             },
             // Comes after id:2 because id:2 replaces id:2 from dest and dest items will come first
             {
-              text: 'src no-id',
+              text: "src no-id",
             },
-          ])
-        })
+          ]);
+        });
 
-        test('should include only the last val having the same ID as an earlier one from the dest', () => {
+        test("should include only the last val having the same ID as an earlier one from the dest", () => {
           const dest = [
             {
               id: 1,
-              text: 'dest-first',
+              text: "dest-first",
             },
             {
               id: 1,
-              text: 'dest-second',
+              text: "dest-second",
             },
-          ]
+          ];
           const src = [
             {
-              text: 'src no-id',
+              text: "src no-id",
             },
-          ]
+          ];
 
           expect(unionArraysDistinctIdsCustomizer(dest, src)).toEqual([
             {
               id: 1,
-              text: 'dest-second',
+              text: "dest-second",
             },
             {
-              text: 'src no-id',
+              text: "src no-id",
             },
-          ])
-        })
+          ]);
+        });
 
-        test('should include only the last val having the same ID as an earlier one from the src', () => {
+        test("should include only the last val having the same ID as an earlier one from the src", () => {
           const dest = [
             {
-              text: 'dest',
+              text: "dest",
             },
-          ]
+          ];
           const src = [
             {
               id: 1,
-              text: 'src-first',
+              text: "src-first",
             },
             {
               id: 1,
-              text: 'src-second',
+              text: "src-second",
             },
-          ]
+          ];
 
           expect(unionArraysDistinctIdsCustomizer(dest, src)).toEqual([
             {
-              text: 'dest',
+              text: "dest",
             },
             {
               id: 1,
-              text: 'src-second',
+              text: "src-second",
             },
-          ])
-        })
+          ]);
+        });
 
-        test('should return undefined for non-arrays', () => {
-          expect(unionArraysDistinctIdsCustomizer('string', [])).toBeUndefined()
-          expect(unionArraysDistinctIdsCustomizer([], 42)).toBeUndefined()
-        })
-      })
+        test("should return undefined for non-arrays", () => {
+          expect(
+            unionArraysDistinctIdsCustomizer("string", [])
+          ).toBeUndefined();
+          expect(unionArraysDistinctIdsCustomizer([], 42)).toBeUndefined();
+        });
+      });
+    });
 
-    })
-
-    describe('actions', () => {
-
+    describe("actions", () => {
       describe("api.createJustification.response", () => {
-
-        test('should add justifications to targets', () => {
-          const
-            targetProposition = {
+        test("should add justifications to targets", () => {
+          const targetProposition = {
               id: "1",
-              text: 'target proposition',
+              text: "target proposition",
             },
             basisProposition = {
               id: "2",
-              text: 'basis proposition',
+              text: "basis proposition",
             },
             existingJustification = {
               id: "1",
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: clone(targetProposition),
-              target: {type: JustificationTargetTypes.PROPOSITION, entity: clone(targetProposition)},
+              target: {
+                type: JustificationTargetTypes.PROPOSITION,
+                entity: clone(targetProposition),
+              },
             },
-
             justification = {
               id: "2",
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
-              rootTarget: {id: "1"},
+              rootTarget: { id: "1" },
               target: {
                 type: JustificationTargetTypes.PROPOSITION,
                 entity: targetProposition,
@@ -306,7 +302,6 @@ describe('reducers', () => {
                 entity: basisProposition,
               },
             },
-
             initialState = {
               propositions: {
                 [targetProposition.id]: targetProposition,
@@ -315,42 +310,50 @@ describe('reducers', () => {
                 [existingJustification.id]: existingJustification,
               },
             },
-
             action = api.createJustification.response(
-              {justification: justification},
-              {normalizationSchema: {justification: justificationSchema}}
-            )
+              { justification: justification },
+              { normalizationSchema: { justification: justificationSchema } }
+            );
 
-          targetProposition.justifications = [existingJustification.id]
+          targetProposition.justifications = [existingJustification.id];
 
-          const expectedState = omitDeep({
-            propositions: {
-              [targetProposition.id]: {
-                ...targetProposition,
-                justifications: [...targetProposition.justifications, justification.id],
+          const expectedState = omitDeep(
+            {
+              propositions: {
+                [targetProposition.id]: {
+                  ...targetProposition,
+                  justifications: [
+                    ...targetProposition.justifications,
+                    justification.id,
+                  ],
+                },
+              },
+              justifications: {
+                [existingJustification.id]: existingJustification,
+                [justification.id]: merge({}, justification, {
+                  target: {
+                    entity: {
+                      text: toOmit,
+                      justifications: toOmit,
+                      schema: JustificationTargetTypes.PROPOSITION,
+                    },
+                  },
+                  rootTarget: {
+                    schema: JustificationRootTargetTypes.PROPOSITION,
+                  },
+                }),
               },
             },
-            justifications: {
-              [existingJustification.id]: existingJustification,
-              [justification.id]: merge(
-                {},
-                justification,
-                {
-                  target: {entity: {text: toOmit, justifications: toOmit, schema: JustificationTargetTypes.PROPOSITION}},
-                  rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
-                }
-              ),
-            },
-          }, (val) => val === toOmit)
+            (val) => val === toOmit
+          );
 
-          const actual = entities(initialState, action)
+          const actual = entities(initialState, action);
 
-          expect(actual).toEqual(expectedState)
-        })
+          expect(actual).toEqual(expectedState);
+        });
 
-        test('should add counter-justifications to a target with no counter-justifications', () => {
-          const
-            rootProposition = {id: "1"},
+        test("should add counter-justifications to a target with no counter-justifications", () => {
+          const rootProposition = { id: "1" },
             targetJustification = {
               id: "2",
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
@@ -359,7 +362,7 @@ describe('reducers', () => {
                 type: JustificationTargetTypes.PROPOSITION,
                 entity: rootProposition,
               },
-            }
+            };
           const counterJustification = {
               id: "3",
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
@@ -378,12 +381,10 @@ describe('reducers', () => {
                 [targetJustification.id]: targetJustification,
               },
             },
-
             action = api.createJustification.response(
-              {justification: counterJustification},
-              {normalizationSchema: {justification: justificationSchema}},
+              { justification: counterJustification },
+              { normalizationSchema: { justification: justificationSchema } }
             ),
-
             expectedState = {
               propositions: {
                 [rootProposition.id]: {
@@ -392,42 +393,42 @@ describe('reducers', () => {
                 },
               },
               justifications: {
-                [targetJustification.id]: merge(
-                  {},
-                  targetJustification,
-                  {
-                    counterJustifications: [counterJustification.id],
-                    rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
-                    target: {
-                      entity: {
-                        schema: JustificationTargetTypes.PROPOSITION,
-                      },
+                [targetJustification.id]: merge({}, targetJustification, {
+                  counterJustifications: [counterJustification.id],
+                  rootTarget: {
+                    schema: JustificationRootTargetTypes.PROPOSITION,
+                  },
+                  target: {
+                    entity: {
+                      schema: JustificationTargetTypes.PROPOSITION,
                     },
                   },
+                }),
+                [counterJustification.id]: omitDeep(
+                  merge({}, counterJustification, {
+                    target: {
+                      entity: {
+                        schema: JustificationTargetTypes.JUSTIFICATION,
+                        rootTarget: toOmit,
+                        rootTargetType: toOmit,
+                        target: toOmit,
+                      },
+                    },
+                    rootTarget: {
+                      schema: JustificationRootTargetTypes.PROPOSITION,
+                    },
+                  }),
+                  (val) => val === toOmit
                 ),
-                [counterJustification.id]: omitDeep(merge(
-                  {},
-                  counterJustification,
-                  {
-                    target: {entity: {
-                      schema: JustificationTargetTypes.JUSTIFICATION,
-                      rootTarget: toOmit,
-                      rootTargetType: toOmit,
-                      target: toOmit,
-                    }},
-                    rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
-                  }
-                ), (val) => val === toOmit),
               },
-            }
+            };
 
-          expect(entities(initialState, action)).toEqual(expectedState)
-        })
+          expect(entities(initialState, action)).toEqual(expectedState);
+        });
 
-        test('should add counter-justifications to a target with existing counter-justifications', () => {
-          const
-            existingCounterJustificationId = "3",
-            rootProposition = {id: "1"},
+        test("should add counter-justifications to a target with existing counter-justifications", () => {
+          const existingCounterJustificationId = "3",
+            rootProposition = { id: "1" },
             targetJustification = {
               id: "2",
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
@@ -455,7 +456,6 @@ describe('reducers', () => {
                 counterJustification.id,
               ],
             },
-
             initialState = {
               propositions: {
                 [rootProposition.id]: rootProposition,
@@ -464,51 +464,72 @@ describe('reducers', () => {
                 [targetJustification.id]: targetJustification,
               },
             },
-
             action = api.createJustification.response(
-              {justification: counterJustification},
-              {normalizationSchema: {justification: justificationSchema}},
+              { justification: counterJustification },
+              { normalizationSchema: { justification: justificationSchema } }
             ),
-
             expectedState = {
               propositions: {
-                [rootProposition.id]: {...rootProposition, justifications: [targetJustification.id]},
+                [rootProposition.id]: {
+                  ...rootProposition,
+                  justifications: [targetJustification.id],
+                },
               },
               justifications: {
                 [expectedTargetJustification.id]: merge(
                   {},
                   expectedTargetJustification,
-                  {rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION}},
-                  {target: {entity: {schema: JustificationRootTargetTypes.PROPOSITION}}},
-                ),
-                [counterJustification.id]: omitDeep(merge(
-                  {},
-                  counterJustification,
                   {
-                    target: {entity: {
-                      schema: JustificationTargetTypes.JUSTIFICATION,
-                      rootTarget: toOmit,
-                      rootTargetType: toOmit,
-                      counterJustifications: toOmit,
-                      target: toOmit,
-                    }},
-                    rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION},
+                    rootTarget: {
+                      schema: JustificationRootTargetTypes.PROPOSITION,
+                    },
                   },
-                  {rootTarget: {schema: JustificationRootTargetTypes.PROPOSITION}},
-                ), (val) => val === toOmit),
+                  {
+                    target: {
+                      entity: {
+                        schema: JustificationRootTargetTypes.PROPOSITION,
+                      },
+                    },
+                  }
+                ),
+                [counterJustification.id]: omitDeep(
+                  merge(
+                    {},
+                    counterJustification,
+                    {
+                      target: {
+                        entity: {
+                          schema: JustificationTargetTypes.JUSTIFICATION,
+                          rootTarget: toOmit,
+                          rootTargetType: toOmit,
+                          counterJustifications: toOmit,
+                          target: toOmit,
+                        },
+                      },
+                      rootTarget: {
+                        schema: JustificationRootTargetTypes.PROPOSITION,
+                      },
+                    },
+                    {
+                      rootTarget: {
+                        schema: JustificationRootTargetTypes.PROPOSITION,
+                      },
+                    }
+                  ),
+                  (val) => val === toOmit
+                ),
               },
-            }
+            };
 
-          expect(entities(initialState, action)).toEqual(expectedState)
-        })
+          expect(entities(initialState, action)).toEqual(expectedState);
+        });
 
         // TODO: test 'should handle counter-counter-justifications'
-      })
+      });
 
       describe("api.deleteJustification.response", () => {
-        test('should remove deleted counter-justification from countered justification', () => {
-          const
-            rootProposition = {id: "1"},
+        test("should remove deleted counter-justification from countered justification", () => {
+          const rootProposition = { id: "1" },
             targetJustification = {
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
@@ -524,24 +545,27 @@ describe('reducers', () => {
               rootTargetType: JustificationRootTargetTypes.PROPOSITION,
               rootTarget: rootProposition,
             },
-
             initialState = {
               justifications: {
                 [targetJustification.id]: targetJustification,
                 [counterJustification.id]: counterJustification,
               },
             },
+            action = api.deleteJustification.response(null, {
+              requestPayload: { justification: counterJustification },
+            });
+          targetJustification.counterJustifications = [counterJustification.id];
 
-            action = api.deleteJustification.response(null, {requestPayload: {justification: counterJustification}})
-          targetJustification.counterJustifications = [counterJustification.id]
+          const actualState = entities(initialState, action);
 
-          const actualState = entities(initialState, action)
-
-          const actualCounterJustifications = actualState.justifications[targetJustification.id].counterJustifications
-          expect(actualCounterJustifications).not.toContainEqual(counterJustification.id)
-        })
-      })
-
-    })
-  })
-})
+          const actualCounterJustifications =
+            actualState.justifications[targetJustification.id]
+              .counterJustifications;
+          expect(actualCounterJustifications).not.toContainEqual(
+            counterJustification.id
+          );
+        });
+      });
+    });
+  });
+});

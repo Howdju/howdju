@@ -1,21 +1,18 @@
-import React from 'react'
-import get from 'lodash/get'
+import React from "react";
+import get from "lodash/get";
 
-import {AccountSettings, schemaSettings} from 'howdju-common'
+import { AccountSettings, schemaSettings } from "howdju-common";
 
-import ErrorMessages from "@/ErrorMessages"
-import TextField from '@/TextField'
-import {
-  combineIds,
-  combineNames,
-} from '@/viewModels'
-import {EntityEditorFieldsProps} from '@/editors/withEditor'
+import ErrorMessages from "@/ErrorMessages";
+import TextField from "@/TextField";
+import { combineIds, combineNames } from "@/viewModels";
+import { EntityEditorFieldsProps } from "@/editors/withEditor";
 
 interface Props extends EntityEditorFieldsProps {
-  accountSettings: AccountSettings
+  accountSettings: AccountSettings;
 }
 
-const paidContributionsDisclosureName = 'paidContributionsDisclosure'
+const paidContributionsDisclosureName = "paidContributionsDisclosure";
 
 export default function AccountSettingsEditorFields({
   accountSettings,
@@ -25,10 +22,10 @@ export default function AccountSettingsEditorFields({
   errors,
   onPropertyChange,
 }: Props) {
-  const modelErrors = get(errors, '_model')
+  const modelErrors = get(errors, "_model");
   return (
     <div>
-      <ErrorMessages errors={modelErrors}/>
+      <ErrorMessages errors={modelErrors} />
       <TextField
         id={combineIds(id, paidContributionsDisclosureName)}
         key="quoteText"
@@ -41,7 +38,10 @@ export default function AccountSettingsEditorFields({
         onPropertyChange={onPropertyChange}
         disabled={disabled}
       />
-      <em>For example: I receive compensation from Company A for my content relating to topics X, Y, and Z.</em>
+      <em>
+        For example: I receive compensation from Company A for my content
+        relating to topics X, Y, and Z.
+      </em>
     </div>
-  )
+  );
 }

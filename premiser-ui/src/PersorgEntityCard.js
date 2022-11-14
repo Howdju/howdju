@@ -1,4 +1,4 @@
-import PersorgEntityViewer from './PersorgEntityViewer'
-import withEntityCard from "./withEntityCard"
+import PersorgEntityViewer from "./PersorgEntityViewer";
+import withEntityCard from "./withEntityCard";
 
-export default withEntityCard(PersorgEntityViewer, 'persorg')
+export default withEntityCard(PersorgEntityViewer, "persorg");

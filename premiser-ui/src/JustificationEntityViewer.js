@@ -1,22 +1,15 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {Button} from 'react-md'
-import moment from 'moment'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Button } from "react-md";
+import moment from "moment";
 
-import {
-  isCounter,
-  isRootJustification,
-} from "howdju-common"
+import { isCounter, isRootJustification } from "howdju-common";
 
-import EntityViewer from './EntityViewer'
-import JustificationRootTargetViewer from './JustificationRootTargetViewer'
-import JustificationChatBubble from "./JustificationChatBubble"
-import config from './config'
-import {
-  combineIds,
-  combineSuggestionsKeys,
-} from './viewModels'
-
+import EntityViewer from "./EntityViewer";
+import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
+import JustificationChatBubble from "./JustificationChatBubble";
+import config from "./config";
+import { combineIds, combineSuggestionsKeys } from "./viewModels";
 
 export default class JustificationEntityViewer extends Component {
   render() {
@@ -33,19 +26,26 @@ export default class JustificationEntityViewer extends Component {
       doShowCounterTarget,
       onClickWritQuoteUrl,
       showStatusText,
-    } = this.props
+    } = this.props;
 
-    const _isCounter = isCounter(justification)
-    const _doesCounterRootJustification = _isCounter && isRootJustification(justification.target.entity)
+    const _isCounter = isCounter(justification);
+    const _doesCounterRootJustification =
+      _isCounter && isRootJustification(justification.target.entity);
 
-    const age = justification.created ? moment(justification.created).fromNow() : ''
-    const created = justification.created ? moment(justification.created).format(config.humanDateTimeFormat) : ''
+    const age = justification.created
+      ? moment(justification.created).fromNow()
+      : "";
+    const created = justification.created
+      ? moment(justification.created).format(config.humanDateTimeFormat)
+      : "";
 
     const expander = (
       <div className="justification-expander-wrapper">
-        <Button icon onClick={onExpandJustifications}>more_horiz</Button>
+        <Button icon onClick={onExpandJustifications}>
+          more_horiz
+        </Button>
       </div>
-    )
+    );
 
     return (
       <EntityViewer
@@ -56,10 +56,13 @@ export default class JustificationEntityViewer extends Component {
           <div>
             {doShowRootTarget && (
               <JustificationRootTargetViewer
-                id={combineIds(id, 'root-target')}
+                id={combineIds(id, "root-target")}
                 rootTargetType={justification.rootTargetType}
                 rootTarget={justification.rootTarget}
-                suggestionsKey={combineSuggestionsKeys(suggestionsKey, 'rootTarget')}
+                suggestionsKey={combineSuggestionsKeys(
+                  suggestionsKey,
+                  "rootTarget"
+                )}
                 showStatusText={showStatusText}
               />
             )}
@@ -92,11 +95,11 @@ export default class JustificationEntityViewer extends Component {
           </div>
         }
       />
-    )
+    );
   }
 }
 JustificationEntityViewer.propTypes = {
   id: PropTypes.string.isRequired,
   paraphrasingPropositionEditorId: PropTypes.string,
   sourceExcerptEditorId: PropTypes.string,
-}
+};

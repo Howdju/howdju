@@ -1,1 +1,1 @@
-exports.PicRegionsService = class PicRegionsService {}
+exports.PicRegionsService = class PicRegionsService {};

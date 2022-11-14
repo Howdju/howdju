@@ -1,5 +1,5 @@
 config:
-  target: 'https://api.howdju.com'
+  target: "https://api.howdju.com"
   phases:
     - duration: 60
       arrivalRate: 5
@@ -8,8 +8,8 @@ config:
 scenarios:
   - name: "Read proposition justifications"
     flow:
-    - get:
-        url: "/api/propositions/1525?include=justifications"
+      - get:
+          url: "/api/propositions/1525?include=justifications"
   - name: "Search"
     flow:
       - get:

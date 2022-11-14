@@ -1,31 +1,26 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
-import get from 'lodash/get'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import get from "lodash/get";
 
 import {
   editors,
   goto,
   ui,
   mapActionCreatorGroupToDispatchToProps,
-} from './actions'
-import {
-  combineIds,
-  combineSuggestionsKeys,
-} from './viewModels'
-import {EditorTypes} from './reducers/editors'
-import PropositionEntityViewer from "./PropositionEntityViewer"
-import JustificationsTree from './JustificationsTree'
+} from "./actions";
+import { combineIds, combineSuggestionsKeys } from "./viewModels";
+import { EditorTypes } from "./reducers/editors";
+import PropositionEntityViewer from "./PropositionEntityViewer";
+import JustificationsTree from "./JustificationsTree";
 
-import './PropositionCompoundViewerAtomItem.scss'
-
+import "./PropositionCompoundViewerAtomItem.scss";
 
 class PropositionCompoundViewerAtomItem extends Component {
-
   constructor() {
-    super()
+    super();
 
-    this.editorType = EditorTypes.PROPOSITION
+    this.editorType = EditorTypes.PROPOSITION;
   }
 
   // onEditProposition = () => {
@@ -51,28 +46,26 @@ class PropositionCompoundViewerAtomItem extends Component {
       showBasisUrls,
       showStatusText,
       contextTrailItems,
-    } = this.props
+    } = this.props;
 
-    const hasJustifications = atom.entity.justifications && atom.entity.justifications.length > 0
-    const justifications = atom.entity.justifications
+    const hasJustifications =
+      atom.entity.justifications && atom.entity.justifications.length > 0;
+    const justifications = atom.entity.justifications;
 
     return (
-      <Component
-        id={id}
-        className="compound-atom proposition-atom"
-      >
+      <Component id={id} className="compound-atom proposition-atom">
         <PropositionEntityViewer
-          id={combineIds(id, 'proposition')}
+          id={combineIds(id, "proposition")}
           proposition={atom.entity}
           editorId={propositionEditorId(this.props)}
-          suggestionsKey={combineSuggestionsKeys(id, 'proposition')}
+          suggestionsKey={combineSuggestionsKeys(id, "proposition")}
           doShowControls={doShowControls}
           showStatusText={showStatusText}
           contextTrailItems={contextTrailItems}
         />
         {doShowJustifications && hasJustifications && (
           <JustificationsTree
-            id={combineIds(id, 'justificationsTree')}
+            id={combineIds(id, "justificationsTree")}
             justifications={justifications}
             doShowControls={doShowControls}
             doShowJustifications={doShowJustifications}
@@ -83,7 +76,7 @@ class PropositionCompoundViewerAtomItem extends Component {
           />
         )}
       </Component>
-    )
+    );
   }
 }
 PropositionCompoundViewerAtomItem.propTypes = {
@@ -93,25 +86,32 @@ PropositionCompoundViewerAtomItem.propTypes = {
   doShowJustifications: PropTypes.bool,
   doShowControls: PropTypes.bool,
   showStatusText: PropTypes.bool,
-}
+};
 PropositionCompoundViewerAtomItem.defaultProps = {
   doShowControls: true,
-}
+};
 
 function propositionEditorId(props) {
-  return combineIds(props.id, 'proposition')
+  return combineIds(props.id, "proposition");
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const {editEntity} = get(state, ['editors', EditorTypes.PROPOSITION, propositionEditorId(ownProps)], {})
-  const isEditing = !!editEntity
+  const { editEntity } = get(
+    state,
+    ["editors", EditorTypes.PROPOSITION, propositionEditorId(ownProps)],
+    {}
+  );
+  const isEditing = !!editEntity;
   return {
     isEditing,
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, mapActionCreatorGroupToDispatchToProps({
-  editors,
-  goto,
-  ui,
-}))(PropositionCompoundViewerAtomItem)
+export default connect(
+  mapStateToProps,
+  mapActionCreatorGroupToDispatchToProps({
+    editors,
+    goto,
+    ui,
+  })
+)(PropositionCompoundViewerAtomItem);

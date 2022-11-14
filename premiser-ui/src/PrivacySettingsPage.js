@@ -1,8 +1,8 @@
-import React, {Component} from 'react'
-import {Button, Card, CardText} from 'react-md'
+import React, { Component } from "react";
+import { Button, Card, CardText } from "react-md";
 
-import Helmet from './Helmet'
-import {showPrivacyConsentDialog} from "./cookieConsent"
+import Helmet from "./Helmet";
+import { showPrivacyConsentDialog } from "./cookieConsent";
 
 /**
  * A page where a user an access their privacy settings. Provided so that there is a URL to navigate directly to
@@ -10,7 +10,7 @@ import {showPrivacyConsentDialog} from "./cookieConsent"
  */
 export default class PrivacySettingsPage extends Component {
   componentDidMount() {
-    showPrivacyConsentDialog()
+    showPrivacyConsentDialog();
   }
 
   render() {
@@ -22,10 +22,12 @@ export default class PrivacySettingsPage extends Component {
         <Card className="md-cell--12">
           <CardText>
             <h1 className="md-cell md-cell--12">Privacy Settings</h1>
-            <Button raised primary onClick={showPrivacyConsentDialog}>Show privacy consent dialog</Button>
+            <Button raised primary onClick={showPrivacyConsentDialog}>
+              Show privacy consent dialog
+            </Button>
           </CardText>
         </Card>
       </div>
-    )
+    );
   }
 }

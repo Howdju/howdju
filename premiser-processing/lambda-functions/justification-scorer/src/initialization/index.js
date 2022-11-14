@@ -1,1 +1,1 @@
-module.exports = require('./justificationScorerInitialization')
+module.exports = require("./justificationScorerInitialization");

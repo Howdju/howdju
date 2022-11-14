@@ -1,19 +1,17 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import {Card, CardText} from 'react-md'
-import cn from 'classnames'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Card, CardText } from "react-md";
+import cn from "classnames";
 
-import StatementEntityViewer from './StatementEntityViewer'
-
+import StatementEntityViewer from "./StatementEntityViewer";
 
 export default class StatementCard extends Component {
-
   static propTypes = {
     id: PropTypes.string.isRequired,
     statement: PropTypes.object.isRequired,
-  }
+  };
 
-  render () {
+  render() {
     const {
       id,
       statement,
@@ -21,12 +19,9 @@ export default class StatementCard extends Component {
       className,
       contextTrailItems,
       ...rest
-    } = this.props
+    } = this.props;
     return (
-      <Card
-        {...rest}
-        className={cn(className, 'entity-card')}
-      >
+      <Card {...rest} className={cn(className, "entity-card")}>
         <CardText>
           <StatementEntityViewer
             id={id}
@@ -36,6 +31,6 @@ export default class StatementCard extends Component {
           />
         </CardText>
       </Card>
-    )
+    );
   }
 }

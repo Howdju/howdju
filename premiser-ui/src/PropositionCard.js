@@ -1,14 +1,12 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import {Card, CardText} from 'react-md'
-import cn from 'classnames'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Card, CardText } from "react-md";
+import cn from "classnames";
 
-import PropositionEntityViewer from './PropositionEntityViewer'
-
+import PropositionEntityViewer from "./PropositionEntityViewer";
 
 export default class PropositionCard extends Component {
-
-  render () {
+  render() {
     const {
       id,
       proposition,
@@ -16,12 +14,9 @@ export default class PropositionCard extends Component {
       className,
       contextTrailItems,
       ...rest
-    } = this.props
+    } = this.props;
     return (
-      <Card
-        {...rest}
-        className={cn(className, 'entity-card')}
-      >
+      <Card {...rest} className={cn(className, "entity-card")}>
         <CardText>
           <PropositionEntityViewer
             id={id}
@@ -31,10 +26,10 @@ export default class PropositionCard extends Component {
           />
         </CardText>
       </Card>
-    )
+    );
   }
 }
 PropositionCard.propTypes = {
   id: PropTypes.string.isRequired,
   proposition: PropTypes.object.isRequired,
-}
+};

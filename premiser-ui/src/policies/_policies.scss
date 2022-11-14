@@ -1,4 +1,4 @@
-@import '../colors';
+@import "../colors";
 
 // Use policies class to override reset.css
 .policies {
@@ -24,7 +24,8 @@
     font-weight: bold;
   }
 
-  th, td {
+  th,
+  td {
     border: 1px solid black;
     padding: 5px;
   }

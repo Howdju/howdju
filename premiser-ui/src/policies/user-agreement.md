@@ -10,9 +10,9 @@ By accessing or using our Services, you agree to be bound by these Terms. If you
 
 Please note that these Terms incorporate several other documents, the additional terms of which you agree to when you agree to these Terms:
 
-* The [Code of Conduct](/policies/code-of-conduct) explains how best to use Howdju, as well as things you cannot do with Howdju.
-* The [Privacy Policy](/policies/privacy-policy) explains what personal information we collect and how we use it.
-* The [Cookie Notice](/policies/cookie-notice) goes into detail about how we use cookies and related technologies.
+- The [Code of Conduct](/policies/code-of-conduct) explains how best to use Howdju, as well as things you cannot do with Howdju.
+- The [Privacy Policy](/policies/privacy-policy) explains what personal information we collect and how we use it.
+- The [Cookie Notice](/policies/cookie-notice) goes into detail about how we use cookies and related technologies.
 
 ## 1. Your Access to the Services
 
@@ -28,9 +28,9 @@ Howdju grants you a personal, non-transferable, non-exclusive, revocable, limite
 
 Except as permitted through the Services or as otherwise permitted by us in writing, your license does not include the right to:
 
-* license, sell, transfer, assign, distribute, host, or otherwise commercially exploit the Services or Content;
-* modify, prepare derivative works of, disassemble, decompile, or reverse engineer any part of the Services or Content; or
-* access the Services or Content in order to build a similar or competitive website, product, or service that is for-profit
+- license, sell, transfer, assign, distribute, host, or otherwise commercially exploit the Services or Content;
+- modify, prepare derivative works of, disassemble, decompile, or reverse engineer any part of the Services or Content; or
+- access the Services or Content in order to build a similar or competitive website, product, or service that is for-profit
   — members of not-for-profit organizations developing non-commercial products may use the services for comparitive
   purposes.
 
@@ -38,7 +38,7 @@ We reserve the right to modify, suspend, or discontinue the Services (in whole o
 
 ## 3. Your Howdju Account and Account Security
 
-To use certain features of our Services, you may be required to create a Howdju account (an “Account”) and provide us with a username, password, and certain other information about yourself as set forth in the [Privacy Policy](/policies/privacy-policy).  Accounts may not belong to or be used by corporations or government entities.
+To use certain features of our Services, you may be required to create a Howdju account (an “Account”) and provide us with a username, password, and certain other information about yourself as set forth in the [Privacy Policy](/policies/privacy-policy). Accounts may not belong to or be used by corporations or government entities.
 
 You are allowed to have one and only one Howdju account at any time. Each Howdju account may only be used by a single accountable person. You may not create another account, even if your account is suspended or restricted in any way. If your account has been suspended, you must wait until the suspension expires before you can use that account.
 
@@ -72,12 +72,12 @@ Any invitation made by Howdju to you to use the Services or submit content to th
 
 When using or accessing Howdju, you must comply with these Terms and all applicable laws, rules, and regulations. Please review the Code of Conduct, which are part of these Terms and contain Howdju’s rules about prohibited content and conduct. In addition to what is prohibited in the Code of Conduct, you may not do any of the following:
 
-* Use the Services in any manner that could interfere with, disable, disrupt, overburden, or otherwise impair the Services.
-* Gain access to (or attempt to gain access to) another user’s Account or any non-public portions of the Services, including the computer systems or networks connected to or used together with the Services.
-* Upload, transmit, or distribute to or through the Services any malware, viruses, spyware, worms, malicious code, or other software intended to interfere with the Services, including its security-related features.
-* Use the Services to violate applicable law or infringe any person’s or entity's intellectual property rights or any other proprietary rights.
-* Access, search, collect, or submit data from the Services by any means (automated or otherwise) except as permitted in these Terms or in a separate agreement with Howdju. We conditionally grant permission to crawl the Services in accordance with the parameters set forth in our robots.txt file, but scraping the Services without Howdju’s prior consent is prohibited.
-* Use the Services in any manner that we reasonably believe to be an abuse of or fraud on Howdju.
+- Use the Services in any manner that could interfere with, disable, disrupt, overburden, or otherwise impair the Services.
+- Gain access to (or attempt to gain access to) another user’s Account or any non-public portions of the Services, including the computer systems or networks connected to or used together with the Services.
+- Upload, transmit, or distribute to or through the Services any malware, viruses, spyware, worms, malicious code, or other software intended to interfere with the Services, including its security-related features.
+- Use the Services to violate applicable law or infringe any person’s or entity's intellectual property rights or any other proprietary rights.
+- Access, search, collect, or submit data from the Services by any means (automated or otherwise) except as permitted in these Terms or in a separate agreement with Howdju. We conditionally grant permission to crawl the Services in accordance with the parameters set forth in our robots.txt file, but scraping the Services without Howdju’s prior consent is prohibited.
+- Use the Services in any manner that we reasonably believe to be an abuse of or fraud on Howdju.
 
 We encourage you to report content or conduct that you believe violates these Terms or our Code of Conduct. We also support the responsible reporting of security vulnerabilities. To report a security issue, please email
 <span data-type="email" data-email-user="security" data-email-domain="howdju.com"></span>.
@@ -87,40 +87,40 @@ We encourage you to report content or conduct that you believe violates these Te
 Howdju respects the intellectual property of others and requires that users of our Services do the same. If you believe that anything on our Services infringes a copyright or a trademark that you own or control, you may notify us by email at
 <span data-type="email" data-email-user="legal" data-email-domain="howdju.com"></span>. Please include:
 
-* The email address you wish to use for correspondence
-* A subject line summarizing the nature of your inquiry
-* Your affirmation that the information you provide may be provided to affected parties upon request
-* The copyright owners full legal name
-* Your name, if different from the copyright owner’s
-* The full legal address of the copyright owner, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
-* Your contact address, if different from the full legal address of the copyright owner, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
-* Your contact phone number, if you would like to be contacted by phone
-* The URL(s) upon which the infringing material appears
-* Screenshots of the infringing material
-* The title of the copyrighted work, if applicable
-* A full description of the copyrighted work
-* Your affirmation of the following statement: “I state that I have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.”
-* Your affirmation of the following statement: “I state that the information in the notification is accurate, and under penalty of perjury, that I am authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.”
-* Include your full legal name again along with your affirmation of your intent to use your electronically transmitted name as your legally binding signature
-* Any additional attachment that may help us to understand and respond to your inquiry
+- The email address you wish to use for correspondence
+- A subject line summarizing the nature of your inquiry
+- Your affirmation that the information you provide may be provided to affected parties upon request
+- The copyright owners full legal name
+- Your name, if different from the copyright owner’s
+- The full legal address of the copyright owner, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
+- Your contact address, if different from the full legal address of the copyright owner, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
+- Your contact phone number, if you would like to be contacted by phone
+- The URL(s) upon which the infringing material appears
+- Screenshots of the infringing material
+- The title of the copyrighted work, if applicable
+- A full description of the copyrighted work
+- Your affirmation of the following statement: “I state that I have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.”
+- Your affirmation of the following statement: “I state that the information in the notification is accurate, and under penalty of perjury, that I am authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.”
+- Include your full legal name again along with your affirmation of your intent to use your electronically transmitted name as your legally binding signature
+- Any additional attachment that may help us to understand and respond to your inquiry
 
 If you knowingly misrepresent that any activity or material on our Service is infringing, you may be liable to Howdju for certain costs and damages. Upon receiving a notice satisfying these requirements, Howdju will take whatever action, in its sole discretion, it deems appropriate, including removal of the challenged content from the services.
 
 If we remove Your Content in response to a copyright or trademark notice, we will notify you via email. If you believe Your Content was wrongly removed due to a mistake or misidentification in a copyright notice, you can send a counter notification via email to <span data-type="email" data-email-user="legal" data-email-domain="howdju.com"></span>. Please include the following in your email:
 
-* The email address you wish to use for correspondence
-* A subject line summarizing the nature of your inquiry
-* Details of your inquiry
-* Your full and legal name
-* Your full and legal address, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
-* Your contact phone number, if you would like to be contacted by phone
-* The URLs upon which the material you believe was mistakenly removed appears
-* Your explanation of why the material is not subject to removal for infringing the intellectual property rights of another
-* Your affirmation of the following statement: “I state, under penalty of perjury, that I have a good faith belief that the material was removed or disabled as a result of mistake or misidentification of the material to be removed or disabled.”
-* Your affirmation of the following statement: “I consent to the jurisdiction of federal district court for the judicial district in which my provided address is located, or if my address is outside of the United States, for any judicial district in which the service provider may be found”
-* Your affirmation of the following statement: “I will accept service of process from the person who provided notification under 17 U.S.C. § 512(c)(1)(c) or an agent of such person”
-* Include your full legal name again along with your affirmation of your intent to use your electronically transmitted name as your legally binding signature
-* Any additional attachment that may help us to understand and respond to your inquiry
+- The email address you wish to use for correspondence
+- A subject line summarizing the nature of your inquiry
+- Details of your inquiry
+- Your full and legal name
+- Your full and legal address, including street number, street name, unit or apartment number, if any, the state or country sub-unit(s), the country, and the postal code.
+- Your contact phone number, if you would like to be contacted by phone
+- The URLs upon which the material you believe was mistakenly removed appears
+- Your explanation of why the material is not subject to removal for infringing the intellectual property rights of another
+- Your affirmation of the following statement: “I state, under penalty of perjury, that I have a good faith belief that the material was removed or disabled as a result of mistake or misidentification of the material to be removed or disabled.”
+- Your affirmation of the following statement: “I consent to the jurisdiction of federal district court for the judicial district in which my provided address is located, or if my address is outside of the United States, for any judicial district in which the service provider may be found”
+- Your affirmation of the following statement: “I will accept service of process from the person who provided notification under 17 U.S.C. § 512(c)(1)(c) or an agent of such person”
+- Include your full legal name again along with your affirmation of your intent to use your electronically transmitted name as your legally binding signature
+- Any additional attachment that may help us to understand and respond to your inquiry
 
 Please see 17 U.S.C. § 512(g)(3) for the requirements of a proper counter notification.
 

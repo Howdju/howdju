@@ -1,17 +1,17 @@
-import React  from 'react'
-import {Card, CardText} from 'react-md'
+import React from "react";
+import { Card, CardText } from "react-md";
 
-import mdSource from './About.md'
+import mdSource from "./About.md";
 
-import './AboutPage.scss'
+import "./AboutPage.scss";
 
 const AboutPage = () => (
   <div className="md-grid" id="about-page">
     <Card className="md-cell--12">
       <CardText>
-        <CardText dangerouslySetInnerHTML={{ __html: mdSource}} />
+        <CardText dangerouslySetInnerHTML={{ __html: mdSource }} />
       </CardText>
     </Card>
   </div>
-)
-export default AboutPage
+);
+export default AboutPage;

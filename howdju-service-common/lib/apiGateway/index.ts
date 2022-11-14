@@ -1,1 +1,1 @@
-export * from './apiGateway'
+export * from "./apiGateway";

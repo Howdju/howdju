@@ -1,19 +1,16 @@
-import React, {Component} from 'react'
+import React, { Component } from "react";
 
-import CellList from './CellList'
-import ListEntitiesWidget from './ListEntitiesWidget'
-import WritQuoteCard from './WritQuoteCard'
-import t from './texts'
-import {
-  api,
-} from './actions'
-import {writQuotesSchema} from "./normalizationSchemas"
+import CellList from "./CellList";
+import ListEntitiesWidget from "./ListEntitiesWidget";
+import WritQuoteCard from "./WritQuoteCard";
+import t from "./texts";
+import { api } from "./actions";
+import { writQuotesSchema } from "./normalizationSchemas";
 
 export default class RecentWritQuotesWidget extends Component {
-
-  writQuoteToCard = writQuote => {
-    const id = this.props.id
-    const cardId = `${id}-writ-quote-${writQuote.id}`
+  writQuoteToCard = (writQuote) => {
+    const id = this.props.id;
+    const cardId = `${id}-writ-quote-${writQuote.id}`;
     return (
       <WritQuoteCard
         id={cardId}
@@ -21,15 +18,11 @@ export default class RecentWritQuotesWidget extends Component {
         writQuote={writQuote}
         className={CellList.smallCellClasses}
       />
-    )
-  }
+    );
+  };
 
   render() {
-    const {
-      id,
-      widgetId,
-      ...rest
-    } = this.props
+    const { id, widgetId, ...rest } = this.props;
     return (
       <ListEntitiesWidget
         {...rest}
@@ -42,6 +35,6 @@ export default class RecentWritQuotesWidget extends Component {
         emptyEntitiesMessage={t("No recent quotes")}
         loadErrorMessage={t("There was an error fetching the recent quotes.")}
       />
-    )
+    );
   }
 }

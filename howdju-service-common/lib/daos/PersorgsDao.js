@@ -1,21 +1,12 @@
-const {
-  cleanWhitespace,
-} = require('howdju-common')
+const { cleanWhitespace } = require("howdju-common");
 
-const {
-  normalizeText,
-} = require('./daosUtil')
-const {
-  toPersorg,
-} = require('./orm')
-const {
-  BaseDao,
-} = require('./BaseDao')
-
+const { normalizeText } = require("./daosUtil");
+const { toPersorg } = require("./orm");
+const { BaseDao } = require("./BaseDao");
 
 exports.PersorgsDao = class PersorgsDao extends BaseDao {
   constructor(logger, database) {
-    super(logger, database, toPersorg)
+    super(logger, database, toPersorg);
   }
 
   async createPersorg(persorg, creatorUserId, now) {
@@ -23,7 +14,7 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
       insert into persorgs (is_organization, name, normal_name, known_for, normal_known_for, website_url, twitter_url, wikipedia_url, creator_user_id, created) 
       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
       returning *
-    `
+    `;
     const args = [
       persorg.isOrganization,
       cleanWhitespace(persorg.name),
@@ -35,13 +26,13 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
       persorg.wikipediaUrl,
       creatorUserId,
       now,
-    ]
-    return await this.queryOne('createPersorg', sql, args)
+    ];
+    return await this.queryOne("createPersorg", sql, args);
   }
 
   async readEquivalentPersorg(persorg) {
     return await this.queryOne(
-      'readEquivalentPersorg',
+      "readEquivalentPersorg",
       `
         select * 
         from persorgs 
@@ -51,41 +42,45 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
             and normal_known_for = $3
             and deleted is null
       `,
-      [persorg.isOrganization, normalizeText(persorg.name), normalizeText(persorg.knownFor)]
-    )
+      [
+        persorg.isOrganization,
+        normalizeText(persorg.name),
+        normalizeText(persorg.knownFor),
+      ]
+    );
   }
 
   async readPersorgForId(persorgId) {
     return await this.queryOne(
-      'readPersorgForId',
+      "readPersorgForId",
       `select * from persorgs where persorg_id = $1 and deleted is null`,
       [persorgId]
-    )
+    );
   }
 
   async readPersorgsForName(persorgName) {
     return await this.queryMany(
-      'readPersorgsForName',
+      "readPersorgsForName",
       `select * from persorgs where normal_name = $1 and deleted is null`,
       [normalizeText(persorgName)]
-    )
+    );
   }
 
   async readPersorgs() {
     return await this.queryMany(
-      'readPersorgs',
+      "readPersorgs",
       `
         select * 
         from persorgs 
         where deleted is null
         order by created
       `
-    )
+    );
   }
 
   async readPersorgsLikeName(persorgName) {
     return await this.queryMany(
-      'readPersorgsLikeName',
+      "readPersorgsLikeName",
       `
         select * 
         from persorgs 
@@ -94,12 +89,12 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
         order by length(name), name
       `,
       [normalizeText(persorgName)]
-    )
+    );
   }
 
   async hasEquivalentPersorgs(persorg) {
     const equivalentPersorgs = await this.queryMany(
-      'hasEquivalentPersorgs',
+      "hasEquivalentPersorgs",
       `
         select * from persorgs 
         where 
@@ -108,12 +103,13 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
           and persorg_id <> $3
           and deleted is null`,
       [normalizeText(persorg.name), normalizeText(persorg.knownFor), persorg.id]
-    )
-    return equivalentPersorgs.length > 0
+    );
+    return equivalentPersorgs.length > 0;
   }
 
   async updatePersorg(persorg, now) {
-    return this.queryOne('updatePersorg',
+    return this.queryOne(
+      "updatePersorg",
       `
         update persorgs set 
           is_organization = $2,
@@ -128,8 +124,18 @@ exports.PersorgsDao = class PersorgsDao extends BaseDao {
           where persorg_id = $1 and deleted is null
         returning *
       `,
-      [persorg.id, persorg.isOrganization, persorg.name, normalizeText(persorg.name), persorg.knownFor,
-        normalizeText(persorg.knownFor), persorg.websiteUrl, persorg.twitterUrl, persorg.wikipediaUrl, now]
-    )
+      [
+        persorg.id,
+        persorg.isOrganization,
+        persorg.name,
+        normalizeText(persorg.name),
+        persorg.knownFor,
+        normalizeText(persorg.knownFor),
+        persorg.websiteUrl,
+        persorg.twitterUrl,
+        persorg.wikipediaUrl,
+        now,
+      ]
+    );
   }
-}
+};

@@ -1,8 +1,8 @@
-@import './reset';
-@import './util';
-@import './colors';
-@import './react-md';
-@import './grid';
+@import "./reset";
+@import "./util";
+@import "./colors";
+@import "./react-md";
+@import "./grid";
 
 @include apply-react-md-grid;
 
@@ -10,10 +10,12 @@ html {
   background-color: $dark-background-color;
 }
 
-html, html p {
+html,
+html p {
   font-size: 15px;
 }
-html, a {
+html,
+a {
   color: $primary-text-color;
 }
 p a {
@@ -25,14 +27,16 @@ body {
 #app {
   background-color: $light-background-color;
 }
-body, p {
+body,
+p {
   line-height: 20px;
 }
 // Display link buttons with the correct color
 .md-btn.md-background--primary a {
   color: $md-primary-background-text-color;
 }
-.md-btn.md-background--secondary a, #error-boundary {
+.md-btn.md-background--secondary a,
+#error-boundary {
   color: $md-secondary-background-text-color;
 }
 
@@ -50,13 +54,18 @@ em {
   font-style: italic;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Oswald", sans-serif;
   font-weight: 200;
 }
 h1 {
   font-size: 40px;
-  color: rgba(0,0,0,.54);
+  color: rgba(0, 0, 0, 0.54);
   line-height: 40px;
   margin-bottom: 14px;
 }
@@ -72,8 +81,10 @@ p {
   margin-bottom: 10px;
 }
 // When included in an iFrame (e.g. the extension) react-md's mixin doesn't seem to take precedence.
-p, textarea, input {
-  font-family: 'Lato', sans-serif;
+p,
+textarea,
+input {
+  font-family: "Lato", sans-serif;
 }
 
 strong {
@@ -85,13 +96,12 @@ strong {
 }
 
 #app-nav-drawer {
-  width: min(400px, $md-drawer-desktop-width)
+  width: min(400px, $md-drawer-desktop-width);
 
   // TODO make this more like the left-nav rules
   // The left nav drawer's rules are:
   // On mobile devices, the width of the drawer will be calc(100vw - 56px) and a max width of 320px.
   // On tablets and desktop screens, the width will be equal to the $md-drawer-tablet-width and $md-drawer-desktop-width but no more than 400px.
-
 }
 
 // This should be in react-md's _tooltips.scss, but it isn't loaded for some reason
@@ -122,7 +132,8 @@ strong {
   button {
     background-color: white;
   }
-  &, &.md-menu-container {
+  &,
+  &.md-menu-container {
     position: absolute;
   }
 }
