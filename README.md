@@ -251,6 +251,15 @@ git rebase --continue
 
 where `HEAD~n` corresponds to the parent of the the commit you want to amend.
 
+#### Culprit finding
+
+```sh
+git bisect start features/better-eslint master --
+git bisect run sh -c "yarn && cd howdju-common && yarn run custom-check && yarn run test"
+# command above will output the culprit commit
+git bisect reset
+```
+
 ### Upgrading dependencies
 
 ```shell
