@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "argparse": "^2.0.1",
-    "eslint": "^7.25.0",
+    "eslint": "^8.27.0",
     "eslint-config-howdju": "^1.0.0",
     "gulp": "^3.9.1",
     "gulp-install": "^1.1.0",

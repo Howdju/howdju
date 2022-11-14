@@ -11,6 +11,9 @@ class BrowserScreen extends React.Component<{
 }> {
   webView: WebView | null | undefined;
 
+  // This rule falsely fails on this method.
+  // TODO: convert to a functional component to see if it goes away.
+  // eslint-disable-next-line react/require-render-return
   render = () => {
     const { items } = this.props;
     const submitUrl = inferSubmitUrl(items);

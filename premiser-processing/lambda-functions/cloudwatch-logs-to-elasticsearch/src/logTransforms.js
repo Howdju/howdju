@@ -12,6 +12,7 @@ module.exports.extract = async function extract(event) {
   const text = unzippedData
     .toString("ascii")
     // For some reason odd characters can appear in the data
+    // eslint-disable-next-line no-control-regex
     .replace(/[\u{0000}-\u{0008}\u{000b}-\u{000c}\u{000e}-\u{001f}]/gu, "");
   try {
     return JSON.parse(text);
