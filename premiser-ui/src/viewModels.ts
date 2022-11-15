@@ -37,10 +37,10 @@ import {
   EntityId,
 } from "howdju-common";
 import {
-  JustificationBasisEditModel,
-  JustificationEditModel,
+  JustificationBasisCreateModel,
+  JustificationCreateModel,
   JustificationSubmissionModel,
-  SourceExcerptEditModel,
+  SourceExcerptCreateModel,
 } from "howdju-client-common";
 
 import * as characters from "./characters";
@@ -94,7 +94,7 @@ export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
 };
 
 export const consolidateNewJustificationEntities = (
-  justificationInput: JustificationEditModel
+  justificationInput: JustificationCreateModel
 ): JustificationSubmissionModel => {
   const basis = translateBasisEditModel(justificationInput.basis);
   const justification: JustificationSubmissionModel = assign(
@@ -107,7 +107,7 @@ export const consolidateNewJustificationEntities = (
 };
 
 const translateBasisEditModel = (
-  basis: JustificationBasisEditModel
+  basis: JustificationBasisCreateModel
 ): JustificationBasis => {
   switch (basis.type) {
     case JustificationBasisTypes.PROPOSITION_COMPOUND:
@@ -148,7 +148,7 @@ const translateBasisEditModel = (
 };
 
 export function translateSourceExcerptEditModel(
-  sourceExcerpt: SourceExcerptEditModel
+  sourceExcerpt: SourceExcerptCreateModel
 ): SourceExcerpt {
   switch (sourceExcerpt.type) {
     case "PIC_REGION":
@@ -189,7 +189,7 @@ export function translateSourceExcerptEditModel(
 // TODO(26): the createJustification route currently returns a Joi error, whereas this function
 // expects a BespokeValidationErrors.
 export function translateJustificationErrorsFromFormInput(
-  justification: JustificationEditModel,
+  justification: JustificationCreateModel,
   errors: BespokeValidationErrors
 ) {
   if (!justification || !errors) {

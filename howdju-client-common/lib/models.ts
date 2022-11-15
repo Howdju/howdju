@@ -54,37 +54,37 @@ import {
  * Supports edits to alternative bases at the same time (whereas a materialized Justification can
  * have just one basis type.) This used to be called a NewJustification.
  */
-export interface JustificationEditModel {
-  target: JustificationTargetEditModel;
+export interface JustificationCreateModel {
+  target: JustificationTargetCreateModel;
   polarity: JustificationPolarity;
-  basis: JustificationBasisEditModel;
+  basis: JustificationBasisCreateModel;
   rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTargetEditModel;
+  rootTarget: JustificationRootTargetCreateModel;
   rootPolarity: JustificationRootPolarity;
 }
 
-export interface CounterJustificationEditModel
-  extends Omit<JustificationEditModel, "basis"> {
+export interface CounterJustificationCreateModel
+  extends Omit<JustificationCreateModel, "basis"> {
   basis: CounterJustificationBasisEditModel;
 }
 
 export interface JustificationSubmissionModel {
-  target: JustificationTargetEditModel;
+  target: JustificationTargetCreateModel;
   polarity: JustificationPolarity;
   basis: FormSubmission<JustificationBasis>;
   rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTargetEditModel;
+  rootTarget: JustificationRootTargetCreateModel;
   rootPolarity: JustificationRootPolarity;
 }
 
 type FormSubmission<T> = T | Persisted<T>;
 
 // A root target might have just its ID.
-export type JustificationRootTargetEditModel =
+export type JustificationRootTargetCreateModel =
   | Persisted<Proposition>
   | Persisted<Statement>;
 
-export type JustificationTargetEditModel =
+export type JustificationTargetCreateModel =
   | JustificationTarget_Proposition_EditModel
   | JustificationTarget_Justification_EditModel
   | JustificationTarget_Statement_EditModel;
@@ -104,16 +104,16 @@ interface JustificationTarget_Statement_EditModel {
   entity: Statement | Persisted<Statement>;
 }
 
-export interface JustificationBasisEditModel {
+export interface JustificationBasisCreateModel {
   type: JustificationBasisType;
   propositionCompound: PropositionCompoundEditModel;
   /** @deprecated use {@link sourceExcerpt} instead. */
   writQuote: WritQuoteEditModel;
-  sourceExcerpt: SourceExcerptEditModel;
+  sourceExcerpt: SourceExcerptCreateModel;
 }
 
 export type CounterJustificationBasisEditModel = Omit<
-  JustificationBasisEditModel,
+  JustificationBasisCreateModel,
   "writQuote" | "sourceExcerpt"
 >;
 
@@ -122,7 +122,7 @@ export type WritQuoteEditModel = WritQuote;
 export type VidSegmentEditModel = VidSegment;
 export type PicRegionEditModel = PicRegion;
 
-export interface SourceExcerptEditModel {
+export interface SourceExcerptCreateModel {
   type: SourceExcerptType;
   writQuote: WritQuote;
   picRegion: PicRegion;
@@ -161,8 +161,8 @@ export interface JustificationVote {
 }
 
 export const makeJustificationEditModel = (
-  props: Partial<JustificationEditModel>
-): JustificationEditModel => {
+  props?: Partial<JustificationCreateModel>
+): JustificationCreateModel => {
   const justificationInput = merge(
     {
       rootTargetType: JustificationRootTargetTypes.PROPOSITION,
@@ -183,7 +183,7 @@ export const makeJustificationEditModel = (
       },
     },
     props
-  ) as JustificationEditModel;
+  ) as JustificationCreateModel;
 
   inferJustificationRootTarget(justificationInput);
 
@@ -209,8 +209,8 @@ export const makeJustificationViewModel = (
 };
 
 export function makeSourceExcerptEditModel(
-  props?: Partial<SourceExcerptEditModel>
-): SourceExcerptEditModel {
+  props?: Partial<SourceExcerptCreateModel>
+): SourceExcerptCreateModel {
   return merge(
     {
       type: SourceExcerptTypes.WRIT_QUOTE,
@@ -245,7 +245,7 @@ export function makePropositionEditModel(): PropositionEditModel {
 }
 
 function inferJustificationRootTarget(
-  justification: JustificationEditModel | JustificationViewModel
+  justification: JustificationCreateModel | JustificationViewModel
 ) {
   let targetEntity = justification.target.entity;
   let targetType = justification.target.type;
@@ -257,7 +257,7 @@ function inferJustificationRootTarget(
     targetEntity = targetJustification.target.entity;
   }
   justification.rootTargetType = targetType;
-  justification.rootTarget = targetEntity as JustificationRootTargetEditModel;
+  justification.rootTarget = targetEntity as JustificationRootTargetCreateModel;
   justification.rootPolarity = rootPolarity;
 }
 
@@ -269,7 +269,7 @@ export const isDisverified = (j: JustificationViewModel) =>
 // TODO(1): must we export this? Where will we use it?
 export function convertSourceExcerptToEditModel(
   sourceExcerpt: SourceExcerpt
-): SourceExcerptEditModel {
+): SourceExcerptCreateModel {
   const formModel = makeSourceExcerptEditModel(sourceExcerpt);
   switch (sourceExcerpt.type) {
     case SourceExcerptTypes.WRIT_QUOTE:
@@ -307,13 +307,13 @@ export interface JustifiedPropositionViewModel extends Proposition {
 export interface CreatePropositionEditModel {
   proposition: Proposition;
   speakers: Persorg[];
-  justification: JustificationEditModel;
+  justification: JustificationCreateModel;
   doCreateJustification: boolean;
 }
 
 export const makeJustifiedPropositionEditModel = (
   propositionProps: Partial<PropositionEditModel>,
-  justificationProps: Partial<JustificationEditModel>
+  justificationProps: Partial<JustificationCreateModel>
 ): CreatePropositionEditModel => ({
   proposition: makeProposition(propositionProps),
   speakers: [],
@@ -327,7 +327,7 @@ export const makeJustificationEditModelTargetingRoot = (
   targetType: JustificationRootTargetType & JustificationTargetType,
   targetId: EntityId,
   polarity?: JustificationPolarity
-): JustificationEditModel =>
+): JustificationCreateModel =>
   makeJustificationEditModel({
     rootTargetType: targetType,
     rootTarget: { id: targetId },
@@ -338,7 +338,7 @@ export const makeJustificationEditModelTargetingRoot = (
 export const makeCounterJustification = (
   targetJustification: Persisted<Justification> &
     Pick<Justification, "rootTargetType" | "rootTarget" | "rootPolarity">
-): CounterJustificationEditModel => ({
+): CounterJustificationCreateModel => ({
   rootTargetType: targetJustification.rootTargetType,
   rootTarget: { id: targetJustification.rootTarget.id },
   rootPolarity: negateRootPolarity(targetJustification.rootPolarity),

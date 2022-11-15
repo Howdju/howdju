@@ -6,7 +6,8 @@ import { isDefined, extractDomain } from "howdju-common";
 
 import config from "./config";
 import { Divider } from "react-md";
-import React from "react";
+import React, { ChangeEvent } from "react";
+import { OnPropertyChangeCallback } from "./types";
 
 export const isWindowNarrow = () => {
   return window.innerWidth < config.ui.narrowBreakpoint;
@@ -82,32 +83,46 @@ export const getDimensionInfo = () => {
   return dimensionInfo;
 };
 
-export function isValidUrl(value) {
+export function isValidUrl(value: string) {
   return !!validUrl.isUri(value);
 }
 
-export function hasValidDomain(url) {
+export function hasValidDomain(url: string) {
   const domain = extractDomain(url);
   if (!domain) return false;
   return isValidDomain(domain);
 }
 
-export function isWikipediaUrl(url) {
+export function isWikipediaUrl(url: string) {
   const domain = extractDomain(url);
   return domain.endsWith("wikipedia.org");
 }
 
-export function isTwitterUrl(url) {
+export function isTwitterUrl(url: string) {
   const domain = extractDomain(url);
   return domain.endsWith("twitter.com");
 }
 
-export function getComponentDisplayName(component) {
-  return component.displayName || component.name || "Component";
+export function getComponentDisplayName(
+  component: React.FunctionComponent | React.Component
+) {
+  if ("displayName" in component) {
+    return component.displayName;
+  }
+  if ("name" in component) {
+    return component.name;
+  }
+  if ("displayName" in component.constructor) {
+    return (component.constructor as any).displayName;
+  }
+  if ("name" in component.constructor) {
+    return (component.constructor as any).name;
+  }
+  return "Component";
 }
 
 /** Inserts a <Divider> between the groups of components. */
-export function divideMenuItems(...componentGroups) {
+export function divideMenuItems(...componentGroups: JSX.Element[][]) {
   const dividedComponents = [];
   for (let i = 0; i < componentGroups.length; i++) {
     const components = componentGroups[i];
@@ -121,3 +136,12 @@ export function divideMenuItems(...componentGroups) {
   }
   return dividedComponents;
 }
+
+export const toOnChangeCallback = (
+  onPropertyChange: OnPropertyChangeCallback
+) => {
+  return function onChange(value: any, event: ChangeEvent<HTMLInputElement>) {
+    const name = event.target.name;
+    onPropertyChange({ [name]: value });
+  };
+};

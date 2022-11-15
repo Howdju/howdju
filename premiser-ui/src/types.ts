@@ -1,4 +1,5 @@
 import { Entity, EntityId } from "howdju-common";
+import { UIEvent } from "react";
 
 export interface ContextTrailItemInfo {
   targetType: "PROPOSITION" | "STATEMENT" | "JUSTIFICATION";
@@ -52,8 +53,9 @@ export type OnChangeCallback = (value: number | string, event: Event) => void;
 export type OnSubmitCallback = (
   event: React.FormEvent<HTMLFormElement>
 ) => void;
-export type OnClickHandler = (event: React.MouseEvent<HTMLElement>) => void;
-export type OnRemoveHandler<T> = (value: T, index: number) => void;
+export type OnClickCallback = (event: React.MouseEvent<HTMLElement>) => void;
+export type OnAddCallback = (index: number) => void;
+export type OnRemoveCallback<T> = (value: T, index: number) => void;
 
 export interface PrivacyConsentCookie {
   id: string;

@@ -6464,6 +6464,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/is-valid-domain@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@types/is-valid-domain@npm:0.0.1"
+  checksum: 0cc40732ff489b43b0904b57d08a918fc096b40c8a91a9d0817fbc74018d81fa7e9a6847533dfb4281527f1feabd10e539b37c113b1493f0b060cfc1f5aedeca
+  languageName: node
+  linkType: hard
+
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0, @types/istanbul-lib-coverage@npm:^2.0.1":
   version: 2.0.3
   resolution: "@types/istanbul-lib-coverage@npm:2.0.3"
@@ -6846,6 +6853,13 @@ __metadata:
   version: 2.0.2
   resolution: "@types/trusted-types@npm:2.0.2"
   checksum: 3371eef5f1c50e1c3c07a127c1207b262ba65b83dd167a1c460fc1b135a3fb0c97b9f508efebd383f239cc5dd5b7169093686a692a501fde9c3f7208657d9b0d
+  languageName: node
+  linkType: hard
+
+"@types/valid-url@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@types/valid-url@npm:1.0.3"
+  checksum: bd527221b4f839c440600520f9bfbdb340f473543ea5ee25215f35155ae52fd2cc5c39086cab2ffa67a54a7c303de937fcc8a58edf9bc5b7000169d7a7aa8d42
   languageName: node
   linkType: hard
 
@@ -22229,6 +22243,7 @@ __metadata:
     "@testing-library/react": ^12
     "@testing-library/user-event": ^14.4.3
     "@types/dompurify": ^2.3.4
+    "@types/is-valid-domain": ^0.0.1
     "@types/lodash": ^4.14.186
     "@types/moment-locales-webpack-plugin": ^1.2.3
     "@types/node": ^18.8.3
@@ -22236,6 +22251,7 @@ __metadata:
     "@types/react-router": ^5.1.19
     "@types/react-router-dom": ^5.3.3
     "@types/redux-actions": ^2.6.2
+    "@types/valid-url": ^1.0.3
     "@types/webpack": ^5.28.0
     "@types/webpack-bundle-analyzer": ^4.6.0
     "@types/webpack-env": ^1.18.0

@@ -19,8 +19,12 @@ a user could delete all of the characters from a text field, the model must
 allow an empty string there, even if this it not a valid final state to submit
 the entity.
 
-If an editor would allow choosing between and editing alternative specializations
-of a related field then the model must represent the alernatives simultaneously
+## `CreateModel`s
+
+EditModels for creating new things.
+
+If an editor allows choosing between and editing alternative specializations
+of a related field then the create model must represent the alernatives simultaneously
 so as not to discard intermediate edits. E.g. if a user edits a justification
 basis proposition, and then switches between it and a different basis, the edits
 from the proposition should not appear.
@@ -29,8 +33,8 @@ Practically speaking, it means that fields like:
 
 ```typescript
 sourceExcerpt: {
-  type: "WritQuote" | "PicRegion" | "VidSegment"
-  entity: WritQuote | PicRegion | VidSegment
+  type: "WritQuote" | "PicRegion" | "VidSegment";
+  entity: WritQuote | PicRegion | VidSegment;
 }
 ```
 
@@ -38,10 +42,10 @@ will have an edit model representation like:
 
 ```typescript
 sourceExcerpt: {
-  type: "WritQuote" | "PicRegion" | "VidSegment"
-  writQuote: WritQuote
-  picRegion: PicRegion
-  vidSegment: VidSegment
+  type: "WritQuote" | "PicRegion" | "VidSegment";
+  writQuote: WritQuote;
+  picRegion: PicRegion;
+  vidSegment: VidSegment;
 }
 ```
 
@@ -91,8 +95,8 @@ Entities read from the database database are materialized, which means that they
 contain both the Entity's `id` and full versions of many of the Entity's fields.
 An Entity may be materialized in different ways for different purposes:
 
-* Including related fields or not
-* Including all fields or not.
+- Including related fields or not
+- Including all fields or not.
 
 ## `FactoryInput`s
 
@@ -105,10 +109,10 @@ because any of the fields can be overridden, but none must be.
 
 For submission models, we often want to transform an entity so that:
 
-* some fieldsa are required,
-* some other fields are required, but can represent a `Persisted` version of the
+- some fieldsa are required,
+- some other fields are required, but can represent a `Persisted` version of the
   related entity, and
-* the remaining fields are optional
+- the remaining fields are optional
 
 To support that, we have the `FactoryInput` helper:
 

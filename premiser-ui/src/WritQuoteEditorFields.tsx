@@ -20,10 +20,10 @@ import { DirtyFields } from "@/reducers/editors";
 import {
   ComponentId,
   ComponentName,
-  OnClickHandler,
+  OnClickCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
-  OnRemoveHandler,
+  OnRemoveCallback,
   OnSubmitCallback,
   SuggestionsKey,
 } from "@/types";
@@ -40,8 +40,8 @@ interface Props {
   onPropertyChange: OnPropertyChangeCallback;
   onKeyDown?: OnKeyDownCallback;
   onSubmit: OnSubmitCallback;
-  onAddUrl: OnClickHandler;
-  onRemoveUrl: OnRemoveHandler<Url>;
+  onAddUrl: OnClickCallback;
+  onRemoveUrl: OnRemoveCallback<Url>;
   errors: BespokeValidationErrors;
   disabled: boolean;
   dirtyFields: DirtyFields;

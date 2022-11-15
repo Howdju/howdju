@@ -5,7 +5,7 @@ import { editors } from "../actions";
 import { AppDispatch } from "@/setupStore";
 import { EditorType, EditorTypes } from "@/reducers/editors";
 
-const lits = {
+const translators = {
   onAddUrl:
     (editorType: EditorType, editorId: string, dispatch: AppDispatch) =>
     (index: number) =>
@@ -23,5 +23,5 @@ export default withEditor(
   WritQuoteEditorFields,
   "writQuote",
   schemaIds.writQuote,
-  lits
+  translators
 );

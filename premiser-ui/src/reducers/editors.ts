@@ -61,7 +61,7 @@ import {
 } from "@/texts";
 import { logger } from "@/logger";
 import { EditorId, EntityFactory, PropertyChanges } from "@/types";
-import { JustificationEditModel } from "howdju-client-common";
+import { JustificationCreateModel } from "howdju-client-common";
 import { keys } from "lodash";
 
 type BooleanObject = { [key: string]: boolean };
@@ -109,7 +109,7 @@ export type DirtyFields = RecursiveObject<boolean>;
 interface PropositionJustificationsEditEntity extends Entity {
   proposition: Proposition;
   speakers: Persorg[];
-  justification: JustificationEditModel;
+  justification: JustificationCreateModel;
 }
 
 /**
@@ -119,7 +119,7 @@ interface PropositionJustificationsEditEntity extends Entity {
  */
 export type EditorEntity =
   | Entity
-  | JustificationEditModel
+  | JustificationCreateModel
   | PropositionJustificationsEditEntity
   | WritQuote
   | AccountSettings
@@ -380,7 +380,7 @@ const editorReducerByType: {
       [str(editors.addUrl)]: (state) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationEditModel;
+        } as unknown as JustificationCreateModel;
         editEntity.basis.writQuote.urls =
           editEntity.basis.writQuote.urls.concat([makeUrl()]);
         return { ...state, editEntity };
@@ -388,7 +388,7 @@ const editorReducerByType: {
       [str(editors.removeUrl)]: (state, action) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationEditModel;
+        } as unknown as JustificationCreateModel;
 
         const urls = clone(editEntity.basis.writQuote.urls);
         removeAt(urls, action.payload.index);

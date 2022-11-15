@@ -1,6 +1,11 @@
 import { keys } from "lodash";
 
-import { ContentReportTypes, EntityTypes } from "./enums";
+import {
+  ContentReportTypes,
+  EntityTypes,
+  JustificationPolarities,
+  JustificationRootPolarities,
+} from "./enums";
 
 export const schemaSettings = {
   propositionTextMaxLength: 512,
@@ -68,6 +73,12 @@ export const definitionsSchema = {
         "An identifier for an entity. Usually used in the database to identify the entity. A positive integer" +
         " formatted as a string.",
       examples: ["1", "2", "42"],
+    },
+    justificationPolarity: {
+      enum: JustificationPolarities,
+    },
+    justificationRootPolarity: {
+      enum: JustificationRootPolarities,
     },
   },
 } as const;
@@ -342,9 +353,39 @@ const accountSettings = {
   },
 } as const;
 
+// export interface JustificationCreateModel {
+//   target: JustificationTargetCreateModel;
+//   basis: JustificationBasisCreateModel;
+//   rootTargetType: JustificationRootTargetType;
+//   rootTarget: JustificationRootTargetCreateModel;
+// }
+
+/** See JustificationCreateModel. */
+const newJustification = {
+  $id: "https://howdju.com/schemas/new-justification.schema.json",
+  $schema: "http://json-schema.org/draft-07/schema#",
+  title: "New Justification",
+  description: "A model for creating a new justification.",
+  type: "object",
+  required: [],
+  properties: {
+    target: {
+      type: "object",
+      description:
+        "The new justification's targets. Only one of these will be selected upon submission.",
+      properties: {},
+    },
+    polarity: { $ref: "definitions.json#/definitions/justificationPolarity" },
+    rootPolarity: {
+      $ref: "definitions.json#/definitions/justificationRootPolarity",
+    },
+  },
+} as const;
+
 export const schemas = {
   accountSettings,
   contentReport,
+  newJustification,
   passwordResetRequest,
   passwordResetConfirmation,
   persorg,
@@ -358,6 +399,7 @@ export const schemas = {
 export const schemasById = {
   [accountSettings["$id"]]: accountSettings,
   [contentReport["$id"]]: contentReport,
+  [newJustification["$id"]]: newJustification,
   [passwordResetRequest["$id"]]: passwordResetRequest,
   [passwordResetConfirmation["$id"]]: passwordResetConfirmation,
   [persorg["$id"]]: persorg,

@@ -238,6 +238,10 @@ export const makePropositionCompoundAtomFromProposition = (
   entity: proposition,
 });
 
+export const makePropositionCompoundAtom = () => ({
+  entity: makeProposition(),
+});
+
 export const makeUrl = (props?: Partial<Url>): Url => merge({ url: "" }, props);
 
 export const makePersorg = (): Persorg => ({

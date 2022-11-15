@@ -14,13 +14,13 @@ import {
   newUnimplementedError,
 } from "howdju-common";
 import {
-  JustificationBasisEditModel,
+  JustificationBasisCreateModel,
   makeJustifiedPropositionEditModel,
   makePropositionCompoundEditModel,
   makeSourceExcerptEditModel,
   makeWritQuoteEditModel,
   PropositionCompoundEditModel,
-  SourceExcerptEditModel,
+  SourceExcerptCreateModel,
   WritQuoteEditModel,
 } from "howdju-client-common";
 
@@ -63,7 +63,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
         let type: JustificationBasisType;
         let propositionCompound: PropositionCompoundEditModel | undefined;
         let writQuote: WritQuoteEditModel | undefined;
-        let sourceExcerpt: SourceExcerptEditModel | undefined;
+        let sourceExcerpt: SourceExcerptCreateModel | undefined;
 
         switch (alternatives.basisType) {
           case JustificationBasisSourceTypes.PROPOSITION_COMPOUND:
@@ -88,7 +88,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
             throw newExhaustedEnumError(alternatives);
         }
 
-        const basis: JustificationBasisEditModel = {
+        const basis: JustificationBasisCreateModel = {
           type,
           propositionCompound:
             propositionCompound || makePropositionCompoundEditModel(),

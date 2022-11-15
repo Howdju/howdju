@@ -1,7 +1,7 @@
 import throttle from "lodash/throttle";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 import { Autocomplete, AutocompleteProps } from "react-md";
 import { connect } from "react-redux";
 
@@ -134,8 +134,10 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
     }
   }
 
-  onChange = (val: any, event: any) => {
-    const name = event.target.name;
+  onChange = (val: any, event: React.FormEvent<HTMLFormElement>) => {
+    // TODO(17): I think .name is present at runtime, but FormEvent<HTMLFormElement> doesn't have it.
+    const name = (event as unknown as ChangeEvent<HTMLInputElement>).target
+      .name;
     if (this.props.singleLine) {
       val = toSingleLine(val);
     }
