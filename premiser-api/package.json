@@ -55,7 +55,7 @@
     "debug": "^4.3.1",
     "env-cmd": "^10.1.0",
     "esbuild": "^0.11.19",
-    "eslint": "^7.25.0",
+    "eslint": "^8.27.0",
     "eslint-config-howdju": "^1.0.0",
     "express": "^4.15.2",
     "howdju-ops": "^1.0.0",

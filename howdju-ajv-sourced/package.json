@@ -17,7 +17,7 @@
     "howdju-common": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.27.0",
+    "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "jest": "^29.3.1",
     "prettier": "2.7.1",
