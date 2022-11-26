@@ -12,12 +12,14 @@ import { ESCAPE_KEY_CODE } from "./keyCodes";
 import JustificationEditor from "./JustificationEditor";
 
 import "./CreateJustificationDialog.scss";
-import { useAppSelector } from "./hooks";
+import { useAppDispatch, useAppSelector } from "./hooks";
 import { EventHandler } from "react";
 import { CommitThenPutAction } from "./editors/withEditor";
 import { AnyAction } from "@reduxjs/toolkit";
 import { combineIds, combineNames } from "./viewModels";
 import { ComponentId, ComponentName } from "./types";
+import { flows } from "./actions";
+import justificationsPage from "./pages/justifications/justificationsPageSlice";
 
 type Props = {
   id: ComponentId;
@@ -45,6 +47,18 @@ export default function CreateJustificationDialog(props: Props) {
     ) || {};
   const isSaving = editorState.isSaving;
   const isWindowNarrow = useAppSelector(selectIsWindowNarrow);
+
+  const dispatch = useAppDispatch();
+  const onSubmit = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.preventDefault();
+    dispatch(
+      flows.commitEditThenPutActionOnSuccess(
+        EditorTypes.NEW_JUSTIFICATION,
+        editorId,
+        justificationsPage.hideNewJustificationDialog()
+      )
+    );
+  };
 
   // Putting these buttons in an array to reuse in both places requires giving them a key, which led to the warning
   // "ButtonTooltipedInked: `key` is not a prop. Trying to access it will result in `undefined` being returned."

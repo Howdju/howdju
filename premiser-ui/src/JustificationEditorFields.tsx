@@ -35,6 +35,8 @@ import {
   OnSubmitCallback,
 } from "./types";
 import { toOnChangeCallback } from "./util";
+import { EntityEditorFieldsProps } from "./editors/withEditor";
+import { DirtyFields } from "./reducers/editors";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";
@@ -92,7 +94,7 @@ type Props = {
   doShowTypeSelection?: boolean;
   onKeyDown?: OnKeyDownCallback;
   onSubmit: OnSubmitCallback;
-};
+} & EntityEditorFieldsProps;
 export default function JustificationEditorFields(props: Props) {
   const {
     justification,
@@ -109,6 +111,8 @@ export default function JustificationEditorFields(props: Props) {
     errors,
     onKeyDown,
     onSubmit,
+    dirtyFields,
+    wasSubmitAttempted,
   } = props;
 
   const onChange = toOnChangeCallback(onPropertyChange);
@@ -153,6 +157,9 @@ export default function JustificationEditorFields(props: Props) {
       errors={writQuoteErrors}
       onAddUrl={onAddUrl}
       onRemoveUrl={onRemoveUrl}
+      wasSubmitAttempted={wasSubmitAttempted}
+      // TODO genericize DirtyFields<Justification> to avoid casting.
+      dirtyFields={get(dirtyFields, "basis.writQuote") as DirtyFields}
     />
   );
   const editorFields = _isPropositionCompoundBased ? (

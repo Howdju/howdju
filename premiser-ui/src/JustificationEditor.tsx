@@ -48,13 +48,12 @@ const translators = {
     },
 };
 
-// translateCreateJustificationErrorsToInput?
-
 /** A new Justification editor. */
 export default withEditor(
   EditorTypes.NEW_JUSTIFICATION,
   JustificationEditorFields,
   "justification",
-  CreateJustificationInput,
-  translators
+  undefined,
+  translators,
+  CreateJustificationInput
 );

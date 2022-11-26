@@ -16,6 +16,7 @@ import { toErrorText } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
+import { DirtyFields } from "@/reducers/editors";
 import {
   ComponentId,
   ComponentName,
@@ -28,8 +29,9 @@ import {
 } from "@/types";
 
 import "./WritQuoteEditorFields.scss";
+import { EntityEditorFieldsProps } from "./editors/withEditor";
 
-interface Props {
+interface Props extends EntityEditorFieldsProps {
   writQuote: WritQuote;
   /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
   id: ComponentId;
@@ -42,7 +44,9 @@ interface Props {
   onAddUrl: OnAddCallback;
   onRemoveUrl: OnRemoveCallback<Url>;
   errors: BespokeValidationErrors;
-  disabled?: boolean;
+  disabled: boolean;
+  dirtyFields: DirtyFields;
+  wasSubmitAttempted: boolean;
 }
 
 const writQuoteTextName = "quoteText";
