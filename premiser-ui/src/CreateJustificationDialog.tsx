@@ -14,14 +14,18 @@ import JustificationEditor from "./JustificationEditor";
 import "./CreateJustificationDialog.scss";
 import { useAppSelector } from "./hooks";
 import { EventHandler } from "react";
+import { CommitThenPutAction } from "./editors/withEditor";
+import { AnyAction } from "@reduxjs/toolkit";
+import { combineIds, combineNames } from "./viewModels";
+import { ComponentId, ComponentName } from "./types";
 
 type Props = {
-  id: string;
+  id: ComponentId;
+  name: ComponentName;
   editorId: string;
-  suggestionsKey?: string;
   visible?: boolean;
+  commitAction?: AnyAction;
   onCancel?: EventHandler<React.SyntheticEvent>;
-  onSubmit?: EventHandler<React.SyntheticEvent>;
   onHide?: (...args: any[]) => any;
 };
 
@@ -33,8 +37,7 @@ export default function CreateJustificationDialog(props: Props) {
     }
   };
 
-  const { id, editorId, suggestionsKey, visible, onCancel, onSubmit, onHide } =
-    props;
+  const { id, name, editorId, visible, onCancel, onHide, commitAction } = props;
 
   const editorState =
     useAppSelector((state) =>
@@ -97,13 +100,15 @@ export default function CreateJustificationDialog(props: Props) {
         </h2>
       )}
       <JustificationEditor
+        id={combineIds(id, "editor")}
+        name={combineNames(name, "editor")}
         editorId={editorId}
-        id={id}
-        suggestionsKey={suggestionsKey}
         onKeyDown={onKeyDown}
-        onSubmit={onSubmit}
-        doShowButtons={false}
-        disabled={isSaving}
+        editorCommitBehavior={
+          commitAction
+            ? new CommitThenPutAction(commitAction)
+            : "CommitThenView"
+        }
       />
 
       {isWindowNarrow && (

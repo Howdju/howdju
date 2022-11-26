@@ -23,7 +23,6 @@ import set from "lodash/set";
 import {
   apiErrorCodes,
   insertAt,
-  makePropositionAtom,
   makePersorg,
   makeUrl,
   newProgrammingError,
@@ -33,8 +32,6 @@ import {
   tagEqual,
   Entity,
   ApiErrorCode,
-  Persorg,
-  Proposition,
   PropositionTagVotePolarity,
   WritQuote,
   RecursiveObject,
@@ -43,6 +40,8 @@ import {
   RegistrationRequest,
   BespokeValidationErrors,
   EmptyBespokeValidationErrors,
+  CreateJustificationInput,
+  makeCreatePropositionCompoundAtomInput,
 } from "howdju-common";
 
 import {
@@ -61,8 +60,11 @@ import {
 } from "@/texts";
 import { logger } from "@/logger";
 import { EditorId, EntityFactory, PropertyChanges } from "@/types";
-import { JustificationCreateModel } from "howdju-client-common";
 import { keys } from "lodash";
+import {
+  CreateJustifiedPropositionInput,
+  makeCreateWritQuoteInput,
+} from "howdju-client-common";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};
@@ -106,12 +108,6 @@ export type BlurredFields = RecursiveObject<boolean>;
 // Whether the user has changed the value of a control
 export type DirtyFields = RecursiveObject<boolean>;
 
-interface PropositionJustificationsEditEntity extends Entity {
-  proposition: Proposition;
-  speakers: Persorg[];
-  justification: JustificationCreateModel;
-}
-
 /**
  * Something we have an editor for.
  *
@@ -119,8 +115,8 @@ interface PropositionJustificationsEditEntity extends Entity {
  */
 export type EditorEntity =
   | Entity
-  | JustificationCreateModel
-  | PropositionJustificationsEditEntity
+  | CreateJustificationInput
+  | CreateJustifiedPropositionInput
   | WritQuote
   | AccountSettings
   | RegistrationRequest
@@ -363,7 +359,7 @@ const editorReducerByType: {
     {
       [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
         "basis.propositionCompound.atoms",
-        makePropositionAtom
+        makeCreatePropositionCompoundAtomInput
       ),
       [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
         "basis.propositionCompound.atoms"
@@ -380,7 +376,12 @@ const editorReducerByType: {
       [str(editors.addUrl)]: (state) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationCreateModel;
+        } as unknown as CreateJustificationInput;
+        if (!("urls" in editEntity.basis.writQuote)) {
+          editEntity.basis.writQuote = makeCreateWritQuoteInput(
+            editEntity.basis.writQuote
+          );
+        }
         editEntity.basis.writQuote.urls =
           editEntity.basis.writQuote.urls.concat([makeUrl()]);
         return { ...state, editEntity };
@@ -388,7 +389,14 @@ const editorReducerByType: {
       [str(editors.removeUrl)]: (state, action) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as JustificationCreateModel;
+        } as unknown as CreateJustificationInput;
+
+        if (!("urls" in editEntity.basis.writQuote)) {
+          logger.error(
+            "Unable to remove URL from justification's WritQuote because it is a Ref."
+          );
+          return state;
+        }
 
         const urls = clone(editEntity.basis.writQuote.urls);
         removeAt(urls, action.payload.index);
@@ -398,7 +406,7 @@ const editorReducerByType: {
       },
       [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
         "basis.propositionCompound.atoms",
-        makePropositionAtom
+        makeCreatePropositionCompoundAtomInput
       ),
       [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
         "basis.propositionCompound.atoms"
@@ -414,7 +422,7 @@ const editorReducerByType: {
     {
       [str(editors.addSpeaker)]: (state) => {
         const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
+          state.editEntity as unknown as CreateJustifiedPropositionInput;
         const speakers = editEntity.speakers;
         return assign({}, state, {
           editEntity: {
@@ -425,7 +433,7 @@ const editorReducerByType: {
       },
       [str(editors.removeSpeaker)]: (state, action) => {
         const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
+          state.editEntity as unknown as CreateJustifiedPropositionInput;
         const speakers = clone(editEntity.speakers);
         removeAt(speakers, action.payload.index);
         return assign({}, state, {
@@ -437,7 +445,7 @@ const editorReducerByType: {
       },
       [str(editors.replaceSpeaker)]: (state, action) => {
         const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
+          state.editEntity as unknown as CreateJustifiedPropositionInput;
         const speakers = clone(editEntity.speakers);
         speakers[action.payload.index] = action.payload.speaker;
         return assign({}, state, {
@@ -449,8 +457,11 @@ const editorReducerByType: {
       },
       [str(editors.addUrl)]: (state) => {
         const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
-        const writQuote = { ...editEntity.justification.basis.writQuote };
+          state.editEntity as unknown as CreateJustifiedPropositionInput;
+        let writQuote = { ...editEntity.justification.basis.writQuote };
+        if (!("urls" in writQuote)) {
+          writQuote = makeCreateWritQuoteInput(writQuote);
+        }
         writQuote.urls = writQuote.urls.concat([makeUrl()]);
         return merge(
           { ...state },
@@ -460,7 +471,14 @@ const editorReducerByType: {
       [str(editors.removeUrl)]: (state, action) => {
         const editEntity = {
           ...state.editEntity,
-        } as unknown as PropositionJustificationsEditEntity;
+        } as unknown as CreateJustifiedPropositionInput;
+
+        if (!("urls" in editEntity.justification.basis.writQuote)) {
+          logger.error(
+            "Unable to remove URL from Justification's WritQuote because it is a Ref."
+          );
+          return state;
+        }
 
         const urls = clone(editEntity.justification.basis.writQuote.urls);
         removeAt(urls, action.payload.index);
@@ -470,7 +488,7 @@ const editorReducerByType: {
       },
       [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
         "justification.basis.propositionCompound.atoms",
-        makePropositionAtom
+        makeCreatePropositionCompoundAtomInput
       ),
       [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
         "justification.basis.propositionCompound.atoms"
@@ -618,7 +636,7 @@ function makePropositionTagReducer(
       );
       return state;
     }
-    const editEntity = state.editEntity as PropositionJustificationsEditEntity;
+    const editEntity = state.editEntity as CreateJustifiedPropositionInput;
     const proposition = editEntity.proposition;
     const { tag } = action.payload;
 

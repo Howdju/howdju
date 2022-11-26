@@ -11,7 +11,7 @@ import t, {
   CANCEL_BUTTON_LABEL,
   COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts";
-import { translateJustificationErrorsFromFormInput } from "./viewModels";
+import { translateCreateJustificationErrorsToInput } from "./viewModels";
 
 class CounterJustificationEditor extends Component {
   constructor() {
@@ -66,7 +66,7 @@ class CounterJustificationEditor extends Component {
 
     // TODO(26): counter justifications can only have proposition compounds, so we might be able to
     // get rid of this function call?
-    const justificationErrors = translateJustificationErrorsFromFormInput(
+    const justificationErrors = translateCreateJustificationErrorsToInput(
       editEntity,
       errors
     );

@@ -1,7 +1,12 @@
 import { editors } from "./actions";
 import { EditorType, EditorTypes } from "./reducers/editors";
 import JustificationEditorFields from "./JustificationEditorFields";
-import { makePropositionCompoundAtom, makeUrl, schemaIds } from "howdju-common";
+import {
+  CreateJustificationInput,
+  makePropositionCompoundAtom,
+  makeUrl,
+  PropositionCompoundAtom,
+} from "howdju-common";
 import withEditor from "./editors/withEditor";
 import { AppDispatch } from "./setupStore";
 
@@ -31,7 +36,7 @@ const translators = {
     },
   onRemovePropositionCompoundAtom:
     (editorType: EditorType, editorId: string, dispatch: AppDispatch) =>
-    (index: number) => {
+    (_atom: PropositionCompoundAtom, index: number) => {
       dispatch(
         editors.removeListItem(
           editorType,
@@ -43,13 +48,13 @@ const translators = {
     },
 };
 
-// translateJustificationErrorsFromFormInput?
+// translateCreateJustificationErrorsToInput?
 
 /** A new Justification editor. */
 export default withEditor(
   EditorTypes.NEW_JUSTIFICATION,
   JustificationEditorFields,
   "justification",
-  schemaIds.newJustification,
+  CreateJustificationInput,
   translators
 );

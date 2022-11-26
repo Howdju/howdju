@@ -24,7 +24,7 @@ import {
   PropositionTagVotePolarities,
 } from "howdju-common";
 
-import { makeJustifiedPropositionEditModel } from "howdju-client-common";
+import { makeCreateJustifiedPropositionInput } from "howdju-client-common";
 
 import {
   editors,
@@ -43,7 +43,7 @@ import t, {
   JUSTIFICATION_TITLE,
 } from "./texts";
 import {
-  translateJustificationErrorsFromFormInput,
+  translateCreateJustificationErrorsToInput,
   combineIds,
   combineNames,
   combineSuggestionsKeys,
@@ -102,7 +102,7 @@ class CreatePropositionPage extends Component {
         this.props.editors.beginEdit(
           CreatePropositionPage.editorType,
           CreatePropositionPage.editorId,
-          makeJustifiedPropositionEditModel()
+          makeCreateJustifiedPropositionInput()
         );
         break;
       case CreatePropositionPageMode.CREATE_JUSTIFICATION: {
@@ -152,7 +152,7 @@ class CreatePropositionPage extends Component {
             writQuote,
           },
         };
-        const justifiedProposition = makeJustifiedPropositionEditModel(
+        const justifiedProposition = makeCreateJustifiedPropositionInput(
           {},
           justificationProps
         );
@@ -298,7 +298,7 @@ class CreatePropositionPage extends Component {
     const justificationEntityErrors =
       errors && doCreateJustification ? errors.justification : null;
     const justificationFormInputErrors =
-      translateJustificationErrorsFromFormInput(
+      translateCreateJustificationErrorsToInput(
         justification,
         justificationEntityErrors
       );

@@ -3,70 +3,58 @@ import merge from "lodash/merge";
 import asString from "lodash/toString";
 
 import { newImpossibleError, newExhaustedEnumError } from "./commonErrors";
+import { EntityId } from "./entities";
+import { isDefined } from "./general";
 import {
-  EntityId,
+  CreatePropositionCompoundAtomInput,
+  Entity,
   Justification,
-  Persisted,
+  JustificationRootPolarity,
+  JustificationRootTargetType,
+  JustificationVotePolarity,
   Persorg,
   PicRegion,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
-  PropositionTagVoteSubmissionModel,
-  Sentence,
   SourceExcerpt,
   Statement,
   Tag,
+  TagVote,
   Url,
   VidSegment,
   Writ,
   WritQuote,
-} from "./entities";
-import {
-  JustificationPolarities,
-  JustificationRootPolarities,
-  JustificationVotePolarities,
-  JustificationBasisTypes,
-  JustificationTargetTypes,
-  JustificationVotePolarity,
-  JustificationRootPolarity,
-  SentenceType,
-  SourceExcerptTypes,
-  PropositionTagVotePolarities,
-  JustificationRootTargetType,
-} from "./enums";
-import { isDefined } from "./general";
+} from "./zodSchemas";
+import { EntityName, EntityOrRef, isRef, Ref } from "./zodSchemaTypes";
 
-export const isPositive = (j: Justification) =>
-  j.polarity === JustificationPolarities.POSITIVE;
-export const isNegative = (j: Justification) =>
-  j.polarity === JustificationPolarities.NEGATIVE;
+export const isPositive = (j: Justification) => j.polarity === "POSITIVE";
+export const isNegative = (j: Justification) => j.polarity === "NEGATIVE";
 export const isRootPositive = (j: Justification) =>
-  j.rootPolarity === JustificationRootPolarities.POSITIVE;
+  j.rootPolarity === "POSITIVE";
 export const isRootNegative = (j: Justification) =>
-  j.rootPolarity === JustificationRootPolarities.NEGATIVE;
+  j.rootPolarity === "NEGATIVE";
 // If a justification targets another justification, its polarity should always be negative
 export const isCounter = (j: Justification) =>
-  j.target.type === JustificationTargetTypes.JUSTIFICATION && isNegative(j);
+  j.target.type === "JUSTIFICATION" && isNegative(j);
 export const isRootJustification = (j: Justification) =>
   j.target.type === j.rootTargetType && j.target.entity.id === j.rootTarget.id;
 export const hasQuote = (j: Justification) =>
-  j.basis.type === JustificationBasisTypes.WRIT_QUOTE &&
-  j.basis.entity.quoteText;
+  j.basis.type === "WRIT_QUOTE" && j.basis.entity.quoteText;
 export const isPropositionCompoundBased = (j: Justification) =>
-  j ? j.basis.type === JustificationBasisTypes.PROPOSITION_COMPOUND : false;
+  j ? j.basis.type === "PROPOSITION_COMPOUND" : false;
 export const isWritQuoteBased = (j: Justification) =>
-  j ? j.basis.type === JustificationBasisTypes.WRIT_QUOTE : false;
+  j ? j.basis.type === "WRIT_QUOTE" : false;
 
 export const negateJustificationVotePolarity = (
   polarity: JustificationVotePolarity
 ) => {
   switch (polarity) {
-    case JustificationVotePolarities.POSITIVE:
-      return JustificationVotePolarities.NEGATIVE;
-    case JustificationVotePolarities.NEGATIVE:
-      return JustificationVotePolarities.POSITIVE;
+    case "POSITIVE":
+      return "NEGATIVE";
+    case "NEGATIVE":
+      return "POSITIVE";
     default:
       throw newExhaustedEnumError(polarity);
   }
@@ -74,10 +62,10 @@ export const negateJustificationVotePolarity = (
 
 export const negateRootPolarity = (rootPolarity: JustificationRootPolarity) => {
   switch (rootPolarity) {
-    case JustificationRootPolarities.POSITIVE:
-      return JustificationRootPolarities.NEGATIVE;
-    case JustificationRootPolarities.NEGATIVE:
-      return JustificationRootPolarities.POSITIVE;
+    case "POSITIVE":
+      return "NEGATIVE";
+    case "NEGATIVE":
+      return "POSITIVE";
     default:
       throw newImpossibleError(rootPolarity);
   }
@@ -175,15 +163,15 @@ export const makeAccountSettings = (
 export const makeProposition = (props?: Partial<Proposition>): Proposition =>
   assign({ text: "" }, props);
 
-export const makeStatement = (
-  speaker: Persorg,
-  sentenceType: SentenceType,
-  sentence: Sentence
-): Statement => ({
-  speaker,
-  sentenceType,
-  sentence,
-});
+export const makeStatement = (props?: Partial<Statement>): Statement =>
+  merge(
+    {
+      speaker: makePersorg(),
+      sentenceType: "PROPOSITION",
+      sentence: makeProposition(),
+    },
+    props
+  );
 
 export const makeSourceExcerptJustification = (
   props?: Partial<Justification>
@@ -191,7 +179,7 @@ export const makeSourceExcerptJustification = (
   const init = {
     target: null,
     basis: {
-      type: JustificationBasisTypes.WRIT_QUOTE,
+      type: "WRIT_QUOTE",
       entity: null,
     },
   };
@@ -219,28 +207,30 @@ export const makeWritQuote = (props?: Partial<WritQuote>): WritQuote =>
 
 export const makePropositionCompound = (
   props?: Partial<PropositionCompound>
-): PropositionCompound => assign({ atoms: [makePropositionAtom()] }, props);
-
-export const makePropositionAtom = (
-  props?: Partial<PropositionCompoundAtom>
-): PropositionCompoundAtom => assign({ entity: makeProposition() }, props);
+): PropositionCompound =>
+  assign({ atoms: [makePropositionCompoundAtom()] }, props);
 
 export const makePropositionCompoundFromProposition = (
   proposition: Proposition
 ): PropositionCompound =>
   makePropositionCompound({
-    atoms: [makePropositionAtom({ entity: proposition })],
+    atoms: [makePropositionCompoundAtomFromProposition(proposition)],
   });
 
 export const makePropositionCompoundAtomFromProposition = (
   proposition: Proposition
-) => ({
+): PropositionCompoundAtom => ({
   entity: proposition,
 });
 
-export const makePropositionCompoundAtom = () => ({
-  entity: makeProposition(),
-});
+export const makePropositionCompoundAtom = (
+  props?: Partial<PropositionCompoundAtom>
+): PropositionCompoundAtom => assign({ entity: makeProposition() }, props);
+
+export const makeCreatePropositionCompoundAtomInput = (
+  props?: Partial<CreatePropositionCompoundAtomInput>
+): CreatePropositionCompoundAtomInput =>
+  assign({ entity: makeCreatePropositionCompoundAtomInput() }, props);
 
 export const makeUrl = (props?: Partial<Url>): Url => merge({ url: "" }, props);
 
@@ -272,19 +262,16 @@ export const makeTag = (props: Partial<Tag>): Tag =>
     props
   );
 
-export const tagEqual = (tag1: Tag, tag2: Tag) =>
-  idEqual(tag1.id, tag2.id) ||
-  (isDefined(tag1.name) && tag1.name === tag2.name);
-
-/** Transform a type to represent a submission model. */
-export type SubmissionModel<
-  T,
-  RequiredFields extends keyof T,
-  RelatedFields extends keyof T
-> = T &
-  Required<Pick<T, RequiredFields>> & {
-    [key in RelatedFields]: Persisted<T[key]>;
-  };
+export const tagEqual = (tag1: EntityOrRef<Tag>, tag2: EntityOrRef<Tag>) => {
+  if (idEqual(tag1.id, tag2.id)) {
+    return true;
+  }
+  if (isRef(tag1) || isRef(tag2)) {
+    // If their IDs were unequal, and either is a ref, then they cannot be equal.
+    return false;
+  }
+  return isDefined(tag1.name) && tag1.name === tag2.name;
+};
 
 /**
  * Transform a type to represent an input to a submission model factory.
@@ -300,28 +287,33 @@ export type FactoryInput<
   Required<Pick<T, RequiredFields>> & {
     // The related field can be persisted or not. If it is not persisted, it will
     // be deduplicated on the API with an equivalent entity.
-    [key in RelatedFields]: T[key] | Persisted<T[key]>;
+    [key in RelatedFields]: T[key] extends Entity
+      ? T[key] | Ref<EntityName<T[key]>>
+      : T[key];
   };
 
 export const makePropositionTagVote = (
   props: FactoryInput<PropositionTagVote, never, "proposition" | "tag">
-): PropositionTagVoteSubmissionModel =>
+): PropositionTagVote =>
   merge(
     {
-      polarity: PropositionTagVotePolarities.POSITIVE,
+      polarity: "POSITIVE",
     },
     props
   );
 
-export const makePropositionTagVoteSubmissionModel = (
-  props: FactoryInput<PropositionTagVote, "tag", "proposition">
-): PropositionTagVoteSubmissionModel =>
+export const makeCreatePropositionTagVote = makePropositionTagVote;
+
+export const makeTagVote = (
+  props: FactoryInput<TagVote, "targetType", "target" | "tag">
+): TagVote =>
   merge(
     {
-      polarity: PropositionTagVotePolarities.POSITIVE,
+      polarity: "POSITIVE",
     },
     props
   );
+export const makeCreateTagVote = makeTagVote;
 
 export const doTargetSameRoot = (j1: Justification, j2: Justification) =>
   idEqual(j1.rootTarget.id, j2.rootTarget.id) &&
@@ -342,7 +334,7 @@ export const makeSourceExcerpt = (
 ): SourceExcerpt =>
   merge(
     {
-      type: SourceExcerptTypes.WRIT_QUOTE,
+      type: "WRIT_QUOTE",
       entity: makeWritQuote(),
     },
     props

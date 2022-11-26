@@ -1,15 +1,14 @@
 import cloneDeep from "lodash/cloneDeep";
 import map from "lodash/map";
 
+import { CounteredJustification, Perspective } from "./entities";
 import {
-  CounteredJustification,
   Entity,
-  Perspective,
   PropositionCompound,
   PropositionCompoundAtom,
   Proposition,
   SourceExcerpt,
-} from "./entities";
+} from "./zodSchemas";
 
 import { newExhaustedEnumError } from "./commonErrors";
 
@@ -88,13 +87,9 @@ export const decircularizeSourceExcerpt = (sourceExcerpt: SourceExcerpt) => {
 export const decircularizeProposition = (
   proposition: Proposition
 ): Decircularized<Proposition> => {
-  const decircularized: Decircularized<Proposition> = cloneDeep(proposition);
-  if (proposition.justifications) {
-    decircularized.justifications = proposition.justifications.map(
-      decircularizeJustification
-    );
-  }
-  return decircularized;
+  // proposition has no circular references; proposiion.justifications should only exist on a view
+  // model, and we should remove .justifications before editing it, and so it won't be submitted either.
+  return proposition;
 };
 
 export const decircularizePerspective = (perspective: Perspective) => {

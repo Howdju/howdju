@@ -16,7 +16,7 @@ import {
   makeWritQuote,
 } from "howdju-common";
 import {
-  makeCounterJustification,
+  makeCreateCounterJustificationInput,
   makeJustificationViewModel,
 } from "howdju-client-common";
 
@@ -151,7 +151,8 @@ export default class LandingPage extends Component {
       },
     ];
 
-    const counterJustification = makeCounterJustification(proJustification);
+    const counterJustification =
+      makeCreateCounterJustificationInput(proJustification);
     counterJustification.rootPolarity = JustificationRootPolarities.NEGATIVE;
     counterJustification.basis = {
       type: JustificationBasisTypes.PROPOSITION_COMPOUND,

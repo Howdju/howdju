@@ -3,9 +3,16 @@ import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import { useDispatch, useSelector } from "react-redux";
 import get from "lodash/get";
 import reduce from "lodash/reduce";
+import { z } from "zod";
 
-import { BespokeValidationErrors } from "howdju-common";
-import { validate, emptyValidationResult } from "howdju-ajv-sourced";
+import {
+  BespokeValidationErrors,
+  EmptyBespokeValidationErrors,
+  newProgrammingError,
+  translateAjvErrors,
+  translateZodError,
+} from "howdju-common";
+import { validate } from "howdju-ajv-sourced";
 
 import { editors, flows } from "@/actions";
 import { AppDispatch, RootState } from "@/setupStore";
@@ -15,22 +22,31 @@ import t, {
   EDIT_ENTITY_SUBMIT_BUTTON_LABEL,
 } from "@/texts";
 import { AnyAction } from "redux";
-import { DirtyFields, EditorState, EditorType } from "@/reducers/editors";
+import {
+  DirtyFields,
+  EditorEntity,
+  EditorState,
+  EditorType,
+} from "@/reducers/editors";
 import { logger, SchemaId, toJson } from "howdju-common";
 import { isEqual, merge } from "lodash";
 import {
   ComponentId,
   ComponentName,
   EditorId,
+  OnKeyDownCallback,
   OnPropertyChangeCallback,
   OnSubmitCallback,
   SuggestionsKey,
 } from "@/types";
 
-export type CommitThenPutAction = {
+export class CommitThenPutAction {
   // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
   action: AnyAction;
-};
+  constructor(action: AnyAction) {
+    this.action = action;
+  }
+}
 
 type ListItemTranslator = (
   editorType: EditorType,
@@ -38,14 +54,24 @@ type ListItemTranslator = (
   dispatch: AppDispatch
 ) => (...args: any[]) => void;
 
+/**
+ * The props of this HOC's components.
+ *
+ * These props are combined with those additionally required by the specific HOC invocation to get
+ * the full props used by the derived component.
+ */
 export type WithEditorProps = {
   id: ComponentId;
   name: ComponentName;
   editorId: EditorId;
   className?: string;
   submitButtonText?: string;
+  onKeyDown?: OnKeyDownCallback;
   editorCommitBehavior?: "JustCommit" | "CommitThenView" | CommitThenPutAction;
 };
+/**
+ * The fields that must be present on the fields component.
+ */
 export type EntityEditorFieldsProps = {
   id: ComponentId;
   name: ComponentName;
@@ -74,14 +100,22 @@ export type EntityEditorFieldsProps = {
  */
 export default function withEditor<
   P extends EntityEditorFieldsProps,
-  LIT extends { [key: string]: ListItemTranslator }
+  LIT extends { [key: string]: ListItemTranslator },
+  SchemaOutput = any,
+  SchemaInput = any
 >(
   editorType: EditorType,
   EntityEditorFields: React.FC<P>,
   entityPropName: string,
-  schemaId: SchemaId,
-  listItemTranslators?: LIT
+  schemaId: SchemaId | undefined,
+  listItemTranslators?: LIT,
+  zodSchema:
+    | z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput>
+    | undefined = undefined
 ) {
+  if (!(schemaId && zodSchema)) {
+    throw newProgrammingError("One of schemaId and zodSchema is required.");
+  }
   type RestPropsKeys = Exclude<
     keyof P,
     keyof EntityEditorFieldsProps | keyof LIT
@@ -96,6 +130,27 @@ export default function withEditor<
     [key in RestPropsKeys as undefined extends P[key] ? never : key]: P[key];
   };
   type RestProps = RequiredRestPropsKeys & OptionalRestPropsKeys;
+
+  const validateEntity = (
+    editEntity: EditorEntity
+  ): BespokeValidationErrors => {
+    if (!editEntity) {
+      return EmptyBespokeValidationErrors;
+    }
+    if (schemaId) {
+      const result = validate(schemaId, editEntity);
+      if (result.isValid) {
+        return EmptyBespokeValidationErrors;
+      }
+      return translateAjvErrors(result.errors);
+    }
+    const result = zodSchema.safeParse(editEntity);
+    if (result.success) {
+      return EmptyBespokeValidationErrors;
+    }
+    return translateZodError(result.error);
+  };
+
   return function EntityEditor(props: WithEditorProps & RestProps) {
     const {
       id,
@@ -103,6 +158,7 @@ export default function withEditor<
       editorId,
       className,
       submitButtonText,
+      onKeyDown,
       editorCommitBehavior = "JustCommit",
     } = props;
 
@@ -152,9 +208,9 @@ export default function withEditor<
       wasSubmitAttempted,
     } = editorState as EditorState;
 
-    const { errors: clientValidationErrors } = editEntity
-      ? validate(schemaId, editEntity)
-      : emptyValidationResult();
+    const clientValidationErrors = editEntity
+      ? validateEntity(editEntity)
+      : EmptyBespokeValidationErrors;
     // Because the API should validate the same data using the same schema, it shouldn't be possible
     // to receive API errors that didn't also fail client validation.
     if (
@@ -182,6 +238,7 @@ export default function withEditor<
       errors,
       dirtyFields,
       wasSubmitAttempted,
+      onKeyDown,
       // TODO(1): can we remove this typecast? https://stackoverflow.com/questions/74072249/
     } as unknown as P;
 

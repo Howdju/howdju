@@ -18,18 +18,23 @@ import {
   Tag,
   Persisted,
   PropositionTagVote,
-  makePropositionTagVoteSubmissionModel,
+  makeCreatePropositionTagVote,
   JustificationRootTargetTypes,
   httpMethods,
   HttpMethod,
   JustificationRootTargetInfo,
-  decircularizeProposition,
   decircularizeJustification,
   SortDirections,
   encodeQueryStringObject,
   JustificationSearchFilters,
   AuthToken,
   DatetimeString,
+  PropositionRef,
+  SentenceType,
+  TagVote,
+  TaggableEntityType,
+  TagVotePolarities,
+  makeCreateTagVote,
 } from "howdju-common";
 
 import {
@@ -49,6 +54,7 @@ import {
   statementsSchema,
   tagSchema,
   tagsSchema,
+  tagVoteSchema,
   userSchema,
   writQuoteSchema,
   writQuotesSchema,
@@ -259,10 +265,6 @@ const rootTargetEndpointsByType = {
     endpoint: "statements",
     normalizationSchema: { statement: statementSchema },
   },
-  [JustificationRootTargetTypes.JUSTIFICATION]: {
-    endpoint: "statements",
-    normalizationSchema: { justification: justificationSchema },
-  },
 };
 
 const defaultSorts = `created=${SortDirections.DESCENDING}`;
@@ -397,7 +399,10 @@ export const api = {
   ),
   fetchSentenceStatements: apiActionCreator(
     "FETCH_SENTENCE_STATEMENTS",
-    (sentenceType, sentenceId) => ({ sentenceType, sentenceId }),
+    (sentenceType: SentenceType, sentenceId: EntityId) => ({
+      sentenceType,
+      sentenceId,
+    }),
     (payload) => ({
       endpoint: `statements?sentenceType=${payload.sentenceType}&sentenceId=${payload.sentenceId}`,
       normalizationSchema: { statements: statementsSchema },
@@ -786,23 +791,70 @@ export const api = {
 
   createTag: apiActionCreator(
     "CREATE_TAG",
-    (tagTagetType, tagTargetId, tag, tagVote) => ({
-      tagTagetType,
-      tagTargetId,
-      tag,
-      tagVote,
+    (
+      tagTargetType: TaggableEntityType,
+      tagTargetId: EntityId,
+      tag: Tag,
+      tagVote: TagVote
+    ) => ({
+      tagVote: makeCreateTagVote({
+        targetType: tagTargetType,
+        target: {
+          id: tagTargetId,
+        },
+        polarity: TagVotePolarities.POSITIVE,
+        tag,
+      }),
+      previousTagVote: tagVote,
+    }),
+    (payload) => ({
+      endpoint: "tag-votes",
+      fetchInit: {
+        method: httpMethods.POST,
+        body: payload,
+      },
+      normalizationSchema: { tagVote: tagVoteSchema },
     })
   ),
   createAntiTag: apiActionCreator(
     "CREATE_ANTI_TAG",
-    (tagTagetType, tagTargetId, tag, tagVote) => ({
-      tagTagetType,
-      tagTargetId,
-      tag,
-      tagVote,
+    (
+      tagTargetType: TaggableEntityType,
+      tagTargetId: EntityId,
+      tag: Tag,
+      tagVote: TagVote
+    ) => ({
+      tagVote: makeCreateTagVote({
+        targetType: tagTargetType,
+        target: {
+          id: tagTargetId,
+        },
+        polarity: TagVotePolarities.NEGATIVE,
+        tag,
+      }),
+      previousTagVote: tagVote,
+    }),
+    (payload) => ({
+      endpoint: "tag-votes",
+      fetchInit: {
+        method: httpMethods.POST,
+        body: payload,
+      },
+      normalizationSchema: { tagVote: tagVoteSchema },
     })
   ),
-  unTag: apiActionCreator("UN_TAG", (tagVote) => ({ tagVote })),
+  unTag: apiActionCreator(
+    "UN_TAG",
+    (tagVote: Persisted<TagVote>) => ({
+      tagVote,
+    }),
+    (payload) => ({
+      endpoint: `tag-votes/${payload.tagVote.id}`,
+      fetchInit: {
+        method: httpMethods.DELETE,
+      },
+    })
+  ),
 
   tagProposition: apiActionCreator(
     "TAG_PROPOSITION",
@@ -811,9 +863,9 @@ export const api = {
       tag: Tag,
       propositionTagVote: PropositionTagVote
     ) => ({
-      propositionTagVote: makePropositionTagVoteSubmissionModel({
+      propositionTagVote: makeCreatePropositionTagVote({
         polarity: PropositionTagVotePolarities.POSITIVE,
-        proposition: { id: propositionId },
+        proposition: PropositionRef.parse({ id: propositionId }),
         tag,
       }),
       prevPropositionTagVote: propositionTagVote,
@@ -832,9 +884,9 @@ export const api = {
   antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
     (propositionId, tag, propositionTagVote) => ({
-      propositionTagVote: makePropositionTagVoteSubmissionModel({
+      propositionTagVote: makeCreatePropositionTagVote({
         polarity: PropositionTagVotePolarities.NEGATIVE,
-        proposition: { id: propositionId },
+        proposition: PropositionRef.parse({ id: propositionId }),
         tag,
       }),
       prevPropositionTagVote: propositionTagVote,
@@ -886,7 +938,7 @@ export const api = {
       fetchInit: {
         method: httpMethods.PUT,
         body: {
-          proposition: decircularizeProposition(payload.proposition),
+          proposition: payload.proposition,
         },
       },
     })

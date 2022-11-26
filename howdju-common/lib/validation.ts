@@ -1,25 +1,26 @@
-import { filter, head, isObject } from "lodash";
+import { cloneDeep, filter, head, isObject } from "lodash";
+import { Writable } from "type-fest";
 import { EntityErrorCode, ModelErrorCode } from "./codes";
 import { logger } from "./logger";
 
-interface FieldSubErrors {
+export interface FieldSubErrors {
   // Errors for fields on this field
   fieldErrors: FieldErrors;
   // Errors for items in this field (only if this field is an array)
   itemErrors: FieldSubErrors[];
 }
-type FieldErrorCode = ModelErrorCode | EntityErrorCode;
+export type FieldErrorCode = ModelErrorCode | EntityErrorCode;
 // In a few of our services we perform ad-hoc validation where we include both the code and the
 // value
 /** @deprecated use ValidationErrors instead. */
 export type FieldErrorCodeValue = {
   code: FieldErrorCode;
-  // The value that resulted in the validation error.
-  value: any;
+  // The value that resulted in the validation error, if applicable.
+  value?: any;
 };
 type FieldErrorValue = FieldErrorCode | FieldErrorCodeValue;
 interface FieldErrors {
-  // TODO(26): FieldSubErrors will probably be overwritten by JSON serialization.
+  // TODO(26): FieldSubErrors will probably be ignored by JSON serialization.
   [key: string]: FieldErrorValue[] & FieldSubErrors;
 }
 export type FieldErrorsValue = FieldErrors[string];
@@ -44,7 +45,7 @@ export type ValidationErrors<T> = T extends Array<any>
 
 type ArrayValidationErrors<T extends Array<any>> = {
   errors: {
-    [code in FieldErrorCode]: {
+    [code in FieldErrorCode]?: {
       value?: any;
     };
   }[];
@@ -54,7 +55,7 @@ type ArrayValidationErrors<T extends Array<any>> = {
 type ObjectValidationErrors<T> = {
   errors: {
     [field in keyof T]: {
-      [code in FieldErrorCode]: {
+      [code in FieldErrorCode]?: {
         value?: any;
       };
     };
@@ -69,6 +70,12 @@ export const EmptyBespokeValidationErrors: Readonly<BespokeValidationErrors> = {
   modelErrors: [] as ModelErrorCode[],
   fieldErrors: {},
 } as const;
+
+export function newBespokeValidationErrors() {
+  return cloneDeep(
+    EmptyBespokeValidationErrors
+  ) as Writable<BespokeValidationErrors>;
+}
 
 /**
  * Return the first field error having code.

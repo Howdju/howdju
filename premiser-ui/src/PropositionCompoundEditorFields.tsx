@@ -8,12 +8,18 @@ import ErrorMessages from "./ErrorMessages";
 import SingleLineTextField from "./SingleLineTextField";
 import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
 import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
-import { PropositionCompound, PropositionCompoundAtom } from "howdju-common";
+import {
+  BespokeValidationErrors,
+  PropositionCompound,
+  PropositionCompoundAtom,
+} from "howdju-common";
 import {
   ComponentId,
   ComponentName,
-  OnKeyDownCallback,
+  OnAddCallback,
   OnPropertyChangeCallback,
+  OnRemoveCallback,
+  OnSubmitCallback,
   SuggestionsKey,
 } from "./types";
 
@@ -21,18 +27,15 @@ const atomsName = "atoms";
 
 type Props = {
   propositionCompound?: PropositionCompound;
-  id?: ComponentId;
-  name?: ComponentName;
+  id: ComponentId;
+  name: ComponentName;
   suggestionsKey?: SuggestionsKey;
   onPropertyChange: OnPropertyChangeCallback;
-  onAddPropositionCompoundAtom: (index: number) => void;
-  onRemovePropositionCompoundAtom: (
-    atom: PropositionCompoundAtom,
-    index: number
-  ) => any;
-  errors?: object;
+  onAddPropositionCompoundAtom: OnAddCallback;
+  onRemovePropositionCompoundAtom: OnRemoveCallback<PropositionCompoundAtom>;
+  errors?: BespokeValidationErrors;
   disabled?: boolean;
-  onSubmit?: OnKeyDownCallback;
+  onSubmit?: OnSubmitCallback;
 };
 
 export default function PropositionCompoundEditorFields(props: Props) {

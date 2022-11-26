@@ -12,16 +12,16 @@ import {
   WritQuote,
   Proposition,
   newUnimplementedError,
+  CreateWritQuoteInput,
+  CreatePropositionCompoundInput,
+  CreateSourceExcerptInput,
+  CreateJustificationBasisInput,
 } from "howdju-common";
 import {
-  JustificationBasisCreateModel,
-  makeJustifiedPropositionEditModel,
-  makePropositionCompoundEditModel,
-  makeSourceExcerptEditModel,
-  makeWritQuoteEditModel,
-  PropositionCompoundEditModel,
-  SourceExcerptCreateModel,
-  WritQuoteEditModel,
+  makeCreateJustifiedPropositionInput,
+  makeCreatePropositionCompoundInput,
+  makeCreateSourceExcerptInput,
+  makeCreateWritQuoteInput,
 } from "howdju-client-common";
 
 import { api, editors, flows, str } from "@/actions";
@@ -61,9 +61,9 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
         );
 
         let type: JustificationBasisType;
-        let propositionCompound: PropositionCompoundEditModel | undefined;
-        let writQuote: WritQuoteEditModel | undefined;
-        let sourceExcerpt: SourceExcerptCreateModel | undefined;
+        let propositionCompound: CreatePropositionCompoundInput | undefined;
+        let writQuote: CreateWritQuoteInput | undefined;
+        let sourceExcerpt: CreateSourceExcerptInput | undefined;
 
         switch (alternatives.basisType) {
           case JustificationBasisSourceTypes.PROPOSITION_COMPOUND:
@@ -82,22 +82,22 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
           case JustificationBasisSourceTypes.WRIT_QUOTE:
             type = "WRIT_QUOTE";
             writQuote = removeWritQuoteIds(alternatives.writQuote);
-            sourceExcerpt = makeSourceExcerptEditModel({ writQuote });
+            sourceExcerpt = makeCreateSourceExcerptInput({ writQuote });
             break;
           default:
             throw newExhaustedEnumError(alternatives);
         }
 
-        const basis: JustificationBasisCreateModel = {
+        const basis: CreateJustificationBasisInput = {
           type,
           propositionCompound:
-            propositionCompound || makePropositionCompoundEditModel(),
-          writQuote: writQuote || makeWritQuoteEditModel(),
-          sourceExcerpt: sourceExcerpt || makeSourceExcerptEditModel(),
+            propositionCompound || makeCreatePropositionCompoundInput(),
+          writQuote: writQuote || makeCreateWritQuoteInput(),
+          sourceExcerpt: sourceExcerpt || makeCreateSourceExcerptInput(),
         };
 
-        const editModel = makeJustifiedPropositionEditModel({}, { basis });
-        yield put(editors.beginEdit(editorType, editorId, editModel));
+        const model = makeCreateJustifiedPropositionInput({}, { basis });
+        yield put(editors.beginEdit(editorType, editorId, model));
       }
     }
   );

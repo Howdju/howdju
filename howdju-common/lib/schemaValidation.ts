@@ -20,6 +20,12 @@ import {
   Schema,
   schemasById,
 } from "./schemas";
+import {
+  BespokeValidationErrors,
+  FieldErrorCode,
+  newBespokeValidationErrors,
+} from "./validation";
+import { forOwn, isArray, isObject } from "lodash";
 
 export function makeStandaloneCode() {
   const ajv = makeAjv({ code: { source: true } });
@@ -77,6 +83,10 @@ type ToValidationError<S extends Schema> = {
   }
     ? // then recurse on that schema
       ToValidationError<typeof schemasById[S["properties"][prop]["$ref"]]>
+    : S["properties"][prop] extends {
+        type: "array";
+      }
+    ? ValidationError[]
     : // otherwise it's a possible ValidationError (possible because of `+?` above.)
       ValidationError;
 };
@@ -156,4 +166,34 @@ export function emptyValidationResult<T extends SchemaId | Schema>(
   _schemaOrRef?: T
 ): ValidationResult<ToSchema<T>> {
   return { isValid: true, errors: {} };
+}
+
+export function translateAjvErrors<S extends Schema>(
+  ajvErrors: ValidationErrors<S>
+): BespokeValidationErrors {
+  const errors = newBespokeValidationErrors();
+
+  forOwn(ajvErrors, (val, key) => {
+    if (!val) {
+      return;
+    }
+    if (isArray(val)) {
+      errors.fieldErrors[key].itemErrors = val.map((v) => ({
+        code: v.keyword as FieldErrorCode,
+        fieldErrors: {},
+        itemErrors: [],
+      }));
+      errors.hasErrors = true;
+    } else if ("keyword" in val) {
+      errors.fieldErrors[key].push({
+        code: val.keyword as FieldErrorCode,
+      });
+      errors.hasErrors = true;
+    } else if (isObject(val)) {
+      const subErrors = translateAjvErrors(val);
+      errors.fieldErrors = subErrors.fieldErrors;
+      errors.hasErrors = subErrors.hasErrors;
+    }
+  });
+  return errors;
 }

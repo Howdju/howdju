@@ -1,5 +1,4 @@
 import { Entity, EntityId } from "howdju-common";
-import { UIEvent } from "react";
 
 export interface ContextTrailItemInfo {
   targetType: "PROPOSITION" | "STATEMENT" | "JUSTIFICATION";
@@ -16,7 +15,7 @@ export interface ContextTrailItem {
  *
  * This allows us to type props to receive menu items.
  */
-export type MenuItems = React.ReactNode | React.ReactNode[];
+export type MenuItems = JSX.Element | JSX.Element[];
 
 /**
  * A DOM element's `id` attribute. If passed to a container, the ID should be

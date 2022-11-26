@@ -26,7 +26,7 @@ import {
 import {
   isVerified,
   isDisverified,
-  makeCounterJustification,
+  makeCreateCounterJustificationInput,
 } from "howdju-client-common";
 
 import {
@@ -100,7 +100,7 @@ class JustificationBranch extends Component {
     this.props.editors.beginEdit(
       EditorTypes.COUNTER_JUSTIFICATION,
       counterJustificationEditorId(justification),
-      makeCounterJustification(justification)
+      makeCreateCounterJustificationInput(justification)
     );
   };
 

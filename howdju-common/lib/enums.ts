@@ -1,17 +1,9 @@
-export const EntityTypes = {
-  JUSTIFICATION: "JUSTIFICATION",
-  JUSTIFICATION_VOTE: "JUSTIFICATION_VOTE",
-  PASSWORD_HASH: "PASSWORD_HASH",
-  PASSWORD_RESET_REQUEST: "PASSWORD_RESET_REQUEST",
-  PROPOSITION: "PROPOSITION",
-  PROPOSITION_TAG_VOTE: "PROPOSITION_TAG_VOTE",
-  REGISTRATION_REQUEST: "REGISTRATION_REQUEST",
-  STATEMENT: "STATEMENT",
-  USER: "USER",
-  WRIT: "WRIT",
-  WRIT_QUOTE: "WRIT_QUOTE",
-} as const;
-export type EntityType = typeof EntityTypes[keyof typeof EntityTypes];
+/** Enum values that apply to all apps.
+ *
+ * Originally this file was where we defined all enums, including those relating to entity fields.
+ * But now we can derive many or most of those from our Zod schemas. Note that some of the values in
+ *this file should still be derived from our Zod schemas.
+ */
 
 export const ActionTypes = {
   /** The user created something */
@@ -45,55 +37,6 @@ export const ActionSubjectTypes = {
   URL: "URL",
 } as const;
 
-export const JustificationRootTargetTypes = {
-  PROPOSITION: "PROPOSITION",
-  STATEMENT: "STATEMENT",
-  JUSTIFICATION: "JUSTIFICATION",
-} as const;
-export type JustificationRootTargetType =
-  typeof JustificationRootTargetTypes[keyof typeof JustificationRootTargetTypes];
-// A justification can target anything that can be a root target.
-// Additionally, it can target other justifications to counter them.
-export const JustificationTargetTypes = {
-  PROPOSITION: "PROPOSITION",
-  STATEMENT: "STATEMENT",
-  JUSTIFICATION: "JUSTIFICATION",
-} as const;
-export type JustificationTargetType =
-  typeof JustificationTargetTypes[keyof typeof JustificationTargetTypes];
-
-export const JustificationPolarities = {
-  POSITIVE: "POSITIVE",
-  NEGATIVE: "NEGATIVE",
-} as const;
-export type JustificationPolarity =
-  typeof JustificationPolarities[keyof typeof JustificationPolarities];
-// For now they have the same values, but let's at least keep track of the usages separately
-export const JustificationRootPolarities = JustificationPolarities;
-export type JustificationRootPolarity =
-  typeof JustificationRootPolarities[keyof typeof JustificationRootPolarities];
-
-export const JustificationBasisTypes = {
-  /* One or more propositions */
-  PROPOSITION_COMPOUND: "PROPOSITION_COMPOUND",
-  /**
-   * A quote from a written source
-   *
-   * @deprecated Use SOURCE_EXCERPT's WRIT_QUOTE type instead.
-   */
-  WRIT_QUOTE: "WRIT_QUOTE",
-  /** An except from some fixed media. See {@link SourceExcerpt} */
-  SOURCE_EXCERPT: "SOURCE_EXCERPT",
-  /* One or more {@see JustificationBasisCompoundAtomTypes}
-   *
-   * This type will replace the others
-   *
-   * @deprecated
-   */
-  JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
-} as const;
-export type JustificationBasisType =
-  typeof JustificationBasisTypes[keyof typeof JustificationBasisTypes];
 /**
  * Anything you can start with to create a justification based upon.
  *
@@ -105,14 +48,19 @@ export type JustificationBasisType =
 export const JustificationBasisSourceTypes = {
   /* One or more propositions */
   PROPOSITION_COMPOUND: "PROPOSITION_COMPOUND",
-  /* A quote */
-  WRIT_QUOTE: "WRIT_QUOTE",
-  /* One or more {@see JustificationBasisCompoundAtomTypes}
+  /** A quote
    *
-   * This type will replace the others
+   * @deprecated
+   */
+  WRIT_QUOTE: "WRIT_QUOTE",
+  /**
+   * One or more {@see JustificationBasisCompoundAtomTypes}
+   *
+   * @deprecated
    */
   JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
   PROPOSITION: "PROPOSITION",
+  /** @deprecated */
   SOURCE_EXCERPT_PARAPHRASE: "SOURCE_EXCERPT_PARAPHRASE",
 } as const;
 export type JustificationBasisSourceType =
@@ -126,28 +74,6 @@ export const JustificationBasisCompoundAtomTypes = {
 /** @deprecated */
 export type JustificationBasisCompoundAtomType =
   typeof JustificationBasisCompoundAtomTypes[keyof typeof JustificationBasisCompoundAtomTypes];
-
-export const SourceExcerptTypes = {
-  WRIT_QUOTE: "WRIT_QUOTE",
-  PIC_REGION: "PIC_REGION",
-  VID_SEGMENT: "VID_SEGMENT",
-} as const;
-export type SourceExcerptType =
-  typeof SourceExcerptTypes[keyof typeof SourceExcerptTypes];
-
-export const JustificationVotePolarities = {
-  POSITIVE: "POSITIVE",
-  NEGATIVE: "NEGATIVE",
-} as const;
-export type JustificationVotePolarity =
-  typeof JustificationVotePolarities[keyof typeof JustificationVotePolarities];
-export const PropositionTagVotePolarities = {
-  POSITIVE: "POSITIVE",
-  NEGATIVE: "NEGATIVE",
-} as const;
-export type PropositionTagVotePolarity =
-  typeof PropositionTagVotePolarities[keyof typeof PropositionTagVotePolarities];
-export type TagVotePolarity = PropositionTagVotePolarity;
 
 export const SortDirections = {
   ASCENDING: "ascending",
@@ -168,6 +94,7 @@ export const JobHistoryStatuses = {
 } as const;
 
 export const PropositionCompoundAtomTypes = {
+  // What was I thinking of adding here? Statements?
   PROPOSITION: "PROPOSITION",
 } as const;
 
@@ -182,39 +109,3 @@ export const ValidJustificationSearchFilters = [
 export type JustificationSearchFilters = {
   [key in typeof ValidJustificationSearchFilters[number]]?: string;
 };
-
-export const SentenceTypes = {
-  PROPOSITION: "PROPOSITION",
-  STATEMENT: "STATEMENT",
-} as const;
-export type SentenceType = typeof SentenceTypes[keyof typeof SentenceTypes];
-
-export const UrlTargetAnchorTypes = {
-  TEXT_QUOTE: "TEXT_QUOTE",
-} as const;
-export type UrlTargetAnchorType =
-  typeof UrlTargetAnchorTypes[keyof typeof UrlTargetAnchorTypes];
-
-export const ContentReportTypes = {
-  HARASSMENT: "HARASSMENT",
-  THREATENING_VIOLENCE: "THREATENING_VIOLENCE",
-  HATEFUL: "HATEFUL",
-  OBSCENE: "OBSCENE",
-  SEXUALIZATION_OF_MINORS: "SEXUALIZATION_OF_MINORS",
-  SHARING_PRIVATE_PERSONAL_INFORMATION: "SHARING_PRIVATE_PERSONAL_INFORMATION",
-  PORNOGRAPHY: "PORNOGRAPHY",
-  ILLEGAL_ACTIVITY: "ILLEGAL_ACTIVITY",
-  IMPERSONATION: "IMPERSONATION",
-  COPYRIGHT_VIOLATION: "COPYRIGHT_VIOLATION",
-  TRADEMARK_VIOLATION: "TRADEMARK_VIOLATION",
-  SPAM: "SPAM",
-  OTHER: "OTHER",
-} as const;
-export type ContentReportType =
-  typeof ContentReportTypes[keyof typeof ContentReportTypes];
-
-export const TaggableEntityTypes = {
-  PROPOSITION: "PROPOSITION",
-};
-export type TaggableEntityType =
-  typeof TaggableEntityTypes[keyof typeof TaggableEntityTypes];

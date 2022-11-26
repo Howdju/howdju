@@ -32,10 +32,19 @@ from the proposition should not appear.
 Practically speaking, it means that fields like:
 
 ```typescript
-sourceExcerpt: {
-  type: "WritQuote" | "PicRegion" | "VidSegment";
-  entity: WritQuote | PicRegion | VidSegment;
-}
+sourceExcerpt:
+  | {
+    type: "WritQuote";
+    entity: WritQuote;
+  }
+  | {
+    type: "PicRegion";
+    entity: PicRegion ;
+  }
+  | {
+    type: "VidSegment";
+    entity: VidSegment;
+  }
 ```
 
 will have an edit model representation like:
@@ -49,7 +58,7 @@ sourceExcerpt: {
 }
 ```
 
-Where the `type` indicates which of the alternatives the user selected.
+Where the `type` indicates which of the alternatives the user actually wants persisted upon creation.
 
 ## API `SubmissionModel`s
 
@@ -81,8 +90,8 @@ submisison models when they represent the creation of a newly related entity.
 contain additional useful fields for displaying the entity to a user. They
 may contain `Tag`s or `Vote`s that are tailored to the viewing user.
 
-Entities appearing in ViewModels are always a persisted Entity. We often also want
-their fields to be required for display. We use the helper
+Entities appearing in ViewModels are always a persisted Entity. (Unpersisted Entities would be
+`CreateModel`s.) We often also want their fields to be required for display. We use the helper
 `Materialized\<TEntity>` to represent this.
 
 `ViewModel`s are often returned directly from the API for a client to display,
@@ -95,8 +104,8 @@ Entities read from the database database are materialized, which means that they
 contain both the Entity's `id` and full versions of many of the Entity's fields.
 An Entity may be materialized in different ways for different purposes:
 
-- Including related fields or not
-- Including all fields or not.
+- Including some or all related fields or not
+- Including some or all fields or not.
 
 ## `FactoryInput`s
 
@@ -119,3 +128,60 @@ To support that, we have the `FactoryInput` helper:
 ```typescript
 type FactoryInput<T, RequiredFields extends keyof T, RelatedFields extends keyof T>
 ```
+
+## Types table
+
+| Name           | Meaning                                                                         |
+| -------------- | ------------------------------------------------------------------------------- |
+| `CreateXInput` | Model for inputing the creation of an entity in a client.                       |
+|                |                                                                                 |
+|                | These are usually more complicated than edit models because users               |
+|                | can select from among any of an entity's possibilities when creating them.      |
+|                | Submitting these is also the most complicated on backends because we offer      |
+|                | a permissive submission data model: users can either create new related         |
+|                | entities, reference existing ones by ID, or reference equivalent ones           |
+|                | incidentally.                                                                   |
+| `EditXInput`   | Model for inputing an edit of an entity in a client.                            |
+|                |
+|                | These are usually less complicated than create models because there are         |
+|                | fewer ways to edit an entity than to create it. Usually users can only edit     |
+|                | the properties of an entity, not its relationships (although only under         |
+|                | certain conditions.) Users must create new entities to have an entity with      |
+|                | updated relationships.                                                          |
+| `CreateX` /    | Models for sending the creation/edit of an entity to an API.                    |
+| `EditX`        |
+|                | Alternatives from `CreateXInput` have been consolidated, but the model may      |
+|                | still refer to related entities.                                                |
+|                |
+|                | These models must be validated before operating on them. Validation             |
+|                | boundaries occur at the boundaries of ownership.                                |
+| `X`            | Model for representing an entity.                                               |
+|                |
+|                | Used for representing an entity server- and client-side and returning an entity |
+|                | from the API                                                                    |
+|                |
+|                | These models do not require validation since they either come from the database |
+|                | or do not represent modifications to the system..                               |
+
+Model locations:
+
+- howdju-common/lib/zodSchemas.ts
+
+  Our entity validation schemas. Only things that must be validated should go here.
+
+- howdju-common/lib/models.ts
+
+  Factories and helpers for models that are re-used across any endpoint.
+
+- howdju-common/lib/enums.ts
+
+  Enums that are not derived from Zod schemas.
+
+- howdju-common/lib/entities.ts
+- howdju-client-common/lib/models.ts
+
+  Models that are re-used across clients
+
+- premiser-ui/src/viewModels.ts
+
+  Models that are web app specific.

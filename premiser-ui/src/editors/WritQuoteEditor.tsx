@@ -1,7 +1,8 @@
+import { makeUrl, schemaIds } from "howdju-common";
+
+import { editors } from "../actions";
 import WritQuoteEditorFields from "../WritQuoteEditorFields";
 import withEditor from "@/editors/withEditor";
-import { makeUrl, schemaIds } from "howdju-common";
-import { editors } from "../actions";
 import { AppDispatch } from "@/setupStore";
 import { EditorType, EditorTypes } from "@/reducers/editors";
 

@@ -16,7 +16,7 @@ import {
 import { selectEditorState } from "../../selectors";
 import { EditorTypes, EntityTypeDescriptions } from "../../reducers/editors";
 import { api, editors, str, ui } from "../../actions";
-import { consolidateNewJustificationEntities } from "../../viewModels";
+import { consolidateCreateJustificationInput } from "../../viewModels";
 import { newEditorCommitResultError } from "../../uiErrors";
 import { callApiForResource } from "../resourceApiSagas";
 import { logger } from "@/logger";
@@ -39,7 +39,7 @@ const editorTypeCommitApiResourceActions = {
 
           // If the statement is justified, then create a justification targeting the statement
           if (model.doCreateJustification) {
-            const justification = consolidateNewJustificationEntities(
+            const justification = consolidateCreateJustificationInput(
               model.justification
             );
             justification.rootTargetType =
@@ -53,7 +53,7 @@ const editorTypeCommitApiResourceActions = {
 
           return api.createStatement(statement);
         } else if (model.doCreateJustification) {
-          const justification = consolidateNewJustificationEntities(
+          const justification = consolidateCreateJustificationInput(
             model.justification
           );
           // It is sort of an arbitrary decision to create the justification instead of the proposition.
@@ -71,7 +71,7 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.COUNTER_JUSTIFICATION]: (model, crudAction) => {
     switch (crudAction) {
       case CrudActions.CREATE: {
-        const justification = consolidateNewJustificationEntities(model);
+        const justification = consolidateCreateJustificationInput(model);
         return api.createJustification(justification);
       }
     }
@@ -79,7 +79,7 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.NEW_JUSTIFICATION]: (model, crudAction) => {
     switch (crudAction) {
       case CrudActions.CREATE: {
-        const justification = consolidateNewJustificationEntities(model);
+        const justification = consolidateCreateJustificationInput(model);
         return api.createJustification(justification);
       }
     }
@@ -114,13 +114,17 @@ function constructStatement(speakers, proposition) {
   // but we need to build the statements outward so that we have the target of the next statement.
   // So take them in reverse order
   speakers = reverse(clone(speakers));
-  let statement = makeStatement(
-    speakers[0],
-    SentenceTypes.PROPOSITION,
-    proposition
-  );
+  let statement = makeStatement({
+    speaker: speakers[0],
+    sentenceType: SentenceTypes.PROPOSITION,
+    sentence: proposition,
+  });
   for (const speaker of drop(speakers, 1)) {
-    statement = makeStatement(speaker, SentenceTypes.STATEMENT, statement);
+    statement = makeStatement({
+      speaker,
+      sentenceType: SentenceTypes.STATEMENT,
+      sentence: statement,
+    });
   }
   return statement;
 }

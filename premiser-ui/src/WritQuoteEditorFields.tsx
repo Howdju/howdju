@@ -16,11 +16,10 @@ import { toErrorText } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
-import { DirtyFields } from "@/reducers/editors";
 import {
   ComponentId,
   ComponentName,
-  OnClickCallback,
+  OnAddCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   OnRemoveCallback,
@@ -40,12 +39,10 @@ interface Props {
   onPropertyChange: OnPropertyChangeCallback;
   onKeyDown?: OnKeyDownCallback;
   onSubmit: OnSubmitCallback;
-  onAddUrl: OnClickCallback;
+  onAddUrl: OnAddCallback;
   onRemoveUrl: OnRemoveCallback<Url>;
   errors: BespokeValidationErrors;
-  disabled: boolean;
-  dirtyFields: DirtyFields;
-  wasSubmitAttempted: boolean;
+  disabled?: boolean;
 }
 
 const writQuoteTextName = "quoteText";
@@ -177,7 +174,7 @@ const WritQuoteEditorFields = (props: Props) => {
         className="add-button"
         children="Add URL"
         iconEl={<FontIcon>add</FontIcon>}
-        onClick={onAddUrl}
+        onClick={() => onAddUrl(urls.length)}
         disabled={disabled}
       />
       {hasErrors && errors.modelErrors && (

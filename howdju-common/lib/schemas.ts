@@ -5,7 +5,7 @@ import {
   EntityTypes,
   JustificationPolarities,
   JustificationRootPolarities,
-} from "./enums";
+} from "./zodSchemas";
 
 export const schemaSettings = {
   propositionTextMaxLength: 512,

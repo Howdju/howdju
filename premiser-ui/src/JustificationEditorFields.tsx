@@ -1,5 +1,5 @@
-import React from "react";
-import { Divider, Subheader } from "react-md";
+import React, { ChangeEvent } from "react";
+import { CircularProgress, Divider, Subheader } from "react-md";
 import get from "lodash/get";
 import has from "lodash/has";
 import map from "lodash/map";
@@ -34,6 +34,7 @@ import {
   OnRemoveCallback,
   OnSubmitCallback,
 } from "./types";
+import { toOnChangeCallback } from "./util";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";
@@ -79,8 +80,8 @@ const basisTypeControls = [
 type Props = {
   justification?: Justification;
   id: string;
-  name?: string;
-  suggestionsKey?: string;
+  name: string;
+  suggestionsKey: string;
   onPropertyChange: OnPropertyChangeCallback;
   onAddUrl: OnAddCallback;
   onRemoveUrl: OnRemoveCallback<Url>;
@@ -110,18 +111,15 @@ export default function JustificationEditorFields(props: Props) {
     onSubmit,
   } = props;
 
-  const onChange = toOnChangeCallback(onPropertyChage)
-  const onChange = (value, event) => {
-    const name = event.target.name;
-    onPropertyChange({ [name]: value });
-  };
+  const onChange = toOnChangeCallback(onPropertyChange);
 
   const propositionCompoundErrors = get(errors, "basis.propositionCompound");
   const writQuoteErrors = get(errors, "basis.writQuote");
   const basisPropositionCompound = get(justification, propositionCompoundName);
   const basisWritQuote = get(justification, writQuoteName);
-  const _isPropositionCompoundBased = isPropositionCompoundBased(justification);
-  const _isWritQuoteBased = isWritQuoteBased(justification);
+  const _isPropositionCompoundBased =
+    justification && isPropositionCompoundBased(justification);
+  const _isWritQuoteBased = justification && isWritQuoteBased(justification);
   const commonFieldsProps = {
     onPropertyChange,
     onKeyDown,
@@ -157,6 +155,13 @@ export default function JustificationEditorFields(props: Props) {
       onRemoveUrl={onRemoveUrl}
     />
   );
+  const editorFields = _isPropositionCompoundBased ? (
+    propositionCompoundEditorFields
+  ) : _isWritQuoteBased ? (
+    writQuoteEditorFields
+  ) : (
+    <CircularProgress id="justification-editor-fields" />
+  );
   const polarity = get(justification, "polarity");
   const basisTypeName = "basis.type";
   const basisType = get(justification, basisTypeName);
@@ -168,7 +173,9 @@ export default function JustificationEditorFields(props: Props) {
         name={combineNames(name, polarityName)}
         type="radio"
         value={polarity}
-        onChange={onChange}
+        onChange={(value, event) =>
+          onChange(value, event as unknown as ChangeEvent<HTMLInputElement>)
+        }
         controls={polarityControls}
         disabled={disabled}
         error={has(errors, polarityName)}
@@ -187,7 +194,9 @@ export default function JustificationEditorFields(props: Props) {
             name={combineNames(name, basisTypeName)}
             type="radio"
             value={basisType}
-            onChange={onChange}
+            onChange={(value, event) =>
+              onChange(value, event as unknown as ChangeEvent<HTMLInputElement>)
+            }
             controls={basisTypeControls}
             disabled={disabled}
           />
@@ -195,8 +204,7 @@ export default function JustificationEditorFields(props: Props) {
       )}
 
       <Divider />
-      {_isPropositionCompoundBased && propositionCompoundEditorFields}
-      {_isWritQuoteBased && writQuoteEditorFields}
+      {editorFields}
     </div>
   );
 }

@@ -7,7 +7,6 @@ import {
   WritQuote,
   JustificationRootTargetType,
   Proposition,
-  JustificationRootTarget,
   Persorg,
   Url,
   PropositionCompoundAtom,
@@ -15,12 +14,12 @@ import {
   Statement,
   Justification,
   JustificationBasisSourceType,
-  Persisted,
 } from "howdju-common";
 import {
   Source,
   Target,
   ExtensionAnnotationContent,
+  JustificationRootTargetViewModel,
 } from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
@@ -56,7 +55,7 @@ export const apiLike = {
     "DELETE_JUSTIFICATION_ROOT_TARGET",
     (
       rootTargetType: JustificationRootTargetType,
-      rootTarget: Persisted<JustificationRootTarget>
+      rootTarget: JustificationRootTargetViewModel
     ) => ({ rootTargetType, rootTarget })
   ),
   fetchJustificationTargets: createAction(
