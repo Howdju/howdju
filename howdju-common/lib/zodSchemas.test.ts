@@ -25,7 +25,7 @@ describe("Justification schema", () => {
         },
       },
       rootTarget: {
-        text: "the root text"
+        text: "the root text",
       },
       rootTargetType: "PROPOSITION",
       rootPolarity: "POSITIVE",

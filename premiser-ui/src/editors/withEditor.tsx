@@ -144,11 +144,14 @@ export default function withEditor<
       }
       return translateAjvErrors(result.errors);
     }
-    const result = zodSchema.safeParse(editEntity);
-    if (result.success) {
-      return EmptyBespokeValidationErrors;
+    if (zodSchema) {
+      const result = zodSchema.safeParse(editEntity);
+      if (result.success) {
+        return EmptyBespokeValidationErrors;
+      }
+      return translateZodError(result.error);
     }
-    return translateZodError(result.error);
+    throw newProgrammingError("Either schemaId or zodSchema is required.");
   };
 
   return function EntityEditor(props: WithEditorProps & RestProps) {
