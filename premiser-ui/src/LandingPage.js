@@ -8,6 +8,7 @@ import {
   JustificationTargetTypes,
   JustificationPolarities,
   JustificationRootPolarities,
+  JustificationRootTargetTypes,
   makePropositionCompound,
   makePropositionCompoundAtomFromProposition,
   makeProposition,
@@ -27,7 +28,6 @@ import JustificationBranch from "./JustificationBranch";
 import { combineIds } from "./viewModels";
 
 import "./LandingPage.scss";
-import { JustificationRootTargetTypes } from "howdju-common/lib/enums";
 import ContextTrail from "./ContextTrail";
 
 export default class LandingPage extends Component {

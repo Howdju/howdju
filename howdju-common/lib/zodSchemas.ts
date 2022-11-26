@@ -56,15 +56,16 @@ export type Statement = Entity & {
         sentence: Statement;
       }
   );
+const sentenceTypes = z.enum(["PROPOSITION", "STATEMENT"]);
 export const Statement: z.ZodType<Statement> = z.lazy(() =>
   z.discriminatedUnion("sentenceType", [
     Entity.extend({
-      sentenceType: z.literal("PROPOSITION"),
+      sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
       sentence: Proposition,
       speaker: Persorg,
     }).strict(),
     Entity.extend({
-      sentenceType: z.literal("STATEMENT"),
+      sentenceType: z.literal(sentenceTypes.Enum.STATEMENT),
       sentence: Statement,
       speaker: Persorg,
     }).strict(),
@@ -72,6 +73,7 @@ export const Statement: z.ZodType<Statement> = z.lazy(() =>
 );
 export type Sentence = Statement["sentence"];
 export type SentenceType = Statement["sentenceType"];
+export const SentenceTypes = sentenceTypes.Enum;
 
 export const CreateStatementInput = Statement;
 export type CreateStatementInput = Statement;
@@ -84,9 +86,10 @@ export const Writ = Entity.extend({
 });
 export type Writ = z.infer<typeof Writ>;
 
+const urlTargetAnchorTypes = z.enum(["TEXT_QUOTE"]);
 // later this can be a discriminatedUnion on type.
 export const UrlTargetAnchor = z.object({
-  type: z.literal("TEXT_QUOTE"),
+  type: z.literal(urlTargetAnchorTypes.Enum.TEXT_QUOTE),
   exactText: z.string(),
   prefixText: z.string(),
   suffixText: z.string(),
@@ -95,6 +98,7 @@ export const UrlTargetAnchor = z.object({
 });
 export type UrlTargetAnchor = z.infer<typeof UrlTargetAnchor>;
 export type UrlTargetAnchorType = UrlTargetAnchor["type"];
+export const UrlTargetAnchorTypes = urlTargetAnchorTypes.Enum;
 
 export const UrlTarget = Entity.extend({
   anchors: z.array(UrlTargetAnchor),
@@ -128,23 +132,25 @@ export const VidSegment = Entity.extend({
 });
 export type VidSegment = z.infer<typeof VidSegment>;
 
+const sourceExcerptTypes = z.enum(["WRIT_QUOTE", "PIC_REGION", "VID_SEGMENT"]);
 /** An excerpt of some fixed media. */
 export const SourceExcerpt = z.discriminatedUnion("type", [
   Entity.extend({
-    type: z.literal("WRIT_QUOTE"),
+    type: z.literal(sourceExcerptTypes.Enum.WRIT_QUOTE),
     entity: WritQuote,
   }),
   Entity.extend({
-    type: z.literal("PIC_REGION"),
+    type: z.literal(sourceExcerptTypes.Enum.PIC_REGION),
     entity: PicRegion,
   }),
   Entity.extend({
-    type: z.literal("VID_SEGMENT"),
+    type: z.literal(sourceExcerptTypes.Enum.VID_SEGMENT),
     entity: VidSegment,
   }),
 ]);
 export type SourceExcerpt = z.infer<typeof SourceExcerpt>;
 export type SourceExcerptType = SourceExcerpt["type"];
+export const SourceExcerptTypes = sourceExcerptTypes.Enum;
 
 /* One or more propositions intended to be considered conjunctively */
 export const PropositionCompound = Entity.extend({
@@ -253,6 +259,11 @@ const justificationBaseShape = {
 };
 const justificationRootTargetTypes = z.enum(["PROPOSITION", "STATEMENT"]);
 export const JustificationRootTargetTypes = justificationRootTargetTypes.Enum;
+const justificationTargetTypes = z.enum([
+  "PROPOSITION",
+  "STATEMENT",
+  "JUSTIFICATION",
+]);
 export const Justification: z.ZodType<Justification> = z.lazy(() =>
   z.discriminatedUnion("rootTargetType", [
     Entity.extend({
@@ -260,9 +271,18 @@ export const Justification: z.ZodType<Justification> = z.lazy(() =>
       rootTargetType: z.literal(JustificationRootTargetTypes.PROPOSITION),
       rootTarget: Proposition,
       target: z.discriminatedUnion("type", [
-        z.object({ type: z.literal("PROPOSITION"), entity: Proposition }),
-        z.object({ type: z.literal("STATEMENT"), entity: Statement }),
-        z.object({ type: z.literal("JUSTIFICATION"), entity: Justification }),
+        z.object({
+          type: z.literal(justificationTargetTypes.Enum.PROPOSITION),
+          entity: Proposition,
+        }),
+        z.object({
+          type: z.literal(justificationTargetTypes.Enum.STATEMENT),
+          entity: Statement,
+        }),
+        z.object({
+          type: z.literal(justificationTargetTypes.Enum.JUSTIFICATION),
+          entity: Justification,
+        }),
       ]),
     }),
     Entity.extend({
@@ -270,9 +290,18 @@ export const Justification: z.ZodType<Justification> = z.lazy(() =>
       rootTargetType: z.literal(JustificationRootTargetTypes.STATEMENT),
       rootTarget: Statement,
       target: z.discriminatedUnion("type", [
-        z.object({ type: z.literal("PROPOSITION"), entity: Proposition }),
-        z.object({ type: z.literal("STATEMENT"), entity: Statement }),
-        z.object({ type: z.literal("JUSTIFICATION"), entity: Justification }),
+        z.object({
+          type: z.literal(justificationTargetTypes.Enum.PROPOSITION),
+          entity: Proposition,
+        }),
+        z.object({
+          type: z.literal(justificationTargetTypes.Enum.STATEMENT),
+          entity: Statement,
+        }),
+        z.object({
+          type: z.literal(justificationTargetTypes.Enum.JUSTIFICATION),
+          entity: Justification,
+        }),
       ]),
     }),
   ])
@@ -283,6 +312,7 @@ export type JustificationTarget = Justification["target"];
 export type JustificationTargetType = Justification["target"]["type"];
 export type JustificationRootTarget = Justification["rootTarget"];
 export type JustificationRootTargetType = Justification["rootTargetType"];
+export const JustificationTargetTypes = justificationTargetTypes.Enum;
 
 /*
   Replace Persisted with Entity Ref. For places where we were depending on Persisted's optional

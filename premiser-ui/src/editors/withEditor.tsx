@@ -113,7 +113,7 @@ export default function withEditor<
     | z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput>
     | undefined = undefined
 ) {
-  if (!(schemaId && zodSchema)) {
+  if (!(schemaId || zodSchema)) {
     throw newProgrammingError("One of schemaId and zodSchema is required.");
   }
   type RestPropsKeys = Exclude<

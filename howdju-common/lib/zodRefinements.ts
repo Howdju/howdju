@@ -1,6 +1,6 @@
 import { z } from "zod";
-import isUrl from "validator/es/lib/isURL";
-import isIso8601 from "validator/es/lib/isISO8601";
+import isUrl from "validator/lib/isURL";
+import isIso8601 from "validator/lib/isISO8601";
 import { extractDomain } from "./urls";
 
 type UrlOptions = { domain: RegExp };
