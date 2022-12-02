@@ -6,13 +6,11 @@ import reduce from "lodash/reduce";
 import { z } from "zod";
 
 import {
-  BespokeValidationErrors,
-  EmptyBespokeValidationErrors,
-  newProgrammingError,
-  translateAjvErrors,
-  translateZodError,
+  ModelErrors,
+  translateAjvToZodFormattedError,
+  zodIssueFormatter,
 } from "howdju-common";
-import { validate } from "howdju-ajv-sourced";
+import { validateRawErrors } from "howdju-ajv-sourced";
 
 import { editors, flows } from "@/actions";
 import { AppDispatch, RootState } from "@/setupStore";
@@ -23,6 +21,7 @@ import t, {
 } from "@/texts";
 import { AnyAction } from "redux";
 import {
+  BlurredFields,
   DirtyFields,
   EditorEntity,
   EditorState,
@@ -62,25 +61,30 @@ type ListItemTranslator = (
  */
 export type WithEditorProps = {
   id: ComponentId;
-  name: ComponentName;
+  /** An optional name to prefix to the form's input's names. */
+  name?: ComponentName;
   editorId: EditorId;
   className?: string;
   submitButtonText?: string;
   onKeyDown?: OnKeyDownCallback;
+  showButtons?: boolean;
   editorCommitBehavior?: "JustCommit" | "CommitThenView" | CommitThenPutAction;
 };
 /**
  * The fields that must be present on the fields component.
  */
-export type EntityEditorFieldsProps = {
+export type EntityEditorFieldsProps<T> = {
+  /** This string will be prepended to this editor's controls' ids, with an intervening "." */
   id: ComponentId;
-  name: ComponentName;
+  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
+  name?: ComponentName;
   disabled: boolean;
   suggestionsKey: SuggestionsKey;
   onPropertyChange: OnPropertyChangeCallback;
   onSubmit: OnSubmitCallback;
-  errors: BespokeValidationErrors;
-  dirtyFields: DirtyFields;
+  errors?: ModelErrors<T>;
+  blurredFields?: BlurredFields<T>;
+  dirtyFields?: DirtyFields<T>;
   wasSubmitAttempted: boolean;
 };
 
@@ -99,26 +103,20 @@ export type EntityEditorFieldsProps = {
  * @typeparam P the type of Props that EntityEditorFields requires.
  */
 export default function withEditor<
-  P extends EntityEditorFieldsProps,
+  P extends EntityEditorFieldsProps<SchemaOutput>,
   LIT extends { [key: string]: ListItemTranslator },
-  SchemaOutput = any,
-  SchemaInput = any
+  SchemaInput = any,
+  SchemaOutput = any
 >(
   editorType: EditorType,
   EntityEditorFields: React.FC<P>,
   entityPropName: string,
-  schemaId: SchemaId | undefined,
-  listItemTranslators?: LIT,
-  zodSchema:
-    | z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput>
-    | undefined = undefined
+  schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
+  listItemTranslators?: LIT
 ) {
-  if (!(schemaId || zodSchema)) {
-    throw newProgrammingError("One of schemaId and zodSchema is required.");
-  }
   type RestPropsKeys = Exclude<
     keyof P,
-    keyof EntityEditorFieldsProps | keyof LIT
+    keyof EntityEditorFieldsProps<SchemaOutput> | keyof LIT
   >;
   // For some reason accessing the optional fields like
   // `type RestProps = {[key in RestPropsKeys]: P[key]}`
@@ -131,27 +129,28 @@ export default function withEditor<
   };
   type RestProps = RequiredRestPropsKeys & OptionalRestPropsKeys;
 
-  const validateEntity = (
-    editEntity: EditorEntity
-  ): BespokeValidationErrors => {
+  const validateEntity = (editEntity: EditorEntity) => {
     if (!editEntity) {
-      return EmptyBespokeValidationErrors;
+      return { value: editEntity };
     }
-    if (schemaId) {
-      const result = validate(schemaId, editEntity);
-      if (result.isValid) {
-        return EmptyBespokeValidationErrors;
-      }
-      return translateAjvErrors(result.errors);
-    }
-    if (zodSchema) {
-      const result = zodSchema.safeParse(editEntity);
+    if (schemaOrId instanceof z.ZodType) {
+      const result = schemaOrId.safeParse(editEntity);
       if (result.success) {
-        return EmptyBespokeValidationErrors;
+        return { value: result.data };
       }
-      return translateZodError(result.error);
+      return {
+        value: editEntity,
+        errors: result.error.format(zodIssueFormatter),
+      };
     }
-    throw newProgrammingError("Either schemaId or zodSchema is required.");
+    const result = validateRawErrors(schemaOrId, editEntity);
+    if (result.isValid) {
+      return { value: editEntity };
+    }
+    return {
+      value: editEntity,
+      errors: translateAjvToZodFormattedError(result.errors),
+    };
   };
 
   return function EntityEditor(props: WithEditorProps & RestProps) {
@@ -162,6 +161,7 @@ export default function withEditor<
       className,
       submitButtonText,
       onKeyDown,
+      showButtons = true,
       editorCommitBehavior = "JustCommit",
     } = props;
 
@@ -211,9 +211,7 @@ export default function withEditor<
       wasSubmitAttempted,
     } = editorState as EditorState;
 
-    const clientValidationErrors = editEntity
-      ? validateEntity(editEntity)
-      : EmptyBespokeValidationErrors;
+    const { errors: clientValidationErrors } = validateEntity(editEntity);
     // Because the API should validate the same data using the same schema, it shouldn't be possible
     // to receive API errors that didn't also fail client validation.
     if (
@@ -227,11 +225,11 @@ export default function withEditor<
     }
     // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
     // must accept the value.
-    const errors = merge(clientValidationErrors, apiValidationErrors);
+    const errors = merge({}, clientValidationErrors, apiValidationErrors);
 
     const editorFieldsProps = {
       id,
-      name,
+      ...(name ? { name } : {}),
       ...{ [entityPropName]: editEntity },
       disabled: isSaving,
       suggestionsKey: combineSuggestionsKeys(editorType, editorId),
@@ -254,21 +252,23 @@ export default function withEditor<
           {isSaving && (
             <CircularProgress key="progress" id={combineIds(id, "progress")} />
           )}
-          <Button
-            flat
-            key="cancelButton"
-            children={t(CANCEL_BUTTON_LABEL)}
-            onClick={onCancelEdit}
-            disabled={isSaving}
-          />
-          <Button
-            raised
-            primary
-            key="submitButton"
-            type="submit"
-            children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
-            disabled={isSaving}
-          />
+          {showButtons && [
+            <Button
+              flat
+              key="cancelButton"
+              children={t(CANCEL_BUTTON_LABEL)}
+              onClick={onCancelEdit}
+              disabled={isSaving}
+            />,
+            <Button
+              raised
+              primary
+              key="submitButton"
+              type="submit"
+              children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
+              disabled={isSaving}
+            />,
+          ]}
         </CardActions>
       </form>
     );

@@ -25,9 +25,9 @@ const {
   idEqual,
   requireArgs,
   newExhaustedEnumError,
+  CreateJustification,
 } = require("howdju-common");
 
-const { justificationSchema } = require("./validationSchemas");
 const { EntityService } = require("./EntityService");
 const {
   createContinuationToken,
@@ -61,7 +61,7 @@ exports.JustificationsService = class JustificationsService extends (
     justificationsDao,
     permissionsDao
   ) {
-    super(justificationSchema, logger, authService);
+    super(CreateJustification, logger, authService);
     requireArgs({
       config,
       logger,

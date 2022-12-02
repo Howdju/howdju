@@ -199,19 +199,21 @@ export function translateCreateJustificationErrorsToInput(
     return errors;
   }
 
+  const basisFieldErrors = errors.fieldErrors.basis.fieldErrors;
+  if (!basisFieldErrors) {
+    return errors;
+  }
+
   const justificationErrors = cloneDeep(errors);
-  const basisFieldErrors = justificationErrors.fieldErrors.basis.fieldErrors;
   switch (justification.basis.type) {
     case "PROPOSITION_COMPOUND":
-      basisFieldErrors.propositionCompound =
-        errors.fieldErrors.basis.fieldErrors.entity;
+      basisFieldErrors.propositionCompound = basisFieldErrors.entity;
       break;
     case "WRIT_QUOTE":
-      basisFieldErrors.writQuote = errors.fieldErrors.basis.fieldErrors.entity;
+      basisFieldErrors.writQuote = basisFieldErrors.entity;
       break;
     case "SOURCE_EXCERPT":
-      basisFieldErrors.sourceExcerpt =
-        errors.fieldErrors.basis.fieldErrors.entity;
+      basisFieldErrors.sourceExcerpt = basisFieldErrors.entity;
       break;
     case "JUSTIFICATION_BASIS_COMPOUND":
       throw newUnimplementedError(
@@ -307,7 +309,9 @@ export function array(index: number) {
   return new ArrayIndex(index);
 }
 
-export function combineNames(...names: (ComponentName | ArrayIndex)[]) {
+export function combineNames(
+  ...names: (ComponentName | ArrayIndex | undefined)[]
+) {
   // Don't convert case; the names must match the object model for use with get/set
   // I think each and every name should be truthy.  How else could they be relied upon for get/set?
   const filteredNames = dropWhile(names, isFalsey);

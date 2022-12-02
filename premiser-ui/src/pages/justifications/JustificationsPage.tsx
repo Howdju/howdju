@@ -51,7 +51,6 @@ import JustificationRootTargetCard from "@/JustificationRootTargetCard";
 import t, { ADD_JUSTIFICATION_CALL_TO_ACTION } from "@/texts";
 import {
   combineIds,
-  combineNames,
   combineSuggestionsKeys,
   ContextTrailShortcut,
   contextTrailTypeByShortcut,
@@ -77,7 +76,6 @@ import "./JustificationsPage.scss";
  */
 
 const justificationsPageId = "justifications-page";
-const name = "justifications-page";
 
 interface MatchParams {
   rootTargetId: EntityId;
@@ -288,7 +286,6 @@ class JustificationsPage extends Component<Props> {
 
         <CreateJustificationDialog
           id={this.id("create-justification-dialog")}
-          name={combineNames(name, "create-justification-dialog")}
           editorId={JustificationsPage.justificationEditorId}
           visible={isNewJustificationDialogVisible}
           onCancel={this.cancelNewJustificationDialog}

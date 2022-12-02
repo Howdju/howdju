@@ -190,7 +190,7 @@ export const editors = {
   ),
 
   addListItem: createAction(
-    "EDITORS/ON_ADD_LIST_ITEM",
+    "EDITORS/ADD_LIST_ITEM",
     (
       editorType: EditorType,
       editorId: EditorId,
@@ -200,7 +200,7 @@ export const editors = {
     ) => ({ editorType, editorId, itemIndex, listPathMaker, itemFactory })
   ),
   removeListItem: createAction(
-    "EDITORS/ON_REMOVE_LIST_ITEM",
+    "EDITORS/REMOVE_LIST_ITEM",
     (
       editorType: EditorType,
       editorId: EditorId,

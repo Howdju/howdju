@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get";
 
 import { AccountSettings, schemaSettings } from "howdju-common";
 
@@ -7,9 +6,10 @@ import ErrorMessages from "@/ErrorMessages";
 import TextField from "@/TextField";
 import { combineIds, combineNames } from "@/viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
+import { makeErrorPropCreator } from "@/modelErrorMessages";
 
-interface Props extends EntityEditorFieldsProps {
-  accountSettings: AccountSettings;
+interface Props extends EntityEditorFieldsProps<AccountSettings> {
+  accountSettings?: AccountSettings;
 }
 
 const paidContributionsDisclosureName = "paidContributionsDisclosure";
@@ -20,12 +20,14 @@ export default function AccountSettingsEditorFields({
   name,
   disabled,
   errors,
+  dirtyFields,
+  blurredFields,
   onPropertyChange,
 }: Props) {
-  const modelErrors = get(errors, "_model");
+  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
   return (
     <div>
-      <ErrorMessages errors={modelErrors} />
+      <ErrorMessages errors={errors?._errors} />
       <TextField
         id={combineIds(id, paidContributionsDisclosureName)}
         key="quoteText"
@@ -34,9 +36,10 @@ export default function AccountSettingsEditorFields({
         rows={2}
         maxRows={8}
         maxLength={schemaSettings.paidContributionsDisclosureTextMaxLength}
-        value={accountSettings.paidContributionsDisclosure}
+        value={accountSettings?.paidContributionsDisclosure}
         onPropertyChange={onPropertyChange}
         disabled={disabled}
+        {...errorProps((as) => as.paidContributionsDisclosure)}
       />
       <em>
         For example: I receive compensation from Company A for my content

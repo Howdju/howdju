@@ -54,7 +54,15 @@ export type OnSubmitCallback = (
 ) => void;
 export type OnClickCallback = (event: React.MouseEvent<HTMLElement>) => void;
 export type OnAddCallback = (index: number) => void;
-export type OnRemoveCallback<T> = (value: T, index: number) => void;
+export type OnRemoveCallback<T> = (
+  // The value to be removed
+  value: T,
+  // The index of the value to be removed.
+  index: number,
+  // All the current values, including the one that will be removed.
+  // `values[index]` must equal `value`.
+  values: T[]
+) => void;
 
 export interface PrivacyConsentCookie {
   id: string;
@@ -63,6 +71,7 @@ export interface PrivacyConsentCookie {
 
 /** A thunk for creating a new entity. */
 export type EntityFactory = () => Entity;
+export type ModelFactory = () => unknown;
 
 export const CreatePropositionPageMode = {
   /** Blank editors, optionally show and create a justification with the proposition */

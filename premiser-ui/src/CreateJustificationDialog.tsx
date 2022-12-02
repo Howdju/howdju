@@ -16,14 +16,13 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import { EventHandler } from "react";
 import { CommitThenPutAction } from "./editors/withEditor";
 import { AnyAction } from "@reduxjs/toolkit";
-import { combineIds, combineNames } from "./viewModels";
-import { ComponentId, ComponentName } from "./types";
+import { combineIds } from "./viewModels";
+import { ComponentId } from "./types";
 import { flows } from "./actions";
 import justificationsPage from "./pages/justifications/justificationsPageSlice";
 
 type Props = {
   id: ComponentId;
-  name: ComponentName;
   editorId: string;
   visible?: boolean;
   commitAction?: AnyAction;
@@ -39,7 +38,7 @@ export default function CreateJustificationDialog(props: Props) {
     }
   };
 
-  const { id, name, editorId, visible, onCancel, onHide, commitAction } = props;
+  const { id, editorId, visible, onCancel, onHide, commitAction } = props;
 
   const editorState =
     useAppSelector((state) =>
@@ -115,9 +114,9 @@ export default function CreateJustificationDialog(props: Props) {
       )}
       <JustificationEditor
         id={combineIds(id, "editor")}
-        name={combineNames(name, "editor")}
         editorId={editorId}
         onKeyDown={onKeyDown}
+        showButtons={false}
         editorCommitBehavior={
           commitAction
             ? new CommitThenPutAction(commitAction)

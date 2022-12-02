@@ -1,52 +1,29 @@
 import React from "react";
 import { Button, FontIcon, TextField } from "react-md";
 import map from "lodash/map";
-import get from "lodash/get";
-import has from "lodash/has";
 
 import {
-  BespokeValidationErrors,
+  EditWritQuoteInput,
   schemaSettings,
   Url,
   WritQuote,
 } from "howdju-common";
 
 import WritTitleAutocomplete from "@/WritTitleAutocomplete";
-import { toErrorText } from "@/modelErrorMessages";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
-import { DirtyFields } from "@/reducers/editors";
-import {
-  ComponentId,
-  ComponentName,
-  OnAddCallback,
-  OnKeyDownCallback,
-  OnPropertyChangeCallback,
-  OnRemoveCallback,
-  OnSubmitCallback,
-  SuggestionsKey,
-} from "@/types";
+import { OnAddCallback, OnKeyDownCallback, OnRemoveCallback } from "@/types";
 
 import "./WritQuoteEditorFields.scss";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
+import { makeErrorPropCreator } from "./modelErrorMessages";
 
-interface Props extends EntityEditorFieldsProps {
+interface Props extends EntityEditorFieldsProps<EditWritQuoteInput> {
   writQuote: WritQuote;
-  /** If present, this string will be prepended to this editor's controls' ids, with an intervening "." */
-  id: ComponentId;
-  /** If present, this string will be prepended to this editor's controls' names, with an intervening "." */
-  name: ComponentName;
-  suggestionsKey: SuggestionsKey;
-  onPropertyChange: OnPropertyChangeCallback;
   onKeyDown?: OnKeyDownCallback;
-  onSubmit: OnSubmitCallback;
   onAddUrl: OnAddCallback;
   onRemoveUrl: OnRemoveCallback<Url>;
-  errors: BespokeValidationErrors;
-  disabled: boolean;
-  dirtyFields: DirtyFields;
-  wasSubmitAttempted: boolean;
 }
 
 const writQuoteTextName = "quoteText";
@@ -65,6 +42,8 @@ const WritQuoteEditorFields = (props: Props) => {
     onPropertyChange,
     onAddUrl,
     onRemoveUrl,
+    dirtyFields,
+    blurredFields,
   } = props;
 
   const onChange = (value: number | string, event: Event) => {
@@ -75,31 +54,14 @@ const WritQuoteEditorFields = (props: Props) => {
     }
   };
 
-  const urls = get(writQuote, "urls", []);
+  const urls = writQuote.urls ?? [];
 
-  const hasErrors = get(errors, "hasErrors");
-  const quoteInputErrorProps =
-    hasErrors && errors.fieldErrors.quoteText.length > 0
-      ? { error: true, errorText: toErrorText(errors.fieldErrors.quoteText) }
-      : {};
-  const writTitleInputErrorProps =
-    hasErrors && errors.fieldErrors.writ.fieldErrors.title.length > 0
-      ? {
-          error: true,
-          errorText: toErrorText(errors.fieldErrors.writ.fieldErrors.title),
-        }
-      : {};
-  const urlInputErrorProps = hasErrors
-    ? map(errors.fieldErrors.urls.itemErrors, (urlError) =>
-        urlError.fieldErrors.url.length > 0
-          ? { error: true, errorText: toErrorText(urlError.fieldErrors.url) }
-          : {}
-      )
-    : map(urls, () => null);
+  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
 
-  const quoteText = get(writQuote, writQuoteTextName) || "";
-  const writTitle = get(writQuote, writTitleName) || "";
-  const hasWritTitle = has(writQuote, writTitleName);
+  const writTitleInputErrorProps = errorProps((wq) => wq.writ.title);
+
+  const quoteText = writQuote.quoteText ?? "";
+  const writTitle = writQuote.writ.title ?? "";
 
   const writTitleInputProps = {
     id: combineIds(id, writTitleName),
@@ -108,7 +70,7 @@ const WritQuoteEditorFields = (props: Props) => {
     value: writTitle,
     maxLength: schemaSettings.writTitleMaxLength,
     required: true,
-    disabled: disabled || !hasWritTitle,
+    disabled: disabled,
     onKeyDown,
     onSubmit,
     onPropertyChange,
@@ -122,7 +84,7 @@ const WritQuoteEditorFields = (props: Props) => {
   return (
     <div className="writ-quote-editor-fields">
       <TextField
-        {...quoteInputErrorProps}
+        {...errorProps((wq) => wq.quoteText)}
         id={combineIds(id, writQuoteTextName)}
         key="quoteText"
         name={combineNames(name, writQuoteTextName)}
@@ -133,10 +95,10 @@ const WritQuoteEditorFields = (props: Props) => {
         maxLength={schemaSettings.writQuoteQuoteTextMaxLength}
         value={quoteText}
         onChange={onChange}
-        disabled={disabled || !has(writQuote, writQuoteTextName)}
+        disabled={disabled}
         onKeyDown={onKeyDown}
       />
-      {suggestionsKey && !disabled && hasWritTitle ? (
+      {suggestionsKey && !disabled ? (
         <WritTitleAutocomplete
           {...writTitleInputProps}
           {...writTitleInputErrorProps}
@@ -148,31 +110,35 @@ const WritQuoteEditorFields = (props: Props) => {
           {...writTitleInputErrorProps}
         />
       )}
-      {map(urls, (url, index) => (
-        <SingleLineTextField
-          {...urlInputErrorProps[index]}
-          id={combineIds(id, `urls[${index}]`, "url")}
-          key={combineIds(id, `urls[${index}]`, "url")}
-          name={combineNames(name, `urls[${index}]`, "url")}
-          className="urlInput"
-          type="url"
-          label="URL"
-          value={url.url}
-          rightIcon={
-            <Button
-              icon
-              onClick={() => onRemoveUrl(url, index)}
-              disabled={disabled}
-            >
-              delete
-            </Button>
-          }
-          rightIconStateful={false}
-          disabled={!!url.id || disabled || !!url.target}
-          onPropertyChange={onPropertyChange}
-          onSubmit={onSubmit}
-        />
-      ))}
+      {map(
+        urls,
+        (url, index, urls) =>
+          url && (
+            <SingleLineTextField
+              {...errorProps((wq) => wq.urls[index])}
+              id={combineIds(id, `urls[${index}]`, "url")}
+              key={combineIds(id, `urls[${index}]`, "url")}
+              name={combineNames(name, `urls[${index}]`, "url")}
+              className="urlInput"
+              type="url"
+              label="URL"
+              value={url.url}
+              rightIcon={
+                <Button
+                  icon
+                  onClick={() => onRemoveUrl(url, index, urls)}
+                  disabled={disabled}
+                >
+                  delete
+                </Button>
+              }
+              rightIconStateful={false}
+              disabled={!!url.id || disabled || !!url.target}
+              onPropertyChange={onPropertyChange}
+              onSubmit={onSubmit}
+            />
+          )
+      )}
       <Button
         flat
         className="add-button"
@@ -181,9 +147,7 @@ const WritQuoteEditorFields = (props: Props) => {
         onClick={() => onAddUrl(urls.length)}
         disabled={disabled}
       />
-      {hasErrors && errors.modelErrors && (
-        <ErrorMessages errors={errors.modelErrors} />
-      )}
+      <ErrorMessages errors={errors?._errors} />
     </div>
   );
 };

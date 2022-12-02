@@ -8,7 +8,7 @@
 
 import { z } from "zod";
 import { iso8601Datetime, url } from "./zodRefinements";
-import { EntityOrRef } from "./zodSchemaTypes";
+import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
 /** A perstisent conceptual entity */
 export const Entity = z.object({
@@ -326,26 +326,29 @@ export const JustificationTargetTypes = justificationTargetTypes.Enum;
   even this is not necessary. Each form should know what type of thing it's creating.
  */
 
-export const PropositionRef = Entity.required().brand<"Proposition">();
+export const PropositionRef =
+  Entity.required().brand<EntityName<Proposition>>();
 export type PropositionRef = z.infer<typeof PropositionRef>;
 
-export const StatementRef = Entity.required().brand<"Statement">();
+export const StatementRef = Entity.required().brand<EntityName<Statement>>();
 export type StatementRef = z.infer<typeof StatementRef>;
 
-export const JustificationRef = Entity.required().brand<"Justification">();
+export const JustificationRef =
+  Entity.required().brand<EntityName<Justification>>();
 export type JustificationRef = z.infer<typeof JustificationRef>;
 
 export const PropositionCompoundRef =
   Entity.required().brand<"PropositionCompound">();
 export type PropositionCompoundRef = z.infer<typeof PropositionCompoundRef>;
 
-export const SourceExcerptRef = Entity.required().brand<"SourceExcerpt">();
+export const SourceExcerptRef =
+  Entity.required().brand<EntityName<SourceExcerpt>>();
 export type SourceExcerptRef = z.infer<typeof SourceExcerptRef>;
 
-export const WritQuoteRef = Entity.required().brand<"WritQuote">();
+export const WritQuoteRef = Entity.required().brand<EntityName<WritQuote>>();
 export type WritQuoteRef = z.infer<typeof WritQuoteRef>;
 
-export const TagRef = Entity.required().brand<"Tag">();
+export const TagRef = Entity.required().brand<EntityName<Tag>>();
 export type TagRef = z.infer<typeof TagRef>;
 
 /*

@@ -1,18 +1,15 @@
 import React, { ChangeEvent } from "react";
 import { CircularProgress, Divider, Subheader } from "react-md";
 import get from "lodash/get";
-import has from "lodash/has";
-import map from "lodash/map";
-import join from "lodash/join";
 
 import {
   isWritQuoteBased,
   isPropositionCompoundBased,
   JustificationPolarities,
   JustificationBasisTypes,
-  Justification,
   Url,
   PropositionCompoundAtom,
+  CreateJustificationInput,
 } from "howdju-common";
 
 import t, {
@@ -27,16 +24,10 @@ import SelectionControlGroup from "./SelectionControlGroup";
 import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 
 import "./JustificationEditorFields.scss";
-import {
-  OnAddCallback,
-  OnKeyDownCallback,
-  OnPropertyChangeCallback,
-  OnRemoveCallback,
-  OnSubmitCallback,
-} from "./types";
+import { OnAddCallback, OnKeyDownCallback, OnRemoveCallback } from "./types";
 import { toOnChangeCallback } from "./util";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
-import { DirtyFields } from "./reducers/editors";
+import { makeErrorPropCreator } from "./modelErrorMessages";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";
@@ -79,29 +70,23 @@ const basisTypeControls = [
     ),
   },
 ];
-type Props = {
-  justification?: Justification;
-  id: string;
-  name: string;
-  suggestionsKey: string;
-  onPropertyChange: OnPropertyChangeCallback;
+interface Props extends EntityEditorFieldsProps<CreateJustificationInput> {
+  // Justifications are not editable, they can only be created.
+  justification?: CreateJustificationInput;
   onAddUrl: OnAddCallback;
   onRemoveUrl: OnRemoveCallback<Url>;
   onAddPropositionCompoundAtom: OnAddCallback;
   onRemovePropositionCompoundAtom: OnRemoveCallback<PropositionCompoundAtom>;
-  disabled?: boolean;
-  errors?: object;
   doShowTypeSelection?: boolean;
   onKeyDown?: OnKeyDownCallback;
-  onSubmit: OnSubmitCallback;
-} & EntityEditorFieldsProps;
+}
 export default function JustificationEditorFields(props: Props) {
   const {
     justification,
     name,
     id,
     disabled,
-    doShowTypeSelection,
+    doShowTypeSelection = true,
     suggestionsKey,
     onPropertyChange,
     onAddUrl,
@@ -112,6 +97,7 @@ export default function JustificationEditorFields(props: Props) {
     onKeyDown,
     onSubmit,
     dirtyFields,
+    blurredFields,
     wasSubmitAttempted,
   } = props;
 
@@ -144,6 +130,9 @@ export default function JustificationEditorFields(props: Props) {
       errors={propositionCompoundErrors}
       onAddPropositionCompoundAtom={onAddPropositionCompoundAtom}
       onRemovePropositionCompoundAtom={onRemovePropositionCompoundAtom}
+      dirtyFields={dirtyFields?.basis?.propositionCompound}
+      blurredFields={blurredFields?.basis?.propositionCompound}
+      wasSubmitAttempted={wasSubmitAttempted}
     />
   );
   const writQuoteEditorFields = (
@@ -158,8 +147,8 @@ export default function JustificationEditorFields(props: Props) {
       onAddUrl={onAddUrl}
       onRemoveUrl={onRemoveUrl}
       wasSubmitAttempted={wasSubmitAttempted}
-      // TODO genericize DirtyFields<Justification> to avoid casting.
-      dirtyFields={get(dirtyFields, "basis.writQuote") as DirtyFields}
+      dirtyFields={dirtyFields?.basis?.writQuote}
+      blurredFields={dirtyFields?.basis?.writQuote}
     />
   );
   const editorFields = _isPropositionCompoundBased ? (
@@ -172,6 +161,9 @@ export default function JustificationEditorFields(props: Props) {
   const polarity = get(justification, "polarity");
   const basisTypeName = "basis.type";
   const basisType = get(justification, basisTypeName);
+
+  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
+
   return (
     <div>
       <SelectionControlGroup
@@ -185,11 +177,7 @@ export default function JustificationEditorFields(props: Props) {
         }
         controls={polarityControls}
         disabled={disabled}
-        error={has(errors, polarityName)}
-        errorText={join(
-          map(get(errors, polarityName), (e) => e.message),
-          ", "
-        )}
+        {...errorProps((i) => i.polarity)}
       />
       <Divider />
       {doShowTypeSelection && (

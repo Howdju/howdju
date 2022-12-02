@@ -5,26 +5,25 @@ import { logger } from "./logger";
 
 export interface FieldSubErrors {
   // Errors for fields on this field
-  fieldErrors: FieldErrors;
+  fieldErrors?: FieldErrors;
   // Errors for items in this field (only if this field is an array)
-  itemErrors: FieldSubErrors[];
+  itemErrors?: (FieldErrorValue[] & FieldSubErrors)[];
 }
 export type FieldErrorCode = ModelErrorCode | EntityErrorCode;
 // In a few of our services we perform ad-hoc validation where we include both the code and the
 // value
-/** @deprecated use ValidationErrors instead. */
+/** @deprecated use ModelErrors instead. */
 export type FieldErrorCodeValue = {
   code: FieldErrorCode;
   // The value that resulted in the validation error, if applicable.
   value?: any;
 };
-type FieldErrorValue = FieldErrorCode | FieldErrorCodeValue;
+export type FieldErrorValue = FieldErrorCode | FieldErrorCodeValue;
 interface FieldErrors {
   // TODO(26): FieldSubErrors will probably be ignored by JSON serialization.
   [key: string]: FieldErrorValue[] & FieldSubErrors;
 }
-export type FieldErrorsValue = FieldErrors[string];
-/** @deprecated use ValidationErrors instead. */
+/** @deprecated use ModelErrors instead. */
 export interface BespokeValidationErrors {
   // Whether there are any errors.
   hasErrors: boolean;
@@ -33,37 +32,6 @@ export interface BespokeValidationErrors {
   // Errors for individual fields on the model.
   fieldErrors: FieldErrors;
 }
-
-/**
- * This is the new preferred format for validation errors
- *
- * TODO(26) update validation to use this.
- */
-export type ValidationErrors<T> = T extends Array<any>
-  ? ArrayValidationErrors<T>
-  : ObjectValidationErrors<T>;
-
-type ArrayValidationErrors<T extends Array<any>> = {
-  errors: {
-    [code in FieldErrorCode]?: {
-      value?: any;
-    };
-  }[];
-  items: ValidationErrors<T[number]>[];
-};
-
-type ObjectValidationErrors<T> = {
-  errors: {
-    [field in keyof T]: {
-      [code in FieldErrorCode]?: {
-        value?: any;
-      };
-    };
-  };
-  fields: {
-    [field in keyof T]: ValidationErrors<T[field]>;
-  };
-};
 
 export const EmptyBespokeValidationErrors: Readonly<BespokeValidationErrors> = {
   hasErrors: false,
@@ -77,6 +45,8 @@ export function newBespokeValidationErrors() {
   ) as Writable<BespokeValidationErrors>;
 }
 
+export type FieldErrorsValue = FieldErrors[string];
+
 /**
  * Return the first field error having code.
  *
@@ -84,8 +54,8 @@ export function newBespokeValidationErrors() {
  * multiple, and return the first.
  */
 export const onlyFieldError = (
-  fieldError: FieldErrorsValue,
-  code: EntityErrorCode
+  fieldError?: FieldErrorsValue,
+  code?: EntityErrorCode
 ): FieldErrorCodeValue | undefined => {
   const errors = filter(fieldError, (fe) => isObject(fe) && fe.code === code);
   if (errors.length > 1) {

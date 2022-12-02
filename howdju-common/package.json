@@ -23,7 +23,7 @@
     "moment": "^2.29.4",
     "type-fest": "^3.2.0",
     "validator": "^13.7.0",
-    "zod": "^3.19.1"
+    "zod": "https://github.com/Howdju/zod.git#bd11f9ce81420a64d0f87b70459303b9ba23f663"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.186",

@@ -29,7 +29,8 @@
     "outdent": "^0.8.0",
     "pg": "^8.6.0",
     "urlsafe-base64": "^1.0.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "zod": "https://github.com/Howdju/zod.git#bd11f9ce81420a64d0f87b70459303b9ba23f663"
   },
   "devDependencies": {
     "@types/moment-duration-format": "^2.2.3",

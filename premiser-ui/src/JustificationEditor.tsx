@@ -3,6 +3,7 @@ import { EditorType, EditorTypes } from "./reducers/editors";
 import JustificationEditorFields from "./JustificationEditorFields";
 import {
   CreateJustificationInput,
+  CreatePropositionCompoundAtomInput,
   makePropositionCompoundAtom,
   makeUrl,
   PropositionCompoundAtom,
@@ -36,7 +37,11 @@ const translators = {
     },
   onRemovePropositionCompoundAtom:
     (editorType: EditorType, editorId: string, dispatch: AppDispatch) =>
-    (_atom: PropositionCompoundAtom, index: number) => {
+    (
+      _atom: PropositionCompoundAtom,
+      index: number,
+      atoms: CreatePropositionCompoundAtomInput[]
+    ) => {
       dispatch(
         editors.removeListItem(
           editorType,
@@ -45,6 +50,18 @@ const translators = {
           "basis.propositionCompound.atoms"
         )
       );
+      // Don't let the atoms be empty
+      if (atoms.length <= 1) {
+        dispatch(
+          editors.addListItem(
+            editorType,
+            editorId,
+            index,
+            "basis.propositionCompound.atoms",
+            makePropositionCompoundAtom
+          )
+        );
+      }
     },
 };
 
@@ -53,7 +70,6 @@ export default withEditor(
   EditorTypes.NEW_JUSTIFICATION,
   JustificationEditorFields,
   "justification",
-  undefined,
-  translators,
-  CreateJustificationInput
+  CreateJustificationInput,
+  translators
 );

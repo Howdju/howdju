@@ -5,8 +5,10 @@ import {
   CreateJustification,
   CreateJustificationInput,
   CreateProposition,
+  CreatePropositionCompound,
   CreatePropositionCompoundInput,
   CreatePropositionInput,
+  CreateSourceExcerpt,
   CreateSourceExcerptInput,
   CreateStatement,
   CreateStatementInput,
@@ -45,9 +47,13 @@ export type EntityName<T> = T extends Proposition
   ? "Tag"
   : T extends PropositionCompound
   ? "PropositionCompound"
+  : T extends CreatePropositionCompound
+  ? "PropositionCompound"
   : T extends CreatePropositionCompoundInput
   ? "PropositionCompound"
   : T extends SourceExcerpt
+  ? "SourceExcerpt"
+  : T extends CreateSourceExcerpt
   ? "SourceExcerpt"
   : T extends CreateSourceExcerptInput
   ? "SourceExcerpt"

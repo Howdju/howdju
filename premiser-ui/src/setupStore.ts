@@ -2,7 +2,15 @@
 /* globals module */
 import { ActionCreator, Reducer, AnyAction } from "redux";
 import { configureStore, PreloadedState } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { routerMiddleware } from "connected-react-router";
 import createSagaMiddleware from "redux-saga";
@@ -47,10 +55,19 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
     reducer: persistedReducer,
     preloadedState,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat([
-        routerMiddleware(history),
-        sagaMiddleware,
-      ]),
+      getDefaultMiddleware({
+        // https://redux-toolkit.js.org/usage/usage-guide#working-with-non-serializable-data
+        serializableCheck: {
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+          ignoredActionPaths: [
+            // The normalization schemas are convenient to have, but non-serializable. We could also
+            // include a string identifier/descriptor of the normalization schema and look it up
+            // when we need it.
+            "meta.apiConfig.normalizationSchema",
+            "meta.normalizationSchema",
+          ],
+        },
+      }).concat([routerMiddleware(history), sagaMiddleware]),
     devTools:
       process.env.NODE_ENV !== "production"
         ? {

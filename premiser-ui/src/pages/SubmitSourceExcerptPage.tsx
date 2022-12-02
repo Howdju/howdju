@@ -76,7 +76,7 @@ const SubmitSourcExcerptPage = () => {
         <title>Submit Source Excerpt — Howdju</title>
       </HowdjuHelmet>
       <h1 className="md-cell--12">Create WritQuote</h1>
-      <ErrorMessages errors={errors}></ErrorMessages>
+      <ErrorMessages errors={errors} />
       <WritQuoteEditor
         id={id}
         editorId={editorId}

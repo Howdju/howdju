@@ -6,6 +6,8 @@ import { newImpossibleError, newExhaustedEnumError } from "./commonErrors";
 import { EntityId } from "./entities";
 import { isDefined } from "./general";
 import {
+  CreateJustification,
+  CreateJustificationInput,
   CreatePropositionCompoundAtomInput,
   Entity,
   Justification,
@@ -42,10 +44,12 @@ export const isRootJustification = (j: Justification) =>
   j.target.type === j.rootTargetType && j.target.entity.id === j.rootTarget.id;
 export const hasQuote = (j: Justification) =>
   j.basis.type === "WRIT_QUOTE" && j.basis.entity.quoteText;
-export const isPropositionCompoundBased = (j: Justification) =>
-  j ? j.basis.type === "PROPOSITION_COMPOUND" : false;
-export const isWritQuoteBased = (j: Justification) =>
-  j ? j.basis.type === "WRIT_QUOTE" : false;
+export const isPropositionCompoundBased = (
+  j: Justification | CreateJustification | CreateJustificationInput
+) => (j ? j.basis.type === "PROPOSITION_COMPOUND" : false);
+export const isWritQuoteBased = (
+  j: Justification | CreateJustification | CreateJustificationInput
+) => (j ? j.basis.type === "WRIT_QUOTE" : false);
 
 export const negateJustificationVotePolarity = (
   polarity: JustificationVotePolarity
@@ -100,6 +104,9 @@ export interface RegistrationConfirmation {
   longName: string;
   password: string;
   doesAcceptTerms: boolean;
+  is13YearsOrOlder: boolean;
+  hasMajorityConsent: boolean;
+  isNotGdpr: boolean;
 }
 export const makeRegistrationConfirmation = (
   props?: Partial<RegistrationConfirmation>
@@ -112,6 +119,9 @@ export const makeRegistrationConfirmation = (
       longName: "",
       password: "",
       doesAcceptTerms: false,
+      is13YearsOrOlder: false,
+      hasMajorityConsent: false,
+      isNotGdpr: false,
     },
     props
   );
