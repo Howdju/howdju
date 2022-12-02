@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { requireArgs, zodIssueFormatter } from "howdju-common";
+import { requireArgs, formatZodError } from "howdju-common";
 
 import { EntityValidationError } from "../serviceErrors";
 import { translateJoiError } from "./validationSchemas";
@@ -12,7 +12,7 @@ function validateEntity(entitySchema, entity) {
     if (result.success) {
       return { value: result.data };
     }
-    return { value: entity, error: result.error.format(zodIssueFormatter) };
+    return { value: entity, error: formatZodError(result.error) };
   }
   const { error, value } = entitySchema.validate(entity, {
     // report all errors

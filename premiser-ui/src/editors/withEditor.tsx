@@ -6,9 +6,9 @@ import reduce from "lodash/reduce";
 import { z } from "zod";
 
 import {
+  formatZodError,
   ModelErrors,
   translateAjvToZodFormattedError,
-  zodIssueFormatter,
 } from "howdju-common";
 import { validateRawErrors } from "howdju-ajv-sourced";
 
@@ -140,7 +140,7 @@ export default function withEditor<
       }
       return {
         value: editEntity,
-        errors: result.error.format(zodIssueFormatter),
+        errors: formatZodError(result.error),
       };
     }
     const result = validateRawErrors(schemaOrId, editEntity);

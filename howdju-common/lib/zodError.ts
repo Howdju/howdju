@@ -1,6 +1,8 @@
-import { isNumber } from "lodash";
-import { z } from "zod";
+import { isArray, isEqual, isNumber, uniqWith } from "lodash";
+import { z, ZodFormattedError } from "zod";
+
 import { ModelErrorCode } from "./codes";
+import { mapValuesDeep } from "./general";
 import {
   BespokeValidationErrors,
   FieldErrorCode,
@@ -30,6 +32,28 @@ export function translateZodToFieldErrorCode(
 export const zodIssueFormatter = (issue: z.ZodIssue) => issue;
 export type ZodCustomIssueFormat = ReturnType<typeof zodIssueFormatter>;
 export type ErrorFormat = ZodCustomIssueFormat;
+
+/** Formats a Zod error with our custom formatter and removes duplicates. */
+export function formatZodError<T>(error: z.ZodError<T>) {
+  // Zod can produce duplicate issues. E.g., union fields can produce an identical
+  // invalid_type/Required issue for each of the union members. Since duplicate issues are useless
+  // to a client, remove them.
+  return removeZodErrorDupes(error.format(zodIssueFormatter));
+}
+
+export function removeZodErrorDupes<T, U>(
+  error: ZodFormattedError<T, U>
+): ZodFormattedError<T, U> {
+  return mapValuesDeep(error, (val: any, key: string) => {
+    // Perform a deep comparison of errors to remove duplicates.
+    if (key === "_errors") {
+      console.assert(isArray(val));
+      return uniqWith(val, isEqual);
+    }
+    // Return other vals unchanged.
+    return val;
+  }) as ZodFormattedError<T, U>;
+}
 
 /** An object having the same shape as a model and possibly adding _errors to each field. */
 export type ModelErrors<T> = z.ZodFormattedError<T, ZodCustomIssueFormat>;

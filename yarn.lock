@@ -19059,6 +19059,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"map-values-deep@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "map-values-deep@npm:1.0.2"
+  checksum: 391a1d0aae9c5c1211f0fd7bf2769ebd1c614fd2e9907c86767c884b79fae7e341f67d5dcb5c1f73e89401b27d18bfba867a80cab7e6ab3042366dc11c3326c5
+  languageName: node
+  linkType: hard
+
 "map-visit@npm:^1.0.0":
   version: 1.0.0
   resolution: "map-visit@npm:1.0.0"
@@ -22311,6 +22318,7 @@ __metadata:
     jest-environment-jsdom: ^29.3.1
     loader-utils: ^2.0.4
     lodash: ^4.17.21
+    map-values-deep: ^1.0.2
     markdown-loader: ^6.0.0
     mini-css-extract-plugin: ^2.6.1
     moment: ^2.29.4
