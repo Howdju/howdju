@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, DialogContainer as Dialog } from "react-md";
 import get from "lodash/get";
 
@@ -10,8 +10,6 @@ import t, {
 import { selectIsWindowNarrow } from "./selectors";
 import { ESCAPE_KEY_CODE } from "./keyCodes";
 import JustificationEditor from "./JustificationEditor";
-
-import "./CreateJustificationDialog.scss";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { EventHandler } from "react";
 import { CommitThenPutAction } from "./editors/withEditor";
@@ -20,6 +18,8 @@ import { combineIds } from "./viewModels";
 import { ComponentId } from "./types";
 import { flows } from "./actions";
 import justificationsPage from "./pages/justifications/justificationsPageSlice";
+
+import "./CreateJustificationDialog.scss";
 
 type Props = {
   id: ComponentId;
@@ -59,6 +59,8 @@ export default function CreateJustificationDialog(props: Props) {
     );
   };
 
+  const [isValid, setIsValid] = useState(false);
+
   // Putting these buttons in an array to reuse in both places requires giving them a key, which led to the warning
   // "ButtonTooltipedInked: `key` is not a prop. Trying to access it will result in `undefined` being returned."
   // So just handle them separately so that we don't need to give them a key
@@ -77,7 +79,7 @@ export default function CreateJustificationDialog(props: Props) {
       type="submit"
       children={t(CREATE_JUSTIFICATION_SUBMIT_BUTTON_LABEL)}
       onClick={onSubmit}
-      disabled={isSaving}
+      disabled={isSaving || !isValid}
     />
   );
   // react-md bug: even though fullPage is documented as a boolean property, its presence appears to be interpreted as true
@@ -117,6 +119,7 @@ export default function CreateJustificationDialog(props: Props) {
         editorId={editorId}
         onKeyDown={onKeyDown}
         showButtons={false}
+        onValidityChange={setIsValid}
         editorCommitBehavior={
           commitAction
             ? new CommitThenPutAction(commitAction)

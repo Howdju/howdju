@@ -14,6 +14,7 @@ import {
   EntityConflictCode,
   AuthorizationErrorCode,
   UserActionsConflictCode,
+  errorFormatToString,
 } from "howdju-common";
 
 import { logger } from "./logger";
@@ -110,13 +111,8 @@ function propagateUndefined(callback: (...args: any[]) => any) {
   };
 }
 
-export const errorFormatToText = (errors: ErrorFormat[]) =>
-  capitalize(
-    join(
-      map(errors, (e) => e.message),
-      ", "
-    )
-  );
+export const errorFormatsToText = (errors: ErrorFormat[]) =>
+  capitalize(join(map(errors, errorFormatToString), ", "));
 
 /**
  * react-md uses these two props on its field intputs.
@@ -142,6 +138,7 @@ type ReactMdErrorProps = { error?: boolean; errorText?: string };
  * Where `entity` is typed the same as the ModelErrors, DirtyFields, and BlurredFields.
  */
 export function makeErrorPropCreator<T>(
+  wasSubmitAttempted: boolean,
   errors?: ModelErrors<T>,
   dirtyFields?: DirtyFields<T>,
   blurredFields?: BlurredFields<T>
@@ -175,10 +172,10 @@ export function makeErrorPropCreator<T>(
       | undefined;
     const isDirty = dirtySelector(dirtyFields)?._dirty;
     const isBlurred = blurredSelector(blurredFields)?._blurred;
-    if (isDirty || isBlurred) {
+    if (wasSubmitAttempted || isDirty || isBlurred) {
       const fieldErrors = errorsSelector(errors)?._errors;
       if (fieldErrors?.length) {
-        return { error: true, errorText: errorFormatToText(fieldErrors) };
+        return { error: true, errorText: errorFormatsToText(fieldErrors) };
       }
     }
     return {};

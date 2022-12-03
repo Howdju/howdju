@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from "react";
 import { CircularProgress, Divider, Subheader } from "react-md";
-import get from "lodash/get";
 
 import {
   isWritQuoteBased,
@@ -10,6 +9,7 @@ import {
   Url,
   PropositionCompoundAtom,
   CreateJustificationInput,
+  isRef,
 } from "howdju-common";
 
 import t, {
@@ -28,6 +28,7 @@ import { OnAddCallback, OnKeyDownCallback, OnRemoveCallback } from "./types";
 import { toOnChangeCallback } from "./util";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 import { makeErrorPropCreator } from "./modelErrorMessages";
+import { logger } from "./logger";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";
@@ -88,54 +89,67 @@ export default function JustificationEditorFields(props: Props) {
     disabled,
     doShowTypeSelection = true,
     suggestionsKey,
+    onBlur,
     onPropertyChange,
     onAddUrl,
     onRemoveUrl,
     onAddPropositionCompoundAtom,
     onRemovePropositionCompoundAtom,
+    blurredFields,
+    dirtyFields,
     errors,
+    wasSubmitAttempted,
     onKeyDown,
     onSubmit,
-    dirtyFields,
-    blurredFields,
-    wasSubmitAttempted,
   } = props;
 
   const onChange = toOnChangeCallback(onPropertyChange);
 
-  const propositionCompoundErrors = get(errors, "basis.propositionCompound");
-  const writQuoteErrors = get(errors, "basis.writQuote");
-  const basisPropositionCompound = get(justification, propositionCompoundName);
-  const basisWritQuote = get(justification, writQuoteName);
+  const basisPropositionCompound = justification?.basis.propositionCompound;
+  const basisWritQuote = justification?.basis.writQuote;
   const _isPropositionCompoundBased =
     justification && isPropositionCompoundBased(justification);
   const _isWritQuoteBased = justification && isWritQuoteBased(justification);
   const commonFieldsProps = {
-    onPropertyChange,
+    onBlur,
     onKeyDown,
+    onPropertyChange,
     onSubmit,
     disabled,
   };
-  const propositionCompoundEditorFields = (
-    <PropositionCompoundEditorFields
-      {...commonFieldsProps}
-      propositionCompound={basisPropositionCompound}
-      id={combineIds(id, propositionCompoundName)}
-      key={propositionCompoundName}
-      name={combineNames(name, propositionCompoundName)}
-      suggestionsKey={combineSuggestionsKeys(
-        suggestionsKey,
-        propositionCompoundName
-      )}
-      errors={propositionCompoundErrors}
-      onAddPropositionCompoundAtom={onAddPropositionCompoundAtom}
-      onRemovePropositionCompoundAtom={onRemovePropositionCompoundAtom}
-      dirtyFields={dirtyFields?.basis?.propositionCompound}
-      blurredFields={blurredFields?.basis?.propositionCompound}
-      wasSubmitAttempted={wasSubmitAttempted}
-    />
-  );
-  const writQuoteEditorFields = (
+
+  if (basisPropositionCompound && isRef(basisPropositionCompound)) {
+    logger.error(
+      "JustificationEditorFields does not support PropositionCompound refs yet."
+    );
+  }
+  if (basisWritQuote && isRef(basisWritQuote)) {
+    logger.error(
+      "JustificationEditorFields does not support WritQuote refs yet."
+    );
+  }
+
+  const propositionCompoundEditorFields = basisPropositionCompound &&
+    !isRef(basisPropositionCompound) && (
+      <PropositionCompoundEditorFields
+        {...commonFieldsProps}
+        propositionCompound={basisPropositionCompound}
+        id={combineIds(id, propositionCompoundName)}
+        key={propositionCompoundName}
+        name={combineNames(name, propositionCompoundName)}
+        suggestionsKey={combineSuggestionsKeys(
+          suggestionsKey,
+          propositionCompoundName
+        )}
+        blurredFields={blurredFields?.basis?.propositionCompound}
+        dirtyFields={dirtyFields?.basis?.propositionCompound}
+        errors={errors?.basis?.propositionCompound}
+        onAddPropositionCompoundAtom={onAddPropositionCompoundAtom}
+        onRemovePropositionCompoundAtom={onRemovePropositionCompoundAtom}
+        wasSubmitAttempted={wasSubmitAttempted}
+      />
+    );
+  const writQuoteEditorFields = basisWritQuote && !isRef(basisWritQuote) && (
     <WritQuoteEditorFields
       {...commonFieldsProps}
       writQuote={basisWritQuote}
@@ -143,12 +157,12 @@ export default function JustificationEditorFields(props: Props) {
       key={writQuoteName}
       name={combineNames(name, writQuoteName)}
       suggestionsKey={combineSuggestionsKeys(suggestionsKey, writQuoteName)}
-      errors={writQuoteErrors}
+      blurredFields={blurredFields?.basis?.writQuote}
+      dirtyFields={dirtyFields?.basis?.writQuote}
+      errors={errors?.basis?.writQuote}
       onAddUrl={onAddUrl}
       onRemoveUrl={onRemoveUrl}
       wasSubmitAttempted={wasSubmitAttempted}
-      dirtyFields={dirtyFields?.basis?.writQuote}
-      blurredFields={dirtyFields?.basis?.writQuote}
     />
   );
   const editorFields = _isPropositionCompoundBased ? (
@@ -158,11 +172,16 @@ export default function JustificationEditorFields(props: Props) {
   ) : (
     <CircularProgress id="justification-editor-fields" />
   );
-  const polarity = get(justification, "polarity");
+  const polarity = justification?.polarity;
   const basisTypeName = "basis.type";
-  const basisType = get(justification, basisTypeName);
+  const basisType = justification?.basis.type;
 
-  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
+  const errorProps = makeErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
 
   return (
     <div>
@@ -194,6 +213,7 @@ export default function JustificationEditorFields(props: Props) {
             }
             controls={basisTypeControls}
             disabled={disabled}
+            {...errorProps((i) => i.basis.type)}
           />
         </>
       )}

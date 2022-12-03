@@ -6,6 +6,7 @@ import {
   EditWritQuoteInput,
   schemaSettings,
   Url,
+  Writ,
   WritQuote,
 } from "howdju-common";
 
@@ -13,7 +14,12 @@ import WritTitleAutocomplete from "@/WritTitleAutocomplete";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
-import { OnAddCallback, OnKeyDownCallback, OnRemoveCallback } from "@/types";
+import {
+  OnAddCallback,
+  OnKeyDownCallback,
+  OnRemoveCallback,
+  toReactMdOnBlur,
+} from "@/types";
 
 import "./WritQuoteEditorFields.scss";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
@@ -39,11 +45,13 @@ const WritQuoteEditorFields = (props: Props) => {
     errors,
     onKeyDown,
     onSubmit,
+    onBlur,
     onPropertyChange,
     onAddUrl,
     onRemoveUrl,
     dirtyFields,
     blurredFields,
+    wasSubmitAttempted,
   } = props;
 
   const onChange = (value: number | string, event: Event) => {
@@ -56,7 +64,12 @@ const WritQuoteEditorFields = (props: Props) => {
 
   const urls = writQuote.urls ?? [];
 
-  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
+  const errorProps = makeErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
 
   const writTitleInputErrorProps = errorProps((wq) => wq.writ.title);
 
@@ -68,12 +81,14 @@ const WritQuoteEditorFields = (props: Props) => {
     name: combineNames(name, writTitleName),
     label: "Title",
     value: writTitle,
-    maxLength: schemaSettings.writTitleMaxLength,
+    minLength: Writ.shape.title.minLength,
+    maxLength: Writ.shape.title.maxLength,
     required: true,
     disabled: disabled,
+    onBlur,
     onKeyDown,
-    onSubmit,
     onPropertyChange,
+    onSubmit,
   };
 
   const combinedSuggestionKeys = combineSuggestionsKeys(
@@ -94,6 +109,7 @@ const WritQuoteEditorFields = (props: Props) => {
         maxRows={8}
         maxLength={schemaSettings.writQuoteQuoteTextMaxLength}
         value={quoteText}
+        onBlur={toReactMdOnBlur(onBlur)}
         onChange={onChange}
         disabled={disabled}
         onKeyDown={onKeyDown}
@@ -115,7 +131,7 @@ const WritQuoteEditorFields = (props: Props) => {
         (url, index, urls) =>
           url && (
             <SingleLineTextField
-              {...errorProps((wq) => wq.urls[index])}
+              {...errorProps((wq) => wq.urls[index].url)}
               id={combineIds(id, `urls[${index}]`, "url")}
               key={combineIds(id, `urls[${index}]`, "url")}
               name={combineNames(name, `urls[${index}]`, "url")}
@@ -134,6 +150,7 @@ const WritQuoteEditorFields = (props: Props) => {
               }
               rightIconStateful={false}
               disabled={!!url.id || disabled || !!url.target}
+              onBlur={onBlur}
               onPropertyChange={onPropertyChange}
               onSubmit={onSubmit}
             />

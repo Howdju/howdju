@@ -16,12 +16,25 @@ const translators = {
     (editorType: EditorType, editorId: string, dispatch: AppDispatch) =>
     (index: number) =>
       dispatch(
-        editors.addListItem(editorType, editorId, index, "urls", makeUrl)
+        editors.addListItem(
+          editorType,
+          editorId,
+          index,
+          "basis.writQuote.urls",
+          makeUrl
+        )
       ),
   onRemoveUrl:
     (editorType: EditorType, editorId: string, dispatch: AppDispatch) =>
     (_url: string, index: number) =>
-      dispatch(editors.removeListItem(editorType, editorId, index, "urls")),
+      dispatch(
+        editors.removeListItem(
+          editorType,
+          editorId,
+          index,
+          "basis.writQuote.urls"
+        )
+      ),
   onAddPropositionCompoundAtom:
     (editorType: EditorType, editorId: string, dispatch: AppDispatch) =>
     (index: number) => {

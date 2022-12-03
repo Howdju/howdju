@@ -1,7 +1,7 @@
 import { Justification } from "./zodSchemas";
 
 describe("Justification schema", () => {
-  test("recognizes valid data", () => {
+  test("recognizes valid proposition compound based justification", () => {
     const justification: Justification = {
       id: "0",
       target: {
@@ -30,7 +30,9 @@ describe("Justification schema", () => {
       rootTargetType: "PROPOSITION",
       rootPolarity: "POSITIVE",
     };
+
     const result = Justification.parse(justification);
+
     expect(result).toEqual(justification);
   });
 });

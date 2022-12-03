@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import { useDispatch, useSelector } from "react-redux";
 import get from "lodash/get";
@@ -33,9 +33,11 @@ import {
   ComponentId,
   ComponentName,
   EditorId,
+  OnBlurCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   OnSubmitCallback,
+  OnValidityChangeCallback,
   SuggestionsKey,
 } from "@/types";
 
@@ -68,6 +70,7 @@ export type WithEditorProps = {
   submitButtonText?: string;
   onKeyDown?: OnKeyDownCallback;
   showButtons?: boolean;
+  onValidityChange?: OnValidityChangeCallback;
   editorCommitBehavior?: "JustCommit" | "CommitThenView" | CommitThenPutAction;
 };
 /**
@@ -80,6 +83,7 @@ export type EntityEditorFieldsProps<T> = {
   name?: ComponentName;
   disabled: boolean;
   suggestionsKey: SuggestionsKey;
+  onBlur?: OnBlurCallback;
   onPropertyChange: OnPropertyChangeCallback;
   onSubmit: OnSubmitCallback;
   errors?: ModelErrors<T>;
@@ -161,6 +165,7 @@ export default function withEditor<
       className,
       submitButtonText,
       onKeyDown,
+      onValidityChange,
       showButtons = true,
       editorCommitBehavior = "JustCommit",
     } = props;
@@ -169,6 +174,9 @@ export default function withEditor<
 
     const onPropertyChange = (properties: { [key: string]: string }) => {
       dispatch(editors.propertyChange(editorType, editorId, properties));
+    };
+    const onBlur = (name: string) => {
+      dispatch(editors.blurField(editorType, editorId, name));
     };
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -207,11 +215,17 @@ export default function withEditor<
       errors: apiValidationErrors,
       editEntity,
       isSaving,
+      blurredFields,
       dirtyFields,
       wasSubmitAttempted,
     } = editorState as EditorState;
 
     const { errors: clientValidationErrors } = validateEntity(editEntity);
+    const isValid = !clientValidationErrors;
+    useEffect(() => {
+      onValidityChange && onValidityChange(isValid);
+    }, [isValid, onValidityChange]);
+
     // Because the API should validate the same data using the same schema, it shouldn't be possible
     // to receive API errors that didn't also fail client validation.
     if (
@@ -233,11 +247,13 @@ export default function withEditor<
       ...{ [entityPropName]: editEntity },
       disabled: isSaving,
       suggestionsKey: combineSuggestionsKeys(editorType, editorId),
+      onBlur,
       onPropertyChange,
       onSubmit,
       ...listItemCallbackAttributes,
-      errors,
+      blurredFields,
       dirtyFields,
+      errors,
       wasSubmitAttempted,
       onKeyDown,
       // TODO(1): can we remove this typecast? https://stackoverflow.com/questions/74072249/
@@ -266,7 +282,7 @@ export default function withEditor<
               key="submitButton"
               type="submit"
               children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
-              disabled={isSaving}
+              disabled={isSaving || !isValid}
             />,
           ]}
         </CardActions>

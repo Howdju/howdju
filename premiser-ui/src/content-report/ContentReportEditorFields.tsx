@@ -48,10 +48,16 @@ export default function ContentReportEditorFields(
     onPropertyChange,
     dirtyFields,
     blurredFields,
+    wasSubmitAttempted,
   } = props;
   const description = contentReport?.description;
   const types = contentReport?.types;
-  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
+  const errorProps = makeErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
   return (
     <>
       <ErrorMessages errors={errors?._errors} />

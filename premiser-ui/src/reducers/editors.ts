@@ -224,7 +224,14 @@ const defaultEditorActions = {
   ),
   [str(editors.blurField)]: produce(
     (state: EditorState, action: Action<{ fieldName: string }>) => {
-      set(state, combineObjectKey(action.payload.fieldName, blurredProp), true);
+      if (!state.blurredFields) {
+        state.blurredFields = {};
+      }
+      set(
+        state.blurredFields,
+        combineObjectKey(action.payload.fieldName, blurredProp),
+        true
+      );
     }
   ),
   [str(editors.propertyChange)]: produce(

@@ -1,4 +1,5 @@
 import { Entity, EntityId } from "howdju-common";
+import { logger } from "./logger";
 
 export interface ContextTrailItemInfo {
   targetType: "PROPOSITION" | "STATEMENT" | "JUSTIFICATION";
@@ -38,6 +39,34 @@ export type EditorId = string;
 /** A key for storing text field suggestions in the state. */
 export type SuggestionsKey = string;
 
+export type OnBlurCallback = (name: string) => void;
+
+export const toReactMdOnBlur = (
+  onBlurCallback?: OnBlurCallback
+): ReactMdOnBlur => {
+  return function (event: React.FocusEvent<HTMLElement>) {
+    if (onBlurCallback) {
+      if ("name" in event.target) {
+        onBlurCallback(
+          (event as React.FocusEvent<HTMLInputElement>).target.name
+        );
+      } else {
+        logger.error(
+          "Unable to call blur callback because event did not target an HTMLInputElement"
+        );
+      }
+    }
+  };
+};
+
+/**
+ * The type of react-md's onBlur event.
+ *
+ * Sadly react-md uses HTMLElement instead of HTMLInputElement, which prevents us from acessing the
+ * event's name for form state management.
+ */
+type ReactMdOnBlur = (event: React.FocusEvent<HTMLElement>) => void;
+
 /**
  * Represent changes to form field properties.
  *
@@ -45,6 +74,7 @@ export type SuggestionsKey = string;
  */
 export type PropertyChanges = { [key: string]: any };
 export type OnPropertyChangeCallback = (changes: PropertyChanges) => void;
+export type OnValidityChangeCallback = (isValid: boolean) => void;
 export type OnKeyDownCallback = (
   event: React.KeyboardEvent<HTMLElement>
 ) => void;

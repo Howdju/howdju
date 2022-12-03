@@ -34,12 +34,19 @@ export default function PropositionCompoundEditorFields(props: Props) {
     blurredFields,
     onAddPropositionCompoundAtom,
     onRemovePropositionCompoundAtom,
+    onBlur,
     onPropertyChange,
     onSubmit,
+    wasSubmitAttempted,
   } = props;
   const atoms = propositionCompound?.atoms;
 
-  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
+  const errorProps = makeErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
 
   return (
     <div>
@@ -75,23 +82,21 @@ export default function PropositionCompoundEditorFields(props: Props) {
           rightIcon,
           rightIconStateful: false,
           disabled,
+          onBlur,
           onPropertyChange,
           onSubmit,
+          ...errorProps((pc) => pc.atoms[index].entity.text),
         };
         return suggestionsKey && !disabled ? (
           <PropositionTextAutocomplete
             {...inputProps}
-            {...errorProps((pc) => pc.atoms[index])}
             suggestionsKey={combineSuggestionsKeys(
               suggestionsKey,
               atomPropositionTextName
             )}
           />
         ) : (
-          <SingleLineTextField
-            {...inputProps}
-            {...errorProps((pc) => pc.atoms[index])}
-          />
+          <SingleLineTextField {...inputProps} />
         );
       })}
       <ErrorMessages errors={errors?._errors} />

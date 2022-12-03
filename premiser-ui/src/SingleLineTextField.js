@@ -18,6 +18,7 @@ export default class SingleLineTextField extends Component {
     disabled: PropTypes.bool,
     onKeyDown: PropTypes.func,
     onSubmit: PropTypes.func,
+    onBlur: PropTypes.func,
     onPropertyChange: PropTypes.func,
   };
 
@@ -35,6 +36,7 @@ export default class SingleLineTextField extends Component {
       rows,
       maxRows,
       disabled,
+      onBlur,
       // ignore
       onKeyDown,
       onSubmit,
@@ -53,6 +55,7 @@ export default class SingleLineTextField extends Component {
         value={textareaValue}
         {...rowProps}
         disabled={disabled}
+        onBlur={onBlur}
         onKeyDown={this.onKeyDown}
         onChange={this.onChange}
       />

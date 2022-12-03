@@ -1,8 +1,19 @@
-import { isArray, isEqual, isNumber, uniqWith } from "lodash";
+import {
+  isArray,
+  isEqual,
+  isNumber,
+  isString,
+  join,
+  map,
+  startCase,
+  toString,
+  uniqWith,
+} from "lodash";
 import { z, ZodFormattedError } from "zod";
 
 import { ModelErrorCode } from "./codes";
 import { mapValuesDeep } from "./general";
+import { logger } from "./logger";
 import {
   BespokeValidationErrors,
   FieldErrorCode,
@@ -32,6 +43,37 @@ export function translateZodToFieldErrorCode(
 export const zodIssueFormatter = (issue: z.ZodIssue) => issue;
 export type ZodCustomIssueFormat = ReturnType<typeof zodIssueFormatter>;
 export type ErrorFormat = ZodCustomIssueFormat;
+
+export function errorFormatToString(errorFormat: ErrorFormat): string {
+  switch (errorFormat.code) {
+    case "invalid_type": {
+      const { received, message } = errorFormat;
+      if (received === "undefined" && message === "Required") {
+        // TODO: if name is a number, then keep going backwards through path until we get to a
+        // string. Keep track of the numbers, and then add them after the string. So `["prop", 1, 2]`
+        // would become `prop[1][2]`.
+        const rawName = errorFormat.path[errorFormat.path.length - 1];
+        if (!isString(rawName)) {
+          logger.warn(
+            `errorFormatToString got a type that doesn't format nicely (${rawName}: ${typeof rawName})`
+          );
+        }
+        const name = toString(rawName);
+        const casedName = startCase(name);
+        return `${casedName} is required`;
+      }
+      return errorFormat.message;
+    }
+    case "invalid_union_discriminator": {
+      const { options } = errorFormat;
+      const joinedOptions = join(map(options, startCase), ", ");
+      return `Invalid option. Must be one of: ${joinedOptions}`;
+    }
+
+    default:
+      return errorFormat.message;
+  }
+}
 
 /** Formats a Zod error with our custom formatter and removes duplicates. */
 export function formatZodError<T>(error: z.ZodError<T>) {

@@ -18,7 +18,7 @@ export const Entity = z.object({
 export type Entity = z.infer<typeof Entity>;
 
 export const Proposition = Entity.extend({
-  text: z.string(),
+  text: z.string().min(1),
 }).strict();
 export type Proposition = z.infer<typeof Proposition>;
 
@@ -82,7 +82,7 @@ export type CreateStatement = Statement;
 // Statement has no Edit models; users can edit the proposition/statement or the speaker.
 
 export const Writ = Entity.extend({
-  title: z.string(),
+  title: z.string().min(1).max(512),
 });
 export type Writ = z.infer<typeof Writ>;
 
@@ -105,7 +105,7 @@ export const UrlTarget = Entity.extend({
 });
 
 export const Url = Entity.extend({
-  url: z.string(),
+  url: z.string().url(),
   target: UrlTarget.optional(),
 });
 export type Url = z.infer<typeof Url>;
@@ -154,11 +154,13 @@ export const SourceExcerptTypes = sourceExcerptTypes.Enum;
 
 /* One or more propositions intended to be considered conjunctively */
 export const PropositionCompound = Entity.extend({
-  atoms: z.array(
-    Entity.extend({
-      entity: Proposition,
-    })
-  ),
+  atoms: z
+    .array(
+      Entity.extend({
+        entity: Proposition,
+      })
+    )
+    .min(1),
 });
 export type PropositionCompound = z.infer<typeof PropositionCompound>;
 export type PropositionCompoundAtom = PropositionCompound["atoms"][number];
@@ -543,6 +545,10 @@ export const CreateJustification: z.ZodType<CreateJustification> = z.lazy(() =>
       z.object({
         type: z.literal("SOURCE_EXCERPT"),
         entity: z.union([CreateSourceExcerpt, SourceExcerptRef]),
+      }),
+      z.object({
+        type: z.literal("WRIT_QUOTE"),
+        entity: z.union([CreateWritQuote, WritQuoteRef]),
       }),
     ]),
     target: z.discriminatedUnion("type", [

@@ -23,8 +23,14 @@ export default function AccountSettingsEditorFields({
   dirtyFields,
   blurredFields,
   onPropertyChange,
+  wasSubmitAttempted,
 }: Props) {
-  const errorProps = makeErrorPropCreator(errors, dirtyFields, blurredFields);
+  const errorProps = makeErrorPropCreator(
+    wasSubmitAttempted,
+    errors,
+    dirtyFields,
+    blurredFields
+  );
   return (
     <div>
       <ErrorMessages errors={errors?._errors} />

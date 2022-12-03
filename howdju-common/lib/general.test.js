@@ -30,9 +30,12 @@ describe("cleanWhitespace", () => {
 describe("mapValuesDeep", () => {
   test("Should map deep arrays correctly", () => {
     expect(
-      mapValuesDeep({
-        arr: ["one", "one", "two"],
-      }, uniq)
+      mapValuesDeep(
+        {
+          arr: ["one", "one", "two"],
+        },
+        uniq
+      )
     ).toEqual({
       arr: ["one", "two"],
     });
