@@ -40,6 +40,9 @@ import {
   CreateJustificationTarget,
   newProgrammingError,
   isRef,
+  CreateCounterJustificationInput,
+  CreateCounterJustificationBasisInput,
+  CreateCounterJustificationTargetInput,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -89,7 +92,7 @@ export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
 };
 
 export const consolidateCreateJustificationInput = (
-  input: CreateJustificationInput
+  input: CreateJustificationInput | CreateCounterJustificationInput
 ): CreateJustification => {
   const basis = consolidateCreateJustificationBasisInput(input.basis);
   const target = consolidateCreateJustificationTargetInput(input.target);
@@ -101,7 +104,7 @@ export const consolidateCreateJustificationInput = (
 };
 
 const consolidateCreateJustificationBasisInput = (
-  basis: CreateJustificationBasisInput
+  basis: CreateJustificationBasisInput | CreateCounterJustificationBasisInput
 ): CreateJustificationBasis => {
   switch (basis.type) {
     case "PROPOSITION_COMPOUND":
@@ -125,12 +128,12 @@ const consolidateCreateJustificationBasisInput = (
     case "JUSTIFICATION_BASIS_COMPOUND":
       throw newUnimplementedError(`Unsupported basis type: ${basis.type}`);
     default:
-      throw newExhaustedEnumError(basis.type);
+      throw newExhaustedEnumError(basis);
   }
 };
 
 const consolidateCreateJustificationTargetInput = (
-  target: CreateJustificationTargetInput
+  target: CreateJustificationTargetInput | CreateCounterJustificationTargetInput
 ): CreateJustificationTarget => {
   switch (target.type) {
     case "PROPOSITION":
@@ -157,7 +160,7 @@ const consolidateCreateJustificationTargetInput = (
           : consolidateCreateJustificationInput(target.justification),
       };
     default:
-      throw newExhaustedEnumError(target.type);
+      throw newExhaustedEnumError(target);
   }
 };
 

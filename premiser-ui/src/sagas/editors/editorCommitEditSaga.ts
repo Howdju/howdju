@@ -1,32 +1,45 @@
-import { put, call, takeEvery, select } from "redux-saga/effects";
+import { put, call, takeEvery, select } from "typed-redux-saga";
 import isFunction from "lodash/isFunction";
 import clone from "lodash/clone";
 import drop from "lodash/drop";
 import reverse from "lodash/reverse";
 
 import {
-  arrayToObject,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
   newProgrammingError,
   makeStatement,
   SentenceTypes,
+  newUnimplementedError,
+  CreateCounterJustificationInput,
+  CreateJustificationInput,
+  CreatePersorgInput,
+  CreatePropositionInput,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
-import { EditorTypes, EntityTypeDescriptions } from "../../reducers/editors";
-import { api, editors, str, ui } from "../../actions";
+import { EditorEntity, EditorType, EditorTypes } from "../../reducers/editors";
+import { api, editors, str } from "../../actions";
 import { consolidateCreateJustificationInput } from "../../viewModels";
 import { newEditorCommitResultError } from "../../uiErrors";
 import { callApiForResource } from "../resourceApiSagas";
-import { logger } from "@/logger";
+import { CreateJustifiedPropositionInput } from "howdju-client-common";
+import { EditorAction } from "@/editors/editorTypes";
+import { startCase } from "lodash";
+import app from "@/app/appSlice";
+import { ActionCreator } from "@reduxjs/toolkit";
 
-const CrudActions = arrayToObject(["CREATE", "UPDATE"]);
+const CrudActions = { CREATE: "CREATE", UPDATE: "UPDATE" } as const;
+type CrudAction = typeof CrudActions[keyof typeof CrudActions];
+const UNSUPPORTED = {};
 const editorTypeCommitApiResourceActions = {
   [EditorTypes.PROPOSITION]: {
     [CrudActions.UPDATE]: api.updateProposition,
   },
-  [EditorTypes.PROPOSITION_JUSTIFICATION]: (model, crudType) => {
+  [EditorTypes.PROPOSITION_JUSTIFICATION]: (
+    model: CreateJustifiedPropositionInput,
+    crudType: CrudAction
+  ) => {
     switch (crudType) {
       case CrudActions.CREATE: {
         if (model.speakers && model.speakers.length > 0) {
@@ -66,22 +79,38 @@ const editorTypeCommitApiResourceActions = {
           return api.createProposition(model.proposition);
         }
       }
+      case "UPDATE":
+        throw newUnimplementedError(
+          "Updating JustifiedPropositions is not supported"
+        );
     }
   },
-  [EditorTypes.COUNTER_JUSTIFICATION]: (model, crudAction) => {
+  [EditorTypes.COUNTER_JUSTIFICATION]: (
+    model: CreateCounterJustificationInput,
+    crudAction: CrudAction
+  ) => {
     switch (crudAction) {
       case CrudActions.CREATE: {
         const justification = consolidateCreateJustificationInput(model);
         return api.createJustification(justification);
       }
+      case "UPDATE":
+        throw newUnimplementedError(
+          "Updating CounterJustifications is not supported"
+        );
     }
   },
-  [EditorTypes.NEW_JUSTIFICATION]: (model, crudAction) => {
+  [EditorTypes.NEW_JUSTIFICATION]: (
+    model: CreateJustificationInput,
+    crudAction: CrudAction
+  ) => {
     switch (crudAction) {
       case CrudActions.CREATE: {
         const justification = consolidateCreateJustificationInput(model);
         return api.createJustification(justification);
       }
+      case "UPDATE":
+        throw newUnimplementedError("Updating Justifications is not supported");
     }
   },
   [EditorTypes.WRIT_QUOTE]: {
@@ -107,9 +136,13 @@ const editorTypeCommitApiResourceActions = {
   [EditorTypes.CONTENT_REPORT]: {
     [CrudActions.CREATE]: api.createContentReport,
   },
+  [EditorTypes.JUSTIFICATION_BASIS_COMPOUND]: UNSUPPORTED,
 };
 
-function constructStatement(speakers, proposition) {
+function constructStatement(
+  speakers: CreatePersorgInput[],
+  proposition: CreatePropositionInput
+) {
   // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
   // but we need to build the statements outward so that we have the target of the next statement.
   // So take them in reverse order
@@ -132,7 +165,7 @@ function constructStatement(speakers, proposition) {
 export function* editorCommitEdit() {
   yield takeEvery(
     str(editors.commitEdit),
-    function* editorCommitEditWorker(action) {
+    function* editorCommitEditWorker(action: EditorAction) {
       const { editorType, editorId } = action.payload;
 
       if (!editorType) {
@@ -150,12 +183,12 @@ export function* editorCommitEdit() {
         editEntity
       );
       try {
-        const resultAction = yield call(
+        const resultAction = yield* call(
           callApiForResource,
           editorCommitApiResourceAction
         );
         if (resultAction.error) {
-          return yield put(
+          return yield* put(
             editors.commitEdit.result(
               newEditorCommitResultError(
                 editorType,
@@ -166,18 +199,11 @@ export function* editorCommitEdit() {
           );
         } else {
           if (resultAction.payload.alreadyExists) {
-            let entityTypeDescription = EntityTypeDescriptions[editorType];
-            if (!entityTypeDescription) {
-              logger.warn(
-                `No EntityTypeDesription for editorType ${editorType}`
-              );
-              entityTypeDescription = "entity";
-            }
             yield put(
-              ui.addToast(`That ${entityTypeDescription} already exists.`)
+              app.addToast(`That ${startCase(editorType)} already exists.`)
             );
           }
-          return yield put(
+          return yield* put(
             editors.commitEdit.result(
               editorType,
               editorId,
@@ -186,9 +212,9 @@ export function* editorCommitEdit() {
           );
         }
       } catch (error) {
-        return yield put(
+        return yield* put(
           editors.commitEdit.result(
-            newEditorCommitResultError(editorType, editorId, error)
+            newEditorCommitResultError(editorType, editorId, error as Error)
           )
         );
       }
@@ -196,24 +222,35 @@ export function* editorCommitEdit() {
   );
 }
 
-function createEditorCommitApiResourceAction(editorType, editEntity) {
+function createEditorCommitApiResourceAction(
+  editorType: EditorType,
+  editEntity: EditorEntity
+) {
   const editorCommitApiResourceActions =
     editorTypeCommitApiResourceActions[editorType];
+  if (editorCommitApiResourceActions === UNSUPPORTED) {
+    throw newUnimplementedError(`Cannot edit ediitor type ${editorType}.`);
+  }
   if (!editorCommitApiResourceActions) {
     throw new Error(`Missing editor type ${editorType} action creator config.`);
   }
 
-  const crudType = editEntity.id ? CrudActions.UPDATE : CrudActions.CREATE;
+  const crudType =
+    !("id" in editEntity) || !editEntity.id
+      ? CrudActions.CREATE
+      : CrudActions.UPDATE;
   let action;
   if (isFunction(editorCommitApiResourceActions)) {
     action = editorCommitApiResourceActions(editEntity, crudType);
   } else {
-    const actionCreator = editorCommitApiResourceActions[crudType];
-    if (!actionCreator) {
+    if (!(crudType in editorCommitApiResourceActions)) {
       throw new Error(
         `Missing ${crudType} action creator to commit edit of ${editorType} (add to editorTypeCommitApiResourceActions).`
       );
     }
+    const actionCreator = editorCommitApiResourceActions[
+      crudType as keyof typeof editorCommitApiResourceActions
+    ] as ActionCreator<any>;
     action = actionCreator(editEntity);
   }
   return action;

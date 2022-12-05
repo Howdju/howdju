@@ -588,6 +588,10 @@ export const CreateCounterJustificationInput = Entity.extend({
 export type CreateCounterJustificationInput = z.infer<
   typeof CreateCounterJustificationInput
 >;
+export type CreateCounterJustificationBasisInput =
+  CreateCounterJustificationInput["basis"];
+export type CreateCounterJustificationTargetInput =
+  CreateCounterJustificationInput["target"];
 export type CreateCounterJustificationTargetJustificationInput =
   CreateCounterJustificationInput["target"]["justification"];
 
@@ -710,3 +714,8 @@ export const UserSubmissionModel = User.extend({
   affirmedNotGdpr: z.boolean(),
 });
 export type UserSubmissionModel = z.infer<typeof UserSubmissionModel>;
+
+export const AccountSettings = Entity.extend({
+  paidContributionsDisclosure: z.string(),
+});
+export type AccountSettings = z.infer<typeof AccountSettings>;

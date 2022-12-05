@@ -82,9 +82,7 @@ forEach(
 );
 
 export const EditorTypes = {
-  DEFAULT: "DEFAULT",
   PROPOSITION: "PROPOSITION",
-  PROPOSITION_COMPOUND: "PROPOSITION_COMPOUND",
   JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
   WRIT_QUOTE: "WRIT_QUOTE",
   COUNTER_JUSTIFICATION: "COUNTER_JUSTIFICATION",
@@ -100,10 +98,6 @@ export const EditorTypes = {
   CONTENT_REPORT: "CONTENT_REPORT",
 } as const;
 export type EditorType = typeof EditorTypes[keyof typeof EditorTypes];
-
-export const EntityTypeDescriptions = {
-  [EditorTypes.WRIT_QUOTE]: "WritQuote",
-};
 
 const blurredProp = "_blurred";
 // Whether the user has interacted with a control
@@ -345,8 +339,6 @@ const editorReducerByType: {
     EditorMeta
   >;
 } = {
-  [EditorTypes.DEFAULT]: defaultEditorReducer,
-
   // TODO(94): adopt Redux's slice pattern to get precise reducer typechecking
   [EditorTypes.PROPOSITION]: handleActions<EditorState, any, EditorMeta>(
     {

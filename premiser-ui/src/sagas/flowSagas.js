@@ -19,7 +19,7 @@ import {
   selectAuthTokenExpiration,
   selectLoginRedirectLocation,
 } from "../selectors";
-import { api, app, goto, ui, str } from "../actions";
+import { api, app, goto, str } from "../actions";
 import { callApiResponse } from "../apiActions";
 import { history } from "../history";
 import { isActivePath } from "../routes";
@@ -37,7 +37,7 @@ export function* goHomeIfDeletePropositionWhileViewing() {
           true
         );
         if (routerLocation.pathname.startsWith(noSlugPath)) {
-          yield put(ui.addToast(t(DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE)));
+          yield put(app.addToast(t(DELETE_PROPOSITION_SUCCESS_TOAST_MESSAGE)));
           yield put(push(paths.home()));
         }
       }
@@ -168,7 +168,7 @@ export function* redirectHomeFromMissingRootTarget() {
         }
         // startsWith because we don't have a slug
         if (routerLocation.pathname.startsWith(path)) {
-          yield put(ui.addToast(t(messageKey)));
+          yield put(app.addToast(t(messageKey)));
           yield put(push(paths.home()));
         }
       }

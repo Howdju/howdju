@@ -156,7 +156,7 @@ export const makeUserRegistration = (
     props
   );
 
-export interface AccountSettings {
+interface AccountSettings {
   paidContributionsDisclosure: string;
 }
 
