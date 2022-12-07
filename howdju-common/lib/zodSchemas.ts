@@ -735,6 +735,8 @@ export const AccountSettings = Entity.extend({
   paidContributionsDisclosure: z.string(),
 });
 export type AccountSettings = z.infer<typeof AccountSettings>;
+export type EditAccountSettings = AccountSettings;
+export type EditAccountSettingsInput = AccountSettings;
 
 /**
  * A CreationModel for creating a Proposition potentially with Speakers and/or Justifications.
@@ -756,3 +758,26 @@ export const CreateJustifiedSentence = z.object({
   justification: CreateJustificationInput,
 });
 export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;
+
+export const RegistrationRequest = z.object({
+  email: z.string().email(),
+});
+export type RegistrationRequest = z.infer<typeof RegistrationRequest>;
+
+export type CreateRegistrationRequest = RegistrationRequest;
+export type CreateRegistrationRequestInput = RegistrationRequest;
+
+export const RegistrationConfirmation = z.object({
+  registrationCode: z.string().min(1),
+  username: z.string().min(3),
+  shortName: z.string().min(2),
+  longName: z.string().min(3),
+  password: z.string().min(6),
+  doesAcceptTerms: z.boolean(),
+  is13YearsOrOlder: z.boolean(),
+  hasMajorityConsent: z.boolean(),
+  isNotGdpr: z.boolean(),
+});
+export type RegistrationConfirmation = z.infer<typeof RegistrationConfirmation>;
+export type CreateRegistrationConfirmation = RegistrationConfirmation;
+export type CreateRegistrationConfirmationInput = RegistrationConfirmation;

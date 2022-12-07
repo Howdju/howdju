@@ -34,6 +34,7 @@ import {
   CreatePropositionCompoundAtomInput,
   CreatePropositionCompoundInput,
   CreatePropositionInput,
+  CreateRegistrationConfirmationInput,
   CreateSourceExcerpt,
   CreateSourceExcerptInput,
   CreateStatementInput,
@@ -56,6 +57,7 @@ import {
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
+  RegistrationRequest,
   SourceExcerpt,
   SourceExcerptRef,
   Statement,
@@ -120,10 +122,6 @@ export interface Credentials {
 export const makeCredentials = (props?: Partial<Credentials>): Credentials =>
   assign({ email: "", password: "" }, props);
 
-export interface RegistrationRequest {
-  email: string;
-}
-
 export const makeRegistrationRequest = (
   props?: Partial<RegistrationRequest>
 ): RegistrationRequest =>
@@ -134,20 +132,9 @@ export const makeRegistrationRequest = (
     props
   );
 
-export interface RegistrationConfirmation {
-  registrationCode: string;
-  username: string;
-  shortName: string;
-  longName: string;
-  password: string;
-  doesAcceptTerms: boolean;
-  is13YearsOrOlder: boolean;
-  hasMajorityConsent: boolean;
-  isNotGdpr: boolean;
-}
-export const makeRegistrationConfirmation = (
-  props?: Partial<RegistrationConfirmation>
-): RegistrationConfirmation =>
+export const makeCreateRegistrationConfirmationInput = (
+  props?: Partial<CreateRegistrationConfirmationInput>
+): CreateRegistrationConfirmationInput =>
   assign(
     {
       registrationCode: "",
@@ -162,6 +149,9 @@ export const makeRegistrationConfirmation = (
     },
     props
   );
+
+export const makeCreateRegistrationConfirmation =
+  makeCreateRegistrationConfirmationInput;
 
 export interface UserRegistration {
   email: string;

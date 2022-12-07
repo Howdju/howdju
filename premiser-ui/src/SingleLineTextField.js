@@ -70,6 +70,11 @@ export default class SingleLineTextField extends Component {
       }
     }
     if (event.key === Keys.ENTER) {
+      // As I recall, react-md (@1, at least) implements all text fields as textareas. This breaks
+      // the html text input convention of pressing enter to submit a form.
+      //
+      // To work around that, we added this component that recreates the behavior.
+      //
       // No line breaks in single-line text fields
       event.preventDefault();
       if (this.props.onSubmit) {

@@ -1,14 +1,18 @@
 import React, { useEffect } from "react";
-import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import { useDispatch, useSelector } from "react-redux";
+import { AnyAction } from "redux";
+import { PrepareAction } from "@reduxjs/toolkit";
+import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import get from "lodash/get";
 import reduce from "lodash/reduce";
 import { z } from "zod";
+import { identity, merge } from "lodash";
 
 import {
   formatZodError,
   ModelErrors,
   translateAjvToZodFormattedError,
+  SchemaId,
 } from "howdju-common";
 import { validateRawErrors } from "howdju-ajv-sourced";
 
@@ -19,7 +23,6 @@ import t, {
   CANCEL_BUTTON_LABEL,
   EDIT_ENTITY_SUBMIT_BUTTON_LABEL,
 } from "@/texts";
-import { AnyAction } from "redux";
 import {
   BlurredFields,
   DirtyFields,
@@ -27,8 +30,6 @@ import {
   EditorState,
   EditorType,
 } from "@/reducers/editors";
-import { logger, SchemaId, toJson } from "howdju-common";
-import { identity, isEqual, merge } from "lodash";
 import {
   ComponentId,
   ComponentName,
@@ -41,7 +42,7 @@ import {
   SuggestionsKey,
 } from "@/types";
 import { EditorCommitCrudActionConfig } from "@/sagas/editors/editorCommitEditSaga";
-import { PrepareAction } from "@reduxjs/toolkit";
+import SubmitButton from "./SubmitButton";
 
 export class CommitThenPutAction {
   // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
@@ -107,12 +108,15 @@ export type EntityEditorFieldsProps<T> = {
  *   EntityEditorFields that produce callbacks that will dispatch the
  *   correct addListItem/removeListItem editor actions.
  * @typeparam P the type of Props that EntityEditorFields requires.
+ * @typeparam LIT the type of the list item translator's object
+ * @typeparam SchemaInput the type of model the editor edits.
+ * @typeparam SchemaOutput the output of the schema validation, in case it has refinements.
  */
 export default function withEditor<
   P extends EntityEditorFieldsProps<SchemaOutput>,
   LIT extends { [key: string]: ListItemTranslator },
   SchemaInput extends EditorEntity = any,
-  SchemaOutput = any,
+  SchemaOutput = SchemaInput,
   U = any,
   Y = any,
   RP = any,
@@ -147,7 +151,7 @@ export default function withEditor<
   };
   type RestProps = RequiredRestPropsKeys & OptionalRestPropsKeys;
 
-  const validateEntity = (editEntity: EditorEntity) => {
+  const validateEntity = (editEntity: EditorEntity | undefined) => {
     if (!editEntity) {
       return { value: editEntity };
     }
@@ -184,6 +188,18 @@ export default function withEditor<
       editorCommitBehavior = "JustCommit",
     } = props;
 
+    const editorState = useSelector((state: RootState) =>
+      get(state.editors, [editorType, editorId])
+    ) as EditorState<SchemaInput, U>;
+    const {
+      errors: apiValidationErrors,
+      editEntity,
+      isSaving,
+      blurredFields,
+      dirtyFields,
+      wasSubmitAttempted,
+    } = editorState;
+
     const dispatch = useDispatch();
 
     const onPropertyChange = (properties: { [key: string]: string }) => {
@@ -192,8 +208,38 @@ export default function withEditor<
     const onBlur = (name: string) => {
       dispatch(editors.blurField(editorType, editorId, name));
     };
+
+    const inputTransformer = commitConfig?.inputTransformer ?? identity;
+    const requestEntity = editEntity && inputTransformer(editEntity);
+    function isValidRequest(requestEntity: U | undefined) {
+      if (!requestEntity) {
+        // If there is no entity, we can't call it valid.
+        return false;
+      }
+      if (!commitConfig?.requestSchema) {
+        // Without request schema, we cannot validate the request.
+        return true;
+      }
+      const result = commitConfig.requestSchema.safeParse(requestEntity);
+      return result.success;
+    }
+    const isValid = isValidRequest(requestEntity);
+    useEffect(() => {
+      onValidityChange && onValidityChange(isValid);
+    }, [isValid, onValidityChange]);
+
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+
+      if (isSaving) {
+        return;
+      }
+
+      if (!isValid) {
+        dispatch(editors.attemptedSubmit(editorType, editorId));
+        return;
+      }
+
       if (editorCommitBehavior === "JustCommit") {
         dispatch(editors.commitEdit(editorType, editorId));
       } else if (editorCommitBehavior === "CommitThenView") {
@@ -222,49 +268,20 @@ export default function withEditor<
       {} as { [key: string]: (...args: any[]) => void }
     );
 
-    const editorState = useSelector((state: RootState) =>
-      get(state.editors, [editorType, editorId], {})
-    );
-    const {
-      errors: apiValidationErrors,
-      editEntity,
-      isSaving,
-      blurredFields,
-      dirtyFields,
-      wasSubmitAttempted,
-    } = editorState as EditorState;
-
     const { errors: clientValidationErrors } = validateEntity(editEntity);
-    function isValidRequest() {
-      if (!commitConfig?.requestSchema) {
-        // Without request schema, we cannot validate the request.
-        return true;
-      }
-      const requestEntity = (commitConfig.inputTransformer ?? identity)(
-        editEntity
-      );
-      const result = commitConfig.requestSchema.safeParse(requestEntity);
-      return result.success;
-    }
-    const isValid = isValidRequest();
-    useEffect(() => {
-      onValidityChange && onValidityChange(isValid);
-    }, [isValid, onValidityChange]);
 
-    // Because the API should validate the same data using the same schema, it shouldn't be possible
-    // to receive API errors that didn't also fail client validation.
-    if (
-      apiValidationErrors &&
-      !isEqual(clientValidationErrors, apiValidationErrors)
-    ) {
-      logger.error(
-        `clientValidationErrors and apiValidationErrors do not match ` +
-          `${toJson({ clientValidationErrors, apiValidationErrors })}`
-      );
-    }
+    const responseErrorTransformer = commitConfig?.responseErrorTransformer;
+    const transformedApiValidationErrors =
+      requestEntity && apiValidationErrors && responseErrorTransformer
+        ? responseErrorTransformer(requestEntity, apiValidationErrors)
+        : apiValidationErrors;
     // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
     // must accept the value.
-    const errors = merge({}, clientValidationErrors, apiValidationErrors);
+    const errors = merge(
+      {},
+      clientValidationErrors,
+      transformedApiValidationErrors
+    );
 
     const editorFieldsProps = {
       id,
@@ -284,6 +301,12 @@ export default function withEditor<
       // TODO(1): can we remove this typecast? https://stackoverflow.com/questions/74072249/
     } as unknown as P;
 
+    const submitButtonTitle = isValid
+      ? "Submit"
+      : wasSubmitAttempted
+      ? "Please correct the errors to continue"
+      : "Please complete the form to continue";
+
     return (
       <form onSubmit={onSubmit} className={className}>
         <CardText>
@@ -301,13 +324,11 @@ export default function withEditor<
               onClick={onCancelEdit}
               disabled={isSaving}
             />,
-            <Button
-              raised
-              primary
+            <SubmitButton
               key="submitButton"
-              type="submit"
+              appearDisabled={!isValid || isSaving}
+              title={submitButtonTitle}
               children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
-              disabled={isSaving || !isValid}
             />,
           ]}
         </CardActions>

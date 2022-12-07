@@ -13,6 +13,7 @@ import {
 } from "react-md";
 
 import {
+  CreatePropositionInput,
   EntityId,
   isNegative,
   isPositive,
@@ -286,7 +287,11 @@ class JustificationRootTargetCard extends React.Component<Props> {
       return;
     }
     const editorType = editorTypesByRootTargetType[rootTargetType];
-    this.props.editors.beginEdit(editorType, editorId, rootTarget);
+    this.props.editors.beginEdit(
+      editorType,
+      editorId,
+      rootTarget as CreatePropositionInput
+    );
   };
 
   deleteRootTarget = () => {

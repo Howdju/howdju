@@ -183,6 +183,10 @@ export const editors = {
       properties: { [key: string]: any }
     ) => ({ editorType, editorId, properties })
   ),
+  attemptedSubmit: createAction(
+    "EDITORS/ATTEMPTED_SUBMIT",
+    (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
+  ),
   commitEdit,
   cancelEdit: createAction(
     "EDITORS/CANCEL_EDIT",

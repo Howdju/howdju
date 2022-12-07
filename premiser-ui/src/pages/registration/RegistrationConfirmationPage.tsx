@@ -22,7 +22,7 @@ import {
   apiErrorCodes,
   EntityErrorCodes,
   logger,
-  makeRegistrationConfirmation,
+  makeCreateRegistrationConfirmationInput,
   schemas,
   schemaSettings,
   onlyFieldError,
@@ -76,7 +76,7 @@ export default function RegistrationConfirmationPage() {
       editors.beginEdit(
         editorType,
         editorId,
-        makeRegistrationConfirmation({ registrationCode })
+        makeCreateRegistrationConfirmationInput({ registrationCode })
       )
     );
   }, [dispatch, registrationCode]);

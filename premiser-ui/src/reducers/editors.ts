@@ -38,15 +38,21 @@ import {
   PropositionTagVotePolarity,
   WritQuote,
   RecursiveObject,
-  AccountSettings,
-  RegistrationConfirmation,
-  RegistrationRequest,
   CreateJustificationInput,
   makeCreatePropositionCompoundAtomInput,
   CustomError,
   ModelErrors,
   CreateJustifiedSentenceInput,
   makeCreateWritQuoteInput,
+  CreateJustification,
+  CreateWritQuoteInput,
+  CreateJustifiedSentence,
+  CreateRegistrationRequestInput,
+  CreateRegistrationRequest,
+  CreateContentReportInput,
+  EditAccountSettingsInput,
+  CreateRegistrationConfirmationInput,
+  CreatePropositionInput,
 } from "howdju-common";
 
 import {
@@ -110,15 +116,19 @@ export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
  * TODO: deduplicate this with *EditModels.
  */
 export type EditorEntity =
-  | Entity
+  | CreatePropositionInput
   | CreateJustificationInput
   | CreateJustifiedSentenceInput
-  | WritQuote
-  | AccountSettings
-  | RegistrationRequest
-  | RegistrationConfirmation;
-
-export interface EditorState<T = any> {
+  | CreateWritQuoteInput
+  | EditAccountSettingsInput
+  | CreateRegistrationRequestInput
+  | CreateContentReportInput
+  | CreateRegistrationConfirmationInput;
+/**
+ * @typeparam T the editor model type.
+ * @typeparam U the request model type. TODO add FromInput<> mirroring ToInput.
+ */
+export interface EditorState<T extends EditorEntity, U = T> {
   /**
    * The model the editor is editing.
    *
@@ -127,7 +137,7 @@ export interface EditorState<T = any> {
   editEntity?: T;
   blurredFields?: BlurredFields<T>;
   dirtyFields?: DirtyFields<T>;
-  errors?: ModelErrors<T>;
+  errors?: ModelErrors<U>;
   /** Whether the entity is in the middle of saving. */
   isSaving: boolean;
   /**
@@ -141,7 +151,7 @@ export interface EditorState<T = any> {
   isSaved: boolean;
 }
 
-const defaultEditorState = <T>() =>
+const defaultEditorState = <T extends EditorEntity>() =>
   ({
     editEntity: undefined,
     errors: undefined,
@@ -176,7 +186,7 @@ export interface AddListItemPayload {
 
 // TODO(#83): replace bespoke list reducers with addListItem/removeListItem
 const makeAddAtomReducer =
-  <T = any>(atomsPath: string, atomMaker: ModelFactory) =>
+  <T extends EditorEntity>(atomsPath: string, atomMaker: ModelFactory) =>
   (state: WritableDraft<EditorState<T>>, action: AnyAction) => {
     if (!state.editEntity) {
       logger.error("Cannot add atom to absent editEntity.");
@@ -191,7 +201,7 @@ const makeAddAtomReducer =
   };
 
 const makeRemoveAtomReducer =
-  <T = any>(atomsPath: string) =>
+  <T extends EditorEntity>(atomsPath: string) =>
   (state: WritableDraft<EditorState<T>>, action: AnyAction) => {
     if (!state.editEntity) {
       logger.error("Cannot remove atom from absent editEntity.");
@@ -215,7 +225,7 @@ const defaultEditorActions = {
     }
   ),
   [str(editors.blurField)]: produce(
-    (state: EditorState, action: Action<{ fieldName: string }>) => {
+    (state: EditorState<any>, action: Action<{ fieldName: string }>) => {
       if (!state.blurredFields) {
         state.blurredFields = {};
       }
@@ -227,7 +237,7 @@ const defaultEditorActions = {
     }
   ),
   [str(editors.propertyChange)]: produce(
-    (state: EditorState, action: Action<PropertyChanges>) => {
+    (state: EditorState<any>, action: Action<PropertyChanges>) => {
       if (!state.editEntity) {
         logger.error("Cannot change a property of an absent editEntity.");
         return;
@@ -244,7 +254,7 @@ const defaultEditorActions = {
     }
   ),
   [str(editors.addListItem)]: produce(
-    (state: EditorState, action: Action<AddListItemPayload>) => {
+    (state: EditorState<any>, action: Action<AddListItemPayload>) => {
       const { itemIndex, listPathMaker, itemFactory } = action.payload;
       const editEntity = state.editEntity;
 
@@ -257,7 +267,7 @@ const defaultEditorActions = {
     }
   ),
   [str(editors.removeListItem)]: produce(
-    (state: EditorState, action: AnyAction) => {
+    (state: EditorState<any>, action: AnyAction) => {
       const { itemIndex, listPathMaker } = action.payload;
       const editEntity = state.editEntity;
 
@@ -268,19 +278,22 @@ const defaultEditorActions = {
       removeAt(list, itemIndex);
     }
   ),
-  [str(editors.commitEdit)]: (state: EditorState) => ({
+  [str(editors.attemptedSubmit)]: produce((state: EditorState<any>) => {
+    state.wasSubmitAttempted = true;
+  }),
+  [str(editors.commitEdit)]: (state: EditorState<any>) => ({
     ...state,
     isSaving: true,
     errors: undefined,
     wasSubmitAttempted: true,
   }),
   [str(editors.commitEdit.result)]: {
-    next: (state: EditorState) => ({
+    next: (state: EditorState<any>) => ({
       ...state,
       ...defaultEditorState(),
       isSaved: true,
     }),
-    throw: produce((state: EditorState, action: Action<ErrorPayload>) => {
+    throw: produce((state: EditorState<any>, action: Action<ErrorPayload>) => {
       state.isSaving = false;
 
       const sourceError = action.payload.sourceError;
@@ -316,7 +329,7 @@ const defaultEditorActions = {
       state.errors = responseBody.errors[errorKey];
     }),
   },
-  [str(editors.cancelEdit)]: (state: EditorState) => ({
+  [str(editors.cancelEdit)]: (state: EditorState<any>) => ({
     ...state,
     ...defaultEditorState(),
   }),
@@ -326,7 +339,7 @@ const defaultEditorActions = {
 interface EditorMeta {
   requestPayload?: any;
 }
-const defaultEditorReducer = handleActions<EditorState, any>(
+const defaultEditorReducer = handleActions<EditorState<any>, any>(
   defaultEditorActions,
   defaultEditorState()
 );
@@ -338,7 +351,7 @@ const editorReducerByType: {
   >;
 } = {
   // TODO(94): adopt Redux's slice pattern to get precise reducer typechecking
-  [EditorTypes.PROPOSITION]: handleActions<EditorState, any, EditorMeta>(
+  [EditorTypes.PROPOSITION]: handleActions<EditorState<any>, any, EditorMeta>(
     {
       [str(api.fetchProposition)]: (state, action) => {
         const propositionId = get(state, "editEntity.id");
@@ -358,7 +371,7 @@ const editorReducerByType: {
     defaultEditorState()
   ),
 
-  [EditorTypes.COUNTER_JUSTIFICATION]: handleActions<EditorState, any>(
+  [EditorTypes.COUNTER_JUSTIFICATION]: handleActions<EditorState<any>, any>(
     {
       [str(editors.addPropositionCompoundAtom)]: produce(
         makeAddAtomReducer(
@@ -374,7 +387,7 @@ const editorReducerByType: {
   ),
 
   [EditorTypes.NEW_JUSTIFICATION]: handleActions<
-    EditorState<CreateJustificationInput>,
+    EditorState<CreateJustificationInput, CreateJustification>,
     any
   >(
     {
@@ -414,11 +427,11 @@ const editorReducerByType: {
         makeRemoveAtomReducer("basis.propositionCompound.atoms")
       ),
     },
-    defaultEditorState()
+    defaultEditorState<any>()
   ),
 
   [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions<
-    EditorState<CreateJustifiedSentenceInput>,
+    EditorState<CreateJustifiedSentenceInput, CreateJustifiedSentence>,
     any
   >(
     {
@@ -526,7 +539,7 @@ const editorReducerByType: {
     defaultEditorState()
   ),
 
-  [EditorTypes.WRIT_QUOTE]: handleActions<EditorState, any, any>(
+  [EditorTypes.WRIT_QUOTE]: handleActions<EditorState<any>, any, any>(
     {
       [str(editors.addUrl)]: (state) => {
         const editEntity = { ...state.editEntity } as WritQuote;
@@ -560,7 +573,7 @@ const editorReducerByType: {
     defaultEditorState()
   ),
 
-  [EditorTypes.LOGIN_CREDENTIALS]: handleActions<EditorState, any>(
+  [EditorTypes.LOGIN_CREDENTIALS]: handleActions<EditorState<any>, any>(
     {
       [str(editors.commitEdit.result)]: {
         throw: (state, action) => {
@@ -608,7 +621,7 @@ const editorReducerByType: {
   ),
 
   [EditorTypes.REGISTRATION_REQUEST]: handleActions<
-    EditorState<RegistrationRequest>,
+    EditorState<CreateRegistrationRequestInput, CreateRegistrationRequest>,
     any
   >(
     {
@@ -687,7 +700,7 @@ function makePropositionTagReducer(
   };
 }
 
-type EditorTypeState = { [key: EditorId]: EditorState };
+type EditorTypeState = { [key: EditorId]: EditorState<any> };
 // The editor reducer state is a two-level map: editorType -> editorId -> editorState
 type ReducerState = { [key in EditorType]: EditorTypeState };
 

@@ -2,7 +2,6 @@
 import merge from "lodash/merge";
 
 import {
-  ContentReport,
   Entity,
   FactoryInput,
   Justification,
@@ -14,10 +13,8 @@ import {
   Persisted,
   Proposition,
   PropositionTagVote,
-  Ref,
   SourceExcerptParaphrase,
   Tag,
-  EntityName,
   JustificationVote,
   CreateContentReportInput,
   TagVote,
@@ -32,16 +29,16 @@ export type JustificationViewModel = Persisted<Justification> & {
   counterJustifications: JustificationViewModel[];
 };
 
-// TODO rename to JustificationRootTargetRef, replace justifications with hasAgreement and hasDisagreement.
-export type JustificationRootTargetViewModel = Ref<
-  EntityName<JustificationRootTarget>
-> &
-  TaggedEntityViewModel & {
-    justifications: JustificationViewModel[];
-    // TODO make tags a view model and put the votes on them.
-    // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
-    propositionTagVotes: PropositionTagVoteViewModel[];
-  };
+// TODO either rename to JustificationRootTargetRef, replace justifications with hasAgreement and
+// hasDisagreement. Or replace with non-persisted version to allow drafting of justification trees.
+export type JustificationRootTargetViewModel =
+  Persisted<JustificationRootTarget> &
+    TaggedEntityViewModel & {
+      justifications: JustificationViewModel[];
+      // TODO make tags a view model and put the votes on them.
+      // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
+      propositionTagVotes: PropositionTagVoteViewModel[];
+    };
 
 export interface TaggedEntityViewModel extends Entity {
   tags: Tag[];
@@ -116,7 +113,7 @@ export interface JustifiedPropositionViewModel extends Proposition {
 
 export const makeCreateContentReportInput = (
   fields: Partial<CreateContentReportInput>
-): ContentReport =>
+): CreateContentReportInput =>
   merge(
     {
       entityType: null,
