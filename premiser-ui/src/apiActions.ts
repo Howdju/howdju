@@ -23,7 +23,6 @@ import {
   httpMethods,
   HttpMethod,
   JustificationRootTargetInfo,
-  decircularizeJustification,
   SortDirections,
   encodeQueryStringObject,
   JustificationSearchFilters,
@@ -35,6 +34,7 @@ import {
   TaggableEntityType,
   TagVotePolarities,
   makeCreateTagVote,
+  CreateJustification,
 } from "howdju-common";
 
 import {
@@ -72,7 +72,7 @@ import { SuggestionsKey } from "./types";
  * @typeparam RP response payload type
  * @typeparam PA prepare action type
  */
-type ApiActionCreator<
+export type ApiActionCreator<
   P,
   RP,
   PA extends void | PrepareAction<P>
@@ -1073,13 +1073,13 @@ export const api = {
 
   createJustification: apiActionCreator(
     "CREATE_JUSTIFICATION",
-    (justification) => ({ justification }),
-    (payload) => ({
+    (justification: CreateJustification) => ({ justification }),
+    ({ justification }) => ({
       endpoint: "justifications",
       fetchInit: {
         method: httpMethods.POST,
         body: {
-          justification: decircularizeJustification(payload.justification),
+          justification,
         },
       },
       normalizationSchema: { justification: justificationSchema },

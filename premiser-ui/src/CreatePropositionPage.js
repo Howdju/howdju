@@ -22,9 +22,8 @@ import queryString from "query-string";
 import {
   JustificationBasisTypes,
   PropositionTagVotePolarities,
+  makeCreateJustifiedSentenceInput,
 } from "howdju-common";
-
-import { makeCreateJustifiedPropositionInput } from "howdju-client-common";
 
 import {
   editors,
@@ -102,7 +101,7 @@ class CreatePropositionPage extends Component {
         this.props.editors.beginEdit(
           CreatePropositionPage.editorType,
           CreatePropositionPage.editorId,
-          makeCreateJustifiedPropositionInput()
+          makeCreateJustifiedSentenceInput()
         );
         break;
       case CreatePropositionPageMode.CREATE_JUSTIFICATION: {
@@ -152,7 +151,7 @@ class CreatePropositionPage extends Component {
             writQuote,
           },
         };
-        const justifiedProposition = makeCreateJustifiedPropositionInput(
+        const justifiedProposition = makeCreateJustifiedSentenceInput(
           {},
           justificationProps
         );

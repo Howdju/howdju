@@ -22,12 +22,9 @@ import {
   isRootNegative,
   JustificationBasisTypes,
   newExhaustedEnumError,
-} from "howdju-common";
-import {
-  isVerified,
-  isDisverified,
   makeCreateCounterJustificationInput,
-} from "howdju-client-common";
+} from "howdju-common";
+import { isVerified, isDisverified } from "howdju-client-common";
 
 import {
   api,

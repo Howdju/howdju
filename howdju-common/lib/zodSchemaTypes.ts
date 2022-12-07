@@ -2,8 +2,16 @@ import { SetRequired } from "type-fest";
 import { z } from "zod";
 
 import {
+  CreateCounterJustification,
+  CreateCounterJustificationInput,
+  CreateCounterJustificationInputTarget,
+  CreateCounterJustificationTarget,
   CreateJustification,
   CreateJustificationInput,
+  CreateJustificationInputTarget,
+  CreateJustificationTarget,
+  CreateJustifiedSentence,
+  CreateJustifiedSentenceInput,
   CreateProposition,
   CreatePropositionCompound,
   CreatePropositionCompoundInput,
@@ -72,3 +80,16 @@ export function isRef<T extends Entity>(
   const keys = Object.keys(e);
   return keys.length === 1 && keys[0] === "id";
 }
+
+/** Yields the Input version of a type. */
+export type ToInput<T> = T extends CreateJustification
+  ? CreateJustificationInput
+  : T extends CreateCounterJustification
+  ? CreateCounterJustificationInput
+  : T extends CreateJustificationTarget
+  ? CreateJustificationInputTarget
+  : T extends CreateCounterJustificationTarget
+  ? CreateCounterJustificationInputTarget
+  : T extends CreateJustifiedSentence
+  ? CreateJustifiedSentenceInput
+  : never;

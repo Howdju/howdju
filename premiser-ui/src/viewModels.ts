@@ -13,7 +13,7 @@ import lowerCase from "lodash/lowerCase";
 import map from "lodash/map";
 import split from "lodash/split";
 import truncate from "lodash/truncate";
-import { TruncateOptions } from "lodash";
+import { clone, reverse, TruncateOptions } from "lodash";
 
 import config from "./config";
 import {
@@ -29,20 +29,11 @@ import {
   newUnimplementedError,
   EntityId,
   CreateJustificationInput,
-  CreateJustificationBasisInput,
   Sentence,
-  CreateJustificationBasisSourceExcerptInput,
-  EntityOrRef,
-  CreateJustification,
-  CreateJustificationBasis,
-  CreateSourceExcerpt,
-  CreateJustificationTargetInput,
-  CreateJustificationTarget,
-  newProgrammingError,
-  isRef,
-  CreateCounterJustificationInput,
-  CreateCounterJustificationBasisInput,
-  CreateCounterJustificationTargetInput,
+  CreatePersorgInput,
+  CreatePropositionInput,
+  makeStatement,
+  SentenceTypes,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -91,105 +82,28 @@ export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
   }
 };
 
-export const consolidateCreateJustificationInput = (
-  input: CreateJustificationInput | CreateCounterJustificationInput
-): CreateJustification => {
-  const basis = consolidateCreateJustificationBasisInput(input.basis);
-  const target = consolidateCreateJustificationTargetInput(input.target);
-  const creation: CreateJustification = assign(cloneDeep(input), {
-    target,
-    basis,
+/** Return a Statement with speakers stating the proposition */
+export function constructStatement(
+  speakers: CreatePersorgInput[],
+  proposition: CreatePropositionInput
+) {
+  // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
+  // but we need to build the statements outward so that we have the target of the next statement.
+  // So take them in reverse order
+  speakers = reverse(clone(speakers));
+  let statement = makeStatement({
+    speaker: speakers[0],
+    sentenceType: SentenceTypes.PROPOSITION,
+    sentence: proposition,
   });
-  return creation;
-};
-
-const consolidateCreateJustificationBasisInput = (
-  basis: CreateJustificationBasisInput | CreateCounterJustificationBasisInput
-): CreateJustificationBasis => {
-  switch (basis.type) {
-    case "PROPOSITION_COMPOUND":
-      return {
-        type: "PROPOSITION_COMPOUND",
-        entity: basis.propositionCompound,
-      };
-    case "WRIT_QUOTE":
-      // TODO WritQuote bases are temporarily supported until we support SourceExcerpt bases.
-      return {
-        type: "WRIT_QUOTE",
-        entity: basis.writQuote,
-      };
-    case "SOURCE_EXCERPT":
-      return {
-        type: "SOURCE_EXCERPT",
-        entity: consolidateJustificationBasisSourceExcerptInput(
-          basis.sourceExcerpt
-        ),
-      };
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      throw newUnimplementedError(`Unsupported basis type: ${basis.type}`);
-    default:
-      throw newExhaustedEnumError(basis);
+  for (const speaker of drop(speakers, 1)) {
+    statement = makeStatement({
+      speaker,
+      sentenceType: SentenceTypes.STATEMENT,
+      sentence: statement,
+    });
   }
-};
-
-const consolidateCreateJustificationTargetInput = (
-  target: CreateJustificationTargetInput | CreateCounterJustificationTargetInput
-): CreateJustificationTarget => {
-  switch (target.type) {
-    case "PROPOSITION":
-      return {
-        type: "PROPOSITION",
-        entity: target.proposition,
-      };
-    case "STATEMENT":
-      // TODO WritQuote bases are temporarily supported until we support SourceExcerpt bases.
-      return {
-        type: "STATEMENT",
-        entity: target.statement,
-      };
-    case "JUSTIFICATION":
-      if (!target.justification) {
-        throw newProgrammingError(
-          "CreateJustificationInput.target must hold another CreateJustificationInput when tyep is JUSTIFICATION."
-        );
-      }
-      return {
-        type: "JUSTIFICATION",
-        entity: isRef(target.justification)
-          ? target.justification
-          : consolidateCreateJustificationInput(target.justification),
-      };
-    default:
-      throw newExhaustedEnumError(target);
-  }
-};
-
-export function consolidateJustificationBasisSourceExcerptInput(
-  sourceExcerpt: CreateJustificationBasisSourceExcerptInput
-): EntityOrRef<CreateSourceExcerpt> {
-  if (isRef(sourceExcerpt)) {
-    // It must be a Ref.
-    return sourceExcerpt;
-  }
-  switch (sourceExcerpt.type) {
-    case "PIC_REGION":
-      return {
-        type: "PIC_REGION",
-        entity: sourceExcerpt.picRegion,
-      };
-    case "VID_SEGMENT":
-      return {
-        type: "VID_SEGMENT",
-        entity: sourceExcerpt.vidSegment,
-      };
-    case "WRIT_QUOTE":
-      return {
-        type: "WRIT_QUOTE",
-        entity: sourceExcerpt.writQuote,
-      };
-    default:
-      throw newExhaustedEnumError(sourceExcerpt.type);
-  }
+  return statement;
 }
 
 // TODO(26): the createJustification route currently returns a Joi error, whereas this function

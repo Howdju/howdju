@@ -21,12 +21,12 @@ import {
   JustificationRootTarget,
   JustificationRootTargetType,
   JustificationTargetType,
+  makeCreateJustificationInputTargetingRoot,
 } from "howdju-common";
 import {
   actions,
   isVerified,
   isDisverified,
-  makeCreateJustificationInputTargetingRoot,
   JustificationViewModel,
 } from "howdju-client-common";
 

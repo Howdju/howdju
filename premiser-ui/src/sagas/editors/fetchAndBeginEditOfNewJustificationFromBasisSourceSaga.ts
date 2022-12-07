@@ -15,14 +15,12 @@ import {
   CreateWritQuoteInput,
   CreatePropositionCompoundInput,
   CreateSourceExcerptInput,
-  CreateJustificationBasisInput,
-} from "howdju-common";
-import {
-  makeCreateJustifiedPropositionInput,
+  CreateJustificationInputBasis,
+  makeCreateJustifiedSentenceInput,
   makeCreatePropositionCompoundInput,
   makeCreateSourceExcerptInput,
   makeCreateWritQuoteInput,
-} from "howdju-client-common";
+} from "howdju-common";
 
 import { api, editors, flows, str } from "@/actions";
 import {
@@ -88,7 +86,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
             throw newExhaustedEnumError(alternatives);
         }
 
-        const basis: CreateJustificationBasisInput = {
+        const basis: CreateJustificationInputBasis = {
           type,
           propositionCompound:
             propositionCompound || makeCreatePropositionCompoundInput(),
@@ -96,7 +94,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
           sourceExcerpt: sourceExcerpt || makeCreateSourceExcerptInput(),
         };
 
-        const model = makeCreateJustifiedPropositionInput({}, { basis });
+        const model = makeCreateJustifiedSentenceInput({}, { basis });
         yield put(editors.beginEdit(editorType, editorId, model));
       }
     }

@@ -163,6 +163,8 @@ type FactoryInput<T, RequiredFields extends keyof T, RelatedFields extends keyof
 |                | These models do not require validation since they either come from the database |
 |                | or do not represent modifications to the system..                               |
 
+mux/demux
+
 Model locations:
 
 - howdju-common/lib/zodSchemas.ts

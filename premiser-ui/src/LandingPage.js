@@ -15,11 +15,9 @@ import {
   makeSourceExcerptJustification,
   makeWrit,
   makeWritQuote,
-} from "howdju-common";
-import {
   makeCreateCounterJustificationInput,
-  makeJustificationViewModel,
-} from "howdju-client-common";
+} from "howdju-common";
+import { makeJustificationViewModel } from "howdju-client-common";
 
 import paths from "./paths";
 import PropositionCard from "./PropositionCard";

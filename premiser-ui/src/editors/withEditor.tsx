@@ -28,7 +28,7 @@ import {
   EditorType,
 } from "@/reducers/editors";
 import { logger, SchemaId, toJson } from "howdju-common";
-import { isEqual, merge } from "lodash";
+import { identity, isEqual, merge } from "lodash";
 import {
   ComponentId,
   ComponentName,
@@ -40,6 +40,8 @@ import {
   OnValidityChangeCallback,
   SuggestionsKey,
 } from "@/types";
+import { EditorCommitCrudActionConfig } from "@/sagas/editors/editorCommitEditSaga";
+import { PrepareAction } from "@reduxjs/toolkit";
 
 export class CommitThenPutAction {
   // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
@@ -100,7 +102,7 @@ export type EntityEditorFieldsProps<T> = {
  * @param editorType The editor type to determine editor behaviors and state location.
  * @param EntityEditorFields The EditorFields class for the entity.
  * @param entityPropName The field on EntityEditorFields for the editEntity
- * @param schemaId: The ID of the schema to use to validate the entity.
+ * @param schemaOrId: Either the Zod schema (preferred) or the ID of the AJV schema to use to validate the entity.
  * @param listItemTranslators An object keyed by callbacks for attributes of
  *   EntityEditorFields that produce callbacks that will dispatch the
  *   correct addListItem/removeListItem editor actions.
@@ -109,14 +111,26 @@ export type EntityEditorFieldsProps<T> = {
 export default function withEditor<
   P extends EntityEditorFieldsProps<SchemaOutput>,
   LIT extends { [key: string]: ListItemTranslator },
-  SchemaInput = any,
-  SchemaOutput = any
+  SchemaInput extends EditorEntity = any,
+  SchemaOutput = any,
+  U = any,
+  Y = any,
+  RP = any,
+  PA extends void | PrepareAction<Y> = void
 >(
   editorType: EditorType,
   EntityEditorFields: React.FC<P>,
   entityPropName: string,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  listItemTranslators?: LIT
+  listItemTranslators?: LIT,
+  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, U, Y, RP, PA>
+  /*
+   * @typeparam T the input model type
+   * @typeparam U the request model type (Create or Edit)
+   * @typeparam P the request action creator payload type
+   * @typeparam RP the response action creator payload type
+   * @typeparam PA the prepare action type.
+   * */
 ) {
   type RestPropsKeys = Exclude<
     keyof P,
@@ -221,7 +235,18 @@ export default function withEditor<
     } = editorState as EditorState;
 
     const { errors: clientValidationErrors } = validateEntity(editEntity);
-    const isValid = !clientValidationErrors;
+    function isValidRequest() {
+      if (!commitConfig?.requestSchema) {
+        // Without request schema, we cannot validate the request.
+        return true;
+      }
+      const requestEntity = (commitConfig.inputTransformer ?? identity)(
+        editEntity
+      );
+      const result = commitConfig.requestSchema.safeParse(requestEntity);
+      return result.success;
+    }
+    const isValid = isValidRequest();
     useEffect(() => {
       onValidityChange && onValidityChange(isValid);
     }, [isValid, onValidityChange]);

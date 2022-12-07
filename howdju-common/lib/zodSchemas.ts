@@ -496,11 +496,11 @@ export const CreateJustificationInput: z.ZodType<CreateJustificationInput> =
       }),
     })
   );
-export type CreateJustificationBasisInput = CreateJustificationInput["basis"];
-export type CreateJustificationBasisSourceExcerptInput =
+export type CreateJustificationInputBasis = CreateJustificationInput["basis"];
+export type CreateJustificationInputBasisSourceExcerpt =
   CreateJustificationInput["basis"]["sourceExcerpt"];
-export type CreateJustificationTargetInput = CreateJustificationInput["target"];
-export type CreateJustificationRootTargetInput =
+export type CreateJustificationInputTarget = CreateJustificationInput["target"];
+export type CreateJustificationInputRootTarget =
   CreateJustificationInput["rootTarget"];
 
 export type CreateJustification = Omit<
@@ -579,21 +579,37 @@ export const CreateCounterJustificationInput = Entity.extend({
   }),
   target: z.object({
     type: z.literal("JUSTIFICATION"),
-    justification: z
-      .union([CreateJustificationInput, JustificationRef])
-      // Create the justification input on-demand to avoid infinite recursion
-      .optional(),
+    justification: z.union([CreateJustificationInput, JustificationRef]),
   }),
 });
 export type CreateCounterJustificationInput = z.infer<
   typeof CreateCounterJustificationInput
 >;
-export type CreateCounterJustificationBasisInput =
+export type CreateCounterJustificationInputBasis =
   CreateCounterJustificationInput["basis"];
-export type CreateCounterJustificationTargetInput =
+export type CreateCounterJustificationInputTarget =
   CreateCounterJustificationInput["target"];
-export type CreateCounterJustificationTargetJustificationInput =
+export type CreateCounterJustificationInputTargetJustification =
   CreateCounterJustificationInput["target"]["justification"];
+
+export const CreateCounterJustification =
+  CreateCounterJustificationInput.extend({
+    basis: z.object({
+      type: z.literal("PROPOSITION_COMPOUND"),
+      entity: z.union([PropositionCompound, PropositionCompoundRef]),
+    }),
+    target: z.object({
+      type: z.literal("JUSTIFICATION"),
+      entity: z.union([CreateJustification, JustificationRef]),
+    }),
+  });
+export type CreateCounterJustification = z.infer<
+  typeof CreateCounterJustification
+>;
+export type CreateCounterJustificationTarget =
+  CreateCounterJustification["target"];
+export type CreateCounterJustificationBasis =
+  CreateCounterJustification["basis"];
 
 const justificationVotePolarities = z.enum(["POSITIVE", "NEGATIVE"]);
 export const JustificationVote = z.object({
@@ -719,3 +735,24 @@ export const AccountSettings = Entity.extend({
   paidContributionsDisclosure: z.string(),
 });
 export type AccountSettings = z.infer<typeof AccountSettings>;
+
+/**
+ * A CreationModel for creating a Proposition potentially with Speakers and/or Justifications.
+ */
+export const CreateJustifiedSentenceInput = z.object({
+  proposition: CreatePropositionInput,
+  speakers: z.array(CreatePersorgInput),
+  doCreateJustification: z.boolean(),
+  justification: CreateJustificationInput,
+});
+export type CreateJustifiedSentenceInput = z.infer<
+  typeof CreateJustifiedSentenceInput
+>;
+
+export const CreateJustifiedSentence = z.object({
+  proposition: CreateProposition,
+  speakers: z.array(CreatePersorg),
+  doCreateJustification: z.boolean(),
+  justification: CreateJustificationInput,
+});
+export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;

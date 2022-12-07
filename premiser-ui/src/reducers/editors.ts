@@ -45,11 +45,9 @@ import {
   makeCreatePropositionCompoundAtomInput,
   CustomError,
   ModelErrors,
-} from "howdju-common";
-import {
-  CreateJustifiedPropositionInput,
+  CreateJustifiedSentenceInput,
   makeCreateWritQuoteInput,
-} from "howdju-client-common";
+} from "howdju-common";
 
 import {
   api,
@@ -114,7 +112,7 @@ export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
 export type EditorEntity =
   | Entity
   | CreateJustificationInput
-  | CreateJustifiedPropositionInput
+  | CreateJustifiedSentenceInput
   | WritQuote
   | AccountSettings
   | RegistrationRequest
@@ -420,7 +418,7 @@ const editorReducerByType: {
   ),
 
   [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions<
-    EditorState<CreateJustifiedPropositionInput>,
+    EditorState<CreateJustifiedSentenceInput>,
     any
   >(
     {
@@ -633,7 +631,7 @@ function makePropositionTagReducer(
   combiner: Combiner
 ) {
   return (
-    state: EditorState<CreateJustifiedPropositionInput>,
+    state: EditorState<CreateJustifiedSentenceInput>,
     action: AnyAction
   ) => {
     if (!state.editEntity || !("proposition" in state.editEntity)) {

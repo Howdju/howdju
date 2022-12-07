@@ -1,179 +1,50 @@
 import { put, call, takeEvery, select } from "typed-redux-saga";
 import isFunction from "lodash/isFunction";
-import clone from "lodash/clone";
-import drop from "lodash/drop";
-import reverse from "lodash/reverse";
+import { identity, reduce, reverse, startCase } from "lodash";
+import { z } from "zod";
+import { PrepareAction } from "@reduxjs/toolkit";
 
 import {
+  CreateJustification,
+  CreatePersorg,
+  CreatePersorgInput,
+  CreateProposition,
+  CreateStatement,
+  CreateStatementInput,
+  EditProposition,
+  ErrorFormat,
+  isRef,
   JustificationRootTargetTypes,
   JustificationTargetTypes,
+  ModelErrors,
   newProgrammingError,
-  makeStatement,
-  SentenceTypes,
-  newUnimplementedError,
-  CreateCounterJustificationInput,
+  demuxCreateJustificationInput,
+  muxCreateJustificationErrors,
+  CreateJustifiedSentenceInput,
   CreateJustificationInput,
-  CreatePersorgInput,
-  CreatePropositionInput,
+  Justification,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
-import { EditorEntity, EditorType, EditorTypes } from "../../reducers/editors";
+import { EditorEntity, EditorType } from "../../reducers/editors";
 import { api, editors, str } from "../../actions";
-import { consolidateCreateJustificationInput } from "../../viewModels";
 import { newEditorCommitResultError } from "../../uiErrors";
 import { callApiForResource } from "../resourceApiSagas";
-import { CreateJustifiedPropositionInput } from "howdju-client-common";
 import { EditorAction } from "@/editors/editorTypes";
-import { startCase } from "lodash";
 import app from "@/app/appSlice";
-import { ActionCreator } from "@reduxjs/toolkit";
+import { constructStatement } from "@/viewModels";
+import { ApiActionCreator } from "@/apiActions";
 
-const CrudActions = { CREATE: "CREATE", UPDATE: "UPDATE" } as const;
-type CrudAction = typeof CrudActions[keyof typeof CrudActions];
-const UNSUPPORTED = {};
-const editorTypeCommitApiResourceActions = {
-  [EditorTypes.PROPOSITION]: {
-    [CrudActions.UPDATE]: api.updateProposition,
-  },
-  [EditorTypes.PROPOSITION_JUSTIFICATION]: (
-    model: CreateJustifiedPropositionInput,
-    crudType: CrudAction
-  ) => {
-    switch (crudType) {
-      case CrudActions.CREATE: {
-        if (model.speakers && model.speakers.length > 0) {
-          // If there are speakers, then we are creating a statement.  But is it justified or not?
-
-          const statement = constructStatement(
-            model.speakers,
-            model.proposition
-          );
-
-          // If the statement is justified, then create a justification targeting the statement
-          if (model.doCreateJustification) {
-            const justification = consolidateCreateJustificationInput(
-              model.justification
-            );
-            justification.rootTargetType =
-              JustificationRootTargetTypes.STATEMENT;
-            justification.target = {
-              entity: statement,
-              type: JustificationTargetTypes.STATEMENT,
-            };
-            return api.createJustification(justification);
-          }
-
-          return api.createStatement(statement);
-        } else if (model.doCreateJustification) {
-          const justification = consolidateCreateJustificationInput(
-            model.justification
-          );
-          // It is sort of an arbitrary decision to create the justification instead of the proposition.
-          // We could support creating a proposition and justification at the same
-          // time by either targeting the proposition from the justification, or adding the justification to the proposition's
-          // justifications (although the API does not support the latter yet.)
-          justification.target.entity = model.proposition;
-          return api.createJustification(justification);
-        } else {
-          return api.createProposition(model.proposition);
-        }
-      }
-      case "UPDATE":
-        throw newUnimplementedError(
-          "Updating JustifiedPropositions is not supported"
-        );
-    }
-  },
-  [EditorTypes.COUNTER_JUSTIFICATION]: (
-    model: CreateCounterJustificationInput,
-    crudAction: CrudAction
-  ) => {
-    switch (crudAction) {
-      case CrudActions.CREATE: {
-        const justification = consolidateCreateJustificationInput(model);
-        return api.createJustification(justification);
-      }
-      case "UPDATE":
-        throw newUnimplementedError(
-          "Updating CounterJustifications is not supported"
-        );
-    }
-  },
-  [EditorTypes.NEW_JUSTIFICATION]: (
-    model: CreateJustificationInput,
-    crudAction: CrudAction
-  ) => {
-    switch (crudAction) {
-      case CrudActions.CREATE: {
-        const justification = consolidateCreateJustificationInput(model);
-        return api.createJustification(justification);
-      }
-      case "UPDATE":
-        throw newUnimplementedError("Updating Justifications is not supported");
-    }
-  },
-  [EditorTypes.WRIT_QUOTE]: {
-    [CrudActions.CREATE]: api.createWritQuote,
-    [CrudActions.UPDATE]: api.updateWritQuote,
-  },
-  [EditorTypes.LOGIN_CREDENTIALS]: {
-    [CrudActions.CREATE]: api.login,
-  },
-  [EditorTypes.REGISTRATION_REQUEST]: {
-    [CrudActions.CREATE]: api.requestRegistration,
-  },
-  [EditorTypes.REGISTRATION_CONFIRMATION]: {
-    [CrudActions.CREATE]: api.confirmRegistration,
-  },
-  [EditorTypes.PERSORG]: {
-    [CrudActions.UPDATE]: api.updatePersorg,
-  },
-  [EditorTypes.ACCOUNT_SETTINGS]: {
-    [CrudActions.CREATE]: api.createAccountSettings,
-    [CrudActions.UPDATE]: api.updateAccountSettings,
-  },
-  [EditorTypes.CONTENT_REPORT]: {
-    [CrudActions.CREATE]: api.createContentReport,
-  },
-  [EditorTypes.JUSTIFICATION_BASIS_COMPOUND]: UNSUPPORTED,
-};
-
-function constructStatement(
-  speakers: CreatePersorgInput[],
-  proposition: CreatePropositionInput
-) {
-  // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
-  // but we need to build the statements outward so that we have the target of the next statement.
-  // So take them in reverse order
-  speakers = reverse(clone(speakers));
-  let statement = makeStatement({
-    speaker: speakers[0],
-    sentenceType: SentenceTypes.PROPOSITION,
-    sentence: proposition,
-  });
-  for (const speaker of drop(speakers, 1)) {
-    statement = makeStatement({
-      speaker,
-      sentenceType: SentenceTypes.STATEMENT,
-      sentence: statement,
-    });
-  }
-  return statement;
-}
-
+/**
+ * A redux saga handling editor commits.
+ *
+ * Including translating to an API action and error handling.
+ */
 export function* editorCommitEdit() {
   yield takeEvery(
     str(editors.commitEdit),
     function* editorCommitEditWorker(action: EditorAction) {
       const { editorType, editorId } = action.payload;
-
-      if (!editorType) {
-        throw newProgrammingError("editorType is required");
-      }
-      if (!editorId) {
-        throw newProgrammingError("editorId is required");
-      }
 
       const { editEntity } = yield select(
         selectEditorState(editorType, editorId)
@@ -197,20 +68,15 @@ export function* editorCommitEdit() {
               )
             )
           );
-        } else {
-          if (resultAction.payload.alreadyExists) {
-            yield put(
-              app.addToast(`That ${startCase(editorType)} already exists.`)
-            );
-          }
-          return yield* put(
-            editors.commitEdit.result(
-              editorType,
-              editorId,
-              resultAction.payload
-            )
+        }
+        if (resultAction.payload.alreadyExists) {
+          yield put(
+            app.addToast(`That ${startCase(editorType)} already exists.`)
           );
         }
+        return yield* put(
+          editors.commitEdit.result(editorType, editorId, resultAction.payload)
+        );
       } catch (error) {
         return yield* put(
           editors.commitEdit.result(
@@ -222,36 +88,313 @@ export function* editorCommitEdit() {
   );
 }
 
-function createEditorCommitApiResourceAction(
-  editorType: EditorType,
+/** Returns the action corresponding to the appropriate CRUD action for an edit entity */
+function createEditorCommitApiResourceAction<E extends EditorType>(
+  editorType: E,
   editEntity: EditorEntity
 ) {
-  const editorCommitApiResourceActions =
-    editorTypeCommitApiResourceActions[editorType];
-  if (editorCommitApiResourceActions === UNSUPPORTED) {
-    throw newUnimplementedError(`Cannot edit ediitor type ${editorType}.`);
-  }
-  if (!editorCommitApiResourceActions) {
-    throw new Error(`Missing editor type ${editorType} action creator config.`);
+  const editorCommitConfig = editorCommitConfigs[editorType];
+  if (!editorCommitConfig) {
+    throw new Error(`No editor commit config for editor type ${editorType}`);
   }
 
+  // editModels lacking an ID only support creation (e.g. JustifiedProposition.)
   const crudType =
     !("id" in editEntity) || !editEntity.id
       ? CrudActions.CREATE
       : CrudActions.UPDATE;
-  let action;
-  if (isFunction(editorCommitApiResourceActions)) {
-    action = editorCommitApiResourceActions(editEntity, crudType);
-  } else {
-    if (!(crudType in editorCommitApiResourceActions)) {
-      throw new Error(
-        `Missing ${crudType} action creator to commit edit of ${editorType} (add to editorTypeCommitApiResourceActions).`
+  const crudActionConfig = editorCommitConfig[crudType];
+  if (!crudActionConfig) {
+    throw new Error(
+      `Missing ${crudType} CRUD action config for editor type ${editorType}.`
+    );
+  }
+  let actionCreator;
+  if (isFunction(crudActionConfig)) {
+    // crudActionConfig is the action creator and there is no inputTransformer
+    return crudActionConfig(editEntity);
+  }
+  const { inputTransformer = identity } = crudActionConfig;
+  if ("requestActionCreator" in crudActionConfig) {
+    if ("makeRequestActionCreator" in crudActionConfig) {
+      throw newProgrammingError(
+        "Only one of makeRequestActionCreator and requestActionCreator may be present."
       );
     }
-    const actionCreator = editorCommitApiResourceActions[
-      crudType as keyof typeof editorCommitApiResourceActions
-    ] as ActionCreator<any>;
-    action = actionCreator(editEntity);
+    actionCreator = crudActionConfig.requestActionCreator;
+  } else {
+    actionCreator = crudActionConfig.makeRequestActionCreator(
+      editEntity,
+      crudType
+    );
   }
-  return action;
+  // I'm not sure why actionCreator might not be callable here; I thought that ApiActionCreator
+  // should always be callable.
+  if (!isFunction(actionCreator)) {
+    throw newProgrammingError(
+      "Action creators must be callable and accept the transformed editEntity."
+    );
+  }
+  return actionCreator(inputTransformer(editEntity));
+}
+
+const CrudActions = { CREATE: "CREATE", UPDATE: "UPDATE" } as const;
+type CrudAction = typeof CrudActions[keyof typeof CrudActions];
+
+/**
+ * Config for commiting an editor.
+ *
+ * The config can be a single EditorCommitCrudActionConfig that applies to all CRUD types, or
+ * individual configs per CRUD type.
+ */
+type EditorCommitConfig = {
+  // Each CRUD type may take its own types, so we have a lot of anys.
+  [key in CrudAction]?:
+    | EditorCommitCrudActionConfig<any, any, any, any, any>
+    | ApiActionCreator<any, any, any>;
+};
+/**
+ * Config for commiting one CRUD action of an editor.
+ *
+ * If this is the only config provided, then it applies to all CRUD actions.
+ *
+ * @typeparam T the input model type
+ * @typeparam U the request model type (Create or Edit)
+ * @typeparam P the request action creator payload type
+ * @typeparam RP the response action creator payload type
+ * @typeparam PA the prepare action type.
+ */
+export type EditorCommitCrudActionConfig<
+  T extends EditorEntity,
+  U,
+  P,
+  RP,
+  PA extends void | PrepareAction<P>
+> = {
+  /**
+   * Transforms the Input model into the request model
+   *
+   * If missing, the model is not transformed.
+   */
+  inputTransformer?: (model: T) => U;
+  /**
+   * Transforms the response errors into the input model errors.
+   *
+   * If missing, the errors are not transformed.
+   */
+  responseErrorTransformer?: (
+    model: U,
+    errors: ModelErrors<U>
+  ) => ModelErrors<T>;
+  /** The schema of the editor's request.
+   *
+   * If present, is used to determine whether the editor submission is valid.
+   */
+  requestSchema?: z.ZodType<U>;
+} & (
+  | {
+      /**
+       * The action creator to send the request.
+       *
+       * Only one of requestActionCreator and makeRequestActionCreator should be present.
+       */
+      requestActionCreator: ApiActionCreator<P, RP, PA>;
+    }
+  | {
+      /**
+       * Returns the action creator to send the request.
+       *
+       * Only one of requestActionCreator and makeRequestActionCreator should be present.
+       */
+      makeRequestActionCreator: (
+        model: T,
+        crudType: CrudAction
+      ) => ApiActionCreator<P, RP, PA>;
+    }
+);
+
+export const CreateJustificationConfig: EditorCommitCrudActionConfig<
+  CreateJustificationInput,
+  CreateJustification,
+  { justification: CreateJustification },
+  { justification: Justification },
+  PrepareAction<{ justification: CreateJustification }>
+> = {
+  inputTransformer: demuxCreateJustificationInput,
+  responseErrorTransformer: muxCreateJustificationErrors,
+  requestActionCreator: api.createJustification,
+  requestSchema: CreateJustification,
+};
+export const editorCommitConfigs: Partial<
+  Record<EditorType, EditorCommitConfig>
+> = {
+  PROPOSITION: {
+    // Create propositions through the JustifiedSentence endpoint.
+    UPDATE: {
+      requestActionCreator: api.updateProposition,
+      requestSchema: EditProposition,
+    },
+  },
+  PROPOSITION_JUSTIFICATION: {
+    CREATE: {
+      inputTransformer(model: CreateJustifiedSentenceInput) {
+        const { speakers, doCreateJustification, proposition } = model;
+        if (speakers.length) {
+          const statement = constructStatement(speakers, proposition);
+
+          if (!doCreateJustification) {
+            return statement;
+          }
+
+          const justification = demuxCreateJustificationInput(
+            model.justification
+          );
+          justification.rootTargetType = JustificationRootTargetTypes.STATEMENT;
+          justification.target = {
+            entity: statement,
+            type: JustificationTargetTypes.STATEMENT,
+          };
+          return justification;
+        }
+
+        if (!doCreateJustification) {
+          return proposition;
+        }
+        const justification = demuxCreateJustificationInput(
+          model.justification
+        );
+        justification.target.entity = model.proposition;
+        return justification;
+      },
+      responseErrorTransformer: transformCreateJustifiedSentenceErrors,
+      makeRequestActionCreator(model: CreateJustifiedSentenceInput) {
+        const { doCreateJustification, speakers } = model;
+        if (doCreateJustification) {
+          return api.createJustification;
+        }
+        return speakers.length ? api.createStatement : api.createProposition;
+      },
+    },
+  },
+  NEW_JUSTIFICATION: {
+    // Editing justifications is not supported
+    CREATE: CreateJustificationConfig,
+  },
+  COUNTER_JUSTIFICATION: {
+    CREATE: {
+      inputTransformer: demuxCreateJustificationInput,
+      responseErrorTransformer: muxCreateJustificationErrors,
+      requestActionCreator: api.createJustification,
+    },
+  },
+  WRIT_QUOTE: {
+    CREATE: api.createWritQuote,
+    UPDATE: api.updateWritQuote,
+  },
+  LOGIN_CREDENTIALS: {
+    CREATE: api.login,
+  },
+  REGISTRATION_REQUEST: {
+    CREATE: api.requestRegistration,
+  },
+  REGISTRATION_CONFIRMATION: {
+    CREATE: api.confirmRegistration,
+  },
+  PERSORG: {
+    UPDATE: api.updatePersorg,
+  },
+  ACCOUNT_SETTINGS: {
+    CREATE: api.createAccountSettings,
+    UPDATE: api.updateAccountSettings,
+  },
+  CONTENT_REPORT: {
+    CREATE: api.createContentReport,
+  },
+};
+
+/** Translates CreateJustifiedSentence errors into input model errors. */
+function transformCreateJustifiedSentenceErrors(
+  model: CreateJustification,
+  modelErrors: ModelErrors<CreateJustification>
+): ModelErrors<CreateJustifiedSentenceInput>;
+function transformCreateJustifiedSentenceErrors(
+  model: CreateStatement,
+  modelErrors: ModelErrors<CreateStatement>
+): ModelErrors<CreateJustifiedSentenceInput>;
+function transformCreateJustifiedSentenceErrors(
+  model: CreateProposition,
+  modelErrors: ModelErrors<CreateProposition>
+): ModelErrors<CreateJustifiedSentenceInput>;
+function transformCreateJustifiedSentenceErrors(
+  model: CreateJustification | CreateStatement | CreateProposition,
+  errors: ModelErrors<CreateJustification | CreateStatement | CreateProposition>
+): ModelErrors<CreateJustifiedSentenceInput> {
+  const inputErrors: ModelErrors<CreateJustifiedSentenceInput> = {
+    _errors: [],
+  };
+  // If it's a justification, grab the target. If it's a sentence, pull off the speakers and
+  // proposition. Otherwise it's a proposition.
+  if ("target" in model) {
+    const justificationErrors = errors as ModelErrors<CreateJustification>;
+    inputErrors.justification = justificationErrors;
+    const { target } = model;
+    switch (target.type) {
+      case "JUSTIFICATION":
+        throw newProgrammingError(
+          "A CreateJustifiedSentence cannot target a justification"
+        );
+      case "STATEMENT":
+        {
+          if (isRef(target.entity)) {
+            throw newProgrammingError(
+              "CreateJustifiedSentence does not support Refs"
+            );
+          }
+          setCreateJustifiedSentenceErrorsFromStatement(
+            inputErrors,
+            target.entity,
+            justificationErrors.target?.entity as
+              | ModelErrors<CreateStatementInput>
+              | undefined
+          );
+        }
+        break;
+      case "PROPOSITION":
+        inputErrors.proposition = justificationErrors.target?.entity;
+        break;
+    }
+  } else if ("sentence" in model) {
+    setCreateJustifiedSentenceErrorsFromStatement(inputErrors, model, errors);
+  } else {
+    inputErrors.proposition = errors;
+  }
+  return inputErrors;
+}
+
+function setCreateJustifiedSentenceErrorsFromStatement(
+  inputErrors: ModelErrors<CreateJustifiedSentenceInput>,
+  statement: CreateStatement,
+  statementErrors: ModelErrors<CreateStatementInput> | undefined
+) {
+  let sentenceErrors = statementErrors;
+  let sentence = statement;
+  const speakerErrors: (ModelErrors<CreatePersorgInput> | undefined)[] = [];
+  while (sentence.sentenceType === "STATEMENT" && sentenceErrors) {
+    speakerErrors.push(sentenceErrors.speaker);
+    sentence = sentence.sentence;
+    sentenceErrors = sentenceErrors.sentence;
+  }
+
+  inputErrors.proposition = sentenceErrors;
+  inputErrors.speakers = reduce(
+    reverse(speakerErrors),
+    (acc, val, idx) => {
+      acc[idx] = val || { _errors: [] };
+      return acc;
+    },
+    { _errors: [] } as {
+      _errors: ErrorFormat[];
+      [k: number]: ModelErrors<CreatePersorg>;
+    }
+  );
 }

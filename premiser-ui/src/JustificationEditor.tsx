@@ -10,6 +10,7 @@ import {
 } from "howdju-common";
 import withEditor from "./editors/withEditor";
 import { AppDispatch } from "./setupStore";
+import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
 
 const translators = {
   onAddUrl:
@@ -84,5 +85,6 @@ export default withEditor(
   JustificationEditorFields,
   "justification",
   CreateJustificationInput,
-  translators
+  translators,
+  CreateJustificationConfig
 );
