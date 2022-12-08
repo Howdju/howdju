@@ -42,7 +42,6 @@ import t, {
   JUSTIFICATION_TITLE,
 } from "./texts";
 import {
-  translateCreateJustificationErrorsToInput,
   combineIds,
   combineNames,
   combineSuggestionsKeys,
@@ -56,6 +55,8 @@ import { logger } from "./logger";
 import PersorgEditorFields from "./PersorgEditorFields";
 import EntityViewer from "./EntityViewer";
 import { CreatePropositionPageMode } from "./types";
+import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
+import { identity } from "lodash";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -296,11 +297,11 @@ class CreatePropositionPage extends Component {
         : errors.proposition);
     const justificationEntityErrors =
       errors && doCreateJustification ? errors.justification : null;
-    const justificationFormInputErrors =
-      translateCreateJustificationErrorsToInput(
-        justification,
-        justificationEntityErrors
-      );
+    const { responseErrorTransformer = identity } = CreateJustificationConfig;
+    const justificationFormInputErrors = responseErrorTransformer(
+      justification,
+      justificationEntityErrors
+    );
 
     const propositionTags = get(proposition, "tags");
     const propositionTagVotes = get(proposition, "propositionTagVotes");

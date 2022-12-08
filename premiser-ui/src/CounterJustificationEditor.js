@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Button, CircularProgress, CardActions, CardText } from "react-md";
 import get from "lodash/get";
+import { identity } from "lodash";
 
 import PropositionCompoundEditorFields from "./PropositionCompoundEditorFields";
 import { EditorTypes } from "./reducers/editors";
@@ -11,7 +12,7 @@ import t, {
   CANCEL_BUTTON_LABEL,
   COUNTER_JUSTIFICATION_SUBMIT_BUTTON_LABEL,
 } from "./texts";
-import { translateCreateJustificationErrorsToInput } from "./viewModels";
+import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
 
 class CounterJustificationEditor extends Component {
   constructor() {
@@ -64,12 +65,11 @@ class CounterJustificationEditor extends Component {
     delete rest.editors;
     delete rest.editorId;
 
+    const { responseErrorTransformer = identity } = CreateJustificationConfig;
+
     // TODO(26): counter justifications can only have proposition compounds, so we might be able to
     // get rid of this function call?
-    const justificationErrors = translateCreateJustificationErrorsToInput(
-      editEntity,
-      errors
-    );
+    const justificationErrors = responseErrorTransformer(editEntity, errors);
     const propositionCompoundErrors = get(
       justificationErrors,
       "fieldErrors.basis.fieldErrors.propositionCompound"

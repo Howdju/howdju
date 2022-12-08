@@ -17,7 +17,6 @@ import { clone, reverse, TruncateOptions } from "lodash";
 
 import config from "./config";
 import {
-  BespokeValidationErrors,
   SourceExcerpt,
   isFalsey,
   JustificationRootTarget,
@@ -26,9 +25,7 @@ import {
   Proposition,
   PropositionCompound,
   WritQuote,
-  newUnimplementedError,
   EntityId,
-  CreateJustificationInput,
   Sentence,
   CreatePersorgInput,
   CreatePropositionInput,
@@ -104,43 +101,6 @@ export function constructStatement(
     });
   }
   return statement;
-}
-
-// TODO(26): the createJustification route currently returns a Joi error, whereas this function
-// expects a BespokeValidationErrors.
-export function translateCreateJustificationErrorsToInput(
-  justification: CreateJustificationInput,
-  errors: BespokeValidationErrors
-) {
-  if (!justification || !errors) {
-    return errors;
-  }
-
-  const basisFieldErrors = errors.fieldErrors.basis.fieldErrors;
-  if (!basisFieldErrors) {
-    return errors;
-  }
-
-  const justificationErrors = cloneDeep(errors);
-  switch (justification.basis.type) {
-    case "PROPOSITION_COMPOUND":
-      basisFieldErrors.propositionCompound = basisFieldErrors.entity;
-      break;
-    case "WRIT_QUOTE":
-      basisFieldErrors.writQuote = basisFieldErrors.entity;
-      break;
-    case "SOURCE_EXCERPT":
-      basisFieldErrors.sourceExcerpt = basisFieldErrors.entity;
-      break;
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      throw newUnimplementedError(
-        `Unsupported basis type: ${justification.basis.type}`
-      );
-    default:
-      throw newExhaustedEnumError(justification.basis.type);
-  }
-
-  return justificationErrors;
 }
 
 const truncateOptions = {
