@@ -68,7 +68,14 @@ import {
   Writ,
   WritQuote,
 } from "./zodSchemas";
-import { EntityName, EntityOrRef, isRef, Ref, ToInput } from "./zodSchemaTypes";
+import {
+  EntityName,
+  EntityOrRef,
+  isRef,
+  Persisted,
+  Ref,
+  ToInput,
+} from "./zodSchemaTypes";
 
 export const isPositive = (j: Justification) => j.polarity === "POSITIVE";
 export const isNegative = (j: Justification) => j.polarity === "NEGATIVE";
@@ -534,9 +541,15 @@ const demuxCreateJustificationInputTarget = (
   }
 };
 
-export const demuxCreateJustificationInput = (
+export function demuxCreateJustificationInput(
+  input: CreateJustificationInput
+): CreateJustification;
+export function demuxCreateJustificationInput(
+  input: CreateCounterJustificationInput
+): CreateCounterJustification;
+export function demuxCreateJustificationInput(
   input: CreateJustificationInput | CreateCounterJustificationInput
-): CreateJustification => {
+): CreateJustification | CreateCounterJustificationInput {
   const basis = demuxCreateJustificationInputBasis(input.basis);
   const target = demuxCreateJustificationInputTarget(input.target);
   const creation: CreateJustification = assign(cloneDeep(input), {
@@ -544,7 +557,7 @@ export const demuxCreateJustificationInput = (
     basis,
   });
   return creation;
-};
+}
 
 export const muxCreateJustificationErrors = <
   C extends CreateJustification | CreateCounterJustification
@@ -729,14 +742,22 @@ function muxSourceExcerptEntity(
   }
 }
 
+/** Returns a CreateCounterJustificationInput targeting targetJustification.
+ *
+ * If targetJustification is another input, it targets it directly. If targetJustification is
+ * persisted, then it counters a ref to it.
+ */
 export const makeCreateCounterJustificationInput = (
-  targetJustification: EntityOrRef<Justification> &
-    Pick<Justification, "rootTargetType" | "rootTarget" | "rootPolarity">
+  targetJustification:
+    | CreateJustificationInput
+    | (Persisted<Justification> & Pick<Justification, "rootPolarity">)
 ): CreateCounterJustificationInput => ({
   rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
   target: {
     type: "JUSTIFICATION",
-    justification: toCreateJustificationInput(targetJustification),
+    justification: targetJustification.id
+      ? JustificationRef.parse(targetJustification)
+      : (targetJustification as CreateJustificationInput),
   },
   basis: {
     type: "PROPOSITION_COMPOUND",
@@ -745,19 +766,15 @@ export const makeCreateCounterJustificationInput = (
   polarity: "NEGATIVE",
 });
 
-function toCreateJustificationInput(
-  justification: EntityOrRef<Justification>
-): CreateJustificationInput | JustificationRef {
-  if (isRef(justification)) {
-    return JustificationRef.parse(justification);
-  }
-
+export function copyJustificationForInput(
+  justification: Justification
+): CreateJustificationInput {
   let justificationTarget;
   let propositionTarget;
   let statementTarget;
   switch (justification.target.type) {
     case "JUSTIFICATION":
-      justificationTarget = toCreateJustificationInput(
+      justificationTarget = copyJustificationForInput(
         justification.target.entity
       );
       break;
@@ -775,7 +792,7 @@ function toCreateJustificationInput(
   let propositionCompoundBasis;
   switch (justification.basis.type) {
     case "SOURCE_EXCERPT":
-      sourceExcerptBasis = toCreateSourceExcerptInput(
+      sourceExcerptBasis = copySourceExcerptForInput(
         justification.basis.entity
       );
       break;
@@ -810,7 +827,7 @@ function toCreateJustificationInput(
   };
 }
 
-function toCreateSourceExcerptInput(
+export function copySourceExcerptForInput(
   sourceExcerpt: EntityOrRef<SourceExcerpt>
 ): CreateSourceExcerptInput | SourceExcerptRef {
   if (isRef(sourceExcerpt)) {

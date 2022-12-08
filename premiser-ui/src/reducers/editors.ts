@@ -21,7 +21,7 @@ import isString from "lodash/isString";
 import includes from "lodash/includes";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import { keys } from "lodash";
+import { isFunction, keys } from "lodash";
 
 import {
   apiErrorCodes,
@@ -53,6 +53,7 @@ import {
   EditAccountSettingsInput,
   CreateRegistrationConfirmationInput,
   CreatePropositionInput,
+  CreateCounterJustificationInput,
 } from "howdju-common";
 
 import {
@@ -118,6 +119,7 @@ export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
 export type EditorEntity =
   | CreatePropositionInput
   | CreateJustificationInput
+  | CreateCounterJustificationInput
   | CreateJustifiedSentenceInput
   | CreateWritQuoteInput
   | EditAccountSettingsInput
@@ -151,7 +153,7 @@ export interface EditorState<T extends EditorEntity, U = T> {
   isSaved: boolean;
 }
 
-const defaultEditorState = <T extends EditorEntity>() =>
+export const defaultEditorState = <T extends EditorEntity>() =>
   ({
     editEntity: undefined,
     errors: undefined,
@@ -258,9 +260,9 @@ const defaultEditorActions = {
       const { itemIndex, listPathMaker, itemFactory } = action.payload;
       const editEntity = state.editEntity;
 
-      const listPath = isString(listPathMaker)
-        ? listPathMaker
-        : listPathMaker(action.payload);
+      const listPath = isFunction(listPathMaker)
+        ? listPathMaker(action.payload)
+        : listPathMaker;
       const list = get(editEntity, listPath);
       const insertIndex = isNumber(itemIndex) ? itemIndex : list.length;
       insertAt(list, insertIndex, itemFactory());

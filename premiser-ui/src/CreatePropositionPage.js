@@ -47,7 +47,7 @@ import {
   combineSuggestionsKeys,
   array,
 } from "./viewModels";
-import JustificationEditorFields from "./JustificationEditorFields";
+import JustificationEditorFields from "@/editors/JustificationEditorFields";
 import PropositionEditorFields from "./PropositionEditorFields";
 import { EditorTypes } from "./reducers/editors";
 import TagsControl from "./TagsControl";

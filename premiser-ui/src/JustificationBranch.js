@@ -35,7 +35,7 @@ import {
 } from "./actions";
 import { suggestionKeys } from "./autocompleter";
 import config from "./config";
-import CounterJustificationEditor from "./CounterJustificationEditor";
+import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
 import {
   counterJustificationEditorId,
   justificationBasisEditorId,

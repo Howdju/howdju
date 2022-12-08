@@ -1,5 +1,5 @@
-import { editors } from "./actions";
-import { EditorType, EditorTypes } from "./reducers/editors";
+import { editors } from "../actions";
+import { EditorType, EditorTypes } from "../reducers/editors";
 import JustificationEditorFields from "./JustificationEditorFields";
 import {
   CreateJustificationInput,
@@ -8,9 +8,9 @@ import {
   makeUrl,
   PropositionCompoundAtom,
 } from "howdju-common";
-import withEditor from "./editors/withEditor";
-import { AppDispatch } from "./setupStore";
-import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
+import withEditor from "./withEditor";
+import { AppDispatch } from "../setupStore";
+import { CreateJustificationConfig } from "../sagas/editors/editorCommitEditSaga";
 
 const translators = {
   onAddUrl:

@@ -17,18 +17,19 @@ import t, {
   JUSTIFICATION_POLARITY_POSITIVE,
   JUSTIFICATION_BASIS_TYPE_PROPOSITION_COMPOUND,
   JUSTIFICATION_BASIS_TYPE_WRIT_QUOTE,
-} from "./texts";
-import WritQuoteEditorFields from "./WritQuoteEditorFields";
-import PropositionCompoundEditorFields from "./PropositionCompoundEditorFields";
-import SelectionControlGroup from "./SelectionControlGroup";
-import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
+} from "@/texts";
+import WritQuoteEditorFields from "@/WritQuoteEditorFields";
+import PropositionCompoundEditorFields from "@/PropositionCompoundEditorFields";
+import SelectionControlGroup from "@/SelectionControlGroup";
+import { combineNames, combineIds, combineSuggestionsKeys } from "@/viewModels";
+
+import { OnAddCallback, OnKeyDownCallback, OnRemoveCallback } from "@/types";
+import { toOnChangeCallback } from "@/util";
+import { EntityEditorFieldsProps } from "@/editors/withEditor";
+import { makeErrorPropCreator } from "@/modelErrorMessages";
+import { logger } from "@/logger";
 
 import "./JustificationEditorFields.scss";
-import { OnAddCallback, OnKeyDownCallback, OnRemoveCallback } from "./types";
-import { toOnChangeCallback } from "./util";
-import { EntityEditorFieldsProps } from "./editors/withEditor";
-import { makeErrorPropCreator } from "./modelErrorMessages";
-import { logger } from "./logger";
 
 const polarityName = "polarity";
 const propositionCompoundName = "basis.propositionCompound";

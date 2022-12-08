@@ -1,5 +1,6 @@
 import { SetRequired } from "type-fest";
 import { z } from "zod";
+import { logger } from "./logger";
 
 import {
   CreateCounterJustification,
@@ -78,7 +79,20 @@ export function isRef<T extends Entity>(
   e: EntityOrRef<T>
 ): e is Ref<EntityName<T>> {
   const keys = Object.keys(e);
-  return keys.length === 1 && keys[0] === "id";
+  // An entity with a single property `id` is a ref.
+  if (keys.length === 1 && keys[0] === "id") {
+    // If we have typed everything correctly, it should have also had the Zod BRAND.
+    logger.warn(`Ref lacks z.BRAND property (id: ${e.id}).`);
+    return true;
+  }
+  // Otherwise, an object with a BRAND is a Ref because we only brand Refs. (We don't brand objects
+  // that can be stucturally typed.)
+  const is = z.BRAND in e;
+  if (is) {
+    // And if it's a Ref, it must have an ID (or else we don't know what it references.)
+    console.assert(e.id);
+  }
+  return is;
 }
 
 /** Yields the Input version of a type. */

@@ -107,6 +107,8 @@ export type EntityEditorFieldsProps<T> = {
  * @param listItemTranslators An object keyed by callbacks for attributes of
  *   EntityEditorFields that produce callbacks that will dispatch the
  *   correct addListItem/removeListItem editor actions.
+ *   TODO: why can't the Fields just dispatch the actions themselves? They can receive the
+ *   editorType and editorId.
  * @typeparam P the type of Props that EntityEditorFields requires.
  * @typeparam LIT the type of the list item translator's object
  * @typeparam SchemaInput the type of model the editor edits.

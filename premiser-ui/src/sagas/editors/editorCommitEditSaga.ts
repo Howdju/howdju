@@ -22,6 +22,8 @@ import {
   CreateJustifiedSentenceInput,
   CreateJustificationInput,
   Justification,
+  CreateCounterJustificationInput,
+  CreateCounterJustification,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -224,6 +226,19 @@ export const CreateJustificationConfig: EditorCommitCrudActionConfig<
   requestActionCreator: api.createJustification,
   requestSchema: CreateJustification,
 };
+
+export const CreateCounterJustificationConfig: EditorCommitCrudActionConfig<
+  CreateCounterJustificationInput,
+  CreateCounterJustification,
+  { justification: CreateCounterJustification },
+  { justification: Justification },
+  PrepareAction<{ justification: CreateCounterJustification }>
+> = {
+  inputTransformer: demuxCreateJustificationInput,
+  responseErrorTransformer: muxCreateJustificationErrors,
+  requestActionCreator: api.createCounterJustification,
+  requestSchema: CreateCounterJustification,
+};
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -279,11 +294,7 @@ export const editorCommitConfigs: Partial<
     CREATE: CreateJustificationConfig,
   },
   COUNTER_JUSTIFICATION: {
-    CREATE: {
-      inputTransformer: demuxCreateJustificationInput,
-      responseErrorTransformer: muxCreateJustificationErrors,
-      requestActionCreator: api.createJustification,
-    },
+    CREATE: CreateCounterJustificationConfig,
   },
   WRIT_QUOTE: {
     CREATE: api.createWritQuote,

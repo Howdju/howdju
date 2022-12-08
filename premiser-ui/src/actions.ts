@@ -155,7 +155,11 @@ commitEdit.result = createAction(
   })
 );
 
-export type ListPathFactory = string | ((payload: any) => string);
+export type ListPathFactory =
+  | string
+  | string[]
+  | ((payload: any) => string)
+  | ((payload: any) => string[]);
 
 /** Editor actions */
 export const editors = {

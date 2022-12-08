@@ -11,7 +11,7 @@ import t, {
 } from "./texts";
 import { selectIsWindowNarrow } from "./selectors";
 import { ESCAPE_KEY_CODE } from "./keyCodes";
-import JustificationEditor from "./JustificationEditor";
+import JustificationEditor from "./editors/JustificationEditor";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { CommitThenPutAction } from "./editors/withEditor";
 import { combineIds } from "./viewModels";

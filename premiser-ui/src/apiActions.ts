@@ -35,6 +35,7 @@ import {
   TagVotePolarities,
   makeCreateTagVote,
   CreateJustification,
+  CreateCounterJustification,
 } from "howdju-common";
 
 import {
@@ -1073,7 +1074,25 @@ export const api = {
 
   createJustification: apiActionCreator(
     "CREATE_JUSTIFICATION",
-    (justification: CreateJustification) => ({ justification }),
+    (justification: CreateJustification | CreateCounterJustification) => ({
+      justification,
+    }),
+    ({ justification }) => ({
+      endpoint: "justifications",
+      fetchInit: {
+        method: httpMethods.POST,
+        body: {
+          justification,
+        },
+      },
+      normalizationSchema: { justification: justificationSchema },
+    })
+  ),
+  createCounterJustification: apiActionCreator(
+    "CREATE_CONTER_JUSTIFICATION",
+    (justification: CreateCounterJustification) => ({
+      justification,
+    }),
     ({ justification }) => ({
       endpoint: "justifications",
       fetchInit: {
