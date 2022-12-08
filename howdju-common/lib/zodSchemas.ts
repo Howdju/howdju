@@ -467,11 +467,6 @@ const createJustificationBaseShape = {
     writQuote: z.union([WritQuote, WritQuoteRef]),
     justificationBasisCompound: Entity.optional(),
   }),
-  // TODO(151) move rootTargetType onto rootTarget to make it an encapsulated discriminated union.
-  // that way we gain type safety but don't need alternative definitions of CreateJustification like
-  // for Justification above.
-  rootTargetType: z.enum(["PROPOSITION", "STATEMENT"]),
-  rootTarget: z.union([Proposition, PropositionRef, Statement, StatementRef]),
 };
 /** A view model for creating a new justification.
  *
@@ -494,6 +489,16 @@ export const CreateJustificationInput: z.ZodType<CreateJustificationInput> =
           // Create the justification input on-demand to avoid infinite recursion
           .optional(),
       }),
+      // TODO(151) move rootTargetType onto rootTarget to make it an encapsulated discriminated union.
+      // that way we gain type safety but don't need alternative definitions of CreateJustification like
+      // for Justification above.
+      rootTargetType: z.enum(["PROPOSITION", "STATEMENT"]),
+      rootTarget: z.union([
+        Proposition,
+        PropositionRef,
+        Statement,
+        StatementRef,
+      ]),
     })
   );
 export type CreateJustificationInputBasis = CreateJustificationInput["basis"];
@@ -505,7 +510,7 @@ export type CreateJustificationInputRootTarget =
 
 export type CreateJustification = Omit<
   CreateJustificationInput,
-  "basis" | "target"
+  "basis" | "target" | "rootTargetType" | "rootTarget"
 > & {
   basis:
     | {
