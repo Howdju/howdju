@@ -733,8 +733,6 @@ export const makeCreateCounterJustificationInput = (
   targetJustification: EntityOrRef<Justification> &
     Pick<Justification, "rootTargetType" | "rootTarget" | "rootPolarity">
 ): CreateCounterJustificationInput => ({
-  rootTargetType: targetJustification.rootTargetType,
-  rootTarget: targetJustification.rootTarget,
   rootPolarity: negateRootPolarity(targetJustification.rootPolarity),
   target: {
     type: "JUSTIFICATION",

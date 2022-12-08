@@ -14,7 +14,6 @@ import {
   EditProposition,
   ErrorFormat,
   isRef,
-  JustificationRootTargetTypes,
   JustificationTargetTypes,
   ModelErrors,
   newProgrammingError,
@@ -41,12 +40,12 @@ import { ApiActionCreator } from "@/apiActions";
  * Including translating to an API action and error handling.
  */
 export function* editorCommitEdit() {
-  yield takeEvery(
+  yield* takeEvery(
     str(editors.commitEdit),
     function* editorCommitEditWorker(action: EditorAction) {
       const { editorType, editorId } = action.payload;
 
-      const { editEntity } = yield select(
+      const { editEntity } = yield* select(
         selectEditorState(editorType, editorId)
       );
       const editorCommitApiResourceAction = createEditorCommitApiResourceAction(
@@ -70,7 +69,7 @@ export function* editorCommitEdit() {
           );
         }
         if (resultAction.payload.alreadyExists) {
-          yield put(
+          yield* put(
             app.addToast(`That ${startCase(editorType)} already exists.`)
           );
         }
@@ -249,7 +248,6 @@ export const editorCommitConfigs: Partial<
           const justification = demuxCreateJustificationInput(
             model.justification
           );
-          justification.rootTargetType = JustificationRootTargetTypes.STATEMENT;
           justification.target = {
             entity: statement,
             type: JustificationTargetTypes.STATEMENT,

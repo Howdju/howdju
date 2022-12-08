@@ -186,8 +186,8 @@ export interface AddListItemPayload {
 
 // TODO(#83): replace bespoke list reducers with addListItem/removeListItem
 const makeAddAtomReducer =
-  <T extends EditorEntity>(atomsPath: string, atomMaker: ModelFactory) =>
-  (state: WritableDraft<EditorState<T>>, action: AnyAction) => {
+  <T extends EditorEntity, U>(atomsPath: string, atomMaker: ModelFactory) =>
+  (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
     if (!state.editEntity) {
       logger.error("Cannot add atom to absent editEntity.");
       return;
@@ -201,8 +201,8 @@ const makeAddAtomReducer =
   };
 
 const makeRemoveAtomReducer =
-  <T extends EditorEntity>(atomsPath: string) =>
-  (state: WritableDraft<EditorState<T>>, action: AnyAction) => {
+  <T extends EditorEntity, U>(atomsPath: string) =>
+  (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
     if (!state.editEntity) {
       logger.error("Cannot remove atom from absent editEntity.");
       return;
