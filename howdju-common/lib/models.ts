@@ -68,14 +68,7 @@ import {
   Writ,
   WritQuote,
 } from "./zodSchemas";
-import {
-  EntityName,
-  EntityOrRef,
-  isRef,
-  Persisted,
-  Ref,
-  ToInput,
-} from "./zodSchemaTypes";
+import { EntityOrRef, isRef, Persisted, ToInput } from "./zodSchemaTypes";
 
 export const isPositive = (j: Justification) => j.polarity === "POSITIVE";
 export const isNegative = (j: Justification) => j.polarity === "NEGATIVE";
@@ -217,20 +210,6 @@ export const makeStatement = (props?: Partial<Statement>): Statement =>
     props
   );
 
-export const makeSourceExcerptJustification = (
-  props?: Partial<Justification>
-): Justification => {
-  const init = {
-    target: null,
-    basis: {
-      type: "WRIT_QUOTE",
-      entity: null,
-    },
-  };
-  const merged = merge(init, props);
-  return merged;
-};
-
 export const makeWrit = (props?: Partial<Writ>): Writ =>
   merge(
     {
@@ -317,46 +296,13 @@ export const tagEqual = (tag1: EntityOrRef<Tag>, tag2: EntityOrRef<Tag>) => {
   return isDefined(tag1.name) && tag1.name === tag2.name;
 };
 
-/**
- * Transform a type to represent an input to a submission model factory.
- *
- * Fields that are not required or related must provide defaults in the factory
- * if necessary to satisfy the base type.
- */
-export type FactoryInput<
-  T,
-  RequiredFields extends keyof T,
-  RelatedFields extends keyof T
-> = Partial<Omit<T, RequiredFields | RelatedFields>> &
-  Required<Pick<T, RequiredFields>> & {
-    // The related field can be persisted or not. If it is not persisted, it will
-    // be deduplicated on the API with an equivalent entity.
-    [key in RelatedFields]: T[key] extends Entity
-      ? T[key] | Ref<EntityName<T[key]>>
-      : T[key];
-  };
-
 export const makePropositionTagVote = (
-  props: FactoryInput<PropositionTagVote, never, "proposition" | "tag">
-): PropositionTagVote =>
-  merge(
-    {
-      polarity: "POSITIVE",
-    },
-    props
-  );
+  props: PropositionTagVote
+): PropositionTagVote => props;
 
 export const makeCreatePropositionTagVote = makePropositionTagVote;
 
-export const makeTagVote = (
-  props: FactoryInput<TagVote, "targetType", "target" | "tag">
-): TagVote =>
-  merge(
-    {
-      polarity: "POSITIVE",
-    },
-    props
-  );
+export const makeTagVote = (props: TagVote): TagVote => props;
 export const makeCreateTagVote = makeTagVote;
 
 export const doTargetSameRoot = (j1: Justification, j2: Justification) =>

@@ -1,9 +1,11 @@
 /** Types and functions relating to clients, including view models. */
+
 import merge from "lodash/merge";
+import { SetOptional } from "type-fest";
+import { cloneDeep } from "lodash";
 
 import {
   Entity,
-  FactoryInput,
   Justification,
   JustificationPolarity,
   JustificationRootTarget,
@@ -20,7 +22,7 @@ import {
   TagVote,
 } from "howdju-common";
 
-export type JustificationViewModel = Persisted<Justification> & {
+export type JustificationViewModel = Justification & {
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
   // The sorting score for the current user
@@ -47,28 +49,27 @@ export interface TaggedEntityViewModel extends Entity {
   recommendedTags: Tag[];
 }
 
-export const makeJustificationViewModel = (
-  props?: FactoryInput<
-    JustificationViewModel,
-    "id" | "rootTarget" | "rootTargetType",
-    "target" | "basis"
+type UnrootedJustificationViewModel = Omit<
+  JustificationViewModel,
+  "rootTarget" | "rootTargetType" | "rootPolarity"
+>;
+const justificationViewModelDefaults = () => ({
+  counterJustifications: [],
+});
+export function makeJustificationViewModel(
+  props?: SetOptional<
+    UnrootedJustificationViewModel,
+    keyof ReturnType<typeof justificationViewModelDefaults>
   >
-): JustificationViewModel => {
-  const init = {
-    rootPolarity: "POSITIVE",
-    polarity: "POSITIVE",
-    counterJustifications: [],
-  };
-  // TODO(151) remove typecast
-  const merged: JustificationViewModel = merge(
-    init,
-    props
-  ) as unknown as JustificationViewModel;
-  inferJustificationRootTarget(merged);
-  return merged;
-};
+): JustificationViewModel {
+  const init = justificationViewModelDefaults();
+  const merged = merge(init, props);
+  return inferJustificationRootTarget(merged);
+}
 
-function inferJustificationRootTarget(justification: JustificationViewModel) {
+function inferJustificationRootTarget(
+  justification: UnrootedJustificationViewModel
+): JustificationViewModel {
   let targetEntity = justification.target.entity;
   let targetType = justification.target.type;
   let rootPolarity: JustificationPolarity = justification.polarity;
@@ -83,9 +84,14 @@ function inferJustificationRootTarget(justification: JustificationViewModel) {
       "Unable to infer justification root target from."
     );
   }
-  justification.rootTargetType = targetType;
-  justification.rootTarget = targetEntity as JustificationRootTarget;
-  justification.rootPolarity = rootPolarity;
+  const rootTargetType = targetType;
+  const rootTarget = targetEntity as JustificationRootTarget;
+  return {
+    ...cloneDeep(justification),
+    rootTargetType,
+    rootTarget,
+    rootPolarity,
+  } as JustificationViewModel;
 }
 
 export const isVerified = (j: JustificationViewModel) =>

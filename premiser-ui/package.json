@@ -131,7 +131,6 @@
     "immer": "^9.0.16",
     "is-valid-domain": "^0.0.19",
     "lodash": "^4.17.21",
-    "map-values-deep": "^1.0.2",
     "moment": "^2.29.4",
     "moment-duration-format": "^2.3.2",
     "normalizr": "^3.6.1",

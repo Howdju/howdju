@@ -84,7 +84,7 @@ export const getDimensionInfo = () => {
 };
 
 export function isValidUrl(value: string) {
-  return !!validUrl.isUri(value);
+  return !!validUrl.isWebUri(value);
 }
 
 export function hasValidDomain(url: string) {

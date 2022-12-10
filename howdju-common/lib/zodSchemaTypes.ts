@@ -33,7 +33,11 @@ import {
 
 const EntityRef = Entity.required();
 type EntityRef = z.infer<typeof EntityRef>;
-/** A type lookup from the entity type to the Zod Brand string. */
+/**
+ * A type lookup from the entity type to the Zod Brand string.
+ *
+ * This allows us to pass just the type to brand-related helpers, and to lookup the brand string.
+ */
 export type EntityName<T> = T extends Proposition
   ? "Proposition"
   : T extends CreateProposition
@@ -81,18 +85,21 @@ export function isRef<T extends Entity>(
   const keys = Object.keys(e);
   // An entity with a single property `id` is a ref.
   if (keys.length === 1 && keys[0] === "id") {
-    // If we have typed everything correctly, it should have also had the Zod BRAND.
+    // If we have typed everything correctly, it should have also had the Zod BRAND, which it
+    // doesn't because it has just one key.
     logger.warn(`Ref lacks z.BRAND property (id: ${e.id}).`);
     return true;
   }
   // Otherwise, an object with a BRAND is a Ref because we only brand Refs. (We don't brand objects
   // that can be stucturally typed.)
-  const is = z.BRAND in e;
-  if (is) {
+  const isBranded = z.BRAND in e;
+  if (isBranded) {
     // And if it's a Ref, it must have an ID (or else we don't know what it references.)
     console.assert(e.id);
   }
-  return is;
+  // Technically we don't know that the object is branded as a T; we must rely on the typesystem,
+  // and that a programmer hasn't overridden the typesystem incorrectly.
+  return isBranded;
 }
 
 /** Yields the Input version of a type. */

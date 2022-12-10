@@ -34,11 +34,9 @@ type Props = {
 export default function CreateJustificationDialog(props: Props) {
   const { id, editorId, visible, onCancel, onHide, commitAction } = props;
 
-  const editorState =
-    useAppSelector((state) =>
-      get(state.editors, [EditorTypes.NEW_JUSTIFICATION, editorId])
-    ) || {};
-  const { isSaving, wasSubmitAttempted } = editorState;
+  const { isSaving, wasSubmitAttempted } = useAppSelector((state) =>
+    get(state.editors, [EditorTypes.NEW_JUSTIFICATION, editorId])
+  );
 
   const isWindowNarrow = useAppSelector(selectIsWindowNarrow);
   const dispatch = useAppDispatch();

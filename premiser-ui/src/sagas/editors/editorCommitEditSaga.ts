@@ -12,7 +12,7 @@ import {
   CreateStatement,
   CreateStatementInput,
   EditProposition,
-  ErrorFormat,
+  IssueFormat,
   isRef,
   JustificationTargetTypes,
   ModelErrors,
@@ -402,7 +402,7 @@ function setCreateJustifiedSentenceErrorsFromStatement(
       return acc;
     },
     { _errors: [] } as {
-      _errors: ErrorFormat[];
+      _errors: IssueFormat[];
       [k: number]: ModelErrors<CreatePersorg>;
     }
   );

@@ -17,6 +17,7 @@ import {
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";
+import { identity } from "lodash";
 import queryString from "query-string";
 
 import {
@@ -56,7 +57,6 @@ import PersorgEditorFields from "./PersorgEditorFields";
 import EntityViewer from "./EntityViewer";
 import { CreatePropositionPageMode } from "./types";
 import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
-import { identity } from "lodash";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,

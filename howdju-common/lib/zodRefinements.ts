@@ -23,12 +23,13 @@ export const url =
       if (!domainPattern.test(domain)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `URL domain must match domain: ${domainPattern}.`,
+          message: `URL domain must match: ${domainPattern}.`,
         });
       }
     }
   };
 
+// Must have tuple type to pass as a spread argument.
 export const iso8601Datetime: [
   (val: string) => boolean,
   (val: string) => z.CustomErrorParams

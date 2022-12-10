@@ -7,15 +7,11 @@ import {
   JustificationBasisTypes,
   JustificationTargetTypes,
   JustificationPolarities,
-  JustificationRootPolarities,
-  JustificationRootTargetTypes,
   makePropositionCompound,
   makePropositionCompoundAtomFromProposition,
   makeProposition,
-  makeSourceExcerptJustification,
   makeWrit,
   makeWritQuote,
-  makeCreateCounterJustificationInput,
 } from "howdju-common";
 import { makeJustificationViewModel } from "howdju-client-common";
 
@@ -38,6 +34,7 @@ export default class LandingPage extends Component {
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
     });
     const proJustification = makeJustificationViewModel({
+      polarity: "POSITIVE",
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: rootProposition,
@@ -53,16 +50,14 @@ export default class LandingPage extends Component {
         }),
       },
     });
-    const proJustificationJustification = makeSourceExcerptJustification({
-      rootTarget: proJustificationProposition,
-      rootPolarity: JustificationRootPolarities.POSITIVE,
-      rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+    const proJustificationJustification = makeJustificationViewModel({
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: proJustificationProposition,
       },
       polarity: JustificationPolarities.POSITIVE,
       basis: {
+        type: "WRIT_QUOTE",
         entity: makeWritQuote({
           quoteText:
             "The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.",
@@ -111,16 +106,14 @@ export default class LandingPage extends Component {
         }),
       },
     });
-    const conJustificationJustification = makeSourceExcerptJustification({
-      rootTarget: conJustificationProposition,
-      rootPolarity: JustificationRootPolarities.POSITIVE,
-      rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+    const conJustificationJustification = makeJustificationViewModel({
+      polarity: JustificationPolarities.POSITIVE,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: conJustificationProposition,
       },
-      polarity: JustificationPolarities.POSITIVE,
       basis: {
+        type: "WRIT_QUOTE",
         entity: makeWritQuote({
           quoteText:
             "No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet",
@@ -149,21 +142,25 @@ export default class LandingPage extends Component {
       },
     ];
 
-    const counterJustification =
-      makeCreateCounterJustificationInput(proJustification);
-    counterJustification.rootPolarity = JustificationRootPolarities.NEGATIVE;
-    counterJustification.basis = {
-      type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-      entity: makePropositionCompound({
-        atoms: [
-          makePropositionCompoundAtomFromProposition(
-            makeProposition({
-              text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
-            })
-          ),
-        ],
-      }),
-    };
+    const counterJustification = makeJustificationViewModel({
+      polarity: "NEGATIVE",
+      target: {
+        type: "JUSTIFICATION",
+        entity: proJustification,
+      },
+      basis: {
+        type: JustificationBasisTypes.PROPOSITION_COMPOUND,
+        entity: makePropositionCompound({
+          atoms: [
+            makePropositionCompoundAtomFromProposition(
+              makeProposition({
+                text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
+              })
+            ),
+          ],
+        }),
+      },
+    });
     const proJustificationCountered = cloneDeep(proJustification);
     proJustificationCountered.counterJustifications = [counterJustification];
 

@@ -9,7 +9,7 @@ import {
   userActionsConflictCodes,
   authorizationErrorCodes,
   ModelErrorCode,
-  ErrorFormat,
+  IssueFormat,
   ModelErrors,
   EntityConflictCode,
   AuthorizationErrorCode,
@@ -111,7 +111,7 @@ function propagateUndefined(callback: (...args: any[]) => any) {
   };
 }
 
-export const errorFormatsToText = (errors: ErrorFormat[]) =>
+export const errorFormatsToText = (errors: IssueFormat[]) =>
   capitalize(join(map(errors, errorFormatToString), ", "));
 
 /**
@@ -167,7 +167,7 @@ export function makeErrorPropCreator<T>(
       t?: ModelErrors<T>
     ) =>
       | {
-          _errors: ErrorFormat[];
+          _errors: IssueFormat[];
         }
       | undefined;
     const isDirty = dirtySelector(dirtyFields)?._dirty;

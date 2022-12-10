@@ -1,9 +1,10 @@
 /**
  * Zod validation schemas.
  *
- * Only things that we need to validate should go here. That must be things that are input to the
- * system, like form models and API request bodies. Types that represent database output, API
- * responses, and view models that we derive on the client do not require validation.
+ * Only things that we need to validate should go here. We must validate input to the
+ * system, including form models and API request bodies. Values that represent database output, API
+ * responses, and view models that we derive on the client do not require validation, although we
+ * may benefit from defining them using Zod schemas.
  */
 
 import { z } from "zod";
@@ -17,20 +18,45 @@ export const Entity = z.object({
 });
 export type Entity = z.infer<typeof Entity>;
 
+/**
+ * A declarative statement of fact that the system tracks.
+ *
+ * Other systems might call this a claim.
+ */
 export const Proposition = Entity.extend({
+  /**
+   * The text of the proposition.
+   *
+   * Text should be a concise, neutral point of view, unambiguous, declarative independent clause.
+   */
   text: z.string().min(1),
 }).strict();
 export type Proposition = z.infer<typeof Proposition>;
 
+/** Something capable of making speech: a person or organization. */
 export const Persorg = Entity.extend({
   isOrganization: z.boolean(),
-  name: z.string(),
-  knownFor: z.string(),
+  /** The person or organization's official or most well-known name. */
+  name: z.string().min(1),
+  /**
+   * Why the person or organization is noteworthy.
+   *
+   * This field can help disambiguate persons with identical or similar names, or provide context on
+   * the speaker's statements.
+   *
+   * Persorgs should respect privacy, and so generally the system should maintain only noteworthy
+   * statements. A statement can be noteworthy because the person making it is generally noteworthy,
+   * or because in the context it was made, it is noteworthy.
+   */
+  knownFor: z.string().optional(),
+  /** The official or primary website representing the persorg. */
   websiteUrl: z.string().url().optional(),
+  /** The persorg's Twitter. */
   twitterUrl: z
     .string()
     .superRefine(url({ domain: /twitter.com$/ }))
     .optional(),
+  /** The persorg's Wikipedia URL. */
   wikipediaUrl: z
     .string()
     .superRefine(url({ domain: /wikipedia.org$/ }))
@@ -44,6 +70,7 @@ export type CreatePersorg = z.infer<typeof CreatePersorg>;
 export const CreatePersorgInput = Persorg;
 export type CreatePersorgInput = z.infer<typeof CreatePersorgInput>;
 
+/** Represents an utterance of a proposition by a persorg. */
 export type Statement = Entity & {
   speaker: Persorg;
 } & (
@@ -81,14 +108,18 @@ export const CreateStatement = Statement;
 export type CreateStatement = Statement;
 // Statement has no Edit models; users can edit the proposition/statement or the speaker.
 
+/** A textual media. */
 export const Writ = Entity.extend({
   title: z.string().min(1).max(512),
 });
 export type Writ = z.infer<typeof Writ>;
 
 const urlTargetAnchorTypes = z.enum(["TEXT_QUOTE"]);
-// later this can be a discriminatedUnion on type.
+/**
+ * A reference to a portion of a URL document.
+ */
 export const UrlTargetAnchor = z.object({
+  // later this can be a discriminatedUnion on type.
   type: z.literal(urlTargetAnchorTypes.Enum.TEXT_QUOTE),
   exactText: z.string(),
   prefixText: z.string(),
@@ -106,6 +137,7 @@ export const UrlTarget = Entity.extend({
 
 export const Url = Entity.extend({
   url: z.string().url(),
+  // TODO I don't think target should be part of URL. Targets should be related to URLs.
   target: UrlTarget.optional(),
 });
 export type Url = z.infer<typeof Url>;
@@ -118,15 +150,19 @@ export const WritQuote = Entity.extend({
 });
 export type WritQuote = z.infer<typeof WritQuote>;
 
+/** A fixed visual media. */
 export const Pic = Entity.extend({});
 export type Pic = z.infer<typeof Pic>;
+/** A reference to a part of a Pic. */
 export const PicRegion = Entity.extend({
   pic: Pic,
 });
 export type PicRegion = z.infer<typeof PicRegion>;
 
+/** A video media. */
 export const Vid = Entity.extend({});
 export type Vid = z.infer<typeof Vid>;
+/** A reference to a part of a Vid. */
 export const VidSegment = Entity.extend({
   vid: Vid,
 });
@@ -178,7 +214,23 @@ export type JustificationRootPolarity = z.infer<
 >;
 export const JustificationRootPolarities = JustificationRootPolarity.Enum;
 
-// Explicit recursive typing for Justification
+/**
+ * A reason for believing some truth valence about a target.
+ *
+ * For example, a reason for believing that a proposition is true.
+ *
+ * Some systems might call this evidence.
+ *
+ * Technically the root target information can be derived from following the chain of targets, and so it
+ * should appear only in the storage and view models. But we include it here for expedience since it
+ * often useful to have it in the models and we assumed it was present in the entity originally. But
+ * perhaps in the future we could remove rootPolarity, rootTarget, and rootTargetType from the
+ * entity and include it in just those models that need it. Models that require it include the data
+ * model (to make it possible to query all of a root target's justifications) and view and input
+ * models (to make it possible to display the justification propertly.) Before we do that, we
+ * probably want to refactor the root target info to be a single discriminated property rootTarget
+ * (including type and entity).
+ */
 export type Justification = Entity & {
   // A justification can target anything that can be a root target.
   // Additionally, it can target other justifications to counter them.
@@ -315,18 +367,6 @@ export type JustificationTargetType = Justification["target"]["type"];
 export type JustificationRootTarget = Justification["rootTarget"];
 export type JustificationRootTargetType = Justification["rootTargetType"];
 export const JustificationTargetTypes = justificationTargetTypes.Enum;
-
-/*
-  Replace Persisted with Entity Ref. For places where we were depending on Persisted's optional
-  fields, Use a specific view model instead of a bunch of optional fields.
-  Materialized -> ApiModels? DbModels? Make a specific type for each use-case rather than requiring
-  all fields. I would call them ViewModels, except that the view may modify them, such as creating
-  circular references or indexing fields.
-
-  One thing that would be handy would be a type helper that recursively replaces any related
-  entities with a union of the Entity or an EntityRef. We could use this to create base input models... actually
-  even this is not necessary. Each form should know what type of thing it's creating.
- */
 
 export const PropositionRef =
   Entity.required().brand<EntityName<Proposition>>();
@@ -645,7 +685,7 @@ export type TagVote = z.infer<typeof TagVote>;
 export type TagVotePolarity = TagVote["polarity"];
 export const TagVotePolarities = tagVotePolarities.Enum;
 
-// TODO: replace with TagVote
+/** @deprecated replace with TagVote */
 export const PropositionTagVote = Entity.extend({
   proposition: z.union([Proposition, PropositionRef]),
   polarity: tagVotePolarities,
@@ -728,13 +768,13 @@ export const User = Entity.extend({
 export type User = z.infer<typeof User>;
 
 /** Additional properties that we collect upon user creation, but that we don't expose later. */
-export const UserSubmissionModel = User.extend({
+export const CreateUser = User.extend({
   acceptedTerms: z.boolean(),
   affirmedMajorityConsent: z.boolean(),
   affirmed13YearsOrOlder: z.boolean(),
   affirmedNotGdpr: z.boolean(),
 });
-export type UserSubmissionModel = z.infer<typeof UserSubmissionModel>;
+export type CreateUser = z.infer<typeof CreateUser>;
 
 export const AccountSettings = Entity.extend({
   paidContributionsDisclosure: z.string(),
@@ -744,7 +784,7 @@ export type EditAccountSettings = AccountSettings;
 export type EditAccountSettingsInput = AccountSettings;
 
 /**
- * A CreationModel for creating a Proposition potentially with Speakers and/or Justifications.
+ * A model for creating a Proposition potentially with Speakers and/or Justifications.
  */
 export const CreateJustifiedSentenceInput = z.object({
   proposition: CreatePropositionInput,

@@ -13,7 +13,6 @@ import {
 } from "react-md";
 
 import {
-  CreatePropositionInput,
   EntityId,
   isNegative,
   isPositive,
@@ -26,7 +25,7 @@ import {
 import hoverAware from "./hoverAware";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import PropositionTagger from "./PropositionTagger";
-import { EditorTypes } from "./reducers/editors";
+import { EditorEntity, EditorTypes } from "./reducers/editors";
 import paths from "./paths";
 import Tagger from "./Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
@@ -290,7 +289,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
     this.props.editors.beginEdit(
       editorType,
       editorId,
-      rootTarget as CreatePropositionInput
+      rootTarget as EditorEntity
     );
   };
 

@@ -1,7 +1,6 @@
 import {
   isArray,
   isEqual,
-  isNumber,
   isString,
   join,
   map,
@@ -11,40 +10,15 @@ import {
 } from "lodash";
 import { z, ZodFormattedError } from "zod";
 
-import { ModelErrorCode } from "./codes";
 import { mapValuesDeep } from "./general";
 import { logger } from "./logger";
-import {
-  BespokeValidationErrors,
-  FieldErrorCode,
-  FieldErrorValue,
-  FieldSubErrors,
-  newBespokeValidationErrors,
-} from "./validation";
-
-export function translateZodToModelErrorCode(
-  code: z.ZodIssueCode
-): ModelErrorCode {
-  switch (code) {
-    default:
-      return "IS_REQUIRED";
-  }
-}
-
-export function translateZodToFieldErrorCode(
-  code: z.ZodIssueCode
-): FieldErrorCode {
-  switch (code) {
-    default:
-      return "IS_REQUIRED";
-  }
-}
 
 export const zodIssueFormatter = (issue: z.ZodIssue) => issue;
 export type ZodCustomIssueFormat = ReturnType<typeof zodIssueFormatter>;
-export type ErrorFormat = ZodCustomIssueFormat;
+export type IssueFormat = ZodCustomIssueFormat;
 
-export function errorFormatToString(errorFormat: ErrorFormat): string {
+/** Returns a user-readable string representing errorFormat. */
+export function errorFormatToString(errorFormat: IssueFormat): string {
   switch (errorFormat.code) {
     case "invalid_type": {
       const { received, message } = errorFormat;
@@ -77,12 +51,16 @@ export function errorFormatToString(errorFormat: ErrorFormat): string {
 
 /** Formats a Zod error with our custom formatter and removes duplicates. */
 export function formatZodError<T>(error: z.ZodError<T>) {
-  // Zod can produce duplicate issues. E.g., union fields can produce an identical
-  // invalid_type/Required issue for each of the union members. Since duplicate issues are useless
-  // to a client, remove them.
   return removeZodErrorDupes(error.format(zodIssueFormatter));
 }
 
+/**
+ * Returns error with all duplicate issues remove.
+ *
+ * Zod can produce duplicate issues. E.g., union fields can produce an identical
+ * invalid_type/Required issues for each of the union members. Since duplicate issues are useless to
+ * a client (they result in the same error message), we should remove them.
+ */
 export function removeZodErrorDupes<T, U>(
   error: ZodFormattedError<T, U>
 ): ZodFormattedError<T, U> {
@@ -97,50 +75,9 @@ export function removeZodErrorDupes<T, U>(
   }) as ZodFormattedError<T, U>;
 }
 
-/** An object having the same shape as a model and possibly adding _errors to each field. */
-export type ModelErrors<T> = z.ZodFormattedError<T, ZodCustomIssueFormat>;
-
 /**
- * Translate Zod errors to BespokeValidationErrors.
+ * An object having the same shape as a model and possibly adding _errors to each field.
  *
- * @param error The Zod error
- * @returns BespokeValidationErrors representing the Zod error.
- * @deprecated Just use Zod's error format.
+ * This type is an alias for a ZodFormattedError having our custom issue format.
  */
-export function translateZodToBespokeErrors<T>(
-  error: z.ZodError<T>
-): BespokeValidationErrors {
-  const allErrors = newBespokeValidationErrors();
-  for (const { path, code } of error.errors) {
-    if (!path || path.length < 1) {
-      allErrors.modelErrors.push(translateZodToModelErrorCode(code));
-      continue;
-    }
-    const [firstPathPart, ...pathParts] = path;
-    // BespokeValidationErrors assumes that the first path part must be an object key, whereas
-    // ZodError could provide a number. If we validate an array, this assumption will be invalid.
-    let currErrors: FieldErrorValue[] & FieldSubErrors =
-      allErrors.fieldErrors[firstPathPart];
-    if (!currErrors) {
-      currErrors = allErrors.fieldErrors[firstPathPart] = [];
-    }
-    for (const pathPart in pathParts) {
-      if (isNumber(pathPart)) {
-        if (!currErrors.itemErrors) {
-          currErrors.itemErrors = [];
-        }
-        currErrors = currErrors.itemErrors[pathPart] = [];
-      } else {
-        if (!currErrors.fieldErrors) {
-          currErrors.fieldErrors = {};
-        }
-        if (!currErrors.fieldErrors[pathPart]) {
-          currErrors.fieldErrors[pathPart] = [];
-        }
-        currErrors = currErrors.fieldErrors[pathPart] = [];
-      }
-    }
-    currErrors.push({ code: translateZodToFieldErrorCode(code) });
-  }
-  return allErrors;
-}
+export type ModelErrors<T> = z.ZodFormattedError<T, ZodCustomIssueFormat>;
