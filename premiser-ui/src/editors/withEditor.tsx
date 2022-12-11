@@ -303,12 +303,6 @@ export default function withEditor<
       // TODO(1): can we remove this typecast? https://stackoverflow.com/questions/74072249/
     } as unknown as P;
 
-    const submitButtonTitle = isValid
-      ? "Submit"
-      : wasSubmitAttempted
-      ? "Please correct the errors to continue"
-      : "Please complete the form to continue";
-
     return (
       <form onSubmit={onSubmit} className={className}>
         <CardText>
@@ -329,7 +323,7 @@ export default function withEditor<
             <SubmitButton
               key="submitButton"
               appearDisabled={!isValid || isSaving}
-              title={submitButtonTitle}
+              title={submitButtonTitle(isValid, wasSubmitAttempted)}
               children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
             />,
           ]}
@@ -337,4 +331,15 @@ export default function withEditor<
       </form>
     );
   };
+}
+
+export function submitButtonTitle(
+  isValid: boolean,
+  wasSubmitAttempted: boolean
+) {
+  return isValid
+    ? "Submit"
+    : wasSubmitAttempted
+    ? "Please correct the errors to continue"
+    : "Please complete the form to continue";
 }

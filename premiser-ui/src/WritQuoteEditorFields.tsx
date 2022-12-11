@@ -20,10 +20,10 @@ import {
   OnRemoveCallback,
   toReactMdOnBlur,
 } from "@/types";
-
-import "./WritQuoteEditorFields.scss";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 import { makeErrorPropCreator } from "./modelErrorMessages";
+
+import "./WritQuoteEditorFields.scss";
 
 interface Props extends EntityEditorFieldsProps<EditWritQuoteInput> {
   writQuote: WritQuote;

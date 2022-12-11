@@ -51,7 +51,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
   return (
     <div>
       {map(atoms, (atom, index, atoms) => {
-        const atomPropositionTextName = `atoms[${index}].entity.text`; // TODO .entity or .proposition?
+        const atomPropositionTextName = `atoms[${index}].entity.text`;
         const value = get(propositionCompound, atomPropositionTextName, "");
         const leftIcon = <FontIcon>short_text</FontIcon>;
         const rightIcon = disabled ? (

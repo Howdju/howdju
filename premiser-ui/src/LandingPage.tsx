@@ -7,11 +7,9 @@ import {
   JustificationBasisTypes,
   JustificationTargetTypes,
   JustificationPolarities,
-  makePropositionCompound,
-  makePropositionCompoundAtomFromProposition,
   makeProposition,
-  makeWrit,
   makeWritQuote,
+  makePropositionCompoundFromProposition,
 } from "howdju-common";
 import { makeJustificationViewModel } from "howdju-client-common";
 
@@ -41,13 +39,9 @@ export default class LandingPage extends Component {
       },
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompound({
-          atoms: [
-            makePropositionCompoundAtomFromProposition(
-              proJustificationProposition
-            ),
-          ],
-        }),
+        entity: makePropositionCompoundFromProposition(
+          proJustificationProposition
+        ),
       },
     });
     const proJustificationJustification = makeJustificationViewModel({
@@ -61,10 +55,10 @@ export default class LandingPage extends Component {
         entity: makeWritQuote({
           quoteText:
             "The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.",
-          writ: makeWrit({
+          writ: {
             title:
               "Vantage Point: The Curse of (Certain) Tall Buildings — The American Surveyor",
-          }),
+          },
           urls: [
             {
               url: "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
@@ -97,13 +91,9 @@ export default class LandingPage extends Component {
       polarity: JustificationPolarities.NEGATIVE,
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompound({
-          atoms: [
-            makePropositionCompoundAtomFromProposition(
-              conJustificationProposition
-            ),
-          ],
-        }),
+        entity: makePropositionCompoundFromProposition(
+          conJustificationProposition
+        ),
       },
     });
     const conJustificationJustification = makeJustificationViewModel({
@@ -117,10 +107,10 @@ export default class LandingPage extends Component {
         entity: makeWritQuote({
           quoteText:
             "No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet",
-          writ: makeWrit({
+          writ: {
             title:
               "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building.",
-          }),
+          },
           urls: [
             {
               url: "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
@@ -150,14 +140,8 @@ export default class LandingPage extends Component {
       },
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompound({
-          atoms: [
-            makePropositionCompoundAtomFromProposition(
-              makeProposition({
-                text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
-              })
-            ),
-          ],
+        entity: makePropositionCompoundFromProposition({
+          text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
         }),
       },
     });

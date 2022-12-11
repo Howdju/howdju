@@ -81,7 +81,7 @@ function inferJustificationRootTarget(
   }
   if (targetType === "JUSTIFICATION") {
     throw newProgrammingError(
-      "Unable to infer justification root target from."
+      "Unable to infer justification root target. We ended up at a justification."
     );
   }
   const rootTargetType = targetType;

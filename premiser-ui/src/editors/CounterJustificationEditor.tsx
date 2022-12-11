@@ -1,11 +1,12 @@
-import { editors } from "../actions";
-import { EditorType, EditorTypes } from "../reducers/editors";
 import {
   CreateCounterJustificationInput,
   CreatePropositionCompoundAtomInput,
   makePropositionCompoundAtom,
   PropositionCompoundAtom,
 } from "howdju-common";
+
+import { editors } from "../actions";
+import { EditorType, EditorTypes } from "../reducers/editors";
 import withEditor from "./withEditor";
 import { AppDispatch } from "../setupStore";
 import { CreateCounterJustificationConfig } from "../sagas/editors/editorCommitEditSaga";

@@ -1,8 +1,7 @@
-import { ActionCreatorWithPreparedPayload } from "@reduxjs/toolkit";
-import { AnyAction } from "redux";
+import { AnyAction, ActionCreatorWithPreparedPayload } from "@reduxjs/toolkit";
 
 /**
- * A helper for matching any of several action creators.
+ * A helper for matching multiple redux action creators producing a typed action.
  *
  * Usage:
  *

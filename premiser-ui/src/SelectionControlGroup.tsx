@@ -12,6 +12,7 @@ interface Props extends SelectionControlGroupProps {
   errorText?: string;
 }
 
+/** A SelectionControlGroup that displays errors. */
 export default function SelectionControlGroup(props: Props) {
   const { error, errorText, ...rest } = props;
   return (

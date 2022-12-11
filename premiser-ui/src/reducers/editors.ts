@@ -186,7 +186,7 @@ export interface AddListItemPayload {
   itemFactory: () => Entity;
 }
 
-// TODO(#83): replace bespoke list reducers with addListItem/removeListItem
+/** @deprecated TODO(#83): replace with addListItem/removeListItem */
 const makeAddAtomReducer =
   <T extends EditorEntity, U>(atomsPath: string, atomMaker: ModelFactory) =>
   (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
@@ -202,6 +202,7 @@ const makeAddAtomReducer =
     insertAt(atoms, index, atomMaker());
   };
 
+/** @deprecated TODO(#83): replace with addListItem/removeListItem */
 const makeRemoveAtomReducer =
   <T extends EditorEntity, U>(atomsPath: string) =>
   (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
@@ -263,6 +264,12 @@ const defaultEditorActions = {
       const listPath = isFunction(listPathMaker)
         ? listPathMaker(action.payload)
         : listPathMaker;
+      if (!editEntity) {
+        logger.error(
+          `Cannot add an item to the list '${listPath}' because editEntity is missing.`
+        );
+        return;
+      }
       const list = get(editEntity, listPath);
       const insertIndex = isNumber(itemIndex) ? itemIndex : list.length;
       insertAt(list, insertIndex, itemFactory());
@@ -276,6 +283,12 @@ const defaultEditorActions = {
       const listPath = isString(listPathMaker)
         ? listPathMaker
         : listPathMaker(action.payload);
+      if (!editEntity) {
+        logger.error(
+          `Cannot remove the ${itemIndex}th item from the list '${listPath}' because editEntity is missing.`
+        );
+        return;
+      }
       const list = get(editEntity, listPath);
       removeAt(list, itemIndex);
     }

@@ -410,7 +410,7 @@ function inferCreateJustificationInputRootTarget(
   }
   if (targetType === "JUSTIFICATION" || !targetEntity) {
     throw newProgrammingError(
-      "Unable to infer justification root target from."
+      "Unable to infer justification root target. We ended up at a justification."
     );
   }
   model.rootTargetType = targetType;

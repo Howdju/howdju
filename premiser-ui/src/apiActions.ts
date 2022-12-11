@@ -1074,7 +1074,7 @@ export const api = {
 
   createJustification: apiActionCreator(
     "CREATE_JUSTIFICATION",
-    (justification: CreateJustification | CreateCounterJustification) => ({
+    (justification: CreateJustification) => ({
       justification,
     }),
     ({ justification }) => ({
@@ -1088,6 +1088,9 @@ export const api = {
       normalizationSchema: { justification: justificationSchema },
     })
   ),
+  // We shouldn't need a separate action for counter justifications since they are just a
+  // specialization of justifications. But I couldn't get the types for the editor config to workout
+  // if I reuse the createJustification action there.
   createCounterJustification: apiActionCreator(
     "CREATE_CONTER_JUSTIFICATION",
     (justification: CreateCounterJustification) => ({
