@@ -18,6 +18,7 @@ export default class SingleLineTextField extends Component {
     disabled: PropTypes.bool,
     onKeyDown: PropTypes.func,
     onSubmit: PropTypes.func,
+    onBlur: PropTypes.func,
     onPropertyChange: PropTypes.func,
   };
 
@@ -35,6 +36,7 @@ export default class SingleLineTextField extends Component {
       rows,
       maxRows,
       disabled,
+      onBlur,
       // ignore
       onKeyDown,
       onSubmit,
@@ -53,6 +55,7 @@ export default class SingleLineTextField extends Component {
         value={textareaValue}
         {...rowProps}
         disabled={disabled}
+        onBlur={onBlur}
         onKeyDown={this.onKeyDown}
         onChange={this.onChange}
       />
@@ -67,6 +70,11 @@ export default class SingleLineTextField extends Component {
       }
     }
     if (event.key === Keys.ENTER) {
+      // As I recall, react-md (@1, at least) implements all text fields as textareas. This breaks
+      // the html text input convention of pressing enter to submit a form.
+      //
+      // To work around that, we added this component that recreates the behavior.
+      //
       // No line breaks in single-line text fields
       event.preventDefault();
       if (this.props.onSubmit) {

@@ -19,3 +19,5 @@ export const userActionsConflictCodes = {
   OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_WRIT:
     "OTHER_USERS_HAVE_COUNTERED_JUSTIFICATIONS_BASED_ON_THIS_WRIT",
 } as const;
+export type UserActionsConflictCode =
+  typeof userActionsConflictCodes[keyof typeof userActionsConflictCodes];

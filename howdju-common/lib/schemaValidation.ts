@@ -11,6 +11,8 @@ import pick from "lodash/pick";
 import set from "lodash/set";
 import reduce from "lodash/reduce";
 import values from "lodash/values";
+import { isNaN, parseInt } from "lodash";
+import { z } from "zod";
 
 import { fromJson, toJson } from "./general";
 import {
@@ -20,6 +22,7 @@ import {
   Schema,
   schemasById,
 } from "./schemas";
+import { ZodCustomIssueFormat, zodIssueFormatter } from "./zodError";
 
 export function makeStandaloneCode() {
   const ajv = makeAjv({ code: { source: true } });
@@ -77,6 +80,10 @@ type ToValidationError<S extends Schema> = {
   }
     ? // then recurse on that schema
       ToValidationError<typeof schemasById[S["properties"][prop]["$ref"]]>
+    : S["properties"][prop] extends {
+        type: "array";
+      }
+    ? ValidationError[]
     : // otherwise it's a possible ValidationError (possible because of `+?` above.)
       ValidationError;
 };
@@ -86,20 +93,32 @@ interface ValidationError {
   params: Record<string, any>;
 }
 
+export function makeValidateRawErrors(ajv: Ajv) {
+  return function validateRawErrors<T extends SchemaId | Schema>(
+    schemaOrRef: T,
+    data: any
+  ) {
+    const jsonVal = toJsonVal(data);
+    const isValid = ajv.validate(schemaOrRef, jsonVal);
+    return { isValid, errors: ajv.errors };
+  };
+}
+
 export function makeValidate(ajv: Ajv) {
+  const rawValidate = makeValidateRawErrors(ajv);
   return function validate<T extends SchemaId | Schema>(
     schemaOrRef: T,
     data: any
   ): ValidationResult<ToSchema<T>> {
     if (!data) {
-      return emptyValidationResult();
+      return emptyValidationResult(); // Why is missing data valid?
     }
-    const jsonVal = toJsonVal(data);
-    const isValid = ajv.validate(schemaOrRef, jsonVal);
+    const result = rawValidate(schemaOrRef, data);
+    const isValid = result.isValid;
     const errors = isValid
       ? {}
       : // @ts-ignore: avoid `Type instantiation is excessively deep and possibly infinite.`
-        transformErrors<ToSchema<T>>(ajv.errors);
+        transformErrors<ToSchema<T>>(result.errors);
     return { isValid, errors };
   };
 }
@@ -127,6 +146,7 @@ function transformErrors<S extends Schema>(
       // TODO doesn't this overwrite multiple errors with the same field?
       // TODO setting these fields directly at `name` means that we might overwrite them with a field
       // having the same name.
+      // TODO lodash.set doesn't support JSON pointers. We could use json-pointer instead.
       set(transformed, name, pick(error, ["keyword", "message", "params"]));
       return transformed;
     },
@@ -156,4 +176,46 @@ export function emptyValidationResult<T extends SchemaId | Schema>(
   _schemaOrRef?: T
 ): ValidationResult<ToSchema<T>> {
   return { isValid: true, errors: {} };
+}
+
+/** Converts Ajv errors to a Zod error. */
+export function translateAjvToZodFormattedError<T>(
+  errors: ErrorObject[] | null | undefined
+): z.ZodFormattedError<T, ZodCustomIssueFormat> {
+  const issues: z.ZodIssue[] = errors
+    ? errors.map((error) => {
+        let name;
+        if (error.instancePath === "") {
+          // When a required property is missing, the instancePath is the empty string
+          if (error.keyword === "required") {
+            name = error.params.missingProperty;
+          } else {
+            throw new Error(`unsupported Ajv error ${JSON.stringify(error)}`);
+          }
+        } else {
+          // Ajv instancePaths start with a root slash
+          name = error.instancePath.substr(1);
+        }
+        return {
+          path: jsonPointerToObjectPath(name),
+          code: z.ZodIssueCode.custom,
+          message: error.message || "Unknown error",
+        };
+      })
+    : [];
+  return new z.ZodError<T>(issues).format(zodIssueFormatter);
+}
+
+/**
+ * Converts a JSON pointer to a lodash-compatible object path.
+ *
+ * E.g. `a/b/0/c` -> ["a", "b", 0, "c"].
+ */
+export function jsonPointerToObjectPath(
+  jsonPointer: string
+): (string | number)[] {
+  return jsonPointer.split("/").map((val) => {
+    const parsed = parseInt(val);
+    return isNaN(parsed) ? val : parsed;
+  });
 }

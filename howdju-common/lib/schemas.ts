@@ -1,6 +1,6 @@
 import { keys } from "lodash";
 
-import { ContentReportTypes, EntityTypes } from "./enums";
+import { ContentReportTypes, EntityTypes } from "./zodSchemas";
 
 export const schemaSettings = {
   propositionTextMaxLength: 512,

@@ -13,43 +13,30 @@ import lowerCase from "lodash/lowerCase";
 import map from "lodash/map";
 import split from "lodash/split";
 import truncate from "lodash/truncate";
-import { TruncateOptions } from "lodash";
+import { clone, reverse, TruncateOptions } from "lodash";
 
 import config from "./config";
 import {
-  BespokeValidationErrors,
   SourceExcerpt,
   isFalsey,
-  JustificationBasis,
-  JustificationBasisTypes,
   JustificationRootTarget,
   JustificationRootTargetType,
-  JustificationRootTargetTypes,
-  JustificationTargetTypes,
   newExhaustedEnumError,
-  newImpossibleError,
   Proposition,
   PropositionCompound,
-  SourceExcerptTypes,
   WritQuote,
-  Sentence,
-  newUnimplementedError,
   EntityId,
+  Sentence,
+  CreatePersorgInput,
+  CreatePropositionInput,
+  makeStatement,
+  SentenceTypes,
 } from "howdju-common";
-import {
-  JustificationBasisEditModel,
-  JustificationEditModel,
-  JustificationSubmissionModel,
-  SourceExcerptEditModel,
-} from "howdju-client-common";
 
 import * as characters from "./characters";
-import {
-  justificationSchema,
-  propositionSchema,
-  statementSchema,
-} from "./normalizationSchemas";
+import { propositionSchema, statementSchema } from "./normalizationSchemas";
 import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
+import { schema } from "normalizr";
 
 export const removePropositionCompoundIds = (
   propositionCompound: PropositionCompound
@@ -58,7 +45,6 @@ export const removePropositionCompoundIds = (
   delete propositionCompound.id;
 
   forEach(propositionCompound.atoms, (atom) => {
-    delete atom.compoundId;
     removePropositionIds(atom.entity);
   });
   return propositionCompound;
@@ -79,13 +65,13 @@ export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
   delete sourceExcerpt.id;
   delete sourceExcerpt.entity.id;
   switch (sourceExcerpt.type) {
-    case SourceExcerptTypes.WRIT_QUOTE:
+    case "WRIT_QUOTE":
       delete sourceExcerpt.entity.writ.id;
       break;
-    case SourceExcerptTypes.PIC_REGION:
+    case "PIC_REGION":
       delete sourceExcerpt.entity.pic.id;
       break;
-    case SourceExcerptTypes.VID_SEGMENT:
+    case "VID_SEGMENT":
       delete sourceExcerpt.entity.vid.id;
       break;
     default:
@@ -93,132 +79,28 @@ export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
   }
 };
 
-export const consolidateNewJustificationEntities = (
-  justificationInput: JustificationEditModel
-): JustificationSubmissionModel => {
-  const basis = translateBasisEditModel(justificationInput.basis);
-  const justification: JustificationSubmissionModel = assign(
-    cloneDeep(justificationInput),
-    {
-      basis,
-    }
-  );
-  return justification;
-};
-
-const translateBasisEditModel = (
-  basis: JustificationBasisEditModel
-): JustificationBasis => {
-  switch (basis.type) {
-    case JustificationBasisTypes.PROPOSITION_COMPOUND:
-      if (!basis.propositionCompound) {
-        throw newImpossibleError(
-          "propositionCompound was missing for JustificationFormInput having type PROPOSITION_COMPOUND"
-        );
-      }
-      return {
-        type: "PROPOSITION_COMPOUND",
-        entity: basis.propositionCompound,
-      };
-    case JustificationBasisTypes.WRIT_QUOTE:
-      if (!basis.writQuote) {
-        throw newImpossibleError(
-          "writQuote was missing for JustificationFormInput having type PROPOSITION_COMPOUND"
-        );
-      }
-      return {
-        type: "WRIT_QUOTE",
-        entity: basis.writQuote,
-      };
-    case JustificationBasisTypes.SOURCE_EXCERPT:
-      if (!basis.sourceExcerpt) {
-        throw newImpossibleError(
-          "sourceExcerpt was missing for JustificationFormInput having type SOURCE_EXCERPT"
-        );
-      }
-      return {
-        type: "SOURCE_EXCERPT",
-        entity: translateSourceExcerptEditModel(basis.sourceExcerpt),
-      };
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      throw newUnimplementedError(`Unsupported basis type: ${basis.type}`);
-    default:
-      throw newExhaustedEnumError(basis.type);
-  }
-};
-
-export function translateSourceExcerptEditModel(
-  sourceExcerpt: SourceExcerptEditModel
-): SourceExcerpt {
-  switch (sourceExcerpt.type) {
-    case "PIC_REGION":
-      if (!sourceExcerpt.picRegion) {
-        throw newImpossibleError(
-          "picRegion was missing for SourceExcerptEditModel having type PIC_REGION"
-        );
-      }
-      return {
-        type: "PIC_REGION",
-        entity: sourceExcerpt.picRegion,
-      };
-    case "VID_SEGMENT":
-      if (!sourceExcerpt.vidSegment) {
-        throw newImpossibleError(
-          "vidSegment was missing for SourceExcerptEditModel having type VID_SEGMENT"
-        );
-      }
-      return {
-        type: "VID_SEGMENT",
-        entity: sourceExcerpt.vidSegment,
-      };
-    case "WRIT_QUOTE":
-      if (!sourceExcerpt.writQuote) {
-        throw newImpossibleError(
-          "writQuote was missing for SourceExcerptEditModel having type WRIT_QUOTE"
-        );
-      }
-      return {
-        type: "WRIT_QUOTE",
-        entity: sourceExcerpt.writQuote,
-      };
-    default:
-      throw newExhaustedEnumError(sourceExcerpt.type);
-  }
-}
-
-// TODO(26): the createJustification route currently returns a Joi error, whereas this function
-// expects a BespokeValidationErrors.
-export function translateJustificationErrorsFromFormInput(
-  justification: JustificationEditModel,
-  errors: BespokeValidationErrors
+/** Return a Statement with speakers stating the proposition */
+export function constructStatement(
+  speakers: CreatePersorgInput[],
+  proposition: CreatePropositionInput
 ) {
-  if (!justification || !errors) {
-    return errors;
+  // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
+  // but we need to build the statements outward so that we have the target of the next statement.
+  // So take them in reverse order
+  speakers = reverse(clone(speakers));
+  let statement = makeStatement({
+    speaker: speakers[0],
+    sentenceType: SentenceTypes.PROPOSITION,
+    sentence: proposition,
+  });
+  for (const speaker of drop(speakers, 1)) {
+    statement = makeStatement({
+      speaker,
+      sentenceType: SentenceTypes.STATEMENT,
+      sentence: statement,
+    });
   }
-
-  const justificationErrors = cloneDeep(errors);
-  const basisFieldErrors = justificationErrors.fieldErrors.basis.fieldErrors;
-  switch (justification.basis.type) {
-    case JustificationBasisTypes.PROPOSITION_COMPOUND:
-      basisFieldErrors.propositionCompound =
-        errors.fieldErrors.basis.fieldErrors.entity;
-      break;
-    case JustificationBasisTypes.WRIT_QUOTE:
-      basisFieldErrors.writQuote = errors.fieldErrors.basis.fieldErrors.entity;
-      break;
-    case JustificationBasisTypes.SOURCE_EXCERPT:
-      basisFieldErrors.sourceExcerpt =
-        errors.fieldErrors.basis.fieldErrors.entity;
-      break;
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      throw newUnimplementedError(
-        `Unsupported basis type: ${justification.basis.type}`
-      );
-    default:
-      throw newExhaustedEnumError(justification.basis.type);
-  }
-
-  return justificationErrors;
+  return statement;
 }
 
 const truncateOptions = {
@@ -239,11 +121,11 @@ export function sourceExcerptDescription(sourceExcerpt: SourceExcerpt) {
 
 export function sourceExcerptIconName(sourceExcerpt: SourceExcerpt) {
   switch (sourceExcerpt.type) {
-    case SourceExcerptTypes.WRIT_QUOTE:
+    case "WRIT_QUOTE":
       return "format_quote";
-    case SourceExcerptTypes.PIC_REGION:
+    case "PIC_REGION":
       return "photo";
-    case SourceExcerptTypes.VID_SEGMENT:
+    case "VID_SEGMENT":
       return "videocam";
     default:
       throw newExhaustedEnumError(sourceExcerpt);
@@ -252,11 +134,11 @@ export function sourceExcerptIconName(sourceExcerpt: SourceExcerpt) {
 
 export function sourceExcerptSourceDescription(sourceExcerpt: SourceExcerpt) {
   switch (sourceExcerpt.type) {
-    case SourceExcerptTypes.WRIT_QUOTE:
+    case "WRIT_QUOTE":
       return "writ";
-    case SourceExcerptTypes.PIC_REGION:
+    case "PIC_REGION":
       return "pic";
-    case SourceExcerptTypes.VID_SEGMENT:
+    case "VID_SEGMENT":
       return "vid";
     default:
       throw newExhaustedEnumError(sourceExcerpt);
@@ -304,7 +186,9 @@ export function array(index: number) {
   return new ArrayIndex(index);
 }
 
-export function combineNames(...names: (ComponentName | ArrayIndex)[]) {
+export function combineNames(
+  ...names: (ComponentName | ArrayIndex | undefined)[]
+) {
   // Don't convert case; the names must match the object model for use with get/set
   // I think each and every name should be truthy.  How else could they be relied upon for get/set?
   const filteredNames = dropWhile(names, isFalsey);
@@ -328,17 +212,19 @@ export function makeChip(props: Partial<ChipInfo>): Partial<ChipInfo> {
 }
 
 export const contextTrailTypeByShortcut = {
-  p: JustificationTargetTypes.PROPOSITION,
-  s: JustificationTargetTypes.STATEMENT,
+  p: "PROPOSITION",
+  s: "STATEMENT",
 } as const;
 export type ContextTrailShortcut = keyof typeof contextTrailTypeByShortcut;
 
 export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut);
 
-export const rootTargetNormalizationSchemasByType = {
-  [JustificationRootTargetTypes.PROPOSITION]: propositionSchema,
-  [JustificationRootTargetTypes.STATEMENT]: statementSchema,
-  [JustificationRootTargetTypes.JUSTIFICATION]: justificationSchema,
+export const rootTargetNormalizationSchemasByType: Record<
+  JustificationRootTargetType,
+  schema.Entity
+> = {
+  ["PROPOSITION"]: propositionSchema,
+  ["STATEMENT"]: statementSchema,
 };
 
 export function describeRootTarget(
@@ -347,9 +233,9 @@ export function describeRootTarget(
 ) {
   // TODO(107) make JustificationRootTarget a discriminated union type and remove typecasts
   switch (rootTargetType) {
-    case JustificationRootTargetTypes.PROPOSITION:
+    case "PROPOSITION":
       return (rootTarget as Proposition).text;
-    case JustificationRootTargetTypes.STATEMENT: {
+    case "STATEMENT": {
       const descriptionParts = [];
       let currSentence = rootTarget as Sentence;
       while ("sentenceType" in currSentence) {
@@ -361,8 +247,6 @@ export function describeRootTarget(
       );
       return join(descriptionParts, " ");
     }
-    case JustificationRootTargetTypes.JUSTIFICATION:
-      throw newUnimplementedError("Add describeRootTarget(Justification)");
     default:
       throw newExhaustedEnumError(rootTargetType);
   }

@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 
 import { Writ } from "howdju-common";
 
@@ -10,9 +11,7 @@ import {
   OnPropertyChangeCallback,
   SuggestionsKey,
 } from "./types";
-import { useDispatch } from "react-redux";
 import { api } from "./actions";
-import { combineNames } from "./viewModels";
 import { cancelWritTitleSuggestions } from "./apiActions";
 
 interface Props {
@@ -34,7 +33,7 @@ const WritTitleAutocomplete = (props: Props) => {
 
   return (
     <ApiAutocomplete
-      name={combineNames(name, "writ-title-autocomplete")}
+      name={name}
       singleLine={true}
       {...rest}
       value={value}
@@ -45,6 +44,7 @@ const WritTitleAutocomplete = (props: Props) => {
       cancelSuggestions={(suggestionsKey: SuggestionsKey) =>
         dispatch(cancelWritTitleSuggestions(suggestionsKey))
       }
+      onPropertyChange={onPropertyChange}
       suggestionsKey={suggestionsKey}
       dataLabel="title"
       dataValue="id"

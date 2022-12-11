@@ -17,14 +17,14 @@ import {
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";
+import { identity } from "lodash";
 import queryString from "query-string";
 
 import {
   JustificationBasisTypes,
   PropositionTagVotePolarities,
+  makeCreateJustifiedSentenceInput,
 } from "howdju-common";
-
-import { makeJustifiedPropositionEditModel } from "howdju-client-common";
 
 import {
   editors,
@@ -43,13 +43,12 @@ import t, {
   JUSTIFICATION_TITLE,
 } from "./texts";
 import {
-  translateJustificationErrorsFromFormInput,
   combineIds,
   combineNames,
   combineSuggestionsKeys,
   array,
 } from "./viewModels";
-import JustificationEditorFields from "./JustificationEditorFields";
+import JustificationEditorFields from "@/editors/JustificationEditorFields";
 import PropositionEditorFields from "./PropositionEditorFields";
 import { EditorTypes } from "./reducers/editors";
 import TagsControl from "./TagsControl";
@@ -57,6 +56,7 @@ import { logger } from "./logger";
 import PersorgEditorFields from "./PersorgEditorFields";
 import EntityViewer from "./EntityViewer";
 import { CreatePropositionPageMode } from "./types";
+import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -102,7 +102,7 @@ class CreatePropositionPage extends Component {
         this.props.editors.beginEdit(
           CreatePropositionPage.editorType,
           CreatePropositionPage.editorId,
-          makeJustifiedPropositionEditModel()
+          makeCreateJustifiedSentenceInput()
         );
         break;
       case CreatePropositionPageMode.CREATE_JUSTIFICATION: {
@@ -152,7 +152,7 @@ class CreatePropositionPage extends Component {
             writQuote,
           },
         };
-        const justifiedProposition = makeJustifiedPropositionEditModel(
+        const justifiedProposition = makeCreateJustifiedSentenceInput(
           {},
           justificationProps
         );
@@ -297,11 +297,11 @@ class CreatePropositionPage extends Component {
         : errors.proposition);
     const justificationEntityErrors =
       errors && doCreateJustification ? errors.justification : null;
-    const justificationFormInputErrors =
-      translateJustificationErrorsFromFormInput(
-        justification,
-        justificationEntityErrors
-      );
+    const { responseErrorTransformer = identity } = CreateJustificationConfig;
+    const justificationFormInputErrors = responseErrorTransformer(
+      justification,
+      justificationEntityErrors
+    );
 
     const propositionTags = get(proposition, "tags");
     const propositionTagVotes = get(proposition, "propositionTagVotes");

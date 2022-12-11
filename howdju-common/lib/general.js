@@ -1,3 +1,4 @@
+const { mapValues, isPlainObject } = require("lodash");
 const cloneDeepWith = require("lodash/cloneDeepWith");
 const forEach = require("lodash/forEach");
 const isArray = require("lodash/isArray");
@@ -15,6 +16,13 @@ const moment = require("moment");
 const { newProgrammingError } = require("./commonErrors");
 
 const _e = module.exports;
+
+/** key is the key of obj's parent that got us here. */
+_e.mapValuesDeep = (obj, fn, key = undefined) => {
+  return isPlainObject(obj)
+    ? mapValues(obj, (val, key) => _e.mapValuesDeep(val, fn, key))
+    : fn(obj, key);
+};
 
 // https://stackoverflow.com/a/27093173/39396
 _e.minDate = () => new Date(-8640000000000000);

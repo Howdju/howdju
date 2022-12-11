@@ -22,12 +22,9 @@ import {
   isRootNegative,
   JustificationBasisTypes,
   newExhaustedEnumError,
+  makeCreateCounterJustificationInput,
 } from "howdju-common";
-import {
-  isVerified,
-  isDisverified,
-  makeCounterJustification,
-} from "howdju-client-common";
+import { isVerified, isDisverified } from "howdju-client-common";
 
 import {
   api,
@@ -38,7 +35,7 @@ import {
 } from "./actions";
 import { suggestionKeys } from "./autocompleter";
 import config from "./config";
-import CounterJustificationEditor from "./CounterJustificationEditor";
+import CounterJustificationEditor from "@/editors/CounterJustificationEditor";
 import {
   counterJustificationEditorId,
   justificationBasisEditorId,
@@ -100,7 +97,7 @@ class JustificationBranch extends Component {
     this.props.editors.beginEdit(
       EditorTypes.COUNTER_JUSTIFICATION,
       counterJustificationEditorId(justification),
-      makeCounterJustification(justification)
+      makeCreateCounterJustificationInput(justification)
     );
   };
 

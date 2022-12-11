@@ -3,27 +3,23 @@ import { schema } from "normalizr";
 import {
   AccountSettings,
   Justification,
-  JustificationBasisTypes,
-  JustificationRootTargetTypes,
-  JustificationTargetTypes,
+  JustificationVote,
   Persorg,
   Pic,
   PicRegion,
   Proposition,
   PropositionCompound,
   PropositionTagVote,
-  SentenceTypes,
   SourceExcerptParaphrase,
-  SourceExcerptTypes,
   Statement,
   Tag,
+  TagVote,
   User,
   Vid,
   VidSegment,
   Writ,
   WritQuote,
 } from "howdju-common";
-import { JustificationVote } from "howdju-client-common";
 
 export const userSchema = new schema.Entity<User>("users");
 
@@ -36,14 +32,18 @@ export const propositionTagVoteSchema = new schema.Entity<PropositionTagVote>(
     tag: tagSchema,
   }
 );
-const propositionTagVoteSchemas = [propositionTagVoteSchema];
+const propositionTagVotesSchema = [propositionTagVoteSchema];
+
+export const tagVoteSchema = new schema.Entity<TagVote>("tagVotes", {
+  tag: tagSchema,
+});
 
 export const propositionSchema = new schema.Entity<Proposition>(
   "propositions",
   {
     tags: tagsSchema,
     recommendedTags: tagsSchema,
-    propositionTagVotes: propositionTagVoteSchemas,
+    propositionTagVotes: propositionTagVotesSchema,
     // justifications added below via justificationTargetSchema
   }
 );
@@ -65,8 +65,8 @@ export const statementSchema = new schema.Entity<Statement>("statements", {
 });
 export const statementsSchema = [statementSchema];
 sentenceSchema.define({
-  [SentenceTypes.PROPOSITION]: propositionSchema,
-  [SentenceTypes.STATEMENT]: statementSchema,
+  PROPOSITION: propositionSchema,
+  STATEMENT: statementSchema,
 });
 
 export const propositionCompoundSchema = new schema.Entity<PropositionCompound>(
@@ -105,9 +105,9 @@ export const justificationVoteSchema = new schema.Entity<JustificationVote>(
 
 const sourceExcerptSchema = new schema.Union(
   {
-    [SourceExcerptTypes.WRIT_QUOTE]: writQuoteSchema,
-    [SourceExcerptTypes.PIC_REGION]: picRegionSchema,
-    [SourceExcerptTypes.VID_SEGMENT]: vidSegmentsSchema,
+    WRIT_QUOTE: writQuoteSchema,
+    PIC_REGION: picRegionSchema,
+    VID_SEGMENT: vidSegmentsSchema,
   },
   (_value, parent) => parent.type
 );
@@ -127,16 +127,16 @@ export const justificationTargetSchema = new schema.Union(
 );
 export const justificationBasisSchema = new schema.Union(
   {
-    [JustificationBasisTypes.PROPOSITION_COMPOUND]: propositionCompoundSchema,
-    [JustificationBasisTypes.WRIT_QUOTE]: writQuoteSchema,
+    PROPOSITION_COMPOUND: propositionCompoundSchema,
+    WRIT_QUOTE: writQuoteSchema,
   },
   (_value, parent) => parent.type
 );
 
 const justificationRootTargetSchema = new schema.Union(
   {
-    [JustificationRootTargetTypes.STATEMENT]: statementSchema,
-    [JustificationRootTargetTypes.PROPOSITION]: propositionSchema,
+    STATEMENT: statementSchema,
+    PROPOSITION: propositionSchema,
   },
   (_value, parent) => parent.rootTargetType
 );
@@ -158,9 +158,9 @@ justificationSchema.define({
 export const justificationsSchema = [justificationSchema];
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there, at least for Unions
 justificationTargetSchema.define({
-  [JustificationTargetTypes.PROPOSITION]: propositionSchema,
-  [JustificationTargetTypes.STATEMENT]: statementSchema,
-  [JustificationTargetTypes.JUSTIFICATION]: justificationSchema,
+  PROPOSITION: propositionSchema,
+  STATEMENT: statementSchema,
+  JUSTIFICATION: justificationSchema,
 });
 
 propositionSchema.define({

@@ -1,12 +1,17 @@
 import React from "react";
-import get from "lodash/get";
 
-import { ContentReportTypes, schemaSettings } from "howdju-common";
+import {
+  ContentReportTypes,
+  CreateContentReportInput,
+  schemaSettings,
+} from "howdju-common";
 
 import CheckboxList from "../CheckboxList";
 import ErrorMessages from "../ErrorMessages";
 import TextField from "../TextField";
-import { ArrayIndex, combineIds, combineNames } from "../viewModels";
+import { combineIds, combineNames } from "../viewModels";
+import { EntityEditorFieldsProps } from "@/editors/withEditor";
+import { makeErrorPropCreator } from "@/modelErrorMessages";
 
 const reportTypeDescriptions = {
   [ContentReportTypes.HARASSMENT]: "Harassment",
@@ -26,20 +31,10 @@ const reportTypeDescriptions = {
   [ContentReportTypes.OTHER]: "Other",
 };
 
-type BooleanObject = {
-  [key: string]: boolean | BooleanObject;
-};
-
-type ContentReportEditorFieldsProps = {
-  contentReport?: object;
-  id: string;
-  name: string | ArrayIndex;
-  disabled?: boolean;
-  errors?: object;
-  dirtyFields: BooleanObject;
-  wasSubmitAttempted: boolean;
-  onPropertyChange: (...args: any[]) => any;
-};
+interface ContentReportEditorFieldsProps
+  extends EntityEditorFieldsProps<CreateContentReportInput> {
+  contentReport?: CreateContentReportInput;
+}
 
 export default function ContentReportEditorFields(
   props: ContentReportEditorFieldsProps
@@ -52,25 +47,20 @@ export default function ContentReportEditorFields(
     errors,
     onPropertyChange,
     dirtyFields,
+    blurredFields,
     wasSubmitAttempted,
   } = props;
-  const description = get(contentReport, "description");
-  const types = get(contentReport, "types");
-  const modelErrors = get(errors, "_model");
-  const typesErrorText = get(errors, combineNames(name, "types", "message"));
-  const isTypesError =
-    typesErrorText &&
-    (get(dirtyFields, combineNames(name, "types")) || wasSubmitAttempted);
-  const descriptionErrorText = get(
+  const description = contentReport?.description;
+  const types = contentReport?.types;
+  const errorProps = makeErrorPropCreator(
+    wasSubmitAttempted,
     errors,
-    combineNames(name, "description", "message")
+    dirtyFields,
+    blurredFields
   );
-  const isDescriptionError =
-    descriptionErrorText &&
-    (get(dirtyFields, combineNames(name, "description")) || wasSubmitAttempted);
   return (
     <>
-      <ErrorMessages errors={modelErrors} />
+      <ErrorMessages errors={errors?._errors} />
       <CheckboxList
         id={combineIds(id, "types")}
         name={combineNames(name, "types")}
@@ -78,8 +68,7 @@ export default function ContentReportEditorFields(
         onPropertyChange={onPropertyChange}
         descriptionsByCode={reportTypeDescriptions}
         disabled={disabled}
-        error={isTypesError}
-        errorText={typesErrorText}
+        {...errorProps((cr) => cr.types)}
       />
       <TextField
         id={combineIds(id, "description")}
@@ -88,8 +77,7 @@ export default function ContentReportEditorFields(
         label="Description"
         rows={2}
         maxRows={8}
-        error={isDescriptionError}
-        errorText={descriptionErrorText}
+        {...errorProps((cr) => cr.description)}
         maxLength={schemaSettings.reportContentDescriptionMaxLength}
         value={description}
         disabled={disabled}

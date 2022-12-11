@@ -9,14 +9,9 @@
 
 @mixin react-md-fixes($grid-desktop-breakpoint, $grid-phone-gutter) {
   .md-dialog {
-    // React-MD doesn't implement scrolling of md-dialog-content, so add scroll to the whole dialog and md-dialog-contents
-    // overflow will need to be visible.
+    // React-MD doesn't implement scrolling of md-dialog-content. This means that if a dialog is too
+    // large for the viewport, it is cutoff and the user can't access controls below the fold. So add scroll to the whole dialog.
     overflow: auto;
-    .md-dialog-content {
-      // When we have big autocomplets, let them be visible outside the content.  Otherwise we get two scrollbars in the
-      // dialog, one for the content and one for the dialog.
-      overflow: visible;
-    }
   }
 
   .md-overlay--wide-dialog > .md-dialog {

@@ -1,3 +1,4 @@
+const { uniq } = require("lodash");
 const moment = require("moment");
 
 const {
@@ -5,6 +6,7 @@ const {
   momentAdd,
   omitDeep,
   momentSubtract,
+  mapValuesDeep,
 } = require("./general");
 
 describe("cleanWhitespace", () => {
@@ -22,6 +24,21 @@ describe("cleanWhitespace", () => {
     expect(cleanWhitespace("This   wîll be   clëaned?")).toBe(
       "This wîll be clëaned?"
     );
+  });
+});
+
+describe("mapValuesDeep", () => {
+  test("Should map deep arrays correctly", () => {
+    expect(
+      mapValuesDeep(
+        {
+          arr: ["one", "one", "two"],
+        },
+        uniq
+      )
+    ).toEqual({
+      arr: ["one", "two"],
+    });
   });
 });
 

@@ -20,13 +20,13 @@ import {
   JustificationRootPolarity,
   JustificationRootTarget,
   JustificationRootTargetType,
-  JustificationTargetTypes,
+  JustificationTargetType,
+  makeCreateJustificationInputTargetingRoot,
 } from "howdju-common";
 import {
   actions,
   isVerified,
   isDisverified,
-  makeJustificationEditModelTargetingRoot,
   JustificationViewModel,
 } from "howdju-client-common";
 
@@ -145,7 +145,7 @@ class JustificationsPage extends Component<Props> {
     polarity?: JustificationRootPolarity
   ) => {
     const { rootTargetType, rootTargetId } = this.rootTargetInfo();
-    const justification = makeJustificationEditModelTargetingRoot(
+    const justification = makeCreateJustificationInputTargetingRoot(
       rootTargetType,
       rootTargetId,
       polarity
@@ -165,15 +165,6 @@ class JustificationsPage extends Component<Props> {
 
   showNewNegativeJustificationDialog = (event: UIEvent) => {
     this.showNewJustificationDialog(event, JustificationPolarities.NEGATIVE);
-  };
-
-  saveNewJustification = (event: Event) => {
-    event.preventDefault();
-    this.props.flows.commitEditThenPutActionOnSuccess(
-      EditorTypes.NEW_JUSTIFICATION,
-      JustificationsPage.justificationEditorId,
-      justificationsPage.hideNewJustificationDialog()
-    );
   };
 
   cancelNewJustificationDialog = () => {
@@ -294,12 +285,11 @@ class JustificationsPage extends Component<Props> {
         />
 
         <CreateJustificationDialog
-          id={this.id("new-justification-dialog")}
+          id={this.id("create-justification-dialog")}
           editorId={JustificationsPage.justificationEditorId}
-          suggestionsKey={this.suggestionsKey("new-justification-dialog")}
           visible={isNewJustificationDialogVisible}
           onCancel={this.cancelNewJustificationDialog}
-          onSubmit={this.saveNewJustification}
+          commitAction={justificationsPage.hideNewJustificationDialog()}
           onHide={this.cancelNewJustificationDialog}
         />
       </div>
@@ -322,10 +312,13 @@ const sortJustifications = (justifications: JustificationViewModel[]) => {
   return justifications;
 };
 
-const entitiesStoreKeyByJustificationTargetType = {
-  [JustificationTargetTypes.PROPOSITION]: "propositions",
-  [JustificationTargetTypes.STATEMENT]: "statements",
-  [JustificationTargetTypes.JUSTIFICATION]: "justifications",
+const entitiesStoreKeyByJustificationTargetType: Record<
+  JustificationTargetType,
+  keyof RootState["entities"]
+> = {
+  PROPOSITION: "propositions",
+  STATEMENT: "statements",
+  JUSTIFICATION: "justifications",
 } as const;
 
 const mapState = (state: RootState, ownProps: OwnProps) => {

@@ -17,17 +17,15 @@ import {
   isNegative,
   isPositive,
   JustificationBasisSourceTypes,
-  JustificationRootTarget,
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   logger,
-  Persisted,
 } from "howdju-common";
 
 import hoverAware from "./hoverAware";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import PropositionTagger from "./PropositionTagger";
-import { EditorTypes } from "./reducers/editors";
+import { EditorEntity, EditorTypes } from "./reducers/editors";
 import paths from "./paths";
 import Tagger from "./Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
@@ -47,7 +45,7 @@ import { contentReportEditorId } from "./content-report/ReportContentDialog";
 import {
   isVerified,
   JustificationRootTargetViewModel,
-  makeContentReportEditModel,
+  makeCreateContentReportInput,
 } from "howdju-client-common";
 import {
   ComponentId,
@@ -74,6 +72,7 @@ interface OwnProps {
 
 interface Props extends OwnProps, PropsFromRedux {}
 
+/** A card displaying anything that can be justified. */
 class JustificationRootTargetCard extends React.Component<Props> {
   state = {
     isOver: false,
@@ -213,14 +212,14 @@ class JustificationRootTargetCard extends React.Component<Props> {
     this.props.editors.beginEdit(
       "CONTENT_REPORT",
       contentReportEditorId,
-      makeContentReportEditModel({ entityType, entityId, url })
+      makeCreateContentReportInput({ entityType, entityId, url })
     );
   };
 
   menuItemsForType(
     rootTargetType: JustificationRootTargetType,
-    rootTarget: Persisted<JustificationRootTarget>
-  ) {
+    rootTarget: JustificationRootTargetViewModel
+  ): { entity: JSX.Element[]; edit: JSX.Element[] } {
     switch (rootTargetType) {
       case JustificationRootTargetTypes.PROPOSITION: {
         const propositionId = get(rootTarget, "id");
@@ -287,7 +286,11 @@ class JustificationRootTargetCard extends React.Component<Props> {
       return;
     }
     const editorType = editorTypesByRootTargetType[rootTargetType];
-    this.props.editors.beginEdit(editorType, editorId, rootTarget);
+    this.props.editors.beginEdit(
+      editorType,
+      editorId,
+      rootTarget as EditorEntity
+    );
   };
 
   deleteRootTarget = () => {

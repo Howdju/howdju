@@ -1,7 +1,7 @@
 import throttle from "lodash/throttle";
 import map from "lodash/map";
 import { denormalize } from "normalizr";
-import React, { Component } from "react";
+import React, { ChangeEvent, Component } from "react";
 import { Autocomplete, AutocompleteProps } from "react-md";
 import { connect } from "react-redux";
 
@@ -16,6 +16,7 @@ import {
 import { DebouncedFunc } from "lodash";
 import {
   ComponentId,
+  OnBlurCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
   OnSubmitCallback,
@@ -31,7 +32,7 @@ const hasFocus = (el: HTMLInputElement) => window.document.activeElement === el;
 
 // TODO(1): remove use of any, convert to functional component? At least use PropsFromRedux
 
-interface Props extends Omit<AutocompleteProps, "data"> {
+interface Props extends Omit<AutocompleteProps, "data" | "onBlur"> {
   /** An ID for the DOM element */
   id?: ComponentId;
   /** The type of the text input */
@@ -57,6 +58,7 @@ interface Props extends Omit<AutocompleteProps, "data"> {
   cancelSuggestions: (suggestionsKey: SuggestionsKey) => void;
   /** Where to store the component's suggestions in the react state (under state.autocompletes.suggestions) */
   suggestionsKey: string;
+  onBlur?: OnBlurCallback;
   /** The callback for when a user modifies the value in the text input.  Arguments: (val, event) */
   onPropertyChange?: OnPropertyChangeCallback;
   /** The callback for when the user selects a suggestion.  Called with the suggested value. */
@@ -134,8 +136,10 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
     }
   }
 
-  onChange = (val: any, event: any) => {
-    const name = event.target.name;
+  onChange = (val: any, event: React.FormEvent<HTMLFormElement>) => {
+    // TODO(17): I think .name is present at runtime, but FormEvent<HTMLFormElement> doesn't have it.
+    const name = (event as unknown as ChangeEvent<HTMLInputElement>).target
+      .name;
     if (this.props.singleLine) {
       val = toSingleLine(val);
     }
@@ -191,16 +195,13 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
     this.closeAutocomplete();
   };
 
-  onClick = () => {
-    // For parity with mobile devices, close the auto complete upon click
-    this.closeAutocomplete();
-  };
-
   isAutocompleteOpen = () => {
     return this.autocomplete.state.visible;
   };
 
   closeAutocomplete = () => {
+    // Note that autocomplete._close fires a blur event. So if our logic in calling it here is off,
+    // then we will be triggering blur and therefor our error properties at the wrong time.
     this.autocomplete._close();
   };
 
@@ -230,6 +231,9 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
   };
 
   onBlur = () => {
+    if (this.props.onBlur) {
+      this.props.onBlur(this.props.name);
+    }
     this.throttledRefreshAutocomplete.cancel();
     if (this.props.cancelSuggestions) {
       this.props.cancelSuggestions(this.props.suggestionsKey);
@@ -280,7 +284,6 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
         onMenuOpen={this.onMenuOpen}
         onBlur={this.onBlur}
         onTouchEnd={this.onTouchEnd}
-        onClick={this.onClick}
         data={transformedSuggestions}
         filter={null}
         ref={this.setAutocomplete}

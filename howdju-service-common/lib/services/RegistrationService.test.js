@@ -7,7 +7,7 @@ const {
   momentAdd,
   momentSubtract,
   makeRegistrationRequest,
-  makeRegistrationConfirmation,
+  makeCreateRegistrationConfirmation,
 } = require("howdju-common");
 const { mockLogger } = require("howdju-test-common");
 
@@ -87,13 +87,15 @@ describe("RegistrationService", () => {
         email: "the-email",
         expires: momentAdd(utcNow(), [5, "minutes"]),
       });
-      const registrationConfirmation = makeRegistrationConfirmation({
-        username: "the-username",
-        password: "the-password-hash",
-        longName: "the-looooong-name",
-        shortName: "the-short-name",
-        registrationCode: "registration-code",
-      });
+      const createRegistrationConfirmation = makeCreateRegistrationConfirmation(
+        {
+          username: "the-username",
+          password: "the-password-hash",
+          longName: "the-looooong-name",
+          shortName: "the-short-name",
+          registrationCode: "registration-code",
+        }
+      );
       const config = { auth: { bcrypt: { saltRounds: 1 } } };
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns(registrationRequest),
@@ -102,7 +104,7 @@ describe("RegistrationService", () => {
 
       const userIn = assign(
         {},
-        pick(registrationConfirmation, [
+        pick(createRegistrationConfirmation, [
           "username",
           "email",
           "longName",
@@ -135,14 +137,16 @@ describe("RegistrationService", () => {
         user: userOut,
         authToken: authTokenOut,
         expires: expiresOut,
-      } = await service.confirmRegistrationAndLogin(registrationConfirmation);
+      } = await service.confirmRegistrationAndLogin(
+        createRegistrationConfirmation
+      );
 
       expect(userOut).toBe(userIn);
       expect(authTokenOut).toBe(authToken);
       expect(expiresOut).toBe(expires);
       sinon.assert.calledWith(
         registrationRequestsDao.consumeForCode,
-        registrationConfirmation.registrationCode
+        createRegistrationConfirmation.registrationCode
       );
     });
   });

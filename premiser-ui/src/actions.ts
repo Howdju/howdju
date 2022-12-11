@@ -7,7 +7,6 @@ import {
   WritQuote,
   JustificationRootTargetType,
   Proposition,
-  JustificationRootTarget,
   Persorg,
   Url,
   PropositionCompoundAtom,
@@ -15,12 +14,12 @@ import {
   Statement,
   Justification,
   JustificationBasisSourceType,
-  Persisted,
 } from "howdju-common";
 import {
   Source,
   Target,
   ExtensionAnnotationContent,
+  JustificationRootTargetViewModel,
 } from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
@@ -56,7 +55,7 @@ export const apiLike = {
     "DELETE_JUSTIFICATION_ROOT_TARGET",
     (
       rootTargetType: JustificationRootTargetType,
-      rootTarget: Persisted<JustificationRootTarget>
+      rootTarget: JustificationRootTargetViewModel
     ) => ({ rootTargetType, rootTarget })
   ),
   fetchJustificationTargets: createAction(
@@ -156,7 +155,11 @@ commitEdit.result = createAction(
   })
 );
 
-export type ListPathFactory = string | ((payload: any) => string);
+export type ListPathFactory =
+  | string
+  | string[]
+  | ((payload: any) => string)
+  | ((payload: any) => string[]);
 
 /** Editor actions */
 export const editors = {
@@ -184,6 +187,10 @@ export const editors = {
       properties: { [key: string]: any }
     ) => ({ editorType, editorId, properties })
   ),
+  attemptedSubmit: createAction(
+    "EDITORS/ATTEMPTED_SUBMIT",
+    (editorType: EditorType, editorId: EditorId) => ({ editorType, editorId })
+  ),
   commitEdit,
   cancelEdit: createAction(
     "EDITORS/CANCEL_EDIT",
@@ -191,7 +198,7 @@ export const editors = {
   ),
 
   addListItem: createAction(
-    "EDITORS/ON_ADD_LIST_ITEM",
+    "EDITORS/ADD_LIST_ITEM",
     (
       editorType: EditorType,
       editorId: EditorId,
@@ -201,7 +208,7 @@ export const editors = {
     ) => ({ editorType, editorId, itemIndex, listPathMaker, itemFactory })
   ),
   removeListItem: createAction(
-    "EDITORS/ON_REMOVE_LIST_ITEM",
+    "EDITORS/REMOVE_LIST_ITEM",
     (
       editorType: EditorType,
       editorId: EditorId,

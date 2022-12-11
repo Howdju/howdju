@@ -6,8 +6,6 @@ import map from "lodash/map";
 import queryString from "query-string";
 import { denormalize } from "normalizr";
 
-import { SentenceTypes } from "howdju-common";
-
 import { api } from "../../actions";
 import CellList from "../../CellList";
 import {
@@ -35,9 +33,7 @@ export default function PropositionUsagesPage() {
   const dispatch = useAppDispatch();
   useEffect(() => {
     // TODO: add fetchInternalPropositionAppearances/fetchExternalPropositionAppearances
-    dispatch(
-      api.fetchSentenceStatements(SentenceTypes.PROPOSITION, propositionId)
-    );
+    dispatch(api.fetchSentenceStatements("PROPOSITION", propositionId));
     dispatch(api.fetchIndirectPropositionStatements(propositionId));
     dispatch(
       api.fetchJustificationsSearch({

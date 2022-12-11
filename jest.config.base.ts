@@ -1,5 +1,5 @@
-const { cwd } = require('process')
-import type {Config} from 'jest'
+const { cwd } = require("process");
+import type { Config } from "jest";
 
 /**
  * Our monorepo's base Jest config.
@@ -15,7 +15,7 @@ const config: Config = {
   setupFiles: [`${__dirname}/jest/jest.setup.js`],
   transformIgnorePatterns: [
     // Include some extra stuff under node_modules in our babel transform
-    'node_modules/(?!(@grrr/cookie-consent|@grrr/utils))',
+    "node_modules/(?!(@grrr/cookie-consent|@grrr/utils))",
   ],
   transform: {
     // This custom transform does:
@@ -33,16 +33,15 @@ const config: Config = {
   // setupFiles: [`${__dirname}/jest/react-navigation-setup.ts`],
   moduleNameMapper: {
     // Support our custom project-relative import defined in tsconig.json:compilerOptions.paths
-    '^@/(.*)': [
+    "^@/(.*)": [
       // Prefix with cwd so that the imports are relative to the test project, and not relative to
       // the rootDir, which is the monorepo root where this file was found.
-      cwd() + '/src/$1',
-      cwd() + '/lib/$1',
+      cwd() + "/src/$1",
+      cwd() + "/lib/$1",
     ],
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga|md)$':
-      `${__dirname}/jest/__mocks__/fileMock.js`,
-    '\\.(scss|css|less)$': 'identity-obj-proxy',
+    "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga|md)$": `${__dirname}/jest/__mocks__/fileMock.js`,
+    "\\.(scss|css|less)$": "identity-obj-proxy",
   },
-}
+};
 
 export default config;

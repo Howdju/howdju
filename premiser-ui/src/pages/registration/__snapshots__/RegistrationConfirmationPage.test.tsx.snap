@@ -827,7 +827,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       id="does-accept-terms"
                       name="doesAcceptTerms"
                       type="checkbox"
-                      value="false"
+                      value="true"
                     />
                     <label
                       class="md-selection-control-label md-pointer--hover md-text"
@@ -889,7 +889,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       id="is-13-years-or-older"
                       name="is13YearsOrOlder"
                       type="checkbox"
-                      value="false"
+                      value="true"
                     />
                     <label
                       class="md-selection-control-label md-pointer--hover md-text"
@@ -932,7 +932,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       id="has-majority-consent"
                       name="hasMajorityConsent"
                       type="checkbox"
-                      value="false"
+                      value="true"
                     />
                     <label
                       class="md-selection-control-label md-pointer--hover md-text"
@@ -975,7 +975,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                       id="is-not-gdpr"
                       name="isNotGdpr"
                       type="checkbox"
-                      value="false"
+                      value="true"
                     />
                     <label
                       class="md-selection-control-label md-pointer--hover md-text"
@@ -1033,6 +1033,58 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                 </section>
               </div>
             </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RegistrationConfirmationPage shows success message upon confirmation. 1`] = `
+<div>
+  <div
+    id="register-page"
+  >
+    <div
+      class="md-grid"
+    >
+      <div
+        class="md-cell md-cell--12"
+      >
+        <div
+          class="md-paper md-paper--1 md-card md-background--card"
+        >
+          <div
+            class="md-card-title md-card-title--primary"
+          >
+            <h2
+              class="md-card-title--title md-card-title--large md-text"
+            >
+              Complete Registration
+            </h2>
+          </div>
+          <section
+            class="md-card-text"
+          >
+            <section
+              class="md-card-text"
+            >
+              You are now logged in.
+            </section>
+            <section
+              class="md-dialog-footer--card md-dialog-footer--inline"
+            >
+              <a
+                class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                href="/recent-activity"
+              >
+                <div
+                  class="md-ink-container"
+                />
+                Go to recent activity
+              </a>
+            </section>
           </section>
         </div>
       </div>

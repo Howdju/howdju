@@ -7,18 +7,11 @@ import {
   JustificationBasisTypes,
   JustificationTargetTypes,
   JustificationPolarities,
-  JustificationRootPolarities,
-  makePropositionCompound,
-  makePropositionCompoundAtomFromProposition,
   makeProposition,
-  makeSourceExcerptJustification,
-  makeWrit,
   makeWritQuote,
+  makePropositionCompoundFromProposition,
 } from "howdju-common";
-import {
-  makeCounterJustification,
-  makeJustificationViewModel,
-} from "howdju-client-common";
+import { makeJustificationViewModel } from "howdju-client-common";
 
 import paths from "./paths";
 import PropositionCard from "./PropositionCard";
@@ -27,7 +20,6 @@ import JustificationBranch from "./JustificationBranch";
 import { combineIds } from "./viewModels";
 
 import "./LandingPage.scss";
-import { JustificationRootTargetTypes } from "howdju-common/lib/enums";
 import ContextTrail from "./ContextTrail";
 
 export default class LandingPage extends Component {
@@ -40,38 +32,33 @@ export default class LandingPage extends Component {
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
     });
     const proJustification = makeJustificationViewModel({
+      polarity: "POSITIVE",
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: rootProposition,
       },
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompound({
-          atoms: [
-            makePropositionCompoundAtomFromProposition(
-              proJustificationProposition
-            ),
-          ],
-        }),
+        entity: makePropositionCompoundFromProposition(
+          proJustificationProposition
+        ),
       },
     });
-    const proJustificationJustification = makeSourceExcerptJustification({
-      rootTarget: proJustificationProposition,
-      rootPolarity: JustificationRootPolarities.POSITIVE,
-      rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+    const proJustificationJustification = makeJustificationViewModel({
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: proJustificationProposition,
       },
       polarity: JustificationPolarities.POSITIVE,
       basis: {
+        type: "WRIT_QUOTE",
         entity: makeWritQuote({
           quoteText:
             "The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.",
-          writ: makeWrit({
+          writ: {
             title:
               "Vantage Point: The Curse of (Certain) Tall Buildings — The American Surveyor",
-          }),
+          },
           urls: [
             {
               url: "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
@@ -104,32 +91,26 @@ export default class LandingPage extends Component {
       polarity: JustificationPolarities.NEGATIVE,
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompound({
-          atoms: [
-            makePropositionCompoundAtomFromProposition(
-              conJustificationProposition
-            ),
-          ],
-        }),
+        entity: makePropositionCompoundFromProposition(
+          conJustificationProposition
+        ),
       },
     });
-    const conJustificationJustification = makeSourceExcerptJustification({
-      rootTarget: conJustificationProposition,
-      rootPolarity: JustificationRootPolarities.POSITIVE,
-      rootTargetType: JustificationRootTargetTypes.PROPOSITION,
+    const conJustificationJustification = makeJustificationViewModel({
+      polarity: JustificationPolarities.POSITIVE,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: conJustificationProposition,
       },
-      polarity: JustificationPolarities.POSITIVE,
       basis: {
+        type: "WRIT_QUOTE",
         entity: makeWritQuote({
           quoteText:
             "No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet",
-          writ: makeWrit({
+          writ: {
             title:
               "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building.",
-          }),
+          },
           urls: [
             {
               url: "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
@@ -151,20 +132,19 @@ export default class LandingPage extends Component {
       },
     ];
 
-    const counterJustification = makeCounterJustification(proJustification);
-    counterJustification.rootPolarity = JustificationRootPolarities.NEGATIVE;
-    counterJustification.basis = {
-      type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-      entity: makePropositionCompound({
-        atoms: [
-          makePropositionCompoundAtomFromProposition(
-            makeProposition({
-              text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
-            })
-          ),
-        ],
-      }),
-    };
+    const counterJustification = makeJustificationViewModel({
+      polarity: "NEGATIVE",
+      target: {
+        type: "JUSTIFICATION",
+        entity: proJustification,
+      },
+      basis: {
+        type: JustificationBasisTypes.PROPOSITION_COMPOUND,
+        entity: makePropositionCompoundFromProposition({
+          text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
+        }),
+      },
+    });
     const proJustificationCountered = cloneDeep(proJustification);
     proJustificationCountered.counterJustifications = [counterJustification];
 

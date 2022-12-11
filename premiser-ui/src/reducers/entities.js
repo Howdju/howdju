@@ -170,6 +170,26 @@ export default handleActions(
         );
       },
     },
+    [api.createCounterJustification.response]: {
+      next: (state, action) => {
+        const { entities } = normalize(
+          action.payload,
+          action.meta.normalizationSchema
+        );
+        const targetUpdates = makeUpdatesAddingJustificationsToTargets(
+          entities,
+          state
+        );
+        const result = mergeWith(
+          {},
+          state,
+          entities,
+          targetUpdates,
+          unionArraysDistinctIdsCustomizer
+        );
+        return result;
+      },
+    },
     [api.deleteJustification.response]: {
       next: (state, action) => {
         const deletedJustification = action.meta.requestPayload.justification;

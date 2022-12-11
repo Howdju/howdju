@@ -42,15 +42,7 @@ export const newCustomError = (
 /**
  * Something has happened which should logically not be possible.
  *
- * This error is useful in basically the same places as newProgrammingError.
- * Looking at current usages, newImpossibleError was used when it was less
- * clear the cause of the mistake, whereas newProgrammingError was used when
- * the cause of the mistake should be fairly obvious, like calling a function
- * with the wrong arguments.
- *
- * I am not sure if the type system will allow me to use this
- * newImpossibleError(never) anywhere useful. If not, just replace one of
- * newProgrammingError and this with the other.
+ * This error is useful where we can use the type system to guarantee that some code should be unreachable.
  */
 export const newImpossibleError = (value: any) => {
   throw newCustomError(
@@ -59,7 +51,12 @@ export const newImpossibleError = (value: any) => {
   );
 };
 
-/** Something has happened that logically should not. */
+/**
+ * Something has happened that is a programmer mistake.
+ *
+ * We should try to use the type system to make these mistakes impossible, and in those cases
+ * newImpossibleError is appropriate.
+ */
 export const newProgrammingError = (message: string) =>
   newCustomError(commonErrorTypes.PROGRAMMING_ERROR, message);
 

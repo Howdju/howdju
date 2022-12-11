@@ -1,4 +1,6 @@
 import { AnyAction } from "redux";
+import produce from "immer";
+import { WritableDraft } from "immer/dist/internal";
 import {
   Action,
   ActionMeta,
@@ -19,11 +21,11 @@ import isString from "lodash/isString";
 import includes from "lodash/includes";
 import merge from "lodash/merge";
 import set from "lodash/set";
+import { isFunction, keys } from "lodash";
 
 import {
   apiErrorCodes,
   insertAt,
-  makePropositionAtom,
   makePersorg,
   makeUrl,
   newProgrammingError,
@@ -33,16 +35,25 @@ import {
   tagEqual,
   Entity,
   ApiErrorCode,
-  Persorg,
-  Proposition,
   PropositionTagVotePolarity,
   WritQuote,
   RecursiveObject,
-  AccountSettings,
-  RegistrationConfirmation,
-  RegistrationRequest,
-  BespokeValidationErrors,
-  EmptyBespokeValidationErrors,
+  CreateJustificationInput,
+  makeCreatePropositionCompoundAtomInput,
+  CustomError,
+  ModelErrors,
+  CreateJustifiedSentenceInput,
+  makeCreateWritQuoteInput,
+  CreateJustification,
+  CreateWritQuoteInput,
+  CreateJustifiedSentence,
+  CreateRegistrationRequestInput,
+  CreateRegistrationRequest,
+  CreateContentReportInput,
+  EditAccountSettingsInput,
+  CreateRegistrationConfirmationInput,
+  CreatePropositionInput,
+  CreateCounterJustificationInput,
 } from "howdju-common";
 
 import {
@@ -60,9 +71,7 @@ import {
   USER_IS_INACTIVE_ERROR,
 } from "@/texts";
 import { logger } from "@/logger";
-import { EditorId, EntityFactory, PropertyChanges } from "@/types";
-import { JustificationEditModel } from "howdju-client-common";
-import { keys } from "lodash";
+import { EditorId, ModelFactory, PropertyChanges } from "@/types";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};
@@ -78,9 +87,7 @@ forEach(
 );
 
 export const EditorTypes = {
-  DEFAULT: "DEFAULT",
   PROPOSITION: "PROPOSITION",
-  PROPOSITION_COMPOUND: "PROPOSITION_COMPOUND",
   JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
   WRIT_QUOTE: "WRIT_QUOTE",
   COUNTER_JUSTIFICATION: "COUNTER_JUSTIFICATION",
@@ -97,20 +104,12 @@ export const EditorTypes = {
 } as const;
 export type EditorType = typeof EditorTypes[keyof typeof EditorTypes];
 
-export const EntityTypeDescriptions = {
-  [EditorTypes.WRIT_QUOTE]: "WritQuote",
-};
-
+const blurredProp = "_blurred";
 // Whether the user has interacted with a control
-export type BlurredFields = RecursiveObject<boolean>;
+export type BlurredFields<T> = RecursiveObject<T, typeof blurredProp, boolean>;
+const dirtyProp = "_dirty";
 // Whether the user has changed the value of a control
-export type DirtyFields = RecursiveObject<boolean>;
-
-interface PropositionJustificationsEditEntity extends Entity {
-  proposition: Proposition;
-  speakers: Persorg[];
-  justification: JustificationEditModel;
-}
+export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
 
 /**
  * Something we have an editor for.
@@ -118,44 +117,65 @@ interface PropositionJustificationsEditEntity extends Entity {
  * TODO: deduplicate this with *EditModels.
  */
 export type EditorEntity =
-  | Entity
-  | JustificationEditModel
-  | PropositionJustificationsEditEntity
-  | WritQuote
-  | AccountSettings
-  | RegistrationRequest
-  | RegistrationConfirmation;
-
-export interface EditorState {
-  editEntity: EditorEntity | null;
-  errors: BespokeValidationErrors;
+  | CreatePropositionInput
+  | CreateJustificationInput
+  | CreateCounterJustificationInput
+  | CreateJustifiedSentenceInput
+  | CreateWritQuoteInput
+  | EditAccountSettingsInput
+  | CreateRegistrationRequestInput
+  | CreateContentReportInput
+  | CreateRegistrationConfirmationInput;
+/**
+ * @typeparam T the editor model type.
+ * @typeparam U the request model type. TODO add FromInput<> mirroring ToInput.
+ */
+export interface EditorState<T extends EditorEntity, U = T> {
+  /**
+   * The model the editor is editing.
+   *
+   * TODO rename to editModel, since JustifiedProposition is not an entity.
+   */
+  editEntity?: T;
+  blurredFields?: BlurredFields<T>;
+  dirtyFields?: DirtyFields<T>;
+  errors?: ModelErrors<U>;
+  /** Whether the entity is in the middle of saving. */
   isSaving: boolean;
-  isSaved: boolean;
-  blurredFields: BlurredFields;
-  // TODO make EditorState generic so that dirtyFields knows the actual editEntity fields?
-  dirtyFields: DirtyFields;
+  /**
+   * Whether the user has ever attempted a submit.
+   *
+   * Usually we want to show all errors for the form now, since otherwise the user may be confused
+   * as to why their submit is blocked.
+   */
   wasSubmitAttempted: boolean;
+  /** Whether the entity has successfully saved. */
+  isSaved: boolean;
 }
 
-const defaultEditorState: EditorState = {
-  editEntity: null,
-  errors: EmptyBespokeValidationErrors,
-  isSaving: false,
-  isSaved: false,
-  blurredFields: {},
-  dirtyFields: {},
-  wasSubmitAttempted: false,
-};
+export const defaultEditorState = <T extends EditorEntity>() =>
+  ({
+    editEntity: undefined,
+    errors: undefined,
+    isSaving: false,
+    isSaved: false,
+    blurredFields: undefined,
+    dirtyFields: undefined,
+    wasSubmitAttempted: false,
+  } as EditorState<T>);
 
 interface ErrorPayload {
   sourceError: {
     errorType: UiErrorType;
     body: {
       errorCode: ApiErrorCode;
-      // TODO(26): replace with `errors: BespokeValidationErrors` so that the type covers the entire property.
-      errors: { [key: string]: BespokeValidationErrors };
+      errors: { [key: string]: ModelErrors<any> };
     };
   };
+}
+
+function combineObjectKey(key: string, extra: string) {
+  return key + "." + extra;
 }
 
 export interface AddListItemPayload {
@@ -166,54 +186,33 @@ export interface AddListItemPayload {
   itemFactory: () => Entity;
 }
 
-const editorErrorReducer =
-  (errorKey: string) => (state: EditorState, action: Action<ErrorPayload>) => {
-    const sourceError = action.payload.sourceError;
-    if (sourceError.errorType !== uiErrorTypes.API_RESPONSE_ERROR) {
-      return state;
-    }
-    const responseBody = sourceError.body;
-    if (
-      !responseBody ||
-      !includes(
-        [
-          apiErrorCodes.VALIDATION_ERROR,
-          apiErrorCodes.ENTITY_CONFLICT,
-          apiErrorCodes.USER_ACTIONS_CONFLICT,
-          apiErrorCodes.AUTHORIZATION_ERROR,
-        ],
-        responseBody.errorCode
-      )
-    ) {
-      return state;
-    }
-    // TODO(26) replace this editorErrorReducer with the default reducer behavior. Editor error reducers
-    // shouldn't be plucking BespokeValidationErrors off of the response, since the errors come as a
-    const errors = responseBody.errors[errorKey];
-    return { ...state, errors, isSaving: false };
-  };
-
-// TODO(#83): replace bespoke list reducers with addListItem/removeListItem
+/** @deprecated TODO(#83): replace with addListItem/removeListItem */
 const makeAddAtomReducer =
-  (atomsPath: string, atomMaker: EntityFactory) =>
-  (state: EditorState, action: AnyAction) => {
-    const editEntity = { ...state.editEntity };
-    const atoms = clone(get(editEntity, atomsPath));
+  <T extends EditorEntity, U>(atomsPath: string, atomMaker: ModelFactory) =>
+  (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
+    if (!state.editEntity) {
+      logger.error("Cannot add atom to absent editEntity.");
+      return;
+    }
+    const editEntity = state.editEntity;
+    const atoms = get(editEntity, atomsPath);
     const index = isNumber(action.payload.index)
       ? action.payload.index
       : atoms.length;
     insertAt(atoms, index, atomMaker());
-    set(editEntity, atomsPath, atoms);
-    return { ...state, editEntity };
   };
 
+/** @deprecated TODO(#83): replace with addListItem/removeListItem */
 const makeRemoveAtomReducer =
-  (atomsPath: string) => (state: EditorState, action: AnyAction) => {
-    const editEntity = { ...state.editEntity };
-    const atoms = clone(get(editEntity, atomsPath));
+  <T extends EditorEntity, U>(atomsPath: string) =>
+  (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
+    if (!state.editEntity) {
+      logger.error("Cannot remove atom from absent editEntity.");
+      return;
+    }
+    const editEntity = state.editEntity;
+    const atoms = get(editEntity, atomsPath);
     removeAt(atoms, action.payload.index);
-    set(editEntity, atomsPath, atoms);
-    return { ...state, editEntity };
   };
 
 /** Reducers that separate the behavior from the state so that it is possible to have independent states updating according
@@ -221,122 +220,153 @@ const makeRemoveAtomReducer =
  * the state.
  */
 const defaultEditorActions = {
-  [str(editors.beginEdit)]: (state: EditorState, action: AnyAction) => {
-    const { entity } = action.payload;
-    const editEntity = cloneDeep(entity);
-    return { ...state, editEntity };
-  },
-  [str(editors.blurField)]: (
-    state: EditorState,
-    action: Action<{ fieldName: string }>
-  ) => {
-    const newBlurredFields = { [action.payload.fieldName]: true };
-    const blurredFields = { ...state.blurredFields, ...newBlurredFields };
-    return { ...state, blurredFields };
-  },
-  [str(editors.propertyChange)]: (
-    state: EditorState,
-    action: Action<PropertyChanges>
-  ) => {
-    if (!state.editEntity) {
-      return state;
+  [str(editors.beginEdit)]: produce(
+    (state: EditorState<any>, action: AnyAction) => {
+      const { entity } = action.payload;
+      state.editEntity = cloneDeep(entity);
+      state.isSaved = false;
     }
-    const editEntity = cloneDeep(state.editEntity);
-    const properties = action.payload.properties;
-    const newDirtyFields: DirtyFields = {};
-    forEach(properties, (val, key) => {
-      set(editEntity, key, val);
-      newDirtyFields[key] = true;
-    });
-    const dirtyFields = { ...state.dirtyFields, ...newDirtyFields };
-    return { ...state, editEntity, dirtyFields };
-  },
-  [str(editors.addListItem)]: (
-    state: EditorState,
-    action: Action<AddListItemPayload>
-  ) => {
-    const { itemIndex, listPathMaker, itemFactory } = action.payload;
-    const editEntity = { ...state.editEntity };
+  ),
+  [str(editors.blurField)]: produce(
+    (state: EditorState<any>, action: Action<{ fieldName: string }>) => {
+      if (!state.blurredFields) {
+        state.blurredFields = {};
+      }
+      set(
+        state.blurredFields,
+        combineObjectKey(action.payload.fieldName, blurredProp),
+        true
+      );
+    }
+  ),
+  [str(editors.propertyChange)]: produce(
+    (state: EditorState<any>, action: Action<PropertyChanges>) => {
+      if (!state.editEntity) {
+        logger.error("Cannot change a property of an absent editEntity.");
+        return;
+      }
 
-    const listPath = isString(listPathMaker)
-      ? listPathMaker
-      : listPathMaker(action.payload);
-    const list = clone(get(editEntity, listPath));
-    const insertIndex = isNumber(itemIndex) ? itemIndex : list.length;
-    insertAt(list, insertIndex, itemFactory());
-    set(editEntity, listPath, list);
-    return { ...state, editEntity };
-  },
-  [str(editors.removeListItem)]: (state: EditorState, action: AnyAction) => {
-    const { itemIndex, listPathMaker } = action.payload;
-    const editEntity = { ...state.editEntity };
+      const properties = action.payload.properties;
+      forEach(properties, (val, key) => {
+        set(state.editEntity, key, val);
+        if (!state.dirtyFields) {
+          state.dirtyFields = {};
+        }
+        set(state.dirtyFields, combineObjectKey(key, dirtyProp), true);
+      });
+    }
+  ),
+  [str(editors.addListItem)]: produce(
+    (state: EditorState<any>, action: Action<AddListItemPayload>) => {
+      const { itemIndex, listPathMaker, itemFactory } = action.payload;
+      const editEntity = state.editEntity;
 
-    const listPath = isString(listPathMaker)
-      ? listPathMaker
-      : listPathMaker(action.payload);
-    const list = clone(get(editEntity, listPath));
-    removeAt(list, itemIndex);
-    set(editEntity, listPath, list);
-    return { ...state, editEntity };
-  },
-  [str(editors.commitEdit)]: (state: EditorState) => ({
+      const listPath = isFunction(listPathMaker)
+        ? listPathMaker(action.payload)
+        : listPathMaker;
+      if (!editEntity) {
+        logger.error(
+          `Cannot add an item to the list '${listPath}' because editEntity is missing.`
+        );
+        return;
+      }
+      const list = get(editEntity, listPath);
+      const insertIndex = isNumber(itemIndex) ? itemIndex : list.length;
+      insertAt(list, insertIndex, itemFactory());
+    }
+  ),
+  [str(editors.removeListItem)]: produce(
+    (state: EditorState<any>, action: AnyAction) => {
+      const { itemIndex, listPathMaker } = action.payload;
+      const editEntity = state.editEntity;
+
+      const listPath = isString(listPathMaker)
+        ? listPathMaker
+        : listPathMaker(action.payload);
+      if (!editEntity) {
+        logger.error(
+          `Cannot remove the ${itemIndex}th item from the list '${listPath}' because editEntity is missing.`
+        );
+        return;
+      }
+      const list = get(editEntity, listPath);
+      removeAt(list, itemIndex);
+    }
+  ),
+  [str(editors.attemptedSubmit)]: produce((state: EditorState<any>) => {
+    state.wasSubmitAttempted = true;
+  }),
+  [str(editors.commitEdit)]: (state: EditorState<any>) => ({
     ...state,
     isSaving: true,
-    errors: EmptyBespokeValidationErrors,
+    errors: undefined,
     wasSubmitAttempted: true,
   }),
   [str(editors.commitEdit.result)]: {
-    next: (state: EditorState) => ({
+    next: (state: EditorState<any>) => ({
       ...state,
-      isSaving: false,
-      editEntity: null,
-      dirtyFields: {},
+      ...defaultEditorState(),
+      isSaved: true,
     }),
-    throw: (state: EditorState, action: Action<ErrorPayload>) => {
+    throw: produce((state: EditorState<any>, action: Action<ErrorPayload>) => {
+      state.isSaving = false;
+
       const sourceError = action.payload.sourceError;
-      if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
-        const responseBody = sourceError.body;
-        if (get(responseBody, "errorCode") === apiErrorCodes.VALIDATION_ERROR) {
-          const errorKeys = keys(responseBody.errors);
-          if (errorKeys.length !== 1) {
-            throw newProgrammingError(
-              "The default reducer can only handle a single top-level error key"
-            );
-          }
-          const errorKey = errorKeys[0];
-          const errors = responseBody.errors[errorKey];
-          return { ...state, isSaving: false, errors };
-        }
+      if (sourceError.errorType !== uiErrorTypes.API_RESPONSE_ERROR) {
+        return;
       }
 
-      return { ...state, isSaving: false };
-    },
+      const responseBody = sourceError.body;
+      if (
+        !responseBody ||
+        !includes(
+          [
+            apiErrorCodes.VALIDATION_ERROR,
+            apiErrorCodes.ENTITY_CONFLICT,
+            apiErrorCodes.USER_ACTIONS_CONFLICT,
+            apiErrorCodes.AUTHORIZATION_ERROR,
+          ],
+          get(responseBody, "errorCode")
+        )
+      ) {
+        return;
+      }
+
+      const errorKeys = keys(responseBody.errors);
+      if (errorKeys.length !== 1) {
+        // TODO(26): figure out an approach that automatically translates the response to the model
+        // rather than assuming that the response errors has one field corresponding to the editEntity
+        throw newProgrammingError(
+          "The default reducer can only handle a single top-level error key"
+        );
+      }
+      const errorKey = errorKeys[0];
+      state.errors = responseBody.errors[errorKey];
+    }),
   },
-  [str(editors.cancelEdit)]: (state: EditorState) => ({
+  [str(editors.cancelEdit)]: (state: EditorState<any>) => ({
     ...state,
-    editEntity: null,
-    dirtyFields: {},
+    ...defaultEditorState(),
   }),
+  [str(editors.resetSubmission)]: () => defaultEditorState(),
 };
 
 interface EditorMeta {
   requestPayload?: any;
 }
-const defaultEditorReducer = handleActions<EditorState, any>(
+const defaultEditorReducer = handleActions<EditorState<any>, any>(
   defaultEditorActions,
-  defaultEditorState
+  defaultEditorState()
 );
 const editorReducerByType: {
   [key in EditorType]+?: ReduxCompatibleReducerMeta<
-    EditorState,
+    EditorState<any>,
     any,
     EditorMeta
   >;
 } = {
-  [EditorTypes.DEFAULT]: defaultEditorReducer,
-
   // TODO(94): adopt Redux's slice pattern to get precise reducer typechecking
-  [EditorTypes.PROPOSITION]: handleActions<EditorState, any, EditorMeta>(
+  [EditorTypes.PROPOSITION]: handleActions<EditorState<any>, any, EditorMeta>(
     {
       [str(api.fetchProposition)]: (state, action) => {
         const propositionId = get(state, "editEntity.id");
@@ -352,69 +382,80 @@ const editorReducerByType: {
         }
         return state;
       },
-      [str(editors.commitEdit.result)]: {
-        throw: editorErrorReducer("proposition"),
-      },
     },
-    defaultEditorState
+    defaultEditorState()
   ),
 
-  [EditorTypes.COUNTER_JUSTIFICATION]: handleActions<EditorState, any>(
+  [EditorTypes.COUNTER_JUSTIFICATION]: handleActions<EditorState<any>, any>(
     {
-      [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
-        "basis.propositionCompound.atoms",
-        makePropositionAtom
+      [str(editors.addPropositionCompoundAtom)]: produce(
+        makeAddAtomReducer(
+          "basis.propositionCompound.atoms",
+          makeCreatePropositionCompoundAtomInput
+        )
       ),
-      [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
-        "basis.propositionCompound.atoms"
+      [str(editors.removePropositionCompoundAtom)]: produce(
+        makeRemoveAtomReducer("basis.propositionCompound.atoms")
       ),
-      [str(editors.commitEdit.result)]: {
-        throw: editorErrorReducer("justification"),
-      },
     },
-    defaultEditorState
+    defaultEditorState()
   ),
 
-  [EditorTypes.NEW_JUSTIFICATION]: handleActions<EditorState, any>(
+  [EditorTypes.NEW_JUSTIFICATION]: handleActions<
+    EditorState<CreateJustificationInput, CreateJustification>,
+    any
+  >(
     {
-      [str(editors.addUrl)]: (state) => {
-        const editEntity = {
-          ...state.editEntity,
-        } as unknown as JustificationEditModel;
-        editEntity.basis.writQuote.urls =
-          editEntity.basis.writQuote.urls.concat([makeUrl()]);
-        return { ...state, editEntity };
-      },
-      [str(editors.removeUrl)]: (state, action) => {
-        const editEntity = {
-          ...state.editEntity,
-        } as unknown as JustificationEditModel;
+      [str(editors.addUrl)]: produce((state) => {
+        const basis = state.editEntity?.basis;
+        if (!basis) {
+          logger.error("Cannot add URL to absent edit entity.");
+          return;
+        }
+        if (!("urls" in basis.writQuote)) {
+          basis.writQuote = makeCreateWritQuoteInput(basis.writQuote);
+        }
+        basis.writQuote.urls.push(makeUrl());
+      }),
+      [str(editors.removeUrl)]: produce((state, action) => {
+        const basis = state.editEntity?.basis;
+        if (!basis) {
+          logger.error("Cannot remove URL from absent edit entity.");
+          return;
+        }
+        if (!("urls" in basis.writQuote)) {
+          logger.error(
+            "Unable to remove URL from justification's WritQuote because it is a Ref."
+          );
+          return;
+        }
 
-        const urls = clone(editEntity.basis.writQuote.urls);
-        removeAt(urls, action.payload.index);
-        editEntity.basis.writQuote.urls = urls;
-
-        return { ...state, editEntity };
-      },
-      [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
-        "basis.propositionCompound.atoms",
-        makePropositionAtom
+        removeAt(basis.writQuote.urls, action.payload.index);
+      }),
+      [str(editors.addPropositionCompoundAtom)]: produce(
+        makeAddAtomReducer(
+          "basis.propositionCompound.atoms",
+          makeCreatePropositionCompoundAtomInput
+        )
       ),
-      [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
-        "basis.propositionCompound.atoms"
+      [str(editors.removePropositionCompoundAtom)]: produce(
+        makeRemoveAtomReducer("basis.propositionCompound.atoms")
       ),
-      [str(editors.commitEdit.result)]: {
-        throw: editorErrorReducer("justification"),
-      },
     },
-    defaultEditorState
+    defaultEditorState<any>()
   ),
 
-  [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions<EditorState, any>(
+  [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions<
+    EditorState<CreateJustifiedSentenceInput, CreateJustifiedSentence>,
+    any
+  >(
     {
       [str(editors.addSpeaker)]: (state) => {
-        const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
+        const editEntity = state.editEntity;
+        if (!editEntity) {
+          logger.error("Cannot add speaker to an absent editEntity.");
+          return state;
+        }
         const speakers = editEntity.speakers;
         return assign({}, state, {
           editEntity: {
@@ -424,8 +465,11 @@ const editorReducerByType: {
         });
       },
       [str(editors.removeSpeaker)]: (state, action) => {
-        const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
+        const editEntity = state.editEntity;
+        if (!editEntity) {
+          logger.error("Cannot remove speaker from an absent editEntity.");
+          return state;
+        }
         const speakers = clone(editEntity.speakers);
         removeAt(speakers, action.payload.index);
         return assign({}, state, {
@@ -436,8 +480,11 @@ const editorReducerByType: {
         });
       },
       [str(editors.replaceSpeaker)]: (state, action) => {
-        const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
+        const editEntity = state.editEntity;
+        if (!editEntity) {
+          logger.error("Cannot replace speaker of an absent editEntity.");
+          return state;
+        }
         const speakers = clone(editEntity.speakers);
         speakers[action.payload.index] = action.payload.speaker;
         return assign({}, state, {
@@ -448,9 +495,15 @@ const editorReducerByType: {
         });
       },
       [str(editors.addUrl)]: (state) => {
-        const editEntity =
-          state.editEntity as unknown as PropositionJustificationsEditEntity;
-        const writQuote = { ...editEntity.justification.basis.writQuote };
+        const editEntity = state.editEntity;
+        if (!editEntity) {
+          logger.error("Cannot add URL to an absent editEntity.");
+          return state;
+        }
+        let writQuote = { ...editEntity.justification.basis.writQuote };
+        if (!("urls" in writQuote)) {
+          writQuote = makeCreateWritQuoteInput(writQuote);
+        }
         writQuote.urls = writQuote.urls.concat([makeUrl()]);
         return merge(
           { ...state },
@@ -458,9 +511,20 @@ const editorReducerByType: {
         );
       },
       [str(editors.removeUrl)]: (state, action) => {
+        if (!state.editEntity) {
+          logger.error("Cannot remove URL from an absent editEntity.");
+          return state;
+        }
         const editEntity = {
           ...state.editEntity,
-        } as unknown as PropositionJustificationsEditEntity;
+        };
+
+        if (!("urls" in editEntity.justification.basis.writQuote)) {
+          logger.error(
+            "Unable to remove URL from Justification's WritQuote because it is a Ref."
+          );
+          return state;
+        }
 
         const urls = clone(editEntity.justification.basis.writQuote.urls);
         removeAt(urls, action.payload.index);
@@ -468,12 +532,14 @@ const editorReducerByType: {
 
         return { ...state, editEntity };
       },
-      [str(editors.addPropositionCompoundAtom)]: makeAddAtomReducer(
-        "justification.basis.propositionCompound.atoms",
-        makePropositionAtom
+      [str(editors.addPropositionCompoundAtom)]: produce(
+        makeAddAtomReducer(
+          "justification.basis.propositionCompound.atoms",
+          makeCreatePropositionCompoundAtomInput
+        )
       ),
-      [str(editors.removePropositionCompoundAtom)]: makeRemoveAtomReducer(
-        "justification.basis.propositionCompound.atoms"
+      [str(editors.removePropositionCompoundAtom)]: produce(
+        makeRemoveAtomReducer("justification.basis.propositionCompound.atoms")
       ),
 
       [str(editors.tagProposition)]: makePropositionTagReducer(
@@ -485,10 +551,10 @@ const editorReducerByType: {
         difference
       ),
     },
-    defaultEditorState
+    defaultEditorState()
   ),
 
-  [EditorTypes.WRIT_QUOTE]: handleActions<EditorState, any, any>(
+  [EditorTypes.WRIT_QUOTE]: handleActions<EditorState<any>, any, any>(
     {
       [str(editors.addUrl)]: (state) => {
         const editEntity = { ...state.editEntity } as WritQuote;
@@ -518,18 +584,15 @@ const editorReducerByType: {
         }
         return state;
       },
-      [str(editors.commitEdit.result)]: {
-        throw: editorErrorReducer("writQuote"),
-      },
     },
-    defaultEditorState
+    defaultEditorState()
   ),
 
-  [EditorTypes.LOGIN_CREDENTIALS]: handleActions<EditorState, any>(
+  [EditorTypes.LOGIN_CREDENTIALS]: handleActions<EditorState<any>, any>(
     {
       [str(editors.commitEdit.result)]: {
         throw: (state, action) => {
-          const sourceError = action.payload.sourceError;
+          const sourceError: CustomError = action.payload.sourceError;
           if (sourceError.errorType === uiErrorTypes.API_RESPONSE_ERROR) {
             switch (get(sourceError, "body.errorCode")) {
               case apiErrorCodes.INVALID_LOGIN_CREDENTIALS: {
@@ -551,7 +614,9 @@ const editorReducerByType: {
                 };
               }
               case apiErrorCodes.VALIDATION_ERROR: {
-                const errors = sourceError.body.errors.credentials;
+                // TODO: remove typecast. CustomError should put custom props on a subfield
+                // rather than on the whole field (`.body` comes from newApiResponseError.)
+                const errors = (sourceError as any).body.errors.credentials;
                 return { ...state, errors, isSaving: false };
               }
               default:
@@ -567,10 +632,13 @@ const editorReducerByType: {
         },
       },
     },
-    defaultEditorState
+    defaultEditorState()
   ),
 
-  [EditorTypes.REGISTRATION_REQUEST]: handleActions<EditorState, any>(
+  [EditorTypes.REGISTRATION_REQUEST]: handleActions<
+    EditorState<CreateRegistrationRequestInput, CreateRegistrationRequest>,
+    any
+  >(
     {
       [str(editors.commitEdit.result)]: {
         next: (state, action) => ({
@@ -579,30 +647,9 @@ const editorReducerByType: {
           isSaving: false,
           isSaved: true,
         }),
-        throw: (state, action) => {
-          state = editorErrorReducer("registration")(state, action);
-          state.isSaved = false;
-          return state;
-        },
       },
-      [str(editors.resetSubmission)]: (state) => ({ ...state, isSaved: false }),
     },
-    defaultEditorState
-  ),
-
-  [EditorTypes.REGISTRATION_CONFIRMATION]: handleActions<EditorState, any>(
-    {
-      [str(editors.commitEdit.result)]: {
-        next: (state) => ({ ...state, isSaving: false, isSaved: true }),
-        throw: (state, action) => {
-          state = editorErrorReducer("registrationConfirmation")(state, action);
-          state.isSaved = false;
-          return state;
-        },
-      },
-      [str(editors.resetSubmission)]: (state) => ({ ...state, isSaved: false }),
-    },
-    defaultEditorState
+    defaultEditorState()
   ),
 };
 
@@ -611,14 +658,17 @@ function makePropositionTagReducer(
   polarity: PropositionTagVotePolarity,
   combiner: Combiner
 ) {
-  return (state: EditorState, action: AnyAction) => {
+  return (
+    state: EditorState<CreateJustifiedSentenceInput>,
+    action: AnyAction
+  ) => {
     if (!state.editEntity || !("proposition" in state.editEntity)) {
       logger.error(
         "editEntity was missing or not a PropositionJustificationsEditEntity"
       );
       return state;
     }
-    const editEntity = state.editEntity as PropositionJustificationsEditEntity;
+    const editEntity = state.editEntity;
     const proposition = editEntity.proposition;
     const { tag } = action.payload;
 
@@ -665,7 +715,7 @@ function makePropositionTagReducer(
   };
 }
 
-type EditorTypeState = { [key: EditorId]: EditorState };
+type EditorTypeState = { [key: EditorId]: EditorState<any> };
 // The editor reducer state is a two-level map: editorType -> editorId -> editorState
 type ReducerState = { [key in EditorType]: EditorTypeState };
 
@@ -687,7 +737,7 @@ const handleEditorAction = (
   }
 
   // editorState could be undefined
-  const editorState = get(state, [editorType, editorId], defaultEditorState);
+  const editorState = get(state, [editorType, editorId], defaultEditorState());
   const editorReducer = editorReducerByType[editorType];
   let newEditorState = editorReducer
     ? editorReducer(editorState, action)

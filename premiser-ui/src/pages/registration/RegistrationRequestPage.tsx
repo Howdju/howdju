@@ -19,8 +19,9 @@ import {
   makeRegistrationRequest,
   schemaSettings,
   schemas,
-  EmptyBespokeValidationErrors,
   onlyFieldError,
+  RegistrationRequest,
+  BespokeValidationErrors,
 } from "howdju-common";
 import { emptyValidationResult, validate } from "howdju-ajv-sourced";
 
@@ -28,7 +29,7 @@ import Helmet from "../../Helmet";
 import { editors } from "../../actions";
 import EmailTextField from "../../EmailTextField";
 import paths from "../../paths";
-import { EditorTypes } from "../../reducers/editors";
+import { EditorState, EditorTypes } from "../../reducers/editors";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { PropertyChanges } from "@/types";
 
@@ -64,7 +65,7 @@ export default function RegistrationRequestPage() {
 
   const editorState = useAppSelector((state) =>
     get(state, ["editors", editorType, editorId])
-  );
+  ) as EditorState<RegistrationRequest>;
 
   if (!editorState) {
     return <CircularProgress id={editorId} />;
@@ -74,7 +75,9 @@ export default function RegistrationRequestPage() {
   const wasSubmitAttempted = get(editorState, "wasSubmitAttempted");
   const isSubmitting = get(editorState, "isSaving");
   const isSubmitted = get(editorState, "isSaved");
-  const remoteErrors = get(editorState, "errors", EmptyBespokeValidationErrors);
+  const remoteErrors = get(editorState, "errors") as unknown as
+    | BespokeValidationErrors
+    | undefined;
   const duration = get(editorState, "duration");
 
   const registration = get(editorState, "editEntity");
@@ -94,7 +97,7 @@ export default function RegistrationRequestPage() {
     : "Please complete the form to continue";
 
   const emailConflictError = onlyFieldError(
-    remoteErrors.fieldErrors.email,
+    remoteErrors?.fieldErrors.email,
     EntityErrorCodes.EMAIL_TAKEN
   );
 
@@ -114,7 +117,7 @@ export default function RegistrationRequestPage() {
             disabled={isSubmitting}
             required
             error={
-              (dirtyFields.email || wasSubmitAttempted) &&
+              (dirtyFields?.email || wasSubmitAttempted) &&
               (!!localErrors.email || remoteErrors?.fieldErrors?.email)
             }
             errorText={
