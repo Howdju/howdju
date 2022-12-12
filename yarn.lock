@@ -23247,9 +23247,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:^0.66":
-  version: 0.66.4
-  resolution: "react-native@npm:0.66.4"
+"react-native@npm:0.66.5":
+  version: 0.66.5
+  resolution: "react-native@npm:0.66.5"
   dependencies:
     "@jest/create-cache-key-function": ^27.0.1
     "@react-native-community/cli": ^6.0.0
@@ -23286,7 +23286,50 @@ __metadata:
     react: 17.0.2
   bin:
     react-native: cli.js
-  checksum: fccfe21339fe88f3cfb38a9495fb42687c6dcc9837b0e4f161083d89936492dcc31a1b5cf1b0194615f5b0d04c5620e3647a02d3264f8bf086289a9c38580874
+  checksum: dd925fa22f54ea6727f71b5a87275b837ebc7ead710be252e01b2b57f5b998ac55c18b03aa21161f357b573cdbe40dd320b331a53dd07d758d1b938ba9fc3d6b
+  languageName: node
+  linkType: hard
+
+"react-native@patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch::locator=howdju-monorepo%40workspace%3A.":
+  version: 0.66.5
+  resolution: "react-native@patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch::version=0.66.5&hash=9f850e&locator=howdju-monorepo%40workspace%3A."
+  dependencies:
+    "@jest/create-cache-key-function": ^27.0.1
+    "@react-native-community/cli": ^6.0.0
+    "@react-native-community/cli-platform-android": ^6.0.0
+    "@react-native-community/cli-platform-ios": ^6.0.0
+    "@react-native/assets": 1.0.0
+    "@react-native/normalize-color": 1.0.0
+    "@react-native/polyfills": 2.0.0
+    abort-controller: ^3.0.0
+    anser: ^1.4.9
+    base64-js: ^1.1.2
+    event-target-shim: ^5.0.1
+    hermes-engine: ~0.9.0
+    invariant: ^2.2.4
+    jsc-android: ^250230.2.1
+    metro-babel-register: 0.66.2
+    metro-react-native-babel-transformer: 0.66.2
+    metro-runtime: 0.66.2
+    metro-source-map: 0.66.2
+    nullthrows: ^1.1.1
+    pretty-format: ^26.5.2
+    promise: ^8.0.3
+    prop-types: ^15.7.2
+    react-devtools-core: ^4.13.0
+    react-native-codegen: ^0.0.7
+    react-refresh: ^0.4.0
+    regenerator-runtime: ^0.13.2
+    scheduler: ^0.20.2
+    stacktrace-parser: ^0.1.3
+    use-subscription: ^1.0.0
+    whatwg-fetch: ^3.0.0
+    ws: ^6.1.4
+  peerDependencies:
+    react: 17.0.2
+  bin:
+    react-native: cli.js
+  checksum: f72d7d8e7203629f7c170eab0c06026db28916a6fd8a76020dac5a8341fb95e02c65c354d527555a2d426a4a83bb5598562f237e90491a1719dfdda97c25e960
   languageName: node
   linkType: hard
 

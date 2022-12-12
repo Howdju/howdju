@@ -84,20 +84,11 @@ After installing via Yarn, don't forget:
 yarn run install-pods
 ```
 
-## Hoisting
+## `react-native` patch
 
-We disable Yarn hoisting for this package using:
-
-```json
-"hoistingLimits": "workspaces"
-```
-
-The reason is that react-native has a lot of strict path assumptions, such as:
-
-- packages explicitly expect files, such as scripts in other packages to exist as siblings in the
-  same `node_modules` directory
-- iOS and Android build files explicitly expect files to exist at `../../node_modules/...`
-
-Getting these right is tricky and updating them if react-native is hoisted differently is tedious.
-So to ease that toil, just don't hoist this package at all, and everything can expect everything
-else to exist in a `node_modules` within this package.
+Our react-native does not hoist to the workspace root (presumably because it has a peer dependency
+on react@17, while we use react@16 in the web app, but I'm not 100% sure why.) But one of the deps
+that `react-native` expects to be a `node_modules` sibling is hoisted (`react-native-codegen`). This
+breaks iOS builds because `react-native` tries to find `react-native-codegen` using a hard-coded
+path, and doesn't find it. We have included a Yarn patch for this, which essentially recreates this
+[PR](https://github.com/facebook/react-native/pull/35430/files).
