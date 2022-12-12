@@ -2,7 +2,7 @@ import type { ShareDataItem } from "react-native-share-menu";
 import logger from "@/logger";
 
 type SafariShareInfo = {
-  url: string;
+  url?: string;
   selectedText?: string;
   title?: string;
 };
@@ -12,10 +12,8 @@ export function inferSubmitUrl(items: ShareDataItem[]): string | null {
   return safariShareInfo ? makeSubmitUrl(safariShareInfo) : null;
 }
 
-const inferSafariShareInfo = (
-  items: ShareDataItem[]
-): SafariShareInfo | null => {
-  let url = null;
+const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
+  let url;
   let selectedText;
   let title;
   if (items) {
@@ -47,13 +45,15 @@ const inferSafariShareInfo = (
     }
   }
 
-  return url ? { url, title, selectedText } : null;
+  return { url, title, selectedText };
 };
 
 const makeSubmitUrl = (safariShareInfo: SafariShareInfo) => {
   const { url, selectedText, title } = safariShareInfo;
   const submitUrl = new URL("https://www.howdju.com/submit");
-  submitUrl.searchParams.append("url", url);
+  if (url) {
+    submitUrl.searchParams.append("url", url);
+  }
   if (title) {
     submitUrl.searchParams.append("description", encodeURIComponent(title));
   }
