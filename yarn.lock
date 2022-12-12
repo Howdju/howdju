@@ -15679,6 +15679,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"immer@npm:^9.0.16":
+  version: 9.0.16
+  resolution: "immer@npm:9.0.16"
+  checksum: e9a5ca65c929b329da7a3b7beccf7984271cda7bdd47b2cab619eac3277dcd56598c211b55cc340786b6eff0c06652ac018808d9fd744443f06882364dece6bc
+  languageName: node
+  linkType: hard
+
 "immer@npm:^9.0.7":
   version: 9.0.15
   resolution: "immer@npm:9.0.15"
@@ -22269,6 +22276,7 @@ __metadata:
     html-loader: ^2.1.2
     html-webpack-plugin: ^5.3.1
     identity-obj-proxy: ^3.0.0
+    immer: ^9.0.16
     inspectpack: ^4.7.1
     is-valid-domain: ^0.0.19
     jest: ^29.3.1
@@ -23018,15 +23026,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-share-menu@github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec":
-  version: 5.0.5
-  resolution: "react-native-share-menu@https://github.com/Howdju/react-native-share-menu.git#commit=ff9c65e456cf80b23b881ed2e1247f14337260ec"
+"react-native-share-menu@portal:/Users/transverna/code/github/Howdju/react-native-share-menu::locator=howdju-monorepo%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "react-native-share-menu@portal:/Users/transverna/code/github/Howdju/react-native-share-menu::locator=howdju-monorepo%40workspace%3A."
   peerDependencies:
     react: ^17.0
     react-native: ^0.66
-  checksum: 455f04d0ea47ee55c3859d7716585a29fd3893dcc85718546d455a0b736fbc37b19442f28d65bbbc5fc0a485c54d6138e5ee98b3c959342fcb55a05d1873363f
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "react-native-webview@npm:^11.15.0":
   version: 11.15.0
