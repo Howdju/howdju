@@ -4,8 +4,8 @@ This repository contains client and server code for the Howdju platform.
 
 ## Status
 
-* [![CI](https://github.com/Howdju/howdju/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/Howdju/howdju/actions/workflows/ci.yml)
-* [![Deploy to preprod](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml/badge.svg?branch=master&event=workflow_run)](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml)
+- [![CI](https://github.com/Howdju/howdju/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/Howdju/howdju/actions/workflows/ci.yml)
+- [![Deploy to preprod](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml/badge.svg?branch=master&event=workflow_run)](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml)
 
 ## Prerequisites
 
@@ -35,12 +35,12 @@ yarn install
 
 ### Password management
 
-* Use a password manager.
-* Memorize your: computer password, email password, and password manager password.
-* Store all non-memorized passwords in your password manager.
-* Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
+- Use a password manager.
+- Memorize your: computer password, email password, and password manager password.
+- Store all non-memorized passwords in your password manager.
+- Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
   manager.
-* Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like
+- Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like
   `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if you can't copy-paste for some
   reason) and can be easy to remember, if you make up an image or story that goes along with the password. So, for this
   example password, you might imagine a tongue licking a gardenia flower, agreeing with it with a soft whispering
@@ -48,12 +48,12 @@ yarn install
   auto-generate these phrases, and that you not iterate through multiple choices to select one that is easy to remember,
   as this decreases the effective search space of the generated passwords. Instead, come up with a mental image to help
   you remember the words. The more silly or ridiculous, the easier it may be to remember.
-* Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator.
+- Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator.
 
 ### Install `aws-vault`
 
 [`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
-development environment.  You'll need an AWS admin to provide your AWS username, access key, and secret access key.
+development environment. You'll need an AWS admin to provide your AWS username, access key, and secret access key.
 
 ```shell
 brew install --cask aws-vault
@@ -272,6 +272,33 @@ yarn upgrade-interactive
 yarn workspaces foreach -Av exec bash -c '[[ -f jest.config.ts ]] && yarn add --dev ts-node'
 ```
 
+### Branching a dependency
+
+If we need to modify a dependency: fork it, clone it locally, link it locally, and then
+create the fix.
+
+This command will link the project of the CWD to the local clone. (I think the resolutions field it
+adds to the workspace root apply the link to all packages in the monorepo, so it's not necessary to
+link from each package, unless the dependency was installed in the package-local `node_modules` for
+some reason.)
+
+```sh
+yarn link ../../zod
+```
+
+We can ignore the resolutions added to the workspace root `package.json` (don't commit it, or at
+least don't merge it, since the remote will not have access to the local clone.)
+
+After creating the fix: commit, push, and open a PR. To get our app to work, we depend on our fork
+until our PR is merged.
+
+```sh
+# Get the Git commit SHA-1 for the fix in our fork:
+git rev-parse HEAD
+# Depend on a commit from our fork. Use the commit hash from above
+yarn add 'zod@github:Howdju/zod#ff9c65e456cf80b23b881ed2e1247f14337260ec'
+```
+
 ### Adding a new lambda
 
 ```shell
@@ -345,8 +372,8 @@ cd premiser-api
 yarn run start:local:inspect
 ```
 
-Open Chrome to `chrome://inspect`.  Click "Open dedicated DevTools for Node".  The Chrome debugger should automatically
-connect to the node process.  The Chrome debugger should automatically reconnect whenever the API restarts.
+Open Chrome to `chrome://inspect`. Click "Open dedicated DevTools for Node". The Chrome debugger should automatically
+connect to the node process. The Chrome debugger should automatically reconnect whenever the API restarts.
 
 ### Debugging/inspecting the UI
 
@@ -423,9 +450,9 @@ Base config `tsconfig.json` in workspace root and packages extend it like:
     // ...
     "paths": {
       // Support project-relative imports
-      "@/*": ["./src/*"],
-    },
-  },
+      "@/*": ["./src/*"]
+    }
+  }
 }
 ```
 
@@ -439,14 +466,14 @@ Base config exporting the config object and packages must define their own `jest
 merges any customizations with the base. Preferably with `lodash`'s `merge` so that the merge is recursive.
 
 ```ts
-import type {Config} from 'jest'
-import {merge} from 'lodash'
+import type { Config } from "jest";
+import { merge } from "lodash";
 
-import baseConfig from '../jest.config.base'
+import baseConfig from "../jest.config.base";
 
 const config: Config = {
   // per-package customizations
-}
+};
 
 export default merge(baseConfig, config);
 ```
