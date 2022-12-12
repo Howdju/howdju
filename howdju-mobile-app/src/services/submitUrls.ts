@@ -7,9 +7,9 @@ type SafariShareInfo = {
   title?: string;
 };
 
-export function inferSubmitUrl(items: ShareDataItem[]): string | null {
+export function inferSubmitUrl(items: ShareDataItem[]): string {
   const safariShareInfo = inferSafariShareInfo(items);
-  return safariShareInfo ? makeSubmitUrl(safariShareInfo) : null;
+  return makeSubmitUrl(safariShareInfo);
 }
 
 const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
