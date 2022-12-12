@@ -1,0 +1,28 @@
+diff --git a/scripts/generate-specs.sh b/scripts/generate-specs.sh
+index 4456557dfbb6cbde072f666b1cb820b5a72b2327..ed6686270d130970fb5c0fc6555f56ffe5e88179 100755
+--- a/scripts/generate-specs.sh
++++ b/scripts/generate-specs.sh
+@@ -57,20 +57,14 @@ main() {
+   TEMP_OUTPUT_DIR="$TEMP_DIR/out"
+   SCHEMA_FILE="$TEMP_DIR/schema.json"
+ 
+-  CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
+-  CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
+-
+   if [ -z "$NODE_BINARY" ]; then
+     echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
+     exit 1
+   fi
+ 
+-  if [ -d "$CODEGEN_REPO_PATH" ]; then
+-    CODEGEN_PATH=$(cd "$CODEGEN_REPO_PATH" && pwd)
+-  elif [ -d "$CODEGEN_NPM_PATH" ]; then
+-    CODEGEN_PATH=$(cd "$CODEGEN_NPM_PATH" && pwd)
+-  else
+-    echo "Error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root." 1>&2
++  CODEGEN_PATH=$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native-codegen/package.json'))")
++  if ! [ -d "$CODEGEN_PATH" ]; then
++    echo "error: Could not determine react-native-codegen location, using node module resolution. Try running 'yarn install' or 'npm install' in your project root."
+     exit 1
+   fi
+ 

@@ -58,7 +58,7 @@ Workarounds to support this local link:
 ## Releasing
 
 ```sh
-yarn add react-native-share-menu@github:Howdju/react-native-share-menu
+yarn add 'react-native-share-menu@github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec'
 ```
 
 Replace the relative reference in `ios/Podfile` with a Github reference:
@@ -83,3 +83,12 @@ After installing via Yarn, don't forget:
 ```shell
 yarn run install-pods
 ```
+
+## `react-native` patch
+
+Our react-native does not hoist to the workspace root (presumably because it has a peer dependency
+on react@17, while we use react@16 in the web app, but I'm not 100% sure why.) But one of the deps
+that `react-native` expects to be a `node_modules` sibling is hoisted (`react-native-codegen`). This
+breaks iOS builds because `react-native` tries to find `react-native-codegen` using a hard-coded
+path, and doesn't find it. We have included a Yarn patch for this, which essentially recreates this
+[PR](https://github.com/facebook/react-native/pull/35430/files).

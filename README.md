@@ -296,7 +296,7 @@ until our PR is merged.
 # Get the Git commit SHA-1 for the fix in our fork:
 git rev-parse HEAD
 # Depend on a commit from our fork. Use the commit hash from above
-yarn add 'zod@https://github.com/Howdju/zod.git#bd11f9ce81420a64d0f87b70459303b9ba23f663'
+yarn add 'zod@github:Howdju/zod#ff9c65e456cf80b23b881ed2e1247f14337260ec'
 ```
 
 ### Adding a new lambda

@@ -72,5 +72,8 @@
     "prettier": "2.7.1",
     "typescript": "^4.8.4"
   },
-  "packageManager": "yarn@3.3.0"
+  "packageManager": "yarn@3.3.0",
+  "resolutions": {
+    "react-native@^0.66": "patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch"
+  }
 }

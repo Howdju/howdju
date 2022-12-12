@@ -10286,8 +10286,8 @@ __metadata:
     bluebird: ^3.5.2
     elasticsearch: ^15.1.1
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
-    howdju-service-common: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
+    howdju-service-common: "workspace:howdju-service-common"
     prettier: 2.7.1
     zlib: ^1.0.5
   languageName: unknown
@@ -15140,13 +15140,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"howdju-ajv-sourced@^1.0.0, howdju-ajv-sourced@workspace:howdju-ajv-sourced":
+"howdju-ajv-sourced@workspace:howdju-ajv-sourced":
   version: 0.0.0-use.local
   resolution: "howdju-ajv-sourced@workspace:howdju-ajv-sourced"
   dependencies:
     eslint: ^8.27.0
     eslint-config-howdju: "workspace:eslint-config-howdju"
-    howdju-common: ^1.0.0
+    howdju-common: "workspace:howdju-common"
     jest: ^29.3.1
     prettier: 2.7.1
     ts-node: ^10.9.1
@@ -15181,8 +15181,8 @@ __metadata:
     eslint-config-howdju: ^1.0.0
     eslint-plugin-react: ^7.23.2
     glamor: ^2.20.40
-    howdju-client-common: ^1.0.0
-    howdju-common: ^1.0.0
+    howdju-client-common: "workspace:howdju-client-common"
+    howdju-common: "workspace:howdju-common"
     jest: ^29.3.1
     lodash: ^4.17.21
     prettier: 2.7.1
@@ -15194,13 +15194,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-client-common@^1.0.0, howdju-client-common@workspace:howdju-client-common":
+"howdju-client-common@workspace:howdju-client-common":
   version: 0.0.0-use.local
   resolution: "howdju-client-common@workspace:howdju-client-common"
   dependencies:
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
-    howdju-common: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
+    howdju-common: "workspace:howdju-common"
     jest: ^29.3.1
     lodash: ^4.17.21
     prettier: 2.7.1
@@ -15211,7 +15211,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-common@^1.0.0, howdju-common@workspace:howdju-common":
+"howdju-common@workspace:howdju-common":
   version: 0.0.0-use.local
   resolution: "howdju-common@workspace:howdju-common"
   dependencies:
@@ -15220,8 +15220,8 @@ __metadata:
     ajv: ^8.1.0
     ajv-formats: ^2.0.2
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
-    howdju-test-common: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
+    howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
     lodash: ^4.17.4
     moment: ^2.29.4
@@ -15298,7 +15298,7 @@ __metadata:
     react-native-reanimated: ^2.10.0
     react-native-safe-area-context: ^4.3.1
     react-native-screens: ^3.15.0
-    react-native-share-menu: "https://github.com/Howdju/react-native-share-menu.git#971e58c10c713b58ce136311453ee8ba2d3da9e6"
+    react-native-share-menu: "github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec"
     react-native-webview: ^11.15.0
     react-test-renderer: 17.0.2
     terser-webpack-plugin: ^5.3.3
@@ -15345,15 +15345,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-ops@^1.0.0, howdju-ops@workspace:howdju-ops":
+"howdju-ops@workspace:howdju-ops":
   version: 0.0.0-use.local
   resolution: "howdju-ops@workspace:howdju-ops"
   dependencies:
     aws-sdk: ^2.108.0
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
     eslint-plugin-promise: ^5.1.0
-    howdju-test-common: ^1.0.0
+    howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
     lodash: ^4.17.4
     prettier: 2.7.1
@@ -15361,7 +15361,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-service-common@^1.0.0, howdju-service-common@workspace:howdju-service-common":
+"howdju-service-common@workspace:howdju-service-common":
   version: 0.0.0-use.local
   resolution: "howdju-service-common@workspace:howdju-service-common"
   dependencies:
@@ -15373,9 +15373,9 @@ __metadata:
     bluebird: ^3.5.0
     cryptohat: ^1.0.1
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
-    howdju-common: ^1.0.0
-    howdju-test-common: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
+    howdju-common: "workspace:howdju-common"
+    howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
     joi: ^17.4.0
     lodash: ^4.17.4
@@ -15394,12 +15394,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"howdju-test-common@^1.0.0, howdju-test-common@workspace:howdju-test-common":
+"howdju-test-common@workspace:howdju-test-common":
   version: 0.0.0-use.local
   resolution: "howdju-test-common@workspace:howdju-test-common"
   dependencies:
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
     jest: ^29.3.1
     prettier: 2.7.1
     sinon: ^10.0.0
@@ -22340,12 +22340,12 @@ __metadata:
     env-cmd: ^10.1.0
     esbuild: ^0.11.19
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
     express: ^4.17.3
-    howdju-common: ^1.0.0
-    howdju-ops: ^1.0.0
-    howdju-service-common: ^1.0.0
-    howdju-test-common: ^1.0.0
+    howdju-common: "workspace:howdju-common"
+    howdju-ops: "workspace:howdju-ops"
+    howdju-service-common: "workspace:howdju-service-common"
+    howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
     moment: ^2.29.4
     morgan: ^1.8.1
@@ -22369,12 +22369,12 @@ __metadata:
     argparse: ^2.0.1
     aws-sdk: ^2.307.0
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
     gulp: ^3.9.1
     gulp-install: ^1.1.0
     gulp-zip: ^4.0.0
-    howdju-ops: ^1.0.0
-    howdju-test-common: ^1.0.0
+    howdju-ops: "workspace:howdju-ops"
+    howdju-test-common: "workspace:howdju-test-common"
     inspect-process: ^0.5.0
     install-local: ^0.6.0
     jest: ^29.3.1
@@ -22439,14 +22439,14 @@ __metadata:
     dompurify: ^2.2.9
     esbuild: ^0.15.10
     eslint: ^8.27.0
-    eslint-config-howdju: ^1.0.0
+    eslint-config-howdju: "workspace:eslint-config-howdju"
     file-loader: ^6.2.0
     history: ^4.10.1
-    howdju-ajv-sourced: ^1.0.0
-    howdju-client-common: ^1.0.0
-    howdju-common: ^1.0.0
-    howdju-ops: ^1.0.0
-    howdju-test-common: ^1.0.0
+    howdju-ajv-sourced: "workspace:howdju-ajv-sourced"
+    howdju-client-common: "workspace:howdju-client-common"
+    howdju-common: "workspace:howdju-common"
+    howdju-ops: "workspace:howdju-ops"
+    howdju-test-common: "workspace:howdju-test-common"
     html-loader: ^2.1.2
     html-webpack-plugin: ^5.3.1
     identity-obj-proxy: ^3.0.0
@@ -23224,13 +23224,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-share-menu@https://github.com/Howdju/react-native-share-menu.git#971e58c10c713b58ce136311453ee8ba2d3da9e6":
+"react-native-share-menu@github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec":
   version: 5.0.5
-  resolution: "react-native-share-menu@https://github.com/Howdju/react-native-share-menu.git#commit=971e58c10c713b58ce136311453ee8ba2d3da9e6"
+  resolution: "react-native-share-menu@https://github.com/Howdju/react-native-share-menu.git#commit=ff9c65e456cf80b23b881ed2e1247f14337260ec"
   peerDependencies:
     react: ^17.0
     react-native: ^0.66
-  checksum: e67d82278b4914117b6fc483fdaea613c8ebc1f9d467d434b7186b9f702b0b0462d3afb3f5a2f504f168e4a8d210f0f572184b9694b3979a3f83f813bd9282ed
+  checksum: 455f04d0ea47ee55c3859d7716585a29fd3893dcc85718546d455a0b736fbc37b19442f28d65bbbc5fc0a485c54d6138e5ee98b3c959342fcb55a05d1873363f
   languageName: node
   linkType: hard
 
@@ -23247,9 +23247,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:^0.66":
-  version: 0.66.4
-  resolution: "react-native@npm:0.66.4"
+"react-native@npm:0.66.5":
+  version: 0.66.5
+  resolution: "react-native@npm:0.66.5"
   dependencies:
     "@jest/create-cache-key-function": ^27.0.1
     "@react-native-community/cli": ^6.0.0
@@ -23286,7 +23286,50 @@ __metadata:
     react: 17.0.2
   bin:
     react-native: cli.js
-  checksum: fccfe21339fe88f3cfb38a9495fb42687c6dcc9837b0e4f161083d89936492dcc31a1b5cf1b0194615f5b0d04c5620e3647a02d3264f8bf086289a9c38580874
+  checksum: dd925fa22f54ea6727f71b5a87275b837ebc7ead710be252e01b2b57f5b998ac55c18b03aa21161f357b573cdbe40dd320b331a53dd07d758d1b938ba9fc3d6b
+  languageName: node
+  linkType: hard
+
+"react-native@patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch::locator=howdju-monorepo%40workspace%3A.":
+  version: 0.66.5
+  resolution: "react-native@patch:react-native@npm%3A0.66.5#./.yarn/patches/react-native-npm-0.66.5-22e5dd8ec5.patch::version=0.66.5&hash=9f850e&locator=howdju-monorepo%40workspace%3A."
+  dependencies:
+    "@jest/create-cache-key-function": ^27.0.1
+    "@react-native-community/cli": ^6.0.0
+    "@react-native-community/cli-platform-android": ^6.0.0
+    "@react-native-community/cli-platform-ios": ^6.0.0
+    "@react-native/assets": 1.0.0
+    "@react-native/normalize-color": 1.0.0
+    "@react-native/polyfills": 2.0.0
+    abort-controller: ^3.0.0
+    anser: ^1.4.9
+    base64-js: ^1.1.2
+    event-target-shim: ^5.0.1
+    hermes-engine: ~0.9.0
+    invariant: ^2.2.4
+    jsc-android: ^250230.2.1
+    metro-babel-register: 0.66.2
+    metro-react-native-babel-transformer: 0.66.2
+    metro-runtime: 0.66.2
+    metro-source-map: 0.66.2
+    nullthrows: ^1.1.1
+    pretty-format: ^26.5.2
+    promise: ^8.0.3
+    prop-types: ^15.7.2
+    react-devtools-core: ^4.13.0
+    react-native-codegen: ^0.0.7
+    react-refresh: ^0.4.0
+    regenerator-runtime: ^0.13.2
+    scheduler: ^0.20.2
+    stacktrace-parser: ^0.1.3
+    use-subscription: ^1.0.0
+    whatwg-fetch: ^3.0.0
+    ws: ^6.1.4
+  peerDependencies:
+    react: 17.0.2
+  bin:
+    react-native: cli.js
+  checksum: f72d7d8e7203629f7c170eab0c06026db28916a6fd8a76020dac5a8341fb95e02c65c354d527555a2d426a4a83bb5598562f237e90491a1719dfdda97c25e960
   languageName: node
   linkType: hard
 

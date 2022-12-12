@@ -17,5 +17,5 @@ exports.devWebServerPort = () => {
 };
 
 exports.devApiServerPort = () => {
-  return process.env["DEV_API_SERVER_PORT"] || 8081;
+  return process.env["DEV_API_SERVER_PORT"] || 8082;
 };
