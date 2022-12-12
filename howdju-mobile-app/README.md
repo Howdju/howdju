@@ -58,7 +58,7 @@ Workarounds to support this local link:
 ## Releasing
 
 ```sh
-yarn add react-native-share-menu@github:Howdju/react-native-share-menu
+yarn add 'react-native-share-menu@github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec'
 ```
 
 Replace the relative reference in `ios/Podfile` with a Github reference:
@@ -83,3 +83,21 @@ After installing via Yarn, don't forget:
 ```shell
 yarn run install-pods
 ```
+
+## Hoisting
+
+We disable Yarn hoisting for this package using:
+
+```json
+"hoistingLimits": "workspaces"
+```
+
+The reason is that react-native has a lot of strict path assumptions, such as:
+
+- packages explicitly expect files, such as scripts in other packages to exist as siblings in the
+  same `node_modules` directory
+- iOS and Android build files explicitly expect files to exist at `../../node_modules/...`
+
+Getting these right is tricky and updating them if react-native is hoisted differently is tedious.
+So to ease that toil, just don't hoist this package at all, and everything can expect everything
+else to exist in a `node_modules` within this package.

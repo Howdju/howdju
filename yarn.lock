@@ -15298,7 +15298,7 @@ __metadata:
     react-native-reanimated: ^2.10.0
     react-native-safe-area-context: ^4.3.1
     react-native-screens: ^3.15.0
-    react-native-share-menu: "https://github.com/Howdju/react-native-share-menu.git#971e58c10c713b58ce136311453ee8ba2d3da9e6"
+    react-native-share-menu: "github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec"
     react-native-webview: ^11.15.0
     react-test-renderer: 17.0.2
     terser-webpack-plugin: ^5.3.3
@@ -23224,13 +23224,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-share-menu@https://github.com/Howdju/react-native-share-menu.git#971e58c10c713b58ce136311453ee8ba2d3da9e6":
+"react-native-share-menu@github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec":
   version: 5.0.5
-  resolution: "react-native-share-menu@https://github.com/Howdju/react-native-share-menu.git#commit=971e58c10c713b58ce136311453ee8ba2d3da9e6"
+  resolution: "react-native-share-menu@https://github.com/Howdju/react-native-share-menu.git#commit=ff9c65e456cf80b23b881ed2e1247f14337260ec"
   peerDependencies:
     react: ^17.0
     react-native: ^0.66
-  checksum: e67d82278b4914117b6fc483fdaea613c8ebc1f9d467d434b7186b9f702b0b0462d3afb3f5a2f504f168e4a8d210f0f572184b9694b3979a3f83f813bd9282ed
+  checksum: 455f04d0ea47ee55c3859d7716585a29fd3893dcc85718546d455a0b736fbc37b19442f28d65bbbc5fc0a485c54d6138e5ee98b3c959342fcb55a05d1873363f
   languageName: node
   linkType: hard
 
