@@ -14,7 +14,7 @@
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "howdju-common": "^1.0.0"
+    "howdju-common": "workspace:howdju-common"
   },
   "devDependencies": {
     "eslint": "^8.27.0",

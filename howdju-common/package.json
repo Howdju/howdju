@@ -25,8 +25,8 @@
   "devDependencies": {
     "@types/lodash": "^4.14.186",
     "eslint": "^8.27.0",
-    "eslint-config-howdju": "^1.0.0",
-    "howdju-test-common": "^1.0.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "howdju-test-common": "workspace:howdju-test-common",
     "jest": "^29.3.1",
     "prettier": "2.7.1",
     "ts-node": "^10.9.1",

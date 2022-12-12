@@ -8,12 +8,12 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "elasticsearch": "^15.1.1",
-    "howdju-service-common": "^1.0.0",
+    "howdju-service-common": "workspace:howdju-service-common",
     "zlib": "^1.0.5"
   },
   "devDependencies": {
     "eslint": "^8.27.0",
-    "eslint-config-howdju": "^1.0.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
     "prettier": "2.7.1"
   },
   "scripts": {

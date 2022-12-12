@@ -14,13 +14,13 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "howdju-common": "^1.0.0",
+    "howdju-common": "workspace:howdju-common",
     "lodash": "^4.17.21",
     "redux-actions": "^2.6.4"
   },
   "devDependencies": {
     "eslint": "^8.27.0",
-    "eslint-config-howdju": "^1.0.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
     "jest": "^29.3.1",
     "prettier": "2.7.1",
     "ts-node": "^10.9.1",
