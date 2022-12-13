@@ -16,8 +16,9 @@ class BrowserScreen extends React.Component<{
   // eslint-disable-next-line react/require-render-return
   render = () => {
     const { items } = this.props;
-    const submitUrl = inferSubmitUrl(items);
-    const browserUrl = submitUrl ?? "https://howdju.com/recent-activity/";
+    const browserUrl = items.length
+      ? inferSubmitUrl(items)
+      : "https://howdju.com/recent-activity/";
     return (
       <WebView
         ref={(wv) => {
