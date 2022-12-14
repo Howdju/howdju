@@ -57,6 +57,8 @@ Workarounds to support this local link:
 
 ## Releasing
 
+### Replace linked react-native-share-menu with committed remote one
+
 ```sh
 yarn add 'react-native-share-menu@github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec'
 ```
@@ -75,6 +77,14 @@ Remove this following from the monorepo's package:
     "react-native-share-menu": "portal:../react-native-share-menu"
   }
 ```
+
+### App Store
+
+Basically, follow [these steps](https://reactnative.dev/docs/publishing-to-app-store).
+
+1. Remove `NSExceptionDomains` from HowdjuApp `Info.plist`.
+1. Configure Release scheme
+1. Build, Archive, Distribute
 
 ## Adding a new native dependency
 
