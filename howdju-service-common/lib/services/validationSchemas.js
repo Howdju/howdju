@@ -236,32 +236,9 @@ const justificationSchema = Joi.object()
   .shared(statementSchema)
   .id(JUSTIFICATION_SCHEMA_ID);
 
-const accountSettingSchema = Joi.object()
-  .keys({
-    id: idSchema,
-    userId: idSchema,
-    paidContributionsDisclosure: Joi.string()
-      .max(schemaSettings.paidContributionsDisclosureTextMaxLength)
-      .empty(Joi.valid(null, "")),
-  })
-  .when(idMissing, {
-    then: Joi.object({
-      name: Joi.required(),
-    }),
-  });
-
 const extantEntity = Joi.object().keys({
   id: idSchema.required(),
 });
-
-// const registrationSchema = Joi.object().keys({
-//   username: Joi.string().regex(/[A-Za-z0-9_]+/).min(2).max(schemaSettings.usernameMaxLength),
-//   email: Joi.string().email().max(schemaSettings.userEmailMaxLength),
-//   shortName: Joi.string().max(schemaSettings.shortNameMaxLength),
-//   longName: Joi.string().max(schemaSettings.longNameMaxLength),
-//   password: Joi.string().min(6).max(schemaSettings.passwordMaxLength),
-//   doesAcceptTerms: Joi.boolean().valid(true),
-// })
 
 /**
  * Converts {details:[{path,type,message}, ...]} to {path:[{type,message}]}
@@ -281,7 +258,6 @@ function translateJoiError(joiError) {
 }
 
 module.exports = {
-  accountSettingSchema,
   extantEntity,
   justificationSchema,
   persorgSchema,

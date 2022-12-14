@@ -24,10 +24,10 @@ import {
   logger,
   makeCreateRegistrationConfirmationInput,
   schemas,
-  schemaSettings,
   onlyFieldError,
   RegistrationConfirmation,
   BespokeValidationErrors,
+  CreateRegistrationConfirmationInput,
 } from "howdju-common";
 import { validate } from "howdju-ajv-sourced";
 
@@ -183,7 +183,12 @@ export default function RegistrationConfirmationPage() {
             autocomplete="username"
             label="Username"
             value={username}
-            maxLength={schemaSettings.usernameMaxLength}
+            minLength={
+              CreateRegistrationConfirmationInput.shape.username.minLength
+            }
+            maxLength={
+              CreateRegistrationConfirmationInput.shape.username.maxLength
+            }
             onPropertyChange={onPropertyChange}
             onBlur={onBlur}
             disabled={isSubmitting}
@@ -206,8 +211,12 @@ export default function RegistrationConfirmationPage() {
             name="password"
             autocomplete="new-password"
             value={password}
-            minLength={schemaSettings.passwordMinLength}
-            maxLength={schemaSettings.passwordMaxLength}
+            minLength={
+              CreateRegistrationConfirmationInput.shape.password.minLength
+            }
+            maxLength={
+              CreateRegistrationConfirmationInput.shape.password.maxLength
+            }
             onPropertyChange={onPropertyChange}
             onBlur={onBlur}
             disabled={isSubmitting}
@@ -227,7 +236,9 @@ export default function RegistrationConfirmationPage() {
             autocomplete="name"
             label="Full Name"
             value={longName}
-            maxLength={schemaSettings.longNameMaxLength}
+            maxLength={
+              CreateRegistrationConfirmationInput.shape.longName.maxLength
+            }
             onPropertyChange={onPropertyChange}
             onBlur={onBlur}
             disabled={isSubmitting}
@@ -244,7 +255,9 @@ export default function RegistrationConfirmationPage() {
             autocomplete="given-name"
             label="First Name"
             value={shortName}
-            maxLength={schemaSettings.shortNameMaxLength}
+            maxLength={
+              CreateRegistrationConfirmationInput.shape.shortName.maxLength
+            }
             onPropertyChange={onPropertyChange}
             onBlur={onBlur}
             disabled={isSubmitting}

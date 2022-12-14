@@ -9,15 +9,26 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
+
 jobs:
   premerge-checks:
     runs-on: ubuntu-latest
+    services:
+      howdju-db:
+        image: postgres:12.5
+        env:
+          POSTGRES_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+        ports:
+          - 5432:5432
 
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 14
+          cache: "yarn"
       - name: Install Yarn
         run: |
           corepack enable
@@ -31,6 +42,14 @@ jobs:
       - name: Typecheck
         run: yarn run typecheck:all
       - name: Test
+        env:
+          DB_USER: postgres
+          DB_NAME: premiser
+          DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          DB_HOST: localhost
+          DB_PORT: 5432
+          LOG_LEVEL: silly
+          NODE_ENV: test
         run: yarn run test:all --ci
       - name: Custom checks
         run: yarn run custom-check:all

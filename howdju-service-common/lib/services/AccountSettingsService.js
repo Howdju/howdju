@@ -1,13 +1,21 @@
-const { requireArgs, makeNewAccountSettings } = require("howdju-common");
+const {
+  requireArgs,
+  makeNewAccountSettings,
+  CreateAccountSettings,
+  EditAccountSettings,
+} = require("howdju-common");
 const { EntityService } = require("./EntityService");
-const { accountSettingSchema } = require("./validationSchemas");
 
 exports.AccountSettingsService = class AccountSettingsService extends (
   EntityService
 ) {
   constructor(logger, authService, accountSettingsDao) {
     requireArgs({ logger, authService, accountSettingsDao });
-    super(accountSettingSchema, logger, authService);
+    super(
+      { createSchema: CreateAccountSettings, editSchema: EditAccountSettings },
+      logger,
+      authService
+    );
     this.logger = logger;
     this.accountSettingsDao = accountSettingsDao;
   }

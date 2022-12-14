@@ -17,11 +17,11 @@ import cn from "classnames";
 import {
   EntityErrorCodes,
   makeRegistrationRequest,
-  schemaSettings,
   schemas,
   onlyFieldError,
   RegistrationRequest,
   BespokeValidationErrors,
+  CreateRegistrationRequestInput,
 } from "howdju-common";
 import { emptyValidationResult, validate } from "howdju-ajv-sourced";
 
@@ -110,7 +110,8 @@ export default function RegistrationRequestPage() {
             name="email"
             autocomplete="email"
             value={email}
-            maxLength={schemaSettings.userEmailMaxLength}
+            minLength={CreateRegistrationRequestInput.shape.email.minLength}
+            maxLength={CreateRegistrationRequestInput.shape.email.maxLength}
             onBlur={onBlur}
             onSubmit={onSubmit}
             onPropertyChange={onPropertyChange}

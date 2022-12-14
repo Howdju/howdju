@@ -65,6 +65,7 @@ describe("RegistrationConfirmationPage", () => {
     await screen.findByRole("heading");
 
     expect(screen.getByText(/missing registration code/i)).toBeInTheDocument();
+    jest.runAllTimers();
     expect(container).toMatchSnapshot();
   });
   test("shows error message for duplicate username", async () => {

@@ -1,4 +1,5 @@
 const moment = require("moment");
+const pg = require("pg");
 
 exports.PgTypeOids = {
   TIMESTAMPTZ: 1184,
@@ -16,4 +17,16 @@ exports.makeTimestampToUtcMomentParser = (logger) => (val) => {
   }
 
   return val;
+};
+
+exports.makePool = function makePool(logger, config) {
+  pg.types.setTypeParser(
+    exports.PgTypeOids.TIMESTAMP,
+    exports.makeTimestampToUtcMomentParser(logger)
+  );
+  const pool = new pg.Pool(config);
+  pool.on("error", (err, client) =>
+    logger.error("database pool error", { err })
+  );
+  return pool;
 };

@@ -2,7 +2,7 @@
   "name": "howdju-test-common",
   "version": "1.0.0",
   "description": "Common test utilities",
-  "main": "lib/index.js",
+  "main": "lib/index.ts",
   "author": "carl.gieringer@gmail.com",
   "license": "UNLICENSED",
   "private": true,
@@ -16,6 +16,7 @@
     "sinon": "^10.0.0"
   },
   "devDependencies": {
+    "@types/sinon": "^10.0.13",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",
     "jest": "^29.3.1",

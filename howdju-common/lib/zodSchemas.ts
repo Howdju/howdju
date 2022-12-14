@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { iso8601Datetime, url } from "./zodRefinements";
+import { iso8601Datetime, momentTimestamp, url } from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
 /** A perstisent conceptual entity */
@@ -751,10 +751,15 @@ export type CreateContentReportInput = z.infer<typeof CreateContentReportInput>;
 
 /** A user of the system */
 export const User = Entity.extend({
-  email: z.string(),
-  username: z.string(),
-  longName: z.string(),
-  shortName: z.string(),
+  email: z.string().email().max(128),
+  username: z
+    .string()
+    .regex(/[A-Za-z0-9_]+/)
+    .min(3)
+    .max(64),
+  shortName: z.string().min(1).max(32),
+  longName: z.string().min(1).max(64),
+  phoneNumber: z.string(),
   created: z.string().refine(...iso8601Datetime),
   isActive: z.boolean(),
   externalIds: z.object({
@@ -768,18 +773,41 @@ export const User = Entity.extend({
 export type User = z.infer<typeof User>;
 
 /** Additional properties that we collect upon user creation, but that we don't expose later. */
-export const CreateUser = User.extend({
-  acceptedTerms: z.boolean(),
-  affirmedMajorityConsent: z.boolean(),
-  affirmed13YearsOrOlder: z.boolean(),
-  affirmedNotGdpr: z.boolean(),
+export const CreateUser = User.omit({
+  created: true,
+  externalIds: true,
+}).extend({
+  acceptedTerms: z.boolean().refine((v) => v, "Must accept the terms."),
+  affirmed13YearsOrOlder: z
+    .boolean()
+    .refine((v) => v, "Must be 13 years or older."),
+  affirmedMajorityConsent: z
+    .boolean()
+    .refine((v) => v, "Must have adult consent."),
+  affirmedNotGdpr: z
+    .boolean()
+    .refine((v) => v, "Must not be subject to the GDPR."),
 });
 export type CreateUser = z.infer<typeof CreateUser>;
 
+export const UserData = User.omit({
+  created: true,
+  externalIds: true,
+}).extend({
+  acceptedTerms: z.any().refine(...momentTimestamp),
+  affirmedMajorityConsent: z.any().refine(...momentTimestamp),
+  affirmed13YearsOrOlder: z.any().refine(...momentTimestamp),
+  affirmedNotGdpr: z.any().refine(...momentTimestamp),
+});
+export type UserData = z.infer<typeof UserData>;
+
 export const AccountSettings = Entity.extend({
-  paidContributionsDisclosure: z.string(),
+  paidContributionsDisclosure: z.string().max(4096),
 });
 export type AccountSettings = z.infer<typeof AccountSettings>;
+export const CreateAccountSettings = AccountSettings;
+export type CreateAccountSettings = AccountSettings;
+export const EditAccountSettings = AccountSettings;
 export type EditAccountSettings = AccountSettings;
 export type EditAccountSettingsInput = AccountSettings;
 
@@ -805,24 +833,26 @@ export const CreateJustifiedSentence = z.object({
 export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;
 
 export const RegistrationRequest = z.object({
-  email: z.string().email(),
+  email: User.shape.email,
 });
 export type RegistrationRequest = z.infer<typeof RegistrationRequest>;
 
 export type CreateRegistrationRequest = RegistrationRequest;
+export const CreateRegistrationRequestInput = RegistrationRequest;
 export type CreateRegistrationRequestInput = RegistrationRequest;
 
 export const RegistrationConfirmation = z.object({
-  registrationCode: z.string().min(1),
-  username: z.string().min(3),
-  shortName: z.string().min(2),
-  longName: z.string().min(3),
-  password: z.string().min(6),
-  doesAcceptTerms: z.boolean(),
-  is13YearsOrOlder: z.boolean(),
-  hasMajorityConsent: z.boolean(),
-  isNotGdpr: z.boolean(),
+  registrationCode: z.string().min(1).max(256),
+  username: User.shape.username,
+  shortName: User.shape.shortName,
+  longName: User.shape.longName,
+  password: z.string().min(6).max(64),
+  doesAcceptTerms: CreateUser.shape.acceptedTerms,
+  is13YearsOrOlder: CreateUser.shape.affirmed13YearsOrOlder,
+  hasMajorityConsent: CreateUser.shape.affirmedMajorityConsent,
+  isNotGdpr: CreateUser.shape.affirmedNotGdpr,
 });
 export type RegistrationConfirmation = z.infer<typeof RegistrationConfirmation>;
 export type CreateRegistrationConfirmation = RegistrationConfirmation;
+export const CreateRegistrationConfirmationInput = RegistrationConfirmation;
 export type CreateRegistrationConfirmationInput = RegistrationConfirmation;

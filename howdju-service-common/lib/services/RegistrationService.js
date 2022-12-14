@@ -149,6 +149,9 @@ async function processRegistrationConflicts(self, registrationRequest) {
 }
 
 async function createRegistration(self, registrationRequest) {
+  // I think cryptohat(256, 36) means 256 bits of randomness using a base-36 representation.
+  // (base 36 is 26 single-cased letters plus 10 numbers.). The expected length of the string is
+  // 52 = ceil(log_36(2^256)). In practice the length is 50 for some reason.
   const registrationCode = cryptohat(256, 36);
   const now = utcNow();
   const duration = moment.duration(self.config.registrationDuration);

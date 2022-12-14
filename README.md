@@ -401,6 +401,11 @@ yarn run test-update-snapshot "RegistrationConfirmationPage shows form"
 
 ## Testing Github actions
 
+Note: Act currently fails for tests that use our Postgres docker because Act doesn't support Github
+actions services. ([issue](https://github.com/nektos/act/issues/173)). We might be able to work
+around this by detecting Act (I think it adds an env. var. `ACT`) and running the Postgres docker
+like we do with local runs, but that sort of defeats the purpose of act.
+
 Install nektos/act:
 
 ```sh
@@ -410,7 +415,7 @@ brew install act
 To test the `push` workflows:
 
 ```sh
-act
+act --secret-file env/act-secrets.env
 ```
 
 To test the deployment:

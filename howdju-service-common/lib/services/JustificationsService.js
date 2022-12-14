@@ -61,7 +61,7 @@ exports.JustificationsService = class JustificationsService extends (
     justificationsDao,
     permissionsDao
   ) {
-    super(CreateJustification, logger, authService);
+    super({ createSchema: CreateJustification }, logger, authService);
     requireArgs({
       config,
       logger,
