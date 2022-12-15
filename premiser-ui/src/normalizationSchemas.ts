@@ -37,11 +37,13 @@ const propositionTagVotesSchema = [propositionTagVoteSchema];
 export const tagVoteSchema = new schema.Entity<TagVote>("tagVotes", {
   tag: tagSchema,
 });
+const tagVotesSchema = [tagVoteSchema];
 
 export const propositionSchema = new schema.Entity<Proposition>(
   "propositions",
   {
     tags: tagsSchema,
+    tagVotes: tagVotesSchema,
     recommendedTags: tagsSchema,
     propositionTagVotes: propositionTagVotesSchema,
     // justifications added below via justificationTargetSchema

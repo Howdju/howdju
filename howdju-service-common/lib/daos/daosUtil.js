@@ -1,12 +1,9 @@
 const concat = require("lodash/concat");
-const deburr = require("lodash/deburr");
 const forEach = require("lodash/forEach");
 const head = require("lodash/head");
 const isNumber = require("lodash/isNumber");
 const join = require("lodash/join");
 const map = require("lodash/map");
-const replace = require("lodash/replace");
-const toLower = require("lodash/toLower");
 const toNumber = require("lodash/toNumber");
 
 const {
@@ -15,19 +12,11 @@ const {
   newProgrammingError,
   idEqual,
   newImpossibleError,
-  cleanWhitespace,
+  normalizeText,
 } = require("howdju-common");
 
-exports.normalizeText = (text) => {
-  // Postgres SQL for the same
-  // regexp_replace(lower(regexp_replace(trim(text), '\s+', ' ', 'g')), '[^[:alnum:][:space:]_.]', '', 'g')
-  text = toLower(text);
-  text = deburr(text);
-  text = replace(text, /[^\w\s]/g, "");
-  text = cleanWhitespace(text);
-
-  return text;
-};
+// Convenience re-export. TODO update deps in this folder to depend on new location directly
+exports.normalizeText = normalizeText;
 
 exports.mapSingle =
   (logger, mapper, tableName, identifiers) =>

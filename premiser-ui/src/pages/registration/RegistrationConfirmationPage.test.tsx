@@ -19,8 +19,6 @@ const handlers = [
 ];
 const server = setupServer(...handlers);
 
-// jest.setTimeout(5 * 60 * 1000)
-
 beforeAll(() => server.listen());
 afterEach(() => {
   server.resetHandlers();

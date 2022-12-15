@@ -11,7 +11,7 @@ import {
   makeWritQuote,
   makePropositionCompoundFromProposition,
 } from "howdju-common";
-import { makeJustificationViewModel } from "howdju-client-common";
+import { makeJustificationOutModel } from "howdju-client-common";
 
 import paths from "./paths";
 import PropositionCard from "./PropositionCard";
@@ -31,7 +31,8 @@ export default class LandingPage extends Component {
     const proJustificationProposition = makeProposition({
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
     });
-    const proJustification = makeJustificationViewModel({
+    const proJustification = makeJustificationOutModel({
+      id: "example",
       polarity: "POSITIVE",
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -44,7 +45,8 @@ export default class LandingPage extends Component {
         ),
       },
     });
-    const proJustificationJustification = makeJustificationViewModel({
+    const proJustificationJustification = makeJustificationOutModel({
+      id: "example",
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: proJustificationProposition,
@@ -83,7 +85,8 @@ export default class LandingPage extends Component {
     const conJustificationProposition = makeProposition({
       text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
     });
-    const conJustification = makeJustificationViewModel({
+    const conJustification = makeJustificationOutModel({
+      id: "example",
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: rootProposition,
@@ -96,7 +99,8 @@ export default class LandingPage extends Component {
         ),
       },
     });
-    const conJustificationJustification = makeJustificationViewModel({
+    const conJustificationJustification = makeJustificationOutModel({
+      id: "example",
       polarity: JustificationPolarities.POSITIVE,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -132,7 +136,8 @@ export default class LandingPage extends Component {
       },
     ];
 
-    const counterJustification = makeJustificationViewModel({
+    const counterJustification = makeJustificationOutModel({
+      id: "example",
       polarity: "NEGATIVE",
       target: {
         type: "JUSTIFICATION",

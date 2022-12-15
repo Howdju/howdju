@@ -51,7 +51,7 @@ const renderHomePath = (props: RouteProps) => {
   return mainSearchText ? <MainSearchPage /> : <LandingPage />;
 };
 
-const routesById = {
+export const routesById = {
   ["home"]: <Route exact path={paths.home()} render={renderHomePath} />,
   ["login"]: <Route exact path={paths.login()} component={LoginPage} />,
   ["request-registration"]: (

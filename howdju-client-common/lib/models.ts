@@ -5,7 +5,6 @@ import { SetOptional } from "type-fest";
 import { cloneDeep } from "lodash";
 
 import {
-  Entity,
   Justification,
   JustificationPolarity,
   JustificationRootTarget,
@@ -13,55 +12,37 @@ import {
   makeSourceExcerpt,
   newProgrammingError,
   Persisted,
-  Proposition,
-  PropositionTagVote,
   SourceExcerptParaphrase,
-  Tag,
-  JustificationVote,
   CreateContentReportInput,
-  TagVote,
+  TaggedEntityViewModel,
+  PropositionTagVoteViewModel,
+  JustificationOutModel,
 } from "howdju-common";
-
-export type JustificationViewModel = Justification & {
-  /** The current user's vote on this justification. */
-  vote?: JustificationVote;
-  // The sorting score for the current user
-  score?: number;
-  // Justifications countering this justification.
-  counterJustifications: JustificationViewModel[];
-};
 
 // TODO either rename to JustificationRootTargetRef, replace justifications with hasAgreement and
 // hasDisagreement. Or replace with non-persisted version to allow drafting of justification trees.
 export type JustificationRootTargetViewModel =
   Persisted<JustificationRootTarget> &
     TaggedEntityViewModel & {
-      justifications: JustificationViewModel[];
+      justifications: JustificationOutModel[];
       // TODO make tags a view model and put the votes on them.
       // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
       propositionTagVotes: PropositionTagVoteViewModel[];
     };
 
-export interface TaggedEntityViewModel extends Entity {
-  tags: Tag[];
-  // TODO put votes on tags and type it as a viewmodel
-  tagVotes: TagVoteViewModel[];
-  recommendedTags: Tag[];
-}
-
 type UnrootedJustificationViewModel = Omit<
-  JustificationViewModel,
+  JustificationOutModel,
   "rootTarget" | "rootTargetType" | "rootPolarity"
 >;
 const justificationViewModelDefaults = () => ({
   counterJustifications: [],
 });
-export function makeJustificationViewModel(
+export function makeJustificationOutModel(
   props?: SetOptional<
     UnrootedJustificationViewModel,
     keyof ReturnType<typeof justificationViewModelDefaults>
   >
-): JustificationViewModel {
+): JustificationOutModel {
   const init = justificationViewModelDefaults();
   const merged = merge(init, props);
   return inferJustificationRootTarget(merged);
@@ -69,7 +50,7 @@ export function makeJustificationViewModel(
 
 function inferJustificationRootTarget(
   justification: UnrootedJustificationViewModel
-): JustificationViewModel {
+): JustificationOutModel {
   let targetEntity = justification.target.entity;
   let targetType = justification.target.type;
   let rootPolarity: JustificationPolarity = justification.polarity;
@@ -91,12 +72,12 @@ function inferJustificationRootTarget(
     rootTargetType,
     rootTarget,
     rootPolarity,
-  } as JustificationViewModel;
+  } as JustificationOutModel;
 }
 
-export const isVerified = (j: JustificationViewModel) =>
+export const isVerified = (j: JustificationOutModel) =>
   j.vote && j.vote.polarity === "POSITIVE";
-export const isDisverified = (j: JustificationViewModel) =>
+export const isDisverified = (j: JustificationOutModel) =>
   j.vote && j.vote.polarity === "NEGATIVE";
 
 /** @deprecated */
@@ -110,12 +91,6 @@ export const makeSourceExcerptParaphrase = (
     },
     props
   );
-
-/** A view model for the JustificationsPage and also an API type, I think. */
-export interface JustifiedPropositionViewModel extends Proposition {
-  proposition: Proposition;
-  justifications?: JustificationViewModel[];
-}
 
 export const makeCreateContentReportInput = (
   fields: Partial<CreateContentReportInput>
@@ -133,11 +108,3 @@ export const makeCreateContentReportInput = (
     },
     fields
   );
-
-// TagVoteViewModel don't need a target because they are added to their targets
-export type TagVoteViewModel = Omit<TagVote, "target">;
-
-export type PropositionTagVoteViewModel = Omit<
-  PropositionTagVote,
-  "proposition"
->;
