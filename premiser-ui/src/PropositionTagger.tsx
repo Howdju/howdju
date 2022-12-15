@@ -4,23 +4,22 @@ import find from "lodash/find";
 import {
   EntityId,
   PropositionTagVotePolarities,
+  PropositionTagVoteViewModel,
   Tag,
   tagEqual,
 } from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
 import { api, goto } from "./actions";
-
 import TagsControl from "./TagsControl";
 import { useAppDispatch } from "./hooks";
 import { ComponentId, SuggestionsKey } from "./types";
-import { PropositionTagVoteViewModel } from "howdju-client-common";
 
 interface Props {
   id: ComponentId;
-  tags: Tag[];
+  tags?: Tag[];
   votes: PropositionTagVoteViewModel[];
-  recommendedTags: Tag[];
+  recommendedTags?: Tag[];
   suggestionsKey: SuggestionsKey;
   propositionId: EntityId;
 }

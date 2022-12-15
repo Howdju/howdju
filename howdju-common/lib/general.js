@@ -219,7 +219,8 @@ _e.cleanWhitespace = (text) => {
 
 _e.toSlug = (text) =>
   text &&
-  _e.normalizeText(text)
+  _e
+    .normalizeText(text)
     .replace(/\s+/g, "-")
     .replace(/[^a-zA-Z0-9-_]/g, "");
 
@@ -271,7 +272,6 @@ _e.toJson = function toJson(val) {
 _e.fromJson = function fromJson(json) {
   return JSON.parse(json);
 };
-
 
 _e.normalizeText = (text) => {
   // Postgres SQL for the same

@@ -11,8 +11,11 @@ fi
 
 echo "Running: jest ${@:1}"
 jest ${@:1}
+jest_status=$?
 
 if [[ -n "${image_id}" ]]; then
   echo "Stopping docker image ${image_id}"
   docker stop $image_id
 fi
+
+exit $jest_status
