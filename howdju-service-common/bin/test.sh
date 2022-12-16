@@ -9,9 +9,15 @@ if [[ -z "${HOWDJU_RUNNING_IN_GITHUB_WORKFLOW+present}" ]]; then
   echo "Started docker image ${image_id}"
 fi
 
-echo "Running: jest ${@:1}"
-jest ${@:1}
-jest_status=$?
+if [[ $1 == "inspect" ]]; then
+  echo "Running: node --inspect-brk ../node_modules/.bin/jest --runInBand --watch ${@:2}"
+  node --inspect-brk ../node_modules/.bin/jest --runInBand --watch ${@:2}
+  jest_status=$?
+else
+  echo "Running: jest ${@:1}"
+  jest ${@:1}
+  jest_status=$?
+fi
 
 if [[ -n "${image_id}" ]]; then
   echo "Stopping docker image ${image_id}"

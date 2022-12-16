@@ -14,25 +14,25 @@ import { AccountSettings, UserData } from "howdju-common";
 import moment from "moment";
 import { toNumber } from "lodash";
 import { Pool } from "pg";
-import { initDb } from "@/util/testUtil";
+import { dropDb, initDb } from "@/util/testUtil";
 
 describe("AccountSettingsService", () => {
+  const dbConfig = {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: toNumber(process.env.DB_PORT),
+    max: toNumber(process.env.DB_MAX_CONNECTIONS),
+  };
   let pool: Pool;
   let usersDao: UsersDao;
   let authService: AuthService;
   let service: AccountSettingsService;
+  let dbName: string;
   beforeEach(async () => {
-    const dbConfig = {
-      user: process.env.DB_USER,
-      database: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
-      host: process.env.DB_HOST,
-      port: toNumber(process.env.DB_PORT),
-      max: toNumber(process.env.DB_MAX_CONNECTIONS),
-    };
-    await initDb(dbConfig);
+    dbName = await initDb(dbConfig);
 
-    pool = makePool(mockLogger, dbConfig);
+    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
     const database = new Database(mockLogger, pool);
     const authDao = new AuthDao(mockLogger, database);
     usersDao = new UsersDao(mockLogger, database);
@@ -56,6 +56,7 @@ describe("AccountSettingsService", () => {
   });
   afterEach(async () => {
     await pool.end();
+    await dropDb(dbConfig, dbName);
   });
 
   describe("createAccountSettings", () => {
