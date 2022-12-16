@@ -2,6 +2,7 @@ import { z } from "zod";
 import isUrl from "validator/lib/isURL";
 import isIso8601 from "validator/lib/isISO8601";
 import { extractDomain } from "./urls";
+import { isMoment } from "moment";
 
 type UrlOptions = { domain: RegExp };
 /** Zod refinement for whether a string is a valid URL.
@@ -38,4 +39,12 @@ export const iso8601Datetime: [
   (val: string) => ({
     message: `Invalid ISO8601 datetime (e.g. "2022-11-19T21:21:33Z"): ${val}`,
   }),
+];
+
+export const momentTimestamp: [
+  (val: any) => boolean,
+  (val: any) => z.CustomErrorParams
+] = [
+  (val: any) => isMoment(val),
+  () => ({ message: "Must be a moment timestamp." }),
 ];

@@ -40,7 +40,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                     class="md-text-field-container md-full-width md-text-field-container--disabled md-text-field-container--multiline"
                   >
                     <label
-                      class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--disabled"
+                      class="md-floating-label md-floating-label--floating md-text--disabled"
                       for="email"
                     >
                       Email
@@ -58,7 +58,9 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                         readonly=""
                         rows="1"
                         tabindex="-1"
-                      />
+                      >
+                        a@b.com
+                      </textarea>
                       <textarea
                         autocomplete="email"
                         class="md-text-field md-text-field--multiline md-full-width md-text--disabled"
@@ -66,7 +68,9 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                         id="email"
                         rows="1"
                         style="height: 0px;"
-                      />
+                      >
+                        a@b.com
+                      </textarea>
                     </div>
                     <hr
                       class="md-divider md-divider--text-field md-divider--expand-from-left"
@@ -101,6 +105,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                         autocomplete="username"
                         class="md-text-field md-text-field--multiline md-full-width md-text"
                         id="username"
+                        minlength="3"
                         name="username"
                         required=""
                         rows="1"
@@ -642,6 +647,7 @@ exports[`RegistrationConfirmationPage shows form 1`] = `
                         autocomplete="username"
                         class="md-text-field md-text-field--multiline md-full-width md-text"
                         id="username"
+                        minlength="3"
                         name="username"
                         required=""
                         rows="1"

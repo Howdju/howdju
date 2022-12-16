@@ -6,18 +6,17 @@ import {
   Tag,
   tagEqual,
   TaggableEntityType,
+  TaggedEntityOut,
 } from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
 import { api, goto } from "./actions";
-
 import TagsControl from "./TagsControl";
 import { useAppDispatch } from "./hooks";
 import { ComponentId, SuggestionsKey } from "./types";
-import { TaggedEntityViewModel } from "howdju-client-common";
 
 interface Props {
-  target: TaggedEntityViewModel;
+  target: TaggedEntityOut;
   id: ComponentId;
   suggestionsKey: SuggestionsKey;
   targetType: TaggableEntityType;

@@ -1,4 +1,4 @@
-const { mapValues, isPlainObject } = require("lodash");
+const { mapValues, isPlainObject, toLower, deburr } = require("lodash");
 const cloneDeepWith = require("lodash/cloneDeepWith");
 const forEach = require("lodash/forEach");
 const isArray = require("lodash/isArray");
@@ -219,10 +219,10 @@ _e.cleanWhitespace = (text) => {
 
 _e.toSlug = (text) =>
   text &&
-  text
+  _e
+    .normalizeText(text)
     .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9-_]/g, "")
-    .toLowerCase();
+    .replace(/[^a-zA-Z0-9-_]/g, "");
 
 _e.omitDeep = function omitDeep(value, predicate = (val) => !val) {
   return cloneDeepWith(value, makeOmittingCloneDeepCustomizer(predicate));
@@ -271,4 +271,15 @@ _e.toJson = function toJson(val) {
 
 _e.fromJson = function fromJson(json) {
   return JSON.parse(json);
+};
+
+_e.normalizeText = (text) => {
+  // Postgres SQL for the same
+  // regexp_replace(lower(regexp_replace(trim(text), '\s+', ' ', 'g')), '[^[:alnum:][:space:]_.]', '', 'g')
+  text = toLower(text);
+  text = deburr(text);
+  text = replace(text, /[^\w\s]/g, "");
+  text = _e.cleanWhitespace(text);
+
+  return text;
 };

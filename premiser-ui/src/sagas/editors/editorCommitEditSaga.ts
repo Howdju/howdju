@@ -47,9 +47,10 @@ export function* editorCommitEdit() {
     function* editorCommitEditWorker(action: EditorAction) {
       const { editorType, editorId } = action.payload;
 
-      const { editEntity } = yield* select(
+      const editorState = yield* select(
         selectEditorState(editorType, editorId)
       );
+      const { editEntity } = editorState;
       const editorCommitApiResourceAction = createEditorCommitApiResourceAction(
         editorType,
         editEntity

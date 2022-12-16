@@ -1,6 +1,6 @@
 import React from "react";
 
-import { AccountSettings, schemaSettings } from "howdju-common";
+import { AccountSettings } from "howdju-common";
 
 import ErrorMessages from "@/ErrorMessages";
 import TextField from "@/TextField";
@@ -41,7 +41,7 @@ export default function AccountSettingsEditorFields({
         label="Paid contributions disclosure"
         rows={2}
         maxRows={8}
-        maxLength={schemaSettings.paidContributionsDisclosureTextMaxLength}
+        maxLength={AccountSettings.shape.paidContributionsDisclosure.maxLength}
         value={accountSettings?.paidContributionsDisclosure}
         onPropertyChange={onPropertyChange}
         disabled={disabled}

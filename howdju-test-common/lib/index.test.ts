@@ -1,4 +1,4 @@
-const { mockLogger } = require("./index");
+import { mockLogger } from "./index";
 
 describe("mockLogger", () => {
   test("logs without error", () => {

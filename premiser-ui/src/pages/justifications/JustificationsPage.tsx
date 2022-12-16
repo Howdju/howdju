@@ -21,14 +21,10 @@ import {
   JustificationRootTarget,
   JustificationRootTargetType,
   JustificationTargetType,
+  JustificationOut,
   makeCreateJustificationInputTargetingRoot,
 } from "howdju-common";
-import {
-  actions,
-  isVerified,
-  isDisverified,
-  JustificationViewModel,
-} from "howdju-client-common";
+import { actions, isVerified, isDisverified } from "howdju-client-common";
 
 import Helmet from "@/Helmet";
 import {
@@ -284,14 +280,16 @@ class JustificationsPage extends Component<Props> {
           className="md-grid--bottom"
         />
 
-        <CreateJustificationDialog
-          id={this.id("create-justification-dialog")}
-          editorId={JustificationsPage.justificationEditorId}
-          visible={isNewJustificationDialogVisible}
-          onCancel={this.cancelNewJustificationDialog}
-          commitAction={justificationsPage.hideNewJustificationDialog()}
-          onHide={this.cancelNewJustificationDialog}
-        />
+        {isNewJustificationDialogVisible && (
+          <CreateJustificationDialog
+            id={this.id("create-justification-dialog")}
+            editorId={JustificationsPage.justificationEditorId}
+            visible={isNewJustificationDialogVisible}
+            onCancel={this.cancelNewJustificationDialog}
+            commitAction={justificationsPage.hideNewJustificationDialog()}
+            onHide={this.cancelNewJustificationDialog}
+          />
+        )}
       </div>
     );
   }
@@ -301,7 +299,7 @@ function describeRootTargetType(rootTargetType: JustificationRootTargetType) {
   return toLower(rootTargetType);
 }
 
-const sortJustifications = (justifications: JustificationViewModel[]) => {
+const sortJustifications = (justifications?: JustificationOut[]) => {
   justifications = sortBy(justifications, (j) => j.score);
   justifications = sortBy(justifications, (j) =>
     isDisverified(j) ? 1 : isVerified(j) ? -1 : 0

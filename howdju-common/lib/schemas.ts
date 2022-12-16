@@ -17,7 +17,6 @@ export const schemaSettings = {
   shortNameMaxLength: 32,
   passwordMinLength: 6,
   passwordMaxLength: 64,
-  paidContributionsDisclosureTextMaxLength: 4096,
   reportContentDescriptionMaxLength: 4096,
 } as const;
 
@@ -325,25 +324,7 @@ const persorg = {
   },
 } as const;
 
-const accountSettings = {
-  $id: "https://howdju.com/schemas/account-settings.schema.json",
-  $schema: "http://json-schema.org/draft-07/schema#",
-  title: "Account Settings",
-  description: "The settings associate with a user's account.",
-  type: "object",
-  required: [],
-  properties: {
-    paidContributionsDisclosure: {
-      type: "string",
-      description:
-        "The user's disclosure that they are paid to contribute to Howdju.",
-      maxLength: schemaSettings.paidContributionsDisclosureTextMaxLength,
-    },
-  },
-} as const;
-
 export const schemas = {
-  accountSettings,
   contentReport,
   passwordResetRequest,
   passwordResetConfirmation,
@@ -356,7 +337,6 @@ export const schemas = {
 } as const;
 
 export const schemasById = {
-  [accountSettings["$id"]]: accountSettings,
   [contentReport["$id"]]: contentReport,
   [passwordResetRequest["$id"]]: passwordResetRequest,
   [passwordResetConfirmation["$id"]]: passwordResetConfirmation,

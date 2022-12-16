@@ -1,20 +1,10 @@
 const assign = require("lodash/assign");
 
 const Promise = require("bluebird");
-const pg = require("pg");
 
-const {
-  Database,
-  makeTimestampToUtcMomentParser,
-  PgTypeOids,
-} = require("howdju-service-common");
+const { Database, makePool } = require("howdju-service-common");
 
 exports.init = function init(provider) {
-  pg.types.setTypeParser(
-    PgTypeOids.TIMESTAMP,
-    makeTimestampToUtcMomentParser(provider.logger)
-  );
-
   const config = {
     user: provider.getConfigVal("DB_USER"),
     database: provider.getConfigVal("DB_NAME"),
@@ -31,12 +21,7 @@ exports.init = function init(provider) {
     ),
     Promise,
   };
-
-  const pool = new pg.Pool(config);
-  pool.on("error", (err, client) =>
-    provider.logger.error("database pool error", { err })
-  );
-
+  const pool = makePool(provider.logger, config);
   assign(provider, {
     pool,
     database: new Database(provider.logger, pool),
