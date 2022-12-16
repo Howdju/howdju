@@ -14,24 +14,24 @@ import {
   Persisted,
   SourceExcerptParaphrase,
   CreateContentReportInput,
-  TaggedEntityViewModel,
-  PropositionTagVoteViewModel,
-  JustificationOutModel,
+  TaggedEntityOut,
+  PropositionTagVoteOut,
+  JustificationOut,
 } from "howdju-common";
 
 // TODO either rename to JustificationRootTargetRef, replace justifications with hasAgreement and
 // hasDisagreement. Or replace with non-persisted version to allow drafting of justification trees.
 export type JustificationRootTargetViewModel =
   Persisted<JustificationRootTarget> &
-    TaggedEntityViewModel & {
-      justifications: JustificationOutModel[];
+    TaggedEntityOut & {
+      justifications: JustificationOut[];
       // TODO make tags a view model and put the votes on them.
       // TODO (At the very least deduplicate between TaggedEntityViewModel.tagVotes)
-      propositionTagVotes: PropositionTagVoteViewModel[];
+      propositionTagVotes: PropositionTagVoteOut[];
     };
 
 type UnrootedJustificationViewModel = Omit<
-  JustificationOutModel,
+  JustificationOut,
   "rootTarget" | "rootTargetType" | "rootPolarity"
 >;
 const justificationViewModelDefaults = () => ({
@@ -42,7 +42,7 @@ export function makeJustificationOutModel(
     UnrootedJustificationViewModel,
     keyof ReturnType<typeof justificationViewModelDefaults>
   >
-): JustificationOutModel {
+): JustificationOut {
   const init = justificationViewModelDefaults();
   const merged = merge(init, props);
   return inferJustificationRootTarget(merged);
@@ -50,7 +50,7 @@ export function makeJustificationOutModel(
 
 function inferJustificationRootTarget(
   justification: UnrootedJustificationViewModel
-): JustificationOutModel {
+): JustificationOut {
   let targetEntity = justification.target.entity;
   let targetType = justification.target.type;
   let rootPolarity: JustificationPolarity = justification.polarity;
@@ -72,12 +72,12 @@ function inferJustificationRootTarget(
     rootTargetType,
     rootTarget,
     rootPolarity,
-  } as JustificationOutModel;
+  } as JustificationOut;
 }
 
-export const isVerified = (j: JustificationOutModel) =>
+export const isVerified = (j: JustificationOut) =>
   j.vote && j.vote.polarity === "POSITIVE";
-export const isDisverified = (j: JustificationOutModel) =>
+export const isDisverified = (j: JustificationOut) =>
   j.vote && j.vote.polarity === "NEGATIVE";
 
 /** @deprecated */

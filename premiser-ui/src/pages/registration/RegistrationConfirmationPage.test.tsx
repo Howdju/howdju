@@ -12,12 +12,7 @@ import {
   httpStatusCodes,
 } from "howdju-common";
 
-const handlers = [
-  rest.get("http://localhost/registration-requests", (_req, res, ctx) => {
-    return res(ctx.status(httpStatusCodes.ERROR));
-  }),
-];
-const server = setupServer(...handlers);
+const server = setupServer();
 
 beforeAll(() => server.listen());
 afterEach(() => {
@@ -52,6 +47,7 @@ describe("RegistrationConfirmationPage", () => {
     expect(screen.getByRole("button", { name: /register/i })).toBeDisabled();
     expect(container).toMatchSnapshot();
   });
+
   test("shows error message for missing registration code", async () => {
     server.use(
       rest.get("http://localhost/registration-requests", (_req, res, ctx) => {
@@ -66,6 +62,7 @@ describe("RegistrationConfirmationPage", () => {
     jest.runAllTimers();
     expect(container).toMatchSnapshot();
   });
+
   test("shows error message for duplicate username", async () => {
     // Arrange
 
@@ -76,6 +73,12 @@ describe("RegistrationConfirmationPage", () => {
     const username = "the_username";
 
     server.use(
+      rest.get("http://localhost/registration-requests", (_req, res, ctx) => {
+        return res(
+          ctx.status(httpStatusCodes.OK),
+          ctx.json({ email: "a@b.com" })
+        );
+      }),
       rest.post("http://localhost/registrations", (_req, res, ctx) => {
         return res(
           ctx.status(httpStatusCodes.CONFLICT),
@@ -141,6 +144,7 @@ describe("RegistrationConfirmationPage", () => {
     jest.runAllTimers();
     expect(container).toMatchSnapshot();
   });
+
   test("shows success message upon confirmation.", async () => {
     // Arrange
 
@@ -148,9 +152,21 @@ describe("RegistrationConfirmationPage", () => {
     // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
+    const registrationCode = "abc";
     const username = "the_username";
 
     server.use(
+      rest.get("http://localhost/registration-requests", (req, res, ctx) => {
+        const requestRegistrationCode =
+          req.url.searchParams.get("registrationCode");
+        if (requestRegistrationCode !== registrationCode) {
+          return res(ctx.status(httpStatusCodes.NOT_FOUND));
+        }
+        return res(
+          ctx.status(httpStatusCodes.OK),
+          ctx.json({ email: "a@b.com" })
+        );
+      }),
       rest.post("http://localhost/registrations", (_req, res, ctx) => {
         return res(ctx.status(httpStatusCodes.OK));
       })
@@ -159,7 +175,7 @@ describe("RegistrationConfirmationPage", () => {
     const { container, history } = renderWithProviders(
       <RegistrationConfirmationPage />
     );
-    history.push(`complete-registration?registrationCode=abc`);
+    history.push(`complete-registration?registrationCode=${registrationCode}`);
     await screen.findByLabelText(/username/i);
 
     await user.type(screen.getByLabelText(/username/i), username);

@@ -7,19 +7,14 @@ import { createMemoryHistory } from "history";
 import {
   GetPropositionResponse,
   httpStatusCodes,
-  JustificationOutModel,
+  JustificationOut,
   toSlug,
 } from "howdju-common";
 
 import { makeRouteComponentProps, renderWithProviders } from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
 
-const handlers = [
-  rest.get("http://localhost/propositions", (_req, res, ctx) => {
-    return res(ctx.status(httpStatusCodes.ERROR));
-  }),
-];
-const server = setupServer(...handlers);
+const server = setupServer();
 
 beforeAll(() => server.listen());
 afterEach(() => {
@@ -32,7 +27,7 @@ afterAll(() => server.close());
 describe("JustificationsPage", () => {
   test("Shows a justified proposition", async () => {
     // Arrange
-    const justifications: JustificationOutModel[] = [];
+    const justifications: JustificationOut[] = [];
     const proposition = {
       id: "1",
       text: "the-proposition-text",

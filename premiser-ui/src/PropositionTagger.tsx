@@ -4,7 +4,7 @@ import find from "lodash/find";
 import {
   EntityId,
   PropositionTagVotePolarities,
-  PropositionTagVoteViewModel,
+  PropositionTagVoteOut,
   Tag,
   tagEqual,
 } from "howdju-common";
@@ -18,7 +18,7 @@ import { ComponentId, SuggestionsKey } from "./types";
 interface Props {
   id: ComponentId;
   tags?: Tag[];
-  votes: PropositionTagVoteViewModel[];
+  votes: PropositionTagVoteOut[];
   recommendedTags?: Tag[];
   suggestionsKey: SuggestionsKey;
   propositionId: EntityId;

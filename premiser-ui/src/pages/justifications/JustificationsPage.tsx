@@ -21,7 +21,7 @@ import {
   JustificationRootTarget,
   JustificationRootTargetType,
   JustificationTargetType,
-  JustificationOutModel,
+  JustificationOut,
   makeCreateJustificationInputTargetingRoot,
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
@@ -299,7 +299,7 @@ function describeRootTargetType(rootTargetType: JustificationRootTargetType) {
   return toLower(rootTargetType);
 }
 
-const sortJustifications = (justifications?: JustificationOutModel[]) => {
+const sortJustifications = (justifications?: JustificationOut[]) => {
   justifications = sortBy(justifications, (j) => j.score);
   justifications = sortBy(justifications, (j) =>
     isDisverified(j) ? 1 : isVerified(j) ? -1 : 0

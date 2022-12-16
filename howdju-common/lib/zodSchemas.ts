@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { iso8601Datetime, momentTimestamp, url } from "./zodRefinements";
+import { iso8601Datetime, url } from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
 /** A perstisent conceptual entity */
@@ -789,17 +789,6 @@ export const CreateUser = User.omit({
     .refine((v) => v, "Must not be subject to the GDPR."),
 });
 export type CreateUser = z.infer<typeof CreateUser>;
-
-export const UserData = User.omit({
-  created: true,
-  externalIds: true,
-}).extend({
-  acceptedTerms: z.any().refine(...momentTimestamp),
-  affirmedMajorityConsent: z.any().refine(...momentTimestamp),
-  affirmed13YearsOrOlder: z.any().refine(...momentTimestamp),
-  affirmedNotGdpr: z.any().refine(...momentTimestamp),
-});
-export type UserData = z.infer<typeof UserData>;
 
 export const AccountSettings = Entity.extend({
   paidContributionsDisclosure: z.string().max(4096),

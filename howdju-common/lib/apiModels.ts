@@ -1,7 +1,7 @@
 /**
  * Models that define requests and responses to APIs.
  *
- * Requests often will contain CreateX models. Responses often will contain XViewModels.
+ * Requests often will contain CreateX or EditX models. Responses often will contain XOuts.
  * Where X is an Entity.
  */
 
@@ -17,34 +17,31 @@ import {
 import { Persisted } from "./zodSchemaTypes";
 
 export interface GetPropositionResponse {
-  proposition: PropositionOutModel;
+  proposition: PropositionOut;
 }
 
-export interface PropositionOutModel
+export interface PropositionOut
   extends Persisted<Proposition>,
-    TaggedEntityViewModel {
-  justifications?: JustificationOutModel[];
-  propositionTagVotes?: PropositionTagVoteViewModel[];
+    TaggedEntityOut {
+  justifications?: JustificationOut[];
+  propositionTagVotes?: PropositionTagVoteOut[];
 }
 
-export type JustificationOutModel = Persisted<Justification> & {
+export type JustificationOut = Persisted<Justification> & {
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
   // The sorting score for the current user
   score?: number;
   // Justifications countering this justification.
-  counterJustifications?: JustificationOutModel[];
+  counterJustifications?: JustificationOut[];
 };
 
 // TagVoteViewModel don't need a target because they are added to their targets
 export type TagVoteViewModel = Omit<TagVote, "target">;
 
-export type PropositionTagVoteViewModel = Omit<
-  PropositionTagVote,
-  "proposition"
->;
+export type PropositionTagVoteOut = Omit<PropositionTagVote, "proposition">;
 
-export interface TaggedEntityViewModel extends Persisted<Entity> {
+export interface TaggedEntityOut extends Persisted<Entity> {
   tags?: Tag[];
   // TODO put votes on tags and type it as a viewmodel
   tagVotes?: TagVoteViewModel[];

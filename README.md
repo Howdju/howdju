@@ -399,6 +399,25 @@ For example, a test named like `RegistrationConfirmationPage › shows form` wou
 yarn run test-update-snapshot "RegistrationConfirmationPage shows form"
 ```
 
+There is an annoying flake with these tests that often manifests when they are run filtered to just
+one test: the react-md animations do not complete and we end up with extraneous diffs like:
+
+```diff
+<div
+  class="md-ink-container"
+- >
+-   <span
+-     class="md-ink md-ink--active md-ink--expanded"
+-     style="left: 0px; top: 0px; height: 0px; width: 0px;"
+-   />
+- </div>
++ />
+```
+
+To deal with this, use `git add -p` to selectively stage only the relevant changes. (If you end up
+editing the file manually, you may benefit from this command too: `git restore path/to/file` which
+removes unstaged changes while keeping staged changes.)
+
 ## Testing Github actions
 
 Note: Act currently fails for tests that use our Postgres docker because Act doesn't support Github

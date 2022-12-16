@@ -95,18 +95,33 @@ the ID.
 `Persisted` entities often appear on the relation fields of edit models or API
 submisison models when they represent the creation of a newly related entity.
 
-## `ViewModel`s
+## Response models (`XOut`)
 
-`ViewModel`s are either UI specific models or extensions to entities that
-contain additional useful fields for displaying the entity to a user. They
+`Out` models are usually those returned by ('coming out of') the API. They usually extend or modify
+the entities upon which they are based, containing additional fields useful for displaying the entity to a user. For example they
 may contain `Tag`s or `Vote`s that are tailored to the viewing user.
 
-Entities appearing in ViewModels are always a persisted Entity. (Unpersisted Entities would be
+Entities appearing in OutModels are usually a persisted Entity. (Unpersisted Entities would be
 `CreateModel`s.) We often also want their fields to be required for display.
 
-`ViewModel`s are often returned directly from the API for a client to display,
-although client may also augment a `ViewModel` after receiving it, or may
-construct `ViewModel`s entirely for ephemeral client-side state.
+Additional fields on `Out` models are often optional, so that either:
+
+1. To ease reuse of the `Out` model in different responses which may not include the extra fields,
+   or
+2. To support request parameters that control the addition of extra fields.
+
+## Persistence models (`XData`)
+
+Persistence models represent how we store the data. We may add additional relation fields that help
+to query or index the data. Some Entities will not need a special persistence model, and so they can
+use the entity model for persistence.
+
+## `View` models
+
+The term `View` model is a catch-all for models used in clients that don't fall in any other category. Client
+may also augment a `Out` model after receiving it, creating a `View` model, or may construct
+`View` models entirely for ephemeral client-side state. `View` models may not necessarily be based
+on an entity.
 
 ## Types table
 
@@ -141,6 +156,21 @@ construct `ViewModel`s entirely for ephemeral client-side state.
 |                |
 |                | These models must be validated before operating on them. Validation             |
 |                | boundaries occur at the boundaries of ownership.                                |
+| `XData`        | Persistence model for `X`.                                                      |
+| `XOut`         | Model returned by API representing the entity `X` and possibly additional info. |
+| `YView`        | A view model for `Y` (where `Y` may not be an entity.)                          |
+
+## Validation
+
+Not all models need to be validated in production. Generally, models representing user input must be
+validated, while data coming from our persistence or API logic does not require production
+validation. But it may be worthwhile to validate outgoing models in development.
+
+## Request/response models
+
+Request and response models represent the specific data sent to the API (requests) or sent from the
+API (responses). They are named like `MethodEntityDirection`
+(`{Get,Post,Put,Delete}Entity{Request,Response}`). E.g.: `GetPropositionRequest`/`GetPropositionResponse`
 
 ## `mux...`/`demux...`
 
