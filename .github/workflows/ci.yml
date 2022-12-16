@@ -44,7 +44,6 @@ jobs:
       - name: Test
         env:
           DB_USER: postgres
-          DB_NAME: premiser
           DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
           DB_HOST: localhost
           DB_PORT: 5432

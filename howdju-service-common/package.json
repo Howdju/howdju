@@ -11,7 +11,7 @@
     "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint .",
     "test": "bin/test.sh",
-    "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
+    "test-inspect": "bin/test.sh inspect",
     "typecheck": "tsc"
   },
   "dependencies": {
