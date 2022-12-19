@@ -6,8 +6,6 @@ import {
   isPropositionCompoundBased,
   JustificationPolarities,
   JustificationBasisTypes,
-  Url,
-  PropositionCompoundAtom,
   CreateJustificationInput,
   isRef,
 } from "howdju-common";
@@ -23,7 +21,7 @@ import PropositionCompoundEditorFields from "@/PropositionCompoundEditorFields";
 import SelectionControlGroup from "@/SelectionControlGroup";
 import { combineNames, combineIds, combineSuggestionsKeys } from "@/viewModels";
 
-import { OnAddCallback, OnKeyDownCallback, OnRemoveCallback } from "@/types";
+import { OnKeyDownCallback } from "@/types";
 import { toOnChangeCallback } from "@/util";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
@@ -75,10 +73,6 @@ const basisTypeControls = [
 interface Props extends EntityEditorFieldsProps<CreateJustificationInput> {
   // Justifications are not editable, they can only be created.
   justification?: CreateJustificationInput;
-  onAddUrl: OnAddCallback;
-  onRemoveUrl: OnRemoveCallback<Url>;
-  onAddPropositionCompoundAtom: OnAddCallback;
-  onRemovePropositionCompoundAtom: OnRemoveCallback<PropositionCompoundAtom>;
   doShowTypeSelection?: boolean;
   onKeyDown?: OnKeyDownCallback;
 }
@@ -92,10 +86,7 @@ export default function JustificationEditorFields(props: Props) {
     suggestionsKey,
     onBlur,
     onPropertyChange,
-    onAddUrl,
-    onRemoveUrl,
-    onAddPropositionCompoundAtom,
-    onRemovePropositionCompoundAtom,
+    editorDispatch,
     blurredFields,
     dirtyFields,
     errors,
@@ -145,9 +136,8 @@ export default function JustificationEditorFields(props: Props) {
         blurredFields={blurredFields?.basis?.propositionCompound}
         dirtyFields={dirtyFields?.basis?.propositionCompound}
         errors={errors?.basis?.propositionCompound}
-        onAddPropositionCompoundAtom={onAddPropositionCompoundAtom}
-        onRemovePropositionCompoundAtom={onRemovePropositionCompoundAtom}
         wasSubmitAttempted={wasSubmitAttempted}
+        editorDispatch={editorDispatch}
       />
     );
   const writQuoteEditorFields = basisWritQuote && !isRef(basisWritQuote) && (
@@ -161,9 +151,8 @@ export default function JustificationEditorFields(props: Props) {
       blurredFields={blurredFields?.basis?.writQuote}
       dirtyFields={dirtyFields?.basis?.writQuote}
       errors={errors?.basis?.writQuote}
-      onAddUrl={onAddUrl}
-      onRemoveUrl={onRemoveUrl}
       wasSubmitAttempted={wasSubmitAttempted}
+      editorDispatch={editorDispatch}
     />
   );
   const editorFields = _isPropositionCompoundBased ? (

@@ -1,4 +1,4 @@
-const { cwd } = require("process");
+// const { cwd } = require("process");
 import type { Config } from "jest";
 
 /**
@@ -28,17 +28,12 @@ const config: Config = {
     `${__dirname}/jest/OutputConsoleOnFailureOnlyReporter.js`,
     `${__dirname}/node_modules/@jest/reporters/build/SummaryReporter.js`,
   ],
-  // TODO add these etc. from howdju-mobile-app/jest.config.js
-  // resolver: `${__dirname}/jest/yarn-link-resolver.js`,
+  // TODO possibly update this resolver to handle symlinked dependencies like howdju-mobile-app
+  // currently does.
+  resolver: `${__dirname}/jest/resolver.js`,
+  // TODO potentially add this (currently used by howdju-mobile-app.)
   // setupFiles: [`${__dirname}/jest/react-navigation-setup.ts`],
   moduleNameMapper: {
-    // Support our custom project-relative import defined in tsconig.json:compilerOptions.paths
-    "^@/(.*)": [
-      // Prefix with cwd so that the imports are relative to the test project, and not relative to
-      // the rootDir, which is the monorepo root where this file was found.
-      cwd() + "/src/$1",
-      cwd() + "/lib/$1",
-    ],
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga|md)$": `${__dirname}/jest/__mocks__/fileMock.js`,
     "\\.(scss|css|less)$": "identity-obj-proxy",
   },

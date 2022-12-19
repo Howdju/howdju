@@ -164,7 +164,7 @@ class CreatePropositionPage extends Component {
         break;
       }
       default: {
-        logger.warning(
+        logger.warn(
           `unsupported CreatePropositionPageMode: ${this.props.mode}`
         );
       }

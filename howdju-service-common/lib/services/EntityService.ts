@@ -19,7 +19,7 @@ import Promise from "any-promise";
 
 interface EntitySchemas {
   createSchema: z.ZodTypeAny;
-  editSchema: z.ZodTypeAny;
+  editSchema?: z.ZodTypeAny;
 }
 
 export abstract class EntityService<T extends Entity> {
@@ -38,7 +38,53 @@ export abstract class EntityService<T extends Entity> {
     this.authService = authService;
   }
 
-  validateEntity(entitySchema: z.ZodTypeAny | Schema, entity: T) {
+  async readOrCreate(entity: T, authToken: AuthToken) {
+    const now = new Date();
+    const entitySchema = isJoiSchema(this.entitySchemas)
+      ? this.entitySchemas
+      : this.entitySchemas.createSchema;
+    const { value, error } = this.validateEntity(entitySchema, entity);
+    if (error) {
+      throw new EntityValidationError(error);
+    }
+    const userId = authToken
+      ? await this.authService.readUserIdForAuthToken(authToken)
+      : undefined;
+    return await this.doReadOrCreate(value, userId, now);
+  }
+
+  abstract doReadOrCreate(
+    entity: T,
+    userId: string | undefined,
+    now: Date
+  ): Promise<T>;
+
+  async update(entity: T, authToken: AuthToken) {
+    if (!entity.id) {
+      throw new EntityValidationError({
+        id: ["id is required to update an entity"],
+      });
+    }
+
+    const now = new Date();
+    const userId = await this.authService.readUserIdForAuthToken(authToken);
+    const entitySchema = isJoiSchema(this.entitySchemas)
+      ? this.entitySchemas
+      : this.entitySchemas.editSchema;
+    if (!entitySchema) {
+      throw newProgrammingError("Entity does not support updates.");
+    }
+    const { error, value } = this.validateEntity(entitySchema, entity);
+    if (error) {
+      const errors = translateJoiError(error);
+      throw new EntityValidationError(errors);
+    }
+    return await this.doUpdate(value, userId, now);
+  }
+
+  abstract doUpdate(entity: T, userId: string, now: Date): Promise<T>;
+
+  protected validateEntity(entitySchema: z.ZodTypeAny | Schema, entity: T) {
     if (entitySchema instanceof z.ZodType) {
       const result = entitySchema.safeParse(entity);
       if (result.success) {
@@ -62,41 +108,4 @@ export abstract class EntityService<T extends Entity> {
     }
     return { value };
   }
-
-  async readOrCreate(entity: T, authToken: AuthToken) {
-    const now = new Date();
-    const userId = await this.authService.readUserIdForAuthToken(authToken);
-    const entitySchema = isJoiSchema(this.entitySchemas)
-      ? this.entitySchemas
-      : this.entitySchemas.createSchema;
-    const { value, error } = this.validateEntity(entitySchema, entity);
-    if (error) {
-      throw new EntityValidationError(error);
-    }
-    return await this.doReadOrCreate(value, userId, now);
-  }
-
-  abstract doReadOrCreate(entity: T, userId: string, now: Date): Promise<T>;
-
-  async update(entity: T, authToken: AuthToken) {
-    if (!entity.id) {
-      throw new EntityValidationError({
-        id: ["id is required to update an entity"],
-      });
-    }
-
-    const now = new Date();
-    const userId = await this.authService.readUserIdForAuthToken(authToken);
-    const entitySchema = isJoiSchema(this.entitySchemas)
-      ? this.entitySchemas
-      : this.entitySchemas.editSchema;
-    const { error, value } = this.validateEntity(entitySchema, entity);
-    if (error) {
-      const errors = translateJoiError(error);
-      throw new EntityValidationError(errors);
-    }
-    return await this.doUpdate(value, userId, now);
-  }
-
-  abstract doUpdate(entity: T, userId: string, now: Date): Promise<T>;
 }

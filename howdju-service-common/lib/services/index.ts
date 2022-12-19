@@ -1,6 +1,7 @@
 export * from "./AccountSettingsService";
 export * from "./ActionsService";
 export * from "./AuthService";
+export * from "./AwsTopicMessageSender";
 export * from "./ContentReportsService";
 export * from "./EmailService";
 export * from "./GroupsService";
@@ -24,8 +25,6 @@ export * from "./RegistrationService";
 export * from "./RootTargetJustificationsService";
 export * from "./StatementsService";
 export * from "./TagsService";
-export * from "./TopicMessageSender";
-export * from "./topicMessages";
 export * from "./UrlsService";
 export * from "./UsersService";
 export * from "./VidSegmentsService";

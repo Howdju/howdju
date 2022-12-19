@@ -1,24 +1,32 @@
-const forEach = require("lodash/forEach");
 const toUpper = require("lodash/toUpper");
 
-const inits = [
-  require("./loggerInit"),
-  require("./utilInit"),
-  require("./configInit"),
-  require("./databaseInit"),
-  require("./daosInit"),
-  require("./searchersInit"),
-  require("./validatorsInit"),
-  require("./awsInit"),
-  require("./servicesInit"),
-];
+const {
+  daosInitializer,
+  searchersInitializer,
+  validatorsInitializer,
+  servicesInitializer,
+} = require("howdju-service-common");
+
+const loggerInit = require("./loggerInit");
+const configInit = require("./configInit");
+const databaseInit = require("./databaseInit");
+const awsInit = require("./awsInit");
 
 exports.AppProvider = class AppProvider {
   constructor(stage) {
     this.stage = stage;
     this.isProduction = this.getConfigVal("NODE_ENV") === "production";
 
-    forEach(inits, (i) => i.init(this));
+    // This is our hacky dependency injection
+    // TODO(106): configure real dependency injection
+    loggerInit.init(this);
+    configInit.init(this);
+    databaseInit.init(this);
+    daosInitializer(this);
+    searchersInitializer(this);
+    validatorsInitializer(this);
+    awsInit.init(this);
+    servicesInitializer(this);
 
     this.logger.debug("AppProvider initialization complete");
   }

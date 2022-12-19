@@ -7,8 +7,10 @@ anyPromiseRegister("bluebird", { Promise: require("bluebird") });
 momentDurationFormatSetup(moment);
 
 export * from "./apiGateway";
+export * from "./config";
 export * from "./daos";
 export * from "./database";
+export * from "./initializers";
 export * from "./jobEnums";
 export * from "./logging";
 export * from "./permissions";

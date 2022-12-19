@@ -5,7 +5,7 @@ import { ComponentId } from "@/types";
 
 interface Props {
   id: ComponentId;
-  accountSettings: AccountSettings | null;
+  accountSettings?: AccountSettings;
   className?: string;
 }
 

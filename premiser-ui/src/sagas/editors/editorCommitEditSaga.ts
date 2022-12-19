@@ -24,6 +24,10 @@ import {
   Justification,
   CreateCounterJustificationInput,
   CreateCounterJustification,
+  CreateRegistrationConfirmation,
+  User,
+  AuthToken,
+  CreateRegistrationConfirmationInput,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -177,6 +181,9 @@ export type EditorCommitCrudActionConfig<
    * Transforms the Input model into the request model
    *
    * If missing, the model is not transformed.
+   *
+   * TODO(26): this has overlap with apiActionCreator's prepare method, which translates the entity
+   * into the request.
    */
   inputTransformer?: (model: T) => U;
   /**
@@ -240,6 +247,18 @@ export const CreateCounterJustificationConfig: EditorCommitCrudActionConfig<
   requestActionCreator: api.createCounterJustification,
   requestSchema: CreateCounterJustification,
 };
+
+export const CreateRegistrationConfirmationConfig: EditorCommitCrudActionConfig<
+  CreateRegistrationConfirmationInput,
+  CreateRegistrationConfirmation,
+  { registrationConfirmation: CreateRegistrationConfirmation },
+  { user: User; authToken: AuthToken; expires: string },
+  PrepareAction<{ registrationConfirmation: CreateRegistrationConfirmation }>
+> = {
+  requestSchema: CreateRegistrationConfirmation,
+  requestActionCreator: api.confirmRegistration,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -308,7 +327,7 @@ export const editorCommitConfigs: Partial<
     CREATE: api.requestRegistration,
   },
   REGISTRATION_CONFIRMATION: {
-    CREATE: api.confirmRegistration,
+    CREATE: CreateRegistrationConfirmationConfig,
   },
   PERSORG: {
     UPDATE: api.updatePersorg,

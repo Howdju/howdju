@@ -1,7 +1,6 @@
 const cryptohat = require("cryptohat");
 const moment = require("moment");
 const outdent = require("outdent");
-const { topicMessages } = require("./topicMessages");
 
 const {
   commonPaths,
@@ -9,6 +8,7 @@ const {
   momentAdd,
   newImpossibleError,
   utcNow,
+  topicMessages,
 } = require("howdju-common");
 const {
   EntityNotFoundError,

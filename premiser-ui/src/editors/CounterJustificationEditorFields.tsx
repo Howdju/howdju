@@ -1,12 +1,10 @@
 import React from "react";
 
 import PropositionCompoundEditorFields from "../PropositionCompoundEditorFields";
-import { OnAddCallback, OnRemoveCallback } from "../types";
 import {
   CreateCounterJustificationInput,
   isRef,
   PropositionCompound,
-  PropositionCompoundAtom,
 } from "howdju-common";
 import {
   combineIds,
@@ -21,8 +19,6 @@ interface Props
   extends EntityEditorFieldsProps<CreateCounterJustificationInput> {
   // Justifications are not editable, they can only be created.
   justification?: CreateCounterJustificationInput;
-  onAddPropositionCompoundAtom: OnAddCallback;
-  onRemovePropositionCompoundAtom: OnRemoveCallback<PropositionCompoundAtom>;
 }
 
 export default function CounterJustificationEditorFields(props: Props) {
@@ -32,8 +28,7 @@ export default function CounterJustificationEditorFields(props: Props) {
     id,
     disabled,
     suggestionsKey,
-    onAddPropositionCompoundAtom,
-    onRemovePropositionCompoundAtom,
+    editorDispatch,
     blurredFields,
     dirtyFields,
     errors,
@@ -45,6 +40,7 @@ export default function CounterJustificationEditorFields(props: Props) {
   if (!propositionCompound || isRef<PropositionCompound>(propositionCompound)) {
     return null;
   }
+
   return (
     <PropositionCompoundEditorFields
       {...props}
@@ -59,8 +55,7 @@ export default function CounterJustificationEditorFields(props: Props) {
       blurredFields={blurredFields?.basis?.propositionCompound}
       dirtyFields={dirtyFields?.basis?.propositionCompound}
       errors={errors?.basis?.propositionCompound}
-      onAddPropositionCompoundAtom={onAddPropositionCompoundAtom}
-      onRemovePropositionCompoundAtom={onRemovePropositionCompoundAtom}
+      editorDispatch={editorDispatch}
       wasSubmitAttempted={wasSubmitAttempted}
       disabled={disabled}
     />

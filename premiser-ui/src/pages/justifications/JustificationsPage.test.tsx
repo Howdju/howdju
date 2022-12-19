@@ -17,10 +17,12 @@ import JustificationsPage from "./JustificationsPage";
 const server = setupServer();
 
 beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
+beforeEach(() => {
   // Use fake timers so that we can ensure animations complete before snapshotting.
   jest.useFakeTimers();
+});
+afterEach(() => {
+  server.resetHandlers();
 });
 afterAll(() => server.close());
 

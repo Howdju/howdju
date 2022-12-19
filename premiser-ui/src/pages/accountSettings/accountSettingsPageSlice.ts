@@ -5,7 +5,7 @@ import { AccountSettings } from "howdju-common";
 export const accountSettingsPageSlice = createSlice({
   name: "accountSettingsPage",
   initialState: {
-    accountSettings: null as AccountSettings | null,
+    accountSettings: undefined as AccountSettings | undefined,
     isFetching: false,
   },
   reducers: {},
@@ -16,7 +16,7 @@ export const accountSettingsPageSlice = createSlice({
     builder.addCase(api.fetchAccountSettings.response, (state, action) => {
       state.isFetching = false;
       if (action.error) {
-        state.accountSettings = null;
+        state.accountSettings = undefined;
         return;
       }
       state.accountSettings = action.payload.accountSettings;

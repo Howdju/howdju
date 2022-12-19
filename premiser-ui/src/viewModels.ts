@@ -186,14 +186,17 @@ export function array(index: number) {
   return new ArrayIndex(index);
 }
 
+export function combineObjectKey(key: string, extra: string) {
+  return key + "." + extra;
+}
+
 export function combineNames(
   ...names: (ComponentName | ArrayIndex | undefined)[]
 ) {
   // Don't convert case; the names must match the object model for use with get/set
   // I think each and every name should be truthy.  How else could they be relied upon for get/set?
   const filteredNames = dropWhile(names, isFalsey);
-  const firstName = head(filteredNames);
-  const remainingNames = drop(filteredNames, 1);
+  const [firstName, ...remainingNames] = filteredNames;
   const remainingNamesWithConnector = map(remainingNames, (n) =>
     n instanceof ArrayIndex ? `[${n.index}]` : `.${n}`
   );

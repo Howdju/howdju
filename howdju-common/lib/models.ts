@@ -15,6 +15,7 @@ import { isDefined } from "./general";
 import { OneOf } from "./typeUtils";
 import { ModelErrors } from "./zodError";
 import {
+  AccountSettings,
   CreateCounterJustification,
   CreateCounterJustificationBasis,
   CreateCounterJustificationInput,
@@ -35,6 +36,7 @@ import {
   CreatePropositionCompoundInput,
   CreatePropositionInput,
   CreateRegistrationConfirmationInput,
+  CreateRegistrationRequestInput,
   CreateSourceExcerpt,
   CreateSourceExcerptInput,
   CreateStatementInput,
@@ -122,12 +124,19 @@ export interface Credentials {
 export const makeCredentials = (props?: Partial<Credentials>): Credentials =>
   assign({ email: "", password: "" }, props);
 
+export const makeCreateRegistrationRequestInput = (
+  props?: Partial<CreateRegistrationRequestInput>
+): CreateRegistrationRequestInput => {
+  return assign({ email: "" }, props);
+};
+
 export const makeRegistrationRequest = (
   props?: Partial<RegistrationRequest>
 ): RegistrationRequest =>
   assign(
     {
       email: "",
+      isConsumed: false,
     },
     props
   );
@@ -152,40 +161,6 @@ export const makeCreateRegistrationConfirmationInput = (
 
 export const makeCreateRegistrationConfirmation =
   makeCreateRegistrationConfirmationInput;
-
-export interface UserRegistration {
-  email: string;
-  username: string;
-  shortName: string;
-  longName: string;
-  acceptedTerms: boolean;
-  affirmedMajorityConsent: boolean;
-  affirmed13YearsOrOlder: boolean;
-  affirmedNotGdpr: boolean;
-  isActive: boolean;
-}
-
-export const makeUserRegistration = (
-  props?: Partial<UserRegistration>
-): UserRegistration =>
-  assign(
-    {
-      email: "",
-      username: "",
-      shortName: "",
-      longName: "",
-      acceptedTerms: null,
-      affirmedMajorityConsent: null,
-      affirmed13YearsOrOlder: null,
-      affirmedNotGdpr: null,
-      isActive: false,
-    },
-    props
-  );
-
-interface AccountSettings {
-  paidContributionsDisclosure: string;
-}
 
 export const makeAccountSettings = (
   props?: Partial<AccountSettings>

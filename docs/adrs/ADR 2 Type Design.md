@@ -74,16 +74,39 @@ sourceExcerpt: {
 
 Where the `type` indicates which of the alternatives the user actually wants persisted upon creation.
 
-## API request models (`CreateX`/`EditX`)
+## In models (`CreateXIn`/`EditXIn`)
 
-API request models are those that a client will send to an API as a request
+In represent data a client sends to an API as a request
 payload. They are often entities that represent all the data the API needs to
-persist the entity. Edit model alternatives must be consolidated into a single
+persist an entity. Edit model alternatives must be consolidated into a single
 choice on these models.
 
 An entity may have several different corresponding API request models for
 different use-cases, if different fields are required. An entity's API request
 model may also refer to persisted related entities using only their `id` (i.e. `Ref`s.)
+
+## Out models (`CreateXOut`/`EditXOut`)
+
+`Out` models are usually those returned by ('coming out of') the API. They usually extend or modify
+the entities upon which they are based, containing additional fields useful for displaying the
+entity to a user. For example they may contain `Tag`s or `Vote`s that are tailored to the viewing
+user.
+
+Entities appearing in OutModels are usually a persisted Entity. (Unpersisted Entities would be
+`CreateModel`s.) We often also want their fields to be required for display.
+
+Additional fields on `Out` models are often optional, so that either:
+
+1. To ease reuse of the `Out` model in different responses which may not include the extra fields,
+   or
+2. To support request parameters that control the addition of extra fields.
+
+## In/Out body models
+
+In/Out Body models represent the entire body of an HTTP request or response. They may contain one or
+more In/Out models respectively. . They are named like `MethodEntityDirection`
+(`{Get,Post,Put,Delete}Endpoint{In,Out}`). E.g.: `GetPropositionIn`/`GetPropositionOut`. Often the
+`Endpoint` will correspond to an entity.
 
 ## `Persisted` entities
 
@@ -94,21 +117,6 @@ the ID.
 
 `Persisted` entities often appear on the relation fields of edit models or API
 submisison models when they represent the creation of a newly related entity.
-
-## Response models (`XOut`)
-
-`Out` models are usually those returned by ('coming out of') the API. They usually extend or modify
-the entities upon which they are based, containing additional fields useful for displaying the entity to a user. For example they
-may contain `Tag`s or `Vote`s that are tailored to the viewing user.
-
-Entities appearing in OutModels are usually a persisted Entity. (Unpersisted Entities would be
-`CreateModel`s.) We often also want their fields to be required for display.
-
-Additional fields on `Out` models are often optional, so that either:
-
-1. To ease reuse of the `Out` model in different responses which may not include the extra fields,
-   or
-2. To support request parameters that control the addition of extra fields.
 
 ## Persistence models (`XData`)
 
@@ -165,12 +173,6 @@ on an entity.
 Not all models need to be validated in production. Generally, models representing user input must be
 validated, while data coming from our persistence or API logic does not require production
 validation. But it may be worthwhile to validate outgoing models in development.
-
-## Request/response models
-
-Request and response models represent the specific data sent to the API (requests) or sent from the
-API (responses). They are named like `MethodEntityDirection`
-(`{Get,Post,Put,Delete}Entity{Request,Response}`). E.g.: `GetPropositionRequest`/`GetPropositionResponse`
 
 ## `mux...`/`demux...`
 

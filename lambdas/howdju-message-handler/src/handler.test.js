@@ -1,5 +1,5 @@
-import { topicMessages } from "howdju-service-common/lib/services/topicMessages";
-import { TopicMessageSender } from "howdju-service-common/lib/services/TopicMessageSender";
+import { topicMessages } from "howdju-common";
+import { AwsTopicMessageSender } from "howdju-service-common";
 import { mockLogger } from "howdju-test-common";
 
 import { handler } from "./handler";
@@ -13,7 +13,7 @@ describe("handler", () => {
     // Integration test of TopicMessageSender and handler
     const callback = jest.fn();
     const mockSns = new MockSns(callback);
-    const topicMessageSender = new TopicMessageSender(
+    const topicMessageSender = new AwsTopicMessageSender(
       mockLogger,
       mockSns,
       TOPIC_ARN

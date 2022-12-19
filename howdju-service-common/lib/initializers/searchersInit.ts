@@ -1,13 +1,12 @@
-const assign = require("lodash/assign");
-
-const {
+import {
   makePropositionTextSearcher,
   makeWritTitleSearcher,
   makeWritQuoteQuoteTextSearcher,
   makePersorgsNameSearcher,
-} = require("howdju-service-common");
+} from "@/searchers/searchers";
+import assign from "lodash/assign";
 
-exports.init = function init(provider) {
+export function searchersInitializer(provider: any) {
   assign(provider, {
     propositionsTextSearcher: makePropositionTextSearcher(provider.database),
     writsTitleSearcher: makeWritTitleSearcher(provider.database),
@@ -18,4 +17,4 @@ exports.init = function init(provider) {
   });
 
   provider.logger.debug("searchersInit complete");
-};
+}

@@ -1,6 +1,6 @@
-const assign = require("lodash/assign");
+import assign from "lodash/assign";
 
-const {
+import {
   AccountSettingsDao,
   ActionsDao,
   AuthDao,
@@ -32,9 +32,9 @@ const {
   UrlsDao,
   WritQuoteUrlTargetsDao,
   VidSegmentsDao,
-} = require("howdju-service-common");
+} from "@/daos";
 
-exports.init = function init(provider) {
+export function daosInitializer(provider: any) {
   const logger = provider.logger;
   const database = provider.database;
 
@@ -133,4 +133,4 @@ exports.init = function init(provider) {
   });
 
   provider.logger.debug("daosInit complete");
-};
+}

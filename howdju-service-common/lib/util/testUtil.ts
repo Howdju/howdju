@@ -4,8 +4,23 @@ import { PoolConfig } from "pg";
 
 import { mockLogger } from "howdju-test-common";
 
-import { makePool } from "..";
+import { ApiConfig, baseConfig, makePool } from "..";
 import { logger } from "howdju-common";
+import { cloneDeep, toNumber } from "lodash";
+
+export function makeTestDbConfig() {
+  return {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: toNumber(process.env.DB_PORT),
+    max: toNumber(process.env.DB_MAX_CONNECTIONS),
+  };
+}
+
+export function makeTestApiConfig(): ApiConfig {
+  return cloneDeep(baseConfig);
+}
 
 /** Create a randomly named test DB. */
 export async function initDb(config: PoolConfig) {
@@ -63,5 +78,5 @@ export async function dropDb(config: PoolConfig, dbName: string) {
 }
 
 function randomDbName() {
-  return "howdju" + randomBytes(20).toString("hex");
+  return "howdju_" + randomBytes(20).toString("hex");
 }

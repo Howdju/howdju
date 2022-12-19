@@ -55,6 +55,101 @@ export function formatZodError<T>(error: z.ZodError<T>) {
 }
 
 /**
+ * Helper for constructing a Zod error based upon the fields of a type.
+ *
+ * ```
+ * const error = newValidationError<User>([
+ *   (r) => r.user.name("Email is already in use."),
+ * ]);
+ * ```
+ *
+ * See tests for expanded usage.
+ *
+ * @param issueDescriptors Lambdas describing the issues. If the arg is a string, it will become the
+ *   message. Otherwise the arg must be the props of a Zod custom issue (minus the code.).
+ * @returns the Zod error.
+ */
+export function makeZodCustomIssuesError<T extends object>(
+  issueDescriptors: IssueDescriptor<T>[]
+): z.ZodError<T> {
+  const proxy = makeCallableProxy<T>();
+  const issues = issueDescriptors.map((d) => d(proxy)) as z.ZodIssue[];
+  return new z.ZodError<T>(issues);
+}
+
+/** Helper that formats the result of calling zodCustomIssuesError. */
+export function makeModelErrors<T extends object>(
+  ...issueDescriptors: IssueDescriptor<T>[]
+): ModelErrors<T> {
+  return formatZodError(makeZodCustomIssuesError(issueDescriptors));
+}
+
+/**
+ * A method that describes an issue at a path.
+ */
+type IssueDescriptor<T> = (t: Callable<T, IssueDescriptorArg>) => any;
+
+/**
+ * A type helper that converts a type T into another type that has all callable fields.
+ *
+ * @typeparam T the shape of the object
+ * @typeparam A the type of the arg of the methods.
+ */
+export type Callable<T, A> = {
+  (a: A): any;
+} & (NonNullable<T> extends [any, ...any[]]
+  ? { [K in keyof NonNullable<T>]: Callable<NonNullable<T>[K], A> }
+  : NonNullable<T> extends any[]
+  ? { [k: number]: Callable<NonNullable<T>[number], A> }
+  : NonNullable<T> extends object
+  ? { [K in keyof NonNullable<T>]: Callable<NonNullable<T>[K], A> }
+  : unknown);
+
+/** The acceptable arg to an issue descriptor. */
+type IssueDescriptorArg = string | Omit<z.ZodCustomIssue, "code" | "path">;
+
+// A singleton function to pass to the proxy so that the proxy supports the `apply` trap.
+// Other than the fact that it is a function, it's value has no effect on the behavior of makeCallableProxy.
+const callableProxyTarget = new Function();
+
+/**
+ * Returns a Proxy for which every field is callable with issue format information.
+ *
+ * If called with a string, it becomes the message. If called with an object, it must contain a
+ * message field and can contain any other fields.
+ */
+function makeCallableProxy<T>(): Callable<T, IssueDescriptorArg> {
+  const names: (string | number | symbol)[] = [];
+  return new Proxy(callableProxyTarget as Callable<T, IssueDescriptorArg>, {
+    get(_target, name, receiver) {
+      names.push(name);
+      return receiver;
+    },
+    apply(_target, _thisArg, argumentsList): z.ZodCustomIssue {
+      if (argumentsList.length !== 1) {
+        throw new Error("Must be a single argument.");
+      }
+      let props;
+      const arg = argumentsList[0];
+      if (isString(arg)) {
+        props = { message: arg };
+      } else if ("message" in arg) {
+        props = arg;
+      } else {
+        throw new Error(
+          "Argument must be a string or an object with at least a .message property."
+        );
+      }
+      return {
+        code: z.ZodIssueCode.custom,
+        path: names,
+        ...props,
+      };
+    },
+  });
+}
+
+/**
  * Returns error with all duplicate issues remove.
  *
  * Zod can produce duplicate issues. E.g., union fields can produce an identical

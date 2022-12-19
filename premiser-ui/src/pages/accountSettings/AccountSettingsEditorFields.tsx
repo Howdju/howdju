@@ -4,7 +4,7 @@ import { AccountSettings } from "howdju-common";
 
 import ErrorMessages from "@/ErrorMessages";
 import TextField from "@/TextField";
-import { combineIds, combineNames } from "@/viewModels";
+import { combineIds } from "@/viewModels";
 import { EntityEditorFieldsProps } from "@/editors/withEditor";
 import { makeErrorPropCreator } from "@/modelErrorMessages";
 
@@ -17,7 +17,6 @@ const paidContributionsDisclosureName = "paidContributionsDisclosure";
 export default function AccountSettingsEditorFields({
   accountSettings,
   id,
-  name,
   disabled,
   errors,
   dirtyFields,
@@ -32,12 +31,12 @@ export default function AccountSettingsEditorFields({
     blurredFields
   );
   return (
-    <div>
+    <>
       <ErrorMessages errors={errors?._errors} />
       <TextField
         id={combineIds(id, paidContributionsDisclosureName)}
         key="quoteText"
-        name={combineNames(name, paidContributionsDisclosureName)}
+        name={paidContributionsDisclosureName}
         label="Paid contributions disclosure"
         rows={2}
         maxRows={8}
@@ -51,6 +50,6 @@ export default function AccountSettingsEditorFields({
         For example: I receive compensation from Company A for my content
         relating to topics X, Y, and Z.
       </em>
-    </div>
+    </>
   );
 }

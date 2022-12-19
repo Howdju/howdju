@@ -1,4 +1,5 @@
 import { Entity, EntityId } from "howdju-common";
+import { FocusEvent } from "react";
 import { logger } from "./logger";
 
 export interface ContextTrailItemInfo {
@@ -26,7 +27,9 @@ export type ComponentId = string;
 
 /**
  * A DOM element's `name` attribute which identifies it in form callbacks.
- * If passed to a container, the ID should be a prefix for the child elements.
+ *
+ * If passed to a container, the ID should be a prefix for the child elements. The delimiter for combining
+ * prefixes is `.`.
  */
 export type ComponentName = string;
 
@@ -40,16 +43,17 @@ export type EditorId = string;
 export type SuggestionsKey = string;
 
 export type OnBlurCallback = (name: string) => void;
+export type OnCheckboxBlurCallback =
+  | ((event: FocusEvent<HTMLElement>) => void)
+  | undefined;
 
 export const toReactMdOnBlur = (
   onBlurCallback?: OnBlurCallback
 ): ReactMdOnBlur => {
-  return function (event: React.FocusEvent<HTMLElement>) {
+  return function (event: FocusEvent<HTMLElement>) {
     if (onBlurCallback) {
       if ("name" in event.target) {
-        onBlurCallback(
-          (event as React.FocusEvent<HTMLInputElement>).target.name
-        );
+        onBlurCallback((event as FocusEvent<HTMLInputElement>).target.name);
       } else {
         logger.error(
           "Unable to call blur callback because event did not target an HTMLInputElement"

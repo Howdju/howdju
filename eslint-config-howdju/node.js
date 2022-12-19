@@ -9,13 +9,6 @@ module.exports = {
   plugins: ["promise"],
   extends: ["eslint-config-howdju", "plugin:promise/recommended", "prettier"],
   rules: {
-    "no-restricted-globals": [
-      "error",
-      {
-        name: "Promise",
-        message: "Use bluebird instead of native Promise.",
-      },
-    ],
     // This incorrectly warns for Bluebird.catch with 2+ arguments (which is correct invocation.)
     "promise/valid-params": "off",
   },
