@@ -263,6 +263,9 @@ git bisect reset
 ### Upgrading dependencies
 
 ```shell
+# Figure out why something is installed
+yarn why -R <package>
+# UI for upgrading
 yarn upgrade-interactive
 ```
 
