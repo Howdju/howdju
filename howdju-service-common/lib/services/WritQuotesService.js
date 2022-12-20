@@ -231,7 +231,7 @@ exports.WritQuotesService = class WritQuotesService {
           entityConflicts[
             entityConflictCodes.ANOTHER_WRIT_QUOTE_HAS_SAME_TEXT
           ] = this.writQuotesDao.hasEquivalentWritQuotes(writQuote);
-          // A user can't upate a justification basis if others have already
+          // A user can't update a justification basis if others have already
           // made other actions relying upon its current state.
           assign(userActionConflicts, {
             [userActionsConflictCodes.OTHER_USERS_HAVE_VOTED_ON_JUSTIFICATIONS_BASED_ON_THIS_WRIT_QUOTE]:

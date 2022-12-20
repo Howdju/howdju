@@ -15259,7 +15259,7 @@ __metadata:
     eslint-config-howdju: "workspace:eslint-config-howdju"
     howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
-    lodash: ^4.17.4
+    lodash: ^4.17.21
     moment: ^2.29.4
     prettier: 2.7.1
     ts-node: ^10.9.1
@@ -15391,7 +15391,7 @@ __metadata:
     eslint-plugin-promise: ^5.1.0
     howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
-    lodash: ^4.17.4
+    lodash: ^4.17.21
     prettier: 2.7.1
     typescript: ^4.8.4
   languageName: unknown
@@ -15416,7 +15416,7 @@ __metadata:
     howdju-test-common: "workspace:howdju-test-common"
     jest: ^29.3.1
     joi: ^17.4.0
-    lodash: ^4.17.4
+    lodash: ^4.17.21
     moment: ^2.29.4
     moment-duration-format: ^2.2.2
     outdent: ^0.8.0

@@ -15,7 +15,7 @@
   "dependencies": {
     "aws-sdk": "^2.108.0",
     "eslint-plugin-promise": "^5.1.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "eslint": "^8.27.0",
