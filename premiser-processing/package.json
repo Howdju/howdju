@@ -35,7 +35,6 @@
     "gulp-install": "^1.1.0",
     "gulp-zip": "^4.0.0",
     "howdju-test-common": "workspace:howdju-test-common",
-    "inspect-process": "^0.5.0",
     "install-local": "^0.6.0",
     "jest": "^29.3.1",
     "prettier": "2.7.1",
