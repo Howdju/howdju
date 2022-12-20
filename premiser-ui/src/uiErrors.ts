@@ -40,7 +40,7 @@ export const newNetworkFailureError = (
     sourceError,
     {
       ...identifiers,
-      url: sourceError.config.url,
+      url: sourceError.config?.url,
     }
   );
 
