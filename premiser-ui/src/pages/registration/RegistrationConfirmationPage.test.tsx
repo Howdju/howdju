@@ -7,18 +7,20 @@ import userEvent from "@testing-library/user-event";
 import RegistrationConfirmationPage from "./RegistrationConfirmationPage";
 import { renderWithProviders } from "@/testUtils";
 import {
-  apiErrorCodes,
-  EntityErrorCodes,
+  CreateRegistrationConfirmation,
   httpStatusCodes,
+  ErrorOut,
 } from "howdju-common";
 
 const server = setupServer();
 
 beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
+beforeEach(() => {
   // Use fake timers so that we can ensure animations complete before snapshotting.
   jest.useFakeTimers();
+});
+afterEach(() => {
+  server.resetHandlers();
 });
 afterAll(() => server.close());
 
@@ -44,7 +46,9 @@ describe("RegistrationConfirmationPage", () => {
     expect(screen.getByRole("heading")).toHaveTextContent(
       /complete registration/i
     );
-    expect(screen.getByRole("button", { name: /register/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /complete registration/i })
+    ).toHaveClass("md-btn--raised-disabled");
     expect(container).toMatchSnapshot();
   });
 
@@ -79,26 +83,30 @@ describe("RegistrationConfirmationPage", () => {
           ctx.json({ email: "a@b.com" })
         );
       }),
+
       rest.post("http://localhost/registrations", (_req, res, ctx) => {
-        return res(
-          ctx.status(httpStatusCodes.CONFLICT),
-          ctx.json({
-            errorCode: apiErrorCodes.ENTITY_CONFLICT,
-            errors: {
-              registrationConfirmation: {
-                hasErrors: true,
-                fieldErrors: {
-                  username: [
-                    {
-                      code: EntityErrorCodes.USERNAME_TAKEN,
-                      value: username,
-                    },
-                  ],
-                },
+        const response: ErrorOut<{
+          registrationConfirmation: CreateRegistrationConfirmation;
+        }> = {
+          errorCode: "VALIDATION_ERROR",
+          errors: {
+            _errors: [],
+            registrationConfirmation: {
+              _errors: [],
+              username: {
+                _errors: [
+                  {
+                    code: "custom",
+                    path: ["username"],
+                    message: `The username is already in use: ${username}`,
+                    params: { code: "ALREADY_IN_USE", username },
+                  },
+                ],
               },
             },
-          })
-        );
+          },
+        };
+        return res(ctx.status(httpStatusCodes.CONFLICT), ctx.json(response));
       })
     );
 
@@ -130,14 +138,20 @@ describe("RegistrationConfirmationPage", () => {
         name: /I am not located in the European Union/i,
       })
     );
-    expect(screen.getByRole("button", { name: /register/i })).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: /complete registration/i })
+    ).toBeEnabled();
 
     // Act
-    await user.click(screen.getByRole("button", { name: /register/i }));
+    await user.click(
+      screen.getByRole("button", { name: /complete registration/i })
+    );
 
     // Assert
     expect(
-      await screen.findByText(/That username is already registered/i)
+      await screen.findByText(
+        new RegExp(`the username is already in use: ${username}`, "i")
+      )
     ).toBeInTheDocument();
     // Let all animations complete before taking the snapshot. Otherwise we get flaky UI
     // differences depending on where the material UI animations are at.
@@ -200,10 +214,14 @@ describe("RegistrationConfirmationPage", () => {
         name: /I am not located in the European Union/i,
       })
     );
-    expect(screen.getByRole("button", { name: /register/i })).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: /complete registration/i })
+    ).toBeEnabled();
 
     // Act
-    await user.click(screen.getByRole("button", { name: /register/i }));
+    await user.click(
+      screen.getByRole("button", { name: /complete registration/i })
+    );
 
     // Assert
     expect(

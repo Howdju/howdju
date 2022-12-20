@@ -1,4 +1,4 @@
-import { mockLogger } from "./index";
+import { mockLogger } from "./mockLogger";
 
 describe("mockLogger", () => {
   test("logs without error", () => {

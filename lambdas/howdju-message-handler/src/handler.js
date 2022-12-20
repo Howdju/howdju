@@ -1,6 +1,6 @@
 import { fromJson } from "howdju-common";
 
-import { EMAIL_TOPIC_MESSAGE } from "howdju-service-common/lib/services/topicMessages";
+import { EMAIL_TOPIC_MESSAGE } from "howdju-common";
 
 const { logger, emailService } = require("./services");
 

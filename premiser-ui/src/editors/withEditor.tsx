@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { AnyAction } from "redux";
 import { PrepareAction } from "@reduxjs/toolkit";
 import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import get from "lodash/get";
-import reduce from "lodash/reduce";
 import { z } from "zod";
-import { identity, merge } from "lodash";
+import { identity, isArray, merge } from "lodash";
 
 import {
   formatZodError,
@@ -17,7 +16,7 @@ import {
 import { validateRawErrors } from "howdju-ajv-sourced";
 
 import { editors, flows } from "@/actions";
-import { AppDispatch, RootState } from "@/setupStore";
+import { RootState } from "@/setupStore";
 import { combineIds, combineSuggestionsKeys } from "@/viewModels";
 import t, {
   CANCEL_BUTTON_LABEL,
@@ -43,6 +42,7 @@ import {
 } from "@/types";
 import { EditorCommitCrudActionConfig } from "@/sagas/editors/editorCommitEditSaga";
 import SubmitButton from "./SubmitButton";
+import { useAppDispatch } from "@/hooks";
 
 export class CommitThenPutAction {
   // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
@@ -52,11 +52,13 @@ export class CommitThenPutAction {
   }
 }
 
-type ListItemTranslator = (
+/** Editor fields can return one or more actions to dispatch. */
+type EditorActionCreator = (
   editorType: EditorType,
-  editorId: string,
-  dispatch: AppDispatch
-) => (...args: any[]) => void;
+  editorId: string
+) => AnyAction | AnyAction[];
+/** Editor fields pass a lambda to this method that returns actions to dispatch to the edit model. */
+type EditorDispatch = (actionCreator: EditorActionCreator) => void;
 
 /**
  * The props of this HOC's components.
@@ -78,6 +80,8 @@ export type WithEditorProps = {
 };
 /**
  * The fields that must be present on the fields component.
+ *
+ * @typeparam T the validated model type (aka schema output.)
  */
 export type EntityEditorFieldsProps<T> = {
   /** This string will be prepended to this editor's controls' ids, with an intervening "." */
@@ -89,6 +93,7 @@ export type EntityEditorFieldsProps<T> = {
   onBlur?: OnBlurCallback;
   onPropertyChange: OnPropertyChangeCallback;
   onSubmit: OnSubmitCallback;
+  editorDispatch: EditorDispatch;
   errors?: ModelErrors<T>;
   blurredFields?: BlurredFields<T>;
   dirtyFields?: DirtyFields<T>;
@@ -110,13 +115,15 @@ export type EntityEditorFieldsProps<T> = {
  *   TODO: why can't the Fields just dispatch the actions themselves? They can receive the
  *   editorType and editorId.
  * @typeparam P the type of Props that EntityEditorFields requires.
- * @typeparam LIT the type of the list item translator's object
  * @typeparam SchemaInput the type of model the editor edits.
  * @typeparam SchemaOutput the output of the schema validation, in case it has refinements.
+ * @typeparam U the commit config's request model type (Create or Edit)
+ * @typeparam Y the commit config's request action creator payload type
+ * @typeparam RP the commit config's response action creator payload type
+ * @typeparam PA the commit config's prepare action type.
  */
 export default function withEditor<
   P extends EntityEditorFieldsProps<SchemaOutput>,
-  LIT extends { [key: string]: ListItemTranslator },
   SchemaInput extends EditorEntity = any,
   SchemaOutput = SchemaInput,
   U = any,
@@ -128,31 +135,10 @@ export default function withEditor<
   EntityEditorFields: React.FC<P>,
   entityPropName: string,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  listItemTranslators?: LIT,
   commitConfig?: EditorCommitCrudActionConfig<SchemaInput, U, Y, RP, PA>
-  /*
-   * @typeparam T the input model type
-   * @typeparam U the request model type (Create or Edit)
-   * @typeparam P the request action creator payload type
-   * @typeparam RP the response action creator payload type
-   * @typeparam PA the prepare action type.
-   * */
-) {
-  type RestPropsKeys = Exclude<
-    keyof P,
-    keyof EntityEditorFieldsProps<SchemaOutput> | keyof LIT
-  >;
-  // For some reason accessing the optional fields like
-  // `type RestProps = {[key in RestPropsKeys]: P[key]}`
-  // was making them non-optional. So separate them so that we can ensure they are optional (`+?`).
-  type OptionalRestPropsKeys = {
-    [key in RestPropsKeys as undefined extends P[key] ? key : never]+?: P[key];
-  };
-  type RequiredRestPropsKeys = {
-    [key in RestPropsKeys as undefined extends P[key] ? never : key]: P[key];
-  };
-  type RestProps = RequiredRestPropsKeys & OptionalRestPropsKeys;
-
+): React.FC<
+  WithEditorProps & Omit<P, keyof EntityEditorFieldsProps<SchemaOutput>>
+> {
   const validateEntity = (editEntity: EditorEntity | undefined) => {
     if (!editEntity) {
       return { value: editEntity };
@@ -177,7 +163,7 @@ export default function withEditor<
     };
   };
 
-  return function EntityEditor(props: WithEditorProps & RestProps) {
+  return function EntityEditor(props: WithEditorProps) {
     const {
       id,
       name,
@@ -188,6 +174,7 @@ export default function withEditor<
       onValidityChange,
       showButtons = true,
       editorCommitBehavior = "JustCommit",
+      ...rest
     } = props;
 
     const editorState = useSelector((state: RootState) =>
@@ -202,7 +189,7 @@ export default function withEditor<
       wasSubmitAttempted,
     } = editorState;
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const onPropertyChange = (properties: { [key: string]: string }) => {
       dispatch(editors.propertyChange(editorType, editorId, properties));
@@ -260,16 +247,6 @@ export default function withEditor<
       dispatch(editors.cancelEdit(editorType, editorId));
     };
 
-    // Create callbacks to add/remove items from the lists in the entity.
-    const listItemCallbackAttributes = reduce(
-      listItemTranslators,
-      (acc, translator, key) => {
-        acc[key] = translator(editorType, editorId, dispatch);
-        return acc;
-      },
-      {} as { [key: string]: (...args: any[]) => void }
-    );
-
     const { errors: clientValidationErrors } = validateEntity(editEntity);
 
     const responseErrorTransformer = commitConfig?.responseErrorTransformer;
@@ -285,16 +262,28 @@ export default function withEditor<
       transformedApiValidationErrors
     );
 
+    function editorDispatch(actionCreator: EditorActionCreator) {
+      const action = actionCreator(editorType, editorId);
+      if (isArray(action)) {
+        for (const a of action) {
+          dispatch(a);
+        }
+      } else {
+        dispatch(action);
+      }
+    }
+
     const editorFieldsProps = {
       id,
       ...(name ? { name } : {}),
       ...{ [entityPropName]: editEntity },
+      ...rest,
       disabled: isSaving,
       suggestionsKey: combineSuggestionsKeys(editorType, editorId),
       onBlur,
       onPropertyChange,
       onSubmit,
-      ...listItemCallbackAttributes,
+      editorDispatch,
       blurredFields,
       dirtyFields,
       errors,

@@ -21,7 +21,7 @@ import isString from "lodash/isString";
 import includes from "lodash/includes";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import { isFunction, keys } from "lodash";
+import { filter, isFunction, keys } from "lodash";
 
 import {
   apiErrorCodes,
@@ -72,6 +72,7 @@ import {
 } from "@/texts";
 import { logger } from "@/logger";
 import { EditorId, ModelFactory, PropertyChanges } from "@/types";
+import { combineObjectKey } from "@/viewModels";
 
 type BooleanObject = { [key: string]: boolean };
 const EditorActions: BooleanObject = {};
@@ -172,10 +173,6 @@ interface ErrorPayload {
       errors: { [key: string]: ModelErrors<any> };
     };
   };
-}
-
-function combineObjectKey(key: string, extra: string) {
-  return key + "." + extra;
 }
 
 export interface AddListItemPayload {
@@ -332,10 +329,19 @@ const defaultEditorActions = {
         return;
       }
 
-      const errorKeys = keys(responseBody.errors);
+      // For now, just remove any top-level errors.
+      // TODO(26): figure out a rational way to handle translating entities to requests and
+      // responses to entity errors.
+      const errorKeys = filter(
+        keys(responseBody.errors),
+        (k) => k !== "_errors"
+      );
       if (errorKeys.length !== 1) {
         // TODO(26): figure out an approach that automatically translates the response to the model
-        // rather than assuming that the response errors has one field corresponding to the editEntity
+        // rather than assuming that the response errors has one field corresponding to the
+        // editEntity.
+        //
+        // See EditorCommitCrudActionConfig.responseErrorTransformer.
         throw newProgrammingError(
           "The default reducer can only handle a single top-level error key"
         );

@@ -15,11 +15,11 @@ import { EditorType } from "./reducers/editors";
 import { WithEditorProps } from "./editors/withEditor";
 
 type EntityPropNameProps<ET extends EditorType> = ET extends "PROPOSITION"
-  ? { proposition: Proposition | null }
+  ? { proposition?: Proposition }
   : ET extends "PERSORG"
-  ? { persorg: Persorg | null }
+  ? { persorg?: Persorg }
   : ET extends "ACCOUNT_SETTINGS"
-  ? { accountSettings: AccountSettings | null }
+  ? { accountSettings?: AccountSettings }
   : never;
 
 interface EditorProps extends WithEditorProps {

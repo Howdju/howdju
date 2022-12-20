@@ -16,6 +16,7 @@ export * from "./schemas";
 export * from "./schemaValidation";
 export * from "./standaloneValidation";
 export * from "./serialization";
+export * from "./services";
 export * from "./typeUtils";
 export * from "./urls";
 export * from "./validation";

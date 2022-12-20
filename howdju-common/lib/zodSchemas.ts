@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { iso8601Datetime, url } from "./zodRefinements";
+import { iso8601Datetime, url, momentTimestamp } from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
 /** A perstisent conceptual entity */
@@ -743,6 +743,9 @@ export const ContentReport = Entity.extend({
 });
 export type ContentReport = z.infer<typeof ContentReport>;
 
+export const CreateContentReport = ContentReport;
+export type CreateContentReport = ContentReport;
+
 export const CreateContentReportInput = ContentReport.extend({
   // When creating a content report, we maintain a map of whether any particular type is selected.
   checkedByType: z.map(ContentReportType, z.boolean()),
@@ -759,7 +762,8 @@ export const User = Entity.extend({
     .max(64),
   shortName: z.string().min(1).max(32),
   longName: z.string().min(1).max(64),
-  phoneNumber: z.string(),
+  // We currently don't request phone number
+  phoneNumber: z.string().optional(),
   created: z.string().refine(...iso8601Datetime),
   isActive: z.boolean(),
   externalIds: z.object({
@@ -821,17 +825,25 @@ export const CreateJustifiedSentence = z.object({
 });
 export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;
 
-export const RegistrationRequest = z.object({
+export const RegistrationRequest = Entity.extend({
   email: User.shape.email,
+  isConsumed: z.boolean(),
+  expires: z.object({}).refine(...momentTimestamp),
 });
 export type RegistrationRequest = z.infer<typeof RegistrationRequest>;
 
-export type CreateRegistrationRequest = RegistrationRequest;
-export const CreateRegistrationRequestInput = RegistrationRequest;
-export type CreateRegistrationRequestInput = RegistrationRequest;
+export const CreateRegistrationRequest = RegistrationRequest.pick({
+  email: true,
+});
+export type CreateRegistrationRequest = z.infer<
+  typeof CreateRegistrationRequest
+>;
+export const CreateRegistrationRequestInput = CreateRegistrationRequest;
+export type CreateRegistrationRequestInput = CreateRegistrationRequest;
 
 export const RegistrationConfirmation = z.object({
   registrationCode: z.string().min(1).max(256),
+  phoneNumber: User.shape.phoneNumber,
   username: User.shape.username,
   shortName: User.shape.shortName,
   longName: User.shape.longName,
@@ -842,6 +854,7 @@ export const RegistrationConfirmation = z.object({
   isNotGdpr: CreateUser.shape.affirmedNotGdpr,
 });
 export type RegistrationConfirmation = z.infer<typeof RegistrationConfirmation>;
+export const CreateRegistrationConfirmation = RegistrationConfirmation;
 export type CreateRegistrationConfirmation = RegistrationConfirmation;
 export const CreateRegistrationConfirmationInput = RegistrationConfirmation;
 export type CreateRegistrationConfirmationInput = RegistrationConfirmation;

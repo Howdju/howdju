@@ -1,6 +1,6 @@
-const assign = require("lodash/assign");
+import assign from "lodash/assign";
 
-const {
+import {
   WritValidator,
   WritQuoteValidator,
   CredentialValidator,
@@ -15,9 +15,9 @@ const {
   UrlValidator,
   UserValidator,
   JustificationVoteValidator,
-} = require("howdju-service-common");
+} from "@/validators";
 
-exports.init = function init(provider) {
+export function validatorsInitializer(provider: any) {
   const urlValidator = new UrlValidator();
   const userValidator = new UserValidator();
   const tagValidator = new TagValidator();
@@ -62,4 +62,4 @@ exports.init = function init(provider) {
   });
 
   provider.logger.debug("validatorsInit complete");
-};
+}

@@ -9,17 +9,19 @@ import SingleLineTextField from "./SingleLineTextField";
 import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
 import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 import {
+  CreatePropositionCompoundAtomInput,
   EditPropositionCompoundInput,
+  makePropositionCompoundAtom,
   PropositionCompound,
   PropositionCompoundAtom,
 } from "howdju-common";
-import { OnAddCallback, OnRemoveCallback } from "./types";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
+import { EditorType } from "./reducers/editors";
+import { editors } from "./actions";
+import { AnyAction } from "@reduxjs/toolkit";
 
 interface Props extends EntityEditorFieldsProps<EditPropositionCompoundInput> {
   propositionCompound?: PropositionCompound;
-  onAddPropositionCompoundAtom: OnAddCallback;
-  onRemovePropositionCompoundAtom: OnRemoveCallback<PropositionCompoundAtom>;
 }
 
 export default function PropositionCompoundEditorFields(props: Props) {
@@ -32,8 +34,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
     errors,
     dirtyFields,
     blurredFields,
-    onAddPropositionCompoundAtom,
-    onRemovePropositionCompoundAtom,
+    editorDispatch,
     onBlur,
     onPropertyChange,
     onSubmit,
@@ -47,6 +48,44 @@ export default function PropositionCompoundEditorFields(props: Props) {
     dirtyFields,
     blurredFields
   );
+
+  const onAddPropositionCompoundAtom = (index: number) =>
+    editorDispatch((editorType: EditorType, editorId: string) =>
+      editors.addListItem(
+        editorType,
+        editorId,
+        index,
+        combineNames(name, "basis", "propositionCompound", "atoms"),
+        makePropositionCompoundAtom
+      )
+    );
+  const onRemovePropositionCompoundAtom = (
+    _atom: PropositionCompoundAtom,
+    index: number,
+    atoms: CreatePropositionCompoundAtomInput[]
+  ) =>
+    editorDispatch((editorType: EditorType, editorId: string) => {
+      const actions: AnyAction[] = [
+        editors.removeListItem(editorType, editorId, index, [
+          "basis",
+          "propositionCompound",
+          "atoms",
+        ]),
+      ];
+      // Don't let the atoms be empty
+      if (atoms.length <= 1) {
+        actions.push(
+          editors.addListItem(
+            editorType,
+            editorId,
+            index,
+            combineNames(name, "basis", "propositionCompound", "atoms"),
+            makePropositionCompoundAtom
+          )
+        );
+      }
+      return actions;
+    });
 
   return (
     <div>

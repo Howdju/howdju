@@ -1,7 +1,6 @@
-const assign = require("lodash/assign");
-const { TopicMessageSender } = require("howdju-service-common");
+import assign from "lodash/assign";
 
-const {
+import {
   AccountSettingsService,
   ActionsService,
   AuthService,
@@ -30,9 +29,9 @@ const {
   VidSegmentsService,
   WritsService,
   WritQuotesService,
-} = require("howdju-service-common");
+} from "@/services";
 
-exports.init = function init(provider) {
+export function servicesInitializer(provider: any) {
   const actionsService = new ActionsService(provider.actionsDao);
   const authService = new AuthService(
     provider.appConfig,
@@ -189,16 +188,10 @@ exports.init = function init(provider) {
     provider.persorgsNameSearcher
   );
 
-  const topicMessageSender = new TopicMessageSender(
-    provider.logger,
-    provider.sns,
-    provider.getConfigVal("MESSAGES_TOPIC_ARN")
-  );
-
   const registrationService = new RegistrationService(
     provider.logger,
     provider.appConfig,
-    topicMessageSender,
+    provider.topicMessageSender,
     usersService,
     authService,
     provider.registrationRequestsDao
@@ -207,7 +200,7 @@ exports.init = function init(provider) {
   const passwordResetService = new PasswordResetService(
     provider.logger,
     provider.appConfig,
-    topicMessageSender,
+    provider.topicMessageSender,
     usersService,
     authService,
     provider.passwordResetRequestsDao
@@ -218,7 +211,7 @@ exports.init = function init(provider) {
     provider.logger,
     authService,
     usersService,
-    topicMessageSender,
+    provider.topicMessageSender,
     provider.contentReportsDao
   );
 
@@ -245,7 +238,6 @@ exports.init = function init(provider) {
     rootTargetJustificationsService,
     statementsService,
     tagsService,
-    topicMessageSender,
     urlsService,
     usersService,
     writQuotesService,
@@ -253,4 +245,4 @@ exports.init = function init(provider) {
   });
 
   provider.logger.debug("servicesInit complete");
-};
+}

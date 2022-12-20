@@ -145,3 +145,13 @@ export const toOnChangeCallback = (
     onPropertyChange({ [name]: value });
   };
 };
+
+export const toOnCheckboxChangeCallback = (
+  onPropertyChange: OnPropertyChangeCallback
+): ((checked: boolean, event: Event) => void) => {
+  return function onChange(checked: boolean, event: Event) {
+    const name = (event as unknown as ChangeEvent<HTMLInputElement>).target
+      .name;
+    onPropertyChange({ [name]: checked });
+  };
+};

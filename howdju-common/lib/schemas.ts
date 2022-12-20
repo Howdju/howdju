@@ -95,60 +95,6 @@ const passwordResetConfirmation = {
   },
 } as const;
 
-const registrationRequest = {
-  $id: "https://howdju.com/schemas/registration-request.schema.json",
-  $schema: "http://json-schema.org/draft-07/schema#",
-  title: "RegistrationRequest",
-  description: "A request to register a new user",
-  type: "object",
-  required: ["email"],
-  properties: {
-    email: { $ref: "definitions.json#/definitions/userEmail" },
-  },
-} as const;
-
-const registrationConfirmation = {
-  $id: "https://howdju.com/schemas/registration-confirmation.schema.json",
-  $schema: "http://json-schema.org/draft-07/schema#",
-  title: "RegistrationConfirmation",
-  description:
-    "The information necessary to complete a registration and make a user",
-  type: "object",
-  required: [
-    "username",
-    "longName",
-    "password",
-    "doesAcceptTerms",
-    "is13YearsOrOlder",
-    "hasMajorityConsent",
-    "isNotGdpr",
-  ],
-  properties: {
-    username: { $ref: "definitions.json#/definitions/username" },
-    password: { $ref: "definitions.json#/definitions/password" },
-    shortName: { $ref: "definitions.json#/definitions/shortName" },
-    longName: { $ref: "definitions.json#/definitions/longName" },
-    doesAcceptTerms: {
-      const: true,
-      description: "Whether the user agreed to the terms.  Must be true.",
-    },
-    is13YearsOrOlder: {
-      const: true,
-      description: "Whether the user is 13 years or older.  Must be true.",
-    },
-    hasMajorityConsent: {
-      const: true,
-      description:
-        "Whether the user affirms that they are old enough to accept the terms.  Must be true.",
-    },
-    isNotGdpr: {
-      const: true,
-      description:
-        "Whether the user is not subject to the GDPR.  Must be true.",
-    },
-  },
-} as const;
-
 const user = {
   $id: "https://howdju.com/schemas/user.schema.json",
   $schema: "http://json-schema.org/draft-07/schema#",
@@ -329,8 +275,6 @@ export const schemas = {
   passwordResetRequest,
   passwordResetConfirmation,
   persorg,
-  registrationRequest,
-  registrationConfirmation,
   user,
   writ,
   writQuote,
@@ -341,8 +285,6 @@ export const schemasById = {
   [passwordResetRequest["$id"]]: passwordResetRequest,
   [passwordResetConfirmation["$id"]]: passwordResetConfirmation,
   [persorg["$id"]]: persorg,
-  [registrationRequest["$id"]]: registrationRequest,
-  [registrationConfirmation["$id"]]: registrationConfirmation,
   [user["$id"]]: user,
   [writ["$id"]]: writ,
   [writQuote["$id"]]: writQuote,

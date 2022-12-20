@@ -1,37 +1,92 @@
-const sinon = require("sinon");
-const assign = require("lodash/assign");
-const pick = require("lodash/pick");
+import sinon from "sinon";
+import assign from "lodash/assign";
+import pick from "lodash/pick";
 
-const {
+import {
   utcNow,
   momentAdd,
   momentSubtract,
   makeRegistrationRequest,
   makeCreateRegistrationConfirmation,
-} = require("howdju-common");
-const { mockLogger } = require("howdju-test-common");
+  CreateRegistrationRequest,
+  TopicMessageSender,
+} from "howdju-common";
+import { mockLogger } from "howdju-test-common";
 
-const {
+import {
   EntityNotFoundError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
-} = require("../serviceErrors");
-const { RegistrationService } = require("./RegistrationService");
+} from "../serviceErrors";
+import { RegistrationService } from "./RegistrationService";
+import { AuthService } from "./AuthService";
+import {
+  ApiConfig,
+  Database,
+  makePool,
+  RegistrationRequestsDao,
+  UsersService,
+} from "..";
+import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import { Pool } from "pg";
+import TestProvider from "@/initializers/TestProvider";
 
 describe("RegistrationService", () => {
+  const dbConfig = makeTestDbConfig();
+  let pool: Pool;
+  let service: RegistrationService;
+  let dbName: string;
+  beforeEach(async () => {
+    dbName = await initDb(dbConfig);
+
+    pool = makePool(mockLogger, { ...dbConfig, database: dbName });
+    const database = new Database(mockLogger, pool);
+
+    const provider = new TestProvider(database);
+
+    service = (provider as any).registrationService;
+  });
+  afterEach(async () => {
+    await pool.end();
+    await dropDb(dbConfig, dbName);
+  });
+  describe("createRequest", () => {
+    test("creates a valid request.", async () => {
+      // Arrange
+      const email = "the@email.com";
+      const registrationRequest: CreateRegistrationRequest = {
+        email,
+      };
+
+      // Act
+      await service.createRequest(registrationRequest);
+
+      // Assert
+      const {
+        rows: [{ registration_code: registrationCode }],
+      } = await pool.query(
+        `select registration_code from registration_requests where email = '${email}'`
+      );
+      console.log({ registrationCode });
+      expect(await service.checkRequestForCode(registrationCode)).toEqual(
+        email
+      );
+    });
+  });
+
   describe("confirmRegistrationAndLogin", () => {
-    test("missing registration code", async () => {
-      const registrationConfirmation = {};
+    test("throws when registration code is missing", async () => {
+      const registrationConfirmation = makeCreateRegistrationConfirmation();
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns(null),
       };
       const service = new RegistrationService(
         mockLogger,
-        null,
-        null,
-        null,
-        null,
-        registrationRequestsDao
+        {} as ApiConfig,
+        {} as TopicMessageSender,
+        {} as UsersService,
+        {} as AuthService,
+        registrationRequestsDao as unknown as RegistrationRequestsDao
       );
 
       await expect(
@@ -39,8 +94,8 @@ describe("RegistrationService", () => {
       ).rejects.toThrow(EntityNotFoundError);
     });
 
-    test("consumed registration code", async () => {
-      const registrationConfirmation = {};
+    test("throws when registration code is already consumed", async () => {
+      const registrationConfirmation = makeCreateRegistrationConfirmation();
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns({
           isConsumed: true,
@@ -48,11 +103,11 @@ describe("RegistrationService", () => {
       };
       const service = new RegistrationService(
         mockLogger,
-        null,
-        null,
-        null,
-        null,
-        registrationRequestsDao
+        {} as ApiConfig,
+        {} as TopicMessageSender,
+        {} as UsersService,
+        {} as AuthService,
+        registrationRequestsDao as unknown as RegistrationRequestsDao
       );
 
       await expect(
@@ -60,8 +115,8 @@ describe("RegistrationService", () => {
       ).rejects.toThrow(RegistrationAlreadyConsumedError);
     });
 
-    test("expired registration code", async () => {
-      const registrationConfirmation = {};
+    test("throws when registration code is expired", async () => {
+      const registrationConfirmation = makeCreateRegistrationConfirmation();
 
       const registrationRequestsDao = {
         readForCode: sinon.fake.returns({
@@ -70,11 +125,11 @@ describe("RegistrationService", () => {
       };
       const service = new RegistrationService(
         mockLogger,
-        null,
-        null,
-        null,
-        null,
-        registrationRequestsDao
+        {} as ApiConfig,
+        {} as TopicMessageSender,
+        {} as UsersService,
+        {} as AuthService,
+        registrationRequestsDao as unknown as RegistrationRequestsDao
       );
 
       await expect(
@@ -125,11 +180,11 @@ describe("RegistrationService", () => {
 
       const service = new RegistrationService(
         mockLogger,
-        config,
-        null,
-        usersService,
-        authService,
-        registrationRequestsDao
+        config as ApiConfig,
+        {} as TopicMessageSender,
+        usersService as unknown as UsersService,
+        authService as unknown as AuthService,
+        registrationRequestsDao as unknown as RegistrationRequestsDao
       );
 
       // Act

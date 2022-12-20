@@ -4,6 +4,7 @@ import map from "lodash/map";
 
 import {
   EditWritQuoteInput,
+  makeUrl,
   schemaSettings,
   Url,
   Writ,
@@ -14,22 +15,17 @@ import WritTitleAutocomplete from "@/WritTitleAutocomplete";
 import ErrorMessages from "@/ErrorMessages";
 import SingleLineTextField from "@/SingleLineTextField";
 import { combineIds, combineNames, combineSuggestionsKeys } from "@/viewModels";
-import {
-  OnAddCallback,
-  OnKeyDownCallback,
-  OnRemoveCallback,
-  toReactMdOnBlur,
-} from "@/types";
+import { OnKeyDownCallback, toReactMdOnBlur } from "@/types";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 import { makeErrorPropCreator } from "./modelErrorMessages";
 
 import "./WritQuoteEditorFields.scss";
+import { EditorType } from "./reducers/editors";
+import { editors } from "./actions";
 
 interface Props extends EntityEditorFieldsProps<EditWritQuoteInput> {
   writQuote: WritQuote;
   onKeyDown?: OnKeyDownCallback;
-  onAddUrl: OnAddCallback;
-  onRemoveUrl: OnRemoveCallback<Url>;
 }
 
 const writQuoteTextName = "quoteText";
@@ -47,8 +43,7 @@ const WritQuoteEditorFields = (props: Props) => {
     onSubmit,
     onBlur,
     onPropertyChange,
-    onAddUrl,
-    onRemoveUrl,
+    editorDispatch,
     dirtyFields,
     blurredFields,
     wasSubmitAttempted,
@@ -95,6 +90,26 @@ const WritQuoteEditorFields = (props: Props) => {
     suggestionsKey,
     writTitleName
   );
+
+  const onAddUrl = (index: number) =>
+    editorDispatch((editorType: EditorType, editorId: string) =>
+      editors.addListItem(
+        editorType,
+        editorId,
+        index,
+        combineNames(name, "urls"),
+        makeUrl
+      )
+    );
+  const onRemoveUrl = (_url: Url, index: number, _urls: Url[]) =>
+    editorDispatch((editorType: EditorType, editorId: string) =>
+      editors.removeListItem(
+        editorType,
+        editorId,
+        index,
+        combineNames(name, "urls")
+      )
+    );
 
   return (
     <div className="writ-quote-editor-fields">

@@ -16,13 +16,8 @@ exports.RegistrationRequestsDao = class RegistrationRequestsDao extends (
     );
   }
 
-  async create(
-    registrationRequest,
-    registrationCode,
-    expires,
-    isConsumed,
-    now
-  ) {
+  async create(registrationRequest, registrationCode, now) {
+    const { email, expires, isConsumed } = registrationRequest;
     return await this.queryOne(
       "RegistrationRequestsDao.create",
       `
@@ -30,7 +25,7 @@ exports.RegistrationRequestsDao = class RegistrationRequestsDao extends (
         values ($1, $2, $3, $4, $5)
         returning *
       `,
-      [registrationRequest.email, registrationCode, expires, isConsumed, now]
+      [email, registrationCode, expires, isConsumed, now]
     );
   }
 

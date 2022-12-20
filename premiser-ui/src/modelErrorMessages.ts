@@ -102,7 +102,8 @@ function propagateUndefined(callback: (...args: any[]) => any) {
     } catch (e) {
       if (
         e instanceof TypeError &&
-        e.message.includes("Cannot read properties of undefined")
+        // I'm not sure why there are different versions of this message...browser vs. node?
+        e.message.match(/Cannot read propert(ies|y '.+') of undefined/g)
       ) {
         return undefined;
       }

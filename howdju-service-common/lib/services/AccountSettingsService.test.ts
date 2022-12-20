@@ -12,18 +12,11 @@ import {
 import { AuthService } from "./AuthService";
 import { AccountSettings, UserData } from "howdju-common";
 import moment from "moment";
-import { toNumber } from "lodash";
 import { Pool } from "pg";
-import { dropDb, initDb } from "@/util/testUtil";
+import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 
 describe("AccountSettingsService", () => {
-  const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST,
-    port: toNumber(process.env.DB_PORT),
-    max: toNumber(process.env.DB_MAX_CONNECTIONS),
-  };
+  const dbConfig = makeTestDbConfig();
   let pool: Pool;
   let usersDao: UsersDao;
   let authService: AuthService;

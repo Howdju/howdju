@@ -5,6 +5,8 @@
  * Where X is an Entity.
  */
 
+import { ApiErrorCode } from "./codes";
+import { ModelErrors } from "./zodError";
 import {
   Entity,
   Justification,
@@ -15,6 +17,18 @@ import {
   TagVote,
 } from "./zodSchemas";
 import { Persisted } from "./zodSchemaTypes";
+
+/**
+ * An out model representing errors for any CRUD action.
+ *
+ * @typeparam T the shape of the In model. Determines the shape of the errors.
+ */
+export interface ErrorOut<T extends object> {
+  /** The overall error code. */
+  errorCode: ApiErrorCode;
+  /** The errors corresponding to the in model. */
+  errors: ModelErrors<T>;
+}
 
 export interface GetPropositionResponse {
   proposition: PropositionOut;

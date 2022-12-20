@@ -11,7 +11,6 @@ const config: Config = {
     // Include some extra stuff under node_modules in our babel transform
     "node_modules/(?!((@|jest-)?react-native|react-navigation|@react-navigation/.*|react-native-share-menu))",
   ],
-  resolver: "./jest/yarn-link-resolver.js",
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   moduleDirectories: ["node_modules"],
 };

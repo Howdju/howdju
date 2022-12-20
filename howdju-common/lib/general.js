@@ -13,6 +13,9 @@ const reject = require("lodash/reject");
 const replace = require("lodash/replace");
 const trim = require("lodash/trim");
 const moment = require("moment");
+const RandomSeed = require("random-seed");
+const bases = require("bases");
+
 const { newProgrammingError } = require("./commonErrors");
 
 const _e = module.exports;
@@ -282,4 +285,12 @@ _e.normalizeText = (text) => {
   text = _e.cleanWhitespace(text);
 
   return text;
+};
+
+const randomSeed = new RandomSeed();
+
+_e.randomBase36Number = (length) => {
+  const minValue = bases.fromBase36("0".repeat(length));
+  const maxValue = bases.fromBase36("z".repeat(length));
+  return bases.toBase36(randomSeed.intBetween(minValue, maxValue));
 };
