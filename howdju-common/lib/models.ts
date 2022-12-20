@@ -131,7 +131,7 @@ export const makeCreateRegistrationRequestInput = (
 };
 
 export const makeRegistrationRequest = (
-  props?: Partial<RegistrationRequest>
+  props?: Partial<RegistrationRequest> & Pick<RegistrationRequest, "expires">
 ): RegistrationRequest =>
   assign(
     {

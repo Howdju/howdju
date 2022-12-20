@@ -1,4 +1,3 @@
-// const { cwd } = require("process");
 import type { Config } from "jest";
 
 /**
@@ -28,8 +27,6 @@ const config: Config = {
     `${__dirname}/jest/OutputConsoleOnFailureOnlyReporter.js`,
     `${__dirname}/node_modules/@jest/reporters/build/SummaryReporter.js`,
   ],
-  // TODO possibly update this resolver to handle symlinked dependencies like howdju-mobile-app
-  // currently does.
   resolver: `${__dirname}/jest/resolver.js`,
   // TODO potentially add this (currently used by howdju-mobile-app.)
   // setupFiles: [`${__dirname}/jest/react-navigation-setup.ts`],

@@ -828,7 +828,7 @@ export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;
 export const RegistrationRequest = Entity.extend({
   email: User.shape.email,
   isConsumed: z.boolean(),
-  expires: z.any().refine(...momentTimestamp),
+  expires: z.object({}).refine(...momentTimestamp),
 });
 export type RegistrationRequest = z.infer<typeof RegistrationRequest>;
 

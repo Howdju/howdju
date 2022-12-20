@@ -12,14 +12,13 @@ exports.init = function init(provider) {
   const sns = new AWS.SNS({ apiVersion: "2010-03-31" });
 
   const topicMessageSender =
-    process.env.NODE_ENV === "production"
-      ? new AwsTopicMessageSender(
+    ["development", "test"].indexOf(process.env.NODE_ENV) > -1
+      ? new FakeTopicMessageSender()
+      : new AwsTopicMessageSender(
           provider.logger,
           sns,
           provider.getConfigVal("MESSAGES_TOPIC_ARN")
-        )
-      : new FakeTopicMessageSender();
-
+        );
   assign(provider, {
     sns,
     topicMessageSender,

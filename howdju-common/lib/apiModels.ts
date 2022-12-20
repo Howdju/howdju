@@ -23,7 +23,7 @@ import { Persisted } from "./zodSchemaTypes";
  *
  * @typeparam T the shape of the In model. Determines the shape of the errors.
  */
-export interface ModelErrorOut<T extends object> {
+export interface ErrorOut<T extends object> {
   /** The overall error code. */
   errorCode: ApiErrorCode;
   /** The errors corresponding to the in model. */

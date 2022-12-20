@@ -101,10 +101,10 @@ Additional fields on `Out` models are often optional, so that either:
    or
 2. To support request parameters that control the addition of extra fields.
 
-## In/Out body models
+## Response/request body models
 
-In/Out Body models represent the entire body of an HTTP request or response. They may contain one or
-more In/Out models respectively. . They are named like `MethodEntityDirection`
+Response/request body models represent the entire body of an HTTP request or response. They may contain one or
+more In/Out models as fields, respectively. They are named like `MethodEndpointDirection`
 (`{Get,Post,Put,Delete}Endpoint{In,Out}`). E.g.: `GetPropositionIn`/`GetPropositionOut`. Often the
 `Endpoint` will correspond to an entity.
 

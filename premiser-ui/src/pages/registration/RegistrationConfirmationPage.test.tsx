@@ -9,7 +9,7 @@ import { renderWithProviders } from "@/testUtils";
 import {
   CreateRegistrationConfirmation,
   httpStatusCodes,
-  ModelErrorOut,
+  ErrorOut,
 } from "howdju-common";
 
 const server = setupServer();
@@ -85,7 +85,7 @@ describe("RegistrationConfirmationPage", () => {
       }),
 
       rest.post("http://localhost/registrations", (_req, res, ctx) => {
-        const response: ModelErrorOut<{
+        const response: ErrorOut<{
           registrationConfirmation: CreateRegistrationConfirmation;
         }> = {
           errorCode: "VALIDATION_ERROR",
