@@ -102,8 +102,13 @@ function propagateUndefined(callback: (...args: any[]) => any) {
     } catch (e) {
       if (
         e instanceof TypeError &&
-        // I'm not sure why there are different versions of this message...browser vs. node?
-        e.message.match(/Cannot read propert(ies|y '.+') of undefined/g)
+        // Safari: undefined is not an object (evaluating 'e.email')
+        // Firefox: e is undefined
+        // Chrome: cannot read properties of undefined
+        // Node: cannot read property 'email' of undefined
+        e.message.match(
+          /(undefined is not an object|is undefined|cannot read propert(ies|y '.+') of undefined)/gi
+        )
       ) {
         return undefined;
       }
