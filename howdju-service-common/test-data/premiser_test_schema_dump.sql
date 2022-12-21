@@ -1611,10 +1611,10 @@ CREATE UNIQUE INDEX unq_registration_requests_code ON public.registration_reques
 
 
 --
--- Name: unq_registration_requests_email; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_registration_requests_email; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX unq_registration_requests_email ON public.registration_requests USING btree (email);
+CREATE INDEX idx_registration_requests_email ON public.registration_requests USING btree (email);
 
 
 --

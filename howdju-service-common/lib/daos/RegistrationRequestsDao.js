@@ -8,14 +8,6 @@ exports.RegistrationRequestsDao = class RegistrationRequestsDao extends (
     super(logger, database, toRegistrationRequest);
   }
 
-  async isEmailInUse(email) {
-    return this.queryOneValue(
-      "RegistrationRequestsDao.isEmailInUse",
-      "select exists(select 1 from registration_requests where email = $1 and deleted is null)",
-      [email]
-    );
-  }
-
   async create(registrationRequest, registrationCode, now) {
     const { email, expires, isConsumed } = registrationRequest;
     return await this.queryOne(

@@ -105,6 +105,14 @@ _e.momentSubtract = (momentInstance, subtrahend) => {
   return result;
 };
 
+_e.differenceDuration = (moment1, moment2) => {
+  return moment.duration(moment1.diff(moment2));
+};
+
+_e.formatDuration = (duration, { template, trim }) => {
+  moment.duration(duration).format(template, { trim });
+};
+
 _e.timestampFormatString = "YYYY-MM-DDTHH:mm:ss.SSS[Z]";
 
 _e.utcTimestamp = () => _e.utcNow().format(_e.timestampFormatString);
