@@ -69,14 +69,21 @@ const settings = {
                     Changing this setting requires a reload of the website to take effect.`,
     },
   ],
-};
+} as const;
+
+export type CookieId = typeof settings["cookies"][number]["id"];
+
+export interface Cookie {
+  id: CookieId;
+  accepted: boolean;
+}
 
 export const cookieConsent = CookieConsent(settings);
 
 export function isMissingPrivacyConsent() {
   const currentIds = keyBy(cookieConsent.getPreferences(), "id");
   const validIds = keyBy(settings.cookies, "id");
-  return some(validIds, (val, id) => isUndefined(currentIds[id]));
+  return some(validIds, (_val, id) => isUndefined(currentIds[id]));
 }
 
 export function showPrivacyConsentDialog() {
@@ -90,7 +97,7 @@ export function showPrivacyConsentDialog() {
 export function fixConsentCookieIds() {
   const validIds = keyBy(settings.cookies, "id");
   const prefs = fromJson(window.localStorage.getItem(PREFS_LOCAL_STORAGE_KEY));
-  const newPrefs = [];
+  const newPrefs: Cookie[] = [];
   forEach(prefs, (pref) => {
     if (!validIds[pref.id]) {
       logger.debug(`dropping invalid cookie consent pref ${toJson(pref)}`);
