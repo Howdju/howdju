@@ -67,10 +67,31 @@ describe("RegistrationService", () => {
       } = await pool.query(
         `select registration_code from registration_requests where email = '${email}'`
       );
-      console.log({ registrationCode });
       expect(await service.checkRequestForCode(registrationCode)).toEqual(
         email
       );
+    });
+    test("supports creating multiple registration requests", async () => {
+      // Arrange
+      const email = "the@email.com";
+      const registrationRequest: CreateRegistrationRequest = {
+        email,
+      };
+      await service.createRequest(registrationRequest);
+
+      // Act
+      await service.createRequest(registrationRequest);
+
+      // Assert
+      const {
+        rows: [
+          { registration_code: registrationCode1 },
+          { registration_code: registrationCode2 },
+        ],
+      } = await pool.query(
+        `select registration_code from registration_requests where email = '${email}'`
+      );
+      expect(registrationCode1).not.toEqual(registrationCode2);
     });
   });
 

@@ -31,7 +31,6 @@ import {
 import { UsersService } from "./UsersService";
 import { AuthService } from "./AuthService";
 import { ApiConfig, RegistrationRequestsDao } from "..";
-import { some } from "lodash";
 
 export class RegistrationService {
   logger: Logger;
@@ -78,28 +77,9 @@ export class RegistrationService {
       };
     }
 
-    let creationResult;
-    try {
-      creationResult = await this.createRegistration(registrationRequest);
-    } catch (e) {
-      if (
-        e instanceof Error &&
-        e.message.includes("duplicate key") &&
-        !this.config.doConcealEmailExistence
-      ) {
-        const { email } = registrationRequest;
-        throw new EntityValidationError(
-          makeModelErrors<CreateRegistrationRequest>((r) =>
-            r.email({
-              message: `Email is already in use: ${email}`,
-              params: { code: "ALREADY_EXISTS", email },
-            })
-          )
-        );
-      }
-      throw e;
-    }
-    const { registrationCode, duration } = creationResult;
+    const { registrationCode, duration } = await this.createRegistration(
+      registrationRequest
+    );
     await this.sendConfirmationEmail(
       registrationRequest,
       registrationCode,
@@ -161,13 +141,7 @@ export class RegistrationService {
     hideEmail?: boolean;
   }> {
     const { email } = registrationRequest;
-    const isEmailInUse = some(
-      await Promise.all([
-        this.usersService.isEmailInUse(email),
-        this.registrationRequestsDao.isEmailInUse(email),
-      ])
-    );
-
+    const isEmailInUse = await this.usersService.isEmailInUse(email);
     if (isEmailInUse) {
       if (this.config.doConcealEmailExistence) {
         await this.sendExistingAccountNotificationEmail(registrationRequest);
@@ -182,6 +156,7 @@ export class RegistrationService {
         ),
       };
     }
+
     return {};
   }
 
