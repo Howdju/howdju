@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component, ComponentClass, MouseEvent } from "react";
 import { hot } from "react-hot-loader/root";
 import { Switch } from "react-router";
 import { Link } from "react-router-dom";
@@ -13,8 +12,9 @@ import {
   Toolbar,
   Tabs,
   Tab,
+  TabsProps,
 } from "react-md";
-import { connect } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 import cn from "classnames";
 import forEach from "lodash/forEach";
 import isFinite from "lodash/isFinite";
@@ -37,6 +37,7 @@ import config from "./config";
 import {
   ANALYTICS,
   BASIC_FUNCTIONALITY,
+  Cookie,
   cookieConsent,
   ERROR_REPORTING,
   fixConsentCookieIds,
@@ -72,6 +73,9 @@ import ReportContentDialog from "./content-report/ReportContentDialog";
 
 import "./App.scss";
 import "./fonts.js";
+import { Location, UnregisterCallback, Action } from "history";
+import { IdPropType } from "react-md/lib";
+import { RootState } from "./setupStore";
 
 const tabInfos = [
   {
@@ -91,17 +95,19 @@ const tabInfos = [
   },
 ];
 
-class App extends Component {
-  constructor() {
-    super();
+class App extends Component<Props> {
+  throttledOnWindowScroll: () => void;
+  unlistenToHistory?: UnregisterCallback;
+  windowMessageHandler?: WindowMessageHandler;
+  state = {
+    activeTabIndex: 0,
+    windowPageYOffset: window.pageYOffset,
+    isOverscrolledTop: false,
+    isOverscrolledBottom: false,
+  };
 
-    this.state = {
-      activeTabIndex: 0,
-      windowPageYOffset: window.pageYOffset,
-      isOverscrolledTop: false,
-      isOverscrolledBottom: false,
-    };
-
+  constructor(props: Props) {
+    super(props);
     this.throttledOnWindowScroll = throttle(this.onWindowScroll, 100);
   }
 
@@ -131,7 +137,7 @@ class App extends Component {
   }
 
   /** Read the current privacy consent and perform any initializations */
-  initPrivacyConsent = (cookies) => {
+  initPrivacyConsent = (cookies: Cookie[]) => {
     forEach(cookies, (cookie) => {
       switch (cookie.id) {
         case REQUIRED_FUNCTIONALITY:
@@ -166,7 +172,7 @@ class App extends Component {
     });
   };
 
-  onCookieConsentUpdate = (cookies) => {
+  onCookieConsentUpdate = (cookies: Cookie[]) => {
     let requiresReload = false;
     const privacyConsentState = this.props.privacyConsentState;
     forEach(cookies, (cookie) => {
@@ -204,7 +210,7 @@ class App extends Component {
           } else {
             const smallchatDiv = document.querySelector("div#Smallchat");
             if (smallchatDiv) {
-              smallchatDiv.parentNode.removeChild(smallchatDiv);
+              smallchatDiv.parentNode?.removeChild(smallchatDiv);
             } else {
               // If we can't find the div for som reason, just reload
               requestReload = true;
@@ -248,7 +254,11 @@ class App extends Component {
     window.removeEventListener("mouseover", this.onFirstMouseOver);
   }
 
-  receiveMessage = (event) => {
+  receiveMessage = (event: MessageEvent<any>) => {
+    if (!this.windowMessageHandler) {
+      logger.warn("Unable to handle window message.");
+      return;
+    }
     this.windowMessageHandler.handleEvent(event);
   };
 
@@ -289,7 +299,7 @@ class App extends Component {
   };
 
   resetOverscrollState = () => {
-    const newState = {
+    const newState: Partial<typeof this.state> = {
       windowPageYOffset: window.pageYOffset,
     };
     // reset overscrolls
@@ -326,7 +336,7 @@ class App extends Component {
     this.props.app.hideNavDrawer();
   };
 
-  onNavDrawerVisibilityChange = (visible) => {
+  onNavDrawerVisibilityChange = (visible: boolean) => {
     this.props.app.setNavDrawerVisibility(visible);
   };
 
@@ -335,25 +345,25 @@ class App extends Component {
   };
 
   onTabChange = (
-    newActiveTabIndex,
-    tabId,
-    tabControlsId,
-    tabChildren,
-    event
+    activeTabIndex: number,
+    _tabId: IdPropType,
+    _tabControlsId: IdPropType,
+    _tabChildren: React.ReactNode,
+    _event: Event
   ) => {
-    this.setState({ activeTabIndex: newActiveTabIndex });
+    this.setState({ activeTabIndex });
   };
 
-  onHistoryListen = (location, action) => {
+  onHistoryListen = (location: Location, _action: Action) => {
     this.syncTabToPathname(location.pathname);
   };
 
-  syncTabToPathname = (pathname) => {
+  syncTabToPathname = (pathname: string) => {
     const index = tabInfos.findIndex((ti) => ti.path === pathname);
     this.setState({ activeTabIndex: index });
   };
 
-  onClickApp = (event) => {
+  onClickApp = (_event: MouseEvent) => {
     this.props.ui.unhandledAppClick();
   };
 
@@ -535,7 +545,7 @@ class App extends Component {
           />
         ))}
       </Tabs>
-    );
+    ) as unknown as ComponentClass<TabsProps>;
 
     const title =
       isFinite(activeTabIndex) && activeTabIndex >= 0
@@ -584,11 +594,8 @@ class App extends Component {
     );
   }
 }
-App.contextTypes = {
-  store: PropTypes.object,
-};
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: RootState) => {
   const { app } = state;
   const authEmail = selectAuthEmail(state);
   const hasAuthToken = isTruthy(selectAuthToken(state));
@@ -605,7 +612,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
+const connector = connect(
   mapStateToProps,
   mapActionCreatorGroupToDispatchToProps({
     api,
@@ -617,4 +624,10 @@ export default connect(
     privacyConsent,
     ui,
   })
-)(hot(App));
+);
+
+type Props = PropsFromRedux;
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(hot(App));
