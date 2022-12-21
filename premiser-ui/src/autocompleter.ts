@@ -1,14 +1,17 @@
+import { Justification } from "howdju-common";
+import { ComponentId } from "./types";
+
 export const suggestionKeys = {
   createPropositionPageProposition: "createPropositionPageProposition",
   createPropositionPageJustification: "createPropositionPageJustification",
-  counterJustificationEditor: (targetJustificationId) =>
+  counterJustificationEditor: (targetJustificationId: ComponentId) =>
     `counterJustificationEditor_${targetJustificationId}`,
-  justificationBasisEditor: (justification) =>
+  justificationBasisEditor: (justification: Justification) =>
     `justificationBasisEditor-${justification.id}-${justification.basis.type}-${justification.basis.entity.id}`,
 };
 
 export default {
-  fixOpen: (autocomplete, text, autocompleteResults) => {
+  fixOpen: (autocomplete: any, text: string, autocompleteResults: any[]) => {
     if (
       text &&
       autocompleteResults.length === 0 &&
