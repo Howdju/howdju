@@ -10,7 +10,7 @@ import mainSearcher from "../../mainSearcher";
 import PropositionCard from "../../PropositionCard";
 import WritCard from "../../WritCard";
 import WritQuoteCard from "../../WritQuoteCard";
-import CellList from "../../CellList";
+import { smallCellClasses } from "../../CellList";
 import { RootState } from "@/setupStore";
 import { api, goto } from "../../actions";
 import {
@@ -163,7 +163,7 @@ function toPropositionCard(proposition: Proposition) {
       proposition={proposition}
       id={id}
       key={id}
-      className={CellList.smallCellClasses}
+      className={smallCellClasses}
     />
   );
 }
@@ -175,7 +175,7 @@ function toWritQuoteCard(writQuote: WritQuote) {
       writQuote={writQuote}
       id={id}
       key={id}
-      className={CellList.smallCellClasses}
+      className={smallCellClasses}
     />
   );
 }
@@ -187,7 +187,7 @@ function toWritQuoteWithUrlsCard(writQuote: WritQuote) {
       writQuote={writQuote}
       id={id}
       key={id}
-      className={CellList.smallCellClasses}
+      className={smallCellClasses}
       showUrls={true}
     />
   );
@@ -195,12 +195,5 @@ function toWritQuoteWithUrlsCard(writQuote: WritQuote) {
 
 function toWritCard(writ: Writ) {
   const id = `writ-card-${writ.id}`;
-  return (
-    <WritCard
-      writ={writ}
-      id={id}
-      key={id}
-      className={CellList.smallCellClasses}
-    />
-  );
+  return <WritCard writ={writ} id={id} key={id} className={smallCellClasses} />;
 }

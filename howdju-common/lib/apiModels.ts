@@ -6,6 +6,7 @@
  */
 
 import { ApiErrorCode } from "./codes";
+import { ContinuationToken } from "./entities";
 import { ModelErrors } from "./zodError";
 import {
   CreateJustification,
@@ -52,6 +53,11 @@ export interface PostJustificationOut {
 
 export interface GetPropositionOut {
   proposition: PropositionOut;
+}
+
+export interface GetPropositionsOut {
+  propositions: PropositionOut[];
+  continuationToken: ContinuationToken;
 }
 
 export interface PropositionOut

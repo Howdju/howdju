@@ -14,13 +14,15 @@ import {
 
 const server = setupServer();
 
-beforeAll(() => server.listen());
-beforeEach(() => {
+beforeAll(() => {
+  server.listen();
   // Use fake timers so that we can ensure animations complete before snapshotting.
   jest.useFakeTimers();
 });
 afterEach(() => {
   server.resetHandlers();
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
 });
 afterAll(() => server.close());
 

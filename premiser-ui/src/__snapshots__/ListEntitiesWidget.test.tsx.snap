@@ -1,0 +1,1479 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RecentPropositionsWidget shows an initial count of recent propositions 1`] = `
+<div>
+  <div
+    id="the-component-id"
+    style="position: relative;"
+  >
+    <div
+      class="md-cell md-cell--12"
+      style="position: absolute; top: 0px; left: 0px; right: 0px; transition: transform 600ms ease 0ms, opacity 600ms ease 0ms; transform: scale(0); opacity: 0;"
+    >
+      No recent propositions
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition0"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition0"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition0"
+                  >
+                    The proposition text 0
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <svg
+      aria-valuemax="100"
+      aria-valuemin="0"
+      class="md-progress md-progress--circular md-block-centered md-progress--circular-indeterminate md-cell md-cell--12"
+      height="24"
+      id="the-component-id-progress"
+      role="progressbar"
+      style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms; position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0;"
+      viewBox="0 0 66 66"
+      width="24"
+    >
+      <circle
+        class="md-circular-progress-path md-circular-progress-path--animated"
+        cx="33"
+        cy="33"
+        r="30"
+        stroke-linecap="round"
+        stroke-width="6"
+      />
+    </svg>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 645ms ease 150ms, opacity 645ms ease 150ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition1"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition1"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition1"
+                  >
+                    The proposition text 1
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 660ms ease 200ms, opacity 660ms ease 200ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition2"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition2"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition2"
+                  >
+                    The proposition text 2
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 675ms ease 250ms, opacity 675ms ease 250ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition3"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition3"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition3"
+                  >
+                    The proposition text 3
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 690ms ease 300ms, opacity 690ms ease 300ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition4"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition4"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition4"
+                  >
+                    The proposition text 4
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 705ms ease 350ms, opacity 705ms ease 350ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition5"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition5"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition5"
+                  >
+                    The proposition text 5
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 720ms ease 400ms, opacity 720ms ease 400ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition6"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition6"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition6"
+                  >
+                    The proposition text 6
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <button
+      class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+      style="transition: transform 735ms ease 450ms, opacity 735ms ease 450ms;"
+      type="button"
+    >
+      <div
+        class="md-ink-container"
+      />
+      Fetch more
+    </button>
+  </div>
+</div>
+`;
+
+exports[`RecentPropositionsWidget shows more propositions when more is clicked 1`] = `
+<div>
+  <div
+    id="the-component-id"
+    style="position: relative;"
+  >
+    <div
+      class="md-cell md-cell--12"
+      style="position: absolute; top: 0px; left: 0px; right: 0px; transition: transform 600ms ease 0ms, opacity 600ms ease 0ms; transform: scale(0); opacity: 0;"
+    >
+      No recent propositions
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style=""
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition0"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition0"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition0"
+                  >
+                    The proposition text 0
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style=""
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition1"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition1"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition1"
+                  >
+                    The proposition text 1
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style=""
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition2"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition2"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition2"
+                  >
+                    The proposition text 2
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style=""
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition3"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition3"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition3"
+                  >
+                    The proposition text 3
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <svg
+      aria-valuemax="100"
+      aria-valuemin="0"
+      class="md-progress md-progress--circular md-block-centered md-progress--circular-indeterminate md-cell md-cell--12"
+      height="24"
+      id="the-component-id-progress"
+      role="progressbar"
+      style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms; position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0;"
+      viewBox="0 0 66 66"
+      width="24"
+    >
+      <circle
+        class="md-circular-progress-path md-circular-progress-path--animated"
+        cx="33"
+        cy="33"
+        r="30"
+        stroke-linecap="round"
+        stroke-width="6"
+      />
+    </svg>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style=""
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition4"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition4"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition4"
+                  >
+                    The proposition text 4
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style=""
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition5"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition5"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition5"
+                  >
+                    The proposition text 5
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style=""
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition6"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition6"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition6"
+                  >
+                    The proposition text 6
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition7"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition7"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition7"
+                  >
+                    The proposition text 7
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 645ms ease 150ms, opacity 645ms ease 150ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition8"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition8"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition8"
+                  >
+                    The proposition text 8
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 660ms ease 200ms, opacity 660ms ease 200ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition9"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition9"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition9"
+                  >
+                    The proposition text 9
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 675ms ease 250ms, opacity 675ms ease 250ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition10"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition10"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition10"
+                  >
+                    The proposition text 10
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 690ms ease 300ms, opacity 690ms ease 300ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition11"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition11"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition11"
+                  >
+                    The proposition text 11
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 705ms ease 350ms, opacity 705ms ease 350ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition12"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition12"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition12"
+                  >
+                    The proposition text 12
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 720ms ease 400ms, opacity 720ms ease 400ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition13"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition13"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition13"
+                  >
+                    The proposition text 13
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="md-paper md-paper--1 md-card md-background--card md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone entity-card"
+      style="transition: transform 735ms ease 450ms, opacity 735ms ease 450ms;"
+    >
+      <section
+        class="md-card-text"
+      >
+        <div
+          class="entity-viewer"
+        >
+          <div
+            class="entity-viewer--header"
+          >
+            <a
+              href="/p/proposition14"
+            >
+              <i
+                class="md-icon material-icons"
+                role="presentation"
+                title="Proposition"
+              >
+                short_text
+              </i>
+            </a>
+          </div>
+          <div
+            class="entity-viewer--entity"
+          >
+            <div
+              class="proposition-viewer"
+              id="the-component-id-proposition-proposition14"
+            >
+              <div
+                class="proposition-viewer"
+              >
+                <div
+                  class="proposition-text"
+                >
+                  <a
+                    href="/p/proposition14"
+                  >
+                    The proposition text 14
+                     
+                  </a>
+                </div>
+                <div>
+                  <span
+                    class="entity-status-text"
+                  >
+                    created
+                    
+                     
+                    <span
+                      title=""
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <button
+      class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-cell md-cell--3 md-cell--8-tablet md-cell--4-phone"
+      style=""
+      type="button"
+    >
+      <div
+        class="md-ink-container"
+      />
+      Fetch more
+    </button>
+  </div>
+</div>
+`;
