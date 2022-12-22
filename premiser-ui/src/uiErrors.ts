@@ -4,8 +4,7 @@ import map from "lodash/map";
 import { newCustomError } from "howdju-common";
 import { EditorType } from "./reducers/editors";
 import { EditorId } from "./types";
-import { AxiosError } from "axios";
-import { AxiosResponseError } from "./api";
+import { AxiosError, AxiosResponse } from "axios";
 
 export const uiErrorTypes = {
   NETWORK_FAILURE_ERROR: "NETWORK_FAILURE_ERROR",
@@ -16,6 +15,9 @@ export const uiErrorTypes = {
 export type UiErrorType = typeof uiErrorTypes[keyof typeof uiErrorTypes];
 
 type Identifiers = { [key: string]: any };
+interface AxiosResponseError extends AxiosError {
+  response: AxiosResponse<any>;
+}
 
 export const makeIdentifiersMessage = (
   message: string,

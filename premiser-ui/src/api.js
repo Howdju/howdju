@@ -1,9 +1,9 @@
-import Axios, { AxiosError, AxiosResponse, Cancel } from "axios";
+import Axios, { CancelToken } from "axios";
 import get from "lodash/get";
 import pick from "lodash/pick";
 import { CANCEL } from "redux-saga";
 
-import { HttpMethod, httpMethods } from "howdju-common";
+import { httpMethods } from "howdju-common";
 
 import { logger } from "./logger";
 import {
@@ -21,27 +21,20 @@ const axios = Axios.create({
   withCredentials: true,
 });
 
-export interface RequestOptions {
-  endpoint: string;
-  method: HttpMethod;
-  body: string;
-  headers: Record<string, string>;
-}
-
-export function request({ endpoint, method, body, headers }: RequestOptions) {
-  const controller = new AbortController();
+export function request({ endpoint, method, body, headers }) {
+  const source = CancelToken.source();
 
   const requestId = newId();
   headers = { ...headers, [customHeaderKeys.REQUEST_ID]: requestId };
 
   // https://github.com/mzabriskie/axios#request-config
-  const promise = axios
+  const request = axios
     .request({
       url: endpoint,
       method: method || httpMethods.GET,
       headers: headers,
       data: body,
-      signal: controller.signal,
+      cancelToken: source.token,
       // onUploadProgress
       // onDownloadProgress
     })
@@ -52,35 +45,15 @@ export function request({ endpoint, method, body, headers }: RequestOptions) {
   // Allows canceling the request when sagas are canceled
   // https://github.com/redux-saga/redux-saga/issues/651#issuecomment-262375964
   // https://github.com/redux-saga/redux-saga/issues/701#issuecomment-267512606
-  (promise as any)[CANCEL] = controller.abort;
+  request[CANCEL] = source.cancel;
 
-  return promise;
+  return request;
 }
 
-const handleError = (error: Error | AxiosError | Cancel) => {
+const handleError = (error) => {
   const headers = get(error, ["config", "headers"]);
   const identifierHeaders = pick(headers, customHeaderKeys.identifierKeys);
-  if (Axios.isAxiosError(error)) {
-    if (error.response) {
-      throw newApiResponseError(
-        `Api error response ${JSON.stringify(error.response.data)}`,
-        identifierHeaders,
-        error as AxiosResponseError
-      );
-    } else if (error.request) {
-      throw newNetworkFailureError(
-        "Api request failed",
-        identifierHeaders,
-        error
-      );
-    } else if (error.config) {
-      throw newRequestConfigurationError(
-        "Request configuration error",
-        identifierHeaders,
-        error
-      );
-    }
-  } else if (Axios.isCancel(error)) {
+  if (Axios.isCancel(error)) {
     logger.debug(
       makeIdentifiersMessage("Request canceled", {
         [customHeaderKeys.REQUEST_ID]:
@@ -88,11 +61,25 @@ const handleError = (error: Error | AxiosError | Cancel) => {
       }),
       error.message
     );
+  } else if (error.response) {
+    throw newApiResponseError(
+      `Api error response ${JSON.stringify(error.response.data)}`,
+      identifierHeaders,
+      error
+    );
+  } else if (error.request) {
+    throw newNetworkFailureError(
+      "Api request failed",
+      identifierHeaders,
+      error
+    );
+  } else if (error.config) {
+    throw newRequestConfigurationError(
+      "Request configuration error",
+      identifierHeaders,
+      error
+    );
   } else {
     throw error;
   }
 };
-
-export interface AxiosResponseError extends AxiosError {
-  response: AxiosResponse<any>;
-}
