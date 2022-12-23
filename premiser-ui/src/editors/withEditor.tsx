@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { AnyAction } from "redux";
-import { PrepareAction } from "@reduxjs/toolkit";
+import { AnyAction, PrepareAction } from "@reduxjs/toolkit";
 import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import get from "lodash/get";
 import { z } from "zod";
@@ -53,12 +52,12 @@ export class CommitThenPutAction {
 }
 
 /** Editor fields can return one or more actions to dispatch. */
-type EditorActionCreator = (
+export type EditorFieldsActionCreator = (
   editorType: EditorType,
   editorId: string
 ) => AnyAction | AnyAction[];
 /** Editor fields pass a lambda to this method that returns actions to dispatch to the edit model. */
-type EditorDispatch = (actionCreator: EditorActionCreator) => void;
+type EditorFieldsDispatch = (actionCreator: EditorFieldsActionCreator) => void;
 
 /**
  * The props of this HOC's components.
@@ -93,7 +92,7 @@ export type EntityEditorFieldsProps<T> = {
   onBlur?: OnBlurCallback;
   onPropertyChange: OnPropertyChangeCallback;
   onSubmit: OnSubmitCallback;
-  editorDispatch: EditorDispatch;
+  editorDispatch: EditorFieldsDispatch;
   errors?: ModelErrors<T>;
   blurredFields?: BlurredFields<T>;
   dirtyFields?: DirtyFields<T>;
@@ -262,7 +261,7 @@ export default function withEditor<
       transformedApiValidationErrors
     );
 
-    function editorDispatch(actionCreator: EditorActionCreator) {
+    function editorDispatch(actionCreator: EditorFieldsActionCreator) {
       const action = actionCreator(editorType, editorId);
       if (isArray(action)) {
         for (const a of action) {

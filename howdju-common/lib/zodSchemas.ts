@@ -821,7 +821,7 @@ export const CreateJustifiedSentence = z.object({
   proposition: CreateProposition,
   speakers: z.array(CreatePersorg),
   doCreateJustification: z.boolean(),
-  justification: CreateJustificationInput,
+  justification: CreateJustification,
 });
 export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;
 

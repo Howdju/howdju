@@ -123,4 +123,6 @@ export const CreatePropositionPageMode = {
   /** Submit writ quote-based justification via query params */
   SUBMIT_JUSTIFICATION_VIA_QUERY_STRING:
     "SUBMIT_JUSTIFICATION_VIA_QUERY_STRING",
-};
+} as const;
+export type CreatePropositionPageMode =
+  typeof CreatePropositionPageMode[keyof typeof CreatePropositionPageMode];

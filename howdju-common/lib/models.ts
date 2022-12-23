@@ -311,8 +311,8 @@ export interface JustificationRootTargetInfo {
 }
 
 export const makeCreateJustifiedSentenceInput = (
-  propositionProps: Partial<CreatePropositionInput>,
-  justificationProps: Partial<CreateJustificationInput>
+  propositionProps: PartialDeep<CreatePropositionInput> = {},
+  justificationProps: PartialDeep<CreateJustificationInput> = {}
 ): CreateJustifiedSentenceInput => ({
   proposition: makeCreatePropositionInput(propositionProps),
   speakers: [],

@@ -154,7 +154,7 @@ export interface EditorState<T extends EditorEntity, U = T> {
   isSaved: boolean;
 }
 
-export const defaultEditorState = <T extends EditorEntity>() =>
+export const defaultEditorState = <T extends EditorEntity, U = T>() =>
   ({
     editEntity: undefined,
     errors: undefined,
@@ -163,7 +163,7 @@ export const defaultEditorState = <T extends EditorEntity>() =>
     blurredFields: undefined,
     dirtyFields: undefined,
     wasSubmitAttempted: false,
-  } as EditorState<T>);
+  } as EditorState<T, U>);
 
 interface ErrorPayload {
   sourceError: {
