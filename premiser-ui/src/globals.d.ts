@@ -2,3 +2,5 @@
 declare module "*.md";
 
 declare module "@grrr/cookie-consent";
+
+import 'jest-extended';

@@ -16,8 +16,9 @@ import JustificationsPage from "./JustificationsPage";
 
 const server = setupServer();
 
-beforeAll(() => server.listen());
-beforeEach(() => {
+beforeAll(() => {
+  server.listen();
+
   // Use fake timers so that we can ensure animations complete before snapshotting.
   jest.useFakeTimers();
 });
@@ -51,8 +52,10 @@ describe("JustificationsPage", () => {
       // TODO convert routesById to routePropsById so that we can get path like `routesById["proposition"].path`
       "p/:rootTargetId/:slug",
       {
-        rootTargetId: proposition.id,
-        slug: toSlug(proposition.text),
+        pathParams: {
+          rootTargetId: proposition.id,
+          slug: toSlug(proposition.text),
+        },
       }
     );
 
@@ -69,6 +72,7 @@ describe("JustificationsPage", () => {
 
     // Assert
     expect(await screen.findByText(proposition.text)).toBeInTheDocument();
+    jest.runAllTimers();
     expect(container).toMatchSnapshot();
   });
 });

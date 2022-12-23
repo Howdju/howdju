@@ -11,7 +11,8 @@ import type { Config } from "jest";
 
 const config: Config = {
   testRegex: ".*\\.test\\.[tj]sx?$",
-  setupFiles: [`${__dirname}/jest/jest.setup.js`],
+  setupFiles: [`${__dirname}/jest/setup.js`],
+  setupFilesAfterEnv: [`${__dirname}/jest/setupAfterEnv.js`],
   transformIgnorePatterns: [
     // Include some extra stuff under node_modules in our babel transform
     "node_modules/(?!(@grrr/cookie-consent|@grrr/utils))",
