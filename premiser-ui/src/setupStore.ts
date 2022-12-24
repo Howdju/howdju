@@ -18,7 +18,6 @@ import createSagaMiddleware from "redux-saga";
 import createRootReducer from "./reducers";
 import { logger } from "./logger";
 import config from "./config";
-import { history } from "./history";
 import * as actionCreatorsUntyped from "./actions";
 import getSagas from "./sagas";
 
@@ -39,18 +38,16 @@ const sagaMiddleware = createSagaMiddleware({
   },
 });
 
-const rootReducer = createRootReducer(history);
-
-const persistedReducer = persistReducer(
-  {
-    key: "root",
-    storage,
-    whitelist: config.reduxPersistWhitelist,
-  },
-  rootReducer
-) as RootReducer;
-
-export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+export const setupStore = (history, preloadedState?: PreloadedState<RootState>) => {
+  const rootReducer = createRootReducer(history);
+  const persistedReducer = persistReducer(
+    {
+      key: "root",
+      storage,
+      whitelist: config.reduxPersistWhitelist,
+    },
+    rootReducer
+  ) as RootReducer;
   const store = configureStore({
     reducer: persistedReducer,
     preloadedState,
@@ -99,7 +96,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
   }
   return store;
 };
-export type RootReducer = typeof rootReducer;
-export type RootState = ReturnType<typeof rootReducer>;
+export type RootReducer = ReturnType<typeof createRootReducer>;
+export type RootState = ReturnType<RootReducer>;
 export type AppStore = ReturnType<typeof setupStore>;
 export type AppDispatch = AppStore["dispatch"];

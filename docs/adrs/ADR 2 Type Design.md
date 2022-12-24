@@ -101,12 +101,17 @@ Additional fields on `Out` models are often optional, so that either:
    or
 2. To support request parameters that control the addition of extra fields.
 
-## Response/request body models
+## Request/response models
 
 Response/request body models represent the entire body of an HTTP request or response. They may contain one or
 more In/Out models as fields, respectively. They are named like `MethodEndpointDirection`
 (`{Get,Post,Put,Delete}Endpoint{In,Out}`). E.g.: `GetPropositionIn`/`GetPropositionOut`. Often the
 `Endpoint` will correspond to an entity.
+
+TODO: request/response models should account for headers and path and query parameters.
+
+Plural model names usually will refer to the bare resource (`GetProposisionsIn` for
+`propositions/1`) while singular refer to entities in the resource (`GetPropositionIn` for `propositions/1`.
 
 ## `Persisted` entities
 

@@ -24,9 +24,9 @@ export function renderWithProviders(
   ui: React.ReactElement,
   {
     preloadedState = {},
-    store = setupStore(preloadedState),
-    persist = true,
     history = createMemoryHistory(),
+    store = setupStore(history, preloadedState),
+    persist = true,
     ...renderOptions
   }: ExtendedRenderOptions = {}
 ) {

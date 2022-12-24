@@ -77,7 +77,19 @@ export type EntityName<T> = T extends Proposition
 export type Ref<TName extends string> = EntityRef & z.BRAND<TName>;
 export type EntityOrRef<T extends Entity> = T | Ref<EntityName<T>>;
 
-export type Persisted<T extends Entity> = SetRequired<T, "id">;
+/** Makes an Entity's ID required and all related entities can be refs. */
+export type Persisted<T extends Entity> = {
+  id: string;
+} & {
+  [key in keyof Omit<T, "id">]: T[key] extends Entity
+    ? Ref<EntityName<T[key]>> | PersistedField<T[key]>
+    : PersistedField<T[key]>;
+};
+type PersistedField<T> = {
+  [key in keyof T]: T[key] extends Entity
+    ? Ref<EntityName<T[key]>> | PersistedField<T[key]>
+    : PersistedField<T[key]>;
+};
 
 export function isRef<T extends Entity>(
   e: EntityOrRef<T>

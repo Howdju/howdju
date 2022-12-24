@@ -8,6 +8,8 @@
 import { ApiErrorCode } from "./codes";
 import { ModelErrors } from "./zodError";
 import {
+  CreateJustification,
+  CreateProposition,
   Entity,
   Justification,
   JustificationVote,
@@ -28,6 +30,22 @@ export interface ErrorOut<T extends object> {
   errorCode: ApiErrorCode;
   /** The errors corresponding to the in model. */
   errors: ModelErrors<T>;
+}
+
+export interface PostPropositionIn {
+  proposition: CreateProposition;
+}
+
+export interface PostPropositionOut {
+  proposition: Persisted<Proposition>;
+}
+
+export interface PostJustificationIn {
+  justification: CreateJustification;
+}
+
+export interface PostJustificationOut {
+  justification: Persisted<Justification>;
 }
 
 export interface GetPropositionResponse {

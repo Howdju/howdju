@@ -36,6 +36,8 @@ import {
   makeCreateTagVote,
   CreateJustification,
   CreateCounterJustification,
+  CreateProposition,
+  PostPropositionIn,
 } from "howdju-common";
 
 import {
@@ -918,7 +920,7 @@ export const api = {
 
   createProposition: apiActionCreator(
     "CREATE_PROPOSITION",
-    (proposition) => ({
+    (proposition: CreateProposition): PostPropositionIn => ({
       proposition,
     }),
     (payload) => ({
