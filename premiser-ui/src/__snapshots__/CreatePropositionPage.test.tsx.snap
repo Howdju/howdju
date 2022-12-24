@@ -1,0 +1,678 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreatePropositionPage renders correctly with query params 1`] = `
+<div>
+  <div
+    id="edit-proposition-justification-page"
+  >
+    <form>
+      <div>
+        <div
+          class="md-grid"
+        >
+          <div
+            class="md-cell md-cell--12"
+          >
+            <div
+              class="md-paper md-paper--1 md-card md-background--card"
+            >
+              <div
+                class="md-card-title md-card-title--primary"
+              >
+                <h2
+                  class="md-card-title--title md-card-title--large md-text"
+                >
+                  Justify proposition
+                </h2>
+              </div>
+              <section
+                class="md-card-text"
+              >
+                <button
+                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+                  title="Add Speaker"
+                  type="button"
+                >
+                  <div
+                    class="md-ink-container"
+                  />
+                  <div
+                    class="md-icon-separator"
+                  >
+                    <i
+                      class="md-icon material-icons md-text--inherit"
+                    >
+                      person_add
+                    </i>
+                    <span
+                      class="md-icon-text"
+                    >
+                      Add Speaker
+                    </span>
+                  </div>
+                </button>
+              </section>
+              <section
+                class="md-card-text"
+              >
+                <div>
+                  <div
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="md-layover md-layover--simplified md-full-width md-menu-container md-menu-container--menu-below md-autocomplete-container"
+                    id="propositionEditorText-menu"
+                  >
+                    <div
+                      class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                    >
+                      <label
+                        class="md-floating-label md-floating-label--floating md-text--theme-primary"
+                        for="propositionEditorText"
+                      >
+                        Text *
+                      </label>
+                      <div
+                        class="md-text-field-multiline-container md-text-field--floating-margin"
+                        style="height: 0px;"
+                      >
+                        <span
+                          aria-hidden="true"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                          readonly=""
+                          rows="1"
+                          tabindex="-1"
+                        />
+                        <textarea
+                          aria-autocomplete="list"
+                          autocomplete="off"
+                          class="md-text-field md-text-field--multiline md-full-width md-text"
+                          id="propositionEditorText"
+                          name="proposition.text"
+                          required=""
+                          rows="1"
+                          style="height: 0px;"
+                        />
+                      </div>
+                      <hr
+                        class="md-divider md-divider--text-field md-divider--expand-from-left md-divider--text-field-expanded md-divider--text-field-active"
+                      />
+                      <div
+                        class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
+                      >
+                        <div
+                          aria-hidden="false"
+                          class="md-text-field-message md-text-field-message--active md-text-field-message--counter"
+                        >
+                          0 / 512
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="chips-list"
+                  style="position: relative;"
+                >
+                  <div
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="md-layover md-layover--simplified md-full-width md-menu-container md-menu-container--menu-below md-autocomplete-container tag-name-autocomplete"
+                    id="create-proposition-page--tags--tag-name-menu"
+                  >
+                    <div
+                      class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                    >
+                      <label
+                        class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
+                        for="create-proposition-page--tags--tag-name"
+                      >
+                        Tag
+                      </label>
+                      <div
+                        class="md-text-field-multiline-container md-text-field--floating-margin"
+                        style="height: 0px;"
+                      >
+                        <span
+                          aria-hidden="true"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                          readonly=""
+                          rows="1"
+                          tabindex="-1"
+                        />
+                        <textarea
+                          aria-autocomplete="list"
+                          autocomplete="off"
+                          class="md-text-field md-text-field--multiline md-full-width md-text"
+                          id="create-proposition-page--tags--tag-name"
+                          name="tagName"
+                          rows="1"
+                          style="height: 0px;"
+                        />
+                      </div>
+                      <hr
+                        class="md-divider md-divider--text-field md-divider--expand-from-left"
+                      />
+                      <div
+                        class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
+                      >
+                        <div
+                          aria-hidden="true"
+                          class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
+                        >
+                          0 / 64
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <div
+                class="md-selection-control-container md-switch-container"
+              >
+                <input
+                  aria-hidden="true"
+                  checked=""
+                  class="md-selection-control-input"
+                  id="create-proposition-page--do-create-justification"
+                  name="doCreateJustification"
+                  type="checkbox"
+                  value=""
+                />
+                <label
+                  class="md-selection-control-label md-pointer--hover md-text"
+                  for="create-proposition-page--do-create-justification"
+                >
+                  <div
+                    class="md-switch-track md-pointer--hover md-switch-track--on"
+                  >
+                    <div
+                      aria-checked="true"
+                      aria-labelledby="create-proposition-page--do-create-justification-label"
+                      aria-pressed="false"
+                      class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-switch-thumb md-switch-thumb--on"
+                      role="checkbox"
+                      tabindex="0"
+                    >
+                      <div
+                        class="md-ink-container md-ink-container--2x"
+                      />
+                    </div>
+                  </div>
+                  <span
+                    id="create-proposition-page--do-create-justification-label"
+                  >
+                    Create justification
+                  </span>
+                </label>
+              </div>
+              <div
+                class="md-card-title md-card-title--primary"
+              >
+                <h2
+                  class="md-card-title--title md-card-title--large md-text"
+                >
+                  Justification
+                </h2>
+              </div>
+              <section
+                class="md-card-text"
+              >
+                <div>
+                  <div
+                    class=""
+                  >
+                    <fieldset
+                      class="md-selection-control-group"
+                    >
+                      <div
+                        class="md-selection-control-container md-selection-control-container--inline"
+                        title="Support the truth of the proposition"
+                      >
+                        <input
+                          aria-hidden="true"
+                          checked=""
+                          class="md-selection-control-input"
+                          id="create-proposition-page--justification--polarity0"
+                          name="justification.polarity"
+                          type="radio"
+                          value="POSITIVE"
+                        />
+                        <label
+                          class="md-selection-control-label md-pointer--hover md-text"
+                          for="create-proposition-page--justification--polarity0"
+                        >
+                          <div
+                            aria-checked="true"
+                            aria-describedby="create-proposition-page--justification--polarity-group-label"
+                            aria-labelledby="create-proposition-page--justification--polarity0-label"
+                            aria-pressed="false"
+                            class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
+                            role="radio"
+                            tabindex="0"
+                          >
+                            <div
+                              class="md-ink-container"
+                            />
+                            <i
+                              class="md-icon material-icons md-text--inherit"
+                            >
+                              radio_button_checked
+                            </i>
+                          </div>
+                          <span
+                            id="create-proposition-page--justification--polarity0-label"
+                          >
+                            Supporting
+                          </span>
+                        </label>
+                      </div>
+                      <div
+                        class="md-selection-control-container md-selection-control-container--inline"
+                        title="Oppose the truth of the proposition"
+                      >
+                        <input
+                          aria-hidden="true"
+                          class="md-selection-control-input"
+                          id="create-proposition-page--justification--polarity1"
+                          name="justification.polarity"
+                          type="radio"
+                          value="NEGATIVE"
+                        />
+                        <label
+                          class="md-selection-control-label md-pointer--hover md-text"
+                          for="create-proposition-page--justification--polarity1"
+                        >
+                          <div
+                            aria-checked="false"
+                            aria-describedby="create-proposition-page--justification--polarity-group-label"
+                            aria-labelledby="create-proposition-page--justification--polarity1-label"
+                            aria-pressed="false"
+                            class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                            role="radio"
+                            tabindex="-1"
+                          >
+                            <div
+                              class="md-ink-container"
+                            />
+                            <i
+                              class="md-icon material-icons md-text--inherit"
+                            >
+                              radio_button_unchecked
+                            </i>
+                          </div>
+                          <span
+                            id="create-proposition-page--justification--polarity1-label"
+                          >
+                            Opposing
+                          </span>
+                        </label>
+                      </div>
+                    </fieldset>
+                  </div>
+                  <hr
+                    class="md-divider"
+                  />
+                  <div
+                    class="md-subheader md-text--theme-primary"
+                  >
+                    Type
+                  </div>
+                  <div
+                    class=""
+                  >
+                    <fieldset
+                      class="md-selection-control-group"
+                    >
+                      <div
+                        class="md-selection-control-container md-selection-control-container--inline"
+                      >
+                        <input
+                          aria-hidden="true"
+                          class="md-selection-control-input"
+                          id="create-proposition-page--justification--basis-type0"
+                          name="justification.basis.type"
+                          type="radio"
+                          value="PROPOSITION_COMPOUND"
+                        />
+                        <label
+                          class="md-selection-control-label md-pointer--hover md-text"
+                          for="create-proposition-page--justification--basis-type0"
+                        >
+                          <div
+                            aria-checked="false"
+                            aria-describedby="create-proposition-page--justification--basis-type-group-label"
+                            aria-labelledby="create-proposition-page--justification--basis-type0-label"
+                            aria-pressed="false"
+                            class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                            role="radio"
+                            tabindex="-1"
+                          >
+                            <div
+                              class="md-ink-container"
+                            />
+                            <i
+                              class="md-icon material-icons md-text--inherit"
+                            >
+                              radio_button_unchecked
+                            </i>
+                          </div>
+                          <span
+                            id="create-proposition-page--justification--basis-type0-label"
+                          >
+                            <div
+                              title="A list of propositions that together imply the target"
+                            >
+                              Proposition(s)
+                            </div>
+                          </span>
+                        </label>
+                      </div>
+                      <div
+                        class="md-selection-control-container md-selection-control-container--inline"
+                      >
+                        <input
+                          aria-hidden="true"
+                          checked=""
+                          class="md-selection-control-input"
+                          id="create-proposition-page--justification--basis-type1"
+                          name="justification.basis.type"
+                          type="radio"
+                          value="WRIT_QUOTE"
+                        />
+                        <label
+                          class="md-selection-control-label md-pointer--hover md-text"
+                          for="create-proposition-page--justification--basis-type1"
+                        >
+                          <div
+                            aria-checked="true"
+                            aria-describedby="create-proposition-page--justification--basis-type-group-label"
+                            aria-labelledby="create-proposition-page--justification--basis-type1-label"
+                            aria-pressed="false"
+                            class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--theme-secondary"
+                            role="radio"
+                            tabindex="0"
+                          >
+                            <div
+                              class="md-ink-container"
+                            />
+                            <i
+                              class="md-icon material-icons md-text--inherit"
+                            >
+                              radio_button_checked
+                            </i>
+                          </div>
+                          <span
+                            id="create-proposition-page--justification--basis-type1-label"
+                          >
+                            <div
+                              title="An external reference"
+                            >
+                              Quote
+                            </div>
+                          </span>
+                        </label>
+                      </div>
+                      <div
+                        class="md-selection-control-container md-selection-control-container--inline"
+                      >
+                        <input
+                          aria-hidden="true"
+                          class="md-selection-control-input"
+                          id="create-proposition-page--justification--basis-type2"
+                          name="justification.basis.type"
+                          type="radio"
+                          value="JUSTIFICATION_BASIS_COMPOUND"
+                        />
+                        <label
+                          class="md-selection-control-label md-pointer--hover md-text"
+                          for="create-proposition-page--justification--basis-type2"
+                        >
+                          <div
+                            aria-checked="false"
+                            aria-describedby="create-proposition-page--justification--basis-type-group-label"
+                            aria-labelledby="create-proposition-page--justification--basis-type2-label"
+                            aria-pressed="false"
+                            class="md-fake-btn md-pointer--hover md-fake-btn--no-outline md-selection-control-toggle md-btn md-btn--icon md-text--secondary"
+                            role="radio"
+                            tabindex="-1"
+                          >
+                            <div
+                              class="md-ink-container"
+                            />
+                            <i
+                              class="md-icon material-icons md-text--inherit"
+                            >
+                              radio_button_unchecked
+                            </i>
+                          </div>
+                          <span
+                            id="create-proposition-page--justification--basis-type2-label"
+                          >
+                            <div
+                              title="A list of justifications that together imply the target"
+                            >
+                              Compound (deprecated)
+                            </div>
+                          </span>
+                        </label>
+                      </div>
+                    </fieldset>
+                  </div>
+                  <hr
+                    class="md-divider"
+                  />
+                  <div
+                    class="writ-quote-editor-fields"
+                  >
+                    <div
+                      class="md-text-field-container md-full-width md-text-field-container--multiline"
+                    >
+                      <label
+                        class="md-floating-label md-floating-label--floating md-text--secondary"
+                        for="create-proposition-page--justification--basis-writ-quote--quote-text"
+                      >
+                        Quote
+                      </label>
+                      <div
+                        class="md-text-field-multiline-container md-text-field--floating-margin"
+                        style="height: 0px;"
+                      >
+                        <span
+                          aria-hidden="true"
+                        />
+                        <textarea
+                          aria-hidden="true"
+                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                          readonly=""
+                          rows="2"
+                          tabindex="-1"
+                        >
+                          An important conclusion.
+                        </textarea>
+                        <textarea
+                          class="md-text-field md-text-field--multiline md-full-width md-text"
+                          id="create-proposition-page--justification--basis-writ-quote--quote-text"
+                          name="justification.basis.writQuote.quoteText"
+                          rows="2"
+                          style="height: 0px;"
+                        >
+                          An important conclusion.
+                        </textarea>
+                      </div>
+                      <hr
+                        class="md-divider md-divider--text-field md-divider--expand-from-left"
+                      />
+                      <div
+                        class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
+                      >
+                        <div
+                          aria-hidden="true"
+                          class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
+                        >
+                          24 / 4096
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="md-layover md-layover--simplified md-full-width md-menu-container md-menu-container--menu-below md-autocomplete-container"
+                      id="create-proposition-page--justification--basis-writ-quote--writ-title-menu"
+                    >
+                      <div
+                        class="md-text-field-container md-full-width md-text-field-container--input md-autocomplete"
+                      >
+                        <label
+                          class="md-floating-label md-floating-label--floating md-text--secondary"
+                          for="create-proposition-page--justification--basis-writ-quote--writ-title"
+                        >
+                          Title *
+                        </label>
+                        <input
+                          aria-autocomplete="list"
+                          autocomplete="off"
+                          class="md-text-field md-text-field--floating-margin md-full-width md-text"
+                          id="create-proposition-page--justification--basis-writ-quote--writ-title"
+                          minlength="1"
+                          name="justification.basis.writQuote.writ.title"
+                          required=""
+                          type="text"
+                          value="A credible source"
+                        />
+                        <hr
+                          class="md-divider md-divider--text-field md-divider--expand-from-left"
+                        />
+                        <div
+                          class="md-text-field-message-container md-text-field-message-container--count-only md-full-width md-text--disabled"
+                        >
+                          <div
+                            aria-hidden="true"
+                            class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
+                          >
+                            17 / 512
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="md-text-field-container md-full-width md-text-field-container--multiline urlInput"
+                    >
+                      <label
+                        class="md-floating-label md-floating-label--floating md-text--secondary"
+                        for="create-proposition-page--justification--basis-writ-quote--urls-0--url"
+                      >
+                        URL
+                      </label>
+                      <div
+                        class="md-text-field-icon-container"
+                      >
+                        <div
+                          class="md-text-field-divider-container md-text-field-divider-container--grow"
+                        >
+                          <div
+                            class="md-text-field-multiline-container md-text-field--floating-margin"
+                            style="height: 0px;"
+                          >
+                            <span
+                              aria-hidden="true"
+                            />
+                            <textarea
+                              aria-hidden="true"
+                              class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+                              readonly=""
+                              rows="1"
+                              tabindex="-1"
+                            >
+                              https://www.info.com
+                            </textarea>
+                            <textarea
+                              class="md-text-field md-text-field--multiline md-full-width md-text"
+                              id="create-proposition-page--justification--basis-writ-quote--urls-0--url"
+                              name="justification.basis.writQuote.urls[0].url"
+                              rows="1"
+                              style="height: 0px;"
+                            >
+                              https://www.info.com
+                            </textarea>
+                          </div>
+                          <hr
+                            class="md-divider md-divider--text-field md-divider--expand-from-left"
+                          />
+                        </div>
+                        <button
+                          class="md-btn md-btn--icon md-pointer--hover md-inline-block md-text-field-icon md-text-field-icon--positioned"
+                          type="button"
+                        >
+                          <div
+                            class="md-ink-container"
+                          />
+                          <i
+                            class="md-icon material-icons md-text--inherit"
+                          >
+                            delete
+                          </i>
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block add-button"
+                      type="button"
+                    >
+                      <div
+                        class="md-ink-container"
+                      />
+                      <div
+                        class="md-icon-separator"
+                      >
+                        <i
+                          class="md-icon material-icons md-text--inherit"
+                        >
+                          add
+                        </i>
+                        <span
+                          class="md-icon-text"
+                        >
+                          Add URL
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="md-dialog-footer--card md-dialog-footer--inline"
+              >
+                <button
+                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+                  type="button"
+                >
+                  <div
+                    class="md-ink-container"
+                  />
+                  Cancel
+                </button>
+                <button
+                  class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                  title="A proposition is only as good as its justification"
+                  type="submit"
+                >
+                  <div
+                    class="md-ink-container"
+                  />
+                  Create
+                </button>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+`;

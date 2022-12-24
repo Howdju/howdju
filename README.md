@@ -388,6 +388,19 @@ Use your web browser's Javascript debugging features as usual.
 yarn set version stable
 ```
 
+## Debugging UI tests
+
+`@testing-library` provides these helpers:
+
+```typescript
+// Log the document
+screen.debug();
+// Log container without truncating
+screen.debug(container, Number.MAX_SAFE_INTEGER);
+// Output a URL that let's you inspect the DOM using a third-party website.
+screen.logTestingPlaygroundURL();
+```
+
 ## Snapshot tests
 
 To regenerate snapshots, run Jest with `--updateSnapshot` and optionally `--testNamePattern`

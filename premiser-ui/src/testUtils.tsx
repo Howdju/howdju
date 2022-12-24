@@ -11,6 +11,7 @@ import { match } from "react-router";
 
 import type { AppStore, RootState } from "./setupStore";
 import { setupStore } from "./setupStore";
+import { head } from "lodash";
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
   preloadedState?: PreloadedState<RootState>;
@@ -53,6 +54,11 @@ export function renderWithProviders(
   };
 }
 
+export interface MakeRouteComponentPropsOptions<T> {
+  pathParams?: T;
+  searchParams?: Record<string, string>;
+}
+
 /**
  * Makes RouteComponentProps.
  *
@@ -61,17 +67,34 @@ export function renderWithProviders(
  */
 export function makeRouteComponentProps<T extends Record<string, string>>(
   path: string,
-  params: T
+  { pathParams = {} as T, searchParams }: MakeRouteComponentPropsOptions<T>
 ) {
   const toUrl = compile(path, { encode: encodeURIComponent });
-  const url = toUrl(params);
+  const url = toUrl(pathParams);
   const match: match<T> = {
     isExact: false,
     path,
     url,
-    params,
+    params: pathParams,
   };
-  const location = createLocation(match.url);
+  const locationPath = searchParams
+    ? match.url + "?" + new URLSearchParams(searchParams)
+    : match.url;
+  const location = createLocation(locationPath);
 
   return { match, location };
+}
+
+/**
+ * Filters the elements to only those that are visible.
+ *
+ * react-md uses a hidden and visible input element as an implementation detail. In our tests we
+ * often only want to assert on the visible one.
+ */
+export function ariaVisibleOne(
+  elements: HTMLElement[]
+): HTMLElement | undefined {
+  return head(
+    elements.filter((e) => e.getAttribute("aria-hidden") !== "false")
+  );
 }
