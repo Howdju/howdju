@@ -1,13 +1,13 @@
 import { normalize } from "normalizr";
 import { handleActions } from "redux-actions";
 import { autocompletes, combineActions, str } from "../actions";
-import { api, ApiActionMeta } from "../apiActions";
+import { api, ApiResponseActionMeta } from "../apiActions";
 
 const initialState = {
   suggestions: {},
 };
 
-export default handleActions<typeof initialState, any, ApiActionMeta>(
+export default handleActions<typeof initialState, any, ApiResponseActionMeta>(
   {
     [combineActions(
       api.fetchPersorgNameSuggestions.response,

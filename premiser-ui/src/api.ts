@@ -52,7 +52,6 @@ export function request({ endpoint, method, body, headers }: RequestOptions) {
   // Allows canceling the request when sagas are canceled
   // https://github.com/redux-saga/redux-saga/issues/651#issuecomment-262375964
   // https://github.com/redux-saga/redux-saga/issues/701#issuecomment-267512606
-  // (promise as any)[CANCEL] = controller.abort;
   (promise as any)[CANCEL] = () => {
     controller.abort();
   };

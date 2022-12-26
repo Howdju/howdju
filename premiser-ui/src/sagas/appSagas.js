@@ -1,5 +1,13 @@
 import moment from "moment";
-import { delay, put, race, select, take, takeEvery } from "redux-saga/effects";
+import {
+  cancel,
+  delay,
+  put,
+  race,
+  select,
+  take,
+  takeEvery,
+} from "redux-saga/effects";
 import { REHYDRATE } from "redux-persist/lib/constants";
 
 import { app } from "../actions";
@@ -11,8 +19,9 @@ import { logger } from "../logger";
 let isRehydrated = false;
 
 export function* flagRehydrate() {
-  yield takeEvery(REHYDRATE, function* flagRehydrateWorker() {
+  const task = yield takeEvery(REHYDRATE, function* flagRehydrateWorker() {
     isRehydrated = true;
+    yield cancel(task);
   });
 }
 

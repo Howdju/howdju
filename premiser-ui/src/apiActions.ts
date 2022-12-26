@@ -3,6 +3,7 @@ import {
   PayloadActionCreator,
   PrepareAction,
   ActionCreatorWithPreparedPayload,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
 import { isEmpty, isFunction, join, pick } from "lodash";
@@ -85,7 +86,7 @@ export type ApiActionCreator<
     RP,
     string,
     Error,
-    ApiActionMeta
+    ApiResponseActionMeta
   >;
 };
 
@@ -95,7 +96,7 @@ const makeApiActionTypes = (type: string) => {
   return [requestType, responseType];
 };
 
-export type ApiActionMeta<P = any> = {
+export type ApiResponseActionMeta<P = any> = {
   normalizationSchema: any;
   requestPayload: P;
 };
@@ -180,10 +181,35 @@ interface ApiResponseWrapper {
 type Prepared<P> = { payload: P; meta?: any };
 
 /**
+ * The meta of an ApiAction
+ *
+ * @typeparam P the payload type.
+ */
+export type ApiActionMeta<P> = {
+  apiConfig: ResourceApiConfig<any> | ((p: P) => ResourceApiConfig<any>);
+};
+export type ApiAction<P> = PayloadAction<P, string, ApiActionMeta<P>>;
+export type AnyApiAction = ApiAction<any>;
+
+type InferPrepareAction<PP extends (...args: any[]) => any> = PP extends (
+  ...args: any[]
+) => Prepared<any>
+  ? PP & { meta: ApiActionMeta<InferPayload<PP>> }
+  : (...args: Parameters<PP>) => {
+      payload: ReturnType<PP>;
+      meta: ApiActionMeta<InferPayload<PP>>;
+    };
+type InferPayload<PP extends (...args: any[]) => any> = PP extends (
+  ...args: any[]
+) => Prepared<infer P>
+  ? P
+  : ReturnType<PP>;
+
+/**
  * Create an action creator having a property `.response` with another action creator for corresponding API responses
  *
  * @param type the type of the action
- * @param payloadCreatorOrPrepare a function that creates the payload directory or returns a
+ * @param payloadCreatorOrPrepare a function that creates the payload directly or returns a
  *   @reduxjs/toolkit prepared object.
  * @param apiConfigCreator the resource config for the API endpoint, or a function for creating it from
  *   the payload. The apiConfig's normalizationSchema determines the payload of the response actions.
@@ -191,11 +217,19 @@ type Prepared<P> = { payload: P; meta?: any };
  * @typeparam N the type of the normalization schema. Used to infer the payload of the response action.
  * @typeparam PA the prepare function type
  */
-function apiActionCreator<P, N, PA extends (...args: any[]) => { payload: P }>(
+function apiActionCreator<
+  PP extends ((...args: any[]) => P) | ((...args: any[]) => Prepared<P>),
+  N,
+  P = InferPayload<PP>
+>(
   type: string,
-  payloadCreatorOrPrepare?: (...args: any[]) => P | Prepared<P>,
+  payloadCreatorOrPrepare?: PP,
   apiConfigCreator?: ResourceApiConfig<N> | ((p: P) => ResourceApiConfig<N>)
-): ApiActionCreator<P, ExtractSchemaEntity<N> & ApiResponseWrapper, PA> {
+): ApiActionCreator<
+  P,
+  ExtractSchemaEntity<N> & ApiResponseWrapper,
+  InferPrepareAction<PP>
+> {
   const [requestType, responseType] = makeApiActionTypes(type);
 
   // Add apiConfig to meta
@@ -225,13 +259,17 @@ function apiActionCreator<P, N, PA extends (...args: any[]) => { payload: P }>(
     ? (createAction(requestType, requestPrepare) as ApiActionCreator<
         P,
         Response,
-        PA
+        InferPrepareAction<PP>
       >)
-    : (createAction(requestType) as ApiActionCreator<P, Response, PA>);
+    : (createAction(requestType) as ApiActionCreator<
+        P,
+        Response,
+        InferPrepareAction<PP>
+      >);
 
   ac.response = createAction(
     responseType,
-    (payload: ExtractSchemaEntity<N>, meta: ApiActionMeta<P>) => ({
+    (payload: ExtractSchemaEntity<N>, meta: ApiResponseActionMeta<P>) => ({
       payload,
       meta,
     })
@@ -240,7 +278,7 @@ function apiActionCreator<P, N, PA extends (...args: any[]) => { payload: P }>(
     Response,
     string,
     Error,
-    ApiActionMeta
+    ApiResponseActionMeta
   >;
   return ac;
 }
@@ -987,7 +1025,7 @@ export const api = {
 
   fetchPropositionTextSuggestions: apiActionCreator(
     "FETCH_PROPOSITION_TEXT_SUGGESTIONS",
-    (propositionText, suggestionsKey) => ({
+    (propositionText: string, suggestionsKey: SuggestionsKey) => ({
       propositionText,
       suggestionsKey,
     }),

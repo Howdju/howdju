@@ -20,13 +20,14 @@ import { logger } from "./logger";
 import config from "./config";
 import * as actionCreatorsUntyped from "./actions";
 import getSagas from "./sagas";
+import { History } from "history";
 
 // TODO(1): Remove typecasting.
 const actionCreators = actionCreatorsUntyped as unknown as {
   [key: string]: ActionCreator<any>;
 };
 
-const sagaMiddleware = createSagaMiddleware({
+export const sagaMiddleware = createSagaMiddleware({
   onError: (error, { sagaStack }) => {
     logger.error(`Uncaught error in sagas: ${error}: ${sagaStack}`);
     logger.exception(error, {
@@ -38,7 +39,10 @@ const sagaMiddleware = createSagaMiddleware({
   },
 });
 
-export const setupStore = (history, preloadedState?: PreloadedState<RootState>) => {
+export const setupStore = (
+  history: History<any>,
+  preloadedState?: PreloadedState<RootState>
+) => {
   const rootReducer = createRootReducer(history);
   const persistedReducer = persistReducer(
     {

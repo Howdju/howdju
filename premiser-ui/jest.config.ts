@@ -5,7 +5,10 @@ import baseConfig from "../jest.config.base";
 
 const config: Config = {
   testEnvironment: "jsdom",
-  setupFilesAfterEnv: ["../jest/setup-after-env-testing-library-jest-dom.ts"],
+  setupFilesAfterEnv: [
+    ...(baseConfig.setupFilesAfterEnv ? baseConfig.setupFilesAfterEnv : []),
+    "../jest/setup-after-env-testing-library-jest-dom.ts",
+  ],
 };
 
 export default merge(baseConfig, config);
