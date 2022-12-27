@@ -7,16 +7,9 @@ import {
   JustificationSearchFilters,
   ValidJustificationSearchFilters,
 } from "howdju-common";
-import { assert } from "console";
 
-export const extractIncludeUrls = (locationSearch: string): boolean => {
-  const value = get(queryString.parse(locationSearch), "includeUrls");
-  if (!value) {
-    return false;
-  }
-  assert(!isArray(value));
-  return value === "true";
-};
+export const extractIncludeUrls = (locationSearch: string) =>
+  get(queryString.parse(locationSearch), "includeUrls") === "true";
 
 export const extractFilters = (
   locationSearch: string

@@ -161,7 +161,7 @@ export const toOnCheckboxChangeCallback = (
 };
 
 export function getQueryParam(
-  location: Location<any>,
+  location: Location,
   name: string
 ): string | undefined {
   const value = get(queryString.parse(location.search), name);
