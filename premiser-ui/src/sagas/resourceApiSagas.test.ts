@@ -10,12 +10,16 @@ const server = setupServer();
 
 beforeAll(() => {
   server.listen();
-
+});
+beforeEach(() => {
   // Use fake timers so that we can ensure animations complete before snapshotting.
   jest.useFakeTimers();
 });
 afterEach(() => {
   server.resetHandlers();
+
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
 });
 afterAll(() => server.close());
 
@@ -77,39 +81,36 @@ describe("callApiForResource", () => {
     );
 
     const suggestionsKey = "the-suggestions-key";
-    await testSaga(function* saga() {
-      // Arrange
+    await expect(
+      testSaga(function* saga() {
+        // Arrange
 
-      // Start the saga that watches for API calls. The error only occurred when callApiForResource
-      // was called by another saga.
-      const task = yield* fork(resourceApiCalls);
+        // Start the saga that watches for API calls. The error only occurred when callApiForResource
+        // was called by another saga.
+        const task = yield* fork(resourceApiCalls);
 
-      // Send an API call
-      yield* put(
-        api.fetchPropositionTextSuggestions(
-          "the proposition text",
-          suggestionsKey
-        )
-      );
+        // Send an API call
+        yield* put(
+          api.fetchPropositionTextSuggestions(
+            "the proposition text",
+            suggestionsKey
+          )
+        );
 
-      // Act
+        // Act
 
-      // Send another API call before the other will finish. Another test ensures that this will
-      // cancel the first call.
-      yield* put(
-        api.fetchPropositionTextSuggestions(
-          "the proposition text",
-          suggestionsKey
-        )
-      );
+        // Send another API call before the other will finish. Another test ensures that this will
+        // cancel the first call.
+        yield* put(
+          api.fetchPropositionTextSuggestions(
+            "the proposition text",
+            suggestionsKey
+          )
+        );
 
-      // Assert
-
-      // If we didn't error during the act, the test passes.
-      expect(true).toBeTrue();
-
-      // Cancel because takeEvery will never end.
-      task.cancel();
-    });
+        // Cancel because takeEvery will never end.
+        task.cancel();
+      })
+    ).toResolve();
   });
 });

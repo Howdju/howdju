@@ -39,7 +39,7 @@ export interface PostPropositionIn {
 }
 
 export interface PostPropositionOut {
-  proposition: Persisted<Proposition>;
+  proposition: PropositionOut;
 }
 
 export interface PostJustificationIn {
@@ -50,7 +50,7 @@ export interface PostJustificationOut {
   justification: Persisted<Justification>;
 }
 
-export interface GetPropositionResponse {
+export interface GetPropositionOut {
   proposition: PropositionOut;
 }
 

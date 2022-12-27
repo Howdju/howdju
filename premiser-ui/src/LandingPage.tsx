@@ -87,7 +87,7 @@ export default class LandingPage extends Component {
     ];
 
     const conJustificationProposition: PropositionOut = {
-      id: "1",
+      id: "example",
       text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
     };
     const conJustification = makeJustificationOutModel({
@@ -100,10 +100,10 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          id: "1",
+          id: "example",
           atoms: [
             {
-              id: "1",
+              id: "example",
               entity: conJustificationProposition,
             },
           ],
@@ -160,12 +160,12 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          id: "12",
+          id: "example",
           atoms: [
             {
-              id: "123",
+              id: "example",
               entity: {
-                id: "5123",
+                id: "example",
                 text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
               },
             },

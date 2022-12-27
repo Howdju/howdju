@@ -110,8 +110,8 @@ more In/Out models as fields, respectively. They are named like `MethodEndpointD
 
 TODO: request/response models should account for headers and path and query parameters.
 
-Plural model names usually will refer to the bare resource (`GetProposisionsIn` for
-`propositions/1`) while singular refer to entities in the resource (`GetPropositionIn` for `propositions/1`.
+Plural model names usually will refer to the bare resource (`GetPropositionsIn` for
+`propositions`) while singular refer to entities in the resource (`GetPropositionIn` for `propositions/1`.
 
 ## `Persisted` entities
 
@@ -188,6 +188,10 @@ We have helpers prefixe with `mux` and `demux` for consolidating or expanding en
 - howdju-common/lib/zodSchemas.ts
 
   Our entity validation schemas. Only things that must be validated should go here.
+
+- howdju-common/lib/apiModels.ts
+
+  Models relating to API input/output
 
 - howdju-common/lib/models.ts
 

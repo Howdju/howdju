@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 import { createMemoryHistory } from "history";
 
 import {
-  GetPropositionResponse,
+  GetPropositionOut,
   httpStatusCodes,
   JustificationOut,
   toSlug,
@@ -36,7 +36,7 @@ describe("JustificationsPage", () => {
       text: "the-proposition-text",
       justifications,
     };
-    const response: GetPropositionResponse = { proposition };
+    const response: GetPropositionOut = { proposition };
 
     server.use(
       rest.get(

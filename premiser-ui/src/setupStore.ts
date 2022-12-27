@@ -14,13 +14,13 @@ import {
 import storage from "redux-persist/lib/storage";
 import { routerMiddleware } from "connected-react-router";
 import createSagaMiddleware from "redux-saga";
+import { History } from "history";
 
 import createRootReducer from "./reducers";
 import { logger } from "./logger";
 import config from "./config";
 import * as actionCreatorsUntyped from "./actions";
 import getSagas from "./sagas";
-import { History } from "history";
 
 // TODO(1): Remove typecasting.
 const actionCreators = actionCreatorsUntyped as unknown as {

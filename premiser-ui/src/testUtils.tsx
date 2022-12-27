@@ -110,7 +110,5 @@ export async function testSaga(saga: Saga<any[]>) {
     manualPersist: true,
   } as PersistorOptions);
   persistor.persist();
-
-  // Should actually be PayloadAction<{ propositions: PropositionOut[] }>.
   await sagaMiddleware.run(saga).toPromise();
 }
