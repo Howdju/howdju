@@ -17,8 +17,6 @@ import {
   JustificationRootTargetType,
   Proposition,
   Tag,
-  Persisted,
-  PropositionTagVote,
   makeCreatePropositionTagVote,
   JustificationRootTargetTypes,
   httpMethods,
@@ -31,7 +29,6 @@ import {
   DatetimeString,
   PropositionRef,
   SentenceType,
-  TagVote,
   TaggableEntityType,
   TagVotePolarities,
   makeCreateTagVote,
@@ -39,6 +36,9 @@ import {
   CreateCounterJustification,
   CreateProposition,
   PostPropositionIn,
+  TagVoteViewModel,
+  TagVoteRef,
+  PropositionTagVoteOut,
 } from "howdju-common";
 
 import {
@@ -190,6 +190,12 @@ export type ApiActionMeta<P> = {
 };
 export type ApiAction<P> = PayloadAction<P, string, ApiActionMeta<P>>;
 export type AnyApiAction = ApiAction<any>;
+export type ApiResponseAction<P> = PayloadAction<
+  P,
+  string,
+  ApiResponseActionMeta<any>,
+  Error
+>;
 
 type InferPrepareAction<PP extends (...args: any[]) => any> = PP extends (
   ...args: any[]
@@ -601,16 +607,16 @@ export const api = {
     "FETCH_JUSTIFICATIONS_SEARCH",
     ({
       filters,
-      includeUrls,
+      includeUrls = false,
       sorts,
       count,
       continuationToken,
     }: {
       filters: JustificationSearchFilters;
-      includeUrls: boolean;
-      sorts: string;
+      includeUrls?: boolean;
+      sorts?: string;
       count: number;
-      continuationToken: string;
+      continuationToken?: string;
     }) => ({
       filters,
       includeUrls,
@@ -836,7 +842,7 @@ export const api = {
       tagTargetType: TaggableEntityType,
       tagTargetId: EntityId,
       tag: Tag,
-      tagVote: TagVote
+      tagVote?: TagVoteViewModel
     ) => ({
       tagVote: makeCreateTagVote({
         targetType: tagTargetType,
@@ -863,7 +869,7 @@ export const api = {
       tagTargetType: TaggableEntityType,
       tagTargetId: EntityId,
       tag: Tag,
-      tagVote: TagVote
+      tagVote?: TagVoteViewModel
     ) => ({
       tagVote: makeCreateTagVote({
         targetType: tagTargetType,
@@ -886,7 +892,7 @@ export const api = {
   ),
   unTag: apiActionCreator(
     "UN_TAG",
-    (tagVote: Persisted<TagVote>) => ({
+    (tagVote: TagVoteRef) => ({
       tagVote,
     }),
     (payload) => ({
@@ -902,7 +908,7 @@ export const api = {
     (
       propositionId: EntityId,
       tag: Tag,
-      propositionTagVote: PropositionTagVote
+      propositionTagVote?: PropositionTagVoteOut
     ) => ({
       propositionTagVote: makeCreatePropositionTagVote({
         polarity: PropositionTagVotePolarities.POSITIVE,
@@ -945,7 +951,7 @@ export const api = {
   ),
   unTagProposition: apiActionCreator(
     "UN_TAG_PROPOSITION",
-    (propositionTagVote: Persisted<PropositionTagVote>) => ({
+    (propositionTagVote: PropositionTagVoteOut) => ({
       prevPropositionTagVote: propositionTagVote,
     }),
     (payload) => ({
@@ -1079,7 +1085,7 @@ export const api = {
 
   fetchMainSearchSuggestions: apiActionCreator(
     "FETCH_MAIN_SEARCH_SUGGESTIONS",
-    (searchText, suggestionsKey) => ({
+    (searchText: string, suggestionsKey: SuggestionsKey) => ({
       searchText,
       suggestionsKey,
     }),

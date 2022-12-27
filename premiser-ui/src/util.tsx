@@ -1,6 +1,7 @@
 import get from "lodash/get";
 import validUrl from "valid-url";
 import isValidDomain from "is-valid-domain";
+import queryString from "query-string";
 
 import { isDefined, extractDomain } from "howdju-common";
 
@@ -8,6 +9,9 @@ import config from "./config";
 import { Divider } from "react-md";
 import React, { ChangeEvent } from "react";
 import { OnPropertyChangeCallback } from "./types";
+import { isArray } from "lodash";
+import { Location } from "history";
+import { newInvalidUrlError } from "./uiErrors";
 
 export const isWindowNarrow = () => {
   return window.innerWidth < config.ui.narrowBreakpoint;
@@ -155,3 +159,16 @@ export const toOnCheckboxChangeCallback = (
     onPropertyChange({ [name]: checked });
   };
 };
+
+export function getQueryParam(
+  location: Location<any>,
+  name: string
+): string | undefined {
+  const value = get(queryString.parse(location.search), name);
+  if (isArray(value)) {
+    throw newInvalidUrlError(
+      `Parameter ${name} must appear at most once in the URL.`
+    );
+  }
+  return value || undefined;
+}

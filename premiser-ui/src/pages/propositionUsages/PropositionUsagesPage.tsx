@@ -1,9 +1,7 @@
 import React, { UIEvent, useEffect } from "react";
 import { Button, CircularProgress } from "react-md";
-import get from "lodash/get";
 import isEmpty from "lodash/isEmpty";
 import map from "lodash/map";
-import queryString from "query-string";
 import { denormalize } from "normalizr";
 
 import { api } from "../../actions";
@@ -19,17 +17,26 @@ import JustificationCard from "../../JustificationCard";
 import config from "../../config";
 import { useLocation } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { getQueryParam } from "@/util";
+import ErrorPage from "@/ErrorPage";
 
 const pageId = "proposition-usages-page";
 const fetchCount = 20;
 
 export default function PropositionUsagesPage() {
   const location = useLocation();
-  const propositionId = get(
-    queryString.parse(location.search),
-    "propositionId"
-  );
+  const propositionId = getQueryParam(location, "propositionId");
+  if (!propositionId) {
+    return <ErrorPage message={"Invalid URL (propositionId is required.)"} />;
+  }
+  return ValidPropositionUsagesPage({ propositionId });
+}
 
+interface ValidProps {
+  propositionId: string;
+}
+
+function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   const dispatch = useAppDispatch();
   useEffect(() => {
     // TODO: add fetchInternalPropositionAppearances/fetchExternalPropositionAppearances

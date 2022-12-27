@@ -1,4 +1,3 @@
-import { SetRequired } from "type-fest";
 import { z } from "zod";
 import { logger } from "./logger";
 
@@ -28,6 +27,7 @@ import {
   SourceExcerpt,
   Statement,
   Tag,
+  TagVote,
   WritQuote,
 } from "./zodSchemas";
 
@@ -58,6 +58,8 @@ export type EntityName<T> = T extends Proposition
   ? "Statement"
   : T extends Tag
   ? "Tag"
+  : T extends TagVote
+  ? "TagVote"
   : T extends PropositionCompound
   ? "PropositionCompound"
   : T extends CreatePropositionCompound
@@ -82,12 +84,12 @@ export type Persisted<T extends Entity> = {
   id: string;
 } & {
   [key in keyof Omit<T, "id">]: T[key] extends Entity
-    ? Ref<EntityName<T[key]>> | PersistedField<T[key]>
+    ? Ref<EntityName<T[key]>> | Persisted<T[key]>
     : PersistedField<T[key]>;
 };
-type PersistedField<T> = {
+export type PersistedField<T> = {
   [key in keyof T]: T[key] extends Entity
-    ? Ref<EntityName<T[key]>> | PersistedField<T[key]>
+    ? Ref<EntityName<T[key]>> | Persisted<T[key]>
     : PersistedField<T[key]>;
 };
 

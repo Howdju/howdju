@@ -20,12 +20,14 @@ import {
   JustificationRootTargetType,
   JustificationRootTargetTypes,
   logger,
+  Proposition,
+  toJson,
 } from "howdju-common";
 
 import hoverAware from "./hoverAware";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import PropositionTagger from "./PropositionTagger";
-import { EditorEntity, EditorTypes } from "./reducers/editors";
+import { EditorTypes } from "./reducers/editors";
 import paths from "./paths";
 import Tagger from "./Tagger";
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
@@ -43,6 +45,7 @@ import "./JustificationRootTargetCard.scss";
 import { divideMenuItems } from "./util";
 import { contentReportEditorId } from "./content-report/ReportContentDialog";
 import {
+  isPropositionRootTarget,
   isVerified,
   JustificationRootTargetViewModel,
   makeCreateContentReportInput,
@@ -285,12 +288,16 @@ class JustificationRootTargetCard extends React.Component<Props> {
       logger.error(`Editing a ${rootTargetType} is not supported`);
       return;
     }
+    if (!isPropositionRootTarget(rootTarget)) {
+      logger.error(
+        `Expected rootTarget to be a proposition, but it was not. rootTargetType: ${rootTargetType}, rootTarget: ${toJson(
+          rootTarget
+        )}`
+      );
+    }
+    const proposition = rootTarget as Proposition;
     const editorType = editorTypesByRootTargetType[rootTargetType];
-    this.props.editors.beginEdit(
-      editorType,
-      editorId,
-      rootTarget as EditorEntity
-    );
+    this.props.editors.beginEdit(editorType, editorId, proposition);
   };
 
   deleteRootTarget = () => {

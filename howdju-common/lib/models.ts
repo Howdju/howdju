@@ -3,6 +3,7 @@ import assign from "lodash/assign";
 import merge from "lodash/merge";
 import asString from "lodash/toString";
 import { PartialDeep } from "type-fest";
+import { JustificationOut } from "./apiModels";
 
 import {
   newImpossibleError,
@@ -72,8 +73,10 @@ import {
 } from "./zodSchemas";
 import { EntityOrRef, isRef, Persisted, ToInput } from "./zodSchemaTypes";
 
-export const isPositive = (j: Justification) => j.polarity === "POSITIVE";
-export const isNegative = (j: Justification) => j.polarity === "NEGATIVE";
+export const isPositive = (j: Justification | JustificationOut) =>
+  j.polarity === "POSITIVE";
+export const isNegative = (j: Justification | JustificationOut) =>
+  j.polarity === "NEGATIVE";
 export const isRootPositive = (j: Justification) =>
   j.rootPolarity === "POSITIVE";
 export const isRootNegative = (j: Justification) =>

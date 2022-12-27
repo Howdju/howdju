@@ -14,6 +14,8 @@ import {
   Justification,
   JustificationVote,
   Proposition,
+  PropositionCompound,
+  PropositionCompoundAtom,
   PropositionTagVote,
   Tag,
   TagVote,
@@ -67,6 +69,10 @@ export type JustificationOut = Persisted<Justification> & {
   // Justifications countering this justification.
   counterJustifications?: JustificationOut[];
 };
+
+export type PropositionCompoundOut = Persisted<PropositionCompound>;
+
+export type PropositionCompoundAtomOut = Persisted<PropositionCompoundAtom>;
 
 // TagVoteViewModel don't need a target because they are added to their targets
 export type TagVoteViewModel = Omit<TagVote, "target">;

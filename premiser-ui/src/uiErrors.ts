@@ -12,6 +12,7 @@ export const uiErrorTypes = {
   API_RESPONSE_ERROR: "API_RESPONSE_ERROR",
   REQUEST_CONFIGURATION_ERROR: "REQUEST_CONFIGURATION_ERROR",
   COMMIT_EDIT_RESULT_ERROR: "COMMIT_EDIT_RESULT_ERROR",
+  INVALID_URL: "INVALID_URL",
 };
 export type UiErrorType = typeof uiErrorTypes[keyof typeof uiErrorTypes];
 
@@ -89,3 +90,6 @@ export const newEditorCommitResultError = (
     { editorType, editorId }
   );
 };
+
+export const newInvalidUrlError = (message: string) =>
+  newCustomError(uiErrorTypes.INVALID_URL, message);

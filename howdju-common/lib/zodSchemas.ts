@@ -394,6 +394,9 @@ export type WritQuoteRef = z.infer<typeof WritQuoteRef>;
 export const TagRef = Entity.required().brand<EntityName<Tag>>();
 export type TagRef = z.infer<typeof TagRef>;
 
+export const TagVoteRef = Entity.required().brand<EntityName<TagVote>>();
+export type TagVoteRef = z.infer<typeof TagVoteRef>;
+
 /*
  * Entities lacking alternatives don't require special Create/Edit models
  */
