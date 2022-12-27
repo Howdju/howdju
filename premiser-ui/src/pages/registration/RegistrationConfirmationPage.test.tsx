@@ -16,6 +16,8 @@ const server = setupServer();
 
 beforeAll(() => {
   server.listen();
+});
+beforeEach(() => {
   // Use fake timers so that we can ensure animations complete before snapshotting.
   jest.useFakeTimers();
 });
