@@ -49,6 +49,11 @@ jobs:
           DB_PORT: 5432
           LOG_LEVEL: silly
           NODE_ENV: test
-        run: yarn run test:all:ci --ci --runInBand
+        run: yarn run test:all:ci
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: "**/coverage/**"
       - name: Custom checks
         run: yarn run custom-check:all

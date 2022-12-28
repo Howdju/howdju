@@ -3,6 +3,7 @@
 **/yarn-error.log
 **/node_modules/
 **/.expo/
+**/coverage/
 
 # See https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored (we are not using Zero-Installs...)
 .yarn/*

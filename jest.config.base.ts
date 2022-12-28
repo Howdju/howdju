@@ -35,6 +35,12 @@ const config: Config = {
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga|md)$": `${__dirname}/jest/__mocks__/fileMock.js`,
     "\\.(scss|css|less)$": "identity-obj-proxy",
   },
+  coverageReporters: ["html-spa", "json", "text", "text-summary"],
+  collectCoverageFrom: [
+    "src/**/*.{js,jsx,ts,tsx}",
+    "lib/**/*.{js,jsx,ts,tsx}",
+    "!**/node_modules/**",
+  ],
 };
 
 export default config;
