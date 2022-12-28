@@ -23,7 +23,8 @@
     "custom-check:all": "echo custom-check:all && yarn workspaces foreach -Apv run custom-check && echo custom-check:all succeeded || {echo custom-check:all faied; exit 1}",
     "typecheck:all": "echo typecheck:all && yarn workspaces foreach -Apv run typecheck && echo typecheck:all succeeded || {echo typecheck:all failed; exit 1}",
     "test:all": "echo test:all && time yarn workspaces foreach -Apv run test --runInBand && echo test:all succeeded || {echo test:all failed; exit 1}",
-    "test:all:ci": "yarn run clear:coverage && echo test:all:ci && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage && echo test:all:ci succeeded || {echo test:all:ci failed; exit 1}"
+    "test:all:coverage": "yarn run clear:coverage && echo test:all:ci && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage && echo test:all:ci succeeded || {echo test:all:ci failed; exit 1}",
+    "test:all:coverage:changes": "yarn run clear:coverage && echo test:all:coverage:changes && time yarn workspaces foreach -Apv run test --ci --runInBand --coverage --changedSince=origin/master --coverageThreshold='{\"global\":{\"statements\":\"80\",\"branches\":\"80\",\"functions\":\"80\",\"lines\":\"80\"}}' && echo test:all:coverage:changes succeeded || {echo test:all:coverage:changes failed; exit 1}"
   },
   "workspaces": {
     "packages": [
