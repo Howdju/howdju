@@ -50,10 +50,15 @@ jobs:
           LOG_LEVEL: silly
           NODE_ENV: test
         run: yarn run test:all:ci
+      - name: Merge coverage
+        run: yarn run merge:coverage
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report
-          path: "**/coverage/**"
+          path: |
+            coverage/**
+            !coverage/workspaces/**
+          if-no-files-found: error
       - name: Custom checks
         run: yarn run custom-check:all
