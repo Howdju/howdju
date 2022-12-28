@@ -1,6 +1,6 @@
 import React from "react";
 import { rest } from "msw";
-import { screen, waitForElementToBeRemoved } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 
@@ -21,8 +21,6 @@ const propositions = Array.from(Array(20).keys()).map((id) => ({
 }));
 const initialFetchCount = 7;
 const fetchCount = 8;
-
-jest.setTimeout(5 * 60 * 1000);
 
 beforeAll(() => {
   server.listen();
@@ -52,25 +50,35 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
+/** Throws if progress is in the document and visible. */
+function progressToBeGone(progress: HTMLElement | null) {
+  try {
+    expect(progress).not.toBeInTheDocument();
+  } catch {
+    // Sometimes CircularProgress hangs around in the DOM even though it is invisible.
+    // TODO(17): Check if this is still necessary after upgrading react-md
+    // eslint-disable-next-line jest/no-conditional-expect
+    expect(progress).toHaveStyle({ opacity: 0 });
+  }
+}
+
 describe("RecentPropositionsWidget", () => {
-  test("shows an initial count of recent propositions", async () => {
+  test("shows initial recent propositions", async () => {
     // Act
     const { container } = renderWithProviders(
       <RecentPropositionsWidget
-        id="the-component-id"
-        widgetId="the-recent-propositions-widget"
+        id="recent-propositions-id"
+        widgetId="recent-propositions-widget-id"
         initialFetchCount={initialFetchCount}
         fetchCount={fetchCount}
       />
     );
 
     // Assert
-    try {
-      await waitForElementToBeRemoved(() => screen.queryByRole("progressbar"));
-    } catch (error) {
-      // TODO(17): for some reason the progressbar never disappears inside the wait, but is gone
-      // after we catch the timeout exception. Maybe upgrading react-md will fix things?
-    }
+    await waitFor(() => {
+      progressToBeGone(screen.queryByRole("progressbar"));
+    });
+
     // TODO(17) update the widgets to be accessible so we can do `screen.findAllByRole("list-item")`
     expect(container.querySelectorAll(".md-card")).toHaveLength(
       initialFetchCount
@@ -83,17 +91,15 @@ describe("RecentPropositionsWidget", () => {
     // Arrange
     const { container } = renderWithProviders(
       <RecentPropositionsWidget
-        id="the-component-id"
-        widgetId="the-recent-propositions-widget"
+        id="recent-propositions-id"
+        widgetId="recent-propositions-widget-id"
         initialFetchCount={initialFetchCount}
         fetchCount={fetchCount}
       />
     );
-    try {
-      await waitForElementToBeRemoved(() => screen.queryByRole("progressbar"));
-    } catch (error) {
-      // TODO(17): see above.
-    }
+    await waitFor(() => {
+      progressToBeGone(screen.queryByRole("progressbar"));
+    });
 
     // userEvent delays between actions, so make sure it advances the fake timers.
     // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
@@ -107,11 +113,9 @@ describe("RecentPropositionsWidget", () => {
     );
 
     // Assert
-    try {
-      await waitForElementToBeRemoved(() => screen.queryByRole("progressbar"));
-    } catch (error) {
-      // TODO(17): see above.
-    }
+    await waitFor(() => {
+      progressToBeGone(screen.queryByRole("progressbar"));
+    });
     jest.runAllTimers();
     // TODO(17): update the widgets to be accessible so we can do `screen.findAllByRole("list-item")`
     expect(container.querySelectorAll(".md-card")).toHaveLength(

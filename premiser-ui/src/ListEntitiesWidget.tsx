@@ -90,6 +90,13 @@ export default function ListEntitiesWidget({
       onClick={fetchMore}
     />
   );
+  const progress = !hasEntities && !didError && (
+    <CircularProgress
+      key={`${id}-progress`}
+      id={`${id}-progress`}
+      className="md-cell md-cell--12"
+    />
+  );
   return (
     <CellList id={id} {...rest}>
       {hasEntities && concat(cards(), fetchMoreButtonCell)}
@@ -98,13 +105,7 @@ export default function ListEntitiesWidget({
           {emptyEntitiesMessage}
         </div>
       )}
-      {!hasEntities && !didError && isFetching && (
-        <CircularProgress
-          key="fetching-progress"
-          id={`${id}-progress`}
-          className="md-cell md-cell--12"
-        />
-      )}
+      {progress}
       {didError && (
         <span key="error-message" className="error-message">
           {loadErrorMessage}

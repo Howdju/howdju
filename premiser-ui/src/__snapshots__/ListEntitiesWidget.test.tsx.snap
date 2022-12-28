@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RecentPropositionsWidget shows an initial count of recent propositions 1`] = `
+exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
 <div>
   <div
-    id="the-component-id"
+    id="recent-propositions-id"
     style="position: relative;"
   >
     <div
@@ -42,7 +42,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition0"
+              id="recent-propositions-id-proposition-proposition0"
             >
               <div
                 class="proposition-viewer"
@@ -80,9 +80,9 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
       aria-valuemin="0"
       class="md-progress md-progress--circular md-block-centered md-progress--circular-indeterminate md-cell md-cell--12"
       height="24"
-      id="the-component-id-progress"
+      id="recent-propositions-id-progress"
       role="progressbar"
-      style="transition: transform 630ms ease 100ms, opacity 630ms ease 100ms; position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0;"
+      style="position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0; transition: transform 630ms ease 100ms, opacity 630ms ease 100ms;"
       viewBox="0 0 66 66"
       width="24"
     >
@@ -125,7 +125,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition1"
+              id="recent-propositions-id-proposition-proposition1"
             >
               <div
                 class="proposition-viewer"
@@ -188,7 +188,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition2"
+              id="recent-propositions-id-proposition-proposition2"
             >
               <div
                 class="proposition-viewer"
@@ -251,7 +251,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition3"
+              id="recent-propositions-id-proposition-proposition3"
             >
               <div
                 class="proposition-viewer"
@@ -314,7 +314,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition4"
+              id="recent-propositions-id-proposition-proposition4"
             >
               <div
                 class="proposition-viewer"
@@ -377,7 +377,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition5"
+              id="recent-propositions-id-proposition-proposition5"
             >
               <div
                 class="proposition-viewer"
@@ -440,7 +440,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition6"
+              id="recent-propositions-id-proposition-proposition6"
             >
               <div
                 class="proposition-viewer"
@@ -490,7 +490,7 @@ exports[`RecentPropositionsWidget shows an initial count of recent propositions 
 exports[`RecentPropositionsWidget shows more propositions when more is clicked 1`] = `
 <div>
   <div
-    id="the-component-id"
+    id="recent-propositions-id"
     style="position: relative;"
   >
     <div
@@ -529,7 +529,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition0"
+              id="recent-propositions-id-proposition-proposition0"
             >
               <div
                 class="proposition-viewer"
@@ -592,7 +592,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition1"
+              id="recent-propositions-id-proposition-proposition1"
             >
               <div
                 class="proposition-viewer"
@@ -655,7 +655,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition2"
+              id="recent-propositions-id-proposition-proposition2"
             >
               <div
                 class="proposition-viewer"
@@ -718,7 +718,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition3"
+              id="recent-propositions-id-proposition-proposition3"
             >
               <div
                 class="proposition-viewer"
@@ -756,9 +756,9 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
       aria-valuemin="0"
       class="md-progress md-progress--circular md-block-centered md-progress--circular-indeterminate md-cell md-cell--12"
       height="24"
-      id="the-component-id-progress"
+      id="recent-propositions-id-progress"
       role="progressbar"
-      style="transition: transform 615ms ease 50ms, opacity 615ms ease 50ms; position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0;"
+      style="position: absolute; top: 0px; left: 0px; right: 0px; transform: scale(0); opacity: 0; transition: transform 615ms ease 50ms, opacity 615ms ease 50ms;"
       viewBox="0 0 66 66"
       width="24"
     >
@@ -801,7 +801,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition4"
+              id="recent-propositions-id-proposition-proposition4"
             >
               <div
                 class="proposition-viewer"
@@ -864,7 +864,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition5"
+              id="recent-propositions-id-proposition-proposition5"
             >
               <div
                 class="proposition-viewer"
@@ -927,7 +927,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition6"
+              id="recent-propositions-id-proposition-proposition6"
             >
               <div
                 class="proposition-viewer"
@@ -990,7 +990,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition7"
+              id="recent-propositions-id-proposition-proposition7"
             >
               <div
                 class="proposition-viewer"
@@ -1053,7 +1053,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition8"
+              id="recent-propositions-id-proposition-proposition8"
             >
               <div
                 class="proposition-viewer"
@@ -1116,7 +1116,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition9"
+              id="recent-propositions-id-proposition-proposition9"
             >
               <div
                 class="proposition-viewer"
@@ -1179,7 +1179,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition10"
+              id="recent-propositions-id-proposition-proposition10"
             >
               <div
                 class="proposition-viewer"
@@ -1242,7 +1242,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition11"
+              id="recent-propositions-id-proposition-proposition11"
             >
               <div
                 class="proposition-viewer"
@@ -1305,7 +1305,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition12"
+              id="recent-propositions-id-proposition-proposition12"
             >
               <div
                 class="proposition-viewer"
@@ -1368,7 +1368,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition13"
+              id="recent-propositions-id-proposition-proposition13"
             >
               <div
                 class="proposition-viewer"
@@ -1431,7 +1431,7 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
           >
             <div
               class="proposition-viewer"
-              id="the-component-id-proposition-proposition14"
+              id="recent-propositions-id-proposition-proposition14"
             >
               <div
                 class="proposition-viewer"
