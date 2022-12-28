@@ -12,7 +12,7 @@ import {
 } from "react-md";
 
 import { api, editors } from "../../actions";
-import CellList from "../../CellList";
+import CellList, { largeCellClasses } from "../../CellList";
 import * as characters from "../../characters";
 import { persorgSchema, statementsSchema } from "../../normalizationSchemas";
 import { EditorTypes } from "../../reducers/editors";
@@ -61,7 +61,7 @@ export default function PersorgPage(props: Props) {
   const statementCards = map(statements, (statement, index) => (
     <StatementCard
       id={combineIds(id, "statements", index)}
-      className={CellList.largeCellClasses}
+      className={largeCellClasses}
       key={index}
       statement={statement}
     />

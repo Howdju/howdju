@@ -24,6 +24,8 @@ beforeAll(() => {
 });
 afterEach(() => {
   server.resetHandlers();
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
 });
 afterAll(() => server.close());
 

@@ -13,8 +13,8 @@ export default class FetchButton extends Component {
         <CircularProgress key={progressId} id={progressId} />
       </div>
     );
-    const fetchLabel = isFetching ? fetchingLabel : label;
-    return <Button {...rest} children={fetchLabel} />;
+    const buttonLabel = isFetching ? fetchingLabel : label;
+    return <Button {...rest} children={buttonLabel} />;
   }
 }
 FetchButton.propTypes = {
