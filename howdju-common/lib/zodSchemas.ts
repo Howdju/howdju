@@ -7,6 +7,7 @@
  * may benefit from defining them using Zod schemas.
  */
 
+import { Simplify } from "type-fest";
 import { z } from "zod";
 import { iso8601Datetime, url, momentTimestamp } from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
@@ -393,6 +394,9 @@ export type WritQuoteRef = z.infer<typeof WritQuoteRef>;
 export const TagRef = Entity.required().brand<EntityName<Tag>>();
 export type TagRef = z.infer<typeof TagRef>;
 
+export const TagVoteRef = Entity.required().brand<EntityName<TagVote>>();
+export type TagVoteRef = z.infer<typeof TagVoteRef>;
+
 /*
  * Entities lacking alternatives don't require special Create/Edit models
  */
@@ -548,37 +552,39 @@ export type CreateJustificationInputTarget = CreateJustificationInput["target"];
 export type CreateJustificationInputRootTarget =
   CreateJustificationInput["rootTarget"];
 
-export type CreateJustification = Omit<
-  CreateJustificationInput,
-  "basis" | "target" | "rootTargetType" | "rootTarget"
-> & {
-  basis:
-    | {
-        type: "PROPOSITION_COMPOUND";
-        entity: EntityOrRef<CreatePropositionCompound>;
-      }
-    | {
-        type: "SOURCE_EXCERPT";
-        entity: EntityOrRef<SourceExcerpt>;
-      }
-    | {
-        type: "WRIT_QUOTE";
-        entity: EntityOrRef<WritQuote>;
-      };
-  target:
-    | {
-        type: "PROPOSITION";
-        entity: EntityOrRef<CreateProposition>;
-      }
-    | {
-        type: "STATEMENT";
-        entity: EntityOrRef<CreateStatement>;
-      }
-    | {
-        type: "JUSTIFICATION";
-        entity: EntityOrRef<CreateJustification>;
-      };
-};
+export type CreateJustification = Simplify<
+  Omit<
+    CreateJustificationInput,
+    "basis" | "target" | "rootTargetType" | "rootTarget"
+  > & {
+    basis:
+      | {
+          type: "PROPOSITION_COMPOUND";
+          entity: EntityOrRef<CreatePropositionCompound>;
+        }
+      | {
+          type: "SOURCE_EXCERPT";
+          entity: EntityOrRef<SourceExcerpt>;
+        }
+      | {
+          type: "WRIT_QUOTE";
+          entity: EntityOrRef<WritQuote>;
+        };
+    target:
+      | {
+          type: "PROPOSITION";
+          entity: EntityOrRef<CreateProposition>;
+        }
+      | {
+          type: "STATEMENT";
+          entity: EntityOrRef<CreateStatement>;
+        }
+      | {
+          type: "JUSTIFICATION";
+          entity: EntityOrRef<CreateJustification>;
+        };
+  }
+>;
 export const CreateJustification: z.ZodType<CreateJustification> = z.lazy(() =>
   Entity.extend({
     ...createJustificationBaseShape,

@@ -101,12 +101,17 @@ Additional fields on `Out` models are often optional, so that either:
    or
 2. To support request parameters that control the addition of extra fields.
 
-## Response/request body models
+## Request/response models
 
 Response/request body models represent the entire body of an HTTP request or response. They may contain one or
 more In/Out models as fields, respectively. They are named like `MethodEndpointDirection`
 (`{Get,Post,Put,Delete}Endpoint{In,Out}`). E.g.: `GetPropositionIn`/`GetPropositionOut`. Often the
 `Endpoint` will correspond to an entity.
+
+TODO: request/response models should account for headers and path and query parameters.
+
+Plural model names usually will refer to the bare resource (`GetPropositionsIn` for
+`propositions`) while singular refer to entities in the resource (`GetPropositionIn` for `propositions/1`.
 
 ## `Persisted` entities
 
@@ -183,6 +188,10 @@ We have helpers prefixe with `mux` and `demux` for consolidating or expanding en
 - howdju-common/lib/zodSchemas.ts
 
   Our entity validation schemas. Only things that must be validated should go here.
+
+- howdju-common/lib/apiModels.ts
+
+  Models relating to API input/output
 
 - howdju-common/lib/models.ts
 

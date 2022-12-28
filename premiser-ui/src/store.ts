@@ -2,8 +2,8 @@ import { Reducer } from "redux";
 import { PreloadedState } from "@reduxjs/toolkit";
 import { persistStore, PersistorOptions } from "redux-persist";
 
+import { history } from "./history";
 import { logger } from "./logger";
-
 import { RootReducer, setupStore } from "./setupStore";
 
 declare global {
@@ -13,7 +13,7 @@ declare global {
 }
 type ExtractReducerState<T> = T extends Reducer<infer S> ? S : never;
 
-const store = setupStore(window.__INITIAL_STATE__);
+const store = setupStore(history, window.__INITIAL_STATE__);
 
 const persistor = persistStore(store, {
   manualPersist: true,

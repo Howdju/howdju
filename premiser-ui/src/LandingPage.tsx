@@ -7,9 +7,7 @@ import {
   JustificationBasisTypes,
   JustificationTargetTypes,
   JustificationPolarities,
-  makeProposition,
-  makeWritQuote,
-  makePropositionCompoundFromProposition,
+  PropositionOut,
 } from "howdju-common";
 import { makeJustificationOutModel } from "howdju-client-common";
 
@@ -25,12 +23,14 @@ import ContextTrail from "./ContextTrail";
 export default class LandingPage extends Component {
   render() {
     const id = "landing-page";
-    const rootProposition = makeProposition({
+    const rootProposition: PropositionOut = {
+      id: "example",
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
-    });
-    const proJustificationProposition = makeProposition({
+    };
+    const proJustificationProposition: PropositionOut = {
+      id: "example",
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
-    });
+    };
     const proJustification = makeJustificationOutModel({
       id: "example",
       polarity: "POSITIVE",
@@ -40,9 +40,10 @@ export default class LandingPage extends Component {
       },
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompoundFromProposition(
-          proJustificationProposition
-        ),
+        entity: {
+          id: "example",
+          atoms: [{ id: "example", entity: proJustificationProposition }],
+        },
       },
     });
     const proJustificationJustification = makeJustificationOutModel({
@@ -54,19 +55,22 @@ export default class LandingPage extends Component {
       polarity: JustificationPolarities.POSITIVE,
       basis: {
         type: "WRIT_QUOTE",
-        entity: makeWritQuote({
+        entity: {
+          id: "example",
           quoteText:
             "The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.",
           writ: {
+            id: "example",
             title:
               "Vantage Point: The Curse of (Certain) Tall Buildings — The American Surveyor",
           },
           urls: [
             {
+              id: "example",
               url: "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
             },
           ],
-        }),
+        },
       },
     });
 
@@ -82,9 +86,10 @@ export default class LandingPage extends Component {
       },
     ];
 
-    const conJustificationProposition = makeProposition({
+    const conJustificationProposition: PropositionOut = {
+      id: "example",
       text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
-    });
+    };
     const conJustification = makeJustificationOutModel({
       id: "example",
       target: {
@@ -94,9 +99,15 @@ export default class LandingPage extends Component {
       polarity: JustificationPolarities.NEGATIVE,
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompoundFromProposition(
-          conJustificationProposition
-        ),
+        entity: {
+          id: "example",
+          atoms: [
+            {
+              id: "example",
+              entity: conJustificationProposition,
+            },
+          ],
+        },
       },
     });
     const conJustificationJustification = makeJustificationOutModel({
@@ -108,19 +119,22 @@ export default class LandingPage extends Component {
       },
       basis: {
         type: "WRIT_QUOTE",
-        entity: makeWritQuote({
+        entity: {
+          id: "example",
           quoteText:
             "No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet",
           writ: {
+            id: "example",
             title:
               "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building.",
           },
           urls: [
             {
+              id: "example",
               url: "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
             },
           ],
-        }),
+        },
       },
     });
 
@@ -145,9 +159,18 @@ export default class LandingPage extends Component {
       },
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
-        entity: makePropositionCompoundFromProposition({
-          text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
-        }),
+        entity: {
+          id: "example",
+          atoms: [
+            {
+              id: "example",
+              entity: {
+                id: "example",
+                text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
+              },
+            },
+          ],
+        },
       },
     });
     const proJustificationCountered = cloneDeep(proJustification);

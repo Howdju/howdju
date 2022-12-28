@@ -4,20 +4,19 @@ import map from "lodash/map";
 import { newCustomError } from "howdju-common";
 import { EditorType } from "./reducers/editors";
 import { EditorId } from "./types";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
+import { AxiosResponseError } from "./api";
 
 export const uiErrorTypes = {
   NETWORK_FAILURE_ERROR: "NETWORK_FAILURE_ERROR",
   API_RESPONSE_ERROR: "API_RESPONSE_ERROR",
   REQUEST_CONFIGURATION_ERROR: "REQUEST_CONFIGURATION_ERROR",
   COMMIT_EDIT_RESULT_ERROR: "COMMIT_EDIT_RESULT_ERROR",
+  INVALID_URL: "INVALID_URL",
 };
 export type UiErrorType = typeof uiErrorTypes[keyof typeof uiErrorTypes];
 
 type Identifiers = { [key: string]: any };
-interface AxiosResponseError extends AxiosError {
-  response: AxiosResponse<any>;
-}
 
 export const makeIdentifiersMessage = (
   message: string,
@@ -91,3 +90,6 @@ export const newEditorCommitResultError = (
     { editorType, editorId }
   );
 };
+
+export const newInvalidUrlError = (message: string) =>
+  newCustomError(uiErrorTypes.INVALID_URL, message);

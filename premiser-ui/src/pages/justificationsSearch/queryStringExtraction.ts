@@ -9,7 +9,7 @@ import {
 } from "howdju-common";
 
 export const extractIncludeUrls = (locationSearch: string) =>
-  get(queryString.parse(locationSearch), "includeUrls");
+  !!get(queryString.parse(locationSearch), "includeUrls");
 
 export const extractFilters = (
   locationSearch: string

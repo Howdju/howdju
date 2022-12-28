@@ -8,10 +8,14 @@
 import { ApiErrorCode } from "./codes";
 import { ModelErrors } from "./zodError";
 import {
+  CreateJustification,
+  CreateProposition,
   Entity,
   Justification,
   JustificationVote,
   Proposition,
+  PropositionCompound,
+  PropositionCompoundAtom,
   PropositionTagVote,
   Tag,
   TagVote,
@@ -30,7 +34,23 @@ export interface ErrorOut<T extends object> {
   errors: ModelErrors<T>;
 }
 
-export interface GetPropositionResponse {
+export interface PostPropositionIn {
+  proposition: CreateProposition;
+}
+
+export interface PostPropositionOut {
+  proposition: PropositionOut;
+}
+
+export interface PostJustificationIn {
+  justification: CreateJustification;
+}
+
+export interface PostJustificationOut {
+  justification: Persisted<Justification>;
+}
+
+export interface GetPropositionOut {
   proposition: PropositionOut;
 }
 
@@ -49,6 +69,10 @@ export type JustificationOut = Persisted<Justification> & {
   // Justifications countering this justification.
   counterJustifications?: JustificationOut[];
 };
+
+export type PropositionCompoundOut = Persisted<PropositionCompound>;
+
+export type PropositionCompoundAtomOut = Persisted<PropositionCompoundAtom>;
 
 // TagVoteViewModel don't need a target because they are added to their targets
 export type TagVoteViewModel = Omit<TagVote, "target">;

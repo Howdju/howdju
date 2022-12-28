@@ -20,8 +20,10 @@ export default function MainSearch() {
   const [isAutocompleteForcedClosed, setIsAutocompleteForcedClosed] =
     useState(true);
   const dispatch = useDispatch();
-  const fetchSuggestions = (...args: any[]) =>
-    dispatch(api.fetchMainSearchSuggestions(...args));
+  const fetchSuggestions = (
+    searchText: string,
+    suggestionsKey: SuggestionsKey
+  ) => dispatch(api.fetchMainSearchSuggestions(searchText, suggestionsKey));
   const cancelSuggestions = (suggestionsKey: SuggestionsKey) =>
     dispatch(cancelMainSearchSuggestions(suggestionsKey));
 

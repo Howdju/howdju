@@ -9,9 +9,10 @@ import { persistStore, PersistorOptions } from "redux-persist";
 import { compile } from "path-to-regexp";
 import { match } from "react-router";
 
-import type { AppStore, RootState } from "./setupStore";
+import { AppStore, RootState, sagaMiddleware } from "./setupStore";
 import { setupStore } from "./setupStore";
 import { head } from "lodash";
+import { Saga } from "redux-saga";
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
   preloadedState?: PreloadedState<RootState>;
@@ -20,13 +21,14 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
   history?: History<any>;
 }
 
+/** Render a React component with the redux store etc. */
 export function renderWithProviders(
   ui: React.ReactElement,
   {
     preloadedState = {},
-    store = setupStore(preloadedState),
-    persist = true,
     history = createMemoryHistory(),
+    store = setupStore(history, preloadedState),
+    persist = true,
     ...renderOptions
   }: ExtendedRenderOptions = {}
 ) {
@@ -97,4 +99,16 @@ export function ariaVisibleOne(
   return head(
     elements.filter((e) => e.getAttribute("aria-hidden") !== "false")
   );
+}
+
+/** Run a saga with the redux store etc. in place. */
+export async function testSaga(saga: Saga<any[]>) {
+  const history = createMemoryHistory();
+  const preloadedState = {};
+  const store = setupStore(history, preloadedState);
+  const persistor = persistStore(store, {
+    manualPersist: true,
+  } as PersistorOptions);
+  persistor.persist();
+  await sagaMiddleware.run(saga).toPromise();
 }

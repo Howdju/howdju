@@ -7,6 +7,7 @@ import {
   tagEqual,
   TaggableEntityType,
   TaggedEntityOut,
+  TagVoteRef,
 } from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
@@ -55,7 +56,7 @@ const Tagger: React.FC<Props> = (props: Props) => {
     const tagVote = findTagVote(tag);
     // We can only delete a vote whose ID we have.  We might be untagging a vote lacking an ID if the user quickly tags/untags
     if (tagVote?.id) {
-      dispatch(api.unTag(tagVote));
+      dispatch(api.unTag(TagVoteRef.parse(tagVote)));
     }
   };
 

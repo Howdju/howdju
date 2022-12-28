@@ -31,14 +31,18 @@ import {
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
-import { EditorEntity, EditorType } from "../../reducers/editors";
+import { EditorEntity, EditorState, EditorType } from "../../reducers/editors";
 import { api, editors, str } from "../../actions";
 import { newEditorCommitResultError } from "../../uiErrors";
 import { callApiForResource } from "../resourceApiSagas";
 import { EditorAction } from "@/editors/editorTypes";
 import app from "@/app/appSlice";
 import { constructStatement } from "@/viewModels";
-import { ApiActionCreator } from "@/apiActions";
+import {
+  AnyApiAction,
+  ApiActionCreator,
+  ApiResponseAction,
+} from "@/apiActions";
 
 /**
  * A redux saga handling editor commits.
@@ -51,7 +55,7 @@ export function* editorCommitEdit() {
     function* editorCommitEditWorker(action: EditorAction) {
       const { editorType, editorId } = action.payload;
 
-      const editorState = yield* select(
+      const editorState: EditorState<any> = yield* select(
         selectEditorState(editorType, editorId)
       );
       const { editEntity } = editorState;
@@ -60,9 +64,9 @@ export function* editorCommitEdit() {
         editEntity
       );
       try {
-        const resultAction = yield* call(
+        const resultAction: ApiResponseAction<any> = yield call(
           callApiForResource,
-          editorCommitApiResourceAction
+          editorCommitApiResourceAction as AnyApiAction
         );
         if (resultAction.error) {
           return yield* put(

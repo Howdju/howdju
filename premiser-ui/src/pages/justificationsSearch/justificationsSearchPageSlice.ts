@@ -5,7 +5,7 @@ import { normalize } from "normalizr";
 
 const initialState = {
   justifications: [],
-  continuationToken: null as string | null,
+  continuationToken: undefined as string | undefined,
   isFetching: false,
   filters: null as JustificationSearchFilters | null,
 };
