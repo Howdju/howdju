@@ -24,12 +24,19 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Fetch origin/master
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Fetch master
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Need to fetch master for relative coverage
-          git fetch --no-tags --prune --depth=0 origin +refs/heads/master:refs/remotes/origin/master
-      - uses: actions/setup-node@v3
+          git fetch --no-tags --depth=1 origin master
+          git checkout -b master
+          git checkout ${{ github.event.pull_request.head.sha }}
+      - name: Setup Node.JS
+        uses: actions/setup-node@v3
         with:
           node-version: 14
           cache: "yarn"
@@ -45,7 +52,7 @@ jobs:
         run: yarn run check-format:all
       - name: Typecheck
         run: yarn run typecheck:all
-      - name: Incremental test & coverage
+      - name: Relative test coverage
         env:
           DB_USER: postgres
           DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
@@ -53,22 +60,27 @@ jobs:
           DB_PORT: 5432
           LOG_LEVEL: silly
           NODE_ENV: test
-        run: yarn run test:all:coverage:changes
-      - name: Merge relative coverage
-        run: yarn run merge:coverage
-      - name: Output relative coverage text-summary
-        id: coverage-summary
+        run: yarn run test:all:coverage:changes master
+      - name: Output merged relative coverage summary
+        id: relative-coverage-summary
         run: |
-          echo $(yarn run nyc report -t coverage --report-dir coverage/text --reporter=text-summary) >> $GITHUB_OUTPUT
+          yarn run merge:coverage
+          output=$(yarn run nyc report -t coverage --reporter=text-summary)
+
+          delimiter="$(openssl rand -hex 8)"
+          echo "coverage_summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "${output}" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
       - name: Create relative coverage coverage PR comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Relative coverage
           message: |
+            # Relative coverage summary
             ```
-            ${{ steps.relative-coverage-summary.outputs.result }}
+            ${{ steps.relative-coverage-summary.outputs.coverage_summary }}
             ```
-      - name: Test & coverage
+      - name: Absolute test & coverage
         env:
           DB_USER: postgres
           DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
@@ -77,9 +89,11 @@ jobs:
           LOG_LEVEL: silly
           NODE_ENV: test
         run: yarn run test:all:coverage
-      - name: Merge absolute coverage
-        run: yarn run merge:coverage
-      - name: Archive code coverage results
+      - name: Create merged absolute coverage
+        run: |
+          yarn run merge:coverage
+          yarn run nyc report -t coverage --report-dir coverage/html --reporter=html-spa --reporter=text-summary
+      - name: Archive absolute code coverage results
         uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report

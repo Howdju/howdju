@@ -140,17 +140,6 @@ psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_na
 rm $pg_dump_file_name
 ```
 
-### Install coreutils
-
-If you want to calculate merged coverage (`yarn run merge:coverage`) you'll need `realpath` which
-comes from `coreutils`.
-
-On Mac OS X:
-
-```sh
-brew install coreutils
-```
-
 ## Running the platform locally
 
 Do each of the following in different terminal windows.
