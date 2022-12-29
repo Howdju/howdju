@@ -150,7 +150,8 @@ const WritQuoteEditorFields = (props: Props) => {
               id={combineIds(id, `urls[${index}]`, "url")}
               key={combineIds(id, `urls[${index}]`, "url")}
               name={combineNames(name, `urls[${index}]`, "url")}
-              className="urlInput"
+              className="writ-quote-url-input"
+              aria-label="url"
               type="url"
               label="URL"
               value={url.url}

@@ -74,9 +74,47 @@ describe("CreatePropositionPage", () => {
     expect(
       ariaVisibleOne(screen.getAllByDisplayValue(url))
     ).toBeInTheDocument();
+
     jest.runAllTimers();
     expect(container).toMatchSnapshot();
   });
+
+  test("can add URL while editing a WritQuote-based justification", async () => {
+    // Arrange
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
+
+    const history = createMemoryHistory();
+    const { location, match } = makeRouteComponentProps("submit");
+
+    const { container } = renderWithProviders(
+      <CreatePropositionPage
+        mode={"CREATE_PROPOSITION"}
+        history={history}
+        location={location}
+        match={match}
+      />,
+      { history }
+    );
+    await user.click(
+      screen.getByRole("checkbox", { name: /create justification/i })
+    );
+    await user.click(
+      screen.getByRole("radio", { name: /An external reference/i })
+    );
+
+    // Act
+    await user.click(screen.getByRole("button", { name: /add url/i }));
+
+    screen.logTestingPlaygroundURL();
+    // Assert
+    expect(await screen.findAllByLabelText(/url/)).toHaveLength(2);
+
+    jest.runAllTimers();
+    expect(container).toMatchSnapshot();
+  });
+
   test("can submit a proposition justified via query params", async () => {
     // Arrange
     // userEvent delays between actions, so make sure it advances the fake timers.

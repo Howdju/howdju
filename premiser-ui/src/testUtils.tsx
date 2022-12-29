@@ -69,8 +69,9 @@ export interface MakeRouteComponentPropsOptions<T> {
  */
 export function makeRouteComponentProps<T extends Record<string, string>>(
   path: string,
-  { pathParams = {} as T, searchParams }: MakeRouteComponentPropsOptions<T>
+  options?: MakeRouteComponentPropsOptions<T>
 ) {
+  const { pathParams = {} as T, searchParams = {} } = options ?? {};
   const toUrl = compile(path, { encode: encodeURIComponent });
   const url = toUrl(pathParams);
   const match: match<T> = {
