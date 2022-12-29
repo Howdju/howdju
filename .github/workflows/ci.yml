@@ -24,8 +24,19 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Fetch master
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch --no-tags --depth=1 origin master
+          git checkout -b master
+          git checkout ${{ github.event.pull_request.head.sha }}
+      - name: Setup Node.JS
+        uses: actions/setup-node@v3
         with:
           node-version: 14
           cache: "yarn"
@@ -41,7 +52,7 @@ jobs:
         run: yarn run check-format:all
       - name: Typecheck
         run: yarn run typecheck:all
-      - name: Test
+      - name: Relative test coverage
         env:
           DB_USER: postgres
           DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
@@ -49,6 +60,46 @@ jobs:
           DB_PORT: 5432
           LOG_LEVEL: silly
           NODE_ENV: test
-        run: yarn run test:all:ci --ci --runInBand
+        run: yarn run test:all:coverage:changes master
+      - name: Output merged relative coverage summary
+        id: relative-coverage-summary
+        run: |
+          yarn run merge:coverage
+          output=$(yarn run nyc report -t coverage --reporter=text-summary)
+
+          delimiter="$(openssl rand -hex 8)"
+          echo "coverage_summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "${output}" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+      - name: Create relative coverage coverage PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Relative coverage
+          message: |
+            # Relative coverage summary
+            ```
+            ${{ steps.relative-coverage-summary.outputs.coverage_summary }}
+            ```
+      - name: Absolute test & coverage
+        env:
+          DB_USER: postgres
+          DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          DB_HOST: localhost
+          DB_PORT: 5432
+          LOG_LEVEL: silly
+          NODE_ENV: test
+        run: yarn run test:all:coverage
+      - name: Create merged absolute coverage
+        run: |
+          yarn run merge:coverage
+          yarn run nyc report -t coverage --report-dir coverage/html --reporter=html-spa --reporter=text-summary
+      - name: Archive absolute code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: |
+            coverage/**
+            !coverage/workspaces/**
+          if-no-files-found: error
       - name: Custom checks
         run: yarn run custom-check:all
