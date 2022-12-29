@@ -14,6 +14,7 @@ cd "${0%/*}/../"
     -path '*.d.ts' -o\
     -path '*node_modules*' -o\
     -path '*dist/*' -o\
+    -path '*coverage/*' -o\
     -path '*.terraform*' -o\
     -path '*Pods*'\
   \)\
