@@ -26,15 +26,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Fetch master
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git fetch --no-tags --depth=1 origin master
-          git checkout -b master
-          git checkout ${{ github.event.pull_request.head.sha }}
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
@@ -52,35 +43,7 @@ jobs:
         run: yarn run check-format:all
       - name: Typecheck
         run: yarn run typecheck:all
-      - name: Relative test coverage
-        env:
-          DB_USER: postgres
-          DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
-          DB_HOST: localhost
-          DB_PORT: 5432
-          LOG_LEVEL: silly
-          NODE_ENV: test
-        run: yarn run test:all:coverage:changes master
-      - name: Output merged relative coverage summary
-        id: relative-coverage-summary
-        run: |
-          yarn run merge:coverage
-          output=$(yarn run nyc report -t coverage --reporter=text-summary)
-
-          delimiter="$(openssl rand -hex 8)"
-          echo "coverage_summary<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "${output}" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
-      - name: Create relative coverage coverage PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: Relative coverage
-          message: |
-            # Relative coverage summary
-            ```
-            ${{ steps.relative-coverage-summary.outputs.coverage_summary }}
-            ```
-      - name: Absolute test & coverage
+      - name: Test & coverage
         env:
           DB_USER: postgres
           DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
@@ -89,17 +52,97 @@ jobs:
           LOG_LEVEL: silly
           NODE_ENV: test
         run: yarn run test:all:coverage
-      - name: Create merged absolute coverage
+      - name: Create merged coverage
         run: |
           yarn run merge:coverage
           yarn run nyc report -t coverage --report-dir coverage/html --reporter=html-spa --reporter=text-summary
-      - name: Archive absolute code coverage results
+      - name: Archive coverage results
         uses: actions/upload-artifact@v3
         with:
-          name: code-coverage-report
+          name: coverage-report
           path: |
             coverage/**
             !coverage/workspaces/**
           if-no-files-found: error
       - name: Custom checks
         run: yarn run custom-check:all
+
+  changed-files-coverage-check:
+    runs-on: ubuntu-latest
+    services:
+      howdju-db:
+        image: postgres:12.5
+        env:
+          POSTGRES_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # During a pre-merge check, Github creates and checks out an temporary merge commit. That
+          # commit won't work as the HEAD for yarn --changedSince
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Fetch merge base commits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Fetch commits to a depth so that head and base reach their merge base.
+          comparison=$(gh api\
+            repos/Howdju/howdju/compare/${{ github.event.pull_request.base.sha }}...${{github.event.pull_request.head.sha }})
+          behind_by=$(echo -E $comparison | jq -r '.behind_by')
+          ahead_by=$(echo -E $comparison | jq -r '.ahead_by')
+          echo "ahead_by: $ahead_by; behind by: $behind_by"
+          # +1 because fetch depth=1 is the commit itself.
+          if [[ $behind_by -gt 0 ]]; then
+            base_depth=$((behind_by+1))
+            echo Fetching base to depth $base_depth
+            git -c protocol.version=2 fetch --no-tags --no-recurse-submodules\
+              --depth=$base_depth origin ${{github.event.pull_request.base.sha }}
+          fi
+          if [[ $ahead_by -gt 0 ]]; then
+            head_depth=$((ahead_by+1))
+            echo Fetching head to depth $head_depth
+            git -c protocol.version=2 fetch --no-tags --no-recurse-submodules\
+              --depth=$head_depth origin ${{github.event.pull_request.head.sha }}
+          fi
+      - name: Setup Node.JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache: "yarn"
+      - name: Install Yarn
+        run: |
+          corepack enable
+          yarn set version stable
+      - name: Install dependencies
+        run: yarn install
+      - name: Changed-files test coverage
+        env:
+          DB_USER: postgres
+          DB_PASSWORD: ${{secrets.TEST_POSTGRES_PASSWORD}}
+          DB_HOST: localhost
+          DB_PORT: 5432
+          LOG_LEVEL: silly
+          NODE_ENV: test
+        run: yarn run test:all:coverage:changed ${{github.event.pull_request.base.sha }}
+      - name: Output merged changed-files coverage summary
+        id: changed-files-coverage-summary
+        run: |
+          yarn run merge:coverage
+          output=$(yarn run nyc report -t coverage --reporter=text-summary)
+
+          delimiter="$(openssl rand -hex 8)"
+          echo "coverage_summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "${output}" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+      - name: Create changed-files coverage PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Changed-files coverage
+          message: |
+            # Changed-files coverage summary
+            ```
+            ${{ steps.changed-files-coverage-summary.outputs.coverage_summary }}
+            ```
