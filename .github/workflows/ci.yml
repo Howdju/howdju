@@ -68,6 +68,8 @@ jobs:
         run: yarn run custom-check:all
 
   changed-files-coverage-check:
+    # Only run on PRs.
+    if: github.event.workflow_run.head_branch != 'master'
     runs-on: ubuntu-latest
     services:
       howdju-db:
