@@ -14,7 +14,7 @@
     "ios": "react-native run-ios",
     "ios-release": "react-native run-ios --configuration Release",
     "ios-release-device": "react-native run-ios --configuration Release --device ${0}",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint --ignore-path=.gitignore . --ext .js,.jsx,.ts,.tsx",
     "start-mobile:ios": "yarn run ios",
     "start": "react-native webpack-start",
     "test": "jest",

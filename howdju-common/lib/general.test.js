@@ -1,4 +1,4 @@
-const { uniq } = require("lodash");
+const { uniq, isNumber, camelCase } = require("lodash");
 const moment = require("moment");
 
 const {
@@ -7,6 +7,7 @@ const {
   omitDeep,
   momentSubtract,
   mapValuesDeep,
+  mapKeysDeep,
 } = require("./general");
 
 describe("cleanWhitespace", () => {
@@ -28,16 +29,60 @@ describe("cleanWhitespace", () => {
 });
 
 describe("mapValuesDeep", () => {
-  test("Should map deep arrays correctly", () => {
+  test("Should map arrays correctly with mapArrays=false", () => {
     expect(
       mapValuesDeep(
         {
           arr: ["one", "one", "two"],
         },
-        uniq
+        uniq,
+        { mapArrays: false }
       )
     ).toEqual({
       arr: ["one", "two"],
+    });
+  });
+  test("Should map arrays correctly with mapArrays=true", () => {
+    expect(
+      mapValuesDeep(
+        {
+          arr: [{ a: 1 }, { b: 2 }],
+        },
+        (x) => (isNumber(x) ? x + 1 : x)
+      )
+    ).toEqual({
+      arr: [{ a: 2 }, { b: 3 }],
+    });
+  });
+  test("Should map arrays of strings correctly with mapArrays=true", () => {
+    expect(
+      mapValuesDeep(
+        {
+          arr: [{ a: "one" }, { b: "two" }],
+        },
+        (x) => "_" + x
+      )
+    ).toEqual({
+      arr: [{ a: "_one" }, { b: "_two" }],
+    });
+  });
+});
+
+describe("mapKeysDeep", () => {
+  test("Should map keys correctly", () => {
+    expect(
+      mapKeysDeep(
+        {
+          field_one: {
+            field_two: "value_one",
+          },
+        },
+        camelCase
+      )
+    ).toEqual({
+      fieldOne: {
+        fieldTwo: "value_one",
+      },
     });
   });
 });

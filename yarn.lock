@@ -6421,6 +6421,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bases@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@types/bases@npm:0.2.2"
+  checksum: 9c21dea871364cba1b99fcc124bea8f3ca803b1f7099bf09733c35644365001cce308dbf03166c93d08442cab6dd960c97a85769b034889355bd31fd95cc5d55
+  languageName: node
+  linkType: hard
+
 "@types/bcryptjs@npm:^2.4.2":
   version: 2.4.2
   resolution: "@types/bcryptjs@npm:2.4.2"
@@ -6854,6 +6861,13 @@ __metadata:
   version: 6.9.7
   resolution: "@types/qs@npm:6.9.7"
   checksum: 7fd6f9c25053e9b5bb6bc9f9f76c1d89e6c04f7707a7ba0e44cc01f17ef5284adb82f230f542c2d5557d69407c9a40f0f3515e8319afd14e1e16b5543ac6cdba
+  languageName: node
+  linkType: hard
+
+"@types/random-seed@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@types/random-seed@npm:0.3.3"
+  checksum: de0f4ce70d47af68424b9bfdb27fd07e2be31cbbafee1ef7f4e661b94576b2cf6a2f1f479697d5b79186bf70bad0988485a7d2ce76084fe7c0544d32b2ec0a67
   languageName: node
   linkType: hard
 
@@ -15372,7 +15386,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "howdju-common@workspace:howdju-common"
   dependencies:
+    "@types/bases": ^0.2.2
     "@types/lodash": ^4.14.186
+    "@types/random-seed": ^0.3.3
     "@types/validator": ^13.7.10
     ajv: ^8.1.0
     ajv-formats: ^2.0.2

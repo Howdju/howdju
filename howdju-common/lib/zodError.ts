@@ -10,7 +10,7 @@ import {
 } from "lodash";
 import { z, ZodFormattedError } from "zod";
 
-import { mapValuesDeep } from "./general";
+import { assert, mapValuesDeep } from "./general";
 import { logger } from "./logger";
 
 export const zodIssueFormatter = (issue: z.ZodIssue) => issue;
@@ -159,15 +159,19 @@ function makeCallableProxy<T>(): Callable<T, IssueDescriptorArg> {
 export function removeZodErrorDupes<T, U>(
   error: ZodFormattedError<T, U>
 ): ZodFormattedError<T, U> {
-  return mapValuesDeep(error, (val: any, key: string) => {
-    // Perform a deep comparison of errors to remove duplicates.
-    if (key === "_errors") {
-      console.assert(isArray(val));
-      return uniqWith(val, isEqual);
-    }
-    // Return other vals unchanged.
-    return val;
-  }) as ZodFormattedError<T, U>;
+  return mapValuesDeep(
+    error,
+    (val: any, key: string) => {
+      // Perform a deep comparison of errors to remove duplicates.
+      if (key === "_errors") {
+        assert(isArray(val));
+        return uniqWith(val, isEqual);
+      }
+      // Return other vals unchanged.
+      return val;
+    },
+    { mapArrays: false }
+  ) as ZodFormattedError<T, U>;
 }
 
 /**

@@ -6,7 +6,7 @@
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
-    "lint": "eslint .",
+    "lint": "eslint --ignore-path=.gitignore .",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
     "typecheck": "tsc"
