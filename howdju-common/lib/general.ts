@@ -23,44 +23,87 @@ export interface MapValuesOptions {
    * Whether to map arrays. Default is true.
    *
    * Some mapper functions operate on arrays, such as `uniq`. In that case we want to call the
-   * mapper on the whole array rather than its individual items.
+   * mapper on the whole array rather than its individual items. Use mapArrays=false in that case.
    */
   mapArrays?: boolean;
 }
 
+type MapValuesDeepReturn<T, FR, O> = O extends { mapArrays: true }
+  ? MapValuesDeepReturn_MapArrays<T, FR>
+  : MapValuesDeepReturn_NoMapArrays<T, FR>;
+
+type MapValuesDeepReturn_MapArrays<T, FR> = T extends [any, ...any[]]
+  ? { [k in keyof T]: MapValuesDeepReturn_MapArrays<T[k], FR> }
+  : T extends any[]
+  ? { [k: number]: MapValuesDeepReturn_MapArrays<T[number], FR> }
+  : T extends object
+  ? { [k in keyof T]: MapValuesDeepReturn_MapArrays<T[k], FR> }
+  : FR;
+
+type MapValuesDeepReturn_NoMapArrays<T, FR> = T extends any[]
+  ? FR
+  : T extends object
+  ? { [k in keyof T]: MapValuesDeepReturn_NoMapArrays<T[k], FR> }
+  : FR;
+
 /** key is the key or index of obj's parent that got us here. */
-export const mapValuesDeep: any = (
-  obj: any,
-  fn: (x: any, key?: string) => any,
+export const mapValuesDeep = <
+  T,
+  F extends (x: any, key?: string | number) => any,
+  O extends MapValuesOptions
+>(
+  obj: T,
+  fn: F,
   options: MapValuesOptions = { mapArrays: true },
-  key: string | undefined = undefined
-) => {
+  key: string | number | undefined = undefined
+): MapValuesDeepReturn<T, ReturnType<F>, O> => {
   const { mapArrays } = options;
   if (isArray(obj)) {
     if (mapArrays) {
-      return map(obj, (item, idx) => mapValuesDeep(item, fn, options, idx));
+      return map(obj, (item, idx) =>
+        mapValuesDeep(item, fn, options, idx)
+      ) as MapValuesDeepReturn<T, ReturnType<F>, O>;
     }
+    // Fall through
   } else if (isObject(obj)) {
-    return mapValues(obj, (val, key) => mapValuesDeep(val, fn, options, key));
+    return mapValues(obj, (val, key) =>
+      mapValuesDeep(val, fn, options, key)
+    ) as MapValuesDeepReturn<T, ReturnType<F>, O>;
   }
   return fn(obj, key);
 };
 
+type MapKeysDeepReturn<T, FR extends string> = T extends [any, ...any[]]
+  ? { [k in keyof T as FR]: MapKeysDeepReturn<T[k], FR> }
+  : T extends any[]
+  ? { [k: number]: MapKeysDeepReturn<T[number], FR> }
+  : T extends object
+  ? { [k in keyof T as FR]: MapKeysDeepReturn<T[k], FR> }
+  : T;
+
 /** key is the original key or index of obj's parent that got us here. */
-export const mapKeysDeep: any = (
-  obj: any,
-  fn: (x: any, key?: string) => any,
-  key: string | undefined = undefined
-) => {
+export const mapKeysDeep = <
+  T,
+  F extends (key: string, parentKey?: string | number) => string
+>(
+  obj: T,
+  fn: F,
+  parentKey: string | number | undefined = undefined
+): MapKeysDeepReturn<T, ReturnType<F>> => {
   if (isArray(obj)) {
-    map(obj, (item, idx) => mapKeysDeep(item, fn, idx));
+    return map(obj, (item, idx) =>
+      mapKeysDeep(item, fn, idx)
+    ) as MapKeysDeepReturn<T, ReturnType<F>>;
   }
   if (isPlainObject(obj)) {
     return Object.fromEntries(
-      Object.entries(obj).map(([k, v]) => [fn(k, key), mapKeysDeep(v, fn, k)])
-    );
+      Object.entries(obj).map(([k, v]) => [
+        fn(k, parentKey),
+        mapKeysDeep(v, fn, k),
+      ])
+    ) as MapKeysDeepReturn<T, ReturnType<F>>;
   }
-  return obj;
+  return obj as MapKeysDeepReturn<T, ReturnType<F>>;
 };
 
 // https://stackoverflow.com/a/27093173/39396
@@ -114,7 +157,7 @@ export const utcNowIsAfter = (dateTimeString: string) =>
 
 type MomentArithmeticArg =
   | [number, unitOfTime.DurationConstructor]
-  | { [k in unitOfTime.DurationConstructor]: number }
+  | { [k in unitOfTime.DurationConstructor]+?: number }
   | Duration;
 export const momentAdd = (
   momentInstance: Moment,
