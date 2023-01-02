@@ -10,7 +10,7 @@
     "check-format": "yarn run prettier --check --ignore-path .prettierignore .",
     "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .prettierignore .",
     "gen-standalone-schema-validation": "npx ts-node bin/gen-standalone-schema-validation.js",
-    "lint": "eslint .",
+    "lint": "eslint --ignore-path=.gitignore .",
     "custom-check": "bin/custom-check.sh",
     "test": "jest",
     "test-inspect": "node --inspect-brk ../node_modules/.bin/jest --runInBand --watch",
@@ -28,7 +28,9 @@
     "zod": "https://github.com/Howdju/zod.git#c2b02dc84a1e25614479aff0c1c26de27a406ea8"
   },
   "devDependencies": {
+    "@types/bases": "^0.2.2",
     "@types/lodash": "^4.14.186",
+    "@types/random-seed": "^0.3.3",
     "@types/validator": "^13.7.10",
     "eslint": "^8.27.0",
     "eslint-config-howdju": "workspace:eslint-config-howdju",

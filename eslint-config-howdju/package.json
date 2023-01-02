@@ -6,7 +6,7 @@
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
-    "lint": "eslint .",
+    "lint": "eslint --ignore-path=.gitignore .",
     "test": "echo Nothing to test here"
   },
   "repository": {

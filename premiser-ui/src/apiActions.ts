@@ -614,7 +614,7 @@ export const api = {
     }: {
       filters: JustificationSearchFilters;
       includeUrls?: boolean;
-      sorts?: string;
+      sorts?: Record<string, string>;
       count: number;
       continuationToken?: string;
     }) => ({

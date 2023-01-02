@@ -96,7 +96,14 @@ export function showPrivacyConsentDialog() {
 
 export function fixConsentCookieIds() {
   const validIds = keyBy(settings.cookies, "id");
-  const prefs = fromJson(window.localStorage.getItem(PREFS_LOCAL_STORAGE_KEY));
+  const prefsJson = window.localStorage.getItem(PREFS_LOCAL_STORAGE_KEY);
+  if (!prefsJson) {
+    logger.error(
+      `Cannot fixConsentCookieIds because localStorage[${PREFS_LOCAL_STORAGE_KEY} is missing.`
+    );
+    return;
+  }
+  const prefs = fromJson(prefsJson);
   const newPrefs: Cookie[] = [];
   forEach(prefs, (pref) => {
     if (!validIds[pref.id]) {
