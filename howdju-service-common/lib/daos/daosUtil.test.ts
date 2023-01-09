@@ -1,9 +1,9 @@
-const {
+import {
   normalizeText,
   renumberSqlArgs,
   addArrayParams,
   createParams,
-} = require("./daosUtil");
+} from "./daosUtil";
 
 describe("normalizeText", () => {
   test("Should normalize burred characters", () => {

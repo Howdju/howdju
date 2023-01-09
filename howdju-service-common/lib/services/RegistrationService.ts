@@ -15,7 +15,6 @@ import {
   utcNow,
   makeModelErrors,
   Logger,
-  UserData,
   makeRegistrationRequest,
   TopicMessageSender,
   topicMessages,
@@ -31,6 +30,7 @@ import {
 import { UsersService } from "./UsersService";
 import { AuthService } from "./AuthService";
 import { ApiConfig, RegistrationRequestsDao } from "..";
+import { CreateUserData } from "@/daos/types";
 
 export class RegistrationService {
   logger: Logger;
@@ -326,7 +326,7 @@ export class RegistrationService {
       registrationConfirmation.password,
       this.config.auth.bcrypt.saltRounds
     );
-    const userData: UserData = {
+    const userData: CreateUserData = {
       username: registrationConfirmation.username,
       email: registration.email,
       phoneNumber: registrationConfirmation.phoneNumber,

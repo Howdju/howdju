@@ -1,32 +1,52 @@
-const concat = require("lodash/concat");
-const forEach = require("lodash/forEach");
-const head = require("lodash/head");
-const isNumber = require("lodash/isNumber");
-const join = require("lodash/join");
-const map = require("lodash/map");
-const toNumber = require("lodash/toNumber");
+import concat from "lodash/concat";
+import forEach from "lodash/forEach";
+import head from "lodash/head";
+import isNumber from "lodash/isNumber";
+import join from "lodash/join";
+import map from "lodash/map";
+import toNumber from "lodash/toNumber";
 
-const {
+import {
   assert,
   JustificationTargetTypes,
   newProgrammingError,
   idEqual,
   newImpossibleError,
-  normalizeText,
-} = require("howdju-common");
+  Logger,
+  EntityId,
+  JustificationRootTargetType,
+} from "howdju-common";
+import { QueryResultRow } from "pg";
+import { JustificationRow, EntityRowId } from "./types";
+import { toString } from "lodash";
 
 // Convenience re-export. TODO update deps in this folder to depend on new location directly
-exports.normalizeText = normalizeText;
+export { normalizeText } from "howdju-common";
 
-exports.mapSingle =
-  (logger, mapper, tableName, identifiers) =>
-  ({ rows }) => {
+export type RowMapper<T extends QueryResultRow, R = any> = (row?: T) => R;
+type MapSingleReturn<T extends QueryResultRow, M extends RowMapper<T>> = ({
+  rows,
+}: {
+  rows: T[];
+}) => ReturnType<M>;
+export function mapSingle<T extends QueryResultRow, M extends RowMapper<T>>(
+  mapper: M
+): MapSingleReturn<T, M>;
+export function mapSingle<T extends QueryResultRow, M extends RowMapper<T>>(
+  loggerOrMapper: Logger | M,
+  mapper?: M,
+  tableName?: string,
+  identifiers?: Record<string, string>
+): MapSingleReturn<T, M> {
+  return ({ rows }: { rows: T[] }) => {
     // Some queries, such as insert, have no chance for returning multiple rows.  So then the caller doesnt' pass the logger
     let requireOne = false;
+    let logger: Logger | undefined = undefined;
     if (!mapper) {
-      mapper = logger;
-      logger = null;
+      mapper = loggerOrMapper as M;
       requireOne = true;
+    } else {
+      logger = loggerOrMapper as Logger;
     }
 
     if (logger && rows.length > 1) {
@@ -45,16 +65,23 @@ exports.mapSingle =
     }
     return mapper(row);
   };
+}
 
-exports.mapMany =
-  (mapper) =>
-  ({ rows }) =>
+export const mapMany =
+  <T extends QueryResultRow, M extends RowMapper<T>>(mapper: M) =>
+  ({ rows }: { rows: T[] }) =>
     map(rows, mapper);
 
-exports.mapManyById =
-  (mapper) =>
-  ({ rows }) => {
-    const byId = {};
+export const mapManyById =
+  <
+    T extends QueryResultRow,
+    R extends { id: EntityId },
+    M extends RowMapper<T, R>
+  >(
+    mapper: M
+  ) =>
+  ({ rows }: { rows: T[] }) => {
+    const byId: Record<EntityId, R> = {};
     forEach(rows, (row) => {
       const entity = mapper(row);
       byId[entity.id] = entity;
@@ -62,14 +89,17 @@ exports.mapManyById =
     return byId;
   };
 
-exports.groupRootJustifications = (
-  rootTargetType,
-  rootTargetId,
-  justification_rows
+export const groupRootJustifications = (
+  rootTargetType: JustificationRootTargetType,
+  rootTargetId: EntityId,
+  justification_rows: JustificationRow[]
 ) => {
   const rootJustifications = [],
-    counterJustificationsByJustificationId = {};
-  for (let justification_row of justification_rows) {
+    counterJustificationsByJustificationId: Record<
+      EntityRowId,
+      JustificationRow[]
+    > = {};
+  for (const justification_row of justification_rows) {
     // There are two types of justifications: those targeting other justifications or those targeting the current root
     if (
       justification_row.target_type === JustificationTargetTypes.JUSTIFICATION
@@ -94,7 +124,9 @@ exports.groupRootJustifications = (
     } else {
       assert(() => justification_row.root_target_type === rootTargetType);
       assert(() => justification_row.target_type === rootTargetType);
-      assert(() => idEqual(justification_row.target_id, rootTargetId));
+      assert(() =>
+        idEqual(toString(justification_row.target_id), rootTargetId)
+      );
       rootJustifications.push(justification_row);
     }
   }
@@ -105,7 +137,7 @@ exports.groupRootJustifications = (
 };
 
 /** Renumber the SQL arguments starting from after {@link after} */
-exports.renumberSqlArgs = (sql, after) => {
+export const renumberSqlArgs = (sql: string, after: number): string => {
   if (!isNumber(after) || after < 0) {
     throw newProgrammingError("after must be a non-negative number");
   }
@@ -114,7 +146,7 @@ exports.renumberSqlArgs = (sql, after) => {
     return sql;
   }
 
-  const renumberedSql = sql.replace(/\$(\d+)/g, (match, paramNumber) => {
+  const renumberedSql = sql.replace(/\$(\d+)/g, (_match, paramNumber) => {
     const paramNumberNumber = toNumber(paramNumber);
     const paramRenumber = paramNumberNumber + after;
     return `$${paramRenumber}`;
@@ -123,8 +155,11 @@ exports.renumberSqlArgs = (sql, after) => {
   return renumberedSql;
 };
 
-exports.addArrayParams = function addArrayParams(baseArgs, values) {
-  const params = [];
+export const addArrayParams = function addArrayParams(
+  baseArgs: any[],
+  values: any[]
+) {
+  const params: string[] = [];
   const start = baseArgs.length + 1;
   for (let i = 0; i < values.length; i++) {
     params.push("$" + (i + start));
@@ -135,6 +170,9 @@ exports.addArrayParams = function addArrayParams(baseArgs, values) {
   };
 };
 
-exports.createParams = function createParams(count, start) {
+export const createParams = function createParams(
+  count: number,
+  start: number
+) {
   return map(Array.from(Array(count).keys()), (i) => "$" + (i + start));
 };

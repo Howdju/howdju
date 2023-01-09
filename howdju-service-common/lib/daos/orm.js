@@ -59,6 +59,7 @@ function makeMapper(mapper) {
   };
 }
 
+/** Unprefixes and maps fields from row, which correspond to a related table. */
 function mapRelation(mapper, prefix, row) {
   requireArgs({ mapper, prefix, row });
   const unprefixed = unprefix(row, prefix);
@@ -139,7 +140,9 @@ const toStatement = makeMapper(function toStatementMapper(row) {
     created: row.created,
   };
 
-  let sentence = (statement["sentence"] = { id: row["sentence_id"] });
+  let sentence = (statement["sentence"] = {
+    id: toIdString(row["sentence_id"]),
+  });
   switch (statement.sentenceType) {
     case SentenceTypes.STATEMENT:
       sentence = mapRelation(toStatement, "sentence_statement_", row);

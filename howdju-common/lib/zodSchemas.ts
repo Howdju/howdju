@@ -9,7 +9,11 @@
 
 import { Simplify } from "type-fest";
 import { z } from "zod";
-import { iso8601Datetime, url, momentTimestamp } from "./zodRefinements";
+import {
+  momentObject,
+  iso8601TimestampString,
+  urlString,
+} from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
 /** A perstisent conceptual entity */
@@ -53,15 +57,9 @@ export const Persorg = Entity.extend({
   /** The official or primary website representing the persorg. */
   websiteUrl: z.string().url().optional(),
   /** The persorg's Twitter. */
-  twitterUrl: z
-    .string()
-    .superRefine(url({ domain: /twitter.com$/ }))
-    .optional(),
+  twitterUrl: urlString({ domain: /twitter.com$/ }).optional(),
   /** The persorg's Wikipedia URL. */
-  wikipediaUrl: z
-    .string()
-    .superRefine(url({ domain: /wikipedia.org$/ }))
-    .optional(),
+  wikipediaUrl: urlString({ domain: /wikipedia.org$/ }).optional(),
 }).strict();
 export type Persorg = z.infer<typeof Persorg>;
 
@@ -205,11 +203,11 @@ export type PropositionCompoundAtom = PropositionCompound["atoms"][number];
 export type CreatePropositionCompoundAtom = PropositionCompoundAtom;
 export type CreatePropositionCompoundAtomInput = PropositionCompoundAtom;
 
-const JustificationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
+export const JustificationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
 export type JustificationPolarity = z.infer<typeof JustificationPolarity>;
 export const JustificationPolarities = JustificationPolarity.Enum;
 
-const JustificationRootPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
+export const JustificationRootPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
 export type JustificationRootPolarity = z.infer<
   typeof JustificationRootPolarity
 >;
@@ -288,7 +286,7 @@ export type Justification = Entity & {
         rootTarget: Statement;
       }
   );
-const justificationBasisTypes = z.enum([
+export const JustificationBasisType = z.enum([
   "PROPOSITION_COMPOUND",
   "SOURCE_EXCERPT",
   // deprecated
@@ -296,7 +294,7 @@ const justificationBasisTypes = z.enum([
   // deprecated
   "JUSTIFICATION_BASIS_COMPOUND",
 ]);
-export const JustificationBasisTypes = justificationBasisTypes.Enum;
+export const JustificationBasisTypes = JustificationBasisType.Enum;
 // Fields that can be shared across the rootTargetType discriminatedUntion
 const justificationBaseShape = {
   polarity: JustificationPolarity,
@@ -312,9 +310,9 @@ const justificationBaseShape = {
   ]),
   rootPolarity: JustificationRootPolarity,
 };
-const justificationRootTargetTypes = z.enum(["PROPOSITION", "STATEMENT"]);
-export const JustificationRootTargetTypes = justificationRootTargetTypes.Enum;
-const justificationTargetTypes = z.enum([
+export const JustificationRootTargetType = z.enum(["PROPOSITION", "STATEMENT"]);
+export const JustificationRootTargetTypes = JustificationRootTargetType.Enum;
+export const JustificationTargetType = z.enum([
   "PROPOSITION",
   "STATEMENT",
   "JUSTIFICATION",
@@ -327,15 +325,15 @@ export const Justification: z.ZodType<Justification> = z.lazy(() =>
       rootTarget: Proposition,
       target: z.discriminatedUnion("type", [
         z.object({
-          type: z.literal(justificationTargetTypes.Enum.PROPOSITION),
+          type: z.literal(JustificationTargetType.Enum.PROPOSITION),
           entity: Proposition,
         }),
         z.object({
-          type: z.literal(justificationTargetTypes.Enum.STATEMENT),
+          type: z.literal(JustificationTargetType.Enum.STATEMENT),
           entity: Statement,
         }),
         z.object({
-          type: z.literal(justificationTargetTypes.Enum.JUSTIFICATION),
+          type: z.literal(JustificationTargetType.Enum.JUSTIFICATION),
           entity: Justification,
         }),
       ]),
@@ -346,15 +344,15 @@ export const Justification: z.ZodType<Justification> = z.lazy(() =>
       rootTarget: Statement,
       target: z.discriminatedUnion("type", [
         z.object({
-          type: z.literal(justificationTargetTypes.Enum.PROPOSITION),
+          type: z.literal(JustificationTargetType.Enum.PROPOSITION),
           entity: Proposition,
         }),
         z.object({
-          type: z.literal(justificationTargetTypes.Enum.STATEMENT),
+          type: z.literal(JustificationTargetType.Enum.STATEMENT),
           entity: Statement,
         }),
         z.object({
-          type: z.literal(justificationTargetTypes.Enum.JUSTIFICATION),
+          type: z.literal(JustificationTargetType.Enum.JUSTIFICATION),
           entity: Justification,
         }),
       ]),
@@ -367,7 +365,7 @@ export type JustificationTarget = Justification["target"];
 export type JustificationTargetType = Justification["target"]["type"];
 export type JustificationRootTarget = Justification["rootTarget"];
 export type JustificationRootTargetType = Justification["rootTargetType"];
-export const JustificationTargetTypes = justificationTargetTypes.Enum;
+export const JustificationTargetTypes = JustificationTargetType.Enum;
 
 export const PropositionRef =
   Entity.required().brand<EntityName<Proposition>>();
@@ -396,6 +394,9 @@ export type TagRef = z.infer<typeof TagRef>;
 
 export const TagVoteRef = Entity.required().brand<EntityName<TagVote>>();
 export type TagVoteRef = z.infer<typeof TagVoteRef>;
+
+export const UserRef = Entity.required().brand<EntityName<User>>();
+export type UserRef = z.infer<typeof UserRef>;
 
 /*
  * Entities lacking alternatives don't require special Create/Edit models
@@ -555,7 +556,7 @@ export type CreateJustificationInputRootTarget =
 export type CreateJustification = Simplify<
   Omit<
     CreateJustificationInput,
-    "basis" | "target" | "rootTargetType" | "rootTarget"
+    "basis" | "target" | "rootTargetType" | "rootTarget" | "rootPolarity"
   > & {
     basis:
       | {
@@ -770,7 +771,7 @@ export const User = Entity.extend({
   longName: z.string().min(1).max(64),
   // We currently don't request phone number
   phoneNumber: z.string().optional(),
-  created: z.string().refine(...iso8601Datetime),
+  created: iso8601TimestampString,
   isActive: z.boolean(),
   externalIds: z.object({
     googleAnalyticsId: z.string(),
@@ -834,7 +835,7 @@ export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;
 export const RegistrationRequest = Entity.extend({
   email: User.shape.email,
   isConsumed: z.boolean(),
-  expires: z.object({}).refine(...momentTimestamp),
+  expires: momentObject,
 });
 export type RegistrationRequest = z.infer<typeof RegistrationRequest>;
 

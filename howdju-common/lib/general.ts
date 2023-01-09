@@ -46,17 +46,46 @@ type MapValuesDeepReturn_NoMapArrays<T, FR> = T extends any[]
   ? { [k in keyof T]: MapValuesDeepReturn_NoMapArrays<T[k], FR> }
   : FR;
 
-/** key is the key or index of obj's parent that got us here. */
-export const mapValuesDeep = <
+/**
+ * Override for mapping only object keys.
+ *
+ * If the target is an object and we don't map arrays, the key can only be a string, which
+ * simplifies the mapper.  */
+export function mapValuesDeep<
+  T extends object,
+  F extends (x: any, key: string) => any,
+  O extends MapValuesOptions & { mapArrays: false }
+>(
+  obj: T,
+  fn: F,
+  options: O,
+  key?: string
+): MapValuesDeepReturn_NoMapArrays<T, ReturnType<F>>;
+/** Override accepting generic arguments. */
+export function mapValuesDeep<
   T,
-  F extends (x: any, key?: string | number) => any,
+  F extends (x: any, key: string | number | undefined) => any,
   O extends MapValuesOptions
 >(
   obj: T,
   fn: F,
-  options: MapValuesOptions = { mapArrays: true },
-  key: string | number | undefined = undefined
-): MapValuesDeepReturn<T, ReturnType<F>, O> => {
+  options?: O,
+  key?: string | number
+): MapValuesDeepReturn<T, ReturnType<F>, O>;
+/**
+ * Recursively map the values of obj using fn.
+ *
+ * key is the key or index of obj's parent that got us here. */
+export function mapValuesDeep<
+  T,
+  F extends (x: any, key: string | number | undefined) => any,
+  O extends MapValuesOptions
+>(
+  obj: T,
+  fn: F,
+  options: O = { mapArrays: true } as O,
+  key?: string | number
+): MapValuesDeepReturn<T, ReturnType<F>, O> {
   const { mapArrays } = options;
   if (isArray(obj)) {
     if (mapArrays) {
@@ -71,7 +100,7 @@ export const mapValuesDeep = <
     ) as MapValuesDeepReturn<T, ReturnType<F>, O>;
   }
   return fn(obj, key);
-};
+}
 
 type MapKeysDeepReturn<T, FR extends string> = T extends [any, ...any[]]
   ? { [k in keyof T as FR]: MapKeysDeepReturn<T[k], FR> }
@@ -83,7 +112,7 @@ type MapKeysDeepReturn<T, FR extends string> = T extends [any, ...any[]]
 
 /** key is the original key or index of obj's parent that got us here. */
 export const mapKeysDeep = <
-  T,
+  T extends Record<string, any> | ArrayLike<any>,
   F extends (key: string, parentKey?: string | number) => string
 >(
   obj: T,
@@ -93,7 +122,7 @@ export const mapKeysDeep = <
   if (isArray(obj)) {
     return map(obj, (item, idx) =>
       mapKeysDeep(item, fn, idx)
-    ) as MapKeysDeepReturn<T, ReturnType<F>>;
+    ) as unknown as MapKeysDeepReturn<T, ReturnType<F>>;
   }
   if (isPlainObject(obj)) {
     return Object.fromEntries(
@@ -117,34 +146,34 @@ export const isFalsey = (val: any) => !val;
 
 export const assert = (
   test: boolean | ((...args: any[]) => boolean),
-  message?: string
+  message?: string | (() => string)
 ) => {
-  if (process.env.DO_ASSERT === "true") {
-    const makeMessage = (message?: string) =>
-      // If there is a message thunk, use it
-      isFunction(message)
-        ? message()
-        : // Otherwise if there is a message, use it
-        message
-        ? message
-        : // Otherwise, if the test was a thunk, use it as a description
-        isFunction(test)
-        ? test.toString().substring(0, 1024)
-        : // Otherwise, not much else we can do
-          message;
-    // assert should only be used in development, so logging to the console should be ok.  Besides, how would we get a logger here?
-    /* eslint-disable no-console */
-    const logError = (message?: string) =>
-      console.error("Failed assertion: " + makeMessage(message));
-    /* eslint-enable no-console */
+  if (process.env.DO_ASSERT !== "true") {
+    return;
+  }
+  const makeMessage = () =>
+    // If there is a message thunk, use it
+    isFunction(message)
+      ? message()
+      : // Otherwise if there is a message, use it
+      message
+      ? message
+      : // Otherwise, if the test was a thunk, use it as a description
+      isFunction(test)
+      ? test.toString().substring(0, 1024)
+      : // Otherwise, not much else we can do
+        message;
+  // assert should only be used in development, so logging to the console should be ok.  Besides, how would we get a logger here?
+  /* eslint-disable no-console */
+  const logError = () => console.error("Failed assertion: " + makeMessage());
+  /* eslint-enable no-console */
 
-    if (isFunction(test)) {
-      if (!test()) {
-        logError(message);
-      }
-    } else if (!test) {
-      logError(message);
+  if (isFunction(test)) {
+    if (!test()) {
+      logError();
     }
+  } else if (!test) {
+    logError();
   }
 };
 
@@ -410,4 +439,10 @@ export const randomBase36Number = (length: number) => {
   const minValue = bases.fromBase("0".repeat(length), 36);
   const maxValue = bases.fromBase("z".repeat(length), 36);
   return bases.toBase(randomSeed.intBetween(minValue, maxValue), 36);
+};
+
+type InferKey<T> = T extends Partial<Record<infer K, any>> ? K : never;
+type InferValue<T> = T extends Partial<Record<any, infer V>> ? V : never;
+export const toEntries = <T extends Partial<Record<string, any>>>(obj: T) => {
+  return Object.entries(obj) as [InferKey<T>, InferValue<T>][];
 };

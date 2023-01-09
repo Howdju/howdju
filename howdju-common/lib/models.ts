@@ -52,6 +52,7 @@ import {
   JustificationPolarity,
   JustificationRef,
   JustificationRootPolarity,
+  JustificationRootTarget,
   JustificationRootTargetType,
   JustificationVotePolarity,
   Persorg,
@@ -283,7 +284,10 @@ export const makeCreatePropositionTagVote = makePropositionTagVote;
 export const makeTagVote = (props: TagVote): TagVote => props;
 export const makeCreateTagVote = makeTagVote;
 
-export const doTargetSameRoot = (j1: Justification, j2: Justification) =>
+type RootTargetInfo = Pick<Justification, "rootTargetType"> & {
+  rootTarget: Pick<JustificationRootTarget, "id">;
+};
+export const doTargetSameRoot = (j1: RootTargetInfo, j2: RootTargetInfo) =>
   idEqual(j1.rootTarget.id, j2.rootTarget.id) &&
   j1.rootTargetType === j2.rootTargetType;
 
