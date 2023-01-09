@@ -54,7 +54,7 @@ import {
   JustificationRow,
   PropositionRow,
   SortDescription,
-  PropositionData,
+  ReadPropositionDataOut,
   WritQuoteRow,
   PropositionCompoundAtomRow,
   SqlClause,
@@ -1015,7 +1015,6 @@ export class JustificationsDao {
     return clauses;
   }
 
-  // here
   private async getNewJustificationRootPolarity(
     justification: CreateJustificationDataIn
   ) {
@@ -1117,8 +1116,8 @@ function mapJustificationRowsById(rows: JustificationRow[], prefix = "") {
 
 function mapPropositionRowsById(
   rows: PropositionRow[]
-): Record<EntityId, PropositionData> {
-  const byId: Record<EntityId, PropositionData> = {};
+): Record<EntityId, ReadPropositionDataOut> {
+  const byId: Record<EntityId, ReadPropositionDataOut> = {};
   forEach(rows, (row) => {
     const proposition = toProposition(row);
     byId[proposition.id] = proposition;

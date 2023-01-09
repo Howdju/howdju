@@ -13,8 +13,6 @@ export type OneOf<Obj> = ValueOf<OneOfByKey<Obj>>;
 /**
  * An object with a shape conforming to another type, but holding a value at each field.
  *
- * TODO try @type-fest/Schema as a replacement
- *
  * @typeparam T the shape of the object
  * @typeparam P the name of the property where the value is stored. It should have some prefix like
  * an underscore to prevent collisions with properties of T.

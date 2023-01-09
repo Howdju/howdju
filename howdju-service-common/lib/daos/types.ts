@@ -23,6 +23,7 @@ import {
   SourceExcerptRef,
   Statement,
   StatementRef,
+  User,
   UserRef,
   WritQuoteRef,
 } from "howdju-common";
@@ -58,11 +59,7 @@ export interface PropositionRow {
   text: string;
   created: Moment;
 }
-const propositionRowToData = ({ proposition_id, ...o }: PropositionRow) => ({
-  id: toString(proposition_id),
-  ...(mapKeys(o, camelCaseKey) as unknown as CamelCasedProperties<typeof o>),
-});
-export type PropositionData = ReturnType<typeof propositionRowToData>;
+export type ReadPropositionDataOut = Persisted<Proposition>;
 
 export interface JustificationBasisCompoundRow {
   justification_basis_compound_id: EntityRowId;
@@ -70,16 +67,6 @@ export interface JustificationBasisCompoundRow {
   created: Moment;
   deleted: Moment;
 }
-export const justificationBasisCompoundRowToData = ({
-  justification_basis_compound_id,
-  ...o
-}: JustificationBasisCompoundRow) => ({
-  id: toString(justification_basis_compound_id),
-  ...(mapKeys(o, camelCaseKey) as CamelCasedProperties<typeof o>),
-});
-export type JustificationBasisCompoundData = ReturnType<
-  typeof justificationBasisCompoundRowToData
->;
 
 export interface JustificationRow {
   justification_id: EntityRowId;
@@ -201,18 +188,6 @@ export interface PropositionCompoundAtomRow {
   proposition_id: EntityRowId;
   order_position: number;
 }
-export const propositionCompoundAtomRowToData = ({
-  proposition_compound_id,
-  proposition_id,
-  ...o
-}: PropositionCompoundAtomRow) => ({
-  propositionCompoundId: toString(proposition_compound_id),
-  propositionId: toString(proposition_id),
-  ...(mapKeys(o, camelCaseKey) as CamelCasedProperties<typeof o>),
-});
-export type PropositionCompoundAtomData = ReturnType<
-  typeof propositionCompoundAtomRowToData
->;
 
 export interface WritQuoteRow {
   writ_quote_id: EntityRowId;
@@ -223,11 +198,6 @@ export interface WritQuoteRow {
   created: Moment;
   deleted: Moment;
 }
-export const writQuoteRowToData = ({ writ_quote_id, ...o }: WritQuoteRow) => ({
-  id: toString(writ_quote_id),
-  ...(mapKeys(o, camelCaseKey) as CamelCasedProperties<typeof o>),
-});
-export type WritQuoteData = ReturnType<typeof writQuoteRowToData>;
 
 export interface UserRow {
   user_id: EntityRowId;
@@ -246,15 +216,16 @@ export interface UserRow {
   affirmed_13_years_or_older: Moment;
   affirmed_not_gdpr: Moment;
 }
-export const userRowToData = ({ user_id, ...o }: UserRow) => ({
-  id: toString(user_id),
-  ...(mapKeys(o, camelCaseKey) as CamelCasedProperties<typeof o>),
-});
-export type UserData = ReturnType<typeof userRowToData>;
-export type CreateUserData = Omit<
+export type UserData = Persisted<User>;
+export type CreateUserDataIn = Omit<
   UserData,
-  "created" | "deleted" | "id" | "creatorUserId"
->;
+  "created" | "deleted" | "id" | "creatorUserId" | "externalIds"
+> & {
+  acceptedTerms: Moment;
+  affirmedMajorityConsent: Moment;
+  affirmed13YearsOrOlder: Moment;
+  affirmedNotGdpr: Moment;
+};
 
 export interface SqlClause {
   sql: string;

@@ -30,7 +30,7 @@ import {
 import { UsersService } from "./UsersService";
 import { AuthService } from "./AuthService";
 import { ApiConfig, RegistrationRequestsDao } from "..";
-import { CreateUserData } from "@/daos/types";
+import { CreateUserDataIn } from "@/daos/types";
 
 export class RegistrationService {
   logger: Logger;
@@ -326,7 +326,7 @@ export class RegistrationService {
       registrationConfirmation.password,
       this.config.auth.bcrypt.saltRounds
     );
-    const userData: CreateUserData = {
+    const userData: CreateUserDataIn = {
       username: registrationConfirmation.username,
       email: registration.email,
       phoneNumber: registrationConfirmation.phoneNumber,

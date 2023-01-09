@@ -14,7 +14,7 @@ import { AccountSettings } from "howdju-common";
 import moment from "moment";
 import { Pool } from "pg";
 import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
-import { CreateUserData } from "@/daos/types";
+import { CreateUserDataIn } from "@/daos/types";
 
 describe("AccountSettingsService", () => {
   const dbConfig = makeTestDbConfig();
@@ -60,7 +60,7 @@ describe("AccountSettingsService", () => {
         paidContributionsDisclosure: "",
       };
       const now = moment.utc();
-      const createUserData: CreateUserData = {
+      const createUserData: CreateUserDataIn = {
         email: "the-user@the-domain.com",
         username: "the_user",
         shortName: "User",
@@ -108,7 +108,7 @@ describe("AccountSettingsService", () => {
       };
 
       const now = moment.utc();
-      const createUserData: CreateUserData = {
+      const createUserData: CreateUserDataIn = {
         email: "the-user@the-domain.com",
         username: "the_user",
         shortName: "User",
