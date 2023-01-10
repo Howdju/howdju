@@ -11,6 +11,7 @@ import t from "./texts";
 import WritQuoteEditorFields from "./WritQuoteEditorFields";
 
 import "./WritQuoteEditor.scss";
+import { isArray } from "lodash";
 
 class WritQuoteEditor extends Component {
   onPropertyChange = (properties) => {
@@ -59,6 +60,20 @@ class WritQuoteEditor extends Component {
 
     const inProgress = isFetching || isSaving;
 
+    const editorDispatch = (actionCreator) => {
+      const action = actionCreator(
+        WritQuoteEditor.editorType,
+        this.props.editorId
+      );
+      if (isArray(action)) {
+        for (const a of action) {
+          this.props.dispatch(a);
+        }
+      } else {
+        this.props.dispatch(action);
+      }
+    };
+
     return (
       <form onSubmit={this.onSubmit}>
         <CardText>
@@ -73,6 +88,7 @@ class WritQuoteEditor extends Component {
             onRemoveUrl={this.onRemoveUrl}
             errors={errors}
             onSubmit={this.onSubmit}
+            editorDispatch={editorDispatch}
           />
         </CardText>
         <CardActions>
