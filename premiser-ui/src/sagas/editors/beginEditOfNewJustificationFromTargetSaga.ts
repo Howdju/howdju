@@ -1,36 +1,40 @@
-import { put, takeEvery } from "redux-saga/effects";
+import { put, takeEvery } from "typed-redux-saga";
 
 import {
-  makeJustifiedPropositionEditModel,
+  makeCreateJustifiedSentenceInput,
   JustificationBasisTypes,
 } from "howdju-common";
 
 import { editors, flows, str, goto } from "../../actions";
 import CreatePropositionPage from "../../CreatePropositionPage";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { PayloadType } from "@/actionHelpers";
+
+type Payload = PayloadType<typeof flows.beginEditOfNewJustificationFromTarget>;
 
 export function* beginEditOfNewJustificationFromTarget() {
-  yield takeEvery(
+  yield* takeEvery(
     str(flows.beginEditOfNewJustificationFromTarget),
-    function* beginEditOfNewJustificationFromTargetWorker(action) {
-      const { content, source, target } = action.payload;
+    function* beginEditOfNewJustificationFromTargetWorker(
+      action: PayloadAction<Payload>
+    ) {
       const propositionJustification = toPropositionJustification(
-        content,
-        source,
-        target
+        action.payload
       );
-      yield put(
+      yield* put(
         editors.beginEdit(
           CreatePropositionPage.editorType,
           CreatePropositionPage.editorId,
           propositionJustification
         )
       );
-      yield put(goto.createJustification());
+      yield* put(goto.createJustification());
     }
   );
 }
 
-function toPropositionJustification(content, source, target) {
+function toPropositionJustification(payload: Payload) {
+  const { content, source, target } = payload;
   const { title } = source;
   const quoteText = content.text.trim();
   const { url } = target;
@@ -48,5 +52,5 @@ function toPropositionJustification(content, source, target) {
       writQuote,
     },
   };
-  return makeJustifiedPropositionEditModel(null, justificationProps);
+  return makeCreateJustifiedSentenceInput(undefined, justificationProps);
 }

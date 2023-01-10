@@ -126,11 +126,11 @@ const urlSchema = Joi.object()
           Joi.object().when("type", {
             is: UrlTargetAnchorTypes.TEXT_QUOTE,
             then: Joi.object({
-              exact: Joi.string(),
-              prefix: Joi.string(),
-              suffix: Joi.string(),
-              start: Joi.number(),
-              end: Joi.number(),
+              exactText: Joi.string(),
+              prefixText: Joi.string(),
+              suffixText: Joi.string(),
+              startOffset: Joi.number(),
+              endOffset: Joi.number(),
             }),
           })
         ),

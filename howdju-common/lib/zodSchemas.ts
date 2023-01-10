@@ -123,8 +123,8 @@ export const UrlTargetAnchor = z.object({
   exactText: z.string(),
   prefixText: z.string(),
   suffixText: z.string(),
-  startOffset: z.string(),
-  endOffset: z.string(),
+  startOffset: z.number(),
+  endOffset: z.number(),
 });
 export type UrlTargetAnchor = z.infer<typeof UrlTargetAnchor>;
 export type UrlTargetAnchorType = UrlTargetAnchor["type"];

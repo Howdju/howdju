@@ -353,11 +353,11 @@ exports.WritQuotesDao = class WritQuotesDao {
         `,
               [
                 row.writ_quote_url_target_id,
-                anchor.exact,
-                anchor.prefix,
-                anchor.suffix,
-                anchor.start,
-                anchor.end,
+                anchor.exactText,
+                anchor.prefixText,
+                anchor.suffixText,
+                anchor.startOffset,
+                anchor.endOffset,
               ]
             )
           )

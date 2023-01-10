@@ -22,6 +22,7 @@ import { makeErrorPropCreator } from "./modelErrorMessages";
 import "./WritQuoteEditorFields.scss";
 import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
+import { logger } from "./logger";
 
 interface Props extends EntityEditorFieldsProps<EditWritQuoteInput> {
   writQuote: WritQuote;
@@ -50,9 +51,14 @@ const WritQuoteEditorFields = (props: Props) => {
   } = props;
 
   const onChange = (value: number | string, event: Event) => {
-    if (onPropertyChange && event.target && "name" in event.target) {
-      const target: HTMLFormElement = event.target;
-      const name = target.name;
+    if (onPropertyChange) {
+      if (!event.target || !("name" in event.target)) {
+        logger.warn(
+          "Unable to fire onPropertyChange because event lacked target.name"
+        );
+        return;
+      }
+      const name = event.target.name;
       onPropertyChange({ [name]: value });
     }
   };
