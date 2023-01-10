@@ -105,7 +105,7 @@ export class JustificationsDao {
   }
 
   async readJustifications(
-    filters: JustificationFilters,
+    filters: JustificationFilters | undefined,
     sorts: SortDescription[],
     count: number,
     isContinuation: boolean,
@@ -889,7 +889,7 @@ export class JustificationsDao {
    * @param isContinuation boolean - whether the query is a continuation of a pagination query
    */
   private makeLimitedJustificationsClause(
-    filters: Record<string, string>,
+    filters: Record<string, string> | undefined,
     sorts: SortDescription[],
     count: number,
     isContinuation: boolean
@@ -938,7 +938,7 @@ export class JustificationsDao {
   }
 
   private makeFilteredJustificationClauses(
-    filters: JustificationFilters,
+    filters: JustificationFilters | undefined,
     sorts: SortDescription[]
   ) {
     const clauses: SqlClause[] = [];
