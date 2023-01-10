@@ -30,11 +30,11 @@ export function selectionToTarget(selection) {
 export class TextQuoteAnchor {
   constructor({ exact, prefix, suffix }, { start, end }) {
     this.type = UrlTargetAnchorTypes.TEXT_QUOTE;
-    this.exact = exact;
-    this.prefix = prefix;
-    this.suffix = suffix;
-    this.start = start;
-    this.end = end;
+    this.exactText = exact;
+    this.prefixText = prefix;
+    this.suffixText = suffix;
+    this.startOffset = start;
+    this.endOffset = end;
   }
 }
 

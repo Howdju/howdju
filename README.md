@@ -388,7 +388,15 @@ Use your web browser's Javascript debugging features as usual.
 yarn set version stable
 ```
 
-## Debugging UI tests
+## Testing
+
+### Inspecting coverage for one package
+
+```sh
+yarn run test --coverage && open coverage/html/index.html
+```
+
+### Debugging UI tests
 
 `@testing-library` provides these helpers:
 
@@ -401,7 +409,7 @@ screen.debug(container, Number.MAX_SAFE_INTEGER);
 screen.logTestingPlaygroundURL();
 ```
 
-## Snapshot tests
+### Snapshot tests
 
 To regenerate snapshots, run Jest with `--updateSnapshot` and optionally `--testNamePattern`
 ([https://jestjs.io/docs/snapshot-testing#updating-snapshots](https://jestjs.io/docs/snapshot-testing#updating-snapshots)).
@@ -434,7 +442,7 @@ To deal with this, use `git add -p` to selectively stage only the relevant chang
 editing the file manually, you may benefit from this command too: `git restore path/to/file` which
 removes unstaged changes while keeping staged changes.)
 
-## Testing Github actions
+### Testing Github actions
 
 Note: Act currently fails for tests that use our Postgres docker because Act doesn't support Github
 actions services. ([issue](https://github.com/nektos/act/issues/173)). We might be able to work

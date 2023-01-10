@@ -155,3 +155,7 @@ export function createAction<T extends string, P>(
 }
 
 export const actionTypeDelim = "/";
+
+export type PayloadType<
+  T extends ActionCreatorWithPreparedPayload<any[], any>
+> = ReturnType<T>["payload"];

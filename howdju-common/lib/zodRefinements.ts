@@ -1,15 +1,16 @@
 import { z } from "zod";
+import { isMoment } from "moment";
 import isUrl from "validator/lib/isURL";
 import isIso8601 from "validator/lib/isISO8601";
+
 import { extractDomain } from "./urls";
-import { isMoment } from "moment";
 
 type UrlOptions = { domain: RegExp };
 /** Zod refinement for whether a string is a valid URL.
  *
  * If domain is present, the URL must m
  */
-export const url =
+const urlRefinement =
   (options: UrlOptions) => (val: string, ctx: z.RefinementCtx) => {
     const { domain: domainPattern } = options;
     if (!isUrl(val)) {
@@ -30,21 +31,16 @@ export const url =
     }
   };
 
-// Must have tuple type to pass as a spread argument.
-export const iso8601Datetime: [
-  (val: string) => boolean,
-  (val: string) => z.CustomErrorParams
-] = [
+export const urlString = (options: UrlOptions) =>
+  z.string().superRefine(urlRefinement(options));
+
+export const iso8601TimestampString = z.string().refine(
   (val: string) => isIso8601(val),
   (val: string) => ({
     message: `Invalid ISO8601 datetime (e.g. "2022-11-19T21:21:33Z"): ${val}`,
-  }),
-];
+  })
+);
 
-export const momentTimestamp: [
-  (val: any) => boolean,
-  (val: any) => z.CustomErrorParams
-] = [
-  (val: any) => isMoment(val),
-  () => ({ message: "Must be a moment timestamp." }),
-];
+export const momentObject = z.object({}).refine((val: any) => isMoment(val), {
+  message: "Must be a moment timestamp.",
+});

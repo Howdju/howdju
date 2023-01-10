@@ -6,7 +6,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
-import { isEmpty, isFunction, join, pick } from "lodash";
+import { isEmpty, isFunction, isObject, join, pick } from "lodash";
 import queryString from "query-string";
 
 import {
@@ -244,7 +244,7 @@ function apiActionCreator<
       ? payloadCreatorOrPrepare(...args)
       : ({} as Prepared<P>);
     if (apiConfigCreator) {
-      if (!("payload" in prepared)) {
+      if (!isObject(prepared) || !("payload" in prepared)) {
         // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
         // otherwise make the entire return value the payload.
         prepared = { payload: prepared, meta: {} };

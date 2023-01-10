@@ -165,7 +165,6 @@ describe("CreatePropositionPage", () => {
           urls: [{ url }],
         },
       },
-      rootPolarity: "POSITIVE",
     };
 
     const response: PostJustificationOut = {

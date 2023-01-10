@@ -10,10 +10,11 @@ import {
   UsersDao,
 } from "..";
 import { AuthService } from "./AuthService";
-import { AccountSettings, UserData } from "howdju-common";
+import { AccountSettings } from "howdju-common";
 import moment from "moment";
 import { Pool } from "pg";
 import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import { CreateUserDataIn } from "@/daos/types";
 
 describe("AccountSettingsService", () => {
   const dbConfig = makeTestDbConfig();
@@ -59,7 +60,7 @@ describe("AccountSettingsService", () => {
         paidContributionsDisclosure: "",
       };
       const now = moment.utc();
-      const userData: UserData = {
+      const createUserData: CreateUserDataIn = {
         email: "the-user@the-domain.com",
         username: "the_user",
         shortName: "User",
@@ -71,7 +72,11 @@ describe("AccountSettingsService", () => {
         affirmed13YearsOrOlder: now,
         affirmedNotGdpr: now,
       };
-      const user = await usersDao.createUser(userData, "100", moment.utc());
+      const user = await usersDao.createUser(
+        createUserData,
+        "100",
+        moment.utc()
+      );
       const { authToken } = await authService.createAuthToken(
         user,
         moment.utc()
@@ -103,7 +108,7 @@ describe("AccountSettingsService", () => {
       };
 
       const now = moment.utc();
-      const userData: UserData = {
+      const createUserData: CreateUserDataIn = {
         email: "the-user@the-domain.com",
         username: "the_user",
         shortName: "User",
@@ -115,7 +120,11 @@ describe("AccountSettingsService", () => {
         affirmed13YearsOrOlder: now,
         affirmedNotGdpr: now,
       };
-      const user = await usersDao.createUser(userData, "100", moment.utc());
+      const user = await usersDao.createUser(
+        createUserData,
+        "100",
+        moment.utc()
+      );
       const { authToken } = await authService.createAuthToken(
         user,
         moment.utc()

@@ -8,6 +8,7 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { DuplicatesPlugin } from "inspectpack/plugin";
 import MomentLocalesPlugin from "moment-locales-webpack-plugin";
 import type { Response } from "webpack-dev-server";
+import WarningsToErrorsPlugin from "warnings-to-errors-webpack-plugin";
 
 import { devWebServerPort, gitShaShort } from "howdju-ops";
 import packageInfo from "../package.json";
@@ -59,6 +60,7 @@ const plugins: WebpackPluginInstance[] = [
   new webpack.DefinePlugin(definePluginConfig),
   new MiniCssExtractPlugin(),
   new MomentLocalesPlugin({ localesToKeep: ["en"] }),
+  new WarningsToErrorsPlugin(),
 ];
 // Adding webpack-bundle-analyzer seems to take over the whole build, only showing
 // the analysis. So only add it when requested.

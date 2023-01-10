@@ -144,11 +144,11 @@ describe("urlSchema", () => {
         anchors: [
           {
             type: "TEXT_QUOTE",
-            exact: "hi there",
-            prefix: "before",
-            suffix: "after",
-            start: 1,
-            end: 10,
+            exactText: "hi there",
+            prefixText: "before",
+            suffixText: "after",
+            startOffset: 1,
+            endOffset: 10,
           },
         ],
       },

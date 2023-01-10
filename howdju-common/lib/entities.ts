@@ -56,8 +56,8 @@ type UrlTargetAnchor_TextQuote = {
   exactText: string;
   prefixText: string;
   suffixText: string;
-  startOffset: string;
-  endOffset: string;
+  startOffset: number;
+  endOffset: number;
 };
 
 interface Proposition extends Entity {

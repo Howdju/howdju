@@ -1,12 +1,15 @@
 import React from "react";
-import { toErrorMessage } from "./modelErrorMessages";
 import map from "lodash/map";
+import { isArray, isObject, isString } from "lodash";
+
 import {
   IssueFormat,
   errorFormatToString,
   ModelErrorCode,
+  assert,
 } from "howdju-common";
-import { isArray, isObject, isString } from "lodash";
+
+import { toErrorMessage } from "./modelErrorMessages";
 
 // TODO support only IssueFormat and remove the others.
 type Error = string | ModelErrorCode | IssueFormat | [ModelErrorCode, ...any];
@@ -29,14 +32,14 @@ export default function ErrorMessages({ errors }: Props) {
         } else if (isObject(error)) {
           // An IssueFormat
 
-          console.assert(!isArray(error));
+          assert(!isArray(error));
 
           firstArg = errorFormatToString(error);
           restArgs = [];
         } else {
           // A string or ModelErrorCode
 
-          console.assert(isString(error));
+          assert(isString(error));
 
           firstArg = error;
           restArgs = [];

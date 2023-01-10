@@ -123,11 +123,21 @@ the ID.
 `Persisted` entities often appear on the relation fields of edit models or API
 submisison models when they represent the creation of a newly related entity.
 
-## Persistence models (`XData`)
+## Persistence models (`XData`, `XRow`)
 
-Persistence models represent how we store the data. We may add additional relation fields that help
+Persistence models represent actions and state of stored data. Actions on data are usually CRUD
+(`CreateJustificationDataIn`, etc.) State of data corresponds to a single item from a table (`JustificationRow`.)
+
+We may add additional relation fields that help
 to query or index the data. Some Entities will not need a special persistence model, and so they can
 use the entity model for persistence.
+
+- `CreateEntityDataIn` a model for creating an entity (e.g., `CreateJustificationDataIn`). The return value will usually be the same as
+  the read out model.
+- `ReadEntityDataOut` a model for reading an entity (e.g., `ReadJustificationDataOut`). There may
+  not be a corresponding `In` model, since often the parameters to a database read don't
+  neatly map to the entity. The `ReadEntityDataOut` model differs from a `EntityRow` model in that
+  the `DataOut` model will have had the fields transformed and may have materialized related entities.
 
 ## `View` models
 

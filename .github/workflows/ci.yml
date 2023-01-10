@@ -11,6 +11,7 @@ on:
 
 env:
   HOWDJU_RUNNING_IN_GITHUB_WORKFLOW:
+  YARN_VERSION: 3.3.1
 
 jobs:
   premerge-checks:
@@ -34,7 +35,7 @@ jobs:
       - name: Install Yarn
         run: |
           corepack enable
-          yarn set version stable
+          yarn set version $YARN_VERSION
       - name: Install dependencies
         run: yarn install
       - name: Lint
@@ -117,7 +118,7 @@ jobs:
       - name: Install Yarn
         run: |
           corepack enable
-          yarn set version stable
+          yarn set version $YARN_VERSION
       - name: Install dependencies
         run: yarn install
       - name: Changed-files test coverage

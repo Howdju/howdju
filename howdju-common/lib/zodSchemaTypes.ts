@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { assert } from "./general";
 import { logger } from "./logger";
 
 import {
@@ -28,11 +29,12 @@ import {
   Statement,
   Tag,
   TagVote,
+  User,
   WritQuote,
 } from "./zodSchemas";
 
-const EntityRef = Entity.required();
-type EntityRef = z.infer<typeof EntityRef>;
+const PersistedEntity = Entity.required();
+type PersistedEntity = z.infer<typeof PersistedEntity>;
 /**
  * A type lookup from the entity type to the Zod Brand string.
  *
@@ -74,24 +76,27 @@ export type EntityName<T> = T extends Proposition
   ? "SourceExcerpt"
   : T extends WritQuote
   ? "WritQuote"
+  : T extends User
+  ? "User"
   : never;
 /** A reference to an Entity by ID. */
-export type Ref<TName extends string> = EntityRef & z.BRAND<TName>;
+export type Ref<TName extends string> = PersistedEntity & z.BRAND<TName>;
 export type EntityOrRef<T extends Entity> = T | Ref<EntityName<T>>;
+export type EntityRef<T extends Entity> = Ref<EntityName<T>>;
 
 /** Makes an Entity's ID required and all related entities can be refs. */
 export type Persisted<T extends Entity> = {
   id: string;
-} & {
-  [key in keyof Omit<T, "id">]: T[key] extends Entity
-    ? Ref<EntityName<T[key]>> | Persisted<T[key]>
-    : PersistedField<T[key]>;
-};
-export type PersistedField<T> = {
+} & PersistRelated<Omit<T, "id">>;
+export type PersistRelated<T> = {
   [key in keyof T]: T[key] extends Entity
     ? Ref<EntityName<T[key]>> | Persisted<T[key]>
-    : PersistedField<T[key]>;
+    : PersistRelated<T[key]>;
 };
+
+export type PersistedOrRef<T extends Entity> =
+  | Ref<EntityName<T>>
+  | Persisted<T>;
 
 export function isRef<T extends Entity>(
   e: EntityOrRef<T>
@@ -109,7 +114,8 @@ export function isRef<T extends Entity>(
   const isBranded = z.BRAND in e;
   if (isBranded) {
     // And if it's a Ref, it must have an ID (or else we don't know what it references.)
-    console.assert(e.id);
+    assert(keys.length === 2);
+    assert(!!e.id);
   }
   // Technically we don't know that the object is branded as a T; we must rely on the typesystem,
   // and that a programmer hasn't overridden the typesystem incorrectly.

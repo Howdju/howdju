@@ -12,6 +12,7 @@
     "change-password:local": "env-cmd -f ../config/local.env ../bin/build-and-run-script.sh bin/change-user-password.js",
     "change-password:pre-prod": "env-cmd -f ../config/pre-prod-local-tunnel.env ../bin/build-and-run-script.sh bin/change-user-password.js",
     "change-password:prod": "env-cmd -f ../config/prod-local-tunnel.env ../bin/build-and-run-script.sh bin/change-user-password.js",
+    "check-build": "yarn run build",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "clean": "rm -rf dist",
     "create-user:prod": "env-cmd -f ../config/prod-local-tunnel.env ../bin/build-and-run-script.sh bin/create-user.js",

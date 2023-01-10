@@ -17,13 +17,14 @@ export interface Target {
   date: Date;
 }
 
+// TODO: dedupe with TextQuoteAnchor in the extension package, UrlTargetAnchor_TextQuote (entites), and UrlTargetAnchor (zodSchemas).
 export interface TextQuoteAnchor {
   type: UrlTargetAnchorType;
-  // exact, prefix, and suffix come from dom-anchor-text-quote
-  exact: string;
-  prefix: string;
-  suffix: string;
-  // start, end come from dom-anchor-text-position
-  start: number;
-  end: number;
+  // Texts correspond to dom-anchor-text-quote
+  exactText: string;
+  prefixText: string;
+  suffixText: string;
+  // Offsets correspond to dom-anchor-text-position
+  startOffset: number;
+  endOffset: number;
 }
