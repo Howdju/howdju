@@ -16,8 +16,12 @@ import {
   UsersDao,
 } from "..";
 import TestProvider from "@/initializers/TestProvider";
-import { CreateJustificationDataIn } from "./types";
-import { PropositionCompoundRef, StatementRef } from "howdju-common";
+import { CreateJustificationDataIn, SortDescription } from "./types";
+import {
+  JustificationRef,
+  PropositionCompoundRef,
+  StatementRef,
+} from "howdju-common";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
@@ -152,6 +156,114 @@ describe("JustificationsDao", () => {
 
       // Act
       const justificationData = await dao.readJustificationForId(id);
+
+      // Assert
+      expect(justificationData.id).toEqual(expect.any(String));
+      const expectedJustificationData = assign({}, createJustificationData, {
+        counterJustifications: [],
+        creator: { id: user.id },
+        created: expect.toBeSameMoment(now),
+        rootPolarity: createJustificationData.polarity,
+        rootTarget: statementData,
+      });
+      expect(justificationData).toMatchObject(expectedJustificationData);
+    });
+  });
+
+  describe("readJustifications", () => {
+    test("Can read a justifications", async () => {
+      // Arrange
+      const now = moment();
+      const creatorUserId = null;
+      const userData = {
+        email: "user@domain.com",
+        username: "the-username",
+        isActive: true,
+      };
+
+      const user = await usersDao.createUser(userData, creatorUserId, now);
+      const { authToken } = await authService.createAuthToken(user, now);
+
+      const proposition = await propositionsDao.createProposition(
+        user.id,
+        {
+          text: "A fine wee proposition.",
+        },
+        now
+      );
+      const speaker = await persorgsDao.createPersorg(
+        {
+          isOrganization: false,
+          name: "Williford von Rutherford",
+        },
+        user.id,
+        now
+      );
+      const createStatementData = {
+        speaker,
+        sentenceType: "PROPOSITION",
+        sentence: proposition,
+      };
+      const { statement: statementData } = await statementsService.readOrCreate(
+        createStatementData,
+        authToken
+      );
+      const { id: statementId } = statementData;
+
+      const rootTargetType = "STATEMENT";
+      const rootTarget = StatementRef.parse({ id: statementId });
+
+      const createJustificationData: CreateJustificationDataIn = {
+        rootTargetType,
+        rootTarget,
+        polarity: "NEGATIVE",
+        target: {
+          type: "STATEMENT",
+          entity: StatementRef.parse({ id: statementId }),
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: PropositionCompoundRef.parse({ id: "2" }),
+        },
+      };
+      const { id: justificationId } = await dao.createJustification(
+        createJustificationData,
+        user.id,
+        now
+      );
+
+      const createCounterJustificationData: CreateJustificationDataIn = {
+        rootTargetType,
+        rootTarget,
+        polarity: "NEGATIVE",
+        target: {
+          type: "JUSTIFICATION",
+          entity: JustificationRef.parse({ id: justificationId }),
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: PropositionCompoundRef.parse({ id: "2" }),
+        },
+      };
+      await dao.createJustification(
+        createCounterJustificationData,
+        user.id,
+        now
+      );
+
+      // Act
+      const filters = {};
+      const sorts: SortDescription[] = [];
+      const count = 10;
+      const isContinuation = false;
+      const includeUrls = true;
+      const [justificationData] = await dao.readJustifications(
+        filters,
+        sorts,
+        count,
+        isContinuation,
+        includeUrls
+      );
 
       // Assert
       expect(justificationData.id).toEqual(expect.any(String));

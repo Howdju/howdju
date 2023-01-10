@@ -123,7 +123,7 @@ const toProposition = makeMapper(function toPropositionMapper(row) {
 
   if (row.creator_user_id) {
     proposition.creator = toUser({
-      user_id: row.creator_user_id,
+      user_id: toIdString(row.creator_user_id),
       long_name: row.creator_user_long_name,
     });
   }
@@ -199,16 +199,16 @@ const toJustification = makeMapper(function toJustificationMapper(
     vote:
       row.justification_vote_id &&
       toJustificationVote({
-        justification_vote_id: row.justification_vote_id,
+        justification_vote_id: toIdString(row.justification_vote_id),
         polarity: row.vote_polarity,
-        justification_id: row.vote_justification_id,
+        justification_id: toIdString(row.vote_justification_id),
       }),
     counterJustifications: [],
   };
 
   if (row.creator_user_id) {
     justification.creator = toUser({
-      user_id: row.creator_user_id,
+      user_id: toIdString(row.creator_user_id),
       long_name: row.creator_user_long_name,
     });
   }
@@ -222,9 +222,9 @@ const toJustification = makeMapper(function toJustificationMapper(
         }
         if (!justification.basis.entity && row.basis_writ_quote_id) {
           justification.basis.entity = toWritQuote({
-            writ_quote_id: row.basis_writ_quote_id,
+            writ_quote_id: toIdString(row.basis_writ_quote_id),
             quote_text: row.basis_writ_quote_quote_text,
-            writ_id: row.basis_writ_quote_writ_id,
+            writ_id: toIdString(row.basis_writ_quote_writ_id),
             writ_title: row.basis_writ_quote_writ_title,
           });
         }
@@ -240,9 +240,13 @@ const toJustification = makeMapper(function toJustificationMapper(
         }
         if (!justification.basis.entity && row.basis_proposition_compound_id) {
           justification.basis.entity = toPropositionCompound({
-            proposition_compound_id: row.basis_proposition_compound_id,
+            proposition_compound_id: toIdString(
+              row.basis_proposition_compound_id
+            ),
             created: row.basis_proposition_compound_created,
-            creator_user_id: row.basis_proposition_compound_creator_user_id,
+            creator_user_id: toIdString(
+              row.basis_proposition_compound_creator_user_id
+            ),
           });
         }
       }
@@ -278,7 +282,7 @@ const toJustification = makeMapper(function toJustificationMapper(
   }
 
   if (!justification.basis.entity) {
-    justification.basis.entity = { id: row.basis_id };
+    justification.basis.entity = { id: toIdString(row.basis_id) };
   }
 
   if (counterJustificationsByJustificationId) {
@@ -307,7 +311,7 @@ const toWritQuote = makeMapper(function toWritQuoteMapper(row) {
     created: row.created,
     creatorUserId: row.creator_user_id,
     writ: toWrit({
-      writ_id: row.writ_id,
+      writ_id: toIdString(row.writ_id),
       title: row.writ_title,
       created: row.writ_created,
       creatorUserId: row.creator_user_id,
@@ -355,9 +359,9 @@ const toPropositionCompound = (row, atoms) => {
   }
 
   const propositionCompound = {
-    id: row.proposition_compound_id,
+    id: toIdString(row.proposition_compound_id),
     created: row.created,
-    creator_user_id: row.creator_user_id,
+    creator_user_id: toIdString(row.creator_user_id),
   };
 
   if (atoms) {
@@ -377,9 +381,9 @@ const toPropositionCompoundAtom = (row) =>
     compoundId: row.proposition_compound_id,
     type: PropositionCompoundAtomTypes.PROPOSITION,
     entity: toProposition({
-      proposition_id: row.proposition_id,
+      proposition_id: toIdString(row.proposition_id),
       text: row.proposition_text,
-      creator_user_id: row.proposition_creator_user_id,
+      creator_user_id: toIdString(row.proposition_creator_user_id),
       created: row.proposition_created,
     }),
     orderPosition: row.order_position,
@@ -387,8 +391,8 @@ const toPropositionCompoundAtom = (row) =>
 
 const toPerspective = (row) =>
   row && {
-    id: row.perspective_id,
-    proposition: { id: row.proposition_id },
+    id: toIdString(row.perspective_id),
+    proposition: { id: toIdString(row.proposition_id) },
     creatorUserId: row.creator_user_id,
   };
 
@@ -400,7 +404,7 @@ const toUserHash = (row) =>
 
 const toJobHistory = (row) =>
   row && {
-    id: row.job_history_id,
+    id: toIdString(row.job_history_id),
     type: row.job_type,
     startedAt: row.started_at,
     completedAt: row.completed_at,
@@ -425,7 +429,7 @@ const toJustificationBasisCompound = (row, atoms) => {
   }
 
   const compound = {
-    id: row.justification_basis_compound_id,
+    id: toIdString(row.justification_basis_compound_id),
     atoms: [],
     creatorUserId: row.creator_user_id,
     created: row.created,
@@ -449,11 +453,11 @@ const toJustificationBasisCompoundAtom = (row) => {
   }
 
   const atom = {
-    id: row.justification_basis_compound_atom_id,
+    id: toIdString(row.justification_basis_compound_atom_id),
     compoundId: row.justification_basis_compound_id,
     type: row.entity_type,
     entity: {
-      id: row.entity_id,
+      id: toIdString(row.entity_id),
     },
     orderPosition: row.order_position,
   };
@@ -462,17 +466,19 @@ const toJustificationBasisCompoundAtom = (row) => {
     case JustificationBasisCompoundAtomTypes.PROPOSITION:
       if (row.proposition_id) {
         atom.entity = toProposition({
-          proposition_id: row.proposition_id,
+          proposition_id: toIdString(row.proposition_id),
           text: row.proposition_text,
           created: row.proposition_created,
-          creator_user_id: row.proposition_creator_user_id,
+          creator_user_id: toIdString(row.proposition_creator_user_id),
         });
       }
       break;
     case JustificationBasisCompoundAtomTypes.SOURCE_EXCERPT_PARAPHRASE:
       if (row.source_excerpt_paraphrase_id) {
         atom.entity = toSourceExcerptParaphrase({
-          source_excerpt_paraphrase_id: row.source_excerpt_paraphrase_id,
+          source_excerpt_paraphrase_id: toIdString(
+            row.source_excerpt_paraphrase_id
+          ),
           paraphrasing_proposition_id:
             row.source_excerpt_paraphrasing_proposition_id,
           paraphrasing_proposition_text:
@@ -482,12 +488,12 @@ const toJustificationBasisCompoundAtom = (row) => {
           paraphrasing_proposition_creator_user_id:
             row.source_excerpt_paraphrasing_proposition_creator_user_id,
           source_excerpt_type: row.source_excerpt_type,
-          writ_quote_id: row.source_excerpt_writ_quote_id,
+          writ_quote_id: toIdString(row.source_excerpt_writ_quote_id),
           writ_quote_quote_text: row.source_excerpt_writ_quote_quote_text,
           writ_quote_created: row.source_excerpt_writ_quote_created,
           writ_quote_creator_user_id:
             row.source_excerpt_writ_quote_creator_user_id,
-          writ_quote_writ_id: row.source_excerpt_writ_quote_writ_id,
+          writ_quote_writ_id: toIdString(row.source_excerpt_writ_quote_writ_id),
           writ_quote_writ_title: row.source_excerpt_writ_quote_writ_title,
           writ_quote_writ_created: row.source_excerpt_writ_quote_writ_created,
           writ_quote_writ_creator_user_id:
@@ -505,23 +511,23 @@ const toSourceExcerptParaphrase = (row) => {
     return row;
   }
   const sourceExcerptParaphrase = {
-    id: row.source_excerpt_paraphrase_id,
+    id: toIdString(row.source_excerpt_paraphrase_id),
     paraphrasingProposition: {
-      id: row.paraphrasing_proposition_id,
+      id: toIdString(row.paraphrasing_proposition_id),
     },
     sourceExcerpt: {
       type: row.source_excerpt_type,
       entity: {
-        id: row.source_excerpt_id,
+        id: toIdString(row.source_excerpt_id),
       },
     },
   };
 
   const paraphrasingProposition = toProposition({
-    proposition_id: row.paraphrasing_proposition_id,
+    proposition_id: toIdString(row.paraphrasing_proposition_id),
     text: row.paraphrasing_proposition_text,
     created: row.paraphrasing_proposition_created,
-    creator_user_id: row.paraphrasing_proposition_creator_user_id,
+    creator_user_id: toIdString(row.paraphrasing_proposition_creator_user_id),
   });
   if (paraphrasingProposition.id) {
     sourceExcerptParaphrase.paraphrasingProposition = paraphrasingProposition;
@@ -543,14 +549,14 @@ const toSourceExcerptEntity = (row) => {
   switch (row.source_excerpt_type) {
     case SourceExcerptTypes.WRIT_QUOTE:
       return toWritQuote({
-        writ_quote_id: row.writ_quote_id,
+        writ_quote_id: toIdString(row.writ_quote_id),
         quote_text: row.writ_quote_quote_text,
         created: row.writ_quote_created,
-        creator_user_id: row.writ_quote_creator_user_id,
-        writ_id: row.writ_quote_writ_id,
+        creator_user_id: toIdString(row.writ_quote_creator_user_id),
+        writ_id: toIdString(row.writ_quote_writ_id),
         writ_title: row.writ_quote_writ_title,
         writ_created: row.writ_quote_writ_created,
-        writ_creator_user_id: row.writ_quote_writ_creator_user_id,
+        writ_creator_user_id: toIdString(row.writ_quote_writ_creator_user_id),
       });
     default:
       throw newExhaustedEnumError(row);
@@ -614,7 +620,7 @@ const toPersorg = makeMapper(function toPersorgMapper(row) {
 
   if (row.creator_user_id) {
     persorg.creator = toUser({
-      user_id: row.creator_user_id,
+      user_id: toIdString(row.creator_user_id),
     });
   }
 
@@ -625,7 +631,7 @@ const toRegistrationRequest = makeMapper(function toRegistrationRequestMapper(
   row
 ) {
   return {
-    id: row.registration_request_id,
+    id: toIdString(row.registration_request_id),
     email: row.email,
     registrationCode: row.registration_code,
     isConsumed: row.is_consumed,
@@ -639,7 +645,7 @@ const toPasswordResetRequest = makeMapper(function toPasswordResetRequestMapper(
   row
 ) {
   return {
-    id: row.password_reset_request_id,
+    id: toIdString(row.password_reset_request_id),
     userId: row.user_id,
     email: row.email,
     passwordResetCode: row.password_reset_code,
