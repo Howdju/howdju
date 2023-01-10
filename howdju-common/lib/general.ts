@@ -443,6 +443,11 @@ export const randomBase36Number = (length: number) => {
 
 type InferKey<T> = T extends Partial<Record<infer K, any>> ? K : never;
 type InferValue<T> = T extends Partial<Record<any, infer V>> ? V : never;
-export const toEntries = <T extends Partial<Record<string, any>>>(obj: T) => {
+export const toEntries = <T extends Partial<Record<string, any>>>(
+  obj: T | undefined
+) => {
+  if (!obj) {
+    return [];
+  }
   return Object.entries(obj) as [InferKey<T>, InferValue<T>][];
 };
