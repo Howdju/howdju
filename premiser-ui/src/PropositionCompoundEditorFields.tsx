@@ -55,7 +55,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
         editorType,
         editorId,
         index,
-        combineNames(name, "basis", "propositionCompound", "atoms"),
+        combineNames(name, "atoms"),
         makePropositionCompoundAtom
       )
     );
@@ -66,11 +66,12 @@ export default function PropositionCompoundEditorFields(props: Props) {
   ) =>
     editorDispatch((editorType: EditorType, editorId: string) => {
       const actions: AnyAction[] = [
-        editors.removeListItem(editorType, editorId, index, [
-          "basis",
-          "propositionCompound",
-          "atoms",
-        ]),
+        editors.removeListItem(
+          editorType,
+          editorId,
+          index,
+          combineNames(name, "atoms")
+        ),
       ];
       // Don't let the atoms be empty
       if (atoms.length <= 1) {
@@ -79,7 +80,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
             editorType,
             editorId,
             index,
-            combineNames(name, "basis", "propositionCompound", "atoms"),
+            combineNames(name, "atoms"),
             makePropositionCompoundAtom
           )
         );
