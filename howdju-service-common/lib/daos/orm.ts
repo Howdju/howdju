@@ -286,12 +286,11 @@ export const toStatement = makeMapper(toStatementMapper);
 function mapJustificationRootTargetRelation(row: ToJustificationMapperRow) {
   switch (row.root_target_type) {
     case "PROPOSITION":
-      if (!row.root_target_proposition_id) {
-        throw newProgrammingError(
-          "root_target_proposition_id must be present when mapping a justification's proposition root target."
-        );
+      if (row.root_target_proposition_id) {
+        return mapRelation(toPropositionMapper, "root_target_", row);
+      } else {
+        return PropositionRef.parse({ id: toIdString(row.root_target_id) });
       }
-      return mapRelation(toPropositionMapper, "root_target_", row);
     case "STATEMENT":
       return StatementRef.parse({
         id: toIdString(row.root_target_id),

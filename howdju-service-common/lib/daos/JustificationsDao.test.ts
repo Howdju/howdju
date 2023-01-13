@@ -19,8 +19,10 @@ import TestProvider from "@/initializers/TestProvider";
 import { CreateJustificationDataIn, SortDescription } from "./types";
 import {
   JustificationRef,
+  negateRootPolarity,
   PropositionCompoundRef,
   StatementRef,
+  WritQuoteRef,
 } from "howdju-common";
 
 describe("JustificationsDao", () => {
@@ -256,7 +258,7 @@ describe("JustificationsDao", () => {
       const count = 10;
       const isContinuation = false;
       const includeUrls = true;
-      const [justificationData] = await dao.readJustifications(
+      const justifications = await dao.readJustifications(
         filters,
         sorts,
         count,
@@ -265,15 +267,185 @@ describe("JustificationsDao", () => {
       );
 
       // Assert
-      expect(justificationData.id).toEqual(expect.any(String));
-      const expectedJustificationData = assign({}, createJustificationData, {
+      const commonExpectations = {
+        id: expect.any(String),
         counterJustifications: [],
         creator: { id: user.id },
         created: expect.toBeSameMoment(now),
-        rootPolarity: createJustificationData.polarity,
         rootTarget: statementData,
+      };
+      const expectedJustificationData = assign({}, createJustificationData, {
+        ...commonExpectations,
+        rootPolarity: createJustificationData.polarity,
       });
-      expect(justificationData).toMatchObject(expectedJustificationData);
+      const expectedCounterJustificationData = assign(
+        {},
+        createCounterJustificationData,
+        {
+          ...commonExpectations,
+          rootPolarity: negateRootPolarity(createJustificationData.polarity),
+        }
+      );
+      expect(justifications).toMatchObject([
+        expectedJustificationData,
+        expectedCounterJustificationData,
+      ]);
+    });
+  });
+
+  describe("readJustificationsForRootTarget", () => {
+    test("read justifications for proposition root target", async () => {
+      // Create a countered writquote justification and a proposition compound disjustification
+      // Arrange
+      const now = moment();
+      const creatorUserId = null;
+      const userData = {
+        email: "user@domain.com",
+        username: "the-username",
+        isActive: true,
+      };
+
+      const user = await usersDao.createUser(userData, creatorUserId, now);
+      const { authToken } = await authService.createAuthToken(user, now);
+
+      const proposition = await propositionsDao.createProposition(
+        user.id,
+        {
+          text: "A fine wee proposition.",
+        },
+        now
+      );
+      const speaker = await persorgsDao.createPersorg(
+        {
+          isOrganization: false,
+          name: "Williford von Rutherford",
+        },
+        user.id,
+        now
+      );
+      const createStatementData = {
+        speaker,
+        sentenceType: "PROPOSITION",
+        sentence: proposition,
+      };
+      const { statement: statementData } = await statementsService.readOrCreate(
+        createStatementData,
+        authToken
+      );
+      const { id: statementId } = statementData;
+
+      const rootTargetType = "STATEMENT";
+      const rootTarget = StatementRef.parse({ id: statementId });
+
+      const createProjustificationData: CreateJustificationDataIn = {
+        rootTargetType,
+        rootTarget,
+        polarity: "POSITIVE",
+        target: {
+          type: rootTargetType,
+          entity: rootTarget,
+        },
+        basis: {
+          type: "WRIT_QUOTE",
+          entity: WritQuoteRef.parse({ id: "2" }),
+        },
+      };
+      const { id: projustificationId } = await dao.createJustification(
+        createProjustificationData,
+        user.id,
+        now
+      );
+      const createCounterJustificationData: CreateJustificationDataIn = {
+        rootTargetType,
+        rootTarget,
+        polarity: "NEGATIVE",
+        target: {
+          type: "JUSTIFICATION",
+          entity: JustificationRef.parse({ id: projustificationId }),
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: PropositionCompoundRef.parse({ id: "2" }),
+        },
+      };
+      const { id: counterJustificationId } = await dao.createJustification(
+        createCounterJustificationData,
+        user.id,
+        now
+      );
+
+      const createDisjustificationData: CreateJustificationDataIn = {
+        rootTargetType,
+        rootTarget,
+        polarity: "NEGATIVE",
+        target: {
+          type: "STATEMENT",
+          entity: rootTarget,
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: PropositionCompoundRef.parse({ id: "2" }),
+        },
+      };
+      const { id: disjustificationId } = await dao.createJustification(
+        createDisjustificationData,
+        user.id,
+        now
+      );
+
+      // Act
+      const filters = {};
+      const sorts: SortDescription[] = [];
+      const count = 10;
+      const isContinuation = false;
+      const includeUrls = true;
+      const justifications = await dao.readJustifications(
+        filters,
+        sorts,
+        count,
+        isContinuation,
+        includeUrls
+      );
+
+      // Assert
+      const commonExpectations = {
+        counterJustifications: [],
+        creator: { id: user.id },
+        created: expect.toBeSameMoment(now),
+        rootTarget: statementData,
+      };
+      const expectedProjustificationData = assign(
+        {},
+        createProjustificationData,
+        {
+          ...commonExpectations,
+          id: projustificationId,
+          rootPolarity: "POSITIVE",
+        }
+      );
+      const expectedCounterJustificationData = assign(
+        {},
+        createCounterJustificationData,
+        {
+          ...commonExpectations,
+          id: counterJustificationId,
+          rootPolarity: "NEGATIVE",
+        }
+      );
+      const expectedDisjustificationData = assign(
+        {},
+        createDisjustificationData,
+        {
+          ...commonExpectations,
+          id: disjustificationId,
+          rootPolarity: "NEGATIVE",
+        }
+      );
+      expect(justifications).toMatchObject([
+        expectedProjustificationData,
+        expectedCounterJustificationData,
+        expectedDisjustificationData,
+      ]);
     });
   });
 });

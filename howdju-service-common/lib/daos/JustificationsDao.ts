@@ -514,7 +514,7 @@ export class JustificationsDao {
     return justifications;
   }
 
-  async readJustificationsWithBasesAndVotesByRootTarget(
+  async readJustificationsForRootTarget(
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
     { userId }: { userId: EntityId }
@@ -544,6 +544,7 @@ export class JustificationsDao {
               j.deleted is null
           and j.root_target_type = $1
           and j.root_target_id = $2
+      order by j.justification_id
       `;
     const [
       { rows: justification_rows },
@@ -552,7 +553,7 @@ export class JustificationsDao {
       justificationBasisCompoundsById,
     ] = await Promise.all([
       this.database.query<ToJustificationMapperRow>(
-        "readJustificationsWithBasesAndVotesByRootTarget",
+        "readJustificationsForRootTarget",
         sql,
         [
           rootTargetType,
@@ -580,16 +581,18 @@ export class JustificationsDao {
     ]);
     const { rootJustifications, counterJustificationsByJustificationId } =
       groupRootJustifications(rootTargetType, rootTargetId, justification_rows);
-    const justifications = map(rootJustifications, (j) =>
-      toJustification(
-        j,
-        counterJustificationsByJustificationId,
-        propositionCompoundsById,
-        writQuotesById,
-        justificationBasisCompoundsById
+    const justifications = filterDefined(
+      map(rootJustifications, (j) =>
+        toJustification(
+          j,
+          counterJustificationsByJustificationId,
+          propositionCompoundsById,
+          writQuotesById,
+          justificationBasisCompoundsById
+        )
       )
     );
-    await this.addStatements(filterDefined(justifications));
+    await this.addStatements(justifications);
     return justifications;
   }
 
