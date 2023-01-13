@@ -50,17 +50,17 @@ export const JustificationBasisSourceTypes = {
   PROPOSITION_COMPOUND: "PROPOSITION_COMPOUND",
   /** A quote
    *
-   * @deprecated
+   * @deprecated TODO(201)
    */
   WRIT_QUOTE: "WRIT_QUOTE",
   /**
    * One or more {@see JustificationBasisCompoundAtomTypes}
    *
-   * @deprecated
+   * @deprecated TODO(28)
    */
   JUSTIFICATION_BASIS_COMPOUND: "JUSTIFICATION_BASIS_COMPOUND",
   PROPOSITION: "PROPOSITION",
-  /** @deprecated */
+  /** @deprecated TODO(215) */
   SOURCE_EXCERPT_PARAPHRASE: "SOURCE_EXCERPT_PARAPHRASE",
 } as const;
 export type JustificationBasisSourceType =
@@ -71,7 +71,7 @@ export const JustificationBasisCompoundAtomTypes = {
   PROPOSITION: "PROPOSITION",
   SOURCE_EXCERPT_PARAPHRASE: "SOURCE_EXCERPT_PARAPHRASE",
 } as const;
-/** @deprecated */
+/** @deprecated TODO(28) */
 export type JustificationBasisCompoundAtomType =
   typeof JustificationBasisCompoundAtomTypes[keyof typeof JustificationBasisCompoundAtomTypes];
 

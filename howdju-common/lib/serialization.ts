@@ -1,14 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
-import map from "lodash/map";
 
 import { CounteredJustification, Perspective } from "./entities";
-import {
-  Entity,
-  PropositionCompound,
-  PropositionCompoundAtom,
-  Proposition,
-  SourceExcerpt,
-} from "./zodSchemas";
+import { Entity, Proposition, SourceExcerpt } from "./zodSchemas";
 
 import { newExhaustedEnumError } from "./commonErrors";
 
@@ -18,30 +11,6 @@ type Decircularized<T> = {
   [key in keyof T]: T[key] extends Entity
     ? Decircularized<T[key]> | Entity
     : Decircularized<T[key]>;
-};
-
-export const decircularizePropositionCompoundAtom = (
-  propositionCompoundAtom: PropositionCompoundAtom
-) => {
-  const decircularized: Decircularized<PropositionCompoundAtom> = cloneDeep(
-    propositionCompoundAtom
-  );
-  decircularized.entity = decircularizeProposition(
-    propositionCompoundAtom.entity
-  );
-  return decircularized;
-};
-
-export const decircularizePropositionCompound = (
-  propositionCompound: PropositionCompound
-) => {
-  const decircularized: Decircularized<PropositionCompound> =
-    cloneDeep(propositionCompound);
-  decircularized.atoms = map(
-    propositionCompound.atoms,
-    decircularizePropositionCompoundAtom
-  );
-  return decircularized;
 };
 
 export const decircularizeJustification = (
@@ -63,15 +32,9 @@ export const decircularizeJustification = (
 
   switch (justification.basis.type) {
     case "PROPOSITION_COMPOUND":
-      {
-        decircularized.basis.entity = decircularizePropositionCompound(
-          justification.basis.entity
-        );
-      }
-      break;
     case "SOURCE_EXCERPT":
     case "WRIT_QUOTE":
-      // writ quotes and source excerpts can't have circular dependencies.
+      // Nothing to decircularize
       break;
     default:
       return newExhaustedEnumError(justification.basis);
@@ -93,9 +56,5 @@ export const decircularizeProposition = (
 };
 
 export const decircularizePerspective = (perspective: Perspective) => {
-  const decircularized: Decircularized<Perspective> = cloneDeep(perspective);
-  decircularized.proposition = decircularizeProposition(
-    perspective.proposition
-  );
-  return decircularized;
+  return perspective;
 };

@@ -7,13 +7,11 @@
  * may benefit from defining them using Zod schemas.
  */
 
+import { omit } from "lodash";
+import { Moment } from "moment";
 import { Simplify } from "type-fest";
 import { z } from "zod";
-import {
-  momentObject,
-  iso8601TimestampString,
-  urlString,
-} from "./zodRefinements";
+import { momentObject, urlString } from "./zodRefinements";
 import { EntityName, EntityOrRef } from "./zodSchemaTypes";
 
 /** A perstisent conceptual entity */
@@ -35,8 +33,16 @@ export const Proposition = Entity.extend({
    * Text should be a concise, neutral point of view, unambiguous, declarative independent clause.
    */
   text: z.string().min(1),
+  created: momentObject,
 }).strict();
 export type Proposition = z.infer<typeof Proposition>;
+
+export const CreatePropositionInput = Proposition.omit({
+  created: true,
+});
+export type CreatePropositionInput = z.infer<typeof CreatePropositionInput>;
+export const CreateProposition = CreatePropositionInput;
+export type CreateProposition = CreatePropositionInput;
 
 /** Something capable of making speech: a person or organization. */
 export const Persorg = Entity.extend({
@@ -72,6 +78,7 @@ export type CreatePersorgInput = z.infer<typeof CreatePersorgInput>;
 /** Represents an utterance of a proposition by a persorg. */
 export type Statement = Entity & {
   speaker: Persorg;
+  created: Moment;
 } & (
     | {
         sentenceType: "PROPOSITION";
@@ -83,7 +90,69 @@ export type Statement = Entity & {
       }
   );
 const sentenceTypes = z.enum(["PROPOSITION", "STATEMENT"]);
+const baseStatement = {
+  speaker: Persorg,
+  created: momentObject,
+};
 export const Statement: z.ZodType<Statement> = z.lazy(() =>
+  z.discriminatedUnion("sentenceType", [
+    Entity.extend({
+      sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
+      sentence: Proposition,
+      ...baseStatement,
+    }).strict(),
+    Entity.extend({
+      sentenceType: z.literal(sentenceTypes.Enum.STATEMENT),
+      sentence: Statement,
+      ...baseStatement,
+    }).strict(),
+  ])
+);
+export type Sentence = Statement["sentence"];
+export type SentenceType = Statement["sentenceType"];
+export const SentenceTypes = sentenceTypes.Enum;
+
+export type CreateStatementInput = Entity & {
+  speaker: Persorg;
+} & (
+    | {
+        sentenceType: "PROPOSITION";
+        sentence: CreatePropositionInput;
+      }
+    | {
+        sentenceType: "STATEMENT";
+        sentence: CreateStatementInput;
+      }
+  );
+export const CreateStatementInput: z.ZodType<CreateStatementInput> = z.lazy(
+  () =>
+    z.discriminatedUnion("sentenceType", [
+      Entity.extend({
+        sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
+        sentence: CreatePropositionInput,
+        speaker: Persorg,
+      }).strict(),
+      Entity.extend({
+        sentenceType: z.literal(sentenceTypes.Enum.STATEMENT),
+        sentence: CreateStatementInput,
+        speaker: Persorg,
+      }).strict(),
+    ])
+);
+
+export type CreateStatement = Entity & {
+  speaker: Persorg;
+} & (
+    | {
+        sentenceType: "PROPOSITION";
+        sentence: CreateProposition;
+      }
+    | {
+        sentenceType: "STATEMENT";
+        sentence: CreateStatement;
+      }
+  );
+export const CreateStatement: z.ZodType<CreateStatement> = z.lazy(() =>
   z.discriminatedUnion("sentenceType", [
     Entity.extend({
       sentenceType: z.literal(sentenceTypes.Enum.PROPOSITION),
@@ -97,21 +166,22 @@ export const Statement: z.ZodType<Statement> = z.lazy(() =>
     }).strict(),
   ])
 );
-export type Sentence = Statement["sentence"];
-export type SentenceType = Statement["sentenceType"];
-export const SentenceTypes = sentenceTypes.Enum;
-
-export const CreateStatementInput = Statement;
-export type CreateStatementInput = Statement;
-export const CreateStatement = Statement;
-export type CreateStatement = Statement;
 // Statement has no Edit models; users can edit the proposition/statement or the speaker.
 
 /** A textual media. */
 export const Writ = Entity.extend({
   title: z.string().min(1).max(512),
+  created: momentObject,
 });
 export type Writ = z.infer<typeof Writ>;
+
+export const CreateWrit = Writ.omit({
+  created: true,
+});
+export type CreateWrit = z.infer<typeof CreateWrit>;
+
+export const CreateWritInput = CreateWrit;
+export type CreateWritInput = z.infer<typeof CreateWritInput>;
 
 const urlTargetAnchorTypes = z.enum(["TEXT_QUOTE"]);
 /**
@@ -141,11 +211,17 @@ export const Url = Entity.extend({
 });
 export type Url = z.infer<typeof Url>;
 
+export const CreateUrl = Url;
+export type CreateUrl = z.infer<typeof CreateUrl>;
+export const CreateUrlInput = CreateUrl;
+export type CreateUrlInput = z.infer<typeof CreateUrlInput>;
+
 /** A SourceExcerpt of a quote from a written Source. */
 export const WritQuote = Entity.extend({
   quoteText: z.string(),
   writ: Writ,
   urls: z.array(Url),
+  created: momentObject,
 });
 export type WritQuote = z.infer<typeof WritQuote>;
 
@@ -187,21 +263,49 @@ export type SourceExcerpt = z.infer<typeof SourceExcerpt>;
 export type SourceExcerptType = SourceExcerpt["type"];
 export const SourceExcerptTypes = sourceExcerptTypes.Enum;
 
+export const PropositionCompoundAtom = z.object({
+  compoundId: z.string(),
+  entity: Proposition,
+});
+export type PropositionCompoundAtom = z.infer<typeof PropositionCompoundAtom>;
+
 /* One or more propositions intended to be considered conjunctively */
 export const PropositionCompound = Entity.extend({
-  atoms: z
-    .array(
-      Entity.extend({
-        entity: Proposition,
-      })
-    )
-    .min(1),
+  atoms: z.array(PropositionCompoundAtom).min(1),
 });
 export type PropositionCompound = z.infer<typeof PropositionCompound>;
-export type PropositionCompoundAtom = PropositionCompound["atoms"][number];
 
-export type CreatePropositionCompoundAtom = PropositionCompoundAtom;
-export type CreatePropositionCompoundAtomInput = PropositionCompoundAtom;
+export const CreatePropositionCompoundAtomInput = z.object({
+  entity: CreatePropositionInput,
+});
+export type CreatePropositionCompoundAtomInput = z.infer<
+  typeof CreatePropositionCompoundAtomInput
+>;
+
+export const CreatePropositionCompoundInput = Entity.extend({
+  atoms: z.array(CreatePropositionCompoundAtomInput).min(1),
+});
+export type CreatePropositionCompoundInput = z.infer<
+  typeof CreatePropositionCompoundInput
+>;
+
+export const CreatePropositionCompoundAtom = z.object({
+  entity: CreateProposition,
+});
+export type CreatePropositionCompoundAtom = z.infer<
+  typeof CreatePropositionCompoundAtom
+>;
+
+export const CreatePropositionCompound = Entity.extend({
+  atoms: z.array(CreatePropositionCompoundAtom).min(1),
+});
+export type CreatePropositionCompound = z.infer<
+  typeof CreatePropositionCompound
+>;
+export const EditPropositionCompoundInput = PropositionCompound;
+export type EditPropositionCompoundInput = PropositionCompound;
+export const EditPropositionCompound = PropositionCompound;
+export type EditPropositionCompound = PropositionCompound;
 
 export const JustificationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
 export type JustificationPolarity = z.infer<typeof JustificationPolarity>;
@@ -276,6 +380,7 @@ export type Justification = Entity & {
         entity: Entity;
       };
   rootPolarity: JustificationRootPolarity;
+  created: Moment;
 } & (
     | {
         rootTargetType: "PROPOSITION";
@@ -309,6 +414,7 @@ const justificationBaseShape = {
     }),
   ]),
   rootPolarity: JustificationRootPolarity,
+  created: momentObject,
 };
 export const JustificationRootTargetType = z.enum(["PROPOSITION", "STATEMENT"]);
 export const JustificationRootTargetTypes = JustificationRootTargetType.Enum;
@@ -378,6 +484,10 @@ export const JustificationRef =
   Entity.required().brand<EntityName<Justification>>();
 export type JustificationRef = z.infer<typeof JustificationRef>;
 
+export const JustificationVoteRef =
+  Entity.required().brand<EntityName<JustificationVote>>();
+export type JustificationVoteRef = z.infer<typeof JustificationVoteRef>;
+
 export const PropositionCompoundRef =
   Entity.required().brand<"PropositionCompound">();
 export type PropositionCompoundRef = z.infer<typeof PropositionCompoundRef>;
@@ -389,11 +499,20 @@ export type SourceExcerptRef = z.infer<typeof SourceExcerptRef>;
 export const WritQuoteRef = Entity.required().brand<EntityName<WritQuote>>();
 export type WritQuoteRef = z.infer<typeof WritQuoteRef>;
 
+export const WritRef = Entity.required().brand<EntityName<Writ>>();
+export type WritRef = z.infer<typeof WritRef>;
+
+export const PersorgRef = Entity.required().brand<EntityName<Persorg>>();
+export type PersorgRef = z.infer<typeof Persorg>;
+
 export const TagRef = Entity.required().brand<EntityName<Tag>>();
 export type TagRef = z.infer<typeof TagRef>;
 
 export const TagVoteRef = Entity.required().brand<EntityName<TagVote>>();
 export type TagVoteRef = z.infer<typeof TagVoteRef>;
+
+export const UrlRef = Entity.required().brand<EntityName<Url>>();
+export type UrlRef = z.infer<typeof UrlRef>;
 
 export const UserRef = Entity.required().brand<EntityName<User>>();
 export type UserRef = z.infer<typeof UserRef>;
@@ -401,55 +520,45 @@ export type UserRef = z.infer<typeof UserRef>;
 /*
  * Entities lacking alternatives don't require special Create/Edit models
  */
-export const CreatePropositionInput = Proposition;
-export type CreatePropositionInput = Proposition;
-export const CreateProposition = Proposition;
-export type CreateProposition = Proposition;
 
 export const EditPropositionInput = Proposition;
-export type EditPropositionInput = Proposition;
+export type EditPropositionInput = z.infer<typeof EditPropositionInput>;
 export const EditProposition = Proposition;
-export type EditProposition = Proposition;
+export type EditProposition = z.infer<typeof EditProposition>;
 
-export const CreatePropositionCompoundInput = PropositionCompound;
-export type CreatePropositionCompoundInput = PropositionCompound;
-export const CreatePropositionCompound = PropositionCompound;
-export type CreatePropositionCompound = PropositionCompound;
-
-export const EditPropositionCompoundInput = PropositionCompound;
-export type EditPropositionCompoundInput = PropositionCompound;
-export const EditPropositionCompound = PropositionCompound;
-export type EditPropositionCompound = PropositionCompound;
-
-export const CreateWritQuoteInput = WritQuote;
-export type CreateWritQuoteInput = WritQuote;
-export const CreateWritQuote = WritQuote;
-export type CreateWritQuote = WritQuote;
+export const CreateWritQuoteInput = Entity.extend({
+  quoteText: z.string(),
+  writ: CreateWritInput,
+  urls: z.array(CreateUrlInput),
+});
+export type CreateWritQuoteInput = z.infer<typeof CreateWritQuoteInput>;
+export const CreateWritQuote = CreateWritQuoteInput;
+export type CreateWritQuote = z.infer<typeof CreateWritQuote>;
 
 export const EditWritQuoteInput = WritQuote;
-export type EditWritQuoteInput = WritQuote;
+export type EditWritQuoteInput = z.infer<typeof EditWritQuoteInput>;
 export const EditWritQuote = WritQuote;
-export type EditWritQuote = WritQuote;
+export type EditWritQuote = z.infer<typeof EditWritQuote>;
 
 export const CreateVidSegmentInput = VidSegment;
-export type CreateVidSegmentInput = VidSegment;
+export type CreateVidSegmentInput = z.infer<typeof CreateVidSegmentInput>;
 export const CreateVidSegment = VidSegment;
-export type CreateVidSegment = VidSegment;
+export type CreateVidSegment = z.infer<typeof CreateVidSegment>;
 
 export const EditVidSegmentInput = VidSegment;
-export type EditVidSegmentInput = VidSegment;
+export type EditVidSegmentInput = z.infer<typeof EditVidSegmentInput>;
 export const EditVidSegment = VidSegment;
-export type EditVidSegment = VidSegment;
+export type EditVidSegment = z.infer<typeof EditVidSegment>;
 
 export const CreatePicRegionInput = PicRegion;
-export type CreatePicRegionInput = PicRegion;
+export type CreatePicRegionInput = z.infer<typeof CreatePicRegionInput>;
 export const CreatePicRegion = PicRegion;
-export type CreatePicRegion = PicRegion;
+export type CreatePicRegion = z.infer<typeof CreatePicRegion>;
 
 export const EditPicRegionInput = PicRegion;
-export type EditPicRegionInput = PicRegion;
+export type EditPicRegionInput = z.infer<typeof EditPicRegionInput>;
 export const EditPicRegion = PicRegion;
-export type EditPicRegion = PicRegion;
+export type EditPicRegion = z.infer<typeof EditPicRegion>;
 
 export const CreateSourceExcerptInput = Entity.extend({
   type: z.enum(["WRIT_QUOTE", "PIC_REGION", "VID_SEGMENT"]),
@@ -490,7 +599,7 @@ export type CreateJustificationInput = Entity & {
     propositionCompound: EntityOrRef<CreatePropositionCompoundInput>;
     sourceExcerpt: EntityOrRef<CreateSourceExcerptInput>;
     // deprecated
-    writQuote: EntityOrRef<WritQuote>;
+    writQuote: EntityOrRef<CreateWritQuoteInput>;
     // Don't validate JBCs since they are deprecated.
     justificationBasisCompound?: Entity;
   };
@@ -501,15 +610,34 @@ export type CreateJustificationInput = Entity & {
     | EntityOrRef<CreateStatementInput>;
 };
 const createJustificationBaseShape = {
-  ...justificationBaseShape,
+  ...omit(justificationBaseShape, ["created"]),
   basis: z.object({
     type: z.enum(["PROPOSITION_COMPOUND", "SOURCE_EXCERPT", "WRIT_QUOTE"] as [
       JustificationBasisType,
       ...JustificationBasisType[]
     ]),
-    propositionCompound: z.union([PropositionCompound, PropositionCompoundRef]),
+    propositionCompound: z.union([
+      CreatePropositionCompound,
+      PropositionCompoundRef,
+    ]),
+    sourceExcerpt: z.union([CreateSourceExcerpt, SourceExcerptRef]),
+    writQuote: z.union([CreateWritQuote, WritQuoteRef]),
+    justificationBasisCompound: Entity.optional(),
+  }),
+};
+const createJustificationInputBaseShape = {
+  ...omit(createJustificationBaseShape, ["basis"]),
+  basis: z.object({
+    type: z.enum(["PROPOSITION_COMPOUND", "SOURCE_EXCERPT", "WRIT_QUOTE"] as [
+      JustificationBasisType,
+      ...JustificationBasisType[]
+    ]),
+    propositionCompound: z.union([
+      CreatePropositionCompoundInput,
+      PropositionCompoundRef,
+    ]),
     sourceExcerpt: z.union([CreateSourceExcerptInput, SourceExcerptRef]),
-    writQuote: z.union([WritQuote, WritQuoteRef]),
+    writQuote: z.union([CreateWritQuoteInput, WritQuoteRef]),
     justificationBasisCompound: Entity.optional(),
   }),
 };
@@ -521,7 +649,7 @@ const createJustificationBaseShape = {
 export const CreateJustificationInput: z.ZodType<CreateJustificationInput> =
   z.lazy(() =>
     Entity.extend({
-      ...createJustificationBaseShape,
+      ...createJustificationInputBaseShape,
       target: z.object({
         type: z.enum(["PROPOSITION", "STATEMENT", "JUSTIFICATION"] as [
           JustificationTargetType,
@@ -565,11 +693,11 @@ export type CreateJustification = Simplify<
         }
       | {
           type: "SOURCE_EXCERPT";
-          entity: EntityOrRef<SourceExcerpt>;
+          entity: EntityOrRef<CreateSourceExcerpt>;
         }
       | {
           type: "WRIT_QUOTE";
-          entity: EntityOrRef<WritQuote>;
+          entity: EntityOrRef<CreateWritQuote>;
         };
     target:
       | {
@@ -623,11 +751,14 @@ export type CreateJustificationBasis = CreateJustification["basis"];
 export type CreateJustificationTarget = CreateJustification["target"];
 
 export const CreateCounterJustificationInput = Entity.extend({
-  ...createJustificationBaseShape,
+  ...createJustificationInputBaseShape,
   polarity: z.literal("NEGATIVE"),
   basis: z.object({
     type: z.literal("PROPOSITION_COMPOUND"),
-    propositionCompound: z.union([PropositionCompound, PropositionCompoundRef]),
+    propositionCompound: z.union([
+      CreatePropositionCompoundInput,
+      PropositionCompoundRef,
+    ]),
   }),
   target: z.object({
     type: z.literal("JUSTIFICATION"),
@@ -664,8 +795,10 @@ export type CreateCounterJustificationBasis =
   CreateCounterJustification["basis"];
 
 const justificationVotePolarities = z.enum(["POSITIVE", "NEGATIVE"]);
-export const JustificationVote = z.object({
+export const JustificationVote = Entity.extend({
   polarity: justificationVotePolarities,
+  // TODO(1): replace justificationId with justification.id.
+  justificationId: z.string(),
   justification: JustificationRef,
 });
 export type JustificationVote = z.infer<typeof JustificationVote>;
@@ -759,7 +892,17 @@ export const CreateContentReportInput = ContentReport.extend({
 });
 export type CreateContentReportInput = z.infer<typeof CreateContentReportInput>;
 
+export const UserExternalIds = z.object({
+  googleAnalyticsId: z.string(),
+  heapAnalyticsId: z.string(),
+  mixpanelId: z.string(),
+  sentryId: z.string(),
+  smallchatId: z.string(),
+});
+export type UserExternalIds = z.infer<typeof UserExternalIds>;
+
 /** A user of the system */
+export const UserShortNameMaxLength = 32;
 export const User = Entity.extend({
   email: z.string().email().max(128),
   username: z
@@ -767,19 +910,13 @@ export const User = Entity.extend({
     .regex(/[A-Za-z0-9_]+/)
     .min(3)
     .max(64),
-  shortName: z.string().min(1).max(32),
+  shortName: z.string().min(1).max(UserShortNameMaxLength).optional(),
   longName: z.string().min(1).max(64),
   // We currently don't request phone number
   phoneNumber: z.string().optional(),
-  created: iso8601TimestampString,
+  created: momentObject,
   isActive: z.boolean(),
-  externalIds: z.object({
-    googleAnalyticsId: z.string(),
-    heapAnalyticsId: z.string(),
-    mixpanelId: z.string(),
-    sentryId: z.string(),
-    smallchatId: z.string(),
-  }),
+  externalIds: UserExternalIds.optional(),
 });
 export type User = z.infer<typeof User>;
 

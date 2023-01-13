@@ -1,3 +1,4 @@
+import moment from "moment";
 import { Justification } from "./zodSchemas";
 
 describe("Justification schema", () => {
@@ -9,6 +10,7 @@ describe("Justification schema", () => {
         entity: {
           id: "1",
           text: "the target text",
+          created: moment("2023-01-12"),
         },
       },
       polarity: "POSITIVE",
@@ -17,8 +19,10 @@ describe("Justification schema", () => {
         entity: {
           atoms: [
             {
+              compoundId: "1",
               entity: {
                 text: "the basis text",
+                created: moment("2023-01-12"),
               },
             },
           ],
@@ -26,9 +30,11 @@ describe("Justification schema", () => {
       },
       rootTarget: {
         text: "the root text",
+        created: moment("2023-01-12"),
       },
       rootTargetType: "PROPOSITION",
       rootPolarity: "POSITIVE",
+      created: moment("2023-01-12"),
     };
 
     const result = Justification.parse(justification);

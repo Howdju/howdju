@@ -81,12 +81,11 @@ describe("JustificationsDao", () => {
       );
 
       // Assert
-      expect(justificationData.id).toEqual(expect.any(String));
       const expectedJustification = assign({}, createJustificationData, {
+        id: expect.any(String),
         counterJustifications: [],
         creator: { id: userId },
         created: expect.toBeSameMoment(now),
-        deleted: null,
         rootPolarity: createJustificationData.polarity,
       });
       expect(justificationData).toEqual(
@@ -96,7 +95,7 @@ describe("JustificationsDao", () => {
   });
 
   describe("readJustificationForId", () => {
-    test("Can read a justification for an ID", async () => {
+    test("reads a justification for an ID", async () => {
       // Arrange
       const now = moment();
       const creatorUserId = null;
@@ -158,7 +157,7 @@ describe("JustificationsDao", () => {
       const justificationData = await dao.readJustificationForId(id);
 
       // Assert
-      expect(justificationData.id).toEqual(expect.any(String));
+      expect(justificationData?.id).toEqual(expect.any(String));
       const expectedJustificationData = assign({}, createJustificationData, {
         counterJustifications: [],
         creator: { id: user.id },
@@ -171,7 +170,7 @@ describe("JustificationsDao", () => {
   });
 
   describe("readJustifications", () => {
-    test("Can read a justifications", async () => {
+    test("reads justifications", async () => {
       // Arrange
       const now = moment();
       const creatorUserId = null;

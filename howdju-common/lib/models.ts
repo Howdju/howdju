@@ -41,12 +41,12 @@ import {
   CreateSourceExcerpt,
   CreateSourceExcerptInput,
   CreateStatementInput,
+  CreateUrlInput,
   CreateVidSegmentInput,
+  CreateWritInput,
   CreateWritQuoteInput,
   EditPicRegionInput,
-  EditProposition,
   EditVidSegmentInput,
-  EditWritQuoteInput,
   Entity,
   Justification,
   JustificationPolarity,
@@ -57,20 +57,14 @@ import {
   JustificationVotePolarity,
   Persorg,
   PicRegion,
-  Proposition,
-  PropositionCompound,
-  PropositionCompoundAtom,
   PropositionTagVote,
   RegistrationRequest,
   SourceExcerpt,
   SourceExcerptRef,
-  Statement,
   Tag,
   TagVote,
   Url,
   VidSegment,
-  Writ,
-  WritQuote,
 } from "./zodSchemas";
 import { EntityOrRef, isRef, Persisted, ToInput } from "./zodSchemaTypes";
 
@@ -176,63 +170,20 @@ export const makeAccountSettings = (
     props
   );
 
-export const makeProposition = (props?: Partial<Proposition>): Proposition =>
-  assign({ text: "" }, props);
-
-export const makeStatement = (props?: Partial<Statement>): Statement =>
-  merge(
-    {
-      speaker: makePersorg(),
-      sentenceType: "PROPOSITION",
-      sentence: makeProposition(),
-    },
-    props
-  );
-
-export const makeWrit = (props?: Partial<Writ>): Writ =>
-  merge(
-    {
-      title: "",
-    },
-    props
-  );
-
-export const makeWritQuote = (props?: Partial<WritQuote>): WritQuote =>
-  merge(
-    {
-      writ: makeWrit(),
-      quoteText: "",
-      urls: [makeUrl()],
-    },
-    props
-  );
-
-export const makePropositionCompound = (
-  props?: Partial<PropositionCompound>
-): PropositionCompound =>
-  assign({ atoms: [makePropositionCompoundAtom()] }, props);
-
-export const makePropositionCompoundFromProposition = (
-  proposition: Proposition
-): PropositionCompound =>
-  makePropositionCompound({
-    atoms: [makePropositionCompoundAtomFromProposition(proposition)],
-  });
-
-export const makePropositionCompoundAtomFromProposition = (
-  proposition: Proposition
-): PropositionCompoundAtom => ({
-  entity: proposition,
+export const makeCreatePropositionCompoundInput = () => ({
+  atoms: [makeCreatePropositionCompoundAtomInput()],
 });
 
-export const makePropositionCompoundAtom = (
-  props?: Partial<PropositionCompoundAtom>
-): PropositionCompoundAtom => assign({ entity: makeProposition() }, props);
+export const makeCreatePropositionCompoundInputFromProposition = (
+  proposition: CreatePropositionInput
+): CreatePropositionCompoundInput => ({
+  atoms: [{ entity: proposition }],
+});
 
-export const makeCreatePropositionCompoundAtomInput = (
-  props?: Partial<CreatePropositionCompoundAtomInput>
-): CreatePropositionCompoundAtomInput =>
-  assign({ entity: makeCreatePropositionCompoundAtomInput() }, props);
+export const makeCreatePropositionCompoundAtomInput =
+  (): CreatePropositionCompoundAtomInput => ({
+    entity: makeCreatePropositionInput(),
+  });
 
 export const makeUrl = (props?: Partial<Url>): Url => merge({ url: "" }, props);
 
@@ -301,17 +252,6 @@ export function makePicRegion(): PicRegion {
   return { pic: {} };
 }
 
-export const makeSourceExcerpt = (
-  props?: Partial<SourceExcerpt>
-): SourceExcerpt =>
-  merge(
-    {
-      type: "WRIT_QUOTE",
-      entity: makeWritQuote(),
-    },
-    props
-  );
-
 export interface JustificationRootTargetInfo {
   rootTargetType: JustificationRootTargetType;
   rootTargetId: EntityId;
@@ -328,15 +268,20 @@ export const makeCreateJustifiedSentenceInput = (
   doCreateJustification: !!justificationProps,
 });
 
-export const makeCreateStatementInput: (
+export const makeCreateStatementInput = (
   props?: Partial<CreateStatementInput>
-) => CreateStatementInput = makeStatement;
-export const makeCreatePropositionInput: (
+): CreateStatementInput =>
+  merge(
+    {
+      speaker: makePersorg(),
+      sentenceType: "PROPOSITION",
+      sentence: makeCreatePropositionInput(),
+    },
+    props
+  );
+export const makeCreatePropositionInput = (
   props?: Partial<CreatePropositionInput>
-) => CreatePropositionInput = makeProposition;
-export const makeCreatePropositionCompoundInput: (
-  props?: Partial<CreatePropositionCompoundInput>
-) => CreatePropositionCompoundInput = makePropositionCompound;
+): CreatePropositionInput => assign({ text: "" }, props);
 
 export const makeCreateJustificationInput = (
   props?: PartialDeep<CreateJustificationInput>
@@ -369,9 +314,20 @@ export const makeCreateJustificationInput = (
   return model;
 };
 
-export const makeCreateWritQuoteInput: (
+export const makeWritInput = (): CreateWritInput => ({ title: "" });
+export const makeUrlInput = (): CreateUrlInput => ({ url: "" });
+
+export const makeCreateWritQuoteInput = (
   props?: Partial<CreateWritQuoteInput>
-) => CreateWritQuoteInput = makeWritQuote;
+): CreateWritQuoteInput =>
+  merge(
+    {
+      writ: makeWritInput(),
+      quoteText: "",
+      urls: [makeUrlInput()],
+    },
+    props
+  );
 export const makeCreatePicRegionInput: (
   props?: Partial<CreatePicRegionInput>
 ) => CreatePicRegionInput = makePicRegion;
@@ -419,16 +375,8 @@ export function makeEditVidSegmentInput(): EditVidSegmentInput {
   return makeVidSegment();
 }
 
-export function makeEditWritQuoteInput(): EditWritQuoteInput {
-  return makeWritQuote();
-}
-
 export function makeEditPicRegionInput(): EditPicRegionInput {
   return makePicRegion();
-}
-
-export function makePropositionEditModel(): EditProposition {
-  return makeProposition();
 }
 
 // Try to support JBCs as little as possible since they are deprecated. Viz., don't implement
@@ -648,8 +596,6 @@ export function demuxJustificationBasisSourceExcerptInput(
         type: "WRIT_QUOTE",
         entity: sourceExcerpt.writQuote,
       };
-    default:
-      throw newExhaustedEnumError(sourceExcerpt.type);
   }
 }
 

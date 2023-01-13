@@ -89,16 +89,13 @@ export const mapManyById =
     return byId;
   };
 
-export const groupRootJustifications = (
+export const groupRootJustifications = <T extends JustificationRow>(
   rootTargetType: JustificationRootTargetType,
   rootTargetId: EntityId,
-  justification_rows: JustificationRow[]
+  justification_rows: T[]
 ) => {
   const rootJustifications = [],
-    counterJustificationsByJustificationId: Record<
-      EntityRowId,
-      JustificationRow[]
-    > = {};
+    counterJustificationsByJustificationId: Record<EntityRowId, T[]> = {};
   for (const justification_row of justification_rows) {
     // There are two types of justifications: those targeting other justifications or those targeting the current root
     if (
@@ -176,3 +173,12 @@ export const createParams = function createParams(
 ) {
   return map(Array.from(Array(count).keys()), (i) => "$" + (i + start));
 };
+
+// We use a convention of translating IDs to strings.
+//
+// Also, there's a built-in toString that does weird things. So rather than
+// accidentally use it by forgetting to import toString from lodash, use this
+// method.
+export function toIdString(val: number) {
+  return toString(val);
+}

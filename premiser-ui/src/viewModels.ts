@@ -29,8 +29,8 @@ import {
   Sentence,
   CreatePersorgInput,
   CreatePropositionInput,
-  makeStatement,
   SentenceTypes,
+  CreateStatementInput,
 } from "howdju-common";
 
 import * as characters from "./characters";
@@ -80,25 +80,25 @@ export const removeSourceExcerptIds = (sourceExcerpt: SourceExcerpt) => {
 };
 
 /** Return a Statement with speakers stating the proposition */
-export function constructStatement(
+export function constructStatementInput(
   speakers: CreatePersorgInput[],
   proposition: CreatePropositionInput
-) {
+): CreateStatementInput {
   // In the UI the speakers are listed so that the last one is the one to say the proposition directly,
   // but we need to build the statements outward so that we have the target of the next statement.
   // So take them in reverse order
   speakers = reverse(clone(speakers));
-  let statement = makeStatement({
+  let statement: CreateStatementInput = {
     speaker: speakers[0],
     sentenceType: SentenceTypes.PROPOSITION,
     sentence: proposition,
-  });
+  };
   for (const speaker of drop(speakers, 1)) {
-    statement = makeStatement({
+    statement = {
       speaker,
       sentenceType: SentenceTypes.STATEMENT,
       sentence: statement,
-    });
+    };
   }
   return statement;
 }

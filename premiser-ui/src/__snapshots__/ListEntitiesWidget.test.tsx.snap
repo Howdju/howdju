@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
+exports[`ListEntitiesWidget RecentPropositionsWidget shows initial recent propositions 1`] = `
 <div>
   <div
     id="recent-propositions-id"
@@ -65,8 +65,10 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -148,8 +150,10 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -211,8 +215,10 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -274,8 +280,10 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -337,8 +345,10 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -400,8 +410,10 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -463,8 +475,10 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -487,7 +501,7 @@ exports[`RecentPropositionsWidget shows initial recent propositions 1`] = `
 </div>
 `;
 
-exports[`RecentPropositionsWidget shows more propositions when more is clicked 1`] = `
+exports[`ListEntitiesWidget RecentPropositionsWidget shows more propositions when more is clicked 1`] = `
 <div>
   <div
     id="recent-propositions-id"
@@ -552,8 +566,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -615,8 +631,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -678,8 +696,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -741,8 +761,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -824,8 +846,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -887,8 +911,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -950,8 +976,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1013,8 +1041,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1076,8 +1106,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1139,8 +1171,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1202,8 +1236,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1265,8 +1301,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1328,8 +1366,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1391,8 +1431,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>
@@ -1454,8 +1496,10 @@ exports[`RecentPropositionsWidget shows more propositions when more is clicked 1
                     
                      
                     <span
-                      title=""
-                    />
+                      title="12 Jan 2023 12:23:00 PM"
+                    >
+                      8 hours ago
+                    </span>
                   </span>
                 </div>
               </div>

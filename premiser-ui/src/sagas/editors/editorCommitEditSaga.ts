@@ -37,7 +37,7 @@ import { newEditorCommitResultError } from "../../uiErrors";
 import { callApiForResource } from "../resourceApiSagas";
 import { EditorAction } from "@/editors/editorTypes";
 import app from "@/app/appSlice";
-import { constructStatement } from "@/viewModels";
+import { constructStatementInput } from "@/viewModels";
 import {
   AnyApiAction,
   ApiActionCreator,
@@ -278,7 +278,7 @@ export const editorCommitConfigs: Partial<
       inputTransformer(model: CreateJustifiedSentenceInput) {
         const { speakers, doCreateJustification, proposition } = model;
         if (speakers.length) {
-          const statement = constructStatement(speakers, proposition);
+          const statement = constructStatementInput(speakers, proposition);
 
           if (!doCreateJustification) {
             return statement;

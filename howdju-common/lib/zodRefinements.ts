@@ -1,7 +1,6 @@
 import { z } from "zod";
-import { isMoment } from "moment";
+import moment, { isMoment, Moment } from "moment";
 import isUrl from "validator/lib/isURL";
-import isIso8601 from "validator/lib/isISO8601";
 
 import { extractDomain } from "./urls";
 
@@ -34,13 +33,12 @@ const urlRefinement =
 export const urlString = (options: UrlOptions) =>
   z.string().superRefine(urlRefinement(options));
 
-export const iso8601TimestampString = z.string().refine(
-  (val: string) => isIso8601(val),
-  (val: string) => ({
-    message: `Invalid ISO8601 datetime (e.g. "2022-11-19T21:21:33Z"): ${val}`,
-  })
-);
-
-export const momentObject = z.object({}).refine((val: any) => isMoment(val), {
-  message: "Must be a moment timestamp.",
-});
+// @types/moment doesn't provide this constructor, but it works.
+type MomentConstructor = {
+  new (...args: Parameters<typeof moment>): Moment;
+};
+export const momentObject = z
+  .instanceof(moment as unknown as MomentConstructor)
+  .refine((val: any) => isMoment(val), {
+    message: "Must be a moment timestamp.",
+  });

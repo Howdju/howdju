@@ -8,6 +8,7 @@ import {
   momentSubtract,
   mapValuesDeep,
   mapKeysDeep,
+  filterDefined,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -120,6 +121,30 @@ describe("omitDeep", () => {
         world: "now",
       },
       arr: [1, 2, 3],
+    });
+  });
+});
+
+describe("filterDefined", () => {
+  test("removes undefined list items", () => {
+    expect(
+      filterDefined([1, null, "2", undefined, "3", undefined, false, 4])
+    ).toEqual([1, null, "2", "3", false, 4]);
+  });
+  test("removes object values", () => {
+    expect(
+      filterDefined({
+        a: "a",
+        b: 1,
+        c: undefined,
+        d: false,
+        e: null,
+      })
+    ).toEqual({
+      a: "a",
+      b: 1,
+      d: false,
+      e: null,
     });
   });
 });

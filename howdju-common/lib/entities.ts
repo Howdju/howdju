@@ -101,6 +101,7 @@ interface VidSegmentSourceExcerpt extends Entity {
 }
 
 interface PropositionCompoundAtom extends Entity {
+  /** A reference to this atom's parent compound. */
   compoundId?: EntityId;
   entity: Proposition;
 }

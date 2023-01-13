@@ -153,7 +153,7 @@ exports.PropositionsDao = class PropositionsDao {
           extant_users as (select * from users where deleted is null)
         select
             s.*
-          , u.long_name as creator_user_long_name
+          , u.long_name as creator_long_name
         from propositions s left join extant_users u on s.creator_user_id = u.user_id
           where s.proposition_id = $1 and s.deleted is null`,
         [propositionId]

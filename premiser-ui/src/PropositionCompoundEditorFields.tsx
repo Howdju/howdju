@@ -10,10 +10,9 @@ import PropositionTextAutocomplete from "./PropositionTextAutocomplete";
 import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 import {
   CreatePropositionCompoundAtomInput,
+  CreatePropositionCompoundInput,
   EditPropositionCompoundInput,
-  makePropositionCompoundAtom,
-  PropositionCompound,
-  PropositionCompoundAtom,
+  makeCreatePropositionCompoundAtomInput,
 } from "howdju-common";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
 import { EditorType } from "./reducers/editors";
@@ -21,7 +20,7 @@ import { editors } from "./actions";
 import { AnyAction } from "@reduxjs/toolkit";
 
 interface Props extends EntityEditorFieldsProps<EditPropositionCompoundInput> {
-  propositionCompound?: PropositionCompound;
+  propositionCompound?: CreatePropositionCompoundInput;
 }
 
 export default function PropositionCompoundEditorFields(props: Props) {
@@ -56,11 +55,11 @@ export default function PropositionCompoundEditorFields(props: Props) {
         editorId,
         index,
         combineNames(name, "atoms"),
-        makePropositionCompoundAtom
+        makeCreatePropositionCompoundAtomInput
       )
     );
   const onRemovePropositionCompoundAtom = (
-    _atom: PropositionCompoundAtom,
+    _atom: CreatePropositionCompoundAtomInput,
     index: number,
     atoms: CreatePropositionCompoundAtomInput[]
   ) =>
@@ -81,7 +80,7 @@ export default function PropositionCompoundEditorFields(props: Props) {
             editorId,
             index,
             combineNames(name, "atoms"),
-            makePropositionCompoundAtom
+            makeCreatePropositionCompoundAtomInput
           )
         );
       }

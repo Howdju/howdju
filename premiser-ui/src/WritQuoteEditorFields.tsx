@@ -3,12 +3,12 @@ import { Button, FontIcon, TextField } from "react-md";
 import map from "lodash/map";
 
 import {
+  CreateWritQuoteInput,
   EditWritQuoteInput,
   makeUrl,
   schemaSettings,
   Url,
   Writ,
-  WritQuote,
 } from "howdju-common";
 
 import WritTitleAutocomplete from "@/WritTitleAutocomplete";
@@ -25,7 +25,7 @@ import { editors } from "./actions";
 import { logger } from "./logger";
 
 interface Props extends EntityEditorFieldsProps<EditWritQuoteInput> {
-  writQuote: WritQuote;
+  writQuote: CreateWritQuoteInput;
   onKeyDown?: OnKeyDownCallback;
 }
 

@@ -1,14 +1,12 @@
 import { describe, expect, it } from "@jest/globals";
-import { makeProposition } from "howdju-common";
 import { PropositionValidator } from "./PropositionValidator";
 import { TagValidator } from "./TagValidator";
 
 describe("PropsositionValidator", () => {
   it("validates a proposition", () => {
     const validator = new PropositionValidator(new TagValidator());
-    const proposition = makeProposition({ text: "the text" });
 
-    const result = validator.validate(proposition);
+    const result = validator.validate({ text: "the text" });
 
     expect(result).toEqual({
       hasErrors: false,
@@ -25,9 +23,8 @@ describe("PropsositionValidator", () => {
 
   it("invalidates an invalid proposition", () => {
     const validator = new PropositionValidator(new TagValidator());
-    const proposition = makeProposition({ text: "" });
 
-    const result = validator.validate(proposition);
+    const result = validator.validate({ text: "" });
 
     expect(result).toEqual({
       hasErrors: true,

@@ -21,7 +21,7 @@ import {
   Tag,
   TagVote,
 } from "./zodSchemas";
-import { Persisted } from "./zodSchemaTypes";
+import { Persisted, PersistRelated } from "./zodSchemaTypes";
 
 /**
  * An out model representing errors for any CRUD action.
@@ -62,7 +62,7 @@ export interface GetPropositionsOut {
 
 export interface PropositionOut
   extends Persisted<Proposition>,
-    TaggedEntityOut {
+    TaggedEntityOut<Proposition> {
   justifications?: JustificationOut[];
   propositionTagVotes?: PropositionTagVoteOut[];
 }
@@ -78,16 +78,17 @@ export type JustificationOut = Persisted<Justification> & {
 
 export type PropositionCompoundOut = Persisted<PropositionCompound>;
 
-export type PropositionCompoundAtomOut = Persisted<PropositionCompoundAtom>;
+export type PropositionCompoundAtomOut =
+  PersistRelated<PropositionCompoundAtom>;
 
 // TagVoteViewModel don't need a target because they are added to their targets
 export type TagVoteViewModel = Omit<TagVote, "target">;
 
 export type PropositionTagVoteOut = Omit<PropositionTagVote, "proposition">;
 
-export interface TaggedEntityOut extends Persisted<Entity> {
+export type TaggedEntityOut<T extends Entity = Entity> = Persisted<T> & {
   tags?: Tag[];
   // TODO put votes on tags and type it as a viewmodel
   tagVotes?: TagVoteViewModel[];
   recommendedTags?: Tag[];
-}
+};

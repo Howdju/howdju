@@ -7,10 +7,7 @@ import { cloneDeep } from "lodash";
 import {
   JustificationPolarity,
   JustificationRootTarget,
-  makeProposition,
-  makeSourceExcerpt,
   newProgrammingError,
-  SourceExcerptParaphrase,
   CreateContentReportInput,
   PropositionTagVoteOut,
   JustificationOut,
@@ -40,12 +37,13 @@ export function isPropositionRootTarget(
 const justificationViewModelDefaults = () => ({
   counterJustifications: [],
 });
+type JustificationOutOverrides = SetOptional<
+  JustificationOut,
+  | keyof ReturnType<typeof justificationViewModelDefaults>
+  | keyof RootTargetStuff
+>;
 export function makeJustificationOutModel(
-  props?: SetOptional<
-    JustificationOut,
-    | keyof ReturnType<typeof justificationViewModelDefaults>
-    | keyof RootTargetStuff
-  >
+  props?: JustificationOutOverrides
 ): JustificationOut {
   const init = justificationViewModelDefaults();
   const merged = merge(init, props);
@@ -55,16 +53,12 @@ export function makeJustificationOutModel(
 
 type RootTargetStuff = {
   rootTargetType: JustificationRootTargetType;
-  rootTarget: JustificationRootTarget;
+  rootTarget: Persisted<JustificationRootTarget>;
   rootPolarity: JustificationRootPolarity;
 };
 
 function calcRootTargetStuff(
-  justification: SetOptional<
-    JustificationOut,
-    | keyof ReturnType<typeof justificationViewModelDefaults>
-    | keyof RootTargetStuff
-  >
+  justification: JustificationOutOverrides
 ): RootTargetStuff {
   let targetEntity = justification.target?.entity;
   let targetType = justification.target?.type;
@@ -81,7 +75,7 @@ function calcRootTargetStuff(
     );
   }
   const rootTargetType = targetType;
-  const rootTarget = targetEntity as JustificationRootTarget;
+  const rootTarget = targetEntity;
   return {
     rootTargetType,
     rootTarget,
@@ -93,18 +87,6 @@ export const isVerified = (j: JustificationOut) =>
   j.vote && j.vote.polarity === "POSITIVE";
 export const isDisverified = (j: JustificationOut) =>
   j.vote && j.vote.polarity === "NEGATIVE";
-
-/** @deprecated */
-export const makeSourceExcerptParaphrase = (
-  props?: Partial<SourceExcerptParaphrase>
-): SourceExcerptParaphrase =>
-  merge(
-    {
-      paraphrasingProposition: makeProposition(),
-      sourceExcerpt: makeSourceExcerpt(),
-    },
-    props
-  );
 
 export const makeCreateContentReportInput = (
   fields: Partial<CreateContentReportInput>
