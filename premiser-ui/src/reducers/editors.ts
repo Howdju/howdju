@@ -53,6 +53,7 @@ import {
   CreateRegistrationConfirmationInput,
   CreatePropositionInput,
   CreateCounterJustificationInput,
+  CreateProposition,
 } from "howdju-common";
 
 import {
@@ -130,7 +131,11 @@ export type EditorEntity =
  * @typeparam T the editor model type.
  * @typeparam U the request model type. TODO add FromInput<> mirroring ToInput.
  */
-export interface EditorState<T extends EditorEntity, U = T> {
+export interface EditorState<
+  T extends EditorEntity,
+  U = T,
+  E extends ModelErrors<any> = ModelErrors<U>
+> {
   /**
    * The model the editor is editing.
    *
@@ -139,7 +144,7 @@ export interface EditorState<T extends EditorEntity, U = T> {
   editEntity?: T;
   blurredFields?: BlurredFields<T>;
   dirtyFields?: DirtyFields<T>;
-  errors?: ModelErrors<U>;
+  errors?: E;
   /** Whether the entity is in the middle of saving. */
   isSaving: boolean;
   /**
@@ -451,7 +456,11 @@ const editorReducerByType: {
   ),
 
   [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions<
-    EditorState<CreateJustifiedSentenceInput, CreateJustifiedSentence>,
+    EditorState<
+      CreateJustifiedSentenceInput,
+      CreateJustifiedSentence,
+      ModelErrors<CreateProposition | CreateJustification>
+    >,
     any
   >(
     {

@@ -30,6 +30,9 @@ import {
   CreateJustifiedSentenceInput,
   CreateJustifiedSentence,
   JustificationBasisType,
+  ModelErrors,
+  CreateProposition,
+  CreateJustification,
 } from "howdju-common";
 
 import Helmet from "./Helmet";
@@ -297,20 +300,15 @@ class CreatePropositionPage extends Component<Props> {
     const isCreateJustificationMode =
       mode === CreatePropositionPageMode.CREATE_JUSTIFICATION;
     const propositionErrors =
-      errors &&
-      (doCreateJustification
-        ? get(errors, "justification.fieldErrors.target.fieldErrors.entity")
-        : errors.proposition);
-    const justificationEntityErrors =
-      errors && doCreateJustification ? errors.justification : undefined;
+      errors && (doCreateJustification ? get(errors, "target.entity") : errors);
     const { responseErrorTransformer = identity, inputTransformer = identity } =
       CreateJustificationConfig;
     const createJustification =
       justification && inputTransformer(justification);
     const justificationFormInputErrors =
       createJustification &&
-      justificationEntityErrors &&
-      responseErrorTransformer(createJustification, justificationEntityErrors);
+      errors &&
+      responseErrorTransformer(createJustification, errors);
     const propositionTags = get(proposition, "tags");
     const propositionTagVotes = get(proposition, "propositionTagVotes");
     const propositionEditorText = "propositionEditorText";
@@ -535,7 +533,12 @@ const mapStateToProps = (state: RootState, ownProps: OwnProps) => {
   const editorState = get(state.editors, [
     CreatePropositionPage.editorType,
     CreatePropositionPage.editorId,
-  ]) as EditorState<CreateJustifiedSentenceInput, CreateJustifiedSentence>;
+  ]) as EditorState<
+    CreateJustifiedSentenceInput,
+    CreateJustifiedSentence,
+    // The editor submits either a proposition or justification.
+    ModelErrors<CreateProposition | CreateJustification>
+  >;
   const queryParams = queryString.parse(ownProps.location.search);
   return {
     editorState,
