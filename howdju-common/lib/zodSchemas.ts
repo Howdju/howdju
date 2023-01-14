@@ -903,7 +903,6 @@ export const UserExternalIds = z.object({
 export type UserExternalIds = z.infer<typeof UserExternalIds>;
 
 /** A user of the system */
-export const UserShortNameMaxLength = 32;
 export const User = Entity.extend({
   email: z.string().email().max(128),
   username: z
@@ -911,7 +910,7 @@ export const User = Entity.extend({
     .regex(/[A-Za-z0-9_]+/)
     .min(3)
     .max(64),
-  shortName: z.string().min(1).max(UserShortNameMaxLength).optional(),
+  shortName: z.string().min(1).max(32).optional(),
   longName: z.string().min(1).max(64),
   // We currently don't request phone number
   phoneNumber: z.string().optional(),

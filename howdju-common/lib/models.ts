@@ -45,8 +45,6 @@ import {
   CreateVidSegmentInput,
   CreateWritInput,
   CreateWritQuoteInput,
-  EditPicRegionInput,
-  EditVidSegmentInput,
   Entity,
   Justification,
   JustificationPolarity,
@@ -170,9 +168,10 @@ export const makeAccountSettings = (
     props
   );
 
-export const makeCreatePropositionCompoundInput = () => ({
-  atoms: [makeCreatePropositionCompoundAtomInput()],
-});
+export const makeCreatePropositionCompoundInput =
+  (): CreatePropositionCompoundInput => ({
+    atoms: [makeCreatePropositionCompoundAtomInput()],
+  });
 
 export const makeCreatePropositionCompoundInputFromProposition = (
   proposition: CreatePropositionInput
@@ -369,14 +368,6 @@ export function makeCreateSourceExcerptInput(
     },
     props
   );
-}
-
-export function makeEditVidSegmentInput(): EditVidSegmentInput {
-  return makeVidSegment();
-}
-
-export function makeEditPicRegionInput(): EditPicRegionInput {
-  return makePicRegion();
 }
 
 // Try to support JBCs as little as possible since they are deprecated. Viz., don't implement

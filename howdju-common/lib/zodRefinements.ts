@@ -1,5 +1,5 @@
 import { z } from "zod";
-import moment, { isMoment, Moment } from "moment";
+import moment, { Moment } from "moment";
 import isUrl from "validator/lib/isURL";
 
 import { extractDomain } from "./urls";
@@ -37,8 +37,9 @@ export const urlString = (options: UrlOptions) =>
 type MomentConstructor = {
   new (...args: Parameters<typeof moment>): Moment;
 };
-export const momentObject = z
-  .instanceof(moment as unknown as MomentConstructor)
-  .refine((val: any) => isMoment(val), {
+export const momentObject = z.instanceof(
+  moment as unknown as MomentConstructor,
+  {
     message: "Must be a moment timestamp.",
-  });
+  }
+);

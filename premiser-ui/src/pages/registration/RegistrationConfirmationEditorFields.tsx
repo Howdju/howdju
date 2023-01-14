@@ -2,10 +2,7 @@ import React from "react";
 import { Checkbox } from "react-md";
 import cn from "classnames";
 
-import {
-  CreateRegistrationConfirmationInput,
-  UserShortNameMaxLength,
-} from "howdju-common";
+import { CreateRegistrationConfirmationInput } from "howdju-common";
 
 import Link from "../../Link";
 import EmailTextField from "../../EmailTextField";
@@ -98,7 +95,9 @@ export default function RegistrationConfirmationEditotFields({
         label="First Name"
         value={registrationConfirmation?.shortName}
         onPropertyChange={onPropertyChange}
-        maxLength={UserShortNameMaxLength}
+        maxLength={
+          CreateRegistrationConfirmationInput.shape.shortName.unwrap().maxLength
+        }
         {...errorProps((rc) => rc.shortName)}
       />
       <Checkbox

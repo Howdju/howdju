@@ -1,11 +1,7 @@
 import React from "react";
 
 import PropositionCompoundEditorFields from "../PropositionCompoundEditorFields";
-import {
-  CreateCounterJustificationInput,
-  CreatePropositionCompoundInput,
-  isRef,
-} from "howdju-common";
+import { CreateCounterJustificationInput, isRef } from "howdju-common";
 import {
   combineIds,
   combineNames,
@@ -37,10 +33,7 @@ export default function CounterJustificationEditorFields(props: Props) {
 
   const propositionCompound = justification?.basis.propositionCompound;
 
-  if (
-    !propositionCompound ||
-    isRef<CreatePropositionCompoundInput>(propositionCompound)
-  ) {
+  if (!propositionCompound || isRef(propositionCompound)) {
     return null;
   }
 
