@@ -3,8 +3,7 @@ const {
   JustificationRootTargetTypes,
 } = require("howdju-common");
 
-const { addArrayParams } = require("./daosUtil");
-const { toIdString } = require("./orm");
+const { addArrayParams, toIdString } = require("./daosUtil");
 
 exports.WritQuoteUrlTargetsDao = class WritQuoteUrlTargetsDao {
   constructor(logger, database) {

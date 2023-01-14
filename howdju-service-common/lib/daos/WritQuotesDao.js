@@ -13,8 +13,8 @@ const {
   SourceExcerptTypes,
 } = require("howdju-common");
 
-const { toIdString, toWritQuote, toWritQuoteUrl, toUrl } = require("./orm");
-const { mapSingle, normalizeText } = require("./daosUtil");
+const { toWritQuote, toWritQuoteUrl, toUrl } = require("./orm");
+const { mapSingle, normalizeText, toIdString } = require("./daosUtil");
 const { DatabaseSortDirection } = require("./daoModels");
 
 exports.WritQuotesDao = class WritQuotesDao {
