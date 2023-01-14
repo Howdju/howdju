@@ -6,7 +6,6 @@ import {
   utcNow,
   momentAdd,
   momentSubtract,
-  makeRegistrationRequest,
   makeCreateRegistrationConfirmation,
   CreateRegistrationRequest,
   TopicMessageSender,
@@ -159,10 +158,10 @@ describe("RegistrationService", () => {
     });
 
     test("consumes valid registration code and returns created user", async () => {
-      const registrationRequest = makeRegistrationRequest({
+      const registrationRequest = {
         email: "the-email",
         expires: momentAdd(utcNow(), [5, "minutes"]),
-      });
+      };
       const createRegistrationConfirmation = makeCreateRegistrationConfirmation(
         {
           username: "the-username",

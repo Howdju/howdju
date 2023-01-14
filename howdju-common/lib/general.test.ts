@@ -47,12 +47,12 @@ describe("mapValuesDeep", () => {
     expect(
       mapValuesDeep(
         {
-          arr: [{ a: 1 }, { b: 2 }],
+          arr: [{ a: 1 }, { b: 2, c: "3" }],
         },
         (x) => (isNumber(x) ? x + 1 : x)
       )
     ).toEqual({
-      arr: [{ a: 2 }, { b: 3 }],
+      arr: [{ a: 2 }, { b: 3, c: "3" }],
     });
   });
   test("Should map arrays of strings correctly with mapArrays=true", () => {

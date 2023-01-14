@@ -4,7 +4,12 @@ import { expect } from "@jest/globals";
 
 import { JustificationsDao } from "./JustificationsDao";
 import { mockLogger } from "howdju-test-common";
-import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  dropDb,
+  expectToBeSameMomentDeep,
+  initDb,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import { Pool } from "pg";
 import {
   AuthService,
@@ -16,7 +21,7 @@ import {
   UsersDao,
 } from "..";
 import TestProvider from "@/initializers/TestProvider";
-import { CreateJustificationDataIn, SortDescription } from "./types";
+import { CreateJustificationDataIn } from "./dataTypes";
 import {
   JustificationRef,
   negateRootPolarity,
@@ -24,6 +29,7 @@ import {
   StatementRef,
   WritQuoteRef,
 } from "howdju-common";
+import { SortDescription } from "./daoTypes";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
@@ -159,14 +165,17 @@ describe("JustificationsDao", () => {
       const justificationData = await dao.readJustificationForId(id);
 
       // Assert
-      expect(justificationData?.id).toEqual(expect.any(String));
       const expectedJustificationData = assign({}, createJustificationData, {
+        id: expect.any(String),
         counterJustifications: [],
         creator: { id: user.id },
         created: expect.toBeSameMoment(now),
         rootPolarity: createJustificationData.polarity,
-        rootTarget: statementData,
+        rootTarget: expectToBeSameMomentDeep(statementData),
       });
+      expect(justificationData.creator).toEqual(
+        expectedJustificationData.creator
+      );
       expect(justificationData).toMatchObject(expectedJustificationData);
     });
   });

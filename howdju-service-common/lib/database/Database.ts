@@ -24,7 +24,7 @@ export class Database {
     this.pool = pool;
   }
 
-  query<R extends QueryResultRow = any>(
+  query<R extends QueryResultRow>(
     queryName: string,
     sql: string,
     args: any[],

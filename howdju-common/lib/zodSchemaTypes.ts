@@ -4,6 +4,8 @@ import { assert } from "./general";
 import { logger } from "./logger";
 
 import {
+  AccountSettings,
+  ContentReport,
   CreateCounterJustification,
   CreateCounterJustificationInput,
   CreateCounterJustificationInputTarget,
@@ -29,10 +31,13 @@ import {
   Justification,
   JustificationRootTarget,
   JustificationVote,
+  PasswordResetRequest,
   Persorg,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
+  PropositionTagVote,
+  RegistrationRequest,
   SourceExcerpt,
   Statement,
   Tag,
@@ -128,7 +133,18 @@ export type EntityName<T> = T extends Proposition
   ? "WritQuote"
   : T extends User
   ? "User"
+  : T extends PropositionTagVote
+  ? "PropositionTagVote"
+  : T extends RegistrationRequest
+  ? "RegistrationRequest"
+  : T extends PasswordResetRequest
+  ? "PasswordResetRequest"
+  : T extends AccountSettings
+  ? "AccountSettings"
+  : T extends ContentReport
+  ? "ContentReport"
   : never;
+
 /** A reference to an Entity by ID. */
 export type Ref<TName extends string> = PersistedEntity & z.BRAND<TName>;
 export type EntityOrRef<T extends Entity> = T | Ref<EntityName<T>>;

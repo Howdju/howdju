@@ -17,27 +17,41 @@ import {
   JustificationRootTargetType,
 } from "howdju-common";
 import { QueryResultRow } from "pg";
-import { JustificationRow, EntityRowId } from "./types";
+import { JustificationRow, EntityRowId } from "./dataTypes";
 import { toString } from "lodash";
 
 // Convenience re-export. TODO update deps in this folder to depend on new location directly
 export { normalizeText } from "howdju-common";
 
-export type RowMapper<T extends QueryResultRow, R = any> = (row?: T) => R;
-type MapSingleReturn<T extends QueryResultRow, M extends RowMapper<T>> = ({
-  rows,
-}: {
-  rows: T[];
-}) => ReturnType<M>;
-export function mapSingle<T extends QueryResultRow, M extends RowMapper<T>>(
-  mapper: M
-): MapSingleReturn<T, M>;
-export function mapSingle<T extends QueryResultRow, M extends RowMapper<T>>(
+export type RowMapper<
+  T extends QueryResultRow | undefined,
+  Args extends any[] | undefined = undefined,
+  R extends object = Record<string, unknown>
+> = Args extends any[] ? (row: T, ...args: Args) => R : (row: T) => R;
+
+export function mapSingle<
+  T extends QueryResultRow,
+  R extends object = Record<string, unknown>,
+  M extends RowMapper<T | undefined, undefined, R> = RowMapper<
+    T | undefined,
+    undefined,
+    R
+  >
+>(mapper: M): R;
+export function mapSingle<
+  T extends QueryResultRow,
+  R extends object = Record<string, unknown>,
+  M extends RowMapper<T | undefined, undefined, R> = RowMapper<
+    T | undefined,
+    undefined,
+    R
+  >
+>(
   loggerOrMapper: Logger | M,
   mapper?: M,
   tableName?: string,
   identifiers?: Record<string, string>
-): MapSingleReturn<T, M> {
+) {
   return ({ rows }: { rows: T[] }) => {
     // Some queries, such as insert, have no chance for returning multiple rows.  So then the caller doesnt' pass the logger
     let requireOne = false;
@@ -76,7 +90,7 @@ export const mapManyById =
   <
     T extends QueryResultRow,
     R extends { id: EntityId },
-    M extends RowMapper<T, R>
+    M extends RowMapper<T, undefined, R>
   >(
     mapper: M
   ) =>

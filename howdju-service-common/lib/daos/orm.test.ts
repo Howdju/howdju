@@ -1,6 +1,6 @@
 import { toIdString } from "./daosUtil";
 import { toJustificationVote } from "./orm";
-import { JustificationVoteRow } from "./types";
+import { JustificationVoteRow } from "./dataTypes";
 
 describe("orm", () => {
   test("toJustificationVote", () => {

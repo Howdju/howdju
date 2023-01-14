@@ -37,6 +37,7 @@ import {
   CreatePropositionCompoundInput,
   CreatePropositionInput,
   CreateRegistrationConfirmationInput,
+  CreateRegistrationRequest,
   CreateRegistrationRequestInput,
   CreateSourceExcerpt,
   CreateSourceExcerptInput,
@@ -56,7 +57,6 @@ import {
   Persorg,
   PicRegion,
   PropositionTagVote,
-  RegistrationRequest,
   SourceExcerpt,
   SourceExcerptRef,
   Tag,
@@ -126,13 +126,12 @@ export const makeCreateRegistrationRequestInput = (
   return assign({ email: "" }, props);
 };
 
-export const makeRegistrationRequest = (
-  props?: Partial<RegistrationRequest> & Pick<RegistrationRequest, "expires">
-): RegistrationRequest =>
+export const makeCreateRegistrationRequest = (
+  props?: Partial<CreateRegistrationRequest>
+): CreateRegistrationRequest =>
   assign(
     {
       email: "",
-      isConsumed: false,
     },
     props
   );

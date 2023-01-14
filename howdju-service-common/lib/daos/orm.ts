@@ -6,9 +6,13 @@ import values from "lodash/values";
 import { QueryResultRow } from "pg";
 
 import {
+  AccountSettingsRef,
   camelCaseKeysDeep,
+  ContentReportRef,
+  ContentReportType,
   Entity,
   EntityId,
+  EntityType,
   JustificationBasisCompoundAtomTypes,
   JustificationBasisTypes,
   JustificationRef,
@@ -18,14 +22,18 @@ import {
   newImpossibleError,
   newProgrammingError,
   newUnimplementedError,
+  PasswordResetRequestRef,
   PersorgRef,
   PropositionCompoundRef,
   PropositionRef,
+  PropositionTagVoteRef,
+  RegistrationRequestRef,
   requireArgs,
   SentenceTypes,
   SourceExcerptRef,
   SourceExcerptTypes,
   StatementRef,
+  TagRef,
   toSlug,
   UserRef,
   WritQuoteRef,
@@ -33,11 +41,19 @@ import {
 } from "howdju-common";
 
 import {
+  AccountSettingsData,
+  AccountSettingsRow,
+  ContentReportData,
+  ContentReportRow,
   CreatorBlurbData,
   CreatorBlurbRow,
   JustificationRow,
+  JustificationScoreData,
+  JustificationScoreRow,
   JustificationVoteData,
   JustificationVoteRow,
+  PasswordResetRequestData,
+  PasswordResetRequestRow,
   PersorgData,
   PersorgRow,
   PropositionCompoundAtomData,
@@ -45,8 +61,14 @@ import {
   PropositionCompoundRow,
   PropositionData,
   PropositionRow,
+  PropositionTagScoreData,
+  PropositionTagScoreRow,
+  PropositionTagVoteData,
+  PropositionTagVoteRow,
   ReadJustificationDataOut,
   ReadPropositionCompoundDataOut,
+  RegistrationRequestData,
+  RegistrationRequestRow,
   SpeakerBlurbRow,
   StatementData,
   StatementRow,
@@ -54,25 +76,30 @@ import {
   UserData,
   UserExternalIdsData,
   UserExternalIdsRow,
+  UserHashData,
+  UserHashRow,
   UserRow,
   WritData,
   WritQuoteData,
   WritQuoteRow,
   WritRow,
-} from "./types";
-import { toIdString } from "./daosUtil";
+} from "./dataTypes";
+import { RowMapper, toIdString } from "./daosUtil";
 import { isUndefined } from "lodash";
-
-// TODO(1): evaluate usage of `: any` in this file.
 
 export function fromIdString(val: string) {
   return parseInt(val);
 }
 
+/**
+ * Returns obj without any keys that contained undefined.
+ *
+ * If all keys contained undefined, return undefined.
+ */
 function removeUndefinedProperties<T extends Record<string, any>>(obj: T) {
   let hasDefinedProperty = false;
   for (const key of Object.keys(obj)) {
-    if (obj[key] === undefined) {
+    if (obj[key] === undefined || obj[key] === null) {
       delete obj[key];
     } else {
       hasDefinedProperty = true;
@@ -82,14 +109,11 @@ function removeUndefinedProperties<T extends Record<string, any>>(obj: T) {
   return hasDefinedProperty ? obj : undefined;
 }
 
-// TODO(1): dedupe with RowMapper in daosUtil
-type RowMapper<
-  T extends QueryResultRow,
-  Args extends any[] | undefined = undefined,
-  R extends object = Record<string, unknown>
-> = Args extends any[] ? (row: T, ...args: Args) => R : (row: T) => R;
-
-function makeMapper<
+/**
+ * Wrap a mapper.
+ *
+ * Guards for undefined row, sets ID if missing, and removes undefined values. */
+function wrapMapper<
   T extends QueryResultRow,
   Args extends any[],
   R extends object
@@ -119,7 +143,8 @@ function mapRelation<
   if (!unprefixed) {
     return unprefixed;
   }
-  return mapper(unprefixed);
+  const mapped = mapper(unprefixed);
+  return removeUndefinedProperties(mapped);
 }
 
 /**
@@ -154,12 +179,15 @@ type Prefix<P extends string, K> = K extends string
     ? K
     : PrefixString<P, K>
   : K;
+/** Prefix the properties of Value with P. */
 type PrefixProperties<P extends string, Value extends Record<string, any>> = {
   [K in keyof Value as Prefix<P, K>]: Value[K];
 };
 
-/** Returns a new object containing the key/values of `obj`
- * for keys whose names start with `prefix` but with that prefix removed
+/**
+ * Returns obj removing prefix from its keys.
+ *
+ * Keys that don't start with prefix are removed.
  */
 function unprefix<T extends QueryResultRow, P extends string>(
   obj: T,
@@ -195,14 +223,17 @@ function toUserMapper(row: UserRow & UserExternalIdsRow): UserData {
 
   return user;
 }
-export const toUser = makeMapper(toUserMapper);
+export const toUser = wrapMapper(toUserMapper);
 
 function toCreatorBlurbMapper(row: CreatorBlurbRow): CreatorBlurbData {
-  return camelCaseKeysDeep(row);
+  return {
+    id: toIdString(row.user_id),
+    longName: row.long_name,
+  };
 }
-export const toCreatorBlurb = makeMapper(toCreatorBlurbMapper);
+export const toCreatorBlurb = wrapMapper(toCreatorBlurbMapper);
 
-export const toUserExternalIds = makeMapper(function (
+export const toUserExternalIds = wrapMapper(function (
   row: UserExternalIdsRow
 ): UserExternalIdsData {
   return {
@@ -238,7 +269,7 @@ function toPropositionMapper(row: PropositionRow): PropositionData {
 
   return proposition;
 }
-export const toProposition = makeMapper(toPropositionMapper);
+export const toProposition = wrapMapper(toPropositionMapper);
 
 type StatementMapperRow = StatementRow &
   PrefixProperties<"creator_", CreatorBlurbRow> &
@@ -281,7 +312,7 @@ function toStatementMapper(row: StatementMapperRow): StatementData {
       throw newExhaustedEnumError(statement.sentenceType);
   }
 }
-export const toStatement = makeMapper(toStatementMapper);
+export const toStatement = wrapMapper(toStatementMapper);
 
 function mapJustificationRootTargetRelation(row: ToJustificationMapperRow) {
   switch (row.root_target_type) {
@@ -298,7 +329,7 @@ function mapJustificationRootTargetRelation(row: ToJustificationMapperRow) {
   }
 }
 
-/** If the ID key is undefined, then no other fieldsa are present. Otherwise they are all present. */
+/** A type that condtionally includes all keys from row iff Id is defined. */
 type PossibleRow<
   Prefix extends string,
   Id extends string,
@@ -340,14 +371,8 @@ function toJustificationMapper(
       "rootTarget relation must be mappable but was undefined."
     );
   }
-  const justificationId = row.justification_id || row.id;
-  if (isUndefined(justificationId)) {
-    throw newProgrammingError(
-      "justificationId is required when mapping a Justification."
-    );
-  }
   const justification: ReadJustificationDataOut = {
-    ...JustificationRef.parse({ id: toIdString(justificationId) }),
+    ...JustificationRef.parse({ id: toIdString(row.justification_id) }),
     created: row.created,
     rootTargetType: row.root_target_type,
     rootTarget,
@@ -372,12 +397,10 @@ function toJustificationMapper(
         user_id: row.creator_user_id,
         long_name: row.creator_long_name,
       });
-      // return toCreatorBlurb(unprefix(row, "creator_"));
-    } else {
-      return UserRef.parse({
-        id: toIdString(row.creator_user_id),
-      });
     }
+    return UserRef.parse({
+      id: toIdString(row.creator_user_id),
+    });
   }
 
   switch (row.basis_type) {
@@ -483,7 +506,7 @@ function toJustificationMapper(
 
   return justification;
 }
-export const toJustification = makeMapper(toJustificationMapper);
+export const toJustification = wrapMapper(toJustificationMapper);
 
 function parseJustificationTargetRef(row: JustificationRow) {
   const type = row.target_type;
@@ -549,7 +572,7 @@ function toWritQuoteMapper(row: ToWritQuoteMapperRow): WritQuoteData {
     urls: [],
   };
 }
-export const toWritQuote = makeMapper(toWritQuoteMapper);
+export const toWritQuote = wrapMapper(toWritQuoteMapper);
 
 type ToWritMapperRow = WritRow & PrefixProperties<"creator_", CreatorBlurbRow>;
 function toWritMapper(row: ToWritMapperRow): WritData {
@@ -568,16 +591,16 @@ function toWritMapper(row: ToWritMapperRow): WritData {
     creator,
   };
 }
-export const toWrit = makeMapper(toWritMapper);
+export const toWrit = wrapMapper(toWritMapper);
 
-export const toUrl = makeMapper(function toUrlMapper(row) {
+export const toUrl = wrapMapper(function toUrlMapper(row) {
   return {
     id: toIdString(row.url_id),
     url: row.url,
   };
 });
 
-export const toJustificationVote = makeMapper(
+export const toJustificationVote = wrapMapper(
   function toJustificationVoteMapper(
     row: JustificationVoteRow
   ): JustificationVoteData {
@@ -594,7 +617,7 @@ export const toJustificationVote = makeMapper(
   }
 );
 
-export const toWritQuoteUrl = makeMapper(function toWriteQuoteUrlMapper(row) {
+export const toWritQuoteUrl = wrapMapper(function toWriteQuoteUrlMapper(row) {
   return {
     writQuoteId: toIdString(row.writ_quote_id),
     urlId: toIdString(row.url_id),
@@ -603,25 +626,25 @@ export const toWritQuoteUrl = makeMapper(function toWriteQuoteUrlMapper(row) {
 
 export const toPropositionCompound = (
   row: PropositionCompoundRow,
-  atoms?: PropositionCompoundAtomData[]
+  atoms: PropositionCompoundAtomData[] = []
 ): ReadPropositionCompoundDataOut => {
   if (!row) {
     return row;
   }
 
-  const propositionCompound: any = {
-    id: toIdString(row.proposition_compound_id),
+  return {
+    ...PropositionCompoundRef.parse({
+      id: toIdString(row.proposition_compound_id),
+    }),
     created: row.created,
     creatorUserId: toIdString(row.creator_user_id),
     atoms,
   };
-
-  return propositionCompound;
 };
 
 export type ToPropositionCompoundAtomMapperRow = PropositionCompoundAtomRow &
   PrefixProperties<"proposition_", PropositionRow>;
-export const toPropositionCompoundAtom = makeMapper(
+export const toPropositionCompoundAtom = wrapMapper(
   function toPropositionCompoundAtomMapper(
     row: ToPropositionCompoundAtomMapperRow
   ): PropositionCompoundAtomData {
@@ -649,11 +672,8 @@ export const toPerspective = (row: any) =>
     creatorUserId: row.creator_user_id,
   };
 
-export const toUserHash = (row: any) =>
-  row && {
-    userId: row.user_id,
-    hash: row.hash,
-  };
+export const toUserHash = (row: UserHashRow): UserHashData =>
+  row && camelCaseKeysDeep(row);
 
 export const toJobHistory = (row: any) =>
   row && {
@@ -665,16 +685,9 @@ export const toJobHistory = (row: any) =>
     message: row.message,
   };
 
-export const toJustificationScore = (row: any) =>
-  row && {
-    justificationId: row.justification_id,
-    scoreType: row.score_type,
-    score: row.score,
-    created: row.created,
-    deleted: row.deleted,
-    creatorJobHistoryId: row.creator_job_history_id,
-    deletorJobHistoryId: row.deletor_job_history_id,
-  };
+export const toJustificationScore = (
+  row: JustificationScoreRow
+): JustificationScoreData => row && camelCaseKeysDeep(row);
 
 export const toJustificationBasisCompound = (row: any, atoms?: any) => {
   if (!row) {
@@ -826,24 +839,30 @@ export const toSourceExcerptEntity = (row: any) => {
   }
 };
 
-export function toPropositionTagVote(row: any) {
+export function toPropositionTagVote(
+  row: PropositionTagVoteRow
+): PropositionTagVoteData {
   if (!row) {
     return row;
   }
 
   return {
-    id: toIdString(row.proposition_tag_vote_id),
+    ...PropositionTagVoteRef.parse({
+      id: toIdString(row.proposition_tag_vote_id),
+    }),
     polarity: row.polarity,
-    proposition: {
+    proposition: PropositionRef.parse({
       id: toIdString(row.proposition_id),
-    },
-    tag: {
+    }),
+    tag: TagRef.parse({
       id: toIdString(row.tag_id),
-    },
+    }),
   };
 }
 
-export function toPropositionTagScore(row: any) {
+export function toPropositionTagScore(
+  row: PropositionTagScoreRow
+): PropositionTagScoreData {
   if (!row) {
     return row;
   }
@@ -854,20 +873,19 @@ export function toPropositionTagScore(row: any) {
     scoreType: row.score_type,
     score: row.score,
     created: row.created,
-    deleted: row.deleted,
     creatorJobHistoryId: row.creator_job_history_id,
     deletorJobHistoryId: row.deletor_job_history_id,
   };
 }
 
-export const toTag = makeMapper(function toTagMapper(row) {
+export const toTag = wrapMapper(function toTagMapper(row) {
   return {
     id: toIdString(row.tag_id),
     name: row.name,
   };
 });
 
-export const toPersorg = makeMapper(function toPersorgMapper(
+export const toPersorg = wrapMapper(function toPersorgMapper(
   row: PersorgRow & PrefixProperties<"creator_", CreatorBlurbRow>
 ): PersorgData {
   const persorg = {
@@ -893,54 +911,62 @@ export const toPersorg = makeMapper(function toPersorgMapper(
   return { ...persorg, creator };
 });
 
-export const toRegistrationRequest = makeMapper(
-  function toRegistrationRequestMapper(row) {
+export const toRegistrationRequest = wrapMapper(
+  function toRegistrationRequestMapper(
+    row: RegistrationRequestRow
+  ): RegistrationRequestData {
     return {
-      id: toIdString(row.registration_request_id),
+      ...RegistrationRequestRef.parse({
+        id: toIdString(row.registration_request_id),
+      }),
       email: row.email,
       registrationCode: row.registration_code,
       isConsumed: row.is_consumed,
       expires: row.expires,
       created: row.created,
-      deleted: row.deleted,
     };
   }
 );
 
-export const toPasswordResetRequest = makeMapper(
-  function toPasswordResetRequestMapper(row) {
+export const toPasswordResetRequest = wrapMapper(
+  function toPasswordResetRequestMapper(
+    row: PasswordResetRequestRow
+  ): PasswordResetRequestData {
     return {
-      id: toIdString(row.password_reset_request_id),
-      userId: row.user_id,
+      ...PasswordResetRequestRef.parse({
+        id: toIdString(row.password_reset_request_id),
+      }),
+      userId: toIdString(row.user_id),
       email: row.email,
       passwordResetCode: row.password_reset_code,
       expires: row.expires,
       isConsumed: row.isConsumed,
       created: row.created,
-      deleted: row.deleted,
     };
   }
 );
 
-export const toAccountSettings = makeMapper(function toAccountSettingsMapper(
-  row
-) {
+export const toAccountSettings = wrapMapper(function toAccountSettingsMapper(
+  row: AccountSettingsRow
+): AccountSettingsData {
   return {
-    id: toIdString(row.account_settings_id),
+    ...AccountSettingsRef.parse({ id: toIdString(row.account_settings_id) }),
     userId: toIdString(row.user_id),
     paidContributionsDisclosure: row.paid_contributions_disclosure,
   };
 });
 
-export const toContentReport = makeMapper(function toContentReportMapper(row) {
+export const toContentReport = wrapMapper(function toContentReportMapper(
+  row: ContentReportRow
+): ContentReportData {
   return {
-    id: toIdString(row.content_report_id),
-    entityType: row.entity_type,
-    entityId: row.entity_id,
+    ...ContentReportRef.parse({ id: toIdString(row.content_report_id) }),
+    entityType: row.entity_type as EntityType,
+    entityId: toIdString(row.entity_id),
     url: row.url,
-    types: row.types,
+    types: row.types as ContentReportType[],
     description: row.description,
-    reporterUserId: row.reporter_user_id,
+    reporterUserId: toIdString(row.reporter_user_id),
     created: row.created,
   };
 });

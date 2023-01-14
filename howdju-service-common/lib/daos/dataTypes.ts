@@ -1,10 +1,13 @@
 import { z } from "zod";
 import { CamelCasedProperties, MergeDeep } from "type-fest";
-import { camelCase, mapKeys, toString } from "lodash";
+import { toString } from "lodash";
 
 import {
+  AccountSettings,
   camelCaseKeysDeep,
+  ContentReport,
   CreateJustification,
+  CreateRegistrationRequest,
   EntityRef,
   Justification,
   JustificationBasisType,
@@ -16,6 +19,7 @@ import {
   JustificationVote,
   JustificationVotePolarity,
   JustificationWithRootRef,
+  PasswordResetRequest,
   Persisted,
   PersistedOrRef,
   PersistRelated,
@@ -24,6 +28,9 @@ import {
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
+  PropositionTagVote,
+  PropositionTagVotePolarity,
+  RegistrationRequest,
   SentenceType,
   Statement,
   User,
@@ -35,31 +42,8 @@ import {
 import { Moment } from "moment";
 import { toIdString } from "./daosUtil";
 
-export interface SortDescription {
-  property: string;
-  direction: string;
-  /** For continuations, the sort should filter out this value and any before it according to `direction`. */
-  value?: string;
-}
-
-export type JustificationFilterName =
-  // Justifications based on this proposition in a PropositionCompound
-  | "propositionId"
-  // Justifications based on this PropositionCompound
-  | "propositionCompoundId"
-  | "sourceExcerptParaphraseId"
-  | "writQuoteId"
-  | "writId"
-  | "justificationId"
-  | "url";
-export type JustificationFilters = Partial<
-  Record<JustificationFilterName, string>
->;
-
 export const EntityRowId = z.number().transform(toString);
 export type EntityRowId = number;
-
-const camelCaseKey = (_val: any, key: string) => camelCase(key);
 
 export interface PropositionRow {
   proposition_id: EntityRowId;
@@ -131,8 +115,6 @@ export interface JustificationBasisCompoundRow {
 
 export interface JustificationRow {
   justification_id: EntityRowId;
-  // TODO remove this in favor of justification_id
-  id?: EntityRowId;
   root_target_id: EntityRowId;
   root_target_type: JustificationRootTargetType;
   root_polarity: JustificationRootPolarity;
@@ -186,23 +168,16 @@ export interface PropositionCompoundRow {
   creator_user_id: EntityRowId;
   created: Moment;
 }
-export const propositionCompoundRowToData = ({
-  proposition_compound_id,
-  ...o
-}: PropositionCompoundRow) => ({
-  id: toString(proposition_compound_id),
-  ...(mapKeys(o, camelCaseKey) as CamelCasedProperties<typeof o>),
-});
 export type ReadPropositionCompoundDataOut = MergeDeep<
   Persisted<PropositionCompound>,
   {
     atoms: {
       entity: Persisted<Proposition> & {
-        rootJustificationCountByPolarity: Partial<
+        rootJustificationCountByPolarity?: Partial<
           Record<"POSITIVE" | "NEGATIVE", number>
         >;
       };
-    };
+    }[];
   }
 >;
 
@@ -275,9 +250,88 @@ export type UserExternalIdsData = UserExternalIds;
 
 /** A short description of a user attached to something the user created to show authorship. */
 export type CreatorBlurbRow = Pick<UserRow, "user_id" | "long_name">;
-export type CreatorBlurbData = Pick<User, "id" | "longName">;
+export type CreatorBlurbData = Pick<Persisted<User>, "id" | "longName">;
 
-export interface SqlClause {
-  sql: string;
-  args: any[];
+export interface UserHashRow {
+  user_id: number;
+  hash: string;
 }
+export type UserHashData = CamelCasedProperties<UserHashRow>;
+
+export interface JustificationScoreRow {
+  justification_id: number;
+  score_type: string;
+  score: number;
+  created: Moment;
+  creator_job_history_id: number;
+  deletor_job_history_id: number;
+}
+export type JustificationScoreData =
+  CamelCasedProperties<JustificationScoreRow>;
+
+export interface PropositionTagVoteRow {
+  proposition_tag_vote_id: number;
+  polarity: PropositionTagVotePolarity;
+  proposition_id: number;
+  tag_id: number;
+}
+export type PropositionTagVoteData = Persisted<PropositionTagVote>;
+
+export interface PropositionTagScoreRow {
+  proposition_id: number;
+  tag_id: number;
+  score_type: string;
+  score: number;
+  created: number;
+  creator_job_history_id: number;
+  deletor_job_history_id: number;
+}
+export type PropositionTagScoreData =
+  CamelCasedProperties<PropositionTagScoreRow>;
+
+export interface RegistrationRequestRow {
+  registration_request_id: number;
+  email: string;
+  registration_code: string;
+  is_consumed: boolean;
+  expires: Moment;
+  created: Moment;
+}
+export type RegistrationRequestData = Persisted<RegistrationRequest>;
+
+export type CreateRegistrationRequestData = CreateRegistrationRequest & {
+  expires: Moment;
+};
+
+export interface PasswordResetRequestRow {
+  password_reset_request_id: number;
+  user_id: number;
+  email: string;
+  password_reset_code: string;
+  expires: Moment;
+  isConsumed: boolean;
+  created: Moment;
+}
+export type PasswordResetRequestData = Persisted<PasswordResetRequest>;
+
+export interface AccountSettingsRow {
+  account_settings_id: number;
+  user_id: number;
+  paid_contributions_disclosure: string;
+}
+export type AccountSettingsData = Persisted<AccountSettings> & {
+  // TODO: remove in favor of id, which should always equal the user's ID.
+  userId: string;
+};
+
+export interface ContentReportRow {
+  content_report_id: number;
+  entity_type: string;
+  entity_id: number;
+  url: string;
+  types: string[];
+  description: string;
+  reporter_user_id: number;
+  created: Moment;
+}
+export type ContentReportData = Persisted<ContentReport>;

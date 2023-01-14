@@ -61,10 +61,7 @@ import { Database } from "../database";
 import {
   JustificationRow,
   PropositionRow,
-  SortDescription,
   ReadPropositionDataOut,
-  SqlClause,
-  JustificationFilters,
   JustificationBasisCompoundRow,
   ReadPropositionCompoundDataOut,
   ReadJustificationDataOut,
@@ -74,9 +71,10 @@ import {
   PropositionCompoundRow,
   WritQuoteData,
   PropositionCompoundAtomRow,
-} from "./types";
+} from "./dataTypes";
+import { SortDescription, SqlClause, JustificationFilters } from "./daoTypes";
 import { Moment } from "moment";
-import { sortBy } from "lodash";
+import { fromPairs, sortBy } from "lodash";
 
 export class JustificationsDao {
   logger: Logger;
@@ -527,7 +525,7 @@ export class JustificationsDao {
         , v.justification_vote_id as vote_justification_vote_id
         , v.polarity              as vote_polarity
         , v.justification_id      as vote_justification_id
-        , u.long_name as creator_long_name
+        , u.long_name             as creator_long_name
       from justifications j
         left join extant_users u on j.creator_user_id = u.user_id
         left join proposition_compounds sc on
@@ -612,7 +610,7 @@ export class JustificationsDao {
                 pca.proposition_id = pcap.proposition_id
             and pcap.proposition_id = $2
     `;
-    const { rows } = await this.database.query(
+    const { rows } = await this.database.query<ToJustificationMapperRow>(
       "readJustificationsDependentUponPropositionId",
       sql,
       [
@@ -648,13 +646,13 @@ export class JustificationsDao {
         and j.basis_id = $5
     `;
     const args = [
-      justification.target?.type,
-      justification.target?.entity?.id,
+      justification.target.type,
+      justification.target.entity.id,
       justification.polarity,
-      justification.basis?.type,
-      justification.basis?.entity?.id,
+      justification.basis.type,
+      justification.basis.entity.id,
     ];
-    const { rows } = await this.database.query(
+    const { rows } = await this.database.query<ToJustificationMapperRow>(
       "readJustificationEquivalentTo",
       sql,
       args
@@ -677,7 +675,7 @@ export class JustificationsDao {
     return await justification_1;
   }
 
-  async readRootJustificationCountByPolarityForRoot(
+  private async readRootJustificationCountByPolarityForRoot(
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId
   ) {
@@ -735,7 +733,11 @@ export class JustificationsDao {
     ];
     const {
       rows: [{ justification_id }],
-    } = await this.database.query("createJustification", sql, args);
+    } = await this.database.query<{ justification_id: number }>(
+      "createJustification",
+      sql,
+      args
+    );
     return {
       ...justification,
       ...JustificationRef.parse({ id: toIdString(justification_id) }),
@@ -767,7 +769,7 @@ export class JustificationsDao {
   }
 
   async deleteJustificationById(justificationId: EntityId, now: Moment) {
-    const { rows } = await this.database.query(
+    const { rows } = await this.database.query<{ justification_id: number }>(
       "deleteJustificationById",
       "update justifications set deleted = $2 where justification_id = $1 returning justification_id",
       [justificationId, now]
@@ -788,7 +790,7 @@ export class JustificationsDao {
     justificationIds: EntityId[],
     now: Moment
   ) {
-    const { rows } = await this.database.query(
+    const { rows } = await this.database.query<{ justification_id: number }>(
       "deleteCounterJustificationsToJustificationIds",
       `
         update justifications set deleted = $1
@@ -1074,22 +1076,26 @@ export class JustificationsDao {
   private async readTargetRootPolarity(
     justification: CreateJustificationDataIn
   ) {
-    const { rows } = await this.database.query(
+    const { rows } = await this.database.query<{
+      root_polarity: JustificationRootPolarity;
+    }>(
       "getTargetRootPolarity",
       "select root_polarity from justifications where justification_id = $1",
       [justification.target.entity.id]
     );
-    if (rows.length < 1) {
-      throw new EntityNotFoundError(
-        `Could not create justification because target justification having ID ${justification.target.entity.id} did not exist`
-      );
-    } else if (rows.length > 1) {
+    if (rows.length > 1) {
       this.logger.error(
         `while creating justification, found more than one target justification having ID ${justification.target.entity.id}`
       );
     }
+    const row = head(rows);
+    if (!row) {
+      throw new EntityNotFoundError(
+        `Could not create justification because target justification having ID ${justification.target.entity.id} did not exist`
+      );
+    }
 
-    const { root_polarity } = head(rows);
+    const { root_polarity } = row;
     return root_polarity as JustificationRootPolarity;
   }
 
@@ -1097,7 +1103,7 @@ export class JustificationsDao {
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
     { userId }: { userId: EntityId }
-  ) {
+  ): Promise<Record<EntityId, ReadPropositionCompoundDataOut>> {
     const propositionCompoundsById =
       await this.propositionCompoundsDao.readPropositionCompoundsByIdForRootTarget(
         rootTargetType,
@@ -1106,35 +1112,37 @@ export class JustificationsDao {
           userId,
         }
       );
-    await this.addRootJustificationCountByPolarity(propositionCompoundsById);
-    return propositionCompoundsById;
+    return this.addRootJustificationCountByPolarity(propositionCompoundsById);
   }
 
   private async addRootJustificationCountByPolarity(
     propositionCompoundsById: Record<EntityId, ReadPropositionCompoundDataOut>
-  ) {
+  ): Promise<Record<EntityId, ReadPropositionCompoundDataOut>> {
     const atoms = flatMap(
       propositionCompoundsById,
       (propositionCompound) => propositionCompound.atoms
     );
     const justificationCounts = await Promise.all(
-      map(
-        atoms,
-        (atom) =>
+      map(atoms, (atom) =>
+        Promise.all([
+          atom.entity.id,
           "entity" in atom &&
-          this.readRootJustificationCountByPolarityForRoot(
-            JustificationRootTargetTypes.PROPOSITION,
-            atom.entity.id
-          )
+            this.readRootJustificationCountByPolarityForRoot(
+              JustificationRootTargetTypes.PROPOSITION,
+              atom.entity.id
+            ),
+        ])
       )
     );
-    forEach(atoms, (atom, i) => {
-      const justificationCount = justificationCounts[i];
-      if (!justificationCount) {
-        return;
-      }
-      atom.entity.rootJustificationCountByPolarity = justificationCount;
-    });
+    const justificationCountsyAtomId = fromPairs(justificationCounts);
+    return mapValues(propositionCompoundsById, (compound) => ({
+      ...compound,
+      atoms: map(compound.atoms, (atom) => ({
+        ...atom,
+        rootJustificationCountByPolarity:
+          justificationCountsyAtomId[atom.entity.id],
+      })),
+    }));
   }
 }
 

@@ -17,11 +17,6 @@ import { drop, take, toNumber } from "lodash";
 import moment, { Moment } from "moment";
 
 const created = moment("2023-01-12T12:23:00");
-// Use deterministic time for relative time formatting
-moment.fn.fromNow = jest.fn(function (this: Moment) {
-  const withoutSuffix = false;
-  return this.from(moment("2023-01-12T20:14:00"), withoutSuffix);
-});
 
 const server = setupServer();
 const propositions = Array.from(Array(20).keys()).map((id) => ({
@@ -32,10 +27,19 @@ const propositions = Array.from(Array(20).keys()).map((id) => ({
 const initialFetchCount = 7;
 const fetchCount = 8;
 
+let fromNow: typeof moment.fn.fromNow;
+
 beforeAll(() => {
   server.listen();
 });
 beforeEach(() => {
+  fromNow = moment.fn.fromNow;
+  // Use deterministic time for relative time formatting
+  moment.fn.fromNow = jest.fn(function (this: Moment) {
+    const withoutSuffix = false;
+    return this.from(moment("2023-01-12T20:14:00"), withoutSuffix);
+  });
+
   jest.useFakeTimers();
 
   server.use(
@@ -57,6 +61,8 @@ afterEach(() => {
 
   jest.runOnlyPendingTimers();
   jest.useRealTimers();
+
+  moment.fn.fromNow = fromNow;
 });
 afterAll(() => server.close());
 

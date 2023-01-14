@@ -273,6 +273,8 @@ export type PropositionCompoundAtom = z.infer<typeof PropositionCompoundAtom>;
 /* One or more propositions intended to be considered conjunctively */
 export const PropositionCompound = Entity.extend({
   atoms: z.array(PropositionCompoundAtom).min(1),
+  created: momentObject.optional(),
+  creatorUserId: z.string().optional(),
 });
 export type PropositionCompound = z.infer<typeof PropositionCompound>;
 
@@ -517,6 +519,26 @@ export type UrlRef = z.infer<typeof UrlRef>;
 
 export const UserRef = Entity.required().brand<EntityName<User>>();
 export type UserRef = z.infer<typeof UserRef>;
+
+export const PropositionTagVoteRef =
+  Entity.required().brand<EntityName<PropositionTagVote>>();
+export type PropositionTagVoteRef = z.infer<typeof PropositionTagVoteRef>;
+
+export const RegistrationRequestRef =
+  Entity.required().brand<EntityName<RegistrationRequest>>();
+export type RegistrationRequestRef = z.infer<typeof RegistrationRequestRef>;
+
+export const PasswordResetRequestRef =
+  Entity.required().brand<EntityName<PasswordResetRequest>>();
+export type PasswordResetRequestRef = z.infer<typeof PasswordResetRequestRef>;
+
+export const AccountSettingsRef =
+  Entity.required().brand<EntityName<AccountSettings>>();
+export type AccountSettingsRef = z.infer<typeof AccountSettingsRef>;
+
+export const ContentReportRef =
+  Entity.required().brand<EntityName<ContentReport>>();
+export type ContentReportRef = z.infer<typeof ContentReportRef>;
 
 /*
  * Entities lacking alternatives don't require special Create/Edit models
@@ -881,6 +903,8 @@ export const ContentReport = Entity.extend({
   types: z.array(ContentReportType),
   description: z.string(),
   url: z.string().url(),
+  reporterUserId: z.string(),
+  created: momentObject,
 });
 export type ContentReport = z.infer<typeof ContentReport>;
 
@@ -971,8 +995,10 @@ export type CreateJustifiedSentence = z.infer<typeof CreateJustifiedSentence>;
 
 export const RegistrationRequest = Entity.extend({
   email: User.shape.email,
+  registrationCode: z.string(),
   isConsumed: z.boolean(),
   expires: momentObject,
+  created: momentObject,
 });
 export type RegistrationRequest = z.infer<typeof RegistrationRequest>;
 
@@ -1002,3 +1028,13 @@ export const CreateRegistrationConfirmation = RegistrationConfirmation;
 export type CreateRegistrationConfirmation = RegistrationConfirmation;
 export const CreateRegistrationConfirmationInput = RegistrationConfirmation;
 export type CreateRegistrationConfirmationInput = RegistrationConfirmation;
+
+export const PasswordResetRequest = Entity.extend({
+  userId: z.string(),
+  email: z.string().email(),
+  passwordResetCode: z.string(),
+  expires: momentObject,
+  isConsumed: z.boolean(),
+  created: momentObject,
+});
+export type PasswordResetRequest = z.infer<typeof PasswordResetRequest>;
