@@ -30,7 +30,6 @@ import {
   makeUrl,
   newProgrammingError,
   removeAt,
-  makePropositionTagVote,
   PropositionTagVotePolarities,
   tagEqual,
   Entity,
@@ -707,9 +706,7 @@ function makePropositionTagReducer(
     const propositionTagVotes =
       redundantPropositionTagVotes.length > 0
         ? oldPropositionTagVotes
-        : combiner(oldPropositionTagVotes, [
-            makePropositionTagVote({ polarity, tag, proposition }),
-          ]);
+        : combiner(oldPropositionTagVotes, [{ polarity, tag, proposition }]);
 
     return {
       ...state,

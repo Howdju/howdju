@@ -8,6 +8,7 @@ import {
   momentSubtract,
   mapValuesDeep,
   mapKeysDeep,
+  filterDefined,
 } from "./general";
 
 describe("cleanWhitespace", () => {
@@ -46,12 +47,12 @@ describe("mapValuesDeep", () => {
     expect(
       mapValuesDeep(
         {
-          arr: [{ a: 1 }, { b: 2 }],
+          arr: [{ a: 1 }, { b: 2, c: "3" }],
         },
         (x) => (isNumber(x) ? x + 1 : x)
       )
     ).toEqual({
-      arr: [{ a: 2 }, { b: 3 }],
+      arr: [{ a: 2 }, { b: 3, c: "3" }],
     });
   });
   test("Should map arrays of strings correctly with mapArrays=true", () => {
@@ -120,6 +121,30 @@ describe("omitDeep", () => {
         world: "now",
       },
       arr: [1, 2, 3],
+    });
+  });
+});
+
+describe("filterDefined", () => {
+  test("removes undefined list items", () => {
+    expect(
+      filterDefined([1, null, "2", undefined, "3", undefined, false, 4])
+    ).toEqual([1, null, "2", "3", false, 4]);
+  });
+  test("removes object values", () => {
+    expect(
+      filterDefined({
+        a: "a",
+        b: 1,
+        c: undefined,
+        d: false,
+        e: null,
+      })
+    ).toEqual({
+      a: "a",
+      b: 1,
+      d: false,
+      e: null,
     });
   });
 });

@@ -3,11 +3,13 @@ import { rest } from "msw";
 import { screen } from "@testing-library/react";
 import { setupServer } from "msw/node";
 import { createMemoryHistory } from "history";
+import moment, { Moment } from "moment";
 
 import {
   GetPropositionOut,
   httpStatusCodes,
   JustificationOut,
+  PropositionRef,
   toSlug,
 } from "howdju-common";
 
@@ -29,12 +31,28 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
+const created = moment("2023-01-12T08:23:00");
+
 describe("JustificationsPage", () => {
+  let fromNow: typeof moment.fn.fromNow;
+  beforeEach(() => {
+    fromNow = moment.fn.fromNow;
+    // Use deterministic time for relative time formatting
+    moment.fn.fromNow = jest.fn(function (this: Moment) {
+      const withoutSuffix = false;
+      return this.from(moment("2023-01-12T20:14:00"), withoutSuffix);
+    });
+  });
+  afterEach(() => {
+    moment.fn.fromNow = fromNow;
+  });
+
   test("Shows a justified proposition", async () => {
     // Arrange
     const justifications: JustificationOut[] = [];
     const proposition = {
-      id: "1",
+      ...PropositionRef.parse({ id: "1" }),
+      created,
       text: "the-proposition-text",
       justifications,
     };

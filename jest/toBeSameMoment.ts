@@ -1,24 +1,26 @@
-import moment, { Moment } from "moment";
+import { Moment, isMoment } from "moment";
 import { diff } from "jest-diff";
 import { MatcherContext, ExpectationResult } from "expect";
+import { toString } from "lodash";
 
 export function toBeSameMoment(
   this: MatcherContext,
-  unparsedReceived: any,
-  unparsedExpected: Moment
+  received: any,
+  expected: Moment
 ): ExpectationResult {
-  let received: Moment | undefined;
-  try {
-    received = moment(unparsedReceived);
-  } catch {
-    // Nothing.
+  if (!isMoment(expected)) {
+    throw new Error(
+      `toBeSameMoment must expect a moment, but got ${typeof expected}: ${toString(
+        expected
+      )}`
+    );
   }
-  const expected = moment(unparsedExpected);
-
-  const receivedAsString = received ? received.toISOString() : "<undefined>";
+  const receivedAsString = isMoment(received)
+    ? received.toISOString()
+    : toString(received);
   const expectedAsString = expected.toISOString();
 
-  const pass = received && received.isSame(expected);
+  const pass = expected.isSame(received);
 
   const message = pass
     ? () =>

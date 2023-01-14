@@ -96,7 +96,7 @@ export default function RegistrationConfirmationEditotFields({
         value={registrationConfirmation?.shortName}
         onPropertyChange={onPropertyChange}
         maxLength={
-          CreateRegistrationConfirmationInput.shape.shortName.maxLength
+          CreateRegistrationConfirmationInput.shape.shortName.unwrap().maxLength
         }
         {...errorProps((rc) => rc.shortName)}
       />

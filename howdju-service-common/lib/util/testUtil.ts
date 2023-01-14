@@ -1,12 +1,14 @@
 import { randomBytes } from "crypto";
 import { readFileSync } from "fs";
 import { PoolConfig } from "pg";
+import { expect } from "@jest/globals";
 
 import { mockLogger } from "howdju-test-common";
 
 import { ApiConfig, baseConfig, makePool } from "..";
-import { logger } from "howdju-common";
+import { logger, mapValuesDeep } from "howdju-common";
 import { cloneDeep, toNumber } from "lodash";
+import { isMoment } from "moment";
 
 export function makeTestDbConfig() {
   return {
@@ -79,4 +81,15 @@ export async function dropDb(config: PoolConfig, dbName: string) {
 
 function randomDbName() {
   return "howdju_" + randomBytes(20).toString("hex");
+}
+
+/**
+ * Deeply replaces all Moments with expect.toBeSameMoment.
+ *
+ * Use on a Jest expected value containing Moments to get reasonable match behavior.
+ */
+export function expectToBeSameMomentDeep(value: any) {
+  return mapValuesDeep(value, (v) =>
+    isMoment(v) ? expect.toBeSameMoment(v) : v
+  );
 }

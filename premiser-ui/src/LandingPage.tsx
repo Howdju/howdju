@@ -8,6 +8,12 @@ import {
   JustificationTargetTypes,
   JustificationPolarities,
   PropositionOut,
+  PropositionRef,
+  JustificationRef,
+  PropositionCompoundRef,
+  WritRef,
+  WritQuoteRef,
+  UrlRef,
 } from "howdju-common";
 import { makeJustificationOutModel } from "howdju-client-common";
 
@@ -19,20 +25,24 @@ import { combineIds } from "./viewModels";
 
 import "./LandingPage.scss";
 import ContextTrail from "./ContextTrail";
+import moment from "moment";
 
 export default class LandingPage extends Component {
   render() {
+    const created = moment.utc("2017-01-12");
     const id = "landing-page";
     const rootProposition: PropositionOut = {
-      id: "example",
+      ...PropositionRef.parse({ id: "example" }),
       text: "By law, no building in Washington, D.C. may be taller than the Capitol building",
+      created,
     };
     const proJustificationProposition: PropositionOut = {
-      id: "example",
+      ...PropositionRef.parse({ id: "example" }),
       text: "The 1899 Height of Buildings Act established that no building could be taller than the Capitol (289 feet)",
+      created,
     };
     const proJustification = makeJustificationOutModel({
-      id: "example",
+      ...JustificationRef.parse({ id: "example" }),
       polarity: "POSITIVE",
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -41,13 +51,17 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          id: "example",
-          atoms: [{ id: "example", entity: proJustificationProposition }],
+          ...PropositionCompoundRef.parse({ id: "example" }),
+          atoms: [
+            { compoundId: "example", entity: proJustificationProposition },
+          ],
         },
       },
+      created,
     });
     const proJustificationJustification = makeJustificationOutModel({
-      id: "example",
+      ...JustificationRef.parse({ id: "example" }),
+      created,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: proJustificationProposition,
@@ -56,20 +70,22 @@ export default class LandingPage extends Component {
       basis: {
         type: "WRIT_QUOTE",
         entity: {
-          id: "example",
+          ...WritQuoteRef.parse({ id: "example" }),
           quoteText:
             "The Heights of Buildings Act of 1899 limited buildings in the District to 288 feet, the height of the Capitol building, in response to the newly erected 14-story Cairo apartment tower, then considered a monstrosity (now revered as outstandingly beautiful) towering over its Dupont Circle neighborhood.",
           writ: {
-            id: "example",
+            ...WritRef.parse({ id: "example" }),
             title:
               "Vantage Point: The Curse of (Certain) Tall Buildings — The American Surveyor",
+            created,
           },
           urls: [
             {
-              id: "example",
+              ...UrlRef.parse({ id: "example" }),
               url: "https://archive.amerisurv.com/PDF/TheAmericanSurveyor_Lathrop-TallBuildings_January2009.pdf",
             },
           ],
+          created,
         },
       },
     });
@@ -87,11 +103,13 @@ export default class LandingPage extends Component {
     ];
 
     const conJustificationProposition: PropositionOut = {
-      id: "example",
+      ...PropositionRef.parse({ id: "example" }),
       text: "In general, buildings in Washington, D.C. may be no taller than the width of their adjacent street plus 20 feet ",
+      created,
     };
     const conJustification = makeJustificationOutModel({
-      id: "example",
+      ...JustificationRef.parse({ id: "example" }),
+      created,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
         entity: rootProposition,
@@ -100,10 +118,10 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          id: "example",
+          ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
             {
-              id: "example",
+              compoundId: "example",
               entity: conJustificationProposition,
             },
           ],
@@ -111,7 +129,8 @@ export default class LandingPage extends Component {
       },
     });
     const conJustificationJustification = makeJustificationOutModel({
-      id: "example",
+      ...JustificationRef.parse({ id: "example" }),
+      created,
       polarity: JustificationPolarities.POSITIVE,
       target: {
         type: JustificationTargetTypes.PROPOSITION,
@@ -120,17 +139,19 @@ export default class LandingPage extends Component {
       basis: {
         type: "WRIT_QUOTE",
         entity: {
-          id: "example",
+          ...WritQuoteRef.parse({ id: "example" }),
+          created,
           quoteText:
             "No building shall be erected, altered, or raised in the District of Columbia in any manner so as to exceed in height above the sidewalk the width of the street, avenue, or highway in its front, increased by 20 feet",
           writ: {
-            id: "example",
+            ...WritRef.parse({ id: "example" }),
+            created,
             title:
               "DC Code - § 6–601.05. Street width to control building height; business streets; residence streets; specified properties; structures above top story of building.",
           },
           urls: [
             {
-              id: "example",
+              ...UrlRef.parse({ id: "example" }),
               url: "https://code.dccouncil.gov/us/dc/council/code/sections/6-601.05",
             },
           ],
@@ -151,7 +172,8 @@ export default class LandingPage extends Component {
     ];
 
     const counterJustification = makeJustificationOutModel({
-      id: "example",
+      ...JustificationRef.parse({ id: "example" }),
+      created,
       polarity: "NEGATIVE",
       target: {
         type: "JUSTIFICATION",
@@ -160,12 +182,13 @@ export default class LandingPage extends Component {
       basis: {
         type: JustificationBasisTypes.PROPOSITION_COMPOUND,
         entity: {
-          id: "example",
+          ...PropositionCompoundRef.parse({ id: "example" }),
           atoms: [
             {
-              id: "example",
+              compoundId: "example",
               entity: {
-                id: "example",
+                ...PropositionRef.parse({ id: "example" }),
+                created,
                 text: "The 1910 Height of Buildings Act amended the 1899 act to base the height restriction on the width of adjacent streets.",
               },
             },

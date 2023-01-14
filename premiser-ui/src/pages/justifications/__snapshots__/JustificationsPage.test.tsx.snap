@@ -66,8 +66,10 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
                           
                            
                           <span
-                            title=""
-                          />
+                            title="12 Jan 2023 8:23:00 AM"
+                          >
+                            12 hours ago
+                          </span>
                         </span>
                       </div>
                     </div>

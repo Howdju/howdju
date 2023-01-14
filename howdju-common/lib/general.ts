@@ -1,4 +1,12 @@
-import { mapValues, isPlainObject, toLower, deburr } from "lodash";
+import {
+  mapValues,
+  isPlainObject as lodashIsPlainObject,
+  toLower,
+  deburr,
+  camelCase,
+  filter,
+  pickBy,
+} from "lodash";
 import cloneDeepWith from "lodash/cloneDeepWith";
 import forEach from "lodash/forEach";
 import isArray from "lodash/isArray";
@@ -17,6 +25,7 @@ import { create as createRandomSeed } from "random-seed";
 import bases from "bases";
 
 import { newProgrammingError } from "./commonErrors";
+import { CamelCasedPropertiesDeep } from "type-fest";
 
 export interface MapValuesOptions {
   /**
@@ -94,7 +103,7 @@ export function mapValuesDeep<
       ) as MapValuesDeepReturn<T, ReturnType<F>, O>;
     }
     // Fall through
-  } else if (isObject(obj)) {
+  } else if (isPlainObject(obj)) {
     return mapValues(obj, (val, key) =>
       mapValuesDeep(val, fn, options, key)
     ) as MapValuesDeepReturn<T, ReturnType<F>, O>;
@@ -134,6 +143,15 @@ export const mapKeysDeep = <
   }
   return obj as MapKeysDeepReturn<T, ReturnType<F>>;
 };
+
+export function camelCaseKeysDeep<T extends Record<string, any>>(val: T) {
+  return mapKeysDeep(val, camelCase) as unknown as CamelCasedPropertiesDeep<T>;
+}
+
+/** Sadly @types/lodash doesn't define this as a typeguard. */
+export function isPlainObject(val: any): val is object {
+  return lodashIsPlainObject(val);
+}
 
 // https://stackoverflow.com/a/27093173/39396
 export const minDate = () => new Date(-8640000000000000);
@@ -177,7 +195,7 @@ export const assert = (
   }
 };
 
-export const isDefined = (val: any) => !isUndefined(val);
+export const isDefined = <T>(val: T | undefined): val is T => !isUndefined(val);
 
 export const utcNow = () => moment.utc();
 
@@ -451,3 +469,19 @@ export const toEntries = <T extends Partial<Record<string, any>>>(
   }
   return Object.entries(obj) as [InferKey<T>, InferValue<T>][];
 };
+
+/** Removes undefined values. */
+export function filterDefined<T>(
+  items: Record<string, T | undefined>
+): Record<string, T>;
+/** Removes undefined items. */
+export function filterDefined<T>(items: (T | undefined)[]): T[];
+export function filterDefined<T>(
+  items: (T | undefined)[] | Record<string, T | undefined>
+): T[] | Record<string, T> {
+  // Filtering with the default identity function will remove everything falsy.
+  if (isArray(items)) {
+    return filter(items, (i) => i !== undefined) as T[];
+  }
+  return pickBy(items, (i) => i !== undefined) as Record<string, T>;
+}

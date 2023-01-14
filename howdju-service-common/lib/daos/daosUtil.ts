@@ -17,27 +17,41 @@ import {
   JustificationRootTargetType,
 } from "howdju-common";
 import { QueryResultRow } from "pg";
-import { JustificationRow, EntityRowId } from "./types";
+import { JustificationRow, EntityRowId } from "./dataTypes";
 import { toString } from "lodash";
 
 // Convenience re-export. TODO update deps in this folder to depend on new location directly
 export { normalizeText } from "howdju-common";
 
-export type RowMapper<T extends QueryResultRow, R = any> = (row?: T) => R;
-type MapSingleReturn<T extends QueryResultRow, M extends RowMapper<T>> = ({
-  rows,
-}: {
-  rows: T[];
-}) => ReturnType<M>;
-export function mapSingle<T extends QueryResultRow, M extends RowMapper<T>>(
-  mapper: M
-): MapSingleReturn<T, M>;
-export function mapSingle<T extends QueryResultRow, M extends RowMapper<T>>(
+export type RowMapper<
+  T extends QueryResultRow | undefined,
+  Args extends any[] | undefined = undefined,
+  R extends object = Record<string, unknown>
+> = Args extends any[] ? (row: T, ...args: Args) => R : (row: T) => R;
+
+export function mapSingle<
+  T extends QueryResultRow,
+  R extends object = Record<string, unknown>,
+  M extends RowMapper<T | undefined, undefined, R> = RowMapper<
+    T | undefined,
+    undefined,
+    R
+  >
+>(mapper: M): R;
+export function mapSingle<
+  T extends QueryResultRow,
+  R extends object = Record<string, unknown>,
+  M extends RowMapper<T | undefined, undefined, R> = RowMapper<
+    T | undefined,
+    undefined,
+    R
+  >
+>(
   loggerOrMapper: Logger | M,
   mapper?: M,
   tableName?: string,
   identifiers?: Record<string, string>
-): MapSingleReturn<T, M> {
+) {
   return ({ rows }: { rows: T[] }) => {
     // Some queries, such as insert, have no chance for returning multiple rows.  So then the caller doesnt' pass the logger
     let requireOne = false;
@@ -76,7 +90,7 @@ export const mapManyById =
   <
     T extends QueryResultRow,
     R extends { id: EntityId },
-    M extends RowMapper<T, R>
+    M extends RowMapper<T, undefined, R>
   >(
     mapper: M
   ) =>
@@ -89,16 +103,13 @@ export const mapManyById =
     return byId;
   };
 
-export const groupRootJustifications = (
+export const groupRootJustifications = <T extends JustificationRow>(
   rootTargetType: JustificationRootTargetType,
   rootTargetId: EntityId,
-  justification_rows: JustificationRow[]
+  justification_rows: T[]
 ) => {
   const rootJustifications = [],
-    counterJustificationsByJustificationId: Record<
-      EntityRowId,
-      JustificationRow[]
-    > = {};
+    counterJustificationsByJustificationId: Record<EntityRowId, T[]> = {};
   for (const justification_row of justification_rows) {
     // There are two types of justifications: those targeting other justifications or those targeting the current root
     if (
@@ -176,3 +187,12 @@ export const createParams = function createParams(
 ) {
   return map(Array.from(Array(count).keys()), (i) => "$" + (i + start));
 };
+
+// We use a convention of translating IDs to strings.
+//
+// Also, there's a built-in toString that does weird things. So rather than
+// accidentally use it by forgetting to import toString from lodash, use this
+// method.
+export function toIdString(val: number) {
+  return toString(val);
+}

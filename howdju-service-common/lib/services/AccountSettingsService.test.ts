@@ -14,7 +14,7 @@ import { AccountSettings } from "howdju-common";
 import moment from "moment";
 import { Pool } from "pg";
 import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
-import { CreateUserDataIn } from "@/daos/types";
+import { CreateUserDataIn } from "@/daos/dataTypes";
 
 describe("AccountSettingsService", () => {
   const dbConfig = makeTestDbConfig();

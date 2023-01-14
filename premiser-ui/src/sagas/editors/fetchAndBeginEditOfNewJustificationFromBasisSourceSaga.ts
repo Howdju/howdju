@@ -4,7 +4,7 @@ import { put, call, takeEvery } from "redux-saga/effects";
 import {
   JustificationBasisSourceTypes,
   newExhaustedEnumError,
-  makePropositionCompoundFromProposition,
+  makeCreatePropositionCompoundInputFromProposition,
   JustificationBasisSourceType,
   EntityId,
   JustificationBasisType,
@@ -74,7 +74,7 @@ export function* fetchAndBeginEditOfNewJustificationFromBasisSource() {
             type = "PROPOSITION_COMPOUND";
             const proposition = removePropositionIds(alternatives.proposition);
             propositionCompound =
-              makePropositionCompoundFromProposition(proposition);
+              makeCreatePropositionCompoundInputFromProposition(proposition);
             break;
           }
           case JustificationBasisSourceTypes.WRIT_QUOTE:

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import queryString from "query-string";
 import { useLocation } from "react-router";
 
-import { WritQuote, makeUrl } from "howdju-common";
+import { makeUrl, CreateWritQuoteInput } from "howdju-common";
 
 import { editors } from "@/actions";
 import WritQuoteEditor from "@/editors/WritQuoteEditor";
@@ -32,7 +32,8 @@ const SubmitSourcExcerptPage = () => {
   const { editEntity } = useSelector((state: RootState) =>
     get(state.editors, [editorType, editorId])
   );
-  let writQuote: WritQuote | null = editEntity as WritQuote;
+  let writQuote: CreateWritQuoteInput | null =
+    editEntity as CreateWritQuoteInput;
 
   const errors = [];
 

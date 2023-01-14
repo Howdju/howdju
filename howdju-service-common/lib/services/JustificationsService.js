@@ -187,12 +187,8 @@ exports.JustificationsService = class JustificationsService extends (
       });
   }
 
-  readJustificationsWithBasesAndVotesByRootTarget(
-    rootTargetType,
-    rootTargetId,
-    { userId }
-  ) {
-    return this.justificationsDao.readJustificationsWithBasesAndVotesByRootTarget(
+  readJustificationsForRootTarget(rootTargetType, rootTargetId, { userId }) {
+    return this.justificationsDao.readJustificationsForRootTarget(
       rootTargetType,
       rootTargetId,
       { userId }

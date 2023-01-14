@@ -1,16 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
-import map from "lodash/map";
 
-import { CounteredJustification, Perspective } from "./entities";
-import {
-  Entity,
-  PropositionCompound,
-  PropositionCompoundAtom,
-  Proposition,
-  SourceExcerpt,
-} from "./zodSchemas";
-
-import { newExhaustedEnumError } from "./commonErrors";
+import { CounteredJustification } from "./entities";
+import { Entity, Proposition, SourceExcerpt } from "./zodSchemas";
 
 // Recursively replace all Entity subtypes with Entity so that they can be
 // replaced with just an object with an ID.
@@ -18,30 +9,6 @@ type Decircularized<T> = {
   [key in keyof T]: T[key] extends Entity
     ? Decircularized<T[key]> | Entity
     : Decircularized<T[key]>;
-};
-
-export const decircularizePropositionCompoundAtom = (
-  propositionCompoundAtom: PropositionCompoundAtom
-) => {
-  const decircularized: Decircularized<PropositionCompoundAtom> = cloneDeep(
-    propositionCompoundAtom
-  );
-  decircularized.entity = decircularizeProposition(
-    propositionCompoundAtom.entity
-  );
-  return decircularized;
-};
-
-export const decircularizePropositionCompound = (
-  propositionCompound: PropositionCompound
-) => {
-  const decircularized: Decircularized<PropositionCompound> =
-    cloneDeep(propositionCompound);
-  decircularized.atoms = map(
-    propositionCompound.atoms,
-    decircularizePropositionCompoundAtom
-  );
-  return decircularized;
 };
 
 export const decircularizeJustification = (
@@ -61,21 +28,6 @@ export const decircularizeJustification = (
     decircularized.target.entity = { id: decircularized.target.entity.id };
   }
 
-  switch (justification.basis.type) {
-    case "PROPOSITION_COMPOUND":
-      {
-        decircularized.basis.entity = decircularizePropositionCompound(
-          justification.basis.entity
-        );
-      }
-      break;
-    case "SOURCE_EXCERPT":
-    case "WRIT_QUOTE":
-      // writ quotes and source excerpts can't have circular dependencies.
-      break;
-    default:
-      return newExhaustedEnumError(justification.basis);
-  }
   return decircularized;
 };
 
@@ -90,12 +42,4 @@ export const decircularizeProposition = (
   // proposition has no circular references; proposiion.justifications should only exist on a view
   // model, and we should remove .justifications before editing it, and so it won't be submitted either.
   return proposition;
-};
-
-export const decircularizePerspective = (perspective: Perspective) => {
-  const decircularized: Decircularized<Perspective> = cloneDeep(perspective);
-  decircularized.proposition = decircularizeProposition(
-    perspective.proposition
-  );
-  return decircularized;
 };

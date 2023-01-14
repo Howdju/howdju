@@ -59,7 +59,7 @@ exports.RootTargetJustificationsService = class RootTargetJustificationsService 
       throw new EntityNotFoundError(entityType, rootTargetId);
     }
     const justifications =
-      await this.justificationsService.readJustificationsWithBasesAndVotesByRootTarget(
+      await this.justificationsService.readJustificationsForRootTarget(
         rootTargetType,
         rootTargetId,
         { userId }

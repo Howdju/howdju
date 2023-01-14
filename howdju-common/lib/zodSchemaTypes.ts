@@ -1,8 +1,11 @@
+import { Moment } from "moment";
 import { z } from "zod";
 import { assert } from "./general";
 import { logger } from "./logger";
 
 import {
+  AccountSettings,
+  ContentReport,
   CreateCounterJustification,
   CreateCounterJustificationInput,
   CreateCounterJustificationInputTarget,
@@ -15,16 +18,26 @@ import {
   CreateJustifiedSentenceInput,
   CreateProposition,
   CreatePropositionCompound,
+  CreatePropositionCompoundAtom,
   CreatePropositionCompoundInput,
   CreatePropositionInput,
   CreateSourceExcerpt,
   CreateSourceExcerptInput,
   CreateStatement,
   CreateStatementInput,
+  CreateWritQuote,
+  CreateWritQuoteInput,
   Entity,
   Justification,
+  JustificationRootTarget,
+  JustificationVote,
+  PasswordResetRequest,
+  Persorg,
   Proposition,
   PropositionCompound,
+  PropositionCompoundAtom,
+  PropositionTagVote,
+  RegistrationRequest,
   SourceExcerpt,
   Statement,
   Tag,
@@ -35,6 +48,34 @@ import {
 
 const PersistedEntity = Entity.required();
 type PersistedEntity = z.infer<typeof PersistedEntity>;
+
+export type JustificationWithRootRef = Omit<
+  Persisted<Justification>,
+  "rootTarget" | "target" | "basis"
+> & {
+  rootTarget: EntityRef<JustificationRootTarget>;
+  target:
+    | {
+        type: "PROPOSITION";
+        entity: PersistedOrRef<Proposition>;
+      }
+    | {
+        type: "STATEMENT";
+        entity: PersistedOrRef<Statement>;
+      }
+    | {
+        type: "JUSTIFICATION";
+        entity: JustificationWithRootRef | Ref<EntityName<Justification>>;
+      };
+  basis:
+    | {
+        type: "PROPOSITION_COMPOUND";
+        entity: PersistedOrRef<PropositionCompound>;
+      }
+    | { type: "SOURCE_EXCERPT"; entity: PersistedOrRef<SourceExcerpt> }
+    | { type: "WRIT_QUOTE"; entity: PersistedOrRef<WritQuote> };
+};
+
 /**
  * A type lookup from the entity type to the Zod Brand string.
  *
@@ -52,16 +93,26 @@ export type EntityName<T> = T extends Proposition
   ? "Justification"
   : T extends CreateJustificationInput
   ? "Justification"
+  : T extends JustificationWithRootRef
+  ? "Justification"
+  : T extends JustificationVote
+  ? "JustificationVote"
   : T extends Statement
   ? "Statement"
   : T extends CreateStatement
   ? "Statement"
   : T extends CreateStatementInput
   ? "Statement"
+  : T extends Persorg
+  ? "Persorg"
   : T extends Tag
   ? "Tag"
   : T extends TagVote
   ? "TagVote"
+  : T extends PropositionCompoundAtom
+  ? "PropositionCompoundAtom"
+  : T extends CreatePropositionCompoundAtom
+  ? "PropositionCompoundAtom"
   : T extends PropositionCompound
   ? "PropositionCompound"
   : T extends CreatePropositionCompound
@@ -76,31 +127,52 @@ export type EntityName<T> = T extends Proposition
   ? "SourceExcerpt"
   : T extends WritQuote
   ? "WritQuote"
+  : T extends CreateWritQuote
+  ? "WritQuote"
+  : T extends CreateWritQuoteInput
+  ? "WritQuote"
   : T extends User
   ? "User"
+  : T extends PropositionTagVote
+  ? "PropositionTagVote"
+  : T extends RegistrationRequest
+  ? "RegistrationRequest"
+  : T extends PasswordResetRequest
+  ? "PasswordResetRequest"
+  : T extends AccountSettings
+  ? "AccountSettings"
+  : T extends ContentReport
+  ? "ContentReport"
   : never;
+
 /** A reference to an Entity by ID. */
 export type Ref<TName extends string> = PersistedEntity & z.BRAND<TName>;
 export type EntityOrRef<T extends Entity> = T | Ref<EntityName<T>>;
-export type EntityRef<T extends Entity> = Ref<EntityName<T>>;
+// If T is already a Ref, return it as-is.
+export type EntityRef<T extends Entity> = T extends Ref<string>
+  ? T
+  : Ref<EntityName<T>>;
 
 /** Makes an Entity's ID required and all related entities can be refs. */
 export type Persisted<T extends Entity> = {
   id: string;
-} & PersistRelated<Omit<T, "id">>;
+} & EntityRef<T> &
+  PersistRelated<Omit<T, "id">>;
 export type PersistRelated<T> = {
   [key in keyof T]: T[key] extends Entity
-    ? Ref<EntityName<T[key]>> | Persisted<T[key]>
-    : PersistRelated<T[key]>;
+    ? Persisted<T[key]>
+    : T[key] extends Moment
+    ? T[key]
+    : T[key] extends object
+    ? PersistRelated<T[key]>
+    : T[key];
 };
 
 export type PersistedOrRef<T extends Entity> =
   | Ref<EntityName<T>>
   | Persisted<T>;
 
-export function isRef<T extends Entity>(
-  e: EntityOrRef<T>
-): e is Ref<EntityName<T>> {
+export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   const keys = Object.keys(e);
   // An entity with a single property `id` is a ref.
   if (keys.length === 1 && keys[0] === "id") {
