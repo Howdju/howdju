@@ -28,6 +28,8 @@ import {
   User,
   AuthToken,
   CreateRegistrationConfirmationInput,
+  CreateRegistrationRequest,
+  CreateRegistrationRequestInput,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -42,6 +44,7 @@ import {
   AnyApiAction,
   ApiActionCreator,
   ApiResponseAction,
+  ApiResponseWrapper,
 } from "@/apiActions";
 
 /**
@@ -261,6 +264,17 @@ export const CreateRegistrationConfirmationConfig: EditorCommitCrudActionConfig<
 > = {
   requestSchema: CreateRegistrationConfirmation,
   requestActionCreator: api.confirmRegistration,
+};
+
+export const CreateRegistrationRequestConfig: EditorCommitCrudActionConfig<
+  CreateRegistrationRequestInput,
+  CreateRegistrationRequest,
+  { registrationRequest: CreateRegistrationRequest },
+  ApiResponseWrapper,
+  PrepareAction<{ registrationRequest: CreateRegistrationRequest }>
+> = {
+  requestSchema: CreateRegistrationRequest,
+  requestActionCreator: api.requestRegistration,
 };
 
 export const editorCommitConfigs: Partial<

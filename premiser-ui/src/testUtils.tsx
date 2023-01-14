@@ -8,17 +8,50 @@ import { createMemoryHistory, History, createLocation } from "history";
 import { persistStore, PersistorOptions } from "redux-persist";
 import { compile } from "path-to-regexp";
 import { match } from "react-router";
+import userEvent from "@testing-library/user-event";
 
 import { AppStore, RootState, sagaMiddleware } from "./setupStore";
 import { setupStore } from "./setupStore";
 import { head } from "lodash";
 import { Saga } from "redux-saga";
 
-interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
+interface ProviderRenderOptions
+  extends DefaultStoreOptions,
+    Omit<RenderOptions, "queries"> {
+  persist?: boolean;
+}
+
+export interface DefaultStoreOptions {
   preloadedState?: PreloadedState<RootState>;
   store?: AppStore;
-  persist?: boolean;
   history?: History<any>;
+}
+
+export function setupDefaultStore({
+  preloadedState = {},
+  history = createMemoryHistory(),
+  store = setupStore(history, preloadedState),
+}: DefaultStoreOptions = {}) {
+  return { preloadedState, history, store };
+}
+
+/**
+ * Use Jest fake timers.
+ *
+ * Restores real timers after each to allow third-party libraries to cleanup. See
+ * https://testing-library.com/docs/using-fake-timers/
+ *
+ * TODO(219): should we do this in a Jest environment instead?
+ */
+export function withFakeTimers() {
+  beforeEach(() => {
+    // Use fake timers so that we can ensure animations complete before snapshotting.
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
 }
 
 /** Render a React component with the redux store etc. */
@@ -30,7 +63,7 @@ export function renderWithProviders(
     store = setupStore(history, preloadedState),
     persist = true,
     ...renderOptions
-  }: ExtendedRenderOptions = {}
+  }: ProviderRenderOptions = {}
 ) {
   const persistor = persistStore(store, {
     manualPersist: true,
@@ -112,4 +145,10 @@ export async function testSaga(saga: Saga<any[]>) {
   } as PersistorOptions);
   persistor.persist();
   await sagaMiddleware.run(saga).toPromise();
+}
+
+export function setupUserEvent() {
+  // userEvent delays between actions, so make sure it advances the fake timers.
+  // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
+  return userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 }

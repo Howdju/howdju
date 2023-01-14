@@ -224,7 +224,6 @@ export default function withEditor<
       }
 
       if (!isValid) {
-        dispatch(editors.attemptedSubmit(editorType, editorId));
         return;
       }
 
@@ -241,6 +240,9 @@ export default function withEditor<
           )
         );
       }
+    };
+    const onSubmitClick = (_event: React.MouseEvent<HTMLElement>) => {
+      dispatch(editors.attemptedSubmit(editorType, editorId));
     };
     const onCancelEdit = () => {
       dispatch(editors.cancelEdit(editorType, editorId));
@@ -313,6 +315,7 @@ export default function withEditor<
               appearDisabled={!isValid || isSaving}
               title={submitButtonTitle(isValid, wasSubmitAttempted)}
               children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
+              onClick={onSubmitClick}
             />,
           ]}
         </CardActions>
