@@ -264,6 +264,7 @@ export type SourceExcerptType = SourceExcerpt["type"];
 export const SourceExcerptTypes = sourceExcerptTypes.Enum;
 
 export const PropositionCompoundAtom = z.object({
+  /** A reference to this atom's parent compound. */
   compoundId: z.string(),
   entity: Proposition,
 });

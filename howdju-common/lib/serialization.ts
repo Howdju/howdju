@@ -1,9 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
 
-import { CounteredJustification, Perspective } from "./entities";
+import { CounteredJustification } from "./entities";
 import { Entity, Proposition, SourceExcerpt } from "./zodSchemas";
-
-import { newExhaustedEnumError } from "./commonErrors";
 
 // Recursively replace all Entity subtypes with Entity so that they can be
 // replaced with just an object with an ID.
@@ -30,15 +28,6 @@ export const decircularizeJustification = (
     decircularized.target.entity = { id: decircularized.target.entity.id };
   }
 
-  switch (justification.basis.type) {
-    case "PROPOSITION_COMPOUND":
-    case "SOURCE_EXCERPT":
-    case "WRIT_QUOTE":
-      // Nothing to decircularize
-      break;
-    default:
-      return newExhaustedEnumError(justification.basis);
-  }
   return decircularized;
 };
 
@@ -53,8 +42,4 @@ export const decircularizeProposition = (
   // proposition has no circular references; proposiion.justifications should only exist on a view
   // model, and we should remove .justifications before editing it, and so it won't be submitted either.
   return proposition;
-};
-
-export const decircularizePerspective = (perspective: Perspective) => {
-  return perspective;
 };
