@@ -16,7 +16,7 @@ const {
   PasswordResetExpiredError,
 } = require("../serviceErrors");
 
-exports.PasswordResetService = class PasswordResetsService {
+exports.PasswordResetService = class PasswordResetService {
   constructor(
     logger,
     config,
@@ -127,7 +127,7 @@ async function consumeRequest(self, passwordResetCode) {
 
 async function sendConfirmationEmail(self, email, passwordResetCode, duration) {
   const confirmationUrl = `${
-    this.config.uiAuthority
+    self.config.uiAuthority
   }${commonPaths.confirmPasswordReset()}?passwordResetCode=${passwordResetCode}`;
   const durationText = duration.format(self.config.durationFormatTemplate, {
     trim: self.config.durationFormatTrim,
