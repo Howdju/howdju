@@ -113,55 +113,37 @@ export type EntityEditorFieldsProps<T> = {
  *   correct addListItem/removeListItem editor actions.
  *   TODO: why can't the Fields just dispatch the actions themselves? They can receive the
  *   editorType and editorId.
- * @typeparam P the type of Props that EntityEditorFields requires.
+ * @typeparam Props the type of props that EntityEditorFields requires.
  * @typeparam SchemaInput the type of model the editor edits.
  * @typeparam SchemaOutput the output of the schema validation, in case it has refinements.
- * @typeparam U the commit config's request model type (Create or Edit)
- * @typeparam Y the commit config's request action creator payload type
- * @typeparam RP the commit config's response action creator payload type
- * @typeparam PA the commit config's prepare action type.
+ * @typeparam ApiModel the commit config's request model type (Create or Edit)
+ * @typeparam RequestPayload the commit config's request action creator payload type
+ * @typeparam ResponsePayload the commit config's response action creator payload type
+ * @typeparam Prepare the commit config's prepare action type.
  */
 export default function withEditor<
-  P extends EntityEditorFieldsProps<SchemaOutput>,
+  Props extends EntityEditorFieldsProps<SchemaOutput>,
   SchemaInput extends EditorEntity = any,
   SchemaOutput = SchemaInput,
-  U = any,
-  Y = any,
-  RP = any,
-  PA extends void | PrepareAction<Y> = void
+  ApiModel = any,
+  RequestPayload = any,
+  ResponsePayload = any,
+  Prepare extends void | PrepareAction<RequestPayload> = void
 >(
   editorType: EditorType,
-  EntityEditorFields: React.FC<P>,
+  EntityEditorFields: React.FC<Props>,
   entityPropName: string,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, U, Y, RP, PA>
+  commitConfig?: EditorCommitCrudActionConfig<
+    SchemaInput,
+    ApiModel,
+    RequestPayload,
+    ResponsePayload,
+    Prepare
+  >
 ): React.FC<
-  WithEditorProps & Omit<P, keyof EntityEditorFieldsProps<SchemaOutput>>
+  WithEditorProps & Omit<Props, keyof EntityEditorFieldsProps<SchemaOutput>>
 > {
-  const validateEntity = (editEntity: EditorEntity | undefined) => {
-    if (!editEntity) {
-      return { value: editEntity };
-    }
-    if (schemaOrId instanceof z.ZodType) {
-      const result = schemaOrId.safeParse(editEntity);
-      if (result.success) {
-        return { value: result.data };
-      }
-      return {
-        value: editEntity,
-        errors: formatZodError(result.error),
-      };
-    }
-    const result = validateRawErrors(schemaOrId, editEntity);
-    if (result.isValid) {
-      return { value: editEntity };
-    }
-    return {
-      value: editEntity,
-      errors: translateAjvToZodFormattedError(result.errors),
-    };
-  };
-
   return function EntityEditor(props: WithEditorProps) {
     const {
       id,
@@ -178,7 +160,7 @@ export default function withEditor<
 
     const editorState = useSelector((state: RootState) =>
       get(state.editors, [editorType, editorId])
-    ) as EditorState<SchemaInput, U>;
+    ) as EditorState<SchemaInput, ApiModel>;
     const {
       errors: apiValidationErrors,
       editEntity,
@@ -197,24 +179,15 @@ export default function withEditor<
       dispatch(editors.blurField(editorType, editorId, name));
     };
 
-    const inputTransformer = commitConfig?.inputTransformer ?? identity;
-    const requestEntity = editEntity && inputTransformer(editEntity);
-    function isValidRequest(requestEntity: U | undefined) {
-      if (!requestEntity) {
-        // If there is no entity, we can't call it valid.
-        return false;
-      }
-      if (!commitConfig?.requestSchema) {
-        // Without request schema, we cannot validate the request.
-        return true;
-      }
-      const result = commitConfig.requestSchema.safeParse(requestEntity);
-      return result.success;
-    }
-    const isValid = isValidRequest(requestEntity);
+    const { errors, isValidRequest } = validateEditorEntity(
+      commitConfig,
+      schemaOrId,
+      apiValidationErrors,
+      editEntity
+    );
     useEffect(() => {
-      onValidityChange && onValidityChange(isValid);
-    }, [isValid, onValidityChange]);
+      onValidityChange && onValidityChange(isValidRequest);
+    }, [isValidRequest, onValidityChange]);
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -223,7 +196,7 @@ export default function withEditor<
         return;
       }
 
-      if (!isValid) {
+      if (!isValidRequest) {
         return;
       }
 
@@ -247,21 +220,6 @@ export default function withEditor<
     const onCancelEdit = () => {
       dispatch(editors.cancelEdit(editorType, editorId));
     };
-
-    const { errors: clientValidationErrors } = validateEntity(editEntity);
-
-    const responseErrorTransformer = commitConfig?.responseErrorTransformer;
-    const transformedApiValidationErrors =
-      requestEntity && apiValidationErrors && responseErrorTransformer
-        ? responseErrorTransformer(requestEntity, apiValidationErrors)
-        : apiValidationErrors;
-    // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
-    // must accept the value.
-    const errors = merge(
-      {},
-      clientValidationErrors,
-      transformedApiValidationErrors
-    );
 
     function editorDispatch(actionCreator: EditorFieldsActionCreator) {
       const action = actionCreator(editorType, editorId);
@@ -291,7 +249,7 @@ export default function withEditor<
       wasSubmitAttempted,
       onKeyDown,
       // TODO(1): can we remove this typecast? https://stackoverflow.com/questions/74072249/
-    } as unknown as P;
+    } as unknown as Props;
 
     return (
       <form onSubmit={onSubmit} className={className}>
@@ -312,8 +270,9 @@ export default function withEditor<
             />,
             <SubmitButton
               key="submitButton"
-              appearDisabled={!isValid || isSaving}
-              title={submitButtonTitle(isValid, wasSubmitAttempted)}
+              disabled={isSaving}
+              appearDisabled={!isValidRequest}
+              title={submitButtonTitle(isValidRequest, wasSubmitAttempted)}
               children={t(submitButtonText || EDIT_ENTITY_SUBMIT_BUTTON_LABEL)}
               onClick={onSubmitClick}
             />,
@@ -333,4 +292,96 @@ export function submitButtonTitle(
     : wasSubmitAttempted
     ? "Please correct the errors to continue"
     : "Please complete the form to continue";
+}
+
+export function validateEditorEntity<
+  SchemaInput extends EditorEntity,
+  SchemaOutput,
+  U,
+  Y,
+  RP,
+  PA extends void | PrepareAction<Y>
+>(
+  commitConfig:
+    | EditorCommitCrudActionConfig<SchemaInput, U, Y, RP, PA>
+    | undefined,
+  schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
+  apiValidationErrors: ModelErrors<U> | undefined,
+  editEntity: SchemaInput | undefined
+): { errors: ModelErrors<SchemaInput>; isValidRequest: boolean } {
+  const { errors: clientValidationErrors } = validateEntity(
+    schemaOrId,
+    editEntity
+  );
+
+  const inputTransformer = commitConfig?.inputTransformer ?? identity;
+  const requestEntity = editEntity && inputTransformer(editEntity);
+
+  const isValidRequest = validateRequest(
+    commitConfig?.requestSchema,
+    requestEntity
+  );
+
+  const responseErrorTransformer = commitConfig?.responseErrorTransformer;
+  const transformedApiValidationErrors =
+    requestEntity && apiValidationErrors && responseErrorTransformer
+      ? responseErrorTransformer(requestEntity, apiValidationErrors)
+      : (apiValidationErrors as ModelErrors<SchemaInput>);
+  // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
+  // must accept the value.
+  const errors = merge(
+    {},
+    clientValidationErrors,
+    transformedApiValidationErrors
+  );
+  return {
+    errors,
+    isValidRequest,
+  };
+}
+
+function validateEntity<
+  SchemaInput extends EditorEntity,
+  SchemaOutput = SchemaInput
+>(
+  schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
+  editEntity: EditorEntity | undefined
+) {
+  if (!editEntity) {
+    return { value: editEntity };
+  }
+  if (schemaOrId instanceof z.ZodType) {
+    const result = schemaOrId.safeParse(editEntity);
+    if (result.success) {
+      return { value: result.data };
+    }
+    return {
+      value: editEntity,
+      errors: formatZodError(result.error),
+    };
+  }
+  const result = validateRawErrors(schemaOrId, editEntity);
+  if (result.isValid) {
+    return { value: editEntity };
+  }
+  return {
+    value: editEntity,
+    errors: translateAjvToZodFormattedError(result.errors),
+  };
+}
+
+function validateRequest<U>(
+  requestSchema: z.ZodType | undefined,
+  requestEntity: U | undefined
+) {
+  if (!requestEntity) {
+    // If there is no entity, we can't call it valid.
+    return false;
+  }
+  if (!requestSchema) {
+    // Without request schema, we cannot validate the request.
+    return true;
+  }
+  const result = requestSchema.safeParse(requestEntity);
+  return result.success;
 }

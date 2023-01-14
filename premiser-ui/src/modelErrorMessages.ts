@@ -145,9 +145,9 @@ type ReactMdErrorProps = { error?: boolean; errorText?: string };
  */
 export function makeErrorPropCreator<T>(
   wasSubmitAttempted: boolean,
-  errors?: ModelErrors<T>,
-  dirtyFields?: DirtyFields<T>,
-  blurredFields?: BlurredFields<T>
+  errors: ModelErrors<T> | undefined,
+  dirtyFields: DirtyFields<T> | undefined,
+  blurredFields: BlurredFields<T> | undefined
 ) {
   return function makeErrorProps(
     // PartialDeep so that the callback handles missing dirty/blurred fields.

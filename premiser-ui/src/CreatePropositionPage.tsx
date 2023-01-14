@@ -16,7 +16,7 @@ import {
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";
-import { identity, isArray, keys, toString } from "lodash";
+import { isArray, keys, toString } from "lodash";
 import queryString from "query-string";
 
 import {
@@ -62,9 +62,13 @@ import { logger } from "./logger";
 import PersorgEditorFields from "./PersorgEditorFields";
 import EntityViewer from "./EntityViewer";
 import { CreatePropositionPageMode, PropertyChanges } from "./types";
-import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
+import { CreateJustifiedSentenceConfig } from "./sagas/editors/editorCommitEditSaga";
 import { RootState } from "./setupStore";
-import { EditorFieldsActionCreator } from "./editors/withEditor";
+import {
+  EditorFieldsActionCreator,
+  validateEditorEntity,
+} from "./editors/withEditor";
+import SubmitButton from "./editors/SubmitButton";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -279,9 +283,20 @@ class CreatePropositionPage extends Component<Props> {
       )
     );
   };
+
+  onClickSubmit = (_event: React.MouseEvent<HTMLElement>) => {
+    this.props.dispatch(
+      editors.attemptedSubmit(
+        CreatePropositionPage.editorType,
+        CreatePropositionPage.editorId
+      )
+    );
+  };
+
   onCancel = () => {
     this.props.dispatch(goBack());
   };
+
   render() {
     const { mode, editorState } = this.props;
     if (!editorState) {
@@ -289,9 +304,19 @@ class CreatePropositionPage extends Component<Props> {
         <CircularProgress id="create-proposition-page-circular-progress" />
       );
     }
-    const { errors, isSaving, editEntity, wasSubmitAttempted } = editorState;
+    const {
+      errors: apiValidationErrors,
+      isSaving,
+      editEntity,
+      wasSubmitAttempted,
+      dirtyFields,
+      blurredFields,
+    } = editorState;
+    if (!editEntity) {
+      return <CircularProgress id="create-justified-sentence-progress" />;
+    }
     const { proposition, speakers, justification, doCreateJustification } =
-      editEntity || {};
+      editEntity;
     // const isEditing = !!editEntity
     const id = CreatePropositionPage.id;
     const title = t(titleTextKeyByMode[mode]);
@@ -299,16 +324,14 @@ class CreatePropositionPage extends Component<Props> {
     const submitButtonTitle = t(submitButtonTitleTextKeyByMode[mode]);
     const isCreateJustificationMode =
       mode === CreatePropositionPageMode.CREATE_JUSTIFICATION;
-    const propositionErrors =
-      errors && (doCreateJustification ? get(errors, "target.entity") : errors);
-    const { responseErrorTransformer = identity, inputTransformer = identity } =
-      CreateJustificationConfig;
-    const createJustification =
-      justification && inputTransformer(justification);
-    const justificationFormInputErrors =
-      createJustification &&
-      errors &&
-      responseErrorTransformer(createJustification, errors);
+
+    const { errors, isValidRequest } = validateEditorEntity(
+      CreateJustifiedSentenceConfig,
+      CreateJustifiedSentenceInput,
+      apiValidationErrors,
+      editEntity
+    );
+
     const propositionTags = get(proposition, "tags");
     const propositionTagVotes = get(proposition, "propositionTagVotes");
     const propositionEditorText = "propositionEditorText";
@@ -416,6 +439,12 @@ class CreatePropositionPage extends Component<Props> {
                                     }
                                     onPropertyChange={this.onPropertyChange}
                                     onSubmit={this.onSubmit}
+                                    errors={errors.speakers?.[index]}
+                                    wasSubmitAttempted={wasSubmitAttempted}
+                                    blurredFields={
+                                      blurredFields?.speakers?.[index]
+                                    }
+                                    dirtyFields={dirtyFields?.speakers?.[index]}
                                   />
                                 }
                               />
@@ -438,9 +467,12 @@ class CreatePropositionPage extends Component<Props> {
                         propositionName
                       )}
                       onPropertyChange={this.onPropertyChange}
-                      errors={propositionErrors}
+                      errors={errors.proposition}
                       disabled={isSaving}
                       onSubmit={this.onSubmit}
+                      wasSubmitAttempted={wasSubmitAttempted}
+                      dirtyFields={dirtyFields?.proposition}
+                      blurredFields={blurredFields?.proposition}
                     />
                     <TagsControl
                       id={combineIds(id, tagsName)}
@@ -495,7 +527,7 @@ class CreatePropositionPage extends Component<Props> {
                       doShowTypeSelection={doShowTypeSelection}
                       onPropertyChange={this.onPropertyChange}
                       onSubmit={this.onSubmit}
-                      errors={justificationFormInputErrors}
+                      errors={errors.justification}
                       editorDispatch={editorDispatch}
                       wasSubmitAttempted={wasSubmitAttempted}
                     />
@@ -511,13 +543,13 @@ class CreatePropositionPage extends Component<Props> {
                       disabled={isSaving}
                       onClick={this.onCancel}
                     />
-                    <Button
-                      raised
-                      primary
+                    <SubmitButton
                       type="submit"
                       children={submitButtonLabel}
                       title={submitButtonTitle}
                       disabled={isSaving}
+                      appearDisabled={!isValidRequest}
+                      onClick={this.onClickSubmit}
                     />
                   </CardActions>
                 </Card>

@@ -75,6 +75,9 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                 class="md-card-text"
               >
                 <div>
+                  <ul
+                    class="error-message"
+                  />
                   <div
                     aria-expanded="false"
                     aria-haspopup="true"
@@ -711,6 +714,9 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                         </span>
                       </div>
                     </button>
+                    <ul
+                      class="error-message"
+                    />
                   </div>
                 </div>
               </section>
@@ -727,7 +733,7 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                   Cancel
                 </button>
                 <button
-                  class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
                   title="Tell the world!"
                   type="submit"
                 >
@@ -802,6 +808,9 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                 class="md-card-text"
               >
                 <div>
+                  <ul
+                    class="error-message"
+                  />
                   <div
                     aria-expanded="false"
                     aria-haspopup="true"
@@ -1405,7 +1414,7 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                   Cancel
                 </button>
                 <button
-                  class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
                   title="A proposition is only as good as its justification"
                   type="submit"
                 >

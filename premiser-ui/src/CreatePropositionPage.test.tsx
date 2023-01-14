@@ -107,7 +107,6 @@ describe("CreatePropositionPage", () => {
     // Act
     await user.click(screen.getByRole("button", { name: /add url/i }));
 
-    screen.logTestingPlaygroundURL();
     // Assert
     expect(await screen.findAllByLabelText(/url/)).toHaveLength(2);
 
