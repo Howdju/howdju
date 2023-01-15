@@ -95,7 +95,7 @@ export const EditorTypes = {
   /* e.g. new justification dialog */
   NEW_JUSTIFICATION: "NEW_JUSTIFICATION",
   /* e.g. Proposition justification page */
-  PROPOSITION_JUSTIFICATION: "PROPOSITION_JUSTIFICATION",
+  JUSTIFIED_SENTENCE: "JUSTIFIED_SENTENCE",
   LOGIN_CREDENTIALS: "LOGIN_CREDENTIALS",
   REGISTRATION_REQUEST: "REGISTRATION_REQUEST",
   REGISTRATION_CONFIRMATION: "REGISTRATION_CONFIRMATION",
@@ -139,7 +139,7 @@ export interface EditorState<
   /**
    * The model the editor is editing.
    *
-   * TODO rename to editModel, since JustifiedProposition is not an entity.
+   * TODO rename to editModel, since JustifiedSentence is not an entity.
    */
   editEntity?: T;
   blurredFields?: BlurredFields<T>;
@@ -455,7 +455,7 @@ const editorReducerByType: {
     defaultEditorState<any>()
   ),
 
-  [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions<
+  [EditorTypes.JUSTIFIED_SENTENCE]: handleActions<
     EditorState<
       CreateJustifiedSentenceInput,
       CreateJustifiedSentence,

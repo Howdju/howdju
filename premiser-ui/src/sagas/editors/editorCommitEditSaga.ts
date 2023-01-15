@@ -113,7 +113,7 @@ function createEditorCommitApiResourceAction<E extends EditorType>(
     throw new Error(`No editor commit config for editor type ${editorType}`);
   }
 
-  // editModels lacking an ID only support creation (e.g. JustifiedProposition.)
+  // editModels lacking an ID only support creation (e.g. JustifiedSentence.)
   const crudType =
     !("id" in editEntity) || !editEntity.id
       ? CrudActions.CREATE
@@ -343,7 +343,7 @@ export const editorCommitConfigs: Partial<
       requestSchema: EditProposition,
     },
   },
-  PROPOSITION_JUSTIFICATION: {
+  JUSTIFIED_SENTENCE: {
     CREATE: CreateJustifiedSentenceConfig,
   },
   NEW_JUSTIFICATION: {

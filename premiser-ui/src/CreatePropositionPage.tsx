@@ -105,7 +105,7 @@ interface Props extends OwnProps, PropsFromRedux {}
 
 class CreatePropositionPage extends Component<Props> {
   static id = "create-proposition-page";
-  static editorType = EditorTypes.PROPOSITION_JUSTIFICATION;
+  static editorType = EditorTypes.JUSTIFIED_SENTENCE;
   static editorId = CreatePropositionPage.id;
 
   componentDidMount() {
@@ -190,7 +190,7 @@ class CreatePropositionPage extends Component<Props> {
             writQuote,
           },
         };
-        const justifiedProposition = makeCreateJustifiedSentenceInput(
+        const justifiedSentence = makeCreateJustifiedSentenceInput(
           {},
           justificationProps
         );
@@ -198,7 +198,7 @@ class CreatePropositionPage extends Component<Props> {
           editors.beginEdit(
             CreatePropositionPage.editorType,
             CreatePropositionPage.editorId,
-            justifiedProposition
+            justifiedSentence
           )
         );
         break;
