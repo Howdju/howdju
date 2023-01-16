@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 
 import RegistrationConfirmationPage from "./RegistrationConfirmationPage";
-import { renderWithProviders } from "@/testUtils";
+import { renderWithProviders, withFakeTimers } from "@/testUtils";
 import {
   CreateRegistrationConfirmation,
   httpStatusCodes,
@@ -14,17 +14,13 @@ import {
 
 const server = setupServer();
 
+withFakeTimers();
+
 beforeAll(() => {
   server.listen();
 });
-beforeEach(() => {
-  // Use fake timers so that we can ensure animations complete before snapshotting.
-  jest.useFakeTimers();
-});
 afterEach(() => {
   server.resetHandlers();
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
 });
 afterAll(() => server.close());
 

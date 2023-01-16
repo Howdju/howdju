@@ -4,22 +4,17 @@ import { rest } from "msw";
 
 import { api } from "@/apiActions";
 import { callApiForResource, resourceApiCalls } from "./resourceApiSagas";
-import { testSaga } from "@/testUtils";
+import { testSaga, withFakeTimers } from "@/testUtils";
 
 const server = setupServer();
+
+withFakeTimers();
 
 beforeAll(() => {
   server.listen();
 });
-beforeEach(() => {
-  // Use fake timers so that we can ensure animations complete before snapshotting.
-  jest.useFakeTimers();
-});
 afterEach(() => {
   server.resetHandlers();
-
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
 });
 afterAll(() => server.close());
 

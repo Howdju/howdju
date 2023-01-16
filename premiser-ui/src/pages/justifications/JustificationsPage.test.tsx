@@ -13,21 +13,22 @@ import {
   toSlug,
 } from "howdju-common";
 
-import { makeRouteComponentProps, renderWithProviders } from "@/testUtils";
+import {
+  makeRouteComponentProps,
+  renderWithProviders,
+  withFakeTimers,
+} from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
 
 const server = setupServer();
 
+withFakeTimers();
+
 beforeAll(() => {
   server.listen();
-
-  // Use fake timers so that we can ensure animations complete before snapshotting.
-  jest.useFakeTimers();
 });
 afterEach(() => {
   server.resetHandlers();
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
 });
 afterAll(() => server.close());
 

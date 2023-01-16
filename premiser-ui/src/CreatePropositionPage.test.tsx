@@ -20,17 +20,17 @@ import {
   ariaVisibleOne,
   makeRouteComponentProps,
   renderWithProviders,
+  withFakeTimers,
 } from "@/testUtils";
 import CreatePropositionPage from "./CreatePropositionPage";
 import { pathToRegexp } from "path-to-regexp";
 
 const server = setupServer();
 
+withFakeTimers();
+
 beforeAll(() => {
   server.listen();
-
-  // Use fake timers so that we can ensure animations complete before snapshotting.
-  jest.useFakeTimers();
 });
 afterEach(() => {
   server.resetHandlers();

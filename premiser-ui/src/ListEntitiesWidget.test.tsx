@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 
 import RecentPropositionsWidget from "./RecentPropositionsWidget";
-import { renderWithProviders } from "@/testUtils";
+import { renderWithProviders, withFakeTimers } from "@/testUtils";
 import {
   httpStatusCodes,
   GetPropositionsOut,
@@ -17,6 +17,8 @@ import { drop, take, toNumber } from "lodash";
 import moment, { Moment } from "moment";
 
 const created = moment("2023-01-12T12:23:00");
+
+withFakeTimers();
 
 const server = setupServer();
 const propositions = Array.from(Array(20).keys()).map((id) => ({
@@ -40,8 +42,6 @@ beforeEach(() => {
     return this.from(moment("2023-01-12T20:14:00"), withoutSuffix);
   });
 
-  jest.useFakeTimers();
-
   server.use(
     rest.get("http://localhost/propositions", (req, res, ctx) => {
       const count = toNumber(req.url.searchParams.get("count"));
@@ -58,9 +58,6 @@ beforeEach(() => {
 });
 afterEach(() => {
   server.resetHandlers();
-
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
 
   moment.fn.fromNow = fromNow;
 });
