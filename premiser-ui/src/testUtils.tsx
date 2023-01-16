@@ -9,11 +9,11 @@ import { persistStore, PersistorOptions } from "redux-persist";
 import { compile } from "path-to-regexp";
 import { match } from "react-router";
 import userEvent from "@testing-library/user-event";
-
-import { AppStore, RootState, sagaMiddleware } from "./setupStore";
-import { setupStore } from "./setupStore";
-import { head } from "lodash";
+import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
+import { head } from "lodash";
+
+import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
 
 interface ProviderRenderOptions
   extends DefaultStoreOptions,
@@ -52,6 +52,25 @@ export function withFakeTimers() {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
   });
+}
+
+/** Configures an msw fake server for the test.
+ *
+ * @returns the mock server
+ */
+export function withMockServer() {
+  const server = setupServer();
+
+  beforeAll(() => {
+    server.listen();
+  });
+  afterEach(() => {
+    server.resetHandlers();
+  });
+  afterAll(() => {
+    server.close();
+  });
+  return server;
 }
 
 /** Render a React component with the redux store etc. */

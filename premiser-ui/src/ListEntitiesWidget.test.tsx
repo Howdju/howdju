@@ -1,11 +1,14 @@
 import React from "react";
 import { rest } from "msw";
 import { screen, waitFor } from "@testing-library/react";
-import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 
 import RecentPropositionsWidget from "./RecentPropositionsWidget";
-import { renderWithProviders, withFakeTimers } from "@/testUtils";
+import {
+  renderWithProviders,
+  withFakeTimers,
+  withMockServer,
+} from "@/testUtils";
 import {
   httpStatusCodes,
   GetPropositionsOut,
@@ -20,7 +23,7 @@ const created = moment("2023-01-12T12:23:00");
 
 withFakeTimers();
 
-const server = setupServer();
+const server = withMockServer();
 const propositions = Array.from(Array(20).keys()).map((id) => ({
   ...PropositionRef.parse({ id: "proposition" + id }),
   created,
@@ -31,9 +34,6 @@ const fetchCount = 8;
 
 let fromNow: typeof moment.fn.fromNow;
 
-beforeAll(() => {
-  server.listen();
-});
 beforeEach(() => {
   fromNow = moment.fn.fromNow;
   // Use deterministic time for relative time formatting
@@ -57,11 +57,8 @@ beforeEach(() => {
   );
 });
 afterEach(() => {
-  server.resetHandlers();
-
   moment.fn.fromNow = fromNow;
 });
-afterAll(() => server.close());
 
 /** Throws if progress is in the document and visible. */
 function progressToBeGone(progress: HTMLElement | null) {

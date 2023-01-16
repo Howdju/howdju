@@ -2,7 +2,6 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import { setupServer } from "msw/node";
 import { rest } from "msw";
 import { merge } from "lodash";
 
@@ -21,21 +20,13 @@ import {
   makeRouteComponentProps,
   renderWithProviders,
   withFakeTimers,
+  withMockServer,
 } from "@/testUtils";
 import CreatePropositionPage from "./CreatePropositionPage";
 import { pathToRegexp } from "path-to-regexp";
 
-const server = setupServer();
-
 withFakeTimers();
-
-beforeAll(() => {
-  server.listen();
-});
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => server.close());
+const server = withMockServer();
 
 describe("CreatePropositionPage", () => {
   test("renders correctly with query params", async () => {

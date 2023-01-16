@@ -1,28 +1,22 @@
 import React from "react";
 import { rest } from "msw";
 import { screen } from "@testing-library/react";
-import { setupServer } from "msw/node";
 import userEvent from "@testing-library/user-event";
 
 import RegistrationConfirmationPage from "./RegistrationConfirmationPage";
-import { renderWithProviders, withFakeTimers } from "@/testUtils";
+import {
+  renderWithProviders,
+  withFakeTimers,
+  withMockServer,
+} from "@/testUtils";
 import {
   CreateRegistrationConfirmation,
   httpStatusCodes,
   ErrorOut,
 } from "howdju-common";
 
-const server = setupServer();
-
 withFakeTimers();
-
-beforeAll(() => {
-  server.listen();
-});
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => server.close());
+const server = withMockServer();
 
 describe("RegistrationConfirmationPage", () => {
   test("shows form", async () => {

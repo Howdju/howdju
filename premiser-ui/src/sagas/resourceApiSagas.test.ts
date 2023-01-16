@@ -1,22 +1,13 @@
 import { fork, put } from "typed-redux-saga";
-import { setupServer } from "msw/node";
 import { rest } from "msw";
 
 import { api } from "@/apiActions";
 import { callApiForResource, resourceApiCalls } from "./resourceApiSagas";
-import { testSaga, withFakeTimers } from "@/testUtils";
+import { testSaga, withFakeTimers, withMockServer } from "@/testUtils";
 
-const server = setupServer();
+const server = withMockServer();
 
 withFakeTimers();
-
-beforeAll(() => {
-  server.listen();
-});
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => server.close());
 
 describe("callApiForResource", () => {
   test("a call with the same cancelKey cancels an pending call", async () => {

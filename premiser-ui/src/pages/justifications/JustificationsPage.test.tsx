@@ -1,7 +1,6 @@
 import React from "react";
 import { rest } from "msw";
 import { screen } from "@testing-library/react";
-import { setupServer } from "msw/node";
 import { createMemoryHistory } from "history";
 import moment, { Moment } from "moment";
 
@@ -17,20 +16,12 @@ import {
   makeRouteComponentProps,
   renderWithProviders,
   withFakeTimers,
+  withMockServer,
 } from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
 
-const server = setupServer();
-
 withFakeTimers();
-
-beforeAll(() => {
-  server.listen();
-});
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => server.close());
+const server = withMockServer();
 
 const created = moment("2023-01-12T08:23:00");
 
