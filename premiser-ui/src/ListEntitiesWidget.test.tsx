@@ -7,6 +7,7 @@ import RecentPropositionsWidget from "./RecentPropositionsWidget";
 import {
   renderWithProviders,
   withFakeTimers,
+  withStaticFromNowMoment,
   withMockServer,
 } from "@/testUtils";
 import {
@@ -17,7 +18,7 @@ import {
   PropositionRef,
 } from "howdju-common";
 import { drop, take, toNumber } from "lodash";
-import moment, { Moment } from "moment";
+import moment from "moment";
 
 const created = moment("2023-01-12T12:23:00");
 
@@ -32,16 +33,9 @@ const propositions = Array.from(Array(20).keys()).map((id) => ({
 const initialFetchCount = 7;
 const fetchCount = 8;
 
-let fromNow: typeof moment.fn.fromNow;
+withStaticFromNowMoment("2023-01-12T20:14:00");
 
 beforeEach(() => {
-  fromNow = moment.fn.fromNow;
-  // Use deterministic time for relative time formatting
-  moment.fn.fromNow = jest.fn(function (this: Moment) {
-    const withoutSuffix = false;
-    return this.from(moment("2023-01-12T20:14:00"), withoutSuffix);
-  });
-
   server.use(
     rest.get("http://localhost/propositions", (req, res, ctx) => {
       const count = toNumber(req.url.searchParams.get("count"));
@@ -55,9 +49,6 @@ beforeEach(() => {
       return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
     })
   );
-});
-afterEach(() => {
-  moment.fn.fromNow = fromNow;
 });
 
 /** Throws if progress is in the document and visible. */

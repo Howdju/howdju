@@ -12,6 +12,7 @@ import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
 import { head } from "lodash";
+import moment, { Moment, MomentInput } from "moment";
 
 import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
 
@@ -71,6 +72,21 @@ export function withMockServer() {
     server.close();
   });
   return server;
+}
+
+export function withStaticFromNowMoment(input: MomentInput) {
+  let fromNow: typeof moment.fn.fromNow;
+  beforeEach(() => {
+    fromNow = moment.fn.fromNow;
+    // Use deterministic time for relative time formatting
+    moment.fn.fromNow = jest.fn(function (this: Moment) {
+      const withoutSuffix = false;
+      return this.from(moment(input), withoutSuffix);
+    });
+  });
+  afterEach(() => {
+    moment.fn.fromNow = fromNow;
+  });
 }
 
 /** Render a React component with the redux store etc. */
