@@ -7,6 +7,7 @@ import {
   PropositionTagVoteOut,
   Tag,
   tagEqual,
+  TagVote,
 } from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
@@ -27,8 +28,8 @@ interface Props {
 const PropositionTagger: React.FC<Props> = (props: Props) => {
   const {
     id,
-    tags,
-    votes,
+    tags = [],
+    votes = [],
     recommendedTags,
     suggestionsKey,
     propositionId,
@@ -62,14 +63,22 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const compatibleVotes = votes.map(
+    (v) =>
+      ({
+        ...v,
+        target: v.proposition,
+        targetType: "PROPOSITION",
+      } as TagVote)
+  );
+
   return (
     <TagsControl
       {...rest}
       id={combineIds(id, "tags")}
       tags={tags}
-      votes={votes}
+      votes={compatibleVotes}
       recommendedTags={recommendedTags}
-      extraChildren={[]}
       votePolarity={{
         POSITIVE: PropositionTagVotePolarities.POSITIVE,
         NEGATIVE: PropositionTagVotePolarities.NEGATIVE,

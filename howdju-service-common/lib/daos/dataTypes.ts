@@ -274,6 +274,7 @@ export interface PropositionTagVoteRow {
   polarity: PropositionTagVotePolarity;
   proposition_id: number;
   tag_id: number;
+  tag_name: string;
 }
 export type PropositionTagVoteData = Persisted<PropositionTagVote>;
 

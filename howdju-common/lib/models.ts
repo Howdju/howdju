@@ -228,8 +228,6 @@ export const makePropositionTagVote = (
   props: PropositionTagVote
 ): PropositionTagVote => props;
 
-export const makeCreatePropositionTagVote = makePropositionTagVote;
-
 export const makeTagVote = (props: TagVote): TagVote => props;
 export const makeCreateTagVote = makeTagVote;
 

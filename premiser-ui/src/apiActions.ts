@@ -17,7 +17,6 @@ import {
   JustificationRootTargetType,
   Proposition,
   Tag,
-  makeCreatePropositionTagVote,
   JustificationRootTargetTypes,
   httpMethods,
   HttpMethod,
@@ -39,6 +38,7 @@ import {
   TagVoteViewModel,
   TagVoteRef,
   PropositionTagVoteOut,
+  CreatePropositionTagVote,
 } from "howdju-common";
 
 import {
@@ -911,12 +911,15 @@ export const api = {
       propositionId: EntityId,
       tag: Tag,
       propositionTagVote?: PropositionTagVoteOut
-    ) => ({
-      propositionTagVote: makeCreatePropositionTagVote({
+    ): {
+      propositionTagVote: CreatePropositionTagVote;
+      prevPropositionTagVote?: PropositionTagVoteOut;
+    } => ({
+      propositionTagVote: {
         polarity: PropositionTagVotePolarities.POSITIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,
-      }),
+      },
       prevPropositionTagVote: propositionTagVote,
     }),
     (payload) => ({
@@ -932,12 +935,19 @@ export const api = {
   ),
   antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
-    (propositionId, tag, propositionTagVote) => ({
-      propositionTagVote: makeCreatePropositionTagVote({
+    (
+      propositionId,
+      tag,
+      propositionTagVote
+    ): {
+      propositionTagVote: CreatePropositionTagVote;
+      prevPropositionTagVote?: PropositionTagVoteOut;
+    } => ({
+      propositionTagVote: {
         polarity: PropositionTagVotePolarities.NEGATIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,
-      }),
+      },
       prevPropositionTagVote: propositionTagVote,
     }),
     (payload) => ({

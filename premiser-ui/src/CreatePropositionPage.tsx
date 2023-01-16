@@ -1,4 +1,4 @@
-import React, { Component, FormEvent } from "react";
+import React, { Component, SyntheticEvent } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
@@ -274,7 +274,7 @@ class CreatePropositionPage extends Component<Props> {
       )
     );
   };
-  onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  onSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
     this.props.dispatch(
       flows.commitEditThenView(
@@ -478,7 +478,6 @@ class CreatePropositionPage extends Component<Props> {
                       id={combineIds(id, tagsName)}
                       tags={propositionTags}
                       votes={propositionTagVotes}
-                      name={combineNames(propositionName, tagsName)}
                       suggestionsKey={combineSuggestionsKeys(id, tagsName)}
                       votePolarity={{
                         POSITIVE: PropositionTagVotePolarities.POSITIVE,

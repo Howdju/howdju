@@ -64,10 +64,9 @@ const Tagger: React.FC<Props> = (props: Props) => {
     <TagsControl
       {...rest}
       id={combineIds(id, "tags")}
-      tags={tags}
-      votes={tagVotes}
+      tags={tags ?? []}
+      votes={tagVotes ?? []}
       recommendedTags={recommendedTags}
-      extraChildren={[]}
       votePolarity={{
         POSITIVE: PropositionTagVotePolarities.POSITIVE,
         NEGATIVE: PropositionTagVotePolarities.NEGATIVE,

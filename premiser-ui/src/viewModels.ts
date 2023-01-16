@@ -1,6 +1,5 @@
 import assign from "lodash/assign";
 import camelCase from "lodash/camelCase";
-import cloneDeep from "lodash/cloneDeep";
 import drop from "lodash/drop";
 import dropWhile from "lodash/dropWhile";
 import flatMap from "lodash/flatMap";
@@ -208,10 +207,6 @@ export interface ChipInfo {
   label: string;
   isAntiVoted: boolean;
   className: string;
-}
-
-export function makeChip(props: Partial<ChipInfo>): Partial<ChipInfo> {
-  return cloneDeep(props);
 }
 
 export const contextTrailTypeByShortcut = {

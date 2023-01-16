@@ -3,7 +3,7 @@ import map from "lodash/map";
 import { denormalize } from "normalizr";
 import React, { ChangeEvent, Component } from "react";
 import { Autocomplete, AutocompleteProps } from "react-md";
-import { connect } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 
 import { toSingleLine } from "howdju-common";
 
@@ -30,9 +30,9 @@ const dataValue = "data-value";
 
 const hasFocus = (el: HTMLInputElement) => window.document.activeElement === el;
 
-// TODO(1): remove use of any, convert to functional component? At least use PropsFromRedux
+// TODO(1): remove use of any, convert to functional component?
 
-interface Props extends Omit<AutocompleteProps, "data" | "onBlur"> {
+export interface ApiAutocompleteProps {
   /** An ID for the DOM element */
   id?: ComponentId;
   /** The type of the text input */
@@ -45,9 +45,9 @@ interface Props extends Omit<AutocompleteProps, "data" | "onBlur"> {
    * required and tells the autocomplete which property of the object is the
    * label
    */
-  dataLabel: string;
+  dataLabel?: string;
   /** Optional name of property to extract from the suggestion to use as a react key */
-  dataValue: string;
+  dataValue?: string;
   /** If true, pressing escape when the suggestions are already hidden will clear the field */
   escapeClears?: boolean;
   /** A dispatch-wrapped actionCreator to update the suggestions. */
@@ -78,23 +78,32 @@ interface Props extends Omit<AutocompleteProps, "data" | "onBlur"> {
   suggestionSchema: any;
   /** If present, enter will trigger this function */
   onSubmit?: OnSubmitCallback;
-  /** If true, enforces no line breaks */
-  singleLine: boolean;
+  /** If true, enforces no line breaks even if the input has multiple rows. */
+  singleLine?: boolean;
+
+  /** These props are part of ApiAutocompleteProps, but Typescript requies us to redefine them for
+   * some reason. */
+
+  /** Label that appears in the input initially, and then moves about when focused. */
+  label?: React.ReactNode;
+  inputClassName?: string;
+  maxLength?: number;
+  className?: string;
+  rightIcon?: JSX.Element;
+  rightIconStateful?: boolean;
+  /** Placeholder text that disappears after typing */
+  placeholder?: string;
 }
 
-interface ConnectProps {
-  /** The auto-suggestions. Added by mapStateToProps. Required, but must be
-   * optional so that components aren't asked to send it.
-   */
-  suggestions?: any[];
-  transformedSuggestions: any[];
-  // TODO(1): the type should be a bound dispatch method of the autocompletes.
-  // But rather than fix, maybe we should be using the useDispatch hook instead.
-  autocompletes?: typeof autocompletes;
-  dispatch?: any; // ignore. Only here to prevent passing it as ...rest
-}
+interface Props
+  extends ApiAutocompleteProps,
+    Omit<
+      AutocompleteProps,
+      "id" | "data" | "onBlur" | "value" | "onAutocomplete"
+    >,
+    PropsFromRedux {}
 
-class ApiAutocomplete extends Component<Props & ConnectProps> {
+class ApiAutocomplete extends Component<Props> {
   public static defaultProps = {
     autocompleteThrottle: 250,
     escapeClears: false,
@@ -105,7 +114,7 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
   throttledRefreshAutocomplete: DebouncedFunc<(value: any) => void>;
   autocomplete: any;
 
-  constructor(props: Props & ConnectProps) {
+  constructor(props: Props) {
     super(props);
     this.throttledRefreshAutocomplete = throttle(() => {
       return;
@@ -271,7 +280,6 @@ class ApiAutocomplete extends Component<Props & ConnectProps> {
       singleLine,
       ...rest
     } = this.props;
-
     return (
       <Autocomplete
         {...rest}
@@ -300,7 +308,7 @@ const defaultSuggestionTransform = (props: any) => (model: any) => ({
   [dataValue]: model[props.dataValue],
 });
 
-const mapStateToProps = (state: RootState, ownProps: Props) => {
+const mapStateToProps = (state: RootState, ownProps: ApiAutocompleteProps) => {
   const normalized = (state.autocompletes.suggestions as any)[
     ownProps.suggestionsKey
   ];
@@ -318,9 +326,13 @@ const mapStateToProps = (state: RootState, ownProps: Props) => {
   };
 };
 
-export default connect(
+const connector = connect(
   mapStateToProps,
   mapActionCreatorGroupToDispatchToProps({
     autocompletes,
   })
-)(ApiAutocomplete as any);
+);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(ApiAutocomplete as any);

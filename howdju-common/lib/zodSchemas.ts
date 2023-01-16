@@ -842,7 +842,7 @@ export const TagVote = Entity.extend({
   target: Entity,
   targetType: TaggableEntityType,
   polarity: tagVotePolarities,
-  tag: z.union([Tag, TagRef]),
+  tag: Tag,
 });
 export type TagVote = z.infer<typeof TagVote>;
 export type TagVotePolarity = TagVote["polarity"];
@@ -852,7 +852,7 @@ export const TagVotePolarities = tagVotePolarities.Enum;
 export const PropositionTagVote = Entity.extend({
   proposition: z.union([Proposition, PropositionRef]),
   polarity: tagVotePolarities,
-  tag: z.union([Tag, TagRef]),
+  tag: Tag,
 });
 export type PropositionTagVote = z.infer<typeof PropositionTagVote>;
 export type PropositionTagVotePolarity = PropositionTagVote["polarity"];

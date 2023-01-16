@@ -86,6 +86,8 @@ export type OnChangeCallback = (value: number | string, event: Event) => void;
 export type OnSubmitCallback = (
   event: React.FormEvent<HTMLFormElement>
 ) => void;
+export type OnEventCallback = (event: React.SyntheticEvent) => void;
+
 export type OnClickCallback = (event: React.MouseEvent<HTMLElement>) => void;
 export type OnAddCallback = (index: number) => void;
 export type OnRemoveCallback<T> = (
@@ -97,6 +99,21 @@ export type OnRemoveCallback<T> = (
   // `values[index]` must equal `value`.
   values: T[]
 ) => void;
+
+export type ListEventCallback<T, E extends React.UIEvent = React.UIEvent> = (
+  item: T,
+  index: number,
+  event: E
+) => void;
+
+export type ListClickCallback<T> = ListEventCallback<
+  T,
+  React.MouseEvent<HTMLElement>
+>;
+export type ListKeyDownCallback<T> = ListEventCallback<
+  T,
+  React.KeyboardEvent<HTMLElement>
+>;
 
 export interface PrivacyConsentCookie {
   id: string;

@@ -145,7 +145,7 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                     id="create-proposition-page--tags--tag-name-menu"
                   >
                     <div
-                      class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                      class="md-text-field-container md-full-width md-text-field-container--input md-autocomplete"
                     >
                       <label
                         class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
@@ -153,30 +153,15 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                       >
                         Tag
                       </label>
-                      <div
-                        class="md-text-field-multiline-container md-text-field--floating-margin"
-                        style="height: 0px;"
-                      >
-                        <span
-                          aria-hidden="true"
-                        />
-                        <textarea
-                          aria-hidden="true"
-                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                          readonly=""
-                          rows="1"
-                          tabindex="-1"
-                        />
-                        <textarea
-                          aria-autocomplete="list"
-                          autocomplete="off"
-                          class="md-text-field md-text-field--multiline md-full-width md-text"
-                          id="create-proposition-page--tags--tag-name"
-                          name="tagName"
-                          rows="1"
-                          style="height: 0px;"
-                        />
-                      </div>
+                      <input
+                        aria-autocomplete="list"
+                        autocomplete="off"
+                        class="md-text-field md-text-field--floating-margin md-full-width md-text"
+                        id="create-proposition-page--tags--tag-name"
+                        name="tagName"
+                        type="text"
+                        value=""
+                      />
                       <hr
                         class="md-divider md-divider--text-field md-divider--expand-from-left"
                       />
@@ -878,7 +863,7 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                     id="create-proposition-page--tags--tag-name-menu"
                   >
                     <div
-                      class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                      class="md-text-field-container md-full-width md-text-field-container--input md-autocomplete"
                     >
                       <label
                         class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
@@ -886,30 +871,15 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                       >
                         Tag
                       </label>
-                      <div
-                        class="md-text-field-multiline-container md-text-field--floating-margin"
-                        style="height: 0px;"
-                      >
-                        <span
-                          aria-hidden="true"
-                        />
-                        <textarea
-                          aria-hidden="true"
-                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                          readonly=""
-                          rows="1"
-                          tabindex="-1"
-                        />
-                        <textarea
-                          aria-autocomplete="list"
-                          autocomplete="off"
-                          class="md-text-field md-text-field--multiline md-full-width md-text"
-                          id="create-proposition-page--tags--tag-name"
-                          name="tagName"
-                          rows="1"
-                          style="height: 0px;"
-                        />
-                      </div>
+                      <input
+                        aria-autocomplete="list"
+                        autocomplete="off"
+                        class="md-text-field md-text-field--floating-margin md-full-width md-text"
+                        id="create-proposition-page--tags--tag-name"
+                        name="tagName"
+                        type="text"
+                        value=""
+                      />
                       <hr
                         class="md-divider md-divider--text-field md-divider--expand-from-left"
                       />

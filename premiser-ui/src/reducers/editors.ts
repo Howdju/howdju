@@ -678,7 +678,7 @@ function makePropositionTagReducer(
   ) => {
     if (!state.editEntity || !("proposition" in state.editEntity)) {
       logger.error(
-        "editEntity was missing or not a PropositionJustificationsEditEntity"
+        "editEntity was missing or not a JustifiedSentence editEntity"
       );
       return state;
     }
