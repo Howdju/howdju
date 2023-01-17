@@ -7,7 +7,6 @@ import {
   PropositionTagVoteOut,
   Tag,
   tagEqual,
-  TagVote,
 } from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
@@ -15,6 +14,7 @@ import { api, goto } from "./actions";
 import TagsControl from "./TagsControl";
 import { useAppDispatch } from "./hooks";
 import { ComponentId, SuggestionsKey } from "./types";
+import { toCompatibleTagVotes } from "./util";
 
 interface Props {
   id: ComponentId;
@@ -63,14 +63,7 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const compatibleVotes = votes.map(
-    (v) =>
-      ({
-        ...v,
-        target: v.proposition,
-        targetType: "PROPOSITION",
-      } as TagVote)
-  );
+  const compatibleVotes = toCompatibleTagVotes(votes);
 
   return (
     <TagsControl

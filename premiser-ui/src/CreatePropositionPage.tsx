@@ -69,6 +69,7 @@ import {
   validateEditorEntity,
 } from "./editors/withEditor";
 import SubmitButton from "./editors/SubmitButton";
+import { toCompatibleTagVotes } from "./util";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -352,6 +353,9 @@ class CreatePropositionPage extends Component<Props> {
       }
     };
 
+    const tagVotes = propositionTagVotes
+      ? toCompatibleTagVotes(propositionTagVotes)
+      : [];
     return (
       <div id="edit-proposition-justification-page">
         <Helmet>
@@ -476,8 +480,8 @@ class CreatePropositionPage extends Component<Props> {
                     />
                     <TagsControl
                       id={combineIds(id, tagsName)}
-                      tags={propositionTags}
-                      votes={propositionTagVotes}
+                      tags={propositionTags ?? []}
+                      votes={tagVotes}
                       suggestionsKey={combineSuggestionsKeys(id, tagsName)}
                       votePolarity={{
                         POSITIVE: PropositionTagVotePolarities.POSITIVE,

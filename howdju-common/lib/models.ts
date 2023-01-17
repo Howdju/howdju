@@ -413,7 +413,7 @@ export function demuxCreateJustificationInput(
 ): CreateCounterJustification;
 export function demuxCreateJustificationInput(
   input: CreateJustificationInput | CreateCounterJustificationInput
-): CreateJustification | CreateCounterJustificationInput {
+): CreateJustification | CreateCounterJustification {
   const basis = demuxCreateJustificationInputBasis(input.basis);
   const target = demuxCreateJustificationInputTarget(input.target);
   const creation: CreateJustification = assign(cloneDeep(input), {

@@ -37,11 +37,68 @@ export const Proposition = Entity.extend({
 }).strict();
 export type Proposition = z.infer<typeof Proposition>;
 
+export const Tag = Entity.extend({
+  name: z.string(),
+});
+export type Tag = z.infer<typeof Tag>;
+export const CreateTag = Tag;
+export type CreateTag = z.infer<typeof CreateTag>;
+export const CreateTagInput = CreateTag;
+export type CreateTagInput = z.infer<typeof CreateTagInput>;
+
+const tagVotePolarities = z.enum(["POSITIVE", "NEGATIVE"]);
+export type TagVotePolarity = z.infer<typeof tagVotePolarities>;
+
+/** @deprecated replace with TagVote */
+export const PropositionTagVote = z.lazy(() =>
+  Entity.extend({
+    proposition: z.union([Proposition, PropositionRef]),
+    polarity: tagVotePolarities,
+    tag: Tag,
+  })
+);
+export type PropositionTagVote = z.infer<typeof PropositionTagVote>;
+export type PropositionTagVotePolarity = PropositionTagVote["polarity"];
+export const PropositionTagVotePolarities = tagVotePolarities.Enum;
+
+export type CreatePropositionTagVote = {
+  proposition: PropositionRef | CreateProposition;
+  polarity: TagVotePolarity;
+  tag: TagRef | CreateTag;
+};
+export const CreatePropositionTagVote: z.ZodType<CreatePropositionTagVote> =
+  z.lazy(() =>
+    Entity.extend({
+      proposition: z.union([PropositionRef, CreateProposition]),
+      polarity: tagVotePolarities,
+      tag: z.union([TagRef, CreateTag]),
+    })
+  );
+export type CreatePropositionTagVoteInput = {
+  proposition: PropositionRef | CreateProposition;
+  polarity: TagVotePolarity;
+  tag: TagRef | CreateTag;
+};
+export const CreatePropositionTagVoteInput: z.ZodType<CreatePropositionTagVoteInput> =
+  z.lazy(() =>
+    Entity.extend({
+      proposition: z.union([CreatePropositionInput, PropositionRef]),
+      polarity: tagVotePolarities,
+      tag: z.union([TagRef, CreateTagInput]),
+    })
+  );
+
 export const CreatePropositionInput = Proposition.omit({
   created: true,
+}).extend({
+  tags: z.array(CreateTagInput).optional(),
+  propositionTagVotes: z.array(CreatePropositionTagVoteInput).optional(),
 });
 export type CreatePropositionInput = z.infer<typeof CreatePropositionInput>;
-export const CreateProposition = CreatePropositionInput;
+export const CreateProposition = CreatePropositionInput.extend({
+  tags: z.array(CreateTag).optional(),
+  propositionTagVotes: z.array(CreatePropositionTagVote).optional(),
+});
 export type CreateProposition = CreatePropositionInput;
 
 /** Something capable of making speech: a person or organization. */
@@ -828,15 +885,9 @@ export type JustificationVote = z.infer<typeof JustificationVote>;
 export type JustificationVotePolarity = JustificationVote["polarity"];
 export const JustificationVotePolarities = justificationVotePolarities.Enum;
 
-export const Tag = Entity.extend({
-  name: z.string(),
-});
-export type Tag = z.infer<typeof Tag>;
-
 const TaggableEntityType = z.enum(["PROPOSITION", "STATEMENT"]);
 export type TaggableEntityType = z.infer<typeof TaggableEntityType>;
 
-const tagVotePolarities = z.enum(["POSITIVE", "NEGATIVE"]);
 // TODO make this a discriminated union over all target entity types?
 export const TagVote = Entity.extend({
   target: Entity,
@@ -845,21 +896,7 @@ export const TagVote = Entity.extend({
   tag: Tag,
 });
 export type TagVote = z.infer<typeof TagVote>;
-export type TagVotePolarity = TagVote["polarity"];
 export const TagVotePolarities = tagVotePolarities.Enum;
-
-/** @deprecated replace with TagVote */
-export const PropositionTagVote = Entity.extend({
-  proposition: z.union([Proposition, PropositionRef]),
-  polarity: tagVotePolarities,
-  tag: Tag,
-});
-export type PropositionTagVote = z.infer<typeof PropositionTagVote>;
-export type PropositionTagVotePolarity = PropositionTagVote["polarity"];
-export const PropositionTagVotePolarities = tagVotePolarities.Enum;
-
-export const CreatePropositionTagVote = PropositionTagVote;
-export type CreatePropositionTagVote = PropositionTagVote;
 
 const EntityType = z.enum([
   "JUSTIFICATION",

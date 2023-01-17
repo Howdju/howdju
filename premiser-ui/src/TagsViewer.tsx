@@ -39,7 +39,7 @@ interface Props {
 /** A list of tags. */
 export default function TagsViewer(props: Props) {
   const {
-    tags = [],
+    tags,
     votes = [],
     recommendedTags,
     votePolarity = { POSITIVE: "POSITIVE", NEGATIVE: "NEGATIVE" },

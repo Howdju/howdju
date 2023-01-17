@@ -75,7 +75,7 @@ export default function ChipsList(props: Props) {
   };
 
   const {
-    chips = [],
+    chips,
     extraChildren,
     showAvatars = false,
     removable = false,

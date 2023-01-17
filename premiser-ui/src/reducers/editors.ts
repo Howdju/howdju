@@ -54,6 +54,8 @@ import {
   CreatePropositionInput,
   CreateCounterJustificationInput,
   CreateProposition,
+  Tag,
+  PropositionTagVote,
 } from "howdju-common";
 
 import {
@@ -667,10 +669,9 @@ const editorReducerByType: {
   ),
 };
 
-type Combiner = (one: Array<unknown>, two: Array<unknown>) => Array<unknown>;
 function makePropositionTagReducer(
   polarity: PropositionTagVotePolarity,
-  combiner: Combiner
+  combiner: (one: any[], two: any[]) => any[]
 ) {
   return (
     state: EditorState<CreateJustifiedSentenceInput>,
@@ -701,7 +702,7 @@ function makePropositionTagReducer(
 
     const oldTags = get(proposition, "tags", []);
     const existingTag = find(oldTags, (oldTag) => tagEqual(oldTag, tag));
-    const tags = existingTag ? oldTags : combiner(oldTags, [tag]);
+    const tags: Tag[] = existingTag ? oldTags : combiner(oldTags, [tag]);
 
     if (
       tags === oldTags &&
@@ -712,10 +713,12 @@ function makePropositionTagReducer(
       return state;
     }
 
-    const propositionTagVotes =
+    const propositionTagVotes: PropositionTagVote[] =
       redundantPropositionTagVotes.length > 0
         ? oldPropositionTagVotes
-        : combiner(oldPropositionTagVotes, [{ polarity, tag, proposition }]);
+        : combiner(oldPropositionTagVotes as [], [
+            { polarity, tag, proposition },
+          ]);
 
     return {
       ...state,
