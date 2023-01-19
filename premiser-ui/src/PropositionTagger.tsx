@@ -1,13 +1,7 @@
 import React from "react";
 import find from "lodash/find";
 
-import {
-  EntityId,
-  PropositionTagVotePolarities,
-  PropositionTagVoteOut,
-  Tag,
-  tagEqual,
-} from "howdju-common";
+import { EntityId, PropositionTagVoteOut, Tag, tagEqual } from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
 import { api, goto } from "./actions";
@@ -72,10 +66,6 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
       tags={tags}
       votes={compatibleVotes}
       recommendedTags={recommendedTags}
-      votePolarity={{
-        POSITIVE: PropositionTagVotePolarities.POSITIVE,
-        NEGATIVE: PropositionTagVotePolarities.NEGATIVE,
-      }}
       suggestionsKey={combineSuggestionsKeys(suggestionsKey, "tagName")}
       onTag={onTag}
       onUnTag={onUnTag}

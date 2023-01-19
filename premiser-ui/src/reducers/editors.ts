@@ -11,8 +11,6 @@ import assign from "lodash/assign";
 import clone from "lodash/clone";
 import cloneDeep from "lodash/cloneDeep";
 import concat from "lodash/concat";
-import difference from "lodash/difference";
-import find from "lodash/find";
 import forEach from "lodash/forEach";
 import get from "lodash/get";
 import has from "lodash/has";
@@ -21,7 +19,14 @@ import isString from "lodash/isString";
 import includes from "lodash/includes";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import { filter, isFunction, keys } from "lodash";
+import {
+  differenceWith,
+  filter,
+  isEqual,
+  isFunction,
+  keys,
+  uniqWith,
+} from "lodash";
 
 import {
   apiErrorCodes,
@@ -54,8 +59,8 @@ import {
   CreatePropositionInput,
   CreateCounterJustificationInput,
   CreateProposition,
-  Tag,
   PropositionTagVote,
+  assert,
 } from "howdju-common";
 
 import {
@@ -564,7 +569,7 @@ const editorReducerByType: {
       ),
       [str(editors.unTagProposition)]: makePropositionTagReducer(
         PropositionTagVotePolarities.POSITIVE,
-        difference
+        (list1, list2) => differenceWith(list1, list2, isEqual)
       ),
     },
     defaultEditorState()
@@ -701,8 +706,16 @@ function makePropositionTagReducer(
     });
 
     const oldTags = get(proposition, "tags", []);
-    const existingTag = find(oldTags, (oldTag) => tagEqual(oldTag, tag));
-    const tags: Tag[] = existingTag ? oldTags : combiner(oldTags, [tag]);
+    const combinedTags = combiner(oldTags, [tag]);
+    const uniqueTags = uniqWith(combinedTags, tagEqual);
+    // See if the combiner actually changed anything. If not, just use the oldTags.
+    let tags;
+    if (uniqueTags.length === combinedTags.length) {
+      tags = combinedTags;
+    } else {
+      tags = oldTags;
+      assert(uniqueTags.length === oldTags.length);
+    }
 
     if (
       tags === oldTags &&
@@ -713,12 +726,10 @@ function makePropositionTagReducer(
       return state;
     }
 
-    const propositionTagVotes: PropositionTagVote[] =
-      redundantPropositionTagVotes.length > 0
-        ? oldPropositionTagVotes
-        : combiner(oldPropositionTagVotes as [], [
-            { polarity, tag, proposition },
-          ]);
+    const propositionTagVotes: PropositionTagVote[] = combiner(
+      oldPropositionTagVotes,
+      [{ polarity, tag, proposition } as PropositionTagVote]
+    );
 
     return {
       ...state,

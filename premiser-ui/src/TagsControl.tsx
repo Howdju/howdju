@@ -39,18 +39,29 @@ export interface Props {
   recommendedTags?: Tag[];
   commitChipKeys?: string[];
   suggestionsKey: SuggestionsKey;
-  votePolarity: {
+  votePolarity?: {
     POSITIVE: string;
     NEGATIVE: string;
   };
   onClickTag?: OnClickTagCallback;
+  /**
+   * Callback to respond to when a user has tagged something.
+   *
+   * The callback may want to add the tag to an editor or make an API call to add the tag.
+   */
   onTag: OnTagCallback;
+  /** Callback to respond when a user has removed an existing tag. */
   onUnTag: OnUntagCallback;
+  /**
+   * Callback to respond to when a user has anti-tagged something.
+   *
+   * An anti tag is a vote against the tag applying to the target.
+   */
   onAntiTag?: OnAntitagCallback;
   /** Enable collapsing the tag name input */
   inputCollapsable?: boolean;
-  onSubmit?: OnEventCallback;
   addTitle?: string;
+  onSubmit?: OnEventCallback;
 }
 
 export default function TagsControl(props: Props) {
@@ -61,14 +72,17 @@ export default function TagsControl(props: Props) {
     commitChipKeys = [Keys.ENTER, Keys.COMMA],
     id,
     suggestionsKey,
-    votePolarity,
+    votePolarity = {
+      POSITIVE: "POSITIVE",
+      NEGATIVE: "NEGATIVE",
+    },
     inputCollapsable,
-    onSubmit,
     // ignore
     onTag,
     onUnTag,
     onAntiTag,
     addTitle = "Add tag",
+    onSubmit,
     ...rest
   } = props;
 
@@ -76,21 +90,16 @@ export default function TagsControl(props: Props) {
   const [isInputCollapsed, setIsInputCollapsed] = useState(true);
 
   const onTagNameKeyDown: OnKeyDownCallback = (event) => {
-    if (!tagName && event.key === Keys.ENTER && onSubmit) {
-      onSubmit(event);
-
-      if (event.isDefaultPrevented()) {
-        return;
-      }
-    }
-
-    if (includes(commitChipKeys, event.key)) {
+    // Prevent submit if the tag name was not empty
+    if (includes(commitChipKeys, event.key) && tagName) {
+      // Stops ApiAutocomplete from proceeding to call onSubmit callbacks
       event.preventDefault();
-
-      if (tagName) {
-        addTag(tagName);
-        setTagName("");
+      if (event.key === Keys.ENTER) {
+        // Stops the form from submitting via native user agent behavior
+        event.stopPropagation();
       }
+      addTag(tagName);
+      setTagName("");
     }
 
     if (inputCollapsable && event.key === Keys.ENTER) {
@@ -137,20 +146,18 @@ export default function TagsControl(props: Props) {
   const onRemoveTag = (tagName: string) => {
     const tag = find(tags, (tag) => tag.name === tagName);
     if (!tag) {
-      logger.error(`onRemoveTag: no tag wiyh name ${tagName}`);
+      logger.error(`onRemoveTag: no tag with name ${tagName}`);
       return;
     }
 
     const vote = find(votes, (vote) => tagEqual(vote.tag, tag));
     const polarity = get(vote, "polarity");
-    if (polarity === votePolarity.NEGATIVE) {
+    if (polarity === votePolarity.POSITIVE) {
       onUnTag(tag);
-    } else {
+    } else if (onAntiTag && tag.id) {
       // Only anti-tag existing tags on existing targets (the point of anti-tagging is to vote against tags recommended
       //  by the system; the system can't recommend tags for targets/tags that don't exist.
-      if (onAntiTag && tag.id) {
-        onAntiTag(tag);
-      }
+      onAntiTag(tag);
     }
   };
 

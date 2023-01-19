@@ -5,7 +5,7 @@ import React, { ChangeEvent, Component } from "react";
 import { Autocomplete, AutocompleteProps } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
 
-import { toSingleLine } from "howdju-common";
+import { logger, toSingleLine } from "howdju-common";
 
 import autocompleter from "./autocompleter";
 import { ESCAPE_KEY_CODE, Keys } from "./keyCodes";
@@ -17,9 +17,9 @@ import { DebouncedFunc } from "lodash";
 import {
   ComponentId,
   OnBlurCallback,
+  OnEventCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
-  OnSubmitCallback,
   PropertyChanges,
   SuggestionsKey,
 } from "./types";
@@ -76,10 +76,28 @@ export interface ApiAutocompleteProps {
   focusInputOnAutocomplete?: boolean;
   /** The schema which the component uses to denormalize suggestions */
   suggestionSchema: any;
-  /** If present, enter will trigger this function */
-  onSubmit?: OnSubmitCallback;
+  /**
+   * If present, pressing enter will trigger this function instead of default browser behavior.
+   *
+   * ApiAutocomplete supports an input behavior with multiline display but single-line values.
+   * So it wraps long text, but when the user preses Enter, it will prevent a newline. The only way
+   * to keep the newline out of the input is to preventDefault on Enter presses.
+   */
+  onSubmit?: OnEventCallback;
   /** If true, enforces no line breaks even if the input has multiple rows. */
   singleLine?: boolean;
+  /**
+   * The initial number of rows of text to show.
+   *
+   * If present, the input will be a textarea rather than a text input.
+   */
+  rows?: number;
+  /**
+   * The maximum number of rows of text to show.
+   *
+   * If present, the input will be a textarea rather than a text input.
+   */
+  maxRows?: number;
 
   /** These props are part of ApiAutocompleteProps, but Typescript requies us to redefine them for
    * some reason. */
@@ -103,6 +121,23 @@ interface Props
     >,
     PropsFromRedux {}
 
+/**
+ * Autocomplete that knows how to request suggestions from an API.
+ *
+ * Calls onAutocomplete with the result.
+ *
+ * This component also has behavior relating to line display and submitting.
+ * TODO: factor out the line and submit behavior into SingleLineTextField and reuse it here, if
+ * possible. It may not be possible if react-md has tightly coupled the input and the autocomplete behavior.
+ *
+ * The props affecting this behavior are:
+ *
+ * - singleLine: if truthy, will remove newlines from the value
+ * - rows/maxRows: if either are present, react-md will render a textarea, othertwise a text input
+ * - onSubmit: if present, pressing enter will call this instead of the default behavior.
+ *
+ * See the constructor warning for potential misconfiguration.
+ */
 class ApiAutocomplete extends Component<Props> {
   public static defaultProps = {
     autocompleteThrottle: 250,
@@ -119,6 +154,14 @@ class ApiAutocomplete extends Component<Props> {
     this.throttledRefreshAutocomplete = throttle(() => {
       return;
     });
+    const { singleLine, rows, maxRows, onSubmit } = this.props;
+    if (!singleLine && (rows || maxRows) && onSubmit) {
+      logger.warn(
+        "Multiline ApiAutocomplete will not enforce single-line value. " +
+          "So users can copy-paste newlines but not type them by pressing Enter." +
+          "Did you mean to pass singleLine=true?"
+      );
+    }
   }
 
   componentDidMount() {
@@ -191,9 +234,12 @@ class ApiAutocomplete extends Component<Props> {
       }
     } else if (event.key === Keys.ENTER) {
       this.closeAutocomplete();
+      if (this.props.singleLine) {
+        event.preventDefault();
+      }
       if (this.props.onSubmit) {
         event.preventDefault();
-        this.props.onSubmit(event as any);
+        this.props.onSubmit(event);
       }
     }
   };

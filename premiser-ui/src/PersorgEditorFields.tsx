@@ -45,7 +45,7 @@ export interface Props {
   disabled?: boolean;
   /** If present, overrides the default label for the proposition text input */
   nameLabel?: string;
-  onSubmit: OnSubmitCallback;
+  onSubmit?: OnSubmitCallback;
   wasSubmitAttempted: boolean;
   dirtyFields: DirtyFields<CreatePersorgInput> | undefined;
   blurredFields: BlurredFields<CreatePersorgInput> | undefined;

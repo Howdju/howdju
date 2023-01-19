@@ -33,9 +33,9 @@ import {
   ComponentName,
   EditorId,
   OnBlurCallback,
+  OnEventCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
-  OnSubmitCallback,
   OnValidityChangeCallback,
   SuggestionsKey,
 } from "@/types";
@@ -91,7 +91,7 @@ export type EntityEditorFieldsProps<T> = {
   suggestionsKey: SuggestionsKey;
   onBlur?: OnBlurCallback;
   onPropertyChange: OnPropertyChangeCallback;
-  onSubmit: OnSubmitCallback;
+  onSubmit?: OnEventCallback;
   editorDispatch: EditorFieldsDispatch;
   errors?: ModelErrors<T>;
   blurredFields?: BlurredFields<T>;

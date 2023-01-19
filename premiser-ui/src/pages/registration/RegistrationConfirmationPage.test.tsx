@@ -1,11 +1,11 @@
 import React from "react";
 import { rest } from "msw";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
 import RegistrationConfirmationPage from "./RegistrationConfirmationPage";
 import {
   renderWithProviders,
+  setupUserEvent,
   withFakeTimers,
   withMockServer,
 } from "@/testUtils";
@@ -64,9 +64,7 @@ describe("RegistrationConfirmationPage", () => {
   test("shows error message for duplicate username", async () => {
     // Arrange
 
-    // userEvent delays between actions, so make sure it advances the fake timers.
-    // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const user = setupUserEvent();
 
     const username = "the_username";
 
@@ -155,10 +153,7 @@ describe("RegistrationConfirmationPage", () => {
 
   test("shows success message upon confirmation.", async () => {
     // Arrange
-
-    // userEvent delays between actions, so make sure it advances the fake timers.
-    // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const user = setupUserEvent();
 
     const registrationCode = "abc";
     const username = "the_username";

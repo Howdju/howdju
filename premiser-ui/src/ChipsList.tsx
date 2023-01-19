@@ -2,10 +2,8 @@ import cn from "classnames";
 import includes from "lodash/includes";
 import map from "lodash/map";
 import React from "react";
-import FlipMove from "react-flip-move";
 import { Chip, Avatar, FontIcon, ChipProps } from "react-md";
 
-import config from "./config";
 import { Keys } from "./keyCodes";
 
 import "./ChipsList.scss";
@@ -87,14 +85,9 @@ export default function ChipsList(props: Props) {
   } = props;
 
   return (
-    <FlipMove
-      {...rest}
-      {...config.ui.flipMove}
-      className={cn(className, "chips-list")}
-    >
+    <div {...rest} className={cn(className, "chips-list")}>
       {map(chips, (chip, index) => {
         const chipProps: ChipProps = {
-          // key: chip.label,
           label: chip.label,
           removable: removable,
           className: chip.className,
@@ -120,10 +113,10 @@ export default function ChipsList(props: Props) {
             />
           );
         }
-        return <Chip {...chipProps} />;
+        return <Chip key={chip.label} {...chipProps} />;
       })}
 
       {extraChildren}
-    </FlipMove>
+    </div>
   );
 }

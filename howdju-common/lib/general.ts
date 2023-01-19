@@ -365,16 +365,18 @@ export const decodeSorts = (param: string) => {
 
 /** Removes linebreaks from a string, ensuring whitespace between the joined characters */
 export const toSingleLine = (val: string) =>
-  val.replace(
-    /(\s*)[\r\n]+(\s*)/,
-    (_match, leadingWhitespace, trailingWhitespace) => {
-      return leadingWhitespace.length === 0 && trailingWhitespace.length === 0
-        ? // If the linebreak(s) have no whitespace around them, then insert some
-          " "
-        : // Otherwise just use the existing whitespace
-          "";
-    }
-  );
+  val
+    // Remove leading newlines
+    .replace(/^[\r\n]/, "")
+    // Remove trailing newlines
+    .replace(/[\r\n]$/, "")
+    // Remove other newlines, replacing with space if they lacked other surrounding whitespace.
+    .replace(
+      /(\s*)[\r\n]+(\s*)/,
+      (_match, leadingWhitespace, trailingWhitespace) => {
+        return !leadingWhitespace && !trailingWhitespace ? " " : "";
+      }
+    );
 
 export const cleanWhitespace = (text: string) => {
   text = trim(text);

@@ -1,7 +1,6 @@
 import React from "react";
 import { rest } from "msw";
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
 import RecentPropositionsWidget from "./RecentPropositionsWidget";
 import {
@@ -9,6 +8,7 @@ import {
   withFakeTimers,
   withStaticFromNowMoment,
   withMockServer,
+  setupUserEvent,
 } from "@/testUtils";
 import {
   httpStatusCodes,
@@ -103,9 +103,7 @@ describe("ListEntitiesWidget", () => {
         progressToBeGone(screen.queryByRole("progressbar"));
       });
 
-      // userEvent delays between actions, so make sure it advances the fake timers.
-      // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const user = setupUserEvent();
 
       // Act
       await user.click(

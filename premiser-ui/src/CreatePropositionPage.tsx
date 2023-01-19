@@ -21,7 +21,6 @@ import queryString from "query-string";
 
 import {
   JustificationBasisTypes,
-  PropositionTagVotePolarities,
   makeCreateJustifiedSentenceInput,
   JustificationBasisSourceType,
   JustificationBasisSourceTypes,
@@ -277,6 +276,24 @@ class CreatePropositionPage extends Component<Props> {
   };
   onSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
+
+    const { errors: apiValidationErrors, editEntity } = this.props.editorState;
+    const { isValidRequest } = validateEditorEntity(
+      CreateJustifiedSentenceConfig,
+      CreateJustifiedSentenceInput,
+      apiValidationErrors,
+      editEntity
+    );
+    if (!isValidRequest) {
+      return;
+    }
+
+    this.props.dispatch(
+      editors.attemptedSubmit(
+        CreatePropositionPage.editorType,
+        CreatePropositionPage.editorId
+      )
+    );
     this.props.dispatch(
       flows.commitEditThenView(
         CreatePropositionPage.editorType,
@@ -442,13 +459,13 @@ class CreatePropositionPage extends Component<Props> {
                                       this.onPersorgAutocomplete(persorg, index)
                                     }
                                     onPropertyChange={this.onPropertyChange}
-                                    onSubmit={this.onSubmit}
                                     errors={errors.speakers?.[index]}
                                     wasSubmitAttempted={wasSubmitAttempted}
                                     blurredFields={
                                       blurredFields?.speakers?.[index]
                                     }
                                     dirtyFields={dirtyFields?.speakers?.[index]}
+                                    onSubmit={this.onSubmit}
                                   />
                                 }
                               />
@@ -483,10 +500,6 @@ class CreatePropositionPage extends Component<Props> {
                       tags={propositionTags ?? []}
                       votes={tagVotes}
                       suggestionsKey={combineSuggestionsKeys(id, tagsName)}
-                      votePolarity={{
-                        POSITIVE: PropositionTagVotePolarities.POSITIVE,
-                        NEGATIVE: PropositionTagVotePolarities.NEGATIVE,
-                      }}
                       onTag={this.onTagProposition}
                       onUnTag={this.onUnTagProposition}
                       onSubmit={this.onSubmit}
@@ -529,10 +542,10 @@ class CreatePropositionPage extends Component<Props> {
                       disabled={isSaving}
                       doShowTypeSelection={doShowTypeSelection}
                       onPropertyChange={this.onPropertyChange}
-                      onSubmit={this.onSubmit}
                       errors={errors.justification}
                       editorDispatch={editorDispatch}
                       wasSubmitAttempted={wasSubmitAttempted}
+                      onSubmit={this.onSubmit}
                     />
                   </CardText>
 

@@ -9,9 +9,9 @@ import { CreatePropositionInput, ModelErrors } from "howdju-common";
 import {
   ComponentId,
   ComponentName,
+  OnEventCallback,
   OnKeyDownCallback,
   OnPropertyChangeCallback,
-  OnSubmitCallback,
   SuggestionsKey,
 } from "./types";
 import { BlurredFields, DirtyFields } from "./reducers/editors";
@@ -32,7 +32,7 @@ interface Props {
   onKeyDown?: OnKeyDownCallback;
   /** If present, overrides the default label for the proposition text input */
   textLabel?: string;
-  onSubmit: OnSubmitCallback;
+  onSubmit?: OnEventCallback;
   wasSubmitAttempted: boolean;
   dirtyFields: DirtyFields<CreatePropositionInput> | undefined;
   blurredFields: BlurredFields<CreatePropositionInput> | undefined;

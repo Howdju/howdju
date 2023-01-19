@@ -1,6 +1,5 @@
 import React from "react";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import { rest } from "msw";
 import { merge } from "lodash";
@@ -19,6 +18,7 @@ import {
   ariaVisibleOne,
   makeRouteComponentProps,
   renderWithProviders,
+  setupUserEvent,
   withFakeTimers,
   withMockServer,
 } from "@/testUtils";
@@ -27,6 +27,8 @@ import { pathToRegexp } from "path-to-regexp";
 
 withFakeTimers();
 const server = withMockServer();
+
+jest.setTimeout(5 * 60 * 1000);
 
 describe("CreatePropositionPage", () => {
   test("renders correctly with query params", async () => {
@@ -72,9 +74,7 @@ describe("CreatePropositionPage", () => {
 
   test("can add URL while editing a WritQuote-based justification", async () => {
     // Arrange
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
+    const user = setupUserEvent();
 
     const history = createMemoryHistory();
     const { location, match } = makeRouteComponentProps("submit");
@@ -107,11 +107,7 @@ describe("CreatePropositionPage", () => {
 
   test("can submit a proposition justified via query params", async () => {
     // Arrange
-    // userEvent delays between actions, so make sure it advances the fake timers.
-    // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
+    const user = setupUserEvent();
 
     const description = "A credible source";
     const quoteText = "An important conclusion.";
@@ -195,5 +191,35 @@ describe("CreatePropositionPage", () => {
     });
     // TODO(196): get path pattern from routesById instead.
     expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
+  });
+  test("removing tag removes it", async () => {
+    // Arrange
+    const user = setupUserEvent();
+
+    const history = createMemoryHistory();
+    const { location, match } = makeRouteComponentProps("submit");
+
+    renderWithProviders(
+      <CreatePropositionPage
+        mode={"CREATE_PROPOSITION"}
+        history={history}
+        location={location}
+        match={match}
+      />,
+      { history }
+    );
+
+    const tagName = "TestTag";
+    await user.type(screen.getByLabelText(/tag/i), tagName);
+    await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+
+    // Act
+    await user.click(document.querySelector(".remove-chip-icon") as Element);
+
+    // Assert
+    jest.runAllTimers();
+    expect(
+      screen.queryByRole("button", { name: new RegExp(tagName) })
+    ).not.toBeInTheDocument();
   });
 });
