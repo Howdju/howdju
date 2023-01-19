@@ -1,7 +1,7 @@
 # eslint-config-howdju
 
 Contains shared ESLint config for the project. This package is linked into all our packages
-so that we can use it lik:
+so that we can use it like:
 
 ```js
 module.exports = {
@@ -32,6 +32,9 @@ module.exports = {
       extends: ["howdju/node"],
     },
   ],
+  parserOptions: {
+    project: ["./tsconfig.json"],
+  },
 };
 ```
 
@@ -51,5 +54,8 @@ module.exports = {
       extends: ["howdju/node"],
     },
   ],
+  parserOptions: {
+    project: ["./tsconfig.json"],
+  },
 };
 ```

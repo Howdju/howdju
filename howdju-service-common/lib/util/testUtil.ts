@@ -51,7 +51,7 @@ export async function initDb(config: PoolConfig) {
     }
     attempts++;
   }
-  noDbPool.end();
+  await noDbPool.end();
   if (!succeeded) {
     throw new Error("Failed to create a test database.");
   }
@@ -63,7 +63,7 @@ export async function initDb(config: PoolConfig) {
     flag: "r",
   });
   await dbPool.query(ddl);
-  dbPool.end();
+  await dbPool.end();
 
   return dbName as string;
 }
@@ -76,7 +76,7 @@ export async function dropDb(config: PoolConfig, dbName: string) {
   }
   const pool = makePool(mockLogger, config);
   await pool.query(`DROP DATABASE IF EXISTS ${dbName};`);
-  pool.end();
+  await pool.end();
 }
 
 function randomDbName() {

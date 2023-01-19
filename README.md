@@ -482,7 +482,7 @@ See eslint-config-howdju/README.md.
 
 ### Prettier
 
-Each workspace must install the `--exact` same version of `prettier` and defines a script `format`
+Each workspace must install the `--exact` same version of `prettier` and defines a script `fix-format`
 that calls `eslint --fix` and `prettier`:
 
 ```sh

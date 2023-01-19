@@ -52,6 +52,12 @@ module.exports = {
         "jest/no-commented-out-tests": "error",
         "jest/no-disabled-tests": "error",
         "jest/no-large-snapshots": "warn",
+        "jest/expect-expect": [
+          "error",
+          {
+            assertFunctionNames: ["expect", "waitForElementToBeRemoved"],
+          },
+        ],
       },
     },
     {
@@ -86,6 +92,9 @@ module.exports = {
             "ts-ignore": "allow-with-description",
           },
         ],
+        // TODO try extending plugin:@typescript-eslint/recommended-requiring-type-checking to
+        // enable this (and others?)
+        "@typescript-eslint/no-floating-promises": "error",
       },
     },
   ],

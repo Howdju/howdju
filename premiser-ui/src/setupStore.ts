@@ -21,6 +21,7 @@ import { logger } from "./logger";
 import config from "./config";
 import * as actionCreatorsUntyped from "./actions";
 import getSagas from "./sagas";
+import { toString } from "lodash";
 
 // TODO(1): Remove typecasting.
 const actionCreators = actionCreatorsUntyped as unknown as {
@@ -89,14 +90,25 @@ export const setupStore = (
         createRootReducer(history) as unknown as Reducer<RootState, AnyAction>
       );
     });
-    module.hot.accept("./sagas", () => {
-      rootTask.cancel();
-      rootTask.toPromise().then(() => {
-        rootTask = sagaMiddleware.run(function* saga() {
-          yield getSagas();
-        });
-      });
-    });
+    module.hot.accept(
+      "./sagas",
+      () => {
+        rootTask.cancel();
+        rootTask.toPromise().then(
+          () => {
+            rootTask = sagaMiddleware.run(function* saga() {
+              yield getSagas();
+            });
+          },
+          (err: Error) => {
+            console.log(`Error during sagas HMR: ${toString(err)}`);
+          }
+        );
+      },
+      (err: Error) => {
+        console.log(`Error during sagas HMR: ${toString(err)}`);
+      }
+    );
   }
   return store;
 };
