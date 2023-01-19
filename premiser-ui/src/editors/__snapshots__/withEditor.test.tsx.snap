@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`withEditor Exemplary component (RegistrationRequestEditor) submitting invalid entity shows errors 1`] = `
+<div>
+  <form>
+    <section
+      class="md-card-text"
+    >
+      <ul
+        class="error-message"
+      />
+      <div
+        class="md-text-field-container md-full-width md-text-field-container--multiline"
+      >
+        <label
+          class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--error"
+          for="email"
+        >
+          Email *
+        </label>
+        <div
+          class="md-text-field-multiline-container md-text-field--floating-margin"
+          style="height: 0px;"
+        >
+          <span
+            aria-hidden="true"
+          />
+          <textarea
+            aria-hidden="true"
+            class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
+            readonly=""
+            rows="1"
+            tabindex="-1"
+          />
+          <textarea
+            autocomplete="email"
+            class="md-text-field md-text-field--multiline md-full-width md-text"
+            id="email"
+            name="email"
+            required=""
+            rows="1"
+            style="height: 0px;"
+          />
+        </div>
+        <hr
+          class="md-divider md-divider--text-field md-divider--expand-from-left md-divider--text-field-error"
+        />
+        <div
+          class="md-text-field-message-container md-full-width md-text--error"
+        >
+          <div
+            aria-hidden="false"
+            class="md-text-field-message md-text-field-message--active"
+          >
+            Invalid email
+          </div>
+          <div
+            aria-hidden="true"
+            class="md-text-field-message md-text-field-message--inactive md-text-field-message--counter"
+          >
+            0 / 128
+          </div>
+        </div>
+      </div>
+    </section>
+    <section
+      class="md-dialog-footer--card md-dialog-footer--inline"
+    >
+      <button
+        class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block"
+        type="button"
+      >
+        <div
+          class="md-ink-container"
+        />
+        Cancel
+      </button>
+      <button
+        class="md-btn md-btn--flat md-btn--text md-btn--hover md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
+        title="Please correct the errors to continue"
+        type="submit"
+      >
+        <div
+          class="md-ink-container"
+        />
+        Save
+      </button>
+    </section>
+  </form>
+</div>
+`;

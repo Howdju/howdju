@@ -6,4 +6,7 @@ module.exports = {
       extends: ["howdju/node"],
     },
   ],
+  parserOptions: {
+    project: ["./tsconfig.json"],
+  },
 };

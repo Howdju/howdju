@@ -1,9 +1,8 @@
 import React from "react";
 import { rest } from "msw";
 import { screen } from "@testing-library/react";
-import { setupServer } from "msw/node";
 import { createMemoryHistory } from "history";
-import moment, { Moment } from "moment";
+import moment from "moment";
 
 import {
   GetPropositionOut,
@@ -13,39 +12,22 @@ import {
   toSlug,
 } from "howdju-common";
 
-import { makeRouteComponentProps, renderWithProviders } from "@/testUtils";
+import {
+  makeRouteComponentProps,
+  renderWithProviders,
+  withFakeTimers,
+  withMockServer,
+  withStaticFromNowMoment,
+} from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
 
-const server = setupServer();
-
-beforeAll(() => {
-  server.listen();
-
-  // Use fake timers so that we can ensure animations complete before snapshotting.
-  jest.useFakeTimers();
-});
-afterEach(() => {
-  server.resetHandlers();
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
-});
-afterAll(() => server.close());
+withFakeTimers();
+const server = withMockServer();
 
 const created = moment("2023-01-12T08:23:00");
 
 describe("JustificationsPage", () => {
-  let fromNow: typeof moment.fn.fromNow;
-  beforeEach(() => {
-    fromNow = moment.fn.fromNow;
-    // Use deterministic time for relative time formatting
-    moment.fn.fromNow = jest.fn(function (this: Moment) {
-      const withoutSuffix = false;
-      return this.from(moment("2023-01-12T20:14:00"), withoutSuffix);
-    });
-  });
-  afterEach(() => {
-    moment.fn.fromNow = fromNow;
-  });
+  withStaticFromNowMoment("2023-01-12T20:14:00");
 
   test("Shows a justified proposition", async () => {
     // Arrange

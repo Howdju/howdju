@@ -197,7 +197,7 @@ We have helpers prefixe with `mux` and `demux` for consolidating or expanding en
 
 - howdju-common/lib/zodSchemas.ts
 
-  Our entity validation schemas. Only things that must be validated should go here.
+  Our entity definitions.
 
 - howdju-common/lib/apiModels.ts
 
@@ -219,3 +219,8 @@ We have helpers prefixe with `mux` and `demux` for consolidating or expanding en
 - premiser-ui/src/viewModels.ts
 
   Models that are web app specific.
+
+- howdju-service-common/lib/daos/dataTypes.ts
+
+Data persistence specific models. Rows correspond to database rows, and Data models correspond to
+models that go in/out of DAO methods.

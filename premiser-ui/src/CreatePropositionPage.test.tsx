@@ -1,8 +1,6 @@
 import React from "react";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import { setupServer } from "msw/node";
 import { rest } from "msw";
 import { merge } from "lodash";
 
@@ -20,25 +18,18 @@ import {
   ariaVisibleOne,
   makeRouteComponentProps,
   renderWithProviders,
+  setupUserEvent,
+  withFakeTimers,
+  withMockServer,
 } from "@/testUtils";
 import CreatePropositionPage from "./CreatePropositionPage";
 import { pathToRegexp } from "path-to-regexp";
 
-const server = setupServer();
-
-beforeAll(() => {
-  server.listen();
-
-  // Use fake timers so that we can ensure animations complete before snapshotting.
-  jest.useFakeTimers();
-});
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => server.close());
+withFakeTimers();
+const server = withMockServer();
 
 describe("CreatePropositionPage", () => {
-  test("renders correctly with query params", async () => {
+  test("renders correctly with query params", () => {
     // Arrange
     const description = "A credible source";
     const quoteText = "An important conclusion.";
@@ -81,9 +72,7 @@ describe("CreatePropositionPage", () => {
 
   test("can add URL while editing a WritQuote-based justification", async () => {
     // Arrange
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
+    const user = setupUserEvent();
 
     const history = createMemoryHistory();
     const { location, match } = makeRouteComponentProps("submit");
@@ -107,7 +96,6 @@ describe("CreatePropositionPage", () => {
     // Act
     await user.click(screen.getByRole("button", { name: /add url/i }));
 
-    screen.logTestingPlaygroundURL();
     // Assert
     expect(await screen.findAllByLabelText(/url/)).toHaveLength(2);
 
@@ -117,11 +105,7 @@ describe("CreatePropositionPage", () => {
 
   test("can submit a proposition justified via query params", async () => {
     // Arrange
-    // userEvent delays between actions, so make sure it advances the fake timers.
-    // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
+    const user = setupUserEvent();
 
     const description = "A credible source";
     const quoteText = "An important conclusion.";
@@ -179,7 +163,7 @@ describe("CreatePropositionPage", () => {
     let requestBody: PostJustificationIn = {} as PostJustificationIn;
     server.use(
       rest.post(`http://localhost/justifications`, async (req, res, ctx) => {
-        requestBody = (await req.json()) as PostJustificationIn;
+        requestBody = await req.json<PostJustificationIn>();
         return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
       }),
       rest.get("http://localhost/search-propositions", (_req, res, ctx) => {
@@ -205,5 +189,63 @@ describe("CreatePropositionPage", () => {
     });
     // TODO(196): get path pattern from routesById instead.
     expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
+  });
+  test("removing a tag removes it", async () => {
+    // Arrange
+    const user = setupUserEvent();
+
+    const history = createMemoryHistory();
+    const { location, match } = makeRouteComponentProps("submit");
+
+    renderWithProviders(
+      <CreatePropositionPage
+        mode={"CREATE_PROPOSITION"}
+        history={history}
+        location={location}
+        match={match}
+      />,
+      { history }
+    );
+
+    const tagName = "TestTag";
+    await user.type(screen.getByLabelText(/tag/i), tagName);
+    await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+
+    // Act
+    await user.click(document.querySelector(".remove-chip-icon") as Element);
+
+    // Assert
+    jest.runAllTimers();
+    expect(
+      screen.queryByRole("button", { name: new RegExp(tagName) })
+    ).not.toBeInTheDocument();
+  });
+  test("attempting to submit with an invalid form shows errors", async () => {
+    const user = setupUserEvent();
+
+    const history = createMemoryHistory();
+    const { location, match } = makeRouteComponentProps("submit");
+
+    renderWithProviders(
+      <CreatePropositionPage
+        mode={"CREATE_PROPOSITION"}
+        history={history}
+        location={location}
+        match={match}
+      />,
+      { history }
+    );
+
+    const tagName = "TestTag";
+    await user.type(screen.getByLabelText(/tag/i), tagName);
+    await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+
+    // Act
+    await user.click(screen.getByRole("button", { name: /create/i }));
+
+    // Assert
+    screen
+      .getAllByText("String must contain at least 1 character(s)")
+      .forEach((el) => expect(el).toBeInTheDocument());
   });
 });

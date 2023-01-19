@@ -1,4 +1,4 @@
-import React, { Component, FormEvent } from "react";
+import React, { Component, SyntheticEvent } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { goBack } from "connected-react-router";
@@ -16,12 +16,11 @@ import {
 import cn from "classnames";
 import get from "lodash/get";
 import map from "lodash/map";
-import { identity, isArray, keys, toString } from "lodash";
+import { isArray, keys, toString } from "lodash";
 import queryString from "query-string";
 
 import {
   JustificationBasisTypes,
-  PropositionTagVotePolarities,
   makeCreateJustifiedSentenceInput,
   JustificationBasisSourceType,
   JustificationBasisSourceTypes,
@@ -30,6 +29,9 @@ import {
   CreateJustifiedSentenceInput,
   CreateJustifiedSentence,
   JustificationBasisType,
+  ModelErrors,
+  CreateProposition,
+  CreateJustification,
 } from "howdju-common";
 
 import Helmet from "./Helmet";
@@ -59,9 +61,14 @@ import { logger } from "./logger";
 import PersorgEditorFields from "./PersorgEditorFields";
 import EntityViewer from "./EntityViewer";
 import { CreatePropositionPageMode, PropertyChanges } from "./types";
-import { CreateJustificationConfig } from "./sagas/editors/editorCommitEditSaga";
+import { CreateJustifiedSentenceConfig } from "./sagas/editors/editorCommitEditSaga";
 import { RootState } from "./setupStore";
-import { EditorFieldsActionCreator } from "./editors/withEditor";
+import {
+  EditorFieldsActionCreator,
+  validateEditorEntity,
+} from "./editors/withEditor";
+import SubmitButton from "./editors/SubmitButton";
+import { toCompatibleTagVotes } from "./util";
 
 const titleTextKeyByMode = {
   [CreatePropositionPageMode.CREATE_PROPOSITION]: CREATE_PROPOSITION_TITLE,
@@ -98,7 +105,7 @@ interface Props extends OwnProps, PropsFromRedux {}
 
 class CreatePropositionPage extends Component<Props> {
   static id = "create-proposition-page";
-  static editorType = EditorTypes.PROPOSITION_JUSTIFICATION;
+  static editorType = EditorTypes.JUSTIFIED_SENTENCE;
   static editorId = CreatePropositionPage.id;
 
   componentDidMount() {
@@ -183,7 +190,7 @@ class CreatePropositionPage extends Component<Props> {
             writQuote,
           },
         };
-        const justifiedProposition = makeCreateJustifiedSentenceInput(
+        const justifiedSentence = makeCreateJustifiedSentenceInput(
           {},
           justificationProps
         );
@@ -191,7 +198,7 @@ class CreatePropositionPage extends Component<Props> {
           editors.beginEdit(
             CreatePropositionPage.editorType,
             CreatePropositionPage.editorId,
-            justifiedProposition
+            justifiedSentence
           )
         );
         break;
@@ -267,18 +274,20 @@ class CreatePropositionPage extends Component<Props> {
       )
     );
   };
-  onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+
+  onClickSubmit = (_event: React.MouseEvent<HTMLElement>) => {
     this.props.dispatch(
-      flows.commitEditThenView(
+      editors.attemptedSubmit(
         CreatePropositionPage.editorType,
         CreatePropositionPage.editorId
       )
     );
   };
+
   onCancel = () => {
     this.props.dispatch(goBack());
   };
+
   render() {
     const { mode, editorState } = this.props;
     if (!editorState) {
@@ -286,9 +295,19 @@ class CreatePropositionPage extends Component<Props> {
         <CircularProgress id="create-proposition-page-circular-progress" />
       );
     }
-    const { errors, isSaving, editEntity, wasSubmitAttempted } = editorState;
+    const {
+      errors: apiValidationErrors,
+      isSaving,
+      editEntity,
+      wasSubmitAttempted,
+      dirtyFields,
+      blurredFields,
+    } = editorState;
+    if (!editEntity) {
+      return <CircularProgress id="create-justified-sentence-progress" />;
+    }
     const { proposition, speakers, justification, doCreateJustification } =
-      editEntity || {};
+      editEntity;
     // const isEditing = !!editEntity
     const id = CreatePropositionPage.id;
     const title = t(titleTextKeyByMode[mode]);
@@ -296,21 +315,14 @@ class CreatePropositionPage extends Component<Props> {
     const submitButtonTitle = t(submitButtonTitleTextKeyByMode[mode]);
     const isCreateJustificationMode =
       mode === CreatePropositionPageMode.CREATE_JUSTIFICATION;
-    const propositionErrors =
-      errors &&
-      (doCreateJustification
-        ? get(errors, "justification.fieldErrors.target.fieldErrors.entity")
-        : errors.proposition);
-    const justificationEntityErrors =
-      errors && doCreateJustification ? errors.justification : undefined;
-    const { responseErrorTransformer = identity, inputTransformer = identity } =
-      CreateJustificationConfig;
-    const createJustification =
-      justification && inputTransformer(justification);
-    const justificationFormInputErrors =
-      createJustification &&
-      justificationEntityErrors &&
-      responseErrorTransformer(createJustification, justificationEntityErrors);
+
+    const { errors, isValidRequest } = validateEditorEntity(
+      CreateJustifiedSentenceConfig,
+      CreateJustifiedSentenceInput,
+      apiValidationErrors,
+      editEntity
+    );
+
     const propositionTags = get(proposition, "tags");
     const propositionTagVotes = get(proposition, "propositionTagVotes");
     const propositionEditorText = "propositionEditorText";
@@ -331,6 +343,31 @@ class CreatePropositionPage extends Component<Props> {
       }
     };
 
+    const onSubmit = (event: SyntheticEvent) => {
+      event.preventDefault();
+
+      this.props.dispatch(
+        editors.attemptedSubmit(
+          CreatePropositionPage.editorType,
+          CreatePropositionPage.editorId
+        )
+      );
+
+      if (!isValidRequest) {
+        return;
+      }
+
+      this.props.dispatch(
+        flows.commitEditThenView(
+          CreatePropositionPage.editorType,
+          CreatePropositionPage.editorId
+        )
+      );
+    };
+
+    const tagVotes = propositionTagVotes
+      ? toCompatibleTagVotes(propositionTagVotes)
+      : [];
     return (
       <div id="edit-proposition-justification-page">
         <Helmet>
@@ -348,7 +385,7 @@ class CreatePropositionPage extends Component<Props> {
             </div>
           </div>
         )}
-        <form onSubmit={this.onSubmit}>
+        <form onSubmit={onSubmit}>
           <FocusContainer
             initialFocus={"#" + propositionEditorText}
             containFocus={false}
@@ -417,7 +454,13 @@ class CreatePropositionPage extends Component<Props> {
                                       this.onPersorgAutocomplete(persorg, index)
                                     }
                                     onPropertyChange={this.onPropertyChange}
-                                    onSubmit={this.onSubmit}
+                                    errors={errors.speakers?.[index]}
+                                    wasSubmitAttempted={wasSubmitAttempted}
+                                    blurredFields={
+                                      blurredFields?.speakers?.[index]
+                                    }
+                                    dirtyFields={dirtyFields?.speakers?.[index]}
+                                    onSubmit={onSubmit}
                                   />
                                 }
                               />
@@ -440,23 +483,21 @@ class CreatePropositionPage extends Component<Props> {
                         propositionName
                       )}
                       onPropertyChange={this.onPropertyChange}
-                      errors={propositionErrors}
+                      errors={errors.proposition}
                       disabled={isSaving}
-                      onSubmit={this.onSubmit}
+                      onSubmit={onSubmit}
+                      wasSubmitAttempted={wasSubmitAttempted}
+                      dirtyFields={dirtyFields?.proposition}
+                      blurredFields={blurredFields?.proposition}
                     />
                     <TagsControl
                       id={combineIds(id, tagsName)}
-                      tags={propositionTags}
-                      votes={propositionTagVotes}
-                      name={combineNames(propositionName, tagsName)}
+                      tags={propositionTags ?? []}
+                      votes={tagVotes}
                       suggestionsKey={combineSuggestionsKeys(id, tagsName)}
-                      votePolarity={{
-                        POSITIVE: PropositionTagVotePolarities.POSITIVE,
-                        NEGATIVE: PropositionTagVotePolarities.NEGATIVE,
-                      }}
                       onTag={this.onTagProposition}
                       onUnTag={this.onUnTagProposition}
-                      onSubmit={this.onSubmit}
+                      onSubmit={onSubmit}
                     />
                   </CardText>
 
@@ -496,10 +537,10 @@ class CreatePropositionPage extends Component<Props> {
                       disabled={isSaving}
                       doShowTypeSelection={doShowTypeSelection}
                       onPropertyChange={this.onPropertyChange}
-                      onSubmit={this.onSubmit}
-                      errors={justificationFormInputErrors}
+                      errors={errors.justification}
                       editorDispatch={editorDispatch}
                       wasSubmitAttempted={wasSubmitAttempted}
+                      onSubmit={onSubmit}
                     />
                   </CardText>
 
@@ -513,13 +554,13 @@ class CreatePropositionPage extends Component<Props> {
                       disabled={isSaving}
                       onClick={this.onCancel}
                     />
-                    <Button
-                      raised
-                      primary
+                    <SubmitButton
                       type="submit"
                       children={submitButtonLabel}
                       title={submitButtonTitle}
                       disabled={isSaving}
+                      appearDisabled={!isValidRequest}
+                      onClick={this.onClickSubmit}
                     />
                   </CardActions>
                 </Card>
@@ -535,7 +576,12 @@ const mapStateToProps = (state: RootState, ownProps: OwnProps) => {
   const editorState = get(state.editors, [
     CreatePropositionPage.editorType,
     CreatePropositionPage.editorId,
-  ]) as EditorState<CreateJustifiedSentenceInput, CreateJustifiedSentence>;
+  ]) as EditorState<
+    CreateJustifiedSentenceInput,
+    CreateJustifiedSentence,
+    // The editor submits either a proposition or justification.
+    ModelErrors<CreateProposition | CreateJustification>
+  >;
   const queryParams = queryString.parse(ownProps.location.search);
   return {
     editorState,

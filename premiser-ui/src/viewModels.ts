@@ -1,6 +1,5 @@
 import assign from "lodash/assign";
 import camelCase from "lodash/camelCase";
-import cloneDeep from "lodash/cloneDeep";
 import drop from "lodash/drop";
 import dropWhile from "lodash/dropWhile";
 import flatMap from "lodash/flatMap";
@@ -26,7 +25,6 @@ import {
   PropositionCompound,
   WritQuote,
   EntityId,
-  Sentence,
   CreatePersorgInput,
   CreatePropositionInput,
   SentenceTypes,
@@ -210,10 +208,6 @@ export interface ChipInfo {
   className: string;
 }
 
-export function makeChip(props: Partial<ChipInfo>): Partial<ChipInfo> {
-  return cloneDeep(props);
-}
-
 export const contextTrailTypeByShortcut = {
   p: "PROPOSITION",
   s: "STATEMENT",
@@ -240,7 +234,7 @@ export function describeRootTarget(
       return (rootTarget as Proposition).text;
     case "STATEMENT": {
       const descriptionParts = [];
-      let currSentence = rootTarget as Sentence;
+      let currSentence = rootTarget;
       while ("sentenceType" in currSentence) {
         descriptionParts.push(`${currSentence.speaker.name} said that`);
         currSentence = currSentence.sentence;

@@ -672,7 +672,7 @@ export class JustificationsDao {
     if (justification_1) {
       await this.addStatements([justification_1]);
     }
-    return await justification_1;
+    return justification_1;
   }
 
   private async readRootJustificationCountByPolarityForRoot(
@@ -1096,7 +1096,7 @@ export class JustificationsDao {
     }
 
     const { root_polarity } = row;
-    return root_polarity as JustificationRootPolarity;
+    return root_polarity;
   }
 
   private async readPropositionCompoundsByIdForRootTarget(

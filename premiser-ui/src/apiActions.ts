@@ -17,7 +17,6 @@ import {
   JustificationRootTargetType,
   Proposition,
   Tag,
-  makeCreatePropositionTagVote,
   JustificationRootTargetTypes,
   httpMethods,
   HttpMethod,
@@ -39,6 +38,7 @@ import {
   TagVoteViewModel,
   TagVoteRef,
   PropositionTagVoteOut,
+  CreatePropositionTagVote,
 } from "howdju-common";
 
 import {
@@ -165,7 +165,7 @@ const responseSchema =
     normalizationSchema as T & N;
 
 /** Properties that may be present on API responses */
-interface ApiResponseWrapper {
+export interface ApiResponseWrapper {
   /**
    * Whether an entity equivalent to the top-level entity of a POST's body already existed on the
    * server.
@@ -175,7 +175,7 @@ interface ApiResponseWrapper {
    */
   isExtant?: boolean;
   /** A pagination token. */
-  continuationToken: string;
+  continuationToken?: string;
 }
 
 type Prepared<P> = { payload: P; meta?: any };
@@ -721,7 +721,9 @@ export const api = {
 
   requestRegistration: apiActionCreator(
     "REQUEST_REGISTRATION",
-    (registrationRequest) => ({ registrationRequest }),
+    (registrationRequest) => ({
+      registrationRequest,
+    }),
     (payload) => ({
       endpoint: "registration-requests",
       fetchInit: {
@@ -909,12 +911,15 @@ export const api = {
       propositionId: EntityId,
       tag: Tag,
       propositionTagVote?: PropositionTagVoteOut
-    ) => ({
-      propositionTagVote: makeCreatePropositionTagVote({
+    ): {
+      propositionTagVote: CreatePropositionTagVote;
+      prevPropositionTagVote?: PropositionTagVoteOut;
+    } => ({
+      propositionTagVote: {
         polarity: PropositionTagVotePolarities.POSITIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,
-      }),
+      },
       prevPropositionTagVote: propositionTagVote,
     }),
     (payload) => ({
@@ -930,12 +935,19 @@ export const api = {
   ),
   antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
-    (propositionId, tag, propositionTagVote) => ({
-      propositionTagVote: makeCreatePropositionTagVote({
+    (
+      propositionId: EntityId,
+      tag: Tag,
+      propositionTagVote?: PropositionTagVoteOut
+    ): {
+      propositionTagVote: CreatePropositionTagVote;
+      prevPropositionTagVote?: PropositionTagVoteOut;
+    } => ({
+      propositionTagVote: {
         polarity: PropositionTagVotePolarities.NEGATIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,
-      }),
+      },
       prevPropositionTagVote: propositionTagVote,
     }),
     (payload) => ({
@@ -1049,7 +1061,7 @@ export const api = {
 
   fetchWritTitleSuggestions: apiActionCreator(
     "FETCH_WRIT_TITLE_SUGGESTIONS",
-    (writTitle, suggestionsKey) => ({
+    (writTitle: string, suggestionsKey: string) => ({
       writTitle,
       suggestionsKey,
     }),
@@ -1067,7 +1079,7 @@ export const api = {
 
   fetchTagNameSuggestions: apiActionCreator(
     "FETCH_TAG_NAME_SUGGESTIONS",
-    (tagName, suggestionsKey) => ({
+    (tagName: string, suggestionsKey: string) => ({
       tagName,
       suggestionsKey,
     }),

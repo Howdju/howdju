@@ -82,9 +82,9 @@ export type PropositionCompoundAtomOut =
   PersistRelated<PropositionCompoundAtom>;
 
 // TagVoteViewModel don't need a target because they are added to their targets
-export type TagVoteViewModel = Omit<TagVote, "target">;
+export type TagVoteViewModel = TagVote;
 
-export type PropositionTagVoteOut = Omit<PropositionTagVote, "proposition">;
+export type PropositionTagVoteOut = Persisted<PropositionTagVote>;
 
 export type TaggedEntityOut<T extends Entity = Entity> = Persisted<T> & {
   tags?: Tag[];

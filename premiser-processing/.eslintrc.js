@@ -6,4 +6,7 @@ module.exports = {
       extends: ["howdju/node", "prettier"],
     },
   ],
+  parserOptions: {
+    project: ["./tsconfig.json"],
+  },
 };

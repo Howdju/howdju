@@ -28,6 +28,10 @@ import {
   User,
   AuthToken,
   CreateRegistrationConfirmationInput,
+  CreateRegistrationRequest,
+  CreateRegistrationRequestInput,
+  Proposition,
+  Statement,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -42,6 +46,7 @@ import {
   AnyApiAction,
   ApiActionCreator,
   ApiResponseAction,
+  ApiResponseWrapper,
 } from "@/apiActions";
 
 /**
@@ -108,7 +113,7 @@ function createEditorCommitApiResourceAction<E extends EditorType>(
     throw new Error(`No editor commit config for editor type ${editorType}`);
   }
 
-  // editModels lacking an ID only support creation (e.g. JustifiedProposition.)
+  // editModels lacking an ID only support creation (e.g. JustifiedSentence.)
   const crudType =
     !("id" in editEntity) || !editEntity.id
       ? CrudActions.CREATE
@@ -168,18 +173,18 @@ type EditorCommitConfig = {
  *
  * If this is the only config provided, then it applies to all CRUD actions.
  *
- * @typeparam T the input model type
- * @typeparam U the request model type (Create or Edit)
- * @typeparam P the request action creator payload type
- * @typeparam RP the response action creator payload type
- * @typeparam PA the prepare action type.
+ * @typeparam ClientModel the input model type
+ * @typeparam ApiModel the request model type (Create or Edit)
+ * @typeparam RequestPayload the request action creator payload type
+ * @typeparam ResponsePayload the response action creator payload type
+ * @typeparam Prepare the prepare action type.
  */
 export type EditorCommitCrudActionConfig<
-  T extends EditorEntity,
-  U,
-  P,
-  RP,
-  PA extends void | PrepareAction<P>
+  ClientModel extends EditorEntity,
+  ApiModel,
+  RequestPayload,
+  ResponsePayload,
+  Prepare extends void | PrepareAction<RequestPayload>
 > = {
   /**
    * Transforms the Input model into the request model
@@ -189,21 +194,21 @@ export type EditorCommitCrudActionConfig<
    * TODO(26): this has overlap with apiActionCreator's prepare method, which translates the entity
    * into the request.
    */
-  inputTransformer?: (model: T) => U;
+  inputTransformer?: (model: ClientModel) => ApiModel;
   /**
    * Transforms the response errors into the input model errors.
    *
    * If missing, the errors are not transformed.
    */
   responseErrorTransformer?: (
-    model: U,
-    errors: ModelErrors<U>
-  ) => ModelErrors<T>;
+    model: ApiModel,
+    errors: ModelErrors<ApiModel>
+  ) => ModelErrors<ClientModel>;
   /** The schema of the editor's request.
    *
    * If present, is used to determine whether the editor submission is valid.
    */
-  requestSchema?: z.ZodType<U>;
+  requestSchema?: z.ZodType<ApiModel>;
 } & (
   | {
       /**
@@ -211,7 +216,11 @@ export type EditorCommitCrudActionConfig<
        *
        * Only one of requestActionCreator and makeRequestActionCreator should be present.
        */
-      requestActionCreator: ApiActionCreator<P, RP, PA>;
+      requestActionCreator: ApiActionCreator<
+        RequestPayload,
+        ResponsePayload,
+        Prepare
+      >;
     }
   | {
       /**
@@ -220,9 +229,9 @@ export type EditorCommitCrudActionConfig<
        * Only one of requestActionCreator and makeRequestActionCreator should be present.
        */
       makeRequestActionCreator: (
-        model: T,
+        model: ClientModel,
         crudType: CrudAction
-      ) => ApiActionCreator<P, RP, PA>;
+      ) => ApiActionCreator<RequestPayload, ResponsePayload, Prepare>;
     }
 );
 
@@ -237,6 +246,56 @@ export const CreateJustificationConfig: EditorCommitCrudActionConfig<
   responseErrorTransformer: muxCreateJustificationErrors,
   requestActionCreator: api.createJustification,
   requestSchema: CreateJustification,
+};
+
+export const CreateJustifiedSentenceConfig: EditorCommitCrudActionConfig<
+  CreateJustifiedSentenceInput,
+  CreateProposition | CreateStatement | CreateJustification,
+  | { justification: CreateJustification }
+  | { proposition: CreateProposition }
+  | { statement: CreateStatement },
+  | { justification: Justification }
+  | { proposition: Proposition }
+  | { statement: Statement },
+  PrepareAction<
+    | { justification: CreateJustification }
+    | { proposition: CreateProposition }
+    | { statement: CreateStatement }
+  >
+> = {
+  inputTransformer(model: CreateJustifiedSentenceInput) {
+    const { speakers, doCreateJustification, proposition } = model;
+    if (speakers.length) {
+      const statement = constructStatementInput(speakers, proposition);
+
+      if (!doCreateJustification) {
+        return statement as CreateStatement;
+      }
+
+      const justification = demuxCreateJustificationInput(model.justification);
+      justification.target = {
+        entity: statement,
+        type: JustificationTargetTypes.STATEMENT,
+      };
+      return justification;
+    }
+
+    if (!doCreateJustification) {
+      return proposition;
+    }
+    const justification = demuxCreateJustificationInput(model.justification);
+    justification.target.entity = model.proposition;
+    return justification;
+  },
+  responseErrorTransformer: transformCreateJustifiedSentenceErrors,
+  makeRequestActionCreator(model: CreateJustifiedSentenceInput) {
+    const { doCreateJustification, speakers } = model;
+    if (doCreateJustification) {
+      return api.createJustification;
+    }
+    return speakers.length ? api.createStatement : api.createProposition;
+  },
+  requestSchema: CreateProposition.or(CreateStatement).or(CreateJustification),
 };
 
 export const CreateCounterJustificationConfig: EditorCommitCrudActionConfig<
@@ -263,6 +322,17 @@ export const CreateRegistrationConfirmationConfig: EditorCommitCrudActionConfig<
   requestActionCreator: api.confirmRegistration,
 };
 
+export const CreateRegistrationRequestConfig: EditorCommitCrudActionConfig<
+  CreateRegistrationRequestInput,
+  CreateRegistrationRequest,
+  { registrationRequest: CreateRegistrationRequest },
+  ApiResponseWrapper,
+  PrepareAction<{ registrationRequest: CreateRegistrationRequest }>
+> = {
+  requestSchema: CreateRegistrationRequest,
+  requestActionCreator: api.requestRegistration,
+};
+
 export const editorCommitConfigs: Partial<
   Record<EditorType, EditorCommitConfig>
 > = {
@@ -273,45 +343,8 @@ export const editorCommitConfigs: Partial<
       requestSchema: EditProposition,
     },
   },
-  PROPOSITION_JUSTIFICATION: {
-    CREATE: {
-      inputTransformer(model: CreateJustifiedSentenceInput) {
-        const { speakers, doCreateJustification, proposition } = model;
-        if (speakers.length) {
-          const statement = constructStatementInput(speakers, proposition);
-
-          if (!doCreateJustification) {
-            return statement;
-          }
-
-          const justification = demuxCreateJustificationInput(
-            model.justification
-          );
-          justification.target = {
-            entity: statement,
-            type: JustificationTargetTypes.STATEMENT,
-          };
-          return justification;
-        }
-
-        if (!doCreateJustification) {
-          return proposition;
-        }
-        const justification = demuxCreateJustificationInput(
-          model.justification
-        );
-        justification.target.entity = model.proposition;
-        return justification;
-      },
-      responseErrorTransformer: transformCreateJustifiedSentenceErrors,
-      makeRequestActionCreator(model: CreateJustifiedSentenceInput) {
-        const { doCreateJustification, speakers } = model;
-        if (doCreateJustification) {
-          return api.createJustification;
-        }
-        return speakers.length ? api.createStatement : api.createProposition;
-      },
-    },
+  JUSTIFIED_SENTENCE: {
+    CREATE: CreateJustifiedSentenceConfig,
   },
   NEW_JUSTIFICATION: {
     // Editing justifications is not supported
@@ -346,18 +379,6 @@ export const editorCommitConfigs: Partial<
 };
 
 /** Translates CreateJustifiedSentence errors into input model errors. */
-function transformCreateJustifiedSentenceErrors(
-  model: CreateJustification,
-  modelErrors: ModelErrors<CreateJustification>
-): ModelErrors<CreateJustifiedSentenceInput>;
-function transformCreateJustifiedSentenceErrors(
-  model: CreateStatement,
-  modelErrors: ModelErrors<CreateStatement>
-): ModelErrors<CreateJustifiedSentenceInput>;
-function transformCreateJustifiedSentenceErrors(
-  model: CreateProposition,
-  modelErrors: ModelErrors<CreateProposition>
-): ModelErrors<CreateJustifiedSentenceInput>;
 function transformCreateJustifiedSentenceErrors(
   model: CreateJustification | CreateStatement | CreateProposition,
   errors: ModelErrors<CreateJustification | CreateStatement | CreateProposition>

@@ -1,27 +1,13 @@
 import { fork, put } from "typed-redux-saga";
-import { setupServer } from "msw/node";
 import { rest } from "msw";
 
 import { api } from "@/apiActions";
 import { callApiForResource, resourceApiCalls } from "./resourceApiSagas";
-import { testSaga } from "@/testUtils";
+import { testSaga, withFakeTimers, withMockServer } from "@/testUtils";
 
-const server = setupServer();
+const server = withMockServer();
 
-beforeAll(() => {
-  server.listen();
-});
-beforeEach(() => {
-  // Use fake timers so that we can ensure animations complete before snapshotting.
-  jest.useFakeTimers();
-});
-afterEach(() => {
-  server.resetHandlers();
-
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
-});
-afterAll(() => server.close());
+withFakeTimers();
 
 describe("callApiForResource", () => {
   test("a call with the same cancelKey cancels an pending call", async () => {

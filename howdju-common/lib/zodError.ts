@@ -110,7 +110,7 @@ type IssueDescriptorArg = string | Omit<z.ZodCustomIssue, "code" | "path">;
 
 // A singleton function to pass to the proxy so that the proxy supports the `apply` trap.
 // Other than the fact that it is a function, it's value has no effect on the behavior of makeCallableProxy.
-const callableProxyTarget = new Function();
+const callableProxyTarget = function () {};
 
 /**
  * Returns a Proxy for which every field is callable with issue format information.

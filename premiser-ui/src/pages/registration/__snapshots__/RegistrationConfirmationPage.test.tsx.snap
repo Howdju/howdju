@@ -485,7 +485,7 @@ exports[`RegistrationConfirmationPage shows error message for duplicate username
                   Cancel
                 </button>
                 <button
-                  class="md-btn md-btn--raised md-btn--text md-btn--hover md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                  class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
                   title="Submit"
                   type="submit"
                 >

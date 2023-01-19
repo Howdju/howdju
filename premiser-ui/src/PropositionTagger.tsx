@@ -1,19 +1,14 @@
 import React from "react";
 import find from "lodash/find";
 
-import {
-  EntityId,
-  PropositionTagVotePolarities,
-  PropositionTagVoteOut,
-  Tag,
-  tagEqual,
-} from "howdju-common";
+import { EntityId, PropositionTagVoteOut, Tag, tagEqual } from "howdju-common";
 
 import { combineIds, combineSuggestionsKeys } from "./viewModels";
 import { api, goto } from "./actions";
 import TagsControl from "./TagsControl";
 import { useAppDispatch } from "./hooks";
 import { ComponentId, SuggestionsKey } from "./types";
+import { toCompatibleTagVotes } from "./util";
 
 interface Props {
   id: ComponentId;
@@ -27,8 +22,8 @@ interface Props {
 const PropositionTagger: React.FC<Props> = (props: Props) => {
   const {
     id,
-    tags,
-    votes,
+    tags = [],
+    votes = [],
     recommendedTags,
     suggestionsKey,
     propositionId,
@@ -62,18 +57,15 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const compatibleVotes = toCompatibleTagVotes(votes);
+
   return (
     <TagsControl
       {...rest}
       id={combineIds(id, "tags")}
       tags={tags}
-      votes={votes}
+      votes={compatibleVotes}
       recommendedTags={recommendedTags}
-      extraChildren={[]}
-      votePolarity={{
-        POSITIVE: PropositionTagVotePolarities.POSITIVE,
-        NEGATIVE: PropositionTagVotePolarities.NEGATIVE,
-      }}
       suggestionsKey={combineSuggestionsKeys(suggestionsKey, "tagName")}
       onTag={onTag}
       onUnTag={onUnTag}

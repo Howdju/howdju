@@ -49,9 +49,24 @@ module.exports = {
       plugins: ["jest"],
       extends: ["plugin:jest/recommended", "plugin:jest/style", "prettier"],
       rules: {
+        "no-restricted-syntax": [
+          "error",
+          {
+            selector:
+              "CallExpression[callee.object.name='jest'][callee.property.name='setTimeout']",
+            message:
+              "Tests should complete within the default timeout. (Did you forget to remove a call to jest.setTimeout?)",
+          },
+        ],
         "jest/no-commented-out-tests": "error",
         "jest/no-disabled-tests": "error",
         "jest/no-large-snapshots": "warn",
+        "jest/expect-expect": [
+          "error",
+          {
+            assertFunctionNames: ["expect", "waitForElementToBeRemoved"],
+          },
+        ],
       },
     },
     {
@@ -67,7 +82,7 @@ module.exports = {
       parser: "@typescript-eslint/parser",
       extends: [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "prettier",
       ],
       rules: {
@@ -86,6 +101,13 @@ module.exports = {
             "ts-ignore": "allow-with-description",
           },
         ],
+        // TODO(1): replace these global overrides with specific per instance overrides
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
       },
     },
   ],

@@ -18,9 +18,7 @@ export function* beginEditOfNewJustificationFromTarget() {
     function* beginEditOfNewJustificationFromTargetWorker(
       action: PayloadAction<Payload>
     ) {
-      const propositionJustification = toPropositionJustification(
-        action.payload
-      );
+      const propositionJustification = toJustifiedSentence(action.payload);
       yield* put(
         editors.beginEdit(
           CreatePropositionPage.editorType,
@@ -33,7 +31,7 @@ export function* beginEditOfNewJustificationFromTarget() {
   );
 }
 
-function toPropositionJustification(payload: Payload) {
+function toJustifiedSentence(payload: Payload) {
   const { content, source, target } = payload;
   const { title } = source;
   const quoteText = content.text.trim();

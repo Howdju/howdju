@@ -173,7 +173,7 @@ export const addArrayParams = function addArrayParams(
   const params: string[] = [];
   const start = baseArgs.length + 1;
   for (let i = 0; i < values.length; i++) {
-    params.push("$" + (i + start));
+    params.push("$" + toString(i + start));
   }
   return {
     params,
@@ -185,7 +185,7 @@ export const createParams = function createParams(
   count: number,
   start: number
 ) {
-  return map(Array.from(Array(count).keys()), (i) => "$" + (i + start));
+  return map(Array.from(Array(count).keys()), (i) => "$" + toString(i + start));
 };
 
 // We use a convention of translating IDs to strings.

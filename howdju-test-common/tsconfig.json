@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      // Support project-relative imports
+      "@/*": ["./lib/*"]
+    }
+  }
+}

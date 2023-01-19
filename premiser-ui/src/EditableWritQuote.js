@@ -6,8 +6,8 @@ import get from "lodash/get";
 
 import { EditorTypes } from "./reducers/editors";
 import WritQuoteViewer from "./WritQuoteViewer";
-import WritQuoteEditor from "./WritQuoteEditor";
 import ExpandableChildContainer from "./ExpandableChildContainer";
+import WritQuoteEditor from "./editors/WritQuoteEditor";
 
 class EditableWritQuote extends Component {
   render() {

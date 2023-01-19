@@ -14,7 +14,7 @@ import { editors, goto, flows, str } from "../../actions";
 const editorCommitResultGotoActionCreators = {
   [EditorTypes.PROPOSITION]: ({ proposition }) => goto.proposition(proposition),
   [EditorTypes.WRIT_QUOTE]: ({ writQuote }) => goto.writQuote(writQuote),
-  [EditorTypes.PROPOSITION_JUSTIFICATION]: ({
+  [EditorTypes.JUSTIFIED_SENTENCE]: ({
     proposition,
     statement,
     justification,

@@ -75,6 +75,9 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                 class="md-card-text"
               >
                 <div>
+                  <ul
+                    class="error-message"
+                  />
                   <div
                     aria-expanded="false"
                     aria-haspopup="true"
@@ -133,7 +136,6 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                 </div>
                 <div
                   class="chips-list"
-                  style="position: relative;"
                 >
                   <div
                     aria-expanded="false"
@@ -142,7 +144,7 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                     id="create-proposition-page--tags--tag-name-menu"
                   >
                     <div
-                      class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                      class="md-text-field-container md-full-width md-text-field-container--input md-autocomplete"
                     >
                       <label
                         class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
@@ -150,30 +152,15 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                       >
                         Tag
                       </label>
-                      <div
-                        class="md-text-field-multiline-container md-text-field--floating-margin"
-                        style="height: 0px;"
-                      >
-                        <span
-                          aria-hidden="true"
-                        />
-                        <textarea
-                          aria-hidden="true"
-                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                          readonly=""
-                          rows="1"
-                          tabindex="-1"
-                        />
-                        <textarea
-                          aria-autocomplete="list"
-                          autocomplete="off"
-                          class="md-text-field md-text-field--multiline md-full-width md-text"
-                          id="create-proposition-page--tags--tag-name"
-                          name="tagName"
-                          rows="1"
-                          style="height: 0px;"
-                        />
-                      </div>
+                      <input
+                        aria-autocomplete="list"
+                        autocomplete="off"
+                        class="md-text-field md-text-field--floating-margin md-full-width md-text"
+                        id="create-proposition-page--tags--tag-name"
+                        name="tagName"
+                        type="text"
+                        value=""
+                      />
                       <hr
                         class="md-divider md-divider--text-field md-divider--expand-from-left"
                       />
@@ -711,6 +698,9 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                         </span>
                       </div>
                     </button>
+                    <ul
+                      class="error-message"
+                    />
                   </div>
                 </div>
               </section>
@@ -727,7 +717,7 @@ exports[`CreatePropositionPage can add URL while editing a WritQuote-based justi
                   Cancel
                 </button>
                 <button
-                  class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
                   title="Tell the world!"
                   type="submit"
                 >
@@ -802,6 +792,9 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                 class="md-card-text"
               >
                 <div>
+                  <ul
+                    class="error-message"
+                  />
                   <div
                     aria-expanded="false"
                     aria-haspopup="true"
@@ -860,7 +853,6 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                 </div>
                 <div
                   class="chips-list"
-                  style="position: relative;"
                 >
                   <div
                     aria-expanded="false"
@@ -869,7 +861,7 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                     id="create-proposition-page--tags--tag-name-menu"
                   >
                     <div
-                      class="md-text-field-container md-full-width md-text-field-container--multiline md-autocomplete"
+                      class="md-text-field-container md-full-width md-text-field-container--input md-autocomplete"
                     >
                       <label
                         class="md-floating-label md-floating-label--inactive md-floating-label--inactive-sized md-text--secondary"
@@ -877,30 +869,15 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                       >
                         Tag
                       </label>
-                      <div
-                        class="md-text-field-multiline-container md-text-field--floating-margin"
-                        style="height: 0px;"
-                      >
-                        <span
-                          aria-hidden="true"
-                        />
-                        <textarea
-                          aria-hidden="true"
-                          class="md-text-field md-text-field--multiline md-full-width md-text md-text-field--multiline-mask"
-                          readonly=""
-                          rows="1"
-                          tabindex="-1"
-                        />
-                        <textarea
-                          aria-autocomplete="list"
-                          autocomplete="off"
-                          class="md-text-field md-text-field--multiline md-full-width md-text"
-                          id="create-proposition-page--tags--tag-name"
-                          name="tagName"
-                          rows="1"
-                          style="height: 0px;"
-                        />
-                      </div>
+                      <input
+                        aria-autocomplete="list"
+                        autocomplete="off"
+                        class="md-text-field md-text-field--floating-margin md-full-width md-text"
+                        id="create-proposition-page--tags--tag-name"
+                        name="tagName"
+                        type="text"
+                        value=""
+                      />
                       <hr
                         class="md-divider md-divider--text-field md-divider--expand-from-left"
                       />
@@ -1405,7 +1382,7 @@ exports[`CreatePropositionPage renders correctly with query params 1`] = `
                   Cancel
                 </button>
                 <button
-                  class="md-btn md-btn--raised md-btn--text md-pointer--hover md-background--primary md-background--primary-hover md-inline-block"
+                  class="md-btn md-btn--flat md-btn--text md-pointer--hover md-text md-inline-block md-btn--raised-disabled md-text--disabled"
                   title="A proposition is only as good as its justification"
                   type="submit"
                 >

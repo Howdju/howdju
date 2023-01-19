@@ -2,7 +2,6 @@ import React from "react";
 import find from "lodash/find";
 
 import {
-  PropositionTagVotePolarities,
   Tag,
   tagEqual,
   TaggableEntityType,
@@ -64,14 +63,9 @@ const Tagger: React.FC<Props> = (props: Props) => {
     <TagsControl
       {...rest}
       id={combineIds(id, "tags")}
-      tags={tags}
-      votes={tagVotes}
+      tags={tags ?? []}
+      votes={tagVotes ?? []}
       recommendedTags={recommendedTags}
-      extraChildren={[]}
-      votePolarity={{
-        POSITIVE: PropositionTagVotePolarities.POSITIVE,
-        NEGATIVE: PropositionTagVotePolarities.NEGATIVE,
-      }}
       suggestionsKey={combineSuggestionsKeys(suggestionsKey, "tagName")}
       onTag={onTag}
       onUnTag={onUnTag}

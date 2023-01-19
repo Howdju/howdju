@@ -228,8 +228,6 @@ export const makePropositionTagVote = (
   props: PropositionTagVote
 ): PropositionTagVote => props;
 
-export const makeCreatePropositionTagVote = makePropositionTagVote;
-
 export const makeTagVote = (props: TagVote): TagVote => props;
 export const makeCreateTagVote = makeTagVote;
 
@@ -415,7 +413,7 @@ export function demuxCreateJustificationInput(
 ): CreateCounterJustification;
 export function demuxCreateJustificationInput(
   input: CreateJustificationInput | CreateCounterJustificationInput
-): CreateJustification | CreateCounterJustificationInput {
+): CreateJustification | CreateCounterJustification {
   const basis = demuxCreateJustificationInputBasis(input.basis);
   const target = demuxCreateJustificationInputTarget(input.target);
   const creation: CreateJustification = assign(cloneDeep(input), {

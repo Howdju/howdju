@@ -5,9 +5,11 @@ import withEditor from "@/editors/withEditor";
 import { EditorTypes } from "@/reducers/editors";
 
 /** A WritQuote editor. */
-export default withEditor(
+const WritQuoteEditor = withEditor(
   EditorTypes.WRIT_QUOTE,
   WritQuoteEditorFields,
   "writQuote",
   schemaIds.writQuote
 );
+
+export default WritQuoteEditor;

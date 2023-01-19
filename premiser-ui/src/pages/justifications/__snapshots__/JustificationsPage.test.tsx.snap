@@ -99,7 +99,6 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
               </div>
               <div
                 class="chips-list"
-                style="position: relative;"
               >
                 <button
                   class="md-btn md-btn--icon md-pointer--hover md-inline-block"

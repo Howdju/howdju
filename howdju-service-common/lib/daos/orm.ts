@@ -854,9 +854,12 @@ export function toPropositionTagVote(
     proposition: PropositionRef.parse({
       id: toIdString(row.proposition_id),
     }),
-    tag: TagRef.parse({
-      id: toIdString(row.tag_id),
-    }),
+    tag: {
+      ...TagRef.parse({
+        id: toIdString(row.tag_id),
+      }),
+      name: row.tag_name,
+    },
   };
 }
 

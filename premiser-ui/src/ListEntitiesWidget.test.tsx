@@ -1,11 +1,15 @@
 import React from "react";
 import { rest } from "msw";
 import { screen, waitFor } from "@testing-library/react";
-import { setupServer } from "msw/node";
-import userEvent from "@testing-library/user-event";
 
 import RecentPropositionsWidget from "./RecentPropositionsWidget";
-import { renderWithProviders } from "@/testUtils";
+import {
+  renderWithProviders,
+  withFakeTimers,
+  withStaticFromNowMoment,
+  withMockServer,
+  setupUserEvent,
+} from "@/testUtils";
 import {
   httpStatusCodes,
   GetPropositionsOut,
@@ -14,39 +18,31 @@ import {
   PropositionRef,
 } from "howdju-common";
 import { drop, take, toNumber } from "lodash";
-import moment, { Moment } from "moment";
+import moment from "moment";
 
 const created = moment("2023-01-12T12:23:00");
 
-const server = setupServer();
+withFakeTimers();
+
+const server = withMockServer();
 const propositions = Array.from(Array(20).keys()).map((id) => ({
-  ...PropositionRef.parse({ id: "proposition" + id }),
+  ...PropositionRef.parse({ id: `proposition${id}` }),
   created,
-  text: "The proposition text " + id,
+  text: `The proposition text ${id}`,
 }));
 const initialFetchCount = 7;
 const fetchCount = 8;
 
-let fromNow: typeof moment.fn.fromNow;
+withStaticFromNowMoment("2023-01-12T20:14:00");
 
-beforeAll(() => {
-  server.listen();
-});
 beforeEach(() => {
-  fromNow = moment.fn.fromNow;
-  // Use deterministic time for relative time formatting
-  moment.fn.fromNow = jest.fn(function (this: Moment) {
-    const withoutSuffix = false;
-    return this.from(moment("2023-01-12T20:14:00"), withoutSuffix);
-  });
-
-  jest.useFakeTimers();
-
   server.use(
     rest.get("http://localhost/propositions", (req, res, ctx) => {
       const count = toNumber(req.url.searchParams.get("count"));
       const continuationTokenIn = req.url.searchParams.get("continuationToken");
-      const offset = continuationTokenIn ? fromJson(continuationTokenIn) : 0;
+      const offset = continuationTokenIn
+        ? toNumber(fromJson(continuationTokenIn))
+        : 0;
       const continuationToken = toJson(offset + count);
       const response: GetPropositionsOut = {
         propositions: take(drop(propositions, offset), count),
@@ -56,15 +52,6 @@ beforeEach(() => {
     })
   );
 });
-afterEach(() => {
-  server.resetHandlers();
-
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
-
-  moment.fn.fromNow = fromNow;
-});
-afterAll(() => server.close());
 
 /** Throws if progress is in the document and visible. */
 function progressToBeGone(progress: HTMLElement | null) {
@@ -118,9 +105,7 @@ describe("ListEntitiesWidget", () => {
         progressToBeGone(screen.queryByRole("progressbar"));
       });
 
-      // userEvent delays between actions, so make sure it advances the fake timers.
-      // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const user = setupUserEvent();
 
       // Act
       await user.click(

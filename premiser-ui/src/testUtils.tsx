@@ -8,17 +8,86 @@ import { createMemoryHistory, History, createLocation } from "history";
 import { persistStore, PersistorOptions } from "redux-persist";
 import { compile } from "path-to-regexp";
 import { match } from "react-router";
-
-import { AppStore, RootState, sagaMiddleware } from "./setupStore";
-import { setupStore } from "./setupStore";
-import { head } from "lodash";
+import userEvent from "@testing-library/user-event";
+import { setupServer } from "msw/node";
 import { Saga } from "redux-saga";
+import { head } from "lodash";
+import moment, { Moment, MomentInput } from "moment";
 
-interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
+import { AppStore, RootState, sagaMiddleware, setupStore } from "./setupStore";
+
+interface ProviderRenderOptions
+  extends DefaultStoreOptions,
+    Omit<RenderOptions, "queries"> {
+  persist?: boolean;
+}
+
+export interface DefaultStoreOptions {
   preloadedState?: PreloadedState<RootState>;
   store?: AppStore;
-  persist?: boolean;
   history?: History<any>;
+}
+
+export function setupDefaultStore({
+  preloadedState = {},
+  history = createMemoryHistory(),
+  store = setupStore(history, preloadedState),
+}: DefaultStoreOptions = {}) {
+  return { preloadedState, history, store };
+}
+
+/**
+ * Use Jest fake timers.
+ *
+ * Restores real timers after each to allow third-party libraries to cleanup. See
+ * https://testing-library.com/docs/using-fake-timers/
+ *
+ * TODO(219): should we do this in a Jest environment instead?
+ */
+export function withFakeTimers() {
+  beforeEach(() => {
+    // Use fake timers so that we can ensure animations complete before snapshotting.
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+}
+
+/** Configures an msw fake server for the test.
+ *
+ * @returns the mock server
+ */
+export function withMockServer() {
+  const server = setupServer();
+
+  beforeAll(() => {
+    server.listen();
+  });
+  afterEach(() => {
+    server.resetHandlers();
+  });
+  afterAll(() => {
+    server.close();
+  });
+  return server;
+}
+
+export function withStaticFromNowMoment(input: MomentInput) {
+  let fromNow: typeof moment.fn.fromNow;
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    fromNow = moment.fn.fromNow;
+    // Use deterministic time for relative time formatting
+    moment.fn.fromNow = jest.fn(function (this: Moment) {
+      const withoutSuffix = false;
+      return this.from(moment(input), withoutSuffix);
+    });
+  });
+  afterEach(() => {
+    moment.fn.fromNow = fromNow;
+  });
 }
 
 /** Render a React component with the redux store etc. */
@@ -30,7 +99,7 @@ export function renderWithProviders(
     store = setupStore(history, preloadedState),
     persist = true,
     ...renderOptions
-  }: ExtendedRenderOptions = {}
+  }: ProviderRenderOptions = {}
 ) {
   const persistor = persistStore(store, {
     manualPersist: true,
@@ -81,7 +150,7 @@ export function makeRouteComponentProps<T extends Record<string, string>>(
     params: pathParams,
   };
   const locationPath = searchParams
-    ? match.url + "?" + new URLSearchParams(searchParams)
+    ? match.url + "?" + new URLSearchParams(searchParams).toString()
     : match.url;
   const location = createLocation(locationPath);
 
@@ -112,4 +181,10 @@ export async function testSaga(saga: Saga<any[]>) {
   } as PersistorOptions);
   persistor.persist();
   await sagaMiddleware.run(saga).toPromise();
+}
+
+export function setupUserEvent() {
+  // userEvent delays between actions, so make sure it advances the fake timers.
+  // (https://github.com/testing-library/user-event/issues/833#issuecomment-1171452841)
+  return userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 }

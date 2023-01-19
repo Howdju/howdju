@@ -11,8 +11,6 @@ import assign from "lodash/assign";
 import clone from "lodash/clone";
 import cloneDeep from "lodash/cloneDeep";
 import concat from "lodash/concat";
-import difference from "lodash/difference";
-import find from "lodash/find";
 import forEach from "lodash/forEach";
 import get from "lodash/get";
 import has from "lodash/has";
@@ -21,7 +19,14 @@ import isString from "lodash/isString";
 import includes from "lodash/includes";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import { filter, isFunction, keys } from "lodash";
+import {
+  differenceWith,
+  filter,
+  isEqual,
+  isFunction,
+  keys,
+  uniqWith,
+} from "lodash";
 
 import {
   apiErrorCodes,
@@ -53,6 +58,9 @@ import {
   CreateRegistrationConfirmationInput,
   CreatePropositionInput,
   CreateCounterJustificationInput,
+  CreateProposition,
+  PropositionTagVote,
+  assert,
 } from "howdju-common";
 
 import {
@@ -94,7 +102,7 @@ export const EditorTypes = {
   /* e.g. new justification dialog */
   NEW_JUSTIFICATION: "NEW_JUSTIFICATION",
   /* e.g. Proposition justification page */
-  PROPOSITION_JUSTIFICATION: "PROPOSITION_JUSTIFICATION",
+  JUSTIFIED_SENTENCE: "JUSTIFIED_SENTENCE",
   LOGIN_CREDENTIALS: "LOGIN_CREDENTIALS",
   REGISTRATION_REQUEST: "REGISTRATION_REQUEST",
   REGISTRATION_CONFIRMATION: "REGISTRATION_CONFIRMATION",
@@ -130,16 +138,20 @@ export type EditorEntity =
  * @typeparam T the editor model type.
  * @typeparam U the request model type. TODO add FromInput<> mirroring ToInput.
  */
-export interface EditorState<T extends EditorEntity, U = T> {
+export interface EditorState<
+  T extends EditorEntity,
+  U = T,
+  E extends ModelErrors<any> = ModelErrors<U>
+> {
   /**
    * The model the editor is editing.
    *
-   * TODO rename to editModel, since JustifiedProposition is not an entity.
+   * TODO rename to editModel, since JustifiedSentence is not an entity.
    */
   editEntity?: T;
   blurredFields?: BlurredFields<T>;
   dirtyFields?: DirtyFields<T>;
-  errors?: ModelErrors<U>;
+  errors?: E;
   /** Whether the entity is in the middle of saving. */
   isSaving: boolean;
   /**
@@ -450,8 +462,12 @@ const editorReducerByType: {
     defaultEditorState<any>()
   ),
 
-  [EditorTypes.PROPOSITION_JUSTIFICATION]: handleActions<
-    EditorState<CreateJustifiedSentenceInput, CreateJustifiedSentence>,
+  [EditorTypes.JUSTIFIED_SENTENCE]: handleActions<
+    EditorState<
+      CreateJustifiedSentenceInput,
+      CreateJustifiedSentence,
+      ModelErrors<CreateProposition | CreateJustification>
+    >,
     any
   >(
     {
@@ -553,7 +569,7 @@ const editorReducerByType: {
       ),
       [str(editors.unTagProposition)]: makePropositionTagReducer(
         PropositionTagVotePolarities.POSITIVE,
-        difference
+        (list1, list2) => differenceWith(list1, list2, isEqual)
       ),
     },
     defaultEditorState()
@@ -658,10 +674,9 @@ const editorReducerByType: {
   ),
 };
 
-type Combiner = (one: Array<unknown>, two: Array<unknown>) => Array<unknown>;
 function makePropositionTagReducer(
   polarity: PropositionTagVotePolarity,
-  combiner: Combiner
+  combiner: (one: any[], two: any[]) => any[]
 ) {
   return (
     state: EditorState<CreateJustifiedSentenceInput>,
@@ -669,7 +684,7 @@ function makePropositionTagReducer(
   ) => {
     if (!state.editEntity || !("proposition" in state.editEntity)) {
       logger.error(
-        "editEntity was missing or not a PropositionJustificationsEditEntity"
+        "editEntity was missing or not a JustifiedSentence editEntity"
       );
       return state;
     }
@@ -691,8 +706,16 @@ function makePropositionTagReducer(
     });
 
     const oldTags = get(proposition, "tags", []);
-    const existingTag = find(oldTags, (oldTag) => tagEqual(oldTag, tag));
-    const tags = existingTag ? oldTags : combiner(oldTags, [tag]);
+    const combinedTags = combiner(oldTags, [tag]);
+    const uniqueTags = uniqWith(combinedTags, tagEqual);
+    // See if the combiner actually changed anything. If not, just use the oldTags.
+    let tags;
+    if (uniqueTags.length === combinedTags.length) {
+      tags = combinedTags;
+    } else {
+      tags = oldTags;
+      assert(uniqueTags.length === oldTags.length);
+    }
 
     if (
       tags === oldTags &&
@@ -703,10 +726,10 @@ function makePropositionTagReducer(
       return state;
     }
 
-    const propositionTagVotes =
-      redundantPropositionTagVotes.length > 0
-        ? oldPropositionTagVotes
-        : combiner(oldPropositionTagVotes, [{ polarity, tag, proposition }]);
+    const propositionTagVotes: PropositionTagVote[] = combiner(
+      oldPropositionTagVotes,
+      [{ polarity, tag, proposition } as PropositionTagVote]
+    );
 
     return {
       ...state,

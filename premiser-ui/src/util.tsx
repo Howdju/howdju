@@ -3,7 +3,13 @@ import validUrl from "valid-url";
 import isValidDomain from "is-valid-domain";
 import queryString from "query-string";
 
-import { isDefined, extractDomain } from "howdju-common";
+import {
+  isDefined,
+  extractDomain,
+  PropositionTagVoteOut,
+  TagVote,
+  CreatePropositionTagVoteInput,
+} from "howdju-common";
 
 import config from "./config";
 import { Divider } from "react-md";
@@ -171,4 +177,23 @@ export function getQueryParam(
     );
   }
   return value || undefined;
+}
+
+export function toCompatibleTagVotes(
+  propositionTagVotes: CreatePropositionTagVoteInput[]
+): TagVote[];
+export function toCompatibleTagVotes(
+  propositionTagVotes: PropositionTagVoteOut[]
+): TagVote[];
+export function toCompatibleTagVotes(
+  propositionTagVotes: PropositionTagVoteOut[] | CreatePropositionTagVoteInput[]
+): TagVote[] {
+  return propositionTagVotes.map(
+    (v) =>
+      ({
+        ...v,
+        target: v.proposition,
+        targetType: "PROPOSITION",
+      } as TagVote)
+  );
 }

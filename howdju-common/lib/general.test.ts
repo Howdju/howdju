@@ -1,4 +1,4 @@
-import { uniq, isNumber, camelCase } from "lodash";
+import { uniq, isNumber, camelCase, isString } from "lodash";
 import moment from "moment";
 
 import {
@@ -61,7 +61,7 @@ describe("mapValuesDeep", () => {
         {
           arr: [{ a: "one" }, { b: "two" }],
         },
-        (x) => "_" + x
+        (x) => (isString(x) ? "_" + x : x)
       )
     ).toEqual({
       arr: [{ a: "_one" }, { b: "_two" }],
