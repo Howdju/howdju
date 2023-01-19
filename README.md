@@ -478,16 +478,24 @@ for the possible contents of the JSON file.
 
 ### ESLint
 
-See eslint-config-howdju/README.md.
+Each workspce must define a script `lint` like:
+
+```sh
+eslint --ignore-path=.gitignore .
+```
+
+For information about configuring linting, see eslint-config-howdju/README.md.
 
 ### Prettier
 
-Each workspace must install the `--exact` same version of `prettier` and defines a script `fix-format`
-that calls `eslint --fix` and `prettier`:
+Each workspace must install the `--exact` same version of `prettier` and define a script `check-format`
+that calls `prettier` like:
 
 ```sh
-yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .
+yarn run prettier --check --ignore-path .gitignore .
 ```
+
+Each workspace must have a `.prettierrc` containing an empty JSON object (`{}`).
 
 Each of our configs in `eslint-config-howdju` extends `prettier` as the last extended config so that it can override
 any previous configs. If a package extends a config other than one of these, it must also be sure to

@@ -28,8 +28,6 @@ import { pathToRegexp } from "path-to-regexp";
 withFakeTimers();
 const server = withMockServer();
 
-jest.setTimeout(5 * 60 * 1000);
-
 describe("CreatePropositionPage", () => {
   test("renders correctly with query params", () => {
     // Arrange
@@ -192,7 +190,7 @@ describe("CreatePropositionPage", () => {
     // TODO(196): get path pattern from routesById instead.
     expect(history.location.pathname).toMatch(pathToRegexp("/p/:id"));
   });
-  test("removing tag removes it", async () => {
+  test("removing a tag removes it", async () => {
     // Arrange
     const user = setupUserEvent();
 
@@ -221,5 +219,33 @@ describe("CreatePropositionPage", () => {
     expect(
       screen.queryByRole("button", { name: new RegExp(tagName) })
     ).not.toBeInTheDocument();
+  });
+  test("attempting to submit with an invalid form shows errors", async () => {
+    const user = setupUserEvent();
+
+    const history = createMemoryHistory();
+    const { location, match } = makeRouteComponentProps("submit");
+
+    renderWithProviders(
+      <CreatePropositionPage
+        mode={"CREATE_PROPOSITION"}
+        history={history}
+        location={location}
+        match={match}
+      />,
+      { history }
+    );
+
+    const tagName = "TestTag";
+    await user.type(screen.getByLabelText(/tag/i), tagName);
+    await user.type(screen.getByLabelText(/tag/i), "{Enter}");
+
+    // Act
+    await user.click(screen.getByRole("button", { name: /create/i }));
+
+    // Assert
+    screen
+      .getAllByText("String must contain at least 1 character(s)")
+      .forEach((el) => expect(el).toBeInTheDocument());
   });
 });

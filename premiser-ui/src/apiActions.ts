@@ -936,9 +936,9 @@ export const api = {
   antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
     (
-      propositionId,
-      tag,
-      propositionTagVote
+      propositionId: EntityId,
+      tag: Tag,
+      propositionTagVote?: PropositionTagVoteOut
     ): {
       propositionTagVote: CreatePropositionTagVote;
       prevPropositionTagVote?: PropositionTagVoteOut;

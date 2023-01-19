@@ -192,6 +192,8 @@ export default function withEditor<
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
+      dispatch(editors.attemptedSubmit(editorType, editorId));
+
       if (isSaving) {
         return;
       }
@@ -297,16 +299,22 @@ export function submitButtonTitle(
 export function validateEditorEntity<
   SchemaInput extends EditorEntity,
   SchemaOutput,
-  U,
-  Y,
-  RP,
-  PA extends void | PrepareAction<Y>
+  ApiModel,
+  RequestPayload,
+  ResponsePayload,
+  Prepare extends void | PrepareAction<RequestPayload>
 >(
   commitConfig:
-    | EditorCommitCrudActionConfig<SchemaInput, U, Y, RP, PA>
+    | EditorCommitCrudActionConfig<
+        SchemaInput,
+        ApiModel,
+        RequestPayload,
+        ResponsePayload,
+        Prepare
+      >
     | undefined,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  apiValidationErrors: ModelErrors<U> | undefined,
+  apiValidationErrors: ModelErrors<ApiModel> | undefined,
   editEntity: SchemaInput | undefined
 ): { errors: ModelErrors<SchemaInput>; isValidRequest: boolean } {
   const { errors: clientValidationErrors } = validateEntity(

@@ -133,7 +133,9 @@ interface Props
  * The props affecting this behavior are:
  *
  * - singleLine: if truthy, will remove newlines from the value
- * - rows/maxRows: if either are present, react-md will render a textarea, othertwise a text input
+ * - rows/maxRows: if either are present, react-md will render a textarea, othertwise a text input.
+ *   This is significant for form submission, because pressing enter in a text input will trigger a
+ *   form's onSubmit while in a textarea it will insert a newline.
  * - onSubmit: if present, pressing enter will call this instead of the default behavior.
  *
  * See the constructor warning for potential misconfiguration.

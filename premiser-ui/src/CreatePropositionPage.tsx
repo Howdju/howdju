@@ -274,33 +274,6 @@ class CreatePropositionPage extends Component<Props> {
       )
     );
   };
-  onSubmit = (event: SyntheticEvent) => {
-    event.preventDefault();
-
-    const { errors: apiValidationErrors, editEntity } = this.props.editorState;
-    const { isValidRequest } = validateEditorEntity(
-      CreateJustifiedSentenceConfig,
-      CreateJustifiedSentenceInput,
-      apiValidationErrors,
-      editEntity
-    );
-    if (!isValidRequest) {
-      return;
-    }
-
-    this.props.dispatch(
-      editors.attemptedSubmit(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId
-      )
-    );
-    this.props.dispatch(
-      flows.commitEditThenView(
-        CreatePropositionPage.editorType,
-        CreatePropositionPage.editorId
-      )
-    );
-  };
 
   onClickSubmit = (_event: React.MouseEvent<HTMLElement>) => {
     this.props.dispatch(
@@ -370,6 +343,28 @@ class CreatePropositionPage extends Component<Props> {
       }
     };
 
+    const onSubmit = (event: SyntheticEvent) => {
+      event.preventDefault();
+
+      this.props.dispatch(
+        editors.attemptedSubmit(
+          CreatePropositionPage.editorType,
+          CreatePropositionPage.editorId
+        )
+      );
+
+      if (!isValidRequest) {
+        return;
+      }
+
+      this.props.dispatch(
+        flows.commitEditThenView(
+          CreatePropositionPage.editorType,
+          CreatePropositionPage.editorId
+        )
+      );
+    };
+
     const tagVotes = propositionTagVotes
       ? toCompatibleTagVotes(propositionTagVotes)
       : [];
@@ -390,7 +385,7 @@ class CreatePropositionPage extends Component<Props> {
             </div>
           </div>
         )}
-        <form onSubmit={this.onSubmit}>
+        <form onSubmit={onSubmit}>
           <FocusContainer
             initialFocus={"#" + propositionEditorText}
             containFocus={false}
@@ -465,7 +460,7 @@ class CreatePropositionPage extends Component<Props> {
                                       blurredFields?.speakers?.[index]
                                     }
                                     dirtyFields={dirtyFields?.speakers?.[index]}
-                                    onSubmit={this.onSubmit}
+                                    onSubmit={onSubmit}
                                   />
                                 }
                               />
@@ -490,7 +485,7 @@ class CreatePropositionPage extends Component<Props> {
                       onPropertyChange={this.onPropertyChange}
                       errors={errors.proposition}
                       disabled={isSaving}
-                      onSubmit={this.onSubmit}
+                      onSubmit={onSubmit}
                       wasSubmitAttempted={wasSubmitAttempted}
                       dirtyFields={dirtyFields?.proposition}
                       blurredFields={blurredFields?.proposition}
@@ -502,7 +497,7 @@ class CreatePropositionPage extends Component<Props> {
                       suggestionsKey={combineSuggestionsKeys(id, tagsName)}
                       onTag={this.onTagProposition}
                       onUnTag={this.onUnTagProposition}
-                      onSubmit={this.onSubmit}
+                      onSubmit={onSubmit}
                     />
                   </CardText>
 
@@ -545,7 +540,7 @@ class CreatePropositionPage extends Component<Props> {
                       errors={errors.justification}
                       editorDispatch={editorDispatch}
                       wasSubmitAttempted={wasSubmitAttempted}
-                      onSubmit={this.onSubmit}
+                      onSubmit={onSubmit}
                     />
                   </CardText>
 

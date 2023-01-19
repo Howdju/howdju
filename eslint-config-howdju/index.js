@@ -49,6 +49,15 @@ module.exports = {
       plugins: ["jest"],
       extends: ["plugin:jest/recommended", "plugin:jest/style", "prettier"],
       rules: {
+        "no-restricted-syntax": [
+          "error",
+          {
+            selector:
+              "CallExpression[callee.object.name='jest'][callee.property.name='setTimeout']",
+            message:
+              "Tests should complete within the default timeout. (Did you forget to remove a call to jest.setTimeout?)",
+          },
+        ],
         "jest/no-commented-out-tests": "error",
         "jest/no-disabled-tests": "error",
         "jest/no-large-snapshots": "warn",

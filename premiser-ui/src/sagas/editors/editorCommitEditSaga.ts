@@ -379,18 +379,6 @@ export const editorCommitConfigs: Partial<
 };
 
 /** Translates CreateJustifiedSentence errors into input model errors. */
-// function transformCreateJustifiedSentenceErrors(
-//   model: CreateJustification,
-//   modelErrors: ModelErrors<CreateJustification>
-// ): ModelErrors<CreateJustifiedSentenceInput>;
-// function transformCreateJustifiedSentenceErrors(
-//   model: CreateStatement,
-//   modelErrors: ModelErrors<CreateStatement>
-// ): ModelErrors<CreateJustifiedSentenceInput>;
-// function transformCreateJustifiedSentenceErrors(
-//   model: CreateProposition,
-//   modelErrors: ModelErrors<CreateProposition>
-// ): ModelErrors<CreateJustifiedSentenceInput>;
 function transformCreateJustifiedSentenceErrors(
   model: CreateJustification | CreateStatement | CreateProposition,
   errors: ModelErrors<CreateJustification | CreateStatement | CreateProposition>
