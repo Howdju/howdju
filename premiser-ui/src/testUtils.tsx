@@ -77,6 +77,7 @@ export function withMockServer() {
 export function withStaticFromNowMoment(input: MomentInput) {
   let fromNow: typeof moment.fn.fromNow;
   beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     fromNow = moment.fn.fromNow;
     // Use deterministic time for relative time formatting
     moment.fn.fromNow = jest.fn(function (this: Moment) {
@@ -149,7 +150,7 @@ export function makeRouteComponentProps<T extends Record<string, string>>(
     params: pathParams,
   };
   const locationPath = searchParams
-    ? match.url + "?" + new URLSearchParams(searchParams)
+    ? match.url + "?" + new URLSearchParams(searchParams).toString()
     : match.url;
   const location = createLocation(locationPath);
 

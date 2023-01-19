@@ -31,7 +31,7 @@ const server = withMockServer();
 jest.setTimeout(5 * 60 * 1000);
 
 describe("CreatePropositionPage", () => {
-  test("renders correctly with query params", async () => {
+  test("renders correctly with query params", () => {
     // Arrange
     const description = "A credible source";
     const quoteText = "An important conclusion.";
@@ -165,7 +165,7 @@ describe("CreatePropositionPage", () => {
     let requestBody: PostJustificationIn = {} as PostJustificationIn;
     server.use(
       rest.post(`http://localhost/justifications`, async (req, res, ctx) => {
-        requestBody = (await req.json()) as PostJustificationIn;
+        requestBody = await req.json<PostJustificationIn>();
         return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
       }),
       rest.get("http://localhost/search-propositions", (_req, res, ctx) => {

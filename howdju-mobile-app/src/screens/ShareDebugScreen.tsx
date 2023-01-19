@@ -13,6 +13,7 @@ import { ShareDataItem } from "react-native-share-menu";
 import { inferSubmitUrl } from "@/services/submitUrls";
 import * as webBrowser from "@/services/webBrowser";
 import ShareDataItemPreview from "@/views/ShareDataItemPreview";
+import { logError } from "@/util";
 
 const Section: React.FC<{
   title: string;
@@ -63,7 +64,9 @@ const ShareDebugScreen: React.FC<{
       >
         <Button
           title="Open Submit Page"
-          onPress={async () => openUrl(submitUrl)}
+          onPress={() =>
+            void logError(openUrl(submitUrl), `Opening URL ${submitUrl}`)
+          }
           disabled={!!submitUrl}
         />
         <Section title="Share data">

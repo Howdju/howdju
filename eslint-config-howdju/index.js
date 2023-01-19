@@ -73,7 +73,7 @@ module.exports = {
       parser: "@typescript-eslint/parser",
       extends: [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "prettier",
       ],
       rules: {
@@ -92,9 +92,13 @@ module.exports = {
             "ts-ignore": "allow-with-description",
           },
         ],
-        // TODO try extending plugin:@typescript-eslint/recommended-requiring-type-checking to
-        // enable this (and others?)
-        "@typescript-eslint/no-floating-promises": "error",
+        // TODO(1): replace these global overrides with specific per instance overrides
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
       },
     },
   ],

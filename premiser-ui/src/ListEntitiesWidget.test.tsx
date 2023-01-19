@@ -26,9 +26,9 @@ withFakeTimers();
 
 const server = withMockServer();
 const propositions = Array.from(Array(20).keys()).map((id) => ({
-  ...PropositionRef.parse({ id: "proposition" + id }),
+  ...PropositionRef.parse({ id: `proposition${id}` }),
   created,
-  text: "The proposition text " + id,
+  text: `The proposition text ${id}`,
 }));
 const initialFetchCount = 7;
 const fetchCount = 8;
@@ -40,7 +40,9 @@ beforeEach(() => {
     rest.get("http://localhost/propositions", (req, res, ctx) => {
       const count = toNumber(req.url.searchParams.get("count"));
       const continuationTokenIn = req.url.searchParams.get("continuationToken");
-      const offset = continuationTokenIn ? fromJson(continuationTokenIn) : 0;
+      const offset = continuationTokenIn
+        ? toNumber(fromJson(continuationTokenIn))
+        : 0;
       const continuationToken = toJson(offset + count);
       const response: GetPropositionsOut = {
         propositions: take(drop(propositions, offset), count),

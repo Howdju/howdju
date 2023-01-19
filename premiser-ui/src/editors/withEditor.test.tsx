@@ -14,7 +14,7 @@ withFakeTimers();
 
 describe("withEditor", () => {
   describe("Exemplary component (RegistrationRequestEditor)", () => {
-    test("submit button appears disabled when edit entity is invalid", async () => {
+    test("submit button appears disabled when edit entity is invalid", () => {
       const editorId = "test-editor-id";
 
       const { preloadedState, history, store } = setupDefaultStore();

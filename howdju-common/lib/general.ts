@@ -183,7 +183,7 @@ export const assert = (
         message;
   // assert should only be used in development, so logging to the console should be ok.  Besides, how would we get a logger here?
   /* eslint-disable no-console */
-  const logError = () => console.error("Failed assertion: " + makeMessage());
+  const logError = () => console.error(`Failed assertion: ${makeMessage()}`);
   /* eslint-enable no-console */
 
   if (isFunction(test)) {

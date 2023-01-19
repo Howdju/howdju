@@ -281,7 +281,7 @@ export const CreateJustifiedSentenceConfig: EditorCommitCrudActionConfig<
     }
 
     if (!doCreateJustification) {
-      return proposition as CreateProposition;
+      return proposition;
     }
     const justification = demuxCreateJustificationInput(model.justification);
     justification.target.entity = model.proposition;

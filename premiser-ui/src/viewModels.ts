@@ -25,7 +25,6 @@ import {
   PropositionCompound,
   WritQuote,
   EntityId,
-  Sentence,
   CreatePersorgInput,
   CreatePropositionInput,
   SentenceTypes,
@@ -235,7 +234,7 @@ export function describeRootTarget(
       return (rootTarget as Proposition).text;
     case "STATEMENT": {
       const descriptionParts = [];
-      let currSentence = rootTarget as Sentence;
+      let currSentence = rootTarget;
       while ("sentenceType" in currSentence) {
         descriptionParts.push(`${currSentence.speaker.name} said that`);
         currSentence = currSentence.sentence;

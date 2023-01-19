@@ -60,8 +60,8 @@
     "@types/webpack": "^5.28.0",
     "@types/webpack-bundle-analyzer": "^4.6.0",
     "@types/webpack-env": "^1.18.0",
-    "@typescript-eslint/eslint-plugin": "^5.42.1",
-    "@typescript-eslint/parser": "^5.42.1",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
+    "@typescript-eslint/parser": "^5.48.2",
     "argparse": "^2.0.1",
     "aws-sdk": "^2.890.0",
     "babel-jest": "^29.3.1",
@@ -157,8 +157,5 @@
     "uuid": "^9.0.0",
     "valid-url": "^1.0.9",
     "zod": "https://github.com/Howdju/zod.git#c2b02dc84a1e25614479aff0c1c26de27a406ea8"
-  },
-  "msw": {
-    "workerDirectory": "public"
   }
 }

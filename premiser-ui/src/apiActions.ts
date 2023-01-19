@@ -1061,7 +1061,7 @@ export const api = {
 
   fetchWritTitleSuggestions: apiActionCreator(
     "FETCH_WRIT_TITLE_SUGGESTIONS",
-    (writTitle, suggestionsKey) => ({
+    (writTitle: string, suggestionsKey: string) => ({
       writTitle,
       suggestionsKey,
     }),
@@ -1079,7 +1079,7 @@ export const api = {
 
   fetchTagNameSuggestions: apiActionCreator(
     "FETCH_TAG_NAME_SUGGESTIONS",
-    (tagName, suggestionsKey) => ({
+    (tagName: string, suggestionsKey: string) => ({
       tagName,
       suggestionsKey,
     }),

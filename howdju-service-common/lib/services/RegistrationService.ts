@@ -101,7 +101,7 @@ export class RegistrationService {
     const registration = await this.registrationRequestsDao.readForCode(
       registrationCode
     );
-    await this.checkRegistrationRequestValidity(registration, now);
+    this.checkRegistrationRequestValidity(registration, now);
     return registration.email;
   }
 
@@ -114,7 +114,7 @@ export class RegistrationService {
     const registrationRequest = await this.registrationRequestsDao.readForCode(
       registrationCode
     );
-    await this.checkRegistrationRequestValidity(registrationRequest, now);
+    this.checkRegistrationRequestValidity(registrationRequest, now);
     // TODO this is a race condition right now with creating the registration based upon the username/email
     const error = await this.checkRegistrationConfirmationConflicts(
       registrationConfirmation
@@ -162,7 +162,7 @@ export class RegistrationService {
     return {};
   }
 
-  private async checkRegistrationRequestValidity(
+  private checkRegistrationRequestValidity(
     registrationRequest: RegistrationRequest,
     now: Moment
   ) {
