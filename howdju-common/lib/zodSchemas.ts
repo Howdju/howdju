@@ -223,7 +223,7 @@ export const CreateStatement: z.ZodType<CreateStatement> = z.lazy(() =>
     }).strict(),
   ])
 );
-// Statement has no Edit models; users can edit the proposition/statement or the speaker.
+// Statement has no Update models; users can edit the proposition/statement or the speaker.
 
 /** A textual media. */
 export const Writ = Entity.extend({
@@ -362,10 +362,10 @@ export const CreatePropositionCompound = Entity.extend({
 export type CreatePropositionCompound = z.infer<
   typeof CreatePropositionCompound
 >;
-export const EditPropositionCompoundInput = PropositionCompound;
-export type EditPropositionCompoundInput = PropositionCompound;
-export const EditPropositionCompound = PropositionCompound;
-export type EditPropositionCompound = PropositionCompound;
+export const UpdatePropositionCompoundInput = PropositionCompound;
+export type UpdatePropositionCompoundInput = PropositionCompound;
+export const UpdatePropositionCompound = PropositionCompound;
+export type UpdatePropositionCompound = PropositionCompound;
 
 export const JustificationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
 export type JustificationPolarity = z.infer<typeof JustificationPolarity>;
@@ -598,13 +598,13 @@ export const ContentReportRef =
 export type ContentReportRef = z.infer<typeof ContentReportRef>;
 
 /*
- * Entities lacking alternatives don't require special Create/Edit models
+ * Entities lacking alternatives don't require special Create/Update models
  */
 
-export const EditPropositionInput = Proposition;
-export type EditPropositionInput = z.infer<typeof EditPropositionInput>;
-export const EditProposition = Proposition;
-export type EditProposition = z.infer<typeof EditProposition>;
+export const UpdatePropositionInput = Proposition;
+export type UpdatePropositionInput = z.infer<typeof UpdatePropositionInput>;
+export const UpdateProposition = Proposition;
+export type UpdateProposition = z.infer<typeof UpdateProposition>;
 
 export const CreateWritQuoteInput = Entity.extend({
   quoteText: z.string(),
@@ -615,30 +615,30 @@ export type CreateWritQuoteInput = z.infer<typeof CreateWritQuoteInput>;
 export const CreateWritQuote = CreateWritQuoteInput;
 export type CreateWritQuote = z.infer<typeof CreateWritQuote>;
 
-export const EditWritQuoteInput = WritQuote;
-export type EditWritQuoteInput = z.infer<typeof EditWritQuoteInput>;
-export const EditWritQuote = WritQuote;
-export type EditWritQuote = z.infer<typeof EditWritQuote>;
+export const UpdateWritQuoteInput = WritQuote;
+export type UpdateWritQuoteInput = z.infer<typeof UpdateWritQuoteInput>;
+export const UpdateWritQuote = WritQuote;
+export type UpdateWritQuote = z.infer<typeof UpdateWritQuote>;
 
 export const CreateVidSegmentInput = VidSegment;
 export type CreateVidSegmentInput = z.infer<typeof CreateVidSegmentInput>;
 export const CreateVidSegment = VidSegment;
 export type CreateVidSegment = z.infer<typeof CreateVidSegment>;
 
-export const EditVidSegmentInput = VidSegment;
-export type EditVidSegmentInput = z.infer<typeof EditVidSegmentInput>;
-export const EditVidSegment = VidSegment;
-export type EditVidSegment = z.infer<typeof EditVidSegment>;
+export const UpdateVidSegmentInput = VidSegment;
+export type UpdateVidSegmentInput = z.infer<typeof UpdateVidSegmentInput>;
+export const UpdateVidSegment = VidSegment;
+export type UpdateVidSegment = z.infer<typeof UpdateVidSegment>;
 
 export const CreatePicRegionInput = PicRegion;
 export type CreatePicRegionInput = z.infer<typeof CreatePicRegionInput>;
 export const CreatePicRegion = PicRegion;
 export type CreatePicRegion = z.infer<typeof CreatePicRegion>;
 
-export const EditPicRegionInput = PicRegion;
-export type EditPicRegionInput = z.infer<typeof EditPicRegionInput>;
-export const EditPicRegion = PicRegion;
-export type EditPicRegion = z.infer<typeof EditPicRegion>;
+export const UpdatePicRegionInput = PicRegion;
+export type UpdatePicRegionInput = z.infer<typeof UpdatePicRegionInput>;
+export const UpdatePicRegion = PicRegion;
+export type UpdatePicRegion = z.infer<typeof UpdatePicRegion>;
 
 export const CreateSourceExcerptInput = Entity.extend({
   type: z.enum(["WRIT_QUOTE", "PIC_REGION", "VID_SEGMENT"]),
@@ -1005,9 +1005,9 @@ export const AccountSettings = Entity.extend({
 export type AccountSettings = z.infer<typeof AccountSettings>;
 export const CreateAccountSettings = AccountSettings;
 export type CreateAccountSettings = AccountSettings;
-export const EditAccountSettings = AccountSettings;
-export type EditAccountSettings = AccountSettings;
-export type EditAccountSettingsInput = AccountSettings;
+export const UpdateAccountSettings = AccountSettings;
+export type UpdateAccountSettings = AccountSettings;
+export type UpdateAccountSettingsInput = AccountSettings;
 
 /**
  * A model for creating a Proposition potentially with Speakers and/or Justifications.

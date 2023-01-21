@@ -28,7 +28,7 @@ In a relational data model, entities roughly correspond to rows with unique IDs 
 must have an `id`, but it is optional because they might not be persisted yet. Fields are required
 unless the entity can be valid without them.
 
-## Form models (`CreateXInput`/`EditXInput`)
+## Form models (`CreateXInput`/`UpdateXInput`)
 
 Versions of an entity suitable for editing, say using an HTML form.
 
@@ -74,18 +74,18 @@ sourceExcerpt: {
 
 Where the `type` indicates which of the alternatives the user actually wants persisted upon creation.
 
-## In models (`CreateXIn`/`EditXIn`)
+## In models (`CreateXIn`/`UpdateXIn`)
 
-In represent data a client sends to an API as a request
+In models represent data a client sends to an API as a request
 payload. They are often entities that represent all the data the API needs to
-persist an entity. Edit model alternatives must be consolidated into a single
+persist an entity. Update model alternatives must be consolidated into a single
 choice on these models.
 
 An entity may have several different corresponding API request models for
 different use-cases, if different fields are required. An entity's API request
 model may also refer to persisted related entities using only their `id` (i.e. `Ref`s.)
 
-## Out models (`CreateXOut`/`EditXOut`)
+## Out models (`CreateXOut`/`ReadXOut`/`UpdateXOut`)
 
 `Out` models are usually those returned by ('coming out of') the API. They usually extend or modify
 the entities upon which they are based, containing additional fields useful for displaying the
@@ -95,7 +95,7 @@ user.
 Entities appearing in OutModels are usually a persisted Entity. (Unpersisted Entities would be
 `CreateModel`s.) We often also want their fields to be required for display.
 
-Additional fields on `Out` models are often optional, so that either:
+Additional fields on `Out` models are often optional, either:
 
 1. To ease reuse of the `Out` model in different responses which may not include the extra fields,
    or
@@ -165,7 +165,7 @@ on an entity.
 |                | a permissive submission data model: users can either create new related         |
 |                | entities, reference existing ones by ID, or reference equivalent ones           |
 |                | incidentally.                                                                   |
-| `EditXInput`   | Model for inputing an edit of an entity in a client.                            |
+| `UpdateXInput` | Model for inputing an edit of an entity in a client.                            |
 |                |
 |                | These are usually less complicated than create models because there are         |
 |                | fewer ways to edit an entity than to create it. Usually users can only edit     |
@@ -173,7 +173,7 @@ on an entity.
 |                | certain conditions.) Users must create new entities to have an entity with      |
 |                | updated relationships.                                                          |
 | `CreateX` /    | API Request models for sending the creation/edit of an entity to an API.        |
-| `EditX`        |
+| `UpdateX`      |
 |                | Alternatives from `CreateXInput` have been consolidated, but the model may      |
 |                | still refer to related entities.                                                |
 |                |
