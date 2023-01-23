@@ -227,7 +227,7 @@ export const toUser = wrapMapper(toUserMapper);
 
 function toCreatorBlurbMapper(row: CreatorBlurbRow): CreatorBlurbData {
   return {
-    id: toIdString(row.user_id),
+    ...UserRef.parse({ id: toIdString(row.user_id) }),
     longName: row.long_name,
   };
 }
@@ -456,28 +456,6 @@ function toJustificationMapper(
       break;
     }
 
-    case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND: {
-      const basisId = row.basis_id || row.basis_justification_basis_compound_id;
-      if (basisId) {
-        if (justificationBasisCompoundsById) {
-          justification.basis.entity = justificationBasisCompoundsById[basisId];
-        }
-        if (
-          !justification.basis.entity &&
-          row.basis_justification_basis_compound_id
-        ) {
-          justification.basis.entity = toJustificationBasisCompound({
-            justification_basis_compound_id:
-              row.basis_justification_basis_compound_id,
-            created: row.basis_justification_basis_compound_created,
-            creator_user_id:
-              row.basis_justification_basis_compound_creator_user_id,
-          });
-        }
-      }
-      break;
-    }
-
     default:
       throw newImpossibleError(
         `Unsupported JustificationBasisTypes: ${row.basis_type}`
@@ -543,10 +521,6 @@ function parseJustificationBasisRef(row: JustificationRow) {
       const entity = WritQuoteRef.parse({ id });
       return { type, entity };
     }
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      throw newUnimplementedError(
-        "TODO(28) JustificationBasisCompound is unsupported"
-      );
   }
 }
 
@@ -689,6 +663,7 @@ export const toJustificationScore = (
   row: JustificationScoreRow
 ): JustificationScoreData => row && camelCaseKeysDeep(row);
 
+// TODO(28): remove
 export const toJustificationBasisCompound = (row: any, atoms?: any) => {
   if (!row) {
     return row;

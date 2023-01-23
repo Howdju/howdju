@@ -14,7 +14,7 @@ exports.AccountSettingsService = class AccountSettingsService extends (
     super(
       {
         createSchema: CreateAccountSettings,
-        editSchema: UpdateAccountSettings,
+        updateSchema: UpdateAccountSettings,
       },
       logger,
       authService

@@ -49,7 +49,14 @@ import {
 const PersistedEntity = Entity.required();
 type PersistedEntity = z.infer<typeof PersistedEntity>;
 
-export type JustificationWithRootRef = Omit<
+/**
+ * A persisted justification with persisted or ref relations and a ref-only root target.
+ *
+ * This type is suitable for returning out of DAOs.
+ *
+ * See MaterializedJustificationWithRootRef, which is a similar type that does not allow ref relations.
+ */
+export type PersistedJustificationWithRootRef = Omit<
   Persisted<Justification>,
   "rootTarget" | "target" | "basis"
 > & {
@@ -65,7 +72,9 @@ export type JustificationWithRootRef = Omit<
       }
     | {
         type: "JUSTIFICATION";
-        entity: JustificationWithRootRef | Ref<EntityName<Justification>>;
+        entity:
+          | PersistedJustificationWithRootRef
+          | Ref<EntityName<Justification>>;
       };
   basis:
     | {
@@ -93,7 +102,7 @@ export type EntityName<T> = T extends Proposition
   ? "Justification"
   : T extends CreateJustificationInput
   ? "Justification"
-  : T extends JustificationWithRootRef
+  : T extends PersistedJustificationWithRootRef
   ? "Justification"
   : T extends JustificationVote
   ? "JustificationVote"
@@ -168,9 +177,25 @@ export type PersistRelated<T> = {
     : T[key];
 };
 
+/** A persisted entity that may be only a Ref.
+ *
+ * This type will definitely have an ID, but may not have other fields.
+ */
 export type PersistedOrRef<T extends Entity> =
   | Ref<EntityName<T>>
   | Persisted<T>;
+/**
+ * Recursively transforms Entities on T to PersistedOrRef.
+ *
+ * Prefer PersistedOrRef if you know that T is an Entity.
+ */
+export type PersistOrRef<T> = T extends Entity
+  ? PersistedOrRef<T>
+  : {
+      [key in keyof T]: T[key] extends Entity
+        ? PersistedOrRef<T[key]>
+        : PersistOrRef<T[key]>;
+    };
 
 export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   const keys = Object.keys(e);

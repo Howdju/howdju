@@ -10,7 +10,6 @@ import snakeCase from "lodash/snakeCase";
 import {
   assert,
   isDefined,
-  doTargetSameRoot,
   JustificationBasisCompoundAtomTypes,
   JustificationBasisTypes,
   JustificationPolarities,
@@ -32,6 +31,8 @@ import {
   filterDefined,
   JustificationRef,
   UserRef,
+  JustificationFilters,
+  SortDescription,
 } from "howdju-common";
 
 import {
@@ -72,7 +73,7 @@ import {
   WritQuoteData,
   PropositionCompoundAtomRow,
 } from "./dataTypes";
-import { SortDescription, SqlClause, JustificationFilters } from "./daoTypes";
+import { SqlClause } from "./daoTypes";
 import { Moment } from "moment";
 import { fromPairs, sortBy } from "lodash";
 
@@ -515,7 +516,7 @@ export class JustificationsDao {
   async readJustificationsForRootTarget(
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
-    { userId }: { userId: EntityId }
+    userId: EntityId
   ) {
     const sql = `
       with
@@ -635,7 +636,12 @@ export class JustificationsDao {
     return justification;
   }
 
-  async readJustificationEquivalentTo(justification: ReadJustificationDataOut) {
+  async readJustificationEquivalentTo(
+    justification: Omit<
+      CreateJustificationDataIn,
+      "rootTarget" | "rootTargetType"
+    >
+  ) {
     const sql = `
       select * from justifications j where
             j.deleted is null
@@ -658,21 +664,10 @@ export class JustificationsDao {
       args
     );
     const equivalentJustification = toJustification(head(rows));
-    assert(
-      () =>
-        !equivalentJustification ||
-        doTargetSameRoot(equivalentJustification, justification),
-      () =>
-        `justification's (${justification.id}) rootTarget ${justification.rootTargetType} ` +
-        `${justification.rootTarget.id} does not equal equivalent justification's ` +
-        `(${equivalentJustification?.id}) rootTarget ${justification.rootTargetType} ` +
-        `${equivalentJustification?.rootTarget.id}`
-    );
-    const justification_1 = equivalentJustification;
-    if (justification_1) {
-      await this.addStatements([justification_1]);
+    if (equivalentJustification) {
+      await this.addStatements([equivalentJustification]);
     }
-    return justification_1;
+    return equivalentJustification;
   }
 
   private async readRootJustificationCountByPolarityForRoot(
@@ -764,8 +759,11 @@ export class JustificationsDao {
     );
   }
 
-  deleteJustification(justification: DeleteJustificationDataIn, now: Moment) {
-    return this.deleteJustificationById(justification.id, now);
+  async deleteJustification(
+    justification: DeleteJustificationDataIn,
+    now: Moment
+  ) {
+    return await this.deleteJustificationById(justification.id, now);
   }
 
   async deleteJustificationById(justificationId: EntityId, now: Moment) {
@@ -781,7 +779,7 @@ export class JustificationsDao {
     }
     const row = head(rows);
     if (!row) {
-      return null;
+      return undefined;
     }
     return row.justification_id;
   }

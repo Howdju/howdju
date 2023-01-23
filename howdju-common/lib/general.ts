@@ -338,6 +338,7 @@ export const decodeQueryStringObject = (param: string | undefined) => {
   return obj;
 };
 
+// TODO dedupe with SortDescription
 export interface SortDescriptor {
   property: string;
   direction: "ASC" | "DESC";

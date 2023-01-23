@@ -18,7 +18,7 @@ import {
   JustificationTargetType,
   JustificationVote,
   JustificationVotePolarity,
-  JustificationWithRootRef,
+  PersistedJustificationWithRootRef,
   PasswordResetRequest,
   Persisted,
   PersistedOrRef,
@@ -144,11 +144,13 @@ export type CreateJustificationDataIn = PersistRelated<CreateJustification> & {
 };
 export type CreateJustificationDataOut = Persisted<CreateJustification> & {
   rootPolarity: JustificationRootPolarity;
+  rootTarget: EntityRef<JustificationRootTarget>;
+  rootTargetType: JustificationRootTargetType;
   created: Moment;
   counterJustifications: [];
   creator: UserRef;
 };
-export type ReadJustificationDataOut = JustificationWithRootRef & {
+export type ReadJustificationDataOut = PersistedJustificationWithRootRef & {
   creator?: CreatorBlurbData | EntityRef<User>;
   counterJustifications: ReadJustificationDataOut[];
   score?: number;
@@ -250,7 +252,8 @@ export type UserExternalIdsData = UserExternalIds;
 
 /** A short description of a user attached to something the user created to show authorship. */
 export type CreatorBlurbRow = Pick<UserRow, "user_id" | "long_name">;
-export type CreatorBlurbData = Pick<Persisted<User>, "id" | "longName">;
+export type CreatorBlurbData = EntityRef<User> &
+  Pick<Persisted<User>, "longName">;
 
 export interface UserHashRow {
   user_id: number;

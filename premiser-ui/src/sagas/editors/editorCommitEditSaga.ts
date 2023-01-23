@@ -11,7 +11,7 @@ import {
   CreateProposition,
   CreateStatement,
   CreateStatementInput,
-  EditProposition,
+  UpdateProposition,
   IssueFormat,
   isRef,
   JustificationTargetTypes,
@@ -340,7 +340,7 @@ export const editorCommitConfigs: Partial<
     // Create propositions through the JustifiedSentence endpoint.
     UPDATE: {
       requestActionCreator: api.updateProposition,
-      requestSchema: EditProposition,
+      requestSchema: UpdateProposition,
     },
   },
   JUSTIFIED_SENTENCE: {

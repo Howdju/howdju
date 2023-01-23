@@ -13,15 +13,21 @@ import {
   CreateProposition,
   Entity,
   Justification,
+  JustificationRef,
+  JustificationRootTarget,
   JustificationVote,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
+  SourceExcerpt,
+  Statement,
   Tag,
   TagVote,
+  User,
+  WritQuote,
 } from "./zodSchemas";
-import { Persisted, PersistRelated } from "./zodSchemaTypes";
+import { EntityRef, Persisted, PersistRelated } from "./zodSchemaTypes";
 
 /**
  * An out model representing errors for any CRUD action.
@@ -67,13 +73,54 @@ export interface PropositionOut
   propositionTagVotes?: PropositionTagVoteOut[];
 }
 
-export type JustificationOut = Persisted<Justification> & {
-  /** The current user's vote on this justification. */
-  vote?: JustificationVote;
+export type WritQuoteOut = Persisted<WritQuote>;
+
+export type StatementOut = Persisted<Statement>;
+
+export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
+
+export type JustificationOut = MaterializedJustificationWithRootRef & {
+  creator?: EntityRef<User>;
+  // Justifications countering this justification.
+  counterJustifications?: (JustificationRef | JustificationOut)[];
   // The sorting score for the current user
   score?: number;
-  // Justifications countering this justification.
-  counterJustifications?: JustificationOut[];
+  /** The current user's vote on this justification. */
+  vote?: JustificationVote;
+};
+
+/**
+ * A Justification with persisted relations other than the root target, which is a ref.
+ *
+ * This type is suitable for returning out of an API.
+ *
+ * See PersistedJustificationWithRootRef, which is similar but allows persisted or ref relations.
+ */
+type MaterializedJustificationWithRootRef = Omit<
+  Persisted<Justification>,
+  "rootTarget" | "target" | "basis"
+> & {
+  rootTarget: EntityRef<JustificationRootTarget>;
+  target:
+    | {
+        type: "PROPOSITION";
+        entity: Persisted<Proposition>;
+      }
+    | {
+        type: "STATEMENT";
+        entity: Persisted<Statement>;
+      }
+    | {
+        type: "JUSTIFICATION";
+        entity: MaterializedJustificationWithRootRef;
+      };
+  basis:
+    | {
+        type: "PROPOSITION_COMPOUND";
+        entity: Persisted<PropositionCompound>;
+      }
+    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
+    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
 };
 
 export type PropositionCompoundOut = Persisted<PropositionCompound>;
@@ -92,3 +139,32 @@ export type TaggedEntityOut<T extends Entity = Entity> = Persisted<T> & {
   tagVotes?: TagVoteViewModel[];
   recommendedTags?: Tag[];
 };
+
+export type JustificationFilterName =
+  | typeof ExternalJustificationSearchFilters[number]
+  | "justificationId";
+export type JustificationFilters = Partial<
+  Record<JustificationFilterName, string>
+>;
+
+/** The justification search filters that clients can send. */
+export const ExternalJustificationSearchFilters = [
+  "writQuoteId",
+  "writId",
+  // Justifications based on this PropositionCompound
+  "propositionCompoundId",
+  "sourceExcerptParaphraseId",
+  // Justifications based on this proposition in a PropositionCompound
+  "propositionId",
+  "url",
+] as const;
+export type JustificationSearchFilters = {
+  [key in typeof ExternalJustificationSearchFilters[number]]?: string;
+};
+
+export interface SortDescription {
+  property: string;
+  direction: "ascending" | "descending";
+  /** For continuations, the sort should filter out this value and any before it according to `direction`. */
+  value?: string;
+}

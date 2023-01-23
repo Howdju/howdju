@@ -11,7 +11,7 @@ import { combineNames, combineIds, combineSuggestionsKeys } from "./viewModels";
 import {
   CreatePropositionCompoundAtomInput,
   CreatePropositionCompoundInput,
-  EditPropositionCompoundInput,
+  UpdatePropositionCompoundInput,
   makeCreatePropositionCompoundAtomInput,
 } from "howdju-common";
 import { EntityEditorFieldsProps } from "./editors/withEditor";
@@ -19,7 +19,8 @@ import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
 import { AnyAction } from "@reduxjs/toolkit";
 
-interface Props extends EntityEditorFieldsProps<EditPropositionCompoundInput> {
+interface Props
+  extends EntityEditorFieldsProps<UpdatePropositionCompoundInput> {
   propositionCompound?: CreatePropositionCompoundInput;
 }
 

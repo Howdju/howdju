@@ -15,6 +15,7 @@ export const ActionTypes = {
   ASSOCIATE: "ASSOCIATE",
   DISASSOCIATE: "DISASSOCIATE",
 } as const;
+export type ActionType = typeof ActionTypes[keyof typeof ActionTypes];
 
 export const ActionTargetTypes = {
   PROPOSITION: "PROPOSITION",
@@ -32,10 +33,14 @@ export const ActionTargetTypes = {
   USER: "USER",
   URL: "URL",
 } as const;
+export type ActionTargetType =
+  typeof ActionTargetTypes[keyof typeof ActionTargetTypes];
 
 export const ActionSubjectTypes = {
   URL: "URL",
 } as const;
+export type ActionSubjectType =
+  typeof ActionSubjectTypes[keyof typeof ActionSubjectTypes];
 
 /**
  * Anything you can start with to create a justification based upon.
@@ -79,6 +84,7 @@ export const SortDirections = {
   ASCENDING: "ascending",
   DESCENDING: "descending",
 } as const;
+export type SortDirection = typeof SortDirections[keyof typeof SortDirections];
 
 export const JustificationScoreTypes = {
   GLOBAL_VOTE_SUM: "GLOBAL_VOTE_SUM",
@@ -97,15 +103,3 @@ export const PropositionCompoundAtomTypes = {
   // What was I thinking of adding here? Statements?
   PROPOSITION: "PROPOSITION",
 } as const;
-
-export const ValidJustificationSearchFilters = [
-  "writQuoteId",
-  "writId",
-  "propositionCompoundId",
-  "sourceExcerptParaphraseId",
-  "propositionId",
-  "url",
-] as const;
-export type JustificationSearchFilters = {
-  [key in typeof ValidJustificationSearchFilters[number]]?: string;
-};

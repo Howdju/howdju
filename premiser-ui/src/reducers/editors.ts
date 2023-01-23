@@ -54,7 +54,7 @@ import {
   CreateRegistrationRequestInput,
   CreateRegistrationRequest,
   CreateContentReportInput,
-  EditAccountSettingsInput,
+  UpdateAccountSettingsInput,
   CreateRegistrationConfirmationInput,
   CreatePropositionInput,
   CreateCounterJustificationInput,
@@ -130,7 +130,7 @@ export type EditorEntity =
   | CreateCounterJustificationInput
   | CreateJustifiedSentenceInput
   | CreateWritQuoteInput
-  | EditAccountSettingsInput
+  | UpdateAccountSettingsInput
   | CreateRegistrationRequestInput
   | CreateContentReportInput
   | CreateRegistrationConfirmationInput;

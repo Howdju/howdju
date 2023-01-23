@@ -2,6 +2,7 @@ export * from "./AccountSettingsDao";
 export * from "./ActionsDao";
 export * from "./AuthDao";
 export * from "./ContentReportsDao";
+export * from "./dataTypes";
 export * from "./JobHistoryDao";
 export * from "./JustificationsDao";
 export * from "./JustificationBasisCompoundsDao";

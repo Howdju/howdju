@@ -74,7 +74,7 @@ sourceExcerpt: {
 
 Where the `type` indicates which of the alternatives the user actually wants persisted upon creation.
 
-## In models (`CreateXIn`/`UpdateXIn`)
+## In models (`CreateXIn`/`ReadXIn`/`UpdateXIn`)
 
 In models represent data a client sends to an API as a request
 payload. They are often entities that represent all the data the API needs to

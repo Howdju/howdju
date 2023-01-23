@@ -428,16 +428,6 @@ export type Justification = Entity & {
     | {
         type: "WRIT_QUOTE";
         entity: WritQuote;
-      }
-    /**
-     * A mixture of Propositions and WritQuotes.
-     *
-     * @deprecated We decided not to mix 'claims' (Propositions) and 'evidence' (SourceExcerpts).
-     * Instead, a justificaiton must be all Propositions (a PropositionCompound) or a single SourceExcerpt.
-     */
-    | {
-        type: "JUSTIFICATION_BASIS_COMPOUND";
-        entity: Entity;
       };
   rootPolarity: JustificationRootPolarity;
   created: Moment;
@@ -456,7 +446,12 @@ export const JustificationBasisType = z.enum([
   "SOURCE_EXCERPT",
   // deprecated
   "WRIT_QUOTE",
-  // deprecated
+  /**
+   * A mixture of Propositions and WritQuotes.
+   *
+   * @deprecated We decided not to mix 'claims' (Propositions) and 'evidence' (SourceExcerpts).
+   * Instead, a justificaiton must be all Propositions (a PropositionCompound) or a single SourceExcerpt.
+   */
   "JUSTIFICATION_BASIS_COMPOUND",
 ]);
 export const JustificationBasisTypes = JustificationBasisType.Enum;

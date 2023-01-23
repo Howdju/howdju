@@ -4,7 +4,7 @@ import map from "lodash/map";
 
 import {
   CreateWritQuoteInput,
-  EditWritQuoteInput,
+  UpdateWritQuoteInput,
   makeUrl,
   schemaSettings,
   Url,
@@ -24,7 +24,7 @@ import { EditorType } from "./reducers/editors";
 import { editors } from "./actions";
 import { logger } from "./logger";
 
-interface Props extends EntityEditorFieldsProps<EditWritQuoteInput> {
+interface Props extends EntityEditorFieldsProps<UpdateWritQuoteInput> {
   writQuote: CreateWritQuoteInput;
   onKeyDown?: OnKeyDownCallback;
 }

@@ -7,29 +7,40 @@ import {
   AuthToken,
   newProgrammingError,
   Entity,
+  Logger,
+  utcNow,
 } from "howdju-common";
 
 import { AuthenticationError, EntityValidationError } from "../serviceErrors";
 import { translateJoiError } from "./validationSchemas";
 import { translateJoiToZodFormattedError } from "./joiErrors";
 import { AuthService } from "./AuthService";
-import { AwsLogger } from "..";
 import { isJoiSchema } from "./joiValidation";
-import Promise from "any-promise";
+import { Moment } from "moment";
 
 interface EntitySchemas {
   createSchema: z.ZodTypeAny;
-  editSchema?: z.ZodTypeAny;
+  updateSchema?: z.ZodTypeAny;
 }
 
-export abstract class EntityService<T extends Entity> {
+type EntityPropped<T, P extends string> = {
+  [key in P]: T;
+};
+
+export abstract class EntityService<
+  CreateIn extends Entity,
+  CreateOut extends Entity,
+  UpdateIn extends Entity,
+  UpdateOut extends Entity,
+  P extends string
+> {
   entitySchemas: EntitySchemas | Schema;
   logger: any;
   authService: AuthService;
 
   constructor(
     entitySchemas: EntitySchemas | Schema,
-    logger: AwsLogger,
+    logger: Logger,
     authService: AuthService
   ) {
     requireArgs({ entitySchemas, logger, authService });
@@ -38,8 +49,11 @@ export abstract class EntityService<T extends Entity> {
     this.authService = authService;
   }
 
-  async readOrCreate(entity: T, authToken: AuthToken) {
-    const now = new Date();
+  async readOrCreate(
+    entity: CreateIn,
+    authToken: AuthToken
+  ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>> {
+    const now = utcNow();
     const entitySchema = isJoiSchema(this.entitySchemas)
       ? this.entitySchemas
       : this.entitySchemas.createSchema;
@@ -57,24 +71,24 @@ export abstract class EntityService<T extends Entity> {
     return await this.doReadOrCreate(value, userId, now);
   }
 
-  abstract doReadOrCreate(
-    entity: T,
+  protected abstract doReadOrCreate(
+    entity: CreateIn,
     userId: string | undefined,
-    now: Date
-  ): Promise<T>;
+    now: Moment
+  ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>>;
 
-  async update(entity: T, authToken: AuthToken) {
+  async update(entity: UpdateIn, authToken: AuthToken): Promise<UpdateOut> {
     if (!entity.id) {
       throw new EntityValidationError({
         id: ["id is required to update an entity"],
       });
     }
 
-    const now = new Date();
+    const now = utcNow();
     const userId = await this.authService.readUserIdForAuthToken(authToken);
     const entitySchema = isJoiSchema(this.entitySchemas)
       ? this.entitySchemas
-      : this.entitySchemas.editSchema;
+      : this.entitySchemas.updateSchema;
     if (!entitySchema) {
       throw newProgrammingError("Entity does not support updates.");
     }
@@ -86,9 +100,16 @@ export abstract class EntityService<T extends Entity> {
     return await this.doUpdate(value, userId, now);
   }
 
-  abstract doUpdate(entity: T, userId: string, now: Date): Promise<T>;
+  protected abstract doUpdate(
+    entity: UpdateIn,
+    userId: string,
+    now: Moment
+  ): Promise<UpdateOut>;
 
-  protected validateEntity(entitySchema: z.ZodTypeAny | Schema, entity: T) {
+  protected validateEntity(
+    entitySchema: z.ZodTypeAny | Schema,
+    entity: CreateIn | UpdateIn
+  ) {
     if (entitySchema instanceof z.ZodType) {
       const result = entitySchema.safeParse(entity);
       if (result.success) {

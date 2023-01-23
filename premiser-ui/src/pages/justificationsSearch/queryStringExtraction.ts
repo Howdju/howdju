@@ -5,7 +5,7 @@ import queryString from "query-string";
 
 import {
   JustificationSearchFilters,
-  ValidJustificationSearchFilters,
+  ExternalJustificationSearchFilters,
 } from "howdju-common";
 
 export const extractIncludeUrls = (locationSearch: string) =>
@@ -15,6 +15,6 @@ export const extractFilters = (
   locationSearch: string
 ): JustificationSearchFilters =>
   mapValues(
-    pick(queryString.parse(locationSearch), ValidJustificationSearchFilters),
+    pick(queryString.parse(locationSearch), ExternalJustificationSearchFilters),
     (val) => (isArray(val) ? val[0] : val === null ? undefined : val)
   );

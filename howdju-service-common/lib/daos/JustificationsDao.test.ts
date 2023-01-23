@@ -28,8 +28,8 @@ import {
   PropositionCompoundRef,
   StatementRef,
   WritQuoteRef,
+  SortDescription,
 } from "howdju-common";
-import { SortDescription } from "./daoTypes";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
@@ -300,10 +300,8 @@ describe("JustificationsDao", () => {
         expectedCounterJustificationData,
       ]);
     });
-  });
 
-  describe("readJustificationsForRootTarget", () => {
-    test("read justifications for proposition root target", async () => {
+    test("read pro and con justifications", async () => {
       // Create a countered writquote justification and a proposition compound disjustification
       // Arrange
       const now = moment();
