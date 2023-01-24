@@ -859,7 +859,7 @@ export const CreateCounterJustification =
   CreateCounterJustificationInput.extend({
     basis: z.object({
       type: z.literal("PROPOSITION_COMPOUND"),
-      entity: z.union([PropositionCompound, PropositionCompoundRef]),
+      entity: z.union([CreatePropositionCompound, PropositionCompoundRef]),
     }),
     target: z.object({
       type: z.literal("JUSTIFICATION"),
