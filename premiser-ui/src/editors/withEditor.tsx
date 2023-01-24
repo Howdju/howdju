@@ -11,6 +11,8 @@ import {
   ModelErrors,
   translateAjvToZodFormattedError,
   SchemaId,
+  logger,
+  toJson,
 } from "howdju-common";
 import { validateRawErrors } from "howdju-ajv-sourced";
 
@@ -325,10 +327,18 @@ export function validateEditorEntity<
   const inputTransformer = commitConfig?.inputTransformer ?? identity;
   const requestEntity = editEntity && inputTransformer(editEntity);
 
-  const isValidRequest = validateRequest(
+  const { isValidRequest, error: requestValidationError } = validateRequest(
     commitConfig?.requestSchema,
     requestEntity
   );
+  if (!isValidRequest && !clientValidationErrors) {
+    logger.error(
+      `Entity editor has an invalid request without client validation errors. ` +
+        `The user will have no feedback as to what the problem is. ` +
+        "One of the two schemas is incorrect. " +
+        `The requestValidationError is: ${toJson(requestValidationError)}`
+    );
+  }
 
   const responseErrorTransformer = commitConfig?.responseErrorTransformer;
   const transformedApiValidationErrors =
@@ -384,12 +394,15 @@ function validateRequest<U>(
 ) {
   if (!requestEntity) {
     // If there is no entity, we can't call it valid.
-    return false;
+    return { isValidRequest: false };
   }
   if (!requestSchema) {
     // Without request schema, we cannot validate the request.
-    return true;
+    return { isValidRequest: true };
   }
   const result = requestSchema.safeParse(requestEntity);
-  return result.success;
+  if (result.success) {
+    return { isValidRequest: true };
+  }
+  return { isValidRequest: false, error: result.error };
 }
