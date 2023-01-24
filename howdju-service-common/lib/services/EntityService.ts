@@ -9,7 +9,7 @@ import {
   Entity,
 } from "howdju-common";
 
-import { EntityValidationError } from "../serviceErrors";
+import { AuthenticationError, EntityValidationError } from "../serviceErrors";
 import { translateJoiError } from "./validationSchemas";
 import { translateJoiToZodFormattedError } from "./joiErrors";
 import { AuthService } from "./AuthService";
@@ -46,6 +46,10 @@ export abstract class EntityService<T extends Entity> {
     const { value, error } = this.validateEntity(entitySchema, entity);
     if (error) {
       throw new EntityValidationError(error);
+    }
+    // If the entity lacks an ID, then it is an attempt to create.
+    if (!entity.id && !authToken) {
+      throw new AuthenticationError("Must be logged in to create.");
     }
     const userId = authToken
       ? await this.authService.readUserIdForAuthToken(authToken)
