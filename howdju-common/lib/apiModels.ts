@@ -84,9 +84,9 @@ export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
 
 export type JustificationOut = PersistedJustificationWithRootRef & {
   creator?: EntityRef<User>;
-  // Justifications countering this justification.
+  /** Justifications countering this justification. */
   counterJustifications?: (JustificationRef | JustificationOut)[];
-  // The sorting score for the current user
+  /** The sorting score for the current user */
   score?: number;
   /** The current user's vote on this justification. */
   vote?: JustificationVote;

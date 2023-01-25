@@ -74,9 +74,9 @@ sourceExcerpt: {
 
 Where the `type` indicates which of the alternatives the user actually wants persisted upon creation.
 
-## In models (`CreateXIn`/`ReadXIn`/`UpdateXIn`)
+## In models (`CreateXIn`/`UpdateXIn`)
 
-In models represent data a client sends to an API as a request
+`In` models represent data a client sends to an API as a request
 payload. They are often entities that represent all the data the API needs to
 persist an entity. Update model alternatives must be consolidated into a single
 choice on these models.
@@ -85,7 +85,11 @@ An entity may have several different corresponding API request models for
 different use-cases, if different fields are required. An entity's API request
 model may also refer to persisted related entities using only their `id` (i.e. `Ref`s.)
 
-## Out models (`CreateXOut`/`ReadXOut`/`UpdateXOut`)
+There probably is not a use for a `ReadXIn` model because the data we send to the API to read
+entities often does not have the same shape as the entity. Instead we often send an entity ID along
+with multiple query string parameters that control what we return. A better name might be `ReadXParams`.
+
+## Out models (`XOut`/`CreateXOut`/`ReadXOut`/`UpdateXOut`)
 
 `Out` models are usually those returned by ('coming out of') the API. They usually extend or modify
 the entities upon which they are based, containing additional fields useful for displaying the
@@ -100,6 +104,16 @@ Additional fields on `Out` models are often optional, either:
 1. To ease reuse of the `Out` model in different responses which may not include the extra fields,
    or
 2. To support request parameters that control the addition of extra fields.
+
+An entity/endpoint may have a generic `XOut` type, or it may specialize the out types per method,
+like `CreateXOut`/`ReadXOut`/`UpdateXOut`.
+
+### Out model relations
+
+Every `Out` model must decide the status of its relations: will related entities be included on the
+model, referenced by ID only, or a union of either? When a model will include a related entity, the
+DAO must query those entities and attach them. If we move to a denormalized data model, then many of
+the related entities (or part of them at least) should be denormalized to the main entity.
 
 ## Request/response models
 

@@ -26,6 +26,7 @@ import bases from "bases";
 
 import { newProgrammingError } from "./commonErrors";
 import { CamelCasedPropertiesDeep } from "type-fest";
+import { SortDescription } from "./apiModels";
 
 export interface MapValuesOptions {
   /**
@@ -338,13 +339,7 @@ export const decodeQueryStringObject = (param: string | undefined) => {
   return obj;
 };
 
-// TODO dedupe with SortDescription
-export interface SortDescriptor {
-  property: string;
-  direction: "ASC" | "DESC";
-}
-
-export const encodeSorts = (sorts: SortDescriptor[]) =>
+export const encodeSorts = (sorts: SortDescription[]) =>
   map(sorts, ({ property, direction }) => `${property}=${direction}`).join(",");
 
 export const decodeSorts = (param: string) => {
@@ -354,11 +349,15 @@ export const decodeSorts = (param: string) => {
 
   const propertyDirections = param.split(",");
 
-  const sorts: SortDescriptor[] = [];
+  const sorts: SortDescription[] = [];
   forEach(propertyDirections, (propertyDirection) => {
     const [property, direction] = propertyDirection.split("=");
-    assert(["DESC", "ASC"].indexOf(direction) > 0);
-    sorts.push({ property, direction: direction as "ASC" | "DESC" });
+    assert(["ascending", "descending"].indexOf(direction) > 0);
+    sorts.push({
+      property,
+      direction: direction as "ascending" | "descending",
+      // There is no `value` because those are not supported in query params
+    });
   });
 
   return sorts;

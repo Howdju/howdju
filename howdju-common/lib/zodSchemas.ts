@@ -450,7 +450,7 @@ export const JustificationBasisType = z.enum([
    * A mixture of Propositions and WritQuotes.
    *
    * @deprecated We decided not to mix 'claims' (Propositions) and 'evidence' (SourceExcerpts).
-   * Instead, a justificaiton must be all Propositions (a PropositionCompound) or a single SourceExcerpt.
+   * Instead, a justification must be a PropositionCompound or a SourceExcerpt.
    */
   "JUSTIFICATION_BASIS_COMPOUND",
 ]);

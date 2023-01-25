@@ -141,39 +141,6 @@ export interface JustificationRow {
   score?: number;
 }
 
-// export type JustificationData = JustificationWithRefs & {
-//   creator: UserRef;
-// };
-
-// /**
-//  * A persisted justification with ref targets.
-//  */
-// export type JustificationWithRefs = Omit<
-//   Persisted<Justification>,
-//   "rootTarget" | "target" | "basis"
-// > & {
-//   rootTarget: EntityRef<JustificationRootTarget>;
-//   target:
-//     | {
-//         type: "PROPOSITION";
-//         entity: PersistedOrRef<Proposition>;
-//       }
-//     | {
-//         type: "STATEMENT";
-//         entity: PersistedOrRef<Statement>;
-//       }
-//     | {
-//         type: "JUSTIFICATION";
-//         entity: EntityRef<Justification>;
-//       };
-//   basis:
-//     | {
-//         type: "PROPOSITION_COMPOUND";
-//         entity: PersistedOrRef<PropositionCompound>;
-//       }
-//     | { type: "SOURCE_EXCERPT"; entity: PersistedOrRef<SourceExcerpt> }
-//     | { type: "WRIT_QUOTE"; entity: PersistedOrRef<WritQuote> };
-// };
 export type CreateJustificationDataIn = PersistRelated<CreateJustification> & {
   rootTargetType: JustificationRootTargetType;
   rootTarget: EntityRef<JustificationRootTarget>;

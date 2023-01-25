@@ -198,6 +198,9 @@ describe("JustificationsService", () => {
       expect(isExtant).toBe(true);
       expect(counterJustificationOut2).toMatchObject({
         ...createCounterJustification2,
+        rootTarget: {
+          id: counterJustificationOut1.rootTarget.id,
+        },
         target: {
           type: "JUSTIFICATION",
           entity: {

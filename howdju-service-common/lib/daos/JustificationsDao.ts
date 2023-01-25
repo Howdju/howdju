@@ -480,10 +480,14 @@ export class JustificationsDao {
       targetPropositionRows
     );
 
-    // TODO convert this to a map where the result of the map always has a target, and so is a ReadJustificationDataOut.
+    // TODO(228) convert this to a map where the result of the map always has a target, and so is a ReadJustificationDataOut.
     forEach(justifications, (justification) => {
       switch (justification.target.type) {
         case JustificationTargetTypes.JUSTIFICATION: {
+          // TODO(228) topologically sort the justifications using targets as edges and map them in order.
+          // BasedJustificationDataOut should not be directly assignable to
+          // PersistedJustificationWithRootRef because there's no guarantee we've set the target of
+          // right-hand side to a materialized target.
           justification.target.entity =
             targetJustificationsById[justification.target.entity.id];
           break;
@@ -503,7 +507,7 @@ export class JustificationsDao {
     });
 
     if (justifications.length) {
-      // TODO add statement targets similarly to how we handle justifications and propositions above
+      // TODO(228) add statement targets similarly to how we handle justifications and propositions above
       // (add targetStatementsById)
       await this.addStatements(justifications);
       if (includeUrls) {
@@ -512,7 +516,7 @@ export class JustificationsDao {
       }
     }
 
-    // TODO remove this cast after converting the forEach to a map above and ensuring all targets
+    // TODO(288) remove this cast after converting the forEach to a map above and ensuring all targets
     // are set after the map.
     return justifications as ReadJustificationDataOut[];
   }

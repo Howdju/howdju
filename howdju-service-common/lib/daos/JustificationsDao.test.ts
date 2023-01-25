@@ -32,6 +32,11 @@ import {
   SortDescription,
   CreatePropositionCompound,
   CreateWritQuote,
+  EntityId,
+  PropositionCompound,
+  Persisted,
+  AuthToken,
+  User,
 } from "howdju-common";
 
 describe("JustificationsDao", () => {
@@ -112,72 +117,28 @@ describe("JustificationsDao", () => {
   describe("readJustificationForId", () => {
     test("reads a justification for an ID", async () => {
       // Arrange
-      const now = moment();
-      const creatorUserId = null;
-      const userData = {
-        email: "user@domain.com",
-        username: "the-username",
-        isActive: true,
-      };
+      const { user, authToken } = await makeUser();
+      const statementData = await makeStatement({ user, authToken });
 
-      const user = await usersDao.createUser(userData, creatorUserId, now);
-      const { authToken } = await authService.createAuthToken(user, now);
-
-      const proposition = await propositionsDao.createProposition(
-        user.id,
-        {
-          text: "A fine wee proposition.",
-        },
-        now
-      );
-      const speaker = await persorgsDao.createPersorg(
-        {
-          isOrganization: false,
-          name: "Williford von Rutherford",
-        },
-        user.id,
-        now
-      );
-      const createStatementData = {
-        speaker,
-        sentenceType: "PROPOSITION",
-        sentence: proposition,
-      };
-      const { statement: statementData } = await statementsService.readOrCreate(
-        createStatementData,
-        authToken
-      );
-      const { id: statementId } = statementData;
-
-      const createPropositionCompound: CreatePropositionCompound = {
-        atoms: [
-          {
-            entity: {
-              text: "Hi there.",
-            },
-          },
-        ],
-      };
-      const { propositionCompound } =
-        await propositionCompoundsService.createValidPropositionCompoundAsUser(
-          createPropositionCompound,
-          user.id,
-          now
-        );
+      const propositionCompound = await makePropositionCompound({
+        userId: user.id,
+      });
 
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType: "STATEMENT",
-        rootTarget: StatementRef.parse({ id: statementId }),
+        rootTarget: StatementRef.parse({ id: statementData.id }),
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: statementId }),
+          entity: StatementRef.parse({ id: statementData.id }),
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
           entity: propositionCompound,
         },
       };
+
+      const now = moment();
       const { id } = await dao.createJustification(
         createJustificationData,
         user.id,
@@ -206,76 +167,21 @@ describe("JustificationsDao", () => {
   describe("readJustifications", () => {
     test("reads justifications", async () => {
       // Arrange
-      const now = moment();
-      const creatorUserId = null;
-      const userData = {
-        email: "user@domain.com",
-        username: "the-username",
-        isActive: true,
-      };
+      const { user, authToken } = await makeUser();
 
-      const user = await usersDao.createUser(userData, creatorUserId, now);
-      const { authToken } = await authService.createAuthToken(user, now);
-
-      const proposition = await propositionsDao.createProposition(
-        user.id,
-        {
-          text: "A fine wee proposition.",
-        },
-        now
-      );
-      const speaker = await persorgsDao.createPersorg(
-        {
-          isOrganization: false,
-          name: "Williford von Rutherford",
-        },
-        user.id,
-        now
-      );
-      const createStatementData = {
-        speaker,
-        sentenceType: "PROPOSITION",
-        sentence: proposition,
-      };
-      const { statement: statementData } = await statementsService.readOrCreate(
-        createStatementData,
-        authToken
-      );
-      const { id: statementId } = statementData;
+      const statementData = await makeStatement({ user, authToken });
 
       const rootTargetType = "STATEMENT";
-      const rootTarget = StatementRef.parse({ id: statementId });
+      const rootTarget = StatementRef.parse({ id: statementData.id });
 
-      const createPropositionCompound1: CreatePropositionCompound = {
-        atoms: [
-          {
-            entity: {
-              text: "Hi there 1.",
-            },
-          },
-        ],
-      };
-      const { propositionCompound: propositionCompound1 } =
-        await propositionCompoundsService.createValidPropositionCompoundAsUser(
-          createPropositionCompound1,
-          user.id,
-          now
-        );
-      const createPropositionCompound2: CreatePropositionCompound = {
-        atoms: [
-          {
-            entity: {
-              text: "Hi there 2.",
-            },
-          },
-        ],
-      };
-      const { propositionCompound: propositionCompound2 } =
-        await propositionCompoundsService.createValidPropositionCompoundAsUser(
-          createPropositionCompound2,
-          user.id,
-          now
-        );
+      const propositionCompound1 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 1",
+      });
+      const propositionCompound2 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 2",
+      });
 
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType,
@@ -283,13 +189,14 @@ describe("JustificationsDao", () => {
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: statementId }),
+          entity: StatementRef.parse({ id: statementData.id }),
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
           entity: propositionCompound1,
         },
       };
+      const now = moment();
       const { id: justificationId } = await dao.createJustification(
         createJustificationData,
         user.id,
@@ -358,89 +265,26 @@ describe("JustificationsDao", () => {
     test("read pro and con justifications", async () => {
       // Create a countered writquote justification and a proposition compound disjustification
       // Arrange
-      const now = moment();
-      const creatorUserId = null;
-      const userData = {
-        email: "user@domain.com",
-        username: "the-username",
-        isActive: true,
-      };
+      const { user, authToken } = await makeUser();
 
-      const user = await usersDao.createUser(userData, creatorUserId, now);
-      const { authToken } = await authService.createAuthToken(user, now);
-
-      const proposition = await propositionsDao.createProposition(
-        user.id,
-        {
-          text: "A fine wee proposition.",
-        },
-        now
-      );
-      const speaker = await persorgsDao.createPersorg(
-        {
-          isOrganization: false,
-          name: "Williford von Rutherford",
-        },
-        user.id,
-        now
-      );
-      const createStatementData = {
-        speaker,
-        sentenceType: "PROPOSITION",
-        sentence: proposition,
-      };
-      const { statement: statementData } = await statementsService.readOrCreate(
-        createStatementData,
-        authToken
-      );
-      const { id: statementId } = statementData;
+      const statementData = await makeStatement({ user, authToken });
+      const statementId = statementData.id;
 
       const rootTargetType = "STATEMENT";
       const rootTarget = StatementRef.parse({ id: statementId });
 
-      const createWritQuote: CreateWritQuote = {
-        quoteText: "What if a much of a wind",
-        writ: {
-          title: "Leaves of grass",
-        },
-        urls: [],
-      };
-      const { writQuote } = await writQuotesService.createWritQuote({
-        authToken,
-        writQuote: createWritQuote,
+      const writQuote = await makeWritQuote({ authToken });
+
+      const propositionCompound1 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 1",
+      });
+      const propositionCompound2 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 2",
       });
 
-      const createPropositionCompound1: CreatePropositionCompound = {
-        atoms: [
-          {
-            entity: {
-              text: "Hi there 1.",
-            },
-          },
-        ],
-      };
-      const { propositionCompound: propositionCompound1 } =
-        await propositionCompoundsService.createValidPropositionCompoundAsUser(
-          createPropositionCompound1,
-          user.id,
-          now
-        );
-      const createPropositionCompound2: CreatePropositionCompound = {
-        atoms: [
-          {
-            entity: {
-              text: "Hi there 2.",
-            },
-          },
-        ],
-      };
-      const { propositionCompound: propositionCompound2 } =
-        await propositionCompoundsService.createValidPropositionCompoundAsUser(
-          createPropositionCompound2,
-          user.id,
-          now
-        );
-
+      const now = moment();
       const createProjustificationData: CreateJustificationDataIn = {
         rootTargetType,
         rootTarget,
@@ -552,4 +396,94 @@ describe("JustificationsDao", () => {
       ]);
     });
   });
+
+  async function makeUser() {
+    const now = moment();
+    const creatorUserId = null;
+    const userData = {
+      email: "user@domain.com",
+      username: "the-username",
+      isActive: true,
+    };
+
+    const user = await usersDao.createUser(userData, creatorUserId, now);
+    const { authToken } = await authService.createAuthToken(user, now);
+    return { user, authToken };
+  }
+
+  async function makeStatement({
+    user,
+    authToken,
+  }: {
+    user: User;
+    authToken: AuthToken;
+  }) {
+    const now = moment();
+    const proposition = await propositionsDao.createProposition(
+      user.id,
+      {
+        text: "A fine wee proposition.",
+      },
+      now
+    );
+    const speaker = await persorgsDao.createPersorg(
+      {
+        isOrganization: false,
+        name: "Williford von Rutherford",
+      },
+      user.id,
+      now
+    );
+    const createStatementData = {
+      speaker,
+      sentenceType: "PROPOSITION",
+      sentence: proposition,
+    };
+    const { statement } = await statementsService.readOrCreate(
+      createStatementData,
+      authToken
+    );
+    return statement;
+  }
+
+  async function makePropositionCompound({
+    userId,
+    text = "Socrates is mortal",
+  }: {
+    userId: EntityId;
+    text?: string;
+  }): Promise<Persisted<PropositionCompound>> {
+    const now = moment();
+    const createPropositionCompound: CreatePropositionCompound = {
+      atoms: [
+        {
+          entity: {
+            text,
+          },
+        },
+      ],
+    };
+    const { propositionCompound } =
+      await propositionCompoundsService.createValidPropositionCompoundAsUser(
+        createPropositionCompound,
+        userId,
+        now
+      );
+    return propositionCompound;
+  }
+
+  async function makeWritQuote({ authToken }: { authToken: AuthToken }) {
+    const createWritQuote: CreateWritQuote = {
+      quoteText: "What if a much of a wind",
+      writ: {
+        title: "Leaves of grass",
+      },
+      urls: [],
+    };
+    const { writQuote } = await writQuotesService.createWritQuote({
+      authToken,
+      writQuote: createWritQuote,
+    });
+    return writQuote;
+  }
 });

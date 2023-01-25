@@ -68,10 +68,7 @@ export type PersistedJustificationWithRootRef = Omit<
       }
     | {
         type: "JUSTIFICATION";
-        entity:
-          | PersistedJustificationWithRootRef
-          // TODO can remove?
-          | Ref<EntityName<Justification>>;
+        entity: PersistedJustificationWithRootRef;
       };
   basis:
     | {
@@ -83,7 +80,7 @@ export type PersistedJustificationWithRootRef = Omit<
 };
 
 /**
- * A persisted justification with ref targets.
+ * A persisted justification with materialized basis and ref targets.
  */
 export type BasedJustificationWithRootRef = Omit<
   Persisted<Justification>,
@@ -101,9 +98,8 @@ export type BasedJustificationWithRootRef = Omit<
       }
     | {
         type: "JUSTIFICATION";
-        entity:
-          | PersistedJustificationWithRootRef
-          | Ref<EntityName<Justification>>;
+        // TODO(228) remove EntityRef<Justification>
+        entity: BasedJustificationWithRootRef | EntityRef<Justification>;
       };
   basis:
     | {
@@ -132,6 +128,8 @@ export type EntityName<T> = T extends Proposition
   : T extends CreateJustificationInput
   ? "Justification"
   : T extends PersistedJustificationWithRootRef
+  ? "Justification"
+  : T extends BasedJustificationWithRootRef
   ? "Justification"
   : T extends JustificationVote
   ? "JustificationVote"
