@@ -14,20 +14,23 @@ import {
   Entity,
   Justification,
   JustificationRef,
-  JustificationRootTarget,
   JustificationVote,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
-  SourceExcerpt,
   Statement,
   Tag,
   TagVote,
   User,
   WritQuote,
 } from "./zodSchemas";
-import { EntityRef, Persisted, PersistRelated } from "./zodSchemaTypes";
+import {
+  EntityRef,
+  Persisted,
+  PersistedJustificationWithRootRef,
+  PersistRelated,
+} from "./zodSchemaTypes";
 
 /**
  * An out model representing errors for any CRUD action.
@@ -79,7 +82,7 @@ export type StatementOut = Persisted<Statement>;
 
 export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
 
-export type JustificationOut = MaterializedJustificationWithRootRef & {
+export type JustificationOut = PersistedJustificationWithRootRef & {
   creator?: EntityRef<User>;
   // Justifications countering this justification.
   counterJustifications?: (JustificationRef | JustificationOut)[];
@@ -87,40 +90,6 @@ export type JustificationOut = MaterializedJustificationWithRootRef & {
   score?: number;
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
-};
-
-/**
- * A Justification with persisted relations other than the root target, which is a ref.
- *
- * This type is suitable for returning out of an API.
- *
- * See PersistedJustificationWithRootRef, which is similar but allows persisted or ref relations.
- */
-type MaterializedJustificationWithRootRef = Omit<
-  Persisted<Justification>,
-  "rootTarget" | "target" | "basis"
-> & {
-  rootTarget: EntityRef<JustificationRootTarget>;
-  target:
-    | {
-        type: "PROPOSITION";
-        entity: Persisted<Proposition>;
-      }
-    | {
-        type: "STATEMENT";
-        entity: Persisted<Statement>;
-      }
-    | {
-        type: "JUSTIFICATION";
-        entity: MaterializedJustificationWithRootRef;
-      };
-  basis:
-    | {
-        type: "PROPOSITION_COMPOUND";
-        entity: Persisted<PropositionCompound>;
-      }
-    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
-    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
 };
 
 export type PropositionCompoundOut = Persisted<PropositionCompound>;

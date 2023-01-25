@@ -50,13 +50,42 @@ const PersistedEntity = Entity.required();
 type PersistedEntity = z.infer<typeof PersistedEntity>;
 
 /**
- * A persisted justification with persisted or ref relations and a ref-only root target.
- *
- * This type is suitable for returning out of DAOs.
- *
- * See MaterializedJustificationWithRootRef, which is a similar type that does not allow ref relations.
+ * A persisted justification with ref root target.
  */
 export type PersistedJustificationWithRootRef = Omit<
+  Persisted<Justification>,
+  "rootTarget" | "target" | "basis"
+> & {
+  rootTarget: EntityRef<JustificationRootTarget>;
+  target:
+    | {
+        type: "PROPOSITION";
+        entity: Persisted<Proposition>;
+      }
+    | {
+        type: "STATEMENT";
+        entity: Persisted<Statement>;
+      }
+    | {
+        type: "JUSTIFICATION";
+        entity:
+          | PersistedJustificationWithRootRef
+          // TODO can remove?
+          | Ref<EntityName<Justification>>;
+      };
+  basis:
+    | {
+        type: "PROPOSITION_COMPOUND";
+        entity: Persisted<PropositionCompound>;
+      }
+    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
+    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
+};
+
+/**
+ * A persisted justification with ref targets.
+ */
+export type BasedJustificationWithRootRef = Omit<
   Persisted<Justification>,
   "rootTarget" | "target" | "basis"
 > & {
@@ -79,10 +108,10 @@ export type PersistedJustificationWithRootRef = Omit<
   basis:
     | {
         type: "PROPOSITION_COMPOUND";
-        entity: PersistedOrRef<PropositionCompound>;
+        entity: Persisted<PropositionCompound>;
       }
-    | { type: "SOURCE_EXCERPT"; entity: PersistedOrRef<SourceExcerpt> }
-    | { type: "WRIT_QUOTE"; entity: PersistedOrRef<WritQuote> };
+    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
+    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
 };
 
 /**

@@ -18,7 +18,9 @@ import {
   PersorgsDao,
   PropositionsDao,
   StatementsService,
+  PropositionCompoundsService,
   UsersDao,
+  WritQuotesService,
 } from "..";
 import TestProvider from "@/initializers/TestProvider";
 import { CreateJustificationDataIn } from "./dataTypes";
@@ -27,8 +29,9 @@ import {
   negateRootPolarity,
   PropositionCompoundRef,
   StatementRef,
-  WritQuoteRef,
   SortDescription,
+  CreatePropositionCompound,
+  CreateWritQuote,
 } from "howdju-common";
 
 describe("JustificationsDao", () => {
@@ -41,6 +44,8 @@ describe("JustificationsDao", () => {
   let propositionsDao: PropositionsDao;
   let usersDao: UsersDao;
   let authService: AuthService;
+  let propositionCompoundsService: PropositionCompoundsService;
+  let writQuotesService: WritQuotesService;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
@@ -55,6 +60,8 @@ describe("JustificationsDao", () => {
     propositionsDao = (provider as any).propositionsDao;
     usersDao = (provider as any).usersDao;
     authService = (provider as any).authService;
+    propositionCompoundsService = (provider as any).propositionCompoundsService;
+    writQuotesService = (provider as any).writQuotesService;
   });
   afterEach(async () => {
     await pool.end();
@@ -142,6 +149,22 @@ describe("JustificationsDao", () => {
       );
       const { id: statementId } = statementData;
 
+      const createPropositionCompound: CreatePropositionCompound = {
+        atoms: [
+          {
+            entity: {
+              text: "Hi there.",
+            },
+          },
+        ],
+      };
+      const { propositionCompound } =
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
+          createPropositionCompound,
+          user.id,
+          now
+        );
+
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType: "STATEMENT",
         rootTarget: StatementRef.parse({ id: statementId }),
@@ -152,7 +175,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound,
         },
       };
       const { id } = await dao.createJustification(
@@ -173,10 +196,10 @@ describe("JustificationsDao", () => {
         rootPolarity: createJustificationData.polarity,
         rootTarget: expectToBeSameMomentDeep(statementData),
       });
-      expect(justificationData.creator).toEqual(
+      expect(justificationData).toMatchObject(expectedJustificationData);
+      expect(justificationData?.creator).toEqual(
         expectedJustificationData.creator
       );
-      expect(justificationData).toMatchObject(expectedJustificationData);
     });
   });
 
@@ -223,6 +246,37 @@ describe("JustificationsDao", () => {
       const rootTargetType = "STATEMENT";
       const rootTarget = StatementRef.parse({ id: statementId });
 
+      const createPropositionCompound1: CreatePropositionCompound = {
+        atoms: [
+          {
+            entity: {
+              text: "Hi there 1.",
+            },
+          },
+        ],
+      };
+      const { propositionCompound: propositionCompound1 } =
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
+          createPropositionCompound1,
+          user.id,
+          now
+        );
+      const createPropositionCompound2: CreatePropositionCompound = {
+        atoms: [
+          {
+            entity: {
+              text: "Hi there 2.",
+            },
+          },
+        ],
+      };
+      const { propositionCompound: propositionCompound2 } =
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
+          createPropositionCompound2,
+          user.id,
+          now
+        );
+
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType,
         rootTarget,
@@ -233,7 +287,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound1,
         },
       };
       const { id: justificationId } = await dao.createJustification(
@@ -252,7 +306,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound2,
         },
       };
       await dao.createJustification(
@@ -344,6 +398,49 @@ describe("JustificationsDao", () => {
       const rootTargetType = "STATEMENT";
       const rootTarget = StatementRef.parse({ id: statementId });
 
+      const createWritQuote: CreateWritQuote = {
+        quoteText: "What if a much of a wind",
+        writ: {
+          title: "Leaves of grass",
+        },
+        urls: [],
+      };
+      const { writQuote } = await writQuotesService.createWritQuote({
+        authToken,
+        writQuote: createWritQuote,
+      });
+
+      const createPropositionCompound1: CreatePropositionCompound = {
+        atoms: [
+          {
+            entity: {
+              text: "Hi there 1.",
+            },
+          },
+        ],
+      };
+      const { propositionCompound: propositionCompound1 } =
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
+          createPropositionCompound1,
+          user.id,
+          now
+        );
+      const createPropositionCompound2: CreatePropositionCompound = {
+        atoms: [
+          {
+            entity: {
+              text: "Hi there 2.",
+            },
+          },
+        ],
+      };
+      const { propositionCompound: propositionCompound2 } =
+        await propositionCompoundsService.createValidPropositionCompoundAsUser(
+          createPropositionCompound2,
+          user.id,
+          now
+        );
+
       const createProjustificationData: CreateJustificationDataIn = {
         rootTargetType,
         rootTarget,
@@ -354,7 +451,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "WRIT_QUOTE",
-          entity: WritQuoteRef.parse({ id: "2" }),
+          entity: writQuote,
         },
       };
       const { id: projustificationId } = await dao.createJustification(
@@ -372,7 +469,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound1,
         },
       };
       const { id: counterJustificationId } = await dao.createJustification(
@@ -391,7 +488,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound2,
         },
       };
       const { id: disjustificationId } = await dao.createJustification(

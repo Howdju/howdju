@@ -38,6 +38,8 @@ import {
   UserRef,
   Writ,
   WritQuote,
+  EntityId,
+  BasedJustificationWithRootRef,
 } from "howdju-common";
 import { Moment } from "moment";
 import { toIdString } from "./daosUtil";
@@ -138,6 +140,40 @@ export interface JustificationRow {
   // TODO do we ever populate this?
   score?: number;
 }
+
+// export type JustificationData = JustificationWithRefs & {
+//   creator: UserRef;
+// };
+
+// /**
+//  * A persisted justification with ref targets.
+//  */
+// export type JustificationWithRefs = Omit<
+//   Persisted<Justification>,
+//   "rootTarget" | "target" | "basis"
+// > & {
+//   rootTarget: EntityRef<JustificationRootTarget>;
+//   target:
+//     | {
+//         type: "PROPOSITION";
+//         entity: PersistedOrRef<Proposition>;
+//       }
+//     | {
+//         type: "STATEMENT";
+//         entity: PersistedOrRef<Statement>;
+//       }
+//     | {
+//         type: "JUSTIFICATION";
+//         entity: EntityRef<Justification>;
+//       };
+//   basis:
+//     | {
+//         type: "PROPOSITION_COMPOUND";
+//         entity: PersistedOrRef<PropositionCompound>;
+//       }
+//     | { type: "SOURCE_EXCERPT"; entity: PersistedOrRef<SourceExcerpt> }
+//     | { type: "WRIT_QUOTE"; entity: PersistedOrRef<WritQuote> };
+// };
 export type CreateJustificationDataIn = PersistRelated<CreateJustification> & {
   rootTargetType: JustificationRootTargetType;
   rootTarget: EntityRef<JustificationRootTarget>;
@@ -150,9 +186,17 @@ export type CreateJustificationDataOut = Persisted<CreateJustification> & {
   counterJustifications: [];
   creator: UserRef;
 };
+
+export type BasedJustificationDataOut = BasedJustificationWithRootRef & {
+  creator?: CreatorBlurbData | EntityRef<User>;
+  counterJustifications: BasedJustificationDataOut[];
+  score?: number;
+  vote?: JustificationVoteData;
+};
+
 export type ReadJustificationDataOut = PersistedJustificationWithRootRef & {
   creator?: CreatorBlurbData | EntityRef<User>;
-  counterJustifications: ReadJustificationDataOut[];
+  counterJustifications: BasedJustificationDataOut[];
   score?: number;
   vote?: JustificationVoteData;
 };
@@ -174,6 +218,7 @@ export type ReadPropositionCompoundDataOut = MergeDeep<
   Persisted<PropositionCompound>,
   {
     atoms: {
+      compoundId: EntityId;
       entity: Persisted<Proposition> & {
         rootJustificationCountByPolarity?: Partial<
           Record<"POSITIVE" | "NEGATIVE", number>

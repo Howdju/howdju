@@ -9,6 +9,9 @@ import {
   Entity,
   Logger,
   utcNow,
+  EntityRef,
+  newImpossibleError,
+  isRef,
 } from "howdju-common";
 
 import { AuthenticationError, EntityValidationError } from "../serviceErrors";
@@ -50,10 +53,22 @@ export abstract class EntityService<
   }
 
   async readOrCreate(
-    entity: CreateIn,
+    entity: CreateIn | EntityRef<CreateIn>,
     authToken: AuthToken
   ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>> {
     const now = utcNow();
+    const userId = authToken
+      ? await this.authService.readUserIdForAuthToken(authToken)
+      : undefined;
+    if (entity.id) {
+      return await this.doReadOrCreate(entity, userId, now);
+    }
+    if (isRef(entity)) {
+      throw newImpossibleError(
+        "The entity can't be a ref if its id was falsy."
+      );
+    }
+
     const entitySchema = isJoiSchema(this.entitySchemas)
       ? this.entitySchemas
       : this.entitySchemas.createSchema;
@@ -65,14 +80,12 @@ export abstract class EntityService<
     if (!entity.id && !authToken) {
       throw new AuthenticationError("Must be logged in to create.");
     }
-    const userId = authToken
-      ? await this.authService.readUserIdForAuthToken(authToken)
-      : undefined;
+
     return await this.doReadOrCreate(value, userId, now);
   }
 
   protected abstract doReadOrCreate(
-    entity: CreateIn,
+    entity: CreateIn | EntityRef<CreateIn>,
     userId: string | undefined,
     now: Moment
   ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>>;

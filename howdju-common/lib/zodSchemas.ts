@@ -791,7 +791,7 @@ export type CreateJustification = Simplify<
 >;
 export const CreateJustification: z.ZodType<CreateJustification> = z.lazy(() =>
   Entity.extend({
-    ...createJustificationBaseShape,
+    ...omit(createJustificationBaseShape, ["rootPolarity"]),
     basis: z.discriminatedUnion("type", [
       z.object({
         type: z.literal("PROPOSITION_COMPOUND"),

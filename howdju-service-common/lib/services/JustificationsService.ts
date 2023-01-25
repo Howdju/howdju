@@ -60,6 +60,7 @@ import {
   RequestValidationError,
   EntityTooOldToModifyError,
   AuthorizationError,
+  EntityNotFoundError,
 } from "../serviceErrors";
 import { withPrependedIssues } from "../util";
 import { ActionsService } from "./ActionsService";
@@ -73,7 +74,7 @@ import {
   StatementsService,
   WritQuotesService,
 } from "..";
-import { merge, toString } from "lodash";
+import { merge } from "lodash";
 import {
   CreateJustificationDataIn,
   ReadJustificationDataOut,
@@ -140,45 +141,22 @@ export class JustificationsService extends EntityService<
     this.permissionsDao = permissionsDao;
   }
 
-  private async readJustificationForId(
-    justificationId: EntityId,
-    userId: EntityId
-  ): Promise<JustificationOut> {
-    const justificationData =
-      await this.justificationsDao.readJustificationForId(justificationId);
-    const [rootTarget, targetEntity, basisEntity] = await Promise.all([
-      this.readRootTarget(justificationData, userId),
-      this.readJustificationTarget(justificationData.target, { userId }),
-      this.readJustificationBasis(justificationData.basis),
-    ]);
-    const justification = merge(
-      {},
-      justificationData,
-      { rootTarget },
-      {
-        target: {
-          entity: targetEntity,
-        },
-      },
-      { basis: { entity: basisEntity } }
-    );
-    this.logTargetInconsistency(justification);
-    return justification;
-  }
-
   async readJustifications({
     filters,
     sorts,
-    continuationToken,
+    continuationToken = undefined,
     count = 25,
     includeUrls = false,
   }: {
     filters: JustificationSearchFilters;
     sorts: SortDescription[];
-    continuationToken: ContinuationToken;
+    continuationToken: ContinuationToken | undefined;
     count: number;
     includeUrls: boolean;
-  }) {
+  }): Promise<{
+    justifications: JustificationOut[];
+    continuationToken: ContinuationToken;
+  }> {
     const countNumber = toNumber(count);
     if (!isFinite(countNumber)) {
       throw new RequestValidationError(
@@ -211,7 +189,10 @@ export class JustificationsService extends EntityService<
     requestedSorts: SortDescription[],
     count: number,
     includeUrls: boolean
-  ) {
+  ): Promise<{
+    justifications: JustificationOut[];
+    continuationToken: ContinuationToken;
+  }> {
     const disambiguationSorts: SortDescription[] = [
       { property: "id", direction: "ascending" },
     ];
@@ -238,7 +219,10 @@ export class JustificationsService extends EntityService<
     continuationToken: ContinuationToken,
     count: number,
     includeUrls: boolean
-  ) {
+  ): Promise<{
+    justifications: JustificationOut[];
+    continuationToken: ContinuationToken;
+  }> {
     const { sorts, filters } = decodeContinuationToken(continuationToken);
     const justifications = await this.justificationsDao.readJustifications(
       filters,
@@ -274,7 +258,7 @@ export class JustificationsService extends EntityService<
     userId: EntityId,
     now: Moment
   ): Promise<{ isExtant: boolean; justification: JustificationOut }> {
-    if (isRef(justification)) {
+    if (justification.id) {
       return {
         isExtant: true,
         justification: await this.readJustificationForId(
@@ -283,12 +267,47 @@ export class JustificationsService extends EntityService<
         ),
       };
     }
+    if (isRef(justification)) {
+      throw newImpossibleError(
+        "The justification can't be a ref if its id was falsy."
+      );
+    }
 
     return await this.readOrCreateEquivalentValidJustificationAsUser(
       justification,
       userId,
       now
     );
+  }
+
+  private async readJustificationForId(
+    justificationId: EntityId,
+    userId: EntityId
+  ): Promise<JustificationOut> {
+    const justificationData =
+      await this.justificationsDao.readJustificationForId(justificationId);
+    if (!justificationData) {
+      throw new EntityNotFoundError("JUSTIFICATION", justificationId);
+    }
+
+    const [rootTarget, targetEntity, basisEntity] = await Promise.all([
+      this.readRootTarget(justificationData, userId),
+      this.readJustificationTarget(justificationData.target, { userId }),
+      this.readJustificationBasis(justificationData.basis),
+    ]);
+    const justification = merge(
+      {},
+      justificationData,
+      { rootTarget },
+      {
+        target: {
+          entity: targetEntity,
+        },
+      },
+      { basis: { entity: basisEntity } }
+    );
+    this.logTargetInconsistency(justification);
+    return justification;
   }
 
   protected doUpdate() {
@@ -307,6 +326,10 @@ export class JustificationsService extends EntityService<
       ),
       this.justificationsDao.readJustificationForId(justificationId),
     ]);
+
+    if (!justification) {
+      throw new EntityNotFoundError("JUSTIFICATION", justificationId);
+    }
 
     const now = utcNow();
 
@@ -337,16 +360,6 @@ export class JustificationsService extends EntityService<
         userId,
         now
       );
-    const deletedJustificationId =
-      await this.justificationsDao.deleteJustification(justification, now);
-    if (!deletedJustificationId) {
-      this.logger.error(
-        `Failed to delete justification by ID (${justificationId} but we were able to read it: ${toJson(
-          justification
-        )}`
-      );
-    }
-
     deletedCounterJustificationIds.forEach((id) =>
       this.actionsService.asyncRecordAction(
         userId,
@@ -356,17 +369,29 @@ export class JustificationsService extends EntityService<
         id
       )
     );
-    if (deletedJustificationId) {
-      this.actionsService.asyncRecordAction(
-        userId,
-        now,
-        ActionTypes.DELETE,
-        ActionTargetTypes.JUSTIFICATION,
-        toIdString(deletedJustificationId)
+
+    const deletedJustificationId =
+      await this.justificationsDao.deleteJustification(justification, now);
+    if (!deletedJustificationId) {
+      throw newImpossibleError(
+        `Failed to delete justification by ID (${justificationId} but we were able to read it: ${toJson(
+          justification
+        )}`
       );
     }
 
-    return deletedJustificationId;
+    this.actionsService.asyncRecordAction(
+      userId,
+      now,
+      ActionTypes.DELETE,
+      ActionTargetTypes.JUSTIFICATION,
+      toIdString(deletedJustificationId)
+    );
+
+    return {
+      deletedJustificationId: toIdString(deletedJustificationId),
+      deletedCounterJustificationIds,
+    };
   }
 
   private logTargetInconsistency(justification: Justification) {
@@ -384,7 +409,7 @@ export class JustificationsService extends EntityService<
     }
   }
 
-  async deleteCounterJustificationsToJustificationIds(
+  private async deleteCounterJustificationsToJustificationIds(
     justificationIds: EntityId[],
     userId: EntityId,
     now: Moment,
@@ -398,7 +423,7 @@ export class JustificationsService extends EntityService<
         justificationIds,
         now
       )
-    ).map(toString);
+    ).map(toIdString);
     return await this.deleteCounterJustificationsToJustificationIds(
       newDeletedJustificationIds,
       userId,
@@ -431,7 +456,7 @@ export class JustificationsService extends EntityService<
     }
   }
 
-  async readJustificationTarget(
+  private async readJustificationTarget(
     justificationTarget: PersistOrRef<JustificationTarget>,
     { userId }: { userId: EntityId }
   ) {
@@ -458,10 +483,8 @@ export class JustificationsService extends EntityService<
     }
   }
 
-  async readJustificationBasis(
+  private async readJustificationBasis(
     justificationBasis: PersistOrRef<JustificationBasis>
-    // ,
-    // { userId }: { userId: EntityId }
   ) {
     switch (justificationBasis.type) {
       case "WRIT_QUOTE":
@@ -486,7 +509,7 @@ export class JustificationsService extends EntityService<
     }
   }
 
-  async readOrCreateEquivalentValidJustificationAsUser(
+  private async readOrCreateEquivalentValidJustificationAsUser(
     createJustification: CreateJustification,
     userId: EntityId,
     now: Moment
@@ -523,7 +546,7 @@ export class JustificationsService extends EntityService<
         createJustificationDataIn
       );
     const isExtant = !!equivalentJustification;
-    const justificationDataOut: ReadJustificationDataOut =
+    const persistedJustification =
       equivalentJustification ??
       (await this.justificationsDao.createJustification(
         createJustificationDataIn,
@@ -539,9 +562,14 @@ export class JustificationsService extends EntityService<
       now,
       actionType,
       ActionTargetTypes.JUSTIFICATION,
-      justificationDataOut.id
+      persistedJustification.id
     );
 
+    const justificationDataOut: ReadJustificationDataOut = {
+      ...persistedJustification,
+      ...{ basis, target },
+      counterJustifications: [],
+    };
     return {
       isExtant,
       justification: {
@@ -552,7 +580,7 @@ export class JustificationsService extends EntityService<
     };
   }
 
-  async readOrCreateJustificationTarget(
+  private async readOrCreateJustificationTarget(
     justificationTarget: CreateJustificationTarget,
     userId: EntityId,
     now: Moment
@@ -605,7 +633,7 @@ export class JustificationsService extends EntityService<
     }
   }
 
-  async readOrCreateJustificationBasis(
+  private async readOrCreateJustificationBasis(
     justificationBasis: CreateJustificationBasis,
     userId: EntityId,
     now: Moment
@@ -657,7 +685,7 @@ export class JustificationsService extends EntityService<
     }
   }
 
-  validateJustifications(justifications: ReadJustificationDataOut[]) {
+  private validateJustifications(justifications: ReadJustificationDataOut[]) {
     const [goodJustifications, badJustifications] = partition(
       justifications,
       (j) =>
