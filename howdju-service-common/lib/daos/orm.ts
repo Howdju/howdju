@@ -14,7 +14,6 @@ import {
   EntityId,
   EntityType,
   JustificationBasisCompoundAtomTypes,
-  JustificationBasisTypes,
   JustificationRef,
   JustificationVoteRef,
   logger,
@@ -30,7 +29,6 @@ import {
   RegistrationRequestRef,
   requireArgs,
   SentenceTypes,
-  SourceExcerptRef,
   SourceExcerptTypes,
   StatementRef,
   TagRef,
@@ -43,6 +41,7 @@ import {
 import {
   AccountSettingsData,
   AccountSettingsRow,
+  BasedJustificationDataOut,
   ContentReportData,
   ContentReportRow,
   CreatorBlurbData,
@@ -65,7 +64,6 @@ import {
   PropositionTagScoreRow,
   PropositionTagVoteData,
   PropositionTagVoteRow,
-  ReadJustificationDataOut,
   ReadPropositionCompoundDataOut,
   RegistrationRequestData,
   RegistrationRequestRow,
@@ -227,7 +225,7 @@ export const toUser = wrapMapper(toUserMapper);
 
 function toCreatorBlurbMapper(row: CreatorBlurbRow): CreatorBlurbData {
   return {
-    id: toIdString(row.user_id),
+    ...UserRef.parse({ id: toIdString(row.user_id) }),
     longName: row.long_name,
   };
 }
@@ -364,21 +362,26 @@ function toJustificationMapper(
   propositionCompoundsById?: Record<EntityId, ReadPropositionCompoundDataOut>,
   writQuotesById?: Record<EntityId, WritQuoteData>,
   justificationBasisCompoundsById?: Record<EntityId, any>
-): ReadJustificationDataOut {
+): BasedJustificationDataOut {
   const rootTarget = mapJustificationRootTargetRelation(row);
   if (!rootTarget) {
     throw newProgrammingError(
       "rootTarget relation must be mappable but was undefined."
     );
   }
-  const justification: ReadJustificationDataOut = {
+  const basis = extractJustificationBasis(
+    row,
+    propositionCompoundsById,
+    writQuotesById
+  );
+  const justification: BasedJustificationDataOut = {
     ...JustificationRef.parse({ id: toIdString(row.justification_id) }),
     created: row.created,
     rootTargetType: row.root_target_type,
     rootTarget,
     rootPolarity: row.root_polarity,
     target: parseJustificationTargetRef(row),
-    basis: parseJustificationBasisRef(row),
+    basis,
     polarity: row.polarity,
     score: row.score,
     creator: toJustificationCreator(row),
@@ -403,91 +406,6 @@ function toJustificationMapper(
     });
   }
 
-  switch (row.basis_type) {
-    case JustificationBasisTypes.WRIT_QUOTE: {
-      const basisId = row.basis_id || row.basis_writ_quote_writ_quote_id;
-      if (basisId) {
-        if (writQuotesById) {
-          justification.basis.entity = writQuotesById[basisId];
-        }
-        // justification.basis.entity was certainly set above to parseJustificationBasisRef.
-        // So the only way it would be missing is if basisId were truthy, but writQuotesById was
-        // missing that basisId.
-        // TODO(1): after getting test coverage of all calls to this mapper, confirm whether we
-        // ever trigger the following condition.
-        if (!justification.basis.entity && row.basis_writ_quote_writ_quote_id) {
-          justification.basis.entity = toWritQuoteMapper({
-            writ_quote_id: row.basis_writ_quote_writ_quote_id,
-            quote_text: row.basis_writ_quote_quote_text,
-            normal_quote_text: row.basis_writ_quote_normal_quote_text,
-            creator_user_id: row.basis_writ_quote_creator_user_id,
-            created: row.basis_writ_quote_created,
-            writ_id: row.basis_writ_quote_writ_id,
-            writ_title: row.basis_writ_quote_writ_title,
-            writ_writ_id: row.basis_writ_quote_writ_id,
-            writ_creator_user_id: row.basis_writ_quote_writ_creator_user_id,
-            writ_creator_long_name: row.basis_writ_quote_writ_creator_long_name,
-            writ_created: row.basis_writ_quote_writ_created,
-          });
-        }
-      }
-      break;
-    }
-
-    case JustificationBasisTypes.PROPOSITION_COMPOUND: {
-      const basisId =
-        row.basis_id || row.basis_proposition_compound_proposition_compound_id;
-      if (basisId) {
-        if (propositionCompoundsById) {
-          justification.basis.entity = propositionCompoundsById[basisId];
-        }
-        if (
-          !justification.basis.entity &&
-          row.basis_proposition_compound_proposition_compound_id
-        ) {
-          justification.basis.entity = toPropositionCompound({
-            proposition_compound_id:
-              row.basis_proposition_compound_proposition_compound_id,
-            created: row.basis_proposition_compound_created,
-            creator_user_id: row.basis_proposition_compound_creator_user_id,
-          });
-        }
-      }
-      break;
-    }
-
-    case JustificationBasisTypes.JUSTIFICATION_BASIS_COMPOUND: {
-      const basisId = row.basis_id || row.basis_justification_basis_compound_id;
-      if (basisId) {
-        if (justificationBasisCompoundsById) {
-          justification.basis.entity = justificationBasisCompoundsById[basisId];
-        }
-        if (
-          !justification.basis.entity &&
-          row.basis_justification_basis_compound_id
-        ) {
-          justification.basis.entity = toJustificationBasisCompound({
-            justification_basis_compound_id:
-              row.basis_justification_basis_compound_id,
-            created: row.basis_justification_basis_compound_created,
-            creator_user_id:
-              row.basis_justification_basis_compound_creator_user_id,
-          });
-        }
-      }
-      break;
-    }
-
-    default:
-      throw newImpossibleError(
-        `Unsupported JustificationBasisTypes: ${row.basis_type}`
-      );
-  }
-
-  if (!justification.basis.entity) {
-    justification.basis = parseJustificationBasisRef(row);
-  }
-
   if (counterJustificationsByJustificationId) {
     const counterJustifications =
       counterJustificationsByJustificationId[justification.id];
@@ -508,6 +426,93 @@ function toJustificationMapper(
 }
 export const toJustification = wrapMapper(toJustificationMapper);
 
+function extractJustificationBasis(
+  row: ToJustificationMapperRow,
+  propositionCompoundsById?: Record<EntityId, ReadPropositionCompoundDataOut>,
+  writQuotesById?: Record<EntityId, WritQuoteData>
+) {
+  const type = row.basis_type;
+  switch (type) {
+    case "WRIT_QUOTE": {
+      const basisId = row.basis_id || row.basis_writ_quote_writ_quote_id;
+      if (!basisId) {
+        throw newProgrammingError(
+          `justification row (justification_id: ${row.justification_id}) is missing writ quote basis_id`
+        );
+      }
+      if (writQuotesById) {
+        const entity = writQuotesById[basisId];
+        if (!entity) {
+          throw newProgrammingError(
+            `writQuotesById was missing basisId ${basisId}`
+          );
+        }
+        return { type, entity };
+      }
+
+      if (!row.basis_writ_quote_writ_quote_id) {
+        throw newProgrammingError(
+          "extractJustificationBasis did not receive basis_writ_quote_writ_quote_id but needs it."
+        );
+      }
+
+      const entity = toWritQuoteMapper({
+        writ_quote_id: row.basis_writ_quote_writ_quote_id,
+        quote_text: row.basis_writ_quote_quote_text,
+        normal_quote_text: row.basis_writ_quote_normal_quote_text,
+        creator_user_id: row.basis_writ_quote_creator_user_id,
+        created: row.basis_writ_quote_created,
+        writ_id: row.basis_writ_quote_writ_id,
+        writ_title: row.basis_writ_quote_writ_title,
+        writ_writ_id: row.basis_writ_quote_writ_id,
+        writ_creator_user_id: row.basis_writ_quote_writ_creator_user_id,
+        writ_creator_long_name: row.basis_writ_quote_writ_creator_long_name,
+        writ_created: row.basis_writ_quote_writ_created,
+      });
+      return { type, entity };
+    }
+
+    case "PROPOSITION_COMPOUND": {
+      const basisId =
+        row.basis_id || row.basis_proposition_compound_proposition_compound_id;
+      if (!basisId) {
+        throw newProgrammingError(
+          `justification row (justification_id: ${row.justification_id}) is missing writ quote basis_id`
+        );
+      }
+      if (propositionCompoundsById) {
+        const entity = propositionCompoundsById[basisId];
+        if (!entity) {
+          throw newProgrammingError(
+            `propositionCompoundsById was missing basisId ${basisId}`
+          );
+        }
+        return { type, entity };
+      }
+
+      if (!row.basis_proposition_compound_proposition_compound_id) {
+        throw newProgrammingError(
+          "extractJustificationBasis did not receive basis_proposition_compound_proposition_compound_id but needs it."
+        );
+      }
+
+      const entity = toPropositionCompound({
+        proposition_compound_id:
+          row.basis_proposition_compound_proposition_compound_id,
+        created: row.basis_proposition_compound_created,
+        creator_user_id: row.basis_proposition_compound_creator_user_id,
+      });
+      return { type, entity };
+    }
+
+    case "SOURCE_EXCERPT":
+      throw newImpossibleError(`Unsupported JustificationBasisTypes: ${type}`);
+
+    default:
+      throw newExhaustedEnumError(type);
+  }
+}
+
 function parseJustificationTargetRef(row: JustificationRow) {
   const type = row.target_type;
   const id = toIdString(row.target_id);
@@ -524,29 +529,6 @@ function parseJustificationTargetRef(row: JustificationRow) {
       const entity = StatementRef.parse({ id });
       return { type, entity };
     }
-  }
-}
-
-function parseJustificationBasisRef(row: JustificationRow) {
-  const type = row.basis_type;
-  const id = toIdString(row.basis_id);
-  switch (type) {
-    case "PROPOSITION_COMPOUND": {
-      const entity = PropositionCompoundRef.parse({ id });
-      return { type, entity };
-    }
-    case "SOURCE_EXCERPT": {
-      const entity = SourceExcerptRef.parse({ id });
-      return { type, entity };
-    }
-    case "WRIT_QUOTE": {
-      const entity = WritQuoteRef.parse({ id });
-      return { type, entity };
-    }
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      throw newUnimplementedError(
-        "TODO(28) JustificationBasisCompound is unsupported"
-      );
   }
 }
 
@@ -689,6 +671,7 @@ export const toJustificationScore = (
   row: JustificationScoreRow
 ): JustificationScoreData => row && camelCaseKeysDeep(row);
 
+// TODO(28): remove
 export const toJustificationBasisCompound = (row: any, atoms?: any) => {
   if (!row) {
     return row;

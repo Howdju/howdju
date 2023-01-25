@@ -14,8 +14,8 @@ import {
   Proposition,
   TaggedEntityOut,
   Persisted,
-  JustificationRootTargetType,
   JustificationRootPolarity,
+  Statement,
 } from "howdju-common";
 
 // TODO either rename to JustificationRootTargetRef, replace justifications with hasAgreement and
@@ -51,11 +51,18 @@ export function makeJustificationOutModel(
   return { ...cloneDeep(merged), ...rootTargetStuff } as JustificationOut;
 }
 
-type RootTargetStuff = {
-  rootTargetType: JustificationRootTargetType;
-  rootTarget: Persisted<JustificationRootTarget>;
-  rootPolarity: JustificationRootPolarity;
-};
+// TODO(107): replace with Justification.rootTarget?
+type RootTargetStuff =
+  | {
+      rootTargetType: "PROPOSITION";
+      rootTarget: Persisted<Proposition>;
+      rootPolarity: JustificationRootPolarity;
+    }
+  | {
+      rootTargetType: "STATEMENT";
+      rootTarget: Persisted<Statement>;
+      rootPolarity: JustificationRootPolarity;
+    };
 
 function calcRootTargetStuff(
   justification: JustificationOutOverrides
@@ -71,7 +78,7 @@ function calcRootTargetStuff(
   }
   if (targetType === "JUSTIFICATION") {
     throw newProgrammingError(
-      "Unable to infer justification root target. We ended up at a justification."
+      "Unable to infer justification root target because we ended up at a justification."
     );
   }
   const rootTargetType = targetType;
@@ -80,7 +87,7 @@ function calcRootTargetStuff(
     rootTargetType,
     rootTarget,
     rootPolarity,
-  };
+  } as RootTargetStuff;
 }
 
 export const isVerified = (j: JustificationOut) =>

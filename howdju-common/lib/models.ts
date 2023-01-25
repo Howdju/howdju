@@ -231,6 +231,7 @@ export const makePropositionTagVote = (
 export const makeTagVote = (props: TagVote): TagVote => props;
 export const makeCreateTagVote = makeTagVote;
 
+// TODO(107): replace with Justification.rootTarget?
 type RootTargetInfo = Pick<Justification, "rootTargetType"> & {
   rootTarget: Pick<JustificationRootTarget, "id">;
 };
@@ -554,8 +555,6 @@ const demuxCreateJustificationInputBasis = (
         type: "SOURCE_EXCERPT",
         entity: demuxJustificationBasisSourceExcerptInput(basis.sourceExcerpt),
       };
-    case "JUSTIFICATION_BASIS_COMPOUND":
-      throw newUnimplementedError(`Unsupported basis type: ${basis.type}`);
     default:
       throw newExhaustedEnumError(basis);
   }

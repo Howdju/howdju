@@ -2,7 +2,7 @@ const {
   requireArgs,
   makeNewAccountSettings,
   CreateAccountSettings,
-  EditAccountSettings,
+  UpdateAccountSettings,
 } = require("howdju-common");
 const { EntityService } = require("./EntityService");
 
@@ -12,7 +12,10 @@ exports.AccountSettingsService = class AccountSettingsService extends (
   constructor(logger, authService, accountSettingsDao) {
     requireArgs({ logger, authService, accountSettingsDao });
     super(
-      { createSchema: CreateAccountSettings, editSchema: EditAccountSettings },
+      {
+        createSchema: CreateAccountSettings,
+        updateSchema: UpdateAccountSettings,
+      },
       logger,
       authService
     );

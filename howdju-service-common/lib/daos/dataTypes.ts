@@ -18,7 +18,7 @@ import {
   JustificationTargetType,
   JustificationVote,
   JustificationVotePolarity,
-  JustificationWithRootRef,
+  PersistedJustificationWithRootRef,
   PasswordResetRequest,
   Persisted,
   PersistedOrRef,
@@ -38,6 +38,8 @@ import {
   UserRef,
   Writ,
   WritQuote,
+  EntityId,
+  BasedJustificationWithRootRef,
 } from "howdju-common";
 import { Moment } from "moment";
 import { toIdString } from "./daosUtil";
@@ -138,19 +140,30 @@ export interface JustificationRow {
   // TODO do we ever populate this?
   score?: number;
 }
+
 export type CreateJustificationDataIn = PersistRelated<CreateJustification> & {
   rootTargetType: JustificationRootTargetType;
   rootTarget: EntityRef<JustificationRootTarget>;
 };
 export type CreateJustificationDataOut = Persisted<CreateJustification> & {
   rootPolarity: JustificationRootPolarity;
+  rootTarget: EntityRef<JustificationRootTarget>;
+  rootTargetType: JustificationRootTargetType;
   created: Moment;
   counterJustifications: [];
   creator: UserRef;
 };
-export type ReadJustificationDataOut = JustificationWithRootRef & {
+
+export type BasedJustificationDataOut = BasedJustificationWithRootRef & {
   creator?: CreatorBlurbData | EntityRef<User>;
-  counterJustifications: ReadJustificationDataOut[];
+  counterJustifications: BasedJustificationDataOut[];
+  score?: number;
+  vote?: JustificationVoteData;
+};
+
+export type ReadJustificationDataOut = PersistedJustificationWithRootRef & {
+  creator?: CreatorBlurbData | EntityRef<User>;
+  counterJustifications: BasedJustificationDataOut[];
   score?: number;
   vote?: JustificationVoteData;
 };
@@ -172,6 +185,7 @@ export type ReadPropositionCompoundDataOut = MergeDeep<
   Persisted<PropositionCompound>,
   {
     atoms: {
+      compoundId: EntityId;
       entity: Persisted<Proposition> & {
         rootJustificationCountByPolarity?: Partial<
           Record<"POSITIVE" | "NEGATIVE", number>
@@ -250,7 +264,8 @@ export type UserExternalIdsData = UserExternalIds;
 
 /** A short description of a user attached to something the user created to show authorship. */
 export type CreatorBlurbRow = Pick<UserRow, "user_id" | "long_name">;
-export type CreatorBlurbData = Pick<Persisted<User>, "id" | "longName">;
+export type CreatorBlurbData = EntityRef<User> &
+  Pick<Persisted<User>, "longName">;
 
 export interface UserHashRow {
   user_id: number;

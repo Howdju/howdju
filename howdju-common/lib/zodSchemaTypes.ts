@@ -49,7 +49,40 @@ import {
 const PersistedEntity = Entity.required();
 type PersistedEntity = z.infer<typeof PersistedEntity>;
 
-export type JustificationWithRootRef = Omit<
+/**
+ * A persisted justification with ref root target.
+ */
+export type PersistedJustificationWithRootRef = Omit<
+  Persisted<Justification>,
+  "rootTarget" | "target" | "basis"
+> & {
+  rootTarget: EntityRef<JustificationRootTarget>;
+  target:
+    | {
+        type: "PROPOSITION";
+        entity: Persisted<Proposition>;
+      }
+    | {
+        type: "STATEMENT";
+        entity: Persisted<Statement>;
+      }
+    | {
+        type: "JUSTIFICATION";
+        entity: PersistedJustificationWithRootRef;
+      };
+  basis:
+    | {
+        type: "PROPOSITION_COMPOUND";
+        entity: Persisted<PropositionCompound>;
+      }
+    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
+    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
+};
+
+/**
+ * A persisted justification with materialized basis and ref targets.
+ */
+export type BasedJustificationWithRootRef = Omit<
   Persisted<Justification>,
   "rootTarget" | "target" | "basis"
 > & {
@@ -65,15 +98,16 @@ export type JustificationWithRootRef = Omit<
       }
     | {
         type: "JUSTIFICATION";
-        entity: JustificationWithRootRef | Ref<EntityName<Justification>>;
+        // TODO(228) remove EntityRef<Justification>
+        entity: BasedJustificationWithRootRef | EntityRef<Justification>;
       };
   basis:
     | {
         type: "PROPOSITION_COMPOUND";
-        entity: PersistedOrRef<PropositionCompound>;
+        entity: Persisted<PropositionCompound>;
       }
-    | { type: "SOURCE_EXCERPT"; entity: PersistedOrRef<SourceExcerpt> }
-    | { type: "WRIT_QUOTE"; entity: PersistedOrRef<WritQuote> };
+    | { type: "SOURCE_EXCERPT"; entity: Persisted<SourceExcerpt> }
+    | { type: "WRIT_QUOTE"; entity: Persisted<WritQuote> };
 };
 
 /**
@@ -93,7 +127,9 @@ export type EntityName<T> = T extends Proposition
   ? "Justification"
   : T extends CreateJustificationInput
   ? "Justification"
-  : T extends JustificationWithRootRef
+  : T extends PersistedJustificationWithRootRef
+  ? "Justification"
+  : T extends BasedJustificationWithRootRef
   ? "Justification"
   : T extends JustificationVote
   ? "JustificationVote"
@@ -168,9 +204,25 @@ export type PersistRelated<T> = {
     : T[key];
 };
 
+/** A persisted entity that may be only a Ref.
+ *
+ * This type will definitely have an ID, but may not have other fields.
+ */
 export type PersistedOrRef<T extends Entity> =
   | Ref<EntityName<T>>
   | Persisted<T>;
+/**
+ * Recursively transforms Entities on T to PersistedOrRef.
+ *
+ * Prefer PersistedOrRef if you know that T is an Entity.
+ */
+export type PersistOrRef<T> = T extends Entity
+  ? PersistedOrRef<T>
+  : {
+      [key in keyof T]: T[key] extends Entity
+        ? PersistedOrRef<T[key]>
+        : PersistOrRef<T[key]>;
+    };
 
 export function isRef<T extends Entity>(e: EntityOrRef<T>): e is EntityRef<T> {
   const keys = Object.keys(e);

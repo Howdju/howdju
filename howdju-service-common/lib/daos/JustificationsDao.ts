@@ -10,7 +10,6 @@ import snakeCase from "lodash/snakeCase";
 import {
   assert,
   isDefined,
-  doTargetSameRoot,
   JustificationBasisCompoundAtomTypes,
   JustificationBasisTypes,
   JustificationPolarities,
@@ -32,6 +31,8 @@ import {
   filterDefined,
   JustificationRef,
   UserRef,
+  JustificationFilters,
+  SortDescription,
 } from "howdju-common";
 
 import {
@@ -71,8 +72,9 @@ import {
   PropositionCompoundRow,
   WritQuoteData,
   PropositionCompoundAtomRow,
+  BasedJustificationDataOut,
 } from "./dataTypes";
-import { SortDescription, SqlClause, JustificationFilters } from "./daoTypes";
+import { SqlClause } from "./daoTypes";
 import { Moment } from "moment";
 import { fromPairs, sortBy } from "lodash";
 
@@ -478,9 +480,14 @@ export class JustificationsDao {
       targetPropositionRows
     );
 
+    // TODO(228) convert this to a map where the result of the map always has a target, and so is a ReadJustificationDataOut.
     forEach(justifications, (justification) => {
       switch (justification.target.type) {
         case JustificationTargetTypes.JUSTIFICATION: {
+          // TODO(228) topologically sort the justifications using targets as edges and map them in order.
+          // BasedJustificationDataOut should not be directly assignable to
+          // PersistedJustificationWithRootRef because there's no guarantee we've set the target of
+          // right-hand side to a materialized target.
           justification.target.entity =
             targetJustificationsById[justification.target.entity.id];
           break;
@@ -500,8 +507,8 @@ export class JustificationsDao {
     });
 
     if (justifications.length) {
-      // Add the statements here at the end; it is too much trouble to add them into the joins above;
-      // we can add them into the joins, if that makes sense, after we remove the deprecated justification basis types
+      // TODO(228) add statement targets similarly to how we handle justifications and propositions above
+      // (add targetStatementsById)
       await this.addStatements(justifications);
       if (includeUrls) {
         await this.addUrls(justifications);
@@ -509,14 +516,16 @@ export class JustificationsDao {
       }
     }
 
-    return justifications;
+    // TODO(288) remove this cast after converting the forEach to a map above and ensuring all targets
+    // are set after the map.
+    return justifications as ReadJustificationDataOut[];
   }
 
   async readJustificationsForRootTarget(
     rootTargetType: JustificationRootTargetType,
     rootTargetId: EntityId,
-    { userId }: { userId: EntityId }
-  ) {
+    userId: EntityId
+  ): Promise<BasedJustificationDataOut[]> {
     const sql = `
       with
         extant_users as (select * from users where deleted is null)
@@ -624,7 +633,9 @@ export class JustificationsDao {
     return justifications;
   }
 
-  async readJustificationForId(justificationId: EntityId) {
+  async readJustificationForId(
+    justificationId: EntityId
+  ): Promise<ReadJustificationDataOut | undefined> {
     const [justification] = await this.readJustifications(
       { justificationId },
       [],
@@ -635,9 +646,14 @@ export class JustificationsDao {
     return justification;
   }
 
-  async readJustificationEquivalentTo(justification: ReadJustificationDataOut) {
+  async readJustificationEquivalentTo(
+    justification: Omit<
+      CreateJustificationDataIn,
+      "rootTarget" | "rootTargetType"
+    >
+  ) {
     const sql = `
-      select * from justifications j where
+      select justification_id from justifications j where
             j.deleted is null
         and j.target_type = $1
         and j.target_id = $2
@@ -652,27 +668,16 @@ export class JustificationsDao {
       justification.basis.type,
       justification.basis.entity.id,
     ];
-    const { rows } = await this.database.query<ToJustificationMapperRow>(
+    const { rows } = await this.database.query<JustificationRow>(
       "readJustificationEquivalentTo",
       sql,
       args
     );
-    const equivalentJustification = toJustification(head(rows));
-    assert(
-      () =>
-        !equivalentJustification ||
-        doTargetSameRoot(equivalentJustification, justification),
-      () =>
-        `justification's (${justification.id}) rootTarget ${justification.rootTargetType} ` +
-        `${justification.rootTarget.id} does not equal equivalent justification's ` +
-        `(${equivalentJustification?.id}) rootTarget ${justification.rootTargetType} ` +
-        `${equivalentJustification?.rootTarget.id}`
-    );
-    const justification_1 = equivalentJustification;
-    if (justification_1) {
-      await this.addStatements([justification_1]);
+    if (!rows.length) {
+      return undefined;
     }
-    return justification_1;
+    const [{ justification_id }] = rows;
+    return this.readJustificationForId(toIdString(justification_id));
   }
 
   private async readRootJustificationCountByPolarityForRoot(
@@ -764,8 +769,11 @@ export class JustificationsDao {
     );
   }
 
-  deleteJustification(justification: DeleteJustificationDataIn, now: Moment) {
-    return this.deleteJustificationById(justification.id, now);
+  async deleteJustification(
+    justification: DeleteJustificationDataIn,
+    now: Moment
+  ) {
+    return await this.deleteJustificationById(justification.id, now);
   }
 
   async deleteJustificationById(justificationId: EntityId, now: Moment) {
@@ -781,7 +789,7 @@ export class JustificationsDao {
     }
     const row = head(rows);
     if (!row) {
-      return null;
+      return undefined;
     }
     return row.justification_id;
   }
@@ -803,7 +811,7 @@ export class JustificationsDao {
     return map(rows, (row) => row.justification_id);
   }
 
-  private async addStatements(justifications: ReadJustificationDataOut[]) {
+  private async addStatements(justifications: BasedJustificationDataOut[]) {
     // Collect all the statements we need to read, as well as the justifications that need them as rootTargets and targets
     const statementIds = new Set();
     const justificationsByRootTargetStatementId = new Map();
@@ -868,7 +876,7 @@ export class JustificationsDao {
     }
   }
 
-  private async addUrls(justifications: ReadJustificationDataOut[]) {
+  private async addUrls(justifications: BasedJustificationDataOut[]) {
     for (const justification of justifications) {
       if (
         justification.basis.type === JustificationBasisTypes.WRIT_QUOTE &&
@@ -881,7 +889,7 @@ export class JustificationsDao {
     }
   }
 
-  private async addUrlTargets(justifications: ReadJustificationDataOut[]) {
+  private async addUrlTargets(justifications: BasedJustificationDataOut[]) {
     const justificationIds = map(justifications, (j) => j.id);
     const urlTargetByUrlIdByWritQuoteId =
       await this.writQuoteUrlTargetsDao.readByUrlIdByWritQuoteIdForJustificationIds(
@@ -1170,7 +1178,7 @@ function mapPropositionRowsById(
 function mapJustificationRows(rows: JustificationRow[], prefix = "") {
   const [justificationsById, orderedJustificationIds] =
     mapJustificationRowsWithOrdering(rows, prefix);
-  const orderedJustifications: ReadJustificationDataOut[] = [];
+  const orderedJustifications: BasedJustificationDataOut[] = [];
   forEach(orderedJustificationIds, (justificationId) => {
     orderedJustifications.push(justificationsById[justificationId]);
   });
@@ -1180,7 +1188,7 @@ function mapJustificationRows(rows: JustificationRow[], prefix = "") {
 function mapJustificationRowsWithOrdering(
   rows: JustificationRow[],
   prefix = ""
-): [Record<EntityId, ReadJustificationDataOut>, EntityId[]] {
+): [Record<EntityId, BasedJustificationDataOut>, EntityId[]] {
   // Keep track of the order so that we can efficiently put them back in order
   const orderedJustificationIds: EntityId[] = [];
   const justificationRowsById: Record<EntityId, ToJustificationMapperRow> = {};

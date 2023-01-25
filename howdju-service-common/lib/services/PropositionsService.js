@@ -94,7 +94,9 @@ exports.PropositionsService = class PropositionsService {
     return Promise.resolve()
       .then(
         () =>
-          userId || this.authService.readOptionalUserIdForAuthToken(authToken)
+          userId ||
+          (authToken &&
+            this.authService.readOptionalUserIdForAuthToken(authToken))
       )
       .then((userId) =>
         Promise.all([

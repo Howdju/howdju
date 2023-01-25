@@ -62,7 +62,7 @@ exports.RootTargetJustificationsService = class RootTargetJustificationsService 
       await this.justificationsService.readJustificationsForRootTarget(
         rootTargetType,
         rootTargetId,
-        { userId }
+        userId
       );
     rootTarget.justifications = justifications;
     return rootTarget;

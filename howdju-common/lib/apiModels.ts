@@ -13,15 +13,24 @@ import {
   CreateProposition,
   Entity,
   Justification,
+  JustificationRef,
   JustificationVote,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
+  Statement,
   Tag,
   TagVote,
+  User,
+  WritQuote,
 } from "./zodSchemas";
-import { Persisted, PersistRelated } from "./zodSchemaTypes";
+import {
+  EntityRef,
+  Persisted,
+  PersistedJustificationWithRootRef,
+  PersistRelated,
+} from "./zodSchemaTypes";
 
 /**
  * An out model representing errors for any CRUD action.
@@ -67,13 +76,20 @@ export interface PropositionOut
   propositionTagVotes?: PropositionTagVoteOut[];
 }
 
-export type JustificationOut = Persisted<Justification> & {
+export type WritQuoteOut = Persisted<WritQuote>;
+
+export type StatementOut = Persisted<Statement>;
+
+export type CreatorBlurb = EntityRef<User> & Pick<Persisted<User>, "longName">;
+
+export type JustificationOut = PersistedJustificationWithRootRef & {
+  creator?: EntityRef<User>;
+  /** Justifications countering this justification. */
+  counterJustifications?: (JustificationRef | JustificationOut)[];
+  /** The sorting score for the current user */
+  score?: number;
   /** The current user's vote on this justification. */
   vote?: JustificationVote;
-  // The sorting score for the current user
-  score?: number;
-  // Justifications countering this justification.
-  counterJustifications?: JustificationOut[];
 };
 
 export type PropositionCompoundOut = Persisted<PropositionCompound>;
@@ -92,3 +108,32 @@ export type TaggedEntityOut<T extends Entity = Entity> = Persisted<T> & {
   tagVotes?: TagVoteViewModel[];
   recommendedTags?: Tag[];
 };
+
+export type JustificationFilterName =
+  | typeof ExternalJustificationSearchFilters[number]
+  | "justificationId";
+export type JustificationFilters = Partial<
+  Record<JustificationFilterName, string>
+>;
+
+/** The justification search filters that clients can send. */
+export const ExternalJustificationSearchFilters = [
+  "writQuoteId",
+  "writId",
+  // Justifications based on this PropositionCompound
+  "propositionCompoundId",
+  "sourceExcerptParaphraseId",
+  // Justifications based on this proposition in a PropositionCompound
+  "propositionId",
+  "url",
+] as const;
+export type JustificationSearchFilters = {
+  [key in typeof ExternalJustificationSearchFilters[number]]?: string;
+};
+
+export interface SortDescription {
+  property: string;
+  direction: "ascending" | "descending";
+  /** For continuations, the sort should filter out this value and any before it according to `direction`. */
+  value?: string;
+}

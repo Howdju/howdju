@@ -23,6 +23,7 @@ import {
   JustificationTargetType,
   JustificationOut,
   makeCreateJustificationInputTargetingRoot,
+  JustificationRef,
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
 
@@ -299,13 +300,23 @@ function describeRootTargetType(rootTargetType: JustificationRootTargetType) {
   return toLower(rootTargetType);
 }
 
-const sortJustifications = (justifications?: JustificationOut[]) => {
-  justifications = sortBy(justifications, (j) => j.score);
+const sortJustifications = (
+  justifications?: (JustificationRef | JustificationOut)[]
+) => {
+  // Sort JustificationRefs to the bottom
   justifications = sortBy(justifications, (j) =>
-    isDisverified(j) ? 1 : isVerified(j) ? -1 : 0
+    "score" in j ? j.score : Number.MAX_VALUE
   );
+  justifications = sortBy(justifications, (j) => {
+    if ("score" in j) {
+      return isDisverified(j) ? 1 : isVerified(j) ? -1 : 0;
+    }
+    return 2;
+  });
   forEach(justifications, (j) => {
-    j.counterJustifications = sortJustifications(j.counterJustifications);
+    if ("score" in j) {
+      j.counterJustifications = sortJustifications(j.counterJustifications);
+    }
   });
   return justifications;
 };

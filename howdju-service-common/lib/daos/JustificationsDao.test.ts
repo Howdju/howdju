@@ -18,7 +18,9 @@ import {
   PersorgsDao,
   PropositionsDao,
   StatementsService,
+  PropositionCompoundsService,
   UsersDao,
+  WritQuotesService,
 } from "..";
 import TestProvider from "@/initializers/TestProvider";
 import { CreateJustificationDataIn } from "./dataTypes";
@@ -27,9 +29,15 @@ import {
   negateRootPolarity,
   PropositionCompoundRef,
   StatementRef,
-  WritQuoteRef,
+  SortDescription,
+  CreatePropositionCompound,
+  CreateWritQuote,
+  EntityId,
+  PropositionCompound,
+  Persisted,
+  AuthToken,
+  User,
 } from "howdju-common";
-import { SortDescription } from "./daoTypes";
 
 describe("JustificationsDao", () => {
   const dbConfig = makeTestDbConfig();
@@ -41,6 +49,8 @@ describe("JustificationsDao", () => {
   let propositionsDao: PropositionsDao;
   let usersDao: UsersDao;
   let authService: AuthService;
+  let propositionCompoundsService: PropositionCompoundsService;
+  let writQuotesService: WritQuotesService;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
@@ -55,6 +65,8 @@ describe("JustificationsDao", () => {
     propositionsDao = (provider as any).propositionsDao;
     usersDao = (provider as any).usersDao;
     authService = (provider as any).authService;
+    propositionCompoundsService = (provider as any).propositionCompoundsService;
+    writQuotesService = (provider as any).writQuotesService;
   });
   afterEach(async () => {
     await pool.end();
@@ -105,56 +117,28 @@ describe("JustificationsDao", () => {
   describe("readJustificationForId", () => {
     test("reads a justification for an ID", async () => {
       // Arrange
-      const now = moment();
-      const creatorUserId = null;
-      const userData = {
-        email: "user@domain.com",
-        username: "the-username",
-        isActive: true,
-      };
+      const { user, authToken } = await makeUser();
+      const statementData = await makeStatement({ user, authToken });
 
-      const user = await usersDao.createUser(userData, creatorUserId, now);
-      const { authToken } = await authService.createAuthToken(user, now);
-
-      const proposition = await propositionsDao.createProposition(
-        user.id,
-        {
-          text: "A fine wee proposition.",
-        },
-        now
-      );
-      const speaker = await persorgsDao.createPersorg(
-        {
-          isOrganization: false,
-          name: "Williford von Rutherford",
-        },
-        user.id,
-        now
-      );
-      const createStatementData = {
-        speaker,
-        sentenceType: "PROPOSITION",
-        sentence: proposition,
-      };
-      const { statement: statementData } = await statementsService.readOrCreate(
-        createStatementData,
-        authToken
-      );
-      const { id: statementId } = statementData;
+      const propositionCompound = await makePropositionCompound({
+        userId: user.id,
+      });
 
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType: "STATEMENT",
-        rootTarget: StatementRef.parse({ id: statementId }),
+        rootTarget: StatementRef.parse({ id: statementData.id }),
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: statementId }),
+          entity: StatementRef.parse({ id: statementData.id }),
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound,
         },
       };
+
+      const now = moment();
       const { id } = await dao.createJustification(
         createJustificationData,
         user.id,
@@ -173,55 +157,31 @@ describe("JustificationsDao", () => {
         rootPolarity: createJustificationData.polarity,
         rootTarget: expectToBeSameMomentDeep(statementData),
       });
-      expect(justificationData.creator).toEqual(
+      expect(justificationData).toMatchObject(expectedJustificationData);
+      expect(justificationData?.creator).toEqual(
         expectedJustificationData.creator
       );
-      expect(justificationData).toMatchObject(expectedJustificationData);
     });
   });
 
   describe("readJustifications", () => {
     test("reads justifications", async () => {
       // Arrange
-      const now = moment();
-      const creatorUserId = null;
-      const userData = {
-        email: "user@domain.com",
-        username: "the-username",
-        isActive: true,
-      };
+      const { user, authToken } = await makeUser();
 
-      const user = await usersDao.createUser(userData, creatorUserId, now);
-      const { authToken } = await authService.createAuthToken(user, now);
-
-      const proposition = await propositionsDao.createProposition(
-        user.id,
-        {
-          text: "A fine wee proposition.",
-        },
-        now
-      );
-      const speaker = await persorgsDao.createPersorg(
-        {
-          isOrganization: false,
-          name: "Williford von Rutherford",
-        },
-        user.id,
-        now
-      );
-      const createStatementData = {
-        speaker,
-        sentenceType: "PROPOSITION",
-        sentence: proposition,
-      };
-      const { statement: statementData } = await statementsService.readOrCreate(
-        createStatementData,
-        authToken
-      );
-      const { id: statementId } = statementData;
+      const statementData = await makeStatement({ user, authToken });
 
       const rootTargetType = "STATEMENT";
-      const rootTarget = StatementRef.parse({ id: statementId });
+      const rootTarget = StatementRef.parse({ id: statementData.id });
+
+      const propositionCompound1 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 1",
+      });
+      const propositionCompound2 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 2",
+      });
 
       const createJustificationData: CreateJustificationDataIn = {
         rootTargetType,
@@ -229,13 +189,14 @@ describe("JustificationsDao", () => {
         polarity: "NEGATIVE",
         target: {
           type: "STATEMENT",
-          entity: StatementRef.parse({ id: statementId }),
+          entity: StatementRef.parse({ id: statementData.id }),
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound1,
         },
       };
+      const now = moment();
       const { id: justificationId } = await dao.createJustification(
         createJustificationData,
         user.id,
@@ -252,7 +213,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound2,
         },
       };
       await dao.createJustification(
@@ -300,52 +261,30 @@ describe("JustificationsDao", () => {
         expectedCounterJustificationData,
       ]);
     });
-  });
 
-  describe("readJustificationsForRootTarget", () => {
-    test("read justifications for proposition root target", async () => {
+    test("read pro and con justifications", async () => {
       // Create a countered writquote justification and a proposition compound disjustification
       // Arrange
-      const now = moment();
-      const creatorUserId = null;
-      const userData = {
-        email: "user@domain.com",
-        username: "the-username",
-        isActive: true,
-      };
+      const { user, authToken } = await makeUser();
 
-      const user = await usersDao.createUser(userData, creatorUserId, now);
-      const { authToken } = await authService.createAuthToken(user, now);
-
-      const proposition = await propositionsDao.createProposition(
-        user.id,
-        {
-          text: "A fine wee proposition.",
-        },
-        now
-      );
-      const speaker = await persorgsDao.createPersorg(
-        {
-          isOrganization: false,
-          name: "Williford von Rutherford",
-        },
-        user.id,
-        now
-      );
-      const createStatementData = {
-        speaker,
-        sentenceType: "PROPOSITION",
-        sentence: proposition,
-      };
-      const { statement: statementData } = await statementsService.readOrCreate(
-        createStatementData,
-        authToken
-      );
-      const { id: statementId } = statementData;
+      const statementData = await makeStatement({ user, authToken });
+      const statementId = statementData.id;
 
       const rootTargetType = "STATEMENT";
       const rootTarget = StatementRef.parse({ id: statementId });
 
+      const writQuote = await makeWritQuote({ authToken });
+
+      const propositionCompound1 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 1",
+      });
+      const propositionCompound2 = await makePropositionCompound({
+        userId: user.id,
+        text: "What if a much of a wind 2",
+      });
+
+      const now = moment();
       const createProjustificationData: CreateJustificationDataIn = {
         rootTargetType,
         rootTarget,
@@ -356,7 +295,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "WRIT_QUOTE",
-          entity: WritQuoteRef.parse({ id: "2" }),
+          entity: writQuote,
         },
       };
       const { id: projustificationId } = await dao.createJustification(
@@ -374,7 +313,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound1,
         },
       };
       const { id: counterJustificationId } = await dao.createJustification(
@@ -393,7 +332,7 @@ describe("JustificationsDao", () => {
         },
         basis: {
           type: "PROPOSITION_COMPOUND",
-          entity: PropositionCompoundRef.parse({ id: "2" }),
+          entity: propositionCompound2,
         },
       };
       const { id: disjustificationId } = await dao.createJustification(
@@ -457,4 +396,94 @@ describe("JustificationsDao", () => {
       ]);
     });
   });
+
+  async function makeUser() {
+    const now = moment();
+    const creatorUserId = null;
+    const userData = {
+      email: "user@domain.com",
+      username: "the-username",
+      isActive: true,
+    };
+
+    const user = await usersDao.createUser(userData, creatorUserId, now);
+    const { authToken } = await authService.createAuthToken(user, now);
+    return { user, authToken };
+  }
+
+  async function makeStatement({
+    user,
+    authToken,
+  }: {
+    user: User;
+    authToken: AuthToken;
+  }) {
+    const now = moment();
+    const proposition = await propositionsDao.createProposition(
+      user.id,
+      {
+        text: "A fine wee proposition.",
+      },
+      now
+    );
+    const speaker = await persorgsDao.createPersorg(
+      {
+        isOrganization: false,
+        name: "Williford von Rutherford",
+      },
+      user.id,
+      now
+    );
+    const createStatementData = {
+      speaker,
+      sentenceType: "PROPOSITION",
+      sentence: proposition,
+    };
+    const { statement } = await statementsService.readOrCreate(
+      createStatementData,
+      authToken
+    );
+    return statement;
+  }
+
+  async function makePropositionCompound({
+    userId,
+    text = "Socrates is mortal",
+  }: {
+    userId: EntityId;
+    text?: string;
+  }): Promise<Persisted<PropositionCompound>> {
+    const now = moment();
+    const createPropositionCompound: CreatePropositionCompound = {
+      atoms: [
+        {
+          entity: {
+            text,
+          },
+        },
+      ],
+    };
+    const { propositionCompound } =
+      await propositionCompoundsService.createValidPropositionCompoundAsUser(
+        createPropositionCompound,
+        userId,
+        now
+      );
+    return propositionCompound;
+  }
+
+  async function makeWritQuote({ authToken }: { authToken: AuthToken }) {
+    const createWritQuote: CreateWritQuote = {
+      quoteText: "What if a much of a wind",
+      writ: {
+        title: "Leaves of grass",
+      },
+      urls: [],
+    };
+    const { writQuote } = await writQuotesService.createWritQuote({
+      authToken,
+      writQuote: createWritQuote,
+    });
+    return writQuote;
+  }
 });
