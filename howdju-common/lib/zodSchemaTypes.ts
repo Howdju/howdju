@@ -47,7 +47,7 @@ import {
 } from "./zodSchemas";
 
 const PersistedEntity = Entity.required();
-type PersistedEntity = z.infer<typeof PersistedEntity>;
+export type PersistedEntity = z.infer<typeof PersistedEntity>;
 
 /**
  * A persisted justification with ref root target.
@@ -190,9 +190,8 @@ export type EntityRef<T extends Entity> = T extends Ref<string>
   : Ref<EntityName<T>>;
 
 /** Makes an Entity's ID required and all related entities can be refs. */
-export type Persisted<T extends Entity> = {
-  id: string;
-} & EntityRef<T> &
+export type Persisted<T extends Entity> = PersistedEntity &
+  EntityRef<T> &
   PersistRelated<Omit<T, "id">>;
 export type PersistRelated<T> = {
   [key in keyof T]: T[key] extends Entity

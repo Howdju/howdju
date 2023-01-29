@@ -1,6 +1,6 @@
 import { ValidationError } from "joi";
 import { z } from "zod";
-import { zodIssueFormatter, ZodCustomIssueFormat } from "howdju-common";
+import { ModelErrors, zodIssueFormatter } from "howdju-common";
 
 /**
  * Converts a Joi error to Zod's error format.
@@ -8,7 +8,7 @@ import { zodIssueFormatter, ZodCustomIssueFormat } from "howdju-common";
  */
 export function translateJoiToZodFormattedError<T>(
   joiError: ValidationError
-): z.ZodFormattedError<T, ZodCustomIssueFormat> {
+): ModelErrors<T> {
   const issues: z.ZodIssue[] = joiError.details.map(({ path, message }) => ({
     code: z.ZodIssueCode.custom,
     path,

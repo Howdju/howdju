@@ -17,6 +17,7 @@ import {
   Logger,
   TopicMessageSender,
   topicMessages,
+  formatZodError,
 } from "howdju-common";
 
 import { HashTypes } from "../hashTypes";
@@ -32,7 +33,7 @@ import { ApiConfig, RegistrationRequestsDao } from "..";
 import {
   CreateRegistrationRequestData,
   CreateUserDataIn,
-} from "@/daos/dataTypes";
+} from "../daos/dataTypes";
 
 export class RegistrationService {
   logger: Logger;
@@ -63,7 +64,7 @@ export class RegistrationService {
     // TODO: we should be able to assume that the input was already validated by the request model validation.
     const result = CreateRegistrationRequest.safeParse(registrationRequest);
     if (!result.success) {
-      throw new EntityValidationError(result.error);
+      throw new EntityValidationError(formatZodError(result.error));
     }
     const { error, hideEmail } = await this.validateRegistrationConflicts(
       registrationRequest
@@ -96,7 +97,10 @@ export class RegistrationService {
   }
 
   /** Reads a registration request by code */
-  async checkRequestForCode(registrationCode: string) {
+  async checkRequestForCode(registrationCode: string | undefined) {
+    if (!registrationCode) {
+      throw new EntityNotFoundError("REGISTRATION_REQUEST");
+    }
     const now = utcNow();
     const registration = await this.registrationRequestsDao.readForCode(
       registrationCode

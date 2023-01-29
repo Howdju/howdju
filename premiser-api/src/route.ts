@@ -1,19 +1,24 @@
-const Promise = require("bluebird");
-const assign = require("lodash/assign");
-const forEach = require("lodash/forEach");
-const isEmpty = require("lodash/isEmpty");
-const isUndefined = require("lodash/isUndefined");
-const split = require("lodash/split");
+import assign from "lodash/assign";
+import forEach from "lodash/forEach";
+import isEmpty from "lodash/isEmpty";
+import isUndefined from "lodash/isUndefined";
+import split from "lodash/split";
+import { toNumber } from "lodash";
 
-const {
+import {
   apiErrorCodes,
   decodeQueryStringObject,
   decodeSorts,
-  httpStatusCodes,
   httpMethods,
   JustificationRootTargetTypes,
-} = require("howdju-common");
-const {
+  HttpMethod,
+  AuthToken,
+  toJson,
+  Proposition,
+  WritQuote,
+  JustificationSearchFilters,
+} from "howdju-common";
+import {
   AuthenticationError,
   AuthorizationError,
   EntityConflictError,
@@ -23,69 +28,56 @@ const {
   NoMatchingRouteError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
-  rethrowTranslatedErrors,
   RequestValidationError,
   UserActionsConflictError,
   UserIsInactiveError,
-} = require("howdju-service-common");
+  prefixErrorPath,
+} from "howdju-service-common";
 
-const ok = ({ callback, body = {}, headers }) =>
-  callback({
-    httpStatusCode: httpStatusCodes.OK,
-    headers,
-    body,
-  });
-/* eslint-disable no-unused-vars */
-const noContent = (appProvider, args) => {
-  // NO CONTENT must not have a body. https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204
-  if (args.body)
-    appProvider.logger.error("noContent may not return a body.  Ignoring body");
-  return args.callback({
-    httpStatusCode: httpStatusCodes.NO_CONTENT,
-  });
+import {
+  badRequest,
+  conflict,
+  error,
+  notFound,
+  ok,
+  unauthenticated,
+  unauthorized,
+} from "./responses";
+import { AppProvider } from "./init";
+import { Callback } from "./types";
+
+type Route = {
+  id: string;
+  method: HttpMethod;
+  path?: string | RegExp;
+  /** Limits the handler to routes matching these parameters */
+  queryStringParameters?: Record<string, string | RegExp>;
+  handler: Handler;
 };
-const notFound = ({ callback, body }) =>
-  callback({
-    httpStatusCode: httpStatusCodes.NOT_FOUND,
-    body,
-  });
-const unauthenticated = ({
-  callback,
-  body = { errorCode: apiErrorCodes.UNAUTHENTICATED },
-}) =>
-  callback({
-    httpStatusCode: httpStatusCodes.UNAUTHORIZED,
-    body,
-  });
-const unauthorized = ({ callback, body }) =>
-  callback({
-    httpStatusCode: httpStatusCodes.FORBIDDEN,
-    body,
-  });
-const badRequest = ({ callback, body }) =>
-  callback({
-    httpStatusCode: httpStatusCodes.BAD_REQUEST,
-    body,
-  });
-const error = ({ callback, body }) =>
-  callback({
-    httpStatusCode: httpStatusCodes.ERROR,
-    body,
-  });
-const conflict = ({ callback, body }) =>
-  callback({
-    httpStatusCode: httpStatusCodes.CONFLICT,
-    body,
-  });
-/* eslint-enable no-unused-vars */
 
-const routes = [
+type Handler = (
+  appProvider: AppProvider,
+  { callback, request }: { callback: Callback; request: Request }
+) => ReturnType<typeof callback>;
+
+export type Request = {
+  path: string;
+  method: HttpMethod;
+  queryStringParameters: Record<string, string | undefined>;
+  pathParameters: string[];
+  authToken: AuthToken | undefined;
+  // TODO(1) add a generic parameter `Body extends Record<string, any>`.
+  body: Record<string, any>;
+};
+
+export const routes: Route[] = [
   /*
    * Options
    */
   {
+    id: "options",
     method: httpMethods.OPTIONS,
-    handler: (appProvider, { callback }) => ok({ callback }),
+    handler: (_appProvider, { callback }) => ok({ callback }),
   },
 
   /*
@@ -95,7 +87,7 @@ const routes = [
     id: "searchPropositions",
     path: "search-propositions",
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -103,18 +95,17 @@ const routes = [
           queryStringParameters: { searchText },
         },
       }
-    ) =>
-      appProvider.propositionsTextSearcher
-        .search(searchText)
-        .then((rankedPropositions) =>
-          ok({ callback, body: rankedPropositions })
-        ),
+    ) => {
+      const rankedPropositions =
+        await appProvider.propositionsTextSearcher.search(searchText);
+      return ok({ callback, body: rankedPropositions });
+    },
   },
   {
     id: "searchTags",
     path: "search-tags",
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -122,18 +113,17 @@ const routes = [
           queryStringParameters: { searchText },
         },
       }
-    ) =>
-      appProvider.tagsService
-        .readTagsLikeTagName(searchText)
-        .then((rankedPropositions) =>
-          ok({ callback, body: rankedPropositions })
-        ),
+    ) => {
+      const rankedPropositions =
+        await appProvider.tagsService.readTagsLikeTagName(searchText);
+      return ok({ callback, body: rankedPropositions });
+    },
   },
   {
     id: "searchWrits",
     path: "search-writs",
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -141,10 +131,12 @@ const routes = [
           queryStringParameters: { searchText },
         },
       }
-    ) =>
-      appProvider.writsTitleSearcher
-        .search(searchText)
-        .then((rankedWrits) => ok({ callback, body: rankedWrits })),
+    ) => {
+      const rankedWrits = await appProvider.writsTitleSearcher.search(
+        searchText
+      );
+      return ok({ callback, body: rankedWrits });
+    },
   },
   {
     id: "searchPersorgs",
@@ -169,7 +161,7 @@ const routes = [
     id: "mainSearch",
     path: "search",
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -177,17 +169,17 @@ const routes = [
           queryStringParameters: { searchText },
         },
       }
-    ) =>
-      appProvider.mainSearchService
-        .search(searchText)
-        .then((results) => ok({ callback, body: results })),
+    ) => {
+      const results = await appProvider.mainSearchService.search(searchText);
+      return ok({ callback, body: results });
+    },
   },
 
   {
     id: "readTag",
     path: new RegExp("^tags/([^/]+)$"),
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -195,10 +187,10 @@ const routes = [
           pathParameters: [tagId],
         },
       }
-    ) =>
-      appProvider.tagsService
-        .readTagForId(tagId)
-        .then((tag) => ok({ callback, body: { tag } })),
+    ) => {
+      const tag = await appProvider.tagsService.readTagForId(tagId);
+      return ok({ callback, body: { tag } });
+    },
   },
 
   /*
@@ -209,7 +201,7 @@ const routes = [
     path: "propositions",
     method: httpMethods.GET,
     queryStringParameters: { tagId: /.+/ },
-    handler: (
+    handler: async (
       appProvider,
       {
         request: {
@@ -218,16 +210,19 @@ const routes = [
         },
         callback,
       }
-    ) =>
-      appProvider.propositionsService
-        .readPropositionsForTagId(tagId, { authToken })
-        .then((propositions) => ok({ callback, body: { propositions } })),
+    ) => {
+      const propositions =
+        await appProvider.propositionsService.readPropositionsForTagId(tagId, {
+          authToken,
+        });
+      return ok({ callback, body: { propositions } });
+    },
   },
   {
     id: "readPropositions",
     path: "propositions",
     method: httpMethods.GET,
-    handler: (appProvider, { request, callback }) => {
+    handler: async (appProvider, { request, callback }) => {
       const {
         sorts: encodedSorts,
         continuationToken,
@@ -237,15 +232,22 @@ const routes = [
       const sorts = decodeSorts(encodedSorts);
       if (propositionIdsParam) {
         const propositionIds = split(propositionIdsParam, ",");
-        return appProvider.propositionsService
-          .readPropositionsForIds(propositionIds)
-          .then((propositions) => ok({ callback, body: { propositions } }));
-      } else {
-        return appProvider.propositionsService
-          .readPropositions({ sorts, continuationToken, count })
-          .then(({ propositions, continuationToken }) =>
-            ok({ callback, body: { propositions, continuationToken } })
+        const propositions =
+          await appProvider.propositionsService.readPropositionsForIds(
+            propositionIds
           );
+        return ok({ callback, body: { propositions } });
+      } else {
+        const { propositions, continuationToken: newContinuationToken } =
+          await appProvider.propositionsService.readPropositions({
+            sorts,
+            continuationToken: continuationToken as any,
+            count: count as any,
+          });
+        return ok({
+          callback,
+          body: { propositions, continuationToken: newContinuationToken },
+        });
       }
     },
   },
@@ -253,29 +255,25 @@ const routes = [
     id: "createProposition",
     path: "propositions",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { proposition },
-          method,
-          path,
+          body: { proposition: createProposition },
         },
       }
-    ) =>
-      appProvider.propositionsService
-        .readOrCreateProposition(authToken, proposition)
-        .then(({ proposition, isExtant }) =>
-          ok({ callback, body: { proposition, isExtant } })
-        )
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          UserActionsConflictError,
-          rethrowTranslatedErrors("proposition")
-        ),
+    ) => {
+      const { proposition, isExtant } = await prefixErrorPath(
+        appProvider.propositionsService.readOrCreateProposition(
+          authToken,
+          createProposition
+        ) as Promise<{ isExtant: boolean; proposition: Proposition }>,
+        "proposition"
+      );
+      return ok({ callback, body: { proposition, isExtant } });
+    },
   },
   {
     id: "readProposition",
@@ -283,7 +281,7 @@ const routes = [
     method: httpMethods.GET,
     // explicitly no query string parameters
     queryStringParameters: {},
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -292,40 +290,44 @@ const routes = [
           authToken,
         },
       }
-    ) =>
-      appProvider.propositionsService
-        .readPropositionForId(propositionId, { authToken })
-        .then((proposition) => ok({ callback, body: { proposition } })),
+    ) => {
+      const proposition =
+        await appProvider.propositionsService.readPropositionForId(
+          propositionId,
+          { authToken, userId: undefined }
+        );
+      return ok({ callback, body: { proposition } });
+    },
   },
   {
     id: "updateProposition",
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.PUT,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { proposition },
+          body: { proposition: updateProposition },
         },
       }
-    ) =>
-      appProvider.propositionsService
-        .updateProposition(authToken, proposition)
-        .then((proposition) => ok({ callback, body: { proposition } }))
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          UserActionsConflictError,
-          rethrowTranslatedErrors("proposition")
+    ) => {
+      const proposition = await prefixErrorPath(
+        appProvider.propositionsService.updateProposition(
+          authToken,
+          updateProposition
         ),
+        "proposition"
+      );
+      return ok({ callback, body: { proposition } });
+    },
   },
   {
     id: "deleteProposition",
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.DELETE,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -334,11 +336,16 @@ const routes = [
           pathParameters: [propositionId],
         },
       }
-    ) =>
-      appProvider.propositionsService
-        .deleteProposition(authToken, propositionId)
-        .then(() => ok({ callback }))
-        .catch(AuthorizationError, rethrowTranslatedErrors("proposition")),
+    ) => {
+      await prefixErrorPath(
+        appProvider.propositionsService.deleteProposition(
+          authToken,
+          propositionId
+        ),
+        "proposition"
+      );
+      return ok({ callback });
+    },
   },
 
   /*
@@ -506,24 +513,22 @@ const routes = [
     id: "updatePersorg",
     path: new RegExp("^persorgs/([^/]+)$"),
     method: httpMethods.PUT,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { persorg },
+          body: { persorg: updatePersorg },
         },
       }
-    ) =>
-      Promise.resolve(appProvider.persorgsService.update(persorg, authToken))
-        .then((persorg) => ok({ callback, body: { persorg } }))
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          UserActionsConflictError,
-          rethrowTranslatedErrors("persorg")
-        ),
+    ) => {
+      const persorg = await prefixErrorPath(
+        appProvider.persorgsService.update(updatePersorg, authToken),
+        "persorg"
+      );
+      return ok({ callback, body: { persorg } });
+    },
   },
 
   /*
@@ -590,7 +595,7 @@ const routes = [
     path: new RegExp("^proposition-compounds/([^/]+)$"),
     method: httpMethods.GET,
     queryStringParameters: {},
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -599,39 +604,14 @@ const routes = [
           authToken,
         },
       }
-    ) =>
-      appProvider.propositionCompoundsService
-        .readPropositionCompoundForId(propositionCompoundId, { authToken })
-        .then((propositionCompound) =>
-          ok({ callback, body: { propositionCompound } })
-        ),
-  },
-
-  /*
-   * Justification basis compounds
-   */
-  {
-    id: "readJustificationBasisCompound",
-    path: new RegExp("^justification-basis-compounds/([^/]+)$"),
-    method: httpMethods.GET,
-    queryStringParameters: {},
-    handler: (
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [justificationBasisCompoundId],
-          authToken,
-        },
-      }
-    ) =>
-      appProvider.justificationBasisCompoundsService
-        .readJustificationBasisCompoundForId(justificationBasisCompoundId, {
-          authToken,
-        })
-        .then((justificationBasisCompound) =>
-          ok({ callback, body: { justificationBasisCompound } })
-        ),
+    ) => {
+      const propositionCompound =
+        await appProvider.propositionCompoundsService.readPropositionCompoundForId(
+          propositionCompoundId,
+          { authToken }
+        );
+      return ok({ callback, body: { propositionCompound } });
+    },
   },
 
   /*
@@ -642,7 +622,7 @@ const routes = [
     path: new RegExp("^source-excerpt-paraphrases/([^/]+)$"),
     method: httpMethods.GET,
     queryStringParameters: {},
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -651,14 +631,16 @@ const routes = [
           authToken,
         },
       }
-    ) =>
-      appProvider.sourceExcerptParaphrasesService
-        .readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, {
-          authToken,
-        })
-        .then((sourceExcerptParaphrase) =>
-          ok({ callback, body: { sourceExcerptParaphrase } })
-        ),
+    ) => {
+      const sourceExcerptParaphrase =
+        await appProvider.sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(
+          sourceExcerptParaphraseId,
+          {
+            authToken,
+          }
+        );
+      return ok({ callback, body: { sourceExcerptParaphrase } });
+    },
   },
 
   /*
@@ -668,28 +650,25 @@ const routes = [
     id: "createJustification",
     path: "justifications",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { justification },
+          body: { justification: createJustification },
         },
       }
-    ) =>
-      Promise.resolve(
-        appProvider.justificationsService.readOrCreate(justification, authToken)
-      )
-        .then(({ justification, isExtant }) =>
-          ok({ callback, body: { justification, isExtant } })
-        )
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          UserActionsConflictError,
-          rethrowTranslatedErrors("justification")
+    ) => {
+      const { justification, isExtant } = await prefixErrorPath(
+        appProvider.justificationsService.readOrCreate(
+          createJustification,
+          authToken
         ),
+        "justification"
+      );
+      return ok({ callback, body: { justification, isExtant } });
+    },
   },
   {
     id: "readJustifications",
@@ -703,15 +682,17 @@ const routes = [
         count,
         includeUrls,
       } = request.queryStringParameters;
-      const filters = decodeQueryStringObject(encodedFilters);
+      const filters =
+        decodeQueryStringObject(encodedFilters) ||
+        ({} as JustificationSearchFilters);
       const sorts = decodeSorts(encodedSorts);
       const { justifications, continuationToken: newContinuationToken } =
         await appProvider.justificationsService.readJustifications({
           filters,
           sorts,
           continuationToken,
-          count,
-          includeUrls,
+          count: toNumber(count),
+          includeUrls: !!includeUrls,
         });
       return ok({
         callback,
@@ -723,22 +704,25 @@ const routes = [
     id: "deleteJustification",
     path: new RegExp("^justifications/([^/]+)$"),
     method: httpMethods.DELETE,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          method,
-          path,
           pathParameters: [justificationId],
         },
       }
-    ) =>
-      appProvider.justificationsService
-        .deleteJustification(authToken, justificationId)
-        .then(() => ok({ callback }))
-        .catch(AuthorizationError, rethrowTranslatedErrors("justification")),
+    ) => {
+      await prefixErrorPath(
+        appProvider.justificationsService.deleteJustification(
+          authToken,
+          justificationId
+        ),
+        "justification"
+      );
+      return ok({ callback });
+    },
   },
 
   /*
@@ -748,52 +732,54 @@ const routes = [
     id: "createWritQuote",
     path: "writ-quotes",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { writQuote },
+          body: { writQuote: createWritQuote },
         },
       }
-    ) =>
-      Promise.resolve(
-        appProvider.writQuotesService.createWritQuote({ authToken, writQuote })
-      )
-        .then(({ writQuote, alreadyExists }) =>
-          ok({ callback, body: { writQuote, alreadyExists } })
-        )
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          UserActionsConflictError,
-          rethrowTranslatedErrors("writQuote")
-        ),
+    ) => {
+      const { writQuote, alreadyExists } = await prefixErrorPath(
+        appProvider.writQuotesService.createWritQuote({
+          authToken,
+          writQuote: createWritQuote,
+        }) as Promise<{ alreadyExists: boolean; writQuote: WritQuote }>,
+        "writQuote"
+      );
+      return ok({ callback, body: { writQuote, alreadyExists } });
+    },
   },
   {
     id: "readWritQuotes",
     path: "writ-quotes",
     method: httpMethods.GET,
-    handler: (appProvider, { request, callback }) => {
+    handler: async (appProvider, { request, callback }) => {
       const {
         sorts: encodedSorts,
         continuationToken,
         count,
       } = request.queryStringParameters;
       const sorts = decodeSorts(encodedSorts);
-      return appProvider.writQuotesService
-        .readWritQuotes({ sorts, continuationToken, count })
-        .then(({ writQuotes, continuationToken }) =>
-          ok({ callback, body: { writQuotes, continuationToken } })
-        );
+      const { writQuotes, continuationToken: newContinuationToken } =
+        await appProvider.writQuotesService.readWritQuotes({
+          sorts,
+          continuationToken,
+          count: toNumber(count),
+        });
+      return ok({
+        callback,
+        body: { writQuotes, continuationToken: newContinuationToken },
+      });
     },
   },
   {
     id: "readWritQuote",
     path: new RegExp("^writ-quotes/([^/]+)$"),
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -803,34 +789,36 @@ const routes = [
         },
       }
     ) => {
-      return appProvider.writQuotesService
-        .readWritQuoteForId(writQuoteId, { authToken })
-        .then((writQuote) => ok({ callback, body: { writQuote } }));
+      const writQuote = await appProvider.writQuotesService.readWritQuoteForId(
+        writQuoteId,
+        { authToken }
+      );
+      return ok({ callback, body: { writQuote } });
     },
   },
   {
     id: "updateWritQuote",
     path: new RegExp("^writ-quotes/([^/]+)$"),
     method: httpMethods.PUT,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { writQuote },
+          body: { writQuote: updateWritQuote },
         },
       }
-    ) =>
-      appProvider.writQuotesService
-        .updateWritQuote({ authToken, writQuote })
-        .then((writQuote) => ok({ callback, body: { writQuote } }))
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          UserActionsConflictError,
-          rethrowTranslatedErrors("writQuote")
-        ),
+    ) => {
+      const writQuote = await prefixErrorPath(
+        appProvider.writQuotesService.updateWritQuote({
+          authToken,
+          writQuote: updateWritQuote,
+        }),
+        "writQuote"
+      );
+      return ok({ callback, body: { writQuote } });
+    },
   },
 
   /*
@@ -840,18 +828,23 @@ const routes = [
     id: "readWrits",
     path: "writs",
     method: httpMethods.GET,
-    handler: (appProvider, { request, callback }) => {
+    handler: async (appProvider, { request, callback }) => {
       const {
         sorts: encodedSorts,
         continuationToken,
         count,
       } = request.queryStringParameters;
       const sorts = decodeSorts(encodedSorts);
-      return appProvider.writsService
-        .readWrits({ sorts, continuationToken, count })
-        .then(({ writs, continuationToken }) =>
-          ok({ callback, body: { writs, continuationToken } })
-        );
+      const { writs, continuationToken: newContinuationToken } =
+        await appProvider.writsService.readWrits({
+          sorts,
+          continuationToken,
+          count: toNumber(count),
+        });
+      return ok({
+        callback,
+        body: { writs, continuationToken: newContinuationToken },
+      });
     },
   },
 
@@ -862,7 +855,7 @@ const routes = [
     id: "login",
     path: "login",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -870,29 +863,33 @@ const routes = [
           body: { credentials },
         },
       }
-    ) =>
-      appProvider.authService
-        .login(credentials)
-        .then(({ user, authToken, expires }) =>
-          ok({ callback, body: { user, authToken, expires } })
-        )
-        .catch(EntityNotFoundError, () => {
+    ) => {
+      try {
+        const { user, authToken, expires } =
+          await appProvider.authService.login(credentials);
+        return ok({ callback, body: { user, authToken, expires } });
+      } catch (err) {
+        if (err instanceof EntityNotFoundError) {
           // Hide EntityNotFoundError to prevent someone from learning that an email does or does not correspond to an account
           throw new InvalidLoginError();
-        }),
+        }
+      }
+    },
   },
   {
     id: "logout",
     path: "logout",
     method: httpMethods.POST,
-    handler: (appProvider, { callback, request: { authToken } }) =>
-      appProvider.authService.logout(authToken).then(() => ok({ callback })),
+    handler: async (appProvider, { callback, request: { authToken } }) => {
+      await appProvider.authService.logout(authToken);
+      return ok({ callback });
+    },
   },
   {
     id: "requestPasswordReset",
     path: "password-reset-requests",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -900,16 +897,18 @@ const routes = [
           body: { passwordResetRequest },
         },
       }
-    ) =>
-      Promise.resolve(
-        appProvider.passwordResetService.createRequest(passwordResetRequest)
-      ).then((duration) => ok({ callback, body: { duration } })),
+    ) => {
+      const duration = await appProvider.passwordResetService.createRequest(
+        passwordResetRequest
+      );
+      return ok({ callback, body: { duration } });
+    },
   },
   {
     id: "readPasswordReset",
     path: "password-reset-requests",
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -917,16 +916,18 @@ const routes = [
           queryStringParameters: { passwordResetCode },
         },
       }
-    ) =>
-      Promise.resolve(
-        appProvider.passwordResetService.checkRequestForCode(passwordResetCode)
-      ).then((email) => ok({ callback, body: { email } })),
+    ) => {
+      const email = await appProvider.passwordResetService.checkRequestForCode(
+        passwordResetCode
+      );
+      return ok({ callback, body: { email } });
+    },
   },
   {
     id: "completePasswordReset",
     path: "password-resets",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -934,21 +935,20 @@ const routes = [
           body: { passwordResetCode, passwordResetConfirmation },
         },
       }
-    ) =>
-      Promise.resolve(
-        appProvider.passwordResetService.resetPasswordAndLogin(
+    ) => {
+      const { user, authToken, expires } =
+        await appProvider.passwordResetService.resetPasswordAndLogin(
           passwordResetCode,
           passwordResetConfirmation
-        )
-      ).then(({ user, authToken, expires }) =>
-        ok({ callback, body: { user, authToken, expires } })
-      ),
+        );
+      return ok({ callback, body: { user, authToken, expires } });
+    },
   },
   {
     id: "requestRegistration",
     path: "registration-requests",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -956,22 +956,19 @@ const routes = [
           body: { registrationRequest },
         },
       }
-    ) =>
-      Promise.resolve(
-        appProvider.registrationService.createRequest(registrationRequest)
-      )
-        .then((duration) => ok({ callback, body: { duration } }))
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          rethrowTranslatedErrors("registrationRequest")
-        ),
+    ) => {
+      const duration = await prefixErrorPath(
+        appProvider.registrationService.createRequest(registrationRequest),
+        "registrationRequest"
+      );
+      return ok({ callback, body: { duration } });
+    },
   },
   {
     id: "readRegistrationRequest",
     path: "registration-requests",
     method: httpMethods.GET,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -979,16 +976,18 @@ const routes = [
           queryStringParameters: { registrationCode },
         },
       }
-    ) =>
-      Promise.resolve(
-        appProvider.registrationService.checkRequestForCode(registrationCode)
-      ).then((email) => ok({ callback, body: { email } })),
+    ) => {
+      const email = await appProvider.registrationService.checkRequestForCode(
+        registrationCode
+      );
+      return ok({ callback, body: { email } });
+    },
   },
   {
     id: "register",
     path: "registrations",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -996,20 +995,16 @@ const routes = [
           body: { registrationConfirmation },
         },
       }
-    ) =>
-      Promise.resolve(
+    ) => {
+      const { user, authToken, expires } = await prefixErrorPath(
         appProvider.registrationService.confirmRegistrationAndLogin(
           registrationConfirmation
-        )
-      )
-        .then(({ user, authToken, expires }) =>
-          ok({ callback, body: { user, authToken, expires } })
-        )
-        .catch(
-          EntityValidationError,
-          EntityConflictError,
-          rethrowTranslatedErrors("registrationConfirmation")
         ),
+        "registrationConfirmation"
+      );
+
+      return ok({ callback, body: { user, authToken, expires } });
+    },
   },
 
   /*
@@ -1019,27 +1014,30 @@ const routes = [
     id: "createJustificationVote",
     path: new RegExp("^justification-votes$"),
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
-          body: { justificationVote },
+          body: { justificationVote: createJustificationVote },
           authToken,
         },
       }
-    ) =>
-      appProvider.justificationVotesService
-        .createVote(authToken, justificationVote)
-        .then((justificationVote) =>
-          ok({ callback, body: { justificationVote } })
-        ),
+    ) => {
+      const justificationVote =
+        await appProvider.justificationVotesService.createVote(
+          authToken,
+          createJustificationVote
+        );
+
+      return ok({ callback, body: { justificationVote } });
+    },
   },
   {
     id: "deleteJustificationVote",
     path: new RegExp("^justification-votes$"),
     method: httpMethods.DELETE,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -1048,37 +1046,42 @@ const routes = [
           authToken,
         },
       }
-    ) =>
-      appProvider.justificationVotesService
-        .deleteVote(authToken, justificationVote)
-        .then(() => ok({ callback })),
+    ) => {
+      await appProvider.justificationVotesService.deleteVote(
+        authToken,
+        justificationVote
+      );
+      return ok({ callback });
+    },
   },
 
   {
     id: "createPropositionTagVote",
     path: "proposition-tag-votes",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
-          body: { propositionTagVote },
+          body: { propositionTagVote: createPropositionTagVote },
           authToken,
         },
       }
-    ) =>
-      appProvider.propositionTagVotesService
-        .readOrCreatePropositionTagVote(authToken, propositionTagVote)
-        .then((propositionTagVote) =>
-          ok({ callback, body: { propositionTagVote } })
-        ),
+    ) => {
+      const propositionTagVote =
+        await appProvider.propositionTagVotesService.readOrCreatePropositionTagVote(
+          authToken,
+          createPropositionTagVote
+        );
+      return ok({ callback, body: { propositionTagVote } });
+    },
   },
   {
     id: "deletePropositionTagVote",
     path: new RegExp("^proposition-tag-votes/([^/]+)$"),
     method: httpMethods.DELETE,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -1087,10 +1090,13 @@ const routes = [
           authToken,
         },
       }
-    ) =>
-      appProvider.propositionTagVotesService
-        .deletePropositionTagVoteForId(authToken, propositionTagVoteId)
-        .then(() => ok({ callback })),
+    ) => {
+      await appProvider.propositionTagVotesService.deletePropositionTagVoteForId(
+        authToken,
+        propositionTagVoteId
+      );
+      return ok({ callback });
+    },
   },
 
   /*
@@ -1100,34 +1106,21 @@ const routes = [
     id: "createUser",
     path: "users",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
-          body: { authToken, user },
+          body: { authToken, user: createUser },
         },
       }
-    ) =>
-      appProvider.usersService
-        .createUserAsAuthToken(authToken, user)
-        .then((user) => ok({ callback, body: { user } })),
-  },
-
-  /*
-   * Perspectives
-   */
-  {
-    id: "readFeaturedPerspectives",
-    path: new RegExp("^perspectives$"),
-    method: httpMethods.GET,
-    queryStringParameters: {
-      featured: "",
+    ) => {
+      const user = await appProvider.usersService.createUserAsAuthToken(
+        authToken,
+        createUser
+      );
+      return ok({ callback, body: { user } });
     },
-    handler: (appProvider, { callback, request: { authToken } }) =>
-      appProvider.perspectivesService
-        .readFeaturedPerspectives(authToken)
-        .then((perspectives) => ok({ callback, body: { perspectives } })),
   },
 
   /*
@@ -1137,62 +1130,74 @@ const routes = [
     id: "createAccountSettings",
     path: "account-settings",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { accountSettings },
+          body: { accountSettings: createAccountSettings },
         },
       }
-    ) =>
-      appProvider.accountSettingsService
-        .createAccountSettings(authToken, accountSettings)
-        .then((accountSettings) => ok({ callback, body: { accountSettings } })),
+    ) => {
+      const accountSettings =
+        await appProvider.accountSettingsService.createAccountSettings(
+          authToken,
+          createAccountSettings
+        );
+      return ok({ callback, body: { accountSettings } });
+    },
   },
   {
     id: "readAccountSettings",
     path: "account-settings",
     method: httpMethods.GET,
-    handler: (appProvider, { callback, request: { authToken } }) =>
-      Promise.resolve(
-        appProvider.accountSettingsService.readOrCreateAccountSettings(
-          authToken
-        )
-      )
-        .then((accountSettings) => ok({ callback, body: { accountSettings } }))
-        .catch(RequestValidationError, (e) =>
-          badRequest({ callback, body: { message: e.message } })
-        ),
+    handler: async (appProvider, { callback, request: { authToken } }) => {
+      try {
+        const accountSettings =
+          await appProvider.accountSettingsService.readOrCreateAccountSettings(
+            authToken
+          );
+
+        return ok({ callback, body: { accountSettings } });
+      } catch (err) {
+        // TODO do we still want this pattern?
+        if (err instanceof RequestValidationError) {
+          return badRequest({ callback, body: { message: err.message } });
+        }
+      }
+    },
   },
   {
     id: "updateAccountSettings",
     path: "account-settings",
     method: httpMethods.PUT,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
         request: {
           authToken,
-          body: { accountSettings },
+          body: { accountSettings: updateAccountSettings },
         },
       }
-    ) =>
-      appProvider.accountSettingsService
-        .update(accountSettings, authToken)
-        .then((accountSettings) => ok({ callback, body: { accountSettings } })),
+    ) => {
+      const accountSettings = await appProvider.accountSettingsService.update(
+        updateAccountSettings,
+        authToken
+      );
+      return ok({ callback, body: { accountSettings } });
+    },
   },
 
   /*
-   * Account settings
+   * Content reports
    */
   {
     id: "createContentReport",
     path: "content-reports",
     method: httpMethods.POST,
-    handler: (
+    handler: async (
       appProvider,
       {
         callback,
@@ -1201,17 +1206,20 @@ const routes = [
           body: { contentReport },
         },
       }
-    ) =>
-      appProvider.contentReportsService
-        .createContentReport(authToken, contentReport)
-        .then((accountSettings) => ok({ callback })),
+    ) => {
+      await appProvider.contentReportsService.createContentReport(
+        authToken,
+        contentReport
+      );
+      return ok({ callback });
+    },
   },
 ];
 
-const selectRoute = (appProvider) => (request) => {
+export const selectRoute = (appProvider: AppProvider, request: Request) => {
   const { path, method, queryStringParameters } = request;
 
-  for (let route of routes) {
+  for (const route of routes) {
     let pathMatch;
 
     if (route.method && route.method !== method) continue;
@@ -1252,115 +1260,111 @@ const selectRoute = (appProvider) => (request) => {
   throw new NoMatchingRouteError();
 };
 
-const handleRequest =
-  (appProvider, callback) =>
-  ({ route, routedRequest }) =>
-    route.handler(appProvider, { callback, request: routedRequest });
+const handleRequest = (
+  appProvider: AppProvider,
+  callback: Callback,
+  { route, routedRequest }: { route: Route; routedRequest: Request }
+) => route.handler(appProvider, { callback, request: routedRequest });
 
-const routeRequest = (request, appProvider, callback) =>
-  Promise.resolve(request)
-    .then(selectRoute(appProvider))
-    .then(handleRequest(appProvider, callback))
-    .catch((err) => {
-      appProvider.logger.silly("Error handling route", { err });
-      throw err;
-    })
-    .catch(EntityValidationError, (e) =>
+export const routeRequest = async (
+  request: Request,
+  appProvider: AppProvider,
+  callback: Callback
+) => {
+  const { route, routedRequest } = selectRoute(appProvider, request);
+  try {
+    await handleRequest(appProvider, callback, { route, routedRequest });
+  } catch (err) {
+    if (err instanceof EntityValidationError) {
       badRequest({
         callback,
         body: {
           errorCode: apiErrorCodes.VALIDATION_ERROR,
-          errors: e.errors,
+          errors: err.errors,
         },
-      })
-    )
-    .catch(RequestValidationError, (e) =>
-      badRequest({ callback, body: { message: e.message } })
-    )
-    .catch(EntityNotFoundError, (e) =>
+      });
+    } else if (err instanceof RequestValidationError) {
+      badRequest({ callback, body: { message: err.message } });
+    } else if (err instanceof EntityNotFoundError) {
       notFound({
         callback,
         body: {
           errorCode: apiErrorCodes.ENTITY_NOT_FOUND,
-          entityType: e.entityType,
-          identifier: e.identifier,
+          entityType: err.entityType,
+          identifier: err.identifier,
         },
-      })
-    )
-    .catch(NoMatchingRouteError, (e) =>
-      notFound({ callback, body: { errorCode: apiErrorCodes.ROUTE_NOT_FOUND } })
-    )
-    .catch(AuthenticationError, (e) => unauthenticated({ callback }))
-    .catch(InvalidLoginError, (e) =>
+      });
+    } else if (err instanceof NoMatchingRouteError) {
+      notFound({
+        callback,
+        body: { errorCode: apiErrorCodes.ROUTE_NOT_FOUND },
+      });
+    } else if (err instanceof AuthenticationError) {
+      unauthenticated({ callback });
+    } else if (err instanceof InvalidLoginError) {
       badRequest({
         callback,
         body: {
           errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS,
-          errors: e.errors,
         },
-      })
-    )
-    .catch(AuthorizationError, (e) =>
+      });
+    } else if (err instanceof AuthorizationError) {
       unauthorized({
         callback,
         body: {
           errorCode: apiErrorCodes.AUTHORIZATION_ERROR,
-          errors: e.errors,
+          errors: err.errors,
         },
-      })
-    )
-    .catch(UserIsInactiveError, (e) =>
+      });
+    } else if (err instanceof UserIsInactiveError) {
       error({
         callback,
         body: {
           errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR,
         },
-      })
-    )
-    .catch(EntityConflictError, (e) =>
+      });
+    } else if (err instanceof EntityConflictError) {
       conflict({
         callback,
         body: {
           errorCode: apiErrorCodes.ENTITY_CONFLICT,
-          errors: e.errors,
+          errors: err.errors,
         },
-      })
-    )
-    .catch(UserActionsConflictError, (e) =>
+      });
+    } else if (err instanceof UserActionsConflictError) {
       error({
         callback,
         body: {
           errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT,
-          errors: e.errors,
+          errors: err.errors,
         },
-      })
-    )
-    .catch(RegistrationExpiredError, (e) =>
+      });
+    } else if (err instanceof RegistrationExpiredError) {
       notFound({
         callback,
         body: {
           errorCode: apiErrorCodes.EXPIRED,
         },
-      })
-    )
-    .catch(RegistrationAlreadyConsumedError, (e) =>
+      });
+    } else if (err instanceof RegistrationAlreadyConsumedError) {
       notFound({
         callback,
         body: {
           errorCode: apiErrorCodes.CONSUMED,
         },
-      })
-    )
-    .catch((err) => {
+      });
+    } else if (err instanceof Error) {
       appProvider.logger.error("Unexpected error", { err, stack: err.stack });
       return error({
         callback,
         body: { errorCode: apiErrorCodes.UNEXPECTED_ERROR },
       });
-    });
-
-module.exports = {
-  routes,
-  routeRequest,
-  selectRoute,
+    } else {
+      appProvider.logger.error("Caught unexpected non-error:", toJson(err));
+      return error({
+        callback,
+        body: { errorCode: apiErrorCodes.UNEXPECTED_ERROR },
+      });
+    }
+  }
 };

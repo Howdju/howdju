@@ -130,7 +130,7 @@ exports.PropositionsService = class PropositionsService {
       });
   }
 
-  readPropositions({ sorts, continuationToken = null, count = 25 }) {
+  readPropositions({ sorts = [], continuationToken = undefined, count = 25 }) {
     const countNumber = toNumber(count);
     if (!isFinite(countNumber)) {
       throw new RequestValidationError(
@@ -439,7 +439,7 @@ exports.PropositionsService = class PropositionsService {
       });
   }
 
-  readPropositionsForTagId(tagId, { userId, authToken }) {
+  readPropositionsForTagId(tagId, { userId = undefined, authToken }) {
     return Promise.resolve()
       .then(
         () =>

@@ -12,10 +12,16 @@ import {
   EntityRef,
   newImpossibleError,
   isRef,
+  ModelErrors,
+  makeModelErrors,
+  PersistedEntity,
 } from "howdju-common";
 
-import { AuthenticationError, EntityValidationError } from "../serviceErrors";
-import { translateJoiError } from "./validationSchemas";
+import {
+  AuthenticationError,
+  AuthorizationError,
+  EntityValidationError,
+} from "../serviceErrors";
 import { translateJoiToZodFormattedError } from "./joiErrors";
 import { AuthService } from "./AuthService";
 import { isJoiSchema } from "./joiValidation";
@@ -33,8 +39,8 @@ type EntityPropped<T, P extends string> = {
 export abstract class EntityService<
   CreateIn extends Entity,
   CreateOut extends Entity,
-  UpdateIn extends Entity,
-  UpdateOut extends Entity,
+  UpdateIn extends PersistedEntity,
+  UpdateOut extends PersistedEntity,
   P extends string
 > {
   entitySchemas: EntitySchemas | Schema;
@@ -54,7 +60,7 @@ export abstract class EntityService<
 
   async readOrCreate(
     entity: CreateIn | EntityRef<CreateIn>,
-    authToken: AuthToken
+    authToken: AuthToken | undefined
   ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>> {
     const now = utcNow();
     const userId = authToken
@@ -90,11 +96,24 @@ export abstract class EntityService<
     now: Moment
   ): Promise<{ isExtant: boolean } & EntityPropped<CreateOut, P>>;
 
-  async update(entity: UpdateIn, authToken: AuthToken): Promise<UpdateOut> {
+  async update(
+    entity: UpdateIn,
+    authToken: AuthToken | undefined
+  ): Promise<UpdateOut> {
+    if (!authToken) {
+      throw new AuthorizationError(
+        makeModelErrors<UpdateOut>((e) =>
+          e("Unauthenticated users may not update entities.")
+        )
+      );
+    }
     if (!entity.id) {
-      throw new EntityValidationError({
-        id: ["id is required to update an entity"],
-      });
+      throw new EntityValidationError(
+        // I'm not sure why the generic param can't be UpdateIn.
+        makeModelErrors<PersistedEntity>((u) =>
+          u.id("id is required to update an entity")
+        )
+      );
     }
 
     const now = utcNow();
@@ -107,8 +126,7 @@ export abstract class EntityService<
     }
     const { error, value } = this.validateEntity(entitySchema, entity);
     if (error) {
-      const errors = translateJoiError(error);
-      throw new EntityValidationError(errors);
+      throw new EntityValidationError(error);
     }
     return await this.doUpdate(value, userId, now);
   }
@@ -119,14 +137,20 @@ export abstract class EntityService<
     now: Moment
   ): Promise<UpdateOut>;
 
-  protected validateEntity(
-    entitySchema: z.ZodTypeAny | Schema,
-    entity: CreateIn | UpdateIn
-  ) {
+  protected validateEntity<
+    Input extends CreateIn | UpdateIn,
+    Def extends z.ZodTypeDef,
+    Output = Input
+  >(
+    entitySchema: z.ZodType<Output, Def, Input> | Schema,
+    entity: Input
+  ):
+    | { value: Output; error: undefined }
+    | { value: Input; error: ModelErrors<Input> } {
     if (entitySchema instanceof z.ZodType) {
       const result = entitySchema.safeParse(entity);
       if (result.success) {
-        return { value: result.data };
+        return { value: result.data, error: undefined };
       }
       return { value: entity, error: formatZodError(result.error) };
     }
@@ -142,8 +166,8 @@ export abstract class EntityService<
       stripUnknown: true,
     });
     if (error) {
-      return { value, error: translateJoiToZodFormattedError(error) };
+      return { value, error: translateJoiToZodFormattedError<Input>(error) };
     }
-    return { value };
+    return { value, error: undefined };
   }
 }

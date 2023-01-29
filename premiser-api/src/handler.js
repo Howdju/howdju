@@ -23,7 +23,7 @@ const { routeRequest } = require("./route");
 const { apiHost } = require("./config/util");
 const customHeaderKeys = require("./customHeaderKeys");
 const headerKeys = require("./headerKeys");
-const { AppProvider } = require("./init");
+const { ApiProvider } = require("./init");
 
 const allowedHeaders = concat(
   [
@@ -243,7 +243,7 @@ function getOrCreateAppProvider(gatewayContext) {
   if (!appProvider) {
     const doWarn = !isEmpty(appProviderByStage);
 
-    appProviderByStage[stage] = appProvider = new AppProvider(stage);
+    appProviderByStage[stage] = appProvider = new ApiProvider(stage);
 
     if (doWarn) {
       appProvider.logger.warn(

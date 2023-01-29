@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const baseConfig = {
   auth: {
     bcrypt: {
@@ -5,7 +7,8 @@ export const baseConfig = {
     },
   },
   authTokenDuration: { days: 30 },
-  contentReportNotificationEmails: [],
+  contentReportNotificationEmails: [] as string[],
+  corsAllowOrigin: [] as string[],
   /** Whether to prevent responses that indicate whether an email has been registered with the system */
   doConcealEmailExistence: false,
   // https://github.com/jsmreese/moment-duration-format#template-string
@@ -14,7 +17,7 @@ export const baseConfig = {
   // https://github.com/jsmreese/moment-duration-format#trim
   durationFormatTrim: "both mid",
   /** The amount of time a user can still edit their own entities unless another user has interacted with them */
-  modifyEntityGracePeriod: { hours: 24 },
+  modifyEntityGracePeriod: moment.duration({ hours: 24 }),
   passwordResetDuration: { hours: 4 },
   registrationDuration: { hours: 24 },
   uiAuthority: "https://www.howdju.com",

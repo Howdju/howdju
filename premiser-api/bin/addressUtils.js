@@ -1,6 +1,8 @@
 const os = require("os");
 const forEach = require("lodash/forEach");
 const isIpPrivate = require("private-ip");
+const { exec } = require("child_process");
+const debug = require("debug")("premiser-api:addressUtils");
 
 const emptyMac = "00:00:00:00:00:00";
 const loopbackAddress = "127.0.0.1";
@@ -41,3 +43,21 @@ function localAddress() {
   });
   return addresses.length ? addresses[0] : loopbackAddress;
 }
+
+module.exports.getLocalAddressFromIpConfig =
+  function getLocalAddressFromIpConfig() {
+    try {
+      exec("ipconfig getifaddr en0", (error, stdout, stderr) => {
+        if (error) {
+          debug(`Unable to retrieve local hostname using ipconfig`, { error });
+        } else if (stderr) {
+          debug(`Unable to retrieve local hostname using ipconfig`, { stderr });
+        } else {
+          return stdout;
+        }
+      });
+    } catch (err) {
+      debug(`Unable to retrieve local hostname using ipconfig`, { err });
+    }
+    return undefined;
+  };

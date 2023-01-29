@@ -578,7 +578,7 @@ export class JustificationsDao {
       this.writQuotesDao.readWritQuotesByIdForRootTarget(
         rootTargetType,
         rootTargetId
-      ),
+      ) as Promise<Record<EntityId, WritQuoteData>>,
       // We won't support adding legacy justification basis types to statements
       rootTargetType === JustificationRootTargetTypes.PROPOSITION
         ? this.justificationBasisCompoundsDao.readJustificationBasisCompoundsByIdForRootPropositionId(
@@ -1098,8 +1098,12 @@ export class JustificationsDao {
     }
     const row = head(rows);
     if (!row) {
-      throw new EntityNotFoundError(
+      this.logger.error(
         `Could not create justification because target justification having ID ${justification.target.entity.id} did not exist`
+      );
+      throw new EntityNotFoundError(
+        "JUSTIFICATION",
+        justification.target.entity.id
       );
     }
 

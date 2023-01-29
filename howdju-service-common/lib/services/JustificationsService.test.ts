@@ -1,5 +1,6 @@
 import moment from "moment";
 import { Pool } from "pg";
+import { filter } from "lodash";
 
 import {
   CreateCounterJustification,
@@ -23,8 +24,7 @@ import {
   makePool,
   UsersDao,
 } from "..";
-import TestProvider from "@/initializers/TestProvider";
-import { filter } from "lodash";
+import { makeTestProvider } from "@/initializers/TestProvider";
 
 const dbConfig = makeTestDbConfig();
 
@@ -41,11 +41,11 @@ describe("JustificationsService", () => {
     pool = makePool(mockLogger, { ...dbConfig, database: dbName });
     const database = new Database(mockLogger, pool);
 
-    const provider = new TestProvider(database);
+    const provider = makeTestProvider(database);
 
-    service = (provider as any).justificationsService;
-    usersDao = (provider as any).usersDao;
-    authService = (provider as any).authService;
+    service = provider.justificationsService;
+    usersDao = provider.usersDao;
+    authService = provider.authService;
   });
   afterEach(async () => {
     await pool.end();
@@ -241,10 +241,34 @@ describe("JustificationsService", () => {
         polarity: "POSITIVE",
       };
 
-      // Act/Assert
-      await expect(
-        service.readOrCreate(createJustification, authToken)
-      ).rejects.toBeInstanceOf(EntityValidationError);
+      let err;
+      try {
+        // Act
+        await service.readOrCreate(createJustification, authToken);
+        throw "Should have failed validation.";
+      } catch (e) {
+        err = e;
+      }
+
+      // Assert
+      expect(err).toBeInstanceOf(EntityValidationError);
+      expect(err).toMatchObject({
+        errors: {
+          target: {
+            entity: {
+              text: {
+                _errors: [
+                  {
+                    message: expect.stringContaining(
+                      "String must contain at least 1 character"
+                    ),
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
     });
   });
   describe("readJustifications", () => {

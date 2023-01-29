@@ -30,6 +30,9 @@ exports.AuthService = class AuthService {
   }
 
   readUserIdForAuthToken(authToken) {
+    if (!authToken) {
+      throw new AuthenticationError();
+    }
     return this.readOptionalUserIdForAuthToken(authToken).then((userId) => {
       if (!userId) {
         throw new AuthenticationError();

@@ -1,11 +1,16 @@
 /* This file must pass console to the Logger */
 /* eslint "no-console": ["off"] */
 
-const { AwsLogger } = require("howdju-service-common");
+import { Logger } from "howdju-common";
+import { AwsLogger } from "..";
 
-exports.init = function init(provider) {
+import type { BaseProvider } from "./BaseProvider";
+
+export type LoggerProvider = ReturnType<typeof loggerInit> & BaseProvider;
+
+export function loggerInit(provider: BaseProvider) {
   const logLevel = provider.getConfigVal("LOG_LEVEL", "debug");
-  const isAws = !!provider.getConfigVal("IS_AWS", false);
+  const isAws = !!provider.getConfigVal("IS_AWS", "");
   const doLogTimestamp = true;
   const doUseCarriageReturns = isAws;
   const logFormat = isAws ? "json" : "text";
@@ -15,9 +20,9 @@ exports.init = function init(provider) {
     doLogTimestamp,
     doUseCarriageReturns,
     logFormat,
-  });
-
-  provider.logger = logger;
+  }) as unknown as Logger;
 
   logger.debug("loggerInit complete", { logLevel, isAws });
-};
+
+  return { logger };
+}

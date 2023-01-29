@@ -7,7 +7,7 @@ const argParser = new ArgumentParser({
 argParser.add_argument("--entryPoint", {
   dest: "entryPoints",
   nargs: "+",
-  default: ["src/index.js"],
+  default: ["src/index.ts"],
 });
 argParser.add_argument("--outfile", { default: "dist/index.js" });
 argParser.add_argument("--watch", { action: "store_true" });

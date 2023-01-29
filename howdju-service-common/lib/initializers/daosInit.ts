@@ -1,5 +1,3 @@
-import assign from "lodash/assign";
-
 import {
   AccountSettingsDao,
   ActionsDao,
@@ -32,9 +30,14 @@ import {
   UrlsDao,
   WritQuoteUrlTargetsDao,
   VidSegmentsDao,
-} from "@/daos";
+} from "../daos";
 
-export function daosInitializer(provider: any) {
+import { DatabaseProvider } from "./databaseInit";
+
+export type DaosProvider = ReturnType<typeof daosInitializer> &
+  DatabaseProvider;
+
+export function daosInitializer(provider: DatabaseProvider) {
   const logger = provider.logger;
   const database = provider.database;
 
@@ -98,7 +101,9 @@ export function daosInitializer(provider: any) {
   const propositionTagsDao = new PropositionTagsDao(logger, database);
   const tagsDao = new TagsDao(logger, database);
 
-  assign(provider, {
+  logger.debug("daosInit complete");
+
+  return {
     accountSettingsDao,
     actionsDao,
     authDao,
@@ -130,7 +135,5 @@ export function daosInitializer(provider: any) {
     writQuotesDao,
     writQuoteUrlTargetsDao,
     writsDao,
-  });
-
-  provider.logger.debug("daosInit complete");
+  };
 }

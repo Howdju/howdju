@@ -1,11 +1,12 @@
-const { mockLogger } = require("howdju-test-common");
-const { httpMethods } = require("howdju-common");
+import { mockLogger } from "howdju-test-common";
+import { httpMethods } from "howdju-common";
 
-const { selectRoute } = require("./route");
+import { Request, selectRoute } from "./route";
+import { ServicesProvider } from "howdju-service-common";
 
 const mockAppProvider = {
   logger: mockLogger,
-};
+} as ServicesProvider;
 
 describe("routes", () => {
   test("readProposition route path should match a proposition path", () => {
@@ -13,11 +14,11 @@ describe("routes", () => {
     const method = httpMethods.GET;
     const queryStringParameters = {};
 
-    const { route, routedRequest } = selectRoute(mockAppProvider)({
+    const { route, routedRequest } = selectRoute(mockAppProvider, {
       path,
       method,
       queryStringParameters,
-    });
+    } as Request);
 
     expect(route.id).toBe("readProposition");
     expect(routedRequest.pathParameters).toEqual(["2"]);
@@ -28,10 +29,13 @@ describe("routes", () => {
     const method = httpMethods.GET;
     const queryStringParameters = { include: "justifications" };
 
-    const { route, routedRequest } = selectRoute(mockAppProvider)({
+    const { route, routedRequest } = selectRoute(mockAppProvider, {
       path,
       method,
       queryStringParameters,
+      pathParameters: [],
+      authToken: undefined,
+      body: {},
     });
     expect(route.id).toBe("readPropositionJustifications");
     expect(routedRequest.pathParameters).toEqual(["2"]);
@@ -42,10 +46,13 @@ describe("routes", () => {
     const method = httpMethods.GET;
     const queryStringParameters = { tagId: "42" };
 
-    const { route } = selectRoute(mockAppProvider)({
+    const { route } = selectRoute(mockAppProvider, {
       path,
       method,
       queryStringParameters,
+      pathParameters: [],
+      authToken: undefined,
+      body: {},
     });
 
     expect(route.id).toBe("readTaggedPropositions");
@@ -56,10 +63,13 @@ describe("routes", () => {
     const method = httpMethods.GET;
     const queryStringParameters = { tag: "42" };
 
-    const { route } = selectRoute(mockAppProvider)({
+    const { route } = selectRoute(mockAppProvider, {
       path,
       method,
       queryStringParameters,
+      pathParameters: [],
+      authToken: undefined,
+      body: {},
     });
     expect(route.id).not.toBe("readTaggedPropositions");
   });

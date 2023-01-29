@@ -16,7 +16,8 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
     writQuotesService,
     picRegionsService,
     vidSegmentsService,
-    sourceExcerptParaphrasesDao
+    sourceExcerptParaphrasesDao,
+    authService
   ) {
     requireArgs({
       logger,
@@ -26,6 +27,7 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
       picRegionsService,
       vidSegmentsService,
       sourceExcerptParaphrasesDao,
+      authService,
     });
 
     this.logger = logger;
@@ -35,10 +37,17 @@ exports.SourceExcerptParaphrasesService = class SourceExcerptParaphrasesService 
     this.picRegionsService = picRegionsService;
     this.vidSegmentsService = vidSegmentsService;
     this.sourceExcerptParaphrasesDao = sourceExcerptParaphrasesDao;
+    this.authService = authService;
   }
 
-  readSourceExcerptParaphraseForId(sourceExcerptParaphraseId, { userId }) {
-    return readSourceExcerptParaphraseForId(
+  async readSourceExcerptParaphraseForId(
+    sourceExcerptParaphraseId,
+    { authToken, userId = undefined }
+  ) {
+    if (!userId && authToken) {
+      userId = await this.authService.readOptionalUserIdForAuthToken(authToken);
+    }
+    return await readSourceExcerptParaphraseForId(
       this,
       sourceExcerptParaphraseId,
       userId
