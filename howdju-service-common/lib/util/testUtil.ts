@@ -6,7 +6,7 @@ import { expect } from "@jest/globals";
 import { mockLogger } from "howdju-test-common";
 
 import { ApiConfig, baseConfig, makePool } from "..";
-import { logger, mapValuesDeep } from "howdju-common";
+import { logger, mapValuesDeep, toJson } from "howdju-common";
 import { cloneDeep, toNumber } from "lodash";
 import { isMoment } from "moment";
 
@@ -44,9 +44,11 @@ export async function initDb(config: PoolConfig) {
       await noDbPool.query(`CREATE DATABASE ${dbName};`);
       logger.info(`Successfully created test DB ${dbName}`);
       succeeded = true;
-    } catch {
+    } catch (err) {
       logger.info(
-        `Failed to create test DB ${dbName}. Assuming it already exists and retrying a different name.`
+        `Failed to create test DB ${dbName}. ` +
+          `Assuming it already exists and retrying a different name. ` +
+          `Error: ${toJson(err)}`
       );
     }
     attempts++;
