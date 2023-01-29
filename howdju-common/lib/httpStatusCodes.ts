@@ -2,7 +2,7 @@
  *  See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
  *  See https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
  */
-exports.httpStatusCodes = {
+export const httpStatusCodes = {
   OK: 200,
 
   /** There was nothing to do and nothing new to return (does not allow a body) */
@@ -28,4 +28,6 @@ exports.httpStatusCodes = {
   CONFLICT: 409,
 
   ERROR: 500,
-};
+} as const;
+export type HttpStatusCode =
+  typeof httpStatusCodes[keyof typeof httpStatusCodes];

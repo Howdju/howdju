@@ -1,12 +1,18 @@
 import { mockLogger } from "howdju-test-common";
 import { httpMethods } from "howdju-common";
 
-import { Request, selectRoute } from "./route";
+import { selectRoute } from "./route";
 import { ServicesProvider } from "howdju-service-common";
+import { Request } from "./types";
 
 const mockAppProvider = {
   logger: mockLogger,
 } as ServicesProvider;
+
+const clientIdentifiers = {
+  sessionStorageId: undefined,
+  pageLoadId: undefined,
+};
 
 describe("routes", () => {
   test("readProposition route path should match a proposition path", () => {
@@ -33,9 +39,10 @@ describe("routes", () => {
       path,
       method,
       queryStringParameters,
-      pathParameters: [],
       authToken: undefined,
       body: {},
+      requestIdentifiers: {},
+      clientIdentifiers,
     });
     expect(route.id).toBe("readPropositionJustifications");
     expect(routedRequest.pathParameters).toEqual(["2"]);
@@ -50,9 +57,10 @@ describe("routes", () => {
       path,
       method,
       queryStringParameters,
-      pathParameters: [],
       authToken: undefined,
       body: {},
+      requestIdentifiers: {},
+      clientIdentifiers,
     });
 
     expect(route.id).toBe("readTaggedPropositions");
@@ -67,7 +75,8 @@ describe("routes", () => {
       path,
       method,
       queryStringParameters,
-      pathParameters: [],
+      requestIdentifiers: {},
+      clientIdentifiers,
       authToken: undefined,
       body: {},
     });

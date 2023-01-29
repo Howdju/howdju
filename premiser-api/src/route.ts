@@ -11,8 +11,6 @@ import {
   decodeSorts,
   httpMethods,
   JustificationRootTargetTypes,
-  HttpMethod,
-  AuthToken,
   toJson,
   Proposition,
   WritQuote,
@@ -44,31 +42,7 @@ import {
   unauthorized,
 } from "./responses";
 import { AppProvider } from "./init";
-import { Callback } from "./types";
-
-type Route = {
-  id: string;
-  method: HttpMethod;
-  path?: string | RegExp;
-  /** Limits the handler to routes matching these parameters */
-  queryStringParameters?: Record<string, string | RegExp>;
-  handler: Handler;
-};
-
-type Handler = (
-  appProvider: AppProvider,
-  { callback, request }: { callback: Callback; request: Request }
-) => ReturnType<typeof callback>;
-
-export type Request = {
-  path: string;
-  method: HttpMethod;
-  queryStringParameters: Record<string, string | undefined>;
-  pathParameters: string[];
-  authToken: AuthToken | undefined;
-  // TODO(1) add a generic parameter `Body extends Record<string, any>`.
-  body: Record<string, any>;
-};
+import { Route, Request, RoutedRequest, ApiCallback } from "./types";
 
 export const routes: Route[] = [
   /*
@@ -77,7 +51,7 @@ export const routes: Route[] = [
   {
     id: "options",
     method: httpMethods.OPTIONS,
-    handler: (_appProvider, { callback }) => ok({ callback }),
+    handler: (_appProvider, { callback }) => Promise.resolve(ok({ callback })),
   },
 
   /*
@@ -1251,7 +1225,7 @@ export const selectRoute = (appProvider: AppProvider, request: Request) => {
     }
 
     // First item is the whole match, rest are the group matches
-    const pathParameters = pathMatch ? pathMatch.slice(1) : undefined;
+    const pathParameters = pathMatch ? pathMatch.slice(1) : [];
     const routedRequest = assign({}, request, { pathParameters });
     appProvider.logger.debug(`selected route ${route.id}`);
     return { route, routedRequest };
@@ -1262,21 +1236,21 @@ export const selectRoute = (appProvider: AppProvider, request: Request) => {
 
 const handleRequest = (
   appProvider: AppProvider,
-  callback: Callback,
-  { route, routedRequest }: { route: Route; routedRequest: Request }
+  callback: ApiCallback,
+  { route, routedRequest }: { route: Route; routedRequest: RoutedRequest }
 ) => route.handler(appProvider, { callback, request: routedRequest });
 
-export const routeRequest = async (
+export async function routeRequest(
   request: Request,
   appProvider: AppProvider,
-  callback: Callback
-) => {
+  callback: ApiCallback
+) {
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
     await handleRequest(appProvider, callback, { route, routedRequest });
   } catch (err) {
     if (err instanceof EntityValidationError) {
-      badRequest({
+      return badRequest({
         callback,
         body: {
           errorCode: apiErrorCodes.VALIDATION_ERROR,
@@ -1284,9 +1258,9 @@ export const routeRequest = async (
         },
       });
     } else if (err instanceof RequestValidationError) {
-      badRequest({ callback, body: { message: err.message } });
+      return badRequest({ callback, body: { message: err.message } });
     } else if (err instanceof EntityNotFoundError) {
-      notFound({
+      return notFound({
         callback,
         body: {
           errorCode: apiErrorCodes.ENTITY_NOT_FOUND,
@@ -1295,21 +1269,21 @@ export const routeRequest = async (
         },
       });
     } else if (err instanceof NoMatchingRouteError) {
-      notFound({
+      return notFound({
         callback,
         body: { errorCode: apiErrorCodes.ROUTE_NOT_FOUND },
       });
     } else if (err instanceof AuthenticationError) {
-      unauthenticated({ callback });
+      return unauthenticated({ callback });
     } else if (err instanceof InvalidLoginError) {
-      badRequest({
+      return badRequest({
         callback,
         body: {
           errorCode: apiErrorCodes.INVALID_LOGIN_CREDENTIALS,
         },
       });
     } else if (err instanceof AuthorizationError) {
-      unauthorized({
+      return unauthorized({
         callback,
         body: {
           errorCode: apiErrorCodes.AUTHORIZATION_ERROR,
@@ -1317,14 +1291,14 @@ export const routeRequest = async (
         },
       });
     } else if (err instanceof UserIsInactiveError) {
-      error({
+      return error({
         callback,
         body: {
           errorCode: apiErrorCodes.USER_IS_INACTIVE_ERROR,
         },
       });
     } else if (err instanceof EntityConflictError) {
-      conflict({
+      return conflict({
         callback,
         body: {
           errorCode: apiErrorCodes.ENTITY_CONFLICT,
@@ -1332,7 +1306,7 @@ export const routeRequest = async (
         },
       });
     } else if (err instanceof UserActionsConflictError) {
-      error({
+      return error({
         callback,
         body: {
           errorCode: apiErrorCodes.USER_ACTIONS_CONFLICT,
@@ -1340,14 +1314,14 @@ export const routeRequest = async (
         },
       });
     } else if (err instanceof RegistrationExpiredError) {
-      notFound({
+      return notFound({
         callback,
         body: {
           errorCode: apiErrorCodes.EXPIRED,
         },
       });
     } else if (err instanceof RegistrationAlreadyConsumedError) {
-      notFound({
+      return notFound({
         callback,
         body: {
           errorCode: apiErrorCodes.CONSUMED,
@@ -1367,4 +1341,4 @@ export const routeRequest = async (
       });
     }
   }
-};
+}

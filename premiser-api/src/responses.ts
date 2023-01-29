@@ -1,10 +1,10 @@
 import { apiErrorCodes, httpStatusCodes } from "howdju-common";
 
 import { AppProvider } from "./init";
-import { Callback } from "./types";
+import { ApiCallback } from "./types";
 
 type ResponseArgs = {
-  callback: Callback;
+  callback: ApiCallback;
   body?: Record<string, any>;
   headers?: Record<string, string>;
 };
