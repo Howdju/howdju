@@ -59,6 +59,7 @@ jobs:
           yarn run nyc report -t coverage --report-dir coverage/html --reporter=html-spa --reporter=text-summary
       - name: Archive coverage results
         uses: actions/upload-artifact@v3
+        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           name: coverage-report
           path: |
