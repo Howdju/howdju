@@ -1,8 +1,6 @@
 import set from "lodash/set";
-import { z } from "zod";
 
 import {
-  BespokeValidationErrors,
   newBespokeValidationErrors,
   logger,
   ModelErrors,
@@ -14,35 +12,8 @@ import {
   UserActionsConflictError,
 } from "..";
 
-// Several of the errors in serviceErrors have a property `errors` containing errors keyed by the
-// field causing the error.
-type ErrorsError = Error & {
-  errors: z.ZodError<any> | BespokeValidationErrors;
-};
-
-function translateErrors(err: ErrorsError, translationKey: string) {
-  const errors: BespokeValidationErrors = {
-    hasErrors: true,
-    modelErrors: [],
-    fieldErrors: {},
-  };
-  if (!translationKey.startsWith("fieldErrors.")) {
-    logger.error(
-      `translateErrors translationKey does not begin with fieldErrors.: ${translationKey}`
-    );
-  }
-  set(errors, translationKey, err.errors);
-  err.errors = errors;
-  return err;
-}
-
-export const rethrowTranslatedErrors =
-  (translationKey: string) => (err: ErrorsError) => {
-    throw translateErrors(err, translationKey);
-  };
-
 /**
- * Catches errors that wrap entity errors and prefixes the path of the error.
+ * Catches errors that contain entity field paths and prefixes the paths with some parent path.
  *
  * This helper allows services to translate an error from another service to the path appropriate
  * for the entity from the client's perspective.

@@ -30,9 +30,11 @@ import {
 } from "../services";
 import { AwsProvider } from "./awsInit";
 
+/** Provides the services and previous providers. */
 export type ServicesProvider = ReturnType<typeof servicesInitializer> &
   AwsProvider;
 
+/** Initializes the services. */
 export function servicesInitializer(provider: AwsProvider) {
   const actionsService = new ActionsService(provider.actionsDao);
   const authService = new AuthService(

@@ -30,7 +30,7 @@ import {
 } from "howdju-common";
 import { AwsLogger, configureGatewayContext } from "howdju-service-common";
 
-import { routeRequest } from "./route";
+import { routeRequest } from "./router";
 import { apiHost } from "./config/util";
 import * as customHeaderKeys from "./customHeaderKeys";
 import * as headerKeys from "./headerKeys";
@@ -266,17 +266,17 @@ function makeRequest(
 
 // Only add the handler once even if we are hotloading in dev. Otherwise we
 // get memory leaks.
-function howdjuHandlerunhandledRejectionHandler(err: Error) {
+function howdjuHandlerUnhandledRejectionHandler(err: Error) {
   console.error(err);
   process.exit(1);
 }
 if (
   !some(process.listeners("unhandledRejection"), (l) =>
-    l.toString().includes("howdjuHandlerunhandledRejectionHandler")
+    l.toString().includes("howdjuHandlerUnhandledRejectionHandler")
   )
 ) {
-  console.log("adding howdjuHandlerunhandledRejectionHandler");
-  process.on("unhandledRejection", howdjuHandlerunhandledRejectionHandler);
+  console.log("adding howdjuHandlerUnhandledRejectionHandler");
+  process.on("unhandledRejection", howdjuHandlerUnhandledRejectionHandler);
 }
 
 const appProviderByStage: Record<string, AppProvider> = {};

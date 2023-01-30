@@ -19,9 +19,14 @@ import { makeConfig } from "./configInit";
 
 export type AppProvider = ServicesProvider;
 
-export type ServicesProvider2 = ReturnType<typeof servicesInitializer> &
-  AwsProvider;
-
+/**
+ * A dependency locator.
+ *
+ * The benefit of this locator is that it's simple and it encourages SRP in our classes. Downsides
+ * include that it's toilsome to change deps since we hard code their relations.
+ *
+ * TODO(106): configure a DI container.
+ */
 export class ApiProvider implements BaseProvider {
   stage: string | undefined;
   isProduction: boolean;
@@ -30,8 +35,6 @@ export class ApiProvider implements BaseProvider {
     this.stage = stage;
     this.isProduction = this.getConfigVal("NODE_ENV") === "production";
 
-    // This is our hacky dependency injection
-    // TODO(106): configure real dependency injection
     assign(this, loggerInit(this));
     assign(this, makeConfig(this as unknown as LoggerProvider));
     assign(this, databaseInit(this as unknown as ConfigProvider));

@@ -1,7 +1,7 @@
 import { mockLogger } from "howdju-test-common";
 import { httpMethods } from "howdju-common";
 
-import { selectRoute } from "./route";
+import { selectRoute } from "./router";
 import { ServicesProvider } from "howdju-service-common";
 import { Request } from "./types";
 

@@ -6,8 +6,10 @@ import { AwsLogger } from "..";
 
 import type { BaseProvider } from "./BaseProvider";
 
+/** Provides the logger and base provider. */
 export type LoggerProvider = ReturnType<typeof loggerInit> & BaseProvider;
 
+/** Initializes the logger. */
 export function loggerInit(provider: BaseProvider) {
   const logLevel = provider.getConfigVal("LOG_LEVEL", "debug");
   const isAws = !!provider.getConfigVal("IS_AWS", "");

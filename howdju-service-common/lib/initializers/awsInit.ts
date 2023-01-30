@@ -10,7 +10,6 @@ export type AwsProvider = ReturnType<typeof awsInit> & ValidatorsProvider;
 
 export function awsInit(provider: LoggerProvider) {
   AWS.config.update({ region: provider.getConfigVal("DEFAULT_AWS_REGION") });
-  AWS.config.setPromisesDependency(Promise);
 
   const sns = new AWS.SNS({ apiVersion: "2010-03-31" });
   const topicMessageSender = makeTopicMessageSender(provider, sns);

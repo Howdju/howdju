@@ -34,9 +34,11 @@ import {
 
 import { DatabaseProvider } from "./databaseInit";
 
+/** Provides access to DAOs and previous types. */
 export type DaosProvider = ReturnType<typeof daosInitializer> &
   DatabaseProvider;
 
+/** Initializes DAOs */
 export function daosInitializer(provider: DatabaseProvider) {
   const logger = provider.logger;
   const database = provider.database;

@@ -2,13 +2,18 @@ import isArray from "lodash/isArray";
 import merge from "lodash/merge";
 
 import { arrayToObject } from "howdju-common";
-import { baseConfig, ApiConfig, LoggerProvider } from "howdju-service-common";
+import {
+  baseConfig,
+  ApiConfig,
+  LoggerProvider,
+  ConfigProviderConfig,
+} from "howdju-service-common";
+import { devWebServerPort } from "howdju-ops";
 
 import devConfig from "../config/config.development";
 import prodConfig from "../config/config.production";
-import { devWebServerPort } from "howdju-ops";
 
-export function makeConfig(provider: LoggerProvider) {
+export function makeConfig(provider: LoggerProvider): ConfigProviderConfig {
   const stageConfig = {
     uiAuthority: provider.getConfigVal(
       "UI_AUTHORITY",
@@ -29,7 +34,7 @@ export function makeConfig(provider: LoggerProvider) {
   };
 }
 
-export function getEnvConfig(): Partial<ApiConfig> {
+function getEnvConfig(): Partial<ApiConfig> {
   switch (process.env.NODE_ENV) {
     case "development": {
       let corsAllowOrigin = devConfig.corsAllowOrigin;

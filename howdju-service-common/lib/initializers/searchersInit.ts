@@ -7,9 +7,11 @@ import {
 import { DaosProvider } from "./daosInit";
 import { DatabaseProvider } from "./databaseInit";
 
+/** Provides the searchers and previous providers. */
 export type SearchersProvider = ReturnType<typeof searchersInitializer> &
   DaosProvider;
 
+/** Initializes the searchers. */
 export function searchersInitializer(provider: DatabaseProvider) {
   const propositionsTextSearcher = makePropositionTextSearcher(
     provider.database

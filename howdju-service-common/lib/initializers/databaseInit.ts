@@ -3,8 +3,10 @@ import { Database, makePool } from "..";
 
 import { ConfigProvider } from "./BaseProvider";
 
+/** Provides the database and previous providers. */
 export type DatabaseProvider = ReturnType<typeof databaseInit> & ConfigProvider;
 
+/** Initializes the database. */
 export function databaseInit(provider: ConfigProvider) {
   const config = {
     user: provider.getConfigVal("DB_USER"),

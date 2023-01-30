@@ -44,6 +44,7 @@ function localAddress() {
   return addresses.length ? addresses[0] : loopbackAddress;
 }
 
+// Currently unused, but potentialy useful in the future
 module.exports.getLocalAddressFromIpConfig =
   function getLocalAddressFromIpConfig() {
     try {

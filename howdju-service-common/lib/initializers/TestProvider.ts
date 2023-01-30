@@ -13,18 +13,14 @@ import { DatabaseProvider } from "./databaseInit";
 import { LoggerProvider } from "./loggerInit";
 import { AwsProvider } from "./awsInit";
 
-/** A provider for tests.
+/**
+ * A dependency locator for tests.
  *
- * This is basically a low-fi DI container. The benefit of using this is that it mirrors the
- * ApiProvider we were already using in the API. And at least we are encouraged to structure our
- * classes using DI and SRP.
+ * This test-only provider mirrors the ApiProvider we use in the API.
  *
- * The downsides are:
- *
- * 1) it's not flexible; it's tedious to change deps since we hard code their relations.
- * 2) it must construct all dependencies regardless of what the test actually requests., which is
- *    not too bad for the TestProvider since by definition it should not have any expensive resources
- *    for tests.
+ * An additional downside of it is that it must construct all dependencies regardless of what the
+ * test actually requests., which shouldn't be terrible since by definition it should not have any
+ * expensive resources for tests.
  */
 export class TestProvider {
   isProduction = false;
