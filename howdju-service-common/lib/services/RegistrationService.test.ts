@@ -28,7 +28,7 @@ import {
 } from "..";
 import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { Pool } from "pg";
-import TestProvider from "@/initializers/TestProvider";
+import { makeTestProvider } from "@/initializers/TestProvider";
 
 describe("RegistrationService", () => {
   const dbConfig = makeTestDbConfig();
@@ -41,9 +41,9 @@ describe("RegistrationService", () => {
     pool = makePool(mockLogger, { ...dbConfig, database: dbName });
     const database = new Database(mockLogger, pool);
 
-    const provider = new TestProvider(database);
+    const provider = makeTestProvider(database);
 
-    service = (provider as any).registrationService;
+    service = provider.registrationService;
   });
   afterEach(async () => {
     await pool.end();

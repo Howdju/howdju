@@ -1,5 +1,3 @@
-import assign from "lodash/assign";
-
 import {
   WritValidator,
   WritQuoteValidator,
@@ -15,9 +13,14 @@ import {
   UrlValidator,
   UserValidator,
   JustificationVoteValidator,
-} from "@/validators";
+} from "../validators";
+import { LoggerProvider } from "./loggerInit";
+import { SearchersProvider } from "./searchersInit";
 
-export function validatorsInitializer(provider: any) {
+export type ValidatorsProvider = ReturnType<typeof validatorsInitializer> &
+  SearchersProvider;
+
+export function validatorsInitializer(provider: LoggerProvider) {
   const urlValidator = new UrlValidator();
   const userValidator = new UserValidator();
   const tagValidator = new TagValidator();
@@ -48,7 +51,9 @@ export function validatorsInitializer(provider: any) {
     );
   const credentialValidator = new CredentialValidator();
 
-  assign(provider, {
+  provider.logger.debug("validatorsInit complete");
+
+  return {
     credentialValidator,
     justificationBasisCompoundValidator,
     propositionValidator,
@@ -59,7 +64,5 @@ export function validatorsInitializer(provider: any) {
     justificationVoteValidator,
     writValidator,
     writQuoteValidator,
-  });
-
-  provider.logger.debug("validatorsInit complete");
+  };
 }

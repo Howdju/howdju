@@ -3,13 +3,12 @@ import outdent from "outdent";
 import {
   AuthToken,
   CreateContentReport,
+  formatZodError,
   Logger,
-  schemaIds,
   topicMessages,
   TopicMessageSender,
   User,
 } from "howdju-common";
-import { validate } from "howdju-ajv-sourced";
 
 import { EntityValidationError } from "../serviceErrors";
 import { ApiConfig, AuthService, ContentReportsDao, UsersService } from "..";
@@ -40,20 +39,15 @@ export class ContentReportsService {
   }
 
   async createContentReport(
-    authToken: AuthToken,
+    authToken: AuthToken | undefined,
     contentReport: CreateContentReport
   ) {
     const now = new Date();
     const userId = await this.authService.readUserIdForAuthToken(authToken);
 
-    const { isValid, errors: validationErrors } = validate(
-      schemaIds.contentReport,
-      contentReport
-    );
-    if (!isValid) {
-      // TODO figure out AJV equivalent of validationErrors
-      // const errors = translateJoiError(validationErrors)
-      throw new EntityValidationError(validationErrors);
+    const result = CreateContentReport.safeParse(contentReport);
+    if (!result.success) {
+      throw new EntityValidationError(formatZodError(result.error));
     }
 
     await this.contentReportsDao.createContentReport(

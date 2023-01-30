@@ -1,5 +1,3 @@
-import assign from "lodash/assign";
-
 import {
   AccountSettingsService,
   ActionsService,
@@ -29,9 +27,15 @@ import {
   VidSegmentsService,
   WritsService,
   WritQuotesService,
-} from "@/services";
+} from "../services";
+import { AwsProvider } from "./awsInit";
 
-export function servicesInitializer(provider: any) {
+/** Provides the services and previous providers. */
+export type ServicesProvider = ReturnType<typeof servicesInitializer> &
+  AwsProvider;
+
+/** Initializes the services. */
+export function servicesInitializer(provider: AwsProvider) {
   const actionsService = new ActionsService(provider.actionsDao);
   const authService = new AuthService(
     provider.appConfig,
@@ -121,7 +125,8 @@ export function servicesInitializer(provider: any) {
     writQuotesService,
     picRegionsService,
     vidSegmentsService,
-    provider.sourceExcerptParaphrasesDao
+    provider.sourceExcerptParaphrasesDao,
+    authService
   );
   const justificationBasisCompoundsService =
     new JustificationBasisCompoundsService(
@@ -215,7 +220,9 @@ export function servicesInitializer(provider: any) {
     provider.contentReportsDao
   );
 
-  assign(provider, {
+  provider.logger.debug("servicesInit complete");
+
+  return {
     accountSettingsService,
     actionsService,
     authService,
@@ -242,7 +249,5 @@ export function servicesInitializer(provider: any) {
     usersService,
     writQuotesService,
     writsService,
-  });
-
-  provider.logger.debug("servicesInit complete");
+  };
 }

@@ -3,7 +3,7 @@ const { esbuilder } = require("./esbuilder");
 
 const { devApiServerPort } = require("howdju-ops");
 
-const { apiHostOrHostnameAddress } = require("../src/config/nativeUtil");
+const { apiHostOrHostnameAddress } = require("./addressUtils");
 
 const apiHost = apiHostOrHostnameAddress(false);
 

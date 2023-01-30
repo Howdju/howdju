@@ -325,7 +325,7 @@ export const encodeQueryStringObject = (obj: object) =>
 
 export const decodeQueryStringObject = (param: string | undefined) => {
   if (!param) {
-    return param;
+    return undefined;
   }
 
   const keyVals = param.split(",");
@@ -342,9 +342,9 @@ export const decodeQueryStringObject = (param: string | undefined) => {
 export const encodeSorts = (sorts: SortDescription[]) =>
   map(sorts, ({ property, direction }) => `${property}=${direction}`).join(",");
 
-export const decodeSorts = (param: string) => {
+export const decodeSorts = (param: string | undefined) => {
   if (!param) {
-    return param;
+    return [];
   }
 
   const propertyDirections = param.split(",");

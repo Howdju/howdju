@@ -50,7 +50,7 @@ export function errorFormatToString(errorFormat: IssueFormat): string {
 }
 
 /** Formats a Zod error with our custom formatter and removes duplicates. */
-export function formatZodError<T>(error: z.ZodError<T>) {
+export function formatZodError<T>(error: z.ZodError<T>): ModelErrors<T> {
   return removeZodErrorDupes(error.format(zodIssueFormatter));
 }
 

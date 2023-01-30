@@ -136,6 +136,7 @@ class AwsLogger {
       logFormat = "text",
     }
   ) {
+    this.context = {};
     this.console = console;
     this.logLevel = logLevel;
     this.doUseCarriageReturns = doUseCarriageReturns;

@@ -22,7 +22,7 @@ import {
   UsersDao,
   WritQuotesService,
 } from "..";
-import TestProvider from "@/initializers/TestProvider";
+import { makeTestProvider } from "@/initializers/TestProvider";
 import { CreateJustificationDataIn } from "./dataTypes";
 import {
   JustificationRef,
@@ -57,16 +57,16 @@ describe("JustificationsDao", () => {
     pool = makePool(mockLogger, { ...dbConfig, database: dbName });
     const database = new Database(mockLogger, pool);
 
-    const provider = new TestProvider(database);
+    const provider = makeTestProvider(database);
 
-    dao = (provider as any).justificationsDao;
-    statementsService = (provider as any).statementsService;
-    persorgsDao = (provider as any).persorgsDao;
-    propositionsDao = (provider as any).propositionsDao;
-    usersDao = (provider as any).usersDao;
-    authService = (provider as any).authService;
-    propositionCompoundsService = (provider as any).propositionCompoundsService;
-    writQuotesService = (provider as any).writQuotesService;
+    dao = provider.justificationsDao;
+    statementsService = provider.statementsService;
+    persorgsDao = provider.persorgsDao;
+    propositionsDao = provider.propositionsDao;
+    usersDao = provider.usersDao;
+    authService = provider.authService;
+    propositionCompoundsService = provider.propositionCompoundsService;
+    writQuotesService = provider.writQuotesService;
   });
   afterEach(async () => {
     await pool.end();

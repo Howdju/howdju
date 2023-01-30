@@ -9,6 +9,7 @@ import join from "lodash/join";
 import map from "lodash/map";
 import partition from "lodash/partition";
 import toNumber from "lodash/toNumber";
+import { merge } from "lodash";
 
 import {
   JustificationBasisTypes,
@@ -46,9 +47,10 @@ import {
   StatementOut,
   PropositionCompoundOut,
   WritQuoteOut,
+  makeModelErrors,
 } from "howdju-common";
 
-import { ApiConfig } from "@/config";
+import { ApiConfig } from "../config";
 import { EntityService } from "./EntityService";
 import {
   createContinuationToken,
@@ -62,7 +64,7 @@ import {
   AuthorizationError,
   EntityNotFoundError,
 } from "../serviceErrors";
-import { withPrependedIssues } from "../util";
+import { prefixErrorPath } from "../util";
 import { ActionsService } from "./ActionsService";
 import {
   AuthService,
@@ -74,12 +76,11 @@ import {
   StatementsService,
   WritQuotesService,
 } from "..";
-import { merge } from "lodash";
 import {
   CreateJustificationDataIn,
   ReadJustificationDataOut,
-} from "@/daos/dataTypes";
-import { toIdString } from "@/daos/daosUtil";
+} from "../daos/dataTypes";
+import { toIdString } from "../daos/daosUtil";
 
 export class JustificationsService extends EntityService<
   CreateJustification,
@@ -316,7 +317,10 @@ export class JustificationsService extends EntityService<
     );
   }
 
-  async deleteJustification(authToken: AuthToken, justificationId: EntityId) {
+  async deleteJustification(
+    authToken: AuthToken | undefined,
+    justificationId: EntityId
+  ) {
     const userId = await this.authService.readUserIdForAuthToken(authToken);
 
     const [hasPermission, justification] = await Promise.all([
@@ -336,11 +340,16 @@ export class JustificationsService extends EntityService<
     if (!hasPermission) {
       const creatorUserId = get(justification, "creator.id");
       if (!creatorUserId || userId !== creatorUserId) {
-        throw new AuthorizationError({
-          modelErrors: [
-            authorizationErrorCodes.CANNOT_MODIFY_OTHER_USERS_ENTITIES,
-          ],
-        });
+        throw new AuthorizationError(
+          makeModelErrors<Justification>((j) =>
+            j({
+              message: "Cannot delete other user's justifications.",
+              params: {
+                code: authorizationErrorCodes.CANNOT_MODIFY_OTHER_USERS_ENTITIES,
+              },
+            })
+          )
+        );
       }
 
       const created = moment(justification.created);
@@ -515,7 +524,7 @@ export class JustificationsService extends EntityService<
     now: Moment
   ): Promise<{ isExtant: boolean; justification: JustificationOut }> {
     const [{ target }, { basis }] = await Promise.all([
-      withPrependedIssues(
+      prefixErrorPath(
         this.readOrCreateJustificationTarget(
           createJustification.target,
           userId,
@@ -523,7 +532,7 @@ export class JustificationsService extends EntityService<
         ),
         "target"
       ),
-      withPrependedIssues(
+      prefixErrorPath(
         this.readOrCreateJustificationBasis(
           createJustification.basis,
           userId,
@@ -588,7 +597,7 @@ export class JustificationsService extends EntityService<
     const type = justificationTarget.type;
     switch (type) {
       case "PROPOSITION": {
-        const { isExtant, proposition } = await withPrependedIssues(
+        const { isExtant, proposition } = await prefixErrorPath(
           this.propositionsService.readOrCreateValidPropositionAsUser(
             justificationTarget.entity,
             userId,
@@ -603,7 +612,7 @@ export class JustificationsService extends EntityService<
       }
 
       case "STATEMENT": {
-        const { isExtant, statement } = await withPrependedIssues(
+        const { isExtant, statement } = await prefixErrorPath(
           this.statementsService.doReadOrCreate(
             justificationTarget.entity,
             userId,
@@ -618,7 +627,7 @@ export class JustificationsService extends EntityService<
       }
 
       case "JUSTIFICATION": {
-        const { isExtant, justification } = await withPrependedIssues(
+        const { isExtant, justification } = await prefixErrorPath(
           this.doReadOrCreate(justificationTarget.entity, userId, now),
           "entity"
         );
@@ -641,7 +650,7 @@ export class JustificationsService extends EntityService<
     const type = justificationBasis.type;
     switch (type) {
       case JustificationBasisTypes.WRIT_QUOTE: {
-        const { isExtant, writQuote } = await withPrependedIssues(
+        const { isExtant, writQuote } = await prefixErrorPath(
           this.writQuotesService.readOrCreateWritQuoteAsUser(
             justificationBasis.entity,
             userId,
@@ -657,7 +666,7 @@ export class JustificationsService extends EntityService<
 
       case JustificationBasisTypes.PROPOSITION_COMPOUND: {
         // TODO update to readOrCreatePropositionCompoundAsUser
-        const { isExtant, propositionCompound } = await withPrependedIssues(
+        const { isExtant, propositionCompound } = await prefixErrorPath(
           this.propositionCompoundsService.createPropositionCompoundAsUser(
             justificationBasis.entity,
             userId,
