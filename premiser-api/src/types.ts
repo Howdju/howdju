@@ -1,21 +1,5 @@
 import { AuthToken, HttpMethod, HttpStatusCode } from "howdju-common";
 
-import { AppProvider } from "./init";
-
-export type Route = {
-  id: string;
-  method: HttpMethod;
-  path?: string | RegExp;
-  /** Limits the handler to routes matching these parameters */
-  queryStringParameters?: Record<string, string | RegExp>;
-  handler: Handler;
-};
-
-export type Handler = (
-  appProvider: AppProvider,
-  { callback, request }: { callback: ApiCallback; request: RoutedRequest }
-) => Promise<void>;
-
 export interface RequestIdentifiers {
   clientRequestId?: string;
   awsRequestId?: string;
@@ -34,10 +18,6 @@ export interface Request {
   authToken: AuthToken | undefined;
   // TODO(1) add a generic parameter `Body extends Record<string, any>`.
   body: Record<string, any>;
-}
-
-export interface RoutedRequest extends Request {
-  pathParameters: string[];
 }
 
 export type ApiCallback = ({

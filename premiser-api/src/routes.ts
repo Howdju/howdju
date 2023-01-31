@@ -9,6 +9,25 @@ import {
   Proposition,
   WritQuote,
   JustificationSearchFilters,
+  AuthToken,
+  CreateProposition,
+  UpdateProposition,
+  CreateStatement,
+  CreateJustification,
+  CreateWritQuote,
+  UpdateWritQuote,
+  Credentials,
+  PasswordResetRequest,
+  RegistrationConfirmation,
+  RegistrationRequest,
+  CreatePropositionTagVote,
+  CreateUser,
+  CreateAccountSettings,
+  UpdateAccountSettings,
+  CreateContentReport,
+  UpdatePersorg,
+  CreateJustificationVote,
+  DeleteJustificationVote,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -18,69 +37,81 @@ import {
 } from "howdju-service-common";
 
 import { badRequest, ok } from "./responses";
-import { Route } from "./types";
+import { ApiCallback } from "./types";
+import { AppProvider } from "./init";
 
-export const routes: Route[] = [
+type QueryStringParameters<Params extends string> = {
+  queryStringParameters: {
+    [key in Params]: string | undefined;
+  };
+};
+
+type PathParameters = {
+  pathParameters: string[];
+};
+
+type Authed = {
+  authToken: AuthToken;
+};
+
+type Body<T> = {
+  body: T;
+};
+
+export type Route = typeof routes[keyof typeof routes];
+
+export const routes = {
   /*
    * Options
    */
-  {
-    id: "options",
+  options: {
     method: httpMethods.OPTIONS,
-    handler: (_appProvider, { callback }) => Promise.resolve(ok({ callback })),
+    handler: (_appProvider: AppProvider, callback: ApiCallback) =>
+      Promise.resolve(ok({ callback })),
   },
 
   /*
    * Search
    */
-  {
-    id: "searchPropositions",
+  searchPropositions: {
     path: "search-propositions",
     method: httpMethods.GET,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { searchText },
-        },
-      }
+        queryStringParameters: { searchText },
+      }: QueryStringParameters<"searchText">
     ) => {
       const rankedPropositions =
         await appProvider.propositionsTextSearcher.search(searchText);
       return ok({ callback, body: rankedPropositions });
     },
   },
-  {
-    id: "searchTags",
+  searchTags: {
     path: "search-tags",
     method: httpMethods.GET,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { searchText },
-        },
-      }
+        queryStringParameters: { searchText },
+      }: QueryStringParameters<"searchText">
     ) => {
       const rankedPropositions =
         await appProvider.tagsService.readTagsLikeTagName(searchText);
       return ok({ callback, body: rankedPropositions });
     },
   },
-  {
-    id: "searchWrits",
+  searchWrits: {
     path: "search-writs",
     method: httpMethods.GET,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { searchText },
-        },
-      }
+        queryStringParameters: { searchText },
+      }: QueryStringParameters<"searchText">
     ) => {
       const rankedWrits = await appProvider.writsTitleSearcher.search(
         searchText
@@ -88,18 +119,15 @@ export const routes: Route[] = [
       return ok({ callback, body: rankedWrits });
     },
   },
-  {
-    id: "searchPersorgs",
+  searchPersorgs: {
     path: "search-persorgs",
     method: httpMethods.GET,
     async handler(
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { searchText },
-        },
-      }
+        queryStringParameters: { searchText },
+      }: QueryStringParameters<"searchText">
     ) {
       const rankedPersorgs = await appProvider.persorgsNameSearcher.search(
         searchText
@@ -107,36 +135,28 @@ export const routes: Route[] = [
       return ok({ callback, body: rankedPersorgs });
     },
   },
-  {
-    id: "mainSearch",
+  mainSearch: {
     path: "search",
     method: httpMethods.GET,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { searchText },
-        },
-      }
+        queryStringParameters: { searchText },
+      }: QueryStringParameters<"searchText">
     ) => {
       const results = await appProvider.mainSearchService.search(searchText);
       return ok({ callback, body: results });
     },
   },
 
-  {
-    id: "readTag",
+  readTag: {
     path: new RegExp("^tags/([^/]+)$"),
     method: httpMethods.GET,
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [tagId],
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { pathParameters: [tagId] }: PathParameters
     ) => {
       const tag = await appProvider.tagsService.readTagForId(tagId);
       return ok({ callback, body: { tag } });
@@ -146,20 +166,17 @@ export const routes: Route[] = [
   /*
    * Propositions
    */
-  {
-    id: "readTaggedPropositions",
+  readTaggedPropositions: {
     path: "propositions",
     method: httpMethods.GET,
     queryStringParameters: { tagId: /.+/ },
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        request: {
-          queryStringParameters: { tagId },
-          authToken,
-        },
-        callback,
-      }
+        queryStringParameters: { tagId },
+        authToken,
+      }: QueryStringParameters<"tagId"> & Authed
     ) => {
       const propositions =
         await appProvider.propositionsService.readPropositionsForTagId(tagId, {
@@ -168,17 +185,23 @@ export const routes: Route[] = [
       return ok({ callback, body: { propositions } });
     },
   },
-  {
-    id: "readPropositions",
+  readPropositions: {
     path: "propositions",
     method: httpMethods.GET,
-    handler: async (appProvider, { request, callback }) => {
-      const {
-        sorts: encodedSorts,
-        continuationToken,
-        count,
-        propositionIds: propositionIdsParam,
-      } = request.queryStringParameters;
+    handler: async (
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      {
+        queryStringParameters: {
+          sorts: encodedSorts,
+          continuationToken,
+          count,
+          propositionIds: propositionIdsParam,
+        },
+      }: QueryStringParameters<
+        "sorts" | "continuationToken" | "count" | "propositionIds"
+      >
+    ) => {
       const sorts = decodeSorts(encodedSorts);
       if (propositionIdsParam) {
         const propositionIds = split(propositionIdsParam, ",");
@@ -201,19 +224,16 @@ export const routes: Route[] = [
       }
     },
   },
-  {
-    id: "createProposition",
+  createProposition: {
     path: "propositions",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { proposition: createProposition },
-        },
-      }
+        authToken,
+        body: { proposition: createProposition },
+      }: Authed & Body<{ proposition: CreateProposition }>
     ) => {
       const { proposition, isExtant } = await prefixErrorPath(
         appProvider.propositionsService.readOrCreateProposition(
@@ -225,21 +245,15 @@ export const routes: Route[] = [
       return ok({ callback, body: { proposition, isExtant } });
     },
   },
-  {
-    id: "readProposition",
+  readProposition: {
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.GET,
     // explicitly no query string parameters
     queryStringParameters: {},
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [propositionId],
-          authToken,
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { pathParameters: [propositionId], authToken }: Authed & PathParameters
     ) => {
       const proposition =
         await appProvider.propositionsService.readPropositionForId(
@@ -249,19 +263,16 @@ export const routes: Route[] = [
       return ok({ callback, body: { proposition } });
     },
   },
-  {
-    id: "updateProposition",
+  updateProposition: {
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.PUT,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { proposition: updateProposition },
-        },
-      }
+        authToken,
+        body: { proposition: updateProposition },
+      }: Authed & Body<{ proposition: UpdateProposition }>
     ) => {
       const proposition = await prefixErrorPath(
         appProvider.propositionsService.updateProposition(
@@ -273,19 +284,13 @@ export const routes: Route[] = [
       return ok({ callback, body: { proposition } });
     },
   },
-  {
-    id: "deleteProposition",
+  deleteProposition: {
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.DELETE,
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          authToken,
-          pathParameters: [propositionId],
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { authToken, pathParameters: [propositionId] }: Authed & PathParameters
     ) => {
       await prefixErrorPath(
         appProvider.propositionsService.deleteProposition(
@@ -301,19 +306,16 @@ export const routes: Route[] = [
   /*
    * Statements
    */
-  {
-    id: "createStatement",
+  createStatement: {
     path: new RegExp("^statements$"),
     method: httpMethods.POST,
     async handler(
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { statement: inStatement },
-        },
-      }
+        authToken,
+        body: { statement: inStatement },
+      }: Authed & Body<{ statement: CreateStatement }>
     ) {
       const { isExtant, statement } =
         await appProvider.statementsService.readOrCreate(
@@ -323,19 +325,16 @@ export const routes: Route[] = [
       return ok({ callback, body: { isExtant, statement } });
     },
   },
-  {
-    id: "readSpeakerStatements",
+  readSpeakerStatements: {
     path: "statements",
     method: httpMethods.GET,
     queryStringParameters: { speakerPersorgId: /.+/ },
     async handler(
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { speakerPersorgId },
-        },
-      }
+        queryStringParameters: { speakerPersorgId },
+      }: QueryStringParameters<"speakerPersorgId">
     ) {
       const statements =
         await appProvider.statementsService.readStatementsForSpeakerPersorgId(
@@ -344,8 +343,7 @@ export const routes: Route[] = [
       return ok({ callback, body: { statements } });
     },
   },
-  {
-    id: "readSentenceStatements",
+  readSentenceStatements: {
     path: "statements",
     method: httpMethods.GET,
     queryStringParameters: {
@@ -353,13 +351,11 @@ export const routes: Route[] = [
       sentenceId: /.+/,
     },
     async handler(
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { sentenceType, sentenceId },
-        },
-      }
+        queryStringParameters: { sentenceType, sentenceId },
+      }: QueryStringParameters<"sentenceType" | "sentenceId">
     ) {
       const statements =
         await appProvider.statementsService.readStatementsForSentenceTypeAndId(
@@ -369,8 +365,7 @@ export const routes: Route[] = [
       return ok({ callback, body: { statements } });
     },
   },
-  {
-    id: "readIndirectRootPropositionStatements",
+  readIndirectRootPropositionStatements: {
     path: "statements",
     method: httpMethods.GET,
     queryStringParameters: {
@@ -378,13 +373,11 @@ export const routes: Route[] = [
       indirect: "",
     },
     async handler(
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { rootPropositionId },
-        },
-      }
+        queryStringParameters: { rootPropositionId },
+      }: QueryStringParameters<"rootPropositionId">
     ) {
       const statements =
         await appProvider.statementsService.readIndirectStatementsForRootPropositionId(
@@ -393,21 +386,18 @@ export const routes: Route[] = [
       return ok({ callback, body: { statements } });
     },
   },
-  {
-    id: "readRootPropositionStatements",
+  readRootPropositionStatements: {
     path: "statements",
     method: httpMethods.GET,
     queryStringParameters: {
       rootPropositionId: /.+/,
     },
     async handler(
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { rootPropositionId },
-        },
-      }
+        queryStringParameters: { rootPropositionId },
+      }: QueryStringParameters<"rootPropositionId">
     ) {
       const statements =
         await appProvider.statementsService.readStatementsForRootPropositionId(
@@ -416,20 +406,15 @@ export const routes: Route[] = [
       return ok({ callback, body: { statements } });
     },
   },
-  {
-    id: "readStatement",
+  readStatement: {
     path: new RegExp("^statements/([^/]+)$"),
     method: httpMethods.GET,
     // explicitly no query string parameters
     queryStringParameters: {},
     async handler(
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [statementId],
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { pathParameters: [statementId] }: PathParameters
     ) {
       const { statement } =
         await appProvider.statementsService.readStatementForId(statementId);
@@ -440,18 +425,13 @@ export const routes: Route[] = [
   /*
    * Persorgs
    */
-  {
-    id: "readPersorg",
+  readPersorg: {
     path: new RegExp("^persorgs/([^/]+)$"),
     method: httpMethods.GET,
     async handler(
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [persorgId],
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { pathParameters: [persorgId] }: PathParameters
     ) {
       const persorg = await appProvider.persorgsService.readPersorgForId(
         persorgId
@@ -459,19 +439,16 @@ export const routes: Route[] = [
       return ok({ callback, body: { persorg } });
     },
   },
-  {
-    id: "updatePersorg",
+  updatePersorg: {
     path: new RegExp("^persorgs/([^/]+)$"),
     method: httpMethods.PUT,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { persorg: updatePersorg },
-        },
-      }
+        authToken,
+        body: { persorg: updatePersorg },
+      }: Authed & Body<{ persorg: UpdatePersorg }>
     ) => {
       const persorg = await prefixErrorPath(
         appProvider.persorgsService.update(updatePersorg, authToken),
@@ -484,22 +461,16 @@ export const routes: Route[] = [
   /*
    * Root target justifications
    */
-  {
-    id: "readPropositionJustifications",
+  readPropositionJustifications: {
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.GET,
     queryStringParameters: {
       include: "justifications",
     },
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [propositionId],
-          authToken,
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { pathParameters: [propositionId], authToken }: PathParameters & Authed
     ) => {
       const proposition =
         await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
@@ -510,22 +481,16 @@ export const routes: Route[] = [
       return ok({ callback, body: { proposition } });
     },
   },
-  {
-    id: "readStatementJustifications",
+  readStatementJustifications: {
     path: new RegExp("^statements/([^/]+)$"),
     method: httpMethods.GET,
     queryStringParameters: {
       include: "justifications",
     },
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [statementId],
-          authToken,
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { pathParameters: [statementId], authToken }: PathParameters & Authed
     ) => {
       const statement =
         await appProvider.rootTargetJustificationsService.readRootTargetWithJustifications(
@@ -540,20 +505,17 @@ export const routes: Route[] = [
   /*
    * Proposition compounds
    */
-  {
-    id: "readPropositionCompound",
+  readPropositionCompound: {
     path: new RegExp("^proposition-compounds/([^/]+)$"),
     method: httpMethods.GET,
     queryStringParameters: {},
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          pathParameters: [propositionCompoundId],
-          authToken,
-        },
-      }
+        pathParameters: [propositionCompoundId],
+        authToken,
+      }: PathParameters & Authed
     ) => {
       const propositionCompound =
         await appProvider.propositionCompoundsService.readPropositionCompoundForId(
@@ -567,20 +529,17 @@ export const routes: Route[] = [
   /*
    * Source excerpt paraphrases
    */
-  {
-    id: "readSourceExcerptParaphrase",
+  readSourceExcerptParaphrase: {
     path: new RegExp("^source-excerpt-paraphrases/([^/]+)$"),
     method: httpMethods.GET,
     queryStringParameters: {},
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          pathParameters: [sourceExcerptParaphraseId],
-          authToken,
-        },
-      }
+        pathParameters: [sourceExcerptParaphraseId],
+        authToken,
+      }: PathParameters & Authed
     ) => {
       const sourceExcerptParaphrase =
         await appProvider.sourceExcerptParaphrasesService.readSourceExcerptParaphraseForId(
@@ -596,19 +555,16 @@ export const routes: Route[] = [
   /*
    * Justifications
    */
-  {
-    id: "createJustification",
+  createJustification: {
     path: "justifications",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { justification: createJustification },
-        },
-      }
+        authToken,
+        body: { justification: createJustification },
+      }: Authed & Body<{ justification: CreateJustification }>
     ) => {
       const { justification, isExtant } = await prefixErrorPath(
         appProvider.justificationsService.readOrCreate(
@@ -620,18 +576,24 @@ export const routes: Route[] = [
       return ok({ callback, body: { justification, isExtant } });
     },
   },
-  {
-    id: "readJustifications",
+  readJustifications: {
     path: "justifications",
     method: httpMethods.GET,
-    handler: async (appProvider, { request, callback }) => {
-      const {
-        filters: encodedFilters,
-        sorts: encodedSorts,
-        continuationToken,
-        count,
-        includeUrls,
-      } = request.queryStringParameters;
+    handler: async (
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      {
+        queryStringParameters: {
+          filters: encodedFilters,
+          sorts: encodedSorts,
+          continuationToken,
+          count,
+          includeUrls,
+        },
+      }: QueryStringParameters<
+        "filters" | "sorts" | "continuationToken" | "count" | "includeUrls"
+      >
+    ) => {
       const filters =
         decodeQueryStringObject(encodedFilters) ||
         ({} as JustificationSearchFilters);
@@ -650,19 +612,13 @@ export const routes: Route[] = [
       });
     },
   },
-  {
-    id: "deleteJustification",
+  deleteJustification: {
     path: new RegExp("^justifications/([^/]+)$"),
     method: httpMethods.DELETE,
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          authToken,
-          pathParameters: [justificationId],
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { authToken, pathParameters: [justificationId] }: PathParameters & Authed
     ) => {
       await prefixErrorPath(
         appProvider.justificationsService.deleteJustification(
@@ -678,19 +634,16 @@ export const routes: Route[] = [
   /*
    * Writ quotes
    */
-  {
-    id: "createWritQuote",
+  createWritQuote: {
     path: "writ-quotes",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { writQuote: createWritQuote },
-        },
-      }
+        authToken,
+        body: { writQuote: createWritQuote },
+      }: Authed & Body<{ writQuote: CreateWritQuote }>
     ) => {
       const { writQuote, alreadyExists } = await prefixErrorPath(
         appProvider.writQuotesService.createWritQuote({
@@ -702,16 +655,20 @@ export const routes: Route[] = [
       return ok({ callback, body: { writQuote, alreadyExists } });
     },
   },
-  {
-    id: "readWritQuotes",
+  readWritQuotes: {
     path: "writ-quotes",
     method: httpMethods.GET,
-    handler: async (appProvider, { request, callback }) => {
-      const {
-        sorts: encodedSorts,
-        continuationToken,
-        count,
-      } = request.queryStringParameters;
+    handler: async (
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      {
+        queryStringParameters: {
+          sorts: encodedSorts,
+          continuationToken,
+          count,
+        },
+      }: QueryStringParameters<"sorts" | "continuationToken" | "count">
+    ) => {
       const sorts = decodeSorts(encodedSorts);
       const { writQuotes, continuationToken: newContinuationToken } =
         await appProvider.writQuotesService.readWritQuotes({
@@ -725,19 +682,13 @@ export const routes: Route[] = [
       });
     },
   },
-  {
-    id: "readWritQuote",
+  readWritQuote: {
     path: new RegExp("^writ-quotes/([^/]+)$"),
     method: httpMethods.GET,
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          pathParameters: [writQuoteId],
-          authToken,
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { pathParameters: [writQuoteId], authToken }: PathParameters & Authed
     ) => {
       const writQuote = await appProvider.writQuotesService.readWritQuoteForId(
         writQuoteId,
@@ -746,19 +697,16 @@ export const routes: Route[] = [
       return ok({ callback, body: { writQuote } });
     },
   },
-  {
-    id: "updateWritQuote",
+  updateWritQuote: {
     path: new RegExp("^writ-quotes/([^/]+)$"),
     method: httpMethods.PUT,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { writQuote: updateWritQuote },
-        },
-      }
+        authToken,
+        body: { writQuote: updateWritQuote },
+      }: Authed & Body<{ writQuote: UpdateWritQuote }>
     ) => {
       const writQuote = await prefixErrorPath(
         appProvider.writQuotesService.updateWritQuote({
@@ -774,16 +722,20 @@ export const routes: Route[] = [
   /*
    * Writs
    */
-  {
-    id: "readWrits",
+  readWrits: {
     path: "writs",
     method: httpMethods.GET,
-    handler: async (appProvider, { request, callback }) => {
-      const {
-        sorts: encodedSorts,
-        continuationToken,
-        count,
-      } = request.queryStringParameters;
+    handler: async (
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      {
+        queryStringParameters: {
+          sorts: encodedSorts,
+          continuationToken,
+          count,
+        },
+      }: QueryStringParameters<"sorts" | "continuationToken" | "count">
+    ) => {
       const sorts = decodeSorts(encodedSorts);
       const { writs, continuationToken: newContinuationToken } =
         await appProvider.writsService.readWrits({
@@ -801,18 +753,13 @@ export const routes: Route[] = [
   /*
    * Auth
    */
-  {
-    id: "login",
+  login: {
     path: "login",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
-      {
-        callback,
-        request: {
-          body: { credentials },
-        },
-      }
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { body: { credentials } }: Body<{ credentials: Credentials }>
     ) => {
       try {
         const { user, authToken, expires } =
@@ -826,27 +773,27 @@ export const routes: Route[] = [
       }
     },
   },
-  {
-    id: "logout",
+  logout: {
     path: "logout",
     method: httpMethods.POST,
-    handler: async (appProvider, { callback, request: { authToken } }) => {
+    handler: async (
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { authToken }: Authed
+    ) => {
       await appProvider.authService.logout(authToken);
       return ok({ callback });
     },
   },
-  {
-    id: "requestPasswordReset",
+  requestPasswordReset: {
     path: "password-reset-requests",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { passwordResetRequest },
-        },
-      }
+        body: { passwordResetRequest },
+      }: Body<{ passwordResetRequest: PasswordResetRequest }>
     ) => {
       const duration = await appProvider.passwordResetService.createRequest(
         passwordResetRequest
@@ -854,18 +801,15 @@ export const routes: Route[] = [
       return ok({ callback, body: { duration } });
     },
   },
-  {
-    id: "readPasswordReset",
+  readPasswordReset: {
     path: "password-reset-requests",
     method: httpMethods.GET,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { passwordResetCode },
-        },
-      }
+        queryStringParameters: { passwordResetCode },
+      }: QueryStringParameters<"passwordResetCode">
     ) => {
       const email = await appProvider.passwordResetService.checkRequestForCode(
         passwordResetCode
@@ -873,18 +817,15 @@ export const routes: Route[] = [
       return ok({ callback, body: { email } });
     },
   },
-  {
-    id: "completePasswordReset",
+  completePasswordReset: {
     path: "password-resets",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { passwordResetCode, passwordResetConfirmation },
-        },
-      }
+        body: { passwordResetCode, passwordResetConfirmation },
+      }: Body<{ passwordResetCode: string; passwordResetConfirmation: string }>
     ) => {
       const { user, authToken, expires } =
         await appProvider.passwordResetService.resetPasswordAndLogin(
@@ -894,18 +835,15 @@ export const routes: Route[] = [
       return ok({ callback, body: { user, authToken, expires } });
     },
   },
-  {
-    id: "requestRegistration",
+  requestRegistration: {
     path: "registration-requests",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { registrationRequest },
-        },
-      }
+        body: { registrationRequest },
+      }: Body<{ registrationRequest: RegistrationRequest }>
     ) => {
       const duration = await prefixErrorPath(
         appProvider.registrationService.createRequest(registrationRequest),
@@ -914,18 +852,15 @@ export const routes: Route[] = [
       return ok({ callback, body: { duration } });
     },
   },
-  {
-    id: "readRegistrationRequest",
+  readRegistrationRequest: {
     path: "registration-requests",
     method: httpMethods.GET,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          queryStringParameters: { registrationCode },
-        },
-      }
+        queryStringParameters: { registrationCode },
+      }: QueryStringParameters<"registrationCode">
     ) => {
       const email = await appProvider.registrationService.checkRequestForCode(
         registrationCode
@@ -933,18 +868,15 @@ export const routes: Route[] = [
       return ok({ callback, body: { email } });
     },
   },
-  {
-    id: "register",
+  register: {
     path: "registrations",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { registrationConfirmation },
-        },
-      }
+        body: { registrationConfirmation },
+      }: Body<{ registrationConfirmation: RegistrationConfirmation }>
     ) => {
       const { user, authToken, expires } = await prefixErrorPath(
         appProvider.registrationService.confirmRegistrationAndLogin(
@@ -960,19 +892,16 @@ export const routes: Route[] = [
   /*
    * Votes
    */
-  {
-    id: "createJustificationVote",
+  createJustificationVote: {
     path: new RegExp("^justification-votes$"),
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { justificationVote: createJustificationVote },
-          authToken,
-        },
-      }
+        body: { justificationVote: createJustificationVote },
+        authToken,
+      }: Authed & Body<{ justificationVote: CreateJustificationVote }>
     ) => {
       const justificationVote =
         await appProvider.justificationVotesService.createVote(
@@ -983,19 +912,16 @@ export const routes: Route[] = [
       return ok({ callback, body: { justificationVote } });
     },
   },
-  {
-    id: "deleteJustificationVote",
+  deleteJustificationVote: {
     path: new RegExp("^justification-votes$"),
     method: httpMethods.DELETE,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { justificationVote },
-          authToken,
-        },
-      }
+        body: { justificationVote },
+        authToken,
+      }: Authed & Body<{ justificationVote: DeleteJustificationVote }>
     ) => {
       await appProvider.justificationVotesService.deleteVote(
         authToken,
@@ -1005,19 +931,16 @@ export const routes: Route[] = [
     },
   },
 
-  {
-    id: "createPropositionTagVote",
+  createPropositionTagVote: {
     path: "proposition-tag-votes",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { propositionTagVote: createPropositionTagVote },
-          authToken,
-        },
-      }
+        body: { propositionTagVote: createPropositionTagVote },
+        authToken,
+      }: Authed & Body<{ propositionTagVote: CreatePropositionTagVote }>
     ) => {
       const propositionTagVote =
         await appProvider.propositionTagVotesService.readOrCreatePropositionTagVote(
@@ -1027,19 +950,16 @@ export const routes: Route[] = [
       return ok({ callback, body: { propositionTagVote } });
     },
   },
-  {
-    id: "deletePropositionTagVote",
+  deletePropositionTagVote: {
     path: new RegExp("^proposition-tag-votes/([^/]+)$"),
     method: httpMethods.DELETE,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          pathParameters: [propositionTagVoteId],
-          authToken,
-        },
-      }
+        pathParameters: [propositionTagVoteId],
+        authToken,
+      }: PathParameters & Authed
     ) => {
       await appProvider.propositionTagVotesService.deletePropositionTagVoteForId(
         authToken,
@@ -1052,18 +972,16 @@ export const routes: Route[] = [
   /*
    * Users
    */
-  {
-    id: "createUser",
+  createUser: {
     path: "users",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          body: { authToken, user: createUser },
-        },
-      }
+        authToken,
+        body: { user: createUser },
+      }: Authed & Body<{ user: CreateUser }>
     ) => {
       const user = await appProvider.usersService.createUserAsAuthToken(
         authToken,
@@ -1076,19 +994,16 @@ export const routes: Route[] = [
   /*
    * Account settings
    */
-  {
-    id: "createAccountSettings",
+  createAccountSettings: {
     path: "account-settings",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { accountSettings: createAccountSettings },
-        },
-      }
+        authToken,
+        body: { accountSettings: createAccountSettings },
+      }: Authed & Body<{ accountSettings: CreateAccountSettings }>
     ) => {
       const accountSettings =
         await appProvider.accountSettingsService.createAccountSettings(
@@ -1098,11 +1013,14 @@ export const routes: Route[] = [
       return ok({ callback, body: { accountSettings } });
     },
   },
-  {
-    id: "readAccountSettings",
+  readAccountSettings: {
     path: "account-settings",
     method: httpMethods.GET,
-    handler: async (appProvider, { callback, request: { authToken } }) => {
+    handler: async (
+      appProvider: AppProvider,
+      callback: ApiCallback,
+      { authToken }: Authed
+    ) => {
       try {
         const accountSettings =
           await appProvider.accountSettingsService.readOrCreateAccountSettings(
@@ -1118,19 +1036,16 @@ export const routes: Route[] = [
       }
     },
   },
-  {
-    id: "updateAccountSettings",
+  updateAccountSettings: {
     path: "account-settings",
     method: httpMethods.PUT,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { accountSettings: updateAccountSettings },
-        },
-      }
+        authToken,
+        body: { accountSettings: updateAccountSettings },
+      }: Authed & Body<{ accountSettings: UpdateAccountSettings }>
     ) => {
       const accountSettings = await appProvider.accountSettingsService.update(
         updateAccountSettings,
@@ -1143,19 +1058,16 @@ export const routes: Route[] = [
   /*
    * Content reports
    */
-  {
-    id: "createContentReport",
+  createContentReport: {
     path: "content-reports",
     method: httpMethods.POST,
     handler: async (
-      appProvider,
+      appProvider: AppProvider,
+      callback: ApiCallback,
       {
-        callback,
-        request: {
-          authToken,
-          body: { contentReport },
-        },
-      }
+        authToken,
+        body: { contentReport },
+      }: Authed & Body<{ contentReport: CreateContentReport }>
     ) => {
       await appProvider.contentReportsService.createContentReport(
         authToken,
@@ -1164,4 +1076,4 @@ export const routes: Route[] = [
       return ok({ callback });
     },
   },
-];
+} as const;

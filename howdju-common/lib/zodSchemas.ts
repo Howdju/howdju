@@ -132,6 +132,12 @@ export type CreatePersorg = z.infer<typeof CreatePersorg>;
 export const CreatePersorgInput = Persorg;
 export type CreatePersorgInput = z.infer<typeof CreatePersorgInput>;
 
+export const UpdatePersorg = Persorg;
+export type UpdatePersorg = z.infer<typeof UpdatePersorg>;
+
+export const UpdatePersorgInput = Persorg;
+export type UpdatePersorgInput = z.infer<typeof UpdatePersorgInput>;
+
 /** Represents an utterance of a proposition by a persorg. */
 export type Statement = Entity & {
   speaker: Persorg;
@@ -880,6 +886,14 @@ export type JustificationVote = z.infer<typeof JustificationVote>;
 export type JustificationVotePolarity = JustificationVote["polarity"];
 export const JustificationVotePolarities = justificationVotePolarities.Enum;
 
+export const CreateJustificationVote = JustificationVote.omit({
+  justification: true,
+});
+export type CreateJustificationVote = z.infer<typeof CreateJustificationVote>;
+
+export const DeleteJustificationVote = CreateJustificationVote;
+export type DeleteJustificationVote = z.infer<typeof DeleteJustificationVote>;
+
 const TaggableEntityType = z.enum(["PROPOSITION", "STATEMENT"]);
 export type TaggableEntityType = z.infer<typeof TaggableEntityType>;
 
@@ -892,6 +906,11 @@ export const TagVote = Entity.extend({
 });
 export type TagVote = z.infer<typeof TagVote>;
 export const TagVotePolarities = tagVotePolarities.Enum;
+
+export const CreateTagVote = TagVote.extend({
+  tag: z.union([TagRef, CreateTag]),
+});
+export type CreateTagVote = z.infer<typeof CreateTagVote>;
 
 const EntityType = z.enum([
   "JUSTIFICATION",

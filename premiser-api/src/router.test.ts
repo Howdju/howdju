@@ -1,9 +1,12 @@
+import { toPairs } from "lodash";
+
 import { mockLogger } from "howdju-test-common";
 import { httpMethods } from "howdju-common";
 
 import { selectRoute } from "./router";
 import { ServicesProvider } from "howdju-service-common";
 import { Request } from "./types";
+import { Route, routes } from "./routes";
 
 const mockAppProvider = {
   logger: mockLogger,
@@ -13,6 +16,11 @@ const clientIdentifiers = {
   sessionStorageId: undefined,
   pageLoadId: undefined,
 };
+
+const idRoutes = toPairs(routes);
+function routeId(route: Route) {
+  return idRoutes.find((r) => r[1] === route)?.[0];
+}
 
 describe("routes", () => {
   test("readProposition route path should match a proposition path", () => {
@@ -26,7 +34,7 @@ describe("routes", () => {
       queryStringParameters,
     } as Request);
 
-    expect(route.id).toBe("readProposition");
+    expect(routeId(route)).toBe("readProposition");
     expect(routedRequest.pathParameters).toEqual(["2"]);
   });
 
@@ -44,7 +52,8 @@ describe("routes", () => {
       requestIdentifiers: {},
       clientIdentifiers,
     });
-    expect(route.id).toBe("readPropositionJustifications");
+
+    expect(routeId(route)).toBe("readPropositionJustifications");
     expect(routedRequest.pathParameters).toEqual(["2"]);
   });
 
@@ -63,7 +72,7 @@ describe("routes", () => {
       clientIdentifiers,
     });
 
-    expect(route.id).toBe("readTaggedPropositions");
+    expect(routeId(route)).toBe("readTaggedPropositions");
   });
 
   test("readTaggedPropositions route path should NOT match a non-tagged propositions path", () => {
@@ -80,6 +89,7 @@ describe("routes", () => {
       authToken: undefined,
       body: {},
     });
-    expect(route.id).not.toBe("readTaggedPropositions");
+
+    expect(routeId(route)).not.toBe("readTaggedPropositions");
   });
 });
