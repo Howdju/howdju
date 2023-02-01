@@ -15,27 +15,26 @@ import {
   UserActionsConflictError,
   UserIsInactiveError,
 } from "howdju-service-common";
+import { serviceRoutes } from "howdju-service-routes";
 
 import {
   badRequest,
   conflict,
   error,
   notFound,
+  ok,
   unauthenticated,
   unauthorized,
 } from "./responses";
 import { AppProvider } from "./init";
 import { Request, ApiCallback } from "./types";
-import { routes } from "./routes";
 
-routes.options.method;
-
-const idRoutes = toPairs(routes);
+const serviceRoutePairs = toPairs(serviceRoutes);
 
 export const selectRoute = (appProvider: AppProvider, request: Request) => {
   const { path, method, queryStringParameters } = request;
 
-  for (const [routeId, route] of idRoutes) {
+  for (const [routeId, route] of serviceRoutePairs) {
     let pathMatch;
 
     if (route.method !== method) continue;
@@ -92,7 +91,8 @@ export async function routeRequest(
 ) {
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
-    await route.handler(appProvider, callback, routedRequest as any);
+    const result = await route.handler(appProvider, routedRequest as any);
+    return ok({ callback, ...result });
   } catch (err) {
     if (err instanceof EntityValidationError) {
       return badRequest({

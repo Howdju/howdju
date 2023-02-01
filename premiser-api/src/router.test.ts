@@ -1,12 +1,12 @@
 import { toPairs } from "lodash";
 
 import { mockLogger } from "howdju-test-common";
+import { ServiceRoute, serviceRoutes } from "howdju-service-routes";
+import { ServicesProvider } from "howdju-service-common";
 import { httpMethods } from "howdju-common";
 
 import { selectRoute } from "./router";
-import { ServicesProvider } from "howdju-service-common";
 import { Request } from "./types";
-import { Route, routes } from "./routes";
 
 const mockAppProvider = {
   logger: mockLogger,
@@ -17,9 +17,9 @@ const clientIdentifiers = {
   pageLoadId: undefined,
 };
 
-const idRoutes = toPairs(routes);
-function routeId(route: Route) {
-  return idRoutes.find((r) => r[1] === route)?.[0];
+const serviceRoutePairs = toPairs(serviceRoutes);
+function routeId(route: ServiceRoute) {
+  return serviceRoutePairs.find((r) => r[1] === route)?.[0];
 }
 
 describe("routes", () => {
