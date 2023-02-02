@@ -1,0 +1,27 @@
+{
+  "name": "howdju-service-routes",
+  "version": "1.0.0",
+  "description": "Contains route definitions for our API.",
+  "main": "lib/index.ts",
+  "repository": "git@bitbucket.org:howdju/howdju.git",
+  "author": "Carl Gieringer <carl@howdju.com>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "check-format": "yarn run prettier --check --ignore-path .gitignore .",
+    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "lint": "eslint --ignore-path=.gitignore .",
+    "test": "echo No tests",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "howdju-service-common": "workspace:howdju-service-common",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "eslint": "^8.27.0",
+    "eslint-config-howdju": "workspace:eslint-config-howdju",
+    "prettier": "2.7.1",
+    "typescript": "^4.9.4"
+  },
+  "packageManager": "yarn@3.3.1"
+}

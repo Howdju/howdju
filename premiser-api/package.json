@@ -83,6 +83,7 @@
     "dns-sync": "^0.2.1",
     "howdju-common": "workspace:howdju-common",
     "howdju-service-common": "workspace:howdju-service-common",
+    "howdju-service-routes": "workspace:howdju-service-routes",
     "moment": "^2.29.4",
     "pg": "^8.5.1",
     "source-map-support": "^0.5.19",

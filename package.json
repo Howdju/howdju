@@ -37,6 +37,7 @@
       "howdju-elastic",
       "howdju-mobile-app",
       "howdju-service-common",
+      "howdju-service-routes",
       "howdju-test-common",
       "lambdas/*",
       "premiser-api",

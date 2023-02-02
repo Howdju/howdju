@@ -1,7 +1,4 @@
-import assign from "lodash/assign";
-import forEach from "lodash/forEach";
-import isEmpty from "lodash/isEmpty";
-import isUndefined from "lodash/isUndefined";
+import { assign, forEach, isEmpty, isUndefined, toPairs } from "lodash";
 
 import { apiErrorCodes, toJson } from "howdju-common";
 import {
@@ -18,30 +15,42 @@ import {
   UserActionsConflictError,
   UserIsInactiveError,
 } from "howdju-service-common";
+import { serviceRoutes } from "howdju-service-routes";
 
 import {
   badRequest,
   conflict,
   error,
   notFound,
+  ok,
   unauthenticated,
   unauthorized,
 } from "./responses";
 import { AppProvider } from "./init";
-import { Route, Request, RoutedRequest, ApiCallback } from "./types";
-import { routes } from "./routes";
+import { Request, ApiCallback } from "./types";
+
+const serviceRoutePairs = toPairs(serviceRoutes);
 
 export const selectRoute = (appProvider: AppProvider, request: Request) => {
   const { path, method, queryStringParameters } = request;
 
-  for (const route of routes) {
+  for (const [routeId, route] of serviceRoutePairs) {
     let pathMatch;
 
-    if (route.method && route.method !== method) continue;
-    if (typeof route.path === "string" && route.path !== path) continue;
-    if (route.path instanceof RegExp && !(pathMatch = route.path.exec(path)))
-      continue;
-    if (route.queryStringParameters) {
+    if (route.method !== method) continue;
+    if ("path" in route) {
+      if (typeof route.path === "string" && route.path !== path) {
+        continue;
+      }
+      if (
+        route.path instanceof RegExp &&
+        !(pathMatch = route.path.exec(path))
+      ) {
+        continue;
+      }
+    }
+
+    if ("queryStringParameters" in route) {
       if (
         isEmpty(route.queryStringParameters) !== isEmpty(queryStringParameters)
       ) {
@@ -49,7 +58,7 @@ export const selectRoute = (appProvider: AppProvider, request: Request) => {
       }
 
       let isMisMatch = false;
-      forEach(route.queryStringParameters, (value, name) => {
+      forEach(route.queryStringParameters, (value: string | RegExp, name) => {
         const requestValue = queryStringParameters[name] || "";
         if (value instanceof RegExp) {
           // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
@@ -68,18 +77,12 @@ export const selectRoute = (appProvider: AppProvider, request: Request) => {
     // First item is the whole match, rest are the group matches
     const pathParameters = pathMatch ? pathMatch.slice(1) : [];
     const routedRequest = assign({}, request, { pathParameters });
-    appProvider.logger.debug(`selected route ${route.id}`);
+    appProvider.logger.debug(`selected route ${routeId}`);
     return { route, routedRequest };
   }
 
   throw new NoMatchingRouteError();
 };
-
-const handleRequest = (
-  appProvider: AppProvider,
-  callback: ApiCallback,
-  { route, routedRequest }: { route: Route; routedRequest: RoutedRequest }
-) => route.handler(appProvider, { callback, request: routedRequest });
 
 export async function routeRequest(
   request: Request,
@@ -88,7 +91,8 @@ export async function routeRequest(
 ) {
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
-    await handleRequest(appProvider, callback, { route, routedRequest });
+    const result = await route.handler(appProvider, routedRequest as any);
+    return ok({ callback, ...result });
   } catch (err) {
     if (err instanceof EntityValidationError) {
       return badRequest({
