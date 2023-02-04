@@ -1,4 +1,5 @@
 import { assign, forEach, isEmpty, isUndefined, toPairs } from "lodash";
+import { match } from "path-to-regexp";
 
 import { apiErrorCodes, toJson } from "howdju-common";
 import {
@@ -8,6 +9,7 @@ import {
   EntityNotFoundError,
   EntityValidationError,
   InvalidLoginError,
+  InvalidRequestError,
   NoMatchingRouteError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
@@ -35,18 +37,35 @@ export const selectRoute = (appProvider: AppProvider, request: Request) => {
   const { path, method, queryStringParameters } = request;
 
   for (const [routeId, route] of serviceRoutePairs) {
-    let pathMatch;
+    let pathParams;
 
     if (route.method !== method) continue;
-    if ("path" in route) {
-      if (typeof route.path === "string" && route.path !== path) {
+
+    // DO_NOT_MERGE: configure handling for all routes
+    if ("request" in route) {
+      const pathPattern = route.path;
+      const pathMatcher = match(pathPattern, { decode: decodeURIComponent });
+      const result = pathMatcher(path);
+      if (!result) {
         continue;
       }
-      if (
-        route.path instanceof RegExp &&
-        !(pathMatch = route.path.exec(path))
-      ) {
-        continue;
+      pathParams = result.params;
+    } else if ("path" in route) {
+      if (typeof route.path === "string") {
+        if (route.path !== path) {
+          continue;
+        }
+      } else if (route.path instanceof RegExp) {
+        const pathMatch = route.path.exec(path);
+        if (!pathMatch) {
+          continue;
+        }
+        pathParams = pathMatch ? pathMatch.slice(1) : [];
+        console.log({ pathParams });
+      } else {
+        throw new Error(
+          `Unsupported route.path type (${typeof route.path}): ${route.path}`
+        );
       }
     }
 
@@ -75,8 +94,7 @@ export const selectRoute = (appProvider: AppProvider, request: Request) => {
     }
 
     // First item is the whole match, rest are the group matches
-    const pathParameters = pathMatch ? pathMatch.slice(1) : [];
-    const routedRequest = assign({}, request, { pathParameters });
+    const routedRequest = assign({}, request, { pathParams });
     appProvider.logger.debug(`selected route ${routeId}`);
     return { route, routedRequest };
   }
@@ -91,9 +109,20 @@ export async function routeRequest(
 ) {
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
-    const result = await route.handler(appProvider, routedRequest as any);
+    // DO_NOT_MERGE: convert all routes to request.handler
+    const handler = "handler" in route ? route.handler : route.request.handler;
+    const result = await handler(appProvider, routedRequest as any);
     return ok({ callback, ...result });
   } catch (err) {
+    if (err instanceof InvalidRequestError) {
+      return badRequest({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.INVALID_REQUEST,
+          errors: [err.message],
+        },
+      });
+    }
     if (err instanceof EntityValidationError) {
       return badRequest({
         callback,

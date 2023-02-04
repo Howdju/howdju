@@ -128,7 +128,7 @@ const baseWebpackConfig = {
     rules: [
       {
         test: /\.m?(j|t)sx?$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/],
         resolve: {
           extensions: [".jsx", ".tsx", ".ts", "..."],
         },
@@ -186,6 +186,13 @@ const baseWebpackConfig = {
     ],
   },
   plugins,
+  // Replace imports from howdju-service-common with a reference to a property howdju-service-common
+  // on the global object. This config allows the web app to depend on howdju-service-routes (which
+  // depends on howdju-service-common) without importing any of howdju-service-common into the web
+  // app.
+  //
+  // This property will not exist, and so attempts to access it will fail.
+  externals: { "howdju-service-common": "global howdju-service-common" },
 };
 
 type BaseWebPackConfigOverrides = Partial<typeof baseWebpackConfig>;

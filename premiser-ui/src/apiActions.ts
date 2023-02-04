@@ -40,6 +40,7 @@ import {
   PropositionTagVoteOut,
   CreatePropositionTagVote,
 } from "howdju-common";
+import { serviceRoutes } from "howdju-service-routes";
 
 import {
   accountSettingsSchema,
@@ -68,6 +69,8 @@ import { actionTypeDelim, createAction } from "./actionHelpers";
 import { str } from "./actionHelpers";
 import { UiErrorType } from "./uiErrors";
 import { SuggestionsKey } from "./types";
+import { compile } from "path-to-regexp";
+import { Schema } from "type-fest";
 
 /**
  * ApiActionCreator types must be strings because we generate them.
@@ -229,7 +232,7 @@ function apiActionCreator<
   P = InferPayload<PP>
 >(
   type: string,
-  payloadCreatorOrPrepare?: PP,
+  payloadCreatorOrPrepare: PP | undefined,
   apiConfigCreator?: ResourceApiConfig<N> | ((p: P) => ResourceApiConfig<N>)
 ): ApiActionCreator<
   P,
@@ -258,6 +261,159 @@ function apiActionCreator<
     }
     return prepared;
   };
+
+  type Response = ExtractSchemaEntity<N> & ApiResponseWrapper;
+
+  const ac = requestPrepare
+    ? (createAction(requestType, requestPrepare) as ApiActionCreator<
+        P,
+        Response,
+        InferPrepareAction<PP>
+      >)
+    : (createAction(requestType) as ApiActionCreator<
+        P,
+        Response,
+        InferPrepareAction<PP>
+      >);
+
+  ac.response = createAction(
+    responseType,
+    (payload: ExtractSchemaEntity<N>, meta: ApiResponseActionMeta<P>) => ({
+      payload,
+      meta,
+    })
+  ) as ActionCreatorWithPreparedPayload<
+    unknown[],
+    Response,
+    string,
+    Error,
+    ApiResponseActionMeta
+  >;
+  return ac;
+}
+
+type ApiActionConfig<
+  PP extends ((...args: any[]) => P) | ((...args: any[]) => Prepared<P>),
+  P = InferPayload<PP>
+> = {
+  /**
+   * A function that is either a prepare function or that creates a payload directly.
+   *
+   * If the function returns an object containing a payload property, then it is a prepare method
+   * and may optionally include a meta property too. Otherwise it is a payload creator and the
+   * returned value will be used as the payload directly with a default meta object.
+   */
+  prepare: PP;
+  /** The values to fill into the service route's path's parameters */
+  routeParams: Record<string, string>;
+  /** The values to provide to the API as query string parameters. */
+  queryParams?: Record<string, string>;
+  /** The schema for normalizing the response entities. */
+  // DO_NOT_MERGE: until making generic to handle all service routes.
+  normalizationSchema: Schema<
+    Awaited<
+      ReturnType<typeof serviceRoutes.updateWritQuote["request"]["handler"]>
+    >["body"],
+    schema.Entity<any>
+  >;
+  canSkipRehydrate?: boolean;
+  cancelKey?: string;
+};
+
+/**
+ * Creates PayloadActionCreators for actions that call our API.
+ *
+ * Features:
+ * - payloadCreatorOrPrepare is type-safe with the service route's request body
+ * - Query string parameters are type-safe with the service route.
+ * - Reuses the ServiceRoute definition to determine:
+ *   - Path (including type-safe path parameters)
+ *   - HTTP Method
+ * - Normalization schema is type-safe wtih the API's response body.
+ *
+ * @param type
+ * @param route
+ * @param payloadCreatorOrPrepare
+ * @param apiConfigCreator
+ * @returns
+ */
+function apiActionCreator2<
+  PP extends ((...args: any[]) => P) | ((...args: any[]) => Prepared<P>),
+  N,
+  P = InferPayload<PP>
+>(
+  type: string,
+  route: typeof serviceRoutes.updateWritQuote,
+  apiActionConfig: ApiActionConfig<PP, P> | ((p: P) => ApiActionConfig<PP, P>)
+): ApiActionCreator<
+  P,
+  ExtractSchemaEntity<N> & ApiResponseWrapper,
+  InferPrepareAction<PP>
+> {
+  // route.handler.schema.shape.body.shape.writQuote === UpdateWritQuote;
+  // route.handler.
+
+  const [requestType, responseType] = makeApiActionTypes(type);
+
+  // Add apiConfig to meta
+  const requestPrepare = function requestPrepare(...args: any[]) {
+    let prepared =
+      "prepare" in apiActionConfig
+        ? apiActionConfig.prepare(...args)
+        : ({} as Prepared<P>);
+    if (route) {
+      if (!isObject(prepared) || !("payload" in prepared)) {
+        // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
+        // otherwise make the entire return value the payload.
+        prepared = { payload: prepared, meta: {} };
+      } else if (!prepared.meta) {
+        prepared.meta = {};
+      }
+
+      const {
+        routeParams,
+        queryParams,
+        normalizationSchema,
+        canSkipRehydrate,
+        cancelKey,
+      } = isFunction(apiActionConfig)
+        ? apiActionConfig(prepared.payload)
+        : apiActionConfig;
+      const endpoint = makeEndpoint(route.path, routeParams, queryParams);
+      prepared.meta.apiConfig = {
+        endpoint,
+        normalizationSchema,
+        fetchInit: {
+          method: route.method,
+          body: prepared.payload,
+        },
+        canSkipRehydrate,
+        cancelKey,
+      } as ResourceApiConfig<N>;
+    }
+    return prepared;
+  };
+
+  const pathMakersByPathPattern = {} as Record<
+    string,
+    ReturnType<typeof compile>
+  >;
+
+  function makeEndpoint(
+    pathPattern: string,
+    pathParams: Record<string, string> | undefined,
+    queryParams: Record<string, string> | undefined
+  ) {
+    if (!(pathPattern in pathMakersByPathPattern)) {
+      pathMakersByPathPattern[pathPattern] = compile(pathPattern, {
+        encode: encodeURIComponent,
+      });
+    }
+    const pathMaker = pathMakersByPathPattern[pathPattern];
+    const path = pathMaker(pathParams);
+    const query = queryParams ? "?" + queryString.stringify(queryParams) : "";
+    return path + query;
+  }
 
   type Response = ExtractSchemaEntity<N> & ApiResponseWrapper;
 
@@ -402,15 +558,12 @@ export const api = {
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
-  updateWritQuote: apiActionCreator(
+  updateWritQuote: apiActionCreator2(
     "UPDATE_WRIT_QUOTE",
-    (writQuote: WritQuote) => ({ writQuote }),
+    serviceRoutes.updateWritQuote,
     (payload) => ({
-      endpoint: `writ-quotes/${payload.writQuote.id}`,
-      fetchInit: {
-        method: httpMethods.PUT,
-        body: payload,
-      },
+      prepare: (writQuote: WritQuote) => ({ writQuote }),
+      routeParams: { writQuoteId: payload.writQuote.id },
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
