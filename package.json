@@ -8,9 +8,10 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "check:everything": "echo check:everything && yarn run lint:all && yarn run check-format:all && yarn run typecheck:all && yarn run test:all && yarn run custom-check:all && yarn run check-build:all && echo check:everything succeeded || {echo check:everything failed; exit 1}",
+    "check:everything": "echo check:everything && yarn run lint:all && yarn run check-format:all && yarn run typecheck:all && yarn run test:all && yarn run custom-check:all && yarn run check-build:all && yarn run check:do-not-merge && echo check:everything succeeded || {echo check:everything failed; exit 1}",
     "check:pushed": "bin/check-pushed.sh",
     "check:committed": "node bin/check-committed.mjs",
+    "check:do-not-merge": "echo check:do-not-merge && bin/check-do-not-merge.sh && echo check:do-not-merge succeeded || {echo check:do-not-merge failed; exit 1}",
     "check:pre-deploy": "bin/pre-deploy-check.sh",
     "check-build:all": "echo check-build:all && yarn workspaces foreach -Apv run check-build && echo check-build:all succeeded || {echo check-build:all faied; exit 1}",
     "check-format": "yarn run prettier --check --ignore-path .gitignore jest lambdas/bin",

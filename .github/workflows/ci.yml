@@ -68,6 +68,8 @@ jobs:
           if-no-files-found: error
       - name: Custom checks
         run: yarn run custom-check:all
+      - name: Check do-not-merge
+        run: yarn run check:do-not-merge
 
   changed-files-coverage-check:
     # Only run on PRs && don't run on dependant CLs
