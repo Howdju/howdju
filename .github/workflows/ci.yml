@@ -70,8 +70,11 @@ jobs:
         run: yarn run custom-check:all
 
   changed-files-coverage-check:
-    # Only run on PRs.
-    if: github.ref != 'refs/heads/master'
+    # Only run on PRs && don't run on dependant CLs
+    # Don't run on dependabot CLs because 1) the PR comment step below fails, I think because we
+    # can't comment on dependabot PRs, and 2) dependabot PRs only change dependencies and so can't
+    # affect code coverage. The premerge-checks job should ensure that the upgrade didn't break anything.
+    if: github.ref != 'refs/heads/master' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     services:
       howdju-db:
