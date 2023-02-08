@@ -259,7 +259,7 @@ function makeRequest(
     // TODO strip out leading /v1/ as {version: 'v1'}
     path: gatewayEvent.pathParameters?.proxy || "",
     method: gatewayEvent.httpMethod as HttpMethod,
-    queryStringParameters: gatewayEvent.queryStringParameters || {},
+    queryStringParams: gatewayEvent.queryStringParameters || {},
     body: parseBody(appProvider, gatewayEvent),
   };
 }

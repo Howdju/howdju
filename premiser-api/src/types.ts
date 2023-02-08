@@ -14,7 +14,7 @@ export interface Request {
   };
   path: string;
   method: HttpMethod;
-  queryStringParameters: Record<string, string | undefined>;
+  queryStringParams: Record<string, string | undefined>;
   authToken: AuthToken | undefined;
   // TODO(1) add a generic parameter `Body extends Record<string, any>`.
   body: Record<string, any>;

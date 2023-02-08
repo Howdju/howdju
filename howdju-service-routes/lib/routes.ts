@@ -37,20 +37,21 @@ import {
 } from "howdju-service-common";
 
 type QueryStringParams<Params extends string> = {
-  queryStringParameters: {
+  queryStringParams: {
     [key in Params]: string | undefined;
   };
 };
 
 // DO_NOT_MERGE: convert all routes to PathParams
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 type OldPathParams = { pathParams: string[] };
 
+/** A request schema mixin for routes receiving an auth token. */
 const Authed = z.object({
   authToken: z.string(),
 });
 type Authed = z.infer<typeof Authed>;
 
+/** A request schema mixin for routes receiving path parameters. */
 const PathParams = function <U extends string, T extends [U, ...U[]]>(
   pathParams: T
 ) {
@@ -68,6 +69,7 @@ type PathParams<T> = {
   pathParams: T;
 };
 
+/** A request schema mixin for routes receiving request bodies. */
 const Body = function <T extends z.ZodRawShape>(bodyShape: T) {
   return z.object({ body: z.object(bodyShape) });
 };
@@ -76,7 +78,8 @@ type Body<T> = {
   body: T;
 };
 
-export type ServiceRoute = typeof serviceRoutes[keyof typeof serviceRoutes];
+export type ServiceRoutes = typeof serviceRoutes;
+export type ServiceRoute = ServiceRoutes[keyof ServiceRoutes];
 
 type InferRequest<Schema> = Schema extends z.ZodType<infer T, z.ZodTypeDef>
   ? T
@@ -124,7 +127,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     handler: async (
       appProvider: ServicesProvider,
-      { queryStringParameters: { searchText } }: QueryStringParams<"searchText">
+      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
     ) => {
       const rankedPropositions =
         await appProvider.propositionsTextSearcher.search(searchText);
@@ -136,7 +139,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     handler: async (
       appProvider: ServicesProvider,
-      { queryStringParameters: { searchText } }: QueryStringParams<"searchText">
+      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
     ) => {
       const rankedPropositions =
         await appProvider.tagsService.readTagsLikeTagName(searchText);
@@ -148,7 +151,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     handler: async (
       appProvider: ServicesProvider,
-      { queryStringParameters: { searchText } }: QueryStringParams<"searchText">
+      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
     ) => {
       const rankedWrits = await appProvider.writsTitleSearcher.search(
         searchText
@@ -161,7 +164,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     async handler(
       appProvider: ServicesProvider,
-      { queryStringParameters: { searchText } }: QueryStringParams<"searchText">
+      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
     ) {
       const rankedPersorgs = await appProvider.persorgsNameSearcher.search(
         searchText
@@ -174,7 +177,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     handler: async (
       appProvider: ServicesProvider,
-      { queryStringParameters: { searchText } }: QueryStringParams<"searchText">
+      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
     ) => {
       const results = await appProvider.mainSearchService.search(searchText);
       return { body: results };
@@ -197,11 +200,11 @@ export const serviceRoutes = {
   readTaggedPropositions: {
     path: "propositions",
     method: httpMethods.GET,
-    queryStringParameters: { tagId: /.+/ },
+    queryStringParams: { tagId: /.+/ },
     handler: async (
       appProvider: ServicesProvider,
       {
-        queryStringParameters: { tagId },
+        queryStringParams: { tagId },
         authToken,
       }: QueryStringParams<"tagId"> & Authed
     ) => {
@@ -218,7 +221,7 @@ export const serviceRoutes = {
     handler: async (
       appProvider: ServicesProvider,
       {
-        queryStringParameters: {
+        queryStringParams: {
           sorts: encodedSorts,
           continuationToken,
           count,
@@ -273,7 +276,7 @@ export const serviceRoutes = {
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.GET,
     // explicitly no query string parameters
-    queryStringParameters: {},
+    queryStringParams: {},
     handler: async (
       appProvider: ServicesProvider,
       { pathParams: [propositionId], authToken }: Authed & OldPathParams
@@ -346,11 +349,11 @@ export const serviceRoutes = {
   readSpeakerStatements: {
     path: "statements",
     method: httpMethods.GET,
-    queryStringParameters: { speakerPersorgId: /.+/ },
+    queryStringParams: { speakerPersorgId: /.+/ },
     async handler(
       appProvider: ServicesProvider,
       {
-        queryStringParameters: { speakerPersorgId },
+        queryStringParams: { speakerPersorgId },
       }: QueryStringParams<"speakerPersorgId">
     ) {
       const statements =
@@ -363,14 +366,14 @@ export const serviceRoutes = {
   readSentenceStatements: {
     path: "statements",
     method: httpMethods.GET,
-    queryStringParameters: {
+    queryStringParams: {
       sentenceType: /.+/,
       sentenceId: /.+/,
     },
     async handler(
       appProvider: ServicesProvider,
       {
-        queryStringParameters: { sentenceType, sentenceId },
+        queryStringParams: { sentenceType, sentenceId },
       }: QueryStringParams<"sentenceType" | "sentenceId">
     ) {
       const statements =
@@ -384,14 +387,14 @@ export const serviceRoutes = {
   readIndirectRootPropositionStatements: {
     path: "statements",
     method: httpMethods.GET,
-    queryStringParameters: {
+    queryStringParams: {
       rootPropositionId: /.+/,
       indirect: "",
     },
     async handler(
       appProvider: ServicesProvider,
       {
-        queryStringParameters: { rootPropositionId },
+        queryStringParams: { rootPropositionId },
       }: QueryStringParams<"rootPropositionId">
     ) {
       const statements =
@@ -404,13 +407,13 @@ export const serviceRoutes = {
   readRootPropositionStatements: {
     path: "statements",
     method: httpMethods.GET,
-    queryStringParameters: {
+    queryStringParams: {
       rootPropositionId: /.+/,
     },
     async handler(
       appProvider: ServicesProvider,
       {
-        queryStringParameters: { rootPropositionId },
+        queryStringParams: { rootPropositionId },
       }: QueryStringParams<"rootPropositionId">
     ) {
       const statements =
@@ -424,7 +427,7 @@ export const serviceRoutes = {
     path: new RegExp("^statements/([^/]+)$"),
     method: httpMethods.GET,
     // explicitly no query string parameters
-    queryStringParameters: {},
+    queryStringParams: {},
     async handler(
       appProvider: ServicesProvider,
       { pathParams: [statementId] }: OldPathParams
@@ -473,7 +476,7 @@ export const serviceRoutes = {
   readPropositionJustifications: {
     path: new RegExp("^propositions/([^/]+)$"),
     method: httpMethods.GET,
-    queryStringParameters: {
+    queryStringParams: {
       include: "justifications",
     },
     handler: async (
@@ -492,7 +495,7 @@ export const serviceRoutes = {
   readStatementJustifications: {
     path: new RegExp("^statements/([^/]+)$"),
     method: httpMethods.GET,
-    queryStringParameters: {
+    queryStringParams: {
       include: "justifications",
     },
     handler: async (
@@ -514,7 +517,7 @@ export const serviceRoutes = {
   readPropositionCompound: {
     path: new RegExp("^proposition-compounds/([^/]+)$"),
     method: httpMethods.GET,
-    queryStringParameters: {},
+    queryStringParams: {},
     handler: async (
       appProvider: ServicesProvider,
       { pathParams: [propositionCompoundId], authToken }: OldPathParams & Authed
@@ -533,7 +536,7 @@ export const serviceRoutes = {
   readSourceExcerptParaphrase: {
     path: new RegExp("^source-excerpt-paraphrases/([^/]+)$"),
     method: httpMethods.GET,
-    queryStringParameters: {},
+    queryStringParams: {},
     handler: async (
       appProvider: ServicesProvider,
       {
@@ -580,7 +583,7 @@ export const serviceRoutes = {
     handler: async (
       appProvider: ServicesProvider,
       {
-        queryStringParameters: {
+        queryStringParams: {
           filters: encodedFilters,
           sorts: encodedSorts,
           continuationToken,
@@ -653,11 +656,7 @@ export const serviceRoutes = {
     handler: async (
       appProvider: ServicesProvider,
       {
-        queryStringParameters: {
-          sorts: encodedSorts,
-          continuationToken,
-          count,
-        },
+        queryStringParams: { sorts: encodedSorts, continuationToken, count },
       }: QueryStringParams<"sorts" | "continuationToken" | "count">
     ) => {
       const sorts = decodeSorts(encodedSorts);
@@ -726,11 +725,7 @@ export const serviceRoutes = {
     handler: async (
       appProvider: ServicesProvider,
       {
-        queryStringParameters: {
-          sorts: encodedSorts,
-          continuationToken,
-          count,
-        },
+        queryStringParams: { sorts: encodedSorts, continuationToken, count },
       }: QueryStringParams<"sorts" | "continuationToken" | "count">
     ) => {
       const sorts = decodeSorts(encodedSorts);
@@ -796,7 +791,7 @@ export const serviceRoutes = {
     handler: async (
       appProvider: ServicesProvider,
       {
-        queryStringParameters: { passwordResetCode },
+        queryStringParams: { passwordResetCode },
       }: QueryStringParams<"passwordResetCode">
     ) => {
       const email = await appProvider.passwordResetService.checkRequestForCode(
@@ -844,7 +839,7 @@ export const serviceRoutes = {
     handler: async (
       appProvider: ServicesProvider,
       {
-        queryStringParameters: { registrationCode },
+        queryStringParams: { registrationCode },
       }: QueryStringParams<"registrationCode">
     ) => {
       const email = await appProvider.registrationService.checkRequestForCode(

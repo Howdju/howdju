@@ -31,77 +31,6 @@ import {
 import { AppProvider } from "./init";
 import { Request, ApiCallback } from "./types";
 
-const serviceRoutePairs = toPairs(serviceRoutes);
-
-export const selectRoute = (appProvider: AppProvider, request: Request) => {
-  const { path, method, queryStringParameters } = request;
-
-  for (const [routeId, route] of serviceRoutePairs) {
-    let pathParams;
-
-    if (route.method !== method) continue;
-
-    // DO_NOT_MERGE: configure handling for all routes
-    if ("request" in route) {
-      const pathPattern = route.path;
-      const pathMatcher = match(pathPattern, { decode: decodeURIComponent });
-      const result = pathMatcher(path);
-      if (!result) {
-        continue;
-      }
-      pathParams = result.params;
-    } else if ("path" in route) {
-      if (typeof route.path === "string") {
-        if (route.path !== path) {
-          continue;
-        }
-      } else if (route.path instanceof RegExp) {
-        const pathMatch = route.path.exec(path);
-        if (!pathMatch) {
-          continue;
-        }
-        pathParams = pathMatch ? pathMatch.slice(1) : [];
-        console.log({ pathParams });
-      } else {
-        throw new Error(
-          `Unsupported route.path type (${typeof route.path}): ${route.path}`
-        );
-      }
-    }
-
-    if ("queryStringParameters" in route) {
-      if (
-        isEmpty(route.queryStringParameters) !== isEmpty(queryStringParameters)
-      ) {
-        continue;
-      }
-
-      let isMisMatch = false;
-      forEach(route.queryStringParameters, (value: string | RegExp, name) => {
-        const requestValue = queryStringParameters[name] || "";
-        if (value instanceof RegExp) {
-          // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
-          if (isUndefined(requestValue) || !value.test(requestValue)) {
-            isMisMatch = true;
-          }
-        } else if (value !== requestValue) {
-          isMisMatch = true;
-        }
-      });
-      if (isMisMatch) {
-        continue;
-      }
-    }
-
-    // First item is the whole match, rest are the group matches
-    const routedRequest = assign({}, request, { pathParams });
-    appProvider.logger.debug(`selected route ${routeId}`);
-    return { route, routedRequest };
-  }
-
-  throw new NoMatchingRouteError();
-};
-
 export async function routeRequest(
   request: Request,
   appProvider: AppProvider,
@@ -215,4 +144,73 @@ export async function routeRequest(
       });
     }
   }
+}
+
+const serviceRoutePairs = toPairs(serviceRoutes);
+
+export function selectRoute(appProvider: AppProvider, request: Request) {
+  const { path, method, queryStringParams } = request;
+
+  for (const [routeId, route] of serviceRoutePairs) {
+    let pathParams;
+
+    if (route.method !== method) continue;
+
+    // DO_NOT_MERGE: configure handling for all routes
+    if ("request" in route) {
+      const pathPattern = route.path;
+      const pathMatcher = match(pathPattern, { decode: decodeURIComponent });
+      const result = pathMatcher(path);
+      if (!result) {
+        continue;
+      }
+      pathParams = result.params;
+    } else if ("path" in route) {
+      if (typeof route.path === "string") {
+        if (route.path !== path) {
+          continue;
+        }
+      } else if (route.path instanceof RegExp) {
+        const pathMatch = route.path.exec(path);
+        if (!pathMatch) {
+          continue;
+        }
+        pathParams = pathMatch ? pathMatch.slice(1) : [];
+        console.log({ pathParams });
+      } else {
+        throw new Error(
+          `Unsupported route.path type (${typeof route.path}): ${route.path}`
+        );
+      }
+    }
+
+    if ("queryStringParams" in route) {
+      if (isEmpty(route.queryStringParams) !== isEmpty(queryStringParams)) {
+        continue;
+      }
+
+      let isMisMatch = false;
+      forEach(route.queryStringParams, (value: string | RegExp, name) => {
+        const requestValue = queryStringParams[name] || "";
+        if (value instanceof RegExp) {
+          // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
+          if (isUndefined(requestValue) || !value.test(requestValue)) {
+            isMisMatch = true;
+          }
+        } else if (value !== requestValue) {
+          isMisMatch = true;
+        }
+      });
+      if (isMisMatch) {
+        continue;
+      }
+    }
+
+    // First item is the whole match, rest are the group matches
+    const routedRequest = assign({}, request, { pathParams });
+    appProvider.logger.debug(`selected route ${routeId}`);
+    return { route, routedRequest };
+  }
+
+  throw new NoMatchingRouteError();
 }
