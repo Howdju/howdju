@@ -46,6 +46,7 @@ import {
   CreateVidSegmentInput,
   CreateWritInput,
   CreateWritQuoteInput,
+  Credentials,
   Entity,
   Justification,
   JustificationPolarity,
@@ -111,11 +112,6 @@ export const negateRootPolarity = (rootPolarity: JustificationRootPolarity) => {
       throw newImpossibleError(rootPolarity);
   }
 };
-
-export interface Credentials {
-  email: string;
-  password: string;
-}
 
 export const makeCredentials = (props?: Partial<Credentials>): Credentials =>
   assign({ email: "", password: "" }, props);

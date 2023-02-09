@@ -1089,3 +1089,12 @@ export const PasswordResetRequest = Entity.extend({
   created: momentObject,
 });
 export type PasswordResetRequest = z.infer<typeof PasswordResetRequest>;
+
+export const Password = z.string();
+export type Password = z.infer<typeof Password>;
+
+export const Credentials = z.object({
+  email: z.string(),
+  password: z.string(),
+});
+export type Credentials = z.infer<typeof Credentials>;

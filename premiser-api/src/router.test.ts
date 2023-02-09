@@ -174,7 +174,7 @@ describe("selectRoute", () => {
     } as Request);
 
     expect(routeId(route)).toBe("readProposition");
-    expect(routedRequest.pathParams).toEqual(["2"]);
+    expect(routedRequest.pathParams).toEqual({ propositionId: "2" });
   });
 
   test("readPropositionJustifications route path should match a proposition justifications path", () => {
@@ -193,7 +193,7 @@ describe("selectRoute", () => {
     });
 
     expect(routeId(route)).toBe("readPropositionJustifications");
-    expect(routedRequest.pathParams).toEqual(["2"]);
+    expect(routedRequest.pathParams).toEqual({ propositionId: "2" });
   });
 
   test("readTaggedPropositions route path should match a tagged propositions path", () => {
