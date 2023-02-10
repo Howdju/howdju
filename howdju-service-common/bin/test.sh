@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Run jest and start a local DB for integration tests if we are running locally
 
 if [[ -z "${HOWDJU_RUNNING_IN_GITHUB_WORKFLOW+present}" ]]; then

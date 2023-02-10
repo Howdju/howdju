@@ -13,7 +13,7 @@ import {
 } from "howdju-common";
 import { mockLogger } from "howdju-test-common";
 
-import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import {
   AuthenticationError,
   AuthService,
@@ -48,8 +48,7 @@ describe("JustificationsService", () => {
     authService = provider.authService;
   });
   afterEach(async () => {
-    await pool.end();
-    await dropDb(dbConfig, dbName);
+    await endPoolAndDropDb(pool, dbConfig, dbName);
   });
   describe("readOrCreate", () => {
     test("can create a proposition compound based justification targeting a proposition", async () => {

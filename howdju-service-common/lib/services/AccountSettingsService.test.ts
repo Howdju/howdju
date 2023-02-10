@@ -13,7 +13,7 @@ import { AuthService } from "./AuthService";
 import { AccountSettings } from "howdju-common";
 import moment from "moment";
 import { Pool } from "pg";
-import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { CreateUserDataIn } from "@/daos/dataTypes";
 
 describe("AccountSettingsService", () => {
@@ -49,8 +49,7 @@ describe("AccountSettingsService", () => {
     );
   });
   afterEach(async () => {
-    await pool.end();
-    await dropDb(dbConfig, dbName);
+    await endPoolAndDropDb(pool, dbConfig, dbName);
   });
 
   describe("createAccountSettings", () => {

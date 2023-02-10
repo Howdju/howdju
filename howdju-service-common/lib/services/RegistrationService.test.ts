@@ -26,7 +26,7 @@ import {
   RegistrationRequestsDao,
   UsersService,
 } from "..";
-import { dropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
 import { Pool } from "pg";
 import { makeTestProvider } from "@/initializers/TestProvider";
 
@@ -46,8 +46,7 @@ describe("RegistrationService", () => {
     service = provider.registrationService;
   });
   afterEach(async () => {
-    await pool.end();
-    await dropDb(dbConfig, dbName);
+    await endPoolAndDropDb(pool, dbConfig, dbName);
   });
   describe("createRequest", () => {
     test("creates a valid request.", async () => {
