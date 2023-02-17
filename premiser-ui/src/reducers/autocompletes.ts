@@ -7,7 +7,11 @@ const initialState = {
   suggestions: {},
 };
 
-export default handleActions<typeof initialState, any, ApiResponseActionMeta>(
+export default handleActions<
+  typeof initialState,
+  any,
+  ApiResponseActionMeta<any, any>
+>(
   {
     [combineActions(
       api.fetchPersorgNameSuggestions.response,

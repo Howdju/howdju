@@ -37,15 +37,6 @@ import {
   ServicesProvider,
 } from "howdju-service-common";
 
-type QueryStringParams<Params extends string> = {
-  queryStringParams: {
-    [key in Params]: string | undefined;
-  };
-};
-
-// DO_NOT_MERGE: convert all routes to PathParams
-type OldPathParams = { pathParams: string[] };
-
 /** A request schema mixin for routes receiving an auth token. */
 const Authed = z.object({
   authToken: z.string(),
@@ -59,14 +50,14 @@ const PathParams = function <U extends string, T extends [U, ...U[]]>(
   const shape = reduce(
     paramNames,
     (acc, p: T[number]) => {
-      acc[p] = z.string().optional();
+      acc[p] = z.string();
       return acc;
     },
-    {} as { [key in T[number]]: z.ZodOptional<z.ZodString> }
+    {} as { [key in T[number]]: z.ZodString }
   );
   return z.object({ pathParams: z.object(shape) });
 };
-type PathParams<T> = {
+export type PathParams<T extends Record<string, string>> = {
   pathParams: T;
 };
 
@@ -83,18 +74,25 @@ const QueryStringParams = function <U extends string, T extends [U, ...U[]]>(
   );
   return z.object({ queryStringParams: z.object(shape) });
 };
+export type QueryStringParams<T extends Record<string, string>> = {
+  queryStringParams: T;
+};
 
 /** A request schema mixin for routes receiving request bodies. */
 const Body = function <T extends z.ZodRawShape>(bodyShape: T) {
   return z.object({ body: z.object(bodyShape) });
 };
 
-type Body<T> = {
+export type Body<T> = {
   body: T;
 };
 
+/** Matches any request. */
+const Any = z.object({});
+
 export type ServiceRoutes = typeof serviceRoutes;
 export type ServiceRoute = ServiceRoutes[keyof ServiceRoutes];
+export type PathedServiceRoute = ServiceRoute & { path: string };
 
 type InferRequest<Schema> = Schema extends z.ZodType<infer T, z.ZodTypeDef>
   ? T
@@ -132,7 +130,9 @@ export const serviceRoutes = {
    */
   options: {
     method: httpMethods.OPTIONS,
-    handler: (_appProvider: ServicesProvider) => Promise.resolve(),
+    request: handler(Any, async (_appProvider: ServicesProvider, _request) =>
+      Promise.resolve()
+    ),
   },
   /*
    * Search
@@ -140,74 +140,89 @@ export const serviceRoutes = {
   searchPropositions: {
     path: "search-propositions",
     method: httpMethods.GET,
-    handler: async (
-      appProvider: ServicesProvider,
-      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
-    ) => {
-      const rankedPropositions =
-        await appProvider.propositionsTextSearcher.search(searchText);
-      return { body: rankedPropositions };
-    },
+    request: handler(
+      QueryStringParams("searchText"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { searchText } }
+      ) => {
+        const rankedPropositions =
+          await appProvider.propositionsTextSearcher.search(searchText);
+        return { body: rankedPropositions };
+      }
+    ),
   },
   searchTags: {
     path: "search-tags",
     method: httpMethods.GET,
-    handler: async (
-      appProvider: ServicesProvider,
-      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
-    ) => {
-      const rankedPropositions =
-        await appProvider.tagsService.readTagsLikeTagName(searchText);
-      return { body: rankedPropositions };
-    },
+    request: handler(
+      QueryStringParams("searchText"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { searchText } }
+      ) => {
+        const rankedPropositions =
+          await appProvider.tagsService.readTagsLikeTagName(searchText);
+        return { body: rankedPropositions };
+      }
+    ),
   },
   searchWrits: {
     path: "search-writs",
     method: httpMethods.GET,
-    handler: async (
-      appProvider: ServicesProvider,
-      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
-    ) => {
-      const rankedWrits = await appProvider.writsTitleSearcher.search(
-        searchText
-      );
-      return { body: rankedWrits };
-    },
+    request: handler(
+      QueryStringParams("searchText"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { searchText } }
+      ) => {
+        const rankedWrits = await appProvider.writsTitleSearcher.search(
+          searchText
+        );
+        return { body: rankedWrits };
+      }
+    ),
   },
   searchPersorgs: {
     path: "search-persorgs",
     method: httpMethods.GET,
-    async handler(
-      appProvider: ServicesProvider,
-      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
-    ) {
-      const rankedPersorgs = await appProvider.persorgsNameSearcher.search(
-        searchText
-      );
-      return { body: rankedPersorgs };
-    },
+    request: handler(
+      QueryStringParams("searchText"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { searchText } }
+      ) => {
+        const rankedPersorgs = await appProvider.persorgsNameSearcher.search(
+          searchText
+        );
+        return { body: rankedPersorgs };
+      }
+    ),
   },
   mainSearch: {
     path: "search",
     method: httpMethods.GET,
-    handler: async (
-      appProvider: ServicesProvider,
-      { queryStringParams: { searchText } }: QueryStringParams<"searchText">
-    ) => {
-      const results = await appProvider.mainSearchService.search(searchText);
-      return { body: results };
-    },
+    request: handler(
+      QueryStringParams("searchText"),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { searchText } }
+      ) => {
+        const results = await appProvider.mainSearchService.search(searchText);
+        return { body: results };
+      }
+    ),
   },
   readTag: {
     path: "tags/:tagId",
     method: httpMethods.GET,
-    handler: async (
-      appProvider: ServicesProvider,
-      { pathParams: [tagId] }: OldPathParams
-    ) => {
-      const tag = await appProvider.tagsService.readTagForId(tagId);
-      return { body: { tag } };
-    },
+    request: handler(
+      PathParams("tagId"),
+      async (appProvider: ServicesProvider, { pathParams: { tagId } }) => {
+        const tag = await appProvider.tagsService.readTagForId(tagId);
+        return { body: { tag } };
+      }
+    ),
   },
   /*
    * Propositions
@@ -216,76 +231,85 @@ export const serviceRoutes = {
     path: "propositions",
     method: httpMethods.GET,
     queryStringParams: { tagId: /.+/ },
-    handler: async (
-      appProvider: ServicesProvider,
-      {
-        queryStringParams: { tagId },
-        authToken,
-      }: QueryStringParams<"tagId"> & Authed
-    ) => {
-      const propositions =
-        await appProvider.propositionsService.readPropositionsForTagId(tagId, {
-          authToken,
-        });
-      return { body: { propositions } };
-    },
+    request: handler(
+      Authed.merge(QueryStringParams("tagId")),
+      async (
+        appProvider: ServicesProvider,
+        { queryStringParams: { tagId }, authToken }
+      ) => {
+        const propositions =
+          await appProvider.propositionsService.readPropositionsForTagId(
+            tagId,
+            {
+              authToken,
+            }
+          );
+        return { body: { propositions } };
+      }
+    ),
   },
   readPropositions: {
     path: "propositions",
     method: httpMethods.GET,
-    handler: async (
-      appProvider: ServicesProvider,
-      {
-        queryStringParams: {
-          sorts: encodedSorts,
-          continuationToken,
-          count,
-          propositionIds: propositionIdsParam,
-        },
-      }: QueryStringParams<
-        "sorts" | "continuationToken" | "count" | "propositionIds"
-      >
-    ) => {
-      const sorts = decodeSorts(encodedSorts);
-      if (propositionIdsParam) {
-        const propositionIds = split(propositionIdsParam, ",");
-        const propositions =
-          await appProvider.propositionsService.readPropositionsForIds(
-            propositionIds
-          );
-        return { body: { propositions } };
-      } else {
-        const { propositions, continuationToken: newContinuationToken } =
-          await appProvider.propositionsService.readPropositions({
-            sorts,
-            continuationToken: continuationToken as any,
-            count: count as any,
-          });
-        return {
-          body: { propositions, continuationToken: newContinuationToken },
-        };
+    request: handler(
+      QueryStringParams(
+        "sorts",
+        "continuationToken",
+        "count",
+        "propositionIds"
+      ),
+      async (
+        appProvider: ServicesProvider,
+        {
+          queryStringParams: {
+            sorts: encodedSorts,
+            continuationToken,
+            count,
+            propositionIds: propositionIdsParam,
+          },
+        }
+      ) => {
+        const sorts = decodeSorts(encodedSorts);
+        if (propositionIdsParam) {
+          const propositionIds = split(propositionIdsParam, ",");
+          const propositions =
+            await appProvider.propositionsService.readPropositionsForIds(
+              propositionIds
+            );
+          return { body: { propositions } };
+        } else {
+          const { propositions, continuationToken: newContinuationToken } =
+            await appProvider.propositionsService.readPropositions({
+              sorts,
+              continuationToken: continuationToken as any,
+              count: count as any,
+            });
+          return {
+            body: { propositions, continuationToken: newContinuationToken },
+          };
+        }
       }
-    },
+    ),
   },
   createProposition: {
     path: "propositions",
     method: httpMethods.POST,
-    handler: async (
-      appProvider: ServicesProvider,
-      {
-        authToken,
-        body: { proposition: createProposition },
-      }: Authed & Body<{ proposition: CreateProposition }>
-    ) => {
-      const { proposition, isExtant } = await prefixErrorPath(
-        appProvider.propositionsService.readOrCreateProposition(
-          authToken,
-          createProposition
-        ) as Promise<{ isExtant: boolean; proposition: Proposition }>,
-        "proposition"
-      );
-      return { body: { proposition, isExtant } };
-    },
+    request: handler(
+      Authed.merge(Body({ proposition: CreateProposition })),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, body: { proposition: createProposition } }
+      ) => {
+        const { proposition, isExtant } = await prefixErrorPath(
+          appProvider.propositionsService.readOrCreateProposition(
+            authToken,
+            createProposition
+          ) as Promise<{ isExtant: boolean; proposition: Proposition }>,
+          "proposition"
+        );
+        return { body: { proposition, isExtant } };
+      }
+    ),
   },
   readProposition: {
     path: "propositions/:propositionId",
@@ -658,18 +682,21 @@ export const serviceRoutes = {
   deleteJustification: {
     path: "justifications/:justificationId",
     method: httpMethods.DELETE,
-    handler: async (
-      appProvider: ServicesProvider,
-      { authToken, pathParams: [justificationId] }: OldPathParams & Authed
-    ) => {
-      await prefixErrorPath(
-        appProvider.justificationsService.deleteJustification(
-          authToken,
-          justificationId
-        ),
-        "justification"
-      );
-    },
+    request: handler(
+      Authed.merge(PathParams("justificationId")),
+      async (
+        appProvider: ServicesProvider,
+        { authToken, pathParams: { justificationId } }
+      ) => {
+        await prefixErrorPath(
+          appProvider.justificationsService.deleteJustification(
+            authToken,
+            justificationId
+          ),
+          "justification"
+        );
+      }
+    ),
   },
   /*
    * Writ quotes

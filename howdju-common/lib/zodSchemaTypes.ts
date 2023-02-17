@@ -32,6 +32,7 @@ import {
   JustificationRootTarget,
   JustificationVote,
   PasswordResetRequest,
+  PersistedEntity,
   Persorg,
   Proposition,
   PropositionCompound,
@@ -45,9 +46,6 @@ import {
   User,
   WritQuote,
 } from "./zodSchemas";
-
-const PersistedEntity = Entity.required();
-export type PersistedEntity = z.infer<typeof PersistedEntity>;
 
 /**
  * A persisted justification with ref root target.

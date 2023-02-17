@@ -39,8 +39,16 @@ import {
   TagVoteRef,
   PropositionTagVoteOut,
   CreatePropositionTagVote,
+  UpdateWritQuote,
 } from "howdju-common";
-import { serviceRoutes } from "howdju-service-routes";
+import {
+  InferPathParams,
+  InferQueryStringParams,
+  InferRequestBody,
+  PathedServiceRoute,
+  ServiceRoute,
+  serviceRoutes,
+} from "howdju-service-routes";
 
 import {
   accountSettingsSchema,
@@ -70,9 +78,13 @@ import { str } from "./actionHelpers";
 import { UiErrorType } from "./uiErrors";
 import { SuggestionsKey } from "./types";
 import { compile } from "path-to-regexp";
-import { Schema } from "type-fest";
+import { JsonObject, Schema } from "type-fest";
 
 /**
+ * An action creator representing API calls.
+ *
+ * A PayloadActionCreator with a response field for creating the response action.
+ *
  * ApiActionCreator types must be strings because we generate them.
  *
  * @typeparam P payload type
@@ -80,16 +92,30 @@ import { Schema } from "type-fest";
  * @typeparam PA prepare action type
  */
 export type ApiActionCreator<
-  P,
-  RP,
-  PA extends void | PrepareAction<P>
-> = PayloadActionCreator<P, string, PA> & {
+  Payload,
+  ResponsePayload,
+  PA extends void | PrepareAction<Payload>
+> = PayloadActionCreator<Payload, string, PA> & {
   response: ActionCreatorWithPreparedPayload<
     unknown[],
-    RP,
+    ResponsePayload,
     string,
     Error,
-    ApiResponseActionMeta
+    ApiResponseActionMeta<any, any>
+  >;
+};
+
+export type ApiActionCreator2<
+  Payload,
+  ResponsePayload,
+  Args extends unknown[]
+> = ActionCreatorWithPreparedPayload<Args, Payload> & {
+  response: ActionCreatorWithPreparedPayload<
+    unknown[],
+    ResponsePayload,
+    string,
+    Error,
+    ApiResponseActionMeta<any, any>
   >;
 };
 
@@ -99,23 +125,23 @@ const makeApiActionTypes = (type: string) => {
   return [requestType, responseType];
 };
 
-export type ApiResponseActionMeta<P = any> = {
-  normalizationSchema: any;
+export type ApiResponseActionMeta<N, P> = {
+  normalizationSchema: N;
   requestPayload: P;
 };
 
 /**
  * @typeparam N the type of the normalization schema
  */
-interface ResourceApiConfig<N> {
+interface ResourceApiConfig<B, N> {
   endpoint: string;
-  normalizationSchema?: N;
   fetchInit?: {
     method: HttpMethod;
-    body?: any;
+    body?: B;
   };
   canSkipRehydrate?: boolean;
   cancelKey?: string;
+  normalizationSchema?: N;
 }
 
 /**
@@ -189,14 +215,19 @@ type Prepared<P> = { payload: P; meta?: any };
  * @typeparam P the payload type.
  */
 export type ApiActionMeta<P> = {
-  apiConfig: ResourceApiConfig<any> | ((p: P) => ResourceApiConfig<any>);
+  apiConfig:
+    | ResourceApiConfig<any, any>
+    | ((p: P) => ResourceApiConfig<any, any>);
 };
 export type ApiAction<P> = PayloadAction<P, string, ApiActionMeta<P>>;
-export type AnyApiAction = ApiAction<any>;
+export type ApiAction2<Route extends ServiceRoute> = PayloadAction<
+  ApiConfig<Route>
+>;
+export type AnyApiAction = ApiAction<any> | ApiAction2<any>;
 export type ApiResponseAction<P> = PayloadAction<
   P,
   string,
-  ApiResponseActionMeta<any>,
+  ApiResponseActionMeta<any, P>,
   Error
 >;
 
@@ -233,7 +264,9 @@ function apiActionCreator<
 >(
   type: string,
   payloadCreatorOrPrepare: PP | undefined,
-  apiConfigCreator?: ResourceApiConfig<N> | ((p: P) => ResourceApiConfig<N>)
+  apiConfigCreator?:
+    | ResourceApiConfig<any, N>
+    | ((p: P) => ResourceApiConfig<any, N>)
 ): ApiActionCreator<
   P,
   ExtractSchemaEntity<N> & ApiResponseWrapper,
@@ -242,7 +275,7 @@ function apiActionCreator<
   const [requestType, responseType] = makeApiActionTypes(type);
 
   // Add apiConfig to meta
-  const requestPrepare = function requestPrepare(...args: any[]) {
+  function requestPrepare(...args: any[]) {
     let prepared = payloadCreatorOrPrepare
       ? payloadCreatorOrPrepare(...args)
       : ({} as Prepared<P>);
@@ -260,25 +293,19 @@ function apiActionCreator<
         : apiConfigCreator;
     }
     return prepared;
-  };
+  }
 
   type Response = ExtractSchemaEntity<N> & ApiResponseWrapper;
 
-  const ac = requestPrepare
-    ? (createAction(requestType, requestPrepare) as ApiActionCreator<
-        P,
-        Response,
-        InferPrepareAction<PP>
-      >)
-    : (createAction(requestType) as ApiActionCreator<
-        P,
-        Response,
-        InferPrepareAction<PP>
-      >);
+  const ac = createAction(requestType, requestPrepare) as ApiActionCreator<
+    P,
+    Response,
+    InferPrepareAction<PP>
+  >;
 
   ac.response = createAction(
     responseType,
-    (payload: ExtractSchemaEntity<N>, meta: ApiResponseActionMeta<P>) => ({
+    (payload: ExtractSchemaEntity<N>, meta: ApiResponseActionMeta<N, P>) => ({
       payload,
       meta,
     })
@@ -287,151 +314,136 @@ function apiActionCreator<
     Response,
     string,
     Error,
-    ApiResponseActionMeta
+    ApiResponseActionMeta<N, P>
   >;
   return ac;
 }
 
-type ApiActionConfig<
-  PP extends ((...args: any[]) => P) | ((...args: any[]) => Prepared<P>),
-  P = InferPayload<PP>
-> = {
-  /**
-   * A function that is either a prepare function or that creates a payload directly.
-   *
-   * If the function returns an object containing a payload property, then it is a prepare method
-   * and may optionally include a meta property too. Otherwise it is a payload creator and the
-   * returned value will be used as the payload directly with a default meta object.
-   */
-  prepare: PP;
+type InferResponseReturnType<Route extends ServiceRoute> = Awaited<
+  ReturnType<Route["request"]["handler"]>
+>;
+type InferResponseBody<Route extends ServiceRoute> =
+  InferResponseReturnType<Route> extends Record<string, any>
+    ? InferResponseReturnType<Route>["body"]
+    : never;
+
+type ApiActionConfig<Route extends ServiceRoute> = {
   /** The values to fill into the service route's path's parameters */
-  routeParams: Record<string, string>;
+  pathParams?: InferPathParams<Route>;
   /** The values to provide to the API as query string parameters. */
-  queryParams?: Record<string, string>;
+  queryStringParams?: InferQueryStringParams<Route>;
+  /** The HTTP body to send with the request. */
+  body?: InferRequestBody<Route>;
   /** The schema for normalizing the response entities. */
-  // DO_NOT_MERGE: until making generic to handle all service routes.
-  normalizationSchema: Schema<
-    Awaited<
-      ReturnType<typeof serviceRoutes.updateWritQuote["request"]["handler"]>
-    >["body"],
-    schema.Entity<any>
-  >;
+  normalizationSchema?: Schema<InferResponseBody<Route>, schema.Entity<any>>;
   canSkipRehydrate?: boolean;
   cancelKey?: string;
 };
+
+type ApiConfig<Route extends ServiceRoute> = {
+  endpoint: string;
+  /** The schema for normalizing the response entities. */
+  normalizationSchema: Schema<InferResponseBody<Route>, schema.Entity<any>>;
+  fetchInit: {
+    method: HttpMethod;
+    body: JsonObject;
+  };
+  canSkipRehydrate: boolean;
+  cancelKey: string;
+};
+
+const pathMakersByPathPattern = {} as Record<
+  string,
+  ReturnType<typeof compile>
+>;
+
+function makeEndpoint(
+  pathPattern: string,
+  pathParams: Record<string, string> | undefined,
+  queryStringParams: Record<string, string> | undefined
+) {
+  if (!(pathPattern in pathMakersByPathPattern)) {
+    pathMakersByPathPattern[pathPattern] = compile(pathPattern, {
+      encode: encodeURIComponent,
+    });
+  }
+  const pathMaker = pathMakersByPathPattern[pathPattern];
+  const path = pathMaker(pathParams);
+  const query = queryStringParams
+    ? "?" + queryString.stringify(queryStringParams)
+    : "";
+  return path + query;
+}
 
 /**
  * Creates PayloadActionCreators for actions that call our API.
  *
  * Features:
- * - payloadCreatorOrPrepare is type-safe with the service route's request body
+ * - apiActionConfig is type-safe with the service route's request body
+ * - Route parameters are type-safe with the service route.
  * - Query string parameters are type-safe with the service route.
  * - Reuses the ServiceRoute definition to determine:
  *   - Path (including type-safe path parameters)
  *   - HTTP Method
  * - Normalization schema is type-safe wtih the API's response body.
  *
- * @param type
- * @param route
- * @param payloadCreatorOrPrepare
- * @param apiConfigCreator
- * @returns
+ * @param type The action type
+ * @param route The service route this API action targets
+ * @param apiActionConfig Additional config for calling the service route.
  */
 function apiActionCreator2<
-  PP extends ((...args: any[]) => P) | ((...args: any[]) => Prepared<P>),
-  N,
-  P = InferPayload<PP>
+  Args extends any[],
+  Route extends PathedServiceRoute
 >(
   type: string,
-  route: typeof serviceRoutes.updateWritQuote,
-  apiActionConfig: ApiActionConfig<PP, P> | ((p: P) => ApiActionConfig<PP, P>)
-): ApiActionCreator<
-  P,
-  ExtractSchemaEntity<N> & ApiResponseWrapper,
-  InferPrepareAction<PP>
-> {
-  // route.handler.schema.shape.body.shape.writQuote === UpdateWritQuote;
-  // route.handler.
-
+  route: Route,
+  apiActionConfig:
+    | ApiActionConfig<Route>
+    | ((...args: Args) => ApiActionConfig<Route>)
+): ApiActionCreator2<ApiConfig<Route>, InferResponseBody<Route>, Args> {
   const [requestType, responseType] = makeApiActionTypes(type);
 
+  type NormalizationSchema = ApiActionConfig<Route>["normalizationSchema"];
+
   // Add apiConfig to meta
-  const requestPrepare = function requestPrepare(...args: any[]) {
-    let prepared =
-      "prepare" in apiActionConfig
-        ? apiActionConfig.prepare(...args)
-        : ({} as Prepared<P>);
-    if (route) {
-      if (!isObject(prepared) || !("payload" in prepared)) {
-        // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
-        // otherwise make the entire return value the payload.
-        prepared = { payload: prepared, meta: {} };
-      } else if (!prepared.meta) {
-        prepared.meta = {};
-      }
-
-      const {
-        routeParams,
-        queryParams,
-        normalizationSchema,
-        canSkipRehydrate,
-        cancelKey,
-      } = isFunction(apiActionConfig)
-        ? apiActionConfig(prepared.payload)
-        : apiActionConfig;
-      const endpoint = makeEndpoint(route.path, routeParams, queryParams);
-      prepared.meta.apiConfig = {
-        endpoint,
-        normalizationSchema,
-        fetchInit: {
-          method: route.method,
-          body: prepared.payload,
-        },
-        canSkipRehydrate,
-        cancelKey,
-      } as ResourceApiConfig<N>;
-    }
-    return prepared;
-  };
-
-  const pathMakersByPathPattern = {} as Record<
-    string,
-    ReturnType<typeof compile>
-  >;
-
-  function makeEndpoint(
-    pathPattern: string,
-    pathParams: Record<string, string> | undefined,
-    queryParams: Record<string, string> | undefined
-  ) {
-    if (!(pathPattern in pathMakersByPathPattern)) {
-      pathMakersByPathPattern[pathPattern] = compile(pathPattern, {
-        encode: encodeURIComponent,
-      });
-    }
-    const pathMaker = pathMakersByPathPattern[pathPattern];
-    const path = pathMaker(pathParams);
-    const query = queryParams ? "?" + queryString.stringify(queryParams) : "";
-    return path + query;
+  function apiActionCreatorPrepare(...args: Args) {
+    const {
+      pathParams,
+      queryStringParams,
+      body,
+      normalizationSchema,
+      canSkipRehydrate,
+      cancelKey,
+    } = isFunction(apiActionConfig)
+      ? apiActionConfig(...args)
+      : apiActionConfig;
+    const endpoint = makeEndpoint(route.path, pathParams, queryStringParams);
+    const apiConfig = {
+      endpoint,
+      normalizationSchema,
+      fetchInit: {
+        method: route.method,
+        body,
+      },
+      canSkipRehydrate,
+      cancelKey,
+    } as ResourceApiConfig<InferRequestBody<Route>, NormalizationSchema>;
+    return apiConfig;
   }
 
-  type Response = ExtractSchemaEntity<N> & ApiResponseWrapper;
+  type Response = InferResponseBody<Route> & ApiResponseWrapper;
 
-  const ac = requestPrepare
-    ? (createAction(requestType, requestPrepare) as ApiActionCreator<
-        P,
-        Response,
-        InferPrepareAction<PP>
-      >)
-    : (createAction(requestType) as ApiActionCreator<
-        P,
-        Response,
-        InferPrepareAction<PP>
-      >);
+  const actionCreator = createAction(
+    requestType,
+    apiActionCreatorPrepare
+  ) as unknown as ApiActionCreator2<ApiConfig<Route>, any, Args>;
 
-  ac.response = createAction(
+  actionCreator.response = createAction(
     responseType,
-    (payload: ExtractSchemaEntity<N>, meta: ApiResponseActionMeta<P>) => ({
+    (
+      payload: InferResponseBody<Route>,
+      meta: ApiResponseActionMeta<NormalizationSchema, ApiActionConfig<Route>>
+    ) => ({
       payload,
       meta,
     })
@@ -440,9 +452,9 @@ function apiActionCreator2<
     Response,
     string,
     Error,
-    ApiResponseActionMeta
+    ApiResponseActionMeta<NormalizationSchema, ApiActionConfig<Route>>
   >;
-  return ac;
+  return actionCreator;
 }
 
 type ContinuationQueryStringParams = {
@@ -485,11 +497,12 @@ export const callApiResponse = createAction(
 
 /** Actions that directly result in API calls */
 export const api = {
-  fetchProposition: apiActionCreator(
+  fetchProposition: apiActionCreator2(
     "FETCH_PROPOSITION",
-    (propositionId: EntityId) => ({ propositionId }),
-    (payload) => ({
-      endpoint: `propositions/${payload.propositionId}`,
+    serviceRoutes.readProposition,
+    (propositionId: EntityId) => ({
+      pathParams: { propositionId },
+      fake: { include: "true" },
       normalizationSchema: { proposition: propositionSchema },
     })
   ),
@@ -508,11 +521,11 @@ export const api = {
       };
     }
   ),
-  fetchPropositionCompound: apiActionCreator(
+  fetchPropositionCompound: apiActionCreator2(
     "FETCH_PROPOSITION_COMPOUND",
-    (propositionCompoundId: EntityId) => ({ propositionCompoundId }),
-    (payload) => ({
-      endpoint: `proposition-compounds/${payload.propositionCompoundId}`,
+    serviceRoutes.readPropositionCompound,
+    (_propositionCompoundId: EntityId) => ({
+      // pathParams: { propositionCompoundId },
       normalizationSchema: { propositionCompound: propositionCompoundSchema },
     })
   ),
@@ -538,11 +551,11 @@ export const api = {
     }
   ),
 
-  fetchWritQuote: apiActionCreator(
+  fetchWritQuote: apiActionCreator2(
     "FETCH_WRIT_QUOTE",
-    (writQuoteId: EntityId) => ({ writQuoteId }),
-    (payload) => ({
-      endpoint: `writ-quotes/${payload.writQuoteId}`,
+    serviceRoutes.readWritQuote,
+    (writQuoteId: EntityId) => ({
+      pathParams: { writQuoteId },
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
@@ -561,9 +574,9 @@ export const api = {
   updateWritQuote: apiActionCreator2(
     "UPDATE_WRIT_QUOTE",
     serviceRoutes.updateWritQuote,
-    (payload) => ({
-      prepare: (writQuote: WritQuote) => ({ writQuote }),
-      routeParams: { writQuoteId: payload.writQuote.id },
+    (writQuote: UpdateWritQuote) => ({
+      body: { writQuote },
+      pathParams: { writQuoteId: writQuote.id },
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),

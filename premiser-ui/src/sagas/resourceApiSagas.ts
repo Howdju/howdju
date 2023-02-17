@@ -39,7 +39,9 @@ export function* callApiForResource(action: AnyApiAction) {
 
   try {
     // TODO(1): Move cancelation action creators out of api and make meta required.
-    const config = action.meta && action.meta.apiConfig;
+    // DO_NOT_MERGE replace all apiActions with createApiAction2 and remove reference to action.meta
+    const config =
+      "meta" in action ? action.meta && action.meta.apiConfig : action.payload;
     if (!config) {
       return yield* put(
         responseActionCreator(
@@ -115,7 +117,11 @@ export function* cancelResourceApiCalls() {
       const cancelTargetArgs = action.payload.cancelTargetArgs as [any, any];
       // Call the cancel target in order to get its cancelKey.
       const targetAction = actionCreator(...cancelTargetArgs) as AnyApiAction;
-      const apiConfig = targetAction.meta?.apiConfig;
+      // DO_NOT_MERGE replace all apiActions with createApiAction2 and remove reference to action.meta
+      const apiConfig =
+        "meta" in targetAction
+          ? targetAction.meta?.apiConfig
+          : targetAction.payload;
       if (!apiConfig) {
         logger.error(
           `unable to cancel action type ${targetAction.type} because it lacked apiConfig.`

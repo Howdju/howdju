@@ -21,6 +21,9 @@ export const Entity = z.object({
 });
 export type Entity = z.infer<typeof Entity>;
 
+const PersistedEntity = Entity.required();
+export type PersistedEntity = z.infer<typeof PersistedEntity>;
+
 /**
  * A declarative statement of fact that the system tracks.
  *
@@ -618,7 +621,7 @@ export type CreateWritQuote = z.infer<typeof CreateWritQuote>;
 
 export const UpdateWritQuoteInput = WritQuote;
 export type UpdateWritQuoteInput = z.infer<typeof UpdateWritQuoteInput>;
-export const UpdateWritQuote = WritQuote;
+export const UpdateWritQuote = WritQuote.merge(PersistedEntity);
 export type UpdateWritQuote = z.infer<typeof UpdateWritQuote>;
 
 export const CreateVidSegmentInput = VidSegment;

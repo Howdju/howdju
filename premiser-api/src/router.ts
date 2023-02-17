@@ -38,9 +38,10 @@ export async function routeRequest(
 ) {
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
-    // DO_NOT_MERGE: convert all routes to request.handler
-    const handler = "handler" in route ? route.handler : route.request.handler;
-    const result = await handler(appProvider, routedRequest as any);
+    const result = await route.request.handler(
+      appProvider,
+      routedRequest as any
+    );
     return ok({ callback, ...result });
   } catch (err) {
     if (err instanceof InvalidRequestError) {
@@ -156,8 +157,7 @@ export function selectRoute(appProvider: AppProvider, request: Request) {
 
     if (route.method !== method) continue;
 
-    // DO_NOT_MERGE: configure handling for all routes
-    if ("request" in route) {
+    if ("path" in route) {
       const pathPattern = route.path;
       const pathMatcher = match(pathPattern, { decode: decodeURIComponent });
       const result = pathMatcher(path);
@@ -165,23 +165,6 @@ export function selectRoute(appProvider: AppProvider, request: Request) {
         continue;
       }
       pathParams = result.params;
-    } else if ("path" in route) {
-      if (typeof route.path === "string") {
-        if (route.path !== path) {
-          continue;
-        }
-      } else if (route.path instanceof RegExp) {
-        const pathMatch = route.path.exec(path);
-        if (!pathMatch) {
-          continue;
-        }
-        pathParams = pathMatch ? pathMatch.slice(1) : [];
-        console.log({ pathParams });
-      } else {
-        throw new Error(
-          `Unsupported route.path type (${typeof route.path}): ${route.path}`
-        );
-      }
     }
 
     if ("queryStringParams" in route) {
