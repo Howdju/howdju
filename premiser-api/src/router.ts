@@ -36,6 +36,12 @@ export async function routeRequest(
   appProvider: AppProvider,
   callback: ApiCallback
 ) {
+  // Our OPTIONS route was a no-op anyways, so handle it here so that all our routes can be more
+  // route-like (e.g. all have a path.)
+  if (request.method === "OPTIONS") {
+    return ok({ callback });
+  }
+
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
     const result = await route.request.handler(

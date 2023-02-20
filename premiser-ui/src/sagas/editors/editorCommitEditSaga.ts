@@ -2,7 +2,6 @@ import { put, call, takeEvery, select } from "typed-redux-saga";
 import isFunction from "lodash/isFunction";
 import { identity, reduce, reverse, startCase } from "lodash";
 import { z } from "zod";
-import { PrepareAction } from "@reduxjs/toolkit";
 
 import {
   CreateJustification,
@@ -21,17 +20,12 @@ import {
   muxCreateJustificationErrors,
   CreateJustifiedSentenceInput,
   CreateJustificationInput,
-  Justification,
   CreateCounterJustificationInput,
   CreateCounterJustification,
   CreateRegistrationConfirmation,
-  User,
-  AuthToken,
   CreateRegistrationConfirmationInput,
   CreateRegistrationRequest,
   CreateRegistrationRequestInput,
-  Proposition,
-  Statement,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -45,8 +39,8 @@ import { constructStatementInput } from "@/viewModels";
 import {
   AnyApiAction,
   ApiActionCreator,
+  ApiActionCreator2,
   ApiResponseAction,
-  ApiResponseWrapper,
 } from "@/apiActions";
 
 /**
@@ -165,7 +159,7 @@ type CrudAction = typeof CrudActions[keyof typeof CrudActions];
 type EditorCommitConfig = {
   // Each CRUD type may take its own types, so we have a lot of anys.
   [key in CrudAction]?:
-    | EditorCommitCrudActionConfig<any, any, any, any, any>
+    | EditorCommitCrudActionConfig<any, any>
     | ApiActionCreator<any, any, any>;
 };
 /**
@@ -181,10 +175,7 @@ type EditorCommitConfig = {
  */
 export type EditorCommitCrudActionConfig<
   ClientModel extends EditorEntity,
-  ApiModel,
-  RequestPayload,
-  ResponsePayload,
-  Prepare extends void | PrepareAction<RequestPayload>
+  ApiModel
 > = {
   /**
    * Transforms the Input model into the request model
@@ -216,11 +207,7 @@ export type EditorCommitCrudActionConfig<
        *
        * Only one of requestActionCreator and makeRequestActionCreator should be present.
        */
-      requestActionCreator: ApiActionCreator<
-        RequestPayload,
-        ResponsePayload,
-        Prepare
-      >;
+      requestActionCreator: ApiActionCreator2<any, any, never, any>;
     }
   | {
       /**
@@ -231,16 +218,13 @@ export type EditorCommitCrudActionConfig<
       makeRequestActionCreator: (
         model: ClientModel,
         crudType: CrudAction
-      ) => ApiActionCreator<RequestPayload, ResponsePayload, Prepare>;
+      ) => ApiActionCreator2<any, any, never, any>;
     }
 );
 
 export const CreateJustificationConfig: EditorCommitCrudActionConfig<
   CreateJustificationInput,
-  CreateJustification,
-  { justification: CreateJustification },
-  { justification: Justification },
-  PrepareAction<{ justification: CreateJustification }>
+  CreateJustification
 > = {
   inputTransformer: demuxCreateJustificationInput,
   responseErrorTransformer: muxCreateJustificationErrors,
@@ -250,18 +234,7 @@ export const CreateJustificationConfig: EditorCommitCrudActionConfig<
 
 export const CreateJustifiedSentenceConfig: EditorCommitCrudActionConfig<
   CreateJustifiedSentenceInput,
-  CreateProposition | CreateStatement | CreateJustification,
-  | { justification: CreateJustification }
-  | { proposition: CreateProposition }
-  | { statement: CreateStatement },
-  | { justification: Justification }
-  | { proposition: Proposition }
-  | { statement: Statement },
-  PrepareAction<
-    | { justification: CreateJustification }
-    | { proposition: CreateProposition }
-    | { statement: CreateStatement }
-  >
+  CreateProposition | CreateStatement | CreateJustification
 > = {
   inputTransformer(model: CreateJustifiedSentenceInput) {
     const { speakers, doCreateJustification, proposition } = model;
@@ -300,10 +273,7 @@ export const CreateJustifiedSentenceConfig: EditorCommitCrudActionConfig<
 
 export const CreateCounterJustificationConfig: EditorCommitCrudActionConfig<
   CreateCounterJustificationInput,
-  CreateCounterJustification,
-  { justification: CreateCounterJustification },
-  { justification: Justification },
-  PrepareAction<{ justification: CreateCounterJustification }>
+  CreateCounterJustification
 > = {
   inputTransformer: demuxCreateJustificationInput,
   responseErrorTransformer: muxCreateJustificationErrors,
@@ -313,10 +283,7 @@ export const CreateCounterJustificationConfig: EditorCommitCrudActionConfig<
 
 export const CreateRegistrationConfirmationConfig: EditorCommitCrudActionConfig<
   CreateRegistrationConfirmationInput,
-  CreateRegistrationConfirmation,
-  { registrationConfirmation: CreateRegistrationConfirmation },
-  { user: User; authToken: AuthToken; expires: string },
-  PrepareAction<{ registrationConfirmation: CreateRegistrationConfirmation }>
+  CreateRegistrationConfirmation
 > = {
   requestSchema: CreateRegistrationConfirmation,
   requestActionCreator: api.confirmRegistration,
@@ -324,10 +291,7 @@ export const CreateRegistrationConfirmationConfig: EditorCommitCrudActionConfig<
 
 export const CreateRegistrationRequestConfig: EditorCommitCrudActionConfig<
   CreateRegistrationRequestInput,
-  CreateRegistrationRequest,
-  { registrationRequest: CreateRegistrationRequest },
-  ApiResponseWrapper,
-  PrepareAction<{ registrationRequest: CreateRegistrationRequest }>
+  CreateRegistrationRequest
 > = {
   requestSchema: CreateRegistrationRequest,
   requestActionCreator: api.requestRegistration,

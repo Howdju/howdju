@@ -10,7 +10,6 @@ import { ContinuationToken } from "./entities";
 import { ModelErrors } from "./zodError";
 import {
   CreateJustification,
-  CreateProposition,
   Entity,
   Justification,
   JustificationRef,
@@ -23,6 +22,7 @@ import {
   Tag,
   TagVote,
   User,
+  Writ,
   WritQuote,
 } from "./zodSchemas";
 import {
@@ -42,10 +42,6 @@ export interface ErrorOut<T extends object> {
   errorCode: ApiErrorCode;
   /** The errors corresponding to the in model. */
   errors: ModelErrors<T>;
-}
-
-export interface PostPropositionIn {
-  proposition: CreateProposition;
 }
 
 export interface PostPropositionOut {
@@ -75,6 +71,10 @@ export interface PropositionOut
   justifications?: JustificationOut[];
   propositionTagVotes?: PropositionTagVoteOut[];
 }
+
+export type WritOut = Persisted<Writ>;
+
+export type UserOut = Persisted<User>;
 
 export type WritQuoteOut = Persisted<WritQuote>;
 

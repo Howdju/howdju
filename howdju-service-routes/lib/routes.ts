@@ -1,4 +1,5 @@
 import { toNumber, split, reduce } from "lodash";
+import { Moment } from "moment";
 import { z } from "zod";
 
 import {
@@ -28,6 +29,12 @@ import {
   CreateJustificationVote,
   DeleteJustificationVote,
   Password,
+  ContinuationToken,
+  PropositionOut,
+  WritOut,
+  AuthToken,
+  WritQuoteOut,
+  UserOut,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -87,12 +94,8 @@ export type Body<T> = {
   body: T;
 };
 
-/** Matches any request. */
-const Any = z.object({});
-
 export type ServiceRoutes = typeof serviceRoutes;
 export type ServiceRoute = ServiceRoutes[keyof ServiceRoutes];
-export type PathedServiceRoute = ServiceRoute & { path: string };
 
 type InferRequest<Schema> = Schema extends z.ZodType<infer T, z.ZodTypeDef>
   ? T
@@ -126,15 +129,6 @@ function handler<S extends z.ZodType<T, z.ZodTypeDef>, R, T = InferRequest<S>>(
 
 export const serviceRoutes = {
   /*
-   * Options
-   */
-  options: {
-    method: httpMethods.OPTIONS,
-    request: handler(Any, async (_appProvider: ServicesProvider, _request) =>
-      Promise.resolve()
-    ),
-  },
-  /*
    * Search
    */
   searchPropositions: {
@@ -146,9 +140,10 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
-        const rankedPropositions =
-          await appProvider.propositionsTextSearcher.search(searchText);
-        return { body: rankedPropositions };
+        const propositions = await appProvider.propositionsTextSearcher.search(
+          searchText
+        );
+        return { body: { propositions } };
       }
     ),
   },
@@ -161,9 +156,10 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
-        const rankedPropositions =
-          await appProvider.tagsService.readTagsLikeTagName(searchText);
-        return { body: rankedPropositions };
+        const tags = await appProvider.tagsService.readTagsLikeTagName(
+          searchText
+        );
+        return { body: { tags } };
       }
     ),
   },
@@ -176,10 +172,8 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
-        const rankedWrits = await appProvider.writsTitleSearcher.search(
-          searchText
-        );
-        return { body: rankedWrits };
+        const writs = await appProvider.writsTitleSearcher.search(searchText);
+        return { body: { writs } };
       }
     ),
   },
@@ -192,10 +186,10 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { searchText } }
       ) => {
-        const rankedPersorgs = await appProvider.persorgsNameSearcher.search(
+        const persorgs = await appProvider.persorgsNameSearcher.search(
           searchText
         );
-        return { body: rankedPersorgs };
+        return { body: { persorgs } };
       }
     ),
   },
@@ -253,10 +247,10 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     request: handler(
       QueryStringParams(
-        "sorts",
+        "propositionIds",
         "continuationToken",
-        "count",
-        "propositionIds"
+        "sorts",
+        "count"
       ),
       async (
         appProvider: ServicesProvider,
@@ -273,17 +267,20 @@ export const serviceRoutes = {
         if (propositionIdsParam) {
           const propositionIds = split(propositionIdsParam, ",");
           const propositions =
-            await appProvider.propositionsService.readPropositionsForIds(
+            (await appProvider.propositionsService.readPropositionsForIds(
               propositionIds
-            );
+            )) as PropositionOut[];
           return { body: { propositions } };
         } else {
           const { propositions, continuationToken: newContinuationToken } =
-            await appProvider.propositionsService.readPropositions({
+            (await appProvider.propositionsService.readPropositions({
               sorts,
               continuationToken: continuationToken as any,
               count: count as any,
-            });
+            })) as {
+              propositions: PropositionOut[];
+              continuationToken: ContinuationToken;
+            };
           return {
             body: { propositions, continuationToken: newContinuationToken },
           };
@@ -732,11 +729,14 @@ export const serviceRoutes = {
       ) => {
         const sorts = decodeSorts(encodedSorts);
         const { writQuotes, continuationToken: newContinuationToken } =
-          await appProvider.writQuotesService.readWritQuotes({
+          (await appProvider.writQuotesService.readWritQuotes({
             sorts,
             continuationToken,
             count: toNumber(count),
-          });
+          })) as {
+            writQuotes: WritQuoteOut[];
+            continuationToken: ContinuationToken;
+          };
         return {
           body: { writQuotes, continuationToken: newContinuationToken },
         };
@@ -784,7 +784,7 @@ export const serviceRoutes = {
           appProvider.writQuotesService.updateWritQuote({
             authToken,
             writQuote: updateWritQuote,
-          }) as Promise<WritQuote>,
+          }) as Promise<WritQuoteOut>,
           "writQuote"
         );
         return { body: { writQuote } };
@@ -805,11 +805,11 @@ export const serviceRoutes = {
       ) => {
         const sorts = decodeSorts(encodedSorts);
         const { writs, continuationToken: newContinuationToken } =
-          await appProvider.writsService.readWrits({
+          (await appProvider.writsService.readWrits({
             sorts,
             continuationToken,
             count: toNumber(count),
-          });
+          })) as { writs: WritOut[]; continuationToken: ContinuationToken };
         return {
           body: { writs, continuationToken: newContinuationToken },
         };
@@ -827,7 +827,11 @@ export const serviceRoutes = {
       async (appProvider: ServicesProvider, { body: { credentials } }) => {
         try {
           const { user, authToken, expires } =
-            await appProvider.authService.login(credentials);
+            (await appProvider.authService.login(credentials)) as {
+              user: UserOut;
+              authToken: AuthToken;
+              expires: Moment;
+            };
           return { body: { user, authToken, expires } };
         } catch (err) {
           if (err instanceof EntityNotFoundError) {
@@ -875,9 +879,9 @@ export const serviceRoutes = {
         { queryStringParams: { passwordResetCode } }
       ) => {
         const email =
-          await appProvider.passwordResetService.checkRequestForCode(
+          (await appProvider.passwordResetService.checkRequestForCode(
             passwordResetCode
-          );
+          )) as string;
         return { body: { email } };
       }
     ),
@@ -895,10 +899,10 @@ export const serviceRoutes = {
         { body: { passwordResetCode, passwordResetConfirmation } }
       ) => {
         const { user, authToken, expires } =
-          await appProvider.passwordResetService.resetPasswordAndLogin(
+          (await appProvider.passwordResetService.resetPasswordAndLogin(
             passwordResetCode,
             passwordResetConfirmation
-          );
+          )) as { user: UserOut; authToken: AuthToken; expires: Moment };
         return { body: { user, authToken, expires } };
       }
     ),
@@ -929,9 +933,10 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { queryStringParams: { registrationCode } }
       ) => {
-        const email = await appProvider.registrationService.checkRequestForCode(
-          registrationCode
-        );
+        const email =
+          (await appProvider.registrationService.checkRequestForCode(
+            registrationCode
+          )) as string;
         return { body: { email } };
       }
     ),
@@ -945,12 +950,12 @@ export const serviceRoutes = {
         appProvider: ServicesProvider,
         { body: { registrationConfirmation } }
       ) => {
-        const { user, authToken, expires } = await prefixErrorPath(
+        const { user, authToken, expires } = (await prefixErrorPath(
           appProvider.registrationService.confirmRegistrationAndLogin(
             registrationConfirmation
           ),
           "registrationConfirmation"
-        );
+        )) as { user: UserOut; authToken: AuthToken; expires: Moment };
 
         return { body: { user, authToken, expires } };
       }

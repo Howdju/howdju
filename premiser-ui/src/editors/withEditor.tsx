@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { AnyAction, PrepareAction } from "@reduxjs/toolkit";
+import { AnyAction } from "@reduxjs/toolkit";
 import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import get from "lodash/get";
 import { z } from "zod";
@@ -127,22 +127,13 @@ export default function withEditor<
   Props extends EntityEditorFieldsProps<SchemaOutput>,
   SchemaInput extends EditorEntity = any,
   SchemaOutput = SchemaInput,
-  ApiModel = any,
-  RequestPayload = any,
-  ResponsePayload = any,
-  Prepare extends void | PrepareAction<RequestPayload> = void
+  ApiModel = any
 >(
   editorType: EditorType,
   EntityEditorFields: React.FC<Props>,
   entityPropName: string,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  commitConfig?: EditorCommitCrudActionConfig<
-    SchemaInput,
-    ApiModel,
-    RequestPayload,
-    ResponsePayload,
-    Prepare
-  >
+  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel>
 ): React.FC<
   WithEditorProps & Omit<Props, keyof EntityEditorFieldsProps<SchemaOutput>>
 > {
@@ -301,20 +292,9 @@ export function submitButtonTitle(
 export function validateEditorEntity<
   SchemaInput extends EditorEntity,
   SchemaOutput,
-  ApiModel,
-  RequestPayload,
-  ResponsePayload,
-  Prepare extends void | PrepareAction<RequestPayload>
+  ApiModel
 >(
-  commitConfig:
-    | EditorCommitCrudActionConfig<
-        SchemaInput,
-        ApiModel,
-        RequestPayload,
-        ResponsePayload,
-        Prepare
-      >
-    | undefined,
+  commitConfig: EditorCommitCrudActionConfig<SchemaInput, ApiModel> | undefined,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
   apiValidationErrors: ModelErrors<ApiModel> | undefined,
   editEntity: SchemaInput | undefined
