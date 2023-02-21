@@ -28,7 +28,8 @@ export default handleActions<
           ...state,
           suggestions: {
             ...state.suggestions,
-            [action.meta.requestPayload.suggestionsKey]: result,
+            [action.meta.requestMeta.suggestionsKey]:
+              result[action.meta.requestMeta.suggestionsResponseKey],
           },
         };
       },
@@ -43,8 +44,7 @@ export default handleActions<
           ...state,
           suggestions: {
             ...state.suggestions,
-            [action.meta.requestPayload.suggestionsKey]:
-              result.propositionTexts,
+            [action.meta.requestMeta.suggestionsKey]: result.propositionTexts,
           },
         };
       },

@@ -1,5 +1,6 @@
-import { api } from "@/actions";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { EntityId } from "aws-sdk/clients/machinelearning";
+import { JustificationRootTargetType } from "howdju-common";
 
 export const justificationsPageSlice = createSlice({
   name: "justificationsPage",
@@ -14,14 +15,18 @@ export const justificationsPageSlice = createSlice({
     hideNewJustificationDialog: (state) => {
       state.isNewJustificationDialogVisible = false;
     },
-  },
-  extraReducers(builder) {
-    builder.addCase(api.fetchRootJustificationTarget, (state) => {
+    fetchRootJustificationTarget: (
+      state,
+      _action: PayloadAction<{
+        rootTargetType: JustificationRootTargetType;
+        rootTargetId: EntityId;
+      }>
+    ) => {
       state.isFetching = true;
-    });
-    builder.addCase(api.fetchRootJustificationTarget.response, (state) => {
+    },
+    fetchRootJustificationTargetResponse: (state) => {
       state.isFetching = false;
-    });
+    },
   },
 });
 

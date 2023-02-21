@@ -184,3 +184,38 @@ export const mainSearchResultsSchema = {
 export const accountSettingsSchema = new schema.Entity<AccountSettings>(
   "accountSettings"
 );
+
+/**
+ * Converts a normalizr schema into a response payload.
+ *
+ * Replaces the schemas with their generic entity type.
+ *
+ * For example, given this schema:
+ *
+ * ```typescript
+ * const someSchema: {
+ *   proposition: schema.Entity<Proposition>;
+ *   example: {
+ *       justification: schema.Entity<Justification>;
+ *   };
+ * }
+ * ```
+ *
+ * `ExtractSchemaEntity<typeof someSchema>` will be:
+ *
+ * ```typescript
+ * type someSchemaEntities = {
+ *   proposition: Proposition;
+ *   example: {
+ *       justification: Justification;
+ *   };
+ * }
+ * ```
+ *
+ * TODO(1): do we need this?
+ */
+export type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
+  ? E
+  : {
+      [Key in keyof S]: ExtractSchemaEntity<S[Key]>;
+    };

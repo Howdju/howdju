@@ -35,6 +35,8 @@ import {
   AuthToken,
   WritQuoteOut,
   UserOut,
+  CreateTagVote,
+  newUnimplementedError,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -996,6 +998,26 @@ export const serviceRoutes = {
           authToken,
           justificationVote
         );
+      }
+    ),
+  },
+  createTagVote: {
+    path: "tag-votes",
+    method: httpMethods.POST,
+    request: handler(
+      Authed.merge(Body({ tagVote: CreateTagVote })),
+      (_appProvider): Promise<void> => {
+        throw newUnimplementedError("createTagVote is not implemented");
+      }
+    ),
+  },
+  deleteTagVote: {
+    path: "tag-votes",
+    method: httpMethods.DELETE,
+    request: handler(
+      Authed.merge(PathParams("tagVoteId")),
+      (_appProvider): Promise<void> => {
+        throw newUnimplementedError("deleteTagVote is not implemented");
       }
     ),
   },

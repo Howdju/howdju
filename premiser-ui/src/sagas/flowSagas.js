@@ -4,8 +4,7 @@ import { LOCATION_CHANGE, push, replace } from "connected-react-router";
 
 import {
   httpStatusCodes,
-  JustificationRootTargetTypes,
-  newExhaustedEnumError,
+  newProgrammingError,
   utcNowIsAfter,
 } from "howdju-common";
 
@@ -27,12 +26,12 @@ import { tryWaitOnRehydrate } from "./appSagas";
 
 export function* goHomeIfDeletePropositionWhileViewing() {
   yield takeEvery(
-    str(api.deleteProposition.response),
+    api.deleteProposition.response,
     function* goHomeIfDeletePropositionWhileViewingWorker(action) {
       if (!action.error) {
         const routerLocation = history.location;
         const noSlugPath = paths.proposition(
-          action.meta.requestPayload.proposition,
+          { id: action.meta.requestMeta.propositionId },
           null,
           true
         );
@@ -142,29 +141,35 @@ export function* goTo() {
 
 export function* redirectHomeFromMissingRootTarget() {
   yield takeEvery(
-    str(api.fetchRootJustificationTarget.response),
+    [
+      api.fetchPropositionRootJustificationTarget.response,
+      api.fetchStatementRootJustificationTarget.response,
+    ],
     function* redirectHomeFromMissingRootTargetWorker(action) {
       // Try to determine whether we are on the page for a proposition that was not found
       if (
         action.error &&
         action.payload.httpStatusCode === httpStatusCodes.NOT_FOUND
       ) {
-        const { rootTargetType, rootTargetId } = action.meta.requestPayload;
-
         const routerLocation = history.location;
+        const { rootTargetId } = action.meta.requestMeta;
 
         let path, messageKey;
-        switch (rootTargetType) {
-          case JustificationRootTargetTypes.PROPOSITION:
+        switch (action.type) {
+          case str(api.fetchPropositionRootJustificationTarget.response): {
             path = paths.proposition({ id: rootTargetId });
             messageKey = MISSING_PROPOSITION_REDIRECT_TOAST_MESSAGE;
             break;
-          case JustificationRootTargetTypes.STATEMENT:
+          }
+          case str(api.fetchStatementRootJustificationTarget.response): {
             path = paths.statement({ id: rootTargetId });
             messageKey = MISSING_STATEMENT_REDIRECT_TOAST_MESSAGE;
             break;
+          }
           default:
-            throw newExhaustedEnumError("JustificationRootTargetTypes");
+            throw newProgrammingError(
+              `Exhausted the actions that redirectHomeFromMissingRootTargetWorker should receive: action.type = ${action.type}`
+            );
         }
         // startsWith because we don't have a slug
         if (routerLocation.pathname.startsWith(path)) {

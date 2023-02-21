@@ -37,11 +37,13 @@ import {
 import { contentScriptAck, postExtensionMessages } from "./extensionSagas";
 import * as appSagas from "../app/appSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
+import * as justificationsPageSagas from "../pages/justifications/justificationPageSagas";
 
 export default () =>
   all([
     all(mapValues(appSagas, (s) => s())),
     all(mapValues(justificationsSearchPageSagas, (s) => s())),
+    all(mapValues(justificationsPageSagas, (s) => s())),
 
     resourceApiCalls(),
     cancelResourceApiCalls(),

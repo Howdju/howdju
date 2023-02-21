@@ -369,7 +369,7 @@ const defaultEditorActions = {
 };
 
 interface EditorMeta {
-  requestPayload?: any;
+  requestMeta?: any;
 }
 const defaultEditorReducer = handleActions<EditorState<any>, any>(
   defaultEditorActions,
@@ -383,18 +383,18 @@ const editorReducerByType: {
   >;
 } = {
   // TODO(94): adopt Redux's slice pattern to get precise reducer typechecking
-  [EditorTypes.PROPOSITION]: handleActions<EditorState<any>, any, EditorMeta>(
+  [EditorTypes.PROPOSITION]: handleActions<EditorState<any>, any, any>(
     {
       [str(api.fetchProposition)]: (state, action) => {
         const propositionId = get(state, "editEntity.id");
-        if (propositionId === action.payload.propositionId) {
+        if (propositionId === action.meta.propositionId) {
           return { ...state, isFetching: true };
         }
         return state;
       },
       [str(api.fetchProposition.response)]: (state, action) => {
         const propositionId = get(state, "editEntity.id");
-        if (propositionId === action.meta.requestPayload.propositionId) {
+        if (propositionId === action.meta.requestMeta.propositionId) {
           return { ...state, isFetching: false };
         }
         return state;
@@ -593,14 +593,14 @@ const editorReducerByType: {
       },
       [str(api.fetchWritQuote)]: (state, action) => {
         const writQuoteId = get(state, "editEntity.id");
-        if (writQuoteId === action.payload.writQuoteId) {
+        if (writQuoteId === action.meta.writQuoteId) {
           return { ...state, isFetching: true };
         }
         return state;
       },
       [str(api.fetchWritQuote.response)]: (state, action) => {
         const writQuoteId = get(state, "editEntity.id");
-        if (writQuoteId === action.meta.requestPayload.writQuoteId) {
+        if (writQuoteId === action.meta.requestMeta.writQuoteId) {
           return { ...state, isFetching: false };
         }
         return state;

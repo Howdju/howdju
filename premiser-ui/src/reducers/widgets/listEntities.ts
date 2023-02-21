@@ -10,7 +10,7 @@ import { api, str } from "../../actions";
 const widgetRequestReducer =
   <T extends BaseListEntitiesState>(defaultWidgetState: T) =>
   (state: Record<string, T>, action: AnyAction) => {
-    const widgetId = action.payload.widgetId;
+    const widgetId = action.meta.widgetId;
     const widgetState = get(state, widgetId, defaultWidgetState);
     const newWidgetState = { ...widgetState, isFetching: true };
     return { ...state, [widgetId]: newWidgetState };
@@ -26,7 +26,7 @@ const widgetResponseReducer =
       action.payload,
       action.meta.normalizationSchema
     );
-    const widgetId = action.meta.requestPayload.widgetId;
+    const widgetId = action.meta.requestMeta.widgetId;
     const widgetState = get(state, widgetId, defaultWidgetState);
     const newWidgetState = {
       [entitiesWidgetStateKey]: union(
@@ -42,7 +42,7 @@ const widgetResponseReducer =
 const widgetResponseErrorReducer =
   <T extends BaseListEntitiesState>(defaultWidgetState: T) =>
   (state: Record<string, T>, action: AnyAction) => {
-    const widgetId = action.meta.requestPayload.widgetId;
+    const widgetId = action.meta.requestMeta.widgetId;
     const widgetState = get(state, widgetId, defaultWidgetState);
     const newWidgetState = {
       ...widgetState,
@@ -58,13 +58,14 @@ const widgetDeleteResponseReducer =
     entitiesResultKey: string
   ) =>
   (state: Record<string, T>, action: AnyAction) => {
-    const widgetId = action.meta.requestPayload.widgetId;
+    const widgetId = action.meta.requestMeta.widgetId;
     const widgetState = get(state, widgetId, defaultWidgetState);
     const newWidgetState = {
       [entitiesWidgetStateKey]: filter(
         widgetState[entitiesWidgetStateKey as keyof T] as ArrayLike<{
           id: string;
         }>,
+        // TODO(1): does payload.result exist? Above we are normalizing the response payload.
         (e) => e.id !== action.payload.result[entitiesResultKey].id
       ),
     };

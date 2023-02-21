@@ -17,8 +17,6 @@ export const justificationsSearchPageSlice = createSlice({
     clearSearch: () => initialState,
   },
   extraReducers(builder) {
-    // DO_NOT_MERGE: search all usage of api.* actions in reducers to ensure we havn't changed the
-    // payload under them.
     builder.addCase(api.fetchJustificationsSearch, (state, action) => {
       state.isFetching = true;
       state.filters = action.meta.filters;

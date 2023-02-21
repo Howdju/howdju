@@ -1,7 +1,7 @@
 import { assign, forEach, isEmpty, isUndefined, toPairs } from "lodash";
 import { match } from "path-to-regexp";
 
-import { apiErrorCodes, toJson } from "howdju-common";
+import { apiErrorCodes, isCustomError, toJson } from "howdju-common";
 import {
   AuthenticationError,
   AuthorizationError,
@@ -138,6 +138,17 @@ export async function routeRequest(
         },
       });
     } else if (err instanceof Error) {
+      if (isCustomError(err)) {
+        appProvider.logger.error("Custom error", {
+          err,
+          stack: err.stack,
+          sourceError: err.sourceError,
+        });
+        return error({
+          callback,
+          body: { errorCode: apiErrorCodes.UNEXPECTED_ERROR },
+        });
+      }
       appProvider.logger.error("Unexpected error", { err, stack: err.stack });
       return error({
         callback,

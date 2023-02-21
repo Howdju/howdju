@@ -6,19 +6,15 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
-import { isEmpty, isFunction, isObject, join, toString } from "lodash";
+import { isEmpty, join, toString } from "lodash";
 import queryString from "query-string";
 
 import {
   EntityId,
   JustificationVotePolarities,
   PropositionTagVotePolarities,
-  JustificationRootTargetType,
   Tag,
-  JustificationRootTargetTypes,
-  httpMethods,
   HttpMethod,
-  JustificationRootTargetInfo,
   SortDirections,
   encodeQueryStringObject,
   JustificationSearchFilters,
@@ -108,7 +104,7 @@ export type ApiActionCreator<
 
 export type ApiActionCreator2<
   Args extends unknown[],
-  Payload,
+  Payload extends ApiConfig<any>,
   Meta,
   ResponsePayload
 > = ActionCreatorWithPreparedPayload<Args, Payload, string, never, Meta> & {
@@ -117,7 +113,7 @@ export type ApiActionCreator2<
     ResponsePayload,
     string,
     Error,
-    ApiResponseActionMeta<any, any>
+    ApiResponseActionMeta<Payload["normalizationSchema"], Meta>
   >;
 };
 
@@ -127,9 +123,9 @@ const makeApiActionTypes = (type: string) => {
   return [requestType, responseType];
 };
 
-export type ApiResponseActionMeta<N, P> = {
+export type ApiResponseActionMeta<N, M> = {
   normalizationSchema: N;
-  requestPayload: P;
+  requestMeta: M;
 };
 
 /**
@@ -146,39 +142,6 @@ interface ResourceApiConfig<B, N> {
   normalizationSchema?: N;
 }
 
-/**
- * Converts a normalizr schema into a response payload.
- *
- * Replaces the schemas with their generic entity type.
- *
- * For example, given this schema:
- *
- * ```typescript
- * const someSchema: {
- *   proposition: schema.Entity<Proposition>;
- *   example: {
- *       justification: schema.Entity<Justification>;
- *   };
- * }
- * ```
- *
- * `ExtractSchemaEntity<typeof someSchema>` will be:
- *
- * ```typescript
- * type someSchemaEntities = {
- *   proposition: Proposition;
- *   example: {
- *       justification: Justification;
- *   };
- * }
- * ```
- */
-type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
-  ? E
-  : {
-      [Key in keyof S]: ExtractSchemaEntity<S[Key]>;
-    };
-
 /** Properties that may be present on API responses */
 export interface ApiResponseWrapper {
   /**
@@ -192,8 +155,6 @@ export interface ApiResponseWrapper {
   /** A pagination token. */
   continuationToken?: string;
 }
-
-type Prepared<P> = { payload: P; meta?: any };
 
 /**
  * The meta of an ApiAction
@@ -213,97 +174,9 @@ export type AnyApiAction = ApiAction<any> | ApiAction2<any>;
 export type ApiResponseAction<P> = PayloadAction<
   P,
   string,
-  ApiResponseActionMeta<any, P>,
+  ApiResponseActionMeta<any, any>,
   Error
 >;
-
-type InferPrepareAction<PP extends (...args: any[]) => any> = PP extends (
-  ...args: any[]
-) => Prepared<any>
-  ? PP & { meta: ApiActionMeta<InferPayload<PP>> }
-  : (...args: Parameters<PP>) => {
-      payload: ReturnType<PP>;
-      meta: ApiActionMeta<InferPayload<PP>>;
-    };
-type InferPayload<PP extends (...args: any[]) => any> = PP extends (
-  ...args: any[]
-) => Prepared<infer P>
-  ? P
-  : ReturnType<PP>;
-
-/**
- * Create an action creator having a property `.response` with another action creator for corresponding API responses
- *
- * @param type the type of the action
- * @param payloadCreatorOrPrepare a function that creates the payload directly or returns a
- *   @reduxjs/toolkit prepared object.
- * @param apiConfigCreator the resource config for the API endpoint, or a function for creating it from
- *   the payload. The apiConfig's normalizationSchema determines the payload of the response actions.
- * @typeparam P the payload type
- * @typeparam N the type of the normalization schema. Used to infer the payload of the response action.
- * @typeparam PA the prepare function type
- */
-function apiActionCreator<
-  PP extends ((...args: any[]) => P) | ((...args: any[]) => Prepared<P>),
-  N,
-  P = InferPayload<PP>
->(
-  type: string,
-  payloadCreatorOrPrepare: PP | undefined,
-  apiConfigCreator?:
-    | ResourceApiConfig<any, N>
-    | ((p: P) => ResourceApiConfig<any, N>)
-): ApiActionCreator<
-  P,
-  ExtractSchemaEntity<N> & ApiResponseWrapper,
-  InferPrepareAction<PP>
-> {
-  const [requestType, responseType] = makeApiActionTypes(type);
-
-  // Add apiConfig to meta
-  function requestPrepare(...args: any[]) {
-    let prepared = payloadCreatorOrPrepare
-      ? payloadCreatorOrPrepare(...args)
-      : ({} as Prepared<P>);
-    if (apiConfigCreator) {
-      if (!isObject(prepared) || !("payload" in prepared)) {
-        // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
-        // otherwise make the entire return value the payload.
-        prepared = { payload: prepared, meta: {} };
-      } else if (!prepared.meta) {
-        prepared.meta = {};
-      }
-
-      prepared.meta.apiConfig = isFunction(apiConfigCreator)
-        ? apiConfigCreator(prepared.payload)
-        : apiConfigCreator;
-    }
-    return prepared;
-  }
-
-  type Response = ExtractSchemaEntity<N> & ApiResponseWrapper;
-
-  const ac = createAction(requestType, requestPrepare) as ApiActionCreator<
-    P,
-    Response,
-    InferPrepareAction<PP>
-  >;
-
-  ac.response = createAction(
-    responseType,
-    (payload: ExtractSchemaEntity<N>, meta: ApiResponseActionMeta<N, P>) => ({
-      payload,
-      meta,
-    })
-  ) as ActionCreatorWithPreparedPayload<
-    unknown[],
-    Response,
-    string,
-    Error,
-    ApiResponseActionMeta<N, P>
-  >;
-  return ac;
-}
 
 /** Return never if the Key doesn't correspond to an entity requiring normalization. */
 type ToEntityFieldKey<
@@ -411,8 +284,6 @@ function makeEndpoint(
  *
  * `Config extends Exact<ApiActionConfig<Route>, Config>`
  *
- * DO_NOT_MERGE: try removing the MakeConfig extends so that it directly creates the ApiActionConfig.
- *
  * @param type The action type
  * @param route The service route this API action targets
  * @param makeConfig Additional config for calling the service route.
@@ -482,7 +353,7 @@ function apiActionCreator2<
     responseType,
     (
       payload: InferResponseBody<Route>,
-      meta: ApiResponseActionMeta<NormalizationSchema, ApiActionConfig<Route>>
+      meta: ApiResponseActionMeta<NormalizationSchema, Meta>
     ) => ({
       payload,
       meta,
@@ -492,7 +363,7 @@ function apiActionCreator2<
     Response,
     string,
     Error,
-    ApiResponseActionMeta<NormalizationSchema, ApiActionConfig<Route>>
+    ApiResponseActionMeta<NormalizationSchema, Meta>
   >;
   return actionCreator;
 }
@@ -510,17 +381,6 @@ interface JustificationSearchQueryStringParams {
   count?: string;
   continuationToken?: string;
 }
-
-const rootTargetEndpointsByType = {
-  [JustificationRootTargetTypes.PROPOSITION]: {
-    endpoint: "propositions",
-    normalizationSchema: { proposition: propositionSchema },
-  },
-  [JustificationRootTargetTypes.STATEMENT]: {
-    endpoint: "statements",
-    normalizationSchema: { statement: statementSchema },
-  },
-};
 
 const defaultSorts = `created=${SortDirections.DESCENDING}`;
 
@@ -541,8 +401,11 @@ export const api = {
     "FETCH_PROPOSITION",
     serviceRoutes.readProposition,
     (propositionId: EntityId) => ({
-      pathParams: { propositionId },
-      normalizationSchema: { proposition: propositionSchema },
+      config: {
+        pathParams: { propositionId },
+        normalizationSchema: { proposition: propositionSchema },
+      },
+      meta: { propositionId },
     })
   ),
   fetchPropositions: apiActionCreator2(
@@ -568,26 +431,33 @@ export const api = {
       normalizationSchema: { propositionCompound: propositionCompoundSchema },
     })
   ),
-  fetchRootJustificationTarget: apiActionCreator(
-    "FETCH_ROOT_JUSTIFICATION_TARGET",
-    (
-      rootTargetType: JustificationRootTargetType,
-      rootTargetId: EntityId
-    ): JustificationRootTargetInfo => ({
-      rootTargetType,
-      rootTargetId,
-    }),
-    ({ rootTargetType, rootTargetId }) => {
-      const { endpoint, normalizationSchema } =
-        rootTargetEndpointsByType[rootTargetType];
-      return {
-        endpoint: `${endpoint}/${rootTargetId}?include=justifications`,
-        fetchInit: {
-          method: httpMethods.GET,
-        },
-        normalizationSchema,
-      };
-    }
+  fetchPropositionRootJustificationTarget: apiActionCreator2(
+    "FETCH_PROPOSITION_ROOT_JUSTIFICATION_TARGET",
+    serviceRoutes.readProposition,
+    (propositionId: EntityId) => ({
+      config: {
+        pathParams: { propositionId },
+        queryStringParams: { include: "justifications" },
+        normalizationSchema: { proposition: propositionSchema },
+      },
+      meta: {
+        rootTargetId: propositionId,
+      },
+    })
+  ),
+  fetchStatementRootJustificationTarget: apiActionCreator2(
+    "FETCH_STATEMENT_ROOT_JUSTIFICATION_TARGET",
+    serviceRoutes.readStatement,
+    (statementId: EntityId) => ({
+      config: {
+        pathParams: { statementId },
+        queryStringParams: { include: "justifications" },
+        normalizationSchema: { statement: statementSchema },
+      },
+      meta: {
+        rootTargetId: statementId,
+      },
+    })
   ),
 
   fetchWritQuote: apiActionCreator2(
@@ -689,9 +559,10 @@ export const api = {
         queryStringParams.sorts = defaultSorts;
       }
       return {
-        queryStringParams,
-        normalizationSchema: { propositions: propositionsSchema },
-        // DO_NOT_MERGE until we fix the listeEntities reducers to get widgetId from meta.
+        config: {
+          queryStringParams,
+          normalizationSchema: { propositions: propositionsSchema },
+        },
         meta: { widgetId },
       };
     }
@@ -712,9 +583,10 @@ export const api = {
         queryStringParams.sorts = defaultSorts;
       }
       return {
-        queryStringParams,
-        normalizationSchema: { writs: writsSchema },
-        // DO_NOT_MERGE until we fix the listeEntities reducers to get widgetId from meta.
+        config: {
+          queryStringParams,
+          normalizationSchema: { writs: writsSchema },
+        },
         meta: { widgetId },
       };
     }
@@ -735,9 +607,10 @@ export const api = {
         queryStringParams.sorts = defaultSorts;
       }
       return {
-        queryStringParams,
-        normalizationSchema: { writQuotes: writQuotesSchema },
-        // DO_NOT_MERGE until we fix the listeEntities reducers to get widgetId from meta.
+        config: {
+          queryStringParams,
+          normalizationSchema: { writQuotes: writQuotesSchema },
+        },
         meta: { widgetId },
       };
     }
@@ -758,9 +631,10 @@ export const api = {
         queryStringParams.sorts = defaultSorts;
       }
       return {
-        queryStringParams,
-        normalizationSchema: { justifications: justificationsSchema },
-        // DO_NOT_MERGE until we fix the listeEntities reducers to get widgetId from meta.
+        config: {
+          queryStringParams,
+          normalizationSchema: { justifications: justificationsSchema },
+        },
         meta: { widgetId },
       };
     }
@@ -913,131 +787,141 @@ export const api = {
   verifyJustification: apiActionCreator2(
     "VERIFY_JUSTIFICATION",
     serviceRoutes.createJustificationVote,
-    (justification) => ({
-      body: {
-        justificationVote: {
-          justificationId: justification.id,
-          polarity: JustificationVotePolarities.POSITIVE,
+    (justification) => {
+      const justificationVote = {
+        justificationId: justification.id,
+        polarity: JustificationVotePolarities.POSITIVE,
+      };
+      return {
+        config: {
+          body: {
+            justificationVote,
+          },
+          normalizationSchema: { justificationVote: justificationVoteSchema },
         },
-      },
-      meta: {
-        // DO_NOT_MERGE search for references of previous votes now that it's on meta and not payload
-        previousJustificationVote: justification.vote,
-      },
-      normalizationSchema: { justificationVote: justificationVoteSchema },
-    })
+        meta: {
+          justificationVote,
+          justificationId: justification.id,
+          previousJustificationVote: justification.vote,
+        },
+      };
+    }
   ),
   unVerifyJustification: apiActionCreator2(
     "UN_VERIFY_JUSTIFICATION",
     serviceRoutes.deleteJustificationVote,
-    (justification) => ({
-      body: {
-        justificationVote: {
-          justificationId: justification.id,
-          polarity: JustificationVotePolarities.POSITIVE,
+    (justification) => {
+      const justificationVote = {
+        justificationId: justification.id,
+        polarity: JustificationVotePolarities.POSITIVE,
+      };
+      return {
+        config: {
+          body: {
+            justificationVote,
+          },
         },
-      },
-      meta: {
-        previousJustificationVote: justification.vote,
-      },
-    })
+        meta: {
+          justificationVote,
+          justificationId: justification.id,
+          previousJustificationVote: justification.vote,
+        },
+      };
+    }
   ),
   disverifyJustification: apiActionCreator2(
     "DISVERIFY_JUSTIFICATION",
     serviceRoutes.createJustificationVote,
     (justification) => ({
-      body: {
-        justificationVote: {
-          justificationId: justification.id,
-          polarity: JustificationVotePolarities.NEGATIVE,
+      config: {
+        body: {
+          justificationVote: {
+            justificationId: justification.id,
+            polarity: JustificationVotePolarities.NEGATIVE,
+          },
         },
+        normalizationSchema: { justificationVote: justificationVoteSchema },
       },
       meta: {
+        justificationId: justification.id,
         previousJustificationVote: justification.vote,
       },
-      normalizationSchema: { justificationVote: justificationVoteSchema },
     })
   ),
   unDisverifyJustification: apiActionCreator2(
     "UN_DISVERIFY_JUSTIFICATION",
     serviceRoutes.deleteJustificationVote,
     (justification) => ({
-      body: {
-        justificationVote: {
-          justificationId: justification.id,
-          polarity: JustificationVotePolarities.NEGATIVE,
+      config: {
+        body: {
+          justificationVote: {
+            justificationId: justification.id,
+            polarity: JustificationVotePolarities.NEGATIVE,
+          },
         },
       },
       meta: {
+        justificationId: justification.id,
         previousJustificationVote: justification.vote,
       },
     })
   ),
 
-  createTag: apiActionCreator(
+  createTag: apiActionCreator2(
     "CREATE_TAG",
+    serviceRoutes.createTagVote,
     (
       tagTargetType: TaggableEntityType,
       tagTargetId: EntityId,
       tag: Tag,
       tagVote?: TagVoteViewModel
     ) => ({
-      tagVote: makeCreateTagVote({
-        targetType: tagTargetType,
-        target: {
-          id: tagTargetId,
+      config: {
+        body: {
+          tagVote: makeCreateTagVote({
+            targetType: tagTargetType,
+            target: {
+              id: tagTargetId,
+            },
+            polarity: TagVotePolarities.POSITIVE,
+            tag,
+          }),
         },
-        polarity: TagVotePolarities.POSITIVE,
-        tag,
-      }),
-      previousTagVote: tagVote,
-    }),
-    (payload) => ({
-      endpoint: "tag-votes",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+        normalizationSchema: { tagVote: tagVoteSchema },
       },
-      normalizationSchema: { tagVote: tagVoteSchema },
+      meta: { previousTagVote: tagVote },
     })
   ),
-  createAntiTag: apiActionCreator(
+  createAntiTag: apiActionCreator2(
     "CREATE_ANTI_TAG",
+    serviceRoutes.createTagVote,
     (
       tagTargetType: TaggableEntityType,
       tagTargetId: EntityId,
       tag: Tag,
       tagVote?: TagVoteViewModel
     ) => ({
-      tagVote: makeCreateTagVote({
-        targetType: tagTargetType,
-        target: {
-          id: tagTargetId,
+      config: {
+        body: {
+          tagVote: makeCreateTagVote({
+            targetType: tagTargetType,
+            target: {
+              id: tagTargetId,
+            },
+            polarity: TagVotePolarities.NEGATIVE,
+            tag,
+          }),
         },
-        polarity: TagVotePolarities.NEGATIVE,
-        tag,
-      }),
-      previousTagVote: tagVote,
-    }),
-    (payload) => ({
-      endpoint: "tag-votes",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+        normalizationSchema: { tagVote: tagVoteSchema },
       },
-      normalizationSchema: { tagVote: tagVoteSchema },
+      meta: { previousTagVote: tagVote },
     })
   ),
-  unTag: apiActionCreator(
+  unTag: apiActionCreator2(
     "UN_TAG",
+    serviceRoutes.deleteTagVote,
     (tagVote: TagVoteRef) => ({
-      tagVote,
-    }),
-    (payload) => ({
-      endpoint: `tag-votes/${payload.tagVote.id}`,
-      fetchInit: {
-        method: httpMethods.DELETE,
-      },
+      pathParams: { tagVoteId: tagVote.id },
     })
   ),
 
@@ -1047,18 +931,24 @@ export const api = {
     (
       propositionId: EntityId,
       tag: Tag,
-      propositionTagVote?: PropositionTagVoteOut
-    ) => ({
-      body: {
-        propositionTagVote: {
-          polarity: PropositionTagVotePolarities.POSITIVE,
-          proposition: PropositionRef.parse({ id: propositionId }),
-          tag,
+      prevPropositionTagVote?: PropositionTagVoteOut
+    ) => {
+      const propositionTagVote = {
+        polarity: PropositionTagVotePolarities.POSITIVE,
+        proposition: PropositionRef.parse({ id: propositionId }),
+        tag,
+      };
+      return {
+        config: {
+          body: {
+            propositionTagVote,
+          },
+
+          normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
         },
-      },
-      meta: { prevPropositionTagVote: propositionTagVote },
-      normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
-    })
+        meta: { propositionTagVote, prevPropositionTagVote },
+      };
+    }
   ),
   antiTagProposition: apiActionCreator2(
     "ANTI_TAG_PROPOSITION",
@@ -1066,18 +956,24 @@ export const api = {
     (
       propositionId: EntityId,
       tag: Tag,
-      propositionTagVote?: PropositionTagVoteOut
-    ) => ({
-      body: {
-        propositionTagVote: {
-          polarity: PropositionTagVotePolarities.NEGATIVE,
-          proposition: PropositionRef.parse({ id: propositionId }),
-          tag,
+      prevPropositionTagVote?: PropositionTagVoteOut
+    ) => {
+      const propositionTagVote = {
+        polarity: PropositionTagVotePolarities.NEGATIVE,
+        proposition: PropositionRef.parse({ id: propositionId }),
+        tag,
+      };
+      return {
+        config: {
+          body: {
+            propositionTagVote,
+          },
+
+          normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
         },
-      },
-      meta: { prevPropositionTagVote: propositionTagVote },
-      normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
-    })
+        meta: { propositionTagVote, prevPropositionTagVote },
+      };
+    }
   ),
   unTagProposition: apiActionCreator2(
     "UN_TAG_PROPOSITION",
@@ -1110,7 +1006,10 @@ export const api = {
     "DELETE_PROPOSITION",
     serviceRoutes.deleteProposition,
     (proposition: PropositionRef) => ({
-      pathParams: { propositionId: proposition.id },
+      config: {
+        pathParams: { propositionId: proposition.id },
+      },
+      meta: { propositionId: proposition.id },
     })
   ),
 
@@ -1137,13 +1036,15 @@ export const api = {
     "FETCH_PROPOSITION_TEXT_SUGGESTIONS",
     serviceRoutes.searchPropositions,
     (propositionText: string, suggestionsKey: SuggestionsKey) => ({
-      queryStringParams: { searchText: propositionText },
-      cancelKey:
-        makeApiActionTypes("FETCH_PROPOSITION_TEXT_SUGGESTIONS")[0] +
-        "." +
-        suggestionsKey,
-      // DO_NOT_MERGE: update clients to receive propositions as a property instead of a direct array
-      normalizationSchema: { propositions: propositionsSchema },
+      config: {
+        queryStringParams: { searchText: propositionText },
+        cancelKey:
+          makeApiActionTypes("FETCH_PROPOSITION_TEXT_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: { propositions: propositionsSchema },
+      },
+      meta: { suggestionsKey, suggestionsResponseKey: "propositions" },
     })
   ),
 
@@ -1151,15 +1052,17 @@ export const api = {
     "FETCH_WRIT_TITLE_SUGGESTIONS",
     serviceRoutes.searchWrits,
     (writTitle: string, suggestionsKey: string) => ({
-      queryStringParams: {
-        searchText: writTitle,
+      config: {
+        queryStringParams: {
+          searchText: writTitle,
+        },
+        cancelKey:
+          makeApiActionTypes("FETCH_WRIT_TITLE_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: { writs: writsSchema },
       },
-      cancelKey:
-        makeApiActionTypes("FETCH_WRIT_TITLE_SUGGESTIONS")[0] +
-        "." +
-        suggestionsKey,
-      // DO_NOT_MERGE: update clients to receive a property instead of a direct array
-      normalizationSchema: { writs: writsSchema },
+      meta: { suggestionsKey, suggestionsResponseKey: "writs" },
     })
   ),
 
@@ -1167,14 +1070,17 @@ export const api = {
     "FETCH_TAG_NAME_SUGGESTIONS",
     serviceRoutes.searchTags,
     (tagName: string, suggestionsKey: string) => ({
-      queryStringParams: {
-        searchText: tagName,
+      config: {
+        queryStringParams: {
+          searchText: tagName,
+        },
+        cancelKey:
+          makeApiActionTypes("FETCH_TAG_NAME_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: { tags: tagsSchema },
       },
-      cancelKey:
-        makeApiActionTypes("FETCH_TAG_NAME_SUGGESTIONS")[0] +
-        "." +
-        suggestionsKey,
-      normalizationSchema: { tags: tagsSchema },
+      meta: { suggestionsKey, suggestionsResponseKey: "tags" },
     })
   ),
 
@@ -1182,14 +1088,17 @@ export const api = {
     "FETCH_MAIN_SEARCH_SUGGESTIONS",
     serviceRoutes.mainSearch,
     (searchText: string, suggestionsKey: SuggestionsKey) => ({
-      queryStringParams: {
-        searchText: searchText,
+      config: {
+        queryStringParams: {
+          searchText: searchText,
+        },
+        cancelKey:
+          makeApiActionTypes("FETCH_MAIN_SEARCH_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: mainSearchResultsSchema,
       },
-      cancelKey:
-        makeApiActionTypes("FETCH_MAIN_SEARCH_SUGGESTIONS")[0] +
-        "." +
-        suggestionsKey,
-      normalizationSchema: mainSearchResultsSchema,
+      meta: { suggestionsKey },
     })
   ),
 
@@ -1197,13 +1106,16 @@ export const api = {
     "FETCH_PERSORG_NAME_SUGGESTIONS",
     serviceRoutes.searchPersorgs,
     (searchText, suggestionsKey) => ({
-      queryStringParams: {
-        searchText: searchText,
+      config: {
+        queryStringParams: {
+          searchText: searchText,
+        },
+        cancelKey: `${
+          makeApiActionTypes("FETCH_PERSORG_NAME_SUGGESTIONS")[0]
+        }.${suggestionsKey}`,
+        normalizationSchema: { persorgs: persorgsSchema },
       },
-      cancelKey: `${
-        makeApiActionTypes("FETCH_PERSORG_NAME_SUGGESTIONS")[0]
-      }.${suggestionsKey}`,
-      normalizationSchema: { persorgs: persorgsSchema },
+      meta: { suggestionsKey, suggestionsResponseKey: "persorgs" },
     })
   ),
 
@@ -1234,7 +1146,10 @@ export const api = {
     "DELETE_JUSTIFICATION",
     serviceRoutes.deleteJustification,
     (justification) => ({
-      pathParams: { justificationId: justification.id },
+      config: {
+        pathParams: { justificationId: justification.id },
+      },
+      meta: { justification },
     })
   ),
 
