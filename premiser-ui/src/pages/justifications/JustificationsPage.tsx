@@ -98,7 +98,10 @@ class JustificationsPage extends Component<Props> {
 
   componentDidMount() {
     const { rootTargetType, rootTargetId } = this.rootTargetInfo();
-    this.props.fetchRootJustificationTarget({ rootTargetType, rootTargetId });
+    this.props.justificationsPage.fetchRootJustificationTarget({
+      rootTargetType,
+      rootTargetId,
+    });
 
     const contextTrailItems = contextTrailItemInfosFromProps(this.props);
     if (!isEmpty(contextTrailItems)) {
@@ -112,7 +115,9 @@ class JustificationsPage extends Component<Props> {
     const prevRootTargetInfo = rootTargetInfoFromProps(prevProps);
     const rootTargetInfo = this.rootTargetInfo();
     if (!isEqual(rootTargetInfo, prevRootTargetInfo)) {
-      this.props.fetchRootJustificationTarget(rootTargetInfo);
+      this.props.justificationsPage.fetchRootJustificationTarget(
+        rootTargetInfo
+      );
     }
 
     const prevContextTrailInfos = contextTrailItemInfosFromProps(prevProps);
@@ -416,22 +421,16 @@ function filterContextTrailItems(
 
 const connector = connect(
   mapState,
-  mapActionCreatorGroupToDispatchToProps(
-    {
-      api,
-      apiLike,
-      ui,
-      editors,
-      goto,
-      flows,
-      justificationsPage,
-      extension: actions.extension,
-    },
-    {
-      fetchRootJustificationTarget:
-        justificationsPage.fetchRootJustificationTarget,
-    }
-  )
+  mapActionCreatorGroupToDispatchToProps({
+    api,
+    apiLike,
+    ui,
+    editors,
+    goto,
+    flows,
+    justificationsPage,
+    extension: actions.extension,
+  })
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

@@ -39,7 +39,6 @@ import { constructStatementInput } from "@/viewModels";
 import {
   AnyApiAction,
   ApiActionCreator,
-  ApiActionCreator2,
   ApiResponseAction,
 } from "@/apiActions";
 
@@ -160,7 +159,8 @@ type EditorCommitConfig = {
   // Each CRUD type may take its own types, so we have a lot of anys.
   [key in CrudAction]?:
     | EditorCommitCrudActionConfig<any, any>
-    | ApiActionCreator<any, any, any>;
+    | ApiActionCreator<any, any, any, any>
+    | ApiActionCreator<any, any, never, any>;
 };
 /**
  * Config for commiting one CRUD action of an editor.
@@ -169,9 +169,6 @@ type EditorCommitConfig = {
  *
  * @typeparam ClientModel the input model type
  * @typeparam ApiModel the request model type (Create or Edit)
- * @typeparam RequestPayload the request action creator payload type
- * @typeparam ResponsePayload the response action creator payload type
- * @typeparam Prepare the prepare action type.
  */
 export type EditorCommitCrudActionConfig<
   ClientModel extends EditorEntity,
@@ -207,7 +204,7 @@ export type EditorCommitCrudActionConfig<
        *
        * Only one of requestActionCreator and makeRequestActionCreator should be present.
        */
-      requestActionCreator: ApiActionCreator2<any, any, never, any>;
+      requestActionCreator: ApiActionCreator<any, any, never, any>;
     }
   | {
       /**
@@ -218,7 +215,7 @@ export type EditorCommitCrudActionConfig<
       makeRequestActionCreator: (
         model: ClientModel,
         crudType: CrudAction
-      ) => ApiActionCreator2<any, any, never, any>;
+      ) => ApiActionCreator<any, any, never, any>;
     }
 );
 

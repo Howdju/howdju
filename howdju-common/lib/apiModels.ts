@@ -6,12 +6,9 @@
  */
 
 import { ApiErrorCode } from "./codes";
-import { ContinuationToken } from "./entities";
 import { ModelErrors } from "./zodError";
 import {
-  CreateJustification,
   Entity,
-  Justification,
   JustificationRef,
   JustificationVote,
   Proposition,
@@ -42,27 +39,6 @@ export interface ErrorOut<T extends object> {
   errorCode: ApiErrorCode;
   /** The errors corresponding to the in model. */
   errors: ModelErrors<T>;
-}
-
-export interface PostPropositionOut {
-  proposition: PropositionOut;
-}
-
-export interface PostJustificationIn {
-  justification: CreateJustification;
-}
-
-export interface PostJustificationOut {
-  justification: Persisted<Justification>;
-}
-
-export interface GetPropositionOut {
-  proposition: PropositionOut;
-}
-
-export interface GetPropositionsOut {
-  propositions: PropositionOut[];
-  continuationToken: ContinuationToken;
 }
 
 export interface PropositionOut

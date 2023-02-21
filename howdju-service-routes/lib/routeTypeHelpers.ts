@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { Body, PathParams, QueryStringParams, ServiceRoute } from "./routes";
+import { ServiceRoute } from "./routes";
+import { Body, PathParams, QueryStringParams } from "./routeSchemas";
 
 /** Extracts the path params from a route. */
 export type InferPathParams<Route extends ServiceRoute> = z.infer<
@@ -22,3 +23,12 @@ export type InferRequestBody<Route extends ServiceRoute> = z.infer<
 > extends Body<infer T>
   ? T
   : never;
+
+export type InferResponseReturnType<Route extends ServiceRoute> = Awaited<
+  ReturnType<Route["request"]["handler"]>
+>;
+
+export type InferResponseBody<Route extends ServiceRoute> =
+  InferResponseReturnType<Route> extends Record<string, any>
+    ? InferResponseReturnType<Route>["body"]
+    : never;

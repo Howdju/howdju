@@ -10,7 +10,6 @@ import {
 import isFunction from "lodash/isFunction";
 import values from "lodash/values";
 
-import { str } from "../actions";
 import {
   api,
   AnyApiAction,
@@ -84,13 +83,13 @@ export function* cancelResourceApiCalls() {
   // TODO(1): move cancel onto the API action creator to avoid toil of adding them here?
   yield takeEvery(
     [
-      str(cancelPropositionTextSuggestions),
-      str(cancelWritTitleSuggestions),
-      str(cancelMainSearchSuggestions),
-      str(cancelTagNameSuggestions),
-      str(cancelPersorgNameSuggestions),
+      cancelPropositionTextSuggestions,
+      cancelWritTitleSuggestions,
+      cancelMainSearchSuggestions,
+      cancelTagNameSuggestions,
+      cancelPersorgNameSuggestions,
     ],
-    function* cancelCallApiForResourceWorker(action: AnyApiAction) {
+    function* cancelCallApiForResourceWorker(action) {
       const { cancelTarget } = action.payload;
 
       const actionCreator = apiActionCreatorsByActionType[cancelTarget];

@@ -1,13 +1,13 @@
 import reduce from "lodash/reduce";
 import {
-  PayloadActionCreator,
-  PrepareAction,
   ActionCreatorWithPreparedPayload,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
 import { isEmpty, join, toString } from "lodash";
 import queryString from "query-string";
+import { compile } from "path-to-regexp";
+import { JsonObject, Schema } from "type-fest";
 
 import {
   EntityId,
@@ -23,7 +23,6 @@ import {
   SentenceType,
   TaggableEntityType,
   TagVotePolarities,
-  makeCreateTagVote,
   CreateJustification,
   CreateCounterJustification,
   CreateProposition,
@@ -43,6 +42,8 @@ import {
   InferPathParams,
   InferQueryStringParams,
   InferRequestBody,
+  InferResponseBody,
+  InferResponseReturnType,
   ServiceRoute,
   serviceRoutes,
 } from "howdju-service-routes";
@@ -74,35 +75,8 @@ import { actionTypeDelim, createAction } from "./actionHelpers";
 import { str } from "./actionHelpers";
 import { UiErrorType } from "./uiErrors";
 import { SuggestionsKey, WidgetId } from "./types";
-import { compile } from "path-to-regexp";
-import { JsonObject, Schema } from "type-fest";
 
-/**
- * An action creator representing API calls.
- *
- * A PayloadActionCreator with a response field for creating the response action.
- *
- * ApiActionCreator types must be strings because we generate them.
- *
- * @typeparam P payload type
- * @typeparam RP response payload type
- * @typeparam PA prepare action type
- */
 export type ApiActionCreator<
-  Payload,
-  ResponsePayload,
-  PA extends void | PrepareAction<Payload>
-> = PayloadActionCreator<Payload, string, PA> & {
-  response: ActionCreatorWithPreparedPayload<
-    unknown[],
-    ResponsePayload,
-    string,
-    Error,
-    ApiResponseActionMeta<any, any>
-  >;
-};
-
-export type ApiActionCreator2<
   Args extends unknown[],
   Payload extends ApiConfig<any>,
   Meta,
@@ -166,11 +140,10 @@ export type ApiActionMeta<P> = {
     | ResourceApiConfig<any, any>
     | ((p: P) => ResourceApiConfig<any, any>);
 };
-export type ApiAction<P> = PayloadAction<P, string, ApiActionMeta<P>>;
-export type ApiAction2<Route extends ServiceRoute> = PayloadAction<
+export type ApiAction<Route extends ServiceRoute> = PayloadAction<
   ApiConfig<Route>
 >;
-export type AnyApiAction = ApiAction<any> | ApiAction2<any>;
+export type AnyApiAction = ApiAction<any>;
 export type ApiResponseAction<P> = PayloadAction<
   P,
   string,
@@ -195,17 +168,9 @@ type EntityFieldsOnly<Body extends Record<string, any>> = {
   [K in keyof Body as ToEntityFieldKey<Body, K>]: Body[K];
 };
 
-type InferResponseReturnType<Route extends ServiceRoute> = Awaited<
-  ReturnType<Route["request"]["handler"]>
->;
 type InferResponseBodyEntities<Route extends ServiceRoute> =
   InferResponseReturnType<Route> extends Record<string, any>
     ? EntityFieldsOnly<InferResponseReturnType<Route>["body"]>
-    : never;
-
-type InferResponseBody<Route extends ServiceRoute> =
-  InferResponseReturnType<Route> extends Record<string, any>
-    ? InferResponseReturnType<Route>["body"]
     : never;
 
 type BaseApiActionConfig<Route extends ServiceRoute> = {
@@ -288,7 +253,7 @@ function makeEndpoint(
  * @param route The service route this API action targets
  * @param makeConfig Additional config for calling the service route.
  */
-function apiActionCreator2<
+function apiActionCreator<
   Args extends any[],
   Route extends ServiceRoute,
   Meta = never
@@ -298,7 +263,7 @@ function apiActionCreator2<
   makeConfig:
     | ((...args: Args) => ApiActionConfig<Route>)
     | ((...args: Args) => { config: ApiActionConfig<Route>; meta: Meta })
-): ApiActionCreator2<Args, ApiConfig<Route>, Meta, InferResponseBody<Route>> {
+): ApiActionCreator<Args, ApiConfig<Route>, Meta, InferResponseBody<Route>> {
   const [requestType, responseType] = makeApiActionTypes(type);
 
   type NormalizationSchema = ApiActionConfig<Route> extends {
@@ -347,7 +312,7 @@ function apiActionCreator2<
   const actionCreator = createAction(
     requestType,
     apiActionCreatorPrepare
-  ) as unknown as ApiActionCreator2<Args, ApiConfig<Route>, Meta, any>;
+  ) as unknown as ApiActionCreator<Args, ApiConfig<Route>, Meta, any>;
 
   actionCreator.response = createAction(
     responseType,
@@ -397,7 +362,7 @@ export const callApiResponse = createAction(
 
 /** Actions that directly result in API calls */
 export const api = {
-  fetchProposition: apiActionCreator2(
+  fetchProposition: apiActionCreator(
     "FETCH_PROPOSITION",
     serviceRoutes.readProposition,
     (propositionId: EntityId) => ({
@@ -408,7 +373,7 @@ export const api = {
       meta: { propositionId },
     })
   ),
-  fetchPropositions: apiActionCreator2(
+  fetchPropositions: apiActionCreator(
     "FETCH_PROPOSITIONS",
     serviceRoutes.readPropositions,
     (propositionIds: EntityId[]) => {
@@ -423,7 +388,7 @@ export const api = {
       };
     }
   ),
-  fetchPropositionCompound: apiActionCreator2(
+  fetchPropositionCompound: apiActionCreator(
     "FETCH_PROPOSITION_COMPOUND",
     serviceRoutes.readPropositionCompound,
     (propositionCompoundId: EntityId) => ({
@@ -431,7 +396,7 @@ export const api = {
       normalizationSchema: { propositionCompound: propositionCompoundSchema },
     })
   ),
-  fetchPropositionRootJustificationTarget: apiActionCreator2(
+  fetchPropositionRootJustificationTarget: apiActionCreator(
     "FETCH_PROPOSITION_ROOT_JUSTIFICATION_TARGET",
     serviceRoutes.readProposition,
     (propositionId: EntityId) => ({
@@ -445,7 +410,7 @@ export const api = {
       },
     })
   ),
-  fetchStatementRootJustificationTarget: apiActionCreator2(
+  fetchStatementRootJustificationTarget: apiActionCreator(
     "FETCH_STATEMENT_ROOT_JUSTIFICATION_TARGET",
     serviceRoutes.readStatement,
     (statementId: EntityId) => ({
@@ -460,7 +425,7 @@ export const api = {
     })
   ),
 
-  fetchWritQuote: apiActionCreator2(
+  fetchWritQuote: apiActionCreator(
     "FETCH_WRIT_QUOTE",
     serviceRoutes.readWritQuote,
     (writQuoteId: EntityId) => ({
@@ -468,7 +433,7 @@ export const api = {
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
-  createWritQuote: apiActionCreator2(
+  createWritQuote: apiActionCreator(
     "CREATE_WRIT_QUOTE",
     serviceRoutes.createWritQuote,
     (writQuote: CreateWritQuote) => ({
@@ -476,7 +441,7 @@ export const api = {
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
-  updateWritQuote: apiActionCreator2(
+  updateWritQuote: apiActionCreator(
     "UPDATE_WRIT_QUOTE",
     serviceRoutes.updateWritQuote,
     (writQuote: UpdateWritQuote) => ({
@@ -487,7 +452,7 @@ export const api = {
   ),
 
   /** @deprecated */
-  fetchSourceExcerptParaphrase: apiActionCreator2(
+  fetchSourceExcerptParaphrase: apiActionCreator(
     "FETCH_SOURCE_EXCERPT_PARAPHRASE",
     serviceRoutes.readSourceExcerptParaphrase,
     (sourceExcerptParaphraseId: EntityId) => ({
@@ -497,7 +462,7 @@ export const api = {
       },
     })
   ),
-  fetchPersorg: apiActionCreator2(
+  fetchPersorg: apiActionCreator(
     "FETCH_PERSORG",
     serviceRoutes.readPersorg,
     (persorgId: EntityId) => ({
@@ -507,7 +472,7 @@ export const api = {
       normalizationSchema: { persorg: persorgSchema },
     })
   ),
-  fetchSpeakerStatements: apiActionCreator2(
+  fetchSpeakerStatements: apiActionCreator(
     "FETCH_PERSORG_STATEMENTS",
     serviceRoutes.readSpeakerStatements,
     (speakerPersorgId: EntityId) => ({
@@ -515,7 +480,7 @@ export const api = {
       normalizationSchema: { statements: statementsSchema },
     })
   ),
-  fetchSentenceStatements: apiActionCreator2(
+  fetchSentenceStatements: apiActionCreator(
     "FETCH_SENTENCE_STATEMENTS",
     serviceRoutes.readSentenceStatements,
     (sentenceType: SentenceType, sentenceId: EntityId) => ({
@@ -526,7 +491,7 @@ export const api = {
       normalizationSchema: { statements: statementsSchema },
     })
   ),
-  fetchRootPropositionStatements: apiActionCreator2(
+  fetchRootPropositionStatements: apiActionCreator(
     "FETCH_ROOT_PROPOSITION_STATEMENTS",
     serviceRoutes.readRootPropositionStatements,
     (rootPropositionId: EntityId) => ({
@@ -534,7 +499,7 @@ export const api = {
       normalizationSchema: { statements: statementsSchema },
     })
   ),
-  fetchIndirectPropositionStatements: apiActionCreator2(
+  fetchIndirectPropositionStatements: apiActionCreator(
     "FETCH_INDIRECT_PROPOSITION_STATEMENTS",
     serviceRoutes.readIndirectRootPropositionStatements,
     (rootPropositionId) => ({
@@ -543,7 +508,7 @@ export const api = {
     })
   ),
 
-  fetchRecentPropositions: apiActionCreator2(
+  fetchRecentPropositions: apiActionCreator(
     "FETCH_RECENT_PROPOSITIONS",
     serviceRoutes.readPropositions,
     (
@@ -567,7 +532,7 @@ export const api = {
       };
     }
   ),
-  fetchRecentWrits: apiActionCreator2(
+  fetchRecentWrits: apiActionCreator(
     "FETCH_RECENT_WRITS",
     serviceRoutes.readWrits,
     (
@@ -591,7 +556,7 @@ export const api = {
       };
     }
   ),
-  fetchRecentWritQuotes: apiActionCreator2(
+  fetchRecentWritQuotes: apiActionCreator(
     "FETCH_RECENT_WRIT_QUOTES",
     serviceRoutes.readWritQuotes,
     (
@@ -615,7 +580,7 @@ export const api = {
       };
     }
   ),
-  fetchRecentJustifications: apiActionCreator2(
+  fetchRecentJustifications: apiActionCreator(
     "FETCH_RECENT_JUSTIFICATIONS",
     serviceRoutes.readJustifications,
     (
@@ -640,7 +605,7 @@ export const api = {
     }
   ),
 
-  createAccountSettings: apiActionCreator2(
+  createAccountSettings: apiActionCreator(
     "CREATE_ACCOUNT_SETTINGS",
     serviceRoutes.createAccountSettings,
     (accountSettings: CreateAccountSettings) => ({
@@ -648,7 +613,7 @@ export const api = {
       normalizationSchema: { accountSettings: accountSettingsSchema },
     })
   ),
-  fetchAccountSettings: apiActionCreator2(
+  fetchAccountSettings: apiActionCreator(
     "FETCH_ACCOUNT_SETTINGS",
     serviceRoutes.readAccountSettings,
     () => ({
@@ -657,7 +622,7 @@ export const api = {
       },
     })
   ),
-  updateAccountSettings: apiActionCreator2(
+  updateAccountSettings: apiActionCreator(
     "UPDATE_ACCOUNT_SETTINGS",
     serviceRoutes.updateAccountSettings,
     (accountSettings: UpdateAccountSettings) => ({
@@ -666,7 +631,7 @@ export const api = {
     })
   ),
 
-  createContentReport: apiActionCreator2(
+  createContentReport: apiActionCreator(
     "CREATE_CONTENT_REPORT",
     serviceRoutes.createContentReport,
     (contentReport) => ({
@@ -674,7 +639,7 @@ export const api = {
     })
   ),
 
-  fetchJustificationsSearch: apiActionCreator2(
+  fetchJustificationsSearch: apiActionCreator(
     "FETCH_JUSTIFICATIONS_SEARCH",
     serviceRoutes.readJustifications,
     ({
@@ -723,13 +688,13 @@ export const api = {
       };
     }
   ),
-  login: apiActionCreator2("LOGIN", serviceRoutes.login, (credentials) => ({
+  login: apiActionCreator("LOGIN", serviceRoutes.login, (credentials) => ({
     body: { credentials },
     normalizationSchema: { user: userSchema },
   })),
-  logout: apiActionCreator2("LOGOUT", serviceRoutes.logout, () => ({})),
+  logout: apiActionCreator("LOGOUT", serviceRoutes.logout, () => ({})),
 
-  requestPasswordReset: apiActionCreator2(
+  requestPasswordReset: apiActionCreator(
     "REQUEST_PASSWORD_RESET",
     serviceRoutes.requestPasswordReset,
     (passwordResetRequest) => ({
@@ -737,7 +702,7 @@ export const api = {
       normalizationSchema: {},
     })
   ),
-  checkPasswordResetRequest: apiActionCreator2(
+  checkPasswordResetRequest: apiActionCreator(
     "CHECK_PASSWORD_RESET_REQUEST",
     serviceRoutes.readPasswordReset,
     (passwordResetCode) => ({
@@ -745,7 +710,7 @@ export const api = {
       normalizationSchema: {},
     })
   ),
-  confirmPasswordReset: apiActionCreator2(
+  confirmPasswordReset: apiActionCreator(
     "CONFIRM_PASSWORD_RESET",
     serviceRoutes.completePasswordReset,
     (passwordResetCode: string, passwordResetConfirmation: string) => ({
@@ -757,7 +722,7 @@ export const api = {
     })
   ),
 
-  requestRegistration: apiActionCreator2(
+  requestRegistration: apiActionCreator(
     "REQUEST_REGISTRATION",
     serviceRoutes.requestRegistration,
     (registrationRequest) => ({
@@ -767,7 +732,7 @@ export const api = {
       normalizationSchema: {},
     })
   ),
-  checkRegistration: apiActionCreator2(
+  checkRegistration: apiActionCreator(
     "CHECK_REGISTRATION",
     serviceRoutes.readRegistrationRequest,
     (registrationCode) => ({
@@ -775,7 +740,7 @@ export const api = {
       normalizationSchema: {},
     })
   ),
-  confirmRegistration: apiActionCreator2(
+  confirmRegistration: apiActionCreator(
     "CONFIRM_REGISTRATION",
     serviceRoutes.register,
     (registrationConfirmation) => ({
@@ -784,7 +749,7 @@ export const api = {
     })
   ),
 
-  verifyJustification: apiActionCreator2(
+  verifyJustification: apiActionCreator(
     "VERIFY_JUSTIFICATION",
     serviceRoutes.createJustificationVote,
     (justification) => {
@@ -807,7 +772,7 @@ export const api = {
       };
     }
   ),
-  unVerifyJustification: apiActionCreator2(
+  unVerifyJustification: apiActionCreator(
     "UN_VERIFY_JUSTIFICATION",
     serviceRoutes.deleteJustificationVote,
     (justification) => {
@@ -829,7 +794,7 @@ export const api = {
       };
     }
   ),
-  disverifyJustification: apiActionCreator2(
+  disverifyJustification: apiActionCreator(
     "DISVERIFY_JUSTIFICATION",
     serviceRoutes.createJustificationVote,
     (justification) => ({
@@ -848,7 +813,7 @@ export const api = {
       },
     })
   ),
-  unDisverifyJustification: apiActionCreator2(
+  unDisverifyJustification: apiActionCreator(
     "UN_DISVERIFY_JUSTIFICATION",
     serviceRoutes.deleteJustificationVote,
     (justification) => ({
@@ -867,7 +832,7 @@ export const api = {
     })
   ),
 
-  createTag: apiActionCreator2(
+  createTag: apiActionCreator(
     "CREATE_TAG",
     serviceRoutes.createTagVote,
     (
@@ -878,21 +843,21 @@ export const api = {
     ) => ({
       config: {
         body: {
-          tagVote: makeCreateTagVote({
+          tagVote: {
             targetType: tagTargetType,
             target: {
               id: tagTargetId,
             },
             polarity: TagVotePolarities.POSITIVE,
             tag,
-          }),
+          },
         },
         normalizationSchema: { tagVote: tagVoteSchema },
       },
       meta: { previousTagVote: tagVote },
     })
   ),
-  createAntiTag: apiActionCreator2(
+  createAntiTag: apiActionCreator(
     "CREATE_ANTI_TAG",
     serviceRoutes.createTagVote,
     (
@@ -903,21 +868,21 @@ export const api = {
     ) => ({
       config: {
         body: {
-          tagVote: makeCreateTagVote({
+          tagVote: {
             targetType: tagTargetType,
             target: {
               id: tagTargetId,
             },
             polarity: TagVotePolarities.NEGATIVE,
             tag,
-          }),
+          },
         },
         normalizationSchema: { tagVote: tagVoteSchema },
       },
       meta: { previousTagVote: tagVote },
     })
   ),
-  unTag: apiActionCreator2(
+  unTag: apiActionCreator(
     "UN_TAG",
     serviceRoutes.deleteTagVote,
     (tagVote: TagVoteRef) => ({
@@ -925,7 +890,7 @@ export const api = {
     })
   ),
 
-  tagProposition: apiActionCreator2(
+  tagProposition: apiActionCreator(
     "TAG_PROPOSITION",
     serviceRoutes.createPropositionTagVote,
     (
@@ -950,7 +915,7 @@ export const api = {
       };
     }
   ),
-  antiTagProposition: apiActionCreator2(
+  antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
     serviceRoutes.createPropositionTagVote,
     (
@@ -975,7 +940,7 @@ export const api = {
       };
     }
   ),
-  unTagProposition: apiActionCreator2(
+  unTagProposition: apiActionCreator(
     "UN_TAG_PROPOSITION",
     serviceRoutes.deletePropositionTagVote,
     (propositionTagVote: PropositionTagVoteOut) => ({
@@ -983,7 +948,7 @@ export const api = {
     })
   ),
 
-  createProposition: apiActionCreator2(
+  createProposition: apiActionCreator(
     "CREATE_PROPOSITION",
     serviceRoutes.createProposition,
     (proposition: CreateProposition) => ({
@@ -993,7 +958,7 @@ export const api = {
       normalizationSchema: { proposition: propositionSchema },
     })
   ),
-  updateProposition: apiActionCreator2(
+  updateProposition: apiActionCreator(
     "UPDATE_PROPOSITION",
     serviceRoutes.updateProposition,
     (proposition: UpdateProposition) => ({
@@ -1002,7 +967,7 @@ export const api = {
       normalizationSchema: { proposition: propositionSchema },
     })
   ),
-  deleteProposition: apiActionCreator2(
+  deleteProposition: apiActionCreator(
     "DELETE_PROPOSITION",
     serviceRoutes.deleteProposition,
     (proposition: PropositionRef) => ({
@@ -1013,7 +978,7 @@ export const api = {
     })
   ),
 
-  createStatement: apiActionCreator2(
+  createStatement: apiActionCreator(
     "CREATE_STATEMENT",
     serviceRoutes.createStatement,
     (statement: CreateStatement) => ({
@@ -1022,7 +987,7 @@ export const api = {
     })
   ),
 
-  updatePersorg: apiActionCreator2(
+  updatePersorg: apiActionCreator(
     "UPDATE_PERSORG",
     serviceRoutes.updatePersorg,
     (persorg: UpdatePersorg) => ({
@@ -1032,7 +997,7 @@ export const api = {
     })
   ),
 
-  fetchPropositionTextSuggestions: apiActionCreator2(
+  fetchPropositionTextSuggestions: apiActionCreator(
     "FETCH_PROPOSITION_TEXT_SUGGESTIONS",
     serviceRoutes.searchPropositions,
     (propositionText: string, suggestionsKey: SuggestionsKey) => ({
@@ -1048,7 +1013,7 @@ export const api = {
     })
   ),
 
-  fetchWritTitleSuggestions: apiActionCreator2(
+  fetchWritTitleSuggestions: apiActionCreator(
     "FETCH_WRIT_TITLE_SUGGESTIONS",
     serviceRoutes.searchWrits,
     (writTitle: string, suggestionsKey: string) => ({
@@ -1066,7 +1031,7 @@ export const api = {
     })
   ),
 
-  fetchTagNameSuggestions: apiActionCreator2(
+  fetchTagNameSuggestions: apiActionCreator(
     "FETCH_TAG_NAME_SUGGESTIONS",
     serviceRoutes.searchTags,
     (tagName: string, suggestionsKey: string) => ({
@@ -1084,7 +1049,7 @@ export const api = {
     })
   ),
 
-  fetchMainSearchSuggestions: apiActionCreator2(
+  fetchMainSearchSuggestions: apiActionCreator(
     "FETCH_MAIN_SEARCH_SUGGESTIONS",
     serviceRoutes.mainSearch,
     (searchText: string, suggestionsKey: SuggestionsKey) => ({
@@ -1102,7 +1067,7 @@ export const api = {
     })
   ),
 
-  fetchPersorgNameSuggestions: apiActionCreator2(
+  fetchPersorgNameSuggestions: apiActionCreator(
     "FETCH_PERSORG_NAME_SUGGESTIONS",
     serviceRoutes.searchPersorgs,
     (searchText, suggestionsKey) => ({
@@ -1119,7 +1084,7 @@ export const api = {
     })
   ),
 
-  createJustification: apiActionCreator2(
+  createJustification: apiActionCreator(
     "CREATE_JUSTIFICATION",
     serviceRoutes.createJustification,
     (justification: CreateJustification) => ({
@@ -1132,7 +1097,7 @@ export const api = {
   // We shouldn't need a separate action for counter justifications since they are just a
   // specialization of justifications. But I couldn't get the types for the editor config to workout
   // if I reuse the createJustification action there.
-  createCounterJustification: apiActionCreator2(
+  createCounterJustification: apiActionCreator(
     "CREATE_CONTER_JUSTIFICATION",
     serviceRoutes.createJustification,
     (justification: CreateCounterJustification) => ({
@@ -1142,7 +1107,7 @@ export const api = {
       normalizationSchema: { justification: justificationSchema },
     })
   ),
-  deleteJustification: apiActionCreator2(
+  deleteJustification: apiActionCreator(
     "DELETE_JUSTIFICATION",
     serviceRoutes.deleteJustification,
     (justification) => ({
@@ -1153,7 +1118,7 @@ export const api = {
     })
   ),
 
-  fetchMainSearchResults: apiActionCreator2(
+  fetchMainSearchResults: apiActionCreator(
     "FETCH_MAIN_SEARCH_RESULTS",
     serviceRoutes.mainSearch,
     (searchText) => ({
@@ -1164,11 +1129,11 @@ export const api = {
     })
   ),
 
-  fetchTag: apiActionCreator2("FETCH_TAG", serviceRoutes.readTag, (tagId) => ({
+  fetchTag: apiActionCreator("FETCH_TAG", serviceRoutes.readTag, (tagId) => ({
     pathParams: { tagId },
     normalizationSchema: { tag: tagSchema },
   })),
-  fetchTaggedPropositions: apiActionCreator2(
+  fetchTaggedPropositions: apiActionCreator(
     "FETCH_TAGGED_PROPOSITIONS",
     serviceRoutes.readTaggedPropositions,
     (tagId: EntityId) => ({
@@ -1223,9 +1188,10 @@ export const cancelPropositionTextSuggestions = createAction(
 );
 
 type UnknownApiActionCreator = ApiActionCreator<
+  unknown[],
+  ApiConfig<any>,
   unknown,
-  unknown,
-  void | PrepareAction<unknown>
+  unknown
 >;
 
 export const apiActionCreatorsByActionType = reduce(

@@ -61,7 +61,6 @@ import {
   SourceExcerpt,
   SourceExcerptRef,
   Tag,
-  TagVote,
   Url,
   VidSegment,
 } from "./zodSchemas";
@@ -224,9 +223,6 @@ export const makePropositionTagVote = (
   props: PropositionTagVote
 ): PropositionTagVote => props;
 
-export const makeTagVote = (props: TagVote): TagVote => props;
-export const makeCreateTagVote = makeTagVote;
-
 // TODO(107): replace with Justification.rootTarget?
 type RootTargetInfo = Pick<Justification, "rootTargetType"> & {
   rootTarget: Pick<JustificationRootTarget, "id">;
@@ -243,11 +239,6 @@ export function makeVidSegment(): VidSegment {
 
 export function makePicRegion(): PicRegion {
   return { pic: {} };
-}
-
-export interface JustificationRootTargetInfo {
-  rootTargetType: JustificationRootTargetType;
-  rootTargetId: EntityId;
 }
 
 export const makeCreateJustifiedSentenceInput = (
