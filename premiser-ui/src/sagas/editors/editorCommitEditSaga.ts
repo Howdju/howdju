@@ -2,7 +2,6 @@ import { put, call, takeEvery, select } from "typed-redux-saga";
 import isFunction from "lodash/isFunction";
 import { identity, reduce, reverse, startCase } from "lodash";
 import { z } from "zod";
-import { PrepareAction } from "@reduxjs/toolkit";
 
 import {
   CreateJustification,
@@ -11,7 +10,6 @@ import {
   CreateProposition,
   CreateStatement,
   CreateStatementInput,
-  UpdateProposition,
   IssueFormat,
   isRef,
   JustificationTargetTypes,
@@ -21,17 +19,12 @@ import {
   muxCreateJustificationErrors,
   CreateJustifiedSentenceInput,
   CreateJustificationInput,
-  Justification,
   CreateCounterJustificationInput,
   CreateCounterJustification,
   CreateRegistrationConfirmation,
-  User,
-  AuthToken,
   CreateRegistrationConfirmationInput,
   CreateRegistrationRequest,
   CreateRegistrationRequestInput,
-  Proposition,
-  Statement,
 } from "howdju-common";
 
 import { selectEditorState } from "../../selectors";
@@ -46,8 +39,8 @@ import {
   AnyApiAction,
   ApiActionCreator,
   ApiResponseAction,
-  ApiResponseWrapper,
 } from "@/apiActions";
+import { ServiceRoute } from "howdju-service-routes";
 
 /**
  * A redux saga handling editor commits.
@@ -108,28 +101,57 @@ function createEditorCommitApiResourceAction<E extends EditorType>(
   editorType: E,
   editEntity: EditorEntity
 ) {
-  const editorCommitConfig = editorCommitConfigs[editorType];
-  if (!editorCommitConfig) {
-    throw new Error(`No editor commit config for editor type ${editorType}`);
+  const crudActionConfig = getCrudActionConfig(editorType, editEntity);
+  if (isFunction(crudActionConfig)) {
+    // crudActionConfig is the action creator and there is no inputTransformer
+    return crudActionConfig(editEntity);
   }
+  const actionCreator = getActionCreator(crudActionConfig, editEntity);
+  const { inputTransformer = identity } = crudActionConfig;
+  return actionCreator(inputTransformer(editEntity));
+}
 
+export function getCrudType(editEntity: EditorEntity) {
   // editModels lacking an ID only support creation (e.g. JustifiedSentence.)
   const crudType =
     !("id" in editEntity) || !editEntity.id
       ? CrudActions.CREATE
       : CrudActions.UPDATE;
+  return crudType;
+}
+
+export function getCrudActionConfig<E extends EditorType>(
+  editorType: E,
+  editEntity: EditorEntity
+) {
+  const editorCommitConfig = editorCommitConfigs[editorType];
+  if (!editorCommitConfig) {
+    throw new Error(`No editor commit config for editor type ${editorType}`);
+  }
+
+  const crudType = getCrudType(editEntity);
   const crudActionConfig = editorCommitConfig[crudType];
   if (!crudActionConfig) {
     throw new Error(
       `Missing ${crudType} CRUD action config for editor type ${editorType}.`
     );
   }
+  return crudActionConfig;
+}
+
+export function getActionCreator<
+  ClientModel extends EditorEntity,
+  ApiModel,
+  Route extends ServiceRoute
+>(
+  crudActionConfig: EditorCommitCrudActionConfig<ClientModel, ApiModel, Route>,
+  editEntity: ClientModel
+): ApiActionCreator<[ApiModel], Route, any> {
   let actionCreator;
   if (isFunction(crudActionConfig)) {
     // crudActionConfig is the action creator and there is no inputTransformer
     return crudActionConfig(editEntity);
   }
-  const { inputTransformer = identity } = crudActionConfig;
   if ("requestActionCreator" in crudActionConfig) {
     if ("makeRequestActionCreator" in crudActionConfig) {
       throw newProgrammingError(
@@ -138,10 +160,7 @@ function createEditorCommitApiResourceAction<E extends EditorType>(
     }
     actionCreator = crudActionConfig.requestActionCreator;
   } else {
-    actionCreator = crudActionConfig.makeRequestActionCreator(
-      editEntity,
-      crudType
-    );
+    actionCreator = crudActionConfig.makeRequestActionCreator(editEntity);
   }
   // I'm not sure why actionCreator might not be callable here; I thought that ApiActionCreator
   // should always be callable.
@@ -150,7 +169,7 @@ function createEditorCommitApiResourceAction<E extends EditorType>(
       "Action creators must be callable and accept the transformed editEntity."
     );
   }
-  return actionCreator(inputTransformer(editEntity));
+  return actionCreator;
 }
 
 const CrudActions = { CREATE: "CREATE", UPDATE: "UPDATE" } as const;
@@ -165,7 +184,7 @@ type CrudAction = typeof CrudActions[keyof typeof CrudActions];
 type EditorCommitConfig = {
   // Each CRUD type may take its own types, so we have a lot of anys.
   [key in CrudAction]?:
-    | EditorCommitCrudActionConfig<any, any, any, any, any>
+    | EditorCommitCrudActionConfig<any, any, any>
     | ApiActionCreator<any, any, any>;
 };
 /**
@@ -175,16 +194,11 @@ type EditorCommitConfig = {
  *
  * @typeparam ClientModel the input model type
  * @typeparam ApiModel the request model type (Create or Edit)
- * @typeparam RequestPayload the request action creator payload type
- * @typeparam ResponsePayload the response action creator payload type
- * @typeparam Prepare the prepare action type.
  */
 export type EditorCommitCrudActionConfig<
   ClientModel extends EditorEntity,
   ApiModel,
-  RequestPayload,
-  ResponsePayload,
-  Prepare extends void | PrepareAction<RequestPayload>
+  Route extends ServiceRoute
 > = {
   /**
    * Transforms the Input model into the request model
@@ -194,7 +208,7 @@ export type EditorCommitCrudActionConfig<
    * TODO(26): this has overlap with apiActionCreator's prepare method, which translates the entity
    * into the request.
    */
-  inputTransformer?: (model: ClientModel) => ApiModel;
+  inputTransformer: (model: ClientModel) => ApiModel;
   /**
    * Transforms the response errors into the input model errors.
    *
@@ -216,11 +230,7 @@ export type EditorCommitCrudActionConfig<
        *
        * Only one of requestActionCreator and makeRequestActionCreator should be present.
        */
-      requestActionCreator: ApiActionCreator<
-        RequestPayload,
-        ResponsePayload,
-        Prepare
-      >;
+      requestActionCreator: ApiActionCreator<[ApiModel], Route, any>;
     }
   | {
       /**
@@ -229,39 +239,27 @@ export type EditorCommitCrudActionConfig<
        * Only one of requestActionCreator and makeRequestActionCreator should be present.
        */
       makeRequestActionCreator: (
-        model: ClientModel,
-        crudType: CrudAction
-      ) => ApiActionCreator<RequestPayload, ResponsePayload, Prepare>;
+        model: ClientModel
+      ) => ApiActionCreator<any, Route, any>;
     }
 );
 
 export const CreateJustificationConfig: EditorCommitCrudActionConfig<
   CreateJustificationInput,
   CreateJustification,
-  { justification: CreateJustification },
-  { justification: Justification },
-  PrepareAction<{ justification: CreateJustification }>
+  typeof api.createJustification.route
 > = {
   inputTransformer: demuxCreateJustificationInput,
   responseErrorTransformer: muxCreateJustificationErrors,
   requestActionCreator: api.createJustification,
-  requestSchema: CreateJustification,
 };
 
 export const CreateJustifiedSentenceConfig: EditorCommitCrudActionConfig<
   CreateJustifiedSentenceInput,
   CreateProposition | CreateStatement | CreateJustification,
-  | { justification: CreateJustification }
-  | { proposition: CreateProposition }
-  | { statement: CreateStatement },
-  | { justification: Justification }
-  | { proposition: Proposition }
-  | { statement: Statement },
-  PrepareAction<
-    | { justification: CreateJustification }
-    | { proposition: CreateProposition }
-    | { statement: CreateStatement }
-  >
+  | typeof api.createJustification.route
+  | typeof api.createStatement.route
+  | typeof api.createProposition.route
 > = {
   inputTransformer(model: CreateJustifiedSentenceInput) {
     const { speakers, doCreateJustification, proposition } = model;
@@ -295,42 +293,34 @@ export const CreateJustifiedSentenceConfig: EditorCommitCrudActionConfig<
     }
     return speakers.length ? api.createStatement : api.createProposition;
   },
-  requestSchema: CreateProposition.or(CreateStatement).or(CreateJustification),
 };
 
 export const CreateCounterJustificationConfig: EditorCommitCrudActionConfig<
   CreateCounterJustificationInput,
   CreateCounterJustification,
-  { justification: CreateCounterJustification },
-  { justification: Justification },
-  PrepareAction<{ justification: CreateCounterJustification }>
+  typeof api.createCounterJustification.route
 > = {
   inputTransformer: demuxCreateJustificationInput,
   responseErrorTransformer: muxCreateJustificationErrors,
   requestActionCreator: api.createCounterJustification,
-  requestSchema: CreateCounterJustification,
 };
 
 export const CreateRegistrationConfirmationConfig: EditorCommitCrudActionConfig<
   CreateRegistrationConfirmationInput,
   CreateRegistrationConfirmation,
-  { registrationConfirmation: CreateRegistrationConfirmation },
-  { user: User; authToken: AuthToken; expires: string },
-  PrepareAction<{ registrationConfirmation: CreateRegistrationConfirmation }>
+  typeof api.confirmRegistration.route
 > = {
-  requestSchema: CreateRegistrationConfirmation,
   requestActionCreator: api.confirmRegistration,
+  inputTransformer: identity,
 };
 
 export const CreateRegistrationRequestConfig: EditorCommitCrudActionConfig<
   CreateRegistrationRequestInput,
   CreateRegistrationRequest,
-  { registrationRequest: CreateRegistrationRequest },
-  ApiResponseWrapper,
-  PrepareAction<{ registrationRequest: CreateRegistrationRequest }>
+  typeof api.requestRegistration.route
 > = {
-  requestSchema: CreateRegistrationRequest,
   requestActionCreator: api.requestRegistration,
+  inputTransformer: identity,
 };
 
 export const editorCommitConfigs: Partial<
@@ -340,7 +330,7 @@ export const editorCommitConfigs: Partial<
     // Create propositions through the JustifiedSentence endpoint.
     UPDATE: {
       requestActionCreator: api.updateProposition,
-      requestSchema: UpdateProposition,
+      inputTransformer: identity,
     },
   },
   JUSTIFIED_SENTENCE: {

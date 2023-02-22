@@ -5,7 +5,6 @@ import { createMemoryHistory } from "history";
 import moment from "moment";
 
 import {
-  GetPropositionOut,
   httpStatusCodes,
   JustificationOut,
   PropositionRef,
@@ -20,6 +19,7 @@ import {
   withStaticFromNowMoment,
 } from "@/testUtils";
 import JustificationsPage from "./JustificationsPage";
+import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
 withFakeTimers();
 const server = withMockServer();
@@ -38,7 +38,9 @@ describe("JustificationsPage", () => {
       text: "the-proposition-text",
       justifications,
     };
-    const response: GetPropositionOut = { proposition };
+    const response: InferResponseBody<typeof serviceRoutes.readProposition> = {
+      proposition,
+    };
 
     server.use(
       rest.get(

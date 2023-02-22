@@ -21,6 +21,10 @@ export interface CustomError extends Error {
   sourceError: Error;
 }
 
+export function isCustomError(err: any): err is CustomError {
+  return err instanceof Error && "errorType" in err;
+}
+
 /* Identify custom errors with an errorType property.  Subclassing builtins like Error is not widely supported,
  * and the Babel plugin for doing so relies on static detection, which could be flakey
  */

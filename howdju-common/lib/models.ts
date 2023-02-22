@@ -46,6 +46,7 @@ import {
   CreateVidSegmentInput,
   CreateWritInput,
   CreateWritQuoteInput,
+  Credentials,
   Entity,
   Justification,
   JustificationPolarity,
@@ -60,7 +61,6 @@ import {
   SourceExcerpt,
   SourceExcerptRef,
   Tag,
-  TagVote,
   Url,
   VidSegment,
 } from "./zodSchemas";
@@ -111,11 +111,6 @@ export const negateRootPolarity = (rootPolarity: JustificationRootPolarity) => {
       throw newImpossibleError(rootPolarity);
   }
 };
-
-export interface Credentials {
-  email: string;
-  password: string;
-}
 
 export const makeCredentials = (props?: Partial<Credentials>): Credentials =>
   assign({ email: "", password: "" }, props);
@@ -228,9 +223,6 @@ export const makePropositionTagVote = (
   props: PropositionTagVote
 ): PropositionTagVote => props;
 
-export const makeTagVote = (props: TagVote): TagVote => props;
-export const makeCreateTagVote = makeTagVote;
-
 // TODO(107): replace with Justification.rootTarget?
 type RootTargetInfo = Pick<Justification, "rootTargetType"> & {
   rootTarget: Pick<JustificationRootTarget, "id">;
@@ -247,11 +239,6 @@ export function makeVidSegment(): VidSegment {
 
 export function makePicRegion(): PicRegion {
   return { pic: {} };
-}
-
-export interface JustificationRootTargetInfo {
-  rootTargetType: JustificationRootTargetType;
-  rootTargetId: EntityId;
 }
 
 export const makeCreateJustifiedSentenceInput = (

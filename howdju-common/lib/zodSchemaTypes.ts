@@ -1,5 +1,6 @@
 import { Moment } from "moment";
 import { z } from "zod";
+import { UserOut, WritOut, WritQuoteOut } from "./apiModels";
 import { assert } from "./general";
 import { logger } from "./logger";
 
@@ -25,6 +26,8 @@ import {
   CreateSourceExcerptInput,
   CreateStatement,
   CreateStatementInput,
+  CreateWrit,
+  CreateWritInput,
   CreateWritQuote,
   CreateWritQuoteInput,
   Entity,
@@ -32,6 +35,7 @@ import {
   JustificationRootTarget,
   JustificationVote,
   PasswordResetRequest,
+  PersistedEntity,
   Persorg,
   Proposition,
   PropositionCompound,
@@ -43,11 +47,9 @@ import {
   Tag,
   TagVote,
   User,
+  Writ,
   WritQuote,
 } from "./zodSchemas";
-
-const PersistedEntity = Entity.required();
-export type PersistedEntity = z.infer<typeof PersistedEntity>;
 
 /**
  * A persisted justification with ref root target.
@@ -161,11 +163,21 @@ export type EntityName<T> = T extends Proposition
   ? "SourceExcerpt"
   : T extends CreateSourceExcerptInput
   ? "SourceExcerpt"
+  : T extends Writ
+  ? "Writ"
+  : T extends CreateWrit
+  ? "Writ"
+  : T extends CreateWritInput
+  ? "Writ"
+  : T extends WritOut
+  ? "Writ"
   : T extends WritQuote
   ? "WritQuote"
   : T extends CreateWritQuote
   ? "WritQuote"
   : T extends CreateWritQuoteInput
+  ? "WritQuote"
+  : T extends WritQuoteOut
   ? "WritQuote"
   : T extends User
   ? "User"
@@ -179,6 +191,10 @@ export type EntityName<T> = T extends Proposition
   ? "AccountSettings"
   : T extends ContentReport
   ? "ContentReport"
+  : T extends User
+  ? "User"
+  : T extends UserOut
+  ? "User"
   : never;
 
 /** A reference to an Entity by ID. */

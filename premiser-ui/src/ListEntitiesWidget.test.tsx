@@ -12,13 +12,13 @@ import {
 } from "@/testUtils";
 import {
   httpStatusCodes,
-  GetPropositionsOut,
   fromJson,
   toJson,
   PropositionRef,
 } from "howdju-common";
 import { drop, take, toNumber } from "lodash";
 import moment from "moment";
+import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
 const created = moment("2023-01-12T12:23:00");
 
@@ -44,10 +44,11 @@ beforeEach(() => {
         ? toNumber(fromJson(continuationTokenIn))
         : 0;
       const continuationToken = toJson(offset + count);
-      const response: GetPropositionsOut = {
-        propositions: take(drop(propositions, offset), count),
-        continuationToken,
-      };
+      const response: InferResponseBody<typeof serviceRoutes.readPropositions> =
+        {
+          propositions: take(drop(propositions, offset), count),
+          continuationToken,
+        };
       return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
     })
   );

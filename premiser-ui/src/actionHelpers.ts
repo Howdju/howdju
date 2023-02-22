@@ -1,9 +1,12 @@
-// The terminology around redux actions is confusing.
-//
-// The types `*ActionCreator`: a factory for functions that create actions. Really an ActionCreatorFactory.
-// The function `createAction`: a reduxjs/toolkit helper returning an AllTheGoodNamesWereTaken
-// There is no word for this concept: `AllTheGoodNamesWereTaken`: a function that returns an Action. Usually you call this inside dispatch.
-// `Action`: something passed to redux reducers. Created by AllTheGoodNamesWereTaken.
+/*
+ * The terminology around redux actions is confusing, primarily because there's no good word for an
+ * 'action creator creator' (the first item in this list):
+ *
+ * - The function `createAction`: a reduxjs/toolkit helper returning an action creator (Really an
+ *   ActionCreatorFactory or ActionCreatorCreator.)
+ * - "Action creator": a function that returns an Action. Usually you call this inside dispatch.
+ * - `Action`: an object passed to redux reducers to update the state.
+ */
 
 import {
   ActionFunctionAny,
@@ -39,7 +42,7 @@ export const combineActions = untypedCombineActions as (
  * Action groups are what we call the objects below with react-actions action creators.  They are just
  * a way to organize related action creators.  The convention with redux-react's connect method's mapDispatchToProps
  * is to pass an object with keys equal to action creators.  redux-react will automatically turn the action creators
- * into dispatched versions.  This helper accomplishes the same for an object the properties of which are action creator
+ * into dispatch-bound versions.  This helper accomplishes the same for an object the properties of which are action creator
  * groups like those defined below.
  *
  * @param actionCreatorGroups a map of action creator groups that will be bound by the name of the
@@ -116,13 +119,13 @@ function reduxActionsCompatiblePrepare<P>(
  *
  * (where we can omit the `payload` field.)
  *
- * To avoid the boilerplate, we adopt a createAction callling convention accepting a
+ * To avoid the boilerplate, we adopt a createAction calling convention accepting a
  * payloadCreatorOrPrepare function. If this function returns an object containing a `payload`
  * field, then the return value is used directly as the prepared value. Otherwise, the return value
  * is used as the `payload` of a new prepared object.
  *
  * One consequence of this is that, in the unlikely event that the payload should contain a field
- * called payload, then the payloadCreatorOrPrepare function should return a fully prepared object like:
+ * called `payload`, then the payloadCreatorOrPrepare function should return a fully prepared object like:
  *
  * ```json
  * {payload: {payload: {...}}}

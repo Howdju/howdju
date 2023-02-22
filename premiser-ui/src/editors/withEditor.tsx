@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { AnyAction, PrepareAction } from "@reduxjs/toolkit";
+import { AnyAction } from "@reduxjs/toolkit";
 import { Button, CardActions, CardText, CircularProgress } from "react-md";
 import get from "lodash/get";
 import { z } from "zod";
-import { identity, isArray, merge } from "lodash";
+import { isArray, merge } from "lodash";
 
 import {
   formatZodError,
@@ -41,9 +41,13 @@ import {
   OnValidityChangeCallback,
   SuggestionsKey,
 } from "@/types";
-import { EditorCommitCrudActionConfig } from "@/sagas/editors/editorCommitEditSaga";
+import {
+  EditorCommitCrudActionConfig,
+  getActionCreator,
+} from "@/sagas/editors/editorCommitEditSaga";
 import SubmitButton from "./SubmitButton";
 import { useAppDispatch } from "@/hooks";
+import { ServiceRoute } from "howdju-service-routes";
 
 export class CommitThenPutAction {
   // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
@@ -125,24 +129,16 @@ export type EntityEditorFieldsProps<T> = {
  */
 export default function withEditor<
   Props extends EntityEditorFieldsProps<SchemaOutput>,
+  Route extends ServiceRoute,
   SchemaInput extends EditorEntity = any,
   SchemaOutput = SchemaInput,
-  ApiModel = any,
-  RequestPayload = any,
-  ResponsePayload = any,
-  Prepare extends void | PrepareAction<RequestPayload> = void
+  ApiModel = any
 >(
   editorType: EditorType,
   EntityEditorFields: React.FC<Props>,
   entityPropName: string,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
-  commitConfig?: EditorCommitCrudActionConfig<
-    SchemaInput,
-    ApiModel,
-    RequestPayload,
-    ResponsePayload,
-    Prepare
-  >
+  commitConfig?: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>
 ): React.FC<
   WithEditorProps & Omit<Props, keyof EntityEditorFieldsProps<SchemaOutput>>
 > {
@@ -181,12 +177,15 @@ export default function withEditor<
       dispatch(editors.blurField(editorType, editorId, name));
     };
 
-    const { errors, isValidRequest } = validateEditorEntity(
-      commitConfig,
-      schemaOrId,
-      apiValidationErrors,
-      editEntity
-    );
+    const { errors, isValidRequest } =
+      commitConfig && editEntity
+        ? validateEditorEntity(
+            commitConfig,
+            schemaOrId,
+            apiValidationErrors,
+            editEntity
+          )
+        : { errors: undefined, isValidRequest: false };
     useEffect(() => {
       onValidityChange && onValidityChange(isValidRequest);
     }, [isValidRequest, onValidityChange]);
@@ -302,34 +301,35 @@ export function validateEditorEntity<
   SchemaInput extends EditorEntity,
   SchemaOutput,
   ApiModel,
-  RequestPayload,
-  ResponsePayload,
-  Prepare extends void | PrepareAction<RequestPayload>
+  Route extends ServiceRoute
 >(
-  commitConfig:
-    | EditorCommitCrudActionConfig<
-        SchemaInput,
-        ApiModel,
-        RequestPayload,
-        ResponsePayload,
-        Prepare
-      >
-    | undefined,
+  commitConfig: EditorCommitCrudActionConfig<SchemaInput, ApiModel, Route>,
   schemaOrId: z.ZodType<SchemaOutput, z.ZodTypeDef, SchemaInput> | SchemaId,
   apiValidationErrors: ModelErrors<ApiModel> | undefined,
-  editEntity: SchemaInput | undefined
+  editEntity: SchemaInput
 ): { errors: ModelErrors<SchemaInput>; isValidRequest: boolean } {
   const { errors: clientValidationErrors } = validateEntity(
     schemaOrId,
     editEntity
   );
 
-  const inputTransformer = commitConfig?.inputTransformer ?? identity;
-  const requestEntity = editEntity && inputTransformer(editEntity);
+  const apiEntity = commitConfig.inputTransformer(editEntity);
 
+  const actionCreator = getActionCreator(commitConfig, editEntity);
+  const action = actionCreator(apiEntity);
+  const request = {
+    // Just add a string for the authToken so that it doesn't fail validation. Only the API can
+    // validate authTokens. Technically this might be a place where we recognize that an authToken
+    // is missing and redirect the user to the login page if they don't have one.
+    // TODO(247): inlude placeholder conditional on actual authToken and redirect user to login if authToken validation fails.
+    authToken: "placeholder-auth-token",
+    body: action.payload.fetchInit.body,
+    queryStringParams: action.meta.queryStringParams,
+    pathParams: action.meta.pathParams,
+  };
   const { isValidRequest, error: requestValidationError } = validateRequest(
-    commitConfig?.requestSchema,
-    requestEntity
+    actionCreator.route.request.schema,
+    request
   );
   if (!isValidRequest && !clientValidationErrors) {
     logger.error(
@@ -340,10 +340,10 @@ export function validateEditorEntity<
     );
   }
 
-  const responseErrorTransformer = commitConfig?.responseErrorTransformer;
+  const responseErrorTransformer = commitConfig.responseErrorTransformer;
   const transformedApiValidationErrors =
-    requestEntity && apiValidationErrors && responseErrorTransformer
-      ? responseErrorTransformer(requestEntity, apiValidationErrors)
+    apiEntity && apiValidationErrors && responseErrorTransformer
+      ? responseErrorTransformer(apiEntity, apiValidationErrors)
       : (apiValidationErrors as ModelErrors<SchemaInput>);
   // apiValidationErrors comes after so that it will override clientValidationErrors, since ultimately the API
   // must accept the value.

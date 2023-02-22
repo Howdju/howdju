@@ -5,7 +5,7 @@ import { expect } from "@jest/globals";
 import { JustificationsDao } from "./JustificationsDao";
 import { mockLogger } from "howdju-test-common";
 import {
-  dropDb,
+  endPoolAndDropDb,
   expectToBeSameMomentDeep,
   initDb,
   makeTestDbConfig,
@@ -69,8 +69,7 @@ describe("JustificationsDao", () => {
     writQuotesService = provider.writQuotesService;
   });
   afterEach(async () => {
-    await pool.end();
-    await dropDb(dbConfig, dbName);
+    await endPoolAndDropDb(pool, dbConfig, dbName);
   });
 
   describe("createJustification", () => {

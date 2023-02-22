@@ -24,7 +24,7 @@ import {
 export const userSchema = new schema.Entity<User>("users");
 
 export const tagSchema = new schema.Entity<Tag>("tags");
-export const tagsSchema = [tagSchema];
+export const tagsSchema = new schema.Array(tagSchema);
 
 export const propositionTagVoteSchema = new schema.Entity<PropositionTagVote>(
   "propositionTagVotes",
@@ -32,12 +32,12 @@ export const propositionTagVoteSchema = new schema.Entity<PropositionTagVote>(
     tag: tagSchema,
   }
 );
-const propositionTagVotesSchema = [propositionTagVoteSchema];
+const propositionTagVotesSchema = new schema.Array(propositionTagVoteSchema);
 
 export const tagVoteSchema = new schema.Entity<TagVote>("tagVotes", {
   tag: tagSchema,
 });
-const tagVotesSchema = [tagVoteSchema];
+const tagVotesSchema = new schema.Array(tagVoteSchema);
 
 export const propositionSchema = new schema.Entity<Proposition>(
   "propositions",
@@ -49,12 +49,12 @@ export const propositionSchema = new schema.Entity<Proposition>(
     // justifications added below via justificationTargetSchema
   }
 );
-export const propositionsSchema = [propositionSchema];
+export const propositionsSchema = new schema.Array(propositionSchema);
 
 export const persorgSchema = new schema.Entity<Persorg>("persorgs", {
   creator: userSchema,
 });
-export const persorgsSchema = [persorgSchema];
+export const persorgsSchema = new schema.Array(persorgSchema);
 
 const sentenceSchema = new schema.Union(
   {},
@@ -65,7 +65,7 @@ export const statementSchema = new schema.Entity<Statement>("statements", {
   sentence: sentenceSchema,
   // justifications added below via justificationTargetSchema
 });
-export const statementsSchema = [statementSchema];
+export const statementsSchema = new schema.Array(statementSchema);
 sentenceSchema.define({
   PROPOSITION: propositionSchema,
   STATEMENT: statementSchema,
@@ -82,12 +82,12 @@ export const propositionCompoundSchema = new schema.Entity<PropositionCompound>(
   }
 );
 export const writSchema = new schema.Entity<Writ>("writs");
-export const writsSchema = [writSchema];
+export const writsSchema = new schema.Array(writSchema);
 
 export const writQuoteSchema = new schema.Entity<WritQuote>("writQuotes", {
   writ: writSchema,
 });
-export const writQuotesSchema = [writQuoteSchema];
+export const writQuotesSchema = new schema.Array(writQuoteSchema);
 
 export const picSchema = new schema.Entity<Pic>("pics");
 
@@ -154,10 +154,10 @@ justificationSchema.define({
   basis: {
     entity: justificationBasisSchema,
   },
-  counterJustifications: [justificationSchema],
+  counterJustifications: new schema.Array(justificationSchema),
   vote: justificationVoteSchema,
 });
-export const justificationsSchema = [justificationSchema];
+export const justificationsSchema = new schema.Array(justificationSchema);
 // The docs say that this definition is merged, but for me it appeared to overwrite what was there, at least for Unions
 justificationTargetSchema.define({
   PROPOSITION: propositionSchema,
@@ -184,3 +184,38 @@ export const mainSearchResultsSchema = {
 export const accountSettingsSchema = new schema.Entity<AccountSettings>(
   "accountSettings"
 );
+
+/**
+ * Converts a normalizr schema into a response payload.
+ *
+ * Replaces the schemas with their generic entity type.
+ *
+ * For example, given this schema:
+ *
+ * ```typescript
+ * const someSchema: {
+ *   proposition: schema.Entity<Proposition>;
+ *   example: {
+ *       justification: schema.Entity<Justification>;
+ *   };
+ * }
+ * ```
+ *
+ * `ExtractSchemaEntity<typeof someSchema>` will be:
+ *
+ * ```typescript
+ * type someSchemaEntities = {
+ *   proposition: Proposition;
+ *   example: {
+ *       justification: Justification;
+ *   };
+ * }
+ * ```
+ *
+ * TODO(1): do we need this?
+ */
+export type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
+  ? E
+  : {
+      [Key in keyof S]: ExtractSchemaEntity<S[Key]>;
+    };

@@ -1,4 +1,4 @@
-import { schemaIds } from "howdju-common";
+import { UpdateWritQuoteInput } from "howdju-common";
 
 import WritQuoteEditorFields from "../WritQuoteEditorFields";
 import withEditor from "@/editors/withEditor";
@@ -9,7 +9,7 @@ const WritQuoteEditor = withEditor(
   EditorTypes.WRIT_QUOTE,
   WritQuoteEditorFields,
   "writQuote",
-  schemaIds.writQuote
+  UpdateWritQuoteInput
 );
 
 export default WritQuoteEditor;

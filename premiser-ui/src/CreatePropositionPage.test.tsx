@@ -10,8 +10,6 @@ import {
   httpStatusCodes,
   Justification,
   Persisted,
-  PostJustificationIn,
-  PostJustificationOut,
 } from "howdju-common";
 
 import {
@@ -24,6 +22,7 @@ import {
 } from "@/testUtils";
 import CreatePropositionPage from "./CreatePropositionPage";
 import { pathToRegexp } from "path-to-regexp";
+import { InferResponseBody, serviceRoutes } from "howdju-service-routes";
 
 withFakeTimers();
 const server = withMockServer();
@@ -151,7 +150,10 @@ describe("CreatePropositionPage", () => {
       },
     };
 
-    const response: PostJustificationOut = {
+    const response: InferResponseBody<
+      typeof serviceRoutes.createJustification
+    > = {
+      isExtant: false,
       justification: merge({}, justification, {
         id: "1582",
         target: { entity: { id: "9483" } },
@@ -160,10 +162,10 @@ describe("CreatePropositionPage", () => {
         rootTarget: { id: "9483" },
       }) as Persisted<Justification>,
     };
-    let requestBody: PostJustificationIn = {} as PostJustificationIn;
+    let requestBody;
     server.use(
       rest.post(`http://localhost/justifications`, async (req, res, ctx) => {
-        requestBody = await req.json<PostJustificationIn>();
+        requestBody = await req.json();
         return res(ctx.status(httpStatusCodes.OK), ctx.json(response));
       }),
       rest.get("http://localhost/search-propositions", (_req, res, ctx) => {

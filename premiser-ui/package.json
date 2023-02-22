@@ -130,6 +130,7 @@
     "howdju-ajv-sourced": "workspace:howdju-ajv-sourced",
     "howdju-client-common": "workspace:howdju-client-common",
     "howdju-common": "workspace:howdju-common",
+    "howdju-service-routes": "workspace:howdju-service-routes",
     "immer": "^9.0.16",
     "is-valid-domain": "^0.0.19",
     "lodash": "^4.17.21",

@@ -117,15 +117,8 @@ the related entities (or part of them at least) should be denormalized to the ma
 
 ## Request/response models
 
-Response/request body models represent the entire body of an HTTP request or response. They may contain one or
-more In/Out models as fields, respectively. They are named like `MethodEndpointDirection`
-(`{Get,Post,Put,Delete}Endpoint{In,Out}`). E.g.: `GetPropositionIn`/`GetPropositionOut`. Often the
-`Endpoint` will correspond to an entity.
-
-TODO: request/response models should account for headers and path and query parameters.
-
-Plural model names usually will refer to the bare resource (`GetPropositionsIn` for
-`propositions`) while singular refer to entities in the resource (`GetPropositionIn` for `propositions/1`.
+We have no explicit models for requests/responses. Instead these are implied by the request schemas
+and handler return type of the service routes.
 
 ## `Persisted` entities
 

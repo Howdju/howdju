@@ -23,7 +23,6 @@ import {
   httpStatusCodes,
   idEqual,
   isTruthy,
-  JustificationRootTargetTypes,
   JustificationTargetTypes,
   newExhaustedEnumError,
 } from "howdju-common";
@@ -58,7 +57,8 @@ export default handleActions(
       api.fetchRecentPropositions.response,
       api.fetchRecentWrits.response,
       api.fetchRecentWritQuotes.response,
-      api.fetchRootJustificationTarget.response,
+      api.fetchPropositionRootJustificationTarget.response,
+      api.fetchStatementRootJustificationTarget.response,
       api.fetchRecentJustifications.response,
       api.fetchRootPropositionStatements.response,
       api.fetchSentenceStatements.response,
@@ -112,25 +112,33 @@ export default handleActions(
         return state;
       },
     },
-    [api.fetchRootJustificationTarget.response]: {
+    [api.fetchPropositionRootJustificationTarget.response]: {
       throw: (state, action) => {
         // If a proposition is not found (e.g., another user deleted it), then remove it.
         if (action.httpStatusCode === httpStatusCodes.NOT_FOUND) {
-          const { rootTargetType, rootTargetId } = action.meta.requestPayload;
-          let entitiesKey;
-          switch (rootTargetType) {
-            case JustificationRootTargetTypes.PROPOSITION:
-              entitiesKey = "propositions";
-              break;
-            case JustificationRootTargetTypes.STATEMENT:
-              entitiesKey = "statements";
-              break;
-            default:
-              throw newExhaustedEnumError(rootTargetType);
-          }
+          const { rootTargetId } = action.meta.requestMeta;
           const update = {
-            [entitiesKey]: pickBy(
-              state[entitiesKey],
+            propositions: pickBy(
+              state.propositions,
+              (s, id) => id !== rootTargetId
+            ),
+          };
+          return {
+            ...state,
+            ...update,
+          };
+        }
+        return state;
+      },
+    },
+    [api.fetchStatementRootJustificationTarget.response]: {
+      throw: (state, action) => {
+        // If a proposition is not found (e.g., another user deleted it), then remove it.
+        if (action.httpStatusCode === httpStatusCodes.NOT_FOUND) {
+          const { rootTargetId } = action.meta.requestMeta;
+          const update = {
+            statements: pickBy(
+              state.statements,
               (s, id) => id !== rootTargetId
             ),
           };
@@ -147,7 +155,7 @@ export default handleActions(
         ...state,
         propositions: pickBy(
           state.propositions,
-          (p, id) => id !== action.meta.requestPayload.proposition.id
+          (p, id) => id !== action.meta.requestMeta.propositionId
         ),
       }),
     },
@@ -192,7 +200,7 @@ export default handleActions(
     },
     [api.deleteJustification.response]: {
       next: (state, action) => {
-        const deletedJustification = action.meta.requestPayload.justification;
+        const deletedJustification = action.meta.requestMeta.justification;
         const stateWithoutJustification = {
           ...state,
           justifications: pickBy(
@@ -216,7 +224,7 @@ export default handleActions(
       action
     ) => {
       // Optimistically apply vote
-      const vote = action.payload.justificationVote;
+      const vote = action.meta.justificationVote;
       const { justificationId } = vote;
       const currJustification = state.justifications[justificationId];
       const justification = merge({}, currJustification, { vote });
@@ -233,7 +241,7 @@ export default handleActions(
       action
     ) => {
       // Optimistically remove vote
-      const { justificationId } = action.payload.justificationVote;
+      const { justificationId } = action.meta.justificationVote;
       const currJustification = state.justifications[justificationId];
       const justification = merge({}, currJustification, { vote: null });
       return {
@@ -278,10 +286,8 @@ export default handleActions(
     )]: {
       throw: (state, action) => {
         // Undo optimistic vote
-        const {
-          justificationVote: { justificationId },
-          previousJustificationVote,
-        } = action.meta.requestPayload;
+        const { justificationId, previousJustificationVote } =
+          action.meta.requestMeta;
         const currJustification = state.justifications[justificationId];
         const justification = merge({}, currJustification, {
           vote: previousJustificationVote,
@@ -580,7 +586,7 @@ function replaceOptimisticPropositionTagVote(state, action) {
     action.meta.normalizationSchema
   );
   const { propositionTagVote: optimisticPropositionTagVote } =
-    action.meta.requestPayload;
+    action.meta.requestMeta;
   const propositionTagVote =
     entities.propositionTagVotes[result.propositionTagVote];
 
@@ -610,7 +616,7 @@ function revertOptimisticPropositionTagVote(state, action) {
   const {
     propositionTagVote: optimisticPropositionTagVote,
     prevPropositionTagVote,
-  } = action.meta.requestPayload;
+  } = action.meta.requestMeta;
   // untagging has no optimistic vote, only a previous vote
   const propositionId = get(
     optimisticPropositionTagVote,

@@ -19,7 +19,7 @@ export const justificationsSearchPageSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(api.fetchJustificationsSearch, (state, action) => {
       state.isFetching = true;
-      state.filters = action.payload.filters;
+      state.filters = action.meta.filters;
     });
     builder.addCase(api.fetchJustificationsSearch.response, (state, action) => {
       state.isFetching = false;

@@ -552,7 +552,7 @@ describe("reducers", () => {
               },
             },
             action = api.deleteJustification.response(null, {
-              requestPayload: { justification: counterJustification },
+              requestMeta: { justification: counterJustification },
             });
           targetJustification.counterJustifications = [counterJustification.id];
 

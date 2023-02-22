@@ -1,45 +1,52 @@
 import reduce from "lodash/reduce";
 import {
-  PayloadActionCreator,
-  PrepareAction,
   ActionCreatorWithPreparedPayload,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
-import { isEmpty, isFunction, isObject, join, pick } from "lodash";
+import { isEmpty, join, merge, toString } from "lodash";
 import queryString from "query-string";
+import { compile } from "path-to-regexp";
+import { JsonObject, Schema } from "type-fest";
 
 import {
   EntityId,
   JustificationVotePolarities,
   PropositionTagVotePolarities,
-  WritQuote,
-  JustificationRootTargetType,
-  Proposition,
   Tag,
-  JustificationRootTargetTypes,
-  httpMethods,
   HttpMethod,
-  JustificationRootTargetInfo,
   SortDirections,
   encodeQueryStringObject,
   JustificationSearchFilters,
-  AuthToken,
-  DatetimeString,
+  EntityName,
   PropositionRef,
   SentenceType,
   TaggableEntityType,
   TagVotePolarities,
-  makeCreateTagVote,
   CreateJustification,
   CreateCounterJustification,
   CreateProposition,
-  PostPropositionIn,
   TagVoteViewModel,
   TagVoteRef,
   PropositionTagVoteOut,
-  CreatePropositionTagVote,
+  UpdateWritQuote,
+  CreateWritQuote,
+  ContinuationToken,
+  CreateAccountSettings,
+  UpdateAccountSettings,
+  UpdateProposition,
+  CreateStatement,
+  UpdatePersorg,
 } from "howdju-common";
+import {
+  InferPathParams,
+  InferQueryStringParams,
+  InferRequestBody,
+  InferResponseBody,
+  InferResponseReturnType,
+  ServiceRoute,
+  serviceRoutes,
+} from "howdju-service-routes";
 
 import {
   accountSettingsSchema,
@@ -67,26 +74,22 @@ import {
 import { actionTypeDelim, createAction } from "./actionHelpers";
 import { str } from "./actionHelpers";
 import { UiErrorType } from "./uiErrors";
-import { SuggestionsKey } from "./types";
+import { SuggestionsKey, WidgetId } from "./types";
 
-/**
- * ApiActionCreator types must be strings because we generate them.
- *
- * @typeparam P payload type
- * @typeparam RP response payload type
- * @typeparam PA prepare action type
- */
 export type ApiActionCreator<
-  P,
-  RP,
-  PA extends void | PrepareAction<P>
-> = PayloadActionCreator<P, string, PA> & {
+  Args extends any[],
+  Route extends ServiceRoute,
+  Meta,
+  Payload extends ApiConfig<Route> = ApiConfig<Route>,
+  ResponsePayload = InferResponseBody<Route>
+> = ActionCreatorWithPreparedPayload<Args, Payload, string, never, Meta> & {
+  route: Route;
   response: ActionCreatorWithPreparedPayload<
-    unknown[],
-    RP,
+    any[],
+    ResponsePayload,
     string,
     Error,
-    ApiResponseActionMeta
+    ApiResponseActionMeta<Payload["normalizationSchema"], Meta>
   >;
 };
 
@@ -96,73 +99,24 @@ const makeApiActionTypes = (type: string) => {
   return [requestType, responseType];
 };
 
-export type ApiResponseActionMeta<P = any> = {
-  normalizationSchema: any;
-  requestPayload: P;
+export type ApiResponseActionMeta<N, M> = {
+  normalizationSchema: N;
+  requestMeta: M;
 };
 
 /**
  * @typeparam N the type of the normalization schema
  */
-interface ResourceApiConfig<N> {
+interface ResourceApiConfig<B, N> {
   endpoint: string;
-  normalizationSchema?: N;
   fetchInit?: {
     method: HttpMethod;
-    body?: any;
+    body?: B;
   };
   canSkipRehydrate?: boolean;
   cancelKey?: string;
+  normalizationSchema?: N;
 }
-
-/**
- * Converts a normalizr schema into a response payload.
- *
- * Replaces the schemas with their generic entity type.
- *
- * For example, given this schema:
- *
- * ```typescript
- * const someSchema: {
- *   proposition: schema.Entity<Proposition>;
- *   example: {
- *       justification: schema.Entity<Justification>;
- *   };
- * }
- * ```
- *
- * `ExtractSchemaEntity<typeof someSchema>` will be:
- *
- * ```typescript
- * type someSchemaEntities = {
- *   proposition: Proposition;
- *   example: {
- *       justification: Justification;
- *   };
- * }
- * ```
- */
-type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
-  ? E
-  : {
-      [Key in keyof S]: ExtractSchemaEntity<S[Key]>;
-    };
-
-/**
- * A hack to allow us to define additional response properties.
- *
- * We use a double lambda to curry `T` because TypeScript will then infer `N`
- * (TypeScript otherwise will not infer only some of the typeparams of a single
- * lambda.)
- *
- * @typeparam T the type of additional, non-normalized response properties
- * @typeParam N the type of the normalization schema.
- * @returns A lambda accepting and returning the normalization schema typed as a full response
- */
-const responseSchema =
-  <T>() =>
-  <N extends Record<string, unknown>>(normalizationSchema: N): T & N =>
-    normalizationSchema as T & N;
 
 /** Properties that may be present on API responses */
 export interface ApiResponseWrapper {
@@ -178,104 +132,200 @@ export interface ApiResponseWrapper {
   continuationToken?: string;
 }
 
-type Prepared<P> = { payload: P; meta?: any };
-
 /**
  * The meta of an ApiAction
  *
  * @typeparam P the payload type.
  */
 export type ApiActionMeta<P> = {
-  apiConfig: ResourceApiConfig<any> | ((p: P) => ResourceApiConfig<any>);
+  apiConfig:
+    | ResourceApiConfig<any, any>
+    | ((p: P) => ResourceApiConfig<any, any>);
 };
-export type ApiAction<P> = PayloadAction<P, string, ApiActionMeta<P>>;
+export type ApiAction<Route extends ServiceRoute> = PayloadAction<
+  ApiConfig<Route>
+>;
 export type AnyApiAction = ApiAction<any>;
 export type ApiResponseAction<P> = PayloadAction<
   P,
   string,
-  ApiResponseActionMeta<any>,
+  ApiResponseActionMeta<any, any>,
   Error
 >;
 
-type InferPrepareAction<PP extends (...args: any[]) => any> = PP extends (
-  ...args: any[]
-) => Prepared<any>
-  ? PP & { meta: ApiActionMeta<InferPayload<PP>> }
-  : (...args: Parameters<PP>) => {
-      payload: ReturnType<PP>;
-      meta: ApiActionMeta<InferPayload<PP>>;
-    };
-type InferPayload<PP extends (...args: any[]) => any> = PP extends (
-  ...args: any[]
-) => Prepared<infer P>
-  ? P
-  : ReturnType<PP>;
+/** Return never if the Key doesn't correspond to an entity requiring normalization. */
+type ToEntityFieldKey<
+  Body extends Record<string, any>,
+  Key extends keyof Body
+> = Body[Key] extends (infer I)[]
+  ? EntityName<I> extends never
+    ? never
+    : Key
+  : EntityName<Body[Key]> extends never
+  ? never
+  : Key;
+
+/** Remove all properties from Body except those that are entities. */
+type EntityFieldsOnly<Body extends Record<string, any>> = {
+  [K in keyof Body as ToEntityFieldKey<Body, K>]: Body[K];
+};
+
+type InferResponseBodyEntities<Route extends ServiceRoute> =
+  InferResponseReturnType<Route> extends Record<string, any>
+    ? EntityFieldsOnly<InferResponseReturnType<Route>["body"]>
+    : never;
+
+type BaseApiActionConfig<Route extends ServiceRoute> = {
+  /** The values to fill into the service route's path's parameters */
+  pathParams: InferPathParams<Route>;
+  /** The values to provide to the API as query string parameters. */
+  queryStringParams: InferQueryStringParams<Route>;
+  /** The HTTP body to send with the request. */
+  body: InferRequestBody<Route>;
+  /** The schema for normalizing the response entities. */
+  normalizationSchema: Schema<
+    InferResponseBodyEntities<Route>,
+    schema.Entity<any> | schema.Array<any>
+  >;
+  canSkipRehydrate?: boolean;
+  cancelKey?: string;
+};
+/** Removes properties inferred to be `never`. */
+type ApiActionConfig<Route extends ServiceRoute> = {
+  [key in keyof BaseApiActionConfig<Route> as BaseApiActionConfig<Route>[key] extends never
+    ? never
+    : key]: BaseApiActionConfig<Route>[key];
+};
+
+type ApiConfig<Route extends ServiceRoute> = {
+  endpoint: string;
+  /** The schema for normalizing the response entities. */
+  normalizationSchema: Schema<
+    InferResponseBodyEntities<Route>,
+    schema.Entity<any>
+  >;
+  fetchInit: {
+    method: HttpMethod;
+    body: JsonObject;
+  };
+  canSkipRehydrate: boolean;
+  cancelKey: string;
+};
+
+const pathMakersByPathPattern = {} as Record<
+  string,
+  ReturnType<typeof compile>
+>;
+
+function makeEndpoint(
+  pathPattern: string,
+  pathParams: Record<string, string> | undefined,
+  queryStringParams: Record<string, string | undefined> | undefined
+) {
+  if (!(pathPattern in pathMakersByPathPattern)) {
+    pathMakersByPathPattern[pathPattern] = compile(pathPattern, {
+      encode: encodeURIComponent,
+    });
+  }
+  const pathMaker = pathMakersByPathPattern[pathPattern];
+  const path = pathMaker(pathParams);
+  const query = queryStringParams
+    ? "?" + queryString.stringify(queryStringParams)
+    : "";
+  return path + query;
+}
 
 /**
- * Create an action creator having a property `.response` with another action creator for corresponding API responses
+ * Creates PayloadActionCreators for actions that call our API.
  *
- * @param type the type of the action
- * @param payloadCreatorOrPrepare a function that creates the payload directly or returns a
- *   @reduxjs/toolkit prepared object.
- * @param apiConfigCreator the resource config for the API endpoint, or a function for creating it from
- *   the payload. The apiConfig's normalizationSchema determines the payload of the response actions.
- * @typeparam P the payload type
- * @typeparam N the type of the normalization schema. Used to infer the payload of the response action.
- * @typeparam PA the prepare function type
+ * Features:
+ * - apiActionConfig is type-safe with the service route's request body
+ * - Route parameters are type-safe with the service route.
+ * - Query string parameters are type-safe with the service route.
+ * - Reuses the ServiceRoute definition to determine:
+ *   - Path (including type-safe path parameters)
+ *   - HTTP Method
+ * - Normalization schema is type-safe wtih the API's response body.
+ *
+ * Issues: type system doesn't warn on extra properties. (This didn't work:)
+ *
+ * `Config extends Exact<ApiActionConfig<Route>, Config>`
+ *
+ * @param type The action type
+ * @param route The service route this API action targets
+ * @param makeConfig Additional config for calling the service route.
  */
 function apiActionCreator<
-  PP extends ((...args: any[]) => P) | ((...args: any[]) => Prepared<P>),
-  N,
-  P = InferPayload<PP>
+  Args extends any[],
+  Route extends ServiceRoute,
+  Meta extends Record<string, any>
 >(
   type: string,
-  payloadCreatorOrPrepare?: PP,
-  apiConfigCreator?: ResourceApiConfig<N> | ((p: P) => ResourceApiConfig<N>)
-): ApiActionCreator<
-  P,
-  ExtractSchemaEntity<N> & ApiResponseWrapper,
-  InferPrepareAction<PP>
-> {
+  route: Route,
+  makeConfig:
+    | ((...args: Args) => ApiActionConfig<Route>)
+    | ((...args: Args) => { config: ApiActionConfig<Route>; meta: Meta })
+): ApiActionCreator<Args, Route, Meta> {
   const [requestType, responseType] = makeApiActionTypes(type);
 
+  type NormalizationSchema = ApiActionConfig<Route> extends {
+    normalizationSchema: any;
+  }
+    ? ApiActionConfig<Route>["normalizationSchema"]
+    : never;
+
   // Add apiConfig to meta
-  const requestPrepare = function requestPrepare(...args: any[]) {
-    let prepared = payloadCreatorOrPrepare
-      ? payloadCreatorOrPrepare(...args)
-      : ({} as Prepared<P>);
-    if (apiConfigCreator) {
-      if (!isObject(prepared) || !("payload" in prepared)) {
-        // Allow payloadCreatorOrPrepare to return an object that already has payload in it,
-        // otherwise make the entire return value the payload.
-        prepared = { payload: prepared, meta: {} };
-      } else if (!prepared.meta) {
-        prepared.meta = {};
-      }
+  function apiActionCreatorPrepare(...args: Args) {
+    const result = makeConfig(...args);
+    const apiActionConfig = "config" in result ? result.config : result;
+    const { canSkipRehydrate, cancelKey } = apiActionConfig;
+    const pathParams =
+      "pathParams" in apiActionConfig
+        ? (apiActionConfig.pathParams as Record<string, string>)
+        : undefined;
+    const queryStringParams =
+      "queryStringParams" in apiActionConfig
+        ? (apiActionConfig.queryStringParams as Record<string, string>)
+        : undefined;
+    const body = "body" in apiActionConfig ? apiActionConfig.body : undefined;
+    const normalizationSchema =
+      "normalizationSchema" in apiActionConfig
+        ? apiActionConfig.normalizationSchema
+        : undefined;
+    const endpoint = makeEndpoint(route.path, pathParams, queryStringParams);
+    const apiConfig = {
+      endpoint,
+      fetchInit: {
+        method: route.method,
+        body,
+      },
+      normalizationSchema,
+      canSkipRehydrate,
+      cancelKey,
+    } as ResourceApiConfig<InferRequestBody<Route>, NormalizationSchema>;
+    const baseMeta = {
+      queryStringParams,
+      pathParams,
+    };
+    const meta = "meta" in result ? merge(baseMeta, result.meta) : baseMeta;
+    return { payload: apiConfig, meta };
+  }
 
-      prepared.meta.apiConfig = isFunction(apiConfigCreator)
-        ? apiConfigCreator(prepared.payload)
-        : apiConfigCreator;
-    }
-    return prepared;
-  };
+  type Response = InferResponseBody<Route> & ApiResponseWrapper;
 
-  type Response = ExtractSchemaEntity<N> & ApiResponseWrapper;
+  const actionCreator = createAction(
+    requestType,
+    apiActionCreatorPrepare
+  ) as unknown as ApiActionCreator<Args, Route, Meta>;
 
-  const ac = requestPrepare
-    ? (createAction(requestType, requestPrepare) as ApiActionCreator<
-        P,
-        Response,
-        InferPrepareAction<PP>
-      >)
-    : (createAction(requestType) as ApiActionCreator<
-        P,
-        Response,
-        InferPrepareAction<PP>
-      >);
+  actionCreator.route = route;
 
-  ac.response = createAction(
+  actionCreator.response = createAction(
     responseType,
-    (payload: ExtractSchemaEntity<N>, meta: ApiResponseActionMeta<P>) => ({
+    (
+      payload: InferResponseBody<Route>,
+      meta: ApiResponseActionMeta<NormalizationSchema, Meta>
+    ) => ({
       payload,
       meta,
     })
@@ -284,14 +334,14 @@ function apiActionCreator<
     Response,
     string,
     Error,
-    ApiResponseActionMeta
+    ApiResponseActionMeta<NormalizationSchema, Meta>
   >;
-  return ac;
+  return actionCreator;
 }
 
 type ContinuationQueryStringParams = {
-  continuationToken: string;
-  count: number;
+  continuationToken?: string;
+  count: string;
   sorts?: string;
 };
 
@@ -299,20 +349,9 @@ interface JustificationSearchQueryStringParams {
   filters?: string;
   includeUrls?: string;
   sorts?: string;
-  count?: number;
+  count?: string;
   continuationToken?: string;
 }
-
-const rootTargetEndpointsByType = {
-  [JustificationRootTargetTypes.PROPOSITION]: {
-    endpoint: "propositions",
-    normalizationSchema: { proposition: propositionSchema },
-  },
-  [JustificationRootTargetTypes.STATEMENT]: {
-    endpoint: "statements",
-    normalizationSchema: { statement: statementSchema },
-  },
-};
 
 const defaultSorts = `created=${SortDirections.DESCENDING}`;
 
@@ -331,86 +370,89 @@ export const callApiResponse = createAction(
 export const api = {
   fetchProposition: apiActionCreator(
     "FETCH_PROPOSITION",
-    (propositionId: EntityId) => ({ propositionId }),
-    (payload) => ({
-      endpoint: `propositions/${payload.propositionId}`,
-      normalizationSchema: { proposition: propositionSchema },
+    serviceRoutes.readProposition,
+    (propositionId: EntityId) => ({
+      config: {
+        pathParams: { propositionId },
+        normalizationSchema: { proposition: propositionSchema },
+      },
+      meta: { propositionId },
     })
   ),
   fetchPropositions: apiActionCreator(
     "FETCH_PROPOSITIONS",
-    (propositionIds: EntityId[]) => ({ propositionIds }),
-    (payload) => {
-      const query = payload.propositionIds
-        ? `?${queryString.stringify({
-            propositionIds: join(payload.propositionIds, ","),
-          })}`
-        : "";
+    serviceRoutes.readPropositions,
+    (propositionIds: EntityId[]) => {
+      const queryStringParams = propositionIds
+        ? {
+            propositionIds: join(propositionIds, ","),
+          }
+        : {};
       return {
-        endpoint: `propositions${query}`,
+        queryStringParams,
         normalizationSchema: { propositions: propositionsSchema },
       };
     }
   ),
   fetchPropositionCompound: apiActionCreator(
     "FETCH_PROPOSITION_COMPOUND",
-    (propositionCompoundId: EntityId) => ({ propositionCompoundId }),
-    (payload) => ({
-      endpoint: `proposition-compounds/${payload.propositionCompoundId}`,
+    serviceRoutes.readPropositionCompound,
+    (propositionCompoundId: EntityId) => ({
+      pathParams: { propositionCompoundId },
       normalizationSchema: { propositionCompound: propositionCompoundSchema },
     })
   ),
-  fetchRootJustificationTarget: apiActionCreator(
-    "FETCH_ROOT_JUSTIFICATION_TARGET",
-    (
-      rootTargetType: JustificationRootTargetType,
-      rootTargetId: EntityId
-    ): JustificationRootTargetInfo => ({
-      rootTargetType,
-      rootTargetId,
-    }),
-    ({ rootTargetType, rootTargetId }) => {
-      const { endpoint, normalizationSchema } =
-        rootTargetEndpointsByType[rootTargetType];
-      return {
-        endpoint: `${endpoint}/${rootTargetId}?include=justifications`,
-        fetchInit: {
-          method: httpMethods.GET,
-        },
-        normalizationSchema,
-      };
-    }
+  fetchPropositionRootJustificationTarget: apiActionCreator(
+    "FETCH_PROPOSITION_ROOT_JUSTIFICATION_TARGET",
+    serviceRoutes.readProposition,
+    (propositionId: EntityId) => ({
+      config: {
+        pathParams: { propositionId },
+        queryStringParams: { include: "justifications" },
+        normalizationSchema: { proposition: propositionSchema },
+      },
+      meta: {
+        rootTargetId: propositionId,
+      },
+    })
+  ),
+  fetchStatementRootJustificationTarget: apiActionCreator(
+    "FETCH_STATEMENT_ROOT_JUSTIFICATION_TARGET",
+    serviceRoutes.readStatement,
+    (statementId: EntityId) => ({
+      config: {
+        pathParams: { statementId },
+        queryStringParams: { include: "justifications" },
+        normalizationSchema: { statement: statementSchema },
+      },
+      meta: {
+        rootTargetId: statementId,
+      },
+    })
   ),
 
   fetchWritQuote: apiActionCreator(
     "FETCH_WRIT_QUOTE",
-    (writQuoteId: EntityId) => ({ writQuoteId }),
-    (payload) => ({
-      endpoint: `writ-quotes/${payload.writQuoteId}`,
+    serviceRoutes.readWritQuote,
+    (writQuoteId: EntityId) => ({
+      pathParams: { writQuoteId },
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
   createWritQuote: apiActionCreator(
     "CREATE_WRIT_QUOTE",
-    (writQuote: WritQuote) => ({ writQuote }),
-    (payload) => ({
-      endpoint: `writ-quotes`,
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
-      },
+    serviceRoutes.createWritQuote,
+    (writQuote: CreateWritQuote) => ({
+      body: { writQuote },
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
   updateWritQuote: apiActionCreator(
     "UPDATE_WRIT_QUOTE",
-    (writQuote: WritQuote) => ({ writQuote }),
-    (payload) => ({
-      endpoint: `writ-quotes/${payload.writQuote.id}`,
-      fetchInit: {
-        method: httpMethods.PUT,
-        body: payload,
-      },
+    serviceRoutes.updateWritQuote,
+    (writQuote: UpdateWritQuote) => ({
+      body: { writQuote },
+      pathParams: { writQuoteId: writQuote.id },
       normalizationSchema: { writQuote: writQuoteSchema },
     })
   ),
@@ -418,9 +460,9 @@ export const api = {
   /** @deprecated */
   fetchSourceExcerptParaphrase: apiActionCreator(
     "FETCH_SOURCE_EXCERPT_PARAPHRASE",
-    (sourceExcerptParaphraseId) => ({ sourceExcerptParaphraseId }),
-    (payload) => ({
-      endpoint: `source-excerpt-paraphrases/${payload.sourceExcerptParaphraseId}`,
+    serviceRoutes.readSourceExcerptParaphrase,
+    (sourceExcerptParaphraseId: EntityId) => ({
+      pathParams: { sourceExcerptParaphraseId },
       normalizationSchema: {
         sourceExcerptParaphrase: sourceExcerptParaphraseSchema,
       },
@@ -428,183 +470,184 @@ export const api = {
   ),
   fetchPersorg: apiActionCreator(
     "FETCH_PERSORG",
-    (persorgId) => ({
-      persorgId,
-    }),
-    (payload) => ({
-      endpoint: `persorgs/${payload.persorgId}`,
+    serviceRoutes.readPersorg,
+    (persorgId: EntityId) => ({
+      pathParams: {
+        persorgId,
+      },
       normalizationSchema: { persorg: persorgSchema },
     })
   ),
   fetchSpeakerStatements: apiActionCreator(
     "FETCH_PERSORG_STATEMENTS",
-    (speakerPersorgId) => ({ speakerPersorgId }),
-    (payload) => ({
-      endpoint: `statements?speakerPersorgId=${payload.speakerPersorgId}`,
+    serviceRoutes.readSpeakerStatements,
+    (speakerPersorgId: EntityId) => ({
+      queryStringParams: { speakerPersorgId },
       normalizationSchema: { statements: statementsSchema },
     })
   ),
   fetchSentenceStatements: apiActionCreator(
     "FETCH_SENTENCE_STATEMENTS",
+    serviceRoutes.readSentenceStatements,
     (sentenceType: SentenceType, sentenceId: EntityId) => ({
-      sentenceType,
-      sentenceId,
-    }),
-    (payload) => ({
-      endpoint: `statements?sentenceType=${payload.sentenceType}&sentenceId=${payload.sentenceId}`,
+      queryStringParams: {
+        sentenceType,
+        sentenceId,
+      },
       normalizationSchema: { statements: statementsSchema },
     })
   ),
   fetchRootPropositionStatements: apiActionCreator(
     "FETCH_ROOT_PROPOSITION_STATEMENTS",
-    (propositionId) => ({ propositionId }),
-    (payload) => ({
-      endpoint: `statements?rootPropositionId=${payload.propositionId}`,
+    serviceRoutes.readRootPropositionStatements,
+    (rootPropositionId: EntityId) => ({
+      queryStringParams: { rootPropositionId },
       normalizationSchema: { statements: statementsSchema },
     })
   ),
   fetchIndirectPropositionStatements: apiActionCreator(
     "FETCH_INDIRECT_PROPOSITION_STATEMENTS",
-    (propositionId) => ({ propositionId }),
-    (payload) => ({
-      endpoint: `statements?rootPropositionId=${payload.propositionId}&indirect`,
+    serviceRoutes.readIndirectRootPropositionStatements,
+    (rootPropositionId) => ({
+      queryStringParams: { rootPropositionId, indirect: null },
       normalizationSchema: { statements: statementsSchema },
     })
   ),
 
   fetchRecentPropositions: apiActionCreator(
     "FETCH_RECENT_PROPOSITIONS",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      count,
-      continuationToken,
-    }),
-    (payload) => {
-      const queryStringParams: ContinuationQueryStringParams = pick(payload, [
-        "continuationToken",
-        "count",
-      ]);
+    serviceRoutes.readPropositions,
+    (
+      widgetId: WidgetId,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: ContinuationQueryStringParams = {
+        continuationToken,
+        count: toString(count),
+      };
       if (!queryStringParams.continuationToken) {
         queryStringParams.sorts = defaultSorts;
       }
-      const queryStringParamsString = queryString.stringify(queryStringParams);
       return {
-        endpoint: "propositions?" + queryStringParamsString,
-        normalizationSchema: { propositions: propositionsSchema },
+        config: {
+          queryStringParams,
+          normalizationSchema: { propositions: propositionsSchema },
+        },
+        meta: { widgetId },
       };
     }
   ),
   fetchRecentWrits: apiActionCreator(
     "FETCH_RECENT_WRITS",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      continuationToken,
-      count,
-    }),
-    (payload) => {
-      const queryStringParams: ContinuationQueryStringParams = pick(payload, [
-        "continuationToken",
-        "count",
-      ]);
+    serviceRoutes.readWrits,
+    (
+      widgetId: WidgetId,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: ContinuationQueryStringParams = {
+        continuationToken,
+        count: toString(count),
+      };
       if (!queryStringParams.continuationToken) {
         queryStringParams.sorts = defaultSorts;
       }
-      const queryStringParamsString = queryString.stringify(queryStringParams);
       return {
-        endpoint: "writs?" + queryStringParamsString,
-        normalizationSchema: { writs: writsSchema },
+        config: {
+          queryStringParams,
+          normalizationSchema: { writs: writsSchema },
+        },
+        meta: { widgetId },
       };
     }
   ),
   fetchRecentWritQuotes: apiActionCreator(
     "FETCH_RECENT_WRIT_QUOTES",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      count,
-      continuationToken,
-    }),
-    (payload) => {
-      const queryStringParams: ContinuationQueryStringParams = pick(payload, [
-        "continuationToken",
-        "count",
-      ]);
+    serviceRoutes.readWritQuotes,
+    (
+      widgetId: WidgetId,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: ContinuationQueryStringParams = {
+        continuationToken,
+        count: toString(count),
+      };
       if (!queryStringParams.continuationToken) {
         queryStringParams.sorts = defaultSorts;
       }
-      const queryStringParamsString = queryString.stringify(queryStringParams);
       return {
-        endpoint: "writ-quotes?" + queryStringParamsString,
-        normalizationSchema: { writQuotes: writQuotesSchema },
+        config: {
+          queryStringParams,
+          normalizationSchema: { writQuotes: writQuotesSchema },
+        },
+        meta: { widgetId },
       };
     }
   ),
   fetchRecentJustifications: apiActionCreator(
     "FETCH_RECENT_JUSTIFICATIONS",
-    (widgetId, count, continuationToken) => ({
-      widgetId,
-      count,
-      continuationToken,
-    }),
-    (payload) => {
-      const queryStringParams: ContinuationQueryStringParams = pick(payload, [
-        "continuationToken",
-        "count",
-      ]);
+    serviceRoutes.readJustifications,
+    (
+      widgetId: WidgetId,
+      count: number,
+      continuationToken?: ContinuationToken
+    ) => {
+      const queryStringParams: ContinuationQueryStringParams = {
+        continuationToken,
+        count: toString(count),
+      };
       if (!queryStringParams.continuationToken) {
         queryStringParams.sorts = defaultSorts;
       }
-      const queryStringParamsString = queryString.stringify(queryStringParams);
       return {
-        endpoint: "justifications?" + queryStringParamsString,
-        normalizationSchema: { justifications: justificationsSchema },
+        config: {
+          queryStringParams,
+          normalizationSchema: { justifications: justificationsSchema },
+        },
+        meta: { widgetId },
       };
     }
   ),
 
   createAccountSettings: apiActionCreator(
     "CREATE_ACCOUNT_SETTINGS",
-    (accountSettings) => ({ accountSettings }),
-    (payload) => ({
-      endpoint: `account-settings`,
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+    serviceRoutes.createAccountSettings,
+    (accountSettings: CreateAccountSettings) => ({
+      body: { accountSettings },
+      normalizationSchema: { accountSettings: accountSettingsSchema },
+    })
+  ),
+  fetchAccountSettings: apiActionCreator(
+    "FETCH_ACCOUNT_SETTINGS",
+    serviceRoutes.readAccountSettings,
+    () => ({
+      normalizationSchema: {
+        accountSettings: accountSettingsSchema,
       },
     })
   ),
-  fetchAccountSettings: apiActionCreator("FETCH_ACCOUNT_SETTINGS", undefined, {
-    endpoint: `account-settings`,
-    normalizationSchema: {
-      accountSettings: accountSettingsSchema,
-    },
-  }),
   updateAccountSettings: apiActionCreator(
     "UPDATE_ACCOUNT_SETTINGS",
-    (accountSettings) => ({ accountSettings }),
-    (payload) => ({
-      endpoint: `account-settings`,
-      fetchInit: {
-        method: httpMethods.PUT,
-        body: payload,
-      },
+    serviceRoutes.updateAccountSettings,
+    (accountSettings: UpdateAccountSettings) => ({
+      body: { accountSettings },
       normalizationSchema: { accountSettings: accountSettingsSchema },
     })
   ),
 
   createContentReport: apiActionCreator(
     "CREATE_CONTENT_REPORT",
-    (contentReport) => ({ contentReport }),
-    (payload) => ({
-      endpoint: `content-reports`,
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
-      },
+    serviceRoutes.createContentReport,
+    (contentReport) => ({
+      body: { contentReport },
     })
   ),
 
   fetchJustificationsSearch: apiActionCreator(
     "FETCH_JUSTIFICATIONS_SEARCH",
+    serviceRoutes.readJustifications,
     ({
       filters,
       includeUrls = false,
@@ -617,531 +660,442 @@ export const api = {
       sorts?: Record<string, string>;
       count: number;
       continuationToken?: string;
-    }) => ({
-      filters,
-      includeUrls,
-      sorts,
-      count,
-      continuationToken,
-    }),
-    (payload) => {
-      const { filters, includeUrls, sorts, count, continuationToken } = payload;
-      const params: JustificationSearchQueryStringParams = {};
+    }) => {
+      const queryStringParams: JustificationSearchQueryStringParams = {};
 
       if (!isEmpty(filters)) {
-        params.filters = encodeQueryStringObject(filters);
+        queryStringParams.filters = encodeQueryStringObject(filters);
       }
 
       if (!isEmpty(includeUrls)) {
-        params.includeUrls = includeUrls.toString();
+        queryStringParams.includeUrls = includeUrls.toString();
       }
 
       if (!isEmpty(sorts)) {
-        params.sorts = encodeQueryStringObject(sorts);
+        queryStringParams.sorts = encodeQueryStringObject(sorts);
       } else {
-        params.sorts = defaultSorts;
+        queryStringParams.sorts = defaultSorts;
       }
 
       if (count) {
-        params.count = count;
+        queryStringParams.count = toString(count);
       }
 
       if (continuationToken) {
-        params.continuationToken = continuationToken;
+        queryStringParams.continuationToken = continuationToken;
       }
 
       return {
-        endpoint: "justifications?" + queryString.stringify(params),
-        normalizationSchema: { justifications: justificationsSchema },
+        config: {
+          queryStringParams,
+          normalizationSchema: { justifications: justificationsSchema },
+        },
+        meta: { filters },
       };
     }
   ),
-  login: apiActionCreator(
-    "LOGIN",
-    (credentials) => ({ credentials }),
-    (payload) => ({
-      endpoint: "login",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
-      },
-      normalizationSchema: responseSchema<{
-        authToken: AuthToken;
-        expires: DatetimeString;
-      }>()({ user: userSchema }),
-    })
-  ),
-  logout: apiActionCreator("LOGOUT", () => ({}), {
-    endpoint: "logout",
-    fetchInit: {
-      method: httpMethods.POST,
-    },
-  }),
+  login: apiActionCreator("LOGIN", serviceRoutes.login, (credentials) => ({
+    body: { credentials },
+    normalizationSchema: { user: userSchema },
+  })),
+  logout: apiActionCreator("LOGOUT", serviceRoutes.logout, () => ({})),
 
   requestPasswordReset: apiActionCreator(
     "REQUEST_PASSWORD_RESET",
-    (passwordResetRequest) => ({ passwordResetRequest }),
-    (payload) => ({
-      endpoint: "password-reset-requests",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
-      },
+    serviceRoutes.requestPasswordReset,
+    (passwordResetRequest) => ({
+      body: { passwordResetRequest },
+      normalizationSchema: {},
     })
   ),
   checkPasswordResetRequest: apiActionCreator(
     "CHECK_PASSWORD_RESET_REQUEST",
-    (passwordResetCode) => ({ passwordResetCode }),
-    (payload) => {
-      const queryStringParams = pick(payload, ["passwordResetCode"]);
-      const queryStringParamsString = queryString.stringify(queryStringParams);
-      return {
-        endpoint: `password-reset-requests?${queryStringParamsString}`,
-      };
-    }
+    serviceRoutes.readPasswordReset,
+    (passwordResetCode) => ({
+      queryStringParams: { passwordResetCode },
+      normalizationSchema: {},
+    })
   ),
   confirmPasswordReset: apiActionCreator(
     "CONFIRM_PASSWORD_RESET",
-    (passwordResetCode, passwordResetConfirmation) => ({
-      passwordResetCode,
-      passwordResetConfirmation,
-    }),
-    (payload) => ({
-      endpoint: "password-resets",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+    serviceRoutes.completePasswordReset,
+    (passwordResetCode: string, passwordResetConfirmation: string) => ({
+      body: {
+        passwordResetCode,
+        passwordResetConfirmation,
       },
-      normalizationSchema: responseSchema<{
-        authToken: AuthToken;
-        expires: DatetimeString;
-      }>()({ user: userSchema }),
+      normalizationSchema: { user: userSchema },
     })
   ),
 
   requestRegistration: apiActionCreator(
     "REQUEST_REGISTRATION",
+    serviceRoutes.requestRegistration,
     (registrationRequest) => ({
-      registrationRequest,
-    }),
-    (payload) => ({
-      endpoint: "registration-requests",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+      body: {
+        registrationRequest,
       },
+      normalizationSchema: {},
     })
   ),
   checkRegistration: apiActionCreator(
     "CHECK_REGISTRATION",
-    (registrationCode) => ({ registrationCode }),
-    (payload) => {
-      const queryStringParams = pick(payload, ["registrationCode"]);
-      const queryStringParamsString = queryString.stringify(queryStringParams);
-      return {
-        endpoint: `registration-requests?${queryStringParamsString}`,
-      };
-    }
+    serviceRoutes.readRegistrationRequest,
+    (registrationCode) => ({
+      queryStringParams: { registrationCode },
+      normalizationSchema: {},
+    })
   ),
   confirmRegistration: apiActionCreator(
     "CONFIRM_REGISTRATION",
-    (registrationConfirmation) => ({ registrationConfirmation }),
-    (payload) => ({
-      endpoint: "registrations",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
-      },
-      normalizationSchema: responseSchema<{
-        authToken: AuthToken;
-        expires: DatetimeString;
-      }>()({ user: userSchema }),
+    serviceRoutes.register,
+    (registrationConfirmation) => ({
+      body: { registrationConfirmation },
+      normalizationSchema: { user: userSchema },
     })
   ),
 
   verifyJustification: apiActionCreator(
     "VERIFY_JUSTIFICATION",
-    (justification) => ({
-      justificationVote: {
+    serviceRoutes.createJustificationVote,
+    (justification) => {
+      const justificationVote = {
         justificationId: justification.id,
         polarity: JustificationVotePolarities.POSITIVE,
-      },
-      previousJustificationVote: justification.vote,
-    }),
-    (payload) => ({
-      endpoint: "justification-votes",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: {
-          justificationVote: payload.justificationVote,
+      };
+      return {
+        config: {
+          body: {
+            justificationVote,
+          },
+          normalizationSchema: { justificationVote: justificationVoteSchema },
         },
-      },
-      normalizationSchema: { justificationVote: justificationVoteSchema },
-    })
+        meta: {
+          justificationVote,
+          justificationId: justification.id,
+          previousJustificationVote: justification.vote,
+        },
+      };
+    }
   ),
   unVerifyJustification: apiActionCreator(
     "UN_VERIFY_JUSTIFICATION",
-    (justification) => ({
-      justificationVote: {
+    serviceRoutes.deleteJustificationVote,
+    (justification) => {
+      const justificationVote = {
         justificationId: justification.id,
         polarity: JustificationVotePolarities.POSITIVE,
-      },
-      previousJustificationVote: justification.vote,
-    }),
-    (payload) => ({
-      endpoint: "justification-votes",
-      fetchInit: {
-        method: httpMethods.DELETE,
-        body: {
-          justificationVote: payload.justificationVote,
+      };
+      return {
+        config: {
+          body: {
+            justificationVote,
+          },
         },
-      },
-    })
+        meta: {
+          justificationVote,
+          justificationId: justification.id,
+          previousJustificationVote: justification.vote,
+        },
+      };
+    }
   ),
   disverifyJustification: apiActionCreator(
     "DISVERIFY_JUSTIFICATION",
+    serviceRoutes.createJustificationVote,
     (justification) => ({
-      justificationVote: {
-        justificationId: justification.id,
-        polarity: JustificationVotePolarities.NEGATIVE,
-      },
-      previousJustificationVote: justification.vote,
-    }),
-    (payload) => ({
-      endpoint: "justification-votes",
-      fetchInit: {
-        method: httpMethods.POST,
+      config: {
         body: {
-          justificationVote: payload.justificationVote,
+          justificationVote: {
+            justificationId: justification.id,
+            polarity: JustificationVotePolarities.NEGATIVE,
+          },
         },
+        normalizationSchema: { justificationVote: justificationVoteSchema },
       },
-      normalizationSchema: { justificationVote: justificationVoteSchema },
+      meta: {
+        justificationId: justification.id,
+        previousJustificationVote: justification.vote,
+      },
     })
   ),
   unDisverifyJustification: apiActionCreator(
     "UN_DISVERIFY_JUSTIFICATION",
+    serviceRoutes.deleteJustificationVote,
     (justification) => ({
-      justificationVote: {
-        justificationId: justification.id,
-        polarity: JustificationVotePolarities.NEGATIVE,
-      },
-      previousJustificationVote: justification.vote,
-    }),
-    (payload) => ({
-      endpoint: "justification-votes",
-      fetchInit: {
-        method: httpMethods.DELETE,
+      config: {
         body: {
-          justificationVote: payload.justificationVote,
+          justificationVote: {
+            justificationId: justification.id,
+            polarity: JustificationVotePolarities.NEGATIVE,
+          },
         },
+      },
+      meta: {
+        justificationId: justification.id,
+        previousJustificationVote: justification.vote,
       },
     })
   ),
 
   createTag: apiActionCreator(
     "CREATE_TAG",
+    serviceRoutes.createTagVote,
     (
       tagTargetType: TaggableEntityType,
       tagTargetId: EntityId,
       tag: Tag,
       tagVote?: TagVoteViewModel
     ) => ({
-      tagVote: makeCreateTagVote({
-        targetType: tagTargetType,
-        target: {
-          id: tagTargetId,
+      config: {
+        body: {
+          tagVote: {
+            targetType: tagTargetType,
+            target: {
+              id: tagTargetId,
+            },
+            polarity: TagVotePolarities.POSITIVE,
+            tag,
+          },
         },
-        polarity: TagVotePolarities.POSITIVE,
-        tag,
-      }),
-      previousTagVote: tagVote,
-    }),
-    (payload) => ({
-      endpoint: "tag-votes",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+        normalizationSchema: { tagVote: tagVoteSchema },
       },
-      normalizationSchema: { tagVote: tagVoteSchema },
+      meta: { previousTagVote: tagVote },
     })
   ),
   createAntiTag: apiActionCreator(
     "CREATE_ANTI_TAG",
+    serviceRoutes.createTagVote,
     (
       tagTargetType: TaggableEntityType,
       tagTargetId: EntityId,
       tag: Tag,
       tagVote?: TagVoteViewModel
     ) => ({
-      tagVote: makeCreateTagVote({
-        targetType: tagTargetType,
-        target: {
-          id: tagTargetId,
+      config: {
+        body: {
+          tagVote: {
+            targetType: tagTargetType,
+            target: {
+              id: tagTargetId,
+            },
+            polarity: TagVotePolarities.NEGATIVE,
+            tag,
+          },
         },
-        polarity: TagVotePolarities.NEGATIVE,
-        tag,
-      }),
-      previousTagVote: tagVote,
-    }),
-    (payload) => ({
-      endpoint: "tag-votes",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+        normalizationSchema: { tagVote: tagVoteSchema },
       },
-      normalizationSchema: { tagVote: tagVoteSchema },
+      meta: { previousTagVote: tagVote },
     })
   ),
   unTag: apiActionCreator(
     "UN_TAG",
+    serviceRoutes.deleteTagVote,
     (tagVote: TagVoteRef) => ({
-      tagVote,
-    }),
-    (payload) => ({
-      endpoint: `tag-votes/${payload.tagVote.id}`,
-      fetchInit: {
-        method: httpMethods.DELETE,
-      },
+      pathParams: { tagVoteId: tagVote.id },
     })
   ),
 
   tagProposition: apiActionCreator(
     "TAG_PROPOSITION",
+    serviceRoutes.createPropositionTagVote,
     (
       propositionId: EntityId,
       tag: Tag,
-      propositionTagVote?: PropositionTagVoteOut
-    ): {
-      propositionTagVote: CreatePropositionTagVote;
-      prevPropositionTagVote?: PropositionTagVoteOut;
-    } => ({
-      propositionTagVote: {
+      prevPropositionTagVote?: PropositionTagVoteOut
+    ) => {
+      const propositionTagVote = {
         polarity: PropositionTagVotePolarities.POSITIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,
-      },
-      prevPropositionTagVote: propositionTagVote,
-    }),
-    (payload) => ({
-      endpoint: "proposition-tag-votes",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: {
-          propositionTagVote: payload.propositionTagVote,
+      };
+      return {
+        config: {
+          body: {
+            propositionTagVote,
+          },
+
+          normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
         },
-      },
-      normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
-    })
+        meta: { propositionTagVote, prevPropositionTagVote },
+      };
+    }
   ),
   antiTagProposition: apiActionCreator(
     "ANTI_TAG_PROPOSITION",
+    serviceRoutes.createPropositionTagVote,
     (
       propositionId: EntityId,
       tag: Tag,
-      propositionTagVote?: PropositionTagVoteOut
-    ): {
-      propositionTagVote: CreatePropositionTagVote;
-      prevPropositionTagVote?: PropositionTagVoteOut;
-    } => ({
-      propositionTagVote: {
+      prevPropositionTagVote?: PropositionTagVoteOut
+    ) => {
+      const propositionTagVote = {
         polarity: PropositionTagVotePolarities.NEGATIVE,
         proposition: PropositionRef.parse({ id: propositionId }),
         tag,
-      },
-      prevPropositionTagVote: propositionTagVote,
-    }),
-    (payload) => ({
-      endpoint: "proposition-tag-votes",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: {
-          propositionTagVote: payload.propositionTagVote,
+      };
+      return {
+        config: {
+          body: {
+            propositionTagVote,
+          },
+
+          normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
         },
-      },
-      normalizationSchema: { propositionTagVote: propositionTagVoteSchema },
-    })
+        meta: { propositionTagVote, prevPropositionTagVote },
+      };
+    }
   ),
   unTagProposition: apiActionCreator(
     "UN_TAG_PROPOSITION",
+    serviceRoutes.deletePropositionTagVote,
     (propositionTagVote: PropositionTagVoteOut) => ({
-      prevPropositionTagVote: propositionTagVote,
-    }),
-    (payload) => ({
-      endpoint: `proposition-tag-votes/${payload.prevPropositionTagVote.id}`,
-      fetchInit: {
-        method: httpMethods.DELETE,
-      },
+      pathParams: { propositionTagVoteId: propositionTagVote.id },
     })
   ),
 
   createProposition: apiActionCreator(
     "CREATE_PROPOSITION",
-    (proposition: CreateProposition): PostPropositionIn => ({
-      proposition,
-    }),
-    (payload) => ({
-      endpoint: "propositions",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
+    serviceRoutes.createProposition,
+    (proposition: CreateProposition) => ({
+      body: {
+        proposition,
       },
       normalizationSchema: { proposition: propositionSchema },
     })
   ),
   updateProposition: apiActionCreator(
     "UPDATE_PROPOSITION",
-    (proposition: Proposition) => ({ proposition }),
-    (payload) => ({
-      endpoint: `propositions/${payload.proposition.id}`,
+    serviceRoutes.updateProposition,
+    (proposition: UpdateProposition) => ({
+      body: { proposition },
+      pathParams: { propositionId: proposition.id },
       normalizationSchema: { proposition: propositionSchema },
-      fetchInit: {
-        method: httpMethods.PUT,
-        body: {
-          proposition: payload.proposition,
-        },
-      },
     })
   ),
   deleteProposition: apiActionCreator(
     "DELETE_PROPOSITION",
-    (proposition) => ({
-      proposition,
-    }),
-    (payload) => ({
-      endpoint: `propositions/${payload.proposition.id}`,
-      fetchInit: {
-        method: httpMethods.DELETE,
+    serviceRoutes.deleteProposition,
+    (proposition: PropositionRef) => ({
+      config: {
+        pathParams: { propositionId: proposition.id },
       },
+      meta: { propositionId: proposition.id },
     })
   ),
 
   createStatement: apiActionCreator(
     "CREATE_STATEMENT",
-    (statement) => ({ statement }),
-    (payload) => ({
-      endpoint: "statements",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: payload,
-      },
+    serviceRoutes.createStatement,
+    (statement: CreateStatement) => ({
+      body: { statement },
       normalizationSchema: { statement: statementSchema },
     })
   ),
 
   updatePersorg: apiActionCreator(
     "UPDATE_PERSORG",
-    (persorg) => ({ persorg }),
-    (payload) => ({
-      endpoint: `persorgs/${payload.persorg.id}`,
+    serviceRoutes.updatePersorg,
+    (persorg: UpdatePersorg) => ({
+      body: { persorg },
+      pathParams: { persorgId: persorg.id },
       normalizationSchema: { persorg: persorgSchema },
-      fetchInit: {
-        method: httpMethods.PUT,
-        body: payload,
-      },
     })
   ),
 
   fetchPropositionTextSuggestions: apiActionCreator(
     "FETCH_PROPOSITION_TEXT_SUGGESTIONS",
+    serviceRoutes.searchPropositions,
     (propositionText: string, suggestionsKey: SuggestionsKey) => ({
-      propositionText,
-      suggestionsKey,
-    }),
-    (payload) => ({
-      endpoint: `search-propositions?${queryString.stringify({
-        searchText: payload.propositionText,
-      })}`,
-      cancelKey:
-        makeApiActionTypes("FETCH_PROPOSITION_TEXT_SUGGESTIONS")[0] +
-        "." +
-        payload.suggestionsKey,
-      normalizationSchema: propositionsSchema,
+      config: {
+        queryStringParams: { searchText: propositionText },
+        cancelKey:
+          makeApiActionTypes("FETCH_PROPOSITION_TEXT_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: { propositions: propositionsSchema },
+      },
+      meta: { suggestionsKey, suggestionsResponseKey: "propositions" },
     })
   ),
 
   fetchWritTitleSuggestions: apiActionCreator(
     "FETCH_WRIT_TITLE_SUGGESTIONS",
+    serviceRoutes.searchWrits,
     (writTitle: string, suggestionsKey: string) => ({
-      writTitle,
-      suggestionsKey,
-    }),
-    (payload) => ({
-      endpoint: `search-writs?${queryString.stringify({
-        searchText: payload.writTitle,
-      })}`,
-      cancelKey:
-        makeApiActionTypes("FETCH_WRIT_TITLE_SUGGESTIONS")[0] +
-        "." +
-        payload.suggestionsKey,
-      normalizationSchema: writsSchema,
+      config: {
+        queryStringParams: {
+          searchText: writTitle,
+        },
+        cancelKey:
+          makeApiActionTypes("FETCH_WRIT_TITLE_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: { writs: writsSchema },
+      },
+      meta: { suggestionsKey, suggestionsResponseKey: "writs" },
     })
   ),
 
   fetchTagNameSuggestions: apiActionCreator(
     "FETCH_TAG_NAME_SUGGESTIONS",
+    serviceRoutes.searchTags,
     (tagName: string, suggestionsKey: string) => ({
-      tagName,
-      suggestionsKey,
-    }),
-    (payload) => ({
-      endpoint: `search-tags?${queryString.stringify({
-        searchText: payload.tagName,
-      })}`,
-      cancelKey:
-        makeApiActionTypes("FETCH_TAG_NAME_SUGGESTIONS")[0] +
-        "." +
-        payload.suggestionsKey,
-      normalizationSchema: tagsSchema,
+      config: {
+        queryStringParams: {
+          searchText: tagName,
+        },
+        cancelKey:
+          makeApiActionTypes("FETCH_TAG_NAME_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: { tags: tagsSchema },
+      },
+      meta: { suggestionsKey, suggestionsResponseKey: "tags" },
     })
   ),
 
   fetchMainSearchSuggestions: apiActionCreator(
     "FETCH_MAIN_SEARCH_SUGGESTIONS",
+    serviceRoutes.mainSearch,
     (searchText: string, suggestionsKey: SuggestionsKey) => ({
-      searchText,
-      suggestionsKey,
-    }),
-    (payload) => ({
-      endpoint: `search?${queryString.stringify({
-        searchText: payload.searchText,
-      })}`,
-      cancelKey:
-        makeApiActionTypes("FETCH_MAIN_SEARCH_SUGGESTIONS")[0] +
-        "." +
-        payload.suggestionsKey,
-      normalizationSchema: mainSearchResultsSchema,
+      config: {
+        queryStringParams: {
+          searchText: searchText,
+        },
+        cancelKey:
+          makeApiActionTypes("FETCH_MAIN_SEARCH_SUGGESTIONS")[0] +
+          "." +
+          suggestionsKey,
+        normalizationSchema: mainSearchResultsSchema,
+      },
+      meta: { suggestionsKey },
     })
   ),
 
   fetchPersorgNameSuggestions: apiActionCreator(
     "FETCH_PERSORG_NAME_SUGGESTIONS",
+    serviceRoutes.searchPersorgs,
     (searchText, suggestionsKey) => ({
-      searchText,
-      suggestionsKey,
-    }),
-    (payload) => ({
-      endpoint: `search-persorgs?${queryString.stringify({
-        searchText: payload.searchText,
-      })}`,
-      cancelKey: `${makeApiActionTypes("FETCH_PERSORG_NAME_SUGGESTIONS")[0]}.${
-        payload.suggestionsKey
-      }`,
-      normalizationSchema: persorgsSchema,
+      config: {
+        queryStringParams: {
+          searchText: searchText,
+        },
+        cancelKey: `${
+          makeApiActionTypes("FETCH_PERSORG_NAME_SUGGESTIONS")[0]
+        }.${suggestionsKey}`,
+        normalizationSchema: { persorgs: persorgsSchema },
+      },
+      meta: { suggestionsKey, suggestionsResponseKey: "persorgs" },
     })
   ),
 
   createJustification: apiActionCreator(
     "CREATE_JUSTIFICATION",
+    serviceRoutes.createJustification,
     (justification: CreateJustification) => ({
-      justification,
-    }),
-    ({ justification }) => ({
-      endpoint: "justifications",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: {
-          justification,
-        },
+      body: {
+        justification,
       },
       normalizationSchema: { justification: justificationSchema },
     })
@@ -1151,56 +1105,49 @@ export const api = {
   // if I reuse the createJustification action there.
   createCounterJustification: apiActionCreator(
     "CREATE_CONTER_JUSTIFICATION",
+    serviceRoutes.createJustification,
     (justification: CreateCounterJustification) => ({
-      justification,
-    }),
-    ({ justification }) => ({
-      endpoint: "justifications",
-      fetchInit: {
-        method: httpMethods.POST,
-        body: {
-          justification,
-        },
+      body: {
+        justification,
       },
       normalizationSchema: { justification: justificationSchema },
     })
   ),
   deleteJustification: apiActionCreator(
     "DELETE_JUSTIFICATION",
-    (justification) => ({ justification }),
-    (payload) => ({
-      endpoint: `justifications/${payload.justification.id}`,
-      fetchInit: {
-        method: httpMethods.DELETE,
+    serviceRoutes.deleteJustification,
+    (justification) => ({
+      config: {
+        pathParams: { justificationId: justification.id },
       },
+      meta: { justification },
     })
   ),
 
   fetchMainSearchResults: apiActionCreator(
     "FETCH_MAIN_SEARCH_RESULTS",
-    (searchText) => ({ searchText }),
-    (payload) => ({
-      endpoint: `search?${queryString.stringify({
-        searchText: payload.searchText,
-      })}`,
+    serviceRoutes.mainSearch,
+    (searchText) => ({
+      queryStringParams: {
+        searchText,
+      },
       normalizationSchema: mainSearchResultsSchema,
     })
   ),
 
-  fetchTag: apiActionCreator(
-    "FETCH_TAG",
-    (tagId) => ({ tagId }),
-    (payload) => ({
-      endpoint: `tags/${payload.tagId}`,
-      normalizationSchema: { tag: tagSchema },
-    })
-  ),
+  fetchTag: apiActionCreator("FETCH_TAG", serviceRoutes.readTag, (tagId) => ({
+    pathParams: { tagId },
+    normalizationSchema: { tag: tagSchema },
+  })),
   fetchTaggedPropositions: apiActionCreator(
     "FETCH_TAGGED_PROPOSITIONS",
-    (tagId) => ({ tagId }),
-    (payload) => ({
-      endpoint: `propositions?tagId=${payload.tagId}`,
-      normalizationSchema: { propositions: propositionsSchema },
+    serviceRoutes.readTaggedPropositions,
+    (tagId: EntityId) => ({
+      config: {
+        queryStringParams: { tagId },
+        normalizationSchema: { propositions: propositionsSchema },
+      },
+      meta: { tagId },
     })
   ),
 };
@@ -1246,11 +1193,7 @@ export const cancelPropositionTextSuggestions = createAction(
   })
 );
 
-type UnknownApiActionCreator = ApiActionCreator<
-  unknown,
-  unknown,
-  void | PrepareAction<unknown>
->;
+type UnknownApiActionCreator = ApiActionCreator<unknown[], any, unknown>;
 
 export const apiActionCreatorsByActionType = reduce(
   api,

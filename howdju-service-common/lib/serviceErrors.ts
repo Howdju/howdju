@@ -16,6 +16,9 @@ export class HowdjuApiError extends Error {
   }
 }
 
+/** The client sent a bad request and there is not a more specific error that applies. */
+export class InvalidRequestError extends HowdjuApiError {}
+
 export class EntityValidationError extends HowdjuApiError {
   // TODO(26): remove BespokeValidationErrors
   errors: ModelErrors<any> | BespokeValidationErrors;

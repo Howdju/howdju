@@ -1,6 +1,7 @@
 import { assign, forEach, isEmpty, isUndefined, toPairs } from "lodash";
+import { match } from "path-to-regexp";
 
-import { apiErrorCodes, toJson } from "howdju-common";
+import { apiErrorCodes, isCustomError, toJson } from "howdju-common";
 import {
   AuthenticationError,
   AuthorizationError,
@@ -8,6 +9,7 @@ import {
   EntityNotFoundError,
   EntityValidationError,
   InvalidLoginError,
+  InvalidRequestError,
   NoMatchingRouteError,
   RegistrationAlreadyConsumedError,
   RegistrationExpiredError,
@@ -29,71 +31,34 @@ import {
 import { AppProvider } from "./init";
 import { Request, ApiCallback } from "./types";
 
-const serviceRoutePairs = toPairs(serviceRoutes);
-
-export const selectRoute = (appProvider: AppProvider, request: Request) => {
-  const { path, method, queryStringParameters } = request;
-
-  for (const [routeId, route] of serviceRoutePairs) {
-    let pathMatch;
-
-    if (route.method !== method) continue;
-    if ("path" in route) {
-      if (typeof route.path === "string" && route.path !== path) {
-        continue;
-      }
-      if (
-        route.path instanceof RegExp &&
-        !(pathMatch = route.path.exec(path))
-      ) {
-        continue;
-      }
-    }
-
-    if ("queryStringParameters" in route) {
-      if (
-        isEmpty(route.queryStringParameters) !== isEmpty(queryStringParameters)
-      ) {
-        continue;
-      }
-
-      let isMisMatch = false;
-      forEach(route.queryStringParameters, (value: string | RegExp, name) => {
-        const requestValue = queryStringParameters[name] || "";
-        if (value instanceof RegExp) {
-          // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
-          if (isUndefined(requestValue) || !value.test(requestValue)) {
-            isMisMatch = true;
-          }
-        } else if (value !== requestValue) {
-          isMisMatch = true;
-        }
-      });
-      if (isMisMatch) {
-        continue;
-      }
-    }
-
-    // First item is the whole match, rest are the group matches
-    const pathParameters = pathMatch ? pathMatch.slice(1) : [];
-    const routedRequest = assign({}, request, { pathParameters });
-    appProvider.logger.debug(`selected route ${routeId}`);
-    return { route, routedRequest };
-  }
-
-  throw new NoMatchingRouteError();
-};
-
 export async function routeRequest(
   request: Request,
   appProvider: AppProvider,
   callback: ApiCallback
 ) {
+  // Our OPTIONS route was a no-op anyways, so handle it here so that all our routes can be more
+  // route-like (e.g. all have a path.)
+  if (request.method === "OPTIONS") {
+    return ok({ callback });
+  }
+
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
-    const result = await route.handler(appProvider, routedRequest as any);
+    const result = await route.request.handler(
+      appProvider,
+      routedRequest as any
+    );
     return ok({ callback, ...result });
   } catch (err) {
+    if (err instanceof InvalidRequestError) {
+      return badRequest({
+        callback,
+        body: {
+          errorCode: apiErrorCodes.INVALID_REQUEST,
+          errors: [err.message],
+        },
+      });
+    }
     if (err instanceof EntityValidationError) {
       return badRequest({
         callback,
@@ -173,6 +138,17 @@ export async function routeRequest(
         },
       });
     } else if (err instanceof Error) {
+      if (isCustomError(err)) {
+        appProvider.logger.error("Custom error", {
+          err,
+          stack: err.stack,
+          sourceError: err.sourceError,
+        });
+        return error({
+          callback,
+          body: { errorCode: apiErrorCodes.UNEXPECTED_ERROR },
+        });
+      }
       appProvider.logger.error("Unexpected error", { err, stack: err.stack });
       return error({
         callback,
@@ -186,4 +162,55 @@ export async function routeRequest(
       });
     }
   }
+}
+
+const serviceRoutePairs = toPairs(serviceRoutes);
+
+export function selectRoute(appProvider: AppProvider, request: Request) {
+  const { path, method, queryStringParams } = request;
+
+  for (const [routeId, route] of serviceRoutePairs) {
+    let pathParams;
+
+    if (route.method !== method) continue;
+
+    if ("path" in route) {
+      const pathPattern = route.path;
+      const pathMatcher = match(pathPattern, { decode: decodeURIComponent });
+      const result = pathMatcher(path);
+      if (!result) {
+        continue;
+      }
+      pathParams = result.params;
+    }
+
+    if ("queryStringParams" in route) {
+      if (isEmpty(route.queryStringParams) !== isEmpty(queryStringParams)) {
+        continue;
+      }
+
+      let isMisMatch = false;
+      forEach(route.queryStringParams, (value: string | RegExp, name) => {
+        const requestValue = queryStringParams[name] || "";
+        if (value instanceof RegExp) {
+          // The regex methods cast undefined to the string 'undefined', matching some regexes you might not expect...
+          if (isUndefined(requestValue) || !value.test(requestValue)) {
+            isMisMatch = true;
+          }
+        } else if (value !== requestValue) {
+          isMisMatch = true;
+        }
+      });
+      if (isMisMatch) {
+        continue;
+      }
+    }
+
+    // First item is the whole match, rest are the group matches
+    const routedRequest = assign({}, request, { pathParams });
+    appProvider.logger.debug(`selected route ${routeId}`);
+    return { route, routedRequest };
+  }
+
+  throw new NoMatchingRouteError();
 }

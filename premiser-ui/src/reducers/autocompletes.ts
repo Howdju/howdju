@@ -7,7 +7,11 @@ const initialState = {
   suggestions: {},
 };
 
-export default handleActions<typeof initialState, any, ApiResponseActionMeta>(
+export default handleActions<
+  typeof initialState,
+  any,
+  ApiResponseActionMeta<any, any>
+>(
   {
     [combineActions(
       api.fetchPersorgNameSuggestions.response,
@@ -24,7 +28,8 @@ export default handleActions<typeof initialState, any, ApiResponseActionMeta>(
           ...state,
           suggestions: {
             ...state.suggestions,
-            [action.meta.requestPayload.suggestionsKey]: result,
+            [action.meta.requestMeta.suggestionsKey]:
+              result[action.meta.requestMeta.suggestionsResponseKey],
           },
         };
       },
@@ -39,8 +44,7 @@ export default handleActions<typeof initialState, any, ApiResponseActionMeta>(
           ...state,
           suggestions: {
             ...state.suggestions,
-            [action.meta.requestPayload.suggestionsKey]:
-              result.propositionTexts,
+            [action.meta.requestMeta.suggestionsKey]: result.propositionTexts,
           },
         };
       },

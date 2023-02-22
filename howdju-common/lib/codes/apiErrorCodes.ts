@@ -6,6 +6,9 @@ export const apiErrorCodes = {
   /** The data submitted was invalid */
   VALIDATION_ERROR: "VALIDATION_ERROR",
 
+  /** The client sent an invalid request. The response should explain what was invalid. */
+  INVALID_REQUEST: "INVALID_REQUEST",
+
   AUTHENTICATION_ERROR: "AUTHENTICATION_ERROR",
 
   /** The user tried to login with invalid login credentials */

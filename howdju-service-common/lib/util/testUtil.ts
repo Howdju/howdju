@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import { readFileSync } from "fs";
-import { PoolConfig } from "pg";
+import { Pool, PoolConfig } from "pg";
 import { expect } from "@jest/globals";
 
 import { mockLogger } from "howdju-test-common";
@@ -24,6 +24,8 @@ export function makeTestApiConfig(): ApiConfig {
   return cloneDeep(baseConfig);
 }
 
+let connRefusedCount = 0;
+
 /** Create a randomly named test DB. */
 export async function initDb(config: PoolConfig) {
   if (config.database) {
@@ -38,18 +40,29 @@ export async function initDb(config: PoolConfig) {
   let dbName;
   let succeeded = false;
   let attempts = 0;
-  while (!succeeded && attempts < 10) {
+  while (!succeeded && attempts < 3 && connRefusedCount < 10) {
     dbName = randomDbName();
     try {
       await noDbPool.query(`CREATE DATABASE ${dbName};`);
       logger.info(`Successfully created test DB ${dbName}`);
       succeeded = true;
     } catch (err) {
-      logger.info(
-        `Failed to create test DB ${dbName}. ` +
-          `Assuming it already exists and retrying a different name. ` +
-          `Error: ${toJson(err)}`
-      );
+      if (
+        err instanceof Error &&
+        "code" in err &&
+        err.code === "ECONNREFUSED"
+      ) {
+        connRefusedCount++;
+        logger.info(
+          `Failed to create test DB ${dbName}. Error: ${toJson(err)}`
+        );
+      } else {
+        logger.info(
+          `Failed to create test DB ${dbName}. ` +
+            `Assuming it already exists and retrying a different name. ` +
+            `Error: ${toJson(err)}`
+        );
+      }
     }
     attempts++;
   }
@@ -70,15 +83,22 @@ export async function initDb(config: PoolConfig) {
   return dbName as string;
 }
 
-export async function dropDb(config: PoolConfig, dbName: string) {
+export async function endPoolAndDropDb(
+  pool: Pool | undefined,
+  config: PoolConfig,
+  dbName: string
+) {
+  if (pool) {
+    await pool.end();
+  }
   if (config.database) {
     throw new Error(
       "Must not specify a test database name as it must be randomly generated."
     );
   }
-  const pool = makePool(mockLogger, config);
-  await pool.query(`DROP DATABASE IF EXISTS ${dbName};`);
-  await pool.end();
+  const dbPool = makePool(mockLogger, config);
+  await dbPool.query(`DROP DATABASE IF EXISTS ${dbName};`);
+  await dbPool.end();
 }
 
 function randomDbName() {

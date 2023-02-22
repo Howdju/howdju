@@ -10,9 +10,6 @@ import {
 import isFunction from "lodash/isFunction";
 import values from "lodash/values";
 
-import { newImpossibleError } from "howdju-common";
-
-import { str } from "../actions";
 import {
   api,
   AnyApiAction,
@@ -38,24 +35,14 @@ export function* callApiForResource(action: AnyApiAction) {
     apiActionCreatorsByActionType[action.type].response;
 
   try {
-    // TODO(1): Move cancelation action creators out of api and make meta required.
-    const config = action.meta && action.meta.apiConfig;
-    if (!config) {
-      return yield* put(
-        responseActionCreator(
-          newImpossibleError(
-            `Missing resource API config for action type: ${action.type}`
-          )
-        )
-      );
-    }
+    // TODO(1): Move cancelation action creators out of api.
     const {
       endpoint,
       fetchInit,
       normalizationSchema,
       canSkipRehydrate,
       cancelKey,
-    } = isFunction(config) ? config(action.payload) : config;
+    } = action.payload;
 
     if (cancelKey) {
       const prevTask = cancelableResourceCallTasks[cancelKey];
@@ -78,7 +65,7 @@ export function* callApiForResource(action: AnyApiAction) {
 
     const responseMeta = {
       normalizationSchema,
-      requestPayload: action.payload,
+      requestMeta: "meta" in action ? action.meta : undefined,
     };
     return yield* put(
       responseActionCreator(apiResultAction.payload, responseMeta)
@@ -96,13 +83,13 @@ export function* cancelResourceApiCalls() {
   // TODO(1): move cancel onto the API action creator to avoid toil of adding them here?
   yield takeEvery(
     [
-      str(cancelPropositionTextSuggestions),
-      str(cancelWritTitleSuggestions),
-      str(cancelMainSearchSuggestions),
-      str(cancelTagNameSuggestions),
-      str(cancelPersorgNameSuggestions),
+      cancelPropositionTextSuggestions,
+      cancelWritTitleSuggestions,
+      cancelMainSearchSuggestions,
+      cancelTagNameSuggestions,
+      cancelPersorgNameSuggestions,
     ],
-    function* cancelCallApiForResourceWorker(action: AnyApiAction) {
+    function* cancelCallApiForResourceWorker(action) {
       const { cancelTarget } = action.payload;
 
       const actionCreator = apiActionCreatorsByActionType[cancelTarget];
@@ -115,16 +102,7 @@ export function* cancelResourceApiCalls() {
       const cancelTargetArgs = action.payload.cancelTargetArgs as [any, any];
       // Call the cancel target in order to get its cancelKey.
       const targetAction = actionCreator(...cancelTargetArgs) as AnyApiAction;
-      const apiConfig = targetAction.meta?.apiConfig;
-      if (!apiConfig) {
-        logger.error(
-          `unable to cancel action type ${targetAction.type} because it lacked apiConfig.`
-        );
-        return;
-      }
-      const { cancelKey } = isFunction(apiConfig)
-        ? apiConfig(targetAction.payload)
-        : apiConfig;
+      const { cancelKey } = targetAction.payload;
       if (!cancelKey) {
         logger.error(
           `Unablet to infer cancelKey for cancelTargetType ${cancelTarget}`
