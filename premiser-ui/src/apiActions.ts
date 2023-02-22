@@ -4,7 +4,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { schema } from "normalizr";
-import { isEmpty, join, toString } from "lodash";
+import { isEmpty, join, merge, toString } from "lodash";
 import queryString from "query-string";
 import { compile } from "path-to-regexp";
 import { JsonObject, Schema } from "type-fest";
@@ -77,13 +77,15 @@ import { UiErrorType } from "./uiErrors";
 import { SuggestionsKey, WidgetId } from "./types";
 
 export type ApiActionCreator<
-  Args extends unknown[],
-  Payload extends ApiConfig<any>,
+  Args extends any[],
+  Route extends ServiceRoute,
   Meta,
-  ResponsePayload
+  Payload extends ApiConfig<Route> = ApiConfig<Route>,
+  ResponsePayload = InferResponseBody<Route>
 > = ActionCreatorWithPreparedPayload<Args, Payload, string, never, Meta> & {
+  route: Route;
   response: ActionCreatorWithPreparedPayload<
-    unknown[],
+    any[],
     ResponsePayload,
     string,
     Error,
@@ -256,14 +258,14 @@ function makeEndpoint(
 function apiActionCreator<
   Args extends any[],
   Route extends ServiceRoute,
-  Meta = never
+  Meta extends Record<string, any>
 >(
   type: string,
   route: Route,
   makeConfig:
     | ((...args: Args) => ApiActionConfig<Route>)
     | ((...args: Args) => { config: ApiActionConfig<Route>; meta: Meta })
-): ApiActionCreator<Args, ApiConfig<Route>, Meta, InferResponseBody<Route>> {
+): ApiActionCreator<Args, Route, Meta> {
   const [requestType, responseType] = makeApiActionTypes(type);
 
   type NormalizationSchema = ApiActionConfig<Route> extends {
@@ -301,10 +303,12 @@ function apiActionCreator<
       canSkipRehydrate,
       cancelKey,
     } as ResourceApiConfig<InferRequestBody<Route>, NormalizationSchema>;
-    if ("meta" in result) {
-      return { payload: apiConfig, meta: result.meta };
-    }
-    return { payload: apiConfig };
+    const baseMeta = {
+      queryStringParams,
+      pathParams,
+    };
+    const meta = "meta" in result ? merge(baseMeta, result.meta) : baseMeta;
+    return { payload: apiConfig, meta };
   }
 
   type Response = InferResponseBody<Route> & ApiResponseWrapper;
@@ -312,7 +316,9 @@ function apiActionCreator<
   const actionCreator = createAction(
     requestType,
     apiActionCreatorPrepare
-  ) as unknown as ApiActionCreator<Args, ApiConfig<Route>, Meta, any>;
+  ) as unknown as ApiActionCreator<Args, Route, Meta>;
+
+  actionCreator.route = route;
 
   actionCreator.response = createAction(
     responseType,
@@ -1187,12 +1193,7 @@ export const cancelPropositionTextSuggestions = createAction(
   })
 );
 
-type UnknownApiActionCreator = ApiActionCreator<
-  unknown[],
-  ApiConfig<any>,
-  unknown,
-  unknown
->;
+type UnknownApiActionCreator = ApiActionCreator<unknown[], any, unknown>;
 
 export const apiActionCreatorsByActionType = reduce(
   api,
