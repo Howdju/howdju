@@ -2,9 +2,10 @@
  * Entry point for mobile app.
  */
 
-import { AppRegistry } from "react-native";
-import App from "./src/App";
 import React from "react";
+import { AppRegistry } from "react-native";
+
+import App from "./src/App";
 import { name as appName } from "./app.json";
 
 // Wrap App in a Root so that App supports HMR.

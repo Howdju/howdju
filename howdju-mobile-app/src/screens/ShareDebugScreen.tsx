@@ -1,93 +1,72 @@
-import React from "react";
-import {
-  Button,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import React, { useContext } from "react";
+import { Button, ScrollView, StyleSheet, View } from "react-native";
 import { ShareDataItem } from "react-native-share-menu";
+import { useTheme } from "react-native-paper";
 
 import { inferSubmitUrl } from "@/services/submitUrls";
 import * as webBrowser from "@/services/webBrowser";
 import ShareDataItemPreview from "@/views/ShareDataItemPreview";
 import { logPromiseError } from "@/util";
+import Text from "@/components/Text";
+import { HowdjuSiteAuthority } from "@/contexts";
 
-const Section: React.FC<{
-  title: string;
-}> = ({ children, title }) => {
-  const isDarkMode = useColorScheme() === "dark";
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-  return (
-    <View style={styles.sectionContainer}>
-      <Text style={[styles.sectionTitle, backgroundStyle]}>{title}</Text>
-      <Text style={[styles.sectionDescription, backgroundStyle]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-async function openUrl(url: string | null) {
-  if (!url) {
-    console.error("openUrl must be called with a URL");
-    return;
-  }
-  await webBrowser.openUrl(url);
-}
-
-const ShareDebugScreen: React.FC<{
+export default function ShareDebugScreen({
+  items,
+  extraData,
+}: {
   items: ShareDataItem[];
   extraData?: Record<string, unknown>;
-}> = ({ items, extraData }) => {
-  const isDarkMode = useColorScheme() === "dark";
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  const submitUrl = inferSubmitUrl(items);
+}) {
+  const theme = useTheme();
+  const authority = useContext(HowdjuSiteAuthority);
+  const submitUrl = inferSubmitUrl(authority, items);
+  const hasItems = !!items && !!items.length;
+  const noItemsMessage = (
+    <Text
+      style={[styles.centerText, styles.sectionContainer, styles.sectionTitle]}
+    >
+      No share items.
+    </Text>
+  );
+  const debugInfo = (
+    <>
+      <Button
+        title="Open Submit Page"
+        onPress={() =>
+          void logPromiseError(openUrl(submitUrl), `Opening URL ${submitUrl}`)
+        }
+        disabled={!!submitUrl}
+      />
+      <Section title="Share data">
+        {items &&
+          items.map((item, i) => (
+            <Section title={item.itemGroup ?? "No item Group"} key={i}>
+              <ShareDataItemPreview item={item} />
+            </Section>
+          ))}
+      </Section>
+      <Section title="Extra data">
+        {extraData ? JSON.stringify(extraData) : ""}
+      </Section>
+    </>
+  );
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}
+      style={{
+        backgroundColor: theme.colors.background,
+      }}
     >
-      <View
-        style={{
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        }}
-      >
-        <Button
-          title="Open Submit Page"
-          onPress={() =>
-            void logPromiseError(openUrl(submitUrl), `Opening URL ${submitUrl}`)
-          }
-          disabled={!!submitUrl}
-        />
-        <Section title="Share data">
-          {items &&
-            items.map((item, i) => (
-              <Section title={item.itemGroup ?? "No item Group"} key={i}>
-                <ShareDataItemPreview item={item} />
-              </Section>
-            ))}
-        </Section>
-        <Section title="Extra data">
-          {extraData ? JSON.stringify(extraData) : ""}
-        </Section>
-      </View>
+      {hasItems ? debugInfo : noItemsMessage}
     </ScrollView>
   );
-};
-
-export default ShareDebugScreen;
+}
 
 const styles = StyleSheet.create({
+  centerText: {
+    textAlign: "center",
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
@@ -109,3 +88,22 @@ const styles = StyleSheet.create({
     height: 200,
   },
 });
+
+const Section: React.FC<{
+  title: string;
+}> = ({ children, title }) => {
+  return (
+    <View style={styles.sectionContainer}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={styles.sectionDescription}>{children}</Text>
+    </View>
+  );
+};
+
+async function openUrl(url: string | null) {
+  if (!url) {
+    console.error("openUrl must be called with a URL");
+    return;
+  }
+  await webBrowser.openUrl(url);
+}

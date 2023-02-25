@@ -1,61 +1,48 @@
-import React from "react";
+import React, { useContext, useRef } from "react";
 import { WebView } from "react-native-webview";
 import type { ShareDataItem } from "react-native-share-menu";
 
 import { inferSubmitUrl } from "@/services/submitUrls";
-import { StyleSheet } from "react-native";
 import logger from "@/logger";
+import { makeRecentActivityUrl } from "@/services/urls";
+import { HowdjuSiteAuthority } from "@/contexts";
 
-class BrowserScreen extends React.Component<{
-  items: ShareDataItem[];
-}> {
-  webView: WebView | null | undefined;
+export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
+  const webViewRef = useRef<WebView | null>(null);
 
-  // This rule falsely fails on this method.
-  // TODO: convert to a functional component to see if it goes away.
-  // eslint-disable-next-line react/require-render-return
-  render = () => {
-    const { items } = this.props;
-    const browserUrl = items.length
-      ? inferSubmitUrl(items)
-      : "https://howdju.com/recent-activity/";
-    return (
-      <WebView
-        ref={(wv) => {
-          this.webView = wv;
-        }}
-        source={{ uri: browserUrl }}
-        style={styles.webView}
-        onError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.error("WebView error: ", nativeEvent);
-        }}
-        onHttpError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.warn("WebView HTTP error: ", nativeEvent.statusCode);
-        }}
-        onRenderProcessGone={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.warn("WebView Crashed: ", nativeEvent.didCrash);
-        }}
-        onContentProcessDidTerminate={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.warn("Content process terminated, reloading", nativeEvent);
-          if (!this.webView) {
-            logger.warn("Unable to reload webview because it is missing.");
-            return;
-          }
-          this.webView.reload();
-        }}
-      />
-    );
-  };
+  const authority = useContext(HowdjuSiteAuthority);
+  const browserUrl = items.length
+    ? inferSubmitUrl(authority, items)
+    : makeRecentActivityUrl(authority);
+  return (
+    <WebView
+      ref={(wv) => {
+        webViewRef.current = wv;
+      }}
+      source={{ uri: browserUrl }}
+      onError={(syntheticEvent) => {
+        const { nativeEvent } = syntheticEvent;
+        console.error("WebView error: ", nativeEvent);
+      }}
+      onHttpError={(syntheticEvent) => {
+        const { nativeEvent } = syntheticEvent;
+        console.warn("WebView HTTP error: ", nativeEvent.statusCode);
+      }}
+      onRenderProcessGone={(syntheticEvent) => {
+        const { nativeEvent } = syntheticEvent;
+        console.warn("WebView Crashed: ", nativeEvent.didCrash);
+      }}
+      onContentProcessDidTerminate={(syntheticEvent) => {
+        const { nativeEvent } = syntheticEvent;
+        console.warn("Content process terminated, reloading", nativeEvent);
+        if (!webViewRef.current) {
+          logger.warn("Unable to reload webview because it is missing.");
+          return;
+        }
+        webViewRef.current.reload();
+      }}
+    />
+  );
 }
-
-const styles = StyleSheet.create({
-  webView: {
-    marginTop: 20,
-  },
-});
 
 export default BrowserScreen;

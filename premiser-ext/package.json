@@ -9,7 +9,7 @@
     "build-prod": "yarn run clean && webpack --progress --profile --color",
     "build-dev": "yarn run clean && webpack --progress --profile --color --mode development",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
-    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "package": "bin/package.sh",
     "test": "jest",

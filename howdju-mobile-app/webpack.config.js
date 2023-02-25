@@ -95,16 +95,9 @@ module.exports = {
     alias: {
       // Support project-relative imports
       "@": path.resolve(__dirname, "src/"),
+      // Ensure that packages hoisted to root workspace can find unhoisted react-native
+      "react-native": reactNativePath,
     },
-
-    /**
-     * Uncomment this to ensure all `react-native*` imports will resolve to the same React Native
-     * dependency. You might need it when using workspaces/monorepos or unconventional project
-     * structure. For simple/typical project you won't need it.
-     */
-    // alias: {
-    //   'react-native': reactNativePath,
-    // },
   },
   /**
    * Configures output.
