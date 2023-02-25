@@ -4266,6 +4266,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@callstack/react-theme-provider@npm:^3.0.8":
+  version: 3.0.8
+  resolution: "@callstack/react-theme-provider@npm:3.0.8"
+  dependencies:
+    deepmerge: ^3.2.0
+    hoist-non-react-statics: ^3.3.0
+  peerDependencies:
+    react: ">=16.3.0"
+  checksum: 6077a4795aea4eb06a2a2ffe5cf299c3fdcba56530aa68eba5c3ac0728ce02be2f6e9e71278be303065cb7fbe252c35639538477d5d05ee14f6325d550c8c696
+  languageName: node
+  linkType: hard
+
 "@callstack/repack@npm:^2.5.2":
   version: 2.5.2
   resolution: "@callstack/repack@npm:2.5.2"
@@ -5528,6 +5540,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-async-storage/async-storage@npm:^1.17.11":
+  version: 1.17.11
+  resolution: "@react-native-async-storage/async-storage@npm:1.17.11"
+  dependencies:
+    merge-options: ^3.0.4
+  peerDependencies:
+    react-native: ^0.0.0-0 || 0.60 - 0.71 || 1000.0.0
+  checksum: 691f2b74498160d0b532f673402d8affeecb28b005b1c6d6fa2e7c87f89ab3068177e8e2d2686738306e7592a39c6d7148aa4c426b7e8e149c43a336ad446648
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-debugger-ui@npm:^6.0.0-rc.0":
   version: 6.0.0-rc.0
   resolution: "@react-native-community/cli-debugger-ui@npm:6.0.0-rc.0"
@@ -6722,12 +6745,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-native-vector-icons@npm:^6.4.13":
+  version: 6.4.13
+  resolution: "@types/react-native-vector-icons@npm:6.4.13"
+  dependencies:
+    "@types/react": "*"
+    "@types/react-native": ^0.70
+  checksum: e954807f7229a84ba6aa15c6952a987e0b45406e501131c0d73fdaa3fe634301d466e22eec8bb23d9c509eb39043fae9cad4ca685b125dc4d6d603dc46b789f7
+  languageName: node
+  linkType: hard
+
 "@types/react-native@npm:^0.66.4":
   version: 0.66.6
   resolution: "@types/react-native@npm:0.66.6"
   dependencies:
     "@types/react": "*"
   checksum: fba05b80bf2cf973f4448e9561df567f55988729a0a3b5ad633f07c9ab06f850658bf2ccf2a52cc947827322ecf120241a4f7a4e55485b9c6cdbbbad154d8635
+  languageName: node
+  linkType: hard
+
+"@types/react-native@npm:^0.70":
+  version: 0.70.11
+  resolution: "@types/react-native@npm:0.70.11"
+  dependencies:
+    "@types/react": "*"
+  checksum: d81155adbc0ca7d407772a4be531834890b2a64ebd992d9658c8384d7c39d1026da85ee504ea412887eb4269b9911d213d013a141f352df9e7a7256c267c0c73
   languageName: node
   linkType: hard
 
@@ -10527,7 +10569,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-convert@npm:^1.9.0":
+"color-convert@npm:^1.9.0, color-convert@npm:^1.9.3":
   version: 1.9.3
   resolution: "color-convert@npm:1.9.3"
   dependencies:
@@ -10559,7 +10601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-string@npm:^1.9.0":
+"color-string@npm:^1.6.0, color-string@npm:^1.9.0":
   version: 1.9.1
   resolution: "color-string@npm:1.9.1"
   dependencies:
@@ -10575,6 +10617,16 @@ __metadata:
   bin:
     color-support: bin.js
   checksum: 9b7356817670b9a13a26ca5af1c21615463b500783b739b7634a0c2047c16cef4b2865d7576875c31c3cddf9dd621fa19285e628f20198b233a5cfdda6d0793b
+  languageName: node
+  linkType: hard
+
+"color@npm:^3.1.2":
+  version: 3.2.1
+  resolution: "color@npm:3.2.1"
+  dependencies:
+    color-convert: ^1.9.3
+    color-string: ^1.6.0
+  checksum: f81220e8b774d35865c2561be921f5652117638dcda7ca4029262046e37fc2444ac7bbfdd110cf1fd9c074a4ee5eda8f85944ffbdda26186b602dd9bb05f6400
   languageName: node
   linkType: hard
 
@@ -15395,6 +15447,7 @@ __metadata:
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.12.5
     "@callstack/repack": ^2.5.2
+    "@react-native-async-storage/async-storage": ^1.17.11
     "@react-native-community/eslint-config": ^2.0.0
     "@react-navigation/bottom-tabs": ^6.3.2
     "@react-navigation/native": ^6.0.11
@@ -15402,6 +15455,7 @@ __metadata:
     "@testing-library/jest-native": ^4.0.11
     "@testing-library/react-native": ^11.0.0
     "@types/react-native": ^0.66.4
+    "@types/react-native-vector-icons": ^6.4.13
     "@types/react-test-renderer": ^17.0.1
     add: ^2.0.6
     babel-jest: ^29.0.3
@@ -15415,10 +15469,12 @@ __metadata:
     react: ^17.0
     react-native: ^0.66
     react-native-gesture-handler: ^2.6.0
+    react-native-paper: ^5.2.0
     react-native-reanimated: ^2.10.0
-    react-native-safe-area-context: ^4.3.1
+    react-native-safe-area-context: ^4.5.0
     react-native-screens: ^3.15.0
     react-native-share-menu: "github:Howdju/react-native-share-menu#ff9c65e456cf80b23b881ed2e1247f14337260ec"
+    react-native-vector-icons: ^9.2.0
     react-native-webview: ^11.15.0
     react-test-renderer: 17.0.2
     terser-webpack-plugin: ^5.3.3
@@ -16692,6 +16748,13 @@ __metadata:
   version: 1.1.0
   resolution: "is-plain-obj@npm:1.1.0"
   checksum: 0ee04807797aad50859652a7467481816cbb57e5cc97d813a7dcd8915da8195dc68c436010bf39d195226cde6a2d352f4b815f16f26b7bf486a5754290629931
+  languageName: node
+  linkType: hard
+
+"is-plain-obj@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "is-plain-obj@npm:2.1.0"
+  checksum: cec9100678b0a9fe0248a81743041ed990c2d4c99f893d935545cfbc42876cbe86d207f3b895700c690ad2fa520e568c44afc1605044b535a7820c1d40e38daa
   languageName: node
   linkType: hard
 
@@ -19066,6 +19129,15 @@ __metadata:
   version: 1.0.1
   resolution: "merge-descriptors@npm:1.0.1"
   checksum: 5abc259d2ae25bb06d19ce2b94a21632583c74e2a9109ee1ba7fd147aa7362b380d971e0251069f8b3eb7d48c21ac839e21fa177b335e82c76ec172e30c31a26
+  languageName: node
+  linkType: hard
+
+"merge-options@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "merge-options@npm:3.0.4"
+  dependencies:
+    is-plain-obj: ^2.1.0
+  checksum: d86ddb3dd6e85d558dbf25dc944f3527b6bacb944db3fdda6e84a3f59c4e4b85231095f58b835758b9a57708342dee0f8de0dffa352974a48221487fe9f4584f
   languageName: node
   linkType: hard
 
@@ -22993,6 +23065,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-paper@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "react-native-paper@npm:5.2.0"
+  dependencies:
+    "@callstack/react-theme-provider": ^3.0.8
+    color: ^3.1.2
+    use-event-callback: ^0.1.0
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-safe-area-context: "*"
+    react-native-vector-icons: "*"
+  checksum: bf5e6eecde852719d74713757e678fe576f32b92509ed5417f35fafb3bb4ea0fae0ce0bd6df7d61f38acd191bd1f36c1c6a5572b6f3d05944bd0b2d54f1a18e8
+  languageName: node
+  linkType: hard
+
 "react-native-reanimated@npm:^2.10.0":
   version: 2.10.0
   resolution: "react-native-reanimated@npm:2.10.0"
@@ -23012,13 +23100,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-safe-area-context@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "react-native-safe-area-context@npm:4.3.1"
+"react-native-safe-area-context@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "react-native-safe-area-context@npm:4.5.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 34a4bc60448b0bc6bfa3e952b00a12754cc30ce48c07540a6618179f2c170aa2db0919ac452376322778ed34c4c56fc5d40e17c2b74157c9a134d2b766143ca3
+  checksum: 958df1d20492aa89c23d746f88409a3a3bd1b0d397c80310a4b0bbec9888cbbeb7579c9c92dad46841e2e6536491806206228ba009b7c8af970670aef8273a30
   languageName: node
   linkType: hard
 
@@ -23042,6 +23130,19 @@ __metadata:
     react: ^17.0
     react-native: ^0.66
   checksum: 455f04d0ea47ee55c3859d7716585a29fd3893dcc85718546d455a0b736fbc37b19442f28d65bbbc5fc0a485c54d6138e5ee98b3c959342fcb55a05d1873363f
+  languageName: node
+  linkType: hard
+
+"react-native-vector-icons@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "react-native-vector-icons@npm:9.2.0"
+  dependencies:
+    prop-types: ^15.7.2
+    yargs: ^16.1.1
+  bin:
+    fa5-upgrade: bin/fa5-upgrade.sh
+    generate-icon: bin/generate-icon.js
+  checksum: 222baf88c3f269234c08a41680e6400a4bf1f4c170f7c2ffac34b2c1c089cdb1084223db2a7d9cc54ee212eec20ff1478f3f482df19062e3057c328642da0be2
   languageName: node
   linkType: hard
 
@@ -26946,6 +27047,15 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"use-event-callback@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "use-event-callback@npm:0.1.0"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 1e15fb21306c74f877e9d57686546c363165429412dcb9260254d2dd8f56692cb01ba2162f9169e6fc15b01cf3921b9cd8a9c60cf777d0143afcee92c1a7976a
+  languageName: node
+  linkType: hard
+
 "use-subscription@npm:^1.0.0":
   version: 1.5.1
   resolution: "use-subscription@npm:1.5.1"
@@ -28115,7 +28225,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"yargs@npm:^16.2.0":
+"yargs@npm:^16.1.1, yargs@npm:^16.2.0":
   version: 16.2.0
   resolution: "yargs@npm:16.2.0"
   dependencies:

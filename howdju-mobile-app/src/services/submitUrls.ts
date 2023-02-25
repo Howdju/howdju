@@ -7,9 +7,12 @@ type SafariShareInfo = {
   title?: string;
 };
 
-export function inferSubmitUrl(items: ShareDataItem[]): string {
+export function inferSubmitUrl(
+  urlAuthority: string,
+  items: ShareDataItem[]
+): string {
   const safariShareInfo = inferSafariShareInfo(items);
-  return makeSubmitUrl(safariShareInfo);
+  return makeSubmitUrl(urlAuthority, safariShareInfo);
 }
 
 const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
@@ -48,9 +51,12 @@ const inferSafariShareInfo = (items: ShareDataItem[]): SafariShareInfo => {
   return { url, title, selectedText };
 };
 
-const makeSubmitUrl = (safariShareInfo: SafariShareInfo) => {
+const makeSubmitUrl = (
+  urlAuthority: string,
+  safariShareInfo: SafariShareInfo
+) => {
   const { url, selectedText, title } = safariShareInfo;
-  const submitUrl = new URL("https://www.howdju.com/submit");
+  const submitUrl = new URL(urlAuthority + "/submit/");
   if (url) {
     submitUrl.searchParams.append("url", url);
   }
