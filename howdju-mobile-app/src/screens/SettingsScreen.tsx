@@ -1,15 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Switch, useTheme } from "react-native-paper";
 
 import Text from "@/components/Text";
-import { useIsPreprodApi } from "@/hooks";
+import { IsPreprodSite } from "@/contexts";
 
 export default function SettingsScreen() {
   const theme = useTheme();
-
-  const [isPreprodApi, setIsPreprodApi] = useIsPreprodApi();
-
+  const { isPreprodApi, setIsPreprodApi } = useContext(IsPreprodSite);
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"

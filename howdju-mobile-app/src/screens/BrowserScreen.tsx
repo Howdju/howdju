@@ -1,16 +1,16 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { WebView } from "react-native-webview";
 import type { ShareDataItem } from "react-native-share-menu";
 
 import { inferSubmitUrl } from "@/services/submitUrls";
 import logger from "@/logger";
-import { useHowdjuUrlAuthority } from "@/hooks";
 import { makeRecentActivityUrl } from "@/services/urls";
+import { HowdjuSiteAuthority } from "@/contexts";
 
 export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
   const webViewRef = useRef<WebView | null>(null);
 
-  const authority = useHowdjuUrlAuthority();
+  const authority = useContext(HowdjuSiteAuthority);
   const browserUrl = items.length
     ? inferSubmitUrl(authority, items)
     : makeRecentActivityUrl(authority);

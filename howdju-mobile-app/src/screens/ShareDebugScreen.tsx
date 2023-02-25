@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, ScrollView, StyleSheet, View } from "react-native";
 import { ShareDataItem } from "react-native-share-menu";
 import { useTheme } from "react-native-paper";
@@ -8,7 +8,7 @@ import * as webBrowser from "@/services/webBrowser";
 import ShareDataItemPreview from "@/views/ShareDataItemPreview";
 import { logPromiseError } from "@/util";
 import Text from "@/components/Text";
-import { useHowdjuUrlAuthority } from "@/hooks";
+import { HowdjuSiteAuthority } from "@/contexts";
 
 export default function ShareDebugScreen({
   items,
@@ -18,7 +18,7 @@ export default function ShareDebugScreen({
   extraData?: Record<string, unknown>;
 }) {
   const theme = useTheme();
-  const authority = useHowdjuUrlAuthority();
+  const authority = useContext(HowdjuSiteAuthority);
   const submitUrl = inferSubmitUrl(authority, items);
   const hasItems = !!items && !!items.length;
   const noItemsMessage = (
