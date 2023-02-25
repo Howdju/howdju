@@ -21,7 +21,7 @@
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
     "deploy:ui:pre-prod": "bin/deploy.sh pre-prod",
     "deploy:ui:prod": "bin/deploy.sh prod",
-    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "invalidate:ui:pre-prod": "cross-env NODE_ENV=production DEBUG='*' ../bin/build-and-run-script.sh bin/create-invalidation.js E11GMSE61AJBIL",
     "invalidate:ui:prod": "    cross-env NODE_ENV=production DEBUG='*' ../bin/build-and-run-script.sh bin/create-invalidation.js E3ALDHFXYJRKKJ",
     "lint": "eslint --ignore-path=.gitignore .",

@@ -9,7 +9,7 @@
     "check": "typecheck && lint && check-format && test",
     "check-format": "yarn run prettier --check .",
     "debugger": "react-devtools",
-    "format": "yarn run lint --fix && yarn run prettier --write .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write .",
     "install-pods": "npx pod-install",
     "ios": "react-native run-ios",
     "ios-release": "react-native run-ios --configuration Release",

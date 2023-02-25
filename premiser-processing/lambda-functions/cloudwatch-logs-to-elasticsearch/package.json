@@ -18,6 +18,6 @@
   },
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
-    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore ."
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore ."
   }
 }

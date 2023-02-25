@@ -30,7 +30,7 @@
     "dedupe-writs:prod": "env-cmd -f ../config/prod-local-tunnel.env ../bin/build-and-run-script.sh bin/dedupe-writs.js",
     "deploy:api:pre-prod": "bin/deploy.sh pre-prod",
     "deploy:api:prod": "bin/deploy.sh prod",
-    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "inspect-server": "NODE_ARGS=--inspect-brk yarn run build-and-run-local-server",
     "lint": "eslint --ignore-path=.gitignore .",
     "publish-lambda-function-version": "../bin/build-and-run-script.sh bin/publish-lambda-function-version.js",

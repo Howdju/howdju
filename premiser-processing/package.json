@@ -15,7 +15,7 @@
   "scripts": {
     "build-lambda-function": "npm run lint && gulp --cwd . --gulpfile lambda-functions/gulpfile.js build",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
-    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "publish-lambda-function-version": "node bin/publish-lambda-function-version.js",
     "score-justifications:local": "source ../config/local.env && node bin/score-justifications.js",

@@ -7,7 +7,7 @@
     "build": "node ../../premiser-api/bin/esbuild.js --entryPoint=src/handler.js --outfile=dist/index.js",
     "clean": "rm -rf dist",
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",
-    "format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
+    "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .gitignore .",
     "lint": "eslint --ignore-path=.gitignore .",
     "release": "../bin/release.sh",
     "test": "jest",
