@@ -7,7 +7,7 @@ module.exports = {
     production: {
       // "get smaller bundle size by excluding modules you don't use"
       // (https://callstack.github.io/react-native-paper/docs/guides/getting-started#installation)
-      plugins: ['react-native-paper/babel'],
+      plugins: ["react-native-paper/babel"],
     },
   },
 };
