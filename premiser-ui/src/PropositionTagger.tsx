@@ -50,7 +50,7 @@ const PropositionTagger: React.FC<Props> = (props: Props) => {
     const propositionTagVote = find(votes, (vote) => tagEqual(vote.tag, tag));
     // We can only delete a vote whose ID we have.  We can get here if the user quickly tags and
     // untags
-    // TODO: this sounds like a race condition. If hte user has tagged, then we should wait for
+    // TODO(280) this sounds like a race condition. If the user has tagged, then we should wait for
     // the ID to arrive and then untag based upon the ID.
     if (propositionTagVote?.id) {
       dispatch(api.unTagProposition(propositionTagVote));

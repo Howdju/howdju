@@ -69,8 +69,6 @@ const SubmitSourcExcerptPage = () => {
     dispatch(editors.beginEdit(editorType, editorId, writQuote));
   }
 
-  // TODO add a schema to prevent submission, display errors
-  // TODO display API errors in fields.
   return (
     <div className="md-grid">
       <HowdjuHelmet>

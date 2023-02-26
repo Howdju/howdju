@@ -524,7 +524,7 @@ describe("reducers", () => {
           expect(entities(initialState, action)).toEqual(expectedState);
         });
 
-        // TODO: test 'should handle counter-counter-justifications'
+        // TODO(277): test 'should handle counter-counter-justifications'
       });
 
       describe("api.deleteJustification.response", () => {

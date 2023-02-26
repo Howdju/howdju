@@ -13,8 +13,8 @@ grep -R\
 
 # grep returns 0 if it found matches. It is an error if we found matches.
 if [ $? -eq 0 ] ; then
-  echo Remove all DO_NOT_MERGE before merging;
-  exit 1;
+  echo Remove all DO_NOT_MERGE before merging
+  exit 1
 fi
 
 echo Merge is not blocked by contents.

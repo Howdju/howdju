@@ -9,7 +9,7 @@ import { LocationState, parsePath } from "history";
 import { mainSearch } from "./mainSearchBoxSlice";
 import paths from "../../paths";
 
-describe("mainSearchSlice", () => {
+describe("mainSearchBoxSlice", () => {
   test("should clear the search text when navigating to a non-search page", () => {
     const initialState = { text: "non-empty" };
     const action: LocationChangeAction = {
@@ -43,7 +43,7 @@ describe("mainSearchSlice", () => {
     expect(newState.text).toEqual(text);
   });
 
-  // TODO test 'should load search results on page load'
+  // TODO(281) test 'should load search results on page load'
 
-  // TODO test 'should not load search results on navigation'
+  // TODO(281) test 'should not load search results on navigation'
 });

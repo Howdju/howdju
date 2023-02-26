@@ -39,7 +39,7 @@ interface ValidProps {
 function ValidPropositionUsagesPage({ propositionId }: ValidProps) {
   const dispatch = useAppDispatch();
   useEffect(() => {
-    // TODO: add fetchInternalPropositionAppearances/fetchExternalPropositionAppearances
+    // TODO(20): add fetchInternalPropositionAppearances/fetchExternalPropositionAppearances
     dispatch(api.fetchSentenceStatements("PROPOSITION", propositionId));
     dispatch(api.fetchIndirectPropositionStatements(propositionId));
     dispatch(

@@ -113,11 +113,10 @@ export type EntityEditorFieldsProps<T> = {
  * @param EntityEditorFields The EditorFields class for the entity.
  * @param entityPropName The field on EntityEditorFields for the editEntity
  * @param schemaOrId: Either the Zod schema (preferred) or the ID of the AJV schema to use to validate the entity.
- * @param listItemTranslators An object keyed by callbacks for attributes of
- *   EntityEditorFields that produce callbacks that will dispatch the
- *   correct addListItem/removeListItem editor actions.
- *   TODO: why can't the Fields just dispatch the actions themselves? They can receive the
- *   editorType and editorId.
+ * @param commitConfig An optional commit config describing the API endpoint that commiting uses.
+ *   When provided, the editor supports pre-request validation (prevents submission if the request
+ *   would be invalid.)
+ *   TODO(273): make commit config required
  * @typeparam Props the type of props that EntityEditorFields requires.
  * @typeparam SchemaInput the type of model the editor edits.
  * @typeparam SchemaOutput the output of the schema validation, in case it has refinements.
