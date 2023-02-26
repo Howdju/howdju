@@ -212,7 +212,7 @@ export const accountSettingsSchema = new schema.Entity<AccountSettings>(
  * }
  * ```
  *
- * TODO(1): do we need this?
+ * TODO(266): do we need this?
  */
 export type ExtractSchemaEntity<S> = S extends schema.Entity<infer E>
   ? E

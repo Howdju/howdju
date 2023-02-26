@@ -1,7 +1,12 @@
 import { assign, forEach, isEmpty, isUndefined, toPairs } from "lodash";
 import { match } from "path-to-regexp";
 
-import { apiErrorCodes, isCustomError, toJson } from "howdju-common";
+import {
+  apiErrorCodes,
+  formatZodError,
+  isCustomError,
+  toJson,
+} from "howdju-common";
 import {
   AuthenticationError,
   AuthorizationError,
@@ -44,11 +49,21 @@ export async function routeRequest(
 
   const { route, routedRequest } = selectRoute(appProvider, request);
   try {
-    const result = await route.request.handler(
-      appProvider,
-      routedRequest as any
-    );
-    return ok({ callback, ...result });
+    const parseResult = route.request.schema.safeParse(routedRequest);
+    if (parseResult.success) {
+      const result = await route.request.handler(
+        appProvider,
+        parseResult.data as any
+      );
+      return ok({ callback, ...result });
+    }
+    return badRequest({
+      callback,
+      body: {
+        errorCode: apiErrorCodes.VALIDATION_ERROR,
+        errors: formatZodError<any>(parseResult.error),
+      },
+    });
   } catch (err) {
     if (err instanceof InvalidRequestError) {
       return badRequest({
@@ -176,7 +191,9 @@ export function selectRoute(appProvider: AppProvider, request: Request) {
 
     if ("path" in route) {
       const pathPattern = route.path;
-      const pathMatcher = match(pathPattern, { decode: decodeURIComponent });
+      const pathMatcher = match<Record<string, string>>(pathPattern, {
+        decode: decodeURIComponent,
+      });
       const result = pathMatcher(path);
       if (!result) {
         continue;

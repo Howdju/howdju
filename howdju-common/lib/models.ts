@@ -417,11 +417,6 @@ export const muxCreateJustificationErrors = <
   create: C,
   createErrors: ModelErrors<C>
 ): ModelErrors<ToInput<C>> => {
-  // TODO(1): After we type the CreatePropositionPage, we should be able to figure out why this is
-  // non-null despite the type system
-  if (!createErrors) {
-    return {} as ModelErrors<ToInput<C>>;
-  }
   const basis =
     createErrors.basis &&
     muxCreateJustificationBasisErrors(create.basis, createErrors.basis);

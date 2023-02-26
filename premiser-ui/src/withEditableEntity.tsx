@@ -38,7 +38,7 @@ interface ViewerProps {
 /**
  * HOC for creating an editable entity component
  *
- * @param editorType The type of the editor. TODO(1) can we infer this from EditorComponent?
+ * @param editorType The type of the editor.
  * @param EditorComponent The editor component. Shown when there is an active edit for the editor type and
  *     ID. The component must have a static property editorType of type string|EditorType.
  * @param ViewerComponent The viewer component. Shown when there is no active edit for the editor type and ID.

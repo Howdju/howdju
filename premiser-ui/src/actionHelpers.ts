@@ -86,11 +86,15 @@ function reduxActionsCompatiblePrepare<P>(
 ): PrepareAction<P | Error> {
   return function (...args: any[]) {
     if (args.length > 0 && args[0] instanceof Error) {
-      return {
-        // Pass the error as the payload, to be compatible with redux-actions createAction
-        payload: args[0],
-        error: true,
-      };
+      const payload = args[0];
+      const error = true;
+      // Pass the error as the payload, to be compatible with redux-actions createAction
+      return args.length === 2
+        ? { payload, error, meta: args[1] }
+        : {
+            payload,
+            error,
+          };
     }
     const prepared = prepare(...args);
     return prepared;

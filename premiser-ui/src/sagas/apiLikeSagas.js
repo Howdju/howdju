@@ -12,10 +12,10 @@ export function* deleteJustificationRootTargetTranslator() {
   yield takeEvery(
     str(apiLike.deleteJustificationRootTarget),
     function* deleteJustificationRootTargetWorker(action) {
-      const { rootTargetType, rootTarget } = action.payload;
+      const { rootTargetType, rootTargetId } = action.payload;
       switch (rootTargetType) {
         case JustificationRootTargetTypes.PROPOSITION: {
-          yield put(api.deleteProposition(rootTarget));
+          yield put(api.deleteProposition(rootTargetId));
           break;
         }
         case JustificationRootTargetTypes.STATEMENT: {

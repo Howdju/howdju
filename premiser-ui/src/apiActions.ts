@@ -976,11 +976,11 @@ export const api = {
   deleteProposition: apiActionCreator(
     "DELETE_PROPOSITION",
     serviceRoutes.deleteProposition,
-    (proposition: PropositionRef) => ({
+    (propositionId: EntityId) => ({
       config: {
-        pathParams: { propositionId: proposition.id },
+        pathParams: { propositionId: propositionId },
       },
-      meta: { propositionId: proposition.id },
+      meta: { propositionId: propositionId },
     })
   ),
 
@@ -1120,7 +1120,7 @@ export const api = {
       config: {
         pathParams: { justificationId: justification.id },
       },
-      meta: { justification },
+      meta: { justification, justificationId: justification.id },
     })
   ),
 
