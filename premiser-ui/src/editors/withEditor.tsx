@@ -50,7 +50,6 @@ import { useAppDispatch } from "@/hooks";
 import { ServiceRoute } from "howdju-service-routes";
 
 export class CommitThenPutAction {
-  // TODO(1): make specific to actions: ReturnType<ActionCreator> ActionCreator in keyof Group in keyof actions
   action: AnyAction;
   constructor(action: AnyAction) {
     this.action = action;
@@ -251,7 +250,7 @@ export default function withEditor<
       errors,
       wasSubmitAttempted,
       onKeyDown,
-      // TODO(1): can we remove this typecast? https://stackoverflow.com/questions/74072249/
+      // There appears to be no way around this typecast https://stackoverflow.com/questions/74072249/
     } as unknown as Props;
 
     return (

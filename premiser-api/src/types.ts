@@ -1,4 +1,5 @@
-import { AuthToken, HttpMethod, HttpStatusCode } from "howdju-common";
+import { HttpMethod, HttpStatusCode } from "howdju-common";
+import { Authed, Body } from "howdju-service-routes";
 
 export interface RequestIdentifiers {
   clientRequestId?: string;
@@ -6,19 +7,17 @@ export interface RequestIdentifiers {
   serverRequestId?: string;
 }
 
-export interface Request {
+export type Request<B = any> = {
   requestIdentifiers: RequestIdentifiers;
   clientIdentifiers: {
     sessionStorageId: string | undefined;
     pageLoadId: string | undefined;
   };
+  queryStringParams: Record<string, string | undefined>;
   path: string;
   method: HttpMethod;
-  queryStringParams: Record<string, string | undefined>;
-  authToken: AuthToken | undefined;
-  // TODO(1) add a generic parameter `Body extends Record<string, any>`.
-  body: Record<string, any>;
-}
+} & Partial<Authed> &
+  Body<B>;
 
 export type ApiCallback = ({
   httpStatusCode,

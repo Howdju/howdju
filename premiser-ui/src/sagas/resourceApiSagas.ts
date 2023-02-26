@@ -34,16 +34,18 @@ export function* callApiForResource(action: AnyApiAction) {
   const responseActionCreator =
     apiActionCreatorsByActionType[action.type].response;
 
+  const {
+    endpoint,
+    fetchInit,
+    normalizationSchema,
+    canSkipRehydrate,
+    cancelKey,
+  } = action.payload;
+  const responseMeta = {
+    normalizationSchema,
+    requestMeta: "meta" in action ? action.meta : undefined,
+  };
   try {
-    // TODO(1): Move cancelation action creators out of api.
-    const {
-      endpoint,
-      fetchInit,
-      normalizationSchema,
-      canSkipRehydrate,
-      cancelKey,
-    } = action.payload;
-
     if (cancelKey) {
       const prevTask = cancelableResourceCallTasks[cancelKey];
       if (prevTask) {
@@ -63,15 +65,11 @@ export function* callApiForResource(action: AnyApiAction) {
       delete cancelableResourceCallTasks[cancelKey];
     }
 
-    const responseMeta = {
-      normalizationSchema,
-      requestMeta: "meta" in action ? action.meta : undefined,
-    };
     return yield* put(
       responseActionCreator(apiResultAction.payload, responseMeta)
     );
   } catch (error) {
-    return yield* put(responseActionCreator(error));
+    return yield* put(responseActionCreator(error, responseMeta));
   } finally {
     if (yield* cancelled()) {
       logger.debug(`Canceled ${action.type}`);
@@ -80,7 +78,7 @@ export function* callApiForResource(action: AnyApiAction) {
 }
 
 export function* cancelResourceApiCalls() {
-  // TODO(1): move cancel onto the API action creator to avoid toil of adding them here?
+  // TODO(264): move cancel onto the API action creator to avoid toil of adding them here?
   yield takeEvery(
     [
       cancelPropositionTextSuggestions,
@@ -105,7 +103,7 @@ export function* cancelResourceApiCalls() {
       const { cancelKey } = targetAction.payload;
       if (!cancelKey) {
         logger.error(
-          `Unablet to infer cancelKey for cancelTargetType ${cancelTarget}`
+          `Unable to infer cancelKey for cancelTargetType ${cancelTarget}`
         );
         return;
       }

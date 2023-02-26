@@ -55,18 +55,20 @@ const widgetDeleteResponseReducer =
   <T extends BaseListEntitiesState>(
     defaultWidgetState: T,
     entitiesWidgetStateKey: string,
-    entitiesResultKey: string
+    deletedEntityRequestMetaKey: string
   ) =>
   (state: Record<string, T>, action: AnyAction) => {
+    // TODO(263) widgetId will not be present on delete action's meta.
     const widgetId = action.meta.requestMeta.widgetId;
+    const deletedEntityId =
+      action.meta.requestMeta[deletedEntityRequestMetaKey];
     const widgetState = get(state, widgetId, defaultWidgetState);
     const newWidgetState = {
       [entitiesWidgetStateKey]: filter(
         widgetState[entitiesWidgetStateKey as keyof T] as ArrayLike<{
           id: string;
         }>,
-        // TODO(1): does payload.result exist? Above we are normalizing the response payload.
-        (e) => e.id !== action.payload.result[entitiesResultKey].id
+        (e) => e.id !== deletedEntityId
       ),
     };
 
@@ -123,7 +125,7 @@ export default handleActions<
       next: widgetDeleteResponseReducer(
         defaultRecentPropositionsWidgetState,
         "recentPropositions",
-        "propositions"
+        "propositionId"
       ),
     },
     [str(api.fetchRecentWrits)]: widgetRequestReducer(
@@ -163,7 +165,7 @@ export default handleActions<
       next: widgetDeleteResponseReducer(
         defaultRecentJustificationsWidgetState,
         "recentJustifications",
-        "justifications"
+        "justificationId"
       ),
     },
   },

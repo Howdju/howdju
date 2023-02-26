@@ -28,7 +28,12 @@ export interface RequestOptions {
   headers: Record<string, string>;
 }
 
-export function request({ endpoint, method, body, headers }: RequestOptions) {
+export function sendRequest({
+  endpoint,
+  method,
+  body,
+  headers,
+}: RequestOptions) {
   const controller = new AbortController();
 
   const requestId = newId();

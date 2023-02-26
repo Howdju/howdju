@@ -23,7 +23,6 @@ import * as actionCreatorsUntyped from "./actions";
 import getSagas from "./sagas";
 import { toString } from "lodash";
 
-// TODO(1): Remove typecasting.
 const actionCreators = actionCreatorsUntyped as unknown as {
   [key: string]: ActionCreator<any>;
 };

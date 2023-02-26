@@ -303,7 +303,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
   deleteRootTarget = () => {
     this.props.apiLike.deleteJustificationRootTarget(
       this.props.rootTargetType,
-      this.props.rootTarget
+      this.props.rootTarget.id
     );
   };
 

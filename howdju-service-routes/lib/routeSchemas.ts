@@ -5,7 +5,7 @@ import { z } from "zod";
 export const Authed = z.object({
   authToken: z.string(),
 });
-type Authed = z.infer<typeof Authed>;
+export type Authed = z.infer<typeof Authed>;
 
 /** A request schema mixin for routes receiving path parameters. */
 export const PathParams = function <U extends string, T extends [U, ...U[]]>(

@@ -444,7 +444,7 @@ function toContextTrailItem(state: RootState, item: MaybeContextTrailItemInfo) {
     };
   }
   const storeKey = entitiesStoreKeyByJustificationTargetType[targetType];
-  // TODO(1): remove typecast
+  // TODO(261): remove typecast if we type the entities reducer/state.
   const target: JustificationRootTarget | undefined = (
     state.entities[storeKey] as any
   )?.[targetId];

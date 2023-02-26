@@ -2,7 +2,7 @@ import { put, call, select } from "redux-saga/effects";
 import cloneDeep from "lodash/cloneDeep";
 import isEmpty from "lodash/isEmpty";
 
-import { request } from "../api";
+import { sendRequest } from "../api";
 import { selectAuthToken } from "../selectors";
 import { callApiResponse } from "../apiActions";
 import { tryWaitOnRehydrate } from "./appSagas";
@@ -18,8 +18,8 @@ export function* callApi(endpoint, fetchInit = {}, canSkipRehydrate = false) {
     fetchInit = cloneDeep(fetchInit);
     fetchInit.headers = yield* constructHeaders(fetchInit);
 
-    const result = yield call(request, { endpoint, ...fetchInit });
-    return yield put(callApiResponse(result));
+    const responseData = yield call(sendRequest, { endpoint, ...fetchInit });
+    return yield put(callApiResponse(responseData));
   } catch (error) {
     return yield put(callApiResponse(error));
   }

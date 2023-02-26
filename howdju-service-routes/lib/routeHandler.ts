@@ -16,15 +16,10 @@ export function handler<
   S extends z.ZodType<T, z.ZodTypeDef>,
   R,
   T = InferRequest<S>
->(schema: S, impl: (provider: ServicesProvider, request: T) => Promise<R>) {
+>(schema: S, handler: (provider: ServicesProvider, request: T) => Promise<R>) {
   return {
     schema,
-    handler: async function handleRequest(
-      provider: ServicesProvider,
-      request: T
-    ) {
-      return await impl(provider, schema.parse(request));
-    },
+    handler,
   };
 }
 

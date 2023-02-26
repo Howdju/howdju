@@ -881,7 +881,7 @@ export type CreateCounterJustificationBasis =
 const justificationVotePolarities = z.enum(["POSITIVE", "NEGATIVE"]);
 export const JustificationVote = Entity.extend({
   polarity: justificationVotePolarities,
-  // TODO(1): replace justificationId with justification.id.
+  // TODO(256): replace justificationId with justification.id.
   justificationId: z.string(),
   justification: JustificationRef,
 });

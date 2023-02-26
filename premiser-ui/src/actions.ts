@@ -19,7 +19,6 @@ import {
   Source,
   Target,
   ExtensionAnnotationContent,
-  JustificationRootTargetViewModel,
 } from "howdju-client-common";
 
 import { EditorEntity, EditorType } from "./reducers/editors";
@@ -53,10 +52,10 @@ export { api } from "./apiActions";
 export const apiLike = {
   deleteJustificationRootTarget: createAction(
     "DELETE_JUSTIFICATION_ROOT_TARGET",
-    (
-      rootTargetType: JustificationRootTargetType,
-      rootTarget: JustificationRootTargetViewModel
-    ) => ({ rootTargetType, rootTarget })
+    (rootTargetType: JustificationRootTargetType, rootTargetId: EntityId) => ({
+      rootTargetType,
+      rootTargetId,
+    })
   ),
   fetchJustificationTargets: createAction(
     "FETCH_JUSTIFICATION_TARGETS",

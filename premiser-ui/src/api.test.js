@@ -1,5 +1,6 @@
-const axiosInstance = { request: jest.fn() };
 import Axios from "axios";
+
+const axiosInstance = { request: jest.fn() };
 Axios.create = () => axiosInstance;
 
 beforeEach(() => {
@@ -19,7 +20,12 @@ describe("api", () => {
       })
     );
 
-    const result = await api.request({ endpoint: "blah" });
+    const result = await api.sendRequest({
+      endpoint: "blah",
+      method: "GET",
+      headers: {},
+      body: "",
+    });
 
     expect(result).toEqual(propositions);
   });
