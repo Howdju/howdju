@@ -12,6 +12,7 @@
     "check:pushed": "bin/check-pushed.sh",
     "check:committed": "node bin/check-committed.mjs",
     "check:do-not-merge": "echo check:do-not-merge && bin/check-do-not-merge.sh && echo check:do-not-merge succeeded || {echo check:do-not-merge failed; exit 1}",
+    "check:todo-format": "echo check:todo-format && bin/check-todo-format.sh && echo check:todo-format succeeded || {echo check:todo-format failed; exit 1}",
     "check:pre-deploy": "bin/pre-deploy-check.sh",
     "check-build:all": "echo check-build:all && yarn workspaces foreach -Apv run check-build && echo check-build:all succeeded || {echo check-build:all faied; exit 1}",
     "check-format": "yarn run prettier --check --ignore-path .gitignore jest lambdas/bin",
