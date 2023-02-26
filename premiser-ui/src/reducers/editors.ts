@@ -121,8 +121,6 @@ export type DirtyFields<T> = RecursiveObject<T, typeof dirtyProp, boolean>;
 
 /**
  * Something we have an editor for.
- *
- * TODO: deduplicate this with *EditModels.
  */
 export type EditorEntity =
   | CreatePropositionInput
@@ -136,7 +134,7 @@ export type EditorEntity =
   | CreateRegistrationConfirmationInput;
 /**
  * @typeparam T the editor model type.
- * @typeparam U the request model type. TODO add FromInput<> mirroring ToInput.
+ * @typeparam U the request model type.
  */
 export interface EditorState<
   T extends EditorEntity,
@@ -146,7 +144,7 @@ export interface EditorState<
   /**
    * The model the editor is editing.
    *
-   * TODO rename to editModel, since JustifiedSentence is not an entity.
+   * TODO(278) rename to editModel, since JustifiedSentence is not an entity.
    */
   editEntity?: T;
   blurredFields?: BlurredFields<T>;
@@ -194,7 +192,7 @@ export interface AddListItemPayload {
   itemFactory: () => Entity;
 }
 
-/** @deprecated TODO(#83): replace with addListItem/removeListItem */
+/** @deprecated TODO(83): replace with addListItem/removeListItem */
 const makeAddAtomReducer =
   <T extends EditorEntity, U>(atomsPath: string, atomMaker: ModelFactory) =>
   (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
@@ -210,7 +208,7 @@ const makeAddAtomReducer =
     insertAt(atoms, index, atomMaker());
   };
 
-/** @deprecated TODO(#83): replace with addListItem/removeListItem */
+/** @deprecated TODO(83): replace with addListItem/removeListItem */
 const makeRemoveAtomReducer =
   <T extends EditorEntity, U>(atomsPath: string) =>
   (state: WritableDraft<EditorState<T, U>>, action: AnyAction) => {
@@ -635,7 +633,7 @@ const editorReducerByType: {
                 };
               }
               case apiErrorCodes.VALIDATION_ERROR: {
-                // TODO: remove typecast. CustomError should put custom props on a subfield
+                // TODO(279): remove typecast. CustomError should put custom props on a subfield
                 // rather than on the whole field (`.body` comes from newApiResponseError.)
                 const errors = (sourceError as any).body.errors.credentials;
                 return { ...state, errors, isSaving: false };

@@ -209,7 +209,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       rootTarget: { id: entityId },
     } = this.props;
     const url = window.location.href;
-    // TODO: replace this with this.props.flows.startContentReport({entityType, entityId, url}) that
+    // TODO(272): replace this with this.props.flows.startContentReport({entityType, entityId, url}) that
     // encapsulates the showing of the dialog, the starting of the edit, and the creation of the
     // form input model
     this.props.editors.beginEdit(

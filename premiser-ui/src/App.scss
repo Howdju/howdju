@@ -98,7 +98,7 @@ strong {
 #app-nav-drawer {
   width: min(400px, $md-drawer-desktop-width);
 
-  // TODO make this more like the left-nav rules
+  // TODO(276) make this more like the left-nav rules
   // The left nav drawer's rules are:
   // On mobile devices, the width of the drawer will be calc(100vw - 56px) and a max width of 320px.
   // On tablets and desktop screens, the width will be equal to the $md-drawer-tablet-width and $md-drawer-desktop-width but no more than 400px.

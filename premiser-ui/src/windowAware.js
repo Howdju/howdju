@@ -15,7 +15,7 @@ export default function windowAware(WrappedComponent) {
     WrappedComponent
   )})`;
 
-  // TODO why can't this be pure?  (Otherwise React is not re-rendering wrapped components)
+  // TODO(275) why can't this be pure?  (Otherwise React is not re-rendering wrapped components)
   return connect(mapStateToProps, null, null, { pure: false })(WindowAware);
 }
 

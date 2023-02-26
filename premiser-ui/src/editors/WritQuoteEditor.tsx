@@ -10,6 +10,7 @@ const WritQuoteEditor = withEditor(
   WritQuoteEditorFields,
   "writQuote",
   UpdateWritQuoteInput
+  // TODO(273): add commit config
 );
 
 export default WritQuoteEditor;
