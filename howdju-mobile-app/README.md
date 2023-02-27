@@ -84,6 +84,9 @@ Basically, follow [these steps](https://reactnative.dev/docs/publishing-to-app-s
 
 1. Remove `NSExceptionDomains` from HowdjuApp `Info.plist`.
 1. Configure Release scheme
+1. Increment "Bundle version string (short)" (`1.1`, `1.2`, … or `1`, `2`, …) and update Bundle version (`1`, `2`,
+   … or `20230126.0`, `20230126.1`, …, `20230127.0`, …) in
+   the app's Info.plist
 1. Build, Archive, Distribute
 
 ## Adding a new native dependency
