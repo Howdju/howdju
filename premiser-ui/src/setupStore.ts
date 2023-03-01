@@ -64,7 +64,8 @@ export const setupStore = (
             // The normalization schemas are convenient to have, but non-serializable. We could also
             // include a string identifier/descriptor of the normalization schema and look it up
             // when we need it.
-            "meta.apiConfig.normalizationSchema",
+            // TODO(154) remove these ignores
+            "payload.normalizationSchema",
             "meta.normalizationSchema",
           ],
         },
