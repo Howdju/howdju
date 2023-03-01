@@ -891,8 +891,13 @@ export const api = {
   unTag: apiActionCreator(
     "UN_TAG",
     serviceRoutes.deleteTagVote,
-    (tagVote: TagVoteRef) => ({
-      pathParams: { tagVoteId: tagVote.id },
+    (prevTagVote: TagVoteRef) => ({
+      config: {
+        pathParams: { tagVoteId: prevTagVote.id },
+      },
+      meta: {
+        prevTagVote,
+      },
     })
   ),
 
@@ -949,8 +954,13 @@ export const api = {
   unTagProposition: apiActionCreator(
     "UN_TAG_PROPOSITION",
     serviceRoutes.deletePropositionTagVote,
-    (propositionTagVote: PropositionTagVoteOut) => ({
-      pathParams: { propositionTagVoteId: propositionTagVote.id },
+    (prevPropositionTagVote: PropositionTagVoteOut) => ({
+      config: {
+        pathParams: { propositionTagVoteId: prevPropositionTagVote.id },
+      },
+      meta: {
+        prevPropositionTagVote,
+      },
     })
   ),
 

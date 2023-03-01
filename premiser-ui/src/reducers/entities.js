@@ -514,7 +514,7 @@ function optimisticPropositionTagVote(state, action) {
   const {
     propositionTagVote: optimisticPropositionTagVote,
     prevPropositionTagVote,
-  } = action.payload;
+  } = action.meta;
 
   const propositionId = optimisticPropositionTagVote.proposition.id;
   const proposition = state.propositions[propositionId];
@@ -556,7 +556,7 @@ function optimisticPropositionTagVote(state, action) {
 }
 
 function optimisticPropositionTagUnvote(state, action) {
-  const { prevPropositionTagVote } = action.payload;
+  const { prevPropositionTagVote } = action.meta;
   const {
     proposition: { id: propositionId },
   } = prevPropositionTagVote;
