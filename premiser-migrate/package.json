@@ -4,7 +4,7 @@
   "description": "Migrate from old Howdju",
   "main": "index.js",
   "author": "Carl Gieringer <carl@howdju.com>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "migrate:local": "node bin/migrate-howdju.js",
     "migrate:prod": "NODE_ENV=production node bin/migrate-howdju.js"

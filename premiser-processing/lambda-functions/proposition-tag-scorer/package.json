@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "pg": "^7.2.0"
   },
