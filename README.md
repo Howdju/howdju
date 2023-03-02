@@ -1,6 +1,6 @@
 # Howdju source code
 
-This repository contains client and server code for the Howdju platform.
+This repository contains client and server code for the [Howdju](https://www.howdju.com) platform.
 
 ## Automation status
 
@@ -12,6 +12,10 @@ This repository contains client and server code for the Howdju platform.
 [Howdju](https://www.howdju.com) is a platform for analyzing and sharing critical analysis of
 claims using evidence. The content is currently user-generated, and we hope to augment users'
 actions with machine learning.
+
+## Reporting issues
+
+- [bugs](https://github.com/Howdju/howdju/labels/bug)
 
 ## Slack
 
@@ -45,14 +49,14 @@ is now the preferred name.
 
 If you'd like to contribute to Howdju, great! Please feel free to join our Slack to introduce
 yourself and chat about what interests you. If you're specifically interested in contributing code
-change to Howdju's source code, please see our Contributor guidelines.
+changes to Howdju's source code or issues to this repository, please see our [Contributor guidelines](https://github.com/Howdju/howdju/blob/master/CONTRIBUTING.md).
 
 ## Code layout
 
 This repository is a monorepo based on Yarn berry workspaces. This diagram shows the high level
 dependencies between the packages:
 
-![](https://raw.githubusercontent.com/Howdju/howdju/master/docs/Howdju%20Monorepo%20Package%20Dependencies.drawio.png?token=GHSAT0AAAAAABYMGSPWSANRYRI5BMRJO35YZAAGEQA)
+![package dependency diagram](https://raw.githubusercontent.com/Howdju/howdju/master/docs/Howdju%20Monorepo%20Package%20Dependencies.drawio.png?token=GHSAT0AAAAAABYMGSPWSANRYRI5BMRJO35YZAAGEQA)
 
 - `howdju-common`: code common to client and server runtimes. Any package can depend on this
   package. It includes:
