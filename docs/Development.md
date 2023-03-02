@@ -178,6 +178,30 @@ You can also run `yarn run check:everything`.
 
 ## Development
 
+### DCO commits
+
+As explained in our CONTRIBUTORS guide, all code contributions must include a
+certification of the ["Developer Certificate of
+Origin"](https://developercertificate.org/). Our PR checks will fail if you
+forget to do so. You can do this by adding the `--signoff` flag to your commits. Please
+note that adding this flag to your commits and contributing them to Howdju
+indicates a legal certification on your part. Refer to our CONTRIBUTORS guide
+for details.
+
+You can amend an existing commit to have the DCO like:
+
+```sh
+git commit --amend --no-edit -signoff
+```
+
+You can amend multiple parent commits to have the DCO like:
+
+```sh
+git rebase --signoff <mergeBaseSha>
+```
+
+Where `<mergeBaseSha>` must be the _parent_ of the first commit in your chain of commits.
+
 ### Git branch workflow
 
 #### Basic feature workflow
@@ -191,7 +215,7 @@ git pull --ff-only
 # number of the bug corresponding to your work. We strongly encourage creating bugs for any work.
 gco -b features/n-feature-slug
 # Make your changes and commit
-git commit
+git commit -s
 # ...more commits...
 git push --set-upstream origin <branchName>
 # Visit link output by push command to open a PR
@@ -237,9 +261,9 @@ git rebase -i HEAD~n
 # Make changes
 
 # Either amend the commit
-git commit --amend --no-edit
+git commit -s --amend --no-edit
 # or add new commits
-git commit
+git commit -s
 
 # Update the PR branch to be the new commit
 git branch -f <branch-name> HEAD

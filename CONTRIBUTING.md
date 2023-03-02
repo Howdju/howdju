@@ -6,7 +6,11 @@
 
 This repository enforces the ["Developer Certificate of Origin"](https://developercertificate.org/)
 (DCO), which means that authors must add a
-`Signed-off-by` line to their commit messages certifying the DCO for their contribution.
+`Signed-off-by` line to their commit messages certifying the DCO for their contribution. Please read
+[the DCO](https://developercertificate.org/); it's short and important.
+
+This means that all your commits must include a statement certifying the DCO. You can do this with
+Git like `git commit --signoff ...`.
 
 If your employement agreement contains a copyright assignment, it may prevent you from legally
 certifying the DCO. Please consult your HR or legal department to determine if such a restriction

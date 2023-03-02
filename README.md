@@ -56,7 +56,7 @@ changes to Howdju's source code or issues to this repository, please see our [Co
 This repository is a monorepo based on Yarn berry workspaces. This diagram shows the high level
 dependencies between the packages:
 
-![package dependency diagram](https://raw.githubusercontent.com/Howdju/howdju/master/docs/Howdju%20Monorepo%20Package%20Dependencies.drawio.png?token=GHSAT0AAAAAABYMGSPWSANRYRI5BMRJO35YZAAGEQA)
+![package dependency diagram](https://raw.githubusercontent.com/Howdju/howdju/master/docs/diagrams/Howdju%20Monorepo%20Package%20Dependencies.drawio.png?token=GHSAT0AAAAAABYMGSPWSANRYRI5BMRJO35YZAAGEQA)
 
 - `howdju-common`: code common to client and server runtimes. Any package can depend on this
   package. It includes:
