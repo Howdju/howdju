@@ -4,7 +4,7 @@
   "description": "Common test utilities",
   "main": "lib/index.ts",
   "author": "carl.gieringer@gmail.com",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",

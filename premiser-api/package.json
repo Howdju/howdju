@@ -5,7 +5,7 @@
   "main": "./src/index.ts",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "../bin/build-and-run-script.sh bin/esbuild.js",
     "build-and-run-local-server": "../bin/build-and-run-script.sh bin/esbuild-local-server.js",

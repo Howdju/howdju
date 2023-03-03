@@ -14,7 +14,7 @@
     "test-inspect": "node --inspect-brk ../../node_modules/.bin/jest --runInBand --watch"
   },
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.912.0",
     "howdju-service-common": "workspace:howdju-service-common"

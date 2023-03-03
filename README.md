@@ -1,542 +1,129 @@
-# Howdju monorepo
+# Howdju source code
 
-This repository contains client and server code for the Howdju platform.
+This repository contains client and server code for the [Howdju](https://www.howdju.com) platform.
 
-## Status
+## Automation status
 
 - [![CI](https://github.com/Howdju/howdju/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/Howdju/howdju/actions/workflows/ci.yml)
 - [![Deploy to preprod](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml/badge.svg?branch=master&event=workflow_run)](https://github.com/Howdju/howdju/actions/workflows/deploy-preprod.yml)
 
-## Prerequisites
+## Introduction
 
-### Install node
+[Howdju](https://www.howdju.com) is a platform for analyzing and sharing critical analysis of
+claims using evidence. The content is currently user-generated, and we hope to augment users'
+actions with machine learning.
 
-Install node and yarn:
+## Reporting issues
 
-```shell
-brew install nodenv
-nodenv init
-nodenv install 14.16.0
-# Activates this node version just for this shell via an env. var
-nodenv shell 14.16.0
-npm install -g yarn
-```
+- [bugs](https://github.com/Howdju/howdju/labels/bug)
 
-The correct node version automatically activates due to the `.node-version` file.
+## Slack
 
-### Install dependencies
+You can [join our
+Slack](https://join.slack.com/t/howdju/shared_invite/zt-1qbfzlfsj-YRswgQ5RCLDHelef6ya6xg) to discuss
+Howdju with other useres and the site maintainers.
 
-This project uses Yarn workspaces to allow packages to depend on each other during development and to share
-dependencies.
+## Code history
 
-```shell
-yarn install
-```
+The Howdju code base has undergone a few transformations, and since it is currently a prototype for
+exploring features, we have not thoroughly completed all refactorings/cleanups/migrations. This
+section describes major in-progress projects to provide the context for inconsistencies you may find.
 
-### Password management
+### TypeScript migration
 
-- Use a password manager.
-- Memorize your: computer password, email password, and password manager password.
-- Store all non-memorized passwords in your password manager.
-- Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
-  manager.
-- Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like
-  `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if you can't copy-paste for some
-  reason) and can be easy to remember, if you make up an image or story that goes along with the password. So, for this
-  example password, you might imagine a tongue licking a gardenia flower, agreeing with it with a soft whispering
-  voice. (See [XKCD](https://xkcd.com/936/).) It's important that you allow a professional password manager
-  auto-generate these phrases, and that you not iterate through multiple choices to select one that is easy to remember,
-  as this decreases the effective search space of the generated passwords. Instead, come up with a mental image to help
-  you remember the words. The more silly or ridiculous, the easier it may be to remember.
-- Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator.
+The code base is a little over half TypeScript now and includes TypeScript examples for most major
+components. See #1 for details on the initial migration effort and [issues in the `ts-migration`
+label](https://github.com/Howdju/howdju/labels/ts-migration) for substantial planned effort.
 
-### Install `aws-vault`
+### Zod validation
 
-[`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
-development environment. You'll need an AWS admin to provide your AWS username, access key, and secret access key.
+All of Howdju's entities are defined using [Zod](https://zod.dev/). Zod is also our preferred
+validation library. See #26 for the status of migrating previous data validation definitions to Zod.
 
-```shell
-brew install --cask aws-vault
-aws-vault add username@howdju
-```
+### Premiser name
 
-Update `~/.aws/config`:
+We initially considered Premiser as a name for Howdju, and so some packages have this name. Howdju
+is now the preferred name.
 
-```ini
-[default]
-region = us-east-1
+## Contributing guide
 
-[profile username@howdju]
-mfa_serial = arn:aws:iam::007899441171:mfa/username
-```
+If you'd like to contribute to Howdju, great! Please feel free to join our Slack to introduce
+yourself and chat about what interests you. If you're specifically interested in contributing code
+changes to Howdju's source code or issues to this repository, please see our [Contributor guidelines](https://github.com/Howdju/howdju/blob/master/CONTRIBUTING.md).
 
-#### Running commands using aws-vault
+## Code layout
 
-Logging in:
+This repository is a monorepo based on Yarn berry workspaces. This diagram shows the high level
+dependencies between the packages:
 
-```shell
-aws-vault login username@howdju --duration 2h
-```
+![package dependency diagram](https://raw.githubusercontent.com/Howdju/howdju/master/docs/diagrams/Howdju%20Monorepo%20Package%20Dependencies.drawio.png?token=GHSAT0AAAAAABYMGSPWSANRYRI5BMRJO35YZAAGEQA)
 
-Running commands with your credentials:
+- `howdju-common`: code common to client and server runtimes. Any package can depend on this
+  package. It includes:
+  - Entity definitions
+  - Validation
+- `howdju-service-common`: code common to server runtimes. Most of our server-side business logic
+  lives here including:
+  - Services
+  - Daos
+- `howdju-service-routes`: strongly typed definitions of server-side routes. Used by both clients
+  and services. Clients should only depend on the types and request schemas. Client builds must
+  disallow dependencies on
+- `premiser-api`: AWS lambda for API requests/responses. Initialization, gateway event handler, and
+  logic is deferred to the selected route.
+- `lambdas/howdju-message-handler`: SNS handler for async event handling.
+- `howdju-client-common`: code common to clients.
+- `premiser-ui`: React web app for howdju.com
+- `premiser-ext`: Chrome web extension ([Chrome web store
+  page](https://chrome.google.com/webstore/detail/howdju-extension/gijlmlebhfiglpgdlgphbmaamhkchoei/))
+- `howdju-mobile-app`: React native mobile app.
 
-```shell
-aws-vault exec username@howdju -- terraform apply
-```
+Missing from the diagram are:
 
-See `aws-vault`'s [USAGE](https://github.com/99designs/aws-vault/blob/master/USAGE.md) page for more.
+- `eslint-config-howdju`: shared ESLint config.
+- `howdju-ajv-sourced`: deprecated package for AJV validation.
+- `howdju-elastic`: docker image definitions for custom Elasticsearch/Kibana (currently inactive)
+- `howdju-ops`: utilities for deploying and maintaining service operations.
+- `howdju-test-common`: code shared between tests.
+- `infra`: Terraform definitions for our cloud services.
+- `premiser-migrate`: legacy one-time migration code from a previous persistence format.
+- `premiser-processing`: legacy infra for two lambdas that execute on a schedule. New lambdas should
+  follow the pattern of `lambdas/howdju-message-handler`.
 
-### SSH access
+## System architecture
 
-Upload your public key named like `username.pub` to `s3://howdju-bastion-logs/public-keys/`. (The username for the
-bastion host need not match your AWS username, but it should for simplicity.) The bastion host refreshes
-from these every 5 minutes.
+The howdju.com web app consists of these parts:
 
-Generate a new SSH key:
+- An HTML bootstrap page served from an S3 bucket which loads
+- A single JS bundle served from Cloudfront that calls
+- A monolithic AWS lambda behind AWS API Gateway.
+- Persistance is in AWS RDS Postgres.
 
-```shell
-ssh-keygen -t ed25519 -C "username@howdju.com"
-```
+## Code architecture
 
-Update `~/.ssh/config`:
+The following sections briefly discuss the major components and dependencies of our clients and services.
 
-```ssh
-Host *
-  AddKeysToAgent yes
-  UseKeychain yes
-  IdentityFile ~/.ssh/id_ed25519
+### Web app
 
-Host bastion.howdju.com
-  User username
-```
+The web app uses react-navigation to select pages. The pages dispatch Redux actions handled by Redux
+reducers and redux-saga (for asynchronous handling.) It calls the API using Axios. It normalizes entities using
+normalizr.
 
-### Prepare a local database server
+### API
 
-TODO(#54): update this process to use a snapshot file.
+The API has bespoke request routing supporting strongly-typed routing in clients. The route handlers
+should contain minimal logic and call Services to fulfill the request. Services contain our business
+logic and call DAOs for persistence.
 
-```shell
-cd premiser-api
-yarn run db:tunnel
+## Tests
 
-# in another terminal:
-pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
-pg_dump -h 127.0.0.1 -p 5433 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
-# you can kill `yarn run db:tunnel` once this completes
+Growing test coverage, including UI and Service/DB integration tests. See our [testing
+section](https://github.com/Howdju/howdju/blob/master/docs/Development.md#testing) in the
+development docs.
 
-# In any available terminal (fill in a password for the postgres user):
-printf 'Enter Postgres superuser password:'; read -s POSTGRES_SUPERUSER_PASSWORD
-docker run -d -p 5432:5432 --name premiser_postgres -e POSTGRES_PASSWORD=$POSTGRES_SUPERUSER_PASSWORD postgres:12.5
+## Affiliations
 
-# If you want to see the output from the db, either omit -d from the run command or run:
-docker logs premiser_postgres --follow
-
-# In any available terminal, run the following:
-
-# Choose a premiser_api password and update the config/local*.env files
-psql --echo-all -h localhost -U postgres < db/create-users.sql
-echo 'create database premiser;' | psql -h localhost -U postgres
-psql --echo-all -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
-psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_name
-rm $pg_dump_file_name
-```
-
-## Running the platform locally
-
-Do each of the following in different terminal windows.
-
-### Run and connect to the database
-
-```shell
-docker restart premiser_postgres
-yarn run db:local:shell
-```
-
-### Running the API
-
-```shell
-yarn run start:api:local
-```
-
-### Run the web app
-
-```shell
-yarn run start:ui:local
-```
-
-### Visit the app
-
-Open browser to localhost:3000
-
-## Automatic code checks
-
-The most precise way to run automated checks is to run the
-Github premerge action. See [Testing Github actions](#testing-github-actions)
-below.
-
-You can also run `yarn run check:everything`.
-
-## Development
-
-### Git branch workflow
-
-#### Basic feature workflow
-
-```bash
-# Start from the main branch
-git checkout master
-# Updates should always be fast-forwards because we enforce linear history.
-git pull --ff-only
-# Always develop on a branch. We prefix all development branches with `features/n-` where `n` is the
-# number of the bug corresponding to your work. We strongly encourage creating bugs for any work.
-gco -b features/n-feature-slug
-# Make your changes and commit
-git commit
-# ...more commits...
-git push --set-upstream origin <branchName>
-# Visit link output by push command to open a PR
-```
-
-We enforce 'squash and merge' for our PRs so that we have a linear history and
-so that mainline commits are easier to scan.
-
-#### Working on top of a PR branch
-
-Often you'll want to build on top of changes that are in a PR. This is fine, but
-requires some additional steps.
-
-```bash
-# Assuming that HEAD is your PR branch
-
-# Make sure you start a new branch.
-gco -b features/n-feature-slug
-
-# ...commit changes...
-
-# You can push your changes and start a PR, but I think it won't be mergeable
-# until you rebase onto master. You should select the previous feature /
-# parent PR branch as the new PR's base branch.
-
-git fetch origin master:master
-
-# To prepare your branch for merging, rebase onto master:
-# git rebase --onto master parentCommitExclusive branchName
-git rebase --onto master <previousFeatureBranch> <currentFeatureBranch>
-
-git push -f
-```
-
-#### Editing a PR that you are also working on top of
-
-In order to respond to PR comments with edits for a PR you are working on top of, you'll need an
-interactive rebase.
-
-```bash
-git rebase -i HEAD~n
-
-# Make changes
-
-# Either amend the commit
-git commit --amend --no-edit
-# or add new commits
-git commit
-
-# Update the PR branch to be the new commit
-git branch -f <branch-name> HEAD
-
-# Update the PR branch
-git push -f
-
-git rebase --continue
-```
-
-where `HEAD~n` corresponds to the parent of the the commit you want to amend.
-
-#### Culprit finding
-
-```sh
-git bisect start features/better-eslint master --
-git bisect run sh -c "yarn && cd howdju-common && yarn run custom-check && yarn run test"
-# command above will output the culprit commit
-git bisect reset
-```
-
-### Upgrading dependencies
-
-```shell
-# Figure out why something is installed
-yarn why -R <package>
-# UI for upgrading
-yarn upgrade-interactive
-```
-
-### Doing something in each workspace
-
-```shell
-yarn workspaces foreach -Av exec bash -c '[[ -f jest.config.ts ]] && yarn add --dev ts-node'
-```
-
-### Branching a dependency
-
-If we need to modify a dependency: fork it, clone it locally, link it locally, and then
-create the fix.
-
-This command will link the project of the CWD to the local clone. (I think the resolutions field it
-adds to the workspace root apply the link to all packages in the monorepo, so it's not necessary to
-link from each package, unless the dependency was installed in the package-local `node_modules` for
-some reason.)
-
-```sh
-yarn link ../../zod
-```
-
-We can ignore the resolutions added to the workspace root `package.json` (don't commit it, or at
-least don't merge it, since the remote will not have access to the local clone.)
-
-After creating the fix: commit, push, and open a PR. To get our app to work, we depend on our fork
-until our PR is merged.
-
-```sh
-# Get the Git commit SHA-1 for the fix in our fork:
-git rev-parse HEAD
-# Depend on a commit from our fork. Use the commit hash from above
-yarn add 'zod@github:Howdju/zod#ff9c65e456cf80b23b881ed2e1247f14337260ec'
-```
-
-### Adding a new lambda
-
-```shell
-lamdba_name=...
-mkidr lambdas/$lambda_name
-cp lambdas/howdju-message-handler/.eslintrc.js lambdas/$lambda_name
-cp lambdas/howdju-message-handler/.gitignore lambdas/$lambda_name
-cd lambdas/$lambda_name
-npm init
-yarn add --dev eslint eslint-config-howdju jest
-```
-
-Add commands: `build`, `clean`, `lint`, `release`, `test`.
-
-## Publishing
-
-Deployments are partially automated.
-
-### API and web app
-
-A Github action automatically deploys the API and web app to the preprod
-environment.
-
-After confirming that the preprod environment is valid, deploy the API and
-web app to prod using the
-[prod deployment Github Action](https://github.com/Howdju/howdju/actions/workflows/deploy-prod.yml).
-
-### Publishing infrastructure changes
-
-TODO(GH-46): give TerraformStateUpdater appropriate permissions
-
-Request that your user get access to the role `TerraformStateUpdater`. Add a section to `~/.aws/config` for the role:
-
-```ini
-[profile terraform@howdju]
-source_profile = username@howdju
-role_arn = arn:aws:iam::007899441171:role/TerraformStateUpdater
-```
-
-Then run terraform commands using the role:
-
-```shell
-aws-vault exec terraform@howdju -- terraform plan
-```
-
-### Publishing database changes (migrations)
-
-```shell
-cd premiser-api
-yarn run db:tunnel
-
-# In different tab
-yarn run db:tunnel:shell:pre-prod
-howdju_pre_prod> \i db/migrations/xxxx_the_migration.sql
-howdju_pre_prod> exit
-
-# (Visit pre-prod-www.howdju.com and test the changes)
-
-# apply the migration to prod:
-yarn run db:tunnel:shell:prod
-howdju_prod> \i db/migrations/xxxx_the_migration.sql
-howdju_prod> exit
-```
-
-## Debugging
-
-### Debugging/inspecting the API
-
-```shell
-cd premiser-api
-yarn run start:local:inspect
-```
-
-Open Chrome to `chrome://inspect`. Click "Open dedicated DevTools for Node". The Chrome debugger should automatically
-connect to the node process. The Chrome debugger should automatically reconnect whenever the API restarts.
-
-### Debugging/inspecting the UI
-
-Use your web browser's Javascript debugging features as usual.
-
-## Updating Yarn
-
-```sh
-yarn set version stable
-```
-
-## Testing
-
-### Inspecting coverage for one package
-
-```sh
-yarn run test --coverage && open coverage/html/index.html
-```
-
-### Debugging UI tests
-
-`@testing-library` provides these helpers:
-
-```typescript
-// Log the document
-screen.debug();
-// Log container without truncating
-screen.debug(container, Number.MAX_SAFE_INTEGER);
-// Output a URL that let's you inspect the DOM using a third-party website.
-screen.logTestingPlaygroundURL();
-```
-
-### Snapshot tests
-
-To regenerate snapshots, run Jest with `--updateSnapshot` and optionally `--testNamePattern`
-([https://jestjs.io/docs/snapshot-testing#updating-snapshots](https://jestjs.io/docs/snapshot-testing#updating-snapshots)).
-Packages should define a `test-update-snapshot` script for this. There is also an [interactive
-mode](https://jestjs.io/docs/snapshot-testing#interactive-snapshot-mode) for updating snapshots.
-
-To construct an exact pattern for a test, replace the arrow in the test name with a single space.
-For example, a test named like `RegistrationConfirmationPage › shows form` would be:
-
-```sh
-yarn run test-update-snapshot "RegistrationConfirmationPage shows form"
-```
-
-There is an annoying flake with these tests that often manifests when they are run filtered to just
-one test: the react-md animations do not complete and we end up with extraneous diffs like:
-
-```diff
-<div
-  class="md-ink-container"
-- >
--   <span
--     class="md-ink md-ink--active md-ink--expanded"
--     style="left: 0px; top: 0px; height: 0px; width: 0px;"
--   />
-- </div>
-+ />
-```
-
-To deal with this, use `git add -p` to selectively stage only the relevant changes. (If you end up
-editing the file manually, you may benefit from this command too: `git restore path/to/file` which
-removes unstaged changes while keeping staged changes.)
-
-### Testing Github actions
-
-Note: Act currently fails for tests that use our Postgres docker because Act doesn't support Github
-actions services. ([issue](https://github.com/nektos/act/issues/173)). We might be able to work
-around this by detecting Act (I think it adds an env. var. `ACT`) and running the Postgres docker
-like we do with local runs, but that sort of defeats the purpose of act.
-
-Install nektos/act:
-
-```sh
-brew install act
-```
-
-To test the `push` workflows:
-
-```sh
-act --secret-file env/act-secrets.env
-```
-
-To test the deployment:
-
-```sh
-act workflow_run\
- -e .github/workflows/test-deploy-event.json\
- -s AWS_ACCESS_KEY_ID\
- -s AWS_SECRET_ACCESS_KEY
-```
-
-See
-[here](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_run)
-for the possible contents of the JSON file.
-
-## Config structure
-
-### ESLint
-
-Each workspce must define a script `lint` like:
-
-```sh
-eslint --ignore-path=.gitignore .
-```
-
-For information about configuring linting, see eslint-config-howdju/README.md.
-
-### Prettier
-
-Each workspace must install the `--exact` same version of `prettier` and define a script `check-format`
-that calls `prettier` like:
-
-```sh
-yarn run prettier --check --ignore-path .gitignore .
-```
-
-Each workspace must have a `.prettierrc` containing an empty JSON object (`{}`).
-
-Each of our configs in `eslint-config-howdju` extends `prettier` as the last extended config so that it can override
-any previous configs. If a package extends a config other than one of these, it must also be sure to
-extend `prettier` as the last overridden config.
-
-### TypeScript
-
-Base config `tsconfig.json` in workspace root and packages extend it like:
-
-```json
-{
-  "extends": "../tsconfig.json",
-  // ...
-  "compilerOptions": {
-    // ...
-    "paths": {
-      // Support project-relative imports
-      "@/*": ["./src/*"]
-    }
-  }
-}
-```
-
-### Babel
-
-`babel.config.js` in workspace root and `.babelrc.js` in packages to override.
-
-### Jest
-
-Base config exporting the config object and packages must define their own `jest.config.js` that
-merges any customizations with the base. Preferably with `lodash`'s `merge` so that the merge is recursive.
-
-```ts
-import type { Config } from "jest";
-import { merge } from "lodash";
-
-import baseConfig from "../jest.config.base";
-
-const config: Config = {
-  // per-package customizations
-};
-
-export default merge(baseConfig, config);
-```
+Carl has been attending meetings semiregularly with the [Canonical Debate
+Lab](https://canonicaldebatelab.com/), a lose assocation of people who are all interested in solving
+similar problems (empowering collective intelligence) but with different focuses and approaches. If
+Howdju sounds interesting to you, that group may also interest you.
