@@ -4,7 +4,7 @@
   "description": "UI for howdju.com.  Proprietary and confidential.  Copyright Carl Gieringer",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "analyze-size": "  cross-env NODE_ENV=production DEBUG='*,-babel'     webpack --config config/webpack.config.ts --profile --json > dist/stats.json && webpack-bundle-size-analyzer dist/stats.json && open dist/stats.html",
     "analyze-size-2": "cross-env NODE_ENV=production BUNDLE_ANALYZER=yes  webpack --config config/webpack.config.ts",

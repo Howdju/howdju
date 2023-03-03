@@ -14,7 +14,7 @@
     "url": "git+ssh://git@bitbucket.org/howdju/howdju.git"
   },
   "author": "Carl Gieringer <carl@howdju.com>",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "homepage": "https://bitbucket.org/howdju/howdju#readme",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.48.2",

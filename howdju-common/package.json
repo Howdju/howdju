@@ -5,7 +5,7 @@
   "main": "lib/index.ts",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .prettierignore .",
     "fix-format": "yarn run lint --fix && yarn run prettier --write --ignore-path .prettierignore .",

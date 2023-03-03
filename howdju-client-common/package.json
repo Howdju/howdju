@@ -4,7 +4,7 @@
   "description": "Code common to extension and web app",
   "main": "lib/index.ts",
   "author": "Carl Gieringer <carl.gieringer@gmail.com>",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "scripts": {
     "check-format": "yarn run prettier --check --ignore-path .gitignore .",

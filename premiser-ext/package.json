@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.2.0",
   "main": "dist/background.js",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "clean": "rm -rf dist",
     "build-prod": "yarn run clean && webpack --progress --profile --color",

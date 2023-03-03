@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Subscribes to cloudwatch logs and transfers them to elasticsearch",
   "main": "handler.js",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "dependencies": {
     "bluebird": "^3.5.2",

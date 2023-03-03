@@ -4,7 +4,7 @@
   "description": "Jobs and server-side processes supporting the Howdju platform",
   "repository": "git@bitbucket.org:howdju/howdju.git",
   "author": "Carl Gieringer <carl@howdju.com>",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "workspaces": [
     "lambda-functions/cloudwatch-logs-to-elasticsearch",
