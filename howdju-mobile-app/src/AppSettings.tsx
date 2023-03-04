@@ -1,23 +1,34 @@
 import React, { PropsWithChildren } from "react";
 
 import {
-  IsPreprodSite,
   HowdjuSiteAuthority,
   HOWDJU_PROD_AUTHORITY,
   HOWDJU_PREPROD_AUTHORITY,
+  HOWDJU_LOCAL_AUTHORITY,
+  HowdjuInstance,
 } from "./contexts";
-import { useIsPreprodApi } from "./hooks";
+import { HowdjuInstanceName, useHowdjuInstance } from "./hooks";
 
 export default function AppSettings({ children }: PropsWithChildren<{}>) {
-  const [isPreprodApi, setIsPreprodApi] = useIsPreprodApi();
-  const howdjuSiteAuthority = isPreprodApi
-    ? HOWDJU_PREPROD_AUTHORITY
-    : HOWDJU_PROD_AUTHORITY;
+  const [howdjuInstance, setHowdjuInstance] = useHowdjuInstance();
   return (
-    <IsPreprodSite.Provider value={{ isPreprodApi, setIsPreprodApi }}>
-      <HowdjuSiteAuthority.Provider value={howdjuSiteAuthority}>
+    <HowdjuInstance.Provider value={{ howdjuInstance, setHowdjuInstance }}>
+      <HowdjuSiteAuthority.Provider
+        value={toHowdjuSiteAuthority(howdjuInstance)}
+      >
         {children}
       </HowdjuSiteAuthority.Provider>
-    </IsPreprodSite.Provider>
+    </HowdjuInstance.Provider>
   );
+}
+
+function toHowdjuSiteAuthority(instance: HowdjuInstanceName) {
+  switch (instance) {
+    case "PROD":
+      return HOWDJU_PROD_AUTHORITY;
+    case "PREPROD":
+      return HOWDJU_PREPROD_AUTHORITY;
+    case "LOCAL":
+      return HOWDJU_LOCAL_AUTHORITY;
+  }
 }
