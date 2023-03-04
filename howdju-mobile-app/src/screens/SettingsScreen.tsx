@@ -4,7 +4,7 @@ import { Button, Menu, useTheme } from "react-native-paper";
 
 import Text from "@/components/Text";
 import { HowdjuInstance } from "@/contexts";
-import { HowdjuInstance as HodjuInstanceType } from "@/hooks";
+import { HowdjuInstanceName } from "@/hooks";
 
 export default function SettingsScreen() {
   const theme = useTheme();
@@ -12,9 +12,9 @@ export default function SettingsScreen() {
     useState(false);
   const { howdjuInstance, setHowdjuInstance } = useContext(HowdjuInstance);
 
-  function onPressInstance(instance: HodjuInstanceType) {
-    return function () {
-      setHowdjuInstance(instance);
+  function onPressInstance(instance: HowdjuInstanceName) {
+    return async function () {
+      await setHowdjuInstance(instance);
       setIsHowdjuInstanceMenuVisible(false);
     };
   }
@@ -37,9 +37,12 @@ export default function SettingsScreen() {
             </Button>
           }
         >
-          <Menu.Item onPress={onPressInstance("PROD")} title="Prod" />
-          <Menu.Item onPress={onPressInstance("PREPROD")} title="Preprod" />
-          <Menu.Item onPress={onPressInstance("LOCAL")} title="Local" />
+          <Menu.Item onPress={void onPressInstance("PROD")} title="Prod" />
+          <Menu.Item
+            onPress={void onPressInstance("PREPROD")}
+            title="Preprod"
+          />
+          <Menu.Item onPress={void onPressInstance("LOCAL")} title="Local" />
         </Menu>
       </View>
     </ScrollView>

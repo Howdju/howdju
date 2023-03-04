@@ -8,7 +8,7 @@ import {
   HowdjuInstance,
 } from "./contexts";
 import {
-  HowdjuInstance as HowdjuInstanceType,
+  HowdjuInstanceName,
   useHowdjuInstance,
 } from "./hooks";
 
@@ -25,7 +25,7 @@ export default function AppSettings({ children }: PropsWithChildren<{}>) {
   );
 }
 
-function toHowdjuSiteAuthority(instance: HowdjuInstanceType) {
+function toHowdjuSiteAuthority(instance: HowdjuInstanceName) {
   switch (instance) {
     case "PROD":
       return HOWDJU_PROD_AUTHORITY;

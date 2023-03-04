@@ -4,14 +4,15 @@ import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import logger from "./logger";
 
 const howdjuInstances = ["PROD", "PREPROD", "LOCAL"] as const;
-export type HowdjuInstance = typeof howdjuInstances[number];
+export type HowdjuInstanceName = typeof howdjuInstances[number];
 
 export function useHowdjuInstance() {
-  const [howdjuInstance, setHowdjuInstance] = useState<HowdjuInstance>("PROD");
+  const [howdjuInstance, setHowdjuInstance] =
+    useState<HowdjuInstanceName>("PROD");
   const { getItem: readHowdjuInstance, setItem: storeHowdjuInstance } =
     useAsyncStorage("@howdjuInstance");
 
-  async function setAndStoreHowdjuInstance(instance: HowdjuInstance) {
+  async function setAndStoreHowdjuInstance(instance: HowdjuInstanceName) {
     await storeHowdjuInstance(instance);
     setHowdjuInstance(instance);
   }
@@ -43,6 +44,6 @@ export function useHowdjuInstance() {
   return [howdjuInstance, setAndStoreHowdjuInstance] as const;
 }
 
-function isHowdjuInstance(val: any): val is HowdjuInstance {
+function isHowdjuInstance(val: any): val is HowdjuInstanceName {
   return howdjuInstances.includes(val);
 }
