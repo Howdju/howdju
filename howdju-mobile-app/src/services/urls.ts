@@ -1,4 +1,9 @@
 export function makeRecentActivityUrl(urlAuthority: string) {
-  const url = new URL(urlAuthority.replace(/\/$/, "") + "/recent-activity/");
-  return url.href;
+  return makeUrl(urlAuthority, "/recent-activity/").href;
+}
+
+export function makeUrl(urlAuthority: string, path: string) {
+  return new URL(
+    urlAuthority.replace(/\/$/, "") + "/" + path.replace(/^\//, "")
+  );
 }
