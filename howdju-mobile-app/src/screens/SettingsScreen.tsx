@@ -13,8 +13,8 @@ export default function SettingsScreen() {
   const { howdjuInstance, setHowdjuInstance } = useContext(HowdjuInstance);
 
   function onPressInstance(instance: HowdjuInstanceName) {
-    return async function () {
-      await setHowdjuInstance(instance);
+    return function () {
+      void setHowdjuInstance(instance);
       setIsHowdjuInstanceMenuVisible(false);
     };
   }
@@ -37,12 +37,9 @@ export default function SettingsScreen() {
             </Button>
           }
         >
-          <Menu.Item onPress={void onPressInstance("PROD")} title="Prod" />
-          <Menu.Item
-            onPress={void onPressInstance("PREPROD")}
-            title="Preprod"
-          />
-          <Menu.Item onPress={void onPressInstance("LOCAL")} title="Local" />
+          <Menu.Item onPress={onPressInstance("PROD")} title="PROD" />
+          <Menu.Item onPress={onPressInstance("PREPROD")} title="PREPROD" />
+          <Menu.Item onPress={onPressInstance("LOCAL")} title="LOCAL" />
         </Menu>
       </View>
     </ScrollView>
