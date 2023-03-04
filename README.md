@@ -40,6 +40,14 @@ label](https://github.com/Howdju/howdju/labels/ts-migration) for substantial pla
 All of Howdju's entities are defined using [Zod](https://zod.dev/). Zod is also our preferred
 validation library. See #26 for the status of migrating previous data validation definitions to Zod.
 
+### UI Framework
+
+The web app currently uses react-md@1. Besides being outdated, we would like to explore a UI
+framework that supports both react-native mobile and web. This cross-platform support would enable reusing
+components on both webpages and mobile app screens.
+
+See [#304](https://github.com/Howdju/howdju/issues/304).
+
 ### Premiser name
 
 We initially considered Premiser as a name for Howdju, and so some packages have this name. Howdju
