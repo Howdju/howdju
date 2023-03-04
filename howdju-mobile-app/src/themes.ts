@@ -1,5 +1,8 @@
 import { MD3LightTheme, MD3DarkTheme } from "react-native-paper";
 
+// Created using
+// https://callstack.github.io/react-native-paper/docs/guides/theming#creating-dynamic-theme-colors
+// Using flat UI's midnight blue (#2c3e50) as a basis since that's the main color of our web app.
 export const lightTheme = {
   ...MD3LightTheme,
   colors: {

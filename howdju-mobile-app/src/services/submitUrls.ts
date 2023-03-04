@@ -58,7 +58,7 @@ const makeSubmitUrl = (
   const { url, selectedText, title } = safariShareInfo;
   const submitUrl = new URL(urlAuthority + "/submit/");
   if (url) {
-    submitUrl.searchParams.append("url", url);
+    submitUrl.searchParams.append("url", encodeURIComponent(url));
   }
   if (title) {
     submitUrl.searchParams.append("description", encodeURIComponent(title));
