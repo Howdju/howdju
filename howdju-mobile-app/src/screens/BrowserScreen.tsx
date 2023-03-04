@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { WebView } from "react-native-webview";
 import type { ShareDataItem } from "react-native-share-menu";
 import { Alert, Share, StyleSheet, View } from "react-native";
-import { Appbar, TextInput, useTheme } from "react-native-paper";
+import { Appbar, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { inferSubmitUrl } from "@/services/submitUrls";
@@ -93,22 +93,29 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
           webViewRef.current.reload();
         }}
       />
-      <TextInput value={currentUrl} disabled={true} />
+      <TextInput
+        value={currentUrl}
+        disabled={true}
+        accessibilityLabel="Current URL"
+      />
       <Appbar>
         <Appbar.Action
           icon="arrow-left"
           onPress={() => goBackward()}
           disabled={!canGoBack}
+          accessibilityLabel="Browser go back"
         />
         <Appbar.Action
           icon="arrow-right"
           onPress={() => goForward()}
           disabled={!canGoForward}
+          accessibilityLabel="Browser go forward"
         />
         <Appbar.Action
           icon="refresh"
           onPress={() => refresh()}
           disabled={!webViewRef.current}
+          accessibilityLabel="Refresh browser"
         />
         <Appbar.Action icon="share" onPress={() => void shareCurrentUrl()} />
       </Appbar>
