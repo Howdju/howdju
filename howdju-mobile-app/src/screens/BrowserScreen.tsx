@@ -98,7 +98,7 @@ export function BrowserScreen({ items }: { items: ShareDataItem[] }) {
         disabled={true}
         accessibilityLabel="Current URL"
       />
-      <Appbar>
+      <Appbar style={{ justifyContent: "space-evenly" }}>
         <Appbar.Action
           icon="arrow-left"
           onPress={() => goBackward()}

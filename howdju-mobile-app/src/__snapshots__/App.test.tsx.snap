@@ -301,6 +301,7 @@ exports[`App renders correctly 1`] = `
                             "flex": undefined,
                             "flexDirection": "row",
                             "height": 64,
+                            "justifyContent": "space-evenly",
                             "paddingBottom": undefined,
                             "paddingHorizontal": 4,
                             "paddingLeft": undefined,
