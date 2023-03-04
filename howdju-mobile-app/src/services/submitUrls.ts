@@ -1,5 +1,6 @@
 import type { ShareDataItem } from "react-native-share-menu";
 import logger from "@/logger";
+import { makeUrl } from "./urls";
 
 type SafariShareInfo = {
   url?: string;
@@ -56,7 +57,7 @@ const makeSubmitUrl = (
   safariShareInfo: SafariShareInfo
 ) => {
   const { url, selectedText, title } = safariShareInfo;
-  const submitUrl = new URL(urlAuthority + "/submit/");
+  const submitUrl = makeUrl(urlAuthority, "/submit/");
   if (url) {
     submitUrl.searchParams.append("url", encodeURIComponent(url));
   }
