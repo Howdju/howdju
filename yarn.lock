@@ -14544,6 +14544,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"git-hooks@npm:^1.1.10":
+  version: 1.1.10
+  resolution: "git-hooks@npm:1.1.10"
+  checksum: 3fe31bbdcbbe6ff90d085230a54d72c36d8138de83acaf51dc07c63365332dffe5ac77c38cdc9564e8183977e4db9463794d9eaa6633f26d90b8fb1b0735844c
+  languageName: node
+  linkType: hard
+
 "glamor@npm:^2.20.40":
   version: 2.20.40
   resolution: "glamor@npm:2.20.40"
@@ -15515,6 +15522,7 @@ __metadata:
     browserslist: ^4.17.0
     debug: ^4.3.4
     eslint: ^8.27.0
+    git-hooks: ^1.1.10
     jest: ^29.3.1
     nyc: ^15.1.0
     prettier: 2.7.1
