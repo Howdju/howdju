@@ -7,10 +7,7 @@ import {
   HOWDJU_LOCAL_AUTHORITY,
   HowdjuInstance,
 } from "./contexts";
-import {
-  HowdjuInstanceName,
-  useHowdjuInstance,
-} from "./hooks";
+import { HowdjuInstanceName, useHowdjuInstance } from "./hooks";
 
 export default function AppSettings({ children }: PropsWithChildren<{}>) {
   const [howdjuInstance, setHowdjuInstance] = useHowdjuInstance();
