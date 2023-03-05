@@ -80,11 +80,17 @@ Remove this following from the monorepo's package:
 
 ### App Store
 
-Basically, follow [these steps](https://reactnative.dev/docs/publishing-to-app-store).
+Basically:
 
 1. Remove `NSExceptionDomains` from HowdjuApp `Info.plist`.
-1. Configure Release scheme
-1. Build, Archive, Distribute
+1. Update the version number.
+   1. `Bundle vesion`: the build semantic version number (`1.1.1`)
+   1. `Bundle version string (short)`: the product version number (`1.1` for all `Bundle version`
+      like `1.1.x`)
+1. (Not necessary to configure Release scheme for Archive; it should be done already.)
+1. Archive, Distribute
+
+Originally based on [these steps](https://reactnative.dev/docs/publishing-to-app-store).
 
 ## Adding a new native dependency
 
