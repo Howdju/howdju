@@ -40,6 +40,27 @@ label](https://github.com/Howdju/howdju/labels/ts-migration) for substantial pla
 All of Howdju's entities are defined using [Zod](https://zod.dev/). Zod is also our preferred
 validation library. See #26 for the status of migrating previous data validation definitions to Zod.
 
+### Justification types and evidence representation
+
+Howdju's representation of `Justification`s and references to external sources has undergone some
+evolution. This list represents the status of some relevant entities:
+
+- `JustificationCompound`: deprecated. This entity represented mixing evidence and argument in the
+  same justification. Now we require justifications to be either 'evidence-based'
+  (`SourceExcerpt`-based) or 'argument-based' (`PropositionCompound`-based.)
+- `SourceExcerptParaphrase`: deprecated. This entity represented a requirement that all evidence
+  input to the system (`SourceExcerpt`s) had to come with the user's paraphrase of their meaning.
+  Now we will instead use `SourceExcerpt`s two ways: they can be the basis of a justification, where
+  they represent a user's intention to express the implication of the justification target based
+  upon the evidence. Or they can be part of an appearance, where they represent a user's intention
+  to express that a reasonable reader of the excerpt could conclude that it equated with an
+  expression of the `Appearance`'s content (initially `Proposition`s.)
+- `SourceExcerpt`: the preferred representation of evidence. (We might call this `MediaFragment`
+  because the system need not contain an association between a `Source` and entered evidence.)
+- `WritQuote`: a type of `SourceExcerpt`, along with `PicRegion` and `VidSegment`. In many places we
+  assume that a `WritQuote` is the only type of `SourceExcerpt`, but we intend to generalize this.
+  E.g., we will replace `WritQuote`-based `Justification`s with `SourceExcerpt`-based justifications.
+
 ### UI Framework
 
 The web app currently uses react-md@1. Besides being outdated, we would like to explore a UI
