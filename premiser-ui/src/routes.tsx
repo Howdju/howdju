@@ -52,30 +52,30 @@ const renderHomePath = (props: RouteProps) => {
 };
 
 const routesById = {
-  ["home"]: <Route exact path={paths.home()} render={renderHomePath} />,
-  ["login"]: <Route exact path={paths.login()} component={LoginPage} />,
-  ["request-registration"]: (
+  home: <Route exact path={paths.home()} render={renderHomePath} />,
+  login: <Route exact path={paths.login()} component={LoginPage} />,
+  requestRegistration: (
     <Route
       exact
       path={paths.requestRegistration()}
       component={RegistrationRequestPage}
     />
   ),
-  ["confirm-registration"]: (
+  confirmRegistration: (
     <Route
       exact
       path={commonPaths.confirmRegistration()}
       component={RegistrationConfirmationPage}
     />
   ),
-  ["request-password-reset"]: (
+  requestPasswordReset: (
     <Route
       exact
       path={paths.requestPasswordReset()}
       component={PasswordResetRequestPage}
     />
   ),
-  ["confirm-password-reset"]: (
+  confirmPasswordReset: (
     <Route
       exact
       path={commonPaths.confirmPasswordReset()}
@@ -83,22 +83,20 @@ const routesById = {
     />
   ),
 
-  ["recentActivity"]: (
+  recentActivity: (
     <Route exact path={paths.recentActivity()} component={RecentActivityPage} />
   ),
-  ["whatsNext"]: (
-    <Route exact path={paths.whatsNext()} component={WhatsNextPage} />
-  ),
-  ["about"]: <Route exact path={paths.about()} component={AboutPage} />,
+  whatsNext: <Route exact path={paths.whatsNext()} component={WhatsNextPage} />,
+  about: <Route exact path={paths.about()} component={AboutPage} />,
 
-  ["writQuote"]: (
+  writQuote: (
     <Route
       exact
       path="/writ-quotes/:writQuoteId/:slug?"
       component={WritQuotePage}
     />
   ),
-  ["proposition"]: (
+  proposition: (
     <Route
       exact
       path="/p/:rootTargetId/:slug?"
@@ -110,7 +108,7 @@ const routesById = {
       )}
     />
   ),
-  ["statement"]: (
+  statement: (
     <Route
       exact
       path="/s/:rootTargetId/:slug?"
@@ -122,29 +120,29 @@ const routesById = {
       )}
     />
   ),
-  ["persorg"]: (
+  persorg: (
     <Route exact path="/persorgs/:persorgId/:slug?" component={PersorgPage} />
   ),
-  ["tag"]: <Route exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
-  ["searchJustifications"]: (
+  tag: <Route exact path="/tags/:tagId/:tagSlug?" component={TagPage} />,
+  searchJustifications: (
     <Route
       exact
       path="/search-justifications"
       component={JustificationsSearchPage}
     />
   ),
-  ["proposition-usages"]: (
+  propositionUsages: (
     <Route exact path="/proposition-usages" component={PropositionUsagesPage} />
   ),
 
-  ["submitSourceExcerpt"]: (
+  submitSourceExcerpt: (
     <Route
       exact
-      path="/submit-source-excerpt"
+      path="/source-excerpts/new"
       render={() => <SubmitSourceExcerptPage />}
     />
   ),
-  ["createProposition"]: (
+  createProposition: (
     <Route
       exact
       path="/create-proposition"
@@ -156,7 +154,7 @@ const routesById = {
       )}
     />
   ),
-  ["createJustification"]: (
+  createJustification: (
     <Route
       exact
       path={createJustificationPath}
@@ -168,7 +166,7 @@ const routesById = {
       )}
     />
   ),
-  ["submitJustificationViaQueryString"]: (
+  submitJustificationViaQueryString: (
     <Route
       exact
       path="/submit"
@@ -181,22 +179,20 @@ const routesById = {
     />
   ),
 
-  ["settings"]: (
-    <Route exact path="/settings" component={AccountSettingsPage} />
-  ),
-  ["privacySettings"]: (
+  settings: <Route exact path="/settings" component={AccountSettingsPage} />,
+  privacySettings: (
     <Route exact path="/settings/privacy" component={PrivacySettingsPage} />
   ),
-  ["tools"]: <Route exact path="/tools" component={ToolsPage} />,
+  tools: <Route exact path="/tools" component={ToolsPage} />,
 
-  ["policiesOverview"]: (
+  policiesOverview: (
     <Route
       exact
       path={paths.policiesOverview()}
       component={PoliciesOverviewPage}
     />
   ),
-  ["values"]: (
+  values: (
     <Route
       exact
       path={paths.principles()}
@@ -205,7 +201,7 @@ const routesById = {
       )}
     />
   ),
-  ["userAgreement"]: (
+  userAgreement: (
     <Route
       exact
       path={paths.userAgreement()}
@@ -217,7 +213,7 @@ const routesById = {
       )}
     />
   ),
-  ["codeOfConduct"]: (
+  codeOfConduct: (
     <Route
       exact
       path={paths.codeOfConduct()}
@@ -229,7 +225,7 @@ const routesById = {
       )}
     />
   ),
-  ["privacyPolicy"]: (
+  privacyPolicy: (
     <Route
       exact
       path={paths.privacyPolicy()}
@@ -241,7 +237,7 @@ const routesById = {
       )}
     />
   ),
-  ["cookieNotice"]: (
+  cookieNotice: (
     <Route
       exact
       path={paths.cookieNotice()}
@@ -253,7 +249,7 @@ const routesById = {
       )}
     />
   ),
-  ["faq"]: (
+  faq: (
     <Route
       exact
       path={paths.faq()}
@@ -266,10 +262,10 @@ const routesById = {
     />
   ),
 
-  ["icons"]: <Route exact path="/icons" component={IconPage} />,
+  icons: <Route exact path="/icons" component={IconPage} />,
 
-  ["testError"]: <Route exact path="/test-error" component={TestErrorPage} />,
-  ["notFound"]: <Route component={NotFoundPage} />,
+  testError: <Route exact path="/test-error" component={TestErrorPage} />,
+  notFound: <Route component={NotFoundPage} />,
 } as const;
 
 const routes = map(routesById, (route: ReactElement, id: string) =>

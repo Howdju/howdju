@@ -17,8 +17,8 @@ export const mainSearchPathName = "/";
 
 export const createJustificationPath = "/create-justification";
 
-// I was going to extend CommonPaths, but doing that results in `TypeError: Class constructor CommonPaths cannot be invoked without 'new'`
-// when running jest.
+// TODO(196): separate into a const Record of paths (with parameters) and individual top-file-level
+// factories for paths taking parameters.
 class Paths {
   home = () => "/";
 
