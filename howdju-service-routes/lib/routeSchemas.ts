@@ -7,7 +7,11 @@ export const Authed = z.object({
 });
 export type Authed = z.infer<typeof Authed>;
 
-/** A request schema mixin for routes receiving path parameters. */
+/**
+ * A request schema mixin for routes receiving path parameters.
+ *
+ * TODO(321) infer paramNames from the path.
+ */
 export const PathParams = function <U extends string, T extends [U, ...U[]]>(
   ...paramNames: T
 ) {

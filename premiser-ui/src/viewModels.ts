@@ -211,6 +211,7 @@ export interface ChipInfo {
 export const contextTrailTypeByShortcut = {
   p: "PROPOSITION",
   s: "STATEMENT",
+  j: "JUSTIFICATION",
 } as const;
 export type ContextTrailShortcut = keyof typeof contextTrailTypeByShortcut;
 

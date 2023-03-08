@@ -93,12 +93,13 @@ export default class LandingPage extends Component {
     const proTrailItems = [
       {
         targetType: proJustification.target.type,
+        targetId: proJustification.target.entity.id,
         target: proJustification.target.entity,
       },
       {
         targetType: proJustificationJustification.target.type,
+        targetId: proJustificationJustification.target.entity.id,
         target: proJustificationJustification.target.entity,
-        polarity: proJustificationJustification.polarity,
       },
     ];
 
@@ -162,12 +163,13 @@ export default class LandingPage extends Component {
     const conTrailItems = [
       {
         targetType: conJustification.target.type,
+        targetId: conJustification.target.entity.id,
         target: conJustification.target.entity,
       },
       {
         targetType: conJustificationJustification.target.type,
+        targetId: conJustificationJustification.target.entity.id,
         target: conJustificationJustification.target.entity,
-        polarity: conJustification.polarity,
       },
     ];
 
@@ -270,7 +272,7 @@ export default class LandingPage extends Component {
 
         <div className="banner">
           <div className="banner-content">
-            <ContextTrail trailItems={proTrailItems} />
+            <ContextTrail id="pro-context-trail" trailItems={proTrailItems} />
             <JustificationBranch
               justification={proJustificationJustification}
               doShowBasisJustifications={false}
@@ -285,7 +287,7 @@ export default class LandingPage extends Component {
 
         <div className="banner">
           <div className="banner-content">
-            <ContextTrail trailItems={conTrailItems} />
+            <ContextTrail id="con-context-trail" trailItems={conTrailItems} />
             <JustificationBranch
               justification={conJustificationJustification}
               doShowBasisJustifications={false}

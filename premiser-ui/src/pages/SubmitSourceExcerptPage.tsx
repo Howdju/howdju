@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import queryString from "query-string";
+import queryString, { ParsedQuery } from "query-string";
 import { useLocation } from "react-router";
 
 import { makeUrl, CreateWritQuoteInput } from "howdju-common";
@@ -38,33 +38,10 @@ const SubmitSourcExcerptPage = () => {
   const errors = [];
 
   if (!writQuote) {
-    let { quoteText, description } = queryParams;
-    const { url } = queryParams;
-
-    if (isArray(quoteText)) {
-      errors.push("Can only submit one quote. Extras discarded.");
-      // If multiple query parameters are defined, the array must have at least two elements.
-      quoteText = quoteText[0];
-    }
-    if (isArray(description)) {
-      errors.push("Can only submit one description. Extras discarded.");
-      // If multiple query parameters are defined, the array must have at least two elements.
-      description = description[0];
-    }
-
-    quoteText = quoteText || "";
-    description = description || "";
-    const urls = isArray(url)
-      ? url.map((u) => makeUrl({ url: u }))
-      : [makeUrl({ url: url || "" })];
-
-    writQuote = {
-      quoteText,
-      writ: {
-        title: description,
-      },
-      urls,
-    };
+    const { writQuote: inferredWritQuote, errors: inferrenceErrors } =
+      inferWritQuoteFromQueryParams(queryParams);
+    writQuote = inferredWritQuote;
+    errors.push(...inferrenceErrors);
 
     dispatch(editors.beginEdit(editorType, editorId, writQuote));
   }
@@ -89,3 +66,36 @@ const SubmitSourcExcerptPage = () => {
   );
 };
 export default SubmitSourcExcerptPage;
+
+function inferWritQuoteFromQueryParams(queryParams: ParsedQuery<string>) {
+  let { quoteText, description } = queryParams;
+  const { url } = queryParams;
+
+  const errors = [];
+
+  if (isArray(quoteText)) {
+    errors.push("Can only submit one quote. Extras discarded.");
+    // If multiple query parameters are defined, the array must have at least two elements.
+    quoteText = quoteText[0];
+  }
+  if (isArray(description)) {
+    errors.push("Can only submit one description. Extras discarded.");
+    // If multiple query parameters are defined, the array must have at least two elements.
+    description = description[0];
+  }
+
+  quoteText = quoteText || "";
+  description = description || "";
+  const urls = isArray(url)
+    ? url.map((u) => makeUrl({ url: u }))
+    : [makeUrl({ url: url || "" })];
+
+  const writQuote = {
+    quoteText,
+    writ: {
+      title: description,
+    },
+    urls,
+  };
+  return { writQuote, errors };
+}

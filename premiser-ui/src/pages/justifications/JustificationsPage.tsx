@@ -18,12 +18,12 @@ import {
   EntityId,
   JustificationPolarities,
   JustificationRootPolarity,
-  JustificationRootTarget,
   JustificationRootTargetType,
-  JustificationTargetType,
   JustificationOut,
   makeCreateJustificationInputTargetingRoot,
   JustificationRef,
+  filterDefined,
+  JustificationTarget,
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
 
@@ -56,7 +56,12 @@ import {
 } from "@/viewModels";
 import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "@/extensionCallbacks";
 import { RootState } from "@/setupStore";
-import { ComponentId, ContextTrailItemInfo, SuggestionsKey } from "@/types";
+import {
+  ComponentId,
+  ContextTrailItem,
+  ContextTrailItemInfo,
+  SuggestionsKey,
+} from "@/types";
 
 import "./JustificationsPage.scss";
 
@@ -105,9 +110,7 @@ class JustificationsPage extends Component<Props> {
 
     const contextTrailItems = contextTrailItemInfosFromProps(this.props);
     if (!isEmpty(contextTrailItems)) {
-      this.props.apiLike.fetchJustificationTargets(
-        filterContextTrailItems(contextTrailItems)
-      );
+      this.props.apiLike.fetchJustificationTargets(contextTrailItems);
     }
   }
 
@@ -126,9 +129,7 @@ class JustificationsPage extends Component<Props> {
       !isEqual(contextTrailInfos, prevContextTrailInfos) &&
       !isEmpty(contextTrailInfos)
     ) {
-      this.props.apiLike.fetchJustificationTargets(
-        filterContextTrailItems(contextTrailInfos)
-      );
+      this.props.apiLike.fetchJustificationTargets(contextTrailInfos);
     }
   }
 
@@ -186,6 +187,7 @@ class JustificationsPage extends Component<Props> {
     const nextContextTrailItems = concat(contextTrailItems, [
       {
         targetType: rootTargetType,
+        targetId: rootTarget.id,
         target: rootTarget,
       },
     ]);
@@ -217,6 +219,7 @@ class JustificationsPage extends Component<Props> {
 
         <div className="md-grid md-grid--top">
           <ContextTrail
+            id={this.id("context-trail")}
             trailItems={contextTrailItems}
             className="md-cell md-cell--12 "
           />
@@ -323,10 +326,7 @@ const sortJustifications = (
   return justifications;
 };
 
-const entitiesStoreKeyByJustificationTargetType: Record<
-  JustificationTargetType,
-  keyof RootState["entities"]
-> = {
+const entitiesStoreKeyByJustificationTargetType = {
   PROPOSITION: "propositions",
   STATEMENT: "statements",
   JUSTIFICATION: "justifications",
@@ -377,24 +377,15 @@ const contextTrailItemInfosFromProps = (props: OwnProps) => {
   return contextTrailParam ? toContextTrailItemInfos(contextTrailParam) : [];
 };
 
-// It there was an error parsing a context item, we replace it with a null placeholder
-type NullContextTrailItemInfo = { [key in keyof ContextTrailItemInfo]: null };
-type MaybeContextTrailItemInfo =
-  | ContextTrailItemInfo
-  | NullContextTrailItemInfo;
-
-function toContextTrailItemInfos(
-  contextTrailParam: string
-): MaybeContextTrailItemInfo[] {
+function toContextTrailItemInfos(contextTrailParam: string) {
   const infoStrings = split(contextTrailParam, ";");
   const itemInfos = map(infoStrings, (s) => {
     const [typeShortcut, targetId] = split(s, ",");
     if (!(typeShortcut in contextTrailTypeByShortcut)) {
-      logger.error(`Invalid context trail type shortcut: ${typeShortcut}`);
-      return {
-        targetType: null,
-        targetId: null,
-      };
+      logger.error(
+        `Invalid context trail type shortcut: ${typeShortcut} in ${contextTrailParam}`
+      );
+      return undefined;
     }
     return {
       // casting is necessary because `k in o` does not narrow `k`
@@ -404,19 +395,7 @@ function toContextTrailItemInfos(
       targetId,
     };
   });
-  return itemInfos;
-}
-
-function isPresentContextTrailItemInfo(
-  itemInfo: MaybeContextTrailItemInfo
-): itemInfo is ContextTrailItemInfo {
-  return !!itemInfo.targetId;
-}
-
-function filterContextTrailItems(
-  contextTailsItems: MaybeContextTrailItemInfo[]
-): ContextTrailItemInfo[] {
-  return contextTailsItems.filter(isPresentContextTrailItemInfo);
+  return filterDefined(itemInfos);
 }
 
 const connector = connect(
@@ -435,23 +414,18 @@ const connector = connect(
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function toContextTrailItem(state: RootState, item: MaybeContextTrailItemInfo) {
+function toContextTrailItem(state: RootState, item: ContextTrailItemInfo) {
   const { targetType, targetId } = item;
-  if (targetType === null) {
-    return {
-      targetType,
-      target: null,
-    };
-  }
   const storeKey = entitiesStoreKeyByJustificationTargetType[targetType];
   // TODO(261): remove typecast if we type the entities reducer/state.
-  const target: JustificationRootTarget | undefined = (
+  const target: JustificationTarget | undefined = (
     state.entities[storeKey] as any
   )?.[targetId];
   return {
     targetType,
+    targetId,
     target,
-  };
+  } as unknown as ContextTrailItem;
 }
 
 export default connector(JustificationsPage);

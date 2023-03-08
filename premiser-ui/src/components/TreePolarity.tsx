@@ -5,7 +5,7 @@ import { JustificationPolarities, JustificationPolarity } from "howdju-common";
 import "./TreePolarity.scss";
 
 interface Props {
-  polarity: JustificationPolarity;
+  polarity: JustificationPolarity | undefined;
   children: ReactNode;
 }
 // Offsets and colors justifications in a tree according to their polarity.
