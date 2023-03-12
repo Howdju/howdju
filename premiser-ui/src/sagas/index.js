@@ -30,10 +30,7 @@ import { commitEditThenPutActionOnSuccess } from "./editors/commitEditThenPutAct
 import { fetchAndBeginEditOfNewJustificationFromBasisSource } from "./editors/fetchAndBeginEditOfNewJustificationFromBasisSourceSaga";
 import { editorCommitEdit } from "./editors/editorCommitEditSaga";
 import { beginEditOfNewJustificationFromTarget } from "./editors/beginEditOfNewJustificationFromTargetSaga";
-import {
-  deleteJustificationRootTargetTranslator,
-  fetchJustificationTargets,
-} from "./apiLikeSagas";
+import { deleteJustificationRootTargetTranslator } from "./apiLikeSagas";
 import { contentScriptAck, postExtensionMessages } from "./extensionSagas";
 import * as appSagas from "../app/appSagas";
 import * as justificationsSearchPageSagas from "../pages/justificationsSearch/justificationsSearchPageSagas";
@@ -72,7 +69,6 @@ export default () =>
     beginEditOfNewJustificationFromTarget(),
 
     deleteJustificationRootTargetTranslator(),
-    fetchJustificationTargets(),
 
     editorCommitEdit(),
 

@@ -281,7 +281,7 @@ export class JustificationsService extends EntityService<
     );
   }
 
-  private async readJustificationForId(
+  async readJustificationForId(
     justificationId: EntityId,
     userId: EntityId
   ): Promise<JustificationOut> {

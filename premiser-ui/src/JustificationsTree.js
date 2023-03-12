@@ -15,6 +15,7 @@ import t, { ADD_JUSTIFICATION_CALL_TO_ACTION } from "./texts";
 import windowAware from "./windowAware";
 
 import "./JustificationsTree.scss";
+import { extendContextTrailItems } from "./viewModels";
 
 class JustificationsTree extends Component {
   toBranch = (j) => {
@@ -29,6 +30,11 @@ class JustificationsTree extends Component {
       onClickWritQuoteUrl,
     } = this.props;
     const treeId = `${id}-justification-tree-${j.id}`;
+    const nextContextTrailItems = extendContextTrailItems(
+      contextTrailItems,
+      "JUSTIFICATION",
+      j
+    );
     return (
       <JustificationBranch
         key={treeId}
@@ -38,7 +44,7 @@ class JustificationsTree extends Component {
         isCondensed={isCondensed}
         isUnCondensed={isUnCondensed}
         showBasisUrls={showBasisUrls}
-        contextTrailItems={contextTrailItems}
+        contextTrailItems={nextContextTrailItems}
         onClickWritQuoteUrl={onClickWritQuoteUrl}
       />
     );

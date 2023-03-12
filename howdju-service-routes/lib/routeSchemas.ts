@@ -1,7 +1,7 @@
 import { reduce } from "lodash";
 import { z } from "zod";
 
-/** A request schema mixin for routes receiving an auth token. */
+/** A request schema mixin for routes requiring an auth token. */
 export const Authed = z.object({
   authToken: z.string(),
 });

@@ -3,6 +3,7 @@ export * from "./ActionsService";
 export * from "./AuthService";
 export * from "./AwsTopicMessageSender";
 export * from "./ContentReportsService";
+export * from "./ContextTrailsService";
 export * from "./EmailService";
 export * from "./GroupsService";
 export * from "./JustificationBasisCompoundsService";

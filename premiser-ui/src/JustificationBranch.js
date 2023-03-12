@@ -47,6 +47,7 @@ import { EditorTypes } from "./reducers/editors";
 import t from "./texts";
 
 import "./JustificationBranch.scss";
+import { extendContextTrailItems } from "./viewModels";
 
 const justificationTreeId = (props) => {
   const { justification } = props;
@@ -339,6 +340,11 @@ class JustificationBranch extends Component {
           )}
           {map(justification.counterJustifications, (j) => {
             const id = `counter-justification-${j.id}-branch`;
+            const nextContextTrailItems = extendContextTrailItems(
+              contextTrailItems,
+              "JUSTIFICATION",
+              j
+            );
             return (
               <div id={id} key={id} className="counter-justification-branch">
                 <ConnectedJustificationBranch
@@ -347,7 +353,7 @@ class JustificationBranch extends Component {
                   doShowBasisJustifications={doShowBasisJustifications}
                   isCondensed={isCondensed}
                   isUnCondensed={isUnCondensed}
-                  contextTrailItems={contextTrailItems}
+                  contextTrailItems={nextContextTrailItems}
                 />
               </div>
             );

@@ -28,31 +28,3 @@ export function* deleteJustificationRootTargetTranslator() {
     }
   );
 }
-
-export function* fetchJustificationTargets() {
-  yield takeEvery(
-    str(apiLike.fetchJustificationTargets),
-    function* fetchJustificationTargetsWorker(action) {
-      const { targetInfos } = action.payload;
-      for (const targetInfo of targetInfos) {
-        const { targetType, targetId } = targetInfo;
-        switch (targetType) {
-          case JustificationRootTargetTypes.PROPOSITION: {
-            yield put(api.fetchProposition(targetId));
-            break;
-          }
-          case JustificationRootTargetTypes.STATEMENT: {
-            logger.error("fetching statement by ID is unimplemented");
-            break;
-          }
-          case JustificationRootTargetTypes.JUSTIFICATION: {
-            logger.error("fetching justification by ID is unimplemented");
-            break;
-          }
-          default:
-            throw newExhaustedEnumError();
-        }
-      }
-    }
-  );
-}

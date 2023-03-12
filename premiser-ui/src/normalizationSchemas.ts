@@ -2,6 +2,7 @@ import { schema } from "normalizr";
 
 import {
   AccountSettings,
+  ContextTrailItem,
   Justification,
   JustificationVote,
   Persorg,
@@ -183,6 +184,18 @@ export const mainSearchResultsSchema = {
 
 export const accountSettingsSchema = new schema.Entity<AccountSettings>(
   "accountSettings"
+);
+
+const connectingEntitySchema = new schema.Union(
+  {
+    JUSTIFICATION: justificationSchema,
+  },
+  (_value, parent) => parent.connectingEntityType
+);
+export const contextTrailItemsSchema = new schema.Array(
+  new schema.Entity<ContextTrailItem>("contextTrailItems", {
+    connectingEntity: connectingEntitySchema,
+  })
 );
 
 /**

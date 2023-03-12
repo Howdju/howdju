@@ -1,7 +1,7 @@
 import join from "lodash/join";
 import map from "lodash/map";
 
-import { newCustomError } from "howdju-common";
+import { isCustomError, newCustomError } from "howdju-common";
 import { EditorType } from "./reducers/editors";
 import { EditorId } from "./types";
 import { AxiosError } from "axios";
@@ -42,6 +42,12 @@ export const newNetworkFailureError = (
       url: sourceError.config?.url,
     }
   );
+
+export type ApiResponseError = ReturnType<typeof newApiResponseError>;
+
+export function isApiResponseError(val: any): val is ApiResponseError {
+  return isCustomError(val) && val.errorType === "API_RESPONSE_ERROR";
+}
 
 export const newApiResponseError = (
   message: string,

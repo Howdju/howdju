@@ -14,6 +14,7 @@ import {
   WritRef,
   WritQuoteRef,
   UrlRef,
+  ContextTrailItem,
 } from "howdju-common";
 import { makeJustificationOutModel } from "howdju-client-common";
 
@@ -90,16 +91,18 @@ export default class LandingPage extends Component {
       },
     });
 
-    const proTrailItems = [
+    const proTrailItems: ContextTrailItem[] = [
       {
-        targetType: proJustification.target.type,
-        targetId: proJustification.target.entity.id,
-        target: proJustification.target.entity,
+        connectingEntity: proJustification,
+        connectingEntityId: proJustification.id,
+        connectingEntityType: "JUSTIFICATION",
+        polarity: proJustification.polarity,
       },
       {
-        targetType: proJustificationJustification.target.type,
-        targetId: proJustificationJustification.target.entity.id,
-        target: proJustificationJustification.target.entity,
+        connectingEntity: proJustificationJustification,
+        connectingEntityId: proJustificationJustification.id,
+        connectingEntityType: "JUSTIFICATION",
+        polarity: proJustificationJustification.polarity,
       },
     ];
 
@@ -160,16 +163,18 @@ export default class LandingPage extends Component {
       },
     });
 
-    const conTrailItems = [
+    const conTrailItems: ContextTrailItem[] = [
       {
-        targetType: conJustification.target.type,
-        targetId: conJustification.target.entity.id,
-        target: conJustification.target.entity,
+        connectingEntity: conJustification,
+        connectingEntityId: conJustification.id,
+        connectingEntityType: "JUSTIFICATION",
+        polarity: conJustification.polarity,
       },
       {
-        targetType: conJustificationJustification.target.type,
-        targetId: conJustificationJustification.target.entity.id,
-        target: conJustificationJustification.target.entity,
+        connectingEntity: conJustificationJustification,
+        connectingEntityId: conJustificationJustification.id,
+        connectingEntityType: "JUSTIFICATION",
+        polarity: conJustificationJustification.polarity,
       },
     ];
 

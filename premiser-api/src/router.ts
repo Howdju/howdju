@@ -48,9 +48,24 @@ export async function routeRequest(
   }
 
   const { route, routedRequest } = selectRoute(appProvider, request);
+
+  let userId = undefined;
+  if ("authToken" in route.request.schema.shape) {
+    if (!request.authToken) {
+      throw new AuthenticationError("Must send auth token");
+    }
+    userId = await appProvider.authService.readUserIdForAuthToken(
+      request.authToken
+    );
+    if (!userId) {
+      throw new AuthenticationError("Auth token is invalid");
+    }
+  }
+
   try {
     const parseResult = route.request.schema.safeParse(routedRequest);
     if (parseResult.success) {
+      // TODO: pass userId to just those handlers that declared Authed.
       const result = await route.request.handler(
         appProvider,
         parseResult.data as any

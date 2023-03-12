@@ -1,5 +1,3 @@
-import assign from "lodash/assign";
-
 export const commonErrorTypes = {
   /** Something happened that should have been avoidable (how does this differ from impossible?) */
   PROGRAMMING_ERROR: "PROGRAMMING_ERROR",
@@ -28,20 +26,18 @@ export function isCustomError(err: any): err is CustomError {
 /* Identify custom errors with an errorType property.  Subclassing builtins like Error is not widely supported,
  * and the Babel plugin for doing so relies on static detection, which could be flakey
  */
-export const newCustomError = (
-  errorType: string,
-  message: string,
-  sourceError?: Error,
-  props?: { [key: string]: any }
-) => {
+export function newCustomError<
+  T extends string,
+  E extends Error,
+  P extends Record<string, any>
+>(errorType: T, message: string, sourceError?: E, props?: P): CustomError & P {
   const error = new Error(message) as CustomError;
   error.errorType = errorType;
   if (sourceError) {
     error.sourceError = sourceError;
   }
-  assign(error, props);
-  return error;
-};
+  return { ...error, ...props } as CustomError & P;
+}
 
 /**
  * Something has happened which should logically not be possible.

@@ -1,34 +1,9 @@
 import {
   Entity,
-  EntityId,
-  JustificationOut,
-  PropositionOut,
-  StatementOut,
 } from "howdju-common";
 import { FocusEvent } from "react";
 import { logger } from "./logger";
 
-export interface ContextTrailItemInfo {
-  targetType: "PROPOSITION" | "STATEMENT" | "JUSTIFICATION";
-  targetId: EntityId;
-}
-
-export type ContextTrailItem = {
-  targetId: EntityId;
-} & (
-  | {
-      targetType: "PROPOSITION";
-      target: PropositionOut;
-    }
-  | {
-      targetType: "STATEMENT";
-      target: StatementOut;
-    }
-  | {
-      targetType: "JUSTIFICATION";
-      target: JustificationOut;
-    }
-);
 
 /**
  * The type that react-md expects for menu items.

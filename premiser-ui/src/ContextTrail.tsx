@@ -4,19 +4,17 @@ import take from "lodash/take";
 import cn from "classnames";
 
 import {
+  ContextTrailItem,
   JustificationOut,
-  JustificationTargetTypes,
-  newExhaustedEnumError,
   PropositionOut,
   StatementOut,
 } from "howdju-common";
 
-import * as characters from "./characters";
 import PropositionCard from "./PropositionCard";
 import StatementCard from "./StatementCard";
 import JustificationCard from "./JustificationCard";
 import TreePolarity from "./components/TreePolarity";
-import { ComponentId, ContextTrailItem } from "./types";
+import { ComponentId } from "./types";
 
 import "./ContextTrail.scss";
 
@@ -30,15 +28,18 @@ export default function ContextTrail({
   className?: string;
 }) {
   function toCard(trailItem: ContextTrailItem, trailItems: ContextTrailItem[]) {
-    switch (trailItem.targetType) {
-      case JustificationTargetTypes.PROPOSITION:
-        return propositionToCard(trailItem.target, trailItems);
-      case JustificationTargetTypes.STATEMENT:
-        return statementToCard(trailItem.target, trailItems);
-      case JustificationTargetTypes.JUSTIFICATION:
-        return justificationToCard(trailItem.target, trailItems);
-      default:
-        throw newExhaustedEnumError(trailItem);
+    switch (trailItem.connectingEntityType) {
+      case "JUSTIFICATION": {
+        const justificationTarget = trailItem.connectingEntity.target;
+        switch (justificationTarget.type) {
+          case "PROPOSITION":
+            return propositionToCard(justificationTarget.entity, trailItems);
+          case "STATEMENT":
+            return statementToCard(justificationTarget.entity, trailItems);
+          case "JUSTIFICATION":
+            return justificationToCard(justificationTarget.entity, trailItems);
+        }
+      }
     }
   }
 
@@ -90,23 +91,12 @@ export default function ContextTrail({
     );
   }
 
-  function polarity(trailItem: ContextTrailItem) {
-    switch (trailItem.targetType) {
-      case "JUSTIFICATION":
-        return trailItem.target.polarity;
-      default:
-        return undefined;
-    }
-  }
-
   return trailItems.length > 0 ? (
     <ul className={cn(className, "context-trail")}>
       {map(trailItems, (trailItem, index) => (
         <li key={index}>
-          <TreePolarity polarity={polarity(trailItem)}>
-            {trailItem && trailItem.target
-              ? toCard(trailItem, take(trailItems, index))
-              : characters.ellipsis}
+          <TreePolarity polarity={trailItem.polarity}>
+            {toCard(trailItem, take(trailItems, index))}
           </TreePolarity>
         </li>
       ))}

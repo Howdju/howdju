@@ -1,7 +1,5 @@
 import { createPath } from "history";
-import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
-import join from "lodash/join";
 import queryString from "query-string";
 
 import {
@@ -11,7 +9,7 @@ import {
 } from "howdju-common";
 
 import { logger } from "./logger";
-import { contextTrailShortcutByType } from "./viewModels";
+import { serializeContextTrail } from "./contextTrails";
 
 export const mainSearchPathName = "/";
 
@@ -42,14 +40,7 @@ class Paths {
     }
     const slugPath = !noSlug && slug ? "/" + slug : "";
     const query = !isEmpty(contextTrailItems)
-      ? "?context-trail=" +
-        join(
-          map(
-            contextTrailItems,
-            (i) => `${contextTrailShortcutByType[i.targetType]},${i.target.id}`
-          ),
-          ";"
-        )
+      ? "?context-trail=" + serializeContextTrail(contextTrailItems)
       : "";
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`

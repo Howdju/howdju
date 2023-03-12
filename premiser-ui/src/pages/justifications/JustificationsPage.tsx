@@ -1,13 +1,11 @@
 import React, { Component, UIEvent } from "react";
 import { Button, CircularProgress, FontIcon, ListItem } from "react-md";
 import { connect, ConnectedProps } from "react-redux";
-import concat from "lodash/concat";
 import forEach from "lodash/forEach";
 import isEmpty from "lodash/isEmpty";
 import isEqual from "lodash/isEqual";
 import map from "lodash/map";
 import sortBy from "lodash/sortBy";
-import split from "lodash/split";
 import toLower from "lodash/toLower";
 import { denormalize } from "normalizr";
 import queryString from "query-string";
@@ -15,6 +13,8 @@ import { isArray } from "lodash";
 import { RouteComponentProps } from "react-router";
 
 import {
+  ContextTrailItem,
+  ContextTrailItemInfo,
   EntityId,
   JustificationPolarities,
   JustificationRootPolarity,
@@ -22,8 +22,8 @@ import {
   JustificationOut,
   makeCreateJustificationInputTargetingRoot,
   JustificationRef,
-  filterDefined,
-  JustificationTarget,
+  parseContextTrail,
+  ConnectingEntity,
 } from "howdju-common";
 import { actions, isVerified, isDisverified } from "howdju-client-common";
 
@@ -49,33 +49,15 @@ import t, { ADD_JUSTIFICATION_CALL_TO_ACTION } from "@/texts";
 import {
   combineIds,
   combineSuggestionsKeys,
-  ContextTrailShortcut,
-  contextTrailTypeByShortcut,
   describeRootTarget,
   rootTargetNormalizationSchemasByType,
 } from "@/viewModels";
 import { makeExtensionHighlightOnClickWritQuoteUrlCallback } from "@/extensionCallbacks";
 import { RootState } from "@/setupStore";
-import {
-  ComponentId,
-  ContextTrailItem,
-  ContextTrailItemInfo,
-  SuggestionsKey,
-} from "@/types";
+import { ComponentId, SuggestionsKey } from "@/types";
 
 import "./JustificationsPage.scss";
-
-/*
- * isVerified => isApproved
- *
- * Next steps:
- *
- * implement drill-down
- * types of context items: StatementProposition, Justification, Anchored Statement/Proposition, Justification, Counters
- * StatementTagging
- *
- * counters moving to center when they are expanded
- */
+import ErrorMessages from "@/ErrorMessages";
 
 const justificationsPageId = "justifications-page";
 
@@ -108,9 +90,11 @@ class JustificationsPage extends Component<Props> {
       rootTargetId,
     });
 
-    const contextTrailItems = contextTrailItemInfosFromProps(this.props);
-    if (!isEmpty(contextTrailItems)) {
-      this.props.apiLike.fetchJustificationTargets(contextTrailItems);
+    const { infos, hadInvalidInfos } = contextTrailItemInfosFromProps(
+      this.props
+    );
+    if (!hadInvalidInfos && !isEmpty(infos)) {
+      this.props.api.fetchContextTrail(infos, rootTargetType, rootTargetId);
     }
   }
 
@@ -123,13 +107,13 @@ class JustificationsPage extends Component<Props> {
       );
     }
 
-    const prevContextTrailInfos = contextTrailItemInfosFromProps(prevProps);
-    const contextTrailInfos = contextTrailItemInfosFromProps(this.props);
-    if (
-      !isEqual(contextTrailInfos, prevContextTrailInfos) &&
-      !isEmpty(contextTrailInfos)
-    ) {
-      this.props.apiLike.fetchJustificationTargets(contextTrailInfos);
+    const { infos: prevInfos } = contextTrailItemInfosFromProps(prevProps);
+    const { infos, hadInvalidInfos } = contextTrailItemInfosFromProps(
+      this.props
+    );
+    if (!hadInvalidInfos && !isEqual(infos, prevInfos) && !isEmpty(infos)) {
+      const { rootTargetType, rootTargetId } = rootTargetInfo;
+      this.props.api.fetchContextTrail(infos, rootTargetType, rootTargetId);
     }
   }
 
@@ -176,21 +160,15 @@ class JustificationsPage extends Component<Props> {
       rootTargetType,
       rootTarget,
       contextTrailItems,
+      hadInvalidInfos,
       sortedJustifications,
       isNewJustificationDialogVisible,
       isFetching,
+      isInvalidContextTrail,
       dispatch,
     } = this.props;
 
     const hasJustifications = !isEmpty(sortedJustifications);
-
-    const nextContextTrailItems = concat(contextTrailItems, [
-      {
-        targetType: rootTargetType,
-        targetId: rootTarget.id,
-        target: rootTarget,
-      },
-    ]);
 
     const rootTargetExtraMenuItems = [
       <ListItem
@@ -203,6 +181,17 @@ class JustificationsPage extends Component<Props> {
 
     const onClickWritQuoteUrl =
       makeExtensionHighlightOnClickWritQuoteUrlCallback(dispatch);
+
+    const contextTrail =
+      hadInvalidInfos || isInvalidContextTrail ? (
+        <ErrorMessages errors={["The context trail was invalid"]} />
+      ) : (
+        <ContextTrail
+          id={this.id("context-trail")}
+          trailItems={contextTrailItems}
+          className="md-cell md-cell--12 "
+        />
+      );
 
     return (
       <div id="justifications-page">
@@ -218,12 +207,7 @@ class JustificationsPage extends Component<Props> {
         </Helmet>
 
         <div className="md-grid md-grid--top">
-          <ContextTrail
-            id={this.id("context-trail")}
-            trailItems={contextTrailItems}
-            className="md-cell md-cell--12 "
-          />
-
+          {contextTrail}
           <div className="md-cell md-cell--12">
             <JustificationRootTargetCard
               id={this.id("root-target")}
@@ -231,7 +215,6 @@ class JustificationsPage extends Component<Props> {
               rootTarget={rootTarget}
               editorId={JustificationsPage.rootTargetEditorId}
               suggestionsKey={this.suggestionsKey("root-target")}
-              contextTrailItems={contextTrailItems}
               showJustificationCount={false}
               onShowNewJustificationDialog={this.showNewJustificationDialog}
               extraMenuItems={rootTargetExtraMenuItems}
@@ -281,7 +264,7 @@ class JustificationsPage extends Component<Props> {
           showNewNegativeJustificationDialog={
             this.showNewNegativeJustificationDialog
           }
-          contextTrailItems={nextContextTrailItems}
+          contextTrailItems={contextTrailItems}
           onClickWritQuoteUrl={onClickWritQuoteUrl}
           className="md-grid--bottom"
         />
@@ -326,9 +309,7 @@ const sortJustifications = (
   return justifications;
 };
 
-const entitiesStoreKeyByJustificationTargetType = {
-  PROPOSITION: "propositions",
-  STATEMENT: "statements",
+const entitiesStoreKeyByConnectingEntityType = {
   JUSTIFICATION: "justifications",
 } as const;
 
@@ -342,10 +323,10 @@ const mapState = (state: RootState, ownProps: OwnProps) => {
   const schema = rootTargetNormalizationSchemasByType[rootTargetType];
   const rootTarget = denormalize(rootTargetId, schema, state.entities);
 
-  const contextTrailItems = map(
-    contextTrailItemInfosFromProps(ownProps),
-    (info) => toContextTrailItem(state, info)
-  );
+  const { infos, hadInvalidInfos } = contextTrailItemInfosFromProps(ownProps);
+  const contextTrailItems = hadInvalidInfos
+    ? []
+    : map(infos, (info) => toContextTrailItem(state, info));
 
   const sortedJustifications = rootTarget
     ? sortJustifications(rootTarget.justifications)
@@ -355,7 +336,9 @@ const mapState = (state: RootState, ownProps: OwnProps) => {
     ...state.justificationsPage,
     rootTargetType,
     rootTarget,
+    rootTargetId,
     contextTrailItems,
+    hadInvalidInfos,
     sortedJustifications,
   };
 };
@@ -374,29 +357,12 @@ const contextTrailItemInfosFromProps = (props: OwnProps) => {
     );
     contextTrailParam = contextTrailParam[0];
   }
-  return contextTrailParam ? toContextTrailItemInfos(contextTrailParam) : [];
+  if (!contextTrailParam) {
+    return { infos: [], hadInvalidInfos: false };
+  }
+  const { infos, invalidInfos } = parseContextTrail(contextTrailParam);
+  return { infos, hadInvalidInfos: !!invalidInfos };
 };
-
-function toContextTrailItemInfos(contextTrailParam: string) {
-  const infoStrings = split(contextTrailParam, ";");
-  const itemInfos = map(infoStrings, (s) => {
-    const [typeShortcut, targetId] = split(s, ",");
-    if (!(typeShortcut in contextTrailTypeByShortcut)) {
-      logger.error(
-        `Invalid context trail type shortcut: ${typeShortcut} in ${contextTrailParam}`
-      );
-      return undefined;
-    }
-    return {
-      // casting is necessary because `k in o` does not narrow `k`
-      // (see https://github.com/microsoft/TypeScript/issues/43284)
-      targetType:
-        contextTrailTypeByShortcut[typeShortcut as ContextTrailShortcut],
-      targetId,
-    };
-  });
-  return filterDefined(itemInfos);
-}
 
 const connector = connect(
   mapState,
@@ -414,18 +380,23 @@ const connector = connect(
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function toContextTrailItem(state: RootState, item: ContextTrailItemInfo) {
-  const { targetType, targetId } = item;
-  const storeKey = entitiesStoreKeyByJustificationTargetType[targetType];
+function toContextTrailItem(
+  state: RootState,
+  item: ContextTrailItemInfo
+): ContextTrailItem {
+  const { connectingEntityType, connectingEntityId } = item;
+  const storeKey = entitiesStoreKeyByConnectingEntityType[connectingEntityType];
   // TODO(261): remove typecast if we type the entities reducer/state.
-  const target: JustificationTarget | undefined = (
-    state.entities[storeKey] as any
-  )?.[targetId];
+  const connectingEntity = (state.entities[storeKey] as any)?.[
+    connectingEntityId
+  ] as ConnectingEntity;
+  const polarity = connectingEntity.polarity;
   return {
-    targetType,
-    targetId,
-    target,
-  } as unknown as ContextTrailItem;
+    connectingEntityType,
+    connectingEntityId,
+    connectingEntity,
+    polarity,
+  };
 }
 
 export default connector(JustificationsPage);

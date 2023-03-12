@@ -50,13 +50,7 @@ import {
   JustificationRootTargetViewModel,
   makeCreateContentReportInput,
 } from "howdju-client-common";
-import {
-  ComponentId,
-  ContextTrailItem,
-  EditorId,
-  MenuItems,
-  SuggestionsKey,
-} from "./types";
+import { ComponentId, EditorId, MenuItems, SuggestionsKey } from "./types";
 
 const editorTypesByRootTargetType = {
   [JustificationRootTargetTypes.PROPOSITION]: EditorTypes.PROPOSITION,
@@ -68,7 +62,6 @@ interface OwnProps {
   suggestionsKey: SuggestionsKey;
   rootTargetType: JustificationRootTargetType;
   rootTarget: JustificationRootTargetViewModel;
-  contextTrailItems: ContextTrailItem[];
   extraMenuItems: MenuItems;
   canHover: boolean;
 }
@@ -88,7 +81,6 @@ class JustificationRootTargetCard extends React.Component<Props> {
       suggestionsKey,
       rootTargetType,
       rootTarget,
-      contextTrailItems,
       extraMenuItems,
       canHover,
     } = this.props;
@@ -168,7 +160,6 @@ class JustificationRootTargetCard extends React.Component<Props> {
                 "proposition"
               )}
               menu={menu}
-              contextTrailItems={contextTrailItems}
               showJustificationCount={false}
             />
             {rootTarget &&

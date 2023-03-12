@@ -1,4 +1,4 @@
-import { toNumber, split } from "lodash";
+import { toNumber, split, toString } from "lodash";
 import { Moment } from "moment";
 
 import {
@@ -36,6 +36,8 @@ import {
   newUnimplementedError,
   CreateRegistrationRequest,
   CreateRegistrationConfirmation,
+  parseContextTrail,
+  isFocusEntityType,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -619,6 +621,59 @@ export const serviceRoutes = {
       }
     ),
   },
+
+  /*
+   * Context trail
+   */
+  readContextTrail: {
+    path: "context-trails",
+    method: httpMethods.GET,
+    request: handler(
+      QueryStringParams(
+        "contextTrailInfos",
+        "focusEntityType",
+        "focusEntityId"
+      ),
+      async (
+        appProvider: ServicesProvider,
+        {
+          authToken,
+          queryStringParams: {
+            contextTrailInfos,
+            focusEntityType,
+            focusEntityId,
+          },
+        }
+      ) => {
+        if (!contextTrailInfos) {
+          throw new InvalidRequestError("contextTrailInfos is required");
+        }
+        const { infos, invalidInfos } = parseContextTrail(contextTrailInfos);
+        if (invalidInfos) {
+          throw new InvalidRequestError(
+            `Invalid context trail infos: ${toString(invalidInfos)}`
+          );
+        }
+        if (!isFocusEntityType(focusEntityType)) {
+          throw new InvalidRequestError(
+            `Invalid focus entity type: ${focusEntityType}`
+          );
+        }
+        if (!focusEntityId) {
+          throw new InvalidRequestError(`Focus entity id is required`);
+        }
+        const contextTrailItems =
+          await appProvider.contextTrailsService.readContextTrail(
+            authToken,
+            infos,
+            focusEntityType,
+            focusEntityId
+          );
+        return { body: { contextTrailItems } };
+      }
+    ),
+  },
+
   /*
    * Writ quotes
    */
