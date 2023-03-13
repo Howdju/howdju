@@ -10,13 +10,12 @@ import {
   StatementOut,
 } from "howdju-common";
 
-import PropositionCard from "./PropositionCard";
-import StatementCard from "./StatementCard";
-import JustificationCard from "./JustificationCard";
-import TreePolarity from "./components/TreePolarity";
-import { ComponentId } from "./types";
-
-import "./ContextTrail.scss";
+import PropositionCard from "@/PropositionCard";
+import StatementCard from "@/StatementCard";
+import JustificationCard from "@/JustificationCard";
+import TreePolarity from "@/components/TreePolarity";
+import { ComponentId } from "@/types";
+import PropositionCompoundCard from "@/PropositionCompoundCard";
 
 export default function ContextTrail({
   id,
@@ -48,6 +47,23 @@ export default function ContextTrail({
     trailItems: ContextTrailItem[]
   ) {
     const cardId = `${id}-proposition-${proposition.id}`;
+    const prevTrailItem = trailItems[trailItems.length - 1];
+    if (
+      prevTrailItem &&
+      prevTrailItem.connectingEntityType === "JUSTIFICATION" &&
+      prevTrailItem.connectingEntity.basis.type === "PROPOSITION_COMPOUND" &&
+      prevTrailItem.connectingEntity.basis.entity.atoms.length > 1
+    ) {
+      return (
+        <PropositionCompoundCard
+          id={cardId}
+          propositionCompound={prevTrailItem.connectingEntity.basis.entity}
+          highlightedProposition={proposition}
+          contextTrailItems={trailItems}
+          showStatusText={false}
+        />
+      );
+    }
     return (
       <PropositionCard
         id={cardId}
@@ -93,13 +109,19 @@ export default function ContextTrail({
 
   return trailItems.length > 0 ? (
     <ul className={cn(className, "context-trail")}>
-      {map(trailItems, (trailItem, index) => (
-        <li key={index}>
-          <TreePolarity polarity={trailItem.polarity}>
-            {toCard(trailItem, take(trailItems, index))}
-          </TreePolarity>
-        </li>
-      ))}
+      {/* DO_NOT_MERGE: can consume next trailItem if current is justification
+      having prop compound basis and next targets one of the atoms. Use next item
+      to get highlighting proposition, and then skip it. */}
+      {map(trailItems, (trailItem, i) => {
+        const polarity = i > 0 ? trailItems[i - 1].polarity : undefined;
+        return (
+          <li key={i}>
+            <TreePolarity polarity={polarity}>
+              {toCard(trailItem, take(trailItems, i))}
+            </TreePolarity>
+          </li>
+        );
+      })}
     </ul>
   ) : (
     <div />

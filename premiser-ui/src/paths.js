@@ -5,11 +5,11 @@ import queryString from "query-string";
 import {
   JustificationRootTargetTypes,
   newExhaustedEnumError,
+  serializeContextTrail,
   toSlug,
 } from "howdju-common";
 
 import { logger } from "./logger";
-import { serializeContextTrail } from "./contextTrails";
 
 export const mainSearchPathName = "/";
 

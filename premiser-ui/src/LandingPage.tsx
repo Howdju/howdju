@@ -25,7 +25,7 @@ import JustificationBranch from "./JustificationBranch";
 import { combineIds } from "./viewModels";
 
 import "./LandingPage.scss";
-import ContextTrail from "./ContextTrail";
+import ContextTrail from "@/components/contextTrail/ContextTrail";
 import moment from "moment";
 
 export default class LandingPage extends Component {

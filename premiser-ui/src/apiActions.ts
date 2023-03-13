@@ -39,7 +39,6 @@ import {
   CreateStatement,
   UpdatePersorg,
   serializeContextTrail,
-  FocusEntityType,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -1168,15 +1167,9 @@ export const api = {
   fetchContextTrail: apiActionCreator(
     "FETCH_CONTEXT_TRAIL",
     serviceRoutes.readContextTrail,
-    (
-      contextTrailInfos: ContextTrailItemInfo[],
-      focusEntityType: FocusEntityType,
-      focusEntityId: EntityId
-    ) => ({
+    (contextTrailInfos: ContextTrailItemInfo[]) => ({
       queryStringParams: {
         contextTrailInfos: serializeContextTrail(contextTrailInfos),
-        focusEntityType,
-        focusEntityId,
       },
       normalizationSchema: { contextTrailItems: contextTrailItemsSchema },
     })

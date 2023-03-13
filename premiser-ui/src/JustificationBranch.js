@@ -155,7 +155,7 @@ class JustificationBranch extends Component {
       isUnCondensed,
       canHover,
       showBasisUrls,
-      contextTrailItems,
+      contextTrailItems = [],
       showStatusText,
       onClickWritQuoteUrl,
     } = this.props;

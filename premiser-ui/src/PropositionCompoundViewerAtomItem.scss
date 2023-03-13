@@ -1,3 +1,5 @@
+@import "./flatui-colors";
+
 li.proposition-atom {
   // Position so that chat bubble offsets below position relative to this.
   position: relative;
@@ -9,6 +11,9 @@ li.proposition-atom {
 .proposition-atom {
   .entity-viewer {
     width: 100%;
+  }
+  .highlighted {
+    border: 2px solid $peter-river;
   }
 }
 

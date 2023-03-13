@@ -48,19 +48,12 @@ describe("ContextTrailsService", () => {
         connectingEntityId: "1",
         polarity: "POSITIVE",
       });
-      const focusEntityType = "PROPOSITION";
-      const focusEntityId = "2";
 
       await expect(
-        async () =>
-          await service.readContextTrail(
-            authToken,
-            contextTrailInfos,
-            focusEntityType,
-            focusEntityId
-          )
+        async () => await service.readContextTrail(authToken, contextTrailInfos)
       ).rejects.toThrow(InvalidRequestError);
     });
+    // DO_NOT_MERGE: add a happy path test and one with an invalid trail
   });
 
   async function makeUser() {

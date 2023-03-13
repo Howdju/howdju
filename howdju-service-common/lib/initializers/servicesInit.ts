@@ -224,9 +224,7 @@ export function servicesInitializer(provider: AwsProvider) {
   const contextTrailsService = new ContextTrailsService(
     provider.logger,
     authService,
-    justificationsService,
-    propositionsService,
-    statementsService
+    justificationsService
   );
 
   provider.logger.debug("servicesInit complete");

@@ -37,7 +37,7 @@ import {
   CreateRegistrationRequest,
   CreateRegistrationConfirmation,
   parseContextTrail,
-  isFocusEntityType,
+  toJson,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -629,45 +629,25 @@ export const serviceRoutes = {
     path: "context-trails",
     method: httpMethods.GET,
     request: handler(
-      QueryStringParams(
-        "contextTrailInfos",
-        "focusEntityType",
-        "focusEntityId"
-      ),
+      QueryStringParams("contextTrailInfos"),
       async (
         appProvider: ServicesProvider,
-        {
-          authToken,
-          queryStringParams: {
-            contextTrailInfos,
-            focusEntityType,
-            focusEntityId,
-          },
-        }
+        { authToken, queryStringParams: { contextTrailInfos } }
       ) => {
         if (!contextTrailInfos) {
           throw new InvalidRequestError("contextTrailInfos is required");
         }
-        const { infos, invalidInfos } = parseContextTrail(contextTrailInfos);
-        if (invalidInfos) {
+        const { infos, invalidInfos, hasInvalidInfos } =
+          parseContextTrail(contextTrailInfos);
+        if (hasInvalidInfos) {
           throw new InvalidRequestError(
-            `Invalid context trail infos: ${toString(invalidInfos)}`
+            `Invalid context trail infos: ${toJson(invalidInfos)}`
           );
-        }
-        if (!isFocusEntityType(focusEntityType)) {
-          throw new InvalidRequestError(
-            `Invalid focus entity type: ${focusEntityType}`
-          );
-        }
-        if (!focusEntityId) {
-          throw new InvalidRequestError(`Focus entity id is required`);
         }
         const contextTrailItems =
           await appProvider.contextTrailsService.readContextTrail(
             authToken,
-            infos,
-            focusEntityType,
-            focusEntityId
+            infos
           );
         return { body: { contextTrailItems } };
       }

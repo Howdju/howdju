@@ -44,6 +44,7 @@ import WritQuotePage from "./pages/WritQuotePage";
 import { map } from "lodash";
 import { CreatePropositionPageMode } from "./types";
 import { Location, LocationState } from "history";
+import { PrimaryContextTrailProvider } from "./components/contextTrail/PrimaryContextTrailProvider";
 
 const renderHomePath = (props: RouteProps) => {
   const mainSearchText =
@@ -101,10 +102,12 @@ const routesById = {
       exact
       path="/p/:rootTargetId/:slug?"
       render={(props) => (
-        <JustificationsPage
-          {...props}
-          rootTargetType={JustificationRootTargetTypes.PROPOSITION}
-        />
+        <PrimaryContextTrailProvider {...props}>
+          <JustificationsPage
+            {...props}
+            rootTargetType={JustificationRootTargetTypes.PROPOSITION}
+          />
+        </PrimaryContextTrailProvider>
       )}
     />
   ),

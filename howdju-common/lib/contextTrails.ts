@@ -1,9 +1,9 @@
-import { invert, join, map, split } from "lodash";
+import { invert, join, map, some, split } from "lodash";
 import { JustificationOut } from "./apiModels";
 
 import { EntityId } from "./entities";
 import { logger } from "./logger";
-import { RelationPolarity } from "./zodSchemas";
+import { JustificationTargetType, RelationPolarity } from "./zodSchemas";
 
 /**
  * A representation of an item in a context trail sufficient to request the full information.
@@ -40,6 +40,8 @@ export type ContextTrailItem = {
 
 export type ConnectingEntity = ContextTrailItem["connectingEntity"];
 export type ConnectingEntityType = ContextTrailItem["connectingEntityType"];
+// TODO(20): Union with Appearance target type
+export type ConnectingEntityTargetType = JustificationTargetType;
 // For now just reuse JustificationRootTargetType, but we will need to union with Appearance targets too.
 const focusEntityTypes = ["PROPOSITION", "STATEMENT"] as const;
 export type FocusEntityType = typeof focusEntityTypes[number];
@@ -64,6 +66,9 @@ export const contextTrailPolarityByShortcut = {
 export type ContextTrailPolarityShortcut =
   keyof typeof contextTrailPolarityByShortcut;
 
+export const contextTrailShortcutByPolarity = invert(
+  contextTrailPolarityByShortcut
+);
 export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut);
 
 export function serializeContextTrail(
@@ -74,7 +79,7 @@ export function serializeContextTrail(
       [
         contextTrailShortcutByType[i.connectingEntityType],
         i.connectingEntityId,
-        i.polarity,
+        contextTrailShortcutByPolarity[i.polarity],
       ],
       ","
     )
@@ -87,6 +92,8 @@ export type ContextTrailInfoParseResult = {
   infos: ContextTrailItemInfo[];
   // The infos that could not be successfully parsed
   invalidInfos: string[];
+  // True iff invalidInfos is non-empty;
+  hasInvalidInfos: boolean;
 };
 
 export function parseContextTrail(
@@ -128,5 +135,71 @@ export function parseContextTrail(
       polarity,
     });
   }
-  return { infos, invalidInfos };
+  return { infos, invalidInfos, hasInvalidInfos: !!invalidInfos.length };
+}
+
+// If we add ConnectingEntityTypes, expand this discriminated union.
+export type TypedConnectingEntity = {
+  type: "JUSTIFICATION";
+  entity: JustificationOut;
+};
+
+export type TypedConnectingEntityTargetId = {
+  type: ConnectingEntityTargetType;
+  id: EntityId;
+};
+
+/** `prev` is the previous entity in the chain. Usually this is displayed above the current (`curr`) one. */
+export function areAdjacentConnectingEntities(
+  prev: TypedConnectingEntity,
+  curr: TypedConnectingEntity
+) {
+  switch (curr.type) {
+    case "JUSTIFICATION": {
+      const type = curr.entity.target.type;
+      const id = curr.entity.target.entity.id;
+      return areValidTargetAndConnectingEntity({ type, id }, prev);
+    }
+  }
+}
+
+export function areValidTargetAndConnectingEntity(
+  { type, id }: TypedConnectingEntityTargetId,
+  prev: TypedConnectingEntity
+) {
+  switch (type) {
+    case "JUSTIFICATION": {
+      return prev.type === "JUSTIFICATION" && id === prev.entity.id;
+    }
+    case "PROPOSITION":
+      switch (prev.type) {
+        case "JUSTIFICATION":
+          switch (prev.entity.basis.type) {
+            case "PROPOSITION_COMPOUND":
+              return some(
+                prev.entity.basis.entity.atoms,
+                (a) => a.entity.id === id
+              );
+            case "SOURCE_EXCERPT":
+            case "WRIT_QUOTE":
+              return false;
+          }
+      }
+    case "STATEMENT":
+      // Statements currently cannot appear in a context trail chain because they cannot
+      // be the basis of a Justification.
+      return false;
+  }
+}
+
+export function getConnectingEntitySourceInfo(
+  typedConnectingEntity: TypedConnectingEntity
+) {
+  switch (typedConnectingEntity.type) {
+    case "JUSTIFICATION":
+      return {
+        id: typedConnectingEntity.entity.basis.entity.id,
+        type: typedConnectingEntity.entity.basis.type,
+      };
+  }
 }

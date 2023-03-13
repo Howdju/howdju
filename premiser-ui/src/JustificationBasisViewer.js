@@ -34,7 +34,7 @@ export default class JustificationBasisViewer extends Component {
             id={id}
             propositionCompound={basis.entity}
             doShowControls={doShowControls}
-            doShowPropositionAtomJustifications={doShowBasisJustifications}
+            doShowAtomJustifications={doShowBasisJustifications}
             isCondensed={isCondensed}
             isUnCondensed={isUnCondensed}
             showBasisUrls={showUrls}

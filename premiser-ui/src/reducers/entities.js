@@ -76,7 +76,7 @@ export default handleActions(
       api.updateProposition.response,
       api.updateWritQuote.response,
       api.updatePersorg.response,
-      api.readContextTrail.response
+      api.fetchContextTrail.response
     )]: {
       next: (state, action) => {
         const { entities } = normalize(
