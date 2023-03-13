@@ -22,7 +22,9 @@ import {
   EntityValidationError,
   JustificationsService,
   makePool,
+  PropositionCompoundsService,
   UsersDao,
+  WritQuotesService,
 } from "..";
 import { makeTestProvider } from "@/initializers/TestProvider";
 
@@ -35,6 +37,8 @@ describe("JustificationsService", () => {
   let service: JustificationsService;
   let usersDao: UsersDao;
   let authService: AuthService;
+  let propositionCompoundsService: PropositionCompoundsService;
+  let writQuotesService: WritQuotesService;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
@@ -46,6 +50,8 @@ describe("JustificationsService", () => {
     service = provider.justificationsService;
     usersDao = provider.usersDao;
     authService = provider.authService;
+    propositionCompoundsService = provider.propositionCompoundsService;
+    writQuotesService = provider.writQuotesService;
   });
   afterEach(async () => {
     await endPoolAndDropDb(pool, dbConfig, dbName);
@@ -71,6 +77,100 @@ describe("JustificationsService", () => {
         },
       });
     });
+
+    test("can create an extant PropositionCompound-based justification targeting a proposition", async () => {
+      // Arrange
+      const { authToken, user } = await makeUser();
+
+      const createPropositionCompound = {
+        atoms: [
+          { entity: { text: "Socrates is a man" } },
+          { entity: { text: "All men are mortal" } },
+        ],
+      };
+      const now = moment();
+      const { propositionCompound: propositionCompoundOut } =
+        await propositionCompoundsService.createPropositionCompoundAsUser(
+          createPropositionCompound,
+          user.id,
+          now
+        );
+
+      const createJustification: CreateJustification = {
+        target: {
+          type: "PROPOSITION",
+          entity: {
+            text: "Socrates is mortal.",
+          },
+        },
+        basis: {
+          type: "PROPOSITION_COMPOUND",
+          entity: propositionCompoundOut,
+        },
+        polarity: "POSITIVE",
+      };
+
+      // Act
+      const { isExtant, justification: justificationOut } =
+        await service.readOrCreate(createJustification, authToken);
+
+      // Assert
+      expect(isExtant).toBe(false);
+      expect(justificationOut).toMatchObject({
+        ...createJustification,
+        id: expect.any(String),
+        creator: {
+          id: user.id,
+        },
+      });
+    });
+    test("can create an extant WritQuote-based justification targeting a proposition", async () => {
+      // Arrange
+      const { authToken, user } = await makeUser();
+
+      const createWritQuote = {
+        quoteText:
+          "Extensive scientific reports indicate that Socrates is mortal.",
+        writ: {
+          title: "Trustworthy online news source",
+        },
+        urls: [{ url: "https://www.trustworthy.news" }],
+      };
+      const { writQuote: writQuoteOut } =
+        await writQuotesService.createWritQuote({
+          writQuote: createWritQuote,
+          authToken,
+        });
+
+      const createJustification: CreateJustification = {
+        target: {
+          type: "PROPOSITION",
+          entity: {
+            text: "Socrates is mortal.",
+          },
+        },
+        basis: {
+          type: "WRIT_QUOTE",
+          entity: writQuoteOut,
+        },
+        polarity: "POSITIVE",
+      };
+
+      // Act
+      const { isExtant, justification: justificationOut } =
+        await service.readOrCreate(createJustification, authToken);
+
+      // Assert
+      expect(isExtant).toBe(false);
+      expect(justificationOut).toMatchObject({
+        ...createJustification,
+        id: expect.any(String),
+        creator: {
+          id: user.id,
+        },
+      });
+    });
+
     test("can create a writ quote based justification targeting a statement", async () => {
       // Arrange
       const { authToken, user } = await makeUser();

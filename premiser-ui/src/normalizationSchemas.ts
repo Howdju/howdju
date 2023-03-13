@@ -188,6 +188,7 @@ export const accountSettingsSchema = new schema.Entity<AccountSettings>(
 
 const connectingEntitySchema = new schema.Union(
   {
+    // TODO(20): add Appearances
     JUSTIFICATION: justificationSchema,
   },
   (_value, parent) => parent.connectingEntityType

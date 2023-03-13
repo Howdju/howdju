@@ -3,13 +3,23 @@ import { Pool } from "pg";
 import { ContextTrailItemInfo } from "howdju-common";
 import { mockLogger } from "howdju-test-common";
 
-import { endPoolAndDropDb, initDb, makeTestDbConfig } from "@/util/testUtil";
+import {
+  endPoolAndDropDb,
+  expectToBeSameMomentDeep,
+  initDb,
+  makeTestDbConfig,
+} from "@/util/testUtil";
 import {
   AuthService,
+  ConflictError,
   ContextTrailsService,
   Database,
+  EntityNotFoundError,
   InvalidRequestError,
+  JustificationsService,
   makePool,
+  PropositionCompoundsService,
+  PropositionsService,
   UsersDao,
 } from "..";
 import { makeTestProvider } from "@/initializers/TestProvider";
@@ -24,6 +34,9 @@ describe("ContextTrailsService", () => {
   let service: ContextTrailsService;
   let usersDao: UsersDao;
   let authService: AuthService;
+  let propositionsService: PropositionsService;
+  let propositionCompoundsService: PropositionCompoundsService;
+  let justificationsService: JustificationsService;
   beforeEach(async () => {
     dbName = await initDb(dbConfig);
 
@@ -35,6 +48,9 @@ describe("ContextTrailsService", () => {
     service = provider.contextTrailsService;
     usersDao = provider.usersDao;
     authService = provider.authService;
+    propositionsService = provider.propositionsService;
+    propositionCompoundsService = provider.propositionCompoundsService;
+    justificationsService = provider.justificationsService;
   });
   afterEach(async () => {
     await endPoolAndDropDb(pool, dbConfig, dbName);
@@ -53,7 +69,207 @@ describe("ContextTrailsService", () => {
         async () => await service.readContextTrail(authToken, contextTrailInfos)
       ).rejects.toThrow(InvalidRequestError);
     });
-    // DO_NOT_MERGE: add a happy path test and one with an invalid trail
+
+    test("Reads a valid context trail", async () => {
+      const { authToken, user } = await makeUser();
+
+      const { proposition } = await propositionsService.readOrCreateProposition(
+        authToken,
+        {
+          text: "A fine wee proposition.",
+        }
+      );
+      const { proposition: basisProposition1 } =
+        await propositionsService.readOrCreateProposition(authToken, {
+          text: "A fine wee proposition 1.",
+        });
+      const now = moment();
+      const { propositionCompound: propositionCompound1 } =
+        await propositionCompoundsService.createPropositionCompoundAsUser(
+          {
+            atoms: [{ entity: basisProposition1 }],
+          },
+          user.id,
+          now
+        );
+      const { justification } = await justificationsService.readOrCreate(
+        {
+          target: {
+            type: "PROPOSITION",
+            entity: proposition,
+          },
+          polarity: "POSITIVE",
+          basis: {
+            type: "PROPOSITION_COMPOUND",
+            entity: propositionCompound1,
+          },
+        },
+        authToken
+      );
+      const { proposition: basisProposition2 } =
+        await propositionsService.readOrCreateProposition(authToken, {
+          text: "A fine wee proposition 2.",
+        });
+      const { propositionCompound: propositionCompound2 } =
+        await propositionCompoundsService.createPropositionCompoundAsUser(
+          {
+            atoms: [{ entity: basisProposition2 }],
+          },
+          user.id,
+          now
+        );
+      const { justification: justification2 } =
+        await justificationsService.readOrCreate(
+          {
+            target: {
+              type: "PROPOSITION",
+              entity: basisProposition1,
+            },
+            polarity: "POSITIVE",
+            basis: {
+              type: "PROPOSITION_COMPOUND",
+              entity: propositionCompound2,
+            },
+          },
+          authToken
+        );
+
+      const contextTrailInfos: ContextTrailItemInfo[] = [
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: justification.id,
+          polarity: justification.polarity,
+        },
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: justification2.id,
+          polarity: justification2.polarity,
+        },
+      ];
+
+      // Act
+      const trailItems = await service.readContextTrail(
+        authToken,
+        contextTrailInfos
+      );
+
+      expect(trailItems).toEqual([
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: justification.id,
+          polarity: justification.polarity,
+          connectingEntity: expectToBeSameMomentDeep(justification),
+        },
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: justification2.id,
+          polarity: justification2.polarity,
+          connectingEntity: expectToBeSameMomentDeep(justification2),
+        },
+      ]);
+    });
+
+    test("Throws not found for a missing trail entity", async () => {
+      const { authToken } = await makeUser();
+      const contextTrailInfos: ContextTrailItemInfo[] = [
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: "1",
+          polarity: "POSITIVE",
+        },
+      ];
+
+      await expect(
+        async () => await service.readContextTrail(authToken, contextTrailInfos)
+      ).rejects.toThrow(EntityNotFoundError);
+    });
+
+    test("Throws conflict for an invalid context trail", async () => {
+      const { authToken, user } = await makeUser();
+
+      const { proposition } = await propositionsService.readOrCreateProposition(
+        authToken,
+        {
+          text: "A fine wee proposition.",
+        }
+      );
+      const { proposition: basisProposition1 } =
+        await propositionsService.readOrCreateProposition(authToken, {
+          text: "A fine wee proposition 1.",
+        });
+      const now = moment();
+      const { propositionCompound: propositionCompound1 } =
+        await propositionCompoundsService.createPropositionCompoundAsUser(
+          {
+            atoms: [{ entity: basisProposition1 }],
+          },
+          user.id,
+          now
+        );
+      const { justification } = await justificationsService.readOrCreate(
+        {
+          target: {
+            type: "PROPOSITION",
+            entity: proposition,
+          },
+          polarity: "POSITIVE",
+          basis: {
+            type: "PROPOSITION_COMPOUND",
+            entity: propositionCompound1,
+          },
+        },
+        authToken
+      );
+
+      // A justification that doesn't target a proposition in the first one's basis
+      const { proposition: proposition2 } =
+        await propositionsService.readOrCreateProposition(authToken, {
+          text: "A fine wee proposition 2.",
+        });
+      const { proposition: basisProposition2 } =
+        await propositionsService.readOrCreateProposition(authToken, {
+          text: "A fine wee proposition 3.",
+        });
+      const { propositionCompound: propositionCompound2 } =
+        await propositionCompoundsService.createPropositionCompoundAsUser(
+          {
+            atoms: [{ entity: basisProposition2 }],
+          },
+          user.id,
+          now
+        );
+      const { justification: justification2 } =
+        await justificationsService.readOrCreate(
+          {
+            target: {
+              type: "PROPOSITION",
+              entity: proposition2,
+            },
+            polarity: "POSITIVE",
+            basis: {
+              type: "PROPOSITION_COMPOUND",
+              entity: propositionCompound2,
+            },
+          },
+          authToken
+        );
+
+      const contextTrailInfos: ContextTrailItemInfo[] = [
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: justification.id,
+          polarity: justification.polarity,
+        },
+        {
+          connectingEntityType: "JUSTIFICATION",
+          connectingEntityId: justification2.id,
+          polarity: justification2.polarity,
+        },
+      ];
+      await expect(
+        async () => await service.readContextTrail(authToken, contextTrailInfos)
+      ).rejects.toThrow(ConflictError);
+    });
   });
 
   async function makeUser() {

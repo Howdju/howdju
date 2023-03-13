@@ -125,7 +125,6 @@ function getSourceExcerptEntity(
     case SourceExcerptTypes.WRIT_QUOTE:
       return service.writQuotesService.readWritQuoteForId(
         sourceExcerptEntityId,
-        { userId }
       );
     case SourceExcerptTypes.PIC_REGION:
       return service.picRegionsService.readPicRegionForId(

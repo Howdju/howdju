@@ -152,7 +152,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     queryStringParams: { tagId: /.+/ },
     request: handler(
-      Authed.merge(QueryStringParams("tagId")),
+      QueryStringParams("tagId"),
       async (
         appProvider: ServicesProvider,
         { queryStringParams: { tagId }, authToken }
@@ -240,7 +240,7 @@ export const serviceRoutes = {
     // explicitly no query string parameters
     queryStringParams: {},
     request: handler(
-      PathParams("propositionId").merge(Authed),
+      PathParams("propositionId"),
       async (
         appProvider: ServicesProvider,
         { pathParams: { propositionId }, authToken }
@@ -455,7 +455,7 @@ export const serviceRoutes = {
       include: "justifications",
     },
     request: handler(
-      Authed.merge(PathParams("propositionId")),
+      PathParams("propositionId"),
       async (
         appProvider: ServicesProvider,
         { pathParams: { propositionId }, authToken }
@@ -477,7 +477,7 @@ export const serviceRoutes = {
       include: "justifications",
     },
     request: handler(
-      PathParams("statementId").merge(Authed),
+      PathParams("statementId"),
       async (
         appProvider: ServicesProvider,
         { pathParams: { statementId }, authToken }
@@ -500,15 +500,14 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     queryStringParams: {},
     request: handler(
-      PathParams("propositionCompoundId").merge(Authed),
+      PathParams("propositionCompoundId"),
       async (
         appProvider: ServicesProvider,
-        { pathParams: { propositionCompoundId }, authToken }
+        { pathParams: { propositionCompoundId } }
       ) => {
         const propositionCompound =
           await appProvider.propositionCompoundsService.readPropositionCompoundForId(
-            propositionCompoundId,
-            { authToken }
+            propositionCompoundId
           );
         return { body: { propositionCompound } };
       }
@@ -522,7 +521,7 @@ export const serviceRoutes = {
     method: httpMethods.GET,
     queryStringParams: {},
     request: handler(
-      PathParams("sourceExcerptParaphraseId").merge(Authed),
+      PathParams("sourceExcerptParaphraseId"),
       async (
         appProvider: ServicesProvider,
         { pathParams: { sourceExcerptParaphraseId }, authToken }
@@ -706,15 +705,13 @@ export const serviceRoutes = {
     path: "writ-quotes/:writQuoteId",
     method: httpMethods.GET,
     request: handler(
-      PathParams("writQuoteId").merge(Authed),
+      PathParams("writQuoteId"),
       async (
         appProvider: ServicesProvider,
-        { pathParams: { writQuoteId }, authToken }
+        { pathParams: { writQuoteId } }
       ) => {
         const writQuote =
-          await appProvider.writQuotesService.readWritQuoteForId(writQuoteId, {
-            authToken,
-          });
+          await appProvider.writQuotesService.readWritQuoteForId(writQuoteId);
         return { body: { writQuote } };
       }
     ),

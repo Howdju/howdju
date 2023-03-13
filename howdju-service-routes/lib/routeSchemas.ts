@@ -1,7 +1,14 @@
 import { reduce } from "lodash";
 import { z } from "zod";
 
-/** A request schema mixin for routes requiring an auth token. */
+/**
+ * A request schema mixin for routes requiring an auth token.
+ *
+ * The API router uses this to reject requests missing an AuthToken.
+ *
+ * For routes for which an AuthToken is optional, no special request schema is needed; `authToken`
+ * will be available if the request provided one.
+ */
 export const Authed = z.object({
   authToken: z.string(),
 });

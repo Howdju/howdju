@@ -499,13 +499,11 @@ export class JustificationsService extends EntityService<
       case "WRIT_QUOTE":
         return await this.writQuotesService.readWritQuoteForId(
           justificationBasis.entity.id,
-          { authToken: undefined }
         );
 
       case "PROPOSITION_COMPOUND":
         return await this.propositionCompoundsService.readPropositionCompoundForId(
           justificationBasis.entity.id,
-          { authToken: undefined }
         );
       case "SOURCE_EXCERPT":
         // TODO(201): implement

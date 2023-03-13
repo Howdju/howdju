@@ -10,6 +10,7 @@ import {
 import {
   AuthenticationError,
   AuthorizationError,
+  ConflictError,
   EntityConflictError,
   EntityNotFoundError,
   EntityValidationError,
@@ -143,6 +144,13 @@ export async function routeRequest(
         body: {
           errorCode: apiErrorCodes.ENTITY_CONFLICT,
           errors: err.errors,
+        },
+      });
+    } else if (err instanceof ConflictError) {
+      return conflict({
+        callback,
+        body: {
+          message: err.message,
         },
       });
     } else if (err instanceof UserActionsConflictError) {

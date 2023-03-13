@@ -21,27 +21,31 @@ exports.PropositionCompoundsService = class PropositionCompoundsService {
     this.propositionCompoundsDao = propositionCompoundsDao;
   }
 
-  readPropositionCompoundForId(propositionCompoundId, { authToken }) {
+  readPropositionCompoundForId(propositionCompoundId) {
     return this.propositionCompoundsDao.read(propositionCompoundId);
   }
 
-  createPropositionCompoundAsUser(propositionCompound, userId, now) {
-    return Promise.resolve()
-      .then(() => {
-        const validationErrors =
-          this.propositionCompoundValidator.validate(propositionCompound);
-        if (validationErrors.hasErrors) {
-          throw new EntityValidationError(validationErrors);
-        }
-        return userId;
-      })
-      .then((userId) =>
-        this.createValidPropositionCompoundAsUser(
-          propositionCompound,
-          userId,
-          now
-        )
-      );
+  async createPropositionCompoundAsUser(propositionCompound, userId, now) {
+    if (propositionCompound.id) {
+      return {
+        propositionCompound: await this.readPropositionCompoundForId(
+          propositionCompound.id
+        ),
+        isExtant: true,
+      };
+    }
+
+    const validationErrors =
+      this.propositionCompoundValidator.validate(propositionCompound);
+    if (validationErrors.hasErrors) {
+      throw new EntityValidationError(validationErrors);
+    }
+
+    return await this.createValidPropositionCompoundAsUser(
+      propositionCompound,
+      userId,
+      now
+    );
   }
 
   createValidPropositionCompoundAsUser(propositionCompound, userId, now) {

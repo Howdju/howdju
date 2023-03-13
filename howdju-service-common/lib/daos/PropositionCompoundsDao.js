@@ -56,34 +56,39 @@ exports.PropositionCompoundsDao = class PropositionCompoundsDao {
       .then(({ rows: [row] }) => toPropositionCompoundAtom(row));
   }
 
-  read(propositionCompoundId) {
+  async read(propositionCompoundId) {
     const sql = `
         select
-            sc.proposition_compound_id
-          , sca.order_position
-          , s.proposition_id
-          , s.text as proposition_text
-          , s.creator_user_id as proposition_creator_user_id
-        from proposition_compounds sc
-          join proposition_compound_atoms sca on
-                sc.proposition_compound_id = $1
-            and sca.proposition_compound_id = sc.proposition_compound_id
-            and sc.deleted is null
-          join propositions s on
-                s.proposition_id = sca.proposition_id
-            and s.deleted is null
-        order by sc.proposition_compound_id, sca.order_position
+            pc.proposition_compound_id
+          , pc.created
+          , pc.creator_user_id
+          , pca.order_position
+          , p.proposition_id
+          , p.text as proposition_text
+          , p.normal_text as proposition_normal_text
+          , p.creator_user_id as proposition_creator_user_id
+          , p.created as proposition_created
+        from proposition_compounds pc
+          join proposition_compound_atoms pca on
+                pc.proposition_compound_id = $1
+            and pca.proposition_compound_id = pc.proposition_compound_id
+            and pc.deleted is null
+          join propositions p on
+                p.proposition_id = pca.proposition_id
+            and p.deleted is null
+        order by pc.proposition_compound_id, pca.order_position
           `;
-    return this.database
-      .query("createPropositionCompoundAtom", sql, [propositionCompoundId])
-      .then(({ rows }) => {
-        const row = head(rows);
-        if (!row) {
-          return null;
-        }
-        const atoms = map(rows, toPropositionCompoundAtom);
-        return toPropositionCompound(row, atoms);
-      });
+    const { rows } = await this.database.query(
+      "createPropositionCompoundAtom",
+      sql,
+      [propositionCompoundId]
+    );
+    const row = head(rows);
+    if (!row) {
+      return null;
+    }
+    const atoms = map(rows, toPropositionCompoundAtom);
+    return toPropositionCompound(row, atoms);
   }
 
   readPropositionCompoundEquivalentTo(propositionCompound) {

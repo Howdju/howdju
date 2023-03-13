@@ -109,9 +109,6 @@ export default function ContextTrail({
 
   return trailItems.length > 0 ? (
     <ul className={cn(className, "context-trail")}>
-      {/* DO_NOT_MERGE: can consume next trailItem if current is justification
-      having prop compound basis and next targets one of the atoms. Use next item
-      to get highlighting proposition, and then skip it. */}
       {map(trailItems, (trailItem, i) => {
         const polarity = i > 0 ? trailItems[i - 1].polarity : undefined;
         return (

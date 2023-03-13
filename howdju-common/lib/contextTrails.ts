@@ -45,13 +45,6 @@ export type ConnectingEntityTargetType = JustificationTargetType;
 // For now just reuse JustificationRootTargetType, but we will need to union with Appearance targets too.
 const focusEntityTypes = ["PROPOSITION", "STATEMENT"] as const;
 export type FocusEntityType = typeof focusEntityTypes[number];
-const focusEntityTypesSet = new Set(focusEntityTypes);
-
-export function isFocusEntityType(
-  val: string | undefined
-): val is FocusEntityType {
-  return focusEntityTypesSet.has(val as any);
-}
 
 export const contextTrailTypeByShortcut = {
   j: "JUSTIFICATION",
@@ -138,7 +131,7 @@ export function parseContextTrail(
   return { infos, invalidInfos, hasInvalidInfos: !!invalidInfos.length };
 }
 
-// If we add ConnectingEntityTypes, expand this discriminated union.
+// TODO(20): When we add Appearances, expand this discriminated union.
 export type TypedConnectingEntity = {
   type: "JUSTIFICATION";
   entity: JustificationOut;
