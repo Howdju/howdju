@@ -28,6 +28,7 @@ describe("parseContextTrail", () => {
         },
       ],
       invalidInfos: [],
+      hasInvalidInfos: false,
     });
   });
   test("Identifies invalid context trail infos", () => {
@@ -45,6 +46,7 @@ describe("parseContextTrail", () => {
         },
       ],
       invalidInfos: ["x,2,p", "j,3,y"],
+      hasInvalidInfos: true,
     });
   });
 });

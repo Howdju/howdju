@@ -1,3 +1,5 @@
+import { assign } from "lodash";
+
 export const commonErrorTypes = {
   /** Something happened that should have been avoidable (how does this differ from impossible?) */
   PROGRAMMING_ERROR: "PROGRAMMING_ERROR",
@@ -36,7 +38,8 @@ export function newCustomError<
   if (sourceError) {
     error.sourceError = sourceError;
   }
-  return { ...error, ...props } as CustomError & P;
+  assign(error, props);
+  return error as CustomError & P;
 }
 
 /**

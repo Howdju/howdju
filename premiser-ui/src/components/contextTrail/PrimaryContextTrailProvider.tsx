@@ -10,7 +10,6 @@ import {
   ContextTrailItem,
   ContextTrailItemInfo,
   parseContextTrail,
-  ConnectingEntity,
 } from "howdju-common";
 
 import { logger } from "@/logger";

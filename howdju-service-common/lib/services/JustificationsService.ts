@@ -498,12 +498,12 @@ export class JustificationsService extends EntityService<
     switch (justificationBasis.type) {
       case "WRIT_QUOTE":
         return await this.writQuotesService.readWritQuoteForId(
-          justificationBasis.entity.id,
+          justificationBasis.entity.id
         );
 
       case "PROPOSITION_COMPOUND":
         return await this.propositionCompoundsService.readPropositionCompoundForId(
-          justificationBasis.entity.id,
+          justificationBasis.entity.id
         );
       case "SOURCE_EXCERPT":
         // TODO(201): implement

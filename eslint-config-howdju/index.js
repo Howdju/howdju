@@ -89,6 +89,8 @@ module.exports = {
         // This rule has false positives when an exhaustive switch statement's cases all have `return`s.
         // We can instead rely on Typescript to detect missing case statements.
         "no-fallthrough": "off",
+        // Rely on @typescript-eslint/no-unused-vars instead
+        "no-unused-vars": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": [
           "error",

@@ -64,7 +64,10 @@ export async function routeRequest(
   }
 
   try {
-    const parseResult = route.request.schema.safeParse(routedRequest);
+    const parseResult = route.request.schema
+      // Allow props like authToken to go through even if not explicitly in the schema.
+      .passthrough()
+      .safeParse(routedRequest);
     if (parseResult.success) {
       // TODO: pass userId to just those handlers that declared Authed.
       const result = await route.request.handler(

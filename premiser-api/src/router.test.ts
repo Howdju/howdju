@@ -132,8 +132,12 @@ describe("routeRequest", () => {
       name: "VIP",
     };
     const update = jest.fn().mockReturnValue(persorg);
+    const userId = 54;
     const appProvider = {
       persorgsService: { update },
+      authService: {
+        readUserIdForAuthToken: jest.fn().mockReturnValue(userId),
+      },
       logger: mockLogger,
     } as unknown as ServicesProvider;
     const authToken = "the-auth-token";

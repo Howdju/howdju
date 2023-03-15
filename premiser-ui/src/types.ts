@@ -1,9 +1,6 @@
-import {
-  Entity,
-} from "howdju-common";
+import { Entity } from "howdju-common";
 import { FocusEvent } from "react";
 import { logger } from "./logger";
-
 
 /**
  * The type that react-md expects for menu items.

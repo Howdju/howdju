@@ -1,4 +1,4 @@
-import { toNumber, split, toString } from "lodash";
+import { toNumber, split } from "lodash";
 import { Moment } from "moment";
 
 import {
