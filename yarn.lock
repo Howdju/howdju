@@ -6220,6 +6220,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/argparse@npm:^2.0.10":
+  version: 2.0.10
+  resolution: "@types/argparse@npm:2.0.10"
+  checksum: 6f74560fa300f69ecae339fcb89e82cff0193ba643c05b98b3866e0c7b0dc099aa53821a109bab3c33d48150bd4da9a95b3e186f09de081f2d78e7c005cd8dc1
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -6833,6 +6840,13 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: a51b98dd87838d161278fdf9dd78e6a4ff8c018f406d6647f77963e144fb52a8beee40c89fd0e7e840eaeaa8bd9fe2f34519410540b1a52d43a6f8b4d2fbce33
+  languageName: node
+  linkType: hard
+
+"@types/read@npm:^0.0.29":
+  version: 0.0.29
+  resolution: "@types/read@npm:0.0.29"
+  checksum: 7cbc22283f36eac4ab3a9d64b78f60f3127cefb80a6053afc049b699a2a579e9e1cdde23547efcaea913dab8456098f56c39afbfd9a30d1d73bd96a6f7e88922
   languageName: node
   linkType: hard
 
@@ -19864,6 +19878,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mute-stream@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "mute-stream@npm:1.0.0"
+  checksum: 36fc968b0e9c9c63029d4f9dc63911950a3bdf55c9a87f58d3a266289b67180201cade911e7699f8b2fa596b34c9db43dad37649e3f7fdd13c3bb9edb0017ee7
+  languageName: node
+  linkType: hard
+
 "mz@npm:^2.7.0":
   version: 2.7.0
   resolution: "mz@npm:2.7.0"
@@ -22017,6 +22038,7 @@ __metadata:
   dependencies:
     "@types/aws-lambda": ^8.10.110
     "@types/bluebird": ^3.5.38
+    "@types/read": ^0.0.29
     "@types/source-map-support": ^0.5.6
     "@types/uuid": ^9.0.0
     argparse: ^2.0.1
@@ -22100,6 +22122,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^12
     "@testing-library/user-event": ^14.4.3
+    "@types/argparse": ^2.0.10
     "@types/dompurify": ^2.3.4
     "@types/is-valid-domain": ^0.0.1
     "@types/lodash": ^4.14.186
@@ -22172,6 +22195,7 @@ __metadata:
     react-redux: ^7.2.4
     react-router: ^5.2.0
     react-router-dom: ^5.2.0
+    read: ^2.0.0
     redux: ^4.0.5
     redux-actions: ^2.6.5
     redux-persist: ^6.0.0
@@ -23307,6 +23331,15 @@ __metadata:
   dependencies:
     mute-stream: ~0.0.4
   checksum: 2777c254e5732cac96f5d0a1c0f6b836c89ae23d8febd405b206f6f24d5de1873420f1a0795e0e3721066650d19adf802c7882c4027143ee0acf942a4f34f97b
+  languageName: node
+  linkType: hard
+
+"read@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "read@npm:2.0.0"
+  dependencies:
+    mute-stream: ~1.0.0
+  checksum: 740273db4c2da3e345e7c444a8cf6de43822b04bf7102adeaa7d77d3a83fdc57e6d58ed4f6e90ba32dd5b8797de033c56daaba37aa76923829c32374f19dfd3b
   languageName: node
   linkType: hard
 

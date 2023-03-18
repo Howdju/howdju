@@ -12,18 +12,23 @@ development tasks.
 
 ### Install node
 
-Install node and yarn:
+Install node and yarn.
+
+On macOS using `nodenv`, this could be:
 
 ```shell
 brew install nodenv
 nodenv init
-nodenv install 14.16.0
+nodenv install 14.20.1
 # Activates this node version just for this shell via an env. var
-nodenv shell 14.16.0
+nodenv shell 14.20.1
 npm install -g yarn
 ```
 
-The correct node version automatically activates due to the `.node-version` file.
+The correct node version should automatically activate due to the `.node-version`/`.nvmrc` files.
+
+Note: `14.20.1` is the officially supported Node.js version, and we recommend that everyone use a
+consistent version to avoid any issues with dependencies.
 
 ### Install dependencies
 
@@ -34,112 +39,50 @@ dependencies.
 yarn install
 ```
 
-### Password management
-
-- Use a password manager.
-- Memorize your: computer password, email password, and password manager password.
-- Store all non-memorized passwords in your password manager.
-- Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
-  manager.
-- Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like
-  `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if you can't copy-paste for some
-  reason) and can be easy to remember, if you make up an image or story that goes along with the password. So, for this
-  example password, you might imagine a tongue licking a gardenia flower, agreeing with it with a soft whispering
-  voice. (See [XKCD](https://xkcd.com/936/).) It's important that you allow a professional password manager
-  auto-generate these phrases, and that you not iterate through multiple choices to select one that is easy to remember,
-  as this decreases the effective search space of the generated passwords. Instead, come up with a mental image to help
-  you remember the words. The more silly or ridiculous, the easier it may be to remember.
-- Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator.
-
-### Install `aws-vault`
-
-[`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
-development environment. You'll need an AWS admin to provide your AWS username, access key, and secret access key.
-
-```shell
-brew install --cask aws-vault
-aws-vault add username@howdju
-```
-
-Update `~/.aws/config`:
-
-```ini
-[default]
-region = us-east-1
-
-[profile username@howdju]
-mfa_serial = arn:aws:iam::007899441171:mfa/username
-```
-
-#### Running commands using aws-vault
-
-Logging in:
-
-```shell
-aws-vault login username@howdju --duration 2h
-```
-
-Running commands with your credentials:
-
-```shell
-aws-vault exec username@howdju -- terraform apply
-```
-
-See `aws-vault`'s [USAGE](https://github.com/99designs/aws-vault/blob/master/USAGE.md) page for more.
-
-### SSH access
-
-Upload your public key named like `username.pub` to `s3://howdju-bastion-logs/public-keys/`. (The username for the
-bastion host need not match your AWS username, but it should for simplicity.) The bastion host refreshes
-from these every 5 minutes.
-
-Generate a new SSH key:
-
-```shell
-ssh-keygen -t ed25519 -C "username@howdju.com"
-```
-
-Update `~/.ssh/config`:
-
-```ssh
-Host *
-  AddKeysToAgent yes
-  UseKeychain yes
-  IdentityFile ~/.ssh/id_ed25519
-
-Host bastion.howdju.com
-  User username
-```
-
 ### Prepare a local database server
 
-TODO(#54): update this process to use a snapshot file.
+#### Create a Postgres server in Docker
+
+You'll need to decide on a password for the `postgres`
+'superuser' for the new database instance, and enter it into the first command.
 
 ```shell
-cd premiser-api
-yarn run db:tunnel
-
-# in another terminal:
-pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
-pg_dump -h 127.0.0.1 -p 5433 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
-# you can kill `yarn run db:tunnel` once this completes
-
-# In any available terminal (fill in a password for the postgres user):
 printf 'Enter Postgres superuser password:'; read -s POSTGRES_SUPERUSER_PASSWORD
-docker run -d -p 5432:5432 --name premiser_postgres -e POSTGRES_PASSWORD=$POSTGRES_SUPERUSER_PASSWORD postgres:12.5
-
+docker run -d -p 5432:5432 --name howdju_postgres -e POSTGRES_PASSWORD=$POSTGRES_SUPERUSER_PASSWORD postgres:12.5
 # If you want to see the output from the db, either omit -d from the run command or run:
-docker logs premiser_postgres --follow
+docker logs howdju_postgres --follow
+```
 
-# In any available terminal, run the following:
+#### Create the users, database, and schema
 
-# Choose a premiser_api password and update the config/local*.env files
+You'll need to select two new passwords.
+`premiser_admin` is the Postgres user that will own and control the database.`premiser_api` is the
+user the Howdju API will use to connect to the database. If you are prompted for the password for
+`postgres`, enter the superuser password you set above.
+
+Note: For a local development database, the `premiser_admin` and `postgres` superuser are probably redundant, but we
+have `premiser_admin` for now for parity with the production database.
+
+```shell
+PGPASSWORD=$POSTGRES_SUPERUSER_PASSWORD
 psql --echo-all -h localhost -U postgres < db/create-users.sql
 echo 'create database premiser;' | psql -h localhost -U postgres
-psql --echo-all -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
-psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_name
-rm $pg_dump_file_name
+psql --echo-all -h localhost -U postgres premiser < db/migrations/0*.sql
 ```
+
+Create a local environment file for the API and use `premiser_api`'s password for `DB_PASSWORD`.
+
+```shell
+cp ../config/example.env ../config/local.env
+```
+
+### Create a Howdju user
+
+```shell
+yarn run create-user:local
+```
+
+Alternatively, you can go through the registration process (grab the registration URLs from the API output.)
 
 ## Running the platform locally
 
@@ -148,7 +91,7 @@ Do each of the following in different terminal windows.
 ### Run and connect to the database
 
 ```shell
-docker restart premiser_postgres
+docker restart howdju_postgres
 yarn run db:local:shell
 ```
 
@@ -601,4 +544,115 @@ const config: Config = {
 };
 
 export default merge(baseConfig, config);
+```
+
+### Creating a local database based on a dump from preprod
+
+TODO(#54): update this process not to require AWS access.
+
+```shell
+cd premiser-api
+yarn run db:tunnel
+
+# in another terminal:
+pg_dump_file_name=premiser_preprod_dump-$(date -u +"%Y-%m-%dT%H:%M:%SZ").sql
+pg_dump -h 127.0.0.1 -p 5433 howdju_pre_prod -U premiser_rds > $pg_dump_file_name
+# you can kill `yarn run db:tunnel` once this completes
+
+# In any available terminal (fill in a password for the postgres user):
+printf 'Enter Postgres superuser password:'; read -s POSTGRES_SUPERUSER_PASSWORD
+docker run -d -p 5432:5432 --name howdju_postgres -e POSTGRES_PASSWORD=$POSTGRES_SUPERUSER_PASSWORD postgres:12.5
+
+# If you want to see the output from the db, either omit -d from the run command or run:
+docker logs howdju_postgres --follow
+
+# In any available terminal, run the following:
+
+# Choose a premiser_api password and update the config/local*.env files
+psql --echo-all -h localhost -U postgres < db/create-users.sql
+echo 'create database premiser;' | psql -h localhost -U postgres
+psql --echo-all -h localhost -U postgres premiser < db/migrations/0000_db-users-privileges.sql
+psql -h localhost -U postgres --set ON_ERROR_STOP=on premiser < $pg_dump_file_name
+rm $pg_dump_file_name
+```
+
+## AWS
+
+This section is about accessing and changing infrastructure in AWS. Most contributors will not need this.
+
+### Password management
+
+- Use a password manager.
+- Memorize your: computer password, email password, and password manager password.
+- Store all non-memorized passwords in your password manager.
+- Never write down or persist a non-encrypted password. Passwords are either memorized or stored in the password
+  manager.
+- Use memorable diceware-style passwords: password managers like 1Password will autogenerate passwords like
+  `lingua-GARDENIA-concur-softly`, which are easy to type (for managed passwords, if you can't copy-paste for some
+  reason) and can be easy to remember, if you make up an image or story that goes along with the password. So, for this
+  example password, you might imagine a tongue licking a gardenia flower, agreeing with it with a soft whispering
+  voice. (See [XKCD](https://xkcd.com/936/).) It's important that you allow a professional password manager
+  auto-generate these phrases, and that you not iterate through multiple choices to select one that is easy to remember,
+  as this decreases the effective search space of the generated passwords. Instead, come up with a mental image to help
+  you remember the words. The more silly or ridiculous, the easier it may be to remember.
+- Enable two-factor auth for all accounts that support it. Use a virtual MFA like Authy or Microsoft Authenticator.
+
+### Install `aws-vault`
+
+[`aws-vault`](https://github.com/99designs/aws-vault/) allows securely storing and accessing AWS credentials in a
+development environment. You'll need an AWS admin to provide your AWS username, access key, and secret access key.
+
+```shell
+brew install --cask aws-vault
+aws-vault add username@howdju
+```
+
+Update `~/.aws/config`:
+
+```ini
+[default]
+region = us-east-1
+
+[profile username@howdju]
+mfa_serial = arn:aws:iam::007899441171:mfa/username
+```
+
+#### Running commands using aws-vault
+
+Logging in:
+
+```shell
+aws-vault login username@howdju --duration 2h
+```
+
+Running commands with your credentials:
+
+```shell
+aws-vault exec username@howdju -- terraform apply
+```
+
+See `aws-vault`'s [USAGE](https://github.com/99designs/aws-vault/blob/master/USAGE.md) page for more.
+
+### SSH access
+
+Upload your public key named like `username.pub` to `s3://howdju-bastion-logs/public-keys/`. (The username for the
+bastion host need not match your AWS username, but it should for simplicity.) The bastion host refreshes
+from these every 5 minutes.
+
+Generate a new SSH key:
+
+```shell
+ssh-keygen -t ed25519 -C "username@howdju.com"
+```
+
+Update `~/.ssh/config`:
+
+```ssh
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+
+Host bastion.howdju.com
+  User username
 ```
