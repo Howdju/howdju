@@ -17,8 +17,6 @@ import {
   UpdateWritQuote,
   Credentials,
   PasswordResetRequest,
-  RegistrationConfirmation,
-  RegistrationRequest,
   CreatePropositionTagVote,
   CreateUser,
   CreateAccountSettings,
@@ -36,6 +34,8 @@ import {
   UserOut,
   CreateTagVote,
   newUnimplementedError,
+  CreateRegistrationRequest,
+  CreateRegistrationConfirmation,
 } from "howdju-common";
 import {
   EntityNotFoundError,
@@ -835,7 +835,7 @@ export const serviceRoutes = {
     path: "registration-requests",
     method: httpMethods.POST,
     request: handler(
-      Body({ registrationRequest: RegistrationRequest }),
+      Body({ registrationRequest: CreateRegistrationRequest }),
       async (
         appProvider: ServicesProvider,
         { body: { registrationRequest } }
@@ -869,7 +869,7 @@ export const serviceRoutes = {
     path: "registrations",
     method: httpMethods.POST,
     request: handler(
-      Body({ registrationConfirmation: RegistrationConfirmation }),
+      Body({ registrationConfirmation: CreateRegistrationConfirmation }),
       async (
         appProvider: ServicesProvider,
         { body: { registrationConfirmation } }
