@@ -28,7 +28,12 @@ export type AppProvider = ServicesProvider;
  * TODO(106): configure a DI container.
  */
 export class ApiProvider implements BaseProvider {
+  // The API stage.
+
+  // The provider will check for config overrides based upon this stage name first,
+  // and, if a stage-specific value was not found, fallback to a config value without the stage name.
   stage: string | undefined;
+  // TODO(331) this appears to be unused.
   isProduction: boolean;
 
   constructor(stage: string | undefined) {

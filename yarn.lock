@@ -6220,6 +6220,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/argparse@npm:^2.0.10":
+  version: 2.0.10
+  resolution: "@types/argparse@npm:2.0.10"
+  checksum: 6f74560fa300f69ecae339fcb89e82cff0193ba643c05b98b3866e0c7b0dc099aa53821a109bab3c33d48150bd4da9a95b3e186f09de081f2d78e7c005cd8dc1
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -19857,10 +19864,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mute-stream@npm:0.0.8, mute-stream@npm:~0.0.4":
+"mute-stream@npm:0.0.8":
   version: 0.0.8
   resolution: "mute-stream@npm:0.0.8"
   checksum: ff48d251fc3f827e5b1206cda0ffdaec885e56057ee86a3155e1951bc940fd5f33531774b1cc8414d7668c10a8907f863f6561875ee6e8768931a62121a531a1
+  languageName: node
+  linkType: hard
+
+"mute-stream@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "mute-stream@npm:1.0.0"
+  checksum: 36fc968b0e9c9c63029d4f9dc63911950a3bdf55c9a87f58d3a266289b67180201cade911e7699f8b2fa596b34c9db43dad37649e3f7fdd13c3bb9edb0017ee7
   languageName: node
   linkType: hard
 
@@ -22015,6 +22029,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "premiser-api@workspace:premiser-api"
   dependencies:
+    "@types/argparse": ^2.0.10
     "@types/aws-lambda": ^8.10.110
     "@types/bluebird": ^3.5.38
     "@types/source-map-support": ^0.5.6
@@ -22047,7 +22062,7 @@ __metadata:
     pg: ^8.5.1
     prettier: 2.7.1
     private-ip: ^2.3.4
-    read: ^1.0.7
+    read: ^2.0.0
     run-sequence: ^1.2.2
     source-map-support: ^0.5.19
     ts-node: ^10.9.1
@@ -23301,12 +23316,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"read@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "read@npm:1.0.7"
+"read@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "read@npm:2.0.0"
   dependencies:
-    mute-stream: ~0.0.4
-  checksum: 2777c254e5732cac96f5d0a1c0f6b836c89ae23d8febd405b206f6f24d5de1873420f1a0795e0e3721066650d19adf802c7882c4027143ee0acf942a4f34f97b
+    mute-stream: ~1.0.0
+  checksum: 740273db4c2da3e345e7c444a8cf6de43822b04bf7102adeaa7d77d3a83fdc57e6d58ed4f6e90ba32dd5b8797de033c56daaba37aa76923829c32374f19dfd3b
   languageName: node
   linkType: hard
 

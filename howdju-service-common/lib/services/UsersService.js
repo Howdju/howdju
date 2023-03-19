@@ -112,45 +112,50 @@ exports.UsersService = class UsersService {
     return this.usersDao.readUserForId(createdUser.id);
   }
 
-  createUserAsUser(creatorUserId, user, password) {
-    return Promise.resolve()
-      .then(() => {
-        requireArgs({ creatorUserId, user, password });
+  async createUserAsUser(creatorUserId, user, password) {
+    requireArgs({ user, password });
 
-        const validationErrors = this.userValidator.validate(user);
-        if (validationErrors.hasErrors) {
-          throw new EntityValidationError({ user: validationErrors });
-        }
-        return validationErrors;
-      })
-      .then(() => {
-        const now = utcNow();
-        return [this.usersDao.createUser(user, creatorUserId, now), now];
-      })
-      .then(([dbUser, now]) =>
-        Promise.all([
-          dbUser,
-          this.authService.createOrUpdatePasswordAuthForUserId(
-            dbUser.id,
-            password
-          ),
-          this.userExternalIdsDao.createExternalIdsForUserId(dbUser.id),
-          this.accountSettingsDao.createAccountSettingsForUserId(
-            dbUser.id,
-            makeAccountSettings(),
-            now
-          ),
-        ])
-      )
-      .then(([dbUser]) => {
-        this.actionsService.asyncRecordAction(
-          creatorUserId,
-          dbUser.created,
-          ActionTypes.CREATE,
-          ActionTargetTypes.USER,
-          dbUser.id
-        );
-        return dbUser;
-      });
+    const validationErrors = this.userValidator.validate(user);
+    if (validationErrors.hasErrors) {
+      throw new EntityValidationError({ user: validationErrors });
+    }
+
+    const now = utcNow();
+    const createUserDataIn = {
+      ...user,
+      acceptedTerms: user.acceptedTerms ? now : null,
+      affirmedMajorityConsent: user.affirmedMajorityConsent ? now : null,
+      affirmed13YearsOrOlder: user.affirmed13YearsOrOlder ? now : null,
+      affirmedNotGdpr: user.affirmedNotGdpr ? now : null,
+      isActive: true,
+    };
+    const userDataOut = await this.usersDao.createUser(
+      createUserDataIn,
+      creatorUserId,
+      now
+    );
+
+    await Promise.all([
+      this.authService.createOrUpdatePasswordAuthForUserId(
+        userDataOut.id,
+        password
+      ),
+      this.userExternalIdsDao.createExternalIdsForUserId(userDataOut.id),
+      this.accountSettingsDao.createAccountSettingsForUserId(
+        userDataOut.id,
+        makeAccountSettings(),
+        now
+      ),
+    ]);
+
+    this.actionsService.asyncRecordAction(
+      creatorUserId,
+      userDataOut.created,
+      ActionTypes.CREATE,
+      ActionTargetTypes.USER,
+      userDataOut.id
+    );
+
+    return userDataOut;
   }
 };

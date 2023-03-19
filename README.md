@@ -13,6 +13,11 @@ This repository contains client and server code for the [Howdju](https://www.how
 claims using evidence. The content is currently user-generated, and we hope to augment users'
 actions with machine learning.
 
+## Development
+
+See [docs/Development.md](https://github.com/Howdju/howdju/blob/master/docs/Development.md) to get
+setup for developing Howdju.
+
 ## Reporting issues
 
 - [bugs](https://github.com/Howdju/howdju/labels/bug)
