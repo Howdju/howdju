@@ -49,9 +49,9 @@
     "update-normal-text-prod": "env-cmd -f ../config/prod-local-tunnel.env ../bin/build-and-run-script.sh bin/update-normal-text.js"
   },
   "devDependencies": {
+    "@types/argparse": "^2.0.10",
     "@types/aws-lambda": "^8.10.110",
     "@types/bluebird": "^3.5.38",
-    "@types/read": "^0.0.29",
     "@types/source-map-support": "^0.5.6",
     "@types/uuid": "^9.0.0",
     "argparse": "^2.0.1",
@@ -74,7 +74,7 @@
     "npm-version": "^1.1.0",
     "prettier": "2.7.1",
     "private-ip": "^2.3.4",
-    "read": "^1.0.7",
+    "read": "^2.0.0",
     "run-sequence": "^1.2.2",
     "ts-node": "^10.9.1",
     "typescript": "4.9.4"

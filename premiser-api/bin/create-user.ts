@@ -1,6 +1,5 @@
 import { ArgumentParser } from "argparse";
 import read from "read";
-import util from "util";
 
 import { logger } from "howdju-ops";
 
@@ -30,7 +29,7 @@ Promise.resolve(createUser())
   .catch((err) => console.log({ err }));
 
 async function createUser() {
-  const password = await util.promisify(read)({
+  const password = await read({
     prompt: `Please enter the password for ${args.email}:`,
     silent: true,
   });

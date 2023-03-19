@@ -6843,13 +6843,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/read@npm:^0.0.29":
-  version: 0.0.29
-  resolution: "@types/read@npm:0.0.29"
-  checksum: 7cbc22283f36eac4ab3a9d64b78f60f3127cefb80a6053afc049b699a2a579e9e1cdde23547efcaea913dab8456098f56c39afbfd9a30d1d73bd96a6f7e88922
-  languageName: node
-  linkType: hard
-
 "@types/redux-actions@npm:^2.6.2":
   version: 2.6.2
   resolution: "@types/redux-actions@npm:2.6.2"
@@ -19871,7 +19864,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mute-stream@npm:0.0.8, mute-stream@npm:~0.0.4":
+"mute-stream@npm:0.0.8":
   version: 0.0.8
   resolution: "mute-stream@npm:0.0.8"
   checksum: ff48d251fc3f827e5b1206cda0ffdaec885e56057ee86a3155e1951bc940fd5f33531774b1cc8414d7668c10a8907f863f6561875ee6e8768931a62121a531a1
@@ -22036,9 +22029,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "premiser-api@workspace:premiser-api"
   dependencies:
+    "@types/argparse": ^2.0.10
     "@types/aws-lambda": ^8.10.110
     "@types/bluebird": ^3.5.38
-    "@types/read": ^0.0.29
     "@types/source-map-support": ^0.5.6
     "@types/uuid": ^9.0.0
     argparse: ^2.0.1
@@ -22069,7 +22062,7 @@ __metadata:
     pg: ^8.5.1
     prettier: 2.7.1
     private-ip: ^2.3.4
-    read: ^1.0.7
+    read: ^2.0.0
     run-sequence: ^1.2.2
     source-map-support: ^0.5.19
     ts-node: ^10.9.1
@@ -22122,7 +22115,6 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^12
     "@testing-library/user-event": ^14.4.3
-    "@types/argparse": ^2.0.10
     "@types/dompurify": ^2.3.4
     "@types/is-valid-domain": ^0.0.1
     "@types/lodash": ^4.14.186
@@ -22195,7 +22187,6 @@ __metadata:
     react-redux: ^7.2.4
     react-router: ^5.2.0
     react-router-dom: ^5.2.0
-    read: ^2.0.0
     redux: ^4.0.5
     redux-actions: ^2.6.5
     redux-persist: ^6.0.0
@@ -23322,15 +23313,6 @@ __metadata:
     parse-json: ^5.0.0
     type-fest: ^0.6.0
   checksum: eb696e60528b29aebe10e499ba93f44991908c57d70f2d26f369e46b8b9afc208ef11b4ba64f67630f31df8b6872129e0a8933c8c53b7b4daf0eace536901222
-  languageName: node
-  linkType: hard
-
-"read@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "read@npm:1.0.7"
-  dependencies:
-    mute-stream: ~0.0.4
-  checksum: 2777c254e5732cac96f5d0a1c0f6b836c89ae23d8febd405b206f6f24d5de1873420f1a0795e0e3721066650d19adf802c7882c4027143ee0acf942a4f34f97b
   languageName: node
   linkType: hard
 

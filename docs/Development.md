@@ -53,7 +53,7 @@ docker run -d -p 5432:5432 --name howdju_postgres -e POSTGRES_PASSWORD=$POSTGRES
 docker logs howdju_postgres --follow
 ```
 
-#### Create the users, database, and schema
+#### Create the Postgres users, database, and schema
 
 You'll need to select two new passwords.
 `premiser_admin` is the Postgres user that will own and control the database.`premiser_api` is the
@@ -70,16 +70,18 @@ echo 'create database premiser;' | psql -h localhost -U postgres
 psql --echo-all -h localhost -U postgres premiser < db/migrations/0*.sql
 ```
 
-Create a local environment file for the API and use `premiser_api`'s password for `DB_PASSWORD`.
+Create a local environment file for the API:
 
 ```shell
 cp ../config/example.env ../config/local.env
 ```
 
+Be sure to update `DB_PASSWORD` to be `premiser_api`'s password.
+
 ### Create a Howdju user
 
 ```shell
-yarn run create-user:local
+yarn run create-user:local --email test@localhost --username=test_user
 ```
 
 Alternatively, you can go through the registration process (grab the registration URLs from the API output.)
@@ -88,10 +90,18 @@ Alternatively, you can go through the registration process (grab the registratio
 
 Do each of the following in different terminal windows.
 
-### Run and connect to the database
+### Run the database
+
+If your database is already running, you can skip this. This command will ensure your DB is running,
+even if it already was:
 
 ```shell
 docker restart howdju_postgres
+```
+
+Optionally, open a terminal connected to the DB shell:
+
+```shell
 yarn run db:local:shell
 ```
 
@@ -107,9 +117,7 @@ yarn run start:api:local
 yarn run start:ui:local
 ```
 
-### Visit the app
-
-Open browser to localhost:3000
+This will automatically open a browser. If it doesn't, point yours to `localhost:3000`.
 
 ## Automatic code checks
 
@@ -299,7 +307,7 @@ web app to prod using the
 
 ### Publishing infrastructure changes
 
-TODO(GH-46): give TerraformStateUpdater appropriate permissions
+TODO(46): give TerraformStateUpdater appropriate permissions
 
 Request that your user get access to the role `TerraformStateUpdater`. Add a section to `~/.aws/config` for the role:
 
@@ -548,7 +556,10 @@ export default merge(baseConfig, config);
 
 ### Creating a local database based on a dump from preprod
 
-TODO(#54): update this process not to require AWS access.
+This process will create a seeded database based on the preprod data. It is not recommended for most
+users, since it requires access to the live preprod database.
+
+TODO(54): update this process not to require AWS access.
 
 ```shell
 cd premiser-api

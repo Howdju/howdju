@@ -113,13 +113,13 @@ exports.UsersService = class UsersService {
   }
 
   async createUserAsUser(creatorUserId, user, password) {
-    await Promise.resolve();
     requireArgs({ user, password });
+
     const validationErrors = this.userValidator.validate(user);
     if (validationErrors.hasErrors) {
       throw new EntityValidationError({ user: validationErrors });
     }
-    validationErrors;
+
     const now = utcNow();
     const createUserDataIn = {
       ...user,
@@ -134,7 +134,7 @@ exports.UsersService = class UsersService {
       creatorUserId,
       now
     );
-    console.log({ userDataOutId: userDataOut.id });
+
     await Promise.all([
       this.authService.createOrUpdatePasswordAuthForUserId(
         userDataOut.id,
@@ -147,6 +147,7 @@ exports.UsersService = class UsersService {
         now
       ),
     ]);
+
     this.actionsService.asyncRecordAction(
       creatorUserId,
       userDataOut.created,
@@ -154,6 +155,7 @@ exports.UsersService = class UsersService {
       ActionTargetTypes.USER,
       userDataOut.id
     );
+
     return userDataOut;
   }
 };
