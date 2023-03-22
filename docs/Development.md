@@ -129,6 +129,21 @@ You can also run `yarn run check:everything`.
 
 ## Development
 
+### Contributing in a nutshell
+
+Do this one time:
+
+- Fork this repo
+- Clone your fork locally
+
+Do this every time:
+
+- Ensure you're on the `master` branch (this will be the default if you just cloned.)
+- Create a feature branch. Prefix the branch with the Howdju issue number. `git checkout -b features/123-short-description`
+- Make and commit your changes. `git add ...` ... `git commit --sign-off`.
+- Run `yarn check:everything`
+- Push to your forked repo and open a pull request.
+
 ### DCO commits
 
 As explained in our CONTRIBUTORS guide, all code contributions must include a
@@ -160,10 +175,10 @@ Where `<mergeBaseSha>` must be the _parent_ of the first commit in your chain of
 ```bash
 # Start from the main branch
 git checkout master
-# Updates should always be fast-forwards because we enforce linear history.
+# Updates should always be fast-forwards because we enforce linear history on the main branch.
 git pull --ff-only
 # Always develop on a branch. We prefix all development branches with `features/n-` where `n` is the
-# number of the bug corresponding to your work. We strongly encourage creating bugs for any work.
+# number of the bug corresponding to your work. We strongly encourage creating issues for any work.
 gco -b features/n-feature-slug
 # Make your changes and commit
 git commit -s
