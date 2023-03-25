@@ -40,6 +40,7 @@ const defaultState = {
   statements: {},
   tags: {},
   users: {},
+  contextTrailItems: {},
 };
 
 export default handleActions(
@@ -74,7 +75,8 @@ export default handleActions(
       api.tagProposition.response,
       api.updateProposition.response,
       api.updateWritQuote.response,
-      api.updatePersorg.response
+      api.updatePersorg.response,
+      api.fetchContextTrail.response
     )]: {
       next: (state, action) => {
         const { entities } = normalize(
@@ -96,6 +98,7 @@ export default handleActions(
             ["users"],
             ["writQuotes", stubSkippingCustomizer("quoteText")],
             ["writs", stubSkippingCustomizer("title")],
+            ["contextTrailItems"],
           ],
           ([entitiesKey, customizer]) =>
             createEntityUpdate(state, entities, entitiesKey, customizer)

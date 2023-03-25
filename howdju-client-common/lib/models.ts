@@ -42,13 +42,13 @@ type JustificationOutOverrides = SetOptional<
   | keyof ReturnType<typeof justificationViewModelDefaults>
   | keyof RootTargetStuff
 >;
-export function makeJustificationOutModel(
-  props?: JustificationOutOverrides
-): JustificationOut {
+export function makeJustificationOutModel<O extends JustificationOutOverrides>(
+  props?: O
+): O & JustificationOut {
   const init = justificationViewModelDefaults();
   const merged = merge(init, props);
   const rootTargetStuff = calcRootTargetStuff(merged);
-  return { ...cloneDeep(merged), ...rootTargetStuff } as JustificationOut;
+  return { ...cloneDeep(merged), ...rootTargetStuff };
 }
 
 // TODO(107): replace with Justification.rootTarget?

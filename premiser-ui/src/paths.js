@@ -1,24 +1,22 @@
 import { createPath } from "history";
-import map from "lodash/map";
 import isEmpty from "lodash/isEmpty";
-import join from "lodash/join";
 import queryString from "query-string";
 
 import {
   JustificationRootTargetTypes,
   newExhaustedEnumError,
+  serializeContextTrail,
   toSlug,
 } from "howdju-common";
 
 import { logger } from "./logger";
-import { contextTrailShortcutByType } from "./viewModels";
 
 export const mainSearchPathName = "/";
 
 export const createJustificationPath = "/create-justification";
 
-// I was going to extend CommonPaths, but doing that results in `TypeError: Class constructor CommonPaths cannot be invoked without 'new'`
-// when running jest.
+// TODO(196): separate into a const Record of paths (with parameters) and individual top-file-level
+// factories for paths taking parameters.
 class Paths {
   home = () => "/";
 
@@ -42,14 +40,7 @@ class Paths {
     }
     const slugPath = !noSlug && slug ? "/" + slug : "";
     const query = !isEmpty(contextTrailItems)
-      ? "?context-trail=" +
-        join(
-          map(
-            contextTrailItems,
-            (i) => `${contextTrailShortcutByType[i.targetType]},${i.target.id}`
-          ),
-          ";"
-        )
+      ? "?context-trail=" + serializeContextTrail(contextTrailItems)
       : "";
     const anchor = focusJustificationId
       ? `#justification-${focusJustificationId}`

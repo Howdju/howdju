@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import get from "lodash/get";
+import cn from "classnames";
 
 import {
   editors,
@@ -23,17 +24,6 @@ class PropositionCompoundViewerAtomItem extends Component {
     this.editorType = EditorTypes.PROPOSITION;
   }
 
-  // onEditProposition = () => {
-  //   const _editorId = editorId(baseId(this.props))
-  //   const proposition = this.props.atom.entity
-  //   this.props.editors.beginEdit(this.editorType, _editorId, proposition)
-  // }
-  //
-  // seeUsagesPath = () => {
-  //   const {atom: {entity}} = this.props
-  //   return paths.searchJustifications({propositionId: entity.id})
-  // }
-
   render() {
     const {
       id,
@@ -42,10 +32,11 @@ class PropositionCompoundViewerAtomItem extends Component {
       doShowJustifications,
       isCondensed,
       isUnCondensed,
-      component: Component,
+      isHighlighted,
       showBasisUrls,
       showStatusText,
       contextTrailItems,
+      showJustificationCount,
     } = this.props;
 
     const hasJustifications =
@@ -53,7 +44,12 @@ class PropositionCompoundViewerAtomItem extends Component {
     const justifications = atom.entity.justifications;
 
     return (
-      <Component id={id} className="compound-atom proposition-atom">
+      <li
+        id={id}
+        className={cn("compound-atom proposition-atom", {
+          highlighted: isHighlighted,
+        })}
+      >
         <PropositionEntityViewer
           id={combineIds(id, "proposition")}
           proposition={atom.entity}
@@ -62,6 +58,7 @@ class PropositionCompoundViewerAtomItem extends Component {
           doShowControls={doShowControls}
           showStatusText={showStatusText}
           contextTrailItems={contextTrailItems}
+          showJustificationCount={showJustificationCount}
         />
         {doShowJustifications && hasJustifications && (
           <JustificationsTree
@@ -75,7 +72,7 @@ class PropositionCompoundViewerAtomItem extends Component {
             contextTrailItems={contextTrailItems}
           />
         )}
-      </Component>
+      </li>
     );
   }
 }
@@ -86,6 +83,12 @@ PropositionCompoundViewerAtomItem.propTypes = {
   doShowJustifications: PropTypes.bool,
   doShowControls: PropTypes.bool,
   showStatusText: PropTypes.bool,
+  isHighlighted: PropTypes.bool,
+  isCondensed: PropTypes.bool,
+  isUnCondensed: PropTypes.bool,
+  showBasisUrls: PropTypes.bool,
+  contextTrailItems: PropTypes.array,
+  showJustificationCount: PropTypes.bool,
 };
 PropositionCompoundViewerAtomItem.defaultProps = {
   doShowControls: true,

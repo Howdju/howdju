@@ -62,7 +62,7 @@ exports.WritQuotesService = class WritQuotesService {
     this.permissionsDao = permissionsDao;
   }
 
-  readWritQuoteForId(writQuoteId, { authToken }) {
+  readWritQuoteForId(writQuoteId) {
     return this.writQuotesDao.readWritQuoteForId(writQuoteId);
   }
 
@@ -459,18 +459,18 @@ exports.WritQuotesService = class WritQuotesService {
       .then((updatedUrls) => sortBy(updatedUrls, (url) => url.url));
   }
 
-  readOrCreateWritQuoteAsUser(writQuote, userId, now) {
-    return Promise.resolve()
-      .then(() => {
-        const validationErrors = this.writQuoteValidator.validate(writQuote);
-        if (validationErrors.hasErrors) {
-          throw new EntityValidationError(validationErrors);
-        }
-        return userId;
-      })
-      .then((userId) =>
-        this.readOrCreateValidWritQuoteAsUser(writQuote, userId, now)
-      );
+  async readOrCreateWritQuoteAsUser(writQuote, userId, now) {
+    if (writQuote.id) {
+      return {
+        writQuote: await this.readWritQuoteForId(writQuote.id),
+        isExtant: true,
+      };
+    }
+    const validationErrors = this.writQuoteValidator.validate(writQuote);
+    if (validationErrors.hasErrors) {
+      throw new EntityValidationError(validationErrors);
+    }
+    return await this.readOrCreateValidWritQuoteAsUser(writQuote, userId, now);
   }
 
   readOrCreateValidWritQuoteAsUser(writQuote, userId, now) {

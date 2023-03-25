@@ -380,6 +380,9 @@ export const JustificationPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
 export type JustificationPolarity = z.infer<typeof JustificationPolarity>;
 export const JustificationPolarities = JustificationPolarity.Enum;
 
+export const RelationPolarity = z.enum(["POSITIVE", "NEGATIVE", "NEUTRAL"]);
+export type RelationPolarity = z.infer<typeof RelationPolarity>;
+
 export const JustificationRootPolarity = z.enum(["POSITIVE", "NEGATIVE"]);
 export type JustificationRootPolarity = z.infer<
   typeof JustificationRootPolarity

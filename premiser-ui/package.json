@@ -155,6 +155,7 @@
     "regenerator-runtime": "^0.13.7",
     "type-fest": "^3.3.0",
     "typed-redux-saga": "^1.5.0",
+    "use-deep-compare-effect": "^1.8.1",
     "uuid": "^9.0.0",
     "valid-url": "^1.0.9",
     "zod": "https://github.com/Howdju/zod.git#c2b02dc84a1e25614479aff0c1c26de27a406ea8"

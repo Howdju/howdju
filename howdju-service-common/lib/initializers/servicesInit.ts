@@ -3,6 +3,7 @@ import {
   ActionsService,
   AuthService,
   ContentReportsService,
+  ContextTrailsService,
   GroupsService,
   JustificationsService,
   JustificationBasisCompoundsService,
@@ -220,6 +221,12 @@ export function servicesInitializer(provider: AwsProvider) {
     provider.contentReportsDao
   );
 
+  const contextTrailsService = new ContextTrailsService(
+    provider.logger,
+    authService,
+    justificationsService
+  );
+
   provider.logger.debug("servicesInit complete");
 
   return {
@@ -227,6 +234,7 @@ export function servicesInitializer(provider: AwsProvider) {
     actionsService,
     authService,
     contentReportsService,
+    contextTrailsService,
     groupsService,
     justificationsService,
     justificationBasisCompoundsService,

@@ -31,6 +31,9 @@ export class EntityValidationError extends HowdjuApiError {
 
 export class RequestValidationError extends HowdjuApiError {}
 
+/** The user did something that corresponds to HTTP 409 Conflict */
+export class ConflictError extends HowdjuApiError {}
+
 /** The user tried to do something that requires being logged in, but the user isn't logged in */
 export class AuthenticationError extends HowdjuApiError {}
 

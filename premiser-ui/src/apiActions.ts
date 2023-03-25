@@ -10,6 +10,7 @@ import { compile } from "path-to-regexp";
 import { JsonObject, Schema } from "type-fest";
 
 import {
+  ContextTrailItemInfo,
   EntityId,
   JustificationVotePolarities,
   PropositionTagVotePolarities,
@@ -37,6 +38,7 @@ import {
   UpdateProposition,
   CreateStatement,
   UpdatePersorg,
+  serializeContextTrail,
 } from "howdju-common";
 import {
   InferPathParams,
@@ -50,6 +52,7 @@ import {
 
 import {
   accountSettingsSchema,
+  contextTrailItemsSchema,
   justificationSchema,
   justificationsSchema,
   justificationVoteSchema,
@@ -1158,6 +1161,17 @@ export const api = {
         normalizationSchema: { propositions: propositionsSchema },
       },
       meta: { tagId },
+    })
+  ),
+
+  fetchContextTrail: apiActionCreator(
+    "FETCH_CONTEXT_TRAIL",
+    serviceRoutes.readContextTrail,
+    (contextTrailInfos: ContextTrailItemInfo[]) => ({
+      queryStringParams: {
+        contextTrailInfos: serializeContextTrail(contextTrailInfos),
+      },
+      normalizationSchema: { contextTrailItems: contextTrailItemsSchema },
     })
   ),
 };

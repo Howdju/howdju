@@ -410,7 +410,14 @@ Features:
   (`renderWithProviders`)
 - React Testing Library for user-like high level interactions with page.
 
-`premiser-ui/src/pages/registration/RegistrationConfirmationPage.test.tsx` is a good example.
+#### Examples
+
+- Mock service worker and UI interaction:
+  `premiser-ui/src/pages/registration/RegistrationConfirmationPage.test.tsx`
+- Rendering with query parameters: `premiser-ui/src/CreatePropositionPage.test.tsx`
+- Testing React contexts:
+  `premiser-ui/src/components/contextTrail/PrimaryContextTrailProvider.test.tsx`
+- Test saga: `premiser-ui/src/sagas/resourceApiSagas.test.ts`.
 
 ### Service integration tests
 

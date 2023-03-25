@@ -23,7 +23,6 @@ import {
 
 import { EditorEntity, EditorType } from "./reducers/editors";
 import {
-  ContextTrailItemInfo,
   PrivacyConsentCookie,
   PropertyChanges,
   SuggestionsKey,
@@ -56,10 +55,6 @@ export const apiLike = {
       rootTargetType,
       rootTargetId,
     })
-  ),
-  fetchJustificationTargets: createAction(
-    "FETCH_JUSTIFICATION_TARGETS",
-    (targetInfos: ContextTrailItemInfo[]) => ({ targetInfos })
   ),
 };
 

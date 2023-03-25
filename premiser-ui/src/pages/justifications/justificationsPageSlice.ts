@@ -7,6 +7,7 @@ export const justificationsPageSlice = createSlice({
   initialState: {
     isNewJustificationDialogVisible: false,
     isFetching: false,
+    isInvalidContextTrail: false,
   },
   reducers: {
     showNewJustificationDialog: (state) => {

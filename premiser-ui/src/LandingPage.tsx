@@ -14,6 +14,7 @@ import {
   WritRef,
   WritQuoteRef,
   UrlRef,
+  ContextTrailItem,
 } from "howdju-common";
 import { makeJustificationOutModel } from "howdju-client-common";
 
@@ -24,7 +25,7 @@ import JustificationBranch from "./JustificationBranch";
 import { combineIds } from "./viewModels";
 
 import "./LandingPage.scss";
-import ContextTrail from "./ContextTrail";
+import ContextTrail from "@/components/contextTrail/ContextTrail";
 import moment from "moment";
 
 export default class LandingPage extends Component {
@@ -90,14 +91,17 @@ export default class LandingPage extends Component {
       },
     });
 
-    const proTrailItems = [
+    const proTrailItems: ContextTrailItem[] = [
       {
-        targetType: proJustification.target.type,
-        target: proJustification.target.entity,
+        connectingEntity: proJustification,
+        connectingEntityId: proJustification.id,
+        connectingEntityType: "JUSTIFICATION",
+        polarity: proJustification.polarity,
       },
       {
-        targetType: proJustificationJustification.target.type,
-        target: proJustificationJustification.target.entity,
+        connectingEntity: proJustificationJustification,
+        connectingEntityId: proJustificationJustification.id,
+        connectingEntityType: "JUSTIFICATION",
         polarity: proJustificationJustification.polarity,
       },
     ];
@@ -159,15 +163,18 @@ export default class LandingPage extends Component {
       },
     });
 
-    const conTrailItems = [
+    const conTrailItems: ContextTrailItem[] = [
       {
-        targetType: conJustification.target.type,
-        target: conJustification.target.entity,
+        connectingEntity: conJustification,
+        connectingEntityId: conJustification.id,
+        connectingEntityType: "JUSTIFICATION",
+        polarity: conJustification.polarity,
       },
       {
-        targetType: conJustificationJustification.target.type,
-        target: conJustificationJustification.target.entity,
-        polarity: conJustification.polarity,
+        connectingEntity: conJustificationJustification,
+        connectingEntityId: conJustificationJustification.id,
+        connectingEntityType: "JUSTIFICATION",
+        polarity: conJustificationJustification.polarity,
       },
     ];
 
@@ -270,7 +277,7 @@ export default class LandingPage extends Component {
 
         <div className="banner">
           <div className="banner-content">
-            <ContextTrail trailItems={proTrailItems} />
+            <ContextTrail id="pro-context-trail" trailItems={proTrailItems} />
             <JustificationBranch
               justification={proJustificationJustification}
               doShowBasisJustifications={false}
@@ -285,7 +292,7 @@ export default class LandingPage extends Component {
 
         <div className="banner">
           <div className="banner-content">
-            <ContextTrail trailItems={conTrailItems} />
+            <ContextTrail id="con-context-trail" trailItems={conTrailItems} />
             <JustificationBranch
               justification={conJustificationJustification}
               doShowBasisJustifications={false}

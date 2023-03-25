@@ -8,6 +8,7 @@ exports[`JustificationsPage Shows a justified proposition 1`] = `
     <div
       class="md-grid md-grid--top"
     >
+      <div />
       <div
         class="md-cell md-cell--12"
       >

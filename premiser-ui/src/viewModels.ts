@@ -5,14 +5,14 @@ import dropWhile from "lodash/dropWhile";
 import flatMap from "lodash/flatMap";
 import forEach from "lodash/forEach";
 import head from "lodash/head";
-import invert from "lodash/invert";
 import join from "lodash/join";
 import kebabCase from "lodash/kebabCase";
 import lowerCase from "lodash/lowerCase";
 import map from "lodash/map";
 import split from "lodash/split";
 import truncate from "lodash/truncate";
-import { clone, reverse, TruncateOptions } from "lodash";
+import { clone, concat, reverse, TruncateOptions } from "lodash";
+import { schema } from "normalizr";
 
 import config from "./config";
 import {
@@ -29,12 +29,14 @@ import {
   CreatePropositionInput,
   SentenceTypes,
   CreateStatementInput,
+  ConnectingEntity,
+  ConnectingEntityType,
+  ContextTrailItem,
 } from "howdju-common";
 
 import * as characters from "./characters";
 import { propositionSchema, statementSchema } from "./normalizationSchemas";
 import { ComponentId, ComponentName, EditorId, SuggestionsKey } from "./types";
-import { schema } from "normalizr";
 
 export const removePropositionCompoundIds = (
   propositionCompound: PropositionCompound
@@ -208,14 +210,6 @@ export interface ChipInfo {
   className: string;
 }
 
-export const contextTrailTypeByShortcut = {
-  p: "PROPOSITION",
-  s: "STATEMENT",
-} as const;
-export type ContextTrailShortcut = keyof typeof contextTrailTypeByShortcut;
-
-export const contextTrailShortcutByType = invert(contextTrailTypeByShortcut);
-
 export const rootTargetNormalizationSchemasByType: Record<
   JustificationRootTargetType,
   schema.Entity
@@ -252,4 +246,19 @@ export function describeRootTarget(
 export interface RootTargetInfo {
   rootTargetType: JustificationRootTargetType;
   rootTargetId: EntityId;
+}
+
+export function extendContextTrailItems(
+  contextTrailItems: ContextTrailItem[],
+  connectingEntityType: ConnectingEntityType,
+  connectingEntity: ConnectingEntity
+): ContextTrailItem[] {
+  return concat(contextTrailItems, [
+    {
+      connectingEntityType,
+      connectingEntityId: connectingEntity.id,
+      connectingEntity,
+      polarity: connectingEntity.polarity,
+    },
+  ]);
 }

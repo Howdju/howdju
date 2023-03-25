@@ -20,6 +20,7 @@ import { justificationsPage } from "@/pages/justifications/justificationsPageSli
 import { accountSettingsPage } from "@/pages/accountSettings/accountSettingsPageSlice";
 import { propositionUsagesPage } from "@/pages/propositionUsages/propositionUsagesPageSlice";
 import { registrationConfirmationPage } from "@/pages/registration/registrationConfirmationPageSlice";
+import { primaryContextTrail } from "@/components/contextTrail/primaryContextTrailSlice";
 
 export default (history: History) =>
   combineReducers({
@@ -35,6 +36,7 @@ export default (history: History) =>
     mainSearch,
     mainSearchPage,
     persorgPage,
+    primaryContextTrail,
     privacyConsent,
     propositionUsagesPage,
     registrationConfirmationPage,

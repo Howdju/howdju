@@ -1,5 +1,12 @@
+import { AuthToken } from "howdju-common";
 import { ServicesProvider } from "howdju-service-common";
 import { z } from "zod";
+
+interface CommonRequest {
+  // Any request may include authToken, and handlers may use it to customize the response for the
+  // user. Use Authed to require the authToken.
+  authToken: AuthToken | undefined;
+}
 
 /**
  * Creates a service request handler that validates the request and delegates to an impl.
@@ -16,7 +23,13 @@ export function handler<
   S extends z.ZodType<T, z.ZodTypeDef>,
   R,
   T = InferRequest<S>
->(schema: S, handler: (provider: ServicesProvider, request: T) => Promise<R>) {
+>(
+  schema: S,
+  handler: (
+    provider: ServicesProvider,
+    request: T & CommonRequest
+  ) => Promise<R>
+) {
   return {
     schema,
     handler,
