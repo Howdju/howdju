@@ -15,14 +15,9 @@ interface Props {
   id: ComponentId;
   propositionCompound: PropositionCompoundOut;
   highlightedProposition?: PropositionOut;
-  contextTrailItems: ContextTrailItem[];
-  doShowControls?: boolean;
-  doShowAtomJustifications?: boolean;
-  isCondensed?: boolean;
+  contextTrailItems?: ContextTrailItem[];
   showStatusText?: boolean;
-  isUnCondensed?: boolean;
-  showBasisUrls?: boolean;
-  showJustificationCount: boolean;
+  showJustificationCount?: boolean;
 }
 
 export default function PropositionCompoundViewer({
@@ -30,14 +25,8 @@ export default function PropositionCompoundViewer({
   propositionCompound,
   highlightedProposition,
   contextTrailItems,
-  doShowControls,
-  doShowAtomJustifications,
-  isCondensed,
-  isUnCondensed,
-  showBasisUrls,
   showStatusText,
-  showJustificationCount,
-  ...rest
+  showJustificationCount = false,
 }: Props) {
   const atomListItems = map(propositionCompound.atoms, (atom) => {
     const listItemId = combineIds(
@@ -52,19 +41,15 @@ export default function PropositionCompoundViewer({
         key={listItemId}
         atom={atom}
         isHighlighted={isHighlighted}
-        doShowControls={doShowControls}
-        doShowJustifications={doShowAtomJustifications}
-        isCondensed={isCondensed}
-        isUnCondensed={isUnCondensed}
-        showBasisUrls={showBasisUrls}
         showStatusText={showStatusText}
         contextTrailItems={contextTrailItems}
+        showJustificationCount={showJustificationCount}
       />
     );
   });
 
   return (
-    <ol {...rest} className="compound-viewer proposition-compound-viewer">
+    <ol className="compound-viewer proposition-compound-viewer">
       {atomListItems}
     </ol>
   );

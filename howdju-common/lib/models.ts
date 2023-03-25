@@ -17,6 +17,7 @@ import { OneOf } from "./typeUtils";
 import { ModelErrors } from "./zodError";
 import {
   AccountSettings,
+  CounterJustification,
   CreateCounterJustification,
   CreateCounterJustificationBasis,
   CreateCounterJustificationInput,
@@ -70,13 +71,17 @@ export const isPositive = (j: Justification | JustificationOut) =>
   j.polarity === "POSITIVE";
 export const isNegative = (j: Justification | JustificationOut) =>
   j.polarity === "NEGATIVE";
-export const isRootPositive = (j: Justification) =>
+export const isRootPositive = (j: Justification | JustificationOut) =>
   j.rootPolarity === "POSITIVE";
-export const isRootNegative = (j: Justification) =>
+export const isRootNegative = (j: Justification | JustificationOut) =>
   j.rootPolarity === "NEGATIVE";
 // If a justification targets another justification, its polarity should always be negative
-export const isCounter = (j: Justification) =>
-  j.target.type === "JUSTIFICATION" && isNegative(j);
+export function isCounter(
+  j: Justification | JustificationOut
+): j is CounterJustification {
+  return j.target.type === "JUSTIFICATION" && isNegative(j);
+}
+
 export const isRootJustification = (j: Justification) =>
   j.target.type === j.rootTargetType && j.target.entity.id === j.rootTarget.id;
 export const hasQuote = (j: Justification) =>

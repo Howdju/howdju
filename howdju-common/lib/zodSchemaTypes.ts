@@ -1,6 +1,6 @@
 import { Moment } from "moment";
 import { z } from "zod";
-import { UserOut, WritOut, WritQuoteOut } from "./apiModels";
+import { JustificationOut, UserOut, WritOut, WritQuoteOut } from "./apiModels";
 import { assert } from "./general";
 import { logger } from "./logger";
 
@@ -124,6 +124,8 @@ export type EntityName<T> = T extends Proposition
   : T extends CreatePropositionInput
   ? "Proposition"
   : T extends Justification
+  ? "Justification"
+  : T extends JustificationOut
   ? "Justification"
   : T extends CreateJustification
   ? "Justification"

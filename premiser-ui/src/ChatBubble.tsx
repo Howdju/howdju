@@ -1,10 +1,22 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import cn from "classnames";
 
 import "./ChatBubble.scss";
 
-const ChatBubble = (props) => {
-  const { className, isPositive, isNegative, children, ...rest } = props;
+interface Props {
+  className?: string;
+  isPositive: boolean;
+  isNegative: boolean;
+  children: ReactNode;
+}
+
+export default function ChatBubble({
+  className,
+  isPositive,
+  isNegative,
+  children,
+  ...rest
+}: Props) {
   return (
     <div
       {...rest}
@@ -16,5 +28,4 @@ const ChatBubble = (props) => {
       {children}
     </div>
   );
-};
-export default ChatBubble;
+}

@@ -1,6 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
+import { JustificationOut } from "./apiModels";
 
-import { CounteredJustification } from "./entities";
 import { Entity, Proposition, SourceExcerpt } from "./zodSchemas";
 
 // Recursively replace all Entity subtypes with Entity so that they can be
@@ -11,17 +11,19 @@ type Decircularized<T> = {
     : Decircularized<T[key]>;
 };
 
-export const decircularizeJustification = (
-  justification: CounteredJustification
-): Decircularized<CounteredJustification> => {
-  const decircularized: Decircularized<CounteredJustification> =
+export function decircularizeJustification(
+  justification: JustificationOut
+): Decircularized<JustificationOut> {
+  const decircularized: Decircularized<JustificationOut> =
     cloneDeep(justification);
   if (decircularized.rootTarget.id) {
     decircularized.rootTarget = { id: decircularized.rootTarget.id };
   }
   if (justification.counterJustifications) {
     decircularized.counterJustifications =
-      justification.counterJustifications.map(decircularizeJustification);
+      justification.counterJustifications.map((j) =>
+        "counterJustifications" in j ? decircularizeJustification(j) : j
+      );
   }
 
   if (decircularized.target.entity.id) {
@@ -29,7 +31,7 @@ export const decircularizeJustification = (
   }
 
   return decircularized;
-};
+}
 
 export const decircularizeSourceExcerpt = (sourceExcerpt: SourceExcerpt) => {
   // Source excerpts don't reference any entities that need decircularizing

@@ -453,6 +453,10 @@ export type Justification = Entity & {
         rootTarget: Statement;
       }
   );
+export type CounterJustification = Justification & {
+  target: { type: "JUSTIFICATION" };
+  polarity: "NEGATIVE";
+};
 export const JustificationBasisType = z.enum([
   "PROPOSITION_COMPOUND",
   "SOURCE_EXCERPT",

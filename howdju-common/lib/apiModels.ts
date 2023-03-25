@@ -11,14 +11,17 @@ import {
   Entity,
   JustificationRef,
   JustificationVote,
+  PicRegion,
   Proposition,
   PropositionCompound,
   PropositionCompoundAtom,
   PropositionTagVote,
+  SourceExcerpt,
   Statement,
   Tag,
   TagVote,
   User,
+  VidSegment,
   Writ,
   WritQuote,
 } from "./zodSchemas";
@@ -53,6 +56,15 @@ export type WritOut = Persisted<Writ>;
 export type UserOut = Persisted<User>;
 
 export type WritQuoteOut = Persisted<WritQuote>;
+export type PicRegionOut = Persisted<PicRegion>;
+export type VidSegmentOut = Persisted<VidSegment>;
+
+export type SourceExcerptOut = Persisted<SourceExcerpt> &
+  (
+    | { type: "WRIT_QUOTE"; entity: WritQuoteOut }
+    | { type: "PIC_REGION"; entity: PicRegionOut }
+    | { type: "VID_SEGMENT"; entity: VidSegmentOut }
+  );
 
 export type StatementOut = Persisted<Statement>;
 
