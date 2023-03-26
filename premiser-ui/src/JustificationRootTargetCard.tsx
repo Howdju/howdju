@@ -32,7 +32,6 @@ import {
   makeCreateContentReportInput,
 } from "howdju-client-common";
 
-import hoverAware from "./hoverAware";
 import JustificationRootTargetViewer from "./JustificationRootTargetViewer";
 import PropositionTagger from "./PropositionTagger";
 import { EditorTypes } from "./reducers/editors";
@@ -63,7 +62,6 @@ interface OwnProps {
   rootTargetType: JustificationRootTargetType;
   rootTarget: JustificationRootTargetOut;
   extraMenuItems: MenuItems;
-  canHover: boolean;
 }
 
 interface Props extends OwnProps, PropsFromRedux {}
@@ -82,7 +80,6 @@ class JustificationRootTargetCard extends React.Component<Props> {
       rootTargetType,
       rootTarget,
       extraMenuItems,
-      canHover,
     } = this.props;
     const { isOver } = this.state;
 
@@ -93,7 +90,7 @@ class JustificationRootTargetCard extends React.Component<Props> {
       rootTarget &&
       some(rootTarget.justifications, (j) => isVerified(j) && isNegative(j));
 
-    const doHideControls = !isOver && canHover;
+    const doHideControls = !isOver;
 
     const baseEditMenuItems = [
       <ListItem
@@ -319,4 +316,4 @@ const connector = connect(
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(hoverAware(JustificationRootTargetCard));
+export default connector(JustificationRootTargetCard);

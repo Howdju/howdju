@@ -315,7 +315,6 @@ export default class LandingPage extends Component {
               showStatusText={false}
             />
             <JustificationBranch
-              id={`target-justification-${proJustificationCountered.id}`}
               justification={proJustificationCountered}
               doShowBasisJustifications={false}
               doShowControls={false}

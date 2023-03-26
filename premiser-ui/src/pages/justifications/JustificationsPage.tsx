@@ -189,9 +189,8 @@ class JustificationsPage extends Component<Props> {
               rootTarget={rootTarget}
               editorId={JustificationsPage.rootTargetEditorId}
               suggestionsKey={this.suggestionsKey("root-target")}
-              showJustificationCount={false}
-              onShowNewJustificationDialog={this.showNewJustificationDialog}
               extraMenuItems={rootTargetExtraMenuItems}
+              // contextPolarity={contextTrailItems?.[contextTrailItems.length]}
             />
           </div>
 

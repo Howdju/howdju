@@ -14,7 +14,6 @@ export interface ToastData {
 export const appSlice = createSlice({
   name: "app",
   initialState: {
-    canHover: false,
     isNavDrawerVisible: false,
     isMobileSiteDisabled: false,
     isWindowNarrow: isWindowNarrow(),
@@ -42,12 +41,6 @@ export const appSlice = createSlice({
     },
     dismissToast: (state) => {
       state.toasts = state.toasts.slice(1);
-    },
-    setCanHover: {
-      prepare: (canHover: boolean) => ({ payload: { canHover } }),
-      reducer: (state, action: PayloadAction<{ canHover: boolean }>) => {
-        state.canHover = action.payload.canHover;
-      },
     },
     disableMobileSite: (state) => {
       state.isMobileSiteDisabled = true;

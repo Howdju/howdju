@@ -40,7 +40,6 @@ import {
   counterJustificationEditorId,
   justificationBasisEditorId,
 } from "./editorIds";
-import hoverAware from "./hoverAware";
 import JustificationChatBubble from "./JustificationChatBubble";
 import paths from "./paths";
 import { EditorTypes } from "./reducers/editors";
@@ -153,7 +152,6 @@ class JustificationBranch extends Component {
       doShowBasisJustifications,
       isCondensed,
       isUnCondensed,
-      canHover,
       showBasisUrls,
       contextTrailItems = [],
       showStatusText,
@@ -167,7 +165,7 @@ class JustificationBranch extends Component {
     const _isRootPositive = isRootPositive(justification);
     const _isRootNegative = isRootNegative(justification);
 
-    const doHideControls = !isOver && canHover;
+    const doHideControls = !isOver;
 
     const menu = (
       <MenuButton
@@ -393,7 +391,15 @@ class JustificationBranch extends Component {
   }
 }
 JustificationBranch.propTypes = {
+  justification: PropTypes.object,
   doShowControls: PropTypes.bool,
+  doShowBasisJustifications: PropTypes.bool,
+  isCondensed: PropTypes.bool,
+  isUnCondensed: PropTypes.bool,
+  showBasisUrls: PropTypes.bool,
+  contextTrailItems: PropTypes.array,
+  showStatusText: PropTypes.bool,
+  onClickWritQuoteUrl: PropTypes.func,
 };
 JustificationBranch.defaultProps = {
   doShowControls: true,
@@ -422,6 +428,6 @@ const ConnectedJustificationBranch = connect(
     goto,
     ui,
   })
-)(hoverAware(JustificationBranch));
+)(JustificationBranch);
 
 export default ConnectedJustificationBranch;

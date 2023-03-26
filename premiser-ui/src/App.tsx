@@ -117,7 +117,6 @@ class App extends Component<Props> {
     window.addEventListener("resize", this.onWindowResize, false);
     window.addEventListener("scroll", this.throttledOnWindowScroll, false);
     window.addEventListener("message", this.receiveMessage, false);
-    window.addEventListener("mouseover", this.onFirstMouseOver, false);
 
     this.windowMessageHandler = new WindowMessageHandler({
       extension: this.props.extension,
@@ -251,7 +250,6 @@ class App extends Component<Props> {
     window.removeEventListener("resize", this.onWindowResize);
     window.removeEventListener("scroll", this.throttledOnWindowScroll);
     window.removeEventListener("message", this.receiveMessage);
-    window.removeEventListener("mouseover", this.onFirstMouseOver);
   }
 
   receiveMessage = (event: MessageEvent<any>) => {
@@ -264,11 +262,6 @@ class App extends Component<Props> {
 
   onWindowResize = () => {
     this.props.ui.windowResize();
-  };
-
-  onFirstMouseOver = () => {
-    this.props.app.setCanHover(true);
-    window.removeEventListener("mouseover", this.onFirstMouseOver);
   };
 
   updateOverscrollState = () => {
